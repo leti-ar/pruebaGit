@@ -8,13 +8,17 @@ import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
+import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Muestra la tabla con los resultados de la busqueda de operaciones. También maneja la logica de busqueda para
@@ -163,7 +167,7 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 		resultTableWrapperOpCurso.setWidget(resultTableOpEnCurso);
 		int row = 1;
 		for (OperacionEnCursoDto opCursoDto : opEnCurso) {
-			resultTableOpEnCurso.setWidget(row, 0, IconFactory.lapiz());
+			resultTableOpEnCurso.setWidget(row, 0, IconFactory.addImageWithListener("lapiz"));
 			//if (opCurso.isPuedeVerInfocom()) {
 			//	resultTableOpEnCurso.setWidget(row, 1, IconFactory.lupa());
 			//}
