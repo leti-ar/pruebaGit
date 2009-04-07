@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app>
+
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:ar/com/nextel/sfa/applicationContext.xml</param-value>
+	</context-param>
+   
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+	<filter>
+		<filter-name>hibernateFilter</filter-name>
+		<filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+	</filter>
+
+	<filter>
+		<filter-name>executionContextFilter</filter-name>
+		<filter-class>ar.com.nextel.sfa.server.filter.ExecutionContextFilter</filter-class>
+	</filter>	
+	
+		<!-- Hibernate -->
+	<filter-mapping>
+		<filter-name>hibernateFilter</filter-name>
+		<url-pattern>*.do</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>hibernateFilter</filter-name>
+		<url-pattern>*.rpc</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>hibernateFilter</filter-name>
+		<url-pattern>*.jsp</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>hibernateFilter</filter-name>
+		<url-pattern>*.pdf</url-pattern>
+	</filter-mapping>
+	
+	<filter-mapping>
+		<filter-name>executionContextFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<servlet>
+		<servlet-name>shell</servlet-name>
+		<servlet-class>com.google.gwt.dev.shell.GWTShellServlet</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>shell</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+
+</web-app>

@@ -1,0 +1,203 @@
+/** Add css rules here for your application. */
+@IMPORT url("measures.css");
+
+@IMPORT url("popups.css");
+
+@IMPORT url("datePicker-nexus.css");
+
+@IMPORT url("buttons.css");
+
+body,td {
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 11px;
+	font-size-adjust: none;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: normal;
+}
+
+*,body {
+	margin: 0px;
+	padding: 0px;
+}
+
+.alignCenter {
+	text-align: center;
+}
+
+.gwt-HeaderMenu .menu {
+	background-color: #981836;
+	background-image: url(images/toolbar/back-menu-bar.gif);
+	/*	float: left;*/
+	height: 30px;
+	text-align: left;
+	width: 100%;
+}
+
+.gwt-MenuItem {
+	cursor: pointer;
+}
+
+.gwt-HeaderMenu .gwt-MenuItem {
+	/**	background-image: url(images/toolbar/back-menu-bar.gif);*/
+	border-right: 1px solid #981836;
+	color: #EEEEEE;
+	display: block;
+	font-size: 12px;
+	font-style: italic;
+	font-weight: bold;
+	padding: 6px;
+	text-decoration: none;
+}
+
+.submenuPrincipal .gwt-MenuItem {
+	background-color: #FEFEFE;
+	border-bottom: 1px solid #E9E9E9;
+	color: #9E2F49;
+	display: block;
+	font-size: 10px;
+	font-weight: bold;
+	padding: 4px 8px;
+	text-decoration: none;
+	text-transform: uppercase;
+}
+
+.submenuPrincipal .gwt-MenuItem-selected {
+	background-image: url(images/toolbar/back-menu-item-hover.gif);
+	color: white;
+}
+
+.gwt-MenuBarPopup .menuPopupTopCenter {
+	background-image: url(images/toolbar/back-menu-drop-down.gif);
+	background-repeat: repeat-x;
+	height: 10px;
+}
+
+.gwt-MenuBarPopup {
+	border-color: #AAAAAA;
+	border-style: solid;
+	border-width: 0 1px 1px;
+}
+
+.gwt-TextBox,.gwt-ListBox { /*float: left;*/
+	font-family: Verdana;
+	font-size: 11px;
+	font-weight: normal;
+	margin: 0;
+}
+
+.gwt-TextBox {
+	border: 1px solid #BCBCBC;
+	padding: 1px;
+}
+
+.gwt-central-panel {
+	background-color: #DADADA;
+	/*	float: left;*/
+	min-width: 100%;
+	padding: 0;
+	text-align: center;
+}
+
+.gwt-BuscarCuentaFilterForm,.gwt-BuscarCuentaResultPanel {
+	margin: 5px;
+	background-color: #F7F7F7;
+	background-image: url(images/sch_bkg.gif);
+	background-repeat: repeat-x;
+	border-color: #FFFFFF;
+	border-style: groove ridge ridge groove;
+	border-width: 2px;
+	display: block;
+}
+
+.titulo {
+	color: gray;
+	display: block;
+	font-weight: normal !important;
+	margin: 4px 10px;
+	width: 100% !important;
+	text-align: left;
+}
+
+.gwt-filtrosBuscador {
+	display: block;
+	/*	float: left;*/
+	height: 24px;
+	margin: 0 0 0px;
+	padding: 0;
+	text-align: left;
+}
+
+.tituloRedPanel {
+	width: 100% !IMPORTANT;
+	margin: 0px !IMPORTANT;
+	vertical-align: middle;
+	background-color: #981836;
+	background-image: url(images/h1_bkg_desplegable.jpg);
+	background-repeat: repeat-x;
+	text-indent: 5px;
+	line-height: 20px ! IMPORTANT;
+	color: #FFFFFF;
+	font-family: Verdana, Geneva, Kalimati, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+}
+
+.header td {
+	background-color: #A53953;
+	color: #FFFFFF;
+	font-weight: bold;
+	text-align: center;
+	line-height: 14px;
+}
+
+.gwt-BuscarCuentaResultTable td {
+	border-right: 1px solid #EBEBEB;
+	border-bottom: 1px solid #EBEBEB;
+	height: 24px;
+}
+
+.gwt-BuscarCuentaResultPanel .resultTableWrapper {
+	height: 200px;
+	overflow: auto;
+}
+
+.gwt-BuscarCuentaFilterForm .layout td {
+	padding-bottom: 2px;
+	padding-top: 2px;
+}
+
+.gwt-BuscarCuentaFilterForm .layout td,.gwt-Label {
+	font-family: Verdana, Geneva, Kalimati, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	text-align: left;
+	text-indent: 4px;
+}
+
+.WaitWindow {
+	background-color: #AA0000;
+	color: #FFFFFF;
+}
+
+.gwt-TabBar .gwt-TabBarItem-selected {
+	background-image: url(images/tabs/tab-on.gif);
+	color: #A83C56;
+	cursor: default;
+}
+
+.gwt-TabBar .gwt-TabBarItem {
+	background: #DADADA url(images/tabs/tab.gif) repeat scroll center top;
+	cursor: pointer;
+	font-family: Verdana;
+	font-size: 11px;
+	font-size-adjust: none;
+	font-stretch: normal;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: bold;
+	height: 21px;
+	line-height: 21px;
+	text-align: center;
+	width: 75px;
+}

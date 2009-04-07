@@ -1,0 +1,67 @@
+.gwt-CustomDialogBox {
+	background-color: #fff;
+	border: 1px solid #333333;
+	padding: 0px;
+}
+
+.gwt-CustomDialogBox .popHeader {
+	height: 25px;
+	background-image: url('images/pop_superior.gif');
+	background-color: #A53953;
+	background-position: top left;
+	background-repeat: repeat-x;
+	padding-top: 5px;
+	padding-left: 5px;
+	font-weight: bold;
+	font-size: 120%;
+	font-variant: small-caps;
+	color: #fff;
+}
+
+div.popFooter {
+	height: 25px;
+	background-image: url('images/pop_inferior.gif');
+	background-color: #A53953;
+	background-position: top left;
+	background-repeat: repeat-x;
+	text-align: center;
+}
+
+/* leaving it blank for inline styling with padding, text-align */
+div.popFormButtons {
+	margin: 0px;
+	padding: 5px;
+	text-align: center;
+}
+
+/* links that affect the WINDOW, not the content */
+div.popFooter A {
+	font-size: 100%;
+	text-transform: lowercase;
+}
+
+div.popFooter A,div.popFooter A:link,div.popFooter A:visited,div.popFooter A:active
+	{
+	color: #fff;
+	background: inherit;
+	text-decoration: none;
+}
+
+div.popFooter A:hover,div.popFooter A:focus {
+	text-decoration: underline;
+}
+
+div.popFooter A,div.popFormButtons A {
+	margin-right: 5px;
+}
+
+.gwt-ErrorDialog .stackTrace {
+	width: 380px;
+	height: 200px;
+	margin-left: 10px;
+}
+
+.gwt-ErrorDialog .errorMessages {
+	text-align: center;
+	margin: 10px;
+}

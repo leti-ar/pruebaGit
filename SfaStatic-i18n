@@ -1,0 +1,4 @@
+#!/bin/sh
+APPDIR=`dirname $0`;
+java -cp "$APPDIR/src:$APPDIR/bin:/opt/java/gwt-linux-1.5.2/gwt-user.jar:/opt/java/gwt-linux-1.5.2/gwt-dev-linux.jar" com.google.gwt.i18n.tools.I18NSync -out $APPDIR/src ar.com.nextel.sfa.client.constant.SfaStatic  ;
+

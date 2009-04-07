@@ -1,0 +1,167 @@
+/* Hoja de estilos correspondiente al DatePicker de Snoop GwtCommons. */
+
+TABLE.monthDates TD {
+	font-family:tahoma,sans-serif;
+	font-size:11px;
+	color:#980023;
+	text-align:center;
+}
+
+.datepicker	{
+	background-image: url(library/images/date_icon.gif);
+	width: 17px; 
+	height: 16px;
+    border: none;
+    text-decoration: none;	
+}
+	
+.popupPanel	{
+	font-family:tahoma,sans-serif;
+	font-size:10px;
+	background: #FFFFFF;
+
+}
+	
+.calendarPanel	{
+	font-family:tahoma,sans-serif;
+	font-size:10px;
+	color:#980023;
+	border-bottom: 1px solid #980023;
+	border-right: 1px solid #980023;
+	border-left: 1px solid #980023;
+	border-top:1px solid #980023;
+	background-color: #FAFAFA;
+	background-image: url(../images/sombra_calendarPanel.jpg);
+	background-repeat: repeat-x;
+	background-position: top;
+ }
+ 
+.todayPanel	{
+	font-family:tahoma,sans-serif;font-size:11px;
+	float: right;
+	font-weight:bold;
+	color:#980023;
+	background: #FFFFFF;
+	text-align:center;
+	border-bottom: 1px solid gray;
+	border-right: 1px solid gray;
+	border-left: 1px solid gray;
+ } 
+ 
+ .todayLink	{
+ 	font-family:tahoma,sans-serif;font-size:11px;
+ 	float: center;
+ 	font-weight:bold;
+ 	color:#980023;
+	background: #FFFFFF;
+	width: 50px;
+	text-align:center;
+	text-decoration:underline;
+	cursor:pointer;cursor:hand;
+ }
+ 
+ .cancelLink	{
+	cursor:pointer;cursor:hand;
+	background-image: url(/images/icono_cancelar.gif);
+    float: right;
+    height: 12px;
+    width: 12px;
+ }  
+ 
+ .acceptLink	{
+	cursor:pointer;cursor:hand;
+	background-image: url(../images/icono_aceptar.gif);
+    float: right;
+    height: 12px;
+    width: 12px;
+    margin-right: 5px;
+    margin-left: 5px;
+ } 
+ 
+ .monthHeader {
+ 	font-family:tahoma,sans-serif;
+ 	font-size:10px;
+ 	font-weight:BOLD;
+ 	color:#000000;
+ 	text-align:center;
+ }
+
+ 
+.holidayWeek {
+ 	font-family:tahoma,sans-serif;
+ 	font-size:10px;
+ 	font-weight:BOLD;
+ 	color:gray;
+ 	text-align:center;
+ }
+ 
+.holiday {
+ 	font-family:Arial,tahoma,sans-serif;
+ 	font-size:10px;
+ 	color:gray;
+ 	text-align:center;
+ }
+ 
+ .holidaySelectable {
+ 		font-family:Arial,tahoma,sans-serif;
+	font-size:10px;
+	color:#000000;
+	text-decoration:none;
+	cursor:pointer;cursor:hand;
+ } 
+
+.monthYearTraversorBtn	{
+	font-family:tahoma,sans-serif;font-size:11px;
+	background: #980023;
+	color: #FFFFFF;
+	font-weight:bold;
+	border-right: 0px solid gray;
+	border-left: 0px solid gray;
+	border-bottom: 0px solid gray;
+	border-top: 0px solid gray;
+	cursor:pointer;cursor:hand;
+}
+	
+.monthYearTraversor	{
+	font-family:Arial,tahoma,sans-serif;font-size:11px;
+	background: #980023;
+	color: #FFFFFF;
+	font-weight:bold;
+	
+}	
+	
+.calendarDate {
+	font-family:Arial,tahoma,sans-serif;
+	font-size:10px;
+	color:#000000;
+	text-decoration:none;
+	cursor:pointer;cursor:hand;
+  }
+  
+.currentDate {
+	font-family:tahoma,sans-serif;
+	font-size:10px;
+	color:#980023;
+	font-weight:BOLD;
+	background: #36gb12;
+	text-decoration:none;
+	cursor:pointer;cursor:hand;
+	border-bottom: 1px solid gray;
+	border-right: 1px solid gray;
+	border-left: 1px solid gray;
+	border-top:1px solid gray;	
+  }
+  
+.selectedDate {
+	font-family:tahoma,sans-serif;
+	font-size:10px;
+	color:#000;
+	font-weight:BOLD;
+	background: #FFFFFF;
+	text-decoration:none;
+	cursor:pointer;cursor:hand;
+	border-bottom: 1px solid #980023;
+	border-right: 1px solid #980023;
+	border-left: 1px solid #980023;
+	border-top:1px solid #980023;	
+  }

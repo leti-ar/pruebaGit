@@ -1,0 +1,194 @@
+
+/* Instructions for lamers go here! */
+/* ------------------------------------------------------------------- */
+
+/* Margins */
+.m0 {margin: 0px}
+.m2 {margin: 2px}
+.m3 {margin: 3px}
+.m5 {margin: 5px}
+.m8 {margin: 8px}
+.m10 {margin: 10px}
+.m15 {margin: 15px}
+.m20 {margin: 20px}
+
+/* Top */
+.mt0  {margin-top: 0px;}
+.mt3  {margin-top: 3px;}
+.mt5  {margin-top: 5px;}
+.mt10 {margin-top: 10px;}
+.mt15 {margin-top: 15px;}
+.mt20 {margin-top: 20px;}
+.mt25 {margin-top: 25px;}
+.mt30 {margin-top: 30px;}
+.mt35 {margin-top: 35px;}
+.mt40 {margin-top: 40px;}
+.mt50 {margin-top: 50px;}
+
+/* Right */
+.mr0  {margin-right: 0px;}
+.mr5  {margin-right: 5px;}
+.mr10 {margin-right: 10px;}
+.mr15 {margin-right: 15px;}
+.mr20 {margin-right: 20px;}
+.mr25 {margin-right: 25px;}
+.mr30 {margin-right: 30px;}
+.mr35 {margin-right: 35px;}
+.mr40 {margin-right: 40px;}
+.mr50 {margin-right: 50px;}
+
+/* Bottom */
+.mb0  {margin-bottom: 0px;}
+.mb3  {margin-bottom: 3px;}
+.mb5  {margin-bottom: 5px;}
+.mb10 {margin-bottom: 10px;}
+.mb15 {margin-bottom: 15px;}
+.mb20 {margin-bottom: 20px;}
+.mb25 {margin-bottom: 25px;}
+.mb30 {margin-bottom: 30px;}
+.mb35 {margin-bottom: 35px;}
+.mb40 {margin-bottom: 40px;}
+.mb50 {margin-bottom: 50px;}
+
+/* Left */
+.ml0  {margin-left: 0px;}
+.ml5  {margin-left: 5px;}
+.ml10 {margin-left: 10px;}
+.ml15 {margin-left: 15px;}
+.ml20 {margin-left: 20px;}
+.ml25 {margin-left: 25px;}
+.ml30 {margin-left: 30px;}
+.ml35 {margin-left: 35px;}
+.ml40 {margin-left: 40px;}
+.ml50 {margin-left: 50px;}
+.ml55 {margin-left: 55px;}
+
+/* Left & Right */
+.mlr5  {margin-left: 5px; margin-right: 5px;}
+.mlr8  {margin-left: 8px; margin-right: 8px;}
+.mlr10 {margin-left: 10px; margin-right: 10px;}
+.mlr15 {margin-left: 15px; margin-right: 15px;}
+.mlr20 {margin-left: 20px; margin-right: 20px;}
+
+/* Left, Right & Top */
+.mlrt5  {margin-left: 5px; margin-right: 5px; margin-top: 5px;}
+.mlrt10 {margin-left: 10px; margin-right: 10px; margin-top: 10px;}
+.mlrt15 {margin-left: 15px; margin-right: 15px; margin-top: 15px;}
+.mlrt20 {margin-left: 20px; margin-right: 20px; margin-top: 20px;}
+
+/* ------------------------------------------------------------------- */
+
+/* Paddings */
+.p0 {padding: 0px;}
+.p2 {padding: 2px;}
+.p3 {padding: 3px;}
+.p5 {padding: 5px;}
+.p10 {padding: 10px;}
+.p15 {padding: 15px;}
+.p20 {padding: 20px;}
+
+/* Top */
+.pt0  {padding-top: 0px;}
+.pt2  {padding-top: 2px;}
+.pt3  {padding-top: 3px;}
+.pt5  {padding-top: 5px;}
+.pt8  {padding-top: 8px;}
+.pt10 {padding-top: 10px;}
+.pt15 {padding-top: 15px;}
+.pt20 {padding-top: 20px;}
+.pt25 {padding-top: 25px;}
+.pt30 {padding-top: 30px;}
+.pt35 {padding-top: 35px;}
+.pt40 {padding-top: 40px;}
+.pt50 {padding-top: 50px;}
+
+/* Right */
+.pr0  {padding-right: 0px;}
+.pr5  {padding-right: 5px;}
+.pr10 {padding-right: 10px;}
+.pr15 {padding-right: 15px;}
+.pr20 {padding-right: 20px;}
+.pr25 {padding-right: 25px;}
+.pr30 {padding-right: 30px;}
+.pr35 {padding-right: 35px;}
+.pr40 {padding-right: 40px;}
+.pr50 {padding-right: 50px;}
+
+/* Bottom */
+.pb0  {padding-bottom: 0px;}
+.pb2  {padding-bottom: 2px;}
+.pb3  {padding-bottom: 3px;}
+.pb5  {padding-bottom: 5px;}
+.pb8  {padding-bottom: 8px;}
+.pb10 {padding-bottom: 10px;}
+.pb15 {padding-bottom: 15px;}
+.pb20 {padding-bottom: 20px;}
+.pb25 {padding-bottom: 25px;}
+.pb30 {padding-bottom: 30px;}
+.pb35 {padding-bottom: 35px;}
+.pb40 {padding-bottom: 40px;}
+.pb50 {padding-bottom: 50px;}
+
+/* Left */
+.pl0  {padding-left: 0px;}
+.pl5  {padding-left: 5px;}
+.pl10 {padding-left: 10px;}
+.pl15 {padding-left: 15px;}
+.pl20 {padding-left: 20px;}
+.pl25 {padding-left: 25px;}
+.pl30 {padding-left: 30px;}
+.pl35 {padding-left: 35px;}
+.pl40 {padding-left: 40px;}
+.pl50 {padding-left: 50px;}
+
+/* For tables */
+tr.pt15 td { padding-top: 15px; }
+
+/* All */
+.p40  {padding: 40px 40px 40px 40px;}
+.m0p0 {margin: 0px; padding: 0px;}
+
+/* ------------------------------------------------------------------- */
+
+/* Text Sizes */
+
+/* Arial */
+.a26  {font-family:arial,helvetica,sans-serif;font-size: 26px;}
+.a24  {font-family:arial,helvetica,sans-serif;font-size: 24px;}
+.a22  {font-family:arial,helvetica,sans-serif;font-size: 22px;}
+.a20  {font-family:arial,helvetica,sans-serif;font-size: 20px;}
+.a18  {font-family:arial,helvetica,sans-serif;font-size: 18px;}
+.a17  {font-family:arial,helvetica,sans-serif;font-size: 17px;}
+.a16  {font-family:arial,helvetica,sans-serif;font-size: 16px;}
+.a15  {font-family:arial,helvetica,sans-serif;font-size: 15px;}
+.a14  {font-family:arial,helvetica,sans-serif;font-size: 14px;line-height:16px;}
+.a11  {font-family:arial,helvetica,sans-serif;font-size: 11px;line-height:15px;}
+.a10  {font-family:arial,helvetica,sans-serif;font-size: 10px;}
+.a9  {font-family:arial,helvetica,sans-serif;font-size: 9px;}
+
+/* Verdana */
+.v10  {font-family:verdana,arial,helvetica,sans-serif;font-size: 10px;}
+.v11  {font-family:verdana,arial,helvetica,sans-serif;font-size: 11px;}
+
+/* ------------------------------------------------------------------- */
+
+/* Generic Styles */
+
+/* Width */
+.w260	{ width: 260px; }
+.w60p	{ width: 60%; }
+.w100p	{ width: 100%; }
+
+
+/* Height */
+.h100	{ height: 100px; }
+.h150	{ height: 150px; }
+.h200	{ height: 200px; }
+.h250	{ height: 250px; }
+.h300	{ height: 300px; }
+
+
+/* ------------------------------------------------------------------- */
+
+/* Position */
+

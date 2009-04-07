@@ -1,0 +1,48 @@
+.btn-first,.btn-prev,.btn-next,.btn-last {
+	width: 16px;
+	height: 16px;
+	background-image: url("images/page-arrows.gif");
+	border: none;
+	background-color:transparent;
+	background-repeat:no-repeat;
+	margin-right: 10px;
+}
+
+.btn-first {
+	background-position: 0 0;
+}
+
+.btn-prev {
+	background-position: 0 -16;
+}
+
+.btn-next {
+	background-position: 0 -32;
+}
+
+.btn-last {
+	background-position: 0 -48;
+}
+
+.btn-bkg {
+	width: 79px;
+	height: 21px;
+	background-image: url("images/btn-bkg.gif");
+	border: none;
+	background-color:transparent;
+	background-repeat:no-repeat;
+	margin-right: 10px;
+	color: #A93F59;
+	font-weight:bold;
+}
+
+.btn-menu{
+	position: absolute;
+	top: 0px;
+	left: 50%;
+	margin-left: -25px;
+	background-image: url("images/btn-menu.gif");
+	border: none;
+	height: 10px;
+	width: 50px;
+}

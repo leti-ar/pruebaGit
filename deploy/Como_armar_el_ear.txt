@@ -1,0 +1,10 @@
+¿Cómo se arma el EAR?
+  Coloquese dentro de la carpeta "deploy" y ejecute "mvn install" (o "mvn clean install"). 
+  Esto hará que se compilen los proyectos en el siguiente orden:
+  
+  -sfa-srv
+  -GwtCommons
+  -sfa-web_new (genera WAR)
+  -sfa-web_new/deploy/ear (genera EAR)
+  
+  El paquete generado queda en el repositorio de maven local.
