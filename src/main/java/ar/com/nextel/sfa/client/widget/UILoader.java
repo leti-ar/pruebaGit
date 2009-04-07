@@ -3,7 +3,7 @@ package ar.com.nextel.sfa.client.widget;
 import ar.com.nextel.sfa.client.SFAWeb;
 import ar.com.nextel.sfa.client.cuenta.AgregarCuentaUI;
 import ar.com.nextel.sfa.client.cuenta.BuscarCuentaUI;
-import ar.com.nextel.sfa.client.cuenta.OperacionEnCursoUI;
+import ar.com.nextel.sfa.client.operaciones.OperacionEnCursoUI;
 import ar.com.nextel.sfa.client.oportunidad.BuscarOportunidadUI;
 import ar.com.nextel.sfa.client.veraz.VerazUI;
 
