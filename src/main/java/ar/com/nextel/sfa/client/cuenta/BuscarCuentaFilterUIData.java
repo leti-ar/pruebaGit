@@ -11,6 +11,7 @@ import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItemImpl;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
+import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -28,14 +29,14 @@ public class BuscarCuentaFilterUIData extends UIData {
 
 	private Label tituloLabel = new Label("Búsqueda de Cuentas");
 	private ListBox categoriaCombo;
-	private TextBox numeroCuentaTextBox;
-	private TextBox razonSocialTextBox;
-	private TextBox numeroNextelTextBox;
-	private TextBox flotaIdTextBox;
-	private TextBox numeroSolicitudServicioTextBox;
-	private TextBox responsableTextBox;
+	private RegexTextBox numeroCuentaTextBox = new RegexTextBox("[0-9.]*") {};
+	private RegexTextBox razonSocialTextBox = new RegexTextBox("[0-9a-zA-Z.,;<>-_/*#$%&¡!]*") {};
+	private RegexTextBox numeroNextelTextBox = new RegexTextBox("[0-9]*") {};
+	private RegexTextBox flotaIdTextBox = new RegexTextBox("[0-9]{3,5}[*][0-9]{1,5}") {};
+	private RegexTextBox numeroSolicitudServicioTextBox = new RegexTextBox("[0-9]*") {};
+	private RegexTextBox responsableTextBox = new RegexTextBox("[a-zA-Z.,;-_*#$%&]*") {};
 	private ListBox tipoDocumentoCombo;
-	private TextBox numeroDocumentoTextBox;
+	private RegexTextBox numeroDocumentoTextBox = new RegexTextBox("[0-9.]*") {};
 	private ListBox predefinidasCombo;
 	private ListBox resultadosCombo;
 
@@ -45,14 +46,21 @@ public class BuscarCuentaFilterUIData extends UIData {
 	public BuscarCuentaFilterUIData() {
 
 		fields.add(categoriaCombo = new ListBox(""));
-		fields.add(numeroCuentaTextBox = new TextBox());
-		fields.add(razonSocialTextBox = new TextBox());
-		fields.add(numeroNextelTextBox = new TextBox());
-		fields.add(flotaIdTextBox = new TextBox());
-		fields.add(numeroSolicitudServicioTextBox = new TextBox());
-		fields.add(responsableTextBox = new TextBox());
+		numeroCuentaTextBox.setMaxLength(25);
+		fields.add(numeroCuentaTextBox);
+		razonSocialTextBox.setMaxLength(100);
+		fields.add(razonSocialTextBox);
+		numeroNextelTextBox.setMaxLength(10);
+		fields.add(numeroNextelTextBox);
+		flotaIdTextBox.setMaxLength(11);
+		fields.add(flotaIdTextBox);
+		numeroSolicitudServicioTextBox.setMaxLength(10);
+		fields.add(numeroSolicitudServicioTextBox);
+		responsableTextBox.setMaxLength(19);
+		fields.add(responsableTextBox);
 		fields.add(tipoDocumentoCombo = new ListBox());
-		fields.add(numeroDocumentoTextBox = new TextBox());
+		numeroDocumentoTextBox.setMaxLength(13);
+		fields.add(numeroDocumentoTextBox);
 		fields.add(predefinidasCombo = new ListBox(""));
 		fields.add(resultadosCombo = new ListBox());
 
@@ -89,7 +97,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 			}
 		}
 	}
-
+	
 	public Label getTituloLabel() {
 		return tituloLabel;
 	}
