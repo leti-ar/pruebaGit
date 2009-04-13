@@ -13,6 +13,8 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -40,7 +42,13 @@ public class CuentaForm extends Composite {
 		mainPanel.add(createEmailPanel());
 		mainPanel.add(createFormaDePagoPanel());
 		mainPanel.add(createFechaUsuarioPanel());
-			
+		mainPanel.addStyleName("aButtons");
+		
+		cuentaEditor.getGuardar().setStyleName("link");
+		cuentaEditor.getCrearSS().setStyleName("link");
+		cuentaEditor.getAgregar().setStyleName("link");
+		cuentaEditor.getCancelar().setStyleName("link");
+		
 		footerBar.addLink(cuentaEditor.getGuardar());
 		footerBar.addLink(cuentaEditor.getCrearSS());
 		footerBar.addLink(cuentaEditor.getAgregar());
@@ -67,8 +75,9 @@ public class CuentaForm extends Composite {
 
 	private Widget createDatosCuentaPanel() {
 		datosCuentaTable = new FlexTable();
+		datosCuentaTable.getFlexCellFormatter().setColSpan(1, 1, 4);
+		cuentaEditor.getRazonSocial().setWidth("100%");
 		TitledPanel datosCuentaPanel = new TitledPanel(Sfa.constant().cuentaPanelTitle());
-		datosCuentaPanel.add(datosCuentaTable);
 
 		datosCuentaTable.setText(0, 0, Sfa.constant().tipoDocumento());
 		datosCuentaTable.setWidget(0, 1, cuentaEditor.getTipoDocumento());
@@ -99,10 +108,10 @@ public class CuentaForm extends Composite {
 		datosCuentaTable.setText(7, 3, Sfa.constant().veraz());
 		datosCuentaTable.setWidget(7, 4, cuentaEditor.getVeraz());
 
-		datosCuentaTable.addStyleName("gwt-Label");
-		datosCuentaTable.getFlexCellFormatter().setColSpan(1, 1, 4);
-		cuentaEditor.getRazonSocial().setWidth("100%");
-
+		datosCuentaPanel.addStyleName("abmPanel");
+		datosCuentaTable.addStyleName("abmPanelChild");
+		datosCuentaPanel.add(datosCuentaTable);
+		
 		return datosCuentaPanel;
 	}
 
@@ -122,6 +131,8 @@ public class CuentaForm extends Composite {
 		telefonoTable.setText(2, 0, Sfa.constant().observaciones());
 		telefonoTable.setWidget(2, 1, cuentaEditor.getObservaciones());
 
+		telefonoPanel.addStyleName("abmPanel");
+		telefonoTable.addStyleName("abmPanelChild");
 		return telefonoPanel;
 	}
 
@@ -135,6 +146,8 @@ public class CuentaForm extends Composite {
 		emailTable.setText(0, 2, Sfa.constant().laboral());
 		emailTable.setWidget(0, 3, cuentaEditor.getEmailLaboral());
 
+		emailPanel.addStyleName("abmPanel");
+		emailTable.addStyleName("abmPanelChild");
 		return emailPanel;
 	}
 
@@ -145,17 +158,21 @@ public class CuentaForm extends Composite {
 		
 		formaDePagoTable.setText(0, 0, Sfa.constant().modalidad());
 		formaDePagoTable.setWidget(0, 1, cuentaEditor.getModalidadPago());		
+		
+		formaDePagoPanel.addStyleName("abmPanel");
+		formaDePagoTable.addStyleName("abmPanelChild");
 		return formaDePagoPanel;
 	}
 	
 	private Widget createFechaUsuarioPanel() {
 		fechaUsuarioTable = new FlexTable();
-				
+		
 		fechaUsuarioTable.setText(0, 0, Sfa.constant().usuario());
 		fechaUsuarioTable.setWidget(0, 1, cuentaEditor.getUsuario());		
 		fechaUsuarioTable.setText(0, 2, Sfa.constant().fechaCreacion());
 		fechaUsuarioTable.setWidget(0, 3, cuentaEditor.getFechaCreacion());	
 		
+		fechaUsuarioTable.addStyleName("abmPanelChild");
 		return fechaUsuarioTable;
 	}
 	
