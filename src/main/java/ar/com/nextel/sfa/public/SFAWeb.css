@@ -21,6 +21,7 @@ body,td {
 	padding: 0px;
 }
 
+
 .alignCenter {
 	text-align: center;
 }
@@ -162,12 +163,12 @@ body,td {
 	overflow: auto;
 }
 
-.gwt-BuscarCuentaFilterForm .layout td {
+.gwt-BuscarCuentaFilterForm .layout td, .gwt-CuentaForm .layout td {
 	padding-bottom: 2px;
 	padding-top: 2px;
 }
 
-.gwt-BuscarCuentaFilterForm .layout td,.gwt-Label {
+.gwt-BuscarCuentaFilterForm .layout td,.gwt-Label, .gwt-CuentaForm .layout td {
 	font-family: Verdana, Geneva, Kalimati, sans-serif;
 	font-size: 11px;
 	font-weight: bold;
@@ -200,4 +201,69 @@ body,td {
 	line-height: 21px;
 	text-align: center;
 	width: 75px;
+}
+
+.alignRight {
+	text-align: right;
+}
+
+.razonSocial .gwt-Label {
+float:left;
+font-weight:bold;
+margin:4px 0;
+padding-left:4px;
+width:90px;
+}
+
+.numeroCliente .gwt-Label {
+float:left;
+font-weight:bold;
+margin:4px 0;
+width:55px;
+}
+
+.link {
+color:#666666;
+display:inline;
+font-size:90%;
+font-weight:bold;
+line-height:25px;
+margin-left:5px;
+margin-right:5px;
+text-decoration:none;
+text-transform:uppercase;
+}
+
+.aButtons {
+background-image:url(images/bkg_frmButtons.gif);
+display:block;
+float:left;
+height:25px;
+line-height:25px;
+margin-top:8px;
+text-align:center;
+width:100%;
+}
+
+.gwt-TabPanelBottom {
+background:#FFFFFF url(images/bkg_frmContent.gif) repeat-x scroll 0 0;
+float:left;
+min-width:100%;
+text-align:center;
+}
+
+.abmPanel {
+border:1px solid #981836;
+float:left;
+margin-bottom:8px;
+width:100%;
+}
+
+.abmPanelChild {
+float:left;
+line-height:24px;
+margin:5px 0 0 2px;
+padding:0;
+text-align:left;
+width:48%;
 }
