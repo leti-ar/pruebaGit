@@ -33,7 +33,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 	private RegexTextBox razonSocialTextBox = new RegexTextBox("[0-9a-zA-Z.,;<>-_/*#$%&¡!]*") {};
 	private RegexTextBox numeroNextelTextBox = new RegexTextBox("[0-9]*") {};
 	private RegexTextBox flotaIdTextBox = new RegexTextBox("[0-9]{3,5}[*][0-9]{1,5}") {};
-	private RegexTextBox numeroSolicitudServicioTextBox = new RegexTextBox("[0-9]*") {};
+	private RegexTextBox numeroSolicitudServicioTextBox = new RegexTextBox("[0-9.]*") {};
 	private RegexTextBox responsableTextBox = new RegexTextBox("[a-zA-Z.,;-_*#$%&]*") {};
 	private ListBox tipoDocumentoCombo;
 	private RegexTextBox numeroDocumentoTextBox = new RegexTextBox("[0-9.]*") {};
