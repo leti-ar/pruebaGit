@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client.cuenta;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
+import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.nextel.sfa.client.widget.TelefonoTextBox;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
@@ -26,7 +27,9 @@ public class CuentaForm extends Composite {
 	private FlexTable telefonoTable;
 	private FlexTable emailTable;
 	private FlexTable formaDePagoTable;
-	private FlexTable fechaUsuarioTable;
+	private DualPanel fechaUsuarioTable;
+	private FlexTable usuario;
+	private FlexTable fechaCreacion;
 	private CuentaUIData cuentaEditor;
 	private FormButtonsBar footerBar;
 	
@@ -165,14 +168,20 @@ public class CuentaForm extends Composite {
 	}
 	
 	private Widget createFechaUsuarioPanel() {
-		fechaUsuarioTable = new FlexTable();
+		fechaUsuarioTable = new DualPanel();
+		usuario = new FlexTable();
+		fechaCreacion = new FlexTable();
 		
-		fechaUsuarioTable.setText(0, 0, Sfa.constant().usuario());
-		fechaUsuarioTable.setWidget(0, 1, cuentaEditor.getUsuario());		
-		fechaUsuarioTable.setText(0, 2, Sfa.constant().fechaCreacion());
-		fechaUsuarioTable.setWidget(0, 3, cuentaEditor.getFechaCreacion());	
+			
+		usuario.setText(0, 0, Sfa.constant().usuario());
+		usuario.setWidget(0, 1, cuentaEditor.getUsuario());
+		fechaCreacion.setText(0, 0, Sfa.constant().fechaCreacion());
+		fechaCreacion.setWidget(0, 1, cuentaEditor.getFechaCreacion());
+
+		fechaUsuarioTable.setLeft(usuario);
+		fechaUsuarioTable.setRight(fechaCreacion);
 		
-		fechaUsuarioTable.addStyleName("abmPanelChild");
+		fechaUsuarioTable.addStyleName("abmPiePanel");
 		return fechaUsuarioTable;
 	}
 	
