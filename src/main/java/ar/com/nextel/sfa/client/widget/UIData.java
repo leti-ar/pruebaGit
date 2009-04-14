@@ -20,4 +20,25 @@ public class UIData {
 	public void clean() {
 		FormUtils.clearFields(fields);
 	}
+	
+	/**
+	 * @author eSalvador
+	 */
+	public void cleanAndEnableFields() {
+		FormUtils.cleanAndEnableFields(fields);
+	}
+	
+	/**
+	 * @author eSalvador
+	 */
+	public void enableFields() {
+		FormUtils.enableFields(fields);
+	}
+	
+	/**
+	 * @author eSalvador
+	 */
+	public void disableFields() {
+		FormUtils.disableFields(fields);
+	}
 }

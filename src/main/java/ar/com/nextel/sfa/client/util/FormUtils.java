@@ -33,7 +33,72 @@ public class FormUtils {
 				((DatePicker) field).resetSelectedDates();
 				((DatePicker) field).setSelectedDate(null);
 			}
-			
+		}
+	}
+	
+	/**
+	 * @author eSalvador
+	 * Metodo que ademas de limpiar los datos cargados, setea en Enable(true) los componentes.
+	 */
+	public static void cleanAndEnableFields(List<Widget> fields) {
+		for (Widget field : fields) {
+			// Limpia TextBox y TextArea
+			if (field instanceof TextBoxBase) {
+				((TextBoxBase) field).setText("");
+				((TextBoxBase) field).setEnabled(true);
+			} else if (field instanceof ListBox) {
+				((ListBox) field).setSelectedIndex(0);
+				((ListBox) field).setEnabled(true);
+			} else if (field instanceof CheckBox) {
+				((CheckBox) field).setChecked(false);
+				((CheckBox) field).setEnabled(true);
+			} else if (field instanceof TelefonoTextBox) {
+				((TelefonoTextBox) field).clean();
+			} else if (field instanceof DatePicker){
+				((DatePicker) field).resetSelectedDates();
+				((DatePicker) field).setSelectedDate(null);
+				((DatePicker) field).setEnabled(true);
+			}
+		}
+	}
+	
+	/**
+	 * @author eSalvador
+	 * Metodo que SOLO setea en Enable(TRUE) los componentes.
+	 */
+	public static void enableFields(List<Widget> fields) {
+		for (Widget field : fields) {
+			if (field instanceof TextBoxBase) {
+				((TextBoxBase) field).setEnabled(true);
+			} else if (field instanceof ListBox) {
+				((ListBox) field).setEnabled(true);
+			} else if (field instanceof CheckBox) {
+				((CheckBox) field).setEnabled(true);
+			} else if (field instanceof TelefonoTextBox) {
+				//TODO: Falta averiguar como se habilita/deshabilita.
+			} else if (field instanceof DatePicker){
+				((DatePicker) field).setEnabled(true);
+			}
+		}
+	}
+	
+	/**
+	 * @author eSalvador
+	 * Metodo que SOLO setea en Enable(FALSE) los componentes.
+	 */
+	public static void disableFields(List<Widget> fields) {
+		for (Widget field : fields) {
+			if (field instanceof TextBoxBase) {
+				((TextBoxBase) field).setEnabled(false);
+			} else if (field instanceof ListBox) {
+				((ListBox) field).setEnabled(false);
+			} else if (field instanceof CheckBox) {
+				((CheckBox) field).setEnabled(false);
+			} else if (field instanceof TelefonoTextBox) {
+				//TODO: Falta averiguar como se habilita/deshabilita.
+			} else if (field instanceof DatePicker){
+				((DatePicker) field).setEnabled(false);
+			}
 		}
 	}
 }
