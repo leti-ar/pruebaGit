@@ -55,7 +55,7 @@ public class HeaderMenu extends Composite {
 
 		mainMenu.addItem("Cuentas", menuCuentas);
 		mainMenu.addSeparator();
-		mainMenu.addItem("SS", new OpenPageCommand(UILoader.SOLICITUD));
+		mainMenu.addItem("SS", new OpenPageCommand(UILoader.BUSCAR_SOLICITUD));
 		mainMenu.addSeparator();
 		mainMenu.addItem("Veraz", new OpenPageCommand(UILoader.VERAZ));
 		mainMenu.addSeparator();

@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.constant;
 
 /**
  * Interface to represent the constants contained in resource bundle:
- * 	'/home/jlgperez/workspaceSFASVN/sfa-web2/target/classes/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
+ * 	'/home/juliovesco/Documents/EntornoSFA/workspace/sfa-web2/target/classes/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
  */
 public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
@@ -41,6 +41,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Agregar")
   @Key("agregar")
   String agregar();
+
+  /**
+   * Translated "Alias:".
+   * 
+   * @return translated "Alias:"
+   */
+  @DefaultStringValue("Alias:")
+  @Key("alias")
+  String alias();
 
   /**
    * Translated "Apellido:".
@@ -97,6 +106,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String cicloFacturacion();
 
   /**
+   * Translated "Cierre Desde:".
+   * 
+   * @return translated "Cierre Desde:"
+   */
+  @DefaultStringValue("Cierre Desde:")
+  @Key("cierreDesde")
+  String cierreDesde();
+
+  /**
    * Translated "Clase Cli.:".
    * 
    * @return translated "Clase Cli.:"
@@ -115,6 +133,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String contribuyente();
 
   /**
+   * Translated "CPP/MPP:".
+   * 
+   * @return translated "CPP/MPP:"
+   */
+  @DefaultStringValue("CPP/MPP:")
+  @Key("cppMpp")
+  String cppMpp();
+
+  /**
    * Translated "Crédito de Fidelización".
    * 
    * @return translated "Crédito de Fidelización"
@@ -131,6 +158,24 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Datos de la cuenta")
   @Key("cuentaPanelTitle")
   String cuentaPanelTitle();
+
+  /**
+   * Translated "DDI".
+   * 
+   * @return translated "DDI"
+   */
+  @DefaultStringValue("DDI")
+  @Key("ddi")
+  String ddi();
+
+  /**
+   * Translated "DDN".
+   * 
+   * @return translated "DDN"
+   */
+  @DefaultStringValue("DDN")
+  @Key("ddn")
+  String ddn();
 
   /**
    * Translated "Desde:".
@@ -176,6 +221,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Entrega:")
   @Key("entrega")
   String entrega();
+
+  /**
+   * Translated "Estado:".
+   * 
+   * @return translated "Estado:"
+   */
+  @DefaultStringValue("Estado:")
+  @Key("estado")
+  String estado();
 
   /**
    * Translated "Estado OPP:".
@@ -232,6 +286,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String firmaTitle();
 
   /**
+   * Translated "Firmas:".
+   * 
+   * @return translated "Firmas:"
+   */
+  @DefaultStringValue("Firmas:")
+  @Key("firmas")
+  String firmas();
+
+  /**
    * Translated "Flota*Id:".
    * 
    * @return translated "Flota*Id:"
@@ -259,6 +322,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String hasta();
 
   /**
+   * Translated "Item:".
+   * 
+   * @return translated "Item:"
+   */
+  @DefaultStringValue("Item:")
+  @Key("item")
+  String item();
+
+  /**
    * Translated "Laboral:".
    * 
    * @return translated "Laboral:"
@@ -275,6 +347,24 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Limpiar")
   @Key("limpiar")
   String limpiar();
+
+  /**
+   * Translated "Lista Precio:".
+   * 
+   * @return translated "Lista Precio:"
+   */
+  @DefaultStringValue("Lista Precio:")
+  @Key("listaPrecio")
+  String listaPrecio();
+
+  /**
+   * Translated "Localidad:".
+   * 
+   * @return translated "Localidad:"
+   */
+  @DefaultStringValue("Localidad:")
+  @Key("localidad")
+  String localidad();
 
   /**
    * Translated "Modalidad:".
@@ -367,6 +457,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String origen();
 
   /**
+   * Translated "Pataconex:".
+   * 
+   * @return translated "Pataconex:"
+   */
+  @DefaultStringValue("Pataconex:")
+  @Key("pataconex")
+  String pataconex();
+
+  /**
    * Translated "Pataconex".
    * 
    * @return translated "Pataconex"
@@ -383,6 +482,24 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Personal:")
   @Key("personal")
   String personal();
+
+  /**
+   * Translated "Plan:".
+   * 
+   * @return translated "Plan:"
+   */
+  @DefaultStringValue("Plan:")
+  @Key("plan")
+  String plan();
+
+  /**
+   * Translated "Precio Lista:".
+   * 
+   * @return translated "Precio Lista:"
+   */
+  @DefaultStringValue("Precio Lista:")
+  @Key("precioLista")
+  String precioLista();
 
   /**
    * Translated "Predefinidas:".
@@ -421,6 +538,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String razonSocial();
 
   /**
+   * Translated "Reservar N°:".
+   * 
+   * @return translated "Reservar N°:"
+   */
+  @DefaultStringValue("Reservar N°:")
+  @Key("reservarN")
+  String reservarN();
+
+  /**
    * Translated "Responsable:".
    * 
    * @return translated "Responsable:"
@@ -446,6 +572,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Resumen SS")
   @Key("resumentSSTitle")
   String resumentSSTitle();
+
+  /**
+   * Translated "Roaming".
+   * 
+   * @return translated "Roaming"
+   */
+  @DefaultStringValue("Roaming")
+  @Key("roaming")
+  String roaming();
 
   /**
    * Translated "Rubro:".
@@ -493,6 +628,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String telefonoPanelTitle();
 
   /**
+   * Translated "Término Pago:".
+   * 
+   * @return translated "Término Pago:"
+   */
+  @DefaultStringValue("Término Pago:")
+  @Key("terminoPago")
+  String terminoPago();
+
+  /**
    * Translated "Tipo doc.:".
    * 
    * @return translated "Tipo doc.:"
@@ -500,6 +644,24 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Tipo doc.:")
   @Key("tipoDocumento")
   String tipoDocumento();
+
+  /**
+   * Translated "Tipo Orden:".
+   * 
+   * @return translated "Tipo Orden:"
+   */
+  @DefaultStringValue("Tipo Orden:")
+  @Key("tipoOrden")
+  String tipoOrden();
+
+  /**
+   * Translated "Tipo Plan:".
+   * 
+   * @return translated "Tipo Plan:"
+   */
+  @DefaultStringValue("Tipo Plan:")
+  @Key("tipoPlan")
+  String tipoPlan();
 
   /**
    * Translated "Usuario:".

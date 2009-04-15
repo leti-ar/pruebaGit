@@ -1,15 +1,11 @@
 package ar.com.nextel.sfa.client.ss;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import javax.mail.UIDFolder;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
-import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
-import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
+import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
+import ar.com.nextel.sfa.client.dto.SolicitudServicioSearchDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItemImpl;
@@ -19,14 +15,15 @@ import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Editor del CuentaSearchDto. Contiene todos los campos (Widgets) necesarios para su edición.
+ * Editor del SolicitudServicioSearchDto. Contiene todos los campos (Widgets) necesarios para su edición.
  * 
- * @author jlgperez
+ * @author juliovesco
  * 
  */
 public class BuscarSSCerradasFilterUIData extends UIData {
@@ -67,7 +64,7 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 			}
 		});
 
-		/** @author eSalvador: Carga inicial de combos */
+		/** @author juliovesco: Carga inicial de combos */
 	    CuentaRpcService.Util.getInstance().getBuscarSSCerradasInitializer(new DefaultWaitCallback<BuscarSSCerradasInitializer>() {
 		  			public void success(BuscarSSCerradasInitializer result) {
 						setCombos(result);			
@@ -76,7 +73,7 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 	}
 
 	/**
-	 * @author eSalvador
+	 * @author juliovesco
 	 **/
 	private void setCombos(BuscarSSCerradasInitializer datos){
 		if (datos.getCantidadesResultados() != null ){
@@ -142,21 +139,27 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 		return estadoCombo;
 	}
 	
-	public SimpleDatePicker getDesde() {
-		return desde;
+	public Widget getDesde() {
+		Grid datePickerFull = new Grid(1, 2);
+		datePickerFull.setWidget(0, 0, desde.getTextBox());
+		datePickerFull.setWidget(0, 1, desde);
+		return datePickerFull;
 	}
 
-	public SimpleDatePicker getHasta() {
-		return hasta;
+	public Widget getHasta() {
+		Grid datePickerFull = new Grid(1, 2);
+		datePickerFull.setWidget(0, 0, hasta.getTextBox());
+		datePickerFull.setWidget(0, 1, hasta);
+		return datePickerFull;
 	}
 
-	public SolicitudServicioDto getSSCerradaSearch() {
-		SolicitudServicioDto solicitudServicioDto = new SolicitudServicioDto();
-		solicitudServicioDto.setNumeroCuenta(nroCliente.getText());
-		solicitudServicioDto.setRazonSocial(nroSS.getText());
-		solicitudServicioDto.setCantidadResultados(Integer.parseInt(resultadosCombo.getSelectedItem().getItemValue()));
-		solicitudServicioDto.setOffset(0);
-		return solicitudServicioDto;
+	public SolicitudServicioSearchDto getSSCerradaSearch() {
+		SolicitudServicioSearchDto solicitudServicioSearchDto = new SolicitudServicioSearchDto();
+		solicitudServicioSearchDto.setNumeroCuenta(nroCliente.getText());
+		solicitudServicioSearchDto.setRazonSocial(nroSS.getText());
+		//TODO completar con los filtros.
+		solicitudServicioSearchDto.setCantidadResultados(Integer.parseInt(resultadosCombo.getSelectedItem().getItemValue()));
+		return solicitudServicioSearchDto;
 	}
 	
 }

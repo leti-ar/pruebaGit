@@ -13,9 +13,9 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Layout del filtro de de busqueda de cuentas.
+ * Layout del filtro de de busqueda de SS cerradas.
  * 
- * @author jlgperez
+ * @author juliovesco
  * 
  */
 public class BuscarSSCerradasFilterUI extends Composite {
@@ -40,7 +40,6 @@ public class BuscarSSCerradasFilterUI extends Composite {
 		titulo.addStyleName("titulo");
 		mainPanel.add(titulo);
 
-		// 6 columnas
 		layout = new FlexTable();
 		layout.addStyleName("layout");
 		layout.setWidth("98%");
@@ -51,15 +50,15 @@ public class BuscarSSCerradasFilterUI extends Composite {
 		layout.setWidget(0, 1, buscadorSSCerradasFilterEditor.getNroCliente());
 		layout.setHTML(0, 2, Sfa.constant().ss());
 		layout.setWidget(0, 3, buscadorSSCerradasFilterEditor.getNroSS());
-		layout.setHTML(1, 0, Sfa.constant().desde());
+		layout.setHTML(1, 0, Sfa.constant().cierreDesde());
 		layout.setWidget(1, 1, buscadorSSCerradasFilterEditor.getDesde());
 		layout.setHTML(1, 4, Sfa.constant().hasta());
 		layout.setWidget(1, 5, buscadorSSCerradasFilterEditor.getHasta());
-		layout.setHTML(2, 0, Sfa.constant().estadoOpp());
+		layout.setHTML(2, 0, Sfa.constant().estado());
 		layout.setWidget(2, 1, buscadorSSCerradasFilterEditor.getEstadoCombo());
-		layout.setHTML(2, 4, Sfa.constant().fax());
+		layout.setHTML(2, 4, Sfa.constant().firmas());
 		layout.setWidget(2, 5, buscadorSSCerradasFilterEditor.getFirmasCombo());
-		layout.setHTML(3, 0, Sfa.constant().personal());
+		layout.setHTML(3, 0, Sfa.constant().pataconex());
 		layout.setWidget(3, 1, buscadorSSCerradasFilterEditor.getPataconesCombo());
 		layout.setHTML(3, 4, Sfa.constant().resultados());
 		layout.setWidget(3, 5, buscadorSSCerradasFilterEditor.getResultadosCombo());

@@ -5,7 +5,8 @@ import java.util.List;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
-import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.SolicitudServicioSearchDto;
+import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
@@ -48,8 +49,8 @@ public class CuentaRpcServiceDelegate {
 		cuentaRpcService.saveCuenta(personaDto, callback);
 	}
 
-	public void searchSSCerrada(SolicitudServicioDto solicitudServicioDto,
-			DefaultWaitCallback<List<SolicitudServicioDto>> callback) {
-		cuentaRpcService.searchSSCerrada(solicitudServicioDto, callback);
+	public void searchSSCerrada(SolicitudServicioSearchDto solicitudServicioSearchDto,
+			DefaultWaitCallback<SolicitudesServicioTotalesDto> callback) {
+		cuentaRpcService.searchSSCerrada(solicitudServicioSearchDto, callback);
 	}
 }
