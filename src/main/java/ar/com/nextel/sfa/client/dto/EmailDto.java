@@ -1,5 +1,7 @@
 package ar.com.nextel.sfa.client.dto;
 
-public class EmailDto {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class EmailDto implements IsSerializable {
 
 }

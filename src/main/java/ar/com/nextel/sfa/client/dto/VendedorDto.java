@@ -1,6 +1,8 @@
 package ar.com.nextel.sfa.client.dto;
 
-public class VendedorDto {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class VendedorDto implements IsSerializable{
 
 	private Long id;
 	private UsuarioDto usuarioDto;

@@ -1,7 +1,7 @@
 package ar.com.nextel.sfa.client.dto;
 
-public class DomicilioDto {
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-	
+public class DomicilioDto implements IsSerializable {
 
 }

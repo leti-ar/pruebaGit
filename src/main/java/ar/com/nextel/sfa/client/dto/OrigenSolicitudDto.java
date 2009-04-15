@@ -1,5 +1,7 @@
 package ar.com.nextel.sfa.client.dto;
 
-public class OrigenSolicitudDto {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class OrigenSolicitudDto implements IsSerializable{
 
 }

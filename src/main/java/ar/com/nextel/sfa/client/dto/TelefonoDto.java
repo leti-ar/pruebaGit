@@ -1,7 +1,9 @@
 package ar.com.nextel.sfa.client.dto;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class TelefonoDto {
+
+public class TelefonoDto implements IsSerializable{
 
 	private TipoTelefonoDto tipoTelefono;
 	private String numeroLocal;

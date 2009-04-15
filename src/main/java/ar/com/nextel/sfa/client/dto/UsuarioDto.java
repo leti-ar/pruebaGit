@@ -3,7 +3,9 @@ package ar.com.nextel.sfa.client.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UsuarioDto {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class UsuarioDto implements IsSerializable{
 
 	private Long id;
 	private String userName;
