@@ -7,6 +7,9 @@ public class TipoTelefonoDto implements IsSerializable{
 	private String code;
 	private String descripcion;
 	
+	public TipoTelefonoDto() {
+	}
+	
 	public TipoTelefonoDto(String code, String descripcion) {
 		super();
 		this.code = code;
