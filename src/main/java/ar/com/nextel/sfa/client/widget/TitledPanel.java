@@ -4,8 +4,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 
 /**
- * Este componente se basa en un FlowPanel. Al mismo se agrega un título con
- * degradé rojo y otros estilos.
+ * Este componente se basa en un FlowPanel. Al mismo se agrega un título y otros estilos.
  * 
  * @author jlgperez
  * 
@@ -13,8 +12,9 @@ import com.google.gwt.user.client.ui.HTML;
 public class TitledPanel extends FlowPanel {
 
 	public TitledPanel(String title) {
+		addStyleName("gwt-TitledPanel");
 		HTML titleWidget = new HTML(title);
-		titleWidget.setStyleName("tituloRedPanel");
+		titleWidget.setStyleName("title");
 		add(titleWidget);
 	}
 }
