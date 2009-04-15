@@ -131,12 +131,12 @@ public class BuscarCuentaFilterUIData extends UIData {
 						ValidationTextBox box = (ValidationTextBox) w;
 						if (!"".equals(box.getText())) {
 							habilitar = false;
-						} else if (w instanceof ValidationListBox) {
-							//TODO: hacer un metodo que contenga la logica de los listbox.
-							
-							if (true)
-								habilitar = false;
 						}
+					}else if (w instanceof ValidationListBox) {
+						//TODO: hacer un metodo que contenga la logica de los listbox.
+						validateCombos(w);
+						if (true)
+							habilitar = false;
 					}
 					setEnableFields(habilitar);
 					((FocusWidget) w).setEnabled(true);
@@ -145,6 +145,13 @@ public class BuscarCuentaFilterUIData extends UIData {
 		}
 	}
 
+	/**
+	 * @author eSalvador 
+	 * Metodo privado que implementa la logica particular, para habilitar/deshabilitar combos en la busqueda de cuentas.
+	 **/
+	private void validateCombos(Widget w) {
+	} 
+	
 	/**
 	 * @author eSalvador Metodo privado que hace la implementacion del focusListener, deshabilitando los
 	 *         TextBoxsFields que no estan activos.
