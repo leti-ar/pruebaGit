@@ -137,20 +137,49 @@ public class BuscarCuentaFilterUIData extends UIData {
 						validateCombos(w);
 						if (true)
 							habilitar = false;
+						return;
 					}
-					setEnableFields(habilitar);
-					((FocusWidget) w).setEnabled(true);
+					/** Deshabilita todos los fields.*/
+					  setEnableFields(habilitar);
+					/** Habilita el field que acaba de perder el foco.*/
+					  ((FocusWidget) w).setEnabled(true);
 				}
 			});
 		}
 	}
 
 	/**
-	 * @author eSalvador 
-	 * Metodo privado que implementa la logica particular, para habilitar/deshabilitar combos en la busqueda de cuentas.
+	 * @author eSalvador
+	 * Metodo privado que implementa las logicas particulares, para habilitar/deshabilitar combos en la busqueda de cuentas.
 	 **/
 	private void validateCombos(Widget w) {
-	} 
+	  /**Si completa un criterio excluyente el sistema deshabilitará el resto de los campos (excepto Nº Resultados).*/
+		
+		//Combo Categoría : se deshabilitaran todos los campos exceptuando “Responsable” y “Razon Social”
+		if (w == categoriaCombo){
+			setEnableFields(false);
+			this.responsableTextBox.setEnabled(true);
+			this.razonSocialTextBox.setEnabled(true);
+			((FocusWidget) w).setEnabled(true);
+		}
+		
+		//Combo Tipo de documento: no deshabilita el campo Número de documento
+		if (w == tipoDocumentoCombo){
+			setEnableFields(false);
+			this.numeroDocumentoTextBox.setEnabled(true);
+			((FocusWidget) w).setEnabled(true);
+		}
+		
+		//Combo predefinidasCombo: ??
+		if (w == predefinidasCombo){
+			setEnableFields(false);
+			((FocusWidget) w).setEnabled(true);
+		}
+		
+		//Combo Nº Resultados: Siempre habilitado!!!
+		  //TODO nada!
+ 
+	}
 	
 	/**
 	 * @author eSalvador Metodo privado que hace la implementacion del focusListener, deshabilitando los
