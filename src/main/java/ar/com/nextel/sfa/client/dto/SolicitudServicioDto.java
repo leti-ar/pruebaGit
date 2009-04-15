@@ -35,7 +35,7 @@ public class SolicitudServicioDto implements IsSerializable {
 	// private EstadoAprobacionSolicitud estadoActual;
 	private String observaciones;
 
-	private TipoAnticipo tipoAnticipo;
+//	private TipoAnticipo tipoAnticipo;
 
 	// private Set<LineaSolicitudServicio> lineas = new HashSet<LineaSolicitudServicio>();
 
