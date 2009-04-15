@@ -9,7 +9,9 @@ import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
+import ar.com.nextel.sfa.client.widget.ExcluyenteWidget;
 import ar.com.nextel.sfa.client.widget.UIData;
+import ar.com.nextel.sfa.client.widget.ValidationListBox;
 import ar.com.nextel.sfa.client.widget.ValidationTextBox;
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItemImpl;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -18,6 +20,7 @@ import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FocusListener;
+import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -31,16 +34,16 @@ import com.google.gwt.user.client.ui.Widget;
 public class BuscarCuentaFilterUIData extends UIData {
 
 	private Label tituloLabel = new Label("Búsqueda de Cuentas");
-	private ListBox categoriaCombo;
+	private ValidationListBox categoriaCombo;
 	private ValidationTextBox numeroCuentaTextBox = new ValidationTextBox("[0-9\\.]*") {};
 	private ValidationTextBox razonSocialTextBox = new ValidationTextBox("[a-zA-Z0-9\\s]*") {};
 	private ValidationTextBox numeroNextelTextBox = new ValidationTextBox("[0-9]*") {};
 	private ValidationTextBox flotaIdTextBox = new ValidationTextBox("[0-9]*") {};
 	private ValidationTextBox numeroSolicitudServicioTextBox = new ValidationTextBox("[0-9]*") {};
 	private ValidationTextBox responsableTextBox = new ValidationTextBox("[a-zA-Z ]*") {};
-	private ListBox tipoDocumentoCombo;
+	private ValidationListBox tipoDocumentoCombo;
 	private ValidationTextBox numeroDocumentoTextBox = new ValidationTextBox("[0-9]*") {};
-	private ListBox predefinidasCombo;
+	private ValidationListBox predefinidasCombo;
 	private ListBox resultadosCombo;
 
 	private Button buscarButton;
@@ -67,101 +70,93 @@ public class BuscarCuentaFilterUIData extends UIData {
 					}
 				});
 	}
-	
+
 	/**
 	 * @author eSalvador
 	 **/
 	private void configFields() {
-		//Combo Categoria
-		fields.add(categoriaCombo = new ListBox(""));
-		//Numero de Cuenta/Clienta
+		// Combo Categoria
+		fields.add(categoriaCombo = new ValidationListBox(""));
+		// Numero de Cuenta/Clienta
 		numeroCuentaTextBox.setMaxLength(25);
 		numeroCuentaTextBox.setExcluyente(true);
 		fields.add(numeroCuentaTextBox);
-		//Razon Social
+		// Razon Social
 		razonSocialTextBox.setMaxLength(100);
 		fields.add(razonSocialTextBox);
 		razonSocialTextBox.setExcluyente(true);
-		//Numero de Nextel
+		// Numero de Nextel
 		numeroNextelTextBox.setMaxLength(10);
 		fields.add(numeroNextelTextBox);
 		numeroNextelTextBox.setExcluyente(true);
-		//Id de Flota
+		// Id de Flota
 		flotaIdTextBox.setMaxLength(11);
 		fields.add(flotaIdTextBox);
 		flotaIdTextBox.setExcluyente(true);
-		//Numero de Solicitud de Servicio.
+		// Numero de Solicitud de Servicio.
 		numeroSolicitudServicioTextBox.setMaxLength(10);
 		fields.add(numeroSolicitudServicioTextBox);
 		numeroSolicitudServicioTextBox.setExcluyente(true);
-		//Responsable
+		// Responsable
 		responsableTextBox.setMaxLength(19);
 		fields.add(responsableTextBox);
 		responsableTextBox.setExcluyente(true);
-		//Combo Tipo de Documento
-		fields.add(tipoDocumentoCombo = new ListBox());
-		//Numero de Documento
+		// Combo Tipo de Documento
+		fields.add(tipoDocumentoCombo = new ValidationListBox());
+		// Numero de Documento
 		fields.add(numeroDocumentoTextBox);
 		numeroDocumentoTextBox.setMaxLength(13);
 		numeroDocumentoTextBox.setExcluyente(true);
-		//Combos
-		fields.add(predefinidasCombo = new ListBox(	));
+		// Combos
+		fields.add(predefinidasCombo = new ValidationListBox());
 		fields.add(resultadosCombo = new ListBox());
 		this.addFocusListeners(fields);
 	}
 
 	/**
-	 * @author eSalvador
-	 * Metodo que agrega comportamiento al captar o perder el foco en los TextBoxs.
+	 * @author eSalvador Metodo que agrega comportamiento al captar o perder el foco en los fields.
 	 **/
 	public void addFocusListeners(List<Widget> fields) {
-		ValidationTextBox textBox;
+		FocusWidget field;
 		for (int i = 0; i < fields.size(); i++) {
-			if (fields.get(i) instanceof TextBox) {
-				textBox = (ValidationTextBox) fields.get(i);
-				textBox.addFocusListener(new FocusListener(){
-					public void onFocus(Widget arg0) {
-						ValidationTextBox box = (ValidationTextBox)arg0;
-						box.setActivo(true);
-					}
-					public void onLostFocus(Widget arg0) {
-						ValidationTextBox box = (ValidationTextBox)arg0;
-						if (!"".equals(box.getText())){
-							deshabilitaTextBoxs();
-						}else{
-							habilitaTextBoxs();
+			field = (FocusWidget) fields.get(i);
+			field.addFocusListener(new FocusListener() {
+				public void onFocus(Widget arg0) {
+				}
+
+				public void onLostFocus(Widget w) {
+					// Si el field es un TextBox:
+					boolean habilitar = true;
+					if (w instanceof ValidationTextBox) {
+						ValidationTextBox box = (ValidationTextBox) w;
+						if (!"".equals(box.getText())) {
+							habilitar = false;
+						} else if (w instanceof ValidationListBox) {
+							//TODO: hacer un metodo que contenga la logica de los listbox.
+							
+							if (true)
+								habilitar = false;
 						}
-						box.setActivo(false);
-					}});
-			}
+					}
+					setEnableFields(habilitar);
+					((FocusWidget) w).setEnabled(true);
+				}
+			});
 		}
 	}
 
 	/**
-	 * @author eSalvador
-	 * Metodo privado que hace la implementacion del focusListener, deshabilitando los textBoxs 
-	 * que no estan activos.
+	 * @author eSalvador Metodo privado que hace la implementacion del focusListener, deshabilitando los
+	 *         TextBoxsFields que no estan activos.
 	 **/
-	private void deshabilitaTextBoxs() {
-		ValidationTextBox textBox;
-		for (int i = 0; i < fields.size(); i++) {
-			if (fields.get(i) instanceof TextBox) {
-				textBox = (ValidationTextBox) fields.get(i);
-				if ((textBox.isExcluyente()) && (!textBox.isActivo())){
-					textBox.setEnabled(false);
-				}
+	private void setEnableFields(boolean enabled) {
+		for (Widget widget : fields) {
+			if (widget instanceof ExcluyenteWidget) {
+				((FocusWidget) widget).setEnabled(enabled);
 			}
 		}
 	}
-	
-	/**
-	 * @author eSalvador
-	 * Metodo privado que hace la implementacion del focusListener, habilitando todos los textBoxs. 
-	 **/
-	private void habilitaTextBoxs() {
-		enableFields();
-	}
-	
+
 	/**
 	 * @author eSalvador
 	 **/
@@ -175,7 +170,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 			}
 		}
 	}
-	
+
 	public Label getTituloLabel() {
 		return tituloLabel;
 	}

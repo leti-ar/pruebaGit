@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.widget;
 
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 
-public class ValidationTextBox extends RegexTextBox{
+public class ValidationTextBox extends RegexTextBox implements ExcluyenteWidget{
 
 	private boolean excluyente;
 
