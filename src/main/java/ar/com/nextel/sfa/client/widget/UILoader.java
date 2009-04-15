@@ -5,9 +5,13 @@ import ar.com.nextel.sfa.client.cuenta.AgregarCuentaUI;
 import ar.com.nextel.sfa.client.cuenta.BuscarCuentaUI;
 import ar.com.nextel.sfa.client.operaciones.OperacionEnCursoUI;
 import ar.com.nextel.sfa.client.oportunidad.BuscarOportunidadUI;
+import ar.com.nextel.sfa.client.ss.CrearSSUI;
+import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.veraz.VerazUI;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
@@ -19,7 +23,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
  * @author jlgperez
  * 
  */
-public class UILoader extends SimplePanel {
+public class UILoader extends SimplePanel implements HistoryListener {
 
 	private static UILoader pageLoader;
 	private static ApplicationUI[] pages;
@@ -33,6 +37,7 @@ public class UILoader extends SimplePanel {
 	public final static int OP_EN_CURSO = 5;
 
 	private UILoader() {
+		History.addHistoryListener(this);
 	}
 
 	public static UILoader getInstance() {
@@ -84,6 +89,9 @@ public class UILoader extends SimplePanel {
 		case AGREGAR_CUENTA:
 			pages[AGREGAR_CUENTA] = new AgregarCuentaUI();
 			break;
+		case SOLICITUD:
+			pages[SOLICITUD] = new CrearSSUI();
+			break;
 		case VERAZ:
 			pages[VERAZ] = new VerazUI();
 			break;
@@ -97,5 +105,14 @@ public class UILoader extends SimplePanel {
 			GWT.log("Page not found. Check PageLoader.createPageWidget()", null);
 			break;
 		}
+	}
+
+	public void onHistoryChanged(String historyToken) {
+		String token = HistoryUtils.getToken(historyToken);
+		if ("".equals(token)) {
+			return;
+		}
+		int nToken = Integer.parseInt(token);
+		setPage(nToken);
 	}
 }

@@ -17,11 +17,13 @@ public class HistoryUtils {
 	/**
 	 * @param historyToken
 	 *            (url?param1=value1&param2=value2#token)
-	 * @return solo el token
+	 * @return solo el token. Null si no tiene;
 	 */
 	public static String getToken(String token) {
 		int begin = token.indexOf('#') + 1;
-		return token.substring(begin, token.length());
+		if (begin < 0)
+			return null;
+		return token.substring(begin, token.length()).trim();
 	}
 
 	/**
