@@ -29,6 +29,10 @@ div.popFooter {
 
 /* leaving it blank for inline styling with padding, text-align */
 div.popFormButtons {
+	background-image: url(images/bkg_frmButtons.gif);
+	height: 25px;
+	line-height: 25px;
+	margin-top: 8px;
 	margin: 0px;
 	padding: 5px;
 	text-align: center;
