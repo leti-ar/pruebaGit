@@ -6,7 +6,6 @@ import com.google.gwt.user.client.ui.Image;
 public class IconFactory {
 
 	private static IconBundle iconBundle = null;
-	private static Image imagenFinal;
 
 	private static IconBundle getIconBundle() {
 		if (iconBundle == null) {
