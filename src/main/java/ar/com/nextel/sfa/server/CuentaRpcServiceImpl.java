@@ -15,11 +15,14 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import ar.com.nextel.business.cuentas.search.SearchCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.search.businessUnits.CuentaSearchData;
 import ar.com.nextel.business.cuentas.search.result.CuentaSearchResult;
+import ar.com.nextel.business.dao.GenericDao;
 import ar.com.nextel.business.describable.GetAllBusinessOperator;
 import ar.com.nextel.business.vendedores.RegistroVendedores;
 import ar.com.nextel.framework.security.Usuario;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.personas.beans.Persona;
+import ar.com.nextel.model.personas.beans.Sexo;
+import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.CuentaRpcService;
@@ -30,14 +33,19 @@ import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.RubroDto;
+import ar.com.nextel.sfa.client.dto.SexoDto;
+import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioSearchDto;
 import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
+import ar.com.nextel.sfa.client.dto.VerazSearchDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
+import ar.com.nextel.sfa.client.initializer.VerazInitializer;
+import ar.com.nextel.sfa.client.veraz.MockVeraz;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -56,6 +64,7 @@ public class CuentaRpcServiceImpl extends RemoteServiceServlet implements
 	private Transformer transformer;
 	private MapperExtended mapper;
 	private GetAllBusinessOperator getAllBusinessOperator;
+	private GenericDao genericDao;
 
 	@Override
 	public void init() throws ServletException {
@@ -69,6 +78,7 @@ public class CuentaRpcServiceImpl extends RemoteServiceServlet implements
 		transformer = (Transformer) context
 				.getBean("cuentaToSearchResultTransformer");
 		mapper = (MapperExtended) context.getBean("dozerMapper");
+		genericDao = (GenericDao) context.getBean("genericDao");
 		// Engancho el BOperator
 		setGetAllBusinessOperator((GetAllBusinessOperator) context
 				.getBean("getAllBusinessOperatorBean"));
@@ -268,5 +278,22 @@ public class CuentaRpcServiceImpl extends RemoteServiceServlet implements
 		return personaDto;
 
 	}
+
+
+	public VerazInitializer getVerazInitializer() {
+		VerazInitializer verazInitializer = new VerazInitializer();
+		verazInitializer.setTiposDocumento(mapper.convertList(genericDao.getList(TipoDocumento.class),
+			TipoDocumentoDto.class));
+		verazInitializer.setSexos(mapper.convertList(genericDao.getList(Sexo.class),
+			SexoDto.class));
+		return verazInitializer;
+	}
+	
+
+	public MockVeraz searchVeraz(VerazSearchDto verazSearchDto) {
+		MockVeraz mockVeraz = new MockVeraz();
+		return mockVeraz.getresultado();		
+	}
+
 
 }
