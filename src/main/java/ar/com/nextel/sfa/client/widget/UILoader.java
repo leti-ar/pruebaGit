@@ -114,7 +114,7 @@ public class UILoader extends SimplePanel implements HistoryListener {
 
 	public void onHistoryChanged(String historyToken) {
 		String token = HistoryUtils.getToken(historyToken);
-		if ("".equals(token)) {
+		if (token == null || "".equals(token)) {
 			return;
 		}
 		int nToken = Integer.parseInt(token);
