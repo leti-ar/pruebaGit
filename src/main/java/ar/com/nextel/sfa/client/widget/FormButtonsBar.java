@@ -14,7 +14,7 @@ public class FormButtonsBar extends Composite {
 
 	public FormButtonsBar() {
 		formButtons = new FlowPanel();
-		formButtons.addStyleName("form_buttons");
+		formButtons.addStyleName("popFormButtons");
 		formButtons.setWidth("100%");
 		initWidget(formButtons);
 	}
@@ -25,7 +25,7 @@ public class FormButtonsBar extends Composite {
 
 	/** Agrega un link a la barra de comandos del formulario. */
 	public void addLink(Widget link) {
-		link.addStyleName("fpagoclose");
+		link.addStyleName("popFormButton");
 		formButtons.add(link);
 	}
 
@@ -37,7 +37,7 @@ public class FormButtonsBar extends Composite {
 	 * 341</a> de GWT
 	 */
 	public void addLink(Widget link, int index) {
-		link.addStyleName("fpagoclose");
+		link.addStyleName("popFormButton");
 		List widgets = new ArrayList();
 		for (int i = 0; i < formButtons.getWidgetCount(); i++) {
 			widgets.add(formButtons.getWidget(i));
