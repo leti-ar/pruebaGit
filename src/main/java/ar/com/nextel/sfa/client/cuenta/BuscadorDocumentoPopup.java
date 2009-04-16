@@ -1,11 +1,12 @@
 package ar.com.nextel.sfa.client.cuenta;
 
 import ar.com.nextel.sfa.client.widget.NextelDialog;
+import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -42,7 +43,7 @@ public class BuscadorDocumentoPopup extends NextelDialog implements ClickListene
 	
 		aceptar.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
-				agregarCuentaPage.load();
+				UILoader.getInstance().setPage(UILoader.EDITAR_CUENTA);
 				hide();
 			}
 		});		

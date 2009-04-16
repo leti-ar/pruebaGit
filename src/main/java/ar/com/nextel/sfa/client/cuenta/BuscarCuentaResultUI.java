@@ -8,12 +8,14 @@ import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
+import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
@@ -106,7 +108,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		resultTableWrapper.setWidget(resultTable);
 		int row = 1;
 		for (CuentaDto cuenta : cuentas) {
-			resultTable.setWidget(row, 0, IconFactory.lapiz());
+			resultTable.setWidget(row, 0, new Hyperlink(IconFactory.lapiz().toString(),true,UILoader.EDITAR_CUENTA + "?cuenta_id=" + cuenta.getId()));
 			if (cuenta.isPuedeVerInfocom()) {
 				resultTable.setWidget(row, 1, IconFactory.lupa());
 			}
@@ -141,5 +143,6 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		table.setHTML(0, 4, "Razón Social");
 		table.setHTML(0, 5, "Responsable");
 		table.setHTML(0, 6, "Número de teléfono");
+
 	}
 }

@@ -4,25 +4,22 @@ import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.widget.DualPanel;
-import ar.com.nextel.sfa.client.widget.NextelDialog;
+import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.TelefonoTextBox;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
-import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 
-public class CuentaForm extends Composite {
+public class CuentaDatosForm extends Composite {
 
-	private FlowPanel mainPanel;
+	private static CuentaDatosForm instance = new CuentaDatosForm();
+	private FlexTable mainPanel;
 	private FlexTable datosCuentaTable;
 	private FlexTable telefonoTable;
 	private FlexTable emailTable;
@@ -32,20 +29,24 @@ public class CuentaForm extends Composite {
 	private FlexTable fechaCreacion;
 	private CuentaUIData cuentaEditor;
 	private FormButtonsBar footerBar;
-	
 
-	public CuentaForm() {
+	public static CuentaDatosForm getInstance() {
+		return instance;
+	}
+	
+	private CuentaDatosForm() {
 		cuentaEditor = new CuentaUIData();
-		mainPanel = new FlowPanel();
-		footerBar = new FormButtonsBar();
+		mainPanel    = new FlexTable();
+		footerBar    = new FormButtonsBar();
 		initWidget(mainPanel);
-		
-		mainPanel.add(createDatosCuentaPanel());
-		mainPanel.add(createTelefonoPanel());
-		mainPanel.add(createEmailPanel());
-		mainPanel.add(createFormaDePagoPanel());
-		mainPanel.add(createFechaUsuarioPanel());
-		mainPanel.addStyleName("aButtons");
+		mainPanel.setWidth("100%");
+		mainPanel.addStyleName("abmPanel2");
+		mainPanel.setWidget(0,0,createDatosCuentaPanel());
+		mainPanel.setWidget(1,0,createTelefonoPanel());
+		mainPanel.setWidget(2,0,createEmailPanel());
+		mainPanel.setWidget(3,0,createFormaDePagoPanel());
+		mainPanel.setWidget(4,0,createFechaUsuarioPanel());
+		//mainPanel.addStyleName("aButtons");
 		
 		cuentaEditor.getGuardar().setStyleName("link");
 		cuentaEditor.getCrearSS().setStyleName("link");
@@ -56,7 +57,7 @@ public class CuentaForm extends Composite {
 		footerBar.addLink(cuentaEditor.getCrearSS());
 		footerBar.addLink(cuentaEditor.getAgregar());
 		footerBar.addLink(cuentaEditor.getCancelar());		
-		mainPanel.add(footerBar);
+		mainPanel.setWidget(5,0,footerBar);
 
 		cuentaEditor.getAgregar().addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
@@ -78,6 +79,8 @@ public class CuentaForm extends Composite {
 
 	private Widget createDatosCuentaPanel() {
 		datosCuentaTable = new FlexTable();
+		datosCuentaTable.setWidth("100%");
+		
 		datosCuentaTable.getFlexCellFormatter().setColSpan(1, 1, 4);
 		cuentaEditor.getRazonSocial().setWidth("100%");
 		TitledPanel datosCuentaPanel = new TitledPanel(Sfa.constant().cuentaPanelTitle());
@@ -111,8 +114,8 @@ public class CuentaForm extends Composite {
 		datosCuentaTable.setText(7, 3, Sfa.constant().veraz());
 		datosCuentaTable.setWidget(7, 4, cuentaEditor.getVeraz());
 
-		datosCuentaPanel.addStyleName("abmPanel");
-		datosCuentaTable.addStyleName("abmPanelChild");
+//		datosCuentaPanel.addStyleName("abmPanel");
+//		datosCuentaTable.addStyleName("abmPanelChild");
 		datosCuentaPanel.add(datosCuentaTable);
 		
 		return datosCuentaPanel;
@@ -134,8 +137,8 @@ public class CuentaForm extends Composite {
 		telefonoTable.setText(2, 0, Sfa.constant().observaciones());
 		telefonoTable.setWidget(2, 1, cuentaEditor.getObservaciones());
 
-		telefonoPanel.addStyleName("abmPanel");
-		telefonoTable.addStyleName("abmPanelChild");
+//		telefonoPanel.addStyleName("abmPanel");
+//		telefonoTable.addStyleName("abmPanelChild");
 		return telefonoPanel;
 	}
 
@@ -149,8 +152,8 @@ public class CuentaForm extends Composite {
 		emailTable.setText(0, 2, Sfa.constant().laboral());
 		emailTable.setWidget(0, 3, cuentaEditor.getEmailLaboral());
 
-		emailPanel.addStyleName("abmPanel");
-		emailTable.addStyleName("abmPanelChild");
+//		emailPanel.addStyleName("abmPanel");
+//		emailTable.addStyleName("abmPanelChild");
 		return emailPanel;
 	}
 
@@ -162,8 +165,8 @@ public class CuentaForm extends Composite {
 		formaDePagoTable.setText(0, 0, Sfa.constant().modalidad());
 		formaDePagoTable.setWidget(0, 1, cuentaEditor.getModalidadPago());		
 		
-		formaDePagoPanel.addStyleName("abmPanel");
-		formaDePagoTable.addStyleName("abmPanelChild");
+//		formaDePagoPanel.addStyleName("abmPanel");
+//		formaDePagoTable.addStyleName("abmPanelChild");
 		return formaDePagoPanel;
 	}
 	
@@ -181,8 +184,12 @@ public class CuentaForm extends Composite {
 		fechaUsuarioTable.setLeft(usuario);
 		fechaUsuarioTable.setRight(fechaCreacion);
 		
-		fechaUsuarioTable.addStyleName("abmPiePanel");
+//		fechaUsuarioTable.addStyleName("abmPiePanel");
 		return fechaUsuarioTable;
+	}
+
+	public void reset() {
+		cuentaEditor.clean();
 	}
 	
 }

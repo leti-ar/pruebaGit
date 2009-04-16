@@ -1,7 +1,11 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
+import ar.com.nextel.sfa.client.util.FormUtils;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
@@ -21,24 +25,24 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class CuentaUIData extends UIData {
 
-	private ListBox tipoDocumento;
-	private TextBox numeroDocumento;
-	private TextBox razonSocial;
-	private TextBox nombre;
-	private TextBox apellido;
-	private TextBox sexo;
-	private SimpleDatePicker fechaNacimiento;
-	private ListBox contribuyente;
-	private TextBox provedorAnterior;
-	private ListBox rubro;
-	private TextBox claseCliente;
-	private TextBox categoria;
-	private TextBox cicloFacturacion;
-	private Label veraz;
-	private TextArea observaciones;
-	private TextBox emailPersonal;
-	private TextBox emailLaboral;
-	private ListBox modalidadPago;
+	private ListBox tipoDocumento = new ListBox();
+	private TextBox numeroDocumento = new TextBox();
+	private TextBox razonSocial = new TextBox();
+	private TextBox nombre = new TextBox();
+	private TextBox apellido = new TextBox();
+	private TextBox sexo = new TextBox();
+	private SimpleDatePicker fechaNacimiento = new SimpleDatePicker(false);
+	private ListBox contribuyente = new ListBox();
+	private TextBox provedorAnterior = new TextBox();
+	private ListBox rubro = new ListBox();
+	private TextBox claseCliente = new TextBox();
+	private TextBox categoria = new TextBox();
+	private TextBox cicloFacturacion = new TextBox();
+	private Label veraz = new Label("Si puede");
+	private TextArea observaciones = new TextArea();
+	private TextBox emailPersonal = new TextBox();
+	private TextBox emailLaboral = new TextBox();
+	private ListBox modalidadPago = new ListBox();
 	private Label usuario;
 	private Label fechaCreacion;
 	private SimpleLink guardar;
@@ -49,27 +53,27 @@ public class CuentaUIData extends UIData {
 	PersonaDto persona = new PersonaDto();
 
 	public CuentaUIData() {
-		fields.add(tipoDocumento = new ListBox());
-		fields.add(numeroDocumento = new TextBox());
-		fields.add(razonSocial = new TextBox());
-		fields.add(nombre = new TextBox());
-		fields.add(apellido = new TextBox());
-		fields.add(sexo = new TextBox());
-		fields.add(fechaNacimiento = new SimpleDatePicker(false));
-		fields.add(contribuyente = new ListBox());
-		fields.add(provedorAnterior = new TextBox());
-		fields.add(rubro = new ListBox());
-		fields.add(claseCliente = new TextBox());
-		fields.add(categoria = new TextBox());
-		fields.add(cicloFacturacion = new TextBox());
-		fields.add(veraz = new Label("Si puede"));
-		fields.add(observaciones = new TextArea());
-		fields.add(emailPersonal = new TextBox());
-		fields.add(emailLaboral = new TextBox());
-		fields.add(modalidadPago = new ListBox());
-		fields.add(guardar = new SimpleLink("Guardar", "#", true));
-		fields.add(crearSS = new SimpleLink("Crear SS", "#", true));
-		fields.add(agregar = new SimpleLink("Agregar", "#", true));
+		fields.add(tipoDocumento);
+		fields.add(numeroDocumento);
+		fields.add(razonSocial);
+		fields.add(nombre);
+		fields.add(apellido);
+		fields.add(sexo);
+		fields.add(fechaNacimiento);
+		fields.add(contribuyente);
+		fields.add(provedorAnterior);
+		fields.add(rubro);
+		fields.add(claseCliente);
+		fields.add(categoria);
+		fields.add(cicloFacturacion);
+		fields.add(veraz);
+		fields.add(observaciones);
+		fields.add(emailPersonal);
+		fields.add(emailLaboral);
+		fields.add(modalidadPago);
+		fields.add(guardar  = new SimpleLink("Guardar", "#", true));
+		fields.add(crearSS  = new SimpleLink("Crear SS", "#", true));
+		fields.add(agregar  = new SimpleLink("Agregar", "#", true));
 		fields.add(cancelar = new SimpleLink("Cancelar", "#", true));
 
 		// CuentaRpcService.Util.getInstance().getAgregarCuentaInitializer(new
@@ -165,22 +169,6 @@ public class CuentaUIData extends UIData {
 		return fechaCreacion;
 	}
 
-	private void setCombos(AgregarCuentaInitializer datos) {
-		tipoDocumento.addAllItems(datos.getTiposDocumento());
-		rubro.addAllItems(datos.getRubros());
-		// modalidadPago.addAllItems(datos.get);
-	}
-
-	public PersonaDto getPersona() {
-		persona.setApellido(apellido.getText());
-		persona.setDocumento(numeroDocumento.getText());
-		persona.setFechaNacimiento(fechaNacimiento.getSelectedDate());
-		persona.setNombre(nombre.getText());
-		persona.setRazonSocial(razonSocial.getText());
-		persona.setSexo(sexo.getText());
-		return persona;
-	}
-
 	public void setGuardar(SimpleLink guardar) {
 		this.guardar = guardar;
 	}
@@ -212,5 +200,20 @@ public class CuentaUIData extends UIData {
 	public SimpleLink getCancelar() {
 		return cancelar;
 	}
+	
+	private void setCombos(AgregarCuentaInitializer datos) {
+		tipoDocumento.addAllItems(datos.getTiposDocumento());
+		rubro.addAllItems(datos.getRubros());
+		// modalidadPago.addAllItems(datos.get);
+	}
 
+	public PersonaDto getPersona() {
+		persona.setApellido(apellido.getText());
+		persona.setDocumento(numeroDocumento.getText());
+		persona.setFechaNacimiento(fechaNacimiento.getSelectedDate());
+		persona.setNombre(nombre.getText());
+		persona.setRazonSocial(razonSocial.getText());
+		persona.setSexo(sexo.getText());
+		return persona;
+	}
 }
