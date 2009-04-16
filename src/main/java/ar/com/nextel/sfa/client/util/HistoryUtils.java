@@ -25,7 +25,7 @@ public class HistoryUtils {
 		if (end > 0) {
 			token = historyToken.substring(0, end);
 		}
-		return "".equals(token.trim()) ? token : null;
+		return "".equals(token.trim()) ? null : token;
 
 	}
 
