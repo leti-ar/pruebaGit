@@ -114,7 +114,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 	}
 
 	/**
-	 * @author eSalvador Metodo que agrega comportamiento al captar o perder el foco en los fields.
+	 * @author eSalvador: Metodo que agrega comportamiento al captar o perder el foco en los fields.
 	 **/
 	public void addFocusListeners(List<Widget> fields) {
 		FocusWidget field;
@@ -125,37 +125,98 @@ public class BuscarCuentaFilterUIData extends UIData {
 				}
 
 				public void onLostFocus(Widget w) {
-					// Si el field es un TextBox:
 					boolean habilitar = true;
-					if (w instanceof ValidationTextBox) {
-						ValidationTextBox box = (ValidationTextBox) w;
-						if (!"".equals(box.getText())) {
-							habilitar = false;
-						}
-					}else if (w instanceof ValidationListBox) {
-						//TODO: hacer un metodo que contenga la logica de los listbox.
-						validateCombos(w);
-						if (true)
-							habilitar = false;
-						return;
-					}
-					/** Deshabilita todos los fields.*/
-					  setEnableFields(habilitar);
-					/** Habilita el field que acaba de perder el foco.*/
-					  ((FocusWidget) w).setEnabled(true);
+					validateCriteria(w, habilitar);
 				}
 			});
 		}
 	}
 
 	/**
+	 * @author eSalvador: Metodo que realiza la validacion inicial de fields, donde diferencia si son textBoxs o listBoxs.
+	 **/
+	private boolean validateCriteria(Widget w, boolean habilitar) {
+		//Si es TextBox:
+		if (w instanceof ValidationTextBox) {
+			ValidationTextBox box = (ValidationTextBox) w;
+			if (!"".equals(box.getText())) {
+			   //Si el TextBox NO ES Vacio y pierde el Foco:
+				habilitar = false;
+			}
+			if (!validationTextBoxs(w)){
+				return false;
+			}
+			setEnableFields(habilitar);
+			((FocusWidget) w).setEnabled(true);
+		//FIN - Si es TextBox
+			
+		//Si es ListBox:
+		}else if (w instanceof ValidationListBox) {
+			validateListBoxs(w);
+			if (true)
+				habilitar = false;
+		}
+		//FIN - Si es ListBox
+
+		return habilitar;
+	}
+	
+	/**
+	 * @author eSalvador
+	 * Metodo privado que implementa las logicas particulares, para habilitar/deshabilitar textBoxs en la busqueda de cuentas.
+	 **/
+	private boolean validationTextBoxs(Widget w) {
+		boolean flag = true;
+		/** Validaciones de TextBoxs especiales combinadas:*/
+	
+		//Si w es Num.deDoc, el combo de Tipo de Doc. esta Enabled y además alguno de los demas textBox
+		//esta deshabilitado, no hacer nada (O sea, saltear. Rerornar FALSE) 
+		if (w == numeroDocumentoTextBox && (tipoDocumentoCombo.isEnabled()) && (!numeroSolicitudServicioTextBox.isEnabled())){
+			flag = false;
+		}
+		
+		//Si w es numeroDocumentoTextBox y está vacío, y el combo tipoDocumento esta habilitado:
+		if ((w == numeroDocumentoTextBox) && (tipoDocumentoCombo.isEnabled())){
+			ValidationTextBox box = (ValidationTextBox) w;
+			if (!"".equals(box.getText())) {
+				setEnableFields(false);
+				((FocusWidget) w).setEnabled(true);
+				tipoDocumentoCombo.setEnabled(true);
+				flag = false;
+			}
+		}
+		
+		//Si w es responsableTextBox o razonSocialTextBox: se deshabilitaran todos los campos exceptuando “Responsable”, “Razon Social” y comboCategoria.
+		if ((w == responsableTextBox) || (w == razonSocialTextBox)){
+			ValidationTextBox box = (ValidationTextBox) w;
+			if (!"".equals(box.getText())) {
+				setEnableFields(false);
+				this.responsableTextBox.setEnabled(true);
+				this.razonSocialTextBox.setEnabled(true);
+				this.categoriaCombo.setEnabled(true);
+				flag = false;
+			}else if (("".equals(box.getText()) && (!predefinidasCombo.isEnabled()))) {
+				setEnableFields(false);
+				this.responsableTextBox.setEnabled(true);
+				this.razonSocialTextBox.setEnabled(true);
+				this.categoriaCombo.setEnabled(true);
+				flag = false;
+			}
+		}
+		
+		//Si w es Categoria y el combo de Responsable esta Enabled, no hacer nada.
+		return flag;
+	}
+	
+	
+	/**
 	 * @author eSalvador
 	 * Metodo privado que implementa las logicas particulares, para habilitar/deshabilitar combos en la busqueda de cuentas.
 	 **/
-	private void validateCombos(Widget w) {
+	private void validateListBoxs(Widget w) {
 	  /**Si completa un criterio excluyente el sistema deshabilitará el resto de los campos (excepto Nº Resultados).*/
 		
-		//Combo Categoría : se deshabilitaran todos los campos exceptuando “Responsable” y “Razon Social”
+		//Combo Categoría: se deshabilitaran todos los campos exceptuando “Responsable” y “Razon Social”
 		if (w == categoriaCombo){
 			setEnableFields(false);
 			this.responsableTextBox.setEnabled(true);
@@ -174,6 +235,15 @@ public class BuscarCuentaFilterUIData extends UIData {
 		if (w == predefinidasCombo){
 			setEnableFields(false);
 			((FocusWidget) w).setEnabled(true);
+		}
+		
+		//Si Combo Categoría selecciona vacio, y responsableTextBox Y razonSocialTextBox ambos estan vacios, se habilitan todos.
+		if ((w == categoriaCombo) && (categoriaCombo.isItemSelected(0))){
+			ValidationTextBox boxRS = (ValidationTextBox) razonSocialTextBox;
+			ValidationTextBox boxRE = (ValidationTextBox) responsableTextBox;
+			if (("".equals(boxRS.getText())) && ("".equals(boxRE.getText()))) {
+				setEnableFields(true);
+			}
 		}
 		
 		//Combo Nº Resultados: Siempre habilitado!!!
