@@ -43,7 +43,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		this.totalRegistrosBusqueda = totalRegistrosBusqueda;
 	}
 
-	public BuscarCuentaResultUI() {
+	public BuscarCuentaResultUI(BuscarCuentaController controller) {
 		super();
 		addStyleName("gwt-BuscarCuentaResultPanel");
 		resultTableWrapper = new SimplePanel();

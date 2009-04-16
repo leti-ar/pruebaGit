@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.constant;
 
 /**
  * Interface to represent the constants contained in resource bundle:
- * 	'/home/juliovesco/Documents/EntornoSFA/workspace/sfa-web2/target/classes/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
+ * 	'/home/esalvador/workspaceSFASVN/sfa-web2/target/classes/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
  */
 public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
@@ -124,6 +124,24 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String claseCliente();
 
   /**
+   * Translated "Cliente:".
+   * 
+   * @return translated "Cliente:"
+   */
+  @DefaultStringValue("Cliente:")
+  @Key("cliente")
+  String cliente();
+
+  /**
+   * Translated "Contactos".
+   * 
+   * @return translated "Contactos"
+   */
+  @DefaultStringValue("Contactos")
+  @Key("contactos")
+  String contactos();
+
+  /**
    * Translated "Contribuy.:".
    * 
    * @return translated "Contribuy.:"
@@ -158,6 +176,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Datos de la cuenta")
   @Key("cuentaPanelTitle")
   String cuentaPanelTitle();
+
+  /**
+   * Translated "Datos".
+   * 
+   * @return translated "Datos"
+   */
+  @DefaultStringValue("Datos")
+  @Key("datos")
+  String datos();
 
   /**
    * Translated "DDI".
@@ -203,6 +230,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Domicilio")
   @Key("domicilioTitle")
   String domicilioTitle();
+
+  /**
+   * Translated "Domicilios".
+   * 
+   * @return translated "Domicilios"
+   */
+  @DefaultStringValue("Domicilios")
+  @Key("domicilios")
+  String domicilios();
 
   /**
    * Translated "E-Mail".
@@ -619,6 +655,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ss();
 
   /**
+   * Translated "Teléfono".
+   * 
+   * @return translated "Teléfono"
+   */
+  @DefaultStringValue("Teléfono")
+  @Key("telefono")
+  String telefono();
+
+  /**
    * Translated "Teléfono/Fax".
    * 
    * @return translated "Teléfono/Fax"
@@ -680,6 +725,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Veraz:")
   @Key("veraz")
   String veraz();
+
+  /**
+   * Translated "Resultado Veraz".
+   * 
+   * @return translated "Resultado Veraz"
+   */
+  @DefaultStringValue("Resultado Veraz")
+  @Key("verazTitledPanel")
+  String verazTitledPanel();
 
   /**
    * Translated "&nbsp;".

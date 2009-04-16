@@ -9,7 +9,7 @@ import ar.com.nextel.sfa.client.widget.ApplicationUI;
  * @author jlgperez
  * 
  */
-public class BuscarCuentaUI extends ApplicationUI {
+public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaController{
 
 	protected boolean firstLoad = true;
 	private BuscarCuentaFilterUI buscadorCuentaFilterForm;
@@ -22,8 +22,8 @@ public class BuscarCuentaUI extends ApplicationUI {
 	public void load() {
 		if (firstLoad) {
 			firstLoad = false;
-			buscadorCuentaFilterForm = new BuscarCuentaFilterUI();
-			buscarCuentaResultPanel = new BuscarCuentaResultUI();
+			buscadorCuentaFilterForm = new BuscarCuentaFilterUI(this);
+			buscarCuentaResultPanel = new BuscarCuentaResultUI(this);
 			buscadorCuentaFilterForm.setBuscarCuentaResultPanel(buscarCuentaResultPanel);
 
 			mainPanel.add(buscadorCuentaFilterForm);
@@ -34,5 +34,9 @@ public class BuscarCuentaUI extends ApplicationUI {
 
 	public void unload() {
 
+	}
+
+	public void searchCuentas(BuscarCuentaFilterUIData buscadorCuentasFilterEditor) {
+		buscarCuentaResultPanel.searchCuentas(buscadorCuentasFilterEditor.getCuentaSearch());
 	}
 }

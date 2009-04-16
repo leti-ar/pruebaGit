@@ -4,6 +4,8 @@
 package ar.com.nextel.sfa.client.cuenta;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
@@ -25,9 +27,11 @@ public class BuscarCuentaFilterUI extends Composite {
 	private BuscarCuentaFilterUIData buscadorCuentasFilterEditor;
 	private BuscarCuentaResultUI buscarCuentaResultPanel;
 	private FlexTable layout;
+	private final BuscarCuentaController controller;
 
-	public BuscarCuentaFilterUI() {
+	public BuscarCuentaFilterUI(BuscarCuentaController controller) {
 		buscadorCuentasFilterEditor = new BuscarCuentaFilterUIData();
+		this.controller = controller;
 		init();
 	}
 
@@ -81,7 +85,13 @@ public class BuscarCuentaFilterUI extends Composite {
 
 		buscadorCuentasFilterEditor.getBuscarButton().addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				buscarCuentaResultPanel.searchCuentas(buscadorCuentasFilterEditor.getCuentaSearch());
+				
+				/** BuscarButton Validation: */
+				if (!buscadorCuentasFilterEditor.validatePreSearch()){
+					ErrorDialog.getInstance().show(new RpcExceptionMessages("Por favor ingrese por lo menos un criterio de busqueda."));
+				}else{
+					controller.searchCuentas(buscadorCuentasFilterEditor);	
+				}
 			}
 		});
 

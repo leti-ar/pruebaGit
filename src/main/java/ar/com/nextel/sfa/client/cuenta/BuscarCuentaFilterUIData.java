@@ -35,14 +35,14 @@ public class BuscarCuentaFilterUIData extends UIData {
 
 	private Label tituloLabel = new Label("Búsqueda de Cuentas");
 	private ValidationListBox categoriaCombo;
-	private ValidationTextBox numeroCuentaTextBox = new ValidationTextBox("[0-9\\.]*") {};
-	private ValidationTextBox razonSocialTextBox = new ValidationTextBox("[a-zA-Z0-9\\s]*") {};
-	private ValidationTextBox numeroNextelTextBox = new ValidationTextBox("[0-9]*") {};
-	private ValidationTextBox flotaIdTextBox = new ValidationTextBox("[0-9]*") {};
-	private ValidationTextBox numeroSolicitudServicioTextBox = new ValidationTextBox("[0-9]*") {};
-	private ValidationTextBox responsableTextBox = new ValidationTextBox("[a-zA-Z ]*") {};
+	private ValidationTextBox numeroCuentaTextBox = new ValidationTextBox("[0-9\\.]*");
+	private ValidationTextBox razonSocialTextBox = new ValidationTextBox("[a-zA-Z0-9\\s]*");
+	private ValidationTextBox numeroNextelTextBox = new ValidationTextBox("[0-9]*");
+	private ValidationTextBox flotaIdTextBox = new ValidationTextBox("[0-9]*");
+	private ValidationTextBox numeroSolicitudServicioTextBox = new ValidationTextBox("[0-9]*");
+	private ValidationTextBox responsableTextBox = new ValidationTextBox("[a-zA-Z ]*");
 	private ValidationListBox tipoDocumentoCombo;
-	private ValidationTextBox numeroDocumentoTextBox = new ValidationTextBox("[0-9]*") {};
+	private ValidationTextBox numeroDocumentoTextBox = new ValidationTextBox("[0-9]*");
 	private ValidationListBox predefinidasCombo;
 	private ListBox resultadosCombo;
 
@@ -108,7 +108,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 		numeroDocumentoTextBox.setMaxLength(13);
 		numeroDocumentoTextBox.setExcluyente(true);
 		// Combos
-		fields.add(predefinidasCombo = new ValidationListBox());
+		fields.add(predefinidasCombo = new ValidationListBox(""));
 		fields.add(resultadosCombo = new ListBox());
 		this.addFocusListeners(fields);
 	}
@@ -205,6 +205,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 		}
 		
 		//Si w es Categoria y el combo de Responsable esta Enabled, no hacer nada.
+		
 		return flag;
 	}
 	
@@ -251,9 +252,42 @@ public class BuscarCuentaFilterUIData extends UIData {
  
 	}
 	
+	public boolean validatePreSearch() {
+		boolean vacio = true;
+		//boolean flag = true;
+		
+		//Valida que todos los campos TextBoxs no sean vacios:
+		for (Widget fieldsfieldTextBox : fields) {
+			if (fieldsfieldTextBox instanceof ValidationTextBox){
+				if (!"".equals(((ValidationTextBox) fieldsfieldTextBox).getText())){
+					vacio = false;
+					break;
+				}
+			}
+		}
+		
+		if (!vacio) {
+			return true;
+		}
+		
+		//Valida que todos los campos ListBoxs no sean vacios (excepto tipoDocumento y cantResultados que no tienen valor nulo para cargar):
+		for (Widget fieldsfieldListBox : fields) {
+			if (fieldsfieldListBox instanceof ValidationListBox){
+				if ((fieldsfieldListBox != resultadosCombo) && (fieldsfieldListBox != tipoDocumentoCombo)){
+					if (((ValidationListBox) fieldsfieldListBox).getSelectedItem() != null){
+						vacio = false;
+						break;
+					}
+				}
+			}
+		}
+		
+		return !vacio;
+	}
+	
 	/**
 	 * @author eSalvador Metodo privado que hace la implementacion del focusListener, deshabilitando los
-	 *         TextBoxsFields que no estan activos.
+	 *   TextBoxsFields que no estan activos.
 	 **/
 	private void setEnableFields(boolean enabled) {
 		for (Widget widget : fields) {
