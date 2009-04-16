@@ -43,4 +43,13 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>code</b>
 		</field>
 	</mapping>
+	
+	<mapping>
+		<class-a>ar.com.nextel.model.personas.beans.Sexo</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.SexoDto</class-b>
+		<field>
+			<a>id</a>
+			<b>code</b>
+		</field>
+	</mapping>
 </mappings>
