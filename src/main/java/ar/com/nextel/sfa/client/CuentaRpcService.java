@@ -8,9 +8,12 @@ import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioSearchDto;
 import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
+import ar.com.nextel.sfa.client.dto.VerazSearchDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
+import ar.com.nextel.sfa.client.initializer.VerazInitializer;
+import ar.com.nextel.sfa.client.veraz.MockVeraz;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -42,7 +45,11 @@ public interface CuentaRpcService extends RemoteService {
 	public BuscarSSCerradasInitializer getBuscarSSCerradasInitializer();
 	
 	public AgregarCuentaInitializer getAgregarCuentaInitializer();
-	
+		
 	public PersonaDto saveCuenta(PersonaDto personaDto);
+	
+	public VerazInitializer getVerazInitializer();
+	
+	public MockVeraz searchVeraz(VerazSearchDto verazSearchDto);
 	
 }
