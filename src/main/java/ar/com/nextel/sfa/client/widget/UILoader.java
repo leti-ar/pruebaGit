@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client.widget;
 import ar.com.nextel.sfa.client.SFAWeb;
 import ar.com.nextel.sfa.client.cuenta.AgregarCuentaUI;
 import ar.com.nextel.sfa.client.cuenta.BuscarCuentaUI;
+import ar.com.nextel.sfa.client.cuenta.EditarCuentaUI;
 import ar.com.nextel.sfa.client.operaciones.OperacionEnCursoUI;
 import ar.com.nextel.sfa.client.oportunidad.BuscarOportunidadUI;
 import ar.com.nextel.sfa.client.ss.BuscarSSCerradaUI;
@@ -37,6 +38,7 @@ public class UILoader extends SimplePanel implements HistoryListener {
 	public static final int VERAZ = 3;
 	public static final int BUSCAR_OPP = 4;
 	public final static int OP_EN_CURSO = 5;
+	public final static int EDITAR_CUENTA = 7;
 
 	private UILoader() {
 		History.addHistoryListener(this);
@@ -45,7 +47,7 @@ public class UILoader extends SimplePanel implements HistoryListener {
 	public static UILoader getInstance() {
 		if (pageLoader == null) {
 			pageLoader = new UILoader();
-			pages = new ApplicationUI[7];
+			pages = new ApplicationUI[8];
 		}
 		return pageLoader;
 	}
@@ -89,7 +91,7 @@ public class UILoader extends SimplePanel implements HistoryListener {
 			pages[BUSCAR_CUENTA] = new BuscarCuentaUI();
 			break;
 		case AGREGAR_CUENTA:
-			pages[AGREGAR_CUENTA] = new AgregarCuentaUI();
+			pages[AGREGAR_CUENTA] = AgregarCuentaUI.getInstance();
 			break;
 		case BUSCAR_SOLICITUD:
 			pages[BUSCAR_SOLICITUD] = new BuscarSSCerradaUI();
@@ -106,6 +108,9 @@ public class UILoader extends SimplePanel implements HistoryListener {
 		case OP_EN_CURSO:
 			pages[OP_EN_CURSO] = new OperacionEnCursoUI();
 			break;
+		case EDITAR_CUENTA:
+			pages[EDITAR_CUENTA] = new EditarCuentaUI();
+			break;			
 		default:
 			GWT.log("Page not found. Check PageLoader.createPageWidget()", null);
 			break;
