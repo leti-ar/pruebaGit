@@ -1,11 +1,17 @@
 package ar.com.nextel.sfa.client.dto;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
-public class SexoDto implements ListBoxItem {
+public class SexoDto implements ListBoxItem, IsSerializable {
 
 	private String code;
 	private String descripcion;
+	
+	public SexoDto() {
+	}
+	
 	
 	public SexoDto(String code, String descripcion) {
 		super();

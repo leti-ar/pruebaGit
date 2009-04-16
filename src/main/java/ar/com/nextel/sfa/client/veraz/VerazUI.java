@@ -12,6 +12,7 @@ public class VerazUI extends ApplicationUI {
 	
 	protected boolean firstLoad = true;
 	private VerazFilterUI verazForm;
+	private VerazResultUI verazResultUI;
 	
 	public VerazUI() {
 		super();
@@ -21,9 +22,12 @@ public class VerazUI extends ApplicationUI {
 	public void load() {	
 		if (firstLoad) {
 			firstLoad = false;
-			VerazFilterUI verazForm = new VerazFilterUI();
-			
+			verazForm = new VerazFilterUI();
+			verazResultUI = new VerazResultUI();
+			verazForm.setVerazResultUI(verazResultUI);						
 			mainPanel.add(verazForm);
+			mainPanel.add(verazResultUI);
+			mainPanel.add(verazForm.getFooter());
 			mainPanel.addStyleName("gwt-central-panel");
 		}
 	}
