@@ -16,19 +16,14 @@ public class HistoryUtils {
 
 	/**
 	 * @param historyToken
-	 *            (url#token?param1=value1&param2=value2)
+	 *            (token?param1=value1&param2=value2)
 	 * @return solo el token. Null si no tiene;
 	 */
 	public static String getToken(String historyToken) {
-		int begin = historyToken.indexOf('#') + 1;
 		int end = historyToken.indexOf('?');
-		String token = "";
-		if (begin > 0) {
-			if (end > 0) {
-				token = historyToken.substring(begin, end);
-			} else {
-				token = historyToken.substring(begin, historyToken.length()).trim();
-			}
+		String token = historyToken;
+		if (end > 0) {
+			token = historyToken.substring(0, end);
 		}
 		return "".equals(token.trim()) ? token : null;
 
@@ -43,7 +38,7 @@ public class HistoryUtils {
 
 	/**
 	 * @param historyToken
-	 *            (url#token?param1=value1&param2=value2)
+	 *            (token?param1=value1&param2=value2)
 	 * @return Map con los parametros como clave y sus correspondientes valores
 	 */
 	public static Map getParams(String token) {
@@ -68,7 +63,7 @@ public class HistoryUtils {
 
 	/**
 	 * @param historyToken
-	 *            (url#token?param1=value1&param2=value2)
+	 *            (token?param1=value1&param2=value2)
 	 * @param paramName
 	 * @return valor del parametro. Null en caso de no encontrarlo.
 	 */
@@ -87,7 +82,7 @@ public class HistoryUtils {
 
 	/**
 	 * @param historyToken
-	 *            (url#token?param1=value1&param2=value2)
+	 *            (token?param1=value1&param2=value2)
 	 * @return String contenido depues de '?'
 	 */
 	private static String getParamsString(String token) {
