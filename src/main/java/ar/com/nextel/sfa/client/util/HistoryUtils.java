@@ -16,14 +16,22 @@ public class HistoryUtils {
 
 	/**
 	 * @param historyToken
-	 *            (url?param1=value1&param2=value2#token)
+	 *            (url#token?param1=value1&param2=value2)
 	 * @return solo el token. Null si no tiene;
 	 */
-	public static String getToken(String token) {
-		int begin = token.indexOf('#') + 1;
-		if (begin < 0)
-			return null;
-		return token.substring(begin, token.length()).trim();
+	public static String getToken(String historyToken) {
+		int begin = historyToken.indexOf('#') + 1;
+		int end = historyToken.indexOf('?');
+		String token = "";
+		if (begin > 0) {
+			if (end > 0) {
+				token = historyToken.substring(begin, end);
+			} else {
+				token = historyToken.substring(begin, historyToken.length()).trim();
+			}
+		}
+		return "".equals(token.trim()) ? token : null;
+
 	}
 
 	/**
@@ -35,13 +43,13 @@ public class HistoryUtils {
 
 	/**
 	 * @param historyToken
-	 *            (url?param1=value1&param2=value2#token)
+	 *            (url#token?param1=value1&param2=value2)
 	 * @return Map con los parametros como clave y sus correspondientes valores
 	 */
 	public static Map getParams(String token) {
 		Map<String, String> paramMap = new HashMap<String, String>();
 		String params = getParamsString(token);
-		if (!"".equals(params.trim())) {
+		if (params != null) {
 			String[] splited = params.split("&|=");
 			for (int i = 0; i < splited.length; i = i + 2) {
 				paramMap.put(splited[i], splited[i + 1]);
@@ -60,13 +68,13 @@ public class HistoryUtils {
 
 	/**
 	 * @param historyToken
-	 *            (url?param1=value1&param2=value2#token)
+	 *            (url#token?param1=value1&param2=value2)
 	 * @param paramName
 	 * @return valor del parametro. Null en caso de no encontrarlo.
 	 */
 	public static String getParam(String token, String paramName) {
 		String params = getParamsString(token);
-		if (!"".equals(params.trim())) {
+		if (params != null) {
 			String[] splited = params.split("&|=");
 			for (int i = 0; i < splited.length; i = i + 2) {
 				if (splited[i].equals(paramName)) {
@@ -79,20 +87,15 @@ public class HistoryUtils {
 
 	/**
 	 * @param historyToken
-	 *            (url?param1=value1&param2=value2#token)
-	 * @return String contenido entre '?' y '#'
+	 *            (url#token?param1=value1&param2=value2)
+	 * @return String contenido depues de '?'
 	 */
 	private static String getParamsString(String token) {
 		int begin = token.indexOf('?') + 1;
-		int end = token.indexOf('#');
 		String params = "";
 		if (begin > 0) {
-			if (end > 0) {
-				params = token.substring(begin, end);
-			} else {
-				params = token.substring(begin, token.length());
-			}
+			params = token.substring(begin, token.length());
 		}
-		return params;
+		return "".equals(params.trim()) ? null : params;
 	}
 }
