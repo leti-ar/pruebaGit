@@ -10,6 +10,7 @@ import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
 import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
@@ -87,6 +88,9 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		CuentaRpcService.Util.getInstance().searchCuenta(cuentaSearchDto,
 				new DefaultWaitCallback<List<CuentaDto>>() {
 					public void success(List<CuentaDto> result) {
+						if(result.isEmpty()){
+							ErrorDialog.getInstance().show("No se encontraron datos con el criterio utilizado.");
+						}
 						setCuentas(result);
 						// setTotalRegistrosBusqueda(CuentaRpcService.Util.getInstance().searchTotalCuentas(cuentaSearchDto));
 					}

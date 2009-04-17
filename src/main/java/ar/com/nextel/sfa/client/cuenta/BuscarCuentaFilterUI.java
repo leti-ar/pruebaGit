@@ -3,8 +3,9 @@
  */
 package ar.com.nextel.sfa.client.cuenta;
 
+import java.util.List;
+
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.ui.ClickListener;
@@ -87,9 +88,20 @@ public class BuscarCuentaFilterUI extends Composite {
 			public void onClick(Widget arg0) {
 				
 				/** BuscarButton Validation: */
-				if (!buscadorCuentasFilterEditor.validatePreSearch()){
-					ErrorDialog.getInstance().show(new RpcExceptionMessages("Por favor ingrese por lo menos un criterio de busqueda."));
-				}else{
+				List<String> listaErrores = buscadorCuentasFilterEditor.validatePreSearch();
+				if (!listaErrores.isEmpty()){
+					for (int i = 0; i < listaErrores.size(); i++) {
+						String error = listaErrores.get(i);
+						if (error == "ErrorVacio"){
+							ErrorDialog.getInstance().show("Por favor ingrese por lo menos un criterio de busqueda.");
+							break;
+						}
+						if (error == "ErrorFlotaId"){
+							ErrorDialog.getInstance().show("Formato incorrecto de Flota*Id.");
+							break;
+						}
+					}
+				}else{		
 					controller.searchCuentas(buscadorCuentasFilterEditor);	
 				}
 			}

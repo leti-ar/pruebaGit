@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
@@ -38,7 +39,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 	private ValidationTextBox numeroCuentaTextBox = new ValidationTextBox("[0-9\\.]*");
 	private ValidationTextBox razonSocialTextBox = new ValidationTextBox("[a-zA-Z0-9\\s]*");
 	private ValidationTextBox numeroNextelTextBox = new ValidationTextBox("[0-9]*");
-	private ValidationTextBox flotaIdTextBox = new ValidationTextBox("[0-9]*");
+	private ValidationTextBox flotaIdTextBox = new ValidationTextBox("[0-9\\*]*");
 	private ValidationTextBox numeroSolicitudServicioTextBox = new ValidationTextBox("[0-9]*");
 	private ValidationTextBox responsableTextBox = new ValidationTextBox("[a-zA-Z ]*");
 	private ValidationListBox tipoDocumentoCombo;
@@ -252,9 +253,9 @@ public class BuscarCuentaFilterUIData extends UIData {
  
 	}
 	
-	public boolean validatePreSearch() {
+	public List validatePreSearch() {
 		boolean vacio = true;
-		//boolean flag = true;
+		List<String> list = new ArrayList();
 		
 		//Valida que todos los campos TextBoxs no sean vacios:
 		for (Widget fieldsfieldTextBox : fields) {
@@ -266,23 +267,39 @@ public class BuscarCuentaFilterUIData extends UIData {
 			}
 		}
 		
-		if (!vacio) {
-			return true;
-		}
-		
-		//Valida que todos los campos ListBoxs no sean vacios (excepto tipoDocumento y cantResultados que no tienen valor nulo para cargar):
-		for (Widget fieldsfieldListBox : fields) {
-			if (fieldsfieldListBox instanceof ValidationListBox){
-				if ((fieldsfieldListBox != resultadosCombo) && (fieldsfieldListBox != tipoDocumentoCombo)){
-					if (((ValidationListBox) fieldsfieldListBox).getSelectedItem() != null){
-						vacio = false;
-						break;
+		if (vacio) {
+			//Valida que todos los campos ListBoxs no sean vacios (excepto tipoDocumento y cantResultados que no tienen valor nulo para cargar):
+			for (Widget fieldsfieldListBox : fields) {
+				if (fieldsfieldListBox instanceof ValidationListBox){
+					if ((fieldsfieldListBox != resultadosCombo) && (fieldsfieldListBox != tipoDocumentoCombo)){
+						if (((ValidationListBox) fieldsfieldListBox).getSelectedItem() != null){
+							vacio = false;
+							break;
+						}
 					}
 				}
 			}
 		}
+
+		if(vacio){
+			list.add("ErrorVacio");
+		}else{
+			if(flotaIdTextBox.isEnabled()){
+				if(!validaFlotaId(flotaIdTextBox)){
+					list.add("ErrorFlotaId");
+				}
+			}
+		}
 		
-		return !vacio;
+		return list;
+	}
+	
+	/**
+	 * @author eSalvador Metodo privado que ...
+	 **/
+	private boolean validaFlotaId(ValidationTextBox flota) {
+		String flotaModelo = new String("[0-9]{3,5}[\\*]{1}[0-9]{1,5}");
+		return flota.validatePattern(flotaModelo);
 	}
 	
 	/**
