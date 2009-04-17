@@ -2,7 +2,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-	 <import resource="classpath:spring-config.xml" />
+	<import resource="classpath:spring-config.xml" />
 
 	<bean id="dozerMapper" class="ar.com.nextel.sfa.server.util.MapperExtended"
 		singleton="true">
@@ -11,6 +11,15 @@
 				<value>ar/com/nextel/sfa/dozerBeanMapping.xml</value>
 			</list>
 		</property>
+		<property name="customConverters">
+			<list>
+				<ref bean="identifiableObjectToIdConverter" />
+			</list>
+		</property>
 	</bean>
 
+	<bean name="identifiableObjectToIdConverter"
+		class="ar.com.nextel.sfa.server.converter.IdentifiableObjectToIdConverter">
+		<property name="repository" ref="repository" />
+	</bean>
 </beans>
