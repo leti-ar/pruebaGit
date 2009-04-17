@@ -45,10 +45,9 @@ public class MapperExtended extends DozerBeanMapper {
 		return salida;
 	}
 
-	public void map(Object source) {
-
+	public Object mapFromDto(Object dto) {
 		try {
-			this.map(source, Class.forName(source.getClass().getName().replace("Dto$", "")));
+			return this.map(dto, Class.forName(dto.getClass().getName().replace("Dto$", "")));
 		} catch (ClassNotFoundException e) {
 			throw new MappingException(e);
 		}
