@@ -28,13 +28,11 @@ public interface CuentaRpcServiceAsync {
 	public void saveCuenta(PersonaDto personaDto, AsyncCallback callback);
 
 	public void searchCuenta(CuentaSearchDto cuentaSearchDto, AsyncCallback<List<CuentaDto>> callback);
-
-	public void searchSSCerrada(SolicitudServicioDto solicitudServicioDto,
-			AsyncCallback<List<SolicitudServicioDto>> callback);
 	
 	public void getVerazInitializer(AsyncCallback<VerazInitializer> callback);
 	
 	public void searchVeraz(VerazSearchDto verazSearchDto, AsyncCallback callback);
+	
 	public void searchSSCerrada(SolicitudServicioSearchDto solicitudServicioSearchDto,
 			AsyncCallback<SolicitudesServicioTotalesDto> callback);
 
