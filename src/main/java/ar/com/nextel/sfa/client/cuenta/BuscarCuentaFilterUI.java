@@ -92,14 +92,8 @@ public class BuscarCuentaFilterUI extends Composite {
 				if (!listaErrores.isEmpty()){
 					for (int i = 0; i < listaErrores.size(); i++) {
 						String error = listaErrores.get(i);
-						if (error == "ErrorVacio"){
-							ErrorDialog.getInstance().show("Por favor ingrese por lo menos un criterio de busqueda.");
-							break;
-						}
-						if (error == "ErrorFlotaId"){
-							ErrorDialog.getInstance().show("Formato incorrecto de Flota*Id.");
-							break;
-						}
+						//ErrorDialog.getInstance().setFormButtonsVisible(false);
+						ErrorDialog.getInstance().show(error);
 					}
 				}else{		
 					controller.searchCuentas(buscadorCuentasFilterEditor);	

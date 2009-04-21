@@ -17,6 +17,7 @@ import ar.com.nextel.sfa.client.widget.ValidationTextBox;
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItemImpl;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -282,11 +283,11 @@ public class BuscarCuentaFilterUIData extends UIData {
 		}
 
 		if(vacio){
-			list.add("ErrorVacio");
+			list.add("Por favor ingrese por lo menos un criterio de busqueda.");
 		}else{
 			if(flotaIdTextBox.isEnabled()){
 				if(!validaFlotaId(flotaIdTextBox)){
-					list.add("ErrorFlotaId");
+					list.add("Formato incorrecto de Flota*Id.");
 				}
 			}
 		}
