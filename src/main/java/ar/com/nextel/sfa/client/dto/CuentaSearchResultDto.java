@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.dto;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class CuentaDto implements IsSerializable{
+public class CuentaSearchResultDto implements IsSerializable{
 
 	private long id;
 	private long categoria;
@@ -13,9 +13,9 @@ public class CuentaDto implements IsSerializable{
 	private long lockingState;
 	private String ejecutivoLockeo;
 	private String ejecutivo;
-	private CondicionCuentaDto condicionCuenta;
+	private long condicionCuenta;
 	private boolean responsablePago;
-	private ClaseCuentaDto claseCuenta;
+	private long claseCuenta;
 	private String supervisor;
 	private String montoCreditoFidelizacion;
 	private boolean sincronizada;
@@ -94,11 +94,11 @@ public class CuentaDto implements IsSerializable{
 		this.ejecutivo = ejecutivo;
 	}
 
-	public CondicionCuentaDto getCondicionCuenta() {
+	public long getCondicionCuenta() {
 		return condicionCuenta;
 	}
 
-	public void setCondicionCuenta(CondicionCuentaDto condicionCuenta) {
+	public void setCondicionCuenta(long condicionCuenta) {
 		this.condicionCuenta = condicionCuenta;
 	}
 
@@ -110,11 +110,11 @@ public class CuentaDto implements IsSerializable{
 		this.responsablePago = responsablePago;
 	}
 
-	public ClaseCuentaDto getClaseCuenta() {
+	public long getClaseCuenta() {
 		return claseCuenta;
 	}
 
-	public void setClaseCuenta(ClaseCuentaDto claseCuenta) {
+	public void setClaseCuenta(long claseCuenta) {
 		this.claseCuenta = claseCuenta;
 	}
 

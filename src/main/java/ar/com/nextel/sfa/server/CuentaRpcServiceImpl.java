@@ -32,7 +32,7 @@ import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.dto.BusquedaPredefinidaDto;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
-import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
@@ -95,7 +95,7 @@ public class CuentaRpcServiceImpl extends RemoteServiceServlet implements
 				.getBean("getAllBusinessOperatorBean"));
 	}
 
-	public List<CuentaDto> searchCuenta(CuentaSearchDto cuentaSearchDto) {
+	public List<CuentaSearchResultDto> searchCuenta(CuentaSearchDto cuentaSearchDto) {
 		List dtoResult = new ArrayList();
 		CuentaSearchData cuentaSearchData = (CuentaSearchData) mapper.map(
 				cuentaSearchDto, CuentaSearchData.class);
@@ -117,7 +117,7 @@ public class CuentaRpcServiceImpl extends RemoteServiceServlet implements
 							transformer, cuentaSearchDto.getOffset(),
 							cuentaSearchDto.getCantidadResultados());
 			for (CuentaSearchResult cuentaSearchResult : result) {
-				dtoResult.add(mapper.map(cuentaSearchResult, CuentaDto.class));
+				dtoResult.add(mapper.map(cuentaSearchResult, CuentaSearchResultDto.class));
 			}
 
 		} catch (BusinessException e) {

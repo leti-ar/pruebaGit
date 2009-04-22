@@ -4,7 +4,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
@@ -31,7 +31,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	private FlexTable resultTable;
 	private SimplePanel resultTableWrapper;
 	private TablePageBar tablePageBar;
-	private List<CuentaDto> cuentas;
+	private List<CuentaSearchResultDto> cuentas;
 	private CuentaSearchDto lastCuentaSearchDto;
 	private int numeroPagina = 1;
 	private Long totalRegistrosBusqueda;
@@ -86,8 +86,8 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	 **/
 	private void searchCuentas(CuentaSearchDto cuentaSearchDto, boolean firstTime) {
 		CuentaRpcService.Util.getInstance().searchCuenta(cuentaSearchDto,
-				new DefaultWaitCallback<List<CuentaDto>>() {
-					public void success(List<CuentaDto> result) {
+				new DefaultWaitCallback<List<CuentaSearchResultDto>>() {
+					public void success(List<CuentaSearchResultDto> result) {
 						if(result.isEmpty()){
 							ErrorDialog.getInstance().show("No se encontraron datos con el criterio utilizado.");
 						}
@@ -97,7 +97,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 				});
 	}
 
-	public void setCuentas(List<CuentaDto> cuentas) {
+	public void setCuentas(List<CuentaSearchResultDto> cuentas) {
 		this.cuentas = cuentas;
 		loadTable();
 	}
@@ -111,7 +111,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		initTable(resultTable);
 		resultTableWrapper.setWidget(resultTable);
 		int row = 1;
-		for (CuentaDto cuenta : cuentas) {
+		for (CuentaSearchResultDto cuenta : cuentas) {
 			resultTable.setWidget(row, 0, new Hyperlink(IconFactory.lapiz().toString(),true,UILoader.EDITAR_CUENTA + "?cuenta_id=" + cuenta.getId()));
 			if (cuenta.isPuedeVerInfocom()) {
 				resultTable.setWidget(row, 1, IconFactory.lupa());
