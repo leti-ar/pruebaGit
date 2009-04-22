@@ -132,21 +132,25 @@ public class CrearSSUIData extends UIData {
 		solicitudServicio = solicitud;
 		nss.setText(solicitud.getNumero());
 		nflota.setText(solicitud.getNumeroFlota());
-		//origen.setSelectedItem();
+		// origen.setSelectedItem();
 		entrega.setSelectedItem(solicitud.getDomicilioEnvio());
 		facturacion.setSelectedItem(solicitud.getDomicilioFacturacion());
 		aclaracion.setText(solicitud.getAclaracionEntrega());
-		//credFidelDisponibleText;
-		//credFidelVencimientoText;
-		credFidelizacion.setText(formatter.format(solicitud.getMontoCreditoFideliacion()));
-		pataconex.setText(formatter.format(solicitud.getPataconex()));
+		// credFidelDisponibleText;
+		// credFidelVencimientoText;
+		double credFidelizacionValue = solicitud.getMontoCreditoFideliacion() != null ? solicitud
+				.getMontoCreditoFideliacion() : 0;
+		credFidelizacion.setText(formatter.format(credFidelizacionValue));
+		double pataconexValue = solicitud.getPataconex() != null ? solicitud
+				.getPataconex() : 0;
+		pataconex.setText(formatter.format(pataconexValue));
 		firmarss.setChecked(solicitud.getFirmar());
-		//anticipo.setSelectedItem(solicitud.get);
+		// anticipo.setSelectedItem(solicitud.get);
 		observaciones.setText(solicitud.getObservaciones());
-		//precioListaText;
-		//desvioText;
-		//credFidelText;
-		//pataconexText;
-		//precioVentaText;
+		// precioListaText;
+		// desvioText;
+		// credFidelText;
+		// pataconexText;
+		// precioVentaText;
 	}
 }
