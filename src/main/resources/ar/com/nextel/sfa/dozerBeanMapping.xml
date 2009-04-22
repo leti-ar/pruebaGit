@@ -52,4 +52,15 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>code</b>
 		</field>
 	</mapping>
+	
+	<mapping>
+		<class-a>ar.com.nextel.model.cuentas.beans.ClaseCuenta</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.ClaseCuentaDto</class-b>
+	</mapping>
+	
+	<mapping>
+		<class-a>ar.com.nextel.model.cuentas.beans.CondicionCuenta</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.CondicionCuentaDto</class-b>
+	</mapping>
+
 </mappings>
