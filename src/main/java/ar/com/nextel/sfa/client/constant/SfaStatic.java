@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.constant;
 
 /**
  * Interface to represent the constants contained in resource bundle:
- * 	'/home/esalvador/workspaceSFASVN/sfa-web2/target/classes/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
+ * 	'/home/jlgperez/workspaceSFASVN/sfa-web2/target/classes/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
  */
 public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
@@ -52,6 +52,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String alias();
 
   /**
+   * Translated "Anticipo:".
+   * 
+   * @return translated "Anticipo:"
+   */
+  @DefaultStringValue("Anticipo:")
+  @Key("anticipo")
+  String anticipo();
+
+  /**
    * Translated "Apellido:".
    * 
    * @return translated "Apellido:"
@@ -59,6 +68,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Apellido:")
   @Key("apellido")
   String apellido();
+
+  /**
+   * Translated "A utilizar:".
+   * 
+   * @return translated "A utilizar:"
+   */
+  @DefaultStringValue("A utilizar:")
+  @Key("autilizar")
+  String autilizar();
 
   /**
    * Translated "Buscar".
@@ -160,6 +178,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String cppMpp();
 
   /**
+   * Translated "Cred.Fidel.:".
+   * 
+   * @return translated "Cred.Fidel.:"
+   */
+  @DefaultStringValue("Cred.Fidel.:")
+  @Key("creditoFidel")
+  String creditoFidel();
+
+  /**
    * Translated "Crédito de Fidelización".
    * 
    * @return translated "Crédito de Fidelización"
@@ -214,6 +241,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String desde();
 
   /**
+   * Translated "Desvíos:".
+   * 
+   * @return translated "Desvíos:"
+   */
+  @DefaultStringValue("Desvíos:")
+  @Key("desvios")
+  String desvios();
+
+  /**
    * Translated "Detalle".
    * 
    * @return translated "Detalle"
@@ -221,6 +257,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Detalle")
   @Key("detalleTitle")
   String detalleTitle();
+
+  /**
+   * Translated "Disponible:".
+   * 
+   * @return translated "Disponible:"
+   */
+  @DefaultStringValue("Disponible:")
+  @Key("disponible")
+  String disponible();
 
   /**
    * Translated "Domicilio".
@@ -320,6 +365,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Firmas")
   @Key("firmaTitle")
   String firmaTitle();
+
+  /**
+   * Translated "Firmar SS:".
+   * 
+   * @return translated "Firmar SS:"
+   */
+  @DefaultStringValue("Firmar SS:")
+  @Key("firmarSS")
+  String firmarSS();
 
   /**
    * Translated "Firmas:".
@@ -538,6 +592,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String precioLista();
 
   /**
+   * Translated "Precio Venta:".
+   * 
+   * @return translated "Precio Venta:"
+   */
+  @DefaultStringValue("Precio Venta:")
+  @Key("precioVenta")
+  String precioVenta();
+
+  /**
    * Translated "Predefinidas:".
    * 
    * @return translated "Predefinidas:"
@@ -709,6 +772,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String tipoPlan();
 
   /**
+   * Translated "Totales".
+   * 
+   * @return translated "Totales"
+   */
+  @DefaultStringValue("Totales")
+  @Key("totales")
+  String totales();
+
+  /**
    * Translated "Usuario:".
    * 
    * @return translated "Usuario:"
@@ -716,6 +788,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Usuario:")
   @Key("usuario")
   String usuario();
+
+  /**
+   * Translated "Vencimiento:".
+   * 
+   * @return translated "Vencimiento:"
+   */
+  @DefaultStringValue("Vencimiento:")
+  @Key("vencimiento")
+  String vencimiento();
 
   /**
    * Translated "Veraz:".
