@@ -1,8 +1,10 @@
 package ar.com.nextel.sfa.client.dto;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
-public class BusquedaPredefinidaDto implements ListBoxItem {
+public class BusquedaPredefinidaDto implements ListBoxItem, IsSerializable {
 
 	public static final long TIPO_PREDEFINIDA_PROPIAS = 1;
 	public static final long TIPO_PREDEFINIDA_CON_CREDITO_FIDEL = 2;

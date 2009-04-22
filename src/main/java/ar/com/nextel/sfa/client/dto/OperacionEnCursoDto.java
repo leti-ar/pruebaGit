@@ -1,8 +1,9 @@
 package ar.com.nextel.sfa.client.dto;
 
-import java.io.Serializable;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class OperacionEnCursoDto implements Serializable {
+
+public class OperacionEnCursoDto implements IsSerializable {
 
     /**
      * UID.
