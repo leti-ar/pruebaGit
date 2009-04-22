@@ -13,9 +13,9 @@ public class CuentaDto implements IsSerializable{
 	private long lockingState;
 	private String ejecutivoLockeo;
 	private String ejecutivo;
-	private long condicionCuenta;
+	private CondicionCuentaDto condicionCuenta;
 	private boolean responsablePago;
-	private long claseCuenta;
+	private ClaseCuentaDto claseCuenta;
 	private String supervisor;
 	private String montoCreditoFidelizacion;
 	private boolean sincronizada;
@@ -94,11 +94,11 @@ public class CuentaDto implements IsSerializable{
 		this.ejecutivo = ejecutivo;
 	}
 
-	public long getCondicionCuenta() {
+	public CondicionCuentaDto getCondicionCuenta() {
 		return condicionCuenta;
 	}
 
-	public void setCondicionCuenta(long condicionCuenta) {
+	public void setCondicionCuenta(CondicionCuentaDto condicionCuenta) {
 		this.condicionCuenta = condicionCuenta;
 	}
 
@@ -110,11 +110,11 @@ public class CuentaDto implements IsSerializable{
 		this.responsablePago = responsablePago;
 	}
 
-	public long getClaseCuenta() {
+	public ClaseCuentaDto getClaseCuenta() {
 		return claseCuenta;
 	}
 
-	public void setClaseCuenta(long claseCuenta) {
+	public void setClaseCuenta(ClaseCuentaDto claseCuenta) {
 		this.claseCuenta = claseCuenta;
 	}
 
