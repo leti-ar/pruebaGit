@@ -29,13 +29,25 @@ div.popFooter {
 
 /* leaving it blank for inline styling with padding, text-align */
 div.popFormButtons {
-	background-image: url(images/bkg_frmButtons.gif);
 	height: 25px;
 	line-height: 25px;
 	margin-top: 8px;
+	text-align: center;
+	background-image: url(images/bkg_frmButtons.gif);
+	background-repeat: repeat-x; 
+	text-align : center;
+	margin-top: 8px;
+	text-align: center;
+}
+
+.popFormButton {
+	color: #666666;
 	margin: 0px;
 	padding: 5px;
-	text-align: center;
+	font-weight: bold;
+	text-decoration: none;
+	text-transform: uppercase;
+	padding: 5px;
 }
 
 /* links that affect the WINDOW, not the content */
