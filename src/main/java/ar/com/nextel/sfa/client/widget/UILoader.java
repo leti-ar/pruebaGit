@@ -41,13 +41,14 @@ public class UILoader extends SimplePanel implements HistoryListener {
 	public final static int EDITAR_CUENTA = 7;
 
 	private UILoader() {
+		pages = new ApplicationUI[8];
 		History.addHistoryListener(this);
+		History.fireCurrentHistoryState();
 	}
 
 	public static UILoader getInstance() {
 		if (pageLoader == null) {
 			pageLoader = new UILoader();
-			pages = new ApplicationUI[8];
 		}
 		return pageLoader;
 	}
