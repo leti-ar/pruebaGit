@@ -6,7 +6,7 @@ import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
-import ar.com.nextel.sfa.client.dto.VerazSearchDto;
+import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioSearchDto;
 import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
@@ -31,9 +31,11 @@ public interface CuentaRpcServiceAsync {
 	
 	public void getVerazInitializer(AsyncCallback<VerazInitializer> callback);
 	
-	public void searchVeraz(VerazSearchDto verazSearchDto, AsyncCallback callback);
+	//public void searchVeraz(VerazSearchDto verazSearchDto, AsyncCallback callback);
 	
 	public void searchSSCerrada(SolicitudServicioSearchDto solicitudServicioSearchDto,
 			AsyncCallback<SolicitudesServicioTotalesDto> callback);
+	
+	public void consultarVeraz(PersonaDto personaDto, AsyncCallback callback);
 
 }

@@ -213,7 +213,7 @@ public class CuentaUIData extends UIData {
 		persona.setFechaNacimiento(fechaNacimiento.getSelectedDate());
 		persona.setNombre(nombre.getText());
 		persona.setRazonSocial(razonSocial.getText());
-		persona.setSexo(sexo.getText());
+		//persona.setSexo(sexo.getText());
 		return persona;
 	}
 }

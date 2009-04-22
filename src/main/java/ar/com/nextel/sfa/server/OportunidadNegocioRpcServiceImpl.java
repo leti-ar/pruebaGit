@@ -68,8 +68,8 @@ public class OportunidadNegocioRpcServiceImpl extends RemoteServiceServlet imple
 	 **/
 	public BuscarOportunidadNegocioInitializer getBuscarOportunidadInitializer() {
 		List<TipoDocumentoDto> listaTipoDoc = new ArrayList<TipoDocumentoDto>();
-		listaTipoDoc.add(0, new TipoDocumentoDto("0", "Documento"));
-		listaTipoDoc.add(1, new TipoDocumentoDto("1", "CUIT/CUIL"));
+		//listaTipoDoc.add(0, new TipoDocumentoDto("0", "Documento"));
+		//listaTipoDoc.add(1, new TipoDocumentoDto("1", "CUIT/CUIL"));
 
 		List<EstadoOportunidadDto> listaEstadoOpp = new ArrayList<EstadoOportunidadDto>();
 		listaEstadoOpp.add(0, new EstadoOportunidadDto("0", "Activa"));

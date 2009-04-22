@@ -1,7 +1,11 @@
 package ar.com.nextel.sfa.client.veraz;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
@@ -23,6 +27,7 @@ public class VerazFilterUI extends Composite {
 	private VerazUIData verazEditor; 
 	private VerazResultUI verazResultUI;
 	private FormButtonsBar footerBar;
+	private List<String> errorList = new ArrayList();
 	
 	public VerazFilterUI() {	
 		verazEditor = new VerazUIData();
@@ -55,7 +60,19 @@ public class VerazFilterUI extends Composite {
 		
 		verazEditor.getValidarVerazLink().addClickListener(new ClickListener() {
 			public void onClick (Widget arg0) {
-				verazResultUI.searchVeraz(verazEditor.getVerazSearch());
+
+				/**Validar la completitud y formato de los campos**/
+				errorList.addAll(verazEditor.validarCompletitud());
+				errorList.addAll(verazEditor.validarFormato());
+
+				/**Mostrar los mensajes de error**/
+				if (!errorList.isEmpty()){
+					for (int i = 0; i < errorList.size(); i++) {
+						String error = errorList.get(i);
+						ErrorDialog.getInstance().show(error);
+					}
+				} else
+					verazResultUI.searchVeraz(verazEditor.getVerazSearch());
 			}
 		});
 	}

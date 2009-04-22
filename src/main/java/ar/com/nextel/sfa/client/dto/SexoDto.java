@@ -6,14 +6,14 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 public class SexoDto implements ListBoxItem, IsSerializable {
 
-	private String code;
+	private long code;
 	private String descripcion;
 	
 	public SexoDto() {
 	}
 	
 	
-	public SexoDto(String code, String descripcion) {
+	public SexoDto(long code, String descripcion) {
 		super();
 		this.code = code;
 		this.descripcion = descripcion;
@@ -24,14 +24,14 @@ public class SexoDto implements ListBoxItem, IsSerializable {
 	}
 
 	public String getItemValue() {
+		return code + "";
+	}
+
+	public long getCode() {
 		return code;
 	}
 
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
+	public void setCode(long code) {
 		this.code = code;
 	}
 

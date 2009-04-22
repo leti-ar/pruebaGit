@@ -8,12 +8,14 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class PersonaDto implements IsSerializable {
 
+	private Long id;
     private String apellido;
     private String documento;
     private String nombre;
     private Set<TelefonoDto> telefonos; 
     private Set<EmailDto> emails; 
-    private String sexo;
+    private SexoDto sexo;
+    private TipoDocumentoDto tipoDocumentoDto;
     private String razonSocial;
     private Date fechaNacimiento;
     
@@ -50,10 +52,10 @@ public class PersonaDto implements IsSerializable {
 		this.emails = emails;
 	}
 	
-	public String getSexo() {
+	public SexoDto getSexo() {
 		return sexo;
 	}
-	public void setSexo(String sexo) {
+	public void setSexo(SexoDto sexo) {
 		this.sexo = sexo;
 	}
 	public String getRazonSocial() {
@@ -68,5 +70,16 @@ public class PersonaDto implements IsSerializable {
 	public void setFechaNacimiento(Date fechaNacimiento) {
 		this.fechaNacimiento = fechaNacimiento;
 	}
-		
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public TipoDocumentoDto getTipoDocumentoDto() {
+		return tipoDocumentoDto;
+	}
+	public void setTipoDocumentoDto(TipoDocumentoDto tipoDocumentoDto) {
+		this.tipoDocumentoDto = tipoDocumentoDto;
+	}		
 }

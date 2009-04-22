@@ -27,7 +27,7 @@ public class VerazUI extends ApplicationUI {
 			verazForm.setVerazResultUI(verazResultUI);						
 			mainPanel.add(verazForm);
 			mainPanel.add(verazResultUI);
-			mainPanel.add(verazForm.getFooter());
+			mainPanel.add(verazForm.getFooter());		
 			mainPanel.addStyleName("gwt-central-panel");
 		}
 	}

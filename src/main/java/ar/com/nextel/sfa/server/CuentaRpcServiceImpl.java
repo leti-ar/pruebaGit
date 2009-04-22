@@ -18,6 +18,7 @@ import ar.com.nextel.business.cuentas.search.result.CuentaSearchResult;
 import ar.com.nextel.business.dao.GenericDao;
 import ar.com.nextel.business.describable.GetAllBusinessOperator;
 import ar.com.nextel.business.vendedores.RegistroVendedores;
+import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.security.Usuario;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.personas.beans.Persona;
@@ -25,12 +26,15 @@ import ar.com.nextel.model.personas.beans.Sexo;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
+import ar.com.nextel.services.nextelServices.veraz.VerazService;
+import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.dto.BusquedaPredefinidaDto;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
+import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.RubroDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
@@ -40,13 +44,14 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioSearchDto;
 import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
-import ar.com.nextel.sfa.client.dto.VerazSearchDto;
+import ar.com.nextel.sfa.client.dto.VerazResponseInfoDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.VerazInitializer;
-import ar.com.nextel.sfa.client.veraz.MockVeraz;
 import ar.com.nextel.sfa.server.util.MapperExtended;
+import ar.com.nextel.util.AppLogger;
+import ar.com.nextel.util.StringUtil;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -65,6 +70,9 @@ public class CuentaRpcServiceImpl extends RemoteServiceServlet implements
 	private MapperExtended mapper;
 	private GetAllBusinessOperator getAllBusinessOperator;
 	private GenericDao genericDao;
+    private VerazService veraz;
+    private Repository repository;
+
 
 	@Override
 	public void init() throws ServletException {
@@ -79,6 +87,9 @@ public class CuentaRpcServiceImpl extends RemoteServiceServlet implements
 				.getBean("cuentaToSearchResultTransformer");
 		mapper = (MapperExtended) context.getBean("dozerMapper");
 		genericDao = (GenericDao) context.getBean("genericDao");
+		veraz = (VerazService) context.getBean("verazService");
+		repository = (Repository) context.getBean("repository");
+		
 		// Engancho el BOperator
 		setGetAllBusinessOperator((GetAllBusinessOperator) context
 				.getBean("getAllBusinessOperatorBean"));
@@ -173,8 +184,8 @@ public class CuentaRpcServiceImpl extends RemoteServiceServlet implements
 	 **/
 	public BuscarCuentaInitializer getBuscarCuentaInitializer() {
 		List<TipoDocumentoDto> listaTipoDoc = new ArrayList<TipoDocumentoDto>();
-		listaTipoDoc.add(0, new TipoDocumentoDto("0", "Documento"));
-		listaTipoDoc.add(1, new TipoDocumentoDto("1", "CUIT/CUIL"));
+		//listaTipoDoc.add(0, new TipoDocumentoDto("0", "Documento"));
+		//listaTipoDoc.add(1, new TipoDocumentoDto("1", "CUIT/CUIL"));
 
 		List<BusquedaPredefinidaDto> listaBusquedaPredef = new ArrayList<BusquedaPredefinidaDto>();
 		listaBusquedaPredef.add(0, new BusquedaPredefinidaDto("1",
@@ -255,8 +266,8 @@ public class CuentaRpcServiceImpl extends RemoteServiceServlet implements
 
 	public AgregarCuentaInitializer getAgregarCuentaInitializer() {
 		List<TipoDocumentoDto> listaTipoDoc = new ArrayList<TipoDocumentoDto>();
-		listaTipoDoc.add(0, new TipoDocumentoDto("0", "Documento"));
-		listaTipoDoc.add(1, new TipoDocumentoDto("1", "CUIT/CUIL"));
+		//listaTipoDoc.add(0, new TipoDocumentoDto("0", "Documento"));
+		//listaTipoDoc.add(1, new TipoDocumentoDto("1", "CUIT/CUIL"));
 
 		List<TipoContribuyenteDto> listaTipoContribuy = new ArrayList<TipoContribuyenteDto>();
 		listaTipoContribuy.add(0, new TipoContribuyenteDto("0",
@@ -289,11 +300,22 @@ public class CuentaRpcServiceImpl extends RemoteServiceServlet implements
 		return verazInitializer;
 	}
 	
-
-	public MockVeraz searchVeraz(VerazSearchDto verazSearchDto) {
-		MockVeraz mockVeraz = new MockVeraz();
-		return mockVeraz.getresultado();		
-	}
-
-
+	
+	public VerazResponseDto consultarVeraz(PersonaDto personaDto) {
+        AppLogger.info("Iniciando consulta a Veraz...");
+        VerazResponseDTO responseDTO = null;
+        Sexo sexo = (Sexo) this.repository.retrieve(Sexo.class, personaDto.getSexo().getCode());
+		TipoDocumento tipoDocumento = (TipoDocumento) this.repository.retrieve(TipoDocumento.class, personaDto.getTipoDocumentoDto().getCode());
+		long numeroDocumento = Long.parseLong(personaDto.getDocumento());
+		AppLogger.debug("Parametros consulta a Veraz: " + tipoDocumento.getCodigoVeraz() + " / " + numeroDocumento + " / " + sexo.getCodigoVeraz() + "..."); 	
+		Usuario usuario = new Usuario();
+		usuario.setUserName("acsa1");
+		Vendedor vendedor = registroVendedores.getVendedor(usuario);
+		responseDTO = this.veraz.searchPerson(tipoDocumento.getCodigoVeraz(), numeroDocumento, sexo.getCodigoVeraz(), vendedor.getVerazVersion());
+		VerazResponseDto responseDto = mapper.map(responseDTO, VerazResponseDto.class);
+        responseDto.setMensaje(responseDTO.getMensaje());
+        AppLogger.info("Consulta a Veraz finalizada.");
+        return responseDto;
+    }
+	
 }
