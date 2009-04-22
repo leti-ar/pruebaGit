@@ -19,6 +19,6 @@
 		<module>../../sfa-srv</module>
 		<module>../../GwtCommons</module>
 		<module>../</module>
-<!--		<module>ear</module>-->
+		<module>ear</module>
 	</modules>
 </project>
