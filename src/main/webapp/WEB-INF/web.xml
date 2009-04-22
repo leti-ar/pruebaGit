@@ -51,10 +51,19 @@
 		<servlet-class>
 			ar.com.nextel.sfa.server.CuentaRpcServiceImpl</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>SolicitudRpcService</servlet-name>
+		<servlet-class>
+		ar.com.nextel.sfa.server.SolicitudRpcServiceImpl</servlet-class>
+	</servlet>
 	
 	<servlet-mapping>
 		<servlet-name>CuentaRpcService</servlet-name>
 		<url-pattern>/ar.com.nextel.sfa.SFAWeb/cuenta.rpc</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>SolicitudRpcService</servlet-name>
+		<url-pattern>/solicitud.rpc</url-pattern>
 	</servlet-mapping>
 
 	<resource-ref id="sfaDS">
