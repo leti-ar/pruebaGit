@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
@@ -29,7 +29,7 @@ public class CuentaRpcServiceDelegate {
 		this.cuentaRpcService = cuentaRpcService;
 	}
 
-	public void searchCuenta(CuentaSearchDto cuentaSearchDto, DefaultWaitCallback<List<CuentaDto>> callback) {
+	public void searchCuenta(CuentaSearchDto cuentaSearchDto, DefaultWaitCallback<List<CuentaSearchResultDto>> callback) {
 		WaitWindow.show();
 		cuentaRpcService.searchCuenta(cuentaSearchDto, callback);
 	}
