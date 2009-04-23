@@ -1,8 +1,7 @@
 package ar.com.nextel.sfa.client.command;
 
-import ar.com.nextel.sfa.client.widget.UILoader;
-
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.History;
 
 public class OpenPageCommand implements Command {
 
@@ -13,7 +12,7 @@ public class OpenPageCommand implements Command {
 	}
 
 	public void execute() {
-		UILoader.getInstance().setPage(page);
+		History.newItem("" + page);
 	}
 
 }
