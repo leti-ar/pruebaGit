@@ -29,7 +29,6 @@ body,td {
 .gwt-HeaderMenu .menu {
 	background-color: #981836;
 	background-image: url(images/toolbar/back-menu-bar.gif);
-	/*	float: left;*/
 	height: 30px;
 	text-align: left;
 	width: 100%;
@@ -80,7 +79,7 @@ body,td {
 	border-width: 0 1px 1px;
 }
 
-.gwt-TextBox,.gwt-ListBox { /*float: left;*/
+.gwt-TextBox,.gwt-ListBox { 
 	font-family: Verdana;
 	font-size: 11px;
 	font-weight: normal;
@@ -94,13 +93,12 @@ body,td {
 
 .gwt-central-panel {
 	background-color: #DADADA;
-	float: left;
 	min-width: 100%;
 	padding: 0;
 	text-align: center;
 }
 
-.gwt-BuscarCuentaFilterForm,.gwt-BuscarCuentaResultPanel, .gwt-VerazFilterForm, gwt-VerazResultUI {
+.gwt-BuscarCuentaFilterForm,.gwt-BuscarCuentaResultPanel {
 	margin: 5px;
 	background-color: #F7F7F7;
 	background-image: url(images/sch_bkg.gif);
@@ -122,7 +120,6 @@ body,td {
 
 .gwt-filtrosBuscador {
 	display: block;
-	/*	float: left;*/
 	height: 24px;
 	margin: 0 0 0px;
 	padding: 0;
@@ -131,11 +128,18 @@ body,td {
 
 .gwt-TitledPanel {
 	border: 1px solid #981836;
+	margin-top: 5px;
+	margin-left: 5px;
+	margin-right: 5px;
+	padding-bottom: 5px;
+	text-align: left;
 }
 
 .gwt-TitledPanel .title {
 	width: 100% !IMPORTANT;
-	margin: 0px !IMPORTANT;
+	margin-top: 0px !IMPORTANT;
+	margin-left: 0px !IMPORTANT;
+	margin-right: 0px !IMPORTANT;
 	vertical-align: middle;
 	background-color: #981836;
 	background-image: url(images/h1_bkg_desplegable.jpg);
@@ -146,7 +150,7 @@ body,td {
 	font-family: Verdana, Geneva, Kalimati, sans-serif;
 	font-size: 11px;
 	font-weight: bold;
-	text-align: left;
+	margin-bottom: 5px;
 }
 
 .header td {
@@ -157,23 +161,24 @@ body,td {
 	line-height: 14px;
 }
 
-.gwt-BuscarCuentaResultTable td, .gwt-VerazResultTable td  {
+.gwt-BuscarCuentaResultTable td, .gwt-VerazResultTable td, .dataTable td {
 	border-right: 1px solid #EBEBEB;
 	border-bottom: 1px solid #EBEBEB;
 	height: 24px;
 }
 
-.gwt-BuscarCuentaResultPanel .resultTableWrapper, .gwt-VerazResultUI .verazResultPanel  {
+.gwt-BuscarCuentaResultPanel .resultTableWrapper {
 	height: 200px;
 	overflow: auto;
 }
 
-.gwt-BuscarCuentaFilterForm .layout td, .gwt-CuentaForm .layout td, .gwt-VerazFilterForm .layout td {
+.layout td {
 	padding-bottom: 2px;
 	padding-top: 2px;
+	height: 23px;
 }
 
-.gwt-BuscarCuentaFilterForm .layout td,.gwt-Label, .gwt-CuentaForm .layout td {
+.layout td, .gwt-Label {
 	font-family: Verdana, Geneva, Kalimati, sans-serif;
 	font-size: 11px;
 	font-weight: bold;
@@ -186,14 +191,14 @@ body,td {
 	color: #FFFFFF;
 }
 
-.gwt-TabBar .gwt-TabBarItem-selected {
-	background-image: url(images/tabs/tab-on.gif);
-	color: #A83C56;
-	cursor: default;
+.gwt-TabBarItem-selected {
+	background-image: url(images/tabs/tab-on.gif) ! IMPORTANT; 
+	color: #A83C56 ! IMPORTANT;
 }
 
-.gwt-TabBar .gwt-TabBarItem {
-	background: #DADADA url(images/tabs/tab.gif) repeat scroll center top;
+.gwt-TabBarItem {
+	background-color: #DADADA;
+	background-image: url(images/tabs/tab.gif);
 	cursor: pointer;
 	font-family: Verdana;
 	font-size: 11px;
@@ -213,7 +218,6 @@ body,td {
 }
 
 .razonSocial .gwt-Label {
-float:left;
 font-weight:bold;
 margin:4px 0;
 padding-left:4px;
@@ -221,7 +225,6 @@ width:90px;
 }
 
 .numeroCliente .gwt-Label {
-float:left;
 font-weight:bold;
 margin:4px 0;
 width:55px;
@@ -242,7 +245,6 @@ text-transform:uppercase;
 .aButtons {
 background-image:url(images/bkg_frmButtons.gif);
 display:block;
-float:left;
 height:25px;
 line-height:25px;
 margin-top:8px;
@@ -252,20 +254,16 @@ width:100%;
 
 .gwt-TabPanelBottom {
 background:#FFFFFF url(images/bkg_frmContent.gif) repeat-x scroll 0 0;
-float:left;
-min-width:100%;
-text-align:center;
+padding: 5px;
 }
 
 .abmPanel {
 border:1px solid #981836;
-float:left;
 margin-bottom:8px;
 width:100%;
 }
 
 .abmPanelChild {
-float:left;
 line-height:24px;
 margin:5px 0 0 2px;
 padding:0;
@@ -273,9 +271,41 @@ text-align:left;
 width:48%;
 }
 
+.req{
+color: red;	
+}
+
+.Gwt-EditarSSUI{
+background-color: #dddddd;	
+}
+
+.crearDomicilioButton{
+background-image:url(images/btn-table-nuevo.gif);
+background-repeat:no-repeat;
+background-color: transparent;
+width: 115px;
+height: 17px;
+font-size:11px;
+font-style:italic;
+font-weight:bold;
+color: #333;
+line-height:15px;
+float: right;
+padding-left: 20px;
+margin-right: 8px;
+border: none 0px;
+}
+
+.crearDomicilioBWrapper{
+height: 20px;
+}
+
+.bkgWhite{
+background-color: #FFFFFF
+}
+
 .abmPiePanel {
 border:0 none;
-float:left;
 margin-left:2px;
 text-align:left;
 width:48%;
@@ -283,7 +313,6 @@ width:48%;
 
 .gwt-LabelVeraz {
 background-color:transparent;
-float:left;
 font-family:Verdana;
 font-size:11px;
 font-weight:bold;
@@ -299,7 +328,6 @@ border:1px solid #981836;
 background-color:#FFFFFF;
 margin-top:8px;
 border:1px solid #981836;
-float:left;
 margin-bottom:8px;
 width:100%;
 }
@@ -307,7 +335,6 @@ width:100%;
 .resultadoVerazAceptar {
 background:transparent url(images/icon-scoring-aceptado.jpg) no-repeat scroll 0 0;
 display:block;
-float:left;
 height:22px;
 margin-left:4px;
 padding-left:24px;
@@ -317,7 +344,6 @@ width:74px;
 .resultadoVerazRevisar {
 background:transparent url(images/icon-scoring-revisado.jpg) no-repeat scroll 0 0;
 display:block;
-float:left;
 height:22px;
 margin-left:4px;
 padding-left:24px;
@@ -327,12 +353,9 @@ width:74px;
 .resultadoVerazRechazar {
 background:transparent url(images/icon-scoring-rechazado.jpg) no-repeat scroll 0 0;
 display:block;
-float:left;
 height:22px;
 margin-left:4px;
 padding-left:24px;
 width:74px;
 }
-
-
 
