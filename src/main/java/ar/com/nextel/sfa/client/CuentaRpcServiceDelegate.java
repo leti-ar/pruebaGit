@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
@@ -70,6 +71,11 @@ public class CuentaRpcServiceDelegate {
 	
 	public void consultarVeraz(PersonaDto personaDto, DefaultWaitCallback callback) {
 		cuentaRpcService.consultarVeraz(personaDto, callback);
+	}
+	
+	public void selectCuenta(Long cuentaId,DefaultWaitCallback callback) {
+		WaitWindow.show();
+		cuentaRpcService.selectCuenta(cuentaId, callback);
 	}
 
 }

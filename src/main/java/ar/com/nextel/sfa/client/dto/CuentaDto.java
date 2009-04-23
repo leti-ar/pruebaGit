@@ -15,7 +15,7 @@ public class CuentaDto implements IsSerializable {
     private VendedorDto vendedor;
     private EstadoCuentaDto estadoCuenta;
     private FormaPagoDto formaPago;
-    private DatosPagoDto datosPago;
+    //private DatosPagoDto datosPago;
     private String iibb;
     private Boolean responsablePago;
     private Set<PlanDto> planesPropios;
@@ -107,12 +107,12 @@ public class CuentaDto implements IsSerializable {
 	public void setFormaPago(FormaPagoDto formaPago) {
 		this.formaPago = formaPago;
 	}
-	public DatosPagoDto getDatosPago() {
-		return datosPago;
-	}
-	public void setDatosPago(DatosPagoDto datosPago) {
-		this.datosPago = datosPago;
-	}
+//	public DatosPagoDto getDatosPago() {
+//		return datosPago;
+//	}
+//	public void setDatosPago(DatosPagoDto datosPago) {
+//		this.datosPago = datosPago;
+//	}
 	public String getIibb() {
 		return iibb;
 	}

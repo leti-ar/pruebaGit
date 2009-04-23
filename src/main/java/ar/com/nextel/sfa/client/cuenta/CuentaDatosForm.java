@@ -191,5 +191,13 @@ public class CuentaDatosForm extends Composite {
 	public void reset() {
 		cuentaEditor.clean();
 	}
+
+	public CuentaUIData getCuentaEditor() {
+		return cuentaEditor;
+	}
+
+	public void setCuentaEditor(CuentaUIData cuentaEditor) {
+		this.cuentaEditor = cuentaEditor;
+	}
 	
 }

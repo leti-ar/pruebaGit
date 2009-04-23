@@ -12,10 +12,13 @@ public class CuentaEdicionTabPanel {
 
 	private static CuentaEdicionTabPanel instance = new CuentaEdicionTabPanel();
 	private FlexTable marco = new FlexTable();
-	private TabPanel tabPanel;
-	private DualPanel encabezado;
-	private Label razonSocialLabel;
-	private InlineLabel clienteLabel;
+	DualPanel razonSocialPanel = new DualPanel();
+	private Label razonSocial = new Label();
+	private Label cliente = new Label();
+	private CuentaDatosForm     cuentaDatosForm     = CuentaDatosForm.getInstance();
+	private CuentaDomicilioForm cuentaDomicilioForm = CuentaDomicilioForm.getInstance();
+	private CuentaContactoForm  cuentaContactoForm  = CuentaContactoForm.getInstance();
+
 	
 	private CuentaEdicionTabPanel() {
 		init();
@@ -26,33 +29,76 @@ public class CuentaEdicionTabPanel {
 	}
 	
 	public void init() {
+
 		marco = new FlexTable();
 		marco.setWidth("100%");
+		
+		Label razonSocialLabel = new Label(Sfa.constant().razonSocial());
+		razonSocialPanel.setLeft(razonSocialLabel);
+		razonSocialPanel.setRight(razonSocial);
 
-		encabezado = new DualPanel();
-		encabezado.addStyleName("layout");
-		
-		razonSocialLabel = new Label(Sfa.constant().razonSocial());
-		clienteLabel = new InlineLabel(Sfa.constant().cliente());
-		encabezado.setLeft(razonSocialLabel);
-		encabezado.setRight(clienteLabel);
-		
-		marco.setWidget(0, 0, encabezado);
-		tabPanel = new TabPanel();
+		DualPanel clientePanel = new DualPanel();
+		Label clienteLabel = new Label(Sfa.constant().cliente());
+		clientePanel.setLeft(clienteLabel);
+		clientePanel.setRight(cliente);
+
+		marco.setWidget(0, 0, razonSocialPanel);
+		marco.setWidget(0, 1, clientePanel);
+		TabPanel tabPanel = new TabPanel();
 		tabPanel.setWidth("100%");
-		tabPanel.add(CuentaDatosForm.getInstance(), Sfa.constant().datos());
-		tabPanel.add(CuentaDomicilioForm.getInstance(), Sfa.constant().domicilios());
-		tabPanel.add(CuentaContactoForm.getInstance(), Sfa.constant().contactos());
+		tabPanel.add(cuentaDatosForm, Sfa.constant().datos());
+		tabPanel.add(cuentaDomicilioForm, Sfa.constant().domicilios());
+		tabPanel.add(cuentaContactoForm, Sfa.constant().contactos());
 		tabPanel.selectTab(0);
 		marco.setWidget(1, 0, tabPanel);
+		marco.getFlexCellFormatter().setColSpan(1, 0, 2);
 		
-	}
-	
-	public FlexTable getCuentaEdicionPanel() {
-		return marco;
 	}
 	
 	public void clean() {
-		
+		cuentaDatosForm.reset();
+		razonSocial.setText("");
+		cliente.setText("");
 	}
+
+	public FlexTable getCuentaEdicionPanel() {
+		return marco;
+	}
+
+	public String getRazonSocial() {
+		return razonSocial.getText();
+	}
+	public void setRazonSocial(String razonSocial) {
+		this.razonSocial.setText(razonSocial);
+	}
+
+	public String getCliente() {
+		return cliente.getText();
+	}
+	public void setCliente(String cliente) {
+		this.cliente.setText(cliente);
+	}
+
+	public CuentaDatosForm getCuentaDatosForm() {
+		return cuentaDatosForm;
+	}
+	public void setCuentaDatosForm(CuentaDatosForm cuentaDatosForm) {
+		this.cuentaDatosForm = cuentaDatosForm;
+	}
+
+	public CuentaDomicilioForm getCuentaDomicilioForm() {
+		return cuentaDomicilioForm;
+	}
+	public void setCuentaDomicilioForm(CuentaDomicilioForm cuentaDomicilioForm) {
+		this.cuentaDomicilioForm = cuentaDomicilioForm;
+	}
+
+	public CuentaContactoForm getCuentaContactoForm() {
+		return cuentaContactoForm;
+	}
+	public void setCuentaContactoForm(CuentaContactoForm cuentaContactoForm) {
+		this.cuentaContactoForm = cuentaContactoForm;
+	}
+	
+	
 }

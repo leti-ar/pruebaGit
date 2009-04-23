@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
@@ -34,5 +35,7 @@ public interface CuentaRpcServiceAsync {
 			AsyncCallback<SolicitudesServicioTotalesDto> callback);
 	
 	public void consultarVeraz(PersonaDto personaDto, AsyncCallback callback);
+	
+	public void selectCuenta(Long cuentaId, AsyncCallback<CuentaDto> callback);
 
 }
