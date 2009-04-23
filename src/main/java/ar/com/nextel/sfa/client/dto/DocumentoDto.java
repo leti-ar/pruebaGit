@@ -1,12 +1,12 @@
 package ar.com.nextel.sfa.client.dto;
 
-public class DocumentoDto {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class DocumentoDto implements IsSerializable {
 
     private long serialVersionUID = 6783360349446430990L;
-    public String idTipo;
-    public String descripcionTipo;    
+    public TipoDocumentoDto tipoDocumento;
     public String numero;
-	
     
     public long getSerialVersionUID() {
 		return serialVersionUID;
@@ -14,23 +14,17 @@ public class DocumentoDto {
 	public void setSerialVersionUID(long serialVersionUID) {
 		this.serialVersionUID = serialVersionUID;
 	}
-	public String getIdTipo() {
-		return idTipo;
-	}
-	public void setIdTipo(String idTipo) {
-		this.idTipo = idTipo;
-	}
-	public String getDescripcionTipo() {
-		return descripcionTipo;
-	}
-	public void setDescripcionTipo(String descripcionTipo) {
-		this.descripcionTipo = descripcionTipo;
-	}
 	public String getNumero() {
 		return numero;
 	}
 	public void setNumero(String numero) {
 		this.numero = numero;
+	}
+	public TipoDocumentoDto getTipoDocumento() {
+		return tipoDocumento;
+	}
+	public void setTipoDocumento(TipoDocumentoDto tipoDocumento) {
+		this.tipoDocumento = tipoDocumento;
 	}
 	
 }

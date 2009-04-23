@@ -3,36 +3,38 @@ package ar.com.nextel.sfa.client.dto;
 import java.util.Date;
 import java.util.Set;
 
+import ar.com.nextel.model.personas.beans.Documento;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class PersonaDto implements IsSerializable {
 
 	private Long id;
+    private Long idTipoDocumento;
     private String apellido;
-    private String documento;
     private String nombre;
     private Set<TelefonoDto> telefonos; 
     private Set<EmailDto> emails; 
     private SexoDto sexo;
-    private TipoDocumentoDto tipoDocumentoDto;
+    private DocumentoDto documento;
     private String razonSocial;
     private Date fechaNacimiento;
     
-    
+	public Long getIdTipoDocumento() {
+		return idTipoDocumento;
+	}
+	public void setIdTipoDocumento(Long idTipoDocumento) {
+		this.idTipoDocumento = idTipoDocumento;
+	}
+	public DocumentoDto getDocumento() {
+		return documento;
+	}
 	public String getApellido() {
 		return apellido;
 	}
 	public void setApellido(String apellido) {
 		this.apellido = apellido;
 	}
-	public String getDocumento() {
-		return documento;
-	}
-	public void setDocumento(String documento) {
-		this.documento = documento;
-	}
-
 	public String getNombre() {
 		return nombre;
 	}
@@ -51,7 +53,6 @@ public class PersonaDto implements IsSerializable {
 	public void setEmails(Set<EmailDto> emails) {
 		this.emails = emails;
 	}
-	
 	public SexoDto getSexo() {
 		return sexo;
 	}
@@ -76,10 +77,4 @@ public class PersonaDto implements IsSerializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public TipoDocumentoDto getTipoDocumentoDto() {
-		return tipoDocumentoDto;
-	}
-	public void setTipoDocumentoDto(TipoDocumentoDto tipoDocumentoDto) {
-		this.tipoDocumentoDto = tipoDocumentoDto;
-	}		
 }
