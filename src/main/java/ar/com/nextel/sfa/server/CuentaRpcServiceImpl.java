@@ -24,6 +24,7 @@ import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.personas.beans.Persona;
 import ar.com.nextel.model.personas.beans.Sexo;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
+import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.services.nextelServices.veraz.VerazService;
@@ -34,6 +35,7 @@ import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
+import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.RubroDto;
@@ -44,7 +46,6 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioSearchDto;
 import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
-import ar.com.nextel.sfa.client.dto.VerazResponseInfoDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
@@ -222,30 +223,28 @@ public class CuentaRpcServiceImpl extends RemoteServiceServlet implements
 		 */
 	}
 
-	/**
-	 * @author JulioVesco TODO: Quitar el HardCode cuando se logre obtener los
-	 *         datos reales de la Db.
-	 **/
+
 	public BuscarSSCerradasInitializer getBuscarSSCerradasInitializer() {
+		BuscarSSCerradasInitializer buscarSSCerradasInitializer = new BuscarSSCerradasInitializer();
+					
 		List<String> listaResult = new ArrayList<String>();
 		String cantResult = "10;25;50;75;100";
 		listaResult = Arrays.asList(cantResult.split(";"));
+		buscarSSCerradasInitializer.setCantidadesResultados(listaResult);
 
 		List<String> listaFirmas = new ArrayList<String>();
 		String opcionesFirmas = "SI;NO;TODAS";
 		listaFirmas = Arrays.asList(opcionesFirmas.split(";"));
+		buscarSSCerradasInitializer.setOpcionesFirmas(listaFirmas);
 
 		List<String> listaPataconex = new ArrayList<String>();
 		String opcionesPataconex = "SI;NO;TODAS";
 		listaPataconex = Arrays.asList(opcionesPataconex.split(";"));
+		buscarSSCerradasInitializer.setOpcionesPatacones(listaPataconex);
 
-		List<String> listaEstado = new ArrayList<String>();
-		String opcionesEstado = "Todos;Pass;Fail";
-		listaEstado = Arrays.asList(opcionesEstado.split(";"));
-
-		BuscarSSCerradasInitializer buscarDTOinit = new BuscarSSCerradasInitializer(
-				listaResult, listaFirmas, listaPataconex, listaEstado);
-		return buscarDTOinit;
+		buscarSSCerradasInitializer.setOpcionesEstado(mapper.convertList(genericDao.getList(EstadoSolicitud.class), EstadoSolicitudDto.class));
+		
+		return buscarSSCerradasInitializer;
 	}
 
 	// Prueba rgm
