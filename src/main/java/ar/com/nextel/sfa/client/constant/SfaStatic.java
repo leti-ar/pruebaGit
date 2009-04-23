@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.constant;
 
 /**
  * Interface to represent the constants contained in resource bundle:
- * 	'/home/esalvador/workspaceSFASVN/sfa-web2/src/main/java/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
+ * 	'/home/jlgperez/workspaceSFASVN/sfa-web2/target/classes/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
  */
 public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
@@ -88,15 +88,6 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String buscar();
 
   /**
-   * Translated "Calle:\u0009\u0009".
-   * 
-   * @return translated "Calle:\u0009\u0009"
-   */
-  @DefaultStringValue("Calle:\u0009\u0009")
-  @Key("calle")
-  String calle();
-
-  /**
    * Translated "Categoría:".
    * 
    * @return translated "Categoría:"
@@ -176,24 +167,6 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Contribuy.:")
   @Key("contribuyente")
   String contribuyente();
-
-  /**
-   * Translated "CP:".
-   * 
-   * @return translated "CP:"
-   */
-  @DefaultStringValue("CP:")
-  @Key("cp")
-  String cp();
-
-  /**
-   * Translated "CPA:".
-   * 
-   * @return translated "CPA:"
-   */
-  @DefaultStringValue("CPA:")
-  @Key("cpa")
-  String cpa();
 
   /**
    * Translated "CPP/MPP:".
@@ -313,15 +286,6 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String domicilios();
 
   /**
-   * Translated "Dto/Pta:".
-   * 
-   * @return translated "Dto/Pta:"
-   */
-  @DefaultStringValue("Dto/Pta:")
-  @Key("dpto")
-  String dpto();
-
-  /**
    * Translated "E-Mail".
    * 
    * @return translated "E-Mail"
@@ -331,20 +295,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String emailPanelTitle();
 
   /**
-   * Translated "Entre Calle:".
+   * Translated "<span class=\"req\">Entrega:</span>".
    * 
-   * @return translated "Entre Calle:"
+   * @return translated "<span class=\"req\">Entrega:</span>"
    */
-  @DefaultStringValue("Entre Calle:")
-  @Key("entre_calle")
-  String entre_calle();
-
-  /**
-   * Translated "Entrega:".
-   * 
-   * @return translated "Entrega:"
-   */
-  @DefaultStringValue("Entrega:")
+  @DefaultStringValue("<span class=\"req\">Entrega:</span>")
   @Key("entrega")
   String entrega();
 
@@ -367,11 +322,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String estadoOpp();
 
   /**
-   * Translated "Facturación:".
+   * Translated "<span class=\"req\">Facturación:</span>".
    * 
-   * @return translated "Facturación:"
+   * @return translated "<span class=\"req\">Facturación:</span>"
    */
-  @DefaultStringValue("Facturación:")
+  @DefaultStringValue("<span class=\"req\">Facturación:</span>")
   @Key("facturacion")
   String facturacion();
 
@@ -401,15 +356,6 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("F. Nac.:")
   @Key("fechaNacimiento")
   String fechaNacimiento();
-
-  /**
-   * Translated "Fecha Modificación:".
-   * 
-   * @return translated "Fecha Modificación:"
-   */
-  @DefaultStringValue("Fecha Modificación:")
-  @Key("fecha_Modificacion")
-  String fecha_Modificacion();
 
   /**
    * Translated "Firmas".
@@ -511,15 +457,6 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String localidad();
 
   /**
-   * Translated "Mzna.:".
-   * 
-   * @return translated "Mzna.:"
-   */
-  @DefaultStringValue("Mzna.:")
-  @Key("manzana")
-  String manzana();
-
-  /**
    * Translated "Modalidad:".
    * 
    * @return translated "Modalidad:"
@@ -547,11 +484,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String nombre();
 
   /**
-   * Translated "NºSS:".
+   * Translated "<span class=\"req\">NºSS:</span>".
    * 
-   * @return translated "NºSS:"
+   * @return translated "<span class=\"req\">NºSS:</span>"
    */
-  @DefaultStringValue("NºSS:")
+  @DefaultStringValue("<span class=\"req\">NºSS:</span>")
   @Key("nss")
   String nss();
 
@@ -563,15 +500,6 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Número:")
   @Key("numero")
   String numero();
-
-  /**
-   * Translated "N°:".
-   * 
-   * @return translated "N°:"
-   */
-  @DefaultStringValue("N°:")
-  @Key("numeroCalle")
-  String numeroCalle();
 
   /**
    * Translated "Nº Cliente:".
@@ -601,15 +529,6 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String numeroNextel();
 
   /**
-   * Translated "Observaciones:".
-   * 
-   * @return translated "Observaciones:"
-   */
-  @DefaultStringValue("Observaciones:")
-  @Key("obs_domicilio")
-  String obs_domicilio();
-
-  /**
    * Translated "Obs.:".
    * 
    * @return translated "Obs.:"
@@ -619,22 +538,13 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String observaciones();
 
   /**
-   * Translated "Origen:".
+   * Translated "<span class=\"req\">Origen:</span>".
    * 
-   * @return translated "Origen:"
+   * @return translated "<span class=\"req\">Origen:</span>"
    */
-  @DefaultStringValue("Origen:")
+  @DefaultStringValue("<span class=\"req\">Origen:</span>")
   @Key("origen")
   String origen();
-
-  /**
-   * Translated "Partido:".
-   * 
-   * @return translated "Partido:"
-   */
-  @DefaultStringValue("Partido:")
-  @Key("partido")
-  String partido();
 
   /**
    * Translated "Pataconex:".
@@ -662,15 +572,6 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Personal:")
   @Key("personal")
   String personal();
-
-  /**
-   * Translated "Piso:".
-   * 
-   * @return translated "Piso:"
-   */
-  @DefaultStringValue("Piso:")
-  @Key("piso")
-  String piso();
 
   /**
    * Translated "Plan:".
@@ -725,15 +626,6 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Prov. Ant.:")
   @Key("provedorAnterior")
   String provedorAnterior();
-
-  /**
-   * Translated "Provincia:".
-   * 
-   * @return translated "Provincia:"
-   */
-  @DefaultStringValue("Provincia:")
-  @Key("provincia")
-  String provincia();
 
   /**
    * Translated "Razón Social:".
@@ -880,22 +772,13 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String tipoPlan();
 
   /**
-   * Translated "Torre:".
+   * Translated "Totales".
    * 
-   * @return translated "Torre:"
+   * @return translated "Totales"
    */
-  @DefaultStringValue("Torre:")
-  @Key("torre")
-  String torre();
-
-  /**
-   * Translated "UF:".
-   * 
-   * @return translated "UF:"
-   */
-  @DefaultStringValue("UF:")
-  @Key("uf")
-  String uf();
+  @DefaultStringValue("Totales")
+  @Key("totales")
+  String totales();
 
   /**
    * Translated "Usuario:".
@@ -907,22 +790,13 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String usuario();
 
   /**
-   * Translated "Usuario:".
+   * Translated "Vencimiento:".
    * 
-   * @return translated "Usuario:"
+   * @return translated "Vencimiento:"
    */
-  @DefaultStringValue("Usuario:")
-  @Key("usuario_domicilio")
-  String usuario_domicilio();
-
-  /**
-   * Translated "Validado por EECC/Agente:".
-   * 
-   * @return translated "Validado por EECC/Agente:"
-   */
-  @DefaultStringValue("Validado por EECC/Agente:")
-  @Key("validado")
-  String validado();
+  @DefaultStringValue("Vencimiento:")
+  @Key("vencimiento")
+  String vencimiento();
 
   /**
    * Translated "Veraz:".
@@ -950,13 +824,4 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("&nbsp;")
   @Key("whiteSpace")
   String whiteSpace();
-
-  /**
-   * Translated "y Calle:".
-   * 
-   * @return translated "y Calle:"
-   */
-  @DefaultStringValue("y Calle:")
-  @Key("y_calle")
-  String y_calle();
 }
