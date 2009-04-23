@@ -1,10 +1,12 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.widget.DualPanel;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 
@@ -30,6 +32,17 @@ public class CuentaEdicionTabPanel {
 	
 	public void init() {
 
+		CuentaRpcService.Util.getInstance().getAgregarCuentaInitializer(
+			new DefaultWaitCallback<AgregarCuentaInitializer>() {
+				public void success(AgregarCuentaInitializer result) {
+					cuentaDatosForm.getCuentaEditor().getTipoDocumento().addAllItems(result.getTiposDocumento());
+					cuentaDatosForm.getCuentaEditor().getContribuyente().addAllItems(result.getTiposContribuyentes());
+					cuentaDatosForm.getCuentaEditor().getRubro().addAllItems(result.getRubros());
+				}
+			});
+	
+		
+		
 		marco = new FlexTable();
 		marco.setWidth("100%");
 		

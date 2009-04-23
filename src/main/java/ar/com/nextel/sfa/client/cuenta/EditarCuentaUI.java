@@ -19,12 +19,15 @@ public class EditarCuentaUI extends ApplicationUI {
 		if (cuentaID!=null) {
 			CuentaRpcService.Util.getInstance().selectCuenta(new Long(cuentaID), new DefaultWaitCallback<CuentaDto>() {
 				public void success(CuentaDto cuentaDto) {
-					cuentaTab.setRazonSocial(cuentaDto.getPersona().getRazonSocial());
 					cuentaTab.setCliente(cuentaDto.getCodigoVantive());
-					if (cuentaDto.getPersona().getDocumento()!=null) {
-//						cuentaTab.getCuentaDatosForm().getCuentaEditor().getTipoDocumento().setItemSelected(cuentaDto.getPersona().getIdTipoDocumento().intValue(), true) ;
-						cuentaTab.getCuentaDatosForm().getCuentaEditor().getNumeroDocumento().setText(cuentaDto.getPersona().getDocumento().getNumero());
+					if (cuentaDto.getPersona()!=null) {
+						cuentaTab.setRazonSocial(cuentaDto.getPersona().getRazonSocial());
+						if (cuentaDto.getPersona().getDocumento()!=null) {
+							cuentaTab.getCuentaDatosForm().getCuentaEditor().getTipoDocumento().setItemSelected(cuentaDto.getPersona().getIdTipoDocumento().intValue(), true) ;
+							cuentaTab.getCuentaDatosForm().getCuentaEditor().getNumeroDocumento().setText(cuentaDto.getPersona().getDocumento().getNumero());
+						}
 						cuentaTab.getCuentaDatosForm().getCuentaEditor().getApellido().setText(cuentaDto.getPersona().getApellido());
+						cuentaTab.getCuentaDatosForm().getCuentaEditor().getRazonSocial().setText(cuentaDto.getPersona().getRazonSocial());
 					}
 				}
 			});

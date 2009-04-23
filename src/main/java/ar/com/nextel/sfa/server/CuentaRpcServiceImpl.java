@@ -22,7 +22,9 @@ import ar.com.nextel.business.vendedores.RegistroVendedores;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.security.Usuario;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
+import ar.com.nextel.model.cuentas.beans.TipoContribuyente;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
+import ar.com.nextel.model.oportunidades.beans.Rubro;
 import ar.com.nextel.model.personas.beans.Persona;
 import ar.com.nextel.model.personas.beans.Sexo;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
@@ -269,21 +271,21 @@ public class CuentaRpcServiceImpl extends RemoteServiceServlet implements
 	}
 
 	public AgregarCuentaInitializer getAgregarCuentaInitializer() {
-		List<TipoDocumentoDto> listaTipoDoc = new ArrayList<TipoDocumentoDto>();
-		//listaTipoDoc.add(0, new TipoDocumentoDto("0", "Documento"));
-		//listaTipoDoc.add(1, new TipoDocumentoDto("1", "CUIT/CUIL"));
-
-		List<TipoContribuyenteDto> listaTipoContribuy = new ArrayList<TipoContribuyenteDto>();
-		listaTipoContribuy.add(0, new TipoContribuyenteDto("0",
-				"Consumidor Final"));
-		listaTipoContribuy.add(1, new TipoContribuyenteDto("1", "Monotributo"));
-
-		List<RubroDto> listaRubro = new ArrayList<RubroDto>();
-		listaRubro.add(0, new RubroDto("0", "Comercio Mayorista"));
-		listaRubro.add(1, new RubroDto("1", "Papel"));
-
-		AgregarCuentaInitializer buscarDTOinit = new AgregarCuentaInitializer(
-				listaTipoDoc, listaTipoContribuy, listaRubro);
+//		List<TipoDocumentoDto> listaTipoDoc = new ArrayList<TipoContribuyenteDto>();
+//		listaTipoDoc.add(0, new TipoDocumentoDto("0", "Documento"));
+//		listaTipoDoc.add(1, new TipoDocumentoDto("1", "CUIT/CUIL"));
+//		List<TipoContribuyenteDto> listaTipoContribuy = new ArrayList<TipoContribuyenteDto>();
+//		listaTipoContribuy.add(0, new TipoContribuyenteDto("0",	"Consumidor Final"));
+//		listaTipoContribuy.add(1, new TipoContribuyenteDto("1", "Monotributo"));
+//		List<RubroDto> listaRubro = new ArrayList<RubroDto>();
+//		listaRubro.add(0, new RubroDto("0", "Comercio Mayorista"));
+//		listaRubro.add(1, new RubroDto("1", "Papel"));
+//		AgregarCuentaInitializer buscarDTOinit = new AgregarCuentaInitializer(listaTipoDoc, listaTipoContribuy, listaRubro);
+		
+		AgregarCuentaInitializer buscarDTOinit = new AgregarCuentaInitializer();
+		buscarDTOinit.setTiposContribuyentes(mapper.convertList(genericDao.getList(TipoContribuyente.class),TipoContribuyenteDto.class));
+		buscarDTOinit.setTiposDocumento(mapper.convertList(genericDao.getList(TipoDocumento.class),	TipoDocumentoDto.class));
+		buscarDTOinit.setRubros(mapper.convertList(genericDao.getList(Rubro.class),	RubroDto.class));
 		return buscarDTOinit;
 	}
 
@@ -294,13 +296,10 @@ public class CuentaRpcServiceImpl extends RemoteServiceServlet implements
 
 	}
 
-
 	public VerazInitializer getVerazInitializer() {
 		VerazInitializer verazInitializer = new VerazInitializer();
-		verazInitializer.setTiposDocumento(mapper.convertList(genericDao.getList(TipoDocumento.class),
-			TipoDocumentoDto.class));
-		verazInitializer.setSexos(mapper.convertList(genericDao.getList(Sexo.class),
-			SexoDto.class));
+		verazInitializer.setTiposDocumento(mapper.convertList(genericDao.getList(TipoDocumento.class),TipoDocumentoDto.class));
+		verazInitializer.setSexos(mapper.convertList(genericDao.getList(Sexo.class),SexoDto.class));
 		return verazInitializer;
 	}
 	
