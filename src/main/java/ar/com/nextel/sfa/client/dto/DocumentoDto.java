@@ -4,15 +4,16 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class DocumentoDto implements IsSerializable {
 
-    private long serialVersionUID = 6783360349446430990L;
     public TipoDocumentoDto tipoDocumento;
     public String numero;
     
-    public long getSerialVersionUID() {
-		return serialVersionUID;
-	}
-	public void setSerialVersionUID(long serialVersionUID) {
-		this.serialVersionUID = serialVersionUID;
+    public DocumentoDto() {
+    }
+    
+    public DocumentoDto(String numero, TipoDocumentoDto tipoDocumento) {
+		super();
+		this.numero = numero;
+		this.tipoDocumento = tipoDocumento;
 	}
 	public String getNumero() {
 		return numero;

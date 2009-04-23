@@ -209,7 +209,7 @@ public class CuentaUIData extends UIData {
 
 	public PersonaDto getPersona() {
 		persona.setApellido(apellido.getText());
-		persona.setDocumento(numeroDocumento.getText());
+		persona.getDocumento().setNumero(numeroDocumento.getText());
 		persona.setFechaNacimiento(fechaNacimiento.getSelectedDate());
 		persona.setNombre(nombre.getText());
 		persona.setRazonSocial(razonSocial.getText());

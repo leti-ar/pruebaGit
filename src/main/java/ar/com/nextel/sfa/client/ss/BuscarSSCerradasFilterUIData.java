@@ -155,8 +155,12 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 	public SolicitudServicioSearchDto getSSCerradaSearch() {
 		SolicitudServicioSearchDto solicitudServicioSearchDto = new SolicitudServicioSearchDto();
 		solicitudServicioSearchDto.setNumeroCuenta(nroCliente.getText());
-		solicitudServicioSearchDto.setRazonSocial(nroSS.getText());
-		//TODO completar con los filtros.
+		solicitudServicioSearchDto.setNumeroSS(nroSS.getText());
+		solicitudServicioSearchDto.setFechaDesde(desde.getSelectedDateAsString());
+		solicitudServicioSearchDto.setFechaHasta(hasta.getSelectedDateAsString());
+		solicitudServicioSearchDto.setEstado(estadoCombo.getSelectedItemText());
+		solicitudServicioSearchDto.setPataconex(pataconesCombo.getSelectedItemText());
+		solicitudServicioSearchDto.setFirmas(firmasCombo.getSelectedItemText());
 		solicitudServicioSearchDto.setCantidadResultados(Integer.parseInt(resultadosCombo.getSelectedItem().getItemValue()));
 		return solicitudServicioSearchDto;
 	}

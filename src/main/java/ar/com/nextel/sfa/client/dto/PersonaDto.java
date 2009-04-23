@@ -19,7 +19,8 @@ public class PersonaDto implements IsSerializable {
     private DocumentoDto documento;
     private String razonSocial;
     private Date fechaNacimiento;
-    
+
+   
 	public Long getIdTipoDocumento() {
 		return idTipoDocumento;
 	}
@@ -28,6 +29,9 @@ public class PersonaDto implements IsSerializable {
 	}
 	public DocumentoDto getDocumento() {
 		return documento;
+	}
+	public void setDocumento(DocumentoDto documento) {
+		this.documento = documento;
 	}
 	public String getApellido() {
 		return apellido;

@@ -304,8 +304,8 @@ public class CuentaRpcServiceImpl extends RemoteServiceServlet implements
         AppLogger.info("Iniciando consulta a Veraz...");
         VerazResponseDTO responseDTO = null;
         Sexo sexo = (Sexo) this.repository.retrieve(Sexo.class, personaDto.getSexo().getCode());
-		TipoDocumento tipoDocumento = (TipoDocumento) this.repository.retrieve(TipoDocumento.class, personaDto.getTipoDocumentoDto().getCode());
-		long numeroDocumento = Long.parseLong(personaDto.getDocumento());
+		TipoDocumento tipoDocumento = (TipoDocumento) this.repository.retrieve(TipoDocumento.class, personaDto.getDocumento().getTipoDocumento().getCode());
+		long numeroDocumento = Long.parseLong(personaDto.getDocumento().getNumero());
 		AppLogger.debug("Parametros consulta a Veraz: " + tipoDocumento.getCodigoVeraz() + " / " + numeroDocumento + " / " + sexo.getCodigoVeraz() + "..."); 	
 		Usuario usuario = new Usuario();
 		usuario.setUserName("acsa1");

@@ -9,7 +9,10 @@ public class SolicitudServicioSearchDto implements IsSerializable {
 	private String razonSocial;
 	private Long cantidadEquipos;
 	private String pataconex;
-	private Boolean firmas;
+	private String firmas;
+	private String fechaDesde;
+	private String fechaHasta;
+	private String estado;
 	private int cantidadResultados;
 
 	public String getNumeroSS() {
@@ -52,11 +55,11 @@ public class SolicitudServicioSearchDto implements IsSerializable {
 		this.pataconex = pataconex;
 	}
 
-	public Boolean getFirmas() {
+	public String getFirmas() {
 		return firmas;
 	}
 
-	public void setFirmas(Boolean firmas) {
+	public void setFirmas(String firmas) {
 		this.firmas = firmas;
 	}
 
@@ -66,6 +69,30 @@ public class SolicitudServicioSearchDto implements IsSerializable {
 
 	public void setCantidadResultados(int cantidadResultados) {
 		this.cantidadResultados = cantidadResultados;
+	}
+
+	public String getFechaDesde() {
+		return fechaDesde;
+	}
+
+	public void setFechaDesde(String fechaDesde) {
+		this.fechaDesde = fechaDesde;
+	}
+
+	public String getFechaHasta() {
+		return fechaHasta;
+	}
+
+	public void setFechaHasta(String fechaHasta) {
+		this.fechaHasta = fechaHasta;
+	}
+
+	public String getEstado() {
+		return estado;
+	}
+
+	public void setEstado(String estado) {
+		this.estado = estado;
 	}
 
 }

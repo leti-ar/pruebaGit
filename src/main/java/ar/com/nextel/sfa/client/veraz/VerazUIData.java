@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
+import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
@@ -83,8 +84,9 @@ public class VerazUIData extends UIData {
 	
 	public PersonaDto getVerazSearch() {
 		PersonaDto personaDto = new PersonaDto();
-		personaDto.setTipoDocumentoDto((TipoDocumentoDto) tipoDocListBox.getSelectedItem());
-		personaDto.setDocumento(numeroDocTextBox.getText());
+		DocumentoDto documentoDto = new DocumentoDto(numeroDocTextBox.getText(), (TipoDocumentoDto) tipoDocListBox.getSelectedItem());
+		personaDto.setDocumento(documentoDto);
+		personaDto.setIdTipoDocumento(documentoDto.getTipoDocumento().getCode());
 		personaDto.setSexo((SexoDto) sexoListBox.getSelectedItem());
 		return personaDto;
 	}
