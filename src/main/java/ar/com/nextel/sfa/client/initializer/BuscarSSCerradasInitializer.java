@@ -5,6 +5,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.BusquedaPredefinidaDto;
 import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
+import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -13,16 +14,16 @@ public class BuscarSSCerradasInitializer implements IsSerializable {
 
 	private List<String> opcionesFirmas = new ArrayList<String>();
 	private List<String> opcionesPatacones = new ArrayList<String>();
-	private List<String> opcionesEstado = new ArrayList<String>();
+	private List<EstadoSolicitudDto> opcionesEstado = new ArrayList<EstadoSolicitudDto>();
 	private List<String> cantidadesResultados = new ArrayList<String>();
 	
 	public BuscarSSCerradasInitializer() {		
-	};  
+	}
 	
 	public BuscarSSCerradasInitializer(
 			List<String> cantidadesResultados,
 			List<String> opcionesFirmas, List<String> opcionesPatacones,
-			List<String> opcionesEstado) {
+			List<EstadoSolicitudDto> opcionesEstado) {
 		super();
 		this.cantidadesResultados = cantidadesResultados;
 		this.opcionesFirmas = opcionesFirmas;
@@ -46,11 +47,11 @@ public class BuscarSSCerradasInitializer implements IsSerializable {
 		this.opcionesPatacones = opcionesPatacones;
 	}
 
-	public List<String> getOpcionesEstado() {
+	public List<EstadoSolicitudDto> getOpcionesEstado() {
 		return opcionesEstado;
 	}
 
-	public void setOpcionesEstado(List<String> opcionesEstado) {
+	public void setOpcionesEstado(List<EstadoSolicitudDto> opcionesEstado) {
 		this.opcionesEstado = opcionesEstado;
 	}
 

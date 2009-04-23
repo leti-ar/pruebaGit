@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.ss;
 
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 
@@ -11,14 +12,29 @@ import com.google.gwt.user.client.ui.Label;
  */
 public class BuscarSSTotalesResultUI extends FlowPanel {
 
-	private Label labelEquipos = new Label("Equipos: ");
-	private Label labelPataconex = new Label("Pataconex: ");
-	private Label labelFirmados = new Label("Eq. Firmados: ");
+	private Label labelTotales = new Label("Totales");
+	private Label labelEquipos = new Label();
+	private Label labelPataconex = new Label();
+	private Label labelFirmados = new Label();
+	private FlexTable resultadosTable = new FlexTable();
 
 	public BuscarSSTotalesResultUI() {
-		add(labelEquipos);
-		add(labelPataconex);
-		add(labelFirmados);
+		resultadosTable.setWidget(0, 0, labelTotales);
+		labelTotales.addStyleName("mt5");
+		resultadosTable.setWidget(1, 0, labelEquipos);
+		//labelEquipos.addStyleName("mt10");
+		labelEquipos.addStyleName("mr50");
+		labelEquipos.addStyleName("mt5");
+		labelEquipos.addStyleName("mb3");
+		resultadosTable.setWidget(1, 1, labelPataconex);
+		labelPataconex.addStyleName("mlr40");
+		labelPataconex.addStyleName("mt5");
+		labelPataconex.addStyleName("mb3");
+		resultadosTable.setWidget(1, 2, labelFirmados);
+		labelFirmados.addStyleName("mlr40");
+		labelFirmados.addStyleName("mt5");
+		labelFirmados.addStyleName("mb3");
+		add(resultadosTable);
 	}
 
 	public void setValues(String equipos, String pataconex,

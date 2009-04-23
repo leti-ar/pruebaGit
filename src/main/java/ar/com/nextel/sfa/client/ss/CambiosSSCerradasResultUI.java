@@ -19,11 +19,13 @@ import com.google.gwt.user.client.ui.SimplePanel;
 public class CambiosSSCerradasResultUI extends FlowPanel {
 
 	private FlexTable resultTable;
-	private SimplePanel resultTableWrapper;
+	private FlexTable cambiosTable;
+	private FlowPanel resultTableWrapper;
 	private SolicitudServicioCerradaDto solicitudServicioCerradaDto;
-	private Label labelNroSS = new Label("N° SS: ");
-	private Label labelNroCLiente = new Label("N° Cliente: ");
-	private Label labelRazonSocial = new Label("Razon Social: ");
+	private Label labelDatosSS = new Label ("Datos de SS");
+	private Label labelNroSS = new Label();
+	private Label labelNroCLiente = new Label();
+	private Label labelRazonSocial = new Label();
 
 	public CambiosSSCerradasResultUI() {
 		super();
@@ -31,7 +33,7 @@ public class CambiosSSCerradasResultUI extends FlowPanel {
 		this.add(labelNroSS);
 		this.add(labelNroCLiente);
 		this.add(labelRazonSocial);
-		resultTableWrapper = new SimplePanel();
+		resultTableWrapper = new FlowPanel();
 		resultTableWrapper.addStyleName("resultTableWrapper");
 		add(resultTableWrapper);
 		setVisible(false);
@@ -40,12 +42,25 @@ public class CambiosSSCerradasResultUI extends FlowPanel {
 	public void setSolicitudServicioCerradaDto(
 			SolicitudServicioCerradaDto solicitudServicioCerradaDto) {
 		this.solicitudServicioCerradaDto = solicitudServicioCerradaDto;
+		cambiosTable = new FlexTable();
+		cambiosTable.setWidget(0, 0, labelDatosSS);
+		labelDatosSS.addStyleName("mt5");
+		cambiosTable.setWidget(1, 0, labelNroSS);
+		labelNroSS.addStyleName("mr50");
+		labelNroSS.addStyleName("mtb5");
+		cambiosTable.setWidget(1, 1, labelNroCLiente);
+		labelNroCLiente.addStyleName("mlr40");
+		labelNroCLiente.addStyleName("mtb5");
+		cambiosTable.setWidget(1, 2, labelRazonSocial);		
+		labelRazonSocial.addStyleName("mlr40");
+		labelRazonSocial.addStyleName("mtb5");
 		labelNroSS.setText("N° SS: "
 				+ solicitudServicioCerradaDto.getNumeroSS());
 		labelNroCLiente.setText("N° Cliente: "
 				+ solicitudServicioCerradaDto.getNumeroCuenta());
 		labelRazonSocial.setText("Razon Social: "
 				+ solicitudServicioCerradaDto.getRazonSocial());
+		resultTableWrapper.add(cambiosTable);
 		loadTable();
 	}
 
@@ -57,7 +72,7 @@ public class CambiosSSCerradasResultUI extends FlowPanel {
 		}
 		resultTable = new FlexTable();
 		initTable(resultTable);
-		resultTableWrapper.setWidget(resultTable);
+		resultTableWrapper.add(resultTable);
 		int row = 1;
 		for (CambiosSolicitudServicioDto cambiosDto : solicitudServicioCerradaDto
 				.getCambios()) {

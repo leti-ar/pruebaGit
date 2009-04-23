@@ -8,6 +8,7 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioSearchDto;
 import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
+import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
 import com.google.gwt.user.client.Event;
@@ -95,7 +96,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 		resultTableWrapper.setWidget(resultTable);
 		int row = 1;
 		for (SolicitudServicioCerradaDto solicitudServicioDto : solicitudesServicioDto) {
-			resultTable.setHTML(row, 0, "");
+			resultTable.setWidget(row, 0, IconFactory.word());
 			resultTable.setHTML(row, 1, solicitudServicioDto.getNumeroSS());
 			resultTable.setHTML(row, 2, solicitudServicioDto.getNumeroCuenta());
 			resultTable.setHTML(row, 3, solicitudServicioDto.getRazonSocial());

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioSearchDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
@@ -46,7 +47,7 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 		fields = new ArrayList<Widget>();
 		fields.add(nroCliente = new TextBox());
 		fields.add(nroSS = new TextBox());
-		fields.add(estadoCombo = new ListBox());
+		fields.add(estadoCombo = new ListBox("Todos"));
 		fields.add(pataconesCombo = new ListBox());
 		fields.add(firmasCombo = new ListBox());
 		fields.add(resultadosCombo = new ListBox());
@@ -82,9 +83,7 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 			}
 		}
 		if (datos.getOpcionesEstado() != null ){
-			for (String opcionesEstado : datos.getOpcionesEstado()) {
-				estadoCombo.addItem(new ListBoxItemImpl(opcionesEstado,opcionesEstado));	
-			}
+				estadoCombo.addAllItems(datos.getOpcionesEstado());	
 		}
 		if (datos.getOpcionesFirmas() != null ){
 			for (String opcionesFirmas : datos.getOpcionesFirmas()) {
