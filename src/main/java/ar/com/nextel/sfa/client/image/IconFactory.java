@@ -29,4 +29,8 @@ public class IconFactory {
 	public static Image locked() {
 		return getIconBundle().locked().createImage();
 	}
+	
+	public static Image word() {
+		return getIconBundle().word().createImage();
+	}
 }
