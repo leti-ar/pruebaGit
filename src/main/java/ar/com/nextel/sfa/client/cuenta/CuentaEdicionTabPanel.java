@@ -18,7 +18,7 @@ public class CuentaEdicionTabPanel {
 	private Label razonSocial = new Label();
 	private Label cliente = new Label();
 	private CuentaDatosForm     cuentaDatosForm     = CuentaDatosForm.getInstance();
-	private CuentaDomicilioForm cuentaDomicilioForm = CuentaDomicilioForm.getInstance();
+	private CuentaDomiciliosForm cuentaDomiciliosForm = CuentaDomiciliosForm.getInstance();
 	private CuentaContactoForm  cuentaContactoForm  = CuentaContactoForm.getInstance();
 
 	
@@ -53,7 +53,7 @@ public class CuentaEdicionTabPanel {
 		TabPanel tabPanel = new TabPanel();
 		tabPanel.setWidth("100%");
 		tabPanel.add(cuentaDatosForm, Sfa.constant().datos());
-		tabPanel.add(cuentaDomicilioForm, Sfa.constant().domicilios());
+		tabPanel.add(cuentaDomiciliosForm, Sfa.constant().domicilios());
 		tabPanel.add(cuentaContactoForm, Sfa.constant().contactos());
 		tabPanel.selectTab(0);
 		marco.setWidget(1, 0, tabPanel);
@@ -92,11 +92,11 @@ public class CuentaEdicionTabPanel {
 		this.cuentaDatosForm = cuentaDatosForm;
 	}
 
-	public CuentaDomicilioForm getCuentaDomicilioForm() {
-		return cuentaDomicilioForm;
+	public CuentaDomiciliosForm getCuentaDomicilioForm() {
+		return cuentaDomiciliosForm;
 	}
-	public void setCuentaDomicilioForm(CuentaDomicilioForm cuentaDomicilioForm) {
-		this.cuentaDomicilioForm = cuentaDomicilioForm;
+	public void setCuentaDomicilioForm(CuentaDomiciliosForm cuentaDomicilioForm) {
+		this.cuentaDomiciliosForm = cuentaDomicilioForm;
 	}
 
 	public CuentaContactoForm getCuentaContactoForm() {

@@ -9,7 +9,7 @@ public class EstadoCreditoFidelizacionDto implements IsSerializable {
     private static int HASH_CODE_INITIAL = -275183237;
     private Double monto;
     private Date vencimiento;
-    private CuentaResultsDto cuenta;
+    private CuentaDto cuenta;
 	public Double getMonto() {
 		return monto;
 	}
@@ -22,10 +22,10 @@ public class EstadoCreditoFidelizacionDto implements IsSerializable {
 	public void setVencimiento(Date vencimiento) {
 		this.vencimiento = vencimiento;
 	}
-	public CuentaResultsDto getCuenta() {
+	public CuentaDto getCuenta() {
 		return cuenta;
 	}
-	public void setCuenta(CuentaResultsDto cuenta) {
+	public void setCuenta(CuentaDto cuenta) {
 		this.cuenta = cuenta;
 	}
 	public static int getHASH_CODE_MULTIPLIER() {

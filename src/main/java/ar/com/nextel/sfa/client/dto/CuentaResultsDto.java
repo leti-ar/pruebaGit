@@ -15,7 +15,7 @@ public class CuentaResultsDto implements IsSerializable{
 	private String ejecutivo;
 	private long condicionCuenta;
 	private boolean responsablePago;
-	private long claseCuenta;
+	private ClaseCuentaDto claseCuenta;
 	private String supervisor;
 	private String montoCreditoFidelizacion;
 	private boolean sincronizada;
@@ -110,11 +110,11 @@ public class CuentaResultsDto implements IsSerializable{
 		this.responsablePago = responsablePago;
 	}
 
-	public long getClaseCuenta() {
+	public ClaseCuentaDto getClaseCuenta() {
 		return claseCuenta;
 	}
 
-	public void setClaseCuenta(long claseCuenta) {
+	public void setClaseCuenta(ClaseCuentaDto claseCuenta) {
 		this.claseCuenta = claseCuenta;
 	}
 

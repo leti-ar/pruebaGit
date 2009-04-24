@@ -1,9 +1,9 @@
 package ar.com.nextel.sfa.client.dto;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
-
-import ar.com.nextel.model.personas.beans.Documento;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -20,7 +20,16 @@ public class PersonaDto implements IsSerializable {
     private String razonSocial;
     private Date fechaNacimiento;
 
-   
+    //TODO: Arreglar esto, no me esta mapeando este domicilios con el de Persona!!!
+    private List<DomiciliosCuentaDto> domicilios = new ArrayList<DomiciliosCuentaDto>();
+
+    
+	public List<DomiciliosCuentaDto> getDomicilios() {
+		return domicilios;
+	}
+	public void setDomicilios( List<DomiciliosCuentaDto> domicilios) {
+		this.domicilios = domicilios;
+	}
 	public Long getIdTipoDocumento() {
 		return idTipoDocumento;
 	}

@@ -4,8 +4,6 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 
-import com.google.gwt.user.client.ui.Widget;
-
 public class AgregarCuentaUI extends ApplicationUI {
 
 	protected boolean firstLoad = true;

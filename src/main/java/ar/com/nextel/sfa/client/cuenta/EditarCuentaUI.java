@@ -1,7 +1,10 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import java.util.List;
+
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -28,6 +31,7 @@ public class EditarCuentaUI extends ApplicationUI {
 						}
 						cuentaTab.getCuentaDatosForm().getCuentaEditor().getApellido().setText(cuentaDto.getPersona().getApellido());
 						cuentaTab.getCuentaDatosForm().getCuentaEditor().getRazonSocial().setText(cuentaDto.getPersona().getRazonSocial());
+						loadDomiciliosFormPanel(cuentaDto,cuentaTab);
 					}
 				}
 			});
@@ -38,4 +42,17 @@ public class EditarCuentaUI extends ApplicationUI {
 	public void unload() {
 	}
 
+	/**
+	 * @author eSalvador
+	 **/
+	private void loadDomiciliosFormPanel(CuentaDto cuentaDto, CuentaEdicionTabPanel cuentaTab){
+		if (cuentaDto.getPersona() != null){
+			 List<DomiciliosCuentaDto> domicilios;
+			domicilios = cuentaDto.getPersona().getDomicilios();
+			cuentaTab.getCuentaDomicilioForm().cargaTablaDomicilios(domicilios);
+		}
+		
+	}
+	
 }
+
