@@ -9,6 +9,11 @@ public class ClaseCuentaDto implements IsSerializable{
 
 	public ClaseCuentaDto() {
 	}
+	public ClaseCuentaDto(long id, String descripcion) {
+		super();
+		this.id=id;
+		this.descripcion=descripcion;
+	}
 
 	public Long getId() {
 		return id;
