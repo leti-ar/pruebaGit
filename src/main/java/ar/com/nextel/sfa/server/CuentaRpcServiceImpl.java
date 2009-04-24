@@ -21,6 +21,7 @@ import ar.com.nextel.business.describable.GetAllBusinessOperator;
 import ar.com.nextel.business.vendedores.RegistroVendedores;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.security.Usuario;
+import ar.com.nextel.model.cuentas.beans.CategoriaCuenta;
 import ar.com.nextel.model.cuentas.beans.ClaseCuenta;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.FormaPago;
@@ -195,43 +196,21 @@ public class CuentaRpcServiceImpl extends RemoteServiceServlet implements
 	 *         datos reales de la Db.
 	 **/
 	public BuscarCuentaInitializer getBuscarCuentaInitializer() {
-		List<TipoDocumentoDto> listaTipoDoc = new ArrayList<TipoDocumentoDto>();
-		//listaTipoDoc.add(0, new TipoDocumentoDto("0", "Documento"));
-		//listaTipoDoc.add(1, new TipoDocumentoDto("1", "CUIT/CUIL"));
+		List<TipoDocumentoDto> listaTipoDoc = mapper.convertList(genericDao.getList(TipoDocumento.class),	TipoDocumentoDto.class);
+		List<CategoriaCuentaDto> listaCategorias = mapper.convertList(genericDao.getList(CategoriaCuenta.class),	CategoriaCuentaDto.class);
 
 		List<BusquedaPredefinidaDto> listaBusquedaPredef = new ArrayList<BusquedaPredefinidaDto>();
-		listaBusquedaPredef.add(0, new BusquedaPredefinidaDto("1",
-				"Ctas. propias"));
-		listaBusquedaPredef.add(1, new BusquedaPredefinidaDto("2",
-				"Últimas consultadas"));
-
+		listaBusquedaPredef.add(0, new BusquedaPredefinidaDto("1",	"Ctas. propias"));
+		listaBusquedaPredef.add(1, new BusquedaPredefinidaDto("2",	"Últimas consultadas"));
+		//listaBusquedaPredef.add(1, new BusquedaPredefinidaDto("3",	"Ctas. c/Créd.Fideliz."));
+		
 		List<String> listaResult = new ArrayList<String>();
 		String cantResult = "10;25;50;75;100";
 		listaResult = Arrays.asList(cantResult.split(";"));
 
-		List<CategoriaCuentaDto> listaCategorias = new ArrayList<CategoriaCuentaDto>();
-		listaCategorias.add(0, new CategoriaCuentaDto("0", "GRAN CUENTA"));
-		listaCategorias.add(1, new CategoriaCuentaDto("1", "DIVISION"));
-		listaCategorias.add(2, new CategoriaCuentaDto("2", "SUSCRIPTOR"));
-
 		BuscarCuentaInitializer buscarDTOinit = new BuscarCuentaInitializer(
 				listaBusquedaPredef, listaResult, listaCategorias, listaTipoDoc);
 		return buscarDTOinit;
-		/*
-		 * 
-		 * Para traer los datos de la base:
-		 * 
-		 * initializer.setTiposDocumento(mapper.convertList(genericDao.getList(
-		 * TipoDocumento.class), TipoDocumentoDto.class));
-		 * 
-		 * initializer.setCategorias(mapper.convertList(genericDao.getList(
-		 * CategoriaCuenta.class), CategoriaCuentaDto.class));
-		 * 
-		 * List<String> listaResult = new ArrayList<String>(); String cantResult
-		 * =
-		 * genericDao.getParameter("sfa.business.cuenta.busqueda.cantResultados"
-		 * ); listaResult = Arrays.asList(cantResult.split(";"));
-		 */
 	}
 
 
@@ -275,17 +254,6 @@ public class CuentaRpcServiceImpl extends RemoteServiceServlet implements
 	}
 
 	public AgregarCuentaInitializer getAgregarCuentaInitializer() {
-//		List<TipoDocumentoDto> listaTipoDoc = new ArrayList<TipoContribuyenteDto>();
-//		listaTipoDoc.add(0, new TipoDocumentoDto("0", "Documento"));
-//		listaTipoDoc.add(1, new TipoDocumentoDto("1", "CUIT/CUIL"));
-//		List<TipoContribuyenteDto> listaTipoContribuy = new ArrayList<TipoContribuyenteDto>();
-//		listaTipoContribuy.add(0, new TipoContribuyenteDto("0",	"Consumidor Final"));
-//		listaTipoContribuy.add(1, new TipoContribuyenteDto("1", "Monotributo"));
-//		List<RubroDto> listaRubro = new ArrayList<RubroDto>();
-//		listaRubro.add(0, new RubroDto("0", "Comercio Mayorista"));
-//		listaRubro.add(1, new RubroDto("1", "Papel"));
-//		AgregarCuentaInitializer buscarDTOinit = new AgregarCuentaInitializer(listaTipoDoc, listaTipoContribuy, listaRubro);
-		
 		AgregarCuentaInitializer buscarDTOinit = new AgregarCuentaInitializer();
 		buscarDTOinit.setTiposContribuyentes(mapper.convertList(genericDao.getList(TipoContribuyente.class),TipoContribuyenteDto.class));
 		buscarDTOinit.setTiposDocumento(mapper.convertList(genericDao.getList(TipoDocumento.class),	TipoDocumentoDto.class));
