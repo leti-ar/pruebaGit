@@ -359,3 +359,13 @@ padding-left:24px;
 width:74px;
 }
 
+.obsTextAreaCuentaDatos {
+  height : 35px;
+  width : 95%;
+  min-width : 95%;
+  border:1px solid #BCBCBC;
+}
+
+
+
+
