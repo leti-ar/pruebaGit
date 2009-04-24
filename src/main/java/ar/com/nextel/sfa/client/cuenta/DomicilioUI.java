@@ -128,7 +128,7 @@ public class DomicilioUI extends NextelDialog {
 		add(gridUser);
 		
 		linkCerrar.setStyleName("link");
-		footerBar.addLink(linkCerrar);	
+		footerBar.addLink(linkCerrar);
 		mainPanel.add(footerBar);
 		footer.setVisible(false);
 		linkCerrar.addClickListener(new ClickListener() {
@@ -136,6 +136,20 @@ public class DomicilioUI extends NextelDialog {
 				hide();
 			}
 		});
+	}
+	
+	/**
+	 *@author eSalvador
+	 **/
+	public void cargarDatosPopupEditarDomicilio(){
+		
+	}
+	
+	/**
+	 *@author eSalvador
+	 **/
+	public void abrirPopupNuevoDomicilio(){
+		
 	}
 	
 	@Override
