@@ -29,7 +29,7 @@ public class CuentaUIData extends UIData {
 	private ListBox sexo             = new ListBox();
 	private ListBox contribuyente    = new ListBox();
 	private ListBox rubro            = new ListBox();
-	private ListBox modalidadCobro   = new ListBox();
+	private ListBox formaPago        = new ListBox();
 	private ListBox claseCliente     = new ListBox();
 	
 	private TextBox numeroDocumento  = new TextBox();
@@ -75,7 +75,7 @@ public class CuentaUIData extends UIData {
 		fields.add(observaciones);
 		fields.add(emailPersonal);
 		fields.add(emailLaboral);
-		fields.add(modalidadCobro);
+		fields.add(formaPago);
 		fields.add(guardar  = new SimpleLink("Guardar", "#", true));
 		fields.add(crearSS  = new SimpleLink("Crear SS", "#", true));
 		fields.add(agregar  = new SimpleLink("Agregar", "#", true));
@@ -158,8 +158,8 @@ public class CuentaUIData extends UIData {
 		return emailLaboral;
 	}
 
-	public ListBox getModalidadCobro() {
-		return modalidadCobro;
+	public ListBox getFormaPago() {
+		return formaPago;
 	}
 
 	public Label getUsuario() {
@@ -211,7 +211,7 @@ public class CuentaUIData extends UIData {
 					rubro.addAllItems(result.getRubro());
 					sexo.addAllItems(result.getSexo());
 					claseCliente.addAllItems(result.getClaseCliente());
-					modalidadCobro.addAllItems(result.getModalidadCobro());
+					formaPago.addAllItems(result.getFormaPago());
 				}
 			});
 

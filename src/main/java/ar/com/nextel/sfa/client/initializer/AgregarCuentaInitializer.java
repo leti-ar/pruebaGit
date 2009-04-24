@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.ClaseCuentaDto;
+import ar.com.nextel.sfa.client.dto.FormaPagoDto;
 import ar.com.nextel.sfa.client.dto.ModalidadCobroDto;
 import ar.com.nextel.sfa.client.dto.RubroDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
@@ -18,7 +19,7 @@ public class AgregarCuentaInitializer implements IsSerializable {
 	private List<TipoDocumentoDto> tiposDocumento = new ArrayList<TipoDocumentoDto>();
 	private List<TipoContribuyenteDto> tiposContribuyentes = new ArrayList<TipoContribuyenteDto>();
 	private List<SexoDto> sexo = new ArrayList<SexoDto>();
-	private List<ModalidadCobroDto> modalidadCobro = new ArrayList<ModalidadCobroDto>();
+	private List<FormaPagoDto> formaPago = new ArrayList<FormaPagoDto>();
 	private List<RubroDto> rubro = new ArrayList<RubroDto>();
 	private List<ClaseCuentaDto> claseCliente = new ArrayList<ClaseCuentaDto>();
 	
@@ -28,14 +29,14 @@ public class AgregarCuentaInitializer implements IsSerializable {
 			List<TipoDocumentoDto> tiposDocumento,
 			List<TipoContribuyenteDto> tiposContribuyentes,
 			List<SexoDto> sexo,
-			List<ModalidadCobroDto> modalidadCobro,
+			List<FormaPagoDto> formaPago,
 			List<RubroDto> rubro,
 			List<ClaseCuentaDto> claseCliente) {
 		super();
 		this.tiposDocumento = tiposDocumento;
 		this.tiposContribuyentes = tiposContribuyentes;
 		this.sexo=sexo;
-		this.modalidadCobro = modalidadCobro;
+		this.formaPago = formaPago;
 		this.rubro = rubro;
 		this.claseCliente=claseCliente;
 	}
@@ -68,14 +69,12 @@ public class AgregarCuentaInitializer implements IsSerializable {
 		this.sexo = sexo;
 	}
 
-
-
-	public List<ModalidadCobroDto> getModalidadCobro() {
-		return modalidadCobro;
+	public List<FormaPagoDto> getFormaPago() {
+		return formaPago;
 	}
 
-	public void setModalidadCobro(List<ModalidadCobroDto> modalidadCobro) {
-		this.modalidadCobro = modalidadCobro;
+	public void setFormaPago(List<FormaPagoDto> formaPago) {
+		this.formaPago = formaPago;
 	}
 
 	public List<ClaseCuentaDto> getClaseCliente() {

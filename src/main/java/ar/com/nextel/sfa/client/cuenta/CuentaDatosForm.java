@@ -163,7 +163,7 @@ public class CuentaDatosForm extends Composite {
 		formaDePagoPanel.add(formaDePagoTable);
 		
 		formaDePagoTable.setText(0, 0, Sfa.constant().modalidad());
-		formaDePagoTable.setWidget(0, 1, cuentaEditor.getModalidadCobro());		
+		formaDePagoTable.setWidget(0, 1, cuentaEditor.getFormaPago());		
 		
 //		formaDePagoPanel.addStyleName("abmPanel");
 //		formaDePagoTable.addStyleName("abmPanelChild");
