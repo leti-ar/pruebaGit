@@ -32,14 +32,7 @@ public class CuentaEdicionTabPanel {
 	
 	public void init() {
 
-		CuentaRpcService.Util.getInstance().getAgregarCuentaInitializer(
-			new DefaultWaitCallback<AgregarCuentaInitializer>() {
-				public void success(AgregarCuentaInitializer result) {
-					cuentaDatosForm.getCuentaEditor().getTipoDocumento().addAllItems(result.getTiposDocumento());
-					cuentaDatosForm.getCuentaEditor().getContribuyente().addAllItems(result.getTiposContribuyentes());
-					cuentaDatosForm.getCuentaEditor().getRubro().addAllItems(result.getRubros());
-				}
-			});
+
 	
 		
 		

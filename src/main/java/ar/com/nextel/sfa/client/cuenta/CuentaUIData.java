@@ -1,12 +1,12 @@
 package ar.com.nextel.sfa.client.cuenta;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
+import ar.com.nextel.sfa.client.dto.SexoDto;
+import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
-import ar.com.nextel.sfa.client.util.FormUtils;
 import ar.com.nextel.sfa.client.widget.UIData;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
@@ -25,26 +25,31 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class CuentaUIData extends UIData {
 
-	private ListBox tipoDocumento = new ListBox();
-	private TextBox numeroDocumento = new TextBox();
-	private TextBox razonSocial = new TextBox();
-	private TextBox nombre = new TextBox();
-	private TextBox apellido = new TextBox();
-	private TextBox sexo = new TextBox();
-	private SimpleDatePicker fechaNacimiento = new SimpleDatePicker(false);
-	private ListBox contribuyente = new ListBox();
-	private TextBox provedorAnterior = new TextBox();
-	private ListBox rubro = new ListBox();
-	private TextBox claseCliente = new TextBox();
-	private TextBox categoria = new TextBox();
+	private ListBox tipoDocumento    = new ListBox();
+	private ListBox sexo             = new ListBox();
+	private ListBox contribuyente    = new ListBox();
+	private ListBox rubro            = new ListBox();
+	private ListBox modalidadCobro   = new ListBox();
+	private ListBox claseCliente     = new ListBox();
+	
+	private TextBox numeroDocumento  = new TextBox();
+	private TextBox razonSocial      = new TextBox();
+	private TextBox nombre           = new TextBox();
+	private TextBox apellido         = new TextBox();
+	private TextBox categoria        = new TextBox();
 	private TextBox cicloFacturacion = new TextBox();
-	private Label veraz = new Label("Si puede");
+	private TextBox provedorAnterior = new TextBox();
+	private TextBox emailPersonal    = new TextBox();
+	private TextBox emailLaboral     = new TextBox();
+	
 	private TextArea observaciones = new TextArea();
-	private TextBox emailPersonal = new TextBox();
-	private TextBox emailLaboral = new TextBox();
-	private ListBox modalidadPago = new ListBox();
+
+	private SimpleDatePicker fechaNacimiento = new SimpleDatePicker(false);
+	
+	private Label veraz = new Label("Si puede");
 	private Label usuario;
 	private Label fechaCreacion;
+
 	private SimpleLink guardar;
 	private SimpleLink crearSS;
 	private SimpleLink agregar;
@@ -70,18 +75,12 @@ public class CuentaUIData extends UIData {
 		fields.add(observaciones);
 		fields.add(emailPersonal);
 		fields.add(emailLaboral);
-		fields.add(modalidadPago);
+		fields.add(modalidadCobro);
 		fields.add(guardar  = new SimpleLink("Guardar", "#", true));
 		fields.add(crearSS  = new SimpleLink("Crear SS", "#", true));
 		fields.add(agregar  = new SimpleLink("Agregar", "#", true));
 		fields.add(cancelar = new SimpleLink("Cancelar", "#", true));
-
-		// CuentaRpcService.Util.getInstance().getAgregarCuentaInitializer(new
-		// DefaultWaitCallback<AgregarCuentaInitializer>() {
-		// public void success(AgregarCuentaInitializer result) {
-		// setCombos(result);
-		// }
-		// });
+		setCombos();
 
 	}
 
@@ -106,9 +105,11 @@ public class CuentaUIData extends UIData {
 		return apellido;
 	}
 
-	public TextBox getSexo() {
+	public ListBox getSexo() {
 		return sexo;
 	}
+	
+	
 
 	public Widget getFechaNacimiento() {
 		Grid datePickerFull = new Grid(1, 2);
@@ -129,7 +130,7 @@ public class CuentaUIData extends UIData {
 		return rubro;
 	}
 
-	public TextBox getClaseCliente() {
+	public ListBox getClaseCliente() {
 		return claseCliente;
 	}
 
@@ -157,8 +158,8 @@ public class CuentaUIData extends UIData {
 		return emailLaboral;
 	}
 
-	public ListBox getModalidadPago() {
-		return modalidadPago;
+	public ListBox getModalidadCobro() {
+		return modalidadCobro;
 	}
 
 	public Label getUsuario() {
@@ -201,19 +202,29 @@ public class CuentaUIData extends UIData {
 		return cancelar;
 	}
 	
-	private void setCombos(AgregarCuentaInitializer datos) {
-		tipoDocumento.addAllItems(datos.getTiposDocumento());
-		rubro.addAllItems(datos.getRubros());
-		// modalidadPago.addAllItems(datos.get);
+	private void setCombos() {
+		CuentaRpcService.Util.getInstance().getAgregarCuentaInitializer(
+			new DefaultWaitCallback<AgregarCuentaInitializer>() {
+				public void success(AgregarCuentaInitializer result) {
+					tipoDocumento.addAllItems(result.getTiposDocumento());
+					contribuyente.addAllItems(result.getTiposContribuyentes());
+					rubro.addAllItems(result.getRubro());
+					sexo.addAllItems(result.getSexo());
+					claseCliente.addAllItems(result.getClaseCliente());
+					modalidadCobro.addAllItems(result.getModalidadCobro());
+				}
+			});
+
 	}
 
 	public PersonaDto getPersona() {
 		persona.setApellido(apellido.getText());
 		persona.getDocumento().setNumero(numeroDocumento.getText());
+		persona.getDocumento().setTipoDocumento(new TipoDocumentoDto(Long.parseLong(tipoDocumento.getSelectedItem().getItemValue()),tipoDocumento.getSelectedItem().getItemText()));
 		persona.setFechaNacimiento(fechaNacimiento.getSelectedDate());
 		persona.setNombre(nombre.getText());
 		persona.setRazonSocial(razonSocial.getText());
-		//persona.setSexo(sexo.getText());
+		persona.setSexo(new SexoDto(Long.parseLong(sexo.getSelectedItem().getItemValue()),sexo.getSelectedItem().getItemText()));
 		return persona;
 	}
 }

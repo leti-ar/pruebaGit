@@ -1,26 +1,37 @@
 package ar.com.nextel.sfa.client.dto;
 
+import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ClaseCuentaDto implements IsSerializable{
+public class ClaseCuentaDto implements IsSerializable, ListBoxItem  {
 
-	private Long id;
+	private String code;
 	private String descripcion;
 
 	public ClaseCuentaDto() {
 	}
-	public ClaseCuentaDto(long id, String descripcion) {
+	public ClaseCuentaDto(String code, String descripcion) {
 		super();
-		this.id=id;
+		this.code=code;
 		this.descripcion=descripcion;
 	}
 
-	public Long getId() {
-		return id;
+	
+	public String getItemText() {
+		return descripcion;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public String getItemValue() {
+		return code + "";
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	public String getDescripcion() {
