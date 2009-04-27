@@ -193,8 +193,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 	public BuscarCuentaInitializer getBuscarCuentaInitializer() {
 		//List<TipoDocumentoDto> listaTipoDoc = mapper.convertList(genericDao.getList(TipoDocumento.class),	TipoDocumentoDto.class);
 		List<TipoDocumentoDto> listaTipoDoc = new ArrayList<TipoDocumentoDto>();
-		listaTipoDoc.add(0, new TipoDocumentoDto(0L, "Documento"));
-		listaTipoDoc.add(1, new TipoDocumentoDto(1L, "CUIT/CUIL"));
+		listaTipoDoc.add(0, new TipoDocumentoDto(0, "Documento"));
+		listaTipoDoc.add(1, new TipoDocumentoDto(1, "CUIT/CUIL"));
 		
 		List<CategoriaCuentaDto> listaCategorias = mapper.convertList(genericDao.getList(CategoriaCuenta.class),	CategoriaCuentaDto.class);
 
