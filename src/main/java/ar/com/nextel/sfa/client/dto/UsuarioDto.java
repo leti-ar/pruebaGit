@@ -9,7 +9,7 @@ public class UsuarioDto implements IsSerializable{
 
 	private Long id;
 	private String userName;
-	private List roles = new ArrayList();
+	private List<String> roles = new ArrayList();
 
 	public Long getId() {
 		return id;
@@ -19,7 +19,7 @@ public class UsuarioDto implements IsSerializable{
 		return userName;
 	}
 
-	public List getRoles() {
+	public List<String> getRoles() {
 		return roles;
 	}
 
@@ -31,7 +31,7 @@ public class UsuarioDto implements IsSerializable{
 		this.userName = userName;
 	}
 
-	public void setRoles(List roles) {
+	public void setRoles(List<String> roles) {
 		this.roles = roles;
 	}
 
