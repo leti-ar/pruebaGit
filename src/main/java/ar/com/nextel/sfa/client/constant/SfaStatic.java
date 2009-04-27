@@ -7,11 +7,11 @@ package ar.com.nextel.sfa.client.constant;
 public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
   /**
-   * Translated "Aceptar:".
+   * Translated "aceptar".
    * 
-   * @return translated "Aceptar:"
+   * @return translated "aceptar"
    */
-  @DefaultStringValue("Aceptar:")
+  @DefaultStringValue("aceptar")
   @Key("aceptar")
   String aceptar();
 
@@ -95,6 +95,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Calle:\u0009\u0009")
   @Key("calle")
   String calle();
+
+  /**
+   * Translated "cancelar".
+   * 
+   * @return translated "cancelar"
+   */
+  @DefaultStringValue("cancelar")
+  @Key("cancelar")
+  String cancelar();
 
   /**
    * Translated "Categoría:".
@@ -203,6 +212,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("CPP/MPP:")
   @Key("cppMpp")
   String cppMpp();
+
+  /**
+   * Translated "crear".
+   * 
+   * @return translated "crear"
+   */
+  @DefaultStringValue("crear")
+  @Key("crear")
+  String crear();
 
   /**
    * Translated "Cred.Fidel.:".
@@ -455,6 +473,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Forma de Pago")
   @Key("formaDePagoPanelTitle")
   String formaDePagoPanelTitle();
+
+  /**
+   * Translated "guardar".
+   * 
+   * @return translated "guardar"
+   */
+  @DefaultStringValue("guardar")
+  @Key("guardar")
+  String guardar();
 
   /**
    * Translated "Hasta:".
