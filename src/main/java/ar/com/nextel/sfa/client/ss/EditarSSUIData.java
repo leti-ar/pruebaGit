@@ -10,7 +10,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.TextArea;
 
-public class CrearSSUIData extends UIData {
+public class EditarSSUIData extends UIData {
 
 	private RegexTextBox nss;
 	private RegexTextBox nflota;
@@ -33,18 +33,24 @@ public class CrearSSUIData extends UIData {
 
 	private SolicitudServicioDto solicitudServicio;
 
-	public CrearSSUIData() {
+	public EditarSSUIData() {
 		nss = new RegexTextBox();
 		nflota = new RegexTextBox();
 		origen = new ListBox();
 		entrega = new ListBox();
+		entrega.setWidth("480px");
 		facturacion = new ListBox();
+		facturacion.setWidth("480px");
 		aclaracion = new TextArea();
+		aclaracion.setWidth("480px");
+		aclaracion.setHeight("35px");
 		credFidelizacion = new RegexTextBox();
 		pataconex = new RegexTextBox();
 		firmarss = new CheckBox();
 		anticipo = new ListBox();
 		observaciones = new TextArea();
+		observaciones.setWidth("480px");
+		observaciones.setHeight("35px");
 
 		credFidelDisponibleText = new InlineHTML("$ 0.00");
 		credFidelVencimientoText = new InlineHTML("");
@@ -53,6 +59,14 @@ public class CrearSSUIData extends UIData {
 		credFidelText = new InlineHTML("$ 0.00");
 		pataconexText = new InlineHTML("$ 0.00");
 		precioVentaText = new InlineHTML("$ 0.00");
+		
+		credFidelDisponibleText.addStyleName("normalText");
+		credFidelVencimientoText.addStyleName("normalText");
+		precioListaText.addStyleName("normalText");
+		desvioText.addStyleName("normalText");
+		credFidelText.addStyleName("normalText");
+		pataconexText.addStyleName("normalText");
+		precioVentaText.addStyleName("normalText");
 	}
 
 	public RegexTextBox getNss() {
@@ -128,7 +142,7 @@ public class CrearSSUIData extends UIData {
 	}
 
 	public void setSolicitud(SolicitudServicioDto solicitud) {
-		NumberFormat formatter = NumberFormat.getDecimalFormat();
+		NumberFormat currFormatter = NumberFormat.getDecimalFormat();
 		solicitudServicio = solicitud;
 		nss.setText(solicitud.getNumero());
 		nflota.setText(solicitud.getNumeroFlota());
@@ -140,10 +154,10 @@ public class CrearSSUIData extends UIData {
 		// credFidelVencimientoText;
 		double credFidelizacionValue = solicitud.getMontoCreditoFideliacion() != null ? solicitud
 				.getMontoCreditoFideliacion() : 0;
-		credFidelizacion.setText(formatter.format(credFidelizacionValue));
+		credFidelizacion.setText(currFormatter.format(credFidelizacionValue));
 		double pataconexValue = solicitud.getPataconex() != null ? solicitud
 				.getPataconex() : 0;
-		pataconex.setText(formatter.format(pataconexValue));
+		pataconex.setText(currFormatter.format(pataconexValue));
 		firmarss.setChecked(solicitud.getFirmar());
 		// anticipo.setSelectedItem(solicitud.get);
 		observaciones.setText(solicitud.getObservaciones());

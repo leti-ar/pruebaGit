@@ -7,7 +7,7 @@ import ar.com.nextel.sfa.client.cuenta.EditarCuentaUI;
 import ar.com.nextel.sfa.client.operaciones.OperacionEnCursoUI;
 import ar.com.nextel.sfa.client.oportunidad.BuscarOportunidadUI;
 import ar.com.nextel.sfa.client.ss.BuscarSSCerradaUI;
-import ar.com.nextel.sfa.client.ss.CrearSSUI;
+import ar.com.nextel.sfa.client.ss.EditarSSUI;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.veraz.VerazUI;
 
@@ -98,7 +98,7 @@ public class UILoader extends SimplePanel implements HistoryListener {
 			pages[BUSCAR_SOLICITUD] = new BuscarSSCerradaUI();
 			break;
 		case AGREGAR_SOLICITUD:
-			pages[AGREGAR_SOLICITUD] = new CrearSSUI();
+			pages[AGREGAR_SOLICITUD] = new EditarSSUI();
 			break;
 		case VERAZ:
 			pages[VERAZ] = new VerazUI();
