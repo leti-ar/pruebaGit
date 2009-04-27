@@ -134,50 +134,52 @@ public class BuscarCuentaFilterUIData extends UIData {
 	}
 
 	/**
-	 * @author eSalvador: Metodo que realiza la validacion inicial de fields, donde diferencia si son textBoxs o listBoxs.
+	 * @author eSalvador: Metodo que realiza la validacion inicial de fields, donde diferencia si son textBoxs
+	 *         o listBoxs.
 	 **/
 	private boolean validateCriteria(Widget w, boolean habilitar) {
-		//Si es TextBox:
+		// Si es TextBox:
 		if (w instanceof ValidationTextBox) {
 			ValidationTextBox box = (ValidationTextBox) w;
 			if (!"".equals(box.getText())) {
-			   //Si el TextBox NO ES Vacio y pierde el Foco:
+				// Si el TextBox NO ES Vacio y pierde el Foco:
 				habilitar = false;
 			}
-			if (!validationTextBoxs(w)){
+			if (!validationTextBoxs(w)) {
 				return false;
 			}
 			setEnableFields(habilitar);
 			((FocusWidget) w).setEnabled(true);
-		//FIN - Si es TextBox
+			// FIN - Si es TextBox
 
-		//Si es ListBox:
-		}else if (w instanceof ValidationListBox) {
+			// Si es ListBox:
+		} else if (w instanceof ValidationListBox) {
 			validateListBoxs(w);
 			if (true)
 				habilitar = false;
 		}
-		//FIN - Si es ListBox
+		// FIN - Si es ListBox
 
 		return habilitar;
 	}
-	
+
 	/**
-	 * @author eSalvador
-	 * Metodo privado que implementa las logicas particulares, para habilitar/deshabilitar textBoxs en la busqueda de cuentas.
+	 * @author eSalvador Metodo privado que implementa las logicas particulares, para habilitar/deshabilitar
+	 *         textBoxs en la busqueda de cuentas.
 	 **/
 	private boolean validationTextBoxs(Widget w) {
 		boolean flag = true;
-		/** Validaciones de TextBoxs especiales combinadas:*/
-	
-		//Si w es Num.deDoc, el combo de Tipo de Doc. esta Enabled y además alguno de los demas textBox
-		//esta deshabilitado, no hacer nada (O sea, saltear. Rerornar FALSE) 
-		if (w == numeroDocumentoTextBox && (tipoDocumentoCombo.isEnabled()) && (!numeroSolicitudServicioTextBox.isEnabled())){
+		/** Validaciones de TextBoxs especiales combinadas: */
+
+		// Si w es Num.deDoc, el combo de Tipo de Doc. esta Enabled y además alguno de los demas textBox
+		// esta deshabilitado, no hacer nada (O sea, saltear. Rerornar FALSE)
+		if (w == numeroDocumentoTextBox && (tipoDocumentoCombo.isEnabled())
+				&& (!numeroSolicitudServicioTextBox.isEnabled())) {
 			flag = false;
 		}
-		
-		//Si w es numeroDocumentoTextBox y está vacío, y el combo tipoDocumento esta habilitado:
-		if ((w == numeroDocumentoTextBox) && (tipoDocumentoCombo.isEnabled())){
+
+		// Si w es numeroDocumentoTextBox y está vacío, y el combo tipoDocumento esta habilitado:
+		if ((w == numeroDocumentoTextBox) && (tipoDocumentoCombo.isEnabled())) {
 			ValidationTextBox box = (ValidationTextBox) w;
 			if (!"".equals(box.getText())) {
 				setEnableFields(false);
@@ -186,9 +188,10 @@ public class BuscarCuentaFilterUIData extends UIData {
 				flag = false;
 			}
 		}
-		
-		//Si w es responsableTextBox o razonSocialTextBox: se deshabilitaran todos los campos exceptuando “Responsable”, “Razon Social” y comboCategoria.
-		if ((w == responsableTextBox) || (w == razonSocialTextBox)){
+
+		// Si w es responsableTextBox o razonSocialTextBox: se deshabilitaran todos los campos exceptuando
+		// “Responsable”, “Razon Social” y comboCategoria.
+		if ((w == responsableTextBox) || (w == razonSocialTextBox)) {
 			ValidationTextBox box = (ValidationTextBox) w;
 			if (!"".equals(box.getText())) {
 				setEnableFields(false);
@@ -198,7 +201,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 				razonSocialTextBox.setText(razonSocialTextBox.getText().toUpperCase());
 				responsableTextBox.setText(responsableTextBox.getText().toUpperCase());
 				flag = false;
-			}else if (("".equals(box.getText()) && (!predefinidasCombo.isEnabled()))) {
+			} else if (("".equals(box.getText()) && (!predefinidasCombo.isEnabled()))) {
 				setEnableFields(false);
 				this.responsableTextBox.setEnabled(true);
 				this.razonSocialTextBox.setEnabled(true);
@@ -206,72 +209,79 @@ public class BuscarCuentaFilterUIData extends UIData {
 				flag = false;
 			}
 		}
-		//Si w es Categoria y el combo de Responsable esta Enabled, no hacer nada.
+
+		// Si w es Categoria y el combo de Responsable esta Enabled, no hacer nada.
+
 		return flag;
 	}
-	
+
 	/**
-	 * @author eSalvador
-	 * Metodo privado que implementa las logicas particulares, para habilitar/deshabilitar combos en la busqueda de cuentas.
+	 * @author eSalvador Metodo privado que implementa las logicas particulares, para habilitar/deshabilitar
+	 *         combos en la busqueda de cuentas.
 	 **/
 	private void validateListBoxs(Widget w) {
-	  /**Si completa un criterio excluyente el sistema deshabilitará el resto de los campos (excepto Nº Resultados).*/
-		
-		//Combo Categoría: se deshabilitaran todos los campos exceptuando “Responsable” y “Razon Social”
-		if (w == categoriaCombo){
+		/**
+		 * Si completa un criterio excluyente el sistema deshabilitará el resto de los campos (excepto Nº
+		 * Resultados).
+		 */
+
+		// Combo Categoría: se deshabilitaran todos los campos exceptuando “Responsable” y “Razon Social”
+		if (w == categoriaCombo) {
 			setEnableFields(false);
 			this.responsableTextBox.setEnabled(true);
 			this.razonSocialTextBox.setEnabled(true);
 			((FocusWidget) w).setEnabled(true);
 		}
-		
-		//Combo Tipo de documento: no deshabilita el campo Número de documento
-		if (w == tipoDocumentoCombo){
+
+		// Combo Tipo de documento: no deshabilita el campo Número de documento
+		if (w == tipoDocumentoCombo) {
 			setEnableFields(false);
 			this.numeroDocumentoTextBox.setEnabled(true);
 			((FocusWidget) w).setEnabled(true);
 		}
-		
-		//Combo predefinidasCombo: ??
-		if (w == predefinidasCombo){
+
+		// Combo predefinidasCombo: ??
+		if (w == predefinidasCombo) {
 			setEnableFields(false);
 			((FocusWidget) w).setEnabled(true);
 		}
-		
-		//Si Combo Categoría selecciona vacio, y responsableTextBox Y razonSocialTextBox ambos estan vacios, se habilitan todos.
-		if ((w == categoriaCombo) && (categoriaCombo.isItemSelected(0))){
+
+		// Si Combo Categoría selecciona vacio, y responsableTextBox Y razonSocialTextBox ambos estan vacios,
+		// se habilitan todos.
+		if ((w == categoriaCombo) && (categoriaCombo.isItemSelected(0))) {
 			ValidationTextBox boxRS = (ValidationTextBox) razonSocialTextBox;
 			ValidationTextBox boxRE = (ValidationTextBox) responsableTextBox;
 			if (("".equals(boxRS.getText())) && ("".equals(boxRE.getText()))) {
 				setEnableFields(true);
 			}
 		}
-		
-		//Combo Nº Resultados: Siempre habilitado!!!
-		  //TODO nada!
- 
+
+		// Combo Nº Resultados: Siempre habilitado!!!
+		// TODO nada!
+
 	}
-	
+
 	public List validatePreSearch() {
 		boolean vacio = true;
 		List<String> list = new ArrayList();
-		
-		//Valida que todos los campos TextBoxs no sean vacios:
+
+		// Valida que todos los campos TextBoxs no sean vacios:
 		for (Widget fieldsfieldTextBox : fields) {
-			if (fieldsfieldTextBox instanceof ValidationTextBox){
-				if (!"".equals(((ValidationTextBox) fieldsfieldTextBox).getText())){
+			if (fieldsfieldTextBox instanceof ValidationTextBox) {
+				if (!"".equals(((ValidationTextBox) fieldsfieldTextBox).getText())) {
 					vacio = false;
 					break;
 				}
 			}
 		}
-		
+
 		if (vacio) {
-			//Valida que todos los campos ListBoxs no sean vacios (excepto tipoDocumento y cantResultados que no tienen valor nulo para cargar):
+			// Valida que todos los campos ListBoxs no sean vacios (excepto tipoDocumento y cantResultados que
+			// no tienen valor nulo para cargar):
 			for (Widget fieldsfieldListBox : fields) {
-				if (fieldsfieldListBox instanceof ValidationListBox){
-					if ((fieldsfieldListBox != resultadosCombo) && (fieldsfieldListBox != tipoDocumentoCombo)){
-						if (((ValidationListBox) fieldsfieldListBox).getSelectedItem() != null){
+				if (fieldsfieldListBox instanceof ValidationListBox) {
+					if ((fieldsfieldListBox != resultadosCombo) && (fieldsfieldListBox != tipoDocumentoCombo)) {
+						if (((ValidationListBox) fieldsfieldListBox).getSelectedItem() != null) {
 							vacio = false;
 							break;
 						}
@@ -280,19 +290,19 @@ public class BuscarCuentaFilterUIData extends UIData {
 			}
 		}
 
-		if(vacio){
+		if (vacio) {
 			list.add("Por favor ingrese por lo menos un criterio de busqueda.");
-		}else{
-			if(flotaIdTextBox.isEnabled()){
-				if(!validaFlotaId(flotaIdTextBox)){
-					list.add("Formato incorrecto de Flota*Id.");
-				}
+		}
+
+		if (flotaIdTextBox.isEnabled()) {
+			if (!validaFlotaId(flotaIdTextBox)) {
+				list.add("Formato incorrecto de Flota*Id.");
 			}
 		}
-		
+
 		return list;
 	}
-	
+
 	/**
 	 * @author eSalvador Metodo privado que ...
 	 **/
@@ -300,10 +310,10 @@ public class BuscarCuentaFilterUIData extends UIData {
 		String flotaModelo = new String("[0-9]{3,5}[\\*]{1}[0-9]{1,5}");
 		return flota.validatePattern(flotaModelo);
 	}
-	
+
 	/**
 	 * @author eSalvador Metodo privado que hace la implementacion del focusListener, deshabilitando los
-	 *   TextBoxsFields que no estan activos.
+	 *         TextBoxsFields que no estan activos.
 	 **/
 	private void setEnableFields(boolean enabled) {
 		for (Widget widget : fields) {
