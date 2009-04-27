@@ -23,15 +23,13 @@ import ar.com.nextel.sfa.client.dto.OportunidadSearchDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.initializer.BuscarOportunidadNegocioInitializer;
 import ar.com.nextel.sfa.server.util.MapperExtended;
-
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import ar.com.snoop.gwt.commons.server.RemoteService;
 
 /**
  * @author eSalvador
  */
-public class OportunidadNegocioRpcServiceImpl extends RemoteServiceServlet implements OportunidadNegocioRpcService{
+public class OportunidadNegocioRpcServiceImpl extends RemoteService implements OportunidadNegocioRpcService{
 
-	private static final long serialVersionUID = -8363102229209205047L;
 	private WebApplicationContext context;
 	private RegistroVendedores registroVendedores;
 //	private Transformer transformer;

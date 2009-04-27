@@ -61,16 +61,11 @@ import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.VerazInitializer;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
+import ar.com.snoop.gwt.commons.server.RemoteService;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-
-public class CuentaRpcServiceImpl extends RemoteServiceServlet implements
+public class CuentaRpcServiceImpl extends RemoteService implements
 		CuentaRpcService {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8363102229209205047L;
 	private WebApplicationContext context;
 	// private ApplicationContextLoader context;
 	private RegistroVendedores registroVendedores;
