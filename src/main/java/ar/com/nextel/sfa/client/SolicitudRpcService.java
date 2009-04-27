@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client;
 
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
+import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 
 import com.google.gwt.core.client.GWT;
@@ -13,12 +14,22 @@ public interface SolicitudRpcService extends RemoteService {
 
 	public static class Util {
 
-		public static SolicitudRpcServiceAsync getInstance() {
+		private static SolicitudRpcServiceAsync solicitudRpcServiceAsync = null;
+		private static SolicitudRpcServiceDelegate solicitudRpcServiceDelegate = null;
 
-			return GWT.create(SolicitudRpcService.class);
+		public static SolicitudRpcServiceDelegate getInstance() {
+			if (solicitudRpcServiceDelegate == null) {
+				solicitudRpcServiceAsync = GWT.create(OperacionesRpcService.class);
+				solicitudRpcServiceDelegate = new SolicitudRpcServiceDelegate(solicitudRpcServiceAsync);
+			}
+			return solicitudRpcServiceDelegate;
 		}
 	}
-	
-	public SolicitudServicioDto createSolicitudServicio(SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages;
 
+	public SolicitudServicioDto createSolicitudServicio(
+			SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages;
+
+	public SolicitudInitializer getSolicitudInitializer();
+
+	public SolicitudServicioDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto);
 }
