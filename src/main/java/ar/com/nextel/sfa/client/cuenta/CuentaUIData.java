@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.client.cuenta;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
+import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
@@ -50,14 +51,15 @@ public class CuentaUIData extends UIData {
 	private Label usuario;
 	private Label fechaCreacion;
 
-	private SimpleLink guardar;
-	private SimpleLink crearSS;
-	private SimpleLink agregar;
-	private SimpleLink cancelar;
+	private SimpleLink guardar  = new SimpleLink(Sfa.constant().guardar() , "#", true);
+	private SimpleLink crearSS  = new SimpleLink(Sfa.constant().crear()+Sfa.constant().whiteSpace()+Sfa.constant().ss(), "#", true);
+	private SimpleLink agregar  = new SimpleLink(Sfa.constant().agregar() , "#", true);
+	private SimpleLink cancelar = new SimpleLink(Sfa.constant().cancelar(), "#", true);
 
 	PersonaDto persona = new PersonaDto();
 
 	public CuentaUIData() {
+		observaciones.addStyleName("textAreaCuentaData");
 		fields.add(tipoDocumento);
 		fields.add(numeroDocumento);
 		fields.add(razonSocial);
@@ -76,10 +78,10 @@ public class CuentaUIData extends UIData {
 		fields.add(emailPersonal);
 		fields.add(emailLaboral);
 		fields.add(formaPago);
-		fields.add(guardar  = new SimpleLink("Guardar", "#", true));
-		fields.add(crearSS  = new SimpleLink("Crear SS", "#", true));
-		fields.add(agregar  = new SimpleLink("Agregar", "#", true));
-		fields.add(cancelar = new SimpleLink("Cancelar", "#", true));
+		fields.add(guardar);
+		fields.add(crearSS);
+		fields.add(agregar);
+		fields.add(cancelar);
 		setCombos();
 
 	}
@@ -108,8 +110,6 @@ public class CuentaUIData extends UIData {
 	public ListBox getSexo() {
 		return sexo;
 	}
-	
-	
 
 	public Widget getFechaNacimiento() {
 		Grid datePickerFull = new Grid(1, 2);

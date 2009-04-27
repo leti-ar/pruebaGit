@@ -51,6 +51,6 @@ public interface CuentaRpcService extends RemoteService {
 	
 	public VerazResponseDto consultarVeraz(PersonaDto personaDto);
 	
-	public CuentaDto selectCuenta(Long cuentaId);
+	public CuentaDto selectCuenta(Long cuentaId, String cod_vantiveu);
 	
 }

@@ -112,7 +112,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		resultTableWrapper.setWidget(resultTable);
 		int row = 1;
 		for (CuentaSearchResultDto cuenta : cuentas) {
-			resultTable.setWidget(row, 0, new Hyperlink(IconFactory.lapiz().toString(),true,UILoader.EDITAR_CUENTA + "?cuenta_id=" + cuenta.getId()));
+			resultTable.setWidget(row, 0, new Hyperlink(IconFactory.lapiz().toString(),true,UILoader.EDITAR_CUENTA + "?cuenta_id=" + cuenta.getId()+"&cod_vantive="+cuenta.getNumero()));
 			if (cuenta.isPuedeVerInfocom()) {
 				resultTable.setWidget(row, 1, IconFactory.lupa());
 			}

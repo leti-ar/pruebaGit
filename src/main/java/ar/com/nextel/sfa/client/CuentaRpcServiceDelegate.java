@@ -73,9 +73,9 @@ public class CuentaRpcServiceDelegate {
 		cuentaRpcService.consultarVeraz(personaDto, callback);
 	}
 	
-	public void selectCuenta(Long cuentaId,DefaultWaitCallback callback) {
+	public void selectCuenta(Long cuentaId,String cod_vantive,DefaultWaitCallback callback) {
 		WaitWindow.show();
-		cuentaRpcService.selectCuenta(cuentaId, callback);
+		cuentaRpcService.selectCuenta(cuentaId, cod_vantive,callback);
 	}
 
 }

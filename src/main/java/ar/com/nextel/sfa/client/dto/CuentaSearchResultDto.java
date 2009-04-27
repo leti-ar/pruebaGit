@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class CuentaSearchResultDto implements IsSerializable{
 
 	private long id;
+	private String codigoVantive;
 	private long categoria;
 	private String numero;
 	private String razonSocial;
@@ -36,6 +37,14 @@ public class CuentaSearchResultDto implements IsSerializable{
 
 	public void setCategoria(long categoria) {
 		this.categoria = categoria;
+	}
+
+	public String getCodigoVantive() {
+		return codigoVantive;
+	}
+
+	public void setCodigoVantive(String codigoVantive) {
+		this.codigoVantive = codigoVantive;
 	}
 
 	public String getNumero() {

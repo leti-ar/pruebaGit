@@ -1,7 +1,13 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import ar.com.nextel.sfa.client.CuentaRpcService;
+import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.constant.SfaStatic;
+import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.nextel.sfa.client.widget.UILoader;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
 import com.google.gwt.user.client.ui.ClickListener;
@@ -15,31 +21,17 @@ public class BuscadorDocumentoPopup extends NextelDialog implements ClickListene
 	
 	private SimplePanel buscadorDocumentoPanel; 
 	private FlexTable buscadorDocumentoTable; 
-	private TextBox tipoDocTextBox;
+	private ListBox tipoDocumento;
 	private TextBox numeroDocTextBox;
 	private Label tipoDocLabel;
 	private Label numeroDocLabel;
-	private SimpleLink aceptar = new SimpleLink("ACEPTAR", "#", true);
-	private SimpleLink cerrar = new SimpleLink("CERRAR", "#", true);
+	private SimpleLink aceptar = new SimpleLink(Sfa.constant().aceptar(), "#", true);
+	private SimpleLink cerrar  = new SimpleLink(Sfa.constant().cerrar(), "#", true);
 	private AgregarCuentaUI agregarCuentaPage;
 
 	public BuscadorDocumentoPopup(String title) {
 		super(title);
-		SimplePanel buscadorDocumentoPanel = new SimplePanel();
-		FlexTable buscadorDocumentoTable = new FlexTable();
-		TextBox tipoDocTextBox = new TextBox();
-		TextBox numeroDocTextBox = new TextBox();
-		Label tipoDocLabel = new Label("Tipo Doc:");
-		Label numeroDocLabel = new Label("Número:");
-		
-		buscadorDocumentoTable.setWidget(0, 0, tipoDocLabel);
-		buscadorDocumentoTable.setWidget(0, 1, tipoDocTextBox);
-		buscadorDocumentoTable.setWidget(1, 0, numeroDocLabel);
-		buscadorDocumentoTable.setWidget(1, 1, numeroDocTextBox);
-		buscadorDocumentoPanel.add(buscadorDocumentoTable);
-		addFooter(aceptar);
-		addFooter(cerrar);
-		add(buscadorDocumentoPanel);	
+        init();	
 	
 		aceptar.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
@@ -56,10 +48,33 @@ public class BuscadorDocumentoPopup extends NextelDialog implements ClickListene
 	
 	}
 	
-	
+	public void init() {
+		buscadorDocumentoPanel = new SimplePanel();
+		buscadorDocumentoTable = new FlexTable();
+		tipoDocumento    = new ListBox();
+		numeroDocTextBox = new TextBox();
+		tipoDocLabel   = new Label(Sfa.constant().tipoDocumento());
+		numeroDocLabel = new Label(Sfa.constant().numero());
+		
+		CuentaRpcService.Util.getInstance().getAgregarCuentaInitializer(
+			new DefaultWaitCallback<AgregarCuentaInitializer>() {
+				public void success(AgregarCuentaInitializer result) {
+					tipoDocumento.addAllItems(result.getTiposDocumento());
+				}
+			});
+		
+		buscadorDocumentoTable.setWidget(0, 0, tipoDocLabel);
+		buscadorDocumentoTable.setWidget(0, 1, tipoDocumento);
+		buscadorDocumentoTable.setWidget(1, 0, numeroDocLabel);
+		buscadorDocumentoTable.setWidget(1, 1, numeroDocTextBox);
+		buscadorDocumentoPanel.add(buscadorDocumentoTable);
+		addFooter(aceptar);
+		addFooter(cerrar);
+		add(buscadorDocumentoPanel);
+		
+	}
 	public void onClick(Widget sender) {
 		// TODO Auto-generated method stub
-		
 	}
 	
 }

@@ -17,10 +17,11 @@ public class EditarCuentaUI extends ApplicationUI {
 	
 	public void load() {
 		String cuentaID = HistoryUtils.getParam("cuenta_id");
+		String cod_vantive = HistoryUtils.getParam("cod_vantive");
 		final CuentaEdicionTabPanel cuentaTab = CuentaEdicionTabPanel.getInstance();
 		cuentaTab.clean();
-		if (cuentaID!=null) {
-			CuentaRpcService.Util.getInstance().selectCuenta(new Long(cuentaID), new DefaultWaitCallback<CuentaDto>() {
+		if (cuentaID!=null||cod_vantive!=null) {
+			CuentaRpcService.Util.getInstance().selectCuenta(new Long(1), cod_vantive,new DefaultWaitCallback<CuentaDto>() {
 				public void success(CuentaDto cuentaDto) {
 					cuentaTab.setCliente(cuentaDto.getCodigoVantive());
 					if (cuentaDto.getPersona()!=null) {

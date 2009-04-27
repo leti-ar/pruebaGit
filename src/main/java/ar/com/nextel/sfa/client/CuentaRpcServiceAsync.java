@@ -36,6 +36,6 @@ public interface CuentaRpcServiceAsync {
 	
 	public void consultarVeraz(PersonaDto personaDto, AsyncCallback callback);
 	
-	public void selectCuenta(Long cuentaId, AsyncCallback<CuentaDto> callback);
+	public void selectCuenta(Long cuentaId, String cod_vantive,AsyncCallback<CuentaDto> callback);
 
 }

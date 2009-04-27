@@ -196,7 +196,11 @@ public class CuentaRpcServiceImpl extends RemoteServiceServlet implements
 	 *         datos reales de la Db.
 	 **/
 	public BuscarCuentaInitializer getBuscarCuentaInitializer() {
-		List<TipoDocumentoDto> listaTipoDoc = mapper.convertList(genericDao.getList(TipoDocumento.class),	TipoDocumentoDto.class);
+		//List<TipoDocumentoDto> listaTipoDoc = mapper.convertList(genericDao.getList(TipoDocumento.class),	TipoDocumentoDto.class);
+		List<TipoDocumentoDto> listaTipoDoc = new ArrayList<TipoDocumentoDto>();
+		listaTipoDoc.add(0, new TipoDocumentoDto(0L, "Documento"));
+		listaTipoDoc.add(1, new TipoDocumentoDto(1L, "CUIT/CUIL"));
+		
 		List<CategoriaCuentaDto> listaCategorias = mapper.convertList(genericDao.getList(CategoriaCuenta.class),	CategoriaCuentaDto.class);
 
 		List<BusquedaPredefinidaDto> listaBusquedaPredef = new ArrayList<BusquedaPredefinidaDto>();
@@ -296,12 +300,20 @@ public class CuentaRpcServiceImpl extends RemoteServiceServlet implements
         return responseDto;
     }
 	
-	public CuentaDto selectCuenta(Long cuentaId) {
-		//selectCuentaBusinessOperator.getCuentaYLockear(codigoVantive, vendedor);
+	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive) {
+		Usuario usuario = new Usuario();
+		usuario.setUserName("acsa1");
 		Cuenta cuenta = null;
 		CuentaDto ctaDTO = null;
 		try {
-			cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(cuentaId);
+			//cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(cuentaId);
+			cuenta = selectCuentaBusinessOperator.getCuentaYLockear(cod_vantive, registroVendedores.getVendedor(usuario));
+//			CondicionCuenta cd1= cuenta.getCondicionCuenta();
+//			Long id = cd1.getId();
+//			String code = cd1.getCodigoVantive();
+//			String desc = cd1.getDescripcion();
+//			CondicionCuentaDto cd2 = new CondicionCuentaDto(id,code,desc);
+//			ctaDTO.setCondicionCuenta(cd2);
 			ctaDTO = (CuentaDto) mapper.map(cuenta, CuentaDto.class);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
