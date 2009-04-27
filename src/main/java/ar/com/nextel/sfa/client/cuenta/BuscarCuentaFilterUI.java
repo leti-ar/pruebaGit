@@ -90,11 +90,11 @@ public class BuscarCuentaFilterUI extends Composite {
 				/** BuscarButton Validation: */
 				List<String> listaErrores = buscadorCuentasFilterEditor.validatePreSearch();
 				if (!listaErrores.isEmpty()){
+					StringBuilder error = new StringBuilder();
 					for (int i = 0; i < listaErrores.size(); i++) {
-						String error = listaErrores.get(i);
-						//ErrorDialog.getInstance().setFormButtonsVisible(false);
-						ErrorDialog.getInstance().show(error);
+						error.append(listaErrores.get(i) + "<br />");
 					}
+					ErrorDialog.getInstance().show(error.toString());
 				}else{		
 					controller.searchCuentas(buscadorCuentasFilterEditor);	
 				}
