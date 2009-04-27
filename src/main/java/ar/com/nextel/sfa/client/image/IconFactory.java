@@ -33,4 +33,8 @@ public class IconFactory {
 	public static Image word() {
 		return getIconBundle().word().createImage();
 	}
+	
+	public static Image silvioSoldan() {
+		return getIconBundle().silvioSoldan().createImage();
+	}
 }

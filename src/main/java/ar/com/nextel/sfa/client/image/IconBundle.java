@@ -12,6 +12,8 @@ public interface IconBundle extends ImageBundle {
 	AbstractImagePrototype lupa();
 
 	AbstractImagePrototype locked();
-	
+
 	AbstractImagePrototype word();
+
+	AbstractImagePrototype silvioSoldan();
 }
