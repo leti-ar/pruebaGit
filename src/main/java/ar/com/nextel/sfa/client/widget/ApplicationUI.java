@@ -21,6 +21,7 @@ public abstract class ApplicationUI extends Composite {
 		page = new SimplePanel();
 		page.setWidget(mainPanel);
 		initWidget(page);
+		addStyleName("Gwt-ApplicationUI");
 	}
 
 	public abstract void load();
