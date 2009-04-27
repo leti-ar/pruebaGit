@@ -17,7 +17,6 @@ import ar.com.nextel.sfa.client.widget.ValidationTextBox;
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItemImpl;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
-import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -38,7 +37,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 	private Label tituloLabel = new Label("Búsqueda de Cuentas");
 	private ValidationListBox categoriaCombo;
 	private ValidationTextBox numeroCuentaTextBox = new ValidationTextBox("[0-9\\.]*");
-	private ValidationTextBox razonSocialTextBox = new ValidationTextBox("[a-zA-Z0-9\\s]*");
+	private ValidationTextBox razonSocialTextBox = new ValidationTextBox("[a-zA-Z0-9\\s\\%]*");
 	private ValidationTextBox numeroNextelTextBox = new ValidationTextBox("[0-9]*");
 	private ValidationTextBox flotaIdTextBox = new ValidationTextBox("[0-9\\*]*");
 	private ValidationTextBox numeroSolicitudServicioTextBox = new ValidationTextBox("[0-9]*");
@@ -151,7 +150,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 			setEnableFields(habilitar);
 			((FocusWidget) w).setEnabled(true);
 		//FIN - Si es TextBox
-			
+
 		//Si es ListBox:
 		}else if (w instanceof ValidationListBox) {
 			validateListBoxs(w);
@@ -196,6 +195,8 @@ public class BuscarCuentaFilterUIData extends UIData {
 				this.responsableTextBox.setEnabled(true);
 				this.razonSocialTextBox.setEnabled(true);
 				this.categoriaCombo.setEnabled(true);
+				razonSocialTextBox.setText(razonSocialTextBox.getText().toUpperCase());
+				responsableTextBox.setText(responsableTextBox.getText().toUpperCase());
 				flag = false;
 			}else if (("".equals(box.getText()) && (!predefinidasCombo.isEnabled()))) {
 				setEnableFields(false);
@@ -205,12 +206,9 @@ public class BuscarCuentaFilterUIData extends UIData {
 				flag = false;
 			}
 		}
-		
 		//Si w es Categoria y el combo de Responsable esta Enabled, no hacer nada.
-		
 		return flag;
 	}
-	
 	
 	/**
 	 * @author eSalvador
