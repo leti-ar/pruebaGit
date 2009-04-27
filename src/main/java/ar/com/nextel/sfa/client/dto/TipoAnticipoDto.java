@@ -4,7 +4,7 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class OrigenSolicitudDto implements ListBoxItem, IsSerializable {
+public class TipoAnticipoDto implements IsSerializable, ListBoxItem {
 
 	private Long id;
 	private String descripcion;
@@ -32,5 +32,4 @@ public class OrigenSolicitudDto implements ListBoxItem, IsSerializable {
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
-
 }
