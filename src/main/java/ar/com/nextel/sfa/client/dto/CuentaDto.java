@@ -6,6 +6,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class CuentaDto implements IsSerializable {	   
     
+	private Long id;
     private ClaseCuentaDto claseCuenta;
     private Long idVantive;
     private CategoriaCuentaDto categoriaCuenta;
@@ -53,6 +54,12 @@ public class CuentaDto implements IsSerializable {
     private Boolean completa;
 
     /* *********************************************** */
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
     public ClaseCuentaDto getClaseCuenta() {
 		return claseCuenta;
 	}
