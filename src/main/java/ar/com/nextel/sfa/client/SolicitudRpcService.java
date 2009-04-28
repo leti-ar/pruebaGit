@@ -1,7 +1,11 @@
 package ar.com.nextel.sfa.client;
 
+import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
+import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
+import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
+import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 
@@ -25,9 +29,12 @@ public interface SolicitudRpcService extends RemoteService {
 			return solicitudRpcServiceDelegate;
 		}
 	}
+	
+	public BuscarSSCerradasInitializer getBuscarSSCerradasInitializer();
+	
+	public SolicitudServicioCerradaResultDto searchSSCerrada(SolicitudServicioCerradaDto solicitudServicioCerradaDto);
 
-	public SolicitudServicioDto createSolicitudServicio(
-			SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages;
+	public SolicitudServicioDto createSolicitudServicio(SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages;
 
 	public SolicitudInitializer getSolicitudInitializer();
 
