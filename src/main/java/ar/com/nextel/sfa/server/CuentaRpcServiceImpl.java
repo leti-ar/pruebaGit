@@ -2,13 +2,11 @@ package ar.com.nextel.sfa.server;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
 
 import org.apache.commons.collections.Transformer;
-import org.apache.commons.lang.math.RandomUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -38,8 +36,8 @@ import ar.com.nextel.services.nextelServices.veraz.VerazService;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.dto.BusquedaPredefinidaDto;
-import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.ClaseCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
@@ -50,7 +48,6 @@ import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.RubroDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
-import ar.com.nextel.sfa.client.dto.SolicitudServicioSearchDto;
 import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
@@ -97,6 +94,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		genericDao = (GenericDao) context.getBean("genericDao");
 		veraz = (VerazService) context.getBean("verazService");
 		repository = (Repository) context.getBean("repository");
+
 		
 		// Engancho el BOperator
 		setGetAllBusinessOperator((GetAllBusinessOperator) context
@@ -135,56 +133,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 
 	}
 
-	/**
-	 * @author julioVesco TODO: Quitar el HardCode cuando se logre obtener los
-	 *         datos reales de la Db.
-	 **/
-	public SolicitudesServicioTotalesDto searchSSCerrada(
-			SolicitudServicioSearchDto solicitudServicioSearchDto) {
-		List dtoResult = new ArrayList();
-
-		for (int i = 0; i < 100; i++) {
-			createSSMock(dtoResult, 2L, 1, RandomUtils.nextBoolean(), Long
-					.valueOf(RandomUtils.nextLong()).toString(), "" + i, "0",
-					"Razon Social " + i, "Comentario " + i, "Estado " + i);
-		}
-
-		SolicitudesServicioTotalesDto solicitudes = new SolicitudesServicioTotalesDto();
-		solicitudes.setSolicitudes(dtoResult);
-		solicitudes.setTotalEquipos(10L);
-		solicitudes.setTotalPataconex(20.00);
-		solicitudes.setTotalEquiposFirmados(3L);
-
-		return solicitudes;
-	}
-
-	/**
-	 * @author julioVesco TODO: Este metodo se eliminaria cuando se logren obtener los datos da la base.
-	 **/
-	private void createSSMock(List dtoResult, long cantEquipos,
-			int cantResultados, boolean firmas, String nroCuenta, String nroSS,
-			String pataconex, String razonSocial, String comentario,
-			String estado) {
-		SolicitudServicioCerradaDto solicitudServicioDto = new SolicitudServicioCerradaDto();
-		solicitudServicioDto.setCantidadEquipos(cantEquipos);
-		solicitudServicioDto.setCantidadResultados(cantResultados);
-		solicitudServicioDto.setFirmas(firmas);
-		solicitudServicioDto.setNumeroCuenta(nroCuenta);
-		solicitudServicioDto.setNumeroSS(nroSS);
-		solicitudServicioDto.setPataconex(pataconex);
-		solicitudServicioDto.setRazonSocial(razonSocial);
-		
-		List cambios = new ArrayList<CambiosSolicitudServicioDto>();
-		for (int i = 0; i < 15; i++) {
-			CambiosSolicitudServicioDto cambiosSolicitudServicioDto = new CambiosSolicitudServicioDto();
-			cambiosSolicitudServicioDto.setComentario(comentario);
-			cambiosSolicitudServicioDto.setEstado(estado);
-			cambiosSolicitudServicioDto.setFecha(new Date());
-			cambios.add(cambiosSolicitudServicioDto);
-		}
-		solicitudServicioDto.setCambios(cambios);
-		dtoResult.add(solicitudServicioDto);
-	}
 
 	/**
 	 * @author eSalvador TODO: Quitar el HardCode cuando se logre obtener los
@@ -212,30 +160,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		return buscarDTOinit;
 	}
 
-
-	public BuscarSSCerradasInitializer getBuscarSSCerradasInitializer() {
-		BuscarSSCerradasInitializer buscarSSCerradasInitializer = new BuscarSSCerradasInitializer();
-					
-		List<String> listaResult = new ArrayList<String>();
-		String cantResult = "10;25;50;75;100";
-		listaResult = Arrays.asList(cantResult.split(";"));
-		buscarSSCerradasInitializer.setCantidadesResultados(listaResult);
-
-		List<String> listaFirmas = new ArrayList<String>();
-		String opcionesFirmas = "SI;NO;TODAS";
-		listaFirmas = Arrays.asList(opcionesFirmas.split(";"));
-		buscarSSCerradasInitializer.setOpcionesFirmas(listaFirmas);
-
-		List<String> listaPataconex = new ArrayList<String>();
-		String opcionesPataconex = "SI;NO;TODAS";
-		listaPataconex = Arrays.asList(opcionesPataconex.split(";"));
-		buscarSSCerradasInitializer.setOpcionesPatacones(listaPataconex);
-
-		buscarSSCerradasInitializer.setOpcionesEstado(mapper.convertList(genericDao.getList(EstadoSolicitud.class), EstadoSolicitudDto.class));
-		
-		return buscarSSCerradasInitializer;
-	}
-
+	
 	// Prueba rgm
 
 	/**
@@ -294,6 +219,12 @@ public class CuentaRpcServiceImpl extends RemoteService implements
         AppLogger.info("Consulta a Veraz finalizada.");
         return responseDto;
     }
+
+	public SolicitudesServicioTotalesDto searchSSCerrada(
+			SolicitudServicioCerradaDto solicitudServicioCerradaDto) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive) {
 		Usuario usuario = new Usuario();
