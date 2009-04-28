@@ -65,6 +65,11 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-incubator</artifactId>
+			<version>1.5-Dec_28</version>
+		</dependency>		
+		<dependency>
 			<groupId>ar.com.snoop.gwt</groupId>
 			<artifactId>GwtCommons</artifactId>
 			<version>1.1-SNAPSHOT</version>
