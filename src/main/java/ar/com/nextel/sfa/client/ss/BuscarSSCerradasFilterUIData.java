@@ -2,11 +2,9 @@ package ar.com.nextel.sfa.client.ss;
 
 import java.util.ArrayList;
 
-import ar.com.nextel.sfa.client.CuentaRpcService;
+import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
-import ar.com.nextel.sfa.client.dto.SolicitudServicioSearchDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItemImpl;
@@ -48,8 +46,8 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 		fields.add(nroCliente = new TextBox());
 		fields.add(nroSS = new TextBox());
 		fields.add(estadoCombo = new ListBox("Todos"));
-		fields.add(pataconesCombo = new ListBox());
-		fields.add(firmasCombo = new ListBox());
+		fields.add(pataconesCombo = new ListBox("Todos"));
+		fields.add(firmasCombo = new ListBox("Todos"));
 		fields.add(resultadosCombo = new ListBox());
 		fields.add(desde = new SimpleDatePicker(false));
 		fields.add(hasta = new SimpleDatePicker(false));
@@ -66,7 +64,7 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 		});
 
 		/** @author juliovesco: Carga inicial de combos */
-	    CuentaRpcService.Util.getInstance().getBuscarSSCerradasInitializer(new DefaultWaitCallback<BuscarSSCerradasInitializer>() {
+	    SolicitudRpcService.Util.getInstance().getBuscarSSCerradasInitializer(new DefaultWaitCallback<BuscarSSCerradasInitializer>() {
 		  			public void success(BuscarSSCerradasInitializer result) {
 						setCombos(result);			
 					}
@@ -152,17 +150,24 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 		return datePickerFull;
 	}
 
-	public SolicitudServicioSearchDto getSSCerradaSearch() {
-		SolicitudServicioSearchDto solicitudServicioSearchDto = new SolicitudServicioSearchDto();
-		solicitudServicioSearchDto.setNumeroCuenta(nroCliente.getText());
-		solicitudServicioSearchDto.setNumeroSS(nroSS.getText());
-		solicitudServicioSearchDto.setFechaDesde(desde.getSelectedDateAsString());
-		solicitudServicioSearchDto.setFechaHasta(hasta.getSelectedDateAsString());
-		solicitudServicioSearchDto.setEstado(estadoCombo.getSelectedItemText());
-		solicitudServicioSearchDto.setPataconex(pataconesCombo.getSelectedItemText());
-		solicitudServicioSearchDto.setFirmas(firmasCombo.getSelectedItemText());
-		solicitudServicioSearchDto.setCantidadResultados(Integer.parseInt(resultadosCombo.getSelectedItem().getItemValue()));
-		return solicitudServicioSearchDto;
+	public SolicitudServicioCerradaDto getSSCerradaSearch() {
+		SolicitudServicioCerradaDto solicitudServicioCerradaDto = new SolicitudServicioCerradaDto();
+		solicitudServicioCerradaDto.setNumeroCuenta(nroCliente.getText());
+		solicitudServicioCerradaDto.setNumeroSS(nroSS.getText());
+		solicitudServicioCerradaDto.setFechaDesde(desde.getSelectedDate());
+		solicitudServicioCerradaDto.setFechaHasta(hasta.getSelectedDate());
+		solicitudServicioCerradaDto.setEstado(estadoCombo.getSelectedItemText());
+		solicitudServicioCerradaDto.setPataconex(obtenerBoolean(pataconesCombo.getSelectedItemText()));
+		solicitudServicioCerradaDto.setFirmas(obtenerBoolean(firmasCombo.getSelectedItemText()));
+		solicitudServicioCerradaDto.setCantidadResultados(Integer.parseInt(resultadosCombo.getSelectedItem().getItemValue()));
+		return solicitudServicioCerradaDto;
+	}
+	
+	private Boolean obtenerBoolean(String string) {
+		if ("SI".equals(string)){
+			return Boolean.TRUE;
+		}else
+			return Boolean.FALSE;
 	}
 	
 }

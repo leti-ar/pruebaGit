@@ -3,10 +3,9 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.Iterator;
 import java.util.List;
 
-import ar.com.nextel.sfa.client.CuentaRpcService;
+import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
-import ar.com.nextel.sfa.client.dto.SolicitudServicioSearchDto;
 import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -56,30 +55,24 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 	 * 
 	 * @param: cuentaSearchDto
 	 * */
-	public void searchSSCerradas(
-			SolicitudServicioSearchDto solicitudServicioSearchDto) {
+	public void searchSSCerradas(SolicitudServicioCerradaDto solicitudServicioSearchDto) {
 		this.searchSSCerradas(solicitudServicioSearchDto, true);
-	}
+				};	
 
-	private void searchSSCerradas(
-			SolicitudServicioSearchDto solicitudServicioSearchDto,
-			boolean firstTime) {
-		CuentaRpcService.Util.getInstance().searchSSCerrada(
-				solicitudServicioSearchDto,
+	private void searchSSCerradas(SolicitudServicioCerradaDto solicitudServicioCerradaDto, boolean firstTime) {
+		SolicitudRpcService.Util.getInstance().searchSSCerrada(solicitudServicioCerradaDto,
 				new DefaultWaitCallback<SolicitudesServicioTotalesDto>() {
 					public void success(SolicitudesServicioTotalesDto result) {
 						setSolicitudServicioDto(result.getSolicitudes());
 						buscarSSTotalesResultUI.setValues(result
 								.getTotalEquipos().toString(), result
-								.getTotalPataconex().toString(), result
-								.getTotalEquiposFirmados().toString());
+								.getTotalPataconex().toString(), result.getTotalEquiposFirmados().toString());
 						buscarSSTotalesResultUI.setVisible(true);
 					}
 				});
 	}
-
-	public void setSolicitudServicioDto(
-			List<SolicitudServicioCerradaDto> solicitudServicioDto) {
+	
+	public void setSolicitudServicioDto(List<SolicitudServicioCerradaDto> solicitudServicioDto) {
 		this.solicitudesServicioDto = solicitudServicioDto;
 		loadTable();
 	}
@@ -100,11 +93,9 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 			resultTable.setHTML(row, 1, solicitudServicioDto.getNumeroSS());
 			resultTable.setHTML(row, 2, solicitudServicioDto.getNumeroCuenta());
 			resultTable.setHTML(row, 3, solicitudServicioDto.getRazonSocial());
-			resultTable.setHTML(row, 4, solicitudServicioDto
-					.getCantidadEquipos().toString());
-			resultTable.setHTML(row, 5, solicitudServicioDto.getPataconex());
-			resultTable.setHTML(row, 6, solicitudServicioDto.getFirmas() ? "SI"
-					: "NO");
+			resultTable.setHTML(row, 4, solicitudServicioDto.getCantidadEquipos().toString());
+			resultTable.setHTML(row, 5, solicitudServicioDto.getPataconex() ? "SI" : "NO");
+			resultTable.setHTML(row, 6, solicitudServicioDto.getFirmas() ? "SI" : "NO");
 			row++;
 		}
 		setVisible(true);
