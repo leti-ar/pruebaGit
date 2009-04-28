@@ -1,0 +1,91 @@
+
+.lblEstado{
+	margin-top:11px;
+}
+.estado{
+	background-repeat:no-repeat;
+	float:left;
+	margin:8px 0 0 4px;
+	border:1px dashed gray;
+	cursor:pointer !important;
+	padding:2px 4px 2px 16px;	
+}
+
+.activo{
+	background-image:url(images/art-estado-verde.gif);
+}
+
+.suspendido{
+	background-image:url(images/art-estado-amarillo.gif);
+}
+
+.desactivado{
+	background-image:url(images/art-estado-rojo.gif);
+}
+
+.cicloLabel{
+	margin-top:11px;
+}
+
+.cicloInfo{
+	margin:11 4 0 10px;
+}
+
+.scoring{
+	background-image:url(images/art-icon-scoring.gif);
+	background-repeat:no-repeat;
+	padding-left:16px;
+	float:left;
+	margin:8px 0 0 10px;
+}
+
+.scoring a{
+	color:black;
+	cursor:pointer;
+	font-family:Verdana,Arial,sans-serif;
+	font-size:11px;
+	text-decoration:underline;
+	line-height:17px;	
+}
+
+.responsablePago{
+	float:left;
+	line-height:24px;
+	margin:5px 0 0 2px;
+	padding:0;
+	text-align:left;
+	width:48%;
+}
+
+.credLabel{
+	margin: 8 0 0 10px;	
+}
+
+.responsablePago .gwt-Label{
+	background-color:transparent;
+	float: left;
+	font-family:Verdana;
+	font-size:11px;
+	font-weight:bold;
+	text-align:left;
+	text-indent:4px;
+	display:inline;
+	width:auto !important;	
+}
+
+.resumenEquipo{
+	line-height:24px;
+	margin:5px 0 0 150px;
+	padding:0;
+	text-align:left;
+	width:auto !important;
+}
+
+.resumenEquipo a{
+	color:black;
+	cursor:pointer;
+	font-family:Verdana,Arial,sans-serif;
+	font-size:11px;
+	outline-width:medium;
+	text-decoration:underline;
+}

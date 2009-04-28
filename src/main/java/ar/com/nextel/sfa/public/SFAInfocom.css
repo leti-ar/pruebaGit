@@ -1,0 +1,113 @@
+@IMPORT url("SFAWeb.css");
+@IMPORT url("headerScoring.css");
+
+.razonSocial{
+	width: 310px;
+}
+
+.razonSocial .gwt-Label {
+	width: 150px;
+}
+
+.numeroCliente{
+	width: 310px;
+	margin-left: 500px;
+}
+
+.numeroCliente .gwt-Label{
+	width: 150px;
+}
+
+.gwt-ContendorPanel{
+	background-color:#DADADA;
+	float:left;
+	min-width:100%;
+	padding: 8px;
+}
+
+.contenedor{
+	background-color: white;
+	float:left;
+	margin-bottom:8px;
+	width:100%;	
+}
+
+.respPanel{
+	float:left;
+	line-height:24px;
+	margin:5px 0 0 2px;
+	padding:0;
+	text-align:left;
+	width:48%;
+}
+
+.subTitulo .gwt-Label{
+	color:#A83C56 !important;
+	font-weight:bold !important;
+	margin:4px 0;
+	width:100% !important;	
+	}
+	
+.contTable{
+	border:1px solid gray;
+	margin: 8px;
+}
+
+.contPanel{
+	border:1px solid gray;
+	margin:8px;
+	overflow:auto;
+	width:740px;
+	padding: 1px;	
+}
+
+.fidelizacionTable{
+	border:1px solid white;
+	width: 100%;
+	height: 147px;
+}
+
+.cuenta{
+	border:1px solid white;
+	width: 100%;
+	height: 147px;
+}
+
+.bgrRow{
+	background-color: #F1F1F1;	
+}
+
+.alingRight{
+	text-align: right;
+}
+
+.ccTable{
+	border:1px solid white;
+	width: 100%;
+	height:82px;
+}
+
+.cerrarLink{
+	cursor: pointer;	
+}
+.equipoDialog{
+	width:740px;	
+}
+
+.equipoTable{
+	width: 1360px;
+	height:200px;
+}
+
+.estadoDialog{
+	width:740px;
+}
+
+.estadoTable{
+	width: 1380px;
+	height: 200px;
+}
+
+.transparency{
+	background-color: red;
+}

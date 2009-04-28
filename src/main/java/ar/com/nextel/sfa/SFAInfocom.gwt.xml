@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<module>
+
+      <!-- Inherit the core Web Toolkit stuff.                        -->
+      <inherits name="com.google.gwt.user.User"/>
+      <inherits name="com.google.gwt.i18n.I18N"/>
+      <inherits name="ar.com.snoop.gwt.commons.GwtCommons"/> 
+<!--      <inherits name="com.snoop.gwt.gwt-incubator.15-Dec_28"/>   	-->
+
+      <!-- Specify the app entry point class.                         -->
+      <entry-point class="ar.com.nextel.sfa.client.SFAInfocom"/>
+    
+      <!-- Specify the application specific style sheet.              -->
+<!--      <stylesheet src="SFAWeb.css"/>-->
+      <stylesheet src="SFAInfocom.css"/>
+	
+<!--	<servlet class="ar.com.nextel.sfa.server.CuentaRpcServiceImpl" path="/cuenta.rpc"/>-->
+<!--	<servlet class="ar.com.nextel.sfa.server.OperacionesRpcServiceImpl" path="/operaciones.rpc"/>-->
+<!--	<servlet class="ar.com.nextel.sfa.server.OportunidadNegocioRpcServiceImpl" path="/oportunidades.rpc"/>-->
+</module>
