@@ -19,7 +19,7 @@ public interface SolicitudRpcService extends RemoteService {
 
 		public static SolicitudRpcServiceDelegate getInstance() {
 			if (solicitudRpcServiceDelegate == null) {
-				solicitudRpcServiceAsync = GWT.create(OperacionesRpcService.class);
+				solicitudRpcServiceAsync = GWT.create(SolicitudRpcService.class);
 				solicitudRpcServiceDelegate = new SolicitudRpcServiceDelegate(solicitudRpcServiceAsync);
 			}
 			return solicitudRpcServiceDelegate;
