@@ -29,11 +29,11 @@ public class DatosSSUI extends Composite {
 	private Widget firstRow() {
 		Grid layout = new Grid(1, 6);
 		layout.addStyleName("layout");
-		layout.setHTML(0, 0, Sfa.constant().nss());
+		layout.setHTML(0, 0, Sfa.constant().nssReq());
 		layout.setWidget(0, 1, crearSSUIData.getNss());
 		layout.setHTML(0, 2, Sfa.constant().nflota());
 		layout.setWidget(0, 3, crearSSUIData.getNflota());
-		layout.setHTML(0, 4, Sfa.constant().origen());
+		layout.setHTML(0, 4, Sfa.constant().origenReq());
 		layout.setWidget(0, 5, crearSSUIData.getOrigen());
 		return layout;
 	}
@@ -48,11 +48,11 @@ public class DatosSSUI extends Composite {
 		domicilio.add(crearDomicilioWrapper);
 		Grid layoutDomicilio = new Grid(3, 4);
 		layoutDomicilio.addStyleName("layout");
-		layoutDomicilio.setHTML(0, 0, Sfa.constant().entrega());
+		layoutDomicilio.setHTML(0, 0, Sfa.constant().entregaReq());
 		layoutDomicilio.setWidget(0, 1, crearSSUIData.getEntrega());
 		layoutDomicilio.setWidget(0, 2, IconFactory.lapiz());
 		layoutDomicilio.setWidget(0, 3, IconFactory.cancel());
-		layoutDomicilio.setHTML(1, 0, Sfa.constant().facturacion());
+		layoutDomicilio.setHTML(1, 0, Sfa.constant().facturacionReq());
 		layoutDomicilio.setWidget(1, 1, crearSSUIData.getFacturacion());
 		layoutDomicilio.setWidget(1, 2, IconFactory.lapiz());
 		layoutDomicilio.setWidget(1, 3, IconFactory.cancel());
