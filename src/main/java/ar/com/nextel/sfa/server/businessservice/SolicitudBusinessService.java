@@ -114,4 +114,9 @@ public class SolicitudBusinessService {
 		return retrieveEncabezadoCreditoFidelizacion;
 	}
 
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public SolicitudServicio saveSolicitudServicio(SolicitudServicio solicitudServicio){
+		repository.save(solicitudServicio);
+		return solicitudServicio;
+	}
 }

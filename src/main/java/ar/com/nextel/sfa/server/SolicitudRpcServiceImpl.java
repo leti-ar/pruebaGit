@@ -195,6 +195,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	}
 
 	public SolicitudServicioDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto) {
+		SolicitudServicio solicitudServicio = repository.retrieve(SolicitudServicio.class, solicitudServicioDto.getId());
+		mapper.map(solicitudServicioDto, solicitudServicio);
+		solicitudBusinessService.saveSolicitudServicio(solicitudServicio);
+		solicitudServicioDto = mapper.map(solicitudServicio, SolicitudServicioDto.class);
 		return solicitudServicioDto;
 	}
 }
