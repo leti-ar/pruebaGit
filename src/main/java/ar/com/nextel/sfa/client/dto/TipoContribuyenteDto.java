@@ -6,14 +6,16 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 public class TipoContribuyenteDto implements ListBoxItem, IsSerializable {
 
+	private long id;
 	private String code;
 	private String descripcion;
 	
 	public TipoContribuyenteDto() {
 	}
 	
-	public TipoContribuyenteDto(String code, String descripcion) {
+	public TipoContribuyenteDto(long id, String code, String descripcion) {
 		super();
+		this.id = id;
 		this.code = code;
 		this.descripcion = descripcion;
 	}
@@ -21,11 +23,17 @@ public class TipoContribuyenteDto implements ListBoxItem, IsSerializable {
 	public String getItemText() {
 		return descripcion;
 	}
-
 	public String getItemValue() {
-		return code;
+		return id+"";
 	}
 
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
 	public String getCode() {
 		return code;
 	}

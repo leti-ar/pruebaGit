@@ -36,6 +36,38 @@ public class TelefonoTextBox extends Composite {
 			mainpanel.add(interno);
 		}
 	}
+	
+	public FlowPanel getMainpanel() {
+		return mainpanel;
+	}
+
+	public void setMainpanel(FlowPanel mainpanel) {
+		this.mainpanel = mainpanel;
+	}
+
+	public TextBox getArea() {
+		return area;
+	}
+
+	public void setArea(TextBox area) {
+		this.area = area;
+	}
+
+	public TextBox getNumero() {
+		return numero;
+	}
+
+	public void setNumero(TextBox numero) {
+		this.numero = numero;
+	}
+
+	public TextBox getInterno() {
+		return interno;
+	}
+
+	public void setInterno(TextBox interno) {
+		this.interno = interno;
+	}
 
 	public void clean() {
 		area.setText("");

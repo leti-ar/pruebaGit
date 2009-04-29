@@ -1,21 +1,18 @@
 package ar.com.nextel.sfa.client.dto;
 
-import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ProveedorDto implements ListBoxItem,  IsSerializable {
-    private long id;
+public class TipoEmailDto implements IsSerializable {
+	private long id;
 	private String codigoVantive;
     private String descripcion;
-	
-	public String getItemText() {
-		return descripcion;
-	}
-	public String getItemValue() {
-		return id + "";
-	}
-	public long getId() {
+//    public TipoEmailDto() {}
+//    public TipoEmailDto(long id, String desc) {
+//    	super();
+//    	this.id=id;
+//    	this.descripcion=desc;
+//    }
+    public long getId() {
 		return id;
 	}
 	public void setId(long id) {

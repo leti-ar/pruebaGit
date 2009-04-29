@@ -28,10 +28,6 @@ public class CuentaEdicionTabPanel {
 	}
 	
 	public void init() {
-
-
-	
-		
 		
 		marco = new FlexTable();
 		marco.setWidth("100%");

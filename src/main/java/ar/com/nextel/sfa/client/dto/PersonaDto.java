@@ -13,8 +13,8 @@ public class PersonaDto implements IsSerializable {
     private Long idTipoDocumento;
     private String apellido;
     private String nombre;
-    private Set<TelefonoDto> telefonos; 
-    private Set<EmailDto> emails; 
+    private List<TelefonoDto> telefonos; 
+    private List<EmailDto> emails; 
     private SexoDto sexo;
     private DocumentoDto documento;
     private String razonSocial;
@@ -54,16 +54,16 @@ public class PersonaDto implements IsSerializable {
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-	public Set<TelefonoDto> getTelefonos() {
+	public List<TelefonoDto> getTelefonos() {
 		return telefonos;
 	}
-	public void setTelefonos(Set<TelefonoDto> telefonos) {
+	public void setTelefonos(List<TelefonoDto> telefonos) {
 		this.telefonos = telefonos;
 	}
-	public Set<EmailDto> getEmails() {
+	public List<EmailDto> getEmails() {
 		return emails;
 	}
-	public void setEmails(Set<EmailDto> emails) {
+	public void setEmails(List<EmailDto> emails) {
 		this.emails = emails;
 	}
 	public SexoDto getSexo() {

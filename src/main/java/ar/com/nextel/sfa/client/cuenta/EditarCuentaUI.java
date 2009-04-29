@@ -20,20 +20,18 @@ public class EditarCuentaUI extends ApplicationUI {
 		String cod_vantive = HistoryUtils.getParam("cod_vantive");
 		final CuentaEdicionTabPanel cuentaTab = CuentaEdicionTabPanel.getInstance();
 		cuentaTab.clean();
+		
+		
 		if (cuentaID!=null||cod_vantive!=null) {
 			CuentaRpcService.Util.getInstance().selectCuenta(new Long(1), cod_vantive,new DefaultWaitCallback<CuentaDto>() {
 				public void success(CuentaDto cuentaDto) {
+					//datos tabPanel
 					cuentaTab.setCliente(cuentaDto.getCodigoVantive());
-					if (cuentaDto.getPersona()!=null) {
-						cuentaTab.setRazonSocial(cuentaDto.getPersona().getRazonSocial());
-						if (cuentaDto.getPersona().getDocumento()!=null) {
-							cuentaTab.getCuentaDatosForm().getCuentaEditor().getTipoDocumento().setItemSelected(cuentaDto.getPersona().getIdTipoDocumento().intValue(), true) ;
-							cuentaTab.getCuentaDatosForm().getCuentaEditor().getNumeroDocumento().setText(cuentaDto.getPersona().getDocumento().getNumero());
-						}
-						cuentaTab.getCuentaDatosForm().getCuentaEditor().getApellido().setText(cuentaDto.getPersona().getApellido());
-						cuentaTab.getCuentaDatosForm().getCuentaEditor().getRazonSocial().setText(cuentaDto.getPersona().getRazonSocial());
-						loadDomiciliosFormPanel(cuentaDto,cuentaTab);
-					}
+					cuentaTab.setRazonSocial(cuentaDto.getPersona()!=null ? cuentaDto.getPersona().getRazonSocial():"");
+					//carga info pestaña Datos
+					cuentaTab.getCuentaDatosForm().cargarDatos(cuentaDto);
+					//carga info pestaña Domicilio
+					loadDomiciliosFormPanel(cuentaDto,cuentaTab);
 				}
 			});
 		}

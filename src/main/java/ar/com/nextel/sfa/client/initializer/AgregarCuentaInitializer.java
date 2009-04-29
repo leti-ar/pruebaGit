@@ -5,11 +5,12 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.ClaseCuentaDto;
 import ar.com.nextel.sfa.client.dto.FormaPagoDto;
-import ar.com.nextel.sfa.client.dto.ModalidadCobroDto;
+import ar.com.nextel.sfa.client.dto.ProveedorDto;
 import ar.com.nextel.sfa.client.dto.RubroDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
+import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -22,6 +23,9 @@ public class AgregarCuentaInitializer implements IsSerializable {
 	private List<FormaPagoDto> formaPago = new ArrayList<FormaPagoDto>();
 	private List<RubroDto> rubro = new ArrayList<RubroDto>();
 	private List<ClaseCuentaDto> claseCliente = new ArrayList<ClaseCuentaDto>();
+	private List<ProveedorDto> proveedorAnterior = new ArrayList<ProveedorDto>();
+	private List<TipoTelefonoDto> tipoTelefono = new ArrayList<TipoTelefonoDto>();
+	
 	
 	public AgregarCuentaInitializer() {	};  
 	
@@ -31,7 +35,9 @@ public class AgregarCuentaInitializer implements IsSerializable {
 			List<SexoDto> sexo,
 			List<FormaPagoDto> formaPago,
 			List<RubroDto> rubro,
-			List<ClaseCuentaDto> claseCliente) {
+			List<ClaseCuentaDto> claseCliente,
+			List<ProveedorDto> proveedorAnterior,
+			List<TipoTelefonoDto> tipoTelefono) {
 		super();
 		this.tiposDocumento = tiposDocumento;
 		this.tiposContribuyentes = tiposContribuyentes;
@@ -39,6 +45,8 @@ public class AgregarCuentaInitializer implements IsSerializable {
 		this.formaPago = formaPago;
 		this.rubro = rubro;
 		this.claseCliente=claseCliente;
+		this.proveedorAnterior=proveedorAnterior;
+		this.tipoTelefono=tipoTelefono;
 	}
 	
 	public List<TipoDocumentoDto> getTiposDocumento() {
@@ -84,4 +92,21 @@ public class AgregarCuentaInitializer implements IsSerializable {
 	public void setClaseCliente(List<ClaseCuentaDto> claseCliente) {
 		this.claseCliente = claseCliente;
 	}
+
+	public List<ProveedorDto> getProveedorAnterior() {
+		return proveedorAnterior;
+	}
+
+	public void setProveedorAnterior(List<ProveedorDto> proveedorAnterior) {
+		this.proveedorAnterior = proveedorAnterior;
+	}
+
+	public List<TipoTelefonoDto> getTipoTelefono() {
+		return tipoTelefono;
+	}
+
+	public void setTipoTelefono(List<TipoTelefonoDto> tipoTelefono) {
+		this.tipoTelefono = tipoTelefono;
+	}
+	
 }

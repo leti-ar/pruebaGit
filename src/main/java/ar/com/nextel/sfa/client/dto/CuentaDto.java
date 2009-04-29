@@ -11,22 +11,22 @@ public class CuentaDto implements IsSerializable {
     private Long idVantive;
     private CategoriaCuentaDto categoriaCuenta;
     private String codigoVantive;
-    private CondicionCuentaDto condicionCuenta;
-    private Set<CuentaCorrienteDto> cuentasCorrientes;
+    //private CondicionCuentaDto condicionCuenta;
+    //private Set<CuentaCorrienteDto> cuentasCorrientes;
     private VendedorDto vendedor;
     private EstadoCuentaDto estadoCuenta;
     private FormaPagoDto formaPago;
     //private DatosPagoDto datosPago;
     private String iibb;
     private Boolean responsablePago;
-    private Set<PlanDto> planesPropios;
-    private Set<CuentaPotencialDto> cuentasPotenciales;
-    private CuentaPotencialDto cuentaPotencialOrigen;
+//    private Set<PlanDto> planesPropios;
+//    private Set<CuentaPotencialDto> cuentasPotenciales;
+//    private CuentaPotencialDto cuentaPotencialOrigen;
     private PersonaDto persona;
     private ProveedorDto proveedorInicial;
     private RubroDto rubro;
-    private Set<ServicioAdicionalDto> serviciosAdicionales;
-    private Set<SolicitudServicioDto> solicitudesServicio;
+//    private Set<ServicioAdicionalDto> serviciosAdicionales;
+//    private Set<SolicitudServicioDto> solicitudesServicio;
     private TipoCanalVentasDto tipoCanalVentas;
     private TipoContribuyenteDto tipoContribuyente;
     private String use;
@@ -54,13 +54,13 @@ public class CuentaDto implements IsSerializable {
     private Boolean completa;
 
     /* *********************************************** */
-	public Long getId() {
+    public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
 	}
-    public ClaseCuentaDto getClaseCuenta() {
+	public ClaseCuentaDto getClaseCuenta() {
 		return claseCuenta;
 	}
 	public void setClaseCuenta(ClaseCuentaDto claseCuenta) {
@@ -84,18 +84,18 @@ public class CuentaDto implements IsSerializable {
 	public void setCodigoVantive(String codigoVantive) {
 		this.codigoVantive = codigoVantive;
 	}
-	public CondicionCuentaDto getCondicionCuenta() {
-		return condicionCuenta;
-	}
-	public void setCondicionCuenta(CondicionCuentaDto condicionCuenta) {
-		this.condicionCuenta = condicionCuenta;
-	}
-	public Set<CuentaCorrienteDto> getCuentasCorrientes() {
-		return cuentasCorrientes;
-	}
-	public void setCuentasCorrientes(Set<CuentaCorrienteDto> cuentasCorrientes) {
-		this.cuentasCorrientes = cuentasCorrientes;
-	}
+//	public CondicionCuentaDto getCondicionCuenta() {
+//		return condicionCuenta;
+//	}
+//	public void setCondicionCuenta(CondicionCuentaDto condicionCuenta) {
+//		this.condicionCuenta = condicionCuenta;
+//	}
+//	public Set<CuentaCorrienteDto> getCuentasCorrientes() {
+//		return cuentasCorrientes;
+//	}
+//	public void setCuentasCorrientes(Set<CuentaCorrienteDto> cuentasCorrientes) {
+//		this.cuentasCorrientes = cuentasCorrientes;
+//	}
 	public VendedorDto getVendedor() {
 		return vendedor;
 	}
@@ -132,24 +132,24 @@ public class CuentaDto implements IsSerializable {
 	public void setResponsablePago(Boolean responsablePago) {
 		this.responsablePago = responsablePago;
 	}
-	public Set<PlanDto> getPlanesPropios() {
-		return planesPropios;
-	}
-	public void setPlanesPropios(Set<PlanDto> planesPropios) {
-		this.planesPropios = planesPropios;
-	}
-	public Set<CuentaPotencialDto> getCuentasPotenciales() {
-		return cuentasPotenciales;
-	}
-	public void setCuentasPotenciales(Set<CuentaPotencialDto> cuentasPotenciales) {
-		this.cuentasPotenciales = cuentasPotenciales;
-	}
-	public CuentaPotencialDto getCuentaPotencialOrigen() {
-		return cuentaPotencialOrigen;
-	}
-	public void setCuentaPotencialOrigen(CuentaPotencialDto cuentaPotencialOrigen) {
-		this.cuentaPotencialOrigen = cuentaPotencialOrigen;
-	}
+//	public Set<PlanDto> getPlanesPropios() {
+//		return planesPropios;
+//	}
+//	public void setPlanesPropios(Set<PlanDto> planesPropios) {
+//		this.planesPropios = planesPropios;
+//	}
+//	public Set<CuentaPotencialDto> getCuentasPotenciales() {
+//		return cuentasPotenciales;
+//	}
+//	public void setCuentasPotenciales(Set<CuentaPotencialDto> cuentasPotenciales) {
+//		this.cuentasPotenciales = cuentasPotenciales;
+//	}
+//	public CuentaPotencialDto getCuentaPotencialOrigen() {
+//		return cuentaPotencialOrigen;
+//	}
+//	public void setCuentaPotencialOrigen(CuentaPotencialDto cuentaPotencialOrigen) {
+//		this.cuentaPotencialOrigen = cuentaPotencialOrigen;
+//	}
 	public PersonaDto getPersona() {
 		return persona;
 	}
@@ -168,19 +168,19 @@ public class CuentaDto implements IsSerializable {
 	public void setRubro(RubroDto rubro) {
 		this.rubro = rubro;
 	}
-	public Set<ServicioAdicionalDto> getServiciosAdicionales() {
-		return serviciosAdicionales;
-	}
-	public void setServiciosAdicionales(
-			Set<ServicioAdicionalDto> serviciosAdicionales) {
-		this.serviciosAdicionales = serviciosAdicionales;
-	}
-	public Set<SolicitudServicioDto> getSolicitudesServicio() {
-		return solicitudesServicio;
-	}
-	public void setSolicitudesServicio(Set<SolicitudServicioDto> solicitudesServicio) {
-		this.solicitudesServicio = solicitudesServicio;
-	}
+//	public Set<ServicioAdicionalDto> getServiciosAdicionales() {
+//		return serviciosAdicionales;
+//	}
+//	public void setServiciosAdicionales(
+//			Set<ServicioAdicionalDto> serviciosAdicionales) {
+//		this.serviciosAdicionales = serviciosAdicionales;
+//	}
+//	public Set<SolicitudServicioDto> getSolicitudesServicio() {
+//		return solicitudesServicio;
+//	}
+//	public void setSolicitudesServicio(Set<SolicitudServicioDto> solicitudesServicio) {
+//		this.solicitudesServicio = solicitudesServicio;
+//	}
 	public TipoCanalVentasDto getTipoCanalVentas() {
 		return tipoCanalVentas;
 	}

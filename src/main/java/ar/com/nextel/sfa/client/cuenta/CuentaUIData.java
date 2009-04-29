@@ -1,10 +1,14 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
+import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -32,14 +36,15 @@ public class CuentaUIData extends UIData {
 	private ListBox rubro            = new ListBox();
 	private ListBox formaPago        = new ListBox();
 	private ListBox claseCliente     = new ListBox();
+	private ListBox proveedorAnterior= new ListBox();
 	
 	private TextBox numeroDocumento  = new TextBox();
 	private TextBox razonSocial      = new TextBox();
 	private TextBox nombre           = new TextBox();
 	private TextBox apellido         = new TextBox();
 	private TextBox categoria        = new TextBox();
+	private TextBox iibb             = new TextBox();
 	private TextBox cicloFacturacion = new TextBox();
-	private TextBox provedorAnterior = new TextBox();
 	private TextBox emailPersonal    = new TextBox();
 	private TextBox emailLaboral     = new TextBox();
 	
@@ -57,6 +62,7 @@ public class CuentaUIData extends UIData {
 	private SimpleLink cancelar = new SimpleLink(Sfa.constant().cancelar(), "#", true);
 
 	PersonaDto persona = new PersonaDto();
+	List <TipoTelefonoDto>tipoTelefono = new ArrayList();
 
 	public CuentaUIData() {
 		observaciones.addStyleName("textAreaCuentaData");
@@ -68,10 +74,11 @@ public class CuentaUIData extends UIData {
 		fields.add(sexo);
 		fields.add(fechaNacimiento);
 		fields.add(contribuyente);
-		fields.add(provedorAnterior);
+		fields.add(proveedorAnterior);
 		fields.add(rubro);
 		fields.add(claseCliente);
 		fields.add(categoria);
+		fields.add(iibb);
 		fields.add(cicloFacturacion);
 		fields.add(veraz);
 		fields.add(observaciones);
@@ -111,19 +118,23 @@ public class CuentaUIData extends UIData {
 		return sexo;
 	}
 
-	public Widget getFechaNacimiento() {
+	public Widget getFechaNacimientoGrid() {
 		Grid datePickerFull = new Grid(1, 2);
 		datePickerFull.setWidget(0, 0, fechaNacimiento.getTextBox());
 		datePickerFull.setWidget(0, 1, fechaNacimiento);
 		return datePickerFull;
 	}
 
+	public SimpleDatePicker getFechaNacimiento() {
+		return fechaNacimiento;
+	}
+
 	public ListBox getContribuyente() {
 		return contribuyente;
 	}
 
-	public TextBox getProvedorAnterior() {
-		return provedorAnterior;
+	public ListBox getProveedorAnterior() {
+		return proveedorAnterior;
 	}
 
 	public ListBox getRubro() {
@@ -201,7 +212,13 @@ public class CuentaUIData extends UIData {
 	public SimpleLink getCancelar() {
 		return cancelar;
 	}
+	public TextBox getIibb() {
+		return iibb;
+	}
+
 	
+
+
 	private void setCombos() {
 		CuentaRpcService.Util.getInstance().getAgregarCuentaInitializer(
 			new DefaultWaitCallback<AgregarCuentaInitializer>() {
@@ -212,6 +229,7 @@ public class CuentaUIData extends UIData {
 					sexo.addAllItems(result.getSexo());
 					claseCliente.addAllItems(result.getClaseCliente());
 					formaPago.addAllItems(result.getFormaPago());
+					proveedorAnterior.addAllItems(result.getProveedorAnterior());
 				}
 			});
 
@@ -227,4 +245,5 @@ public class CuentaUIData extends UIData {
 		persona.setSexo(new SexoDto(Long.parseLong(sexo.getSelectedItem().getItemValue()),sexo.getSelectedItem().getItemText()));
 		return persona;
 	}
+
 }
