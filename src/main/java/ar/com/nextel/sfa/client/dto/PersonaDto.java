@@ -27,7 +27,7 @@ public class PersonaDto implements IsSerializable {
 	public List<DomiciliosCuentaDto> getDomicilios() {
 		return domicilios;
 	}
-	public void setDomicilios( List<DomiciliosCuentaDto> domicilios) {
+	public void setDomicilios(List<DomiciliosCuentaDto> domicilios) {
 		this.domicilios = domicilios;
 	}
 	public Long getIdTipoDocumento() {
