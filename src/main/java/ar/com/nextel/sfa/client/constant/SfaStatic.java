@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.constant;
 
 /**
  * Interface to represent the constants contained in resource bundle:
- * 	'/home/esalvador/workspaceSFASVN/sfa-web2/target/classes/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
+ * 	'/home/jlgperez/workspaceSFASVN/sfa-web2/target/classes/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
  */
 public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
@@ -367,6 +367,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String entrega();
 
   /**
+   * Translated "<span class=\"req\">Entrega:</span>".
+   * 
+   * @return translated "<span class=\"req\">Entrega:</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Entrega:</span>")
+  @Key("entregaReq")
+  String entregaReq();
+
+  /**
    * Translated "Estado:".
    * 
    * @return translated "Estado:"
@@ -392,6 +401,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Facturación:")
   @Key("facturacion")
   String facturacion();
+
+  /**
+   * Translated "<span class=\"req\">Facturación:</span>".
+   * 
+   * @return translated "<span class=\"req\">Facturación:</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Facturación:</span>")
+  @Key("facturacionReq")
+  String facturacionReq();
 
   /**
    * Translated "Fax:".
@@ -565,6 +583,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String nflota();
 
   /**
+   * Translated "no".
+   * 
+   * @return translated "no"
+   */
+  @DefaultStringValue("no")
+  @Key("no")
+  String no();
+
+  /**
    * Translated "Nombre:".
    * 
    * @return translated "Nombre:"
@@ -579,8 +606,8 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
    * @return translated "<span class=\"req\">NºSS:</span>"
    */
   @DefaultStringValue("<span class=\"req\">NºSS:</span>")
-  @Key("nss")
-  String nss();
+  @Key("nssReq")
+  String nssReq();
 
   /**
    * Translated "Número:".
@@ -651,8 +678,8 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
    * @return translated "<span class=\"req\">Origen:</span>"
    */
   @DefaultStringValue("<span class=\"req\">Origen:</span>")
-  @Key("origen")
-  String origen();
+  @Key("origenReq")
+  String origenReq();
 
   /**
    * Translated "Partido:".
@@ -842,6 +869,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Sexo:")
   @Key("sexo")
   String sexo();
+
+  /**
+   * Translated "si".
+   * 
+   * @return translated "si"
+   */
+  @DefaultStringValue("si")
+  @Key("si")
+  String si();
 
   /**
    * Translated "SS:".
