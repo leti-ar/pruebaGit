@@ -111,7 +111,7 @@ public class UILoader extends SimplePanel implements HistoryListener {
 			break;
 		case EDITAR_CUENTA:
 			pages[EDITAR_CUENTA] = new EditarCuentaUI();
-			break;			
+			break;
 		default:
 			GWT.log("Page not found. Check PageLoader.createPageWidget()", null);
 			break;
@@ -121,9 +121,10 @@ public class UILoader extends SimplePanel implements HistoryListener {
 	public void onHistoryChanged(String historyToken) {
 		String token = HistoryUtils.getToken(historyToken);
 		if (token == null || "".equals(token)) {
-			return;
+			setPage(SOLO_MENU);
+		} else {
+			int nToken = Integer.parseInt(token);
+			setPage(nToken);
 		}
-		int nToken = Integer.parseInt(token);
-		setPage(nToken);
 	}
 }
