@@ -45,6 +45,7 @@ public class CuentaRpcServiceDelegate {
 
 	
 	public void getVerazInitializer(DefaultWaitCallback<VerazInitializer> callback) {
+		WaitWindow.show();
 		cuentaRpcService.getVerazInitializer(callback);
 	}
 	
@@ -54,6 +55,7 @@ public class CuentaRpcServiceDelegate {
 //	}
 	
 	public void consultarVeraz(PersonaDto personaDto, DefaultWaitCallback callback) {
+		WaitWindow.show();
 		cuentaRpcService.consultarVeraz(personaDto, callback);
 	}
 	

@@ -7,6 +7,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
 public class SolicitudRpcServiceDelegate {
 
@@ -21,16 +22,19 @@ public class SolicitudRpcServiceDelegate {
 
 	public void createSolicitudServicio(SolicitudServicioRequestDto solicitudServicioRequestDto,
 			DefaultWaitCallback<SolicitudServicioDto> callback) {
+		WaitWindow.show();
 		solicitudRpcServiceAsync.createSolicitudServicio(solicitudServicioRequestDto, callback);
 
 	}
 
 	public void getSolicitudInitializer(DefaultWaitCallback<SolicitudInitializer> callback) {
+		WaitWindow.show();
 		solicitudRpcServiceAsync.getSolicitudInitializer(callback);
 	}
 
 	public void saveSolicituServicio(SolicitudServicioDto solicitudServicioDto,
 			DefaultWaitCallback<SolicitudServicioDto> callback) {
+		WaitWindow.show();
 		solicitudRpcServiceAsync.saveSolicituServicio(solicitudServicioDto, callback);
 	}
 
