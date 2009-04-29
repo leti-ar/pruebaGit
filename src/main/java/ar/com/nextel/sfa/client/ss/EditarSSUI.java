@@ -1,5 +1,7 @@
 package ar.com.nextel.sfa.client.ss;
 
+import java.util.List;
+
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
@@ -14,6 +16,8 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TabPanel;
@@ -30,6 +34,10 @@ public class EditarSSUI extends ApplicationUI implements ClickListener {
 	private EditarSSUIData editarSSUIData;
 	private FormButtonsBar formButtonsBar;
 	private RazonSocialClienteBar razonSocialClienteBar;
+	private SimpleLink guardarButton;
+	private SimpleLink cancelarButton;
+	private Button validarCompletitud;
+	private static final String validarCompletitudFailStyle = "validarCompletitudFailButton";
 
 	public EditarSSUI() {
 		super();
@@ -49,14 +57,15 @@ public class EditarSSUI extends ApplicationUI implements ClickListener {
 			SolicitudServicioRequestDto solicitudServicioRequestDto = new SolicitudServicioRequestDto();
 			solicitudServicioRequestDto.setIdCuenta(Long.parseLong(cuenta));
 			solicitudServicioRequestDto.setIdCuentaPotencial(null);
-			//solicitudServicioRequestDto.setNumeroCuenta(numeroCuenta);
+			// solicitudServicioRequestDto.setNumeroCuenta(numeroCuenta);
 			solicitudServicioRequestDto.setIdGrupoSolicitud(1l);
 			SolicitudRpcService.Util.getInstance().createSolicitudServicio(solicitudServicioRequestDto,
 					new DefaultWaitCallback<SolicitudServicioDto>() {
 						public void success(SolicitudServicioDto solicitud) {
-//							if(solicitud.ge)
-//							razonSocialClienteBar
+							// if(solicitud.ge)
+							// razonSocialClienteBar
 							editarSSUIData.setSolicitud(solicitud);
+							validarCompletitud(false);
 						}
 					});
 			mainPanel.setVisible(true);
@@ -64,11 +73,12 @@ public class EditarSSUI extends ApplicationUI implements ClickListener {
 	}
 
 	private void init() {
-		razonSocialClienteBar  = new RazonSocialClienteBar();
+		razonSocialClienteBar = new RazonSocialClienteBar();
 		mainPanel.add(razonSocialClienteBar);
-		
-		Button validarCompletitud = new Button("Validar Completitud");
+
+		validarCompletitud = new Button("Validar Completitud");
 		validarCompletitud.addStyleName("validarCompletitudButton");
+		validarCompletitud.addClickListener(this);
 		mainPanel.add(validarCompletitud);
 		tabs = new TabPanel();
 		tabs.setWidth("98%");
@@ -78,23 +88,25 @@ public class EditarSSUI extends ApplicationUI implements ClickListener {
 		tabs.add(datos = new DatosSSUI(editarSSUIData), "Datos");
 		tabs.add(varios = new VariosSSUI(editarSSUIData), "Varios");
 		tabs.selectTab(0);
-		SolicitudRpcService.Util.getInstance().getSolicitudInitializer(new DefaultWaitCallback<SolicitudInitializer>(){
-			public void success(SolicitudInitializer initializer) {
-				loadInitializer(initializer);
-			};
-		});
+		SolicitudRpcService.Util.getInstance().getSolicitudInitializer(
+				new DefaultWaitCallback<SolicitudInitializer>() {
+					public void success(SolicitudInitializer initializer) {
+						loadInitializer(initializer);
+					};
+				});
 		formButtonsBar = new FormButtonsBar();
 		mainPanel.add(formButtonsBar);
 		formButtonsBar.addStyleName("mt10");
-		SimpleLink guardarButton = new SimpleLink("Guardar");
-		SimpleLink cancelarButton = new SimpleLink("Cancelar");
+		guardarButton = new SimpleLink("Guardar");
+		cancelarButton = new SimpleLink("Cancelar");
 		formButtonsBar.addLink(guardarButton);
 		formButtonsBar.addLink(new SimpleLink("^SS"));
 		formButtonsBar.addLink(cancelarButton);
 		guardarButton.addClickListener(this);
+		cancelarButton.addClickListener(this);
 	}
-	
-	private void loadInitializer(SolicitudInitializer initializer){
+
+	private void loadInitializer(SolicitudInitializer initializer) {
 		editarSSUIData.getOrigen().addAllItems(initializer.getOrigenesSolicitud());
 		editarSSUIData.getAnticipo().addAllItems(initializer.getTiposAnticipo());
 	}
@@ -108,14 +120,34 @@ public class EditarSSUI extends ApplicationUI implements ClickListener {
 	}
 
 	public void onClick(Widget sender) {
-		
+		if (sender == guardarButton) {
+			guardar();
+		} else if (sender == cancelarButton) {
+			History.newItem("");
+			History.fireCurrentHistoryState();
+		} else if (sender == validarCompletitud) {
+			validarCompletitud(true);
+		}
 	}
-	
-	private void guardar(){
-		SolicitudRpcService.Util.getInstance().saveSolicituServicio(new SolicitudServicioDto(), new DefaultWaitCallback<SolicitudServicioDto>(){
-			public void success(SolicitudServicioDto result) {
-				
+
+	private void guardar() {
+		SolicitudRpcService.Util.getInstance().saveSolicituServicio(editarSSUIData.getSolicitudServicio(),
+				new DefaultWaitCallback<SolicitudServicioDto>() {
+					public void success(SolicitudServicioDto result) {
+Window.alert("Se ha guardado la solicitud con exito");
+					}
+				});
+	}
+
+	private void validarCompletitud(boolean showErrorDialog) {
+		List<String> errors = editarSSUIData.validarCompletitud();
+		if (!errors.isEmpty()) {
+			validarCompletitud.addStyleName(validarCompletitudFailStyle);
+			if (showErrorDialog) {
+				ErrorDialog.getInstance().show(errors);
 			}
-		});
+		} else {
+			validarCompletitud.removeStyleName(validarCompletitudFailStyle);
+		}
 	}
 }
