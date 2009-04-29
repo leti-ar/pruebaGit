@@ -19,6 +19,7 @@ import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -30,6 +31,7 @@ public class CuentaDatosForm extends Composite {
 	private FlexTable telefonoTable;
 	private FlexTable emailTable;
 	private FlexTable formaDePagoTable;
+	private FlexTable vendedorTable;
 	private DualPanel fechaUsuarioTable;
 	private FlexTable usuario;
 	private FlexTable fechaCreacion;
@@ -55,8 +57,8 @@ public class CuentaDatosForm extends Composite {
 		mainPanel.setWidget(1,0,createTelefonoPanel());
 		mainPanel.setWidget(2,0,createEmailPanel());
 		mainPanel.setWidget(3,0,createFormaDePagoPanel());
-		mainPanel.setWidget(4,0,createFechaUsuarioPanel());
-		//mainPanel.addStyleName("aButtons");
+		mainPanel.setWidget(4,0,createVendedorPanel());
+		mainPanel.setWidget(5,0,createFechaUsuarioPanel());
 		
 		cuentaEditor.getGuardar().setStyleName("link");
 		cuentaEditor.getCrearSS().setStyleName("link");
@@ -89,54 +91,68 @@ public class CuentaDatosForm extends Composite {
 
 	private Widget createDatosCuentaPanel() {
 		datosCuentaTable = new FlexTable();
-		datosCuentaTable.setWidth("100%");
+		datosCuentaTable.setWidth("80%");
+		datosCuentaTable.addStyleName("layout");
 		
 		datosCuentaTable.getFlexCellFormatter().setColSpan(1, 1, 4);
 		cuentaEditor.getRazonSocial().setWidth("90%");
 		
 		TitledPanel datosCuentaPanel = new TitledPanel(Sfa.constant().cuentaPanelTitle());
-
-		datosCuentaTable.setText(0, 0, Sfa.constant().tipoDocumento());
-		datosCuentaTable.setWidget(0, 1, cuentaEditor.getTipoDocumento());
-		datosCuentaTable.setText(0, 3, Sfa.constant().numero());
-		datosCuentaTable.setWidget(0, 4, cuentaEditor.getNumeroDocumento());
-		datosCuentaTable.setText(1, 0, Sfa.constant().razonSocial());
-		datosCuentaTable.setWidget(1, 1, cuentaEditor.getRazonSocial());
-		datosCuentaTable.setText(2, 0, Sfa.constant().nombre());
-		datosCuentaTable.setWidget(2, 1, cuentaEditor.getNombre());
-		datosCuentaTable.setText(2, 3, Sfa.constant().apellido());
-		datosCuentaTable.setWidget(2, 4, cuentaEditor.getApellido());
-		datosCuentaTable.setText(3, 0, Sfa.constant().sexo());
-		datosCuentaTable.setWidget(3, 1, cuentaEditor.getSexo());
-		datosCuentaTable.setText(3, 3, Sfa.constant().fechaNacimiento());
-		datosCuentaTable.setWidget(3, 4, cuentaEditor.getFechaNacimientoGrid());
-		datosCuentaTable.setText(4, 0, Sfa.constant().contribuyente());
-		datosCuentaTable.setWidget(4, 1, cuentaEditor.getContribuyente());
-		datosCuentaTable.setText(5, 0, Sfa.constant().provedorAnterior());
-		datosCuentaTable.setWidget(5, 1, cuentaEditor.getProveedorAnterior());
-		datosCuentaTable.setText(5, 3, Sfa.constant().rubro());
-		datosCuentaTable.setWidget(5, 4, cuentaEditor.getRubro());
-		datosCuentaTable.setText(6, 0, Sfa.constant().claseCliente());
-		datosCuentaTable.setWidget(6, 1, cuentaEditor.getClaseCliente());
-		datosCuentaTable.setText(6, 3, Sfa.constant().categoria());
-		datosCuentaTable.setWidget(6, 4, cuentaEditor.getCategoria());
-		datosCuentaTable.setText(7, 0, Sfa.constant().cicloFacturacion());
-		datosCuentaTable.setWidget(7, 1, cuentaEditor.getCicloFacturacion());
-		datosCuentaTable.setText(7, 3, Sfa.constant().veraz());
-		datosCuentaTable.setWidget(7, 4, cuentaEditor.getVeraz());
-
-		datosCuentaTable.getFlexCellFormatter().setColSpan(1, 1, 4);
-		
-//		datosCuentaPanel.addStyleName("abmPanel");
-//		datosCuentaTable.addStyleName("abmPanelChild");
+        int row = 0;
+		datosCuentaTable.setText(row, 0, Sfa.constant().tipoDocumento());
+		datosCuentaTable.setWidget(row, 1, cuentaEditor.getTipoDocumento());
+		datosCuentaTable.setText(row, 3, Sfa.constant().numero());
+		datosCuentaTable.setWidget(row, 4, cuentaEditor.getNumeroDocumento());
+		row++; 
+		datosCuentaTable.setText(row, 0, Sfa.constant().razonSocial());
+		datosCuentaTable.setWidget(row, 1, cuentaEditor.getRazonSocial());
+		datosCuentaTable.getFlexCellFormatter().setColSpan(row, 1, 4);
+		row++;
+		datosCuentaTable.setText(row, 0, Sfa.constant().nombre());
+		datosCuentaTable.setWidget(row, 1, cuentaEditor.getNombre());
+		datosCuentaTable.setText(row, 3, Sfa.constant().apellido());
+		datosCuentaTable.setWidget(row, 4, cuentaEditor.getApellido());
+		row++;
+		datosCuentaTable.setText(row, 0, Sfa.constant().sexo());
+		datosCuentaTable.setWidget(row, 1, cuentaEditor.getSexo());
+		datosCuentaTable.setText(row, 3, Sfa.constant().fechaNacimiento());
+		datosCuentaTable.setWidget(row, 4, cuentaEditor.getFechaNacimientoGrid());
+		row++;
+		datosCuentaTable.setText(row, 0, Sfa.constant().contribuyente());
+		datosCuentaTable.setWidget(row, 1, cuentaEditor.getContribuyente());
+		datosCuentaTable.setText(row, 3, Sfa.constant().cargo());
+		datosCuentaTable.setWidget(row, 4, cuentaEditor.getCargo());
+		row++;
+		datosCuentaTable.setText(row, 0, Sfa.constant().iibb());
+		datosCuentaTable.setWidget(row, 1, cuentaEditor.getIibb());
+		datosCuentaTable.setText(row, 3, Sfa.constant().nombreDivision());
+		datosCuentaTable.setWidget(row, 4, cuentaEditor.getNombreDivision());
+		row++;
+		datosCuentaTable.setText(row, 0, Sfa.constant().provedorAnterior());
+		datosCuentaTable.setWidget(row, 1, cuentaEditor.getProveedorAnterior());
+		datosCuentaTable.setText(row, 3, Sfa.constant().rubro());
+		datosCuentaTable.setWidget(row, 4, cuentaEditor.getRubro());
+		row++;
+		datosCuentaTable.setText(row, 0, Sfa.constant().claseCliente());
+		datosCuentaTable.setWidget(row, 1, cuentaEditor.getClaseCliente());
+		datosCuentaTable.setText(row, 3, Sfa.constant().categoria());
+		datosCuentaTable.setWidget(row, 4, cuentaEditor.getCategoria());
+		row++;
+		datosCuentaTable.setText(row, 0, Sfa.constant().cicloFacturacion());
+		datosCuentaTable.setWidget(row, 1, cuentaEditor.getCicloFacturacion());
+		datosCuentaTable.setText(row, 3, Sfa.constant().veraz());
+		datosCuentaTable.setWidget(row, 4, cuentaEditor.getVeraz());
+		row++;
+		datosCuentaTable.setText(row, 0, Sfa.constant().use());
+		datosCuentaTable.setWidget(row, 1, cuentaEditor.getUse());
 		datosCuentaPanel.add(datosCuentaTable);
-		
 		return datosCuentaPanel;
 	}
 
 	private Widget createTelefonoPanel() {
 		telefonoTable = new FlexTable();
-		telefonoTable.setWidth("95%");
+		telefonoTable.setWidth("80%");
+		telefonoTable.addStyleName("layout");
 		TitledPanel telefonoPanel = new TitledPanel(Sfa.constant().telefonoPanelTitle());
 		telefonoPanel.add(telefonoTable);
 		cuentaEditor.getObservaciones().addStyleName("obsTextAreaCuentaDatos");
@@ -157,6 +173,8 @@ public class CuentaDatosForm extends Composite {
 
 	private Widget createEmailPanel() {
 		emailTable = new FlexTable();
+		emailTable.setWidth("80%");
+		emailTable.addStyleName("layout");
 		TitledPanel emailPanel = new TitledPanel(Sfa.constant().emailPanelTitle());
 		emailPanel.add(emailTable);
 		
@@ -169,18 +187,43 @@ public class CuentaDatosForm extends Composite {
 
 	private Widget createFormaDePagoPanel() {
 		formaDePagoTable = new FlexTable();
+		formaDePagoTable.setWidth("100%");
+		formaDePagoTable.setWidget(0, 0, cuentaEditor.getCuentaBancariaPanel());
+		formaDePagoTable.setWidget(1, 0, cuentaEditor.getTarjetaCreditoPanel());
+		formaDePagoTable.setWidget(2, 0, cuentaEditor.getEfectivoPanel());
+		
 		TitledPanel formaDePagoPanel = new TitledPanel(Sfa.constant().formaDePagoPanelTitle());
 		formaDePagoPanel.add(formaDePagoTable);
 		
-		formaDePagoTable.setText(0, 0, Sfa.constant().modalidad());
-		formaDePagoTable.setWidget(0, 1, cuentaEditor.getFormaPago());		
 		return formaDePagoPanel;
+	}
+	
+	private Widget createVendedorPanel() {
+		vendedorTable = new FlexTable();
+		vendedorTable.setWidth("80%");
+		vendedorTable.addStyleName("layout");
+		TitledPanel vendedorPanel = new TitledPanel(Sfa.constant().vendedorPanelTitle());
+		vendedorPanel.add(vendedorTable);
+		
+		vendedorTable.setText(0, 0, Sfa.constant().vendedorNombre());
+		vendedorTable.setWidget(0, 1, cuentaEditor.getVendedorNombre());
+		vendedorTable.setText(0, 2, null);
+		vendedorTable.setWidget(0, 3, null);
+		
+		vendedorTable.setText(1, 0, Sfa.constant().telefono());
+		vendedorTable.setWidget(1, 1, cuentaEditor.getVendedorTelefono());
+		vendedorTable.setText(1, 2, Sfa.constant().canalVentas());
+		vendedorTable.setWidget(1, 3, cuentaEditor.getVendedorCanal());
+		
+		return vendedorPanel;
 	}
 	
 	private Widget createFechaUsuarioPanel() {
 		fechaUsuarioTable = new DualPanel();
 		usuario = new FlexTable();
 		fechaCreacion = new FlexTable();
+		usuario.addStyleName("layout");
+		fechaCreacion.addStyleName("layout");
 		usuario.setText(0, 0, Sfa.constant().usuario());
 		usuario.setWidget(0, 1, cuentaEditor.getUsuario());
 		fechaCreacion.setText(0, 0, Sfa.constant().fechaCreacion());
@@ -217,10 +260,14 @@ public class CuentaDatosForm extends Composite {
 			cuentaEditor.getSexo().setSelectedItem(cuentaDto.getPersona().getSexo());
 			cuentaEditor.getFechaNacimiento().setSelectedDate(cuentaDto.getPersona().getFechaNacimiento());
 			cuentaEditor.getContribuyente().setSelectedItem(cuentaDto.getTipoContribuyente());
+			cuentaEditor.getIibb().setText(cuentaDto.getIibb());
+			cuentaEditor.getNombreDivision().setText("TODO");
+			//cuentaEditor.getCarto(). TODO
 			cuentaEditor.getProveedorAnterior().setSelectedItem(cuentaDto.getProveedorInicial());
 			cuentaEditor.getCategoria().setText(cuentaDto.getCategoriaCuenta().getDescripcion());
 			cuentaEditor.getClaseCliente().setSelectedItem(cuentaDto.getClaseCuenta());
 			cuentaEditor.getCicloFacturacion().setText(cuentaDto.getCicloFacturacion().getCodigoFNCL());
+			cuentaEditor.getUse().setText(cuentaDto.getUse());
 
 			//area telefono
 			for (int i=0;i<cuentaDto.getPersona().getTelefonos().size();i++) {
@@ -264,6 +311,9 @@ public class CuentaDatosForm extends Composite {
 			//Forma de Pago
 
 			//Vendedor
+			cuentaEditor.getVendedorNombre().setText(cuentaDto.getVendedor()!=null?cuentaDto.getVendedor().getNombre():"");
+			cuentaEditor.getVendedorTelefono().setText(cuentaDto.getVendedor()!=null?cuentaDto.getVendedor().getTelefono():"");
+			cuentaEditor.getVendedorCanal().setText("TODO");
 			
 		}
 	}

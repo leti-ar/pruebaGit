@@ -4,15 +4,13 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class FormaPagoDto implements IsSerializable, ListBoxItem {
-    
+public class CargoDto implements ListBoxItem, IsSerializable {
+
 	private long id;
-	private String codigoVantive;
+    private String codigo;
     private String descripcion;
-	public String getCodigoVantive() {
-		return codigoVantive;
-	}
-	public String getItemText() {
+	
+    public String getItemText() {
 		return descripcion;
 	}
 	public String getItemValue() {
@@ -24,8 +22,11 @@ public class FormaPagoDto implements IsSerializable, ListBoxItem {
 	public void setId(long id) {
 		this.id = id;
 	}
-	public void setCodigoVantive(String codigoVantive) {
-		this.codigoVantive = codigoVantive;
+	public String getCodigo() {
+		return codigo;
+	}
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
 	}
 	public String getDescripcion() {
 		return descripcion;
@@ -33,5 +34,4 @@ public class FormaPagoDto implements IsSerializable, ListBoxItem {
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
-
 }

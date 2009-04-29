@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class UsuarioDto implements IsSerializable{
+public class UsuarioDto implements IsSerializable {
 
 	private Long id;
 	private String userName;

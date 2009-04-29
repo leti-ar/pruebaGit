@@ -1,10 +1,27 @@
 package ar.com.nextel.sfa.client.dto;
 
+import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class TipoCuentaBancariaDto implements IsSerializable {
-    private String codigoVantive;
+public class TipoCuentaBancariaDto implements ListBoxItem, IsSerializable {
+    
+	private long id;
+	private String codigoVantive;
     private String descripcion;
+
+    public String getItemText() {
+		return descripcion;
+	}
+	public String getItemValue() {
+		return id + "";
+	}
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	public String getCodigoVantive() {
 		return codigoVantive;
 	}
@@ -17,5 +34,4 @@ public class TipoCuentaBancariaDto implements IsSerializable {
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
-
 }
