@@ -213,7 +213,7 @@ public class CuentaDatosForm extends Composite {
 		vendedorTable.setText(1, 0, Sfa.constant().telefono());
 		vendedorTable.setWidget(1, 1, cuentaEditor.getVendedorTelefono());
 		vendedorTable.setText(1, 2, Sfa.constant().canalVentas());
-		vendedorTable.setWidget(1, 3, cuentaEditor.getVendedorCanal());
+		vendedorTable.setWidget(1, 3, cuentaEditor.getTipoCanalVentas());
 		
 		return vendedorPanel;
 	}
@@ -313,7 +313,7 @@ public class CuentaDatosForm extends Composite {
 			//Vendedor
 			cuentaEditor.getVendedorNombre().setText(cuentaDto.getVendedor()!=null?cuentaDto.getVendedor().getNombre():"");
 			cuentaEditor.getVendedorTelefono().setText(cuentaDto.getVendedor()!=null?cuentaDto.getVendedor().getTelefono():"");
-			cuentaEditor.getVendedorCanal().setText("TODO");
+			//cuentaEditor.getVendedorCanal().setText("TODO");
 			
 		}
 	}

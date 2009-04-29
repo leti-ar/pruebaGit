@@ -3,8 +3,6 @@ package ar.com.nextel.sfa.server;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -28,6 +26,7 @@ import ar.com.nextel.model.cuentas.beans.ClaseCuenta;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.FormaPago;
 import ar.com.nextel.model.cuentas.beans.Proveedor;
+import ar.com.nextel.model.cuentas.beans.TipoCanalVentas;
 import ar.com.nextel.model.cuentas.beans.TipoContribuyente;
 import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
@@ -55,6 +54,7 @@ import ar.com.nextel.sfa.client.dto.RubroDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
+import ar.com.nextel.sfa.client.dto.TipoCanalVentasDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.dto.TipoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
@@ -196,6 +196,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		buscarDTOinit.setCargo(mapper.convertList(genericDao.getList(Cargo.class),CargoDto.class));
 		buscarDTOinit.setTipoCuentaBancaria(mapper.convertList(genericDao.getList(TipoCuentaBancaria.class),TipoCuentaBancariaDto.class));
 		buscarDTOinit.setTipoTarjeta(mapper.convertList(genericDao.getList(TipoTarjeta.class),TipoTarjetaDto.class));
+		buscarDTOinit.setTipoCanalVentas(mapper.convertList(genericDao.getList(TipoCanalVentas.class),TipoCanalVentasDto.class));
 		buscarDTOinit.setAnio(Calendar.getInstance().get(Calendar.YEAR));
 		return buscarDTOinit;
 	}

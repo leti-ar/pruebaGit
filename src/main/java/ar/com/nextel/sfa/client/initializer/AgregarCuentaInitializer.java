@@ -9,6 +9,7 @@ import ar.com.nextel.sfa.client.dto.FormaPagoDto;
 import ar.com.nextel.sfa.client.dto.ProveedorDto;
 import ar.com.nextel.sfa.client.dto.RubroDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
+import ar.com.nextel.sfa.client.dto.TipoCanalVentasDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.dto.TipoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
@@ -31,6 +32,7 @@ public class AgregarCuentaInitializer implements IsSerializable {
 	private List<CargoDto> cargo = new ArrayList<CargoDto>();
 	private List<TipoCuentaBancariaDto> tipoCuentaBancaria = new ArrayList<TipoCuentaBancariaDto>();
 	private List<TipoTarjetaDto> tipoTarjeta = new ArrayList<TipoTarjetaDto>();
+	private List<TipoCanalVentasDto> tipoCanalVentas = new ArrayList<TipoCanalVentasDto>();
 	private int anio;
 	
 	public AgregarCuentaInitializer() {	};  
@@ -140,11 +142,15 @@ public class AgregarCuentaInitializer implements IsSerializable {
 	public void setCargo(List<CargoDto> cargo) {
 		this.cargo = cargo;
 	}
-
+	public List<TipoCanalVentasDto> getTipoCanalVentas() {
+		return tipoCanalVentas;
+	}
+	public void setTipoCanalVentas(List<TipoCanalVentasDto> tipoCanalVentas) {
+		this.tipoCanalVentas = tipoCanalVentas;
+	}
 	public int getAnio() {
 		return anio;
 	}
-
 	public void setAnio(int anio) {
 		this.anio = anio;
 	}

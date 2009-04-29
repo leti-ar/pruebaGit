@@ -43,6 +43,7 @@ public class CuentaUIData extends UIData {
 	private ListBox cargo             = new ListBox();
 	private ListBox tipoCuentaBancaria= new ListBox();
 	private ListBox tipoTarjeta       = new ListBox();
+	private ListBox tipoCanalVentas   = new ListBox();
 	private ListBox mesVto            = new ListBox();
 	private ListBox anioVto           = new ListBox();
 	
@@ -61,7 +62,6 @@ public class CuentaUIData extends UIData {
 	
 	private TextBox vendedorNombre   = new TextBox();
 	private Label   vendedorTelefono = new Label();
-	private Label   vendedorCanal    = new Label();
 	private Label   use              = new Label();
 	
 	private TextArea observaciones = new TextArea();
@@ -122,7 +122,7 @@ public class CuentaUIData extends UIData {
 		fields.add(formaPago);
 		fields.add(vendedorNombre);
 		fields.add(vendedorTelefono);
-		fields.add(vendedorCanal);
+		fields.add(tipoCanalVentas);
 		fields.add(guardar);
 		fields.add(crearSS);
 		fields.add(agregar);
@@ -267,10 +267,6 @@ public class CuentaUIData extends UIData {
 		return vendedorTelefono;
 	}
 
-	public Label getVendedorCanal() {
-		return vendedorCanal;
-	}
-
 	public ListBox getCargo() {
 		return cargo;
 	}
@@ -288,6 +284,10 @@ public class CuentaUIData extends UIData {
 
 	public ListBox getTipoTarjeta() {
 		return tipoTarjeta;
+	}
+
+	public ListBox getTipoCanalVentas() {
+		return tipoCanalVentas;
 	}
 
 	public ListBox getMesVto() {
@@ -324,6 +324,7 @@ public class CuentaUIData extends UIData {
 					cargo.addAllItems(result.getCargo());
 					tipoCuentaBancaria.addAllItems(result.getTipoCuentaBancaria());
 					tipoTarjeta.addAllItems(result.getTipoTarjeta());
+					tipoCanalVentas.addAllItems(result.getTipoCanalVentas());
 			        for(int i=0;i<6;i++) {
 			        	String ano = Integer.toString(result.getAnio()+i);
 			 		    anioVto.addItem(ano, ano);
