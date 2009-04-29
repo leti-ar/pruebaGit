@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.client.util;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.google.gwt.user.client.History;
@@ -92,5 +93,27 @@ public class HistoryUtils {
 			params = token.substring(begin, token.length());
 		}
 		return "".equals(params.trim()) ? null : params;
+	}
+
+	/**
+	 * @param params
+	 *            mapa con parametros y valores
+	 * @return String con los parametros de la forma '?param1=value1&param2=value2...'
+	 */
+	public static String getParamsFromMap(Map params) {
+		StringBuilder linea = new StringBuilder();
+		Iterator<Map.Entry> it = params.entrySet().iterator();
+		Map.Entry entry = null;
+		linea.append("?");
+
+		if (it.hasNext()) {
+			entry = it.next();
+			linea.append("" + entry.getKey() + "=" + entry.getValue());
+			while (it.hasNext()) {
+				entry = it.next();
+				linea.append("&" + entry.getKey() + "=" + entry.getValue());
+			}
+		}
+		return linea.toString();
 	}
 }
