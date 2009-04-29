@@ -7,13 +7,17 @@
 
 @IMPORT url("buttons.css");
 
-body,td {
+body,td, .normalText {
 	font-family: Verdana, Arial, sans-serif;
 	font-size: 11px;
 	font-size-adjust: none;
 	font-style: normal;
 	font-variant: normal;
 	font-weight: normal;
+}
+
+A {
+	cursor: pointer;	
 }
 
 *,body {
@@ -77,6 +81,7 @@ body,td {
 	border-color: #AAAAAA;
 	border-style: solid;
 	border-width: 0 1px 1px;
+	background-color: #FFF;
 }
 
 .gwt-TextBox,.gwt-ListBox { 
@@ -178,7 +183,7 @@ body,td {
 	height: 23px;
 }
 
-.layout td, .gwt-Label {
+.layout td, .gwt-Label, .gwt-InlineLabel {
 	font-family: Verdana, Geneva, Kalimati, sans-serif;
 	font-size: 11px;
 	font-weight: bold;
@@ -211,6 +216,11 @@ body,td {
 	line-height: 21px;
 	text-align: center;
 	width: 75px;
+}
+
+.gwt-TabBarRest, .gwt-TabBarFirst{
+	border-bottom: 1px solid #ccc;
+	-moz-box-sizing: border-box;	
 }
 
 .alignRight {
@@ -279,11 +289,9 @@ color: red;
 background-color: #dddddd;	
 }
 
-.crearDomicilioButton{
-background-image:url(images/btn-table-nuevo.gif);
+.crearDomicilioButton, .validarCompletitudButton{
 background-repeat:no-repeat;
 background-color: transparent;
-width: 115px;
 height: 17px;
 font-size:11px;
 font-style:italic;
@@ -294,6 +302,23 @@ float: right;
 padding-left: 20px;
 margin-right: 8px;
 border: none 0px;
+}
+
+.crearDomicilioButton{
+	background-image:url(images/btn-table-nuevo.gif);
+	width: 115px;
+}
+
+.validarCompletitudButton{
+	background-image:url(images/btn-completitud.gif);
+	width: 170px;	
+	margin-top: 5px;
+	position: absolute;
+	right: 10;
+}
+
+.validarCompletitudFailButton{
+	background-image:url(images/btn-completitudFail.gif) !important;
 }
 
 .crearDomicilioBWrapper{
@@ -366,6 +391,23 @@ width:74px;
   border:1px solid #BCBCBC;
 }
 
+.gwt-RazonSocialClienteBar{
+	background-color: #FFF;
+	height: 17px;
+	line-height: 17px;
+	margin: 0px;
+	padding-left: 10px;
+	padding-right: 10px;	
+}
+.gwt-RazonSocialClienteBar .right {
+	float: right;
+	height: 17px;
+	width: 250px;
+	line-height: 17px;
+}
 
-
-
+.resumenSSTableWrapper, .detalleSSTableWrapper {
+	overflow: auto;
+	padding-right: 15px;
+	height: 100px;
+}
