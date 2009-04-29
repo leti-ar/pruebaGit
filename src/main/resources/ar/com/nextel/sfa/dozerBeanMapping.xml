@@ -131,8 +131,12 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<class-a>ar.com.nextel.model.personas.beans.Domicilio</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto</class-b>
 	</mapping>
-		<mapping>
+	<mapping>
 		<class-a>ar.com.nextel.model.personas.beans.TipoDomicilioAsociado</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.TipoDomicilioAsociadoDto</class-b>
+	</mapping>
+	<mapping>
+		<class-a>ar.com.nextel.model.cuentas.beans.Cargo</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.CargoDto</class-b>
 	</mapping>
 </mappings>
