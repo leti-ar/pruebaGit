@@ -6,6 +6,9 @@
 package ar.com.nextel.sfa.server.converter;
 
 import org.dozer.CustomConverter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import ar.com.nextel.framework.IdentifiableObject;
 import ar.com.nextel.framework.repository.Repository;
@@ -20,14 +23,13 @@ import ar.com.nextel.framework.repository.Repository;
  * 
  * @author llowenthal, mroman
  */
+@Component
 public class IdentifiableObjectToIdConverter implements CustomConverter {
 
 	private Repository repository;
 
-	/**
-	 * Carga el repository de la aplicacion (para spring)
-	 */
-	public void setRepository(Repository repository) {
+	@Autowired
+	public void setRepository(@Qualifier("repository")Repository repository) {
 		this.repository = repository;
 	}
 
