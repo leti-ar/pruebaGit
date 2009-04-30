@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xmlns:context="http://www.springframework.org/schema/context"
-	 xmlns:tx="http://www.springframework.org/schema/tx"
-	
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
            http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
            http://www.springframework.org/schema/context
@@ -12,26 +10,24 @@
            http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
 	<context:annotation-config />
-	<context:component-scan base-package="ar.com.nextel.sfa.server.businessservice"/>
+	<context:component-scan base-package="ar.com.nextel.sfa.server.businessservice" />
+	<context:component-scan base-package="ar.com.nextel.sfa.server.converter" />
 	<tx:annotation-driven />
 
 	<import resource="classpath:spring-config.xml" />
 
-	<bean id="dozerMapper" class="ar.com.nextel.sfa.server.util.MapperExtended" >
+	<bean id="dozerMapper" class="ar.com.nextel.sfa.server.util.MapperExtended">
 		<property name="mappingFiles">
 			<list>
 				<value>ar/com/nextel/sfa/dozerBeanMapping.xml</value>
 			</list>
 		</property>
-		<property name="customConverters">
-			<list>
-				<ref bean="identifiableObjectToIdConverter" />
-			</list>
+		<property name="customConvertersWithId">
+			<map>
+				<entry key="identifiableObjectToId" value-ref="identifiableObjectToIdConverter" />
+				<entry key="enumToDto" value-ref="enumToDtoConverter" />
+			</map>
 		</property>
 	</bean>
 
-	<bean name="identifiableObjectToIdConverter"
-		class="ar.com.nextel.sfa.server.converter.IdentifiableObjectToIdConverter">
-		<property name="repository" ref="repository" />
-	</bean>
 </beans>

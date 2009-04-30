@@ -4,6 +4,9 @@
 http://dozer.sourceforge.net/schema/beanmapping.xsd"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
+<configuration>
+
+</configuration>
 	<mapping>
 		<class-a>ar.com.nextel.sfa.client.dto.CuentaSearchDto
 		</class-a>
@@ -80,17 +83,17 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<class-b>ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto
 		</class-b>
 		<field
-			custom-converter="ar.com.nextel.sfa.server.converter.IdentifiableObjectToIdConverter">
+			custom-converter-id="identifiableObjectToId">
 			<a>grupoSolicitud</a>
 			<b>idGrupoSolicitud</b>
 		</field>
 		<field
-			custom-converter="ar.com.nextel.sfa.server.converter.IdentifiableObjectToIdConverter">
+			custom-converter-id="identifiableObjectToId">
 			<a>cuentaPotencial</a>
 			<b>idCuentaPotencial</b>
 		</field>
 		<field
-			custom-converter="ar.com.nextel.sfa.server.converter.IdentifiableObjectToIdConverter">
+			custom-converter-id="identifiableObjectToId">
 			<a>cuenta</a>
 			<b>idCuenta</b>
 		</field>
@@ -103,12 +106,12 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<class-b>ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto
 		</class-b>
 		<field
-			custom-converter="ar.com.nextel.sfa.server.converter.IdentifiableObjectToIdConverter">
+			custom-converter-id="identifiableObjectToId">
 			<a>estadoActual</a>
 			<b>idEstadoAprobacion</b>
 		</field>
 		<field
-			custom-converter="ar.com.nextel.sfa.server.converter.IdentifiableObjectToIdConverter">
+			custom-converter-id="identifiableObjectToId">
 			<a>cuenta</a>
 			<b>idCuenta</b>
 		</field>
@@ -127,6 +130,14 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>cuenta.estadoCreditoFidelizacion.monto</a>
 			<b>montoDisponible</b>
 		</field>
+		<field custom-converter-id="enumToDto">
+			<a>origen</a>
+			<b>origen</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>tipoAnticipo</a>
+			<b>tipoAnticipo</b>
+		</field>	
 		<field>
 			<a>cuenta.estadoCreditoFidelizacion.vencimiento</a>
 			<b>fechaVencimientoCreditoFidelizacion</b>
