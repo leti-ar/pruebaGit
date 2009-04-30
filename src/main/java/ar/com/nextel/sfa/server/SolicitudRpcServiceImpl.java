@@ -86,8 +86,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return solicitudServicioDto;
 	}
 	
-	public SolicitudServicioCerradaResultDto searchSSCerrada(SolicitudServicioCerradaDto solicitudServicioCerradaDto) {
+	public List<SolicitudServicioCerradaResultDto> searchSSCerrada(SolicitudServicioCerradaDto solicitudServicioCerradaDto) {
 		AppLogger.info("Iniciando busqueda de SS cerradas...");
+		//en este mapeo pierdo las fechas
 		SolicitudServicioCerradaSearchCriteria solicitudServicioCerradaSearchCriteria = mapper.map(solicitudServicioCerradaDto, SolicitudServicioCerradaSearchCriteria.class);
 		Usuario usuario = new Usuario();
 		usuario.setUserName("acsa1");
@@ -100,8 +101,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			AppLogger.info("Error buscando Solicitudes de Servicio cerradas: " + e.getMessage());
 		}
 		
-		SolicitudServicioCerradaResultDto result = new SolicitudServicioCerradaResultDto();
-		result = mapper.map(list, SolicitudServicioCerradaResultDto.class, "ssCerradaResult");
+		List result = mapper.convertList(list, SolicitudServicioCerradaResultDto.class, "ssCerradaResult");
 		AppLogger.info("Busqueda de SS cerradas finalizada...");		
 		return result;
 	}
@@ -115,12 +115,12 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		buscarSSCerradasInitializer.setCantidadesResultados(listaResult);
 
 		List<String> listaFirmas = new ArrayList<String>();
-		String opcionesFirmas = "SI;NO;TODAS";
+		String opcionesFirmas = "Si;No";
 		listaFirmas = Arrays.asList(opcionesFirmas.split(";"));
 		buscarSSCerradasInitializer.setOpcionesFirmas(listaFirmas);
 
 		List<String> listaPataconex = new ArrayList<String>();
-		String opcionesPataconex = "SI;NO;TODAS";
+		String opcionesPataconex = "Si;No";
 		listaPataconex = Arrays.asList(opcionesPataconex.split(";"));
 		buscarSSCerradasInitializer.setOpcionesPatacones(listaPataconex);
 
