@@ -1,5 +1,7 @@
 package ar.com.nextel.sfa.client;
 
+import java.util.List;
+
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
@@ -32,7 +34,7 @@ public interface SolicitudRpcService extends RemoteService {
 	
 	public BuscarSSCerradasInitializer getBuscarSSCerradasInitializer();
 	
-	public SolicitudServicioCerradaResultDto searchSSCerrada(SolicitudServicioCerradaDto solicitudServicioCerradaDto);
+	public List<SolicitudServicioCerradaResultDto> searchSSCerrada(SolicitudServicioCerradaDto solicitudServicioCerradaDto);
 
 	public SolicitudServicioDto createSolicitudServicio(SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages;
 

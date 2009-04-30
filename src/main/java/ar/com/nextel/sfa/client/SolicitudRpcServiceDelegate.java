@@ -1,6 +1,9 @@
 package ar.com.nextel.sfa.client;
 
+import java.util.List;
+
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
+import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
 import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
@@ -42,8 +45,9 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.getBuscarSSCerradasInitializer(callback);	
 	}
 
-	public void searchSSCerrada(SolicitudServicioCerradaDto solicitudServicioCerradaDto, DefaultWaitCallback<SolicitudesServicioTotalesDto> callback) {
-		solicitudRpcServiceAsync.searchSSCerrada(solicitudServicioCerradaDto, callback);		
+	public void searchSSCerrada(SolicitudServicioCerradaDto solicitudServicioCerradaDto, DefaultWaitCallback<List<SolicitudServicioCerradaResultDto>> callback) {
+		solicitudRpcServiceAsync.searchSSCerrada(solicitudServicioCerradaDto, callback);
+		
 	}
 
 }
