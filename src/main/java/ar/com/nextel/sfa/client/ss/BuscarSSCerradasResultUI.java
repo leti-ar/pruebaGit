@@ -6,6 +6,8 @@ import java.util.List;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
+import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
+import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -27,10 +29,13 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 
 	private FlexTable resultTable;
 	private SimplePanel resultTableWrapper;
-	private List<SolicitudServicioCerradaDto> solicitudesServicioDto;
+	private List<SolicitudServicioCerradaResultDto> solicitudesServicioCerradaResultDto;
 	private Long totalRegistrosBusqueda;
 	private BuscarSSTotalesResultUI buscarSSTotalesResultUI;
 	private CambiosSSCerradasResultUI cambiosSSCerradasResultUI;
+	private Long cantEquipos = new Long(0);
+	private Double cantPataconex = new Double(0);
+	private int cantEqFirmados = 0;
 
 	public Long getTotalRegistrosBusqueda() {
 		return totalRegistrosBusqueda;
@@ -61,19 +66,21 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 
 	private void searchSSCerradas(SolicitudServicioCerradaDto solicitudServicioCerradaDto, boolean firstTime) {
 		SolicitudRpcService.Util.getInstance().searchSSCerrada(solicitudServicioCerradaDto,
-				new DefaultWaitCallback<SolicitudesServicioTotalesDto>() {
-					public void success(SolicitudesServicioTotalesDto result) {
-						setSolicitudServicioDto(result.getSolicitudes());
-						buscarSSTotalesResultUI.setValues(result
-								.getTotalEquipos().toString(), result
-								.getTotalPataconex().toString(), result.getTotalEquiposFirmados().toString());
-						buscarSSTotalesResultUI.setVisible(true);
+				new DefaultWaitCallback<List<SolicitudServicioCerradaResultDto>>() {
+					public void success(List<SolicitudServicioCerradaResultDto> result) {
+						List <SolicitudServicioCerradaResultDto> list = result;
+						if (list != null) {
+							setSolicitudServicioDto(list);
+							buscarSSTotalesResultUI.setValues(cantEquipos.toString(), cantPataconex.toString(), String.valueOf(cantEqFirmados));
+							buscarSSTotalesResultUI.setVisible(true);
+						}
+						
 					}
 				});
 	}
 	
-	public void setSolicitudServicioDto(List<SolicitudServicioCerradaDto> solicitudServicioDto) {
-		this.solicitudesServicioDto = solicitudServicioDto;
+	public void setSolicitudServicioDto(List<SolicitudServicioCerradaResultDto> solicitudServicioCerradaResultDto) {
+		this.solicitudesServicioCerradaResultDto = solicitudServicioCerradaResultDto;
 		loadTable();
 	}
 
@@ -88,16 +95,27 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 		initTable(resultTable);
 		resultTableWrapper.setWidget(resultTable);
 		int row = 1;
-		for (SolicitudServicioCerradaDto solicitudServicioDto : solicitudesServicioDto) {
+				
+		
+		if (solicitudesServicioCerradaResultDto!=null) {
+		for (Iterator iter = solicitudesServicioCerradaResultDto.iterator(); iter.hasNext();) {
+			SolicitudServicioCerradaResultDto solicitudServicioCerradaResultDto = (SolicitudServicioCerradaResultDto) iter.next();
 			resultTable.setWidget(row, 0, IconFactory.word());
-			resultTable.setHTML(row, 1, solicitudServicioDto.getNumeroSS());
-			resultTable.setHTML(row, 2, solicitudServicioDto.getNumeroCuenta());
-			resultTable.setHTML(row, 3, solicitudServicioDto.getRazonSocial());
-			resultTable.setHTML(row, 4, solicitudServicioDto.getCantidadEquipos().toString());
-			resultTable.setHTML(row, 5, solicitudServicioDto.getPataconex() ? "SI" : "NO");
-			resultTable.setHTML(row, 6, solicitudServicioDto.getFirmas() ? "SI" : "NO");
+			resultTable.setHTML(row, 1, solicitudServicioCerradaResultDto.getNumero().toString());
+			resultTable.setHTML(row, 2, solicitudServicioCerradaResultDto.getNumeroCuenta().toString());
+			resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getRazonSocialCuenta());
+			resultTable.setHTML(row, 4, solicitudServicioCerradaResultDto.getCantidadEquipos().toString());
+			resultTable.setHTML(row, 5, solicitudServicioCerradaResultDto.getPataconex().toString());
+			resultTable.setHTML(row, 6, solicitudServicioCerradaResultDto.getFirmar() ? "SI" : "NO");
+			if (solicitudServicioCerradaResultDto.getFirmar().booleanValue()==Boolean.TRUE) {
+				cantEqFirmados++;
+			}
+			cantEquipos = cantEquipos + solicitudServicioCerradaResultDto.getCantidadEquipos();
+			cantPataconex = cantPataconex + solicitudServicioCerradaResultDto.getPataconex();
 			row++;
 		}
+		} 
+
 		setVisible(true);
 	}
 
@@ -131,9 +149,8 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 		public void onCellClicked(SourcesTableEvents arg0, int arg1, int arg2) {
 			if (arg1 >= 1) {
 				String numeroSS = resultTable.getHTML(arg1, 1).toString();
-				SolicitudServicioCerradaDto solicitud = buscarSS(numeroSS);
-				cambiosSSCerradasResultUI
-						.setSolicitudServicioCerradaDto(solicitud);
+				SolicitudServicioCerradaResultDto solicitud = buscarSS(numeroSS);
+				cambiosSSCerradasResultUI.setSolicitudServicioCerradaDto(solicitud);
 				cambiosSSCerradasResultUI.setVisible(true);
 			}
 
@@ -141,20 +158,17 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 
 	}
 
-	private SolicitudServicioCerradaDto buscarSS(String numeroSS) {
-		for (Iterator iterator = solicitudesServicioDto.iterator(); iterator
-				.hasNext();) {
-			SolicitudServicioCerradaDto solicitudServicioDto = (SolicitudServicioCerradaDto) iterator
-					.next();
-			if (solicitudServicioDto.getNumeroSS().equals(numeroSS)) {
+	private SolicitudServicioCerradaResultDto buscarSS(String numeroSS) {
+		for (Iterator iterator = solicitudesServicioCerradaResultDto.iterator(); iterator.hasNext();) {
+			SolicitudServicioCerradaResultDto solicitudServicioDto = (SolicitudServicioCerradaResultDto) iterator.next();
+			if (solicitudServicioDto.getNumero().equals(numeroSS)) {
 				return solicitudServicioDto;
 			}
 		}
 		return null;
 	}
 
-	public void setCambiosSSCerradasResultUI(
-			CambiosSSCerradasResultUI cambiosSSCerradasResultUI) {
+	public void setCambiosSSCerradasResultUI(CambiosSSCerradasResultUI cambiosSSCerradasResultUI) {
 		this.cambiosSSCerradasResultUI = cambiosSSCerradasResultUI;
 	}
 

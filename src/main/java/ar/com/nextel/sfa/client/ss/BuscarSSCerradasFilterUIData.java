@@ -154,17 +154,17 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 		SolicitudServicioCerradaDto solicitudServicioCerradaDto = new SolicitudServicioCerradaDto();
 		solicitudServicioCerradaDto.setNumeroCuenta(nroCliente.getText());
 		solicitudServicioCerradaDto.setNumeroSS(nroSS.getText());
-		solicitudServicioCerradaDto.setFechaDesde(desde.getSelectedDate());
-		solicitudServicioCerradaDto.setFechaHasta(hasta.getSelectedDate());
+		solicitudServicioCerradaDto.setFechaCierreDesde(desde.getSelectedDate());
+		solicitudServicioCerradaDto.setFechaCierreHasta(hasta.getSelectedDate());
 		solicitudServicioCerradaDto.setEstado(estadoCombo.getSelectedItemText());
 		solicitudServicioCerradaDto.setPataconex(obtenerBoolean(pataconesCombo.getSelectedItemText()));
 		solicitudServicioCerradaDto.setFirmas(obtenerBoolean(firmasCombo.getSelectedItemText()));
-		solicitudServicioCerradaDto.setCantidadResultados(Integer.parseInt(resultadosCombo.getSelectedItem().getItemValue()));
+		solicitudServicioCerradaDto.setCantidadResultados(Long.valueOf(resultadosCombo.getSelectedItem().getItemValue()));
 		return solicitudServicioCerradaDto;
 	}
 	
 	private Boolean obtenerBoolean(String string) {
-		if ("SI".equals(string)){
+		if ("Si".equals(string)){
 			return Boolean.TRUE;
 		}else
 			return Boolean.FALSE;
