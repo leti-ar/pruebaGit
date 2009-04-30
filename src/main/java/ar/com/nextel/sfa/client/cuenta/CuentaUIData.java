@@ -383,29 +383,38 @@ public class CuentaUIData extends UIData {
 		return tarjetaTable; 
 	}
 	
-	private void setVisibilidadFormasDePago(String idSelected) {
+	public void setVisibilidadFormasDePago(String idSelected) {
 		if (idSelected.equals(TipoFormaPagoEnum.EFECTIVO.getTipo())) {
-			efectivoTable.setWidget(0, 1, getFormaPago());
-			efectivoTable.setVisible(true);
-			cuentaBancariaTable.setVisible(false);
-			tarjetaTable.setVisible(false);
+			setVisibleFormaPagoEfectivo();
 		}
 		if (idSelected.equals(TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo())) {
-			cuentaBancariaTable.setWidget(0, 1, getFormaPago());
-			efectivoTable.setVisible(false);
-			cuentaBancariaTable.setVisible(true);
-			tarjetaTable.setVisible(false);
+			setVisibleFormaPagoCuentaBancaria();
 		}
 		if (idSelected.equals(TipoFormaPagoEnum.TARJETA_CREDITO.getTipo())) {
-			tarjetaTable.setWidget(0, 1, getFormaPago());
-			efectivoTable.setVisible(false);
-			cuentaBancariaTable.setVisible(false);
-			tarjetaTable.setVisible(true);
+			setVisibleFormaPagoTarjeta();
 		}
 	}
 	
-	
-	
+    public void setVisibleFormaPagoEfectivo() {
+		efectivoTable.setWidget(0, 1, getFormaPago());
+		efectivoTable.setVisible(true);
+		cuentaBancariaTable.setVisible(false);
+		tarjetaTable.setVisible(false);    	
+    }
+    public void setVisibleFormaPagoCuentaBancaria() {
+		cuentaBancariaTable.setWidget(0, 1, getFormaPago());
+		efectivoTable.setVisible(false);
+		cuentaBancariaTable.setVisible(true);
+		tarjetaTable.setVisible(false);    	
+    }
+    public void setVisibleFormaPagoTarjeta() {
+		tarjetaTable.setWidget(0, 1, getFormaPago());
+		efectivoTable.setVisible(false);
+		cuentaBancariaTable.setVisible(false);
+		tarjetaTable.setVisible(true);
+    }
+    
+    
 	public PersonaDto getPersona() {
 		persona.setApellido(apellido.getText());
 		persona.getDocumento().setNumero(numeroDocumento.getText());

@@ -3,12 +3,16 @@ package ar.com.nextel.sfa.client.cuenta;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
+import ar.com.nextel.sfa.client.dto.DatosDebitoTarjetaCreditoDto;
+import ar.com.nextel.sfa.client.dto.DatosEfectivoDto;
 import ar.com.nextel.sfa.client.dto.EmailDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.dto.TipoEmailDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
 import ar.com.nextel.sfa.client.enums.TipoEmailEnum;
+import ar.com.nextel.sfa.client.enums.TipoFormaPagoEnum;
 import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
@@ -19,7 +23,6 @@ import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -309,11 +312,20 @@ public class CuentaDatosForm extends Composite {
 			}
 			    
 			//Forma de Pago
+			if (cuentaDto.getDatosPago() instanceof DatosEfectivoDto) {
+				cuentaEditor.getFormaPago().setSelectedIndex(Integer.parseInt(TipoFormaPagoEnum.EFECTIVO.getTipo()));
+			}
+			else if (cuentaDto.getDatosPago() instanceof DatosDebitoCuentaBancariaDto) {
+				cuentaEditor.getFormaPago().setSelectedIndex(Integer.parseInt(TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo()));
+			}
+			else if (cuentaDto.getDatosPago() instanceof DatosDebitoTarjetaCreditoDto) {
+				cuentaEditor.getFormaPago().setSelectedIndex(Integer.parseInt(TipoFormaPagoEnum.TARJETA_CREDITO.getTipo()));
+			}
 
 			//Vendedor
 			cuentaEditor.getVendedorNombre().setText(cuentaDto.getVendedor()!=null?cuentaDto.getVendedor().getNombre():"");
 			cuentaEditor.getVendedorTelefono().setText(cuentaDto.getVendedor()!=null?cuentaDto.getVendedor().getTelefono():"");
-			//cuentaEditor.getVendedorCanal().setText("TODO");
+			cuentaEditor.getTipoCanalVentas().setSelectedItem(cuentaDto.getTipoCanalVentas());
 			
 		}
 	}
