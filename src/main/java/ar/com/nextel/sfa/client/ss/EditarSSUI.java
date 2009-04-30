@@ -68,6 +68,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener {
 							validarCompletitud(false);
 						}
 					});
+			editarSSUIData.clean();
 			mainPanel.setVisible(true);
 		}
 	}
@@ -112,11 +113,6 @@ public class EditarSSUI extends ApplicationUI implements ClickListener {
 	}
 
 	public void unload() {
-		DeferredCommand.addCommand(new Command() {
-			public void execute() {
-				editarSSUIData.clean();
-			}
-		});
 	}
 
 	public void onClick(Widget sender) {
