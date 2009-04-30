@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.DomicilioDto;
+import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
@@ -11,7 +12,10 @@ import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.TextArea;
@@ -38,25 +42,26 @@ public class EditarSSUIData extends UIData {
 	private InlineHTML precioVentaText;
 	private NumberFormat decFormatter = NumberFormat.getDecimalFormat();
 	private NumberFormat currFormatter = NumberFormat.getCurrencyFormat();
+	private DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateFormat();
 
 	private SolicitudServicioDto solicitudServicio;
 
 	public EditarSSUIData() {
-		nss = new RegexTextBox(RegularExpressionConstants.getCantCaracteres(10));
-		nflota = new RegexTextBox(RegularExpressionConstants.getCantCaracteres(5));
-		origen = new ListBox();
-		entrega = new ListBox();
+		fields.add(nss = new RegexTextBox(RegularExpressionConstants.getCantCaracteres(10)));
+		fields.add(nflota = new RegexTextBox(RegularExpressionConstants.getCantCaracteres(5)));
+		fields.add(origen = new ListBox());
+		fields.add(entrega = new ListBox());
 		entrega.setWidth("480px");
-		facturacion = new ListBox();
+		fields.add(facturacion = new ListBox());
 		facturacion.setWidth("480px");
-		aclaracion = new TextArea();
+		fields.add(aclaracion = new TextArea());
 		aclaracion.setWidth("480px");
 		aclaracion.setHeight("35px");
-		credFidelizacion = new RegexTextBox(RegularExpressionConstants.importe);
-		pataconex = new RegexTextBox(RegularExpressionConstants.importe);
-		firmarss = new CheckBox();
-		anticipo = new ListBox();
-		observaciones = new TextArea();
+		fields.add(credFidelizacion = new RegexTextBox(RegularExpressionConstants.importe));
+		fields.add(pataconex = new RegexTextBox(RegularExpressionConstants.importe));
+		fields.add(firmarss = new CheckBox());
+		fields.add(anticipo = new ListBox());
+		fields.add(observaciones = new TextArea());
 		observaciones.setWidth("480px");
 		observaciones.setHeight("35px");
 
@@ -154,7 +159,6 @@ public class EditarSSUIData extends UIData {
 		solicitudServicio = solicitud;
 		nss.setText(solicitud.getNumero());
 		nflota.setText(solicitud.getNumeroFlota());
-		// origen.setSelectedItem();
 		// entrega.clear();
 		// facturacion.clear();
 		// entrega.addAllItems(solicitud.getCuenta().getPersona().getDomicilios);
@@ -164,25 +168,51 @@ public class EditarSSUIData extends UIData {
 		aclaracion.setText(solicitud.getAclaracionEntrega());
 		credFidelDisponibleText.setHTML(solicitud.getMontoDisponible() != null ? currFormatter
 				.format(solicitud.getMontoDisponible()) : "0");
-		credFidelVencimientoText.setHTML(solicitud.getFechaVencimientoCreditoFidelizacion());
+		if (solicitud.getFechaVencimientoCreditoFidelizacion() != null) {
+			credFidelVencimientoText.setHTML(dateTimeFormat.format(solicitud
+					.getFechaVencimientoCreditoFidelizacion()));
+		} else {
+			credFidelVencimientoText.setHTML("");
+		}
 		double credFidelizacionValue = solicitud.getMontoCreditoFidelizacion() != null ? solicitud
 				.getMontoCreditoFidelizacion() : 0;
 		credFidelizacion.setText(decFormatter.format(credFidelizacionValue));
 		double pataconexValue = solicitud.getPataconex() != null ? solicitud.getPataconex() : 0;
 		pataconex.setText(decFormatter.format(pataconexValue));
 		firmarss.setChecked(solicitud.getFirmar());
-		// anticipo.setSelectedItem(solicitud.get);
+
 		observaciones.setText(solicitud.getObservaciones());
 		// precioListaText;
 		// desvioText;
+
+		if (anticipo.getItemCount() != 0) {
+			origen.setSelectedItem(solicitud.getOrigen());
+			anticipo.setSelectedItem(solicitud.getTipoAnticipo());
+		} else {
+			deferredLoad();
+		}
 
 		recarcularValores();
 		// precioVentaText;
 	}
 
+	private void deferredLoad() {
+		DeferredCommand.addCommand(new IncrementalCommand() {
+			public boolean execute() {
+				if (anticipo.getItemCount() == 0) {
+					return true;
+				}
+				origen.setSelectedItem(solicitudServicio.getOrigen());
+				anticipo.setSelectedItem(solicitudServicio.getTipoAnticipo());
+				return false;
+			}
+		});
+	}
+
 	public SolicitudServicioDto getSolicitudServicio() {
 		solicitudServicio.setNumero(nss.getText());
 		solicitudServicio.setNumeroFlota(nflota.getText());
+		solicitudServicio.setOrigen((OrigenSolicitudDto) origen.getSelectedItem());
 		solicitudServicio.setDomicilioEnvio((DomicilioDto) entrega.getSelectedItem());
 		solicitudServicio.setDomicilioFacturacion((DomicilioDto) facturacion.getSelectedItem());
 		solicitudServicio.setAclaracionEntrega(aclaracion.getText());
@@ -212,8 +242,11 @@ public class EditarSSUIData extends UIData {
 					.greater(
 							"La Cantidad de crédito de fidelización a utilizar no puede exceder el máximo disponible",
 							solicitudServicio.getMontoDisponible());
-		// validator.addTarget(pataconex).greater("La cantidad de pataconex ingresada excede el Precio de Venta Total. Por favor modifique el monto",
-		// )
+		validator
+				.addTarget(pataconex)
+				.greater(
+						"La cantidad de pataconex ingresada excede el Precio de Venta Total. Por favor modifique el monto",
+						solicitudServicio.getMontoDisponible());
 		validator.fillResult();
 		return validator.getErrors();
 	}
@@ -233,4 +266,5 @@ public class EditarSSUIData extends UIData {
 			pataconexText.setHTML("$ 0.00");
 		}
 	}
+
 }
