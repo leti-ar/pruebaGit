@@ -4,10 +4,7 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class TipoAnticipoDto implements IsSerializable, ListBoxItem {
-
-	private Long id;
-	private String descripcion;
+public class TipoAnticipoDto extends EnumDto implements IsSerializable, ListBoxItem {
 
 	public String getItemText() {
 		return descripcion;
@@ -17,19 +14,4 @@ public class TipoAnticipoDto implements IsSerializable, ListBoxItem {
 		return "" + id;
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getDescripcion() {
-		return descripcion;
-	}
-
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
-	}
 }
