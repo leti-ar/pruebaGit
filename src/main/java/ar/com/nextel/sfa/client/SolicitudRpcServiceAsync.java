@@ -6,10 +6,8 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
-import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
-import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

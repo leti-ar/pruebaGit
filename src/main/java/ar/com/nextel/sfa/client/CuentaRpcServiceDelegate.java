@@ -5,6 +5,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
+import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.VerazInitializer;

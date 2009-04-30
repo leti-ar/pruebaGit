@@ -37,8 +37,11 @@ import ar.com.nextel.model.personas.beans.Sexo;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
+import ar.com.nextel.services.nextelServices.NextelServices;
 import ar.com.nextel.services.nextelServices.veraz.VerazService;
+import ar.com.nextel.services.nextelServices.veraz.dto.VerazRequestDTO;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
+import ar.com.nextel.services.nextelServices.veraz.exception.VerazException;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.dto.BusquedaPredefinidaDto;
 import ar.com.nextel.sfa.client.dto.CargoDto;
@@ -67,8 +70,7 @@ import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
 import ar.com.snoop.gwt.commons.server.RemoteService;
 
-public class CuentaRpcServiceImpl extends RemoteService implements
-		CuentaRpcService {
+public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcService {
 
 	private WebApplicationContext context;
 	// private ApplicationContextLoader context;
@@ -79,8 +81,9 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 	private MapperExtended mapper;
 	private GetAllBusinessOperator getAllBusinessOperator;
 	private GenericDao genericDao;
-    private VerazService veraz;
-    private Repository repository;
+//    private VerazService veraz;
+	private NextelServices veraz;
+ 	private Repository repository;
 
 
 	@Override
@@ -99,9 +102,9 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 				.getBean("cuentaToSearchResultTransformer");
 		mapper = (MapperExtended) context.getBean("dozerMapper");
 		genericDao = (GenericDao) context.getBean("genericDao");
-		veraz = (VerazService) context.getBean("verazService");
+//		veraz = (VerazService) context.getBean("verazService");
+		veraz = (NextelServices) context.getBean("nextelServices");
 		repository = (Repository) context.getBean("repository");
-
 		
 		// Engancho el BOperator
 		setGetAllBusinessOperator((GetAllBusinessOperator) context
@@ -215,7 +218,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		return verazInitializer;
 	}
 	
-	
 	public VerazResponseDto consultarVeraz(PersonaDto personaDto) {
         AppLogger.info("Iniciando consulta a Veraz...");
         VerazResponseDTO responseDTO = null;
@@ -226,12 +228,26 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		Usuario usuario = new Usuario();
 		usuario.setUserName("acsa1");
 		Vendedor vendedor = registroVendedores.getVendedor(usuario);
-		responseDTO = this.veraz.searchPerson(tipoDocumento.getCodigoVeraz(), numeroDocumento, sexo.getCodigoVeraz(), vendedor.getVerazVersion());
+		
+		VerazRequestDTO verazRequestDTO =  new VerazRequestDTO();
+		verazRequestDTO.setNroDoc(numeroDocumento);
+		verazRequestDTO.setSexo(sexo.getCodigoVeraz());
+		verazRequestDTO.setTipoDoc(tipoDocumento.getCodigoVeraz());
+		verazRequestDTO.setVerazVersion(vendedor.getVerazVersion());
+		
+		try {
+			responseDTO = this.veraz.searchPerson(verazRequestDTO);
+		} catch (VerazException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		VerazResponseDto responseDto = mapper.map(responseDTO, VerazResponseDto.class);
         responseDto.setMensaje(responseDTO.getMensaje());
         AppLogger.info("Consulta a Veraz finalizada.");
         return responseDto;
     }
+	
 
 	public SolicitudesServicioTotalesDto searchSSCerrada(
 			SolicitudServicioCerradaDto solicitudServicioCerradaDto) {
