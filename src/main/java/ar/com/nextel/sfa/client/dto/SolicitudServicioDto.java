@@ -28,7 +28,7 @@ public class SolicitudServicioDto implements IsSerializable {
 	private String emailLicencias;
 
 	private Double montoCreditoFidelizacion;
-	private String fechaVencimientoCreditoFidelizacion;
+	private Date fechaVencimientoCreditoFidelizacion;
 	private Double montoDisponible; // cuenta.estadoCreditoFidelizacion.monto
 	private Long channelCode;
 	private Double pataconex;
@@ -153,11 +153,11 @@ public class SolicitudServicioDto implements IsSerializable {
 		this.montoCreditoFidelizacion = montoCreditoFidelizacion;
 	}
 
-	public String getFechaVencimientoCreditoFidelizacion() {
+	public Date getFechaVencimientoCreditoFidelizacion() {
 		return fechaVencimientoCreditoFidelizacion;
 	}
 
-	public void setFechaVencimientoCreditoFidelizacion(String fechaVencimientoCreditoFidelizacion) {
+	public void setFechaVencimientoCreditoFidelizacion(Date fechaVencimientoCreditoFidelizacion) {
 		this.fechaVencimientoCreditoFidelizacion = fechaVencimientoCreditoFidelizacion;
 	}
 
