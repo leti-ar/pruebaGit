@@ -172,4 +172,15 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<class-a>ar.com.nextel.model.cuentas.beans.Cargo</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.CargoDto</class-b>
 	</mapping>
+
+	<mapping map-id="cuentaEdicion">
+		<class-a>ar.com.nextel.model.cuentas.beans.Cuenta</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.CuentaDto</class-b>
+
+		<field custom-converter="ar.com.nextel.sfa.server.converter.DatosPagoConverter">
+			<a>datosPago</a>
+			<b>datosPago</b>
+		</field>
+	</mapping>
+	
 </mappings>

@@ -281,7 +281,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 					String code = cd1.getCodigoVantive();
 					String desc = cd1.getDescripcion();
 					CondicionCuentaDto cd2 = new CondicionCuentaDto(id,code,desc);
-					ctaDTO = (CuentaDto) mapper.map(cuenta, CuentaDto.class);
+					ctaDTO = (CuentaDto) mapper.map(cuenta, CuentaDto.class,"cuentaEdicion");
 					ctaDTO.setCondicionCuenta(cd2);
 				}
 			}
