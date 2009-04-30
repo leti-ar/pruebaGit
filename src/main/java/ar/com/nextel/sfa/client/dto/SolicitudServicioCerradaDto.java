@@ -6,18 +6,17 @@ import java.util.List;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class SolicitudServicioCerradaDto implements IsSerializable {
-
-	private List<CambiosSolicitudServicioDto> cambios;
-	private String numeroSS;
+	
 	private String numeroCuenta;
+	private String numeroSS;
 	private String razonSocial;
 	private Long cantidadEquipos;
 	private Boolean pataconex;
 	private Boolean firmas;
-	private Date fechaDesde;
-	private Date fechaHasta;
+	private Date fechaCierreDesde;
+	private Date fechaCierreHasta;
 	private String estado;
-	private int cantidadResultados;
+	private Long cantidadResultados;
 
 	public String getNumeroSS() {
 		return numeroSS;
@@ -63,40 +62,43 @@ public class SolicitudServicioCerradaDto implements IsSerializable {
 		this.firmas = firmas;
 	}
 
-	public int getCantidadResultados() {
+
+//	public List<CambiosSolicitudServicioDto> getCambios() {
+//		return cambios;
+//	}
+//
+//	public void setCambios(List<CambiosSolicitudServicioDto> cambios) {
+//		this.cambios = cambios;
+//	}
+	
+
+
+	public Long getCantidadResultados() {
 		return cantidadResultados;
 	}
 
-	public void setCantidadResultados(int cantidadResultados) {
+	public void setCantidadResultados(Long cantidadResultados) {
 		this.cantidadResultados = cantidadResultados;
-	}
-
-	public List<CambiosSolicitudServicioDto> getCambios() {
-		return cambios;
-	}
-
-	public void setCambios(List<CambiosSolicitudServicioDto> cambios) {
-		this.cambios = cambios;
-	}
-	
-	public Date getFechaDesde() {
-		return fechaDesde;
-	}
-
-	public void setFechaDesde(Date fechaDesde) {
-		this.fechaDesde = fechaDesde;
-	}
-
-	public Date getFechaHasta() {
-		return fechaHasta;
-	}
-
-	public void setFechaHasta(Date fechaHasta) {
-		this.fechaHasta = fechaHasta;
 	}
 
 	public String getEstado() {
 		return estado;
+	}
+
+	public Date getFechaCierreDesde() {
+		return fechaCierreDesde;
+	}
+
+	public void setFechaCierreDesde(Date fechaCierreDesde) {
+		this.fechaCierreDesde = fechaCierreDesde;
+	}
+
+	public Date getFechaCierreHasta() {
+		return fechaCierreHasta;
+	}
+
+	public void setFechaCierreHasta(Date fechaCierreHasta) {
+		this.fechaCierreHasta = fechaCierreHasta;
 	}
 
 	public void setEstado(String estado) {

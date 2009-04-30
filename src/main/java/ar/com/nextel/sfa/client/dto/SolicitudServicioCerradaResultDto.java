@@ -1,5 +1,7 @@
 package ar.com.nextel.sfa.client.dto;
 
+import java.util.List;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class SolicitudServicioCerradaResultDto implements IsSerializable {
@@ -8,11 +10,12 @@ public class SolicitudServicioCerradaResultDto implements IsSerializable {
     private Long idEstadoAprobacion;
     private Long idCuenta;
     private String numero;
-    //private String numeroCuenta;
+    private String numeroCuenta;
     private String razonSocialCuenta;
-    //private Long cantidadEquipos;
+    private Long cantidadEquipos;
     private Double pataconex;
     private Boolean firmar;
+    private List<CambiosSolicitudServicioDto> cambios;
 	
     public Long getIdSolicitudServicio() {
 		return idSolicitudServicio;
@@ -56,5 +59,22 @@ public class SolicitudServicioCerradaResultDto implements IsSerializable {
 	public void setFirmar(Boolean firmar) {
 		this.firmar = firmar;
 	}
-    
+	public Long getCantidadEquipos() {
+		return cantidadEquipos;
+	}
+	public void setCantidadEquipos(Long cantidadEquipos) {
+		this.cantidadEquipos = cantidadEquipos;
+	}
+	public void setNumeroCuenta(String numeroCuenta) {
+		this.numeroCuenta = numeroCuenta;
+	}
+	public String getNumeroCuenta() {
+		return numeroCuenta;
+	}
+	public void setCambios(List<CambiosSolicitudServicioDto> cambios) {
+		this.cambios = cambios;
+	}
+	public List<CambiosSolicitudServicioDto> getCambios() {
+		return cambios;
+	}	    
 }
