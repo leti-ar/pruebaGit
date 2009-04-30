@@ -69,6 +69,10 @@
 .mlr10 {margin-left: 10px; margin-right: 10px;}
 .mlr15 {margin-left: 15px; margin-right: 15px;}
 .mlr20 {margin-left: 20px; margin-right: 20px;}
+.mlr40 {margin-left: 40px; margin-right: 40px;}
+
+/* Top & Bottom */
+.mtb5  {margin-top: 5px; margin-bottom: 5px;}
 
 /* Left, Right & Top */
 .mlrt5  {margin-left: 5px; margin-right: 5px; margin-top: 5px;}
