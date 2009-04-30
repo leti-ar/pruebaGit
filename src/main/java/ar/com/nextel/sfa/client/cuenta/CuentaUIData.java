@@ -5,6 +5,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
@@ -331,7 +332,7 @@ public class CuentaUIData extends UIData {
 			        }
 				}
 			});
-        for(int i=1;i<13;i++) {
+		for(int i=1;i<13;i++) {
         	mesVto.addItem(Integer.toString(i), Integer.toString(i));
         }
 	}
@@ -417,8 +418,13 @@ public class CuentaUIData extends UIData {
     
 	public PersonaDto getPersona() {
 		persona.setApellido(apellido.getText());
-		persona.getDocumento().setNumero(numeroDocumento.getText());
-		persona.getDocumento().setTipoDocumento(new TipoDocumentoDto(Long.parseLong(tipoDocumento.getSelectedItem().getItemValue()),tipoDocumento.getSelectedItem().getItemText()));
+		//TODO: Revisar lo del Documento!
+		DocumentoDto doc = new DocumentoDto();
+		TipoDocumentoDto tipoDoc = new TipoDocumentoDto(Long.parseLong(tipoDocumento.getSelectedItem().getItemValue()),tipoDocumento.getSelectedItem().getItemText());
+		doc.setNumero(numeroDocumento.getText());
+		doc.setTipoDocumento(tipoDoc);
+		persona.setDocumento(doc);
+		//
 		persona.setFechaNacimiento(fechaNacimiento.getSelectedDate());
 		persona.setNombre(nombre.getText());
 		persona.setRazonSocial(razonSocial.getText());

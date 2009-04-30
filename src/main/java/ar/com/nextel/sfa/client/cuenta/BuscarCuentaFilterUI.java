@@ -65,7 +65,7 @@ public class BuscarCuentaFilterUI extends Composite {
 		layout.setHTML(2, 0, Sfa.constant().responsable());
 		layout.setWidget(2, 1, buscadorCuentasFilterEditor.getResponsableTextBox());
 		layout.setHTML(2, 2, Sfa.constant().tipoDocumento());
-		layout.setWidget(2, 3, buscadorCuentasFilterEditor.getTipoDocumentoCombo());
+		layout.setWidget(2, 3, buscadorCuentasFilterEditor.getGrupoDocumentoCombo());
 		layout.setHTML(2, 4, Sfa.constant().numeroDocumento());
 		layout.setWidget(2, 5, buscadorCuentasFilterEditor.getNumeroDocumentoTextBox());
 		layout.setHTML(3, 0, Sfa.constant().predefinidas());

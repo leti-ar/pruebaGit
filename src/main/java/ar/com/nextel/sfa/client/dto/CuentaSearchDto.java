@@ -15,7 +15,7 @@ public class CuentaSearchDto implements IsSerializable{
 	private int cantidadResultados;
 	private int offset;
 	private String numeroDocumento;
-	private TipoDocumentoDto tipoDocumento;
+	private GrupoDocumentoDto grupoDocumentoId;
 	
 	public CategoriaCuentaDto getCategoria() {
 		return categoria;
@@ -73,12 +73,12 @@ public class CuentaSearchDto implements IsSerializable{
 		this.responsable = responsable;
 	}
 
-	public TipoDocumentoDto getTipoDocumento() {
-		return tipoDocumento;
+	public GrupoDocumentoDto getGrupoDocumentoId() {
+		return grupoDocumentoId;
 	}
 
-	public void setTipoDocumento(TipoDocumentoDto tipoDocumento) {
-		this.tipoDocumento = tipoDocumento;
+	public void setGrupoDocumentoId(GrupoDocumentoDto grupoDocumentoId) {
+		this.grupoDocumentoId = grupoDocumentoId;
 	}
 
 	public String getNumeroDocumento() {
@@ -117,7 +117,7 @@ public class CuentaSearchDto implements IsSerializable{
 	public String toString(){
 		StringBuilder string = new StringBuilder();
 		string.append("Razón Social:" + razonSocial);
-		string.append("\nTipo Doc:"+tipoDocumento);
+		string.append("\nTipo Doc:"+grupoDocumentoId);
 		string.append("\nNºDocumento:"+numeroDocumento);
 		string.append("\nCategoría:"+categoria);
 		string.append("\nNº Cuenta:"+numeroCuenta);

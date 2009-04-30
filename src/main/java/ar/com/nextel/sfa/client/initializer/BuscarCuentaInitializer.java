@@ -5,13 +5,13 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.BusquedaPredefinidaDto;
 import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
-import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
+import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class BuscarCuentaInitializer implements IsSerializable {
 
-	private List<TipoDocumentoDto> tiposDocumento = new ArrayList<TipoDocumentoDto>();
+	private List<GrupoDocumentoDto> grupoDocumento = new ArrayList<GrupoDocumentoDto>();
 	private List<CategoriaCuentaDto> categorias = new ArrayList<CategoriaCuentaDto>();
 	private List<BusquedaPredefinidaDto> busquedasPredefinidas = new ArrayList<BusquedaPredefinidaDto>();
 	private List<String> cantidadesResultados = new ArrayList<String>();
@@ -22,20 +22,20 @@ public class BuscarCuentaInitializer implements IsSerializable {
 	public BuscarCuentaInitializer(
 			List<BusquedaPredefinidaDto> busquedasPredefinidas,
 			List<String> cantidadesResultados, List<CategoriaCuentaDto> categorias,
-			List<TipoDocumentoDto> tiposDocumento) {
+			List<GrupoDocumentoDto> grupoDocumento) {
 		super();
 		this.busquedasPredefinidas = busquedasPredefinidas;
 		this.cantidadesResultados = cantidadesResultados;
 		this.categorias = categorias;
-		this.tiposDocumento = tiposDocumento;
+		this.grupoDocumento = grupoDocumento;
 	}
 
-	public List<TipoDocumentoDto> getTiposDocumento() {
-		return tiposDocumento;
+	public List<GrupoDocumentoDto> getGrupoDocumento() {
+		return grupoDocumento;
 	}
 
-	public void setTiposDocumento(List<TipoDocumentoDto> tiposDocumento) {
-		this.tiposDocumento = tiposDocumento;
+	public void setGrupoDocumento(List<GrupoDocumentoDto> grupoDocumento) {
+		this.grupoDocumento = grupoDocumento;
 	}
 
 	public List<CategoriaCuentaDto> getCategorias() {

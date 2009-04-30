@@ -11,7 +11,7 @@ public class CuentaDto implements IsSerializable {
     private Long idVantive;
     private CategoriaCuentaDto categoriaCuenta;
     private String codigoVantive;
-    //private CondicionCuentaDto condicionCuenta;
+    private CondicionCuentaDto condicionCuenta;
     //private Set<CuentaCorrienteDto> cuentasCorrientes;
     private VendedorDto vendedor;
     private EstadoCuentaDto estadoCuenta;
@@ -84,12 +84,12 @@ public class CuentaDto implements IsSerializable {
 	public void setCodigoVantive(String codigoVantive) {
 		this.codigoVantive = codigoVantive;
 	}
-//	public CondicionCuentaDto getCondicionCuenta() {
-//		return condicionCuenta;
-//	}
-//	public void setCondicionCuenta(CondicionCuentaDto condicionCuenta) {
-//		this.condicionCuenta = condicionCuenta;
-//	}
+	public CondicionCuentaDto getCondicionCuenta() {
+		return condicionCuenta;
+	}
+	public void setCondicionCuenta(CondicionCuentaDto condicionCuenta) {
+		this.condicionCuenta = condicionCuenta;
+	}
 //	public Set<CuentaCorrienteDto> getCuentasCorrientes() {
 //		return cuentasCorrientes;
 //	}

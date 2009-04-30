@@ -22,8 +22,8 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>tipoPredefinida</b>
 		</field>
 		<field>
-			<a>tipoDocumento.code</a>
-			<b>tipoDocumentoId</b>
+			<a>grupoDocumentoId.code</a>
+			<b>grupoDocumentoId</b>
 		</field>
 		<!--
 			Según
@@ -158,6 +158,11 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 	<mapping>
 		<class-a>ar.com.nextel.model.personas.beans.Domicilio</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto</class-b>
+		<field type="one-way">
+			<!-- a map-get-method="isLockedBySolicitud">lockedBySolicitud</a-->
+			<a>lockedBySolicitud</a>
+			<b>locked</b>
+		</field>
 	</mapping>
 	<mapping>
 		<class-a>ar.com.nextel.model.personas.beans.TipoDomicilioAsociado</class-a>

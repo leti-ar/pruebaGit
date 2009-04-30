@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.widget.UIData;
 
@@ -9,7 +10,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * @author eSalvador 
+ * @author eSalvador
  **/
 public class DomiciliosUIData extends UIData {
 	///
@@ -34,7 +35,7 @@ public class DomiciliosUIData extends UIData {
 	//FacturacionDto facturacion = new FacturacionDto();
 	//EntregaDto entrega = new EntregaDto();
 	//ProvinciaDto provincia = new ProvinciaDto();
-	//EstadoDomicilioDto estado = new EstadoDomicilioDto();	
+	//EstadoDomicilioDto estado = new EstadoDomicilioDto();
 	//Boolean noNormalizar;
 //
 	CheckBox validado = new CheckBox();
@@ -42,6 +43,37 @@ public class DomiciliosUIData extends UIData {
 	CheckBox enCarga = new CheckBox();
 	TextBox nombreUsuarioUltimaModificacion = new TextBox();
 	///
+	
+	public void setDomicilio(DomiciliosCuentaDto domicilio) {
+		/**TODO: Terminar este mapeo!*/
+		calle.setText(domicilio.getCalle());
+		codigoPostal.setText(domicilio.getCodigo_postal());
+		localidad.setText(domicilio.getLocalidad());
+		partido.setText(domicilio.getPartido());
+	}
+	
+	public DomiciliosCuentaDto getNuevoDomicilio() {
+		/**TODO: Deberia hacer alguna validacion?? */
+		
+		/**TODO: Terminar este mapeo!*/
+		DomiciliosCuentaDto domicilioNuevo = new DomiciliosCuentaDto();
+		domicilioNuevo.setCalle(calle.getText());
+		domicilioNuevo.setEntre_calle(entreCalle.getText());
+		domicilioNuevo.setY_calle(ycalle.getText());
+		domicilioNuevo.setCodigo_postal(codigoPostal.getText());
+		domicilioNuevo.setLocalidad(localidad.getText());
+		domicilioNuevo.setPartido(partido.getText());
+		domicilioNuevo.setCpa(cpa.getText());
+		domicilioNuevo.setDepartamento(departamento.getText());
+		domicilioNuevo.setManzana(manzana.getText());
+		domicilioNuevo.setNumero(Long.parseLong(numero.getText()));
+		domicilioNuevo.setObservaciones(observaciones.getText());
+		domicilioNuevo.setPiso(piso.getText());
+		//domicilioNuevo.setProvincia(provincia);
+		domicilioNuevo.setPuerta(puerta.getText());
+		domicilioNuevo.setTorre(torre.getText());
+		return domicilioNuevo;
+	}
 	
 	public DomiciliosUIData() {
 		fields.add(calle);

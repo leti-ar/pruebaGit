@@ -3,46 +3,69 @@ package ar.com.nextel.sfa.client.cuenta;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
+import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.TipoDomicilioAsociadoDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.SourcesTableEvents;
+import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
 
 public class CuentaDomiciliosForm extends Composite {
 
 	private static CuentaDomiciliosForm instance = new CuentaDomiciliosForm();
-	private FlexTable mainPanel;
+	private FlowPanel mainPanel;
 	private FormButtonsBar footerBar;
 	private FlexTable datosTabla;
-	//private DomiciliosCuentaUIData domicilioEditor;
+	private CuentaUIData cuentaUIData;
 
+	//TODO; Analizar!!
+	//private DomiciliosUIData domiciliosData;
+	private CuentaDto cuentaDto;
+	//
+	
 	public static CuentaDomiciliosForm getInstance() {
 		return instance;
 	}
 	
 	private CuentaDomiciliosForm() {
-		mainPanel    = new FlexTable();
+		mainPanel    = new FlowPanel();
 		footerBar    = new FormButtonsBar();
 		datosTabla = new FlexTable();
 		initWidget(mainPanel);
 		mainPanel.clear();
 		mainPanel.setWidth("100%");
 		mainPanel.addStyleName("gwt-BuscarCuentaResultTable");
-		mainPanel.setCellPadding(20);
-		mainPanel.setWidget(0,0,new HTML("Domicilios"));
+		//
+		Button crearDomicilio = new Button("Crear nuevo");
+		crearDomicilio.addClickListener(new ClickListener(){
+			public void onClick(Widget arg0) {
+				//Abajo se setea en el DomicilioUI la accion a tomar al apretar Aceptar.
+				DomicilioUI.getInstance().setComandoAceptar(getComandoAceptarDomicilioForm());
+				DomicilioUI.getInstance().cargarPopupNuevoDomicilio();
+			}
+		});
+		crearDomicilio.addStyleName("crearDomicilioButton");
+		SimplePanel crearDomicilioWrapper = new SimplePanel();
+		crearDomicilioWrapper.add(crearDomicilio);
+		crearDomicilioWrapper.addStyleName("crearDomicilioBWrapper");
+		mainPanel.add(crearDomicilioWrapper);
+		//
 		initTable(datosTabla);
-		mainPanel.getColumnFormatter().addStyleName(0, "alignRight");
-		mainPanel.getRowFormatter().addStyleName(0, "alignRight");
-		mainPanel.setWidget(1, 0, datosTabla);
-		mainPanel.addStyleName("aButtons");
-		mainPanel.setWidget(2,0,footerBar);
+		mainPanel.add(datosTabla);
+		mainPanel.add(footerBar);
 	}
 	
 	private void initTable(FlexTable table) {
@@ -70,34 +93,67 @@ public class CuentaDomiciliosForm extends Composite {
 	/**
 	 * @author eSalvador 
 	 **/
-	public void cargaTablaDomicilios(List<DomiciliosCuentaDto> domicilios){
+	private Command getComandoAceptarDomicilioForm(){
+		Command comandoAceptar = new Command() {
+			public void execute() {
+			//TODO: Aca deberia agregarle un nuevo Domicilio a la Persona.
+				//HardCode - TODO: Aca abajo el cuentaUIData ya deberia venir cargado. Falta terminar! (Preguntarle a Raul).
+				DomiciliosCuentaDto domicilioNuevo = DomicilioUI.getInstance().getDomiciliosData().getNuevoDomicilio();
+				PersonaDto persona = cuentaDto.getPersona();
+				persona.getDomicilios().add(domicilioNuevo);
+				DomicilioUI.getInstance().hide();
+				//Refresca la grilla de domicilios
+				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().cargaTablaDomicilios(cuentaDto);
+			}
+		};
+		return comandoAceptar;
+	}
+	
+	/**
+	 * @author eSalvador 
+	 **/
+	public void cargaTablaDomicilios(final CuentaDto cuentaDto){
 		boolean principal = false;
 		long tipoDomicilio = 666;
-		for (int i = 0; i < domicilios.size(); i++) {
-			//Carga los iconos:
-			Hyperlink linkLapiz = new Hyperlink(IconFactory.lapiz().toString(),true,"");
-			linkLapiz.addClickListener(new ClickListener() {
-				public void onClick(Widget arg0) {
-					DomicilioUI.getInstance().showAndCenter();
+		TipoDomicilioAsociadoDto domicilioDto;
+		this.cuentaDto = cuentaDto;
+		
+		//HardCode - TODO: Aca abajo el cuentaUIData ya deberia venir cargado. Falta terminar! (Preguntarle a Raul).
+		//cuentaUIData = CuentaDatosForm.getInstance().getCuentaEditor();
+		//domicilios = cuentaUIData.getPersona().getDomicilios();
+	 	//
+		
+		List<DomiciliosCuentaDto> domicilios;
+		domicilios = cuentaDto.getPersona().getDomicilios();
+		datosTabla.addTableListener(new TableListener(){
+			public void onCellClicked(SourcesTableEvents arg0, int row, int col) {
+				//Aca preguntar si es Columna = 0:
+				if((col == 0) && (row != 0)){
+					//Aca agarrar el row que me llega, y hacerte a la lista global 
+					//de domicilios, un get(row) y llamar abajo:
+					DomicilioUI.getInstance().cargarPopupEditarDomicilio(cuentaDto.getPersona().getDomicilios().get(row-1));
 				}
-			});
-			datosTabla.setWidget(i+1, 0,linkLapiz);
-
+			}
+		});
+		
+		for (int i = 0; i < domicilios.size(); i++) {
+			if (domicilios.get(i) != null){
+			//Carga los iconos:
+			//Hyperlink linkLapiz = new Hyperlink(IconFactory.lapiz().toString(),true,"");
+			datosTabla.setWidget(i+1, 0,IconFactory.lapiz());
+			
 			//if (cuenta.isPuedeVerInfocom()) {
 			//datosTabla.setWidget(i+1, 1, IconFactory.lupa());
 			//}
 			if (true) {
 				datosTabla.setWidget(i+1, 2, IconFactory.locked());
 			}
-			
 			//Agarra el tipo de domicilio del Dto:
-			TipoDomicilioAsociadoDto domicilioDto;
-			if (domicilios.get(i) != null){
-				if (domicilios.get(i).getTiposDomicilioAsociado() != null){
-					domicilioDto = domicilios.get(i).getTiposDomicilioAsociado().get(i);
-					tipoDomicilio = domicilioDto.getIdTipoDomicilio();
-					principal = domicilioDto.getPrincipal();
-				}
+			if (domicilios.get(i).getTiposDomicilioAsociado() != null){
+				domicilioDto = domicilios.get(i).getTiposDomicilioAsociado().get(i);
+				tipoDomicilio = domicilioDto.getIdTipoDomicilio();
+				principal = domicilioDto.getPrincipal();
+			}
 				/**Logica para tipoDomicilio:*/
 				//Si es (tipoDomicilio = 0) es Domicilio de Entrega:
 				if (tipoDomicilio == 0){

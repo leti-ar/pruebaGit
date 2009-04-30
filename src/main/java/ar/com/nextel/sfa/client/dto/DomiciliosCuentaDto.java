@@ -29,10 +29,15 @@ public class DomiciliosCuentaDto implements IsSerializable{
 	private String fecha_ultima_modificacion;
 	private String activo;
 	private List<TipoDomicilioAsociadoDto> tiposDomicilioAsociado;
-
+	private boolean locked;
+	
 	public String getDomicilios() {
 	/** Muestra la concatenación de Calle, Número, Piso, Dpto., UF, Torre, Localidad, Partido, Provincia, Código Postal y CPA para cada domicilio habilitado.*/
-	String domicilios = this.calle + " " + (this.numero!=null? this.numero:"") + " " + (this.piso!=null? this.piso:"") + " " + (this.departamento!=null? this.departamento:"") + " " + (this.torre!=null? this.torre:"") + " " + this.localidad + " " + this.partido + " " + this.provincia.getDescripcion() + " " + (this.codigo_postal!=null? this.codigo_postal:"") + " " + this.cpa;	
+	//String domicilios = this.calle + " " + (this.numero!=null? this.numero:"") + " " + (this.piso!=null? this.piso:"") + " " + (this.departamento!=null? this.departamento:"") + " " + (this.torre!=null? this.torre:"") + " " + this.localidad + " " + this.partido + " " + this.provincia.getDescripcion() + " " + (this.codigo_postal!=null? this.codigo_postal:"") + " " + this.cpa;	
+	
+	//TODO: Va el de arriba!!!
+	String domicilios = this.calle + " " + (this.numero!=null? this.numero:"") + " " + (this.piso!=null? this.piso:"") + " " + (this.departamento!=null? this.departamento:"") + " " + (this.torre!=null? this.torre:"") + " " + this.localidad + " " + (this.codigo_postal!=null? this.codigo_postal:"") + " " + this.cpa;
+		
 	return domicilios;
 	}
 	
@@ -43,7 +48,6 @@ public class DomiciliosCuentaDto implements IsSerializable{
 	public void setTiposDomicilioAsociado(List<TipoDomicilioAsociadoDto> tipoDomicilioAsociado) {
 		this.tiposDomicilioAsociado = tipoDomicilioAsociado;
 	}
-
 	public String getCalle() {
 		return calle;
 	}
@@ -175,5 +179,11 @@ public class DomiciliosCuentaDto implements IsSerializable{
 	}
 	public void setActivo(String activo) {
 		this.activo = activo;
+	}
+	public boolean isLocked() {
+		return locked;
+	}
+	public void setLocked(boolean locked) {
+		this.locked = locked;
 	}
 }

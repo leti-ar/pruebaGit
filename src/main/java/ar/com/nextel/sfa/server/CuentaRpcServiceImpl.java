@@ -23,6 +23,7 @@ import ar.com.nextel.framework.security.Usuario;
 import ar.com.nextel.model.cuentas.beans.Cargo;
 import ar.com.nextel.model.cuentas.beans.CategoriaCuenta;
 import ar.com.nextel.model.cuentas.beans.ClaseCuenta;
+import ar.com.nextel.model.cuentas.beans.CondicionCuenta;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.FormaPago;
 import ar.com.nextel.model.cuentas.beans.Proveedor;
@@ -47,10 +48,12 @@ import ar.com.nextel.sfa.client.dto.BusquedaPredefinidaDto;
 import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
 import ar.com.nextel.sfa.client.dto.ClaseCuentaDto;
+import ar.com.nextel.sfa.client.dto.CondicionCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.FormaPagoDto;
+import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProveedorDto;
 import ar.com.nextel.sfa.client.dto.RubroDto;
@@ -68,9 +71,14 @@ import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.VerazInitializer;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
+import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.server.RemoteService;
 
-public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcService {
+/**
+ * @author eSalvador
+ **/
+public class CuentaRpcServiceImpl extends RemoteService implements
+		CuentaRpcService {
 
 	private WebApplicationContext context;
 	// private ApplicationContextLoader context;
@@ -150,9 +158,9 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	 **/
 	public BuscarCuentaInitializer getBuscarCuentaInitializer() {
 		//List<TipoDocumentoDto> listaTipoDoc = mapper.convertList(genericDao.getList(TipoDocumento.class),	TipoDocumentoDto.class);
-		List<TipoDocumentoDto> listaTipoDoc = new ArrayList<TipoDocumentoDto>();
-		listaTipoDoc.add(0, new TipoDocumentoDto(0, "Documento"));
-		listaTipoDoc.add(1, new TipoDocumentoDto(1, "CUIT/CUIL"));
+		List<GrupoDocumentoDto> listaGrupoDoc = new ArrayList<GrupoDocumentoDto>();
+		listaGrupoDoc.add(0, new GrupoDocumentoDto(1, "Documento"));
+		listaGrupoDoc.add(1, new GrupoDocumentoDto(2, "CUIT/CUIL"));
 		
 		List<CategoriaCuentaDto> listaCategorias = mapper.convertList(genericDao.getList(CategoriaCuenta.class),	CategoriaCuentaDto.class);
 
@@ -166,7 +174,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		listaResult = Arrays.asList(cantResult.split(";"));
 
 		BuscarCuentaInitializer buscarDTOinit = new BuscarCuentaInitializer(
-				listaBusquedaPredef, listaResult, listaCategorias, listaTipoDoc);
+				listaBusquedaPredef, listaResult, listaCategorias, listaGrupoDoc);
 		return buscarDTOinit;
 	}
 
@@ -261,15 +269,22 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		Cuenta cuenta = null;
 		CuentaDto ctaDTO = null;
 		try {
-			//cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(cuentaId);
-			cuenta = selectCuentaBusinessOperator.getCuentaYLockear(cod_vantive, registroVendedores.getVendedor(usuario));
-//			CondicionCuenta cd1= cuenta.getCondicionCuenta();
-//			Long id = cd1.getId();
-//			String code = cd1.getCodigoVantive();
-//			String desc = cd1.getDescripcion();
-//			CondicionCuentaDto cd2 = new CondicionCuentaDto(id,code,desc);
-//			ctaDTO.setCondicionCuenta(cd2);
-			ctaDTO = (CuentaDto) mapper.map(cuenta, CuentaDto.class);
+			if (cuentaId == 0){
+				//TODO: Analizar y borrar si no va!!
+				throw new RpcExceptionMessages("No tiene permisos para ver esta cuenta.");
+			}else{
+				cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(cuentaId);
+				if (!cod_vantive.equals("***")){
+					cuenta = selectCuentaBusinessOperator.getCuentaYLockear(cod_vantive, registroVendedores.getVendedor(usuario));
+					CondicionCuenta cd1= cuenta.getCondicionCuenta();
+					Long id = cd1.getId();
+					String code = cd1.getCodigoVantive();
+					String desc = cd1.getDescripcion();
+					CondicionCuentaDto cd2 = new CondicionCuentaDto(id,code,desc);
+					ctaDTO = (CuentaDto) mapper.map(cuenta, CuentaDto.class);
+					ctaDTO.setCondicionCuenta(cd2);
+				}
+			}
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
