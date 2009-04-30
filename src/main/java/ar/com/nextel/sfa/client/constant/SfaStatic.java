@@ -97,6 +97,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String calle();
 
   /**
+   * Translated "Canal Vtas.:".
+   * 
+   * @return translated "Canal Vtas.:"
+   */
+  @DefaultStringValue("Canal Vtas.:")
+  @Key("canalVentas")
+  String canalVentas();
+
+  /**
    * Translated "cancelar".
    * 
    * @return translated "cancelar"
@@ -106,6 +115,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String cancelar();
 
   /**
+   * Translated "Cargo:".
+   * 
+   * @return translated "Cargo:"
+   */
+  @DefaultStringValue("Cargo:")
+  @Key("cargo")
+  String cargo();
+
+  /**
    * Translated "Categoría:".
    * 
    * @return translated "Categoría:"
@@ -113,6 +131,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Categoría:")
   @Key("categoria")
   String categoria();
+
+  /**
+   * Translated "CBU".
+   * 
+   * @return translated "CBU"
+   */
+  @DefaultStringValue("CBU")
+  @Key("cbu")
+  String cbu();
 
   /**
    * Translated "Celular:".
@@ -511,6 +538,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String hasta();
 
   /**
+   * Translated "IIBB:".
+   * 
+   * @return translated "IIBB:"
+   */
+  @DefaultStringValue("IIBB:")
+  @Key("iibb")
+  String iibb();
+
+  /**
    * Translated "Item:".
    * 
    * @return translated "Item:"
@@ -599,6 +635,24 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Nombre:")
   @Key("nombre")
   String nombre();
+
+  /**
+   * Translated "Nombre División:".
+   * 
+   * @return translated "Nombre División:"
+   */
+  @DefaultStringValue("Nombre División:")
+  @Key("nombreDivision")
+  String nombreDivision();
+
+  /**
+   * Translated "Nro Tarjeta:".
+   * 
+   * @return translated "Nro Tarjeta:"
+   */
+  @DefaultStringValue("Nro Tarjeta:")
+  @Key("nroTarjeta")
+  String nroTarjeta();
 
   /**
    * Translated "<span class=\"req\">NºSS:</span>".
@@ -889,6 +943,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ss();
 
   /**
+   * Translated "Tarjeta Tipo:".
+   * 
+   * @return translated "Tarjeta Tipo:"
+   */
+  @DefaultStringValue("Tarjeta Tipo:")
+  @Key("tarjetaTipo")
+  String tarjetaTipo();
+
+  /**
    * Translated "Teléfono".
    * 
    * @return translated "Teléfono"
@@ -914,6 +977,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Término Pago:")
   @Key("terminoPago")
   String terminoPago();
+
+  /**
+   * Translated "Tipo Cuenta".
+   * 
+   * @return translated "Tipo Cuenta"
+   */
+  @DefaultStringValue("Tipo Cuenta")
+  @Key("tipoCuenta")
+  String tipoCuenta();
 
   /**
    * Translated "Tipo doc.:".
@@ -970,6 +1042,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String uf();
 
   /**
+   * Translated "Use:".
+   * 
+   * @return translated "Use:"
+   */
+  @DefaultStringValue("Use:")
+  @Key("use")
+  String use();
+
+  /**
    * Translated "Usuario:".
    * 
    * @return translated "Usuario:"
@@ -1006,6 +1087,24 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String vencimiento();
 
   /**
+   * Translated "Nombre:".
+   * 
+   * @return translated "Nombre:"
+   */
+  @DefaultStringValue("Nombre:")
+  @Key("vendedorNombre")
+  String vendedorNombre();
+
+  /**
+   * Translated "Vendedor".
+   * 
+   * @return translated "Vendedor"
+   */
+  @DefaultStringValue("Vendedor")
+  @Key("vendedorPanelTitle")
+  String vendedorPanelTitle();
+
+  /**
    * Translated "Veraz:".
    * 
    * @return translated "Veraz:"
@@ -1022,6 +1121,24 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Resultado Veraz")
   @Key("verazTitledPanel")
   String verazTitledPanel();
+
+  /**
+   * Translated "Vto. año:".
+   * 
+   * @return translated "Vto. año:"
+   */
+  @DefaultStringValue("Vto. año:")
+  @Key("vtoAnio")
+  String vtoAnio();
+
+  /**
+   * Translated "Vto. mes:".
+   * 
+   * @return translated "Vto. mes:"
+   */
+  @DefaultStringValue("Vto. mes:")
+  @Key("vtoMes")
+  String vtoMes();
 
   /**
    * Translated "&nbsp;".
