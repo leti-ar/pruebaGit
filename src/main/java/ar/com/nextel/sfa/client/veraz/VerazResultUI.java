@@ -9,6 +9,7 @@ import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -57,6 +58,11 @@ public class VerazResultUI extends FlowPanel {
 	}
 	
 	private void loadTable() {
+		if (verazResultTable != null) {
+			verazResultTable.unsinkEvents(Event.getEventsSunk(verazResultTable
+					.getElement()));
+			verazResultTable.removeFromParent();
+		}
 		verazResultTable = new FlexTable();
 		verazFilterUI = new VerazFilterUI();
 		verazResultTable.getFlexCellFormatter().setColSpan(1, 1, 4);
