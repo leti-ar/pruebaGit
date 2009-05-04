@@ -15,7 +15,7 @@ public class SolicitudServicioCerradaDto implements IsSerializable {
 	private Boolean firmas;
 	private Date fechaCierreDesde;
 	private Date fechaCierreHasta;
-	private String estado;
+	private Long idEstadoAprobacionSS;
 	private Long cantidadResultados;
 
 	public String getNumeroSS() {
@@ -70,7 +70,6 @@ public class SolicitudServicioCerradaDto implements IsSerializable {
 //	public void setCambios(List<CambiosSolicitudServicioDto> cambios) {
 //		this.cambios = cambios;
 //	}
-	
 
 
 	public Long getCantidadResultados() {
@@ -79,10 +78,6 @@ public class SolicitudServicioCerradaDto implements IsSerializable {
 
 	public void setCantidadResultados(Long cantidadResultados) {
 		this.cantidadResultados = cantidadResultados;
-	}
-
-	public String getEstado() {
-		return estado;
 	}
 
 	public Date getFechaCierreDesde() {
@@ -101,12 +96,17 @@ public class SolicitudServicioCerradaDto implements IsSerializable {
 		this.fechaCierreHasta = fechaCierreHasta;
 	}
 
-	public void setEstado(String estado) {
-		this.estado = estado;
-	}
-
 	public void setPataconex(Boolean pataconex) {
 		this.pataconex = pataconex;
 	}
+
+	public Long getIdEstadoAprobacionSS() {
+		return idEstadoAprobacionSS;
+	}
+
+	public void setIdEstadoAprobacionSS(Long idEstadoAprobacionSS) {
+		this.idEstadoAprobacionSS = idEstadoAprobacionSS;
+	}
+
 	
 }

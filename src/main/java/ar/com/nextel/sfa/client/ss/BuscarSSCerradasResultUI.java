@@ -100,9 +100,10 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 		if (solicitudesServicioCerradaResultDto!=null) {
 		for (Iterator iter = solicitudesServicioCerradaResultDto.iterator(); iter.hasNext();) {
 			SolicitudServicioCerradaResultDto solicitudServicioCerradaResultDto = (SolicitudServicioCerradaResultDto) iter.next();
+			//solicitudServicioCerradaResultDto esta devolviendo todo null!!!
 			resultTable.setWidget(row, 0, IconFactory.word());
 			resultTable.setHTML(row, 1, solicitudServicioCerradaResultDto.getNumero().toString());
-			resultTable.setHTML(row, 2, solicitudServicioCerradaResultDto.getNumeroCuenta().toString());
+				resultTable.setHTML(row, 2, solicitudServicioCerradaResultDto.getNumeroCuenta().toString());
 			resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getRazonSocialCuenta());
 			resultTable.setHTML(row, 4, solicitudServicioCerradaResultDto.getCantidadEquipos().toString());
 			resultTable.setHTML(row, 5, solicitudServicioCerradaResultDto.getPataconex().toString());

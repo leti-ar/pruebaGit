@@ -152,11 +152,13 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 
 	public SolicitudServicioCerradaDto getSSCerradaSearch() {
 		SolicitudServicioCerradaDto solicitudServicioCerradaDto = new SolicitudServicioCerradaDto();
+		//solicitudServicioCerradaDto.setNumeroCuenta(nroCliente.getText());
+		//solicitudServicioCerradaDto.setNumeroSS(nroSS.getText());
 		solicitudServicioCerradaDto.setNumeroCuenta(nroCliente.getText());
 		solicitudServicioCerradaDto.setNumeroSS(nroSS.getText());
 		solicitudServicioCerradaDto.setFechaCierreDesde(desde.getSelectedDate());
 		solicitudServicioCerradaDto.setFechaCierreHasta(hasta.getSelectedDate());
-		solicitudServicioCerradaDto.setEstado(estadoCombo.getSelectedItemText());
+		solicitudServicioCerradaDto.setIdEstadoAprobacionSS(obtenerLong(estadoCombo.getSelectedItemText()));
 		solicitudServicioCerradaDto.setPataconex(obtenerBoolean(pataconesCombo.getSelectedItemText()));
 		solicitudServicioCerradaDto.setFirmas(obtenerBoolean(firmasCombo.getSelectedItemText()));
 		solicitudServicioCerradaDto.setCantidadResultados(Long.valueOf(resultadosCombo.getSelectedItem().getItemValue()));
@@ -170,4 +172,12 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 			return Boolean.FALSE;
 	}
 	
+	//Arreglar estooooooo
+	private Long obtenerLong(String string) {
+		if ("Pass".equals(string)) {
+			return Long.valueOf("2");
+		}
+		return Long.valueOf("1");
+	}
+
 }
