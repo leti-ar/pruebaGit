@@ -1,7 +1,7 @@
 package ar.com.nextel.sfa.client.dto;
 
 import java.util.Date;
-import java.util.Set;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class CuentaDto implements IsSerializable {	   
