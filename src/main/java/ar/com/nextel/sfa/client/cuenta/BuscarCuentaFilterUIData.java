@@ -41,7 +41,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 	private ValidationTextBox numeroNextelTextBox = new ValidationTextBox("[0-9]*");
 	private ValidationTextBox flotaIdTextBox = new ValidationTextBox("[0-9\\*]*");
 	private ValidationTextBox numeroSolicitudServicioTextBox = new ValidationTextBox("[0-9]*");
-	private ValidationTextBox responsableTextBox = new ValidationTextBox("[a-zA-Z]*");
+	private ValidationTextBox responsableTextBox = new ValidationTextBox("[a-zA-Z\\%]*");
 	private ValidationListBox grupoDocumentoCombo;
 	private ValidationTextBox numeroDocumentoTextBox = new ValidationTextBox("[0-9]*");
 	private ValidationListBox predefinidasCombo;
