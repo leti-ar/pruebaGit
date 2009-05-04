@@ -37,7 +37,6 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 	}
 
 	public void searchCuentas(BuscarCuentaFilterUIData buscadorCuentasFilterEditor) {
-		
 		buscarCuentaResultPanel.searchCuentas(buscadorCuentasFilterEditor.getCuentaSearch());
 	}
 }

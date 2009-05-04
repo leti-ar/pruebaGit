@@ -274,8 +274,9 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 				throw new RpcExceptionMessages("No tiene permisos para ver esta cuenta.");
 			}else{
 				cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(cuentaId);
-				if (!cod_vantive.equals("***")){
+				if (!cod_vantive.equals("***") && (!cod_vantive.equals("null"))){
 					cuenta = selectCuentaBusinessOperator.getCuentaYLockear(cod_vantive, registroVendedores.getVendedor(usuario));
+				}
 					CondicionCuenta cd1= cuenta.getCondicionCuenta();
 					Long id = cd1.getId();
 					String code = cd1.getCodigoVantive();
@@ -283,7 +284,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 					CondicionCuentaDto cd2 = new CondicionCuentaDto(id,code,desc);
 					ctaDTO = (CuentaDto) mapper.map(cuenta, CuentaDto.class,"cuentaEdicion");
 					ctaDTO.setCondicionCuenta(cd2);
-				}
 			}
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
