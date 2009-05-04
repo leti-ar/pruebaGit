@@ -56,6 +56,22 @@
 		<servlet-class>
 		ar.com.nextel.sfa.server.SolicitudRpcServiceImpl</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>InfocomRpcService</servlet-name>
+		<servlet-class>
+		ar.com.nextel.sfa.server.InfocomRpcServiceImpl</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>OperacionesRpcService</servlet-name>
+		<servlet-class>
+		ar.com.nextel.sfa.server.OperacionesRpcServiceImpl</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>OportunidadNegocioRpcService</servlet-name>
+		<servlet-class>
+		ar.com.nextel.sfa.server.OportunidadNegocioRpcServiceImpl</servlet-class>
+	</servlet>
+
 	
 	<servlet-mapping>
 		<servlet-name>CuentaRpcService</servlet-name>
@@ -63,9 +79,21 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>SolicitudRpcService</servlet-name>
-		<url-pattern>/solicitud.rpc</url-pattern>
+		<url-pattern>/ar.com.nextel.sfa.SFAWeb/solicitud.rpc</url-pattern>
 	</servlet-mapping>
-
+	<servlet-mapping>
+		<servlet-name>InfocomRpcService</servlet-name>
+		<url-pattern>/ar.com.nextel.sfa.SFAWeb/infocom.rpc</url-pattern>
+	</servlet-mapping>	
+	<servlet-mapping>
+		<servlet-name>OperacionesRpcService</servlet-name>
+		<url-pattern>/ar.com.nextel.sfa.SFAWeb/operaciones.rpc</url-pattern>
+	</servlet-mapping>	
+	<servlet-mapping>
+		<servlet-name>OportunidadNegocioRpcService</servlet-name>
+		<url-pattern>/ar.com.nextel.sfa.SFAWeb/oportunidades.rpc</url-pattern>
+	</servlet-mapping>	
+	
 	<resource-ref id="sfaDS">
 		<description>sfaDS</description>
 		<res-ref-name>jdbc/sfaDS</res-ref-name>
