@@ -88,7 +88,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	
 	public List<SolicitudServicioCerradaResultDto> searchSSCerrada(SolicitudServicioCerradaDto solicitudServicioCerradaDto) {
 		AppLogger.info("Iniciando busqueda de SS cerradas...");
-		//en este mapeo pierdo las fechas
 		SolicitudServicioCerradaSearchCriteria solicitudServicioCerradaSearchCriteria = mapper.map(solicitudServicioCerradaDto, SolicitudServicioCerradaSearchCriteria.class);
 		Usuario usuario = new Usuario();
 		usuario.setUserName("acsa1");
