@@ -93,7 +93,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		usuario.setUserName("acsa1");
 		Vendedor vendedor = registroVendedores.getVendedor(usuario);
 		solicitudServicioCerradaSearchCriteria.setVendedor(vendedor);
-		List<SolicitudServicio> list = null;
+		List<SolicitudServicio> list = new ArrayList();
 		try {
 			list = this.solicitudesBusinessOperator.searchSolicitudesServicioHistoricas(solicitudServicioCerradaSearchCriteria);
 		} catch (Exception e) {
