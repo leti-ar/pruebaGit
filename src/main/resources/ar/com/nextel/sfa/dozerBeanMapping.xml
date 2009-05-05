@@ -99,21 +99,15 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</field>
 	</mapping>
 	
-	<mapping map-id="ssCerradaResult" wildcard="false">
+	<mapping map-id="ssCerradaResult">
 		<class-a>
 			ar.com.nextel.model.solicitudes.beans.SolicitudServicio
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto
 		</class-b>
-		<field
-			custom-converter-id="identifiableObjectToId">
-			<a>estadoActual</a>
-			<b>idEstadoAprobacion</b>
-		</field>
-		<field
-			custom-converter-id="identifiableObjectToId">
-			<a>cuenta</a>
-			<b>idCuenta</b>
+		<field>
+			<a>idVantive</a>
+			<b>idSolicitudServicio</b>
 		</field>
 	</mapping>
 
