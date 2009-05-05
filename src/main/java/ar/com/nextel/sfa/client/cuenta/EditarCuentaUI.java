@@ -8,9 +8,11 @@ import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+/**
+ * @author eSalvador
+ **/
 public class EditarCuentaUI extends ApplicationUI {
 
-	private Boolean panelVisible = true;
 	private final CuentaEdicionTabPanel cuentaTab = CuentaEdicionTabPanel.getInstance();
 	
 	public EditarCuentaUI() {
@@ -22,16 +24,15 @@ public class EditarCuentaUI extends ApplicationUI {
 		String cod_vantive = HistoryUtils.getParam("cod_vantive");
 		cuentaTab.clean();
 		
+	//TODO: Sacar y hacer como corresponda. Solo se creo para emular la funcionalidad visualmente!
 		//Si la cuenta o el codigoVantive NO son nulos:
 		if ((cuentaID!=null) || (!cod_vantive.equals("null"))) {
 			//Si el codVantive es '***' o la cuenta es igual a 0:
 			// lanza mensaje de error por permisos y pone invisible los paneles.
 			if("***".equals(cod_vantive) || (cuentaID == 0)){
 				//panelVisible = false;
-				//UILoader.getInstance().clear();
 				mainPanel.clear();
 				new BuscarCuentaUI().load();
-				//UILoader.getInstance().clear();
 				UILoader.getInstance().setPage(0);
 				ErrorDialog.getInstance().show("No tiene permiso para ver esa cuenta.");
 			}else{
@@ -50,7 +51,6 @@ public class EditarCuentaUI extends ApplicationUI {
 			public void success(CuentaDto cuentaDto) {
 			  //De todas formas, el servicio puede NO devolver ninguna cuenta: (Se pone el panel invisible!).
 			  if (cuentaDto == null){
-				  panelVisible = false;
 				  mainPanel.clear();
 				  new BuscarCuentaUI().load();
 			  }else{
@@ -75,9 +75,7 @@ public class EditarCuentaUI extends ApplicationUI {
 	public void unload() {
 	}
 
-	/**
-	 * @author eSalvador
-	 **/
+
 //	private void loadDomiciliosFormPanel(CuentaDto cuentaDto, CuentaEdicionTabPanel cuentaTab) {
 //		if (cuentaDto.getPersona() != null) {
 //			// List<DomiciliosCuentaDto> domicilios;

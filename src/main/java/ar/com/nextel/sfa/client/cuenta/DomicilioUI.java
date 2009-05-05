@@ -6,7 +6,6 @@ import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Grid;
@@ -27,6 +26,7 @@ public class DomicilioUI extends NextelDialog {
 	private SimpleLink linkCerrar;
 	private SimpleLink linkAceptar;
 	private DomiciliosUIData domiciliosData;
+	private boolean editable; 
 	private static DomicilioUI instance = new DomicilioUI();
 
 	public static DomicilioUI getInstance() {
@@ -57,17 +57,23 @@ public class DomicilioUI extends NextelDialog {
 	/**
 	 * @author esalvador
 	 **/
-	public void cargarPopupEditarDomicilio(DomiciliosCuentaDto domicilio) {
+	public void cargarPopupEditarDomicilio(DomiciliosCuentaDto domicilio, boolean editable) {
 		domiciliosData.setDomicilio(domicilio);
 		linkAceptar.setVisible(false);
 		showAndCenter();
-		//
-		Boolean locked = domicilio.isLocked();
-		GWT.log("Locked?: " + locked.toString(), null);
+		if (!editable){
+			domiciliosData.disableFields();
+		}else{
+			domiciliosData.enableFields();
+		}
+		
+		//Boolean locked = domicilio.isLocked();
+		//GWT.log("Locked?: " + locked.toString(), null);
+
 		//TODO: Arreglar lo del Titulo!!!
 			//setDialogTitle("Editar Domicilio");
 	}
-
+	
 	/**
 	 *@author eSalvador
 	 **/
@@ -203,4 +209,13 @@ public class DomicilioUI extends NextelDialog {
 	public void showAndCenter() {
 		super.showAndCenter();
 	}
+
+	public boolean isEditable() {
+		return editable;
+	}
+
+	public void setEditable(boolean editable) {
+		this.editable = editable;
+	}
+	
 }

@@ -1,14 +1,19 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
+import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
+import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.TipoDomicilioAsociadoDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
@@ -17,7 +22,6 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
@@ -30,6 +34,7 @@ public class CuentaDomiciliosForm extends Composite {
 	private FormButtonsBar footerBar;
 	private FlexTable datosTabla;
 	private CuentaUIData cuentaUIData;
+	private List<SolicitudServicioCerradaDto> ssCerradasAsociadas = new ArrayList<SolicitudServicioCerradaDto>();
 
 	//TODO; Analizar!!
 	//private DomiciliosUIData domiciliosData;
@@ -110,6 +115,36 @@ public class CuentaDomiciliosForm extends Composite {
 	}
 	
 	/**
+	 *@author eSalvador
+	 **/
+	private List<SolicitudServicioCerradaDto> buscaSSCerradasAsociadas(Long idCuenta, String razonSocial) {
+		//Defino el Dto para la busqueda:
+//		Date fechDesde = new Date(2008,04,01);
+//		Date fechHasta = new Date(2009,05,01);
+		SolicitudServicioCerradaDto ssCerradaDto = new SolicitudServicioCerradaDto();
+		ssCerradaDto.setNumeroCuenta(idCuenta.toString());
+		ssCerradaDto.setRazonSocial(razonSocial);
+		//ssCerradaDto.setFechaCierreDesde();
+		ssCerradaDto.setFirmas(true);
+		//ssCerradaDto.setFechaCierreHasta(fechHasta);
+		ssCerradaDto.setPataconex(true);
+		ssCerradaDto.setCantidadResultados(new Long(10));
+		//Llamo al servicio buscando SSCerradas:
+		SolicitudRpcService.Util.getInstance().searchSSCerrada(ssCerradaDto,new DefaultWaitCallback<List<SolicitudServicioCerradaResultDto>>() {
+			@Override
+			public void success(List<SolicitudServicioCerradaResultDto> result) {
+				//ssCerradasAsociadas = result;
+				for (int i = 0; i < result.size(); i++) {
+					//SolicitudServicioCerradaDto resultSS = new SolicitudServicioCerradaDto();
+					//resultSS.setId(result.get(i).getIdCuenta());
+					ssCerradasAsociadas.add((SolicitudServicioCerradaDto) result);
+				}
+			}
+		});
+		return ssCerradasAsociadas;
+	}
+	
+	/**
 	 * @author eSalvador 
 	 **/
 	public void cargaTablaDomicilios(final CuentaDto cuentaDto){
@@ -127,11 +162,24 @@ public class CuentaDomiciliosForm extends Composite {
 		domicilios = cuentaDto.getPersona().getDomicilios();
 		datosTabla.addTableListener(new TableListener(){
 			public void onCellClicked(SourcesTableEvents arg0, int row, int col) {
+				boolean editable = true;
 				//Aca preguntar si es Columna = 0:
 				if((col == 0) && (row != 0)){
 					//Aca agarrar el row que me llega, y hacerte a la lista global 
 					//de domicilios, un get(row) y llamar abajo:
-					DomicilioUI.getInstance().cargarPopupEditarDomicilio(cuentaDto.getPersona().getDomicilios().get(row-1));
+					
+					/**Aca llama al validador para ver si tiene SSCerradas, y si tiene, advertir con un popup,
+					 * e inhabilitar los campos de edicion del Domicilio. */
+					if(buscaSSCerradasAsociadas(cuentaDto.getId(), cuentaDto.getPersona().getRazonSocial()).size() != 0){
+						//TODO: Lanzar PopUp. 
+						editable = false;
+						GWT.log("Devolvio SSCerradas no vacia. O sea, tiene al menos una SS Cerrada!", null);
+					}else{
+						//No deshabilitar nada y sin PopUp.
+						editable = true;
+						GWT.log("Devolvio SSCerradas == 0, o sea NO tiene SS Cerradas asociadas.", null);
+					}
+					DomicilioUI.getInstance().cargarPopupEditarDomicilio(cuentaDto.getPersona().getDomicilios().get(row-1),editable);
 				}
 			}
 		});
@@ -149,10 +197,16 @@ public class CuentaDomiciliosForm extends Composite {
 				datosTabla.setWidget(i+1, 2, IconFactory.locked());
 			}
 			//Agarra el tipo de domicilio del Dto:
+			//TODO: Hacer un For por el tipoDomicilioAsociado:
+			//TODO: Sacar el HardCode del 0 abajo!!!
+			
 			if (domicilios.get(i).getTiposDomicilioAsociado() != null){
-				domicilioDto = domicilios.get(i).getTiposDomicilioAsociado().get(i);
+				//ESTE HardCode sacar!!!
+				domicilioDto = domicilios.get(i).getTiposDomicilioAsociado().get(0);
+				//
 				tipoDomicilio = domicilioDto.getIdTipoDomicilio();
 				principal = domicilioDto.getPrincipal();
+				
 			}
 				/**Logica para tipoDomicilio:*/
 				//Si es (tipoDomicilio = 0) es Domicilio de Entrega:
