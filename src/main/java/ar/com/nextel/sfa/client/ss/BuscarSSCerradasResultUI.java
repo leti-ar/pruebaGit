@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.ss;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -62,17 +63,17 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 	 * */
 	public void searchSSCerradas(SolicitudServicioCerradaDto solicitudServicioSearchDto) {
 		this.searchSSCerradas(solicitudServicioSearchDto, true);
-				};	
+	};	
 
 	private void searchSSCerradas(SolicitudServicioCerradaDto solicitudServicioCerradaDto, boolean firstTime) {
 		SolicitudRpcService.Util.getInstance().searchSSCerrada(solicitudServicioCerradaDto,
 				new DefaultWaitCallback<List<SolicitudServicioCerradaResultDto>>() {
 					public void success(List<SolicitudServicioCerradaResultDto> result) {
-						List <SolicitudServicioCerradaResultDto> list = result;
-						if (list != null) {
-							setSolicitudServicioDto(list);
+						if (result != null) {
+							setSolicitudServicioDto(result);
 							buscarSSTotalesResultUI.setValues(cantEquipos.toString(), cantPataconex.toString(), String.valueOf(cantEqFirmados));
 							buscarSSTotalesResultUI.setVisible(true);
+							
 						}
 						
 					}
@@ -86,8 +87,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 
 	private void loadTable() {
 		if (resultTable != null) {
-			resultTable.unsinkEvents(Event.getEventsSunk(resultTable
-					.getElement()));
+			resultTable.unsinkEvents(Event.getEventsSunk(resultTable.getElement()));
 			resultTable.removeFromParent();
 		}
 		resultTable = new FlexTable();
