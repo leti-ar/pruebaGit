@@ -7,8 +7,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class SolicitudServicioCerradaResultDto implements IsSerializable {
 
 	private Long idSolicitudServicio;
-    private Long idEstadoAprobacion;
-    private Long idCuenta;
+    //private Long idEstadoAprobacion;
+    //private Long idCuenta;
     private String numero;
     private String numeroCuenta;
     private String razonSocialCuenta;
@@ -23,18 +23,18 @@ public class SolicitudServicioCerradaResultDto implements IsSerializable {
 	public void setIdSolicitudServicio(Long idSolicitudServicio) {
 		this.idSolicitudServicio = idSolicitudServicio;
 	}
-	public Long getIdEstadoAprobacion() {
-		return idEstadoAprobacion;
-	}
-	public void setIdEstadoAprobacion(Long idEstadoAprobacion) {
-		this.idEstadoAprobacion = idEstadoAprobacion;
-	}
-	public Long getIdCuenta() {
-		return idCuenta;
-	}
-	public void setIdCuenta(Long idCuenta) {
-		this.idCuenta = idCuenta;
-	}
+//	public Long getIdEstadoAprobacion() {
+//		return idEstadoAprobacion;
+//	}
+//	public void setIdEstadoAprobacion(Long idEstadoAprobacion) {
+//		this.idEstadoAprobacion = idEstadoAprobacion;
+//	}
+//	public Long getIdCuenta() {
+//		return idCuenta;
+//	}
+//	public void setIdCuenta(Long idCuenta) {
+//		this.idCuenta = idCuenta;
+//	}
 	public String getNumero() {
 		return numero;
 	}
