@@ -15,7 +15,6 @@ import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
-import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
 
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -73,11 +72,6 @@ public class CuentaUIData extends UIData {
 	private Label usuario;
 	private Label fechaCreacion;
 
-	private SimpleLink guardar  = new SimpleLink(Sfa.constant().guardar() , "#", true);
-	private SimpleLink crearSS  = new SimpleLink(Sfa.constant().crear()+Sfa.constant().whiteSpace()+Sfa.constant().ss(), "#", true);
-	private SimpleLink agregar  = new SimpleLink(Sfa.constant().agregar() , "#", true);
-	private SimpleLink cancelar = new SimpleLink(Sfa.constant().cancelar(), "#", true);
-
 	private FlexTable efectivoTable       = new FlexTable();
 	private FlexTable cuentaBancariaTable = new FlexTable();
 	private FlexTable tarjetaTable        = new FlexTable();
@@ -124,10 +118,6 @@ public class CuentaUIData extends UIData {
 		fields.add(vendedorNombre);
 		fields.add(vendedorTelefono);
 		fields.add(tipoCanalVentas);
-		fields.add(guardar);
-		fields.add(crearSS);
-		fields.add(agregar);
-		fields.add(cancelar);
 		fields.add(tipoCuentaBancaria);
 		fields.add(tipoTarjeta);
 		fields.add(mesVto);
@@ -137,6 +127,125 @@ public class CuentaUIData extends UIData {
 		
 	}
 	
+
+	private void setCombos() {
+		CuentaRpcService.Util.getInstance().getAgregarCuentaInitializer(
+			new DefaultWaitCallback<AgregarCuentaInitializer>() {
+				public void success(AgregarCuentaInitializer result) {
+					tipoDocumento.addAllItems(result.getTiposDocumento());
+					contribuyente.addAllItems(result.getTiposContribuyentes());
+					rubro.addAllItems(result.getRubro());
+					sexo.addAllItems(result.getSexo());
+					claseCliente.addAllItems(result.getClaseCliente());
+					formaPago.addAllItems(result.getFormaPago());
+					proveedorAnterior.addAllItems(result.getProveedorAnterior());
+					cargo.addAllItems(result.getCargo());
+					tipoCuentaBancaria.addAllItems(result.getTipoCuentaBancaria());
+					tipoTarjeta.addAllItems(result.getTipoTarjeta());
+					tipoCanalVentas.addAllItems(result.getTipoCanalVentas());
+			        for(int i=0;i<6;i++) {
+			        	String ano = Integer.toString(result.getAnio()+i);
+			 		    anioVto.addItem(ano, ano);
+			        }
+				}
+			});
+		for(int i=1;i<13;i++) {
+        	mesVto.addItem(Integer.toString(i), Integer.toString(i));
+        }
+	}
+
+	public FlexTable getEfectivoPanel() {
+		efectivoTable.setWidth("80%");
+		efectivoTable.addStyleName("layout");
+		efectivoTable.setText(0, 0, Sfa.constant().modalidad());
+		efectivoTable.setWidget(0, 1, getFormaPago());
+		efectivoTable.setText(0, 3, null);
+		efectivoTable.setText(0, 4, null);
+		return efectivoTable;
+	}
+	public FlexTable getCuentaBancariaPanel() {
+		cuentaBancariaTable.setWidth("80%");
+		cuentaBancariaTable.addStyleName("layout");
+		cuentaBancariaTable.setVisible(false);
+		
+		cuentaBancariaTable.setText(0, 0, Sfa.constant().modalidad());
+		cuentaBancariaTable.setWidget(0, 1, getFormaPago());		
+		cuentaBancariaTable.setText(0, 3, Sfa.constant().tipoCuenta());
+		cuentaBancariaTable.setWidget(0, 4, getTipoCuentaBancaria());
+		
+		cuentaBancariaTable.setText(1, 0, Sfa.constant().cbu());
+		cuentaBancariaTable.setWidget(1, 1, getCbu());		
+		cuentaBancariaTable.getFlexCellFormatter().setColSpan(1, 1, 4);
+		return cuentaBancariaTable;
+	}
+	
+	public FlexTable getTarjetaCreditoPanel() {
+		tarjetaTable.setWidth("80%");
+		tarjetaTable.addStyleName("layout");
+		tarjetaTable.setVisible(false);
+		
+		tarjetaTable.setText(0, 0, Sfa.constant().modalidad());
+		tarjetaTable.setWidget(0, 1, getFormaPago());		
+		tarjetaTable.setText(0, 3, Sfa.constant().tarjetaTipo());
+		tarjetaTable.setWidget(0, 4, getTipoTarjeta());
+		
+		tarjetaTable.setText(1, 0, Sfa.constant().nroTarjeta());
+		tarjetaTable.setWidget(1, 1, getNumeroTarjeta());		
+		tarjetaTable.setText(1, 3, Sfa.constant().vtoMes());
+		tarjetaTable.setWidget(1, 4, getMesVto());
+
+		tarjetaTable.setText(2, 0, Sfa.constant().vtoAnio());
+		tarjetaTable.setWidget(2, 1, getAnioVto());		
+		tarjetaTable.setText(2, 3, "ValidarTarjeta-TODO");
+		tarjetaTable.setWidget(2, 4, null);
+		return tarjetaTable; 
+	}
+	
+	public void setVisibilidadFormasDePago(String idSelected) {
+		if (idSelected.equals(TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo())) {
+			setVisibleFormaPagoCuentaBancaria();
+		} else if (idSelected.equals(TipoFormaPagoEnum.TARJETA_CREDITO.getTipo())) {
+			setVisibleFormaPagoTarjeta();
+		} else {  //	if (idSelected.equals(TipoFormaPagoEnum.EFECTIVO.getTipo())) {
+			setVisibleFormaPagoEfectivo();
+		}
+		
+	}
+	
+    public void setVisibleFormaPagoEfectivo() {
+		efectivoTable.setWidget(0, 1, getFormaPago());
+		efectivoTable.setVisible(true);
+		cuentaBancariaTable.setVisible(false);
+		tarjetaTable.setVisible(false);    	
+    }
+    public void setVisibleFormaPagoCuentaBancaria() {
+		cuentaBancariaTable.setWidget(0, 1, getFormaPago());
+		efectivoTable.setVisible(false);
+		cuentaBancariaTable.setVisible(true);
+		tarjetaTable.setVisible(false);    	
+    }
+    public void setVisibleFormaPagoTarjeta() {
+		tarjetaTable.setWidget(0, 1, getFormaPago());
+		efectivoTable.setVisible(false);
+		cuentaBancariaTable.setVisible(false);
+		tarjetaTable.setVisible(true);
+    }
+	public PersonaDto getPersona() {
+		persona.setApellido(apellido.getText());
+		//TODO: Revisar lo del Documento!
+		DocumentoDto doc = new DocumentoDto();
+		TipoDocumentoDto tipoDoc = new TipoDocumentoDto(Long.parseLong(tipoDocumento.getSelectedItem().getItemValue()),tipoDocumento.getSelectedItem().getItemText());
+		doc.setNumero(numeroDocumento.getText());
+		doc.setTipoDocumento(tipoDoc);
+		persona.setDocumento(doc);
+		//
+		persona.setFechaNacimiento(fechaNacimiento.getSelectedDate());
+		persona.setNombre(nombre.getText());
+		persona.setRazonSocial(razonSocial.getText());
+		persona.setSexo(new SexoDto(Long.parseLong(sexo.getSelectedItem().getItemValue()),sexo.getSelectedItem().getItemText()));
+		return persona;
+	}
+
 	/** Getters de todos los Widgets **/
 	public ListBox getTipoDocumento() {
 		return tipoDocumento;
@@ -225,37 +334,6 @@ public class CuentaUIData extends UIData {
 		return fechaCreacion;
 	}
 
-	public void setGuardar(SimpleLink guardar) {
-		this.guardar = guardar;
-	}
-
-	public SimpleLink getGuardar() {
-		return guardar;
-	}
-
-	public void setCrearSS(SimpleLink crearSS) {
-		this.crearSS = crearSS;
-	}
-
-	public SimpleLink getCrearSS() {
-		return crearSS;
-	}
-
-	public void setAgregar(SimpleLink agregar) {
-		this.agregar = agregar;
-	}
-
-	public SimpleLink getAgregar() {
-		return agregar;
-	}
-
-	public void setCancelar(SimpleLink cancelar) {
-		this.cancelar = cancelar;
-	}
-
-	public SimpleLink getCancelar() {
-		return cancelar;
-	}
 	public TextBox getIibb() {
 		return iibb;
 	}
@@ -310,126 +388,4 @@ public class CuentaUIData extends UIData {
 	public List<TipoTelefonoDto> getTipoTelefono() {
 		return tipoTelefono;
 	}
-
-	private void setCombos() {
-		CuentaRpcService.Util.getInstance().getAgregarCuentaInitializer(
-			new DefaultWaitCallback<AgregarCuentaInitializer>() {
-				public void success(AgregarCuentaInitializer result) {
-					tipoDocumento.addAllItems(result.getTiposDocumento());
-					contribuyente.addAllItems(result.getTiposContribuyentes());
-					rubro.addAllItems(result.getRubro());
-					sexo.addAllItems(result.getSexo());
-					claseCliente.addAllItems(result.getClaseCliente());
-					formaPago.addAllItems(result.getFormaPago());
-					proveedorAnterior.addAllItems(result.getProveedorAnterior());
-					cargo.addAllItems(result.getCargo());
-					tipoCuentaBancaria.addAllItems(result.getTipoCuentaBancaria());
-					tipoTarjeta.addAllItems(result.getTipoTarjeta());
-					tipoCanalVentas.addAllItems(result.getTipoCanalVentas());
-			        for(int i=0;i<6;i++) {
-			        	String ano = Integer.toString(result.getAnio()+i);
-			 		    anioVto.addItem(ano, ano);
-			        }
-				}
-			});
-		for(int i=1;i<13;i++) {
-        	mesVto.addItem(Integer.toString(i), Integer.toString(i));
-        }
-	}
-
-	public FlexTable getEfectivoPanel() {
-		efectivoTable.setWidth("80%");
-		efectivoTable.addStyleName("layout");
-		efectivoTable.setText(0, 0, Sfa.constant().modalidad());
-		efectivoTable.setWidget(0, 1, getFormaPago());
-		efectivoTable.setText(0, 3, null);
-		efectivoTable.setText(0, 4, null);
-		return efectivoTable;
-	}
-	public FlexTable getCuentaBancariaPanel() {
-		cuentaBancariaTable.setWidth("80%");
-		cuentaBancariaTable.addStyleName("layout");
-		cuentaBancariaTable.setVisible(false);
-		
-		cuentaBancariaTable.setText(0, 0, Sfa.constant().modalidad());
-		cuentaBancariaTable.setWidget(0, 1, getFormaPago());		
-		cuentaBancariaTable.setText(0, 3, Sfa.constant().tipoCuenta());
-		cuentaBancariaTable.setWidget(0, 4, getTipoCuentaBancaria());
-		
-		cuentaBancariaTable.setText(1, 0, Sfa.constant().cbu());
-		cuentaBancariaTable.setWidget(1, 1, getCbu());		
-		cuentaBancariaTable.getFlexCellFormatter().setColSpan(1, 1, 4);
-		return cuentaBancariaTable;
-	}
-	
-	public FlexTable getTarjetaCreditoPanel() {
-		tarjetaTable.setWidth("80%");
-		tarjetaTable.addStyleName("layout");
-		tarjetaTable.setVisible(false);
-		
-		tarjetaTable.setText(0, 0, Sfa.constant().modalidad());
-		tarjetaTable.setWidget(0, 1, getFormaPago());		
-		tarjetaTable.setText(0, 3, Sfa.constant().tarjetaTipo());
-		tarjetaTable.setWidget(0, 4, getTipoTarjeta());
-		
-		tarjetaTable.setText(1, 0, Sfa.constant().nroTarjeta());
-		tarjetaTable.setWidget(1, 1, getNumeroTarjeta());		
-		tarjetaTable.setText(1, 3, Sfa.constant().vtoMes());
-		tarjetaTable.setWidget(1, 4, getMesVto());
-
-		tarjetaTable.setText(2, 0, Sfa.constant().vtoAnio());
-		tarjetaTable.setWidget(2, 1, getAnioVto());		
-		tarjetaTable.setText(2, 3, "ValidarTarjeta-TODO");
-		tarjetaTable.setWidget(2, 4, null);
-		return tarjetaTable; 
-	}
-	
-	public void setVisibilidadFormasDePago(String idSelected) {
-		if (idSelected.equals(TipoFormaPagoEnum.EFECTIVO.getTipo())) {
-			setVisibleFormaPagoEfectivo();
-		}
-		if (idSelected.equals(TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo())) {
-			setVisibleFormaPagoCuentaBancaria();
-		}
-		if (idSelected.equals(TipoFormaPagoEnum.TARJETA_CREDITO.getTipo())) {
-			setVisibleFormaPagoTarjeta();
-		}
-	}
-	
-    public void setVisibleFormaPagoEfectivo() {
-		efectivoTable.setWidget(0, 1, getFormaPago());
-		efectivoTable.setVisible(true);
-		cuentaBancariaTable.setVisible(false);
-		tarjetaTable.setVisible(false);    	
-    }
-    public void setVisibleFormaPagoCuentaBancaria() {
-		cuentaBancariaTable.setWidget(0, 1, getFormaPago());
-		efectivoTable.setVisible(false);
-		cuentaBancariaTable.setVisible(true);
-		tarjetaTable.setVisible(false);    	
-    }
-    public void setVisibleFormaPagoTarjeta() {
-		tarjetaTable.setWidget(0, 1, getFormaPago());
-		efectivoTable.setVisible(false);
-		cuentaBancariaTable.setVisible(false);
-		tarjetaTable.setVisible(true);
-    }
-    
-    
-	public PersonaDto getPersona() {
-		persona.setApellido(apellido.getText());
-		//TODO: Revisar lo del Documento!
-		DocumentoDto doc = new DocumentoDto();
-		TipoDocumentoDto tipoDoc = new TipoDocumentoDto(Long.parseLong(tipoDocumento.getSelectedItem().getItemValue()),tipoDocumento.getSelectedItem().getItemText());
-		doc.setNumero(numeroDocumento.getText());
-		doc.setTipoDocumento(tipoDoc);
-		persona.setDocumento(doc);
-		//
-		persona.setFechaNacimiento(fechaNacimiento.getSelectedDate());
-		persona.setNombre(nombre.getText());
-		persona.setRazonSocial(razonSocial.getText());
-		persona.setSexo(new SexoDto(Long.parseLong(sexo.getSelectedItem().getItemValue()),sexo.getSelectedItem().getItemText()));
-		return persona;
-	}
-
 }

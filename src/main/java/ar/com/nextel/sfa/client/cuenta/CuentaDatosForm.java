@@ -1,26 +1,20 @@
 package ar.com.nextel.sfa.client.cuenta;
 
-import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoTarjetaCreditoDto;
 import ar.com.nextel.sfa.client.dto.DatosEfectivoDto;
 import ar.com.nextel.sfa.client.dto.EmailDto;
-import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.dto.TipoEmailDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
 import ar.com.nextel.sfa.client.enums.TipoEmailEnum;
-import ar.com.nextel.sfa.client.enums.TipoFormaPagoEnum;
 import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.client.widget.DualPanel;
-import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.TelefonoTextBox;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
-import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Widget;
@@ -39,7 +33,6 @@ public class CuentaDatosForm extends Composite {
 	private FlexTable usuario;
 	private FlexTable fechaCreacion;
 	private CuentaUIData cuentaEditor;
-	private FormButtonsBar footerBar;
 	private TelefonoTextBox telPrincipalTextBox = new TelefonoTextBox();
 	private TelefonoTextBox telAdicionalTextBox = new TelefonoTextBox();
 	private TelefonoTextBox telCelularTextBox   = new TelefonoTextBox(false);
@@ -52,7 +45,6 @@ public class CuentaDatosForm extends Composite {
 	private CuentaDatosForm() {
 		cuentaEditor = new CuentaUIData();
 		mainPanel    = new FlexTable();
-		footerBar    = new FormButtonsBar();
 		initWidget(mainPanel);
 		mainPanel.setWidth("100%");
 		mainPanel.addStyleName("abmPanel2");
@@ -62,36 +54,8 @@ public class CuentaDatosForm extends Composite {
 		mainPanel.setWidget(3,0,createFormaDePagoPanel());
 		mainPanel.setWidget(4,0,createVendedorPanel());
 		mainPanel.setWidget(5,0,createFechaUsuarioPanel());
-		
-		cuentaEditor.getGuardar().setStyleName("link");
-		cuentaEditor.getCrearSS().setStyleName("link");
-		cuentaEditor.getAgregar().setStyleName("link");
-		cuentaEditor.getCancelar().setStyleName("link");
-		
-		footerBar.addLink(cuentaEditor.getGuardar());
-		footerBar.addLink(cuentaEditor.getCrearSS());
-		footerBar.addLink(cuentaEditor.getAgregar());
-		footerBar.addLink(cuentaEditor.getCancelar());		
-		mainPanel.setWidget(5,0,footerBar);
-
-		cuentaEditor.getAgregar().addClickListener(new ClickListener() {
-			public void onClick(Widget arg0) {
-				validarYAgregar(cuentaEditor.getPersona());
-			}
-		});
-		
 	}
 	
-	private void validarYAgregar(PersonaDto personaDto) {
-		CuentaRpcService.Util.getInstance().saveCuenta(personaDto,
-				new DefaultWaitCallback() {
-					public void success(Object result) {
-						PersonaDto personaDto = (PersonaDto) result;
-						System.out.println("Apretaste Agregar");
-					}
-				});
-	}
-
 	private Widget createDatosCuentaPanel() {
 		datosCuentaTable = new FlexTable();
 		datosCuentaTable.setWidth("80%");
@@ -242,6 +206,114 @@ public class CuentaDatosForm extends Composite {
 		cuentaEditor.clean();
 	}
 
+
+
+	public void ponerDatosBusquedaEnFormulario(CuentaDto cuentaDto) {
+		if (cuentaDto.getPersona()!=null) {
+			cargarPanelDatos(cuentaDto);
+			cargarPanelTelefonoFax(cuentaDto);
+			cargarPanelEmails(cuentaDto);
+			cargarPanelFormaPago(cuentaDto);
+            cargarPanelVendedor(cuentaDto); 
+		}
+	}
+	
+	public void cargarPanelDatos(CuentaDto cuentaDto) {
+		if (cuentaDto.getPersona().getDocumento()!=null) {
+			cuentaEditor.getTipoDocumento().setSelectedItem(cuentaDto.getPersona().getDocumento().tipoDocumento) ;
+			cuentaEditor.getNumeroDocumento().setText(cuentaDto.getPersona().getDocumento().getNumero());
+		}
+		cuentaEditor.getRazonSocial().setText(cuentaDto.getPersona().getRazonSocial());
+		cuentaEditor.getNombre().setText(cuentaDto.getPersona().getNombre());
+		cuentaEditor.getApellido().setText(cuentaDto.getPersona().getApellido());
+		cuentaEditor.getSexo().setSelectedItem(cuentaDto.getPersona().getSexo());
+		cuentaEditor.getFechaNacimiento().setSelectedDate(cuentaDto.getPersona().getFechaNacimiento());
+		cuentaEditor.getContribuyente().setSelectedItem(cuentaDto.getTipoContribuyente());
+		cuentaEditor.getIibb().setText(cuentaDto.getIibb());
+		cuentaEditor.getNombreDivision().setText("TODO");
+		//cuentaEditor.getCarto(). TODO
+		cuentaEditor.getProveedorAnterior().setSelectedItem(cuentaDto.getProveedorInicial());
+		cuentaEditor.getCategoria().setText(cuentaDto.getCategoriaCuenta().getDescripcion());
+		cuentaEditor.getClaseCliente().setSelectedItem(cuentaDto.getClaseCuenta());
+		cuentaEditor.getCicloFacturacion().setText(cuentaDto.getCicloFacturacion().getCodigoFNCL());
+		cuentaEditor.getUse().setText(cuentaDto.getUse());
+	}
+	
+	public void cargarPanelTelefonoFax(CuentaDto cuentaDto) {
+		for (int i=0;i<cuentaDto.getPersona().getTelefonos().size();i++) {
+			TelefonoDto telefono = (TelefonoDto)cuentaDto.getPersona().getTelefonos().get(i);
+			TipoTelefonoDto tipoTelefono = telefono.getTipoTelefono();
+
+			if ( tipoTelefono.getId()==TipoTelefonoEnum.PRINCIPAL.getTipo()) {
+				telPrincipalTextBox.getArea().setText(telefono.getArea());
+				telPrincipalTextBox.getNumero().setText(telefono.getNumeroLocal());
+				telPrincipalTextBox.getInterno().setText(telefono.getInterno());
+			}
+			if ( tipoTelefono.getId()==TipoTelefonoEnum.PARTICULAR.getTipo() ||
+					 tipoTelefono.getId()==TipoTelefonoEnum.ADICIONAL.getTipo()) {
+				telAdicionalTextBox.getArea().setText(telefono.getArea());
+				telAdicionalTextBox.getNumero().setText(telefono.getNumeroLocal());
+				telAdicionalTextBox.getInterno().setText(telefono.getInterno());
+			}
+			if ( tipoTelefono.getId()==TipoTelefonoEnum.CELULAR.getTipo()) {
+				telCelularTextBox.getArea().setText(telefono.getArea());
+				telCelularTextBox.getNumero().setText(telefono.getNumeroLocal());
+			}
+			if ( tipoTelefono.getId()==TipoTelefonoEnum.FAX.getTipo()) {
+				telFaxTextBox.getArea().setText(telefono.getArea());
+				telFaxTextBox.getNumero().setText(telefono.getNumeroLocal());
+				telFaxTextBox.getInterno().setText(telefono.getInterno());
+			}
+		}
+		cuentaEditor.getObservaciones().setText(cuentaDto.getObservacionesTelMail());
+	}
+    public void cargarPanelEmails(CuentaDto cuentaDto) {
+		for (int i=0;i<cuentaDto.getPersona().getEmails().size();i++) {
+		    EmailDto email = (EmailDto) cuentaDto.getPersona().getEmails().get(i);
+		    TipoEmailDto tipoEmail = email.getTipoEmail();
+		    if (tipoEmail.getId()==TipoEmailEnum.PERSONAL.getTipo()) {
+		    	cuentaEditor.getEmailPersonal().setText(email.getEmail());
+		    }
+		    if (tipoEmail.getId()==TipoEmailEnum.LABORAL.getTipo()) {
+		    	cuentaEditor.getEmailLaboral().setText(email.getEmail());
+		    }
+		}    	
+    }
+    
+    public void cargarPanelFormaPago(CuentaDto cuentaDto) {
+		//if (cuentaDto.getDatosPago() instanceof DatosEfectivoDto) {
+		if (cuentaDto.getDatosPago().isEfectivo()) {
+			DatosEfectivoDto datosPago = (DatosEfectivoDto) cuentaDto.getDatosPago();
+			cuentaEditor.getFormaPago().setSelectedItem(datosPago.getFormaPagoAsociada());
+			cuentaEditor.setVisibleFormaPagoEfectivo();
+		}
+		//else if (cuentaDto.getDatosPago() instanceof DatosDebitoCuentaBancariaDto) {
+		else if (cuentaDto.getDatosPago().isDebitoCuentaBancaria()) {			
+			DatosDebitoCuentaBancariaDto datosPago = (DatosDebitoCuentaBancariaDto) cuentaDto.getDatosPago();
+			//cuentaEditor.getFormaPago().setSelectedIndex(Integer.parseInt(TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo()));
+			cuentaEditor.getFormaPago().setSelectedItem(datosPago.getFormaPagoAsociada());
+			cuentaEditor.getTipoCuentaBancaria().setSelectedItem(datosPago.getTipoCuentaBancaria());
+			cuentaEditor.getCbu().setText(datosPago.getCbu());
+			cuentaEditor.setVisibleFormaPagoCuentaBancaria();
+		}
+		//else if (cuentaDto.getDatosPago() instanceof DatosDebitoTarjetaCreditoDto) {
+		else if (cuentaDto.getDatosPago().isDebitoTarjetaCredito()) {			
+			DatosDebitoTarjetaCreditoDto datosPago = (DatosDebitoTarjetaCreditoDto) cuentaDto.getDatosPago();
+			//cuentaEditor.getFormaPago().setSelectedIndex(Integer.parseInt(TipoFormaPagoEnum.TARJETA_CREDITO.getTipo()));
+			cuentaEditor.getFormaPago().setSelectedItem(datosPago.getFormaPagoAsociada());
+			cuentaEditor.getMesVto().setSelectedIndex(datosPago.getMesVencimientoTarjeta());
+			cuentaEditor.getAnioVto().setSelectedIndex(datosPago.getAnoVencimientoTarjeta());
+			cuentaEditor.getTipoTarjeta().setSelectedItem(datosPago.getTipoTarjeta());
+			cuentaEditor.getNumeroTarjeta().setText(datosPago.getNumero());
+			cuentaEditor.setVisibleFormaPagoTarjeta();
+		}    	
+    }
+    public void cargarPanelVendedor(CuentaDto cuentaDto) {
+		cuentaEditor.getVendedorNombre().setText(cuentaDto.getVendedor()!=null?cuentaDto.getVendedor().getNombre():"");
+		cuentaEditor.getVendedorTelefono().setText(cuentaDto.getVendedor()!=null?cuentaDto.getVendedor().getTelefono():"");
+		cuentaEditor.getTipoCanalVentas().setSelectedItem(cuentaDto.getTipoCanalVentas());
+    }
+
 	public CuentaUIData getCuentaEditor() {
 		return cuentaEditor;
 	}
@@ -249,84 +321,5 @@ public class CuentaDatosForm extends Composite {
 	public void setCuentaEditor(CuentaUIData cuentaEditor) {
 		this.cuentaEditor = cuentaEditor;
 	}
-
-	public void cargarDatos(CuentaDto cuentaDto) {
-		if (cuentaDto.getPersona()!=null) {
-			//area datos
-			if (cuentaDto.getPersona().getDocumento()!=null) {
-				cuentaEditor.getTipoDocumento().setSelectedItem(cuentaDto.getPersona().getDocumento().tipoDocumento) ;
-				cuentaEditor.getNumeroDocumento().setText(cuentaDto.getPersona().getDocumento().getNumero());
-			}
-			cuentaEditor.getRazonSocial().setText(cuentaDto.getPersona().getRazonSocial());
-			cuentaEditor.getNombre().setText(cuentaDto.getPersona().getNombre());
-			cuentaEditor.getApellido().setText(cuentaDto.getPersona().getApellido());
-			cuentaEditor.getSexo().setSelectedItem(cuentaDto.getPersona().getSexo());
-			cuentaEditor.getFechaNacimiento().setSelectedDate(cuentaDto.getPersona().getFechaNacimiento());
-			cuentaEditor.getContribuyente().setSelectedItem(cuentaDto.getTipoContribuyente());
-			cuentaEditor.getIibb().setText(cuentaDto.getIibb());
-			cuentaEditor.getNombreDivision().setText("TODO");
-			//cuentaEditor.getCarto(). TODO
-			cuentaEditor.getProveedorAnterior().setSelectedItem(cuentaDto.getProveedorInicial());
-			cuentaEditor.getCategoria().setText(cuentaDto.getCategoriaCuenta().getDescripcion());
-			cuentaEditor.getClaseCliente().setSelectedItem(cuentaDto.getClaseCuenta());
-			cuentaEditor.getCicloFacturacion().setText(cuentaDto.getCicloFacturacion().getCodigoFNCL());
-			cuentaEditor.getUse().setText(cuentaDto.getUse());
-
-			//area telefono
-			for (int i=0;i<cuentaDto.getPersona().getTelefonos().size();i++) {
-				TelefonoDto telefono = (TelefonoDto)cuentaDto.getPersona().getTelefonos().get(i);
-				TipoTelefonoDto tipoTelefono = telefono.getTipoTelefono();
-
-				if ( tipoTelefono.getId()==TipoTelefonoEnum.PRINCIPAL.getTipo()) {
-					telPrincipalTextBox.getArea().setText(telefono.getArea());
-					telPrincipalTextBox.getNumero().setText(telefono.getNumeroLocal());
-					telPrincipalTextBox.getInterno().setText(telefono.getInterno());
-				}
-				if ( tipoTelefono.getId()==TipoTelefonoEnum.PARTICULAR.getTipo() ||
- 					 tipoTelefono.getId()==TipoTelefonoEnum.ADICIONAL.getTipo()) {
-					telAdicionalTextBox.getArea().setText(telefono.getArea());
-					telAdicionalTextBox.getNumero().setText(telefono.getNumeroLocal());
-					telAdicionalTextBox.getInterno().setText(telefono.getInterno());
-				}
-				if ( tipoTelefono.getId()==TipoTelefonoEnum.CELULAR.getTipo()) {
-					telCelularTextBox.getArea().setText(telefono.getArea());
-					telCelularTextBox.getNumero().setText(telefono.getNumeroLocal());
-				}
-				if ( tipoTelefono.getId()==TipoTelefonoEnum.FAX.getTipo()) {
-					telFaxTextBox.getArea().setText(telefono.getArea());
-					telFaxTextBox.getNumero().setText(telefono.getNumeroLocal());
-					telFaxTextBox.getInterno().setText(telefono.getInterno());
-				}
-			}
-			cuentaEditor.getObservaciones().setText(cuentaDto.getObservacionesTelMail());
-			//EMail
-			for (int i=0;i<cuentaDto.getPersona().getEmails().size();i++) {
-			    EmailDto email = (EmailDto) cuentaDto.getPersona().getEmails().get(i);
-			    TipoEmailDto tipoEmail = email.getTipoEmail();
-			    if (tipoEmail.getId()==TipoEmailEnum.PERSONAL.getTipo()) {
-			    	cuentaEditor.getEmailPersonal().setText(email.getEmail());
-			    }
-			    if (tipoEmail.getId()==TipoEmailEnum.LABORAL.getTipo()) {
-			    	cuentaEditor.getEmailLaboral().setText(email.getEmail());
-			    }
-			}
-			    
-			//Forma de Pago
-			if (cuentaDto.getDatosPago() instanceof DatosEfectivoDto) {
-				cuentaEditor.getFormaPago().setSelectedIndex(Integer.parseInt(TipoFormaPagoEnum.EFECTIVO.getTipo()));
-			}
-			else if (cuentaDto.getDatosPago() instanceof DatosDebitoCuentaBancariaDto) {
-				cuentaEditor.getFormaPago().setSelectedIndex(Integer.parseInt(TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo()));
-			}
-			else if (cuentaDto.getDatosPago() instanceof DatosDebitoTarjetaCreditoDto) {
-				cuentaEditor.getFormaPago().setSelectedIndex(Integer.parseInt(TipoFormaPagoEnum.TARJETA_CREDITO.getTipo()));
-			}
-
-			//Vendedor
-			cuentaEditor.getVendedorNombre().setText(cuentaDto.getVendedor()!=null?cuentaDto.getVendedor().getNombre():"");
-			cuentaEditor.getVendedorTelefono().setText(cuentaDto.getVendedor()!=null?cuentaDto.getVendedor().getTelefono():"");
-			cuentaEditor.getTipoCanalVentas().setSelectedItem(cuentaDto.getTipoCanalVentas());
-			
-		}
-	}
+	
 }

@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.cuenta;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.constant.SfaStatic;
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.nextel.sfa.client.widget.UILoader;
@@ -12,12 +12,13 @@ import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class BuscadorDocumentoPopup extends NextelDialog implements ClickListener {
+public class BuscadorDocumentoPopup extends NextelDialog {
 	
 	private SimplePanel buscadorDocumentoPanel; 
 	private FlexTable buscadorDocumentoTable; 
@@ -25,9 +26,10 @@ public class BuscadorDocumentoPopup extends NextelDialog implements ClickListene
 	private TextBox numeroDocTextBox;
 	private Label tipoDocLabel;
 	private Label numeroDocLabel;
-	private SimpleLink aceptar = new SimpleLink(Sfa.constant().aceptar(), "#", true);
+	private Hyperlink aceptar = new Hyperlink(Sfa.constant().aceptar(),null);
 	private SimpleLink cerrar  = new SimpleLink(Sfa.constant().cerrar(), "#", true);
 	private AgregarCuentaUI agregarCuentaPage;
+    private CuentaDto cuentaDto;
 
 	public BuscadorDocumentoPopup(String title) {
 		super(title);
@@ -35,7 +37,7 @@ public class BuscadorDocumentoPopup extends NextelDialog implements ClickListene
 	
 		aceptar.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
-				UILoader.getInstance().setPage(UILoader.EDITAR_CUENTA);
+				aceptar.setTargetHistoryToken(UILoader.EDITAR_CUENTA  + "?tipoDoc=" + tipoDocumento.getSelectedItemId()+"&nroDoc="+numeroDocTextBox.getText());
 				hide();
 			}
 		});		
@@ -72,9 +74,6 @@ public class BuscadorDocumentoPopup extends NextelDialog implements ClickListene
 		addFooter(cerrar);
 		add(buscadorDocumentoPanel);
 		
-	}
-	public void onClick(Widget sender) {
-		// TODO Auto-generated method stub
 	}
 	
 }

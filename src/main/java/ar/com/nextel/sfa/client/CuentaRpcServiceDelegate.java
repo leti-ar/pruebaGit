@@ -4,8 +4,8 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
+import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
-import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.VerazInitializer;
@@ -65,4 +65,8 @@ public class CuentaRpcServiceDelegate {
 		cuentaRpcService.selectCuenta(cuentaId, cod_vantive,callback);
 	}
 
+	public void reservaCreacionCuenta(DocumentoDto docDto,DefaultWaitCallback callback) {
+		WaitWindow.show();
+		cuentaRpcService.reservaCreacionCuenta(docDto,callback);
+	}
 }

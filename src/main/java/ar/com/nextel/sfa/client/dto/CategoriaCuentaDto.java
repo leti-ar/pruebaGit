@@ -12,18 +12,20 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class CategoriaCuentaDto implements ListBoxItem, IsSerializable {
 
+	private long id;
 	private String code;
 	private String descripcion;
 	
-	public static CategoriaCuentaDto GRAN_CUENTA = new CategoriaCuentaDto("0", "GRAN CUENTA");
-	public static CategoriaCuentaDto DIVISION = new CategoriaCuentaDto("1", "DIVISION");
-	public static CategoriaCuentaDto SUSCRIPTOR = new CategoriaCuentaDto("2", "SUSCRIPTOR");
+	public static CategoriaCuentaDto GRAN_CUENTA = new CategoriaCuentaDto(1, "GRAN CUENTA","GRAN CUENTA");
+	public static CategoriaCuentaDto DIVISION    = new CategoriaCuentaDto(2, "DIVISION","DIVISION");
+	public static CategoriaCuentaDto SUSCRIPTOR  = new CategoriaCuentaDto(3, "SUSCRIPTOR","SUSCRIPTOR");
 
 	public CategoriaCuentaDto() {
 	}
 
-	public CategoriaCuentaDto(String code, String descripcion) {
+	public CategoriaCuentaDto(long id,String code, String descripcion) {
 		super();
+		this.id = id;
 		this.code = code;
 		this.descripcion = descripcion;
 	}
@@ -33,7 +35,15 @@ public class CategoriaCuentaDto implements ListBoxItem, IsSerializable {
 	}
 
 	public String getItemValue() {
-		return code;
+		return id + "";
+	}
+	
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
 	}
 
 	public String getDescripcion() {

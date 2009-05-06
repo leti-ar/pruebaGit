@@ -167,7 +167,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<class-b>ar.com.nextel.sfa.client.dto.CargoDto</class-b>
 	</mapping>
 
-	<mapping map-id="cuentaEdicion">
+	<mapping>
 		<class-a>ar.com.nextel.model.cuentas.beans.Cuenta</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.CuentaDto</class-b>
 

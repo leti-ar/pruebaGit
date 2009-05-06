@@ -11,6 +11,7 @@ import org.apache.commons.collections.Transformer;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
 import ar.com.nextel.business.cuentas.search.SearchCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.search.businessUnits.CuentaSearchData;
 import ar.com.nextel.business.cuentas.search.result.CuentaSearchResult;
@@ -33,13 +34,14 @@ import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.Rubro;
+import ar.com.nextel.model.personas.beans.Documento;
+import ar.com.nextel.model.personas.beans.GrupoDocumento;
 import ar.com.nextel.model.personas.beans.Persona;
 import ar.com.nextel.model.personas.beans.Sexo;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.services.nextelServices.NextelServices;
-import ar.com.nextel.services.nextelServices.veraz.VerazService;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazRequestDTO;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.services.nextelServices.veraz.exception.VerazException;
@@ -52,6 +54,7 @@ import ar.com.nextel.sfa.client.dto.CondicionCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
+import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.FormaPagoDto;
 import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
@@ -69,6 +72,7 @@ import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.VerazInitializer;
+import ar.com.nextel.sfa.server.businessservice.CuentaBusinessService;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
@@ -85,6 +89,9 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 	private RegistroVendedores registroVendedores;
 	private SearchCuentaBusinessOperator searchCuentaBusinessOperator;
 	private SelectCuentaBusinessOperator selectCuentaBusinessOperator;
+	
+	private CuentaBusinessService cuentaBusinessService;
+	
 	private Transformer transformer;
 	private MapperExtended mapper;
 	private GetAllBusinessOperator getAllBusinessOperator;
@@ -104,7 +111,9 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		searchCuentaBusinessOperator = (SearchCuentaBusinessOperator) context
 				.getBean("searchCuentaBusinessOperatorBean");
 		
-		selectCuentaBusinessOperator = (SelectCuentaBusinessOperator) context.getBean("selectCuentaBusinessOperator");
+		selectCuentaBusinessOperator  = (SelectCuentaBusinessOperator)  context.getBean("selectCuentaBusinessOperator");
+		
+		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");
 		
 		transformer = (Transformer) context
 				.getBean("cuentaToSearchResultTransformer");
@@ -275,14 +284,14 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 			}else{
 				cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(cuentaId);
 				if (!cod_vantive.equals("***") && (!cod_vantive.equals("null"))){
-					cuenta = selectCuentaBusinessOperator.getCuentaYLockear(cod_vantive, registroVendedores.getVendedor(usuario));
+					cuenta = selectCuentaBusinessOperator.getCuentaYLockear(cod_vantive, getVendedor("acsa1"));
 				}
 					CondicionCuenta cd1= cuenta.getCondicionCuenta();
 					Long id = cd1.getId();
 					String code = cd1.getCodigoVantive();
 					String desc = cd1.getDescripcion();
 					CondicionCuentaDto cd2 = new CondicionCuentaDto(id,code,desc);
-					ctaDTO = (CuentaDto) mapper.map(cuenta, CuentaDto.class,"cuentaEdicion");
+					ctaDTO = (CuentaDto) mapper.map(cuenta, CuentaDto.class);
 					ctaDTO.setCondicionCuenta(cd2);
 			}
 		} catch (Exception e1) {
@@ -291,4 +300,55 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		}
 		return ctaDTO;
 	}
+
+	/**
+	 * 
+	 * @param solicitudCuenta
+	 * @return
+	 */
+	public CuentaDto reservaCreacionCuenta(DocumentoDto docDto) {
+		Cuenta cuenta = null;
+		CuentaDto cuentaDto = null;
+		SolicitudCuenta solicitudCta = repository.createNewObject(SolicitudCuenta.class);
+		solicitudCta.setVendedor(getVendedor("acsa1"));
+		solicitudCta.setDocumento(getDocumento(docDto));
+//		GrupoDocumento grpDoc = repository.f retrieve(GrupoDocumento.class, 1L);
+//		grpDoc.setId(documentoDto.getTipoDocumento().getCode());
+		try {
+			cuenta = cuentaBusinessService.reservarCrearCta(solicitudCta);
+			cuentaDto = (CuentaDto) mapper.map(cuenta, CuentaDto.class);
+		} catch (BusinessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return cuentaDto;
+	}
+	
+	/**
+	 * 
+	 * @param usu
+	 * @return
+	 */
+    private Vendedor getVendedor(String usu) {
+		Usuario usuario = new Usuario();
+		usuario.setUserName(usu);
+		return registroVendedores.getVendedor(usuario);
+    }
+    
+    /**
+     * 
+     * @param docDto
+     * @return
+     */
+    private Documento getDocumento(DocumentoDto docDto) {
+    	TipoDocumento tipoDoc = repository.retrieve(TipoDocumento.class,docDto.getTipoDocumento().getCode());
+    	//		tipoDoc.setId(Long.parseLong(solicitudCuentaDto.getIdTipoDocumento()));
+    	//		tipoDoc.setCodigoVantive("96");
+    	//		tipoDoc.setDescripcion("DNI");
+    	//		tipoDoc.setGrupoDocumento(grpDoc);
+    	Documento doc = repository.createNewObject(Documento.class);
+    	doc.setTipoDocumento(tipoDoc);
+    	doc.setNumero(docDto.getNumero());
+    	return doc;
+    }
 }
