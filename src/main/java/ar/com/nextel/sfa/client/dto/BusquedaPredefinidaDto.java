@@ -4,37 +4,37 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
+/**
+ * @author eSalvador
+ */
 public class BusquedaPredefinidaDto implements ListBoxItem, IsSerializable {
-
-	public static final long TIPO_PREDEFINIDA_PROPIAS = 1;
-	public static final long TIPO_PREDEFINIDA_CON_CREDITO_FIDEL = 2;
-	public static final long TIPO_PREDEFINIDA_ULTIMA_CONSULTADA = 3;
-
-	private String code;
+	
+	private long id;
 	private String descripcion;
+	
+	public static BusquedaPredefinidaDto TIPO_PREDEFINIDA_NULL = new BusquedaPredefinidaDto(0,"null");
+	public static BusquedaPredefinidaDto TIPO_PREDEFINIDA_PROPIAS    = new BusquedaPredefinidaDto(1,"Ctas. propias");
+	public static BusquedaPredefinidaDto TIPO_PREDEFINIDA_ULTIMA_CONSULTADA  = new BusquedaPredefinidaDto(3,"Últimas consultadas");
 
 	public BusquedaPredefinidaDto() {
 	}
 
-	public BusquedaPredefinidaDto(String code, String descripcion) {
-		this.code = code;
+	public BusquedaPredefinidaDto(long id, String descripcion) {
+		super();
+		this.id = id;
 		this.descripcion = descripcion;
 	}
 
+	public String getItemValue() {
+		return id + "";
+	}
+	
+	public long getId() {
+		return id;
+	}
+	
 	public String getItemText() {
 		return descripcion;
-	}
-
-	public String getItemValue() {
-		return code;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
 	}
 
 	public String getDescripcion() {
@@ -44,5 +44,4 @@ public class BusquedaPredefinidaDto implements ListBoxItem, IsSerializable {
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
-
 }
