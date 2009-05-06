@@ -174,8 +174,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		List<CategoriaCuentaDto> listaCategorias = mapper.convertList(genericDao.getList(CategoriaCuenta.class),	CategoriaCuentaDto.class);
 
 		List<BusquedaPredefinidaDto> listaBusquedaPredef = new ArrayList<BusquedaPredefinidaDto>();
-		listaBusquedaPredef.add(0, new BusquedaPredefinidaDto("1",	"Ctas. propias"));
-		listaBusquedaPredef.add(1, new BusquedaPredefinidaDto("2",	"Últimas consultadas"));
+		listaBusquedaPredef.add(0, new BusquedaPredefinidaDto(1,"Ctas. propias"));
+		listaBusquedaPredef.add(1, new BusquedaPredefinidaDto(3,"Últimas consultadas"));
 		//listaBusquedaPredef.add(1, new BusquedaPredefinidaDto("3",	"Ctas. c/Créd.Fideliz."));
 		
 		List<String> listaResult = new ArrayList<String>();

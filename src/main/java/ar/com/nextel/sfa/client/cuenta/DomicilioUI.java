@@ -49,11 +49,24 @@ public class DomicilioUI extends NextelDialog {
 	public void cargarPopupNuevoDomicilio() {
 		domiciliosData.clean();
 		linkAceptar.setVisible(true);
+		domiciliosData.enableFields();
 		showAndCenter();
 		//TODO: Arreglar lo del Titulo!!!
 			//setDialogTitle("Crear Domicilio");
 	}
 
+	/**
+	 * @author esalvador
+	 **/
+	public void cargarPopupCopiarDomicilio(DomiciliosCuentaDto domicilio) {
+		domiciliosData.setDomicilio(domicilio);
+		linkAceptar.setVisible(true);
+		domiciliosData.enableFields();
+		showAndCenter();
+		//TODO: Arreglar lo del Titulo!!!
+			//setDialogTitle("Crear Domicilio");
+	}
+	
 	/**
 	 * @author esalvador
 	 **/

@@ -14,11 +14,11 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			ar.com.nextel.business.cuentas.search.businessUnits.CuentaSearchData
 		</class-b>
 		<field>
-			<a>categoria.code</a>
-			<b>categoria</b>
+			<a>categoria.id</a>
+			<b>idCategoria</b>
 		</field>
 		<field>
-			<a>busquedaPredefinida.code</a>
+			<a>busquedaPredefinida.id</a>
 			<b>tipoPredefinida</b>
 		</field>
 		<field>
