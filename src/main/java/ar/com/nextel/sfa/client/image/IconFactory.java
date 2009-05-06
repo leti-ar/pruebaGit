@@ -25,16 +25,20 @@ public class IconFactory {
 	public static Image lapiz() {
 		return getIconBundle().lapiz().createImage();
 	}
-	
+
 	public static Image locked() {
 		return getIconBundle().locked().createImage();
 	}
-	
+
 	public static Image word() {
 		return getIconBundle().word().createImage();
 	}
-	
+
 	public static Image silvioSoldan() {
 		return getIconBundle().silvioSoldan().createImage();
+	}
+
+	public static Image copiar() {
+		return getIconBundle().copiar().createImage();
 	}
 }

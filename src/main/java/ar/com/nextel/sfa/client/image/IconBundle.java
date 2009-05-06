@@ -16,4 +16,6 @@ public interface IconBundle extends ImageBundle {
 	AbstractImagePrototype word();
 
 	AbstractImagePrototype silvioSoldan();
+	
+	AbstractImagePrototype copiar();
 }
