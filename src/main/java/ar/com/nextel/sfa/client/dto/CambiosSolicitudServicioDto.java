@@ -6,24 +6,26 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class CambiosSolicitudServicioDto implements IsSerializable {
 
-	private Date fecha;
-	private String estado;
+	private String fechaCambioEstado;
+	private String estadoAprobacionSolicitud;
 	private String comentario;
 
-	public Date getFecha() {
-		return fecha;
+
+
+	public String getFechaCambioEstado() {
+		return fechaCambioEstado;
 	}
 
-	public void setFecha(Date fecha) {
-		this.fecha = fecha;
+	public void setFechaCambioEstado(String fechaCambioEstado) {
+		this.fechaCambioEstado = fechaCambioEstado;
 	}
 
-	public String getEstado() {
-		return estado;
+	public String getEstadoAprobacionSolicitud() {
+		return estadoAprobacionSolicitud;
 	}
 
-	public void setEstado(String estado) {
-		this.estado = estado;
+	public void setEstadoAprobacionSolicitud(String estadoAprobacionSolicitud) {
+		this.estadoAprobacionSolicitud = estadoAprobacionSolicitud;
 	}
 
 	public String getComentario() {
