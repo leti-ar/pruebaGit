@@ -1,8 +1,12 @@
 package ar.com.nextel.sfa.server;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Date;
+import java.util.Collections;
 
 import javax.servlet.ServletException;
 
@@ -10,8 +14,12 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import ar.com.nextel.business.dao.GenericDao;
+import ar.com.nextel.business.legacy.financial.FinancialSystem;
+import ar.com.nextel.business.legacy.vantive.VantiveSystem;
+import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
+import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepository;
 import ar.com.nextel.business.solicitudes.search.dto.SolicitudServicioCerradaSearchCriteria;
 import ar.com.nextel.business.vendedores.RegistroVendedores;
 import ar.com.nextel.framework.repository.Repository;
@@ -23,6 +31,8 @@ import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 
 import ar.com.nextel.model.solicitudes.beans.TipoAnticipo;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
+import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
@@ -36,6 +46,7 @@ import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.server.businessservice.SolicitudBusinessService;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
+import ar.com.nextel.util.DateUtils;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.server.RemoteService;
 import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
@@ -53,20 +64,26 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private GenericDao genericDao;
 	
     private SolicitudServicioBusinessOperator solicitudesBusinessOperator;
-
+    private VantiveSystem vantiveSystem;
+    private FinancialSystem financialSystem;
+    
+    private SolicitudServicioRepository solicitudServicioRepository;
+    
 
 	public void init() throws ServletException {
 		super.init();
 		context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		mapper = (MapperExtended) context.getBean("dozerMapper");
 		solicitudesBusinessOperator = (SolicitudServicioBusinessOperator) context.getBean("solicitudServicioBusinessOperatorBean");
-		// solicitudesBusinessOperator = (SolicitudServicioBusinessOperator) context
-		// .getBean("solicitudServicioBusinessOperatorBean");
 		solicitudBusinessService = (SolicitudBusinessService) context.getBean("solicitudBusinessService");
 		
 		registroVendedores = (RegistroVendedores) context.getBean("registroVendedores");
 		genericDao = (GenericDao) context.getBean("genericDao");
 		repository = (Repository) context.getBean("repository");
+		
+		solicitudServicioRepository = (SolicitudServicioRepository) context.getBean("solicitudServicioRepositoryBean");
+		vantiveSystem = (VantiveSystem) context.getBean("vantiveSystemBean");
+		financialSystem = (FinancialSystem) context.getBean("financialSystemBean");
 	}
 
 	public SolicitudServicioDto createSolicitudServicio(
@@ -93,17 +110,82 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		usuario.setUserName("acsa1");
 		Vendedor vendedor = registroVendedores.getVendedor(usuario);
 		solicitudServicioCerradaSearchCriteria.setVendedor(vendedor);
-		List<SolicitudServicio> list = new ArrayList();
+		List<SolicitudServicio> list = null;
 		try {
 			list = this.solicitudesBusinessOperator.searchSolicitudesServicioHistoricas(solicitudServicioCerradaSearchCriteria);
 		} catch (Exception e) {
 			AppLogger.info("Error buscando Solicitudes de Servicio cerradas: " + e.getMessage());
 		}
-		
 		List result = mapper.convertList(list, SolicitudServicioCerradaResultDto.class, "ssCerradaResult");
 		AppLogger.info("Busqueda de SS cerradas finalizada...");		
 		return result;
 	}
+	
+	
+	public DetalleSolicitudServicioDto getDetalleSolicitudServicio(Long idSolicitudServicio) {
+        AppLogger.info("Iniciando consulta de estados de SS cerradas para idSS " + idSolicitudServicio);
+        SolicitudServicio solicitudServicio = solicitudServicioRepository.getSolicitudServicioPorId(idSolicitudServicio);        	
+        DetalleSolicitudServicioDto detalleSolicitudServicioDto = mapearSolicitud(solicitudServicio);
+                        
+        try {
+        	detalleSolicitudServicioDto.setCambiosEstadoSolicitud(getEstadoSolicitudServicioCerrada(solicitudServicio.getIdVantive()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        AppLogger.info("Consulta de estados de SS cerradas para idSS " + idSolicitudServicio + " finalizada.");
+        return detalleSolicitudServicioDto;
+    }
+	
+		
+    private DetalleSolicitudServicioDto mapearSolicitud(SolicitudServicio solicitudServicio) {
+    	DetalleSolicitudServicioDto detalleSolicitudServicioDto = new DetalleSolicitudServicioDto();
+    	detalleSolicitudServicioDto.setNumero(solicitudServicio.getNumero());
+    	detalleSolicitudServicioDto.setNumeroCuenta(solicitudServicio.getCuenta().getCodigoVantive());
+    	detalleSolicitudServicioDto.setRazonSocialCuenta(solicitudServicio.getCuenta().getPersona().getRazonSocial());
+    	return detalleSolicitudServicioDto;
+    }
+	
+	
+	
+	private List<CambiosSolicitudServicioDto> getEstadoSolicitudServicioCerrada(Long idVantiveSS) throws RpcExceptionMessages {
+    try {
+        List<EstadoSolicitudServicioCerradaDTO> resultDTO = null;
+        //no pasa de la consulta a Vantive
+        resultDTO = this.vantiveSystem.retrieveEstadosSolicitudServicioCerrada(idVantiveSS);
+        resultDTO.addAll(this.financialSystem.retrieveEstadosSolicitudServicioCerrada(idVantiveSS));
+        
+        Comparator<? super EstadoSolicitudServicioCerradaDTO> estadoComparator = new Comparator<EstadoSolicitudServicioCerradaDTO>() {
+
+            public int compare(EstadoSolicitudServicioCerradaDTO estado1, EstadoSolicitudServicioCerradaDTO estado2) {
+                int ret = 0;
+                try {
+                    Date date1 = (estado1.getFechaCambioEstado() != null) ? DateUtils.getInstance().getDate(estado1.getFechaCambioEstado(), "dd/MM/yyyy") : null;
+                    Date date2 = (estado2.getFechaCambioEstado() != null) ? DateUtils.getInstance().getDate(estado2.getFechaCambioEstado(), "dd/MM/yyyy") : null;
+                    if (date1 == null || date2 == null) {
+                        return 1;
+                    } else {
+                        return DateUtils.getInstance().compareDatesByDay(date1, date2);
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                return ret;
+            }
+        };
+        
+        Collections.sort(resultDTO, estadoComparator);
+        return this.transformEstadoSolicitudServicioCerradaDTOToCambioEstadoSolicitudWCTO(resultDTO);
+    } catch (Exception e) {
+        throw ExceptionUtil.wrap(e);
+    }
+}    
+
+	
+	private List<CambiosSolicitudServicioDto> transformEstadoSolicitudServicioCerradaDTOToCambioEstadoSolicitudWCTO(List<EstadoSolicitudServicioCerradaDTO> resultDTO) {
+		List result = mapper.convertList(resultDTO, CambiosSolicitudServicioDto.class);
+        return result;
+    }
+	
 	
 	public BuscarSSCerradasInitializer getBuscarSSCerradasInitializer() {
 		BuscarSSCerradasInitializer buscarSSCerradasInitializer = new BuscarSSCerradasInitializer();
@@ -127,61 +209,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		
 		return buscarSSCerradasInitializer;
 	}
-	
-	
-	
-	/**
-	 * @author julioVesco TODO: Quitar el HardCode cuando se logre obtener los
-	 *         datos reales de la Db.
-	 **/
-//	public SolicitudesServicioTotalesDto searchSSCerrada(
-//			SolicitudServicioSearchDto solicitudServicioSearchDto) {
-//		List dtoResult = new ArrayList();
-//
-//		for (int i = 0; i < 100; i++) {
-//			createSSMock(dtoResult, 2L, 1, RandomUtils.nextBoolean(), Long
-//					.valueOf(RandomUtils.nextLong()).toString(), "" + i, "0",
-//					"Razon Social " + i, "Comentario " + i, "Estado " + i);
-//		}
-//
-//		SolicitudesServicioTotalesDto solicitudes = new SolicitudesServicioTotalesDto();
-//		solicitudes.setSolicitudes(dtoResult);
-//		solicitudes.setTotalEquipos(10L);
-//		solicitudes.setTotalPataconex(20.00);
-//		solicitudes.setTotalEquiposFirmados(3L);
-//
-//		return solicitudes;
-//	}
-	
-	
-	/**
-	 * @author julioVesco TODO: Este metodo se eliminaria cuando se logren obtener los datos da la base.
-	 **/
-//	private void createSSMock(List dtoResult, long cantEquipos,
-//			int cantResultados, boolean firmas, String nroCuenta, String nroSS,
-//			String pataconex, String razonSocial, String comentario,
-//			String estado) {
-//		SolicitudServicioCerradaDto solicitudServicioDto = new SolicitudServicioCerradaDto();
-//		solicitudServicioDto.setCantidadEquipos(cantEquipos);
-//		solicitudServicioDto.setCantidadResultados(cantResultados);
-//		solicitudServicioDto.setFirmas(firmas);
-//		solicitudServicioDto.setNumeroCuenta(nroCuenta);
-//		solicitudServicioDto.setNumeroSS(nroSS);
-//		solicitudServicioDto.setPataconex(pataconex);
-//		solicitudServicioDto.setRazonSocial(razonSocial);
-//		
-//		List cambios = new ArrayList<CambiosSolicitudServicioDto>();
-//		for (int i = 0; i < 15; i++) {
-//			CambiosSolicitudServicioDto cambiosSolicitudServicioDto = new CambiosSolicitudServicioDto();
-//			cambiosSolicitudServicioDto.setComentario(comentario);
-//			cambiosSolicitudServicioDto.setEstado(estado);
-//			cambiosSolicitudServicioDto.setFecha(new Date());
-//			cambios.add(cambiosSolicitudServicioDto);
-//		}
-//		solicitudServicioDto.setCambios(cambios);
-//		dtoResult.add(solicitudServicioDto);
-//	}
-
 	
 
 	public SolicitudInitializer getSolicitudInitializer() {
