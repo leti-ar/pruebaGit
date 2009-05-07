@@ -2,6 +2,9 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
@@ -48,6 +51,10 @@ public class SolicitudRpcServiceDelegate {
 	public void searchSSCerrada(SolicitudServicioCerradaDto solicitudServicioCerradaDto, DefaultWaitCallback<List<SolicitudServicioCerradaResultDto>> callback) {
 		solicitudRpcServiceAsync.searchSSCerrada(solicitudServicioCerradaDto, callback);
 		
+	}
+	
+	public void getDetalleSolicitudServicio(Long idSolicitudServicio, DefaultWaitCallback<DetalleSolicitudServicioDto> callback) {
+		solicitudRpcServiceAsync.getDetalleSolicitudServicio(idSolicitudServicio, callback);
 	}
 
 }

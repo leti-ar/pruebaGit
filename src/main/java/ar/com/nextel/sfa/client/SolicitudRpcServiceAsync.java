@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
@@ -21,6 +22,7 @@ public interface SolicitudRpcServiceAsync {
 
 	public void getSolicitudInitializer(AsyncCallback<SolicitudInitializer> callback);
 
-	public void saveSolicituServicio(SolicitudServicioDto solicitudServicioDto,
-			AsyncCallback<SolicitudServicioDto> callback);
+	public void saveSolicituServicio(SolicitudServicioDto solicitudServicioDto, AsyncCallback<SolicitudServicioDto> callback);
+	
+	public void getDetalleSolicitudServicio(Long idSolicitudServicio, AsyncCallback<DetalleSolicitudServicioDto> callback);
 }

@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
@@ -41,4 +42,6 @@ public interface SolicitudRpcService extends RemoteService {
 	public SolicitudInitializer getSolicitudInitializer();
 
 	public SolicitudServicioDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto);
+	
+	public DetalleSolicitudServicioDto getDetalleSolicitudServicio(Long idSolicitudServicio) ;
 }
