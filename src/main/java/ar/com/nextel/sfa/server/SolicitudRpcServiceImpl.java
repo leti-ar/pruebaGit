@@ -150,7 +150,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private List<CambiosSolicitudServicioDto> getEstadoSolicitudServicioCerrada(Long idVantiveSS) throws RpcExceptionMessages {
     try {
         List<EstadoSolicitudServicioCerradaDTO> resultDTO = null;
-        //no pasa de la consulta a Vantive
         resultDTO = this.vantiveSystem.retrieveEstadosSolicitudServicioCerrada(idVantiveSS);
         resultDTO.addAll(this.financialSystem.retrieveEstadosSolicitudServicioCerrada(idVantiveSS));
         
