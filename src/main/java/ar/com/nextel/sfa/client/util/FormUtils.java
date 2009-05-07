@@ -5,8 +5,10 @@ import java.util.List;
 import ar.com.nextel.sfa.client.widget.TelefonoTextBox;
 import ar.com.snoop.gwt.commons.client.widget.datepicker.DatePicker;
 
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -101,4 +103,21 @@ public class FormUtils {
 			}
 		}
 	}
+	
+	public static boolean fieldDirty(Widget field, String dato) {
+		if (dato==null) 
+			dato = "";
+		String fieldText = "";
+		if (field instanceof DatePicker) {
+			fieldText = ((DatePicker) field).getTextBox().getText();
+		} else if (field instanceof TextBox) {
+			fieldText = ((TextBox) field).getText();
+		} else if (field instanceof ListBox) {
+			fieldText = ((ListBox) field).getValue((((ListBox) field).getSelectedIndex()));
+		}
+		if (!fieldText.trim().equals(((String)dato).trim())) {
+			return true;
+		}	
+		return false;
+	}	
 }
