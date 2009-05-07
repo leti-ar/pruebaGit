@@ -7,14 +7,15 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class SolicitudServicioCerradaResultDto implements IsSerializable {
 
 	private Long idSolicitudServicio;
-    //private Long idEstadoAprobacion;
-    //private Long idCuenta;
     private String numero;
     private String numeroCuenta;
     private String razonSocialCuenta;
     private Long cantidadEquipos;
     private Double pataconex;
     private Boolean firmar;
+    private Long idVantive;
+    private Long id;
+    private Long cantidadEquiposPorCuenta;
     private List<CambiosSolicitudServicioDto> cambios;
 	
     public Long getIdSolicitudServicio() {
@@ -23,18 +24,6 @@ public class SolicitudServicioCerradaResultDto implements IsSerializable {
 	public void setIdSolicitudServicio(Long idSolicitudServicio) {
 		this.idSolicitudServicio = idSolicitudServicio;
 	}
-//	public Long getIdEstadoAprobacion() {
-//		return idEstadoAprobacion;
-//	}
-//	public void setIdEstadoAprobacion(Long idEstadoAprobacion) {
-//		this.idEstadoAprobacion = idEstadoAprobacion;
-//	}
-//	public Long getIdCuenta() {
-//		return idCuenta;
-//	}
-//	public void setIdCuenta(Long idCuenta) {
-//		this.idCuenta = idCuenta;
-//	}
 	public String getNumero() {
 		return numero;
 	}
@@ -76,5 +65,23 @@ public class SolicitudServicioCerradaResultDto implements IsSerializable {
 	}
 	public List<CambiosSolicitudServicioDto> getCambios() {
 		return cambios;
-	}	    
+	}	  
+	public Long getIdVantive() {
+		return idVantive;
+	}
+	public void setIdVantive(Long idVantive) {
+		this.idVantive = idVantive;
+	}
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public Long getCantidadEquiposPorCuenta() {
+		return cantidadEquiposPorCuenta;
+	}
+	public void setCantidadEquiposPorCuenta(Long cantidadEquiposPorCuenta) {
+		this.cantidadEquiposPorCuenta = cantidadEquiposPorCuenta;
+	}		
 }
