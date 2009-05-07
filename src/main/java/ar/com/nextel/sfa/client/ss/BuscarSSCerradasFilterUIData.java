@@ -152,8 +152,6 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 
 	public SolicitudServicioCerradaDto getSSCerradaSearch() {
 		SolicitudServicioCerradaDto solicitudServicioCerradaDto = new SolicitudServicioCerradaDto();
-		//solicitudServicioCerradaDto.setNumeroCuenta(nroCliente.getText());
-		//solicitudServicioCerradaDto.setNumeroSS(nroSS.getText());
 		solicitudServicioCerradaDto.setNumeroCuenta(nroCliente.getText());
 		solicitudServicioCerradaDto.setNumeroSS(nroSS.getText());
 		solicitudServicioCerradaDto.setFechaCierreDesde(desde.getSelectedDate());
