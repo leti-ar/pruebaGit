@@ -62,16 +62,6 @@ public class SolicitudServicioCerradaDto implements IsSerializable {
 		this.firmas = firmas;
 	}
 
-
-//	public List<CambiosSolicitudServicioDto> getCambios() {
-//		return cambios;
-//	}
-//
-//	public void setCambios(List<CambiosSolicitudServicioDto> cambios) {
-//		this.cambios = cambios;
-//	}
-
-
 	public Long getCantidadResultados() {
 		return cantidadResultados;
 	}
