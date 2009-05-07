@@ -30,7 +30,9 @@ public class EditarCuentaUI extends ApplicationUI {
 			DocumentoDto docDto = new DocumentoDto(HistoryUtils.getParam("nroDoc"),tipoDoc);
 			CuentaRpcService.Util.getInstance().reservaCreacionCuenta(docDto,new DefaultWaitCallback<CuentaDto>() {
 				public void success(CuentaDto ctaDto) {
-					cargaPaneles(ctaDto);
+					cuentaTab.getCuentaDatosForm().deshabilitarCamposAlAgregarCuenta();
+					cuentaTab.setCuenta2editDto(ctaDto);
+					cargaPaneles();
 				}
 			});	
 		} else {//viene de resultado de busqueda
@@ -57,7 +59,8 @@ public class EditarCuentaUI extends ApplicationUI {
 								mainPanel.clear();
 								new BuscarCuentaUI().load();
 							}else{
-								cargaPaneles(cuentaDto);
+								cuentaTab.setCuenta2editDto(cuentaDto);
+								cargaPaneles();
 							}
 						}
 					});
@@ -69,25 +72,26 @@ public class EditarCuentaUI extends ApplicationUI {
 	/**
 	 * @author eSalvador 
 	 **/
-	private void cargaPaneles(CuentaDto cuentaDto){
+	private void cargaPaneles() {
 		//Busca la cuenta con alguno de los dos datos NO nulos.
-		if(cuentaDto.getCodigoVantive() != null){
-			cuentaTab.setCliente(cuentaDto.getCodigoVantive());
+		if(cuentaTab.getCuenta2editDto().getCodigoVantive() != null){
+			cuentaTab.setCliente(cuentaTab.getCuenta2editDto().getCodigoVantive());
 		}else{
 			cuentaTab.setCliente("***");
 		}
-		cuentaTab.setRazonSocial(cuentaDto.getPersona()!=null ? cuentaDto.getPersona().getRazonSocial():"");
+		cuentaTab.setRazonSocial(cuentaTab.getCuenta2editDto().getPersona()!=null ? cuentaTab.getCuenta2editDto().getPersona().getRazonSocial():"");
 		//carga info pestaña Datos
-		cuentaTab.getCuentaDatosForm().ponerDatosBusquedaEnFormulario(cuentaDto);
+		cuentaTab.getCuentaDatosForm().ponerDatosBusquedaEnFormulario(cuentaTab.getCuenta2editDto());
 		//carga info pestaña Domicilio
-		if (cuentaDto.getPersona() != null) {
-			cuentaTab.getCuentaDomicilioForm().cargaTablaDomicilios(cuentaDto);
+		if (cuentaTab.getCuenta2editDto().getPersona() != null) {
+			cuentaTab.getCuentaDomicilioForm().cargaTablaDomicilios(cuentaTab.getCuenta2editDto());
 		}
 		mainPanel.add(cuentaTab.getCuentaEdicionPanel());
 	}
 
 	public void unload() {
 	}
+    
 
 
 //	private void loadDomiciliosFormPanel(CuentaDto cuentaDto, CuentaEdicionTabPanel cuentaTab) {

@@ -12,6 +12,7 @@ import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
 import ar.com.nextel.sfa.client.enums.TipoFormaPagoEnum;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
+import ar.com.nextel.sfa.client.widget.TelefonoTextBox;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
@@ -19,6 +20,7 @@ import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
 
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
@@ -59,6 +61,14 @@ public class CuentaUIData extends UIData {
 	private TextBox emailLaboral     = new TextBox();
 	private TextBox cbu              = new TextBox();
 	private TextBox numeroTarjeta    = new TextBox();
+
+	private TelefonoTextBox telPrincipalTextBox = new TelefonoTextBox();
+	private TelefonoTextBox telAdicionalTextBox = new TelefonoTextBox();
+	private TelefonoTextBox telCelularTextBox   = new TelefonoTextBox(false);
+	private TelefonoTextBox telFaxTextBox       = new TelefonoTextBox();
+	
+	private TextBox usuario          = new TextBox();
+	private TextBox fechaCreacion    = new TextBox();
 	
 	private TextBox vendedorNombre   = new TextBox();
 	private Label   vendedorTelefono = new Label();
@@ -69,14 +79,11 @@ public class CuentaUIData extends UIData {
 	private SimpleDatePicker fechaNacimiento = new SimpleDatePicker(false);
 	
 	private Label veraz = new Label("TODO");
-	private Label usuario;
-	private Label fechaCreacion;
 
-	private FlexTable efectivoTable       = new FlexTable();
-	private FlexTable cuentaBancariaTable = new FlexTable();
-	private FlexTable tarjetaTable        = new FlexTable();
 
 	PersonaDto persona = new PersonaDto();
+	List <Widget>camposObligatorios; 
+	List <Widget>camposObligatoriosFormaPago;
 	List <TipoTelefonoDto>tipoTelefono = new ArrayList();
 
 	public CuentaUIData() {
@@ -86,12 +93,29 @@ public class CuentaUIData extends UIData {
 	public void init() {
 		formaPago.addChangeListener(new ChangeListener() {
 			public void onChange(Widget sender) {
-				setVisibilidadFormasDePago(((ListBox) sender).getSelectedItemId());
+				CuentaDatosForm.getInstance().setVisiblePanelFormaPagoYActualizarCamposObligatorios(((ListBox) sender).getSelectedItemId());
 			}
 		});
+		nombre.addFocusListener(new FocusListener() {
+			public void onFocus(Widget sender) {
+			}
+			public void onLostFocus(Widget sender) {
+				exportarNombreApellidoARazonSocial();
+			}
+		});
+		apellido.addFocusListener(new FocusListener() {
+			public void onFocus(Widget sender) {
+			}
+			public void onLostFocus(Widget sender) {
+				exportarNombreApellidoARazonSocial();
+			}
+		});
+		
 		setCombos();
 		cbu.setWidth("90%");
 		observaciones.addStyleName("textAreaCuentaData");
+		usuario.setEnabled(false);
+		fechaCreacion.setEnabled(false);
 		
 		fields.add(tipoDocumento);
 		fields.add(numeroDocumento);
@@ -154,82 +178,23 @@ public class CuentaUIData extends UIData {
         }
 	}
 
-	public FlexTable getEfectivoPanel() {
-		efectivoTable.setWidth("80%");
-		efectivoTable.addStyleName("layout");
-		efectivoTable.setText(0, 0, Sfa.constant().modalidad());
-		efectivoTable.setWidget(0, 1, getFormaPago());
-		efectivoTable.setText(0, 3, null);
-		efectivoTable.setText(0, 4, null);
-		return efectivoTable;
-	}
-	public FlexTable getCuentaBancariaPanel() {
-		cuentaBancariaTable.setWidth("80%");
-		cuentaBancariaTable.addStyleName("layout");
-		cuentaBancariaTable.setVisible(false);
-		
-		cuentaBancariaTable.setText(0, 0, Sfa.constant().modalidad());
-		cuentaBancariaTable.setWidget(0, 1, getFormaPago());		
-		cuentaBancariaTable.setText(0, 3, Sfa.constant().tipoCuenta());
-		cuentaBancariaTable.setWidget(0, 4, getTipoCuentaBancaria());
-		
-		cuentaBancariaTable.setText(1, 0, Sfa.constant().cbu());
-		cuentaBancariaTable.setWidget(1, 1, getCbu());		
-		cuentaBancariaTable.getFlexCellFormatter().setColSpan(1, 1, 4);
-		return cuentaBancariaTable;
+	
+//	public void setVisibilidadFormasDePagoYactualizarCamposObligatorios(String idSelected) {
+//		if (idSelected.equals(TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo())) {
+//			CuentaDatosForm.getInstance().setVisibleFormaPagoCuentaBancaria();
+//		} else if (idSelected.equals(TipoFormaPagoEnum.TARJETA_CREDITO.getTipo())) {
+//			CuentaDatosForm.getInstance().setVisibleFormaPagoTarjeta();
+//		} else {  //	if (idSelected.equals(TipoFormaPagoEnum.EFECTIVO.getTipo())) {
+//			CuentaDatosForm.getInstance().setVisibleFormaPagoEfectivo();
+//		}
+//	}
+	
+	private void exportarNombreApellidoARazonSocial() {
+		nombre.setText(nombre.getText().trim().toUpperCase());
+		apellido.setText(apellido.getText().trim().toUpperCase());
+		razonSocial.setText(nombre.getText() + " " + apellido.getText());
 	}
 	
-	public FlexTable getTarjetaCreditoPanel() {
-		tarjetaTable.setWidth("80%");
-		tarjetaTable.addStyleName("layout");
-		tarjetaTable.setVisible(false);
-		
-		tarjetaTable.setText(0, 0, Sfa.constant().modalidad());
-		tarjetaTable.setWidget(0, 1, getFormaPago());		
-		tarjetaTable.setText(0, 3, Sfa.constant().tarjetaTipo());
-		tarjetaTable.setWidget(0, 4, getTipoTarjeta());
-		
-		tarjetaTable.setText(1, 0, Sfa.constant().nroTarjeta());
-		tarjetaTable.setWidget(1, 1, getNumeroTarjeta());		
-		tarjetaTable.setText(1, 3, Sfa.constant().vtoMes());
-		tarjetaTable.setWidget(1, 4, getMesVto());
-
-		tarjetaTable.setText(2, 0, Sfa.constant().vtoAnio());
-		tarjetaTable.setWidget(2, 1, getAnioVto());		
-		tarjetaTable.setText(2, 3, "ValidarTarjeta-TODO");
-		tarjetaTable.setWidget(2, 4, null);
-		return tarjetaTable; 
-	}
-	
-	public void setVisibilidadFormasDePago(String idSelected) {
-		if (idSelected.equals(TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo())) {
-			setVisibleFormaPagoCuentaBancaria();
-		} else if (idSelected.equals(TipoFormaPagoEnum.TARJETA_CREDITO.getTipo())) {
-			setVisibleFormaPagoTarjeta();
-		} else {  //	if (idSelected.equals(TipoFormaPagoEnum.EFECTIVO.getTipo())) {
-			setVisibleFormaPagoEfectivo();
-		}
-		
-	}
-	
-    public void setVisibleFormaPagoEfectivo() {
-		efectivoTable.setWidget(0, 1, getFormaPago());
-		efectivoTable.setVisible(true);
-		cuentaBancariaTable.setVisible(false);
-		tarjetaTable.setVisible(false);    	
-    }
-    public void setVisibleFormaPagoCuentaBancaria() {
-		cuentaBancariaTable.setWidget(0, 1, getFormaPago());
-		efectivoTable.setVisible(false);
-		cuentaBancariaTable.setVisible(true);
-		tarjetaTable.setVisible(false);    	
-    }
-    public void setVisibleFormaPagoTarjeta() {
-		tarjetaTable.setWidget(0, 1, getFormaPago());
-		efectivoTable.setVisible(false);
-		cuentaBancariaTable.setVisible(false);
-		tarjetaTable.setVisible(true);
-    }
 	public PersonaDto getPersona() {
 		persona.setApellido(apellido.getText());
 		//TODO: Revisar lo del Documento!
@@ -245,7 +210,7 @@ public class CuentaUIData extends UIData {
 		persona.setSexo(new SexoDto(Long.parseLong(sexo.getSelectedItem().getItemValue()),sexo.getSelectedItem().getItemText()));
 		return persona;
 	}
-
+	
 	/** Getters de todos los Widgets **/
 	public ListBox getTipoDocumento() {
 		return tipoDocumento;
@@ -326,11 +291,11 @@ public class CuentaUIData extends UIData {
 		return formaPago;
 	}
 
-	public Label getUsuario() {
+	public TextBox getUsuario() {
 		return usuario;
 	}
 
-	public Label getFechaCreacion() {
+	public TextBox getFechaCreacion() {
 		return fechaCreacion;
 	}
 
@@ -388,4 +353,45 @@ public class CuentaUIData extends UIData {
 	public List<TipoTelefonoDto> getTipoTelefono() {
 		return tipoTelefono;
 	}
+
+	public TelefonoTextBox getTelPrincipalTextBox() {
+		return telPrincipalTextBox;
+	}
+
+	public TelefonoTextBox getTelAdicionalTextBox() {
+		return telAdicionalTextBox;
+	}
+
+	public TelefonoTextBox getTelCelularTextBox() {
+		return telCelularTextBox;
+	}
+
+	public TelefonoTextBox getTelFaxTextBox() {
+		return telFaxTextBox;
+	}
+
+	public List<Widget> getCamposObligatorios() {
+		if(camposObligatorios==null) {
+			camposObligatorios = new ArrayList<Widget>();
+			camposObligatorios.add(nombre);
+			camposObligatorios.add(apellido);
+			camposObligatorios.add(razonSocial);
+			camposObligatorios.add(contribuyente);
+			camposObligatorios.add(proveedorAnterior);
+			camposObligatorios.add(rubro);
+			camposObligatorios.add(telPrincipalTextBox.getArea());
+			camposObligatorios.add(telPrincipalTextBox.getNumero());
+		}		
+		return camposObligatorios;
+	}
+	public List<Widget> getCamposObligatoriosFormaPago() {
+		if(camposObligatoriosFormaPago==null) {
+			camposObligatoriosFormaPago = new ArrayList<Widget>();
+			camposObligatoriosFormaPago.add(cbu);
+			camposObligatoriosFormaPago.add(numeroTarjeta);
+			camposObligatoriosFormaPago.add(anioVto);
+		}		
+		return camposObligatoriosFormaPago;
+	}
+	
 }

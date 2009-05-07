@@ -9,9 +9,11 @@ import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -24,7 +26,7 @@ public class CuentaEdicionTabPanel {
 	DualPanel clientePanel = new DualPanel();
 	private Label razonSocial = new Label();
 	private Label cliente = new Label();
-	private CuentaDto ctaDto;
+	private CuentaDto cuenta2editDto;
 	private CuentaDatosForm     cuentaDatosForm     = CuentaDatosForm.getInstance();
 	private CuentaDomiciliosForm cuentaDomiciliosForm = CuentaDomiciliosForm.getInstance();
 	private CuentaContactoForm  cuentaContactoForm  = CuentaContactoForm.getInstance();
@@ -52,12 +54,13 @@ public class CuentaEdicionTabPanel {
 		initFooter();
 		marco = new FlexTable();
 		marco.setWidth("100%");
-		marco.setWidget(0, 0, razonSocialPanel);
-		marco.setWidget(0, 1, clientePanel);
-		marco.setWidget(1, 0, tabPanel);
-		marco.setWidget(2, 0, footerBar);
-		marco.getFlexCellFormatter().setColSpan(1, 0, 2);
+		marco.setWidget(0, 0, new HTML("<br/>"));
+		marco.setWidget(1, 0, razonSocialPanel);
+		marco.setWidget(1, 1, clientePanel);
+		marco.setWidget(2, 0, tabPanel);
+		marco.setWidget(3, 0, footerBar);
 		marco.getFlexCellFormatter().setColSpan(2, 0, 2);
+		marco.getFlexCellFormatter().setColSpan(3, 0, 2);
 	}
 	
 	/**
@@ -101,22 +104,40 @@ public class CuentaEdicionTabPanel {
 
 		getGuardar().addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				guardar();
+				if (!cuentaDatosForm.formularioDatosDirty()) {
+					ErrorDialog.getInstance().show("NO HAY DATOS PARA GUARDAR");
+				} else if (!cuentaDatosForm.datosObligatoriosCompletos()) {
+					ErrorDialog.getInstance().show("HAY CAMPOS OBLIGATORIOS SIN COMPLETAR");
+				} else {
+					guardar();
+				}
 			}
 		});
 		getCrearSS().addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				crearSS();
+				if (cuentaDatosForm.formularioDatosDirty()) {
+					ErrorDialog.getInstance().show("Hay Cambios sin Guardar");
+				} else { 
+					crearSS();
+				}
 			}
 		});
 		getAgregar().addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				validarYAgregar(new PersonaDto());
+				if (cuentaDatosForm.formularioDatosDirty()) {
+					ErrorDialog.getInstance().show("Hay Cambios sin Guardar");
+				} else {
+					agregar(null/*PersonaDto*/);
+				}
 			}
 		});
 		getCancelar().addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				cancelar();
+				if (cuentaDatosForm.formularioDatosDirty()) {
+					ErrorDialog.getInstance().show("Hay Cambios sin Guardar");
+				} else {
+					cancelar();
+				}
 			}
 		});
 	}
@@ -131,27 +152,28 @@ public class CuentaEdicionTabPanel {
 	}
 	
 	private void guardar() {
-		CuentaUIData cuentaEditor = cuentaDatosForm.getCuentaEditor();	
-		String ver = cuentaEditor.getNombre().getText();
-		getCuentaDtoFromEditor();
+		ErrorDialog.getInstance().show("OK PARA GUARDAR DATOS (@TODO)");
 	}
 	
 	private void crearSS() {
+		ErrorDialog.getInstance().show("OK PARA CREAR SS (@TODO)");
 	}
 	/**
 	 * 
 	 * @param personaDto
 	 */
-	private void validarYAgregar(PersonaDto personaDto) {
-		CuentaRpcService.Util.getInstance().saveCuenta(personaDto,
-				new DefaultWaitCallback() {
-			public void success(Object result) {
-				PersonaDto personaDto = (PersonaDto) result;
-				System.out.println("Apretaste Agregar");
-			}
-		});
+	private void agregar(PersonaDto personaDto) {
+		ErrorDialog.getInstance().show("OK PARA AGREGAR DIVISIO/SUSCRIPTOR (@TODO)");
+//		CuentaRpcService.Util.getInstance().saveCuenta(personaDto,
+//				new DefaultWaitCallback() {
+//			public void success(Object result) {
+//				PersonaDto personaDto = (PersonaDto) result;
+//				System.out.println("Apretaste Agregar");
+//			}
+//		});
 	}
 	private void cancelar() {
+		ErrorDialog.getInstance().show("OK PARA CANCELAR");
 	}
 	
 	private CuentaDto getCuentaDtoFromEditor() {
@@ -169,14 +191,13 @@ public class CuentaEdicionTabPanel {
 		
 	}
 	
-	
 	///////////////
 
-	public CuentaDto getCtaDto() {
-		return ctaDto;
+	public CuentaDto getCuenta2editDto() {
+		return cuenta2editDto;
 	}
-	public void setCtaDto(CuentaDto ctaDto) {
-		this.ctaDto = ctaDto;
+	public void setCuenta2editDto(CuentaDto ctaDto) {
+		this.cuenta2editDto = ctaDto;
 	}
 	public FlexTable getCuentaEdicionPanel() {
 		return marco;

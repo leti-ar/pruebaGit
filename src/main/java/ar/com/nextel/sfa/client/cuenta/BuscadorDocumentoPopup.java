@@ -2,7 +2,6 @@ package ar.com.nextel.sfa.client.cuenta;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.nextel.sfa.client.widget.UILoader;
@@ -28,8 +27,6 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 	private Label numeroDocLabel;
 	private Hyperlink aceptar = new Hyperlink(Sfa.constant().aceptar(),null);
 	private SimpleLink cerrar  = new SimpleLink(Sfa.constant().cerrar(), "#", true);
-	private AgregarCuentaUI agregarCuentaPage;
-    private CuentaDto cuentaDto;
 
 	public BuscadorDocumentoPopup(String title) {
 		super(title);

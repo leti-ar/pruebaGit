@@ -273,8 +273,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 	}
 	
 	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive) {
-		Usuario usuario = new Usuario();
-		usuario.setUserName("acsa1");
 		Cuenta cuenta = null;
 		CuentaDto ctaDTO = null;
 		try {
@@ -286,13 +284,13 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 				if (!cod_vantive.equals("***") && (!cod_vantive.equals("null"))){
 					cuenta = selectCuentaBusinessOperator.getCuentaYLockear(cod_vantive, getVendedor("acsa1"));
 				}
-					CondicionCuenta cd1= cuenta.getCondicionCuenta();
-					Long id = cd1.getId();
-					String code = cd1.getCodigoVantive();
-					String desc = cd1.getDescripcion();
-					CondicionCuentaDto cd2 = new CondicionCuentaDto(id,code,desc);
-					ctaDTO = (CuentaDto) mapper.map(cuenta, CuentaDto.class);
-					ctaDTO.setCondicionCuenta(cd2);
+				CondicionCuenta cd1= cuenta.getCondicionCuenta();
+				Long id = cd1.getId();
+				String code = cd1.getCodigoVantive();
+				String desc = cd1.getDescripcion();
+				CondicionCuentaDto cd2 = new CondicionCuentaDto(id,code,desc);
+				ctaDTO = (CuentaDto) mapper.map(cuenta, CuentaDto.class);
+				ctaDTO.setCondicionCuenta(cd2);
 			}
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
@@ -309,13 +307,13 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 	public CuentaDto reservaCreacionCuenta(DocumentoDto docDto) {
 		Cuenta cuenta = null;
 		CuentaDto cuentaDto = null;
+		Vendedor vendedor = getVendedor("acsa1");
 		SolicitudCuenta solicitudCta = repository.createNewObject(SolicitudCuenta.class);
-		solicitudCta.setVendedor(getVendedor("acsa1"));
+		solicitudCta.setVendedor(vendedor);
 		solicitudCta.setDocumento(getDocumento(docDto));
-//		GrupoDocumento grpDoc = repository.f retrieve(GrupoDocumento.class, 1L);
-//		grpDoc.setId(documentoDto.getTipoDocumento().getCode());
 		try {
 			cuenta = cuentaBusinessService.reservarCrearCta(solicitudCta);
+			//cuenta = selectCuentaBusinessOperator.getCuentaYLockear(cuenta.getCodigoVantive(), vendedor);
 			cuentaDto = (CuentaDto) mapper.map(cuenta, CuentaDto.class);
 		} catch (BusinessException e) {
 			// TODO Auto-generated catch block
@@ -342,10 +340,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements
      */
     private Documento getDocumento(DocumentoDto docDto) {
     	TipoDocumento tipoDoc = repository.retrieve(TipoDocumento.class,docDto.getTipoDocumento().getCode());
-    	//		tipoDoc.setId(Long.parseLong(solicitudCuentaDto.getIdTipoDocumento()));
-    	//		tipoDoc.setCodigoVantive("96");
-    	//		tipoDoc.setDescripcion("DNI");
-    	//		tipoDoc.setGrupoDocumento(grpDoc);
     	Documento doc = repository.createNewObject(Documento.class);
     	doc.setTipoDocumento(tipoDoc);
     	doc.setNumero(docDto.getNumero());
