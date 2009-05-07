@@ -164,18 +164,21 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 	}
 	
 	private Boolean obtenerBoolean(String string) {
-		if ("Si".equals(string)){
+		if ("Si".equals(string)) {
 			return Boolean.TRUE;
-		}else
+		}else if ("No".equals(string)) {
 			return Boolean.FALSE;
+		}
+		return null;
 	}
-	
-	//Arreglar estooooooo
+
 	private Long obtenerLong(String string) {
 		if ("Pass".equals(string)) {
 			return Long.valueOf("2");
+		}else if ("Fail".equals(string)) {
+			return Long.valueOf("3");
 		}
-		return Long.valueOf("1");
+		return null;
 	}
 
 }

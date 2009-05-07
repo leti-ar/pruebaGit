@@ -108,7 +108,9 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 			resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getRazonSocialCuenta());
 			resultTable.setHTML(row, 4, solicitudServicioCerradaResultDto.getCantidadEquiposPorCuenta().toString());
 			resultTable.setHTML(row, 5, solicitudServicioCerradaResultDto.getPataconex().toString());
-			resultTable.setHTML(row, 6, solicitudServicioCerradaResultDto.getFirmar() ? "SI" : "NO");
+			if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == true ) {
+				resultTable.setWidget(row, 6, IconFactory.tildeVerde());
+			}
 			if (solicitudServicioCerradaResultDto.getFirmar().booleanValue()==Boolean.TRUE) {
 				cantEqFirmados++;
 			}
