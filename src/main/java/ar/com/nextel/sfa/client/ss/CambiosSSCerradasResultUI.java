@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.client.ss;
 
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 
 import com.google.gwt.user.client.Event;
@@ -20,7 +21,7 @@ public class CambiosSSCerradasResultUI extends FlowPanel {
 	private FlexTable resultTable;
 	private FlexTable cambiosTable;
 	private FlowPanel resultTableWrapper;
-	private SolicitudServicioCerradaResultDto solicitudServicioCerradaResultDto;
+	private DetalleSolicitudServicioDto detalleSolicitudServicioDto;
 	private Label labelDatosSS = new Label ("Datos de SS");
 	private Label labelNroSS = new Label();
 	private Label labelNroCLiente = new Label();
@@ -38,9 +39,12 @@ public class CambiosSSCerradasResultUI extends FlowPanel {
 		setVisible(false);
 	}
 
-	public void setSolicitudServicioCerradaDto(
-			SolicitudServicioCerradaResultDto solicitudServicioCerradaResultDto) {
-		this.solicitudServicioCerradaResultDto = solicitudServicioCerradaResultDto;
+	public void setSolicitudServicioCerradaDto(DetalleSolicitudServicioDto detalleSolicitudServicioDto) {
+		this.detalleSolicitudServicioDto = detalleSolicitudServicioDto;		
+		if (cambiosTable != null) {
+			cambiosTable.unsinkEvents(Event.getEventsSunk(cambiosTable.getElement()));
+			cambiosTable.removeFromParent();
+		}
 		cambiosTable = new FlexTable();
 		cambiosTable.setWidget(0, 0, labelDatosSS);
 		labelDatosSS.addStyleName("mt5");
@@ -53,29 +57,25 @@ public class CambiosSSCerradasResultUI extends FlowPanel {
 		cambiosTable.setWidget(1, 2, labelRazonSocial);		
 		labelRazonSocial.addStyleName("mlr40");
 		labelRazonSocial.addStyleName("mtb5");
-		labelNroSS.setText("N° SS: "
-				+ solicitudServicioCerradaResultDto.getNumero());
-		labelNroCLiente.setText("N° Cliente: "
-				+ solicitudServicioCerradaResultDto.getNumeroCuenta());
-		labelRazonSocial.setText("Razon Social: "
-				+ solicitudServicioCerradaResultDto.getRazonSocialCuenta());
+		labelNroSS.setText("N° SS: "+ detalleSolicitudServicioDto.getNumero());
+		labelNroCLiente.setText("N° Cuenta: "+ detalleSolicitudServicioDto.getNumeroCuenta());
+		labelRazonSocial.setText("Razon Social: "+ detalleSolicitudServicioDto.getRazonSocialCuenta());
 		resultTableWrapper.add(cambiosTable);
 		loadTable();
 	}
 
 	private void loadTable() {
 		if (resultTable != null) {
-			resultTable.unsinkEvents(Event.getEventsSunk(resultTable
-					.getElement()));
+			resultTable.unsinkEvents(Event.getEventsSunk(resultTable.getElement()));
 			resultTable.removeFromParent();
 		}
 		resultTable = new FlexTable();
 		initTable(resultTable);
 		resultTableWrapper.add(resultTable);
 		int row = 1;
-		for (CambiosSolicitudServicioDto cambiosDto : solicitudServicioCerradaResultDto.getCambios()) {
-			resultTable.setHTML(row, 0, cambiosDto.getFecha().toString());
-			resultTable.setHTML(row, 1, cambiosDto.getEstado());
+		for (CambiosSolicitudServicioDto cambiosDto : detalleSolicitudServicioDto.getCambiosEstadoSolicitud()) {
+			resultTable.setHTML(row, 0, cambiosDto.getFechaCambioEstado().toString());
+			resultTable.setHTML(row, 1, cambiosDto.getEstadoAprobacionSolicitud());
 			resultTable.setHTML(row, 2, cambiosDto.getComentario());
 			row++;
 		}

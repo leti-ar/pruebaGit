@@ -6,6 +6,8 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
@@ -104,8 +106,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 			resultTable.setHTML(row, 1, solicitudServicioCerradaResultDto.getNumero());
 			resultTable.setHTML(row, 2, solicitudServicioCerradaResultDto.getNumeroCuenta());
 			resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getRazonSocialCuenta());
-			resultTable.setHTML(row, 4, solicitudServicioCerradaResultDto.getCantidadEquipos().toString());
-			resultTable.setHTML(row, 4, "7");
+			resultTable.setHTML(row, 4, solicitudServicioCerradaResultDto.getCantidadEquiposPorCuenta().toString());
 			resultTable.setHTML(row, 5, solicitudServicioCerradaResultDto.getPataconex().toString());
 			resultTable.setHTML(row, 6, solicitudServicioCerradaResultDto.getFirmar() ? "SI" : "NO");
 			if (solicitudServicioCerradaResultDto.getFirmar().booleanValue()==Boolean.TRUE) {
@@ -151,8 +152,15 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 			if (arg1 >= 1) {
 				String numeroSS = resultTable.getHTML(arg1, 1).toString();
 				SolicitudServicioCerradaResultDto solicitud = buscarSS(numeroSS);
-				cambiosSSCerradasResultUI.setSolicitudServicioCerradaDto(solicitud);
-				cambiosSSCerradasResultUI.setVisible(true);
+
+				SolicitudRpcService.Util.getInstance().getDetalleSolicitudServicio(solicitud.getId(), 
+						new DefaultWaitCallback<DetalleSolicitudServicioDto>() {
+							public void success(DetalleSolicitudServicioDto result) {
+								cambiosSSCerradasResultUI.setSolicitudServicioCerradaDto(result);
+								cambiosSSCerradasResultUI.setVisible(true);
+								
+							}
+						});		
 			}
 
 		}
