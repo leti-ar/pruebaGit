@@ -18,4 +18,8 @@ public interface IconBundle extends ImageBundle {
 	AbstractImagePrototype silvioSoldan();
 	
 	AbstractImagePrototype copiar();
+	
+	AbstractImagePrototype tildeVerde();
+	
+	AbstractImagePrototype excel();
 }

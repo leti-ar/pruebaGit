@@ -41,4 +41,13 @@ public class IconFactory {
 	public static Image copiar() {
 		return getIconBundle().copiar().createImage();
 	}
+	
+	public static Image tildeVerde() {
+		return getIconBundle().tildeVerde().createImage();
+	}
+	
+	public static Image excel() {
+		return getIconBundle().excel().createImage();
+	}
+	
 }
