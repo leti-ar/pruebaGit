@@ -110,6 +110,14 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>idSolicitudServicio</b>
 		</field>
 	</mapping>
+	
+	<mapping>
+		<class-a>
+			ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto
+		</class-b>
+	</mapping>
 
 	<mapping>
 		<class-a>ar.com.nextel.model.solicitudes.beans.SolicitudServicio
