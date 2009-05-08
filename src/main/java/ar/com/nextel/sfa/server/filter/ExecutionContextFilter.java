@@ -59,6 +59,7 @@ public class ExecutionContextFilter implements Filter {
 	 * Libera el contexto de ejecución
 	 */
 	private void diposeExecutionContext() {
+		sessionContext.getSessionContext().setVendedor(null);
 	}
 
 	public void destroy() {
