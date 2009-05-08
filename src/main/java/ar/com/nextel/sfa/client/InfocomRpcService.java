@@ -11,7 +11,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-@RemoteServiceRelativePath("cuenta.rpc")
+@RemoteServiceRelativePath("infocom.rpc")
 public interface InfocomRpcService extends RemoteService {
 	
 	public class Util{
