@@ -146,6 +146,52 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</field>
 	</mapping>
 
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.TipoSolicitud
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.TipoSolicitudDto
+		</class-b>
+		<field custom-converter-id="identifiableObjectToId">
+			<a>tipoSolicitudBase</a>
+			<b>idTipoSolicitudBase</b>
+		</field>
+		<field-exclude>
+			<a>listasPrecios</a>
+			<b>listasPrecios</b>
+		</field-exclude>
+	</mapping>
+	
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.ListaPrecios
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.ListaPreciosDto
+		</class-b>
+	</mapping>
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.TerminoPagoValido
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.TerminoPagoValidoDto
+		</class-b>
+	</mapping>
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.ItemTasado
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto
+		</class-b>
+	</mapping>
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.Item
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.ItemSolicitudDto
+		</class-b>
+	</mapping>	
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.Ajuste
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.AjustesDto
+		</class-b>
+	</mapping>
+
 	<mapping map-id="cuentaSolicitud" wildcard="false">
 		<class-a>ar.com.nextel.model.cuentas.beans.Cuenta
 		</class-a>
