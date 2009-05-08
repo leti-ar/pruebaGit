@@ -15,12 +15,14 @@ import com.google.gwt.user.client.ui.Widget;
 public class VariosSSUI extends Composite {
 
 	private FlowPanel mainpanel;
+	//private EditarSSUIController controller;
 	private EditarSSUIData editarSSUIData;
 
-	public VariosSSUI(EditarSSUIData editarSSUIData) {
+	public VariosSSUI(EditarSSUIController controller) {
 		mainpanel = new FlowPanel();
 		initWidget(mainpanel);
-		this.editarSSUIData = editarSSUIData;
+		//this.controller = controller;
+		this.editarSSUIData = controller.getEditarSSUIData();
 
 		mainpanel.add(getCreditoFidelizacion());
 		mainpanel.add(getPataconex());
