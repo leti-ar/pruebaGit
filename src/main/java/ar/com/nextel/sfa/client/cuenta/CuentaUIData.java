@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
-import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
-import ar.com.nextel.sfa.client.enums.TipoFormaPagoEnum;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.widget.TelefonoTextBox;
 import ar.com.nextel.sfa.client.widget.UIData;
@@ -19,7 +17,6 @@ import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
 
 import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
@@ -32,7 +29,6 @@ import com.google.gwt.user.client.ui.Widget;
  * @author mrial
  * 
  */
-
 public class CuentaUIData extends UIData {
 
 	private ListBox tipoDocumento     = new ListBox();
@@ -82,8 +78,8 @@ public class CuentaUIData extends UIData {
 
 
 	PersonaDto persona = new PersonaDto();
-	List <Widget>camposObligatorios; 
-	List <Widget>camposObligatoriosFormaPago;
+	List <Widget>camposObligatorios =  new ArrayList<Widget>(); 
+	List <Widget>camposObligatoriosFormaPago = new ArrayList<Widget>();
 	List <TipoTelefonoDto>tipoTelefono = new ArrayList();
 
 	public CuentaUIData() {
@@ -111,12 +107,23 @@ public class CuentaUIData extends UIData {
 			}
 		});
 		
+		camposObligatorios.add(nombre);
+		camposObligatorios.add(apellido);
+		camposObligatorios.add(razonSocial);
+		camposObligatorios.add(contribuyente);
+		camposObligatorios.add(proveedorAnterior);
+		camposObligatorios.add(rubro);
+		camposObligatorios.add(telPrincipalTextBox.getArea());
+		camposObligatorios.add(telPrincipalTextBox.getNumero());
+		camposObligatoriosFormaPago.add(cbu);
+		camposObligatoriosFormaPago.add(numeroTarjeta);
+		camposObligatoriosFormaPago.add(anioVto);
+		
 		setCombos();
 		cbu.setWidth("90%");
 		observaciones.addStyleName("textAreaCuentaData");
 		usuario.setEnabled(false);
 		fechaCreacion.setEnabled(false);
-		
 		fields.add(tipoDocumento);
 		fields.add(numeroDocumento);
 		fields.add(razonSocial);
@@ -178,17 +185,6 @@ public class CuentaUIData extends UIData {
         }
 	}
 
-	
-//	public void setVisibilidadFormasDePagoYactualizarCamposObligatorios(String idSelected) {
-//		if (idSelected.equals(TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo())) {
-//			CuentaDatosForm.getInstance().setVisibleFormaPagoCuentaBancaria();
-//		} else if (idSelected.equals(TipoFormaPagoEnum.TARJETA_CREDITO.getTipo())) {
-//			CuentaDatosForm.getInstance().setVisibleFormaPagoTarjeta();
-//		} else {  //	if (idSelected.equals(TipoFormaPagoEnum.EFECTIVO.getTipo())) {
-//			CuentaDatosForm.getInstance().setVisibleFormaPagoEfectivo();
-//		}
-//	}
-	
 	private void exportarNombreApellidoARazonSocial() {
 		nombre.setText(nombre.getText().trim().toUpperCase());
 		apellido.setText(apellido.getText().trim().toUpperCase());
@@ -371,26 +367,9 @@ public class CuentaUIData extends UIData {
 	}
 
 	public List<Widget> getCamposObligatorios() {
-		if(camposObligatorios==null) {
-			camposObligatorios = new ArrayList<Widget>();
-			camposObligatorios.add(nombre);
-			camposObligatorios.add(apellido);
-			camposObligatorios.add(razonSocial);
-			camposObligatorios.add(contribuyente);
-			camposObligatorios.add(proveedorAnterior);
-			camposObligatorios.add(rubro);
-			camposObligatorios.add(telPrincipalTextBox.getArea());
-			camposObligatorios.add(telPrincipalTextBox.getNumero());
-		}		
 		return camposObligatorios;
 	}
 	public List<Widget> getCamposObligatoriosFormaPago() {
-		if(camposObligatoriosFormaPago==null) {
-			camposObligatoriosFormaPago = new ArrayList<Widget>();
-			camposObligatoriosFormaPago.add(cbu);
-			camposObligatoriosFormaPago.add(numeroTarjeta);
-			camposObligatoriosFormaPago.add(anioVto);
-		}		
 		return camposObligatoriosFormaPago;
 	}
 	

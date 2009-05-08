@@ -1,16 +1,16 @@
 package ar.com.nextel.sfa.client.cuenta;
 
-import ar.com.nextel.sfa.client.CuentaRpcService;
+import java.util.List;
+
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
-import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -27,11 +27,14 @@ public class CuentaEdicionTabPanel {
 	private Label razonSocial = new Label();
 	private Label cliente = new Label();
 	private CuentaDto cuenta2editDto;
-	private CuentaDatosForm     cuentaDatosForm     = CuentaDatosForm.getInstance();
+	private CuentaDatosForm      cuentaDatosForm      = CuentaDatosForm.getInstance();
 	private CuentaDomiciliosForm cuentaDomiciliosForm = CuentaDomiciliosForm.getInstance();
-	private CuentaContactoForm  cuentaContactoForm  = CuentaContactoForm.getInstance();
+	private CuentaContactoForm   cuentaContactoForm   = CuentaContactoForm.getInstance();
 	private TabPanel tabPanel;
 	private FormButtonsBar footerBar;
+	
+	private Button validarCompletitudButton;
+	private static final String VALIDAR_COMPLETITUD_FAIL_STYLE = "validarCompletitudFailButton";
 	private SimpleLink guardar  = new SimpleLink(Sfa.constant().guardar() , "#", true);
 	private SimpleLink crearSS  = new SimpleLink(Sfa.constant().crear()+Sfa.constant().whiteSpace()+Sfa.constant().ss(), "#", true);
 	private SimpleLink agregar  = new SimpleLink(Sfa.constant().agregar() , "#", true);
@@ -50,6 +53,7 @@ public class CuentaEdicionTabPanel {
 	 */
 	public void init() {
 		initRazonSocialClientePanel();
+		initValidarCompletitud();
 		initTabPanel();
 		initFooter();
 		marco = new FlexTable();
@@ -57,16 +61,31 @@ public class CuentaEdicionTabPanel {
 		marco.setWidget(0, 0, new HTML("<br/>"));
 		marco.setWidget(1, 0, razonSocialPanel);
 		marco.setWidget(1, 1, clientePanel);
-		marco.setWidget(2, 0, tabPanel);
-		marco.setWidget(3, 0, footerBar);
+		marco.setWidget(2, 0, validarCompletitudButton);
+		marco.setWidget(3, 0, tabPanel);
+		marco.setWidget(4, 0, footerBar);
 		marco.getFlexCellFormatter().setColSpan(2, 0, 2);
 		marco.getFlexCellFormatter().setColSpan(3, 0, 2);
+		marco.getFlexCellFormatter().setColSpan(4, 0, 2);
+		
 	}
+	
+    private void initValidarCompletitud() {
+		validarCompletitudButton = new Button("Validar Completitud");
+		validarCompletitudButton.addStyleName("validarCompletitudButton");
+		validarCompletitudButton.addClickListener(new ClickListener() {
+			public void onClick(Widget arg0) {
+			    if (validarCompletitud()) {
+					ErrorDialog.getInstance().show("COMPLETITUD OK");
+				}
+			}
+		});
+    }
 	
 	/**
 	 * 
 	 */
-	public void initTabPanel() {
+	private void initTabPanel() {
 		tabPanel = new TabPanel();
 		tabPanel.setWidth("100%");
 		tabPanel.add(cuentaDatosForm, Sfa.constant().datos());
@@ -78,7 +97,7 @@ public class CuentaEdicionTabPanel {
 	/**
 	 * 
 	 */
-	public void initRazonSocialClientePanel() {
+	private void initRazonSocialClientePanel() {
 		Label razonSocialLabel = new Label(Sfa.constant().razonSocial());
 		Label clienteLabel     = new Label(Sfa.constant().cliente());
 		razonSocialPanel.setLeft(razonSocialLabel);
@@ -90,7 +109,7 @@ public class CuentaEdicionTabPanel {
 	/**
 	 * 
 	 */	
-	public void initFooter() {
+	private void initFooter() {
 		footerBar    = new FormButtonsBar();
 		getGuardar().setStyleName("link");
 		getCrearSS().setStyleName("link");
@@ -106,11 +125,10 @@ public class CuentaEdicionTabPanel {
 			public void onClick(Widget arg0) {
 				if (!cuentaDatosForm.formularioDatosDirty()) {
 					ErrorDialog.getInstance().show("NO HAY DATOS PARA GUARDAR");
-				} else if (!cuentaDatosForm.datosObligatoriosCompletos()) {
-					ErrorDialog.getInstance().show("HAY CAMPOS OBLIGATORIOS SIN COMPLETAR");
-				} else {
+				} else if (validarCompletitud()) {
+					//ErrorDialog.getInstance().show("HAY CAMPOS OBLIGATORIOS SIN COMPLETAR");
 					guardar();
-				}
+				} 
 			}
 		});
 		getCrearSS().addClickListener(new ClickListener() {
@@ -176,20 +194,17 @@ public class CuentaEdicionTabPanel {
 		ErrorDialog.getInstance().show("OK PARA CANCELAR");
 	}
 	
-	private CuentaDto getCuentaDtoFromEditor() {
-		CuentaDto cuentaDto = new CuentaDto();
-		CuentaUIData cuentaData = cuentaDatosForm.getCuentaEditor();
-		
-		CategoriaCuentaDto catCtaDto = new CategoriaCuentaDto();
-		catCtaDto.setCode(cuentaData.getCategoria().getSelectedText());
-		catCtaDto.setDescripcion(cuentaData.getCategoria().getText());
-//		catCtaDto.setDescripcion(descripcion)(cuentaData.getCategoria().getText());
-//		cuentaDto.setCategoriaCuenta(cuentaData.getCategoria().getText());
-		
-		
-		return cuentaDto;
-		
+	private boolean validarCompletitud() {
+		List<String> errors = cuentaDatosForm.validarCompletitud();
+		if (!errors.isEmpty()) {
+			validarCompletitudButton.addStyleName(VALIDAR_COMPLETITUD_FAIL_STYLE);
+			ErrorDialog.getInstance().show(errors);
+		} else {
+			validarCompletitudButton.removeStyleName(VALIDAR_COMPLETITUD_FAIL_STYLE);
+		}
+		return errors.isEmpty(); 
 	}
+	
 	
 	///////////////
 

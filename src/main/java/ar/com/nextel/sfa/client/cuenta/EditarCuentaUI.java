@@ -15,7 +15,9 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
  **/
 public class EditarCuentaUI extends ApplicationUI {
 
+
 	private final CuentaEdicionTabPanel cuentaTab = CuentaEdicionTabPanel.getInstance();
+	
 	
 	public EditarCuentaUI() {
 		super();
@@ -30,8 +32,9 @@ public class EditarCuentaUI extends ApplicationUI {
 			DocumentoDto docDto = new DocumentoDto(HistoryUtils.getParam("nroDoc"),tipoDoc);
 			CuentaRpcService.Util.getInstance().reservaCreacionCuenta(docDto,new DefaultWaitCallback<CuentaDto>() {
 				public void success(CuentaDto ctaDto) {
-					cuentaTab.getCuentaDatosForm().deshabilitarCamposAlAgregarCuenta();
 					cuentaTab.setCuenta2editDto(ctaDto);
+					cuentaTab.getCuentaDatosForm().deshabilitarCamposAlAgregarCuenta();
+					cuentaTab.getCuentaDatosForm().setDefaultComboSexo(ctaDto.getPersona().getIdTipoDocumento(),ctaDto.getPersona().getDocumento().getNumero());
 					cargaPaneles();
 				}
 			});	
