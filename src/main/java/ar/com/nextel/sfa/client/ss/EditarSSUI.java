@@ -3,8 +3,11 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
+import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
+import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
+import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
@@ -14,8 +17,6 @@ import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
@@ -23,7 +24,7 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class EditarSSUI extends ApplicationUI implements ClickListener {
+public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSSUIController {
 
 	public static final String ID_CUENTA = "idCuenta";
 
@@ -86,8 +87,8 @@ public class EditarSSUI extends ApplicationUI implements ClickListener {
 		tabs.addStyleName("mlr5 mb10 mt5");
 		mainPanel.add(tabs);
 		editarSSUIData = new EditarSSUIData();
-		tabs.add(datos = new DatosSSUI(editarSSUIData), "Datos");
-		tabs.add(varios = new VariosSSUI(editarSSUIData), "Varios");
+		tabs.add(datos = new DatosSSUI(this), "Datos");
+		tabs.add(varios = new VariosSSUI(this), "Varios");
 		tabs.selectTab(0);
 		SolicitudRpcService.Util.getInstance().getSolicitudInitializer(
 				new DefaultWaitCallback<SolicitudInitializer>() {
@@ -130,7 +131,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener {
 		SolicitudRpcService.Util.getInstance().saveSolicituServicio(editarSSUIData.getSolicitudServicio(),
 				new DefaultWaitCallback<SolicitudServicioDto>() {
 					public void success(SolicitudServicioDto result) {
-Window.alert("Se ha guardado la solicitud con exito");
+						Window.alert("Se ha guardado la solicitud con exito");
 					}
 				});
 	}
@@ -145,5 +146,21 @@ Window.alert("Se ha guardado la solicitud con exito");
 		} else {
 			validarCompletitud.removeStyleName(validarCompletitudFailStyle);
 		}
+	}
+
+	public EditarSSUIData getEditarSSUIData() {
+		return editarSSUIData;
+	}
+
+	public void getLineasSolicitudServicioInitializer(
+			DefaultWaitCallback<LineasSolicitudServicioInitializer> defaultWaitCallback) {
+		SolicitudRpcService.Util.getInstance().getLineasSolicitudServicioInitializer(null,
+				defaultWaitCallback);
+
+	}
+
+	public void getListaPrecios(TipoSolicitudDto tipoSolicitudDto,
+			DefaultWaitCallback<ListaPreciosDto> defaultWaitCallback) {
+
 	}
 }

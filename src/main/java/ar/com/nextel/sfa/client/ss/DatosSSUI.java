@@ -2,25 +2,33 @@ package ar.com.nextel.sfa.client.ss;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class DatosSSUI extends Composite {
+public class DatosSSUI extends Composite implements ClickListener {
 
 	private FlowPanel mainpanel;
 	private EditarSSUIData crearSSUIData;
 	private Grid detalleSS;
+	private EditarSSUIController controller;
+	private Button crearDomicilio;
+	private Button crearLinea;
+	private ItemSolicitudDialog itemSolicitudDialog;
 
-	public DatosSSUI(EditarSSUIData crearSSUIData) {
+	public DatosSSUI(EditarSSUIController controller) {
 		mainpanel = new FlowPanel();
 		initWidget(mainpanel);
-		this.crearSSUIData = crearSSUIData;
+		this.controller = controller;
+		crearSSUIData = controller.getEditarSSUIData();
 		mainpanel.add(firstRow());
 		mainpanel.add(getDomicilioPanel());
 		mainpanel.add(getDetallePanel());
@@ -40,11 +48,14 @@ public class DatosSSUI extends Composite {
 
 	private Widget getDomicilioPanel() {
 		TitledPanel domicilio = new TitledPanel("Domicilio");
-		Button crearDomicilio = new Button("Crear nuevo");
+
+		crearDomicilio = new Button("Crear nuevo");
+		crearDomicilio.addClickListener(this);
 		crearDomicilio.addStyleName("crearDomicilioButton");
 		SimplePanel crearDomicilioWrapper = new SimplePanel();
 		crearDomicilioWrapper.add(crearDomicilio);
-		crearDomicilioWrapper.addStyleName("crearDomicilioBWrapper");
+		crearDomicilioWrapper.addStyleName("h20");
+
 		domicilio.add(crearDomicilioWrapper);
 		Grid layoutDomicilio = new Grid(3, 4);
 		layoutDomicilio.addStyleName("layout");
@@ -65,6 +76,14 @@ public class DatosSSUI extends Composite {
 
 	private Widget getDetallePanel() {
 		TitledPanel detalle = new TitledPanel("Detalle");
+
+		crearLinea = new Button("Crear nuevo");
+		crearLinea.addClickListener(this);
+		crearLinea.addStyleName("crearLineaButton");
+		SimplePanel crearLineaWrapper = new SimplePanel();
+		crearLineaWrapper.add(crearLinea);
+		crearLineaWrapper.addStyleName("h20");
+		detalle.add(crearLineaWrapper);
 		SimplePanel wrapper = new SimplePanel();
 		wrapper.addStyleName("resumenSSTableWrapper mlr5");
 		detalleSS = new Grid(1, 11);
@@ -82,4 +101,23 @@ public class DatosSSUI extends Composite {
 		detalle.add(wrapper);
 		return detalle;
 	}
+
+	public void onClick(Widget sender) {
+		if (sender == crearLinea) {
+			openItemSolicitudDialog();
+		} else if (sender == crearDomicilio) {
+
+		}
+
+	}
+
+	private void openItemSolicitudDialog() {
+		if (itemSolicitudDialog == null) {
+			itemSolicitudDialog = new ItemSolicitudDialog("Agregar Item", controller);
+		}
+		itemSolicitudDialog.showAndCenter();
+
+
+	}
+
 }
