@@ -191,6 +191,7 @@ public class CuentaDatosForm extends Composite {
 		efectivoTable.setText(0, 4, null);
 		return efectivoTable;
 	}
+	
 	public FlexTable getCuentaBancariaPanel() {
 		cuentaBancariaTable.setWidth("80%");
 		cuentaBancariaTable.addStyleName("layout");
@@ -207,6 +208,7 @@ public class CuentaDatosForm extends Composite {
 		cuentaBancariaTable.getFlexCellFormatter().addStyleName(1, 0, "req");
 		return cuentaBancariaTable;
 	}
+	
 	public FlexTable getTarjetaCreditoPanel() {
 		tarjetaTable.setWidth("80%");
 		tarjetaTable.addStyleName("layout");
@@ -232,7 +234,6 @@ public class CuentaDatosForm extends Composite {
 		
 		return tarjetaTable; 
 	}
-
 	
 	private Widget createVendedorPanel() {
 		vendedorTable = new FlexTable();
@@ -308,10 +309,8 @@ public class CuentaDatosForm extends Composite {
 	}
 	
 	public void cargarPanelTelefonoFax(CuentaDto cuentaDto) {
-		for (int i=0;i<cuentaDto.getPersona().getTelefonos().size();i++) {
-			TelefonoDto telefono = (TelefonoDto)cuentaDto.getPersona().getTelefonos().get(i);
+		for ( TelefonoDto telefono : cuentaDto.getPersona().getTelefonos()) {
 			TipoTelefonoDto tipoTelefono = telefono.getTipoTelefono();
-
 			if ( tipoTelefono.getId()==TipoTelefonoEnum.PRINCIPAL.getTipo()) {
 				cuentaEditor.getTelPrincipalTextBox().getArea().setText(telefono.getArea());
 				cuentaEditor.getTelPrincipalTextBox().getNumero().setText(telefono.getNumeroLocal());
@@ -335,9 +334,9 @@ public class CuentaDatosForm extends Composite {
 		}
 		cuentaEditor.getObservaciones().setText(cuentaDto.getObservacionesTelMail());
 	}
+	
     public void cargarPanelEmails(CuentaDto cuentaDto) {
-		for (int i=0;i<cuentaDto.getPersona().getEmails().size();i++) {
-		    EmailDto email = (EmailDto) cuentaDto.getPersona().getEmails().get(i);
+        for (EmailDto email : cuentaDto.getPersona().getEmails()) {
 		    TipoEmailDto tipoEmail = email.getTipoEmail();
 		    if (tipoEmail.getId()==TipoEmailEnum.PERSONAL.getTipo()) {
 		    	cuentaEditor.getEmailPersonal().setText(email.getEmail());
