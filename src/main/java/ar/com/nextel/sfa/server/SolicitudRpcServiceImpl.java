@@ -26,22 +26,27 @@ import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.security.Usuario;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
+import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
-
 import ar.com.nextel.model.solicitudes.beans.TipoAnticipo;
+import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
+import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
+import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
+import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
+import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
-import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
-import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
-import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
+import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
+import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
+import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.server.businessservice.SolicitudBusinessService;
 import ar.com.nextel.sfa.server.util.MapperExtended;
@@ -59,27 +64,27 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 	private SolicitudBusinessService solicitudBusinessService;
 	private Repository repository;
-	
+
 	private RegistroVendedores registroVendedores;
 	private GenericDao genericDao;
-	
     private SolicitudServicioBusinessOperator solicitudesBusinessOperator;
     private VantiveSystem vantiveSystem;
     private FinancialSystem financialSystem;
-    
     private SolicitudServicioRepository solicitudServicioRepository;
-    
+	private SessionContextLoader sessionContextLoader;
 
 	public void init() throws ServletException {
 		super.init();
 		context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		mapper = (MapperExtended) context.getBean("dozerMapper");
+
 		solicitudesBusinessOperator = (SolicitudServicioBusinessOperator) context.getBean("solicitudServicioBusinessOperatorBean");
 		solicitudBusinessService = (SolicitudBusinessService) context.getBean("solicitudBusinessService");
-		
+
 		registroVendedores = (RegistroVendedores) context.getBean("registroVendedores");
 		genericDao = (GenericDao) context.getBean("genericDao");
 		repository = (Repository) context.getBean("repository");
+		sessionContextLoader = (SessionContextLoader) context.getBean("sessionContextLoader");
 		
 		solicitudServicioRepository = (SolicitudServicioRepository) context.getBean("solicitudServicioRepositoryBean");
 		vantiveSystem = (VantiveSystem) context.getBean("vantiveSystemBean");
@@ -102,24 +107,29 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		AppLogger.info("Creacion de Solicitud de Servicio finalizada");
 		return solicitudServicioDto;
 	}
-	
-	public List<SolicitudServicioCerradaResultDto> searchSSCerrada(SolicitudServicioCerradaDto solicitudServicioCerradaDto) {
+
+	public List<SolicitudServicioCerradaResultDto> searchSSCerrada(
+			SolicitudServicioCerradaDto solicitudServicioCerradaDto) {
 		AppLogger.info("Iniciando busqueda de SS cerradas...");
-		SolicitudServicioCerradaSearchCriteria solicitudServicioCerradaSearchCriteria = mapper.map(solicitudServicioCerradaDto, SolicitudServicioCerradaSearchCriteria.class);
+		SolicitudServicioCerradaSearchCriteria solicitudServicioCerradaSearchCriteria = mapper.map(
+				solicitudServicioCerradaDto, SolicitudServicioCerradaSearchCriteria.class);
 		Usuario usuario = new Usuario();
 		usuario.setUserName("acsa1");
 		Vendedor vendedor = registroVendedores.getVendedor(usuario);
 		solicitudServicioCerradaSearchCriteria.setVendedor(vendedor);
-		List<SolicitudServicio> list = null;
+		List<SolicitudServicio> list = new ArrayList();
 		try {
-			list = this.solicitudesBusinessOperator.searchSolicitudesServicioHistoricas(solicitudServicioCerradaSearchCriteria);
+			list = this.solicitudesBusinessOperator
+					.searchSolicitudesServicioHistoricas(solicitudServicioCerradaSearchCriteria);
 		} catch (Exception e) {
 			AppLogger.info("Error buscando Solicitudes de Servicio cerradas: " + e.getMessage());
 		}
+
 		List result = mapper.convertList(list, SolicitudServicioCerradaResultDto.class, "ssCerradaResult");
-		AppLogger.info("Busqueda de SS cerradas finalizada...");		
+		AppLogger.info("Busqueda de SS cerradas finalizada...");
 		return result;
 	}
+
 	
 	
 	public DetalleSolicitudServicioDto getDetalleSolicitudServicio(Long idSolicitudServicio) {
@@ -188,7 +198,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	
 	public BuscarSSCerradasInitializer getBuscarSSCerradasInitializer() {
 		BuscarSSCerradasInitializer buscarSSCerradasInitializer = new BuscarSSCerradasInitializer();
-					
+
 		List<String> listaResult = new ArrayList<String>();
 		String cantResult = "10;25;50;75;100";
 		listaResult = Arrays.asList(cantResult.split(";"));
@@ -204,11 +214,12 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		listaPataconex = Arrays.asList(opcionesPataconex.split(";"));
 		buscarSSCerradasInitializer.setOpcionesPatacones(listaPataconex);
 
-		buscarSSCerradasInitializer.setOpcionesEstado(mapper.convertList(genericDao.getList(EstadoSolicitud.class), EstadoSolicitudDto.class));
-		
+		buscarSSCerradasInitializer.setOpcionesEstado(mapper.convertList(genericDao
+				.getList(EstadoSolicitud.class), EstadoSolicitudDto.class));
+
 		return buscarSSCerradasInitializer;
 	}
-	
+
 
 	public SolicitudInitializer getSolicitudInitializer() {
 		SolicitudInitializer initializer = new SolicitudInitializer();
@@ -220,10 +231,29 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	}
 
 	public SolicitudServicioDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto) {
-		SolicitudServicio solicitudServicio = repository.retrieve(SolicitudServicio.class, solicitudServicioDto.getId());
+		SolicitudServicio solicitudServicio = repository.retrieve(SolicitudServicio.class,
+				solicitudServicioDto.getId());
 		mapper.map(solicitudServicioDto, solicitudServicio);
 		solicitudBusinessService.saveSolicitudServicio(solicitudServicio);
 		solicitudServicioDto = mapper.map(solicitudServicio, SolicitudServicioDto.class);
 		return solicitudServicioDto;
+	}
+
+	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(
+			GrupoSolicitudDto grupoSolicitudDto) {
+		LineasSolicitudServicioInitializer initializer = new LineasSolicitudServicioInitializer();
+		GrupoSolicitud grupoSolicitud = repository.retrieve(GrupoSolicitud.class, Long.valueOf(1));
+		List<TipoSolicitud> tiposSolicitudDeGrupo = grupoSolicitud
+				.calculateTiposSolicitud(sessionContextLoader.getVendedor().getSucursal());
+		System.out.println(new Date());
+		initializer.setTiposSolicitudes(mapper.convertList(tiposSolicitudDeGrupo, TipoSolicitudDto.class));
+		if (!initializer.getTiposSolicitudes().isEmpty()) {
+			TipoSolicitudDto firstTipoSolicitud = initializer.getTiposSolicitudes().get(0);
+			firstTipoSolicitud.setListasPrecios(mapper.convertList(tiposSolicitudDeGrupo.get(0)
+					.getListasPrecios(), ListaPreciosDto.class));
+
+		}
+		System.out.println(new Date());
+		return initializer;
 	}
 }

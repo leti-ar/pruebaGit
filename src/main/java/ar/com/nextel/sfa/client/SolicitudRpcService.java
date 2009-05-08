@@ -2,13 +2,14 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
-import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
+import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 
@@ -32,16 +33,21 @@ public interface SolicitudRpcService extends RemoteService {
 			return solicitudRpcServiceDelegate;
 		}
 	}
-	
-	public BuscarSSCerradasInitializer getBuscarSSCerradasInitializer();
-	
-	public List<SolicitudServicioCerradaResultDto> searchSSCerrada(SolicitudServicioCerradaDto solicitudServicioCerradaDto);
 
-	public SolicitudServicioDto createSolicitudServicio(SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages;
+	public BuscarSSCerradasInitializer getBuscarSSCerradasInitializer();
+
+	public List<SolicitudServicioCerradaResultDto> searchSSCerrada(
+			SolicitudServicioCerradaDto solicitudServicioCerradaDto);
+
+	public SolicitudServicioDto createSolicitudServicio(
+			SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages;
 
 	public SolicitudInitializer getSolicitudInitializer();
 
 	public SolicitudServicioDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto);
+
+	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(
+			GrupoSolicitudDto grupoSolicitudDto);
 	
 	public DetalleSolicitudServicioDto getDetalleSolicitudServicio(Long idSolicitudServicio) ;
 }
