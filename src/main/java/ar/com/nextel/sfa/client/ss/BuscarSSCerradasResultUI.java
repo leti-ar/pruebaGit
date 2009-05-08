@@ -1,26 +1,24 @@
 package ar.com.nextel.sfa.client.ss;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
-import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
-import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Muestra la tabla correspondiente a las SS cerradas, resultado del buscador.
@@ -39,6 +37,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 	private Long cantEquipos = new Long(0);
 	private Double cantPataconex = new Double(0);
 	private int cantEqFirmados = 0;
+	private FlowPanel exportarExcel;
 
 	public Long getTotalRegistrosBusqueda() {
 		return totalRegistrosBusqueda;
@@ -53,19 +52,18 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 		addStyleName("gwt-BuscarCuentaResultPanel");
 		resultTableWrapper = new SimplePanel();
 		resultTableWrapper.addStyleName("resultTableWrapper");
-		add(resultTableWrapper);
 		setVisible(false);
 	}
 
 	/**
-	 * Metodo publico que contiene lo que se desea ejecutar la primera vez que
-	 * se busca. (o sea, cuando se hace click al boton Buscar)
+	 * Metodo publico que contiene lo que se desea ejecutar la primera vez que se busca. (o sea, cuando se
+	 * hace click al boton Buscar)
 	 * 
 	 * @param: cuentaSearchDto
 	 * */
 	public void searchSSCerradas(SolicitudServicioCerradaDto solicitudServicioSearchDto) {
 		this.searchSSCerradas(solicitudServicioSearchDto, true);
-	};	
+	};
 
 	private void searchSSCerradas(SolicitudServicioCerradaDto solicitudServicioCerradaDto, boolean firstTime) {
 		SolicitudRpcService.Util.getInstance().searchSSCerrada(solicitudServicioCerradaDto,
@@ -73,59 +71,76 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 					public void success(List<SolicitudServicioCerradaResultDto> result) {
 						if (result != null) {
 							setSolicitudServicioDto(result);
-							buscarSSTotalesResultUI.setValues(cantEquipos.toString(), cantPataconex.toString(), String.valueOf(cantEqFirmados));
+							buscarSSTotalesResultUI.setValues(cantEquipos.toString(), cantPataconex
+									.toString(), String.valueOf(cantEqFirmados));
 							buscarSSTotalesResultUI.setVisible(true);
-							
+
 						}
-						
+
 					}
 				});
 	}
-	
-	public void setSolicitudServicioDto(List<SolicitudServicioCerradaResultDto> solicitudServicioCerradaResultDto) {
+
+	public void setSolicitudServicioDto(
+			List<SolicitudServicioCerradaResultDto> solicitudServicioCerradaResultDto) {
 		this.solicitudesServicioCerradaResultDto = solicitudServicioCerradaResultDto;
-		loadTable();
+		add(loadExcel());
+		add(loadTable());
+		setVisible(true);
 	}
 
-	private void loadTable() {
+	private Widget loadExcel() {
+		if (exportarExcel != null) {
+			exportarExcel.unsinkEvents(Event.getEventsSunk(exportarExcel.getElement()));
+			exportarExcel.removeFromParent();
+		}
+		exportarExcel = new FlowPanel();
+		Image icon = IconFactory.excel();
+		icon.addStyleName("float-rigth");
+		exportarExcel.add(icon);
+		return exportarExcel;
+	}
+
+	private Widget loadTable() {
 		if (resultTable != null) {
 			resultTable.unsinkEvents(Event.getEventsSunk(resultTable.getElement()));
 			resultTable.removeFromParent();
 		}
 		resultTable = new FlexTable();
+
 		resultTable.addTableListener(new Listener());
 		initTable(resultTable);
 		resultTableWrapper.setWidget(resultTable);
 		int row = 1;
-				
-		
-		if (solicitudesServicioCerradaResultDto!=null) {
-		for (Iterator iter = solicitudesServicioCerradaResultDto.iterator(); iter.hasNext();) {
-			SolicitudServicioCerradaResultDto solicitudServicioCerradaResultDto = (SolicitudServicioCerradaResultDto) iter.next();
-			resultTable.setWidget(row, 0, IconFactory.word());		
-			resultTable.setHTML(row, 1, solicitudServicioCerradaResultDto.getNumero());
-			resultTable.setHTML(row, 2, solicitudServicioCerradaResultDto.getNumeroCuenta());
-			resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getRazonSocialCuenta());
-			resultTable.setHTML(row, 4, solicitudServicioCerradaResultDto.getCantidadEquiposPorCuenta().toString());
-			resultTable.setHTML(row, 5, solicitudServicioCerradaResultDto.getPataconex().toString());
-			if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == true ) {
-				resultTable.setWidget(row, 6, IconFactory.tildeVerde());
-			}
-			if (solicitudServicioCerradaResultDto.getFirmar().booleanValue()==Boolean.TRUE) {
-				cantEqFirmados++;
-			}
-			cantEquipos = cantEquipos + solicitudServicioCerradaResultDto.getCantidadEquipos();
-			cantPataconex = cantPataconex + solicitudServicioCerradaResultDto.getPataconex();
-			row++;
-		}
-		} 
 
-		setVisible(true);
+		if (solicitudesServicioCerradaResultDto != null) {
+			for (Iterator iter = solicitudesServicioCerradaResultDto.iterator(); iter.hasNext();) {
+				SolicitudServicioCerradaResultDto solicitudServicioCerradaResultDto = (SolicitudServicioCerradaResultDto) iter
+						.next();
+				resultTable.setWidget(row, 0, IconFactory.word());
+				resultTable.setHTML(row, 1, solicitudServicioCerradaResultDto.getNumero());
+				resultTable.setHTML(row, 2, solicitudServicioCerradaResultDto.getNumeroCuenta());
+				resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getRazonSocialCuenta());
+				resultTable.setHTML(row, 4, solicitudServicioCerradaResultDto.getCantidadEquiposPorCuenta()
+						.toString());
+				resultTable.setHTML(row, 5, solicitudServicioCerradaResultDto.getPataconex().toString());
+				if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == true) {
+					resultTable.setWidget(row, 6, IconFactory.tildeVerde());
+				}
+				if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == Boolean.TRUE) {
+					cantEqFirmados++;
+				}
+				cantEquipos = cantEquipos + solicitudServicioCerradaResultDto.getCantidadEquipos();
+				cantPataconex = cantPataconex + solicitudServicioCerradaResultDto.getPataconex();
+				row++;
+			}
+		}
+
+		return resultTableWrapper;
 	}
 
 	private void initTable(FlexTable table) {
-		String[] widths = { "24px", "150px", "150px", "150px", "250px",
-				"195px", "170px", };
+		String[] widths = { "24px", "150px", "150px", "150px", "250px", "195px", "170px", };
 		for (int col = 0; col < widths.length; col++) {
 			table.getColumnFormatter().setWidth(col, widths[col]);
 		}
@@ -143,8 +158,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 		table.setHTML(0, 6, "Firmas");
 	}
 
-	public void setBuscarSSTotalesResultUI(
-			BuscarSSTotalesResultUI buscarSSTotalesResultUI) {
+	public void setBuscarSSTotalesResultUI(BuscarSSTotalesResultUI buscarSSTotalesResultUI) {
 		this.buscarSSTotalesResultUI = buscarSSTotalesResultUI;
 	}
 
@@ -155,14 +169,14 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 				String numeroSS = resultTable.getHTML(arg1, 1).toString();
 				SolicitudServicioCerradaResultDto solicitud = buscarSS(numeroSS);
 
-				SolicitudRpcService.Util.getInstance().getDetalleSolicitudServicio(solicitud.getId(), 
+				SolicitudRpcService.Util.getInstance().getDetalleSolicitudServicio(solicitud.getId(),
 						new DefaultWaitCallback<DetalleSolicitudServicioDto>() {
 							public void success(DetalleSolicitudServicioDto result) {
 								cambiosSSCerradasResultUI.setSolicitudServicioCerradaDto(result);
 								cambiosSSCerradasResultUI.setVisible(true);
-								
+
 							}
-						});		
+						});
 			}
 
 		}
@@ -171,7 +185,8 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 
 	private SolicitudServicioCerradaResultDto buscarSS(String numeroSS) {
 		for (Iterator iterator = solicitudesServicioCerradaResultDto.iterator(); iterator.hasNext();) {
-			SolicitudServicioCerradaResultDto solicitudServicioDto = (SolicitudServicioCerradaResultDto) iterator.next();
+			SolicitudServicioCerradaResultDto solicitudServicioDto = (SolicitudServicioCerradaResultDto) iterator
+					.next();
 			if (solicitudServicioDto.getNumero().equals(numeroSS)) {
 				return solicitudServicioDto;
 			}
