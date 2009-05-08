@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.server.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class MapperExtended extends DozerBeanMapper {
 	 * Convierte una listas de objetos de una cierta clase a otra. Si la lista es vacia devuelve una lista
 	 * vacia
 	 */
-	public <T> List<T> convertList(List lista, Class<T> clase) {
+	public <T> List<T> convertList(Collection lista, Class<T> clase) {
 		List<T> salida = new ArrayList();
 		if (lista != null) {
 			for (Iterator iter = lista.iterator(); iter.hasNext();) {
