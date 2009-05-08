@@ -10,12 +10,10 @@ import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
-import ar.com.nextel.sfa.client.dto.TipoDomicilioAsociadoDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -59,7 +57,7 @@ public class CuentaDomiciliosForm extends Composite {
 		crearDomicilio.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				// Abajo se setea en el DomicilioUI la accion a tomar al apretar Aceptar.
-				DomicilioUI.getInstance().setComandoAceptar(getComandoAceptarDomicilioForm());
+				DomicilioUI.getInstance().setComandoAceptar(getComandoNuevoYCopiarDomicilio());
 				DomicilioUI.getInstance().cargarPopupNuevoDomicilio();
 			}
 		});
@@ -99,16 +97,18 @@ public class CuentaDomiciliosForm extends Composite {
 	/**
 	 * @author eSalvador
 	 **/
-	private Command getComandoAceptarDomicilioForm() {
+	private Command getComandoNuevoYCopiarDomicilio() {
 		Command comandoAceptar = new Command() {
 			public void execute() {
-				// TODO: Aca deberia agregarle un nuevo Domicilio a la Persona.
-				// HardCode - TODO: Aca abajo el cuentaUIData ya deberia venir cargado. Falta terminar!
-				// (Preguntarle a Raul).
+				// TODO: Aca deberia agregarle editar el domicilio que le llega, con los datos nuevos.
 				DomiciliosCuentaDto domicilioNuevo = DomicilioUI.getInstance().getDomiciliosData()
-						.getNuevoDomicilio();
+						.getDomicilio();
 				PersonaDto persona = cuentaDto.getPersona();
-				persona.getDomicilios().add(domicilioNuevo);
+				/**TODO:Aca de beria hacer la validacion de datos de entrada, 
+				 **     y despues abrir el popup de Normalizacion.
+				 **     El addDomicilio a persona lo debe hacer el Aceptar del PopUp.*/
+					persona.getDomicilios().add(domicilioNuevo);
+				//
 				DomicilioUI.getInstance().hide();
 				// Refresca la grilla de domicilios
 				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().cargaTablaDomicilios(cuentaDto);
@@ -116,21 +116,36 @@ public class CuentaDomiciliosForm extends Composite {
 		};
 		return comandoAceptar;
 	}
-
+	
+	/**
+	 * @author eSalvador
+	 **/
+	private Command getComandoEditarDomicilio(DomiciliosCuentaDto domicilioAEditar) {
+		Command comandoAceptar = new Command() {
+			public void execute() {
+				// TODO: Aca deberia agregarle un nuevo Domicilio a la Persona.
+				//DomiciliosCuentaDto domicilioNuevo = DomicilioUI.getInstance().getDomiciliosData().getDomicilio();
+				//PersonaDto persona = cuentaDto.getPersona();
+				/**TODO:Aca de beria hacer la validacion de datos de entrada, 
+				 **     y despues abrir el popup de Normalizacion.
+				 **     El addDomicilio a persona lo debe hacer el Aceptar del PopUp.*/
+					//persona.getDomicilios().add(domicilioNuevo);
+				//
+				DomicilioUI.getInstance().hide();
+				// Refresca la grilla de domicilios
+				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().cargaTablaDomicilios(cuentaDto);
+			}
+		};
+		return comandoAceptar;
+	}
+	
 	/**
 	 *@author eSalvador
 	 **/
-	private List<SolicitudServicioCerradaDto> buscaSSCerradasAsociadas(Long idCuenta, String razonSocial) {
+	private List<SolicitudServicioCerradaDto> buscaSSCerradasAsociadas(String idCuenta) {
 		// Defino el Dto para la busqueda:
-		// Date fechDesde = new Date(2008,04,01);
-		// Date fechHasta = new Date(2009,05,01);
 		SolicitudServicioCerradaDto ssCerradaDto = new SolicitudServicioCerradaDto();
-		ssCerradaDto.setNumeroCuenta(idCuenta.toString());
-		ssCerradaDto.setRazonSocial(razonSocial);
-		// ssCerradaDto.setFechaCierreDesde();
-		ssCerradaDto.setFirmas(true);
-		// ssCerradaDto.setFechaCierreHasta(fechHasta);
-		ssCerradaDto.setPataconex(true);
+		ssCerradaDto.setNumeroCuenta(idCuenta);
 		ssCerradaDto.setCantidadResultados(new Long(10));
 		// Llamo al servicio buscando SSCerradas:
 		SolicitudRpcService.Util.getInstance().searchSSCerrada(ssCerradaDto,
@@ -152,9 +167,10 @@ public class CuentaDomiciliosForm extends Composite {
 	 * @author eSalvador
 	 **/
 	public void cargaTablaDomicilios(final CuentaDto cuentaDto) {
-		boolean principal = false;
-		long tipoDomicilio = 666;
-		TipoDomicilioAsociadoDto domicilioDto;
+		//boolean principal = false;
+		//long tipoDomicilio = 666;
+//		TipoDomicilioDto tipoDomicilioDto = new TipoDomicilioDto();
+//		TipoDomicilioAsociadoDto domicilioAsociadoDto = new TipoDomicilioAsociadoDto();
 		this.cuentaDto = cuentaDto;
 
 		// HardCode - TODO: Aca abajo el cuentaUIData ya deberia venir cargado. Falta terminar! (Preguntarle a
@@ -175,30 +191,29 @@ public class CuentaDomiciliosForm extends Composite {
 						 * Aca llama al validador para ver si tiene SSCerradas, y si tiene, advertir con un
 						 * popup, e inhabilitar los campos de edicion del Domicilio.
 						 */
-						if (buscaSSCerradasAsociadas(cuentaDto.getId(),
-								cuentaDto.getPersona().getRazonSocial()).size() != 0) {
+						if (buscaSSCerradasAsociadas(cuentaDto.getCodigoVantive()).size() != 0) {
 							// TODO: Lanzar PopUp.(y borrar los Logeos)
 							editable = false;
-							GWT.log("Devolvio SSCerradas no vacia. O sea, tiene al menos una SS Cerrada!",
-									null);
+							//GWT.log("Devolvio SSCerradas no vacia. O sea, tiene al menos una SS Cerrada!",null);
 						} else {
 							// No deshabilitar nada y sin PopUp.
 							editable = true;
-							GWT.log("Devolvio SSCerradas == 0, o sea NO tiene SS Cerradas asociadas.", null);
+							//GWT.log("Devolvio SSCerradas == 0, o sea NO tiene SS Cerradas asociadas.", null);
 						}
+						DomicilioUI.getInstance().setComandoAceptar(getComandoEditarDomicilio(cuentaDto.getPersona().getDomicilios().get(row - 1)));
 						DomicilioUI.getInstance().cargarPopupEditarDomicilio(
 								cuentaDto.getPersona().getDomicilios().get(row - 1), editable);
 					}
 
 					// Acciones a tomar cuando haga click en iconos de copiado de domicilios:
 					if (col == 1) {
+						DomicilioUI.getInstance().setComandoAceptar(getComandoNuevoYCopiarDomicilio());	
 						DomicilioUI.getInstance().cargarPopupCopiarDomicilio(
 								cuentaDto.getPersona().getDomicilios().get(row - 1));
-						GWT.log("Hizo click en COPIAR domicilio!",null);
 					}
 					// Acciones a tomar cuando haga click en iconos de borrado de domicilios:
 					if (col == 2) {
-						GWT.log("Hizo click en BORRAR domicilio!",null);
+						//TODO: Terminar!!!
 					}
 				}
 			}
@@ -222,38 +237,52 @@ public class CuentaDomiciliosForm extends Composite {
 
 				if (domicilios.get(i).getTiposDomicilioAsociado() != null) {
 					// ESTE HardCode sacar!!!
-					domicilioDto = domicilios.get(i).getTiposDomicilioAsociado().get(0);
+					//domicilioAsociadoDto = domicilios.get(i).getTiposDomicilioAsociado().get(0);
+//					tipoDomicilioDto = domicilioAsociadoDto.getTipoDomicilio();
+//					principal = domicilioAsociadoDto.getPrincipal();
 					//
-					tipoDomicilio = domicilioDto.getIdTipoDomicilio();
-					principal = domicilioDto.getPrincipal();
+					datosTabla.getCellFormatter().addStyleName(i + 1, 3, "alignCenter");
+					datosTabla.getCellFormatter().addStyleName(i + 1, 4, "alignCenter");
+					
+//					if (domicilios.get(i).esPrincipalDeEntrega()){
+//						datosTabla.setHTML(i + 1, 3, "Principal");
+//					} else {
+//						datosTabla.setHTML(i + 1, 3, "No");
+//					}
+//					
+//					if (domicilios.get(i).esPrincipalDeFacturacion()){
+//						datosTabla.setHTML(i + 1, 4, "Principal");
+//					} else {
+//						datosTabla.setHTML(i + 1, 4, "No");
+//					}
 
 				}
 				/** Logica para tipoDomicilio: */
 				// Si es (tipoDomicilio = 0) es Domicilio de Entrega:
-				if (tipoDomicilio == 0) {
-					datosTabla.getCellFormatter().addStyleName(i + 1, 3, "alignCenter");
-					datosTabla.getCellFormatter().addStyleName(i + 1, 4, "alignCenter");
-					// Y es Principal:
-					if (principal) {
-						datosTabla.setHTML(i + 1, 3, "Principal");
-						datosTabla.setHTML(i + 1, 4, "No");
-					} else {
-						datosTabla.setHTML(i + 1, 3, "Si");
-						datosTabla.setHTML(i + 1, 4, "No");
-					}
-					// Si es (tipoDomicilio = 1) es Domicilio de Facturacion:
-				} else if (tipoDomicilio == 1) {
-					datosTabla.getCellFormatter().addStyleName(i + 1, 3, "alignCenter");
-					datosTabla.getCellFormatter().addStyleName(i + 1, 4, "alignCenter");
-					// Si ademas es Principal:
-					if (principal) {
-						datosTabla.setHTML(i + 1, 4, "Principal");
-						datosTabla.setHTML(i + 1, 3, "No");
-					} else {
-						datosTabla.setHTML(i + 1, 3, "No");
-						datosTabla.setHTML(i + 1, 4, "Si");
-					}
-				}
+//				if (tipoDomicilioDto == 0) {
+//					datosTabla.getCellFormatter().addStyleName(i + 1, 3, "alignCenter");
+//					datosTabla.getCellFormatter().addStyleName(i + 1, 4, "alignCenter");
+//					// Y es Principal:
+//					if (principal) {
+//						datosTabla.setHTML(i + 1, 3, "Principal");
+//						datosTabla.setHTML(i + 1, 4, "No");
+//					} else {
+//						datosTabla.setHTML(i + 1, 3, "Si");
+//						datosTabla.setHTML(i + 1, 4, "No");
+//					}
+//					// Si es (tipoDomicilio = 1) es Domicilio de Facturacion:s
+//				} else if (tipoDomicilioDto == 1) {
+//					datosTabla.getCellFormatter().addStyleName(i + 1, 3, "alignCenter");
+//					datosTabla.getCellFormatter().addStyleName(i + 1, 4, "alignCenter");
+//					// Si ademas es Principal:
+//					if (principal) {
+//						datosTabla.setHTML(i + 1, 4, "Principal");
+//						datosTabla.setHTML(i + 1, 3, "No");
+//					} else {
+//						datosTabla.setHTML(i + 1, 3, "No");
+//						datosTabla.setHTML(i + 1, 4, "Si");
+//					}
+//				}
 				datosTabla.setHTML(i + 1, 5, domicilios.get(i).getDomicilios());
 			}
 		}

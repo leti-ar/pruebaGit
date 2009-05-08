@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -14,7 +15,7 @@ public class DomiciliosCuentaDto implements IsSerializable{
 	private String entre_calle;
 	private String manzana;
 	private String puerta;
-	private String y_calle;
+	private String y_calle;	
 	private String observaciones;
 	private String localidad;
 	private String partido;
@@ -28,7 +29,7 @@ public class DomiciliosCuentaDto implements IsSerializable{
 	private String nombre_usuario_ultima_modificacion;
 	private String fecha_ultima_modificacion;
 	private String activo;
-	private List<TipoDomicilioAsociadoDto> tiposDomicilioAsociado;
+    private List<TipoDomicilioAsociadoDto> tiposDomicilioAsociado = new ArrayList<TipoDomicilioAsociadoDto>();
 	private boolean locked;
 	
 	public String getDomicilios() {
@@ -41,13 +42,14 @@ public class DomiciliosCuentaDto implements IsSerializable{
 	return domicilios;
 	}
 	
-	public List<TipoDomicilioAsociadoDto> getTiposDomicilioAsociado() {
-		return tiposDomicilioAsociado;
-	}
+//	public List<TipoDomicilioAsociadoDto> getTiposDomicilioAsociado() {
+//		return tiposDomicilioAsociado;
+//	}
 
-	public void setTiposDomicilioAsociado(List<TipoDomicilioAsociadoDto> tipoDomicilioAsociado) {
-		this.tiposDomicilioAsociado = tipoDomicilioAsociado;
-	}
+//	public void setTiposDomicilioAsociado(Set<TipoDomicilioAsociadoDto> tipoDomicilioAsociado) {
+//		this.tiposDomicilioAsociado = tipoDomicilioAsociado;
+//	}
+	
 	public String getCalle() {
 		return calle;
 	}
@@ -186,4 +188,104 @@ public class DomiciliosCuentaDto implements IsSerializable{
 	public void setLocked(boolean locked) {
 		this.locked = locked;
 	}
+	
+    /**
+     * @return Retorna el/la tipoDomicilio.
+     */
+    public List<TipoDomicilioAsociadoDto> getTiposDomicilioAsociado() {
+        return tiposDomicilioAsociado;
+    }
+
+    /**
+     * @param tiposDomicilio El/La tipoDomicilio a setear.
+     */
+    public void setTiposDomicilioAsociado(List<TipoDomicilioAsociadoDto> tiposDomicilioAsociado) {
+        this.tiposDomicilioAsociado = tiposDomicilioAsociado;
+    }
+
+    /**
+     * @param tipoDomicilioAsociado
+//     */
+//    public void addTipoDomicilioAsociado(TipoDomicilioAsociadoDto tipoDomicilioAsociado) {
+//        boolean added = this.tiposDomicilioAsociado.add(tipoDomicilioAsociado);
+//        if (added && tipoDomicilioAsociado != null) {
+//            tipoDomicilioAsociado.setDomicilio(this);
+//        }
+//    }
+
+    /**
+     * Agrega la colecci�n de tipoDomicilioAsociado a los tipo domicilio asociado al domicilio
+     * 
+     * @param tipoDomicilioAsociados
+     */
+//    public void addTipoDomicilioAsociados(Collection<TipoDomicilioAsociadoDto> tipoDomicilioAsociados) {
+//        for (TipoDomicilioAsociadoDto tipoDomicilioAsociado : tipoDomicilioAsociados) {
+//            this.addTipoDomicilioAsociado(tipoDomicilioAsociado);
+//        }
+//    }
+
+    /**
+     * @param tipoDomicilioAsociado
+     */
+    public void removeTipoDomicilioAsociado(TipoDomicilioAsociadoDto tipoDomicilioAsociado) {
+        this.tiposDomicilioAsociado.remove(tipoDomicilioAsociado);
+    }
+
+    /**
+     * Devuelve los tipos domicilio activos asociados a este domicilio
+     * 
+     * @return
+     */
+    public List<TipoDomicilioAsociadoDto> getTiposDomicilioAsociadosActivos() {
+    	List<TipoDomicilioAsociadoDto> result = new ArrayList<TipoDomicilioAsociadoDto>();
+        for (TipoDomicilioAsociadoDto tipoDomicilioAsociado : this.tiposDomicilioAsociado) {
+            if (tipoDomicilioAsociado.getActivo().booleanValue()) {
+                result.add(tipoDomicilioAsociado);
+            }
+        }
+        return result;
+    }
+    
+    public TipoDomicilioAsociadoDto getTipoDomicilioAsociado(TipoDomicilioDto tipoDomicilio) {
+    	TipoDomicilioAsociadoDto tipoDomicilioAsociado = null;
+        for (TipoDomicilioAsociadoDto currentTipoDomicilioAsociado : this.tiposDomicilioAsociado) {
+            if (currentTipoDomicilioAsociado.getTipoDomicilio().equals(tipoDomicilio)) {
+                tipoDomicilioAsociado = currentTipoDomicilioAsociado;
+            }
+        }
+        return tipoDomicilioAsociado;
+    }
+    
+    /**
+     * Copia todos los tipos de domicilio asociados.
+     * 
+     * @param nuevoDomicilio nuevo domicilio a agregar los tipos de documento
+     */
+//    private void copyAllTiposDomicilioAsociados(DomiciliosCuentaDto nuevoDomicilio) {
+//        for (TipoDomicilioAsociadoDto tipo : this.getTiposDomicilioAsociado()) {
+//        	TipoDomicilioAsociadoDto nuevoTipo = tipo.copy();
+//            nuevoDomicilio.addTipoDomicilioAsociado(nuevoTipo);
+//        }
+//    }
+    
+//    public boolean esPrincipalDeEntrega() {
+//        return esPrincipalDe(new TipoDomicilioDto("TIPO_DOMICILIO_ENTREGA"));
+//    }
+//    
+//    public boolean esPrincipalDeFacturacion() {
+//        return esPrincipalDe((TipoDomicilioDto) knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_DOMICILIO_FACTURACION));
+//    }
+    
+    private boolean esPrincipalDe(TipoDomicilioDto tipoDomicilio) {
+        List<TipoDomicilioAsociadoDto> tiposDomicilioAsociadosActivos = this.getTiposDomicilioAsociadosActivos();
+        
+        for (TipoDomicilioAsociadoDto tipoDomicilioAsoc : tiposDomicilioAsociadosActivos) {
+            if  (tipoDomicilioAsoc.getPrincipal() &&
+                 tipoDomicilioAsoc.getTipoDomicilio().getCodigoVantive().equals(tipoDomicilio.getCodigoVantive())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
 }

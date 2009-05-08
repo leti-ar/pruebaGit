@@ -1,8 +1,14 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
+import ar.com.nextel.sfa.client.dto.TipoDomicilioAsociadoDto;
+import ar.com.nextel.sfa.client.dto.TipoDomicilioDto;
 import ar.com.nextel.sfa.client.widget.UIData;
+import ar.com.snoop.gwt.commons.client.widget.ListBox;
 
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.TextArea;
@@ -13,7 +19,9 @@ import com.google.gwt.user.client.ui.Widget;
  * @author eSalvador
  **/
 public class DomiciliosUIData extends UIData {
-	///
+	//
+	private DomiciliosCuentaDto domicilio;
+	// /
 	TextBox calle = new TextBox();
 	TextBox numero = new TextBox();
 	TextBox piso = new TextBox();
@@ -31,50 +39,149 @@ public class DomiciliosUIData extends UIData {
 	TextBox partido = new TextBox();
 	PersonaDto persona = new PersonaDto();
 
-//TODO: Hacer los combos hardcodeados!
-	//FacturacionDto facturacion = new FacturacionDto();
-	//EntregaDto entrega = new EntregaDto();
-	//ProvinciaDto provincia = new ProvinciaDto();
-	//EstadoDomicilioDto estado = new EstadoDomicilioDto();
-	//Boolean noNormalizar;
-//
+	// TODO: Hacer los combos hardcodeados!
+	ListBox facturacion = new ListBox();
+	ListBox entrega = new ListBox();
+	// ProvinciaDto provincia = new ProvinciaDto();
+	// EstadoDomicilioDto estado = new EstadoDomicilioDto();
+	// Boolean noNormalizar;
+	//
 	CheckBox validado = new CheckBox();
 	TextBox codigoFNCL = new TextBox();
 	CheckBox enCarga = new CheckBox();
 	TextBox nombreUsuarioUltimaModificacion = new TextBox();
-	///
-	
+
+	// /
+
 	public void setDomicilio(DomiciliosCuentaDto domicilio) {
-		/**TODO: Terminar este mapeo!*/
-		calle.setText(domicilio.getCalle());
-		codigoPostal.setText(domicilio.getCodigo_postal());
-		localidad.setText(domicilio.getLocalidad());
-		partido.setText(domicilio.getPartido());
+		if (domicilio == null) {
+			this.domicilio = new DomiciliosCuentaDto();
+		} else {
+			this.domicilio = domicilio;
+			/** TODO: Terminar este mapeo! */
+			calle.setText(domicilio.getCalle());
+			codigoPostal.setText(domicilio.getCodigo_postal());
+			localidad.setText(domicilio.getLocalidad());
+			partido.setText(domicilio.getPartido());
+			numero.setText(domicilio.getNumero().toString());
+			piso.setText(domicilio.getPiso());
+			departamento.setText(domicilio.getDepartamento());
+			entreCalle.setText(domicilio.getEntre_calle());
+			manzana.setText(domicilio.getManzana());
+			puerta.setText(domicilio.getPuerta());
+			ycalle.setText(domicilio.getY_calle());
+			cpa.setText(domicilio.getCpa());
+			torre.setText(domicilio.getTorre());
+			unidadFuncional.setText(domicilio.getUnidad_funcional());
+			observaciones.setText(domicilio.getObservaciones());
+
+			/**
+			 * TODO: Hacer el mapeo de tiposDomicilioAsociado, para cargar los combos de Entrega y
+			 * Facturacion: con lo que venga en Domicilio.
+			 */
+
+			for (int i = 0; i < domicilio.getTiposDomicilioAsociado().size(); i++) {
+				TipoDomicilioAsociadoDto tipoDomicilioAsociadoDto = domicilio.getTiposDomicilioAsociado()
+						.get(i);
+
+				/** Logica para tipoDomicilio: */
+
+				// Si el tipoDomicilio es 0 = No
+				if (tipoDomicilioAsociadoDto.getTipoDomicilio().getId() == 0) {
+					if (tipoDomicilioAsociadoDto.getTipoDomicilio().getDescripcion().equals("FacturacionNo")) {
+						facturacion.setSelectedIndex(2);
+					} else if (tipoDomicilioAsociadoDto.getTipoDomicilio().getDescripcion().equals(
+							"EntregaNo")) {
+						entrega.setSelectedIndex(2);
+					}
+				} else // Si el tipoDomicilio es 1 = Facturacion
+				if (tipoDomicilioAsociadoDto.getTipoDomicilio().getId() == 1) {
+					// Y ademas Principal:
+					if (tipoDomicilioAsociadoDto.getPrincipal()) {
+						facturacion.setSelectedIndex(0);
+					} else {
+						facturacion.setSelectedIndex(1);
+					}
+				} else // Si el tipoDomicilio es 4 = Entrega
+				if (tipoDomicilioAsociadoDto.getTipoDomicilio().getId() == 4) {
+					// Si es entrega:
+					if (tipoDomicilioAsociadoDto.getPrincipal()) {
+						// Y ademas Principal:
+						entrega.setSelectedIndex(0);
+					} else {
+						entrega.setSelectedIndex(1);
+					}
+				}
+			}
+		}
 	}
-	
-	public DomiciliosCuentaDto getNuevoDomicilio() {
-		/**TODO: Deberia hacer alguna validacion?? */
-		
-		/**TODO: Terminar este mapeo!*/
-		DomiciliosCuentaDto domicilioNuevo = new DomiciliosCuentaDto();
-		domicilioNuevo.setCalle(calle.getText());
-		domicilioNuevo.setEntre_calle(entreCalle.getText());
-		domicilioNuevo.setY_calle(ycalle.getText());
-		domicilioNuevo.setCodigo_postal(codigoPostal.getText());
-		domicilioNuevo.setLocalidad(localidad.getText());
-		domicilioNuevo.setPartido(partido.getText());
-		domicilioNuevo.setCpa(cpa.getText());
-		domicilioNuevo.setDepartamento(departamento.getText());
-		domicilioNuevo.setManzana(manzana.getText());
-		domicilioNuevo.setNumero(Long.parseLong(numero.getText()));
-		domicilioNuevo.setObservaciones(observaciones.getText());
-		domicilioNuevo.setPiso(piso.getText());
-		//domicilioNuevo.setProvincia(provincia);
-		domicilioNuevo.setPuerta(puerta.getText());
-		domicilioNuevo.setTorre(torre.getText());
-		return domicilioNuevo;
+
+	public DomiciliosCuentaDto getDomicilio() {
+		/** TODO: Deberia hacer alguna validacion?? */
+		/** TODO: Terminar este mapeo! */
+		domicilio.setCalle(calle.getText());
+		domicilio.setEntre_calle(entreCalle.getText());
+		domicilio.setY_calle(ycalle.getText());
+		domicilio.setCodigo_postal(codigoPostal.getText());
+		domicilio.setLocalidad(localidad.getText());
+		domicilio.setPartido(partido.getText());
+		domicilio.setCpa(cpa.getText());
+		domicilio.setDepartamento(departamento.getText());
+		domicilio.setManzana(manzana.getText());
+		domicilio.setNumero(Long.parseLong(numero.getText()));
+		domicilio.setObservaciones(observaciones.getText());
+		domicilio.setPiso(piso.getText());
+		// domicilioNuevo.setProvincia(provincia);
+		domicilio.setPuerta(puerta.getText());
+		domicilio.setTorre(torre.getText());
+		/** Mapeo de Facturacion y Entrega!! */
+		// Creo los dos tipos de domicilio que seleccionaron en el Combo:
+		TipoDomicilioDto tipoDomicilioFacturacionNuevo = new TipoDomicilioDto();
+		TipoDomicilioItem facturacionObjectSelected = (TipoDomicilioItem) facturacion.getSelectedItem();
+		tipoDomicilioFacturacionNuevo.setId(Long.parseLong(facturacion.getSelectedItemId()));
+		if (facturacionObjectSelected.getTextoAMostrar().equals("No")) {
+			tipoDomicilioFacturacionNuevo.setDescripcion(facturacionObjectSelected.getTextoNo());
+		} else {
+			tipoDomicilioFacturacionNuevo.setDescripcion(facturacion.getSelectedItemText());
+		}
+		TipoDomicilioItem entregaObjectSelected = (TipoDomicilioItem) entrega.getSelectedItem();
+		TipoDomicilioDto tipoDomicilioEntregaNuevo = new TipoDomicilioDto();
+		tipoDomicilioEntregaNuevo.setId(Long.parseLong(entrega.getSelectedItemId()));
+		if (entregaObjectSelected.getTextoAMostrar().equals("No")) {
+			tipoDomicilioEntregaNuevo.setDescripcion(entregaObjectSelected.getTextoNo());
+		} else {
+			tipoDomicilioEntregaNuevo.setDescripcion(entrega.getSelectedItemText());
+		}
+		// Creo un tipo de domicilioAsociado:
+		TipoDomicilioAsociadoDto tipoDomicilioAsociadoNuevoFacturacion = new TipoDomicilioAsociadoDto();
+		tipoDomicilioAsociadoNuevoFacturacion.setTipoDomicilio(tipoDomicilioFacturacionNuevo);
+		if (facturacion.getSelectedItemText().equals("Principal")) {
+			tipoDomicilioAsociadoNuevoFacturacion.setPrincipal(true);
+		} else {
+			tipoDomicilioAsociadoNuevoFacturacion.setPrincipal(false);
+		}
+		tipoDomicilioAsociadoNuevoFacturacion.setCodigoFNCL(codigoFNCL.getSelectedText());
+		tipoDomicilioAsociadoNuevoFacturacion.setActivo(true);
+		//
+		TipoDomicilioAsociadoDto tipoDomicilioAsociadoNuevoEntrega = new TipoDomicilioAsociadoDto();
+		if (entrega.getSelectedItemText().equals("Principal")) {
+			tipoDomicilioAsociadoNuevoEntrega.setPrincipal(true);
+		} else {
+			tipoDomicilioAsociadoNuevoEntrega.setPrincipal(false);
+		}
+		tipoDomicilioAsociadoNuevoEntrega.setCodigoFNCL(codigoFNCL.getSelectedText());
+		tipoDomicilioAsociadoNuevoEntrega.setActivo(true);
+		tipoDomicilioAsociadoNuevoEntrega.setTipoDomicilio(tipoDomicilioEntregaNuevo);
+		//
+		// Le agrego los tipoDomicilioAsociado al nuevo Domicilio:
+		List<TipoDomicilioAsociadoDto> listaTipoDomiciliosAsociados = new ArrayList();
+		listaTipoDomiciliosAsociados.add(tipoDomicilioAsociadoNuevoFacturacion);
+		listaTipoDomiciliosAsociados.add(tipoDomicilioAsociadoNuevoEntrega);
+		domicilio.setTiposDomicilioAsociado(listaTipoDomiciliosAsociados);
+		//
+		return domicilio;
 	}
-	
+
 	public DomiciliosUIData() {
 		fields.add(calle);
 		fields.add(numero);
@@ -91,10 +198,12 @@ public class DomiciliosUIData extends UIData {
 		fields.add(observaciones);
 		fields.add(localidad);
 		fields.add(partido);
-		fields.add((Widget)validado);
+		fields.add((Widget) validado);
 		fields.add(codigoFNCL);
 		fields.add(enCarga);
 		fields.add(nombreUsuarioUltimaModificacion);
+		fields.add(entrega);
+		fields.add(facturacion);
 	}
 
 	public TextBox getCalle() {
@@ -180,6 +289,14 @@ public class DomiciliosUIData extends UIData {
 
 	public CheckBox getEnCarga() {
 		return enCarga;
+	}
+
+	public ListBox getFacturacion() {
+		return facturacion;
+	}
+
+	public ListBox getEntrega() {
+		return entrega;
 	}
 
 	public TextBox getNombreUsuarioUltimaModificacion() {

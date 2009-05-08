@@ -91,16 +91,4 @@ public class EditarCuentaUI extends ApplicationUI {
 
 	public void unload() {
 	}
-    
-
-
-//	private void loadDomiciliosFormPanel(CuentaDto cuentaDto, CuentaEdicionTabPanel cuentaTab) {
-//		if (cuentaDto.getPersona() != null) {
-//			// List<DomiciliosCuentaDto> domicilios;
-//			// domicilios = cuentaDto.getPersona().getDomicilios();
-//			// TODO: Esta MAL pasarle la cuenta por parametro!??!
-//			cuentaTab.getCuentaDomicilioForm().cargaTablaDomicilios(cuentaDto);
-//		}
-//	}
-
 }

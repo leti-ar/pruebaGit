@@ -1,7 +1,11 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
+import ar.com.nextel.sfa.client.dto.TipoDomicilioDto;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
@@ -26,7 +30,7 @@ public class DomicilioUI extends NextelDialog {
 	private SimpleLink linkCerrar;
 	private SimpleLink linkAceptar;
 	private DomiciliosUIData domiciliosData;
-	private boolean editable; 
+	private boolean editable;
 	private static DomicilioUI instance = new DomicilioUI();
 
 	public static DomicilioUI getInstance() {
@@ -48,11 +52,12 @@ public class DomicilioUI extends NextelDialog {
 	 **/
 	public void cargarPopupNuevoDomicilio() {
 		domiciliosData.clean();
+		domiciliosData.setDomicilio(null);
 		linkAceptar.setVisible(true);
 		domiciliosData.enableFields();
 		showAndCenter();
 		//TODO: Arreglar lo del Titulo!!!
-			//setDialogTitle("Crear Domicilio");
+		setDialogTitle("Crear Domicilio");
 	}
 
 	/**
@@ -64,7 +69,7 @@ public class DomicilioUI extends NextelDialog {
 		domiciliosData.enableFields();
 		showAndCenter();
 		//TODO: Arreglar lo del Titulo!!!
-			//setDialogTitle("Crear Domicilio");
+		setDialogTitle("Copiar Domicilio");
 	}
 	
 	/**
@@ -72,19 +77,20 @@ public class DomicilioUI extends NextelDialog {
 	 **/
 	public void cargarPopupEditarDomicilio(DomiciliosCuentaDto domicilio, boolean editable) {
 		domiciliosData.setDomicilio(domicilio);
-		linkAceptar.setVisible(false);
 		showAndCenter();
 		if (!editable){
 			domiciliosData.disableFields();
+			linkAceptar.setVisible(false);
 		}else{
 			domiciliosData.enableFields();
+			linkAceptar.setVisible(true);
 		}
 		
 		//Boolean locked = domicilio.isLocked();
 		//GWT.log("Locked?: " + locked.toString(), null);
 
 		//TODO: Arreglar lo del Titulo!!!
-			//setDialogTitle("Editar Domicilio");
+		setDialogTitle("Editar Domicilio");
 	}
 	
 	/**
@@ -101,7 +107,7 @@ public class DomicilioUI extends NextelDialog {
 		gridObs = new Grid(2, 3);
 		gridUser = new Grid(1, 5);
 		setWidth("635px");
-		
+
 		gridUp.getColumnFormatter().setWidth(1, "85px");
 		gridUp.getColumnFormatter().setWidth(3, "85px");
 		gridUp.addStyleName("layout");
@@ -147,14 +153,14 @@ public class DomicilioUI extends NextelDialog {
 		gridDown.setText(2, 3, Sfa.constant().partido());
 		gridDown.setWidget(2, 4, domiciliosData.getPartido());
 		//
+		tiposDomicilioDtoInit();
+		//
 		gridDown.setText(3, 1, Sfa.constant().facturacion());
-		// TODO: Cambiar este HardCode a facturacion cuando arregle el otro!
-		// gridDown.setWidget(3, 2, domiciliosData.getCodigoFNCL());
+		gridDown.setWidget(3, 2, domiciliosData.getFacturacion());
 		//
 		gridDown.setText(3, 3, Sfa.constant().entrega());
-		// TODO: Cambiar este HardCode a entrega cuando arregle el otro!
-		// gridDown.setWidget(3, 4, domiciliosData.getEntrega());
-		//
+		gridDown.setWidget(3, 4, domiciliosData.getEntrega());
+		
 		gridDown.setText(4, 2, Sfa.constant().validado());
 		gridDown.setWidget(4, 3, domiciliosData.getValidado());
 		// marco.setText(9, 0, Sfa.constant().obs_domicilio());
@@ -192,7 +198,7 @@ public class DomicilioUI extends NextelDialog {
 		footer.setVisible(false);
 		linkAceptar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				// TODO: Logoca de Aceptar y guardar nuevo Domicilio!
+				// TODO: Logica de Aceptar y guardar nuevo Domicilio!
 				if (comandoAceptar != null){
 					comandoAceptar.execute();
 				}
@@ -206,6 +212,57 @@ public class DomicilioUI extends NextelDialog {
 		this.showAndCenter();
 	}
 
+	/**
+	 * @author eSalvador
+	 */
+	private List<TipoDomicilioDto> tiposDomicilioDtoInit(){
+		List<TipoDomicilioDto> listaTiposDomicilioDto = new ArrayList();
+		
+		TipoDomicilioDto tipoDomicilioItem1 = new TipoDomicilioDto();
+		tipoDomicilioItem1.setId(new Long(1));
+		tipoDomicilioItem1.setDescripcion("Bill To");
+		cargaComboTipoDomicilioEntregaDto(tipoDomicilioItem1);
+
+		TipoDomicilioDto tipoDomicilioItem2 = new TipoDomicilioDto();
+		tipoDomicilioItem2.setId(new Long(4));
+		tipoDomicilioItem2.setDescripcion("Ship To");
+		cargaComboTipoDomicilioFacturacionDto(tipoDomicilioItem2);
+		
+		listaTiposDomicilioDto.add(tipoDomicilioItem1);
+		listaTiposDomicilioDto.add(tipoDomicilioItem2);
+		
+		return listaTiposDomicilioDto;
+	}
+	
+	/**
+	 * @author eSalvador
+	 */
+	private void cargaComboTipoDomicilioEntregaDto(TipoDomicilioDto tipoDomicilioDto){
+		domiciliosData.getEntrega().addItem(new TipoDomicilioItem(tipoDomicilioDto,true,"Principal"));
+		domiciliosData.getEntrega().addItem(new TipoDomicilioItem(tipoDomicilioDto,false,"Si"));
+		TipoDomicilioDto tipoDomicilioItemNo = new TipoDomicilioDto();
+		tipoDomicilioItemNo.setId(new Long(0));
+		tipoDomicilioItemNo.setDescripcion("EntregaNo");
+		cargaItemNoComboEntrega(tipoDomicilioItemNo);
+	}
+
+	private void cargaComboTipoDomicilioFacturacionDto(TipoDomicilioDto tipoDomicilioDto){
+		domiciliosData.getFacturacion().addItem(new TipoDomicilioItem(tipoDomicilioDto,true,"Principal"));
+		domiciliosData.getFacturacion().addItem(new TipoDomicilioItem(tipoDomicilioDto,false,"Si"));
+		TipoDomicilioDto tipoDomicilioItemNo = new TipoDomicilioDto();
+		tipoDomicilioItemNo.setId(new Long(0));
+		tipoDomicilioItemNo.setDescripcion("FacturacionNo");
+		cargaItemNoComboFacturacion(tipoDomicilioItemNo);
+	}
+	
+	private void cargaItemNoComboFacturacion(TipoDomicilioDto tipoDomicilioDto){
+		domiciliosData.getFacturacion().addItem(new TipoDomicilioItem(tipoDomicilioDto,false,"No"));
+	}
+	
+	private void cargaItemNoComboEntrega(TipoDomicilioDto tipoDomicilioDto){
+		domiciliosData.getEntrega().addItem(new TipoDomicilioItem(tipoDomicilioDto,false,"No"));
+	}
+	
 	/**
 	 * @author eSalvador
 	 * Metodo que setea la accion a tomar por el botón Aceptar del popup DomicilioUI.
