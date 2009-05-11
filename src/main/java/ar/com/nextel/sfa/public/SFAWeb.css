@@ -267,6 +267,14 @@ background:#FFFFFF url(images/bkg_frmContent.gif) repeat-x scroll 0 0;
 padding: 5px;
 }
 
+.content{
+	background:#E9E9E9;
+}
+
+.content .gwt-Label{
+	color:red;	
+}
+
 .abmPanel {
 border:1px solid #981836;
 margin-bottom:8px;
@@ -410,4 +418,8 @@ width:74px;
 	overflow: auto;
 	padding-right: 15px;
 	height: 100px;
+}
+
+.crearCuentaTabPanel{
+	margin: 16 0 40 0px;
 }
