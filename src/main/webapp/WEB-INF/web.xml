@@ -94,6 +94,16 @@
 		<url-pattern>/ar.com.nextel.sfa.SFAWeb/oportunidades.rpc</url-pattern>
 	</servlet-mapping>	
 	
+	<servlet>
+		<servlet-name>download</servlet-name>
+		<servlet-class>ar.com.nextel.web.download.DownloadServlet</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>download</servlet-name>
+		<url-pattern>/download/*</url-pattern>
+	</servlet-mapping>
+	
 	<resource-ref id="sfaDS">
 		<description>sfaDS</description>
 		<res-ref-name>jdbc/sfaDS</res-ref-name>
