@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+"http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean name="fileServiceFactory"
+		class="ar.com.nextel.web.download.FileServiceFactory">
+		<property name="moduleConfigs">
+			<list>
+				<ref bean="solicitudesModuleConfig"/>
+			</list>
+		</property>
+	</bean>
+	
+	<bean name="solicitudesModuleConfig" class="ar.com.nextel.web.download.config.ModuleConfig">
+		<property name="moduleName" value="solicitudes"/>
+		<property name="serviceConfigs">
+			<list>
+				<ref bean="solicitudesDownloadExcelService"/>
+				<ref bean="solicitudesDownloadRichTextFormatService"/>
+			</list>
+		</property>
+	</bean>
+	
+	<bean name="solicitudesDownloadExcelService" class="ar.com.nextel.web.download.config.impl.SolicitudExcelService">
+		<property name="fileTypeConfig" ref="excelFileTypeConfig"/>
+		<property name="fileNameConfig" ref="fileNameConfig"/>
+		<property name="serviceName" value="xls"/>
+		<property name="moduleName" value="solicitudes"/>
+	</bean>
+
+    
+<!--    <bean name="lineas2TableTransformerBean" class="ar.com.nextel.web.download.config.impl.Lineas2TableTransformer"/>-->
+	
+	<bean name="solicitudesDownloadRichTextFormatService" class="ar.com.nextel.web.download.config.impl.SolicitudRichTextFormatService">
+		<property name="fileTypeConfig" ref="richTextFormatFileTypeConfig"/>
+		<property name="fileNameConfig" ref="fileNameConfig"/>
+		<property name="serviceName" value="rtf"/>
+		<property name="moduleName" value="solicitudes"/>
+		<property name="reportPathBuilder" ref="onSessionReportFileSystemPathBuilder"/>		
+	</bean>
+	
+	<bean name="onSessionReportFileSystemPathBuilder" class="ar.com.nextel.components.report.OnSessionReportFileSystemPathBuilder">
+		<property name="sessionAwareProxyFactory" ref="sessionAwareProxyFactory"/>
+		<property name="simpleReportFileSystemPathBuilder" ref="simpleReportFileSystemPathBuilder"/>		
+	</bean>
+	
+	<bean name="simpleReportFileSystemPathBuilder" class="ar.com.nextel.components.report.SimpleReportFileSystemPathBuilder">
+		<property name="globalParameterRetriever" ref="globalParameterRetriever"/>		
+	</bean>
+	
+	<bean name="sessionAwareProxyFactory" class="ar.com.nextel.framework.repository.SessionAwareProxyFactoryImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>		
+	</bean>	
+	
+	<bean name="excelFileTypeConfig" class="ar.com.nextel.web.download.config.impl.ExcelFileTypeConfig"/>
+	
+	<bean name="richTextFormatFileTypeConfig" class="ar.com.nextel.web.download.config.impl.RichTextFormatFileTypeConfig"/>
+	<bean name="fileNameConfig" class="ar.com.nextel.web.download.config.FileNameConfig"/>
+	
+</beans>
