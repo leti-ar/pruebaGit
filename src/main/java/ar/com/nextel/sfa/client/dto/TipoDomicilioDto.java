@@ -5,7 +5,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 /**
  * @author eSalvador 
  **/
-public class TipoDomicilioDto  implements IsSerializable{
+public class TipoDomicilioDto implements IsSerializable{
 
 	   	private String codigoVantive;
 	    private String descripcion;

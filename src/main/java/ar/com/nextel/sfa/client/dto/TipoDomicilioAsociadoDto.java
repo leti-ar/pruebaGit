@@ -7,24 +7,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  **/
 public class TipoDomicilioAsociadoDto implements IsSerializable{
 
-//    private long idTipoDomicilio;
-//    private Boolean principal;
-//	
-//    public long getIdTipoDomicilio() {
-//		
-//    	return idTipoDomicilio;
-//	}
-//	public void setIdTipoDomicilio(long idTipoDomicilio) {
-//		this.idTipoDomicilio = idTipoDomicilio;
-//	}
-//	public Boolean getPrincipal() {
-//		return principal;
-//	}
-//	public void setPrincipal(Boolean principal) {
-//		this.principal = principal;
-//	}
-	/***/
-	
     private DomiciliosCuentaDto domicilio;
     private TipoDomicilioDto tipoDomicilio;
     private Boolean principal;
@@ -33,11 +15,13 @@ public class TipoDomicilioAsociadoDto implements IsSerializable{
     private Long idVantive;
 
     /**
-     * Solo si est� activo es de interes para la PDA.
+     * Solo si está activo es de interes para la PDA.
      */
     private Boolean activo;
 
     public TipoDomicilioAsociadoDto() {
+        setEstado("A");
+        this.setActivo(Boolean.TRUE);
     }
 
     /**

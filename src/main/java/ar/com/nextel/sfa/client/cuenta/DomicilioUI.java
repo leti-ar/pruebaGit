@@ -30,7 +30,7 @@ public class DomicilioUI extends NextelDialog {
 	private SimpleLink linkCerrar;
 	private SimpleLink linkAceptar;
 	private DomiciliosUIData domiciliosData;
-	private boolean editable;
+	private boolean editable; //Verificar q no sea la misma propiedad que locked del DomicilioCuentaDto!!!
 	private static DomicilioUI instance = new DomicilioUI();
 
 	public static DomicilioUI getInstance() {
@@ -56,7 +56,6 @@ public class DomicilioUI extends NextelDialog {
 		linkAceptar.setVisible(true);
 		domiciliosData.enableFields();
 		showAndCenter();
-		//TODO: Arreglar lo del Titulo!!!
 		setDialogTitle("Crear Domicilio");
 	}
 
@@ -68,14 +67,14 @@ public class DomicilioUI extends NextelDialog {
 		linkAceptar.setVisible(true);
 		domiciliosData.enableFields();
 		showAndCenter();
-		//TODO: Arreglar lo del Titulo!!!
 		setDialogTitle("Copiar Domicilio");
 	}
 	
 	/**
 	 * @author esalvador
 	 **/
-	public void cargarPopupEditarDomicilio(DomiciliosCuentaDto domicilio, boolean editable) {
+	public void cargarPopupEditarDomicilio(DomiciliosCuentaDto domicilio) {
+		editable = (domicilio.isLocked());
 		domiciliosData.setDomicilio(domicilio);
 		showAndCenter();
 		if (!editable){
@@ -85,11 +84,6 @@ public class DomicilioUI extends NextelDialog {
 			domiciliosData.enableFields();
 			linkAceptar.setVisible(true);
 		}
-		
-		//Boolean locked = domicilio.isLocked();
-		//GWT.log("Locked?: " + locked.toString(), null);
-
-		//TODO: Arreglar lo del Titulo!!!
 		setDialogTitle("Editar Domicilio");
 	}
 	
@@ -155,11 +149,10 @@ public class DomicilioUI extends NextelDialog {
 		//
 		tiposDomicilioDtoInit();
 		//
-		gridDown.setText(3, 1, Sfa.constant().facturacion());
-		gridDown.setWidget(3, 2, domiciliosData.getFacturacion());
-		//
-		gridDown.setText(3, 3, Sfa.constant().entrega());
-		gridDown.setWidget(3, 4, domiciliosData.getEntrega());
+		gridDown.setText(3, 1, Sfa.constant().entrega());
+		gridDown.setWidget(3, 2, domiciliosData.getEntrega());
+		gridDown.setText(3, 3, Sfa.constant().facturacion());
+		gridDown.setWidget(3, 4, domiciliosData.getFacturacion());
 		
 		gridDown.setText(4, 2, Sfa.constant().validado());
 		gridDown.setWidget(4, 3, domiciliosData.getValidado());
@@ -216,17 +209,20 @@ public class DomicilioUI extends NextelDialog {
 	 * @author eSalvador
 	 */
 	private List<TipoDomicilioDto> tiposDomicilioDtoInit(){
+		//TODO: Quitar este HardCodeo, y traer los objetos de la base.
 		List<TipoDomicilioDto> listaTiposDomicilioDto = new ArrayList();
 		
 		TipoDomicilioDto tipoDomicilioItem1 = new TipoDomicilioDto();
 		tipoDomicilioItem1.setId(new Long(1));
 		tipoDomicilioItem1.setDescripcion("Bill To");
-		cargaComboTipoDomicilioEntregaDto(tipoDomicilioItem1);
+		tipoDomicilioItem1.setCodigoVantive("Bill To");
+		cargaComboTipoDomicilioFacturacionDto(tipoDomicilioItem1);
 
 		TipoDomicilioDto tipoDomicilioItem2 = new TipoDomicilioDto();
 		tipoDomicilioItem2.setId(new Long(4));
 		tipoDomicilioItem2.setDescripcion("Ship To");
-		cargaComboTipoDomicilioFacturacionDto(tipoDomicilioItem2);
+		tipoDomicilioItem2.setCodigoVantive("Ship To");
+		cargaComboTipoDomicilioEntregaDto(tipoDomicilioItem2);
 		
 		listaTiposDomicilioDto.add(tipoDomicilioItem1);
 		listaTiposDomicilioDto.add(tipoDomicilioItem2);

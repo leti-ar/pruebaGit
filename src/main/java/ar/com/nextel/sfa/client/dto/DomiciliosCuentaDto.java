@@ -268,20 +268,21 @@ public class DomiciliosCuentaDto implements IsSerializable{
 //        }
 //    }
     
-//    public boolean esPrincipalDeEntrega() {
-//        return esPrincipalDe(new TipoDomicilioDto("TIPO_DOMICILIO_ENTREGA"));
-//    }
-//    
-//    public boolean esPrincipalDeFacturacion() {
-//        return esPrincipalDe((TipoDomicilioDto) knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_DOMICILIO_FACTURACION));
-//    }
+    public boolean esPrincipalDeEntrega(TipoDomicilioDto tipoDomicilioEntregaDto) {
+        return esPrincipalDe(tipoDomicilioEntregaDto);
+    }
+    
+    public boolean esPrincipalDeFacturacion(TipoDomicilioDto tipoDomicilioFacturacionDto) {
+        return esPrincipalDe(tipoDomicilioFacturacionDto);
+    }
     
     private boolean esPrincipalDe(TipoDomicilioDto tipoDomicilio) {
         List<TipoDomicilioAsociadoDto> tiposDomicilioAsociadosActivos = this.getTiposDomicilioAsociadosActivos();
         
         for (TipoDomicilioAsociadoDto tipoDomicilioAsoc : tiposDomicilioAsociadosActivos) {
-            if  (tipoDomicilioAsoc.getPrincipal() &&
-                 tipoDomicilioAsoc.getTipoDomicilio().getCodigoVantive().equals(tipoDomicilio.getCodigoVantive())) {
+            if  (tipoDomicilioAsoc.getPrincipal()) {
+            		//OJO con esto de abajo, puede ser que no sea TRUE!!!
+            		//&& tipoDomicilioAsoc.getTipoDomicilio().getCodigoVantive().equals(tipoDomicilio.getCodigoVantive())) {
                 return true;
             }
         }

@@ -7,6 +7,96 @@ package ar.com.nextel.sfa.client.constant;
 public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
   /**
+   * Translated "Hubo un error al validar tarjeta".
+   * 
+   * @return translated "Hubo un error al validar tarjeta"
+   */
+  @DefaultStringValue("Hubo un error al validar tarjeta")
+  @Key("ERR_AL_VALIDAR_TARJETA")
+  String ERR_AL_VALIDAR_TARJETA();
+
+  /**
+   * Translated "El campo {1} es obligatorio".
+   * 
+   * @return translated "El campo {1} es obligatorio"
+   */
+  @DefaultStringValue("El campo {1} es obligatorio")
+  @Key("ERR_CAMPO_OBLIGATORIO")
+  String ERR_CAMPO_OBLIGATORIO();
+
+  /**
+   * Translated "La cuenta debe tener un domicilio principal de entrega".
+   * 
+   * @return translated "La cuenta debe tener un domicilio principal de entrega"
+   */
+  @DefaultStringValue("La cuenta debe tener un domicilio principal de entrega")
+  @Key("ERR_DOMICILIO_ENTREGA")
+  String ERR_DOMICILIO_ENTREGA();
+
+  /**
+   * Translated "La cuenta debe tener un domicilio principal de facturación".
+   * 
+   * @return translated "La cuenta debe tener un domicilio principal de facturación"
+   */
+  @DefaultStringValue("La cuenta debe tener un domicilio principal de facturación")
+  @Key("ERR_DOMICILIO_FACTURACION")
+  String ERR_DOMICILIO_FACTURACION();
+
+  /**
+   * Translated "El campo {1}: no tiene un email válido.".
+   * 
+   * @return translated "El campo {1}: no tiene un email válido."
+   */
+  @DefaultStringValue("El campo {1}: no tiene un email válido.")
+  @Key("ERR_EMAIL_NO_VALIDO")
+  String ERR_EMAIL_NO_VALIDO();
+
+  /**
+   * Translated "El campo {1}: no tiene una fecha válida. Formato válido: \"dd/mm/aaaa\"".
+   * 
+   * @return translated "El campo {1}: no tiene una fecha válida. Formato válido: \"dd/mm/aaaa\""
+   */
+  @DefaultStringValue("El campo {1}: no tiene una fecha válida. Formato válido: \"dd/mm/aaaa\"")
+  @Key("ERR_FECHA_NO_VALIDA")
+  String ERR_FECHA_NO_VALIDA();
+
+  /**
+   * Translated "El formato del campo {1} no es válido".
+   * 
+   * @return translated "El formato del campo {1} no es válido"
+   */
+  @DefaultStringValue("El formato del campo {1} no es válido")
+  @Key("ERR_FORMATO")
+  String ERR_FORMATO();
+
+  /**
+   * Translated "Hay cambios sin guardar: presione Aceptar para descartarlos o Cancelar para continuar editando.".
+   * 
+   * @return translated "Hay cambios sin guardar: presione Aceptar para descartarlos o Cancelar para continuar editando."
+   */
+  @DefaultStringValue("Hay cambios sin guardar: presione Aceptar para descartarlos o Cancelar para continuar editando.")
+  @Key("ERR_FORMULARIO_DIRTY")
+  String ERR_FORMULARIO_DIRTY();
+
+  /**
+   * Translated "Tarjeta no válida: La tarjeta ingresada no es válida. (se)".
+   * 
+   * @return translated "Tarjeta no válida: La tarjeta ingresada no es válida. (se)"
+   */
+  @DefaultStringValue("Tarjeta no válida: La tarjeta ingresada no es válida. (se)")
+  @Key("ERR_TARJETA_NO_VALIDA")
+  String ERR_TARJETA_NO_VALIDA();
+
+  /**
+   * Translated "Tarjeta válida: La tarjeta ingresada es válida. (se)".
+   * 
+   * @return translated "Tarjeta válida: La tarjeta ingresada es válida. (se)"
+   */
+  @DefaultStringValue("Tarjeta válida: La tarjeta ingresada es válida. (se)")
+  @Key("MSG_TARJETA_VALIDA")
+  String MSG_TARJETA_VALIDA();
+
+  /**
    * Translated "aceptar".
    * 
    * @return translated "aceptar"
@@ -25,11 +115,20 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String aclaracion();
 
   /**
-   * Translated "Adicional:".
+   * Translated "Activacion".
    * 
-   * @return translated "Adicional:"
+   * @return translated "Activacion"
    */
-  @DefaultStringValue("Adicional:")
+  @DefaultStringValue("Activacion")
+  @Key("activacion")
+  String activacion();
+
+  /**
+   * Translated "Adicional".
+   * 
+   * @return translated "Adicional"
+   */
+  @DefaultStringValue("Adicional")
   @Key("adicional")
   String adicional();
 
@@ -52,22 +151,40 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String alias();
 
   /**
-   * Translated "Anticipo:".
+   * Translated "Alquiler (AMBA)".
    * 
-   * @return translated "Anticipo:"
+   * @return translated "Alquiler (AMBA)"
    */
-  @DefaultStringValue("Anticipo:")
+  @DefaultStringValue("Alquiler (AMBA)")
+  @Key("alquilerAMBA")
+  String alquilerAMBA();
+
+  /**
+   * Translated "Anticipo".
+   * 
+   * @return translated "Anticipo"
+   */
+  @DefaultStringValue("Anticipo")
   @Key("anticipo")
   String anticipo();
 
   /**
-   * Translated "Apellido:".
+   * Translated "Apellido".
    * 
-   * @return translated "Apellido:"
+   * @return translated "Apellido"
    */
-  @DefaultStringValue("Apellido:")
+  @DefaultStringValue("Apellido")
   @Key("apellido")
   String apellido();
+
+  /**
+   * Translated "Cod área".
+   * 
+   * @return translated "Cod área"
+   */
+  @DefaultStringValue("Cod área")
+  @Key("area")
+  String area();
 
   /**
    * Translated "A utilizar:".
@@ -97,11 +214,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String calle();
 
   /**
-   * Translated "Canal Vtas.:".
+   * Translated "Canal Vtas.".
    * 
-   * @return translated "Canal Vtas.:"
+   * @return translated "Canal Vtas."
    */
-  @DefaultStringValue("Canal Vtas.:")
+  @DefaultStringValue("Canal Vtas.")
   @Key("canalVentas")
   String canalVentas();
 
@@ -115,20 +232,29 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String cancelar();
 
   /**
-   * Translated "Cargo:".
+   * Translated "Cantidad:".
    * 
-   * @return translated "Cargo:"
+   * @return translated "Cantidad:"
    */
-  @DefaultStringValue("Cargo:")
+  @DefaultStringValue("Cantidad:")
+  @Key("cantidad")
+  String cantidad();
+
+  /**
+   * Translated "Cargo".
+   * 
+   * @return translated "Cargo"
+   */
+  @DefaultStringValue("Cargo")
   @Key("cargo")
   String cargo();
 
   /**
-   * Translated "Categoría:".
+   * Translated "Categoría".
    * 
-   * @return translated "Categoría:"
+   * @return translated "Categoría"
    */
-  @DefaultStringValue("Categoría:")
+  @DefaultStringValue("Categoría")
   @Key("categoria")
   String categoria();
 
@@ -142,11 +268,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String cbu();
 
   /**
-   * Translated "Celular:".
+   * Translated "Celular".
    * 
-   * @return translated "Celular:"
+   * @return translated "Celular"
    */
-  @DefaultStringValue("Celular:")
+  @DefaultStringValue("Celular")
   @Key("celular")
   String celular();
 
@@ -160,11 +286,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String cerrar();
 
   /**
-   * Translated "Ciclo Fact.:".
+   * Translated "Ciclo Fact.".
    * 
-   * @return translated "Ciclo Fact.:"
+   * @return translated "Ciclo Fact."
    */
-  @DefaultStringValue("Ciclo Fact.:")
+  @DefaultStringValue("Ciclo Fact.")
   @Key("cicloFacturacion")
   String cicloFacturacion();
 
@@ -178,20 +304,20 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String cierreDesde();
 
   /**
-   * Translated "Clase Cli.:".
+   * Translated "Clase Cli.".
    * 
-   * @return translated "Clase Cli.:"
+   * @return translated "Clase Cli."
    */
-  @DefaultStringValue("Clase Cli.:")
+  @DefaultStringValue("Clase Cli.")
   @Key("claseCliente")
   String claseCliente();
 
   /**
-   * Translated "Cliente:".
+   * Translated "Cliente".
    * 
-   * @return translated "Cliente:"
+   * @return translated "Cliente"
    */
-  @DefaultStringValue("Cliente:")
+  @DefaultStringValue("Cliente")
   @Key("cliente")
   String cliente();
 
@@ -205,11 +331,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String contactos();
 
   /**
-   * Translated "Contribuy.:".
+   * Translated "Contribuy.".
    * 
-   * @return translated "Contribuy.:"
+   * @return translated "Contribuy."
    */
-  @DefaultStringValue("Contribuy.:")
+  @DefaultStringValue("Contribuy.")
   @Key("contribuyente")
   String contribuyente();
 
@@ -439,29 +565,29 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String facturacionReq();
 
   /**
-   * Translated "Fax:".
+   * Translated "Fax".
    * 
-   * @return translated "Fax:"
+   * @return translated "Fax"
    */
-  @DefaultStringValue("Fax:")
+  @DefaultStringValue("Fax")
   @Key("fax")
   String fax();
 
   /**
-   * Translated "Fecha Creación:".
+   * Translated "Fecha Creación".
    * 
-   * @return translated "Fecha Creación:"
+   * @return translated "Fecha Creación"
    */
-  @DefaultStringValue("Fecha Creación:")
+  @DefaultStringValue("Fecha Creación")
   @Key("fechaCreacion")
   String fechaCreacion();
 
   /**
-   * Translated "F. Nac.:".
+   * Translated "F. Nac.".
    * 
-   * @return translated "F. Nac.:"
+   * @return translated "F. Nac."
    */
-  @DefaultStringValue("F. Nac.:")
+  @DefaultStringValue("F. Nac.")
   @Key("fechaNacimiento")
   String fechaNacimiento();
 
@@ -538,13 +664,31 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String hasta();
 
   /**
-   * Translated "IIBB:".
+   * Translated "IIBB".
    * 
-   * @return translated "IIBB:"
+   * @return translated "IIBB"
    */
-  @DefaultStringValue("IIBB:")
+  @DefaultStringValue("IIBB")
   @Key("iibb")
   String iibb();
+
+  /**
+   * Translated "IMEI:".
+   * 
+   * @return translated "IMEI:"
+   */
+  @DefaultStringValue("IMEI:")
+  @Key("imei")
+  String imei();
+
+  /**
+   * Translated "Interno".
+   * 
+   * @return translated "Interno"
+   */
+  @DefaultStringValue("Interno")
+  @Key("interno")
+  String interno();
 
   /**
    * Translated "Item:".
@@ -556,11 +700,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String item();
 
   /**
-   * Translated "Laboral:".
+   * Translated "Laboral".
    * 
-   * @return translated "Laboral:"
+   * @return translated "Laboral"
    */
-  @DefaultStringValue("Laboral:")
+  @DefaultStringValue("Laboral")
   @Key("laboral")
   String laboral();
 
@@ -601,13 +745,22 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String manzana();
 
   /**
-   * Translated "Modalidad:".
+   * Translated "Modalidad".
    * 
-   * @return translated "Modalidad:"
+   * @return translated "Modalidad"
    */
-  @DefaultStringValue("Modalidad:")
+  @DefaultStringValue("Modalidad")
   @Key("modalidad")
   String modalidad();
+
+  /**
+   * Translated "Modelo Eq.:".
+   * 
+   * @return translated "Modelo Eq.:"
+   */
+  @DefaultStringValue("Modelo Eq.:")
+  @Key("modeloEq")
+  String modeloEq();
 
   /**
    * Translated "NºFlota:".
@@ -628,29 +781,29 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String no();
 
   /**
-   * Translated "Nombre:".
+   * Translated "Nombre".
    * 
-   * @return translated "Nombre:"
+   * @return translated "Nombre"
    */
-  @DefaultStringValue("Nombre:")
+  @DefaultStringValue("Nombre")
   @Key("nombre")
   String nombre();
 
   /**
-   * Translated "Nombre División:".
+   * Translated "Nombre División".
    * 
-   * @return translated "Nombre División:"
+   * @return translated "Nombre División"
    */
-  @DefaultStringValue("Nombre División:")
+  @DefaultStringValue("Nombre División")
   @Key("nombreDivision")
   String nombreDivision();
 
   /**
-   * Translated "Nro Tarjeta:".
+   * Translated "Nro Tarjeta".
    * 
-   * @return translated "Nro Tarjeta:"
+   * @return translated "Nro Tarjeta"
    */
-  @DefaultStringValue("Nro Tarjeta:")
+  @DefaultStringValue("Nro Tarjeta")
   @Key("nroTarjeta")
   String nroTarjeta();
 
@@ -664,11 +817,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String nssReq();
 
   /**
-   * Translated "Número:".
+   * Translated "Número".
    * 
-   * @return translated "Número:"
+   * @return translated "Número"
    */
-  @DefaultStringValue("Número:")
+  @DefaultStringValue("Número")
   @Key("numero")
   String numero();
 
@@ -718,11 +871,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String obs_domicilio();
 
   /**
-   * Translated "Obs.:".
+   * Translated "Obs.".
    * 
-   * @return translated "Obs.:"
+   * @return translated "Obs."
    */
-  @DefaultStringValue("Obs.:")
+  @DefaultStringValue("Obs.")
   @Key("observaciones")
   String observaciones();
 
@@ -763,13 +916,22 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String pataconexTitle();
 
   /**
-   * Translated "Personal:".
+   * Translated "Personal".
    * 
-   * @return translated "Personal:"
+   * @return translated "Personal"
    */
-  @DefaultStringValue("Personal:")
+  @DefaultStringValue("Personal")
   @Key("personal")
   String personal();
+
+  /**
+   * Translated "Nº Pin:".
+   * 
+   * @return translated "Nº Pin:"
+   */
+  @DefaultStringValue("Nº Pin:")
+  @Key("pin")
+  String pin();
 
   /**
    * Translated "Piso:".
@@ -817,20 +979,20 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String predefinidas();
 
   /**
-   * Translated "Principal:".
+   * Translated "Principal".
    * 
-   * @return translated "Principal:"
+   * @return translated "Principal"
    */
-  @DefaultStringValue("Principal:")
+  @DefaultStringValue("Principal")
   @Key("principal")
   String principal();
 
   /**
-   * Translated "Prov. Ant.:".
+   * Translated "Prov. Ant.".
    * 
-   * @return translated "Prov. Ant.:"
+   * @return translated "Prov. Ant."
    */
-  @DefaultStringValue("Prov. Ant.:")
+  @DefaultStringValue("Prov. Ant.")
   @Key("provedorAnterior")
   String provedorAnterior();
 
@@ -844,11 +1006,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String provincia();
 
   /**
-   * Translated "Razón Social:".
+   * Translated "Razón Social".
    * 
-   * @return translated "Razón Social:"
+   * @return translated "Razón Social"
    */
-  @DefaultStringValue("Razón Social:")
+  @DefaultStringValue("Razón Social")
   @Key("razonSocial")
   String razonSocial();
 
@@ -898,11 +1060,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String roaming();
 
   /**
-   * Translated "Rubro:".
+   * Translated "Rubro".
    * 
-   * @return translated "Rubro:"
+   * @return translated "Rubro"
    */
-  @DefaultStringValue("Rubro:")
+  @DefaultStringValue("Rubro")
   @Key("rubro")
   String rubro();
 
@@ -916,11 +1078,20 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String scoringTitle();
 
   /**
-   * Translated "Sexo:".
+   * Translated "Nº Serie:".
    * 
-   * @return translated "Sexo:"
+   * @return translated "Nº Serie:"
    */
-  @DefaultStringValue("Sexo:")
+  @DefaultStringValue("Nº Serie:")
+  @Key("serie")
+  String serie();
+
+  /**
+   * Translated "Sexo".
+   * 
+   * @return translated "Sexo"
+   */
+  @DefaultStringValue("Sexo")
   @Key("sexo")
   String sexo();
 
@@ -934,6 +1105,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String si();
 
   /**
+   * Translated "SIM:".
+   * 
+   * @return translated "SIM:"
+   */
+  @DefaultStringValue("SIM:")
+  @Key("sim")
+  String sim();
+
+  /**
    * Translated "SS:".
    * 
    * @return translated "SS:"
@@ -943,11 +1123,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ss();
 
   /**
-   * Translated "Tarjeta Tipo:".
+   * Translated "Tarjeta Tipo".
    * 
-   * @return translated "Tarjeta Tipo:"
+   * @return translated "Tarjeta Tipo"
    */
-  @DefaultStringValue("Tarjeta Tipo:")
+  @DefaultStringValue("Tarjeta Tipo")
   @Key("tarjetaTipo")
   String tarjetaTipo();
 
@@ -988,11 +1168,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String tipoCuenta();
 
   /**
-   * Translated "Tipo doc.:".
+   * Translated "Tipo doc.".
    * 
-   * @return translated "Tipo doc.:"
+   * @return translated "Tipo doc."
    */
-  @DefaultStringValue("Tipo doc.:")
+  @DefaultStringValue("Tipo doc.")
   @Key("tipoDocumento")
   String tipoDocumento();
 
@@ -1024,6 +1204,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String torre();
 
   /**
+   * Translated "Total:".
+   * 
+   * @return translated "Total:"
+   */
+  @DefaultStringValue("Total:")
+  @Key("total")
+  String total();
+
+  /**
    * Translated "Totales".
    * 
    * @return translated "Totales"
@@ -1042,20 +1231,20 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String uf();
 
   /**
-   * Translated "Use:".
+   * Translated "Use".
    * 
-   * @return translated "Use:"
+   * @return translated "Use"
    */
-  @DefaultStringValue("Use:")
+  @DefaultStringValue("Use")
   @Key("use")
   String use();
 
   /**
-   * Translated "Usuario:".
+   * Translated "Usuario".
    * 
-   * @return translated "Usuario:"
+   * @return translated "Usuario"
    */
-  @DefaultStringValue("Usuario:")
+  @DefaultStringValue("Usuario")
   @Key("usuario")
   String usuario();
 
@@ -1078,6 +1267,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String validado();
 
   /**
+   * Translated "Validar tarjeta".
+   * 
+   * @return translated "Validar tarjeta"
+   */
+  @DefaultStringValue("Validar tarjeta")
+  @Key("validarTarjeta")
+  String validarTarjeta();
+
+  /**
    * Translated "Vencimiento:".
    * 
    * @return translated "Vencimiento:"
@@ -1087,11 +1285,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String vencimiento();
 
   /**
-   * Translated "Nombre:".
+   * Translated "Nombre".
    * 
-   * @return translated "Nombre:"
+   * @return translated "Nombre"
    */
-  @DefaultStringValue("Nombre:")
+  @DefaultStringValue("Nombre")
   @Key("vendedorNombre")
   String vendedorNombre();
 
@@ -1105,11 +1303,38 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String vendedorPanelTitle();
 
   /**
-   * Translated "Veraz:".
+   * Translated "Venta (AMBA)".
    * 
-   * @return translated "Veraz:"
+   * @return translated "Venta (AMBA)"
    */
-  @DefaultStringValue("Veraz:")
+  @DefaultStringValue("Venta (AMBA)")
+  @Key("ventaAMBA")
+  String ventaAMBA();
+
+  /**
+   * Translated "Venta de Accesorios".
+   * 
+   * @return translated "Venta de Accesorios"
+   */
+  @DefaultStringValue("Venta de Accesorios")
+  @Key("ventaAccesorio")
+  String ventaAccesorio();
+
+  /**
+   * Translated "Venta de Licencias BB".
+   * 
+   * @return translated "Venta de Licencias BB"
+   */
+  @DefaultStringValue("Venta de Licencias BB")
+  @Key("ventaLicencia")
+  String ventaLicencia();
+
+  /**
+   * Translated "Veraz".
+   * 
+   * @return translated "Veraz"
+   */
+  @DefaultStringValue("Veraz")
   @Key("veraz")
   String veraz();
 
@@ -1123,20 +1348,20 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String verazTitledPanel();
 
   /**
-   * Translated "Vto. año:".
+   * Translated "Vto. año".
    * 
-   * @return translated "Vto. año:"
+   * @return translated "Vto. año"
    */
-  @DefaultStringValue("Vto. año:")
+  @DefaultStringValue("Vto. año")
   @Key("vtoAnio")
   String vtoAnio();
 
   /**
-   * Translated "Vto. mes:".
+   * Translated "Vto. mes".
    * 
-   * @return translated "Vto. mes:"
+   * @return translated "Vto. mes"
    */
-  @DefaultStringValue("Vto. mes:")
+  @DefaultStringValue("Vto. mes")
   @Key("vtoMes")
   String vtoMes();
 

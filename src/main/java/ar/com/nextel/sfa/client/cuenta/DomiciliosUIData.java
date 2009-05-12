@@ -39,7 +39,7 @@ public class DomiciliosUIData extends UIData {
 	TextBox partido = new TextBox();
 	PersonaDto persona = new PersonaDto();
 
-	// TODO: Hacer los combos hardcodeados!
+	// TODO: Sacar los combos hardcodeados!
 	ListBox facturacion = new ListBox();
 	ListBox entrega = new ListBox();
 	// ProvinciaDto provincia = new ProvinciaDto();
@@ -90,8 +90,7 @@ public class DomiciliosUIData extends UIData {
 				if (tipoDomicilioAsociadoDto.getTipoDomicilio().getId() == 0) {
 					if (tipoDomicilioAsociadoDto.getTipoDomicilio().getDescripcion().equals("FacturacionNo")) {
 						facturacion.setSelectedIndex(2);
-					} else if (tipoDomicilioAsociadoDto.getTipoDomicilio().getDescripcion().equals(
-							"EntregaNo")) {
+					} else if (tipoDomicilioAsociadoDto.getTipoDomicilio().getDescripcion().equals("EntregaNo")) {
 						entrega.setSelectedIndex(2);
 					}
 				} else // Si el tipoDomicilio es 1 = Facturacion
@@ -134,11 +133,12 @@ public class DomiciliosUIData extends UIData {
 		// domicilioNuevo.setProvincia(provincia);
 		domicilio.setPuerta(puerta.getText());
 		domicilio.setTorre(torre.getText());
+		
 		/** Mapeo de Facturacion y Entrega!! */
 		// Creo los dos tipos de domicilio que seleccionaron en el Combo:
 		TipoDomicilioDto tipoDomicilioFacturacionNuevo = new TipoDomicilioDto();
 		TipoDomicilioItem facturacionObjectSelected = (TipoDomicilioItem) facturacion.getSelectedItem();
-		tipoDomicilioFacturacionNuevo.setId(Long.parseLong(facturacion.getSelectedItemId()));
+		tipoDomicilioFacturacionNuevo.setId(Long.parseLong(facturacionObjectSelected.getItemValue()));
 		if (facturacionObjectSelected.getTextoAMostrar().equals("No")) {
 			tipoDomicilioFacturacionNuevo.setDescripcion(facturacionObjectSelected.getTextoNo());
 		} else {
