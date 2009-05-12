@@ -3,20 +3,26 @@ package ar.com.nextel.sfa.client.cuenta;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.set.CompositeSet.SetMutator;
+
 import ar.com.nextel.sfa.client.CuentaRpcService;
+import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
+import ar.com.nextel.sfa.client.enums.TipoTarjetaEnum;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.widget.TelefonoTextBox;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
+import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
 
 import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
@@ -67,20 +73,19 @@ public class CuentaUIData extends UIData {
 	private TextBox fechaCreacion    = new TextBox();
 	
 	private TextBox vendedorNombre   = new TextBox();
-	private Label   vendedorTelefono = new Label();
+	private TextBox vendedorTelefono = new TextBox();
 	private Label   use              = new Label();
 	
 	private TextArea observaciones = new TextArea();
-
 	private SimpleDatePicker fechaNacimiento = new SimpleDatePicker(false);
+	private SimpleLink validarTarjeta = new SimpleLink(Sfa.constant().validarTarjeta(), "#", true);
 	
 	private Label veraz = new Label("TODO");
-
 
 	PersonaDto persona = new PersonaDto();
 	List <Widget>camposObligatorios =  new ArrayList<Widget>(); 
 	List <Widget>camposObligatoriosFormaPago = new ArrayList<Widget>();
-	List <TipoTelefonoDto>tipoTelefono = new ArrayList();
+	List <TipoTelefonoDto>tipoTelefono = new ArrayList<TipoTelefonoDto>();
 
 	public CuentaUIData() {
         init();
@@ -106,18 +111,18 @@ public class CuentaUIData extends UIData {
 				exportarNombreApellidoARazonSocial();
 			}
 		});
+		tipoTarjeta.addChangeListener(new ChangeListener() {
+			public void onChange(Widget sender) {
+				setAtributosNumeroTarjeta(); 
+			}
+		});
+		validarTarjeta.addClickListener(new ClickListener() {
+			public void onClick(Widget sender) {
+				CuentaDatosForm.getInstance().validarTarjeta();
+			}
+		});
 		
-		camposObligatorios.add(nombre);
-		camposObligatorios.add(apellido);
-		camposObligatorios.add(razonSocial);
-		camposObligatorios.add(contribuyente);
-		camposObligatorios.add(proveedorAnterior);
-		camposObligatorios.add(rubro);
-		camposObligatorios.add(telPrincipalTextBox.getArea());
-		camposObligatorios.add(telPrincipalTextBox.getNumero());
-		camposObligatoriosFormaPago.add(cbu);
-		camposObligatoriosFormaPago.add(numeroTarjeta);
-		camposObligatoriosFormaPago.add(anioVto);
+		setAtributosDeCampos();
 		
 		setCombos();
 		cbu.setWidth("90%");
@@ -206,6 +211,76 @@ public class CuentaUIData extends UIData {
 		persona.setSexo(new SexoDto(Long.parseLong(sexo.getSelectedItem().getItemValue()),sexo.getSelectedItem().getItemText()));
 		return persona;
 	}
+	
+	private void setAtributosDeCampos() {
+
+        //nombres
+		nombre.setName(Sfa.constant().nombre());
+		apellido.setName(Sfa.constant().apellido());
+		razonSocial.setName(Sfa.constant().razonSocial());		
+		contribuyente.setName(Sfa.constant().contribuyente());
+        fechaNacimiento.getTextBox().setName(Sfa.constant().fechaNacimiento());
+		proveedorAnterior.setName(Sfa.constant().provedorAnterior());
+		rubro.setName(Sfa.constant().rubro());
+
+		telPrincipalTextBox.getArea().setName(Sfa.constant().telefonoPanelTitle() + " " + Sfa.constant().principal()  + " " + Sfa.constant().area());
+		telPrincipalTextBox.getNumero().setName(Sfa.constant().telefonoPanelTitle()  + " " + Sfa.constant().principal() + " " + Sfa.constant().numero());		
+		telPrincipalTextBox.getInterno().setName(Sfa.constant().telefonoPanelTitle()  + " " + Sfa.constant().principal()  + " " + Sfa.constant().interno());
+		telAdicionalTextBox.getArea().setName(Sfa.constant().telefonoPanelTitle()  + " " + Sfa.constant().adicional()  + " " + Sfa.constant().area());
+		telAdicionalTextBox.getNumero().setName(Sfa.constant().telefonoPanelTitle()  + " " + Sfa.constant().adicional()  + " " + Sfa.constant().numero());
+		telAdicionalTextBox.getInterno().setName(Sfa.constant().telefonoPanelTitle()  + " " + Sfa.constant().adicional()  + " " + Sfa.constant().interno());
+		telFaxTextBox.getArea().setName(Sfa.constant().telefonoPanelTitle() + " " + Sfa.constant().fax()  + " " + Sfa.constant().area());
+		telFaxTextBox.getNumero().setName(Sfa.constant().telefonoPanelTitle() + " " + Sfa.constant().fax()  + " " + Sfa.constant().numero());
+		telFaxTextBox.getInterno().setName(Sfa.constant().telefonoPanelTitle() + " " + Sfa.constant().fax()  + " " + Sfa.constant().interno());
+		telCelularTextBox.getArea().setName(Sfa.constant().telefonoPanelTitle() + " " + Sfa.constant().celular()  + " " + Sfa.constant().area());
+		telCelularTextBox.getNumero().setName(Sfa.constant().telefonoPanelTitle() + " " + Sfa.constant().celular()  + " " + Sfa.constant().numero());
+		
+		emailPersonal.setName(Sfa.constant().emailPanelTitle() + " " + Sfa.constant().personal());
+		emailLaboral.setName(Sfa.constant().emailPanelTitle() + " " + Sfa.constant().laboral());
+		
+		cbu.setName(Sfa.constant().cbu());
+		numeroTarjeta.setName(Sfa.constant().nroTarjeta());
+		
+		//maxLenght
+		nombre.setMaxLength(19);
+		apellido.setMaxLength(19);
+		razonSocial.setMaxLength(40);
+		categoria.setMaxLength(15);
+		iibb.setMaxLength(20);
+		vendedorNombre.setMaxLength(50);
+		vendedorTelefono.setMaxLength(15);
+		telPrincipalTextBox.getArea().setMaxLength(5);
+		telPrincipalTextBox.getNumero().setMaxLength(8);
+		telPrincipalTextBox.getInterno().setMaxLength(4);
+		telAdicionalTextBox.getArea().setMaxLength(5);
+		telAdicionalTextBox.getNumero().setMaxLength(8);
+		telAdicionalTextBox.getInterno().setMaxLength(4);
+		telFaxTextBox.getArea().setMaxLength(5);
+		telFaxTextBox.getNumero().setMaxLength(8);
+		telFaxTextBox.getInterno().setMaxLength(4);
+		telCelularTextBox.getArea().setMaxLength(5);
+		telCelularTextBox.getNumero().setMaxLength(10);
+		emailLaboral.setMaxLength(50);
+		emailPersonal.setMaxLength(50);
+		cbu.setMaxLength(22);
+		
+	}
+	
+	private void setAtributosNumeroTarjeta() {
+		if(tipoTarjeta.getSelectedItemId().equals(TipoTarjetaEnum.VIS.getId())
+		 ||tipoTarjeta.getSelectedItemId().equals(TipoTarjetaEnum.MAS.getId())
+ 		 ||tipoTarjeta.getSelectedItemId().equals(TipoTarjetaEnum.CAB.getId())
+		) {
+			numeroTarjeta.setMaxLength(16);
+		}
+		else if(tipoTarjeta.getSelectedItemId().equals(TipoTarjetaEnum.AMX.getId())) {
+			numeroTarjeta.setMaxLength(15);
+		}
+		else if(tipoTarjeta.getSelectedItemId().equals(TipoTarjetaEnum.DIN.getId())) {
+			numeroTarjeta.setMaxLength(14);
+		}
+	}
+	
 	
 	/** Getters de todos los Widgets **/
 	public ListBox getTipoDocumento() {
@@ -303,7 +378,7 @@ public class CuentaUIData extends UIData {
 		return vendedorNombre;
 	}
 
-	public Label getVendedorTelefono() {
+	public TextBox getVendedorTelefono() {
 		return vendedorTelefono;
 	}
 
@@ -367,10 +442,23 @@ public class CuentaUIData extends UIData {
 	}
 
 	public List<Widget> getCamposObligatorios() {
+		camposObligatorios.clear();
+		camposObligatorios.add(nombre);
+		camposObligatorios.add(apellido);
+		camposObligatorios.add(razonSocial);
+		camposObligatorios.add(contribuyente);
+		camposObligatorios.add(proveedorAnterior);
+		camposObligatorios.add(rubro);
+//		camposObligatorios.add(telPrincipalTextBox.getArea());
+		camposObligatorios.add(telPrincipalTextBox.getNumero());
 		return camposObligatorios;
 	}
 	public List<Widget> getCamposObligatoriosFormaPago() {
 		return camposObligatoriosFormaPago;
+	}
+
+	public SimpleLink getValidarTarjeta() {
+		return validarTarjeta;
 	}
 	
 }

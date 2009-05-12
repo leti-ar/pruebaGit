@@ -7,6 +7,7 @@ import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
+import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.VerazInitializer;
@@ -30,5 +31,7 @@ public interface CuentaRpcServiceAsync {
 	public void selectCuenta(Long cuentaId, String cod_vantive,AsyncCallback<CuentaDto> callback);
 	
 	public void reservaCreacionCuenta(DocumentoDto docDto, AsyncCallback<CuentaDto> callback);
+	
+	public void validarTarjeta(String numeroTarjeta, Integer mesVto, Integer anoVto,AsyncCallback<TarjetaCreditoValidatorResultDto> callback);
 
 }

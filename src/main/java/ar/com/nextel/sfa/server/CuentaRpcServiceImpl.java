@@ -16,6 +16,9 @@ import ar.com.nextel.business.cuentas.search.SearchCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.search.businessUnits.CuentaSearchData;
 import ar.com.nextel.business.cuentas.search.result.CuentaSearchResult;
 import ar.com.nextel.business.cuentas.select.SelectCuentaBusinessOperator;
+import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorResult;
+import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorServiceAxisImpl;
+import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorServiceException;
 import ar.com.nextel.business.dao.GenericDao;
 import ar.com.nextel.business.describable.GetAllBusinessOperator;
 import ar.com.nextel.business.vendedores.RegistroVendedores;
@@ -35,7 +38,6 @@ import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.Rubro;
 import ar.com.nextel.model.personas.beans.Documento;
-import ar.com.nextel.model.personas.beans.GrupoDocumento;
 import ar.com.nextel.model.personas.beans.Persona;
 import ar.com.nextel.model.personas.beans.Sexo;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
@@ -63,6 +65,7 @@ import ar.com.nextel.sfa.client.dto.RubroDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
+import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
 import ar.com.nextel.sfa.client.dto.TipoCanalVentasDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.dto.TipoCuentaBancariaDto;
@@ -89,7 +92,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 	private RegistroVendedores registroVendedores;
 	private SearchCuentaBusinessOperator searchCuentaBusinessOperator;
 	private SelectCuentaBusinessOperator selectCuentaBusinessOperator;
-	
+	private TarjetaCreditoValidatorServiceAxisImpl tarjetaCreditoValidatorService;
+
 	private CuentaBusinessService cuentaBusinessService;
 	
 	private Transformer transformer;
@@ -106,17 +110,14 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		super.init();
 		context = WebApplicationContextUtils
 				.getWebApplicationContext(getServletContext());
-		registroVendedores = (RegistroVendedores) context
-				.getBean("registroVendedores");
-		searchCuentaBusinessOperator = (SearchCuentaBusinessOperator) context
-				.getBean("searchCuentaBusinessOperatorBean");
+		registroVendedores = (RegistroVendedores) context.getBean("registroVendedores");
+		searchCuentaBusinessOperator = (SearchCuentaBusinessOperator) context.getBean("searchCuentaBusinessOperatorBean");
 		
 		selectCuentaBusinessOperator  = (SelectCuentaBusinessOperator)  context.getBean("selectCuentaBusinessOperator");
-		
 		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");
+		tarjetaCreditoValidatorService = (TarjetaCreditoValidatorServiceAxisImpl) context.getBean("tarjetaCreditoValidatorService");
 		
-		transformer = (Transformer) context
-				.getBean("cuentaToSearchResultTransformer");
+		transformer = (Transformer) context.getBean("cuentaToSearchResultTransformer");
 		mapper = (MapperExtended) context.getBean("dozerMapper");
 		genericDao = (GenericDao) context.getBean("genericDao");
 //		veraz = (VerazService) context.getBean("verazService");
@@ -320,6 +321,18 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 			e.printStackTrace();
 		}
 		return cuentaDto;
+	}
+	
+	public TarjetaCreditoValidatorResultDto validarTarjeta(String numeroTarjeta, Integer mesVto, Integer anoVto) {
+		TarjetaCreditoValidatorResultDto resultDto = null;
+		try {
+			TarjetaCreditoValidatorResult tarjetaCreditoValidatorResult =tarjetaCreditoValidatorService.validate(numeroTarjeta, mesVto, anoVto);
+			resultDto = (TarjetaCreditoValidatorResultDto) mapper.map(tarjetaCreditoValidatorResult, TarjetaCreditoValidatorResultDto.class);
+		} catch (TarjetaCreditoValidatorServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        return resultDto;
 	}
 	
 	/**

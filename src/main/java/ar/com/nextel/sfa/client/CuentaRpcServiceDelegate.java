@@ -69,4 +69,10 @@ public class CuentaRpcServiceDelegate {
 		WaitWindow.show();
 		cuentaRpcService.reservaCreacionCuenta(docDto,callback);
 	}
+	
+	public void validarTarjeta(String numeroTarjeta, Integer mesVto, Integer anoVto,DefaultWaitCallback callback) {
+		WaitWindow.show();
+		cuentaRpcService.validarTarjeta(numeroTarjeta, mesVto, anoVto, callback);
+	}
+	
 }

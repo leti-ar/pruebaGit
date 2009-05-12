@@ -3,6 +3,8 @@ package ar.com.nextel.sfa.client.cuenta;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.com.nextel.model.cuentas.beans.DatosDebitoTarjetaCredito;
+import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
@@ -11,6 +13,7 @@ import ar.com.nextel.sfa.client.dto.DatosDebitoTarjetaCreditoDto;
 import ar.com.nextel.sfa.client.dto.DatosEfectivoDto;
 import ar.com.nextel.sfa.client.dto.DatosPagoDto;
 import ar.com.nextel.sfa.client.dto.EmailDto;
+import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.dto.TipoEmailDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
@@ -23,10 +26,15 @@ import ar.com.nextel.sfa.client.util.FormUtils;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.widget.ListBox;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
+import ar.com.snoop.gwt.commons.client.window.MessageWindow;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -49,6 +57,7 @@ public class CuentaDatosForm extends Composite {
 	private DatosPagoDto datosPago;
 	private CuentaEdicionTabPanel cuentaTab = CuentaEdicionTabPanel.getInstance();
 	private List <Widget>camposObligatorios = new ArrayList<Widget>();
+	private GwtValidator validator = new GwtValidator();
 	
 	public static CuentaDatosForm getInstance() {
 		return instance;
@@ -230,7 +239,7 @@ public class CuentaDatosForm extends Composite {
 
 		tarjetaTable.setText(2, 0, Sfa.constant().vtoAnio());
 		tarjetaTable.setWidget(2, 1, camposTabDatos.getAnioVto());		
-		tarjetaTable.setText(2, 3, "ValidarTarjeta-TODO");
+		tarjetaTable.setWidget(2, 3, camposTabDatos.getValidarTarjeta());
 		tarjetaTable.setWidget(2, 4, null);
 		
 		tarjetaTable.getFlexCellFormatter().addStyleName(1, 0, "req");
@@ -393,7 +402,7 @@ public class CuentaDatosForm extends Composite {
     		cuentaBancariaTable.setVisible(false);
     		tarjetaTable.setVisible(true);
     		camposTabDatos.getCamposObligatoriosFormaPago().add(camposTabDatos.getNumeroTarjeta());
-    		camposTabDatos.getCamposObligatoriosFormaPago().add(camposTabDatos.getAnioVto());
+    		//camposTabDatos.getCamposObligatoriosFormaPago().add(camposTabDatos.getAnioVto());
     	} else {  //	if (id_formaPago.equals(TipoFormaPagoEnum.EFECTIVO.getTipo())) {
         	efectivoTable.setWidget(0, 1, camposTabDatos.getFormaPago());
     		efectivoTable.setVisible(true);
@@ -421,6 +430,9 @@ public class CuentaDatosForm extends Composite {
 		campos.add(camposTabDatos.getCategoria());
 		campos.add(camposTabDatos.getClaseCliente());
 		campos.add(camposTabDatos.getCicloFacturacion());
+		camposTabDatos.getIibb().setVisible(false);
+		camposTabDatos.getCargo().setVisible(false);
+		
 	    FormUtils.disableFields(campos);
 	}
     
@@ -439,6 +451,28 @@ public class CuentaDatosForm extends Composite {
 		   ||(FormUtils.fieldDirty(camposTabDatos.getObservaciones(), cuentaTab.getCuenta2editDto().getObservacionesTelMail()))
 		) return true;
 
+		if (camposTabDatos.getFormaPago().getSelectedItemId().equals(TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo())) {
+			if (cuentaTab.getCuenta2editDto().getDatosPago() instanceof DatosDebitoCuentaBancariaDto) {
+				if	(FormUtils.fieldDirty(camposTabDatos.getCbu(), ((DatosDebitoCuentaBancariaDto) cuentaTab.getCuenta2editDto().getDatosPago()).getCbu())) {
+					retorno = true;
+				}	
+			} else {
+				if ((!camposTabDatos.getCbu().getText().trim().equals("")))
+					return true;
+			}
+		}
+
+		if (camposTabDatos.getFormaPago().getSelectedItemId().equals(TipoFormaPagoEnum.TARJETA_CREDITO.getTipo())) {
+			if (cuentaTab.getCuenta2editDto().getDatosPago() instanceof DatosDebitoTarjetaCreditoDto) {
+				if	(FormUtils.fieldDirty(camposTabDatos.getNumeroTarjeta(), ((DatosDebitoTarjetaCreditoDto) cuentaTab.getCuenta2editDto().getDatosPago()).getNumero())) {
+					retorno = true;
+				}	
+			} else {
+				if ((!camposTabDatos.getCbu().getText().trim().equals("")))
+					return true;
+			}
+		}
+		
 		//telefonos
         //si la cuenta no tiene telefonos ingresados, simplemente se fija que el campo sea distinto de ""
 		if (cuentaTab.getCuenta2editDto().getPersona().getTelefonos().size()<1) {
@@ -484,22 +518,24 @@ public class CuentaDatosForm extends Composite {
 				}
 			}
 		}
+		
+		//mails
+		if (cuentaTab.getCuenta2editDto().getPersona().getEmails().size()<1) {
+            for (EmailDto email : cuentaTab.getCuenta2editDto().getPersona().getEmails()) {
+				TipoEmailDto tipo = email.getTipoEmail();
+                if (tipo.getId()==TipoEmailEnum.PERSONAL.getTipo()) {
+    				if ( (FormUtils.fieldDirty(camposTabDatos.getEmailPersonal(),email.getEmail()))) 
+    					retorno = true;
+                }
+                if (tipo.getId()==TipoEmailEnum.LABORAL.getTipo()) {
+    				if ( (FormUtils.fieldDirty(camposTabDatos.getEmailLaboral(),email.getEmail()))) 
+    					retorno = true;
+                }
+            }
+		}
 		return retorno;
 	}
 	
-	public boolean datosObligatoriosCompletos() {
-		boolean datosOK = true;
-		camposObligatorios.clear();
-		camposObligatorios = camposTabDatos.getCamposObligatorios();
-		camposObligatorios.addAll(camposTabDatos.getCamposObligatoriosFormaPago());
-		for(Widget campo : camposObligatorios) {
-			if(FormUtils.fieldEmpty(campo)) {
-				return false;	
-			}
-		}
-		return datosOK;
-	}
-
 	/**
 	 * selecciona la opcion del combo sexo que corresponde al tipo de documento
 	 */
@@ -513,19 +549,79 @@ public class CuentaDatosForm extends Composite {
 	    }
 	}
 	
-	public List<String> validarCompletitud() { 
-		//boolean datosObligatorios = datosObligatoriosCompletos();
-		GwtValidator validator = new GwtValidator();
-		if (!datosObligatoriosCompletos())
-			validator.addError("Hay Campos sin completar !!!!!!!!!");
-		
-//		validator.addTarget(nss).required("Debe ingresar un Nº de Solicitud").maxLength(10,"El Nº de solicitud debe tener menos de 10 dígitos");
-//		validator.addTarget(entrega).required("Debe ingresar un domicilio de entrega");
-//		validator.addTarget(facturacion).required("Debe ingresar un domicilio de facturación");
-//		validator.addTarget(credFidelizacion).greater("La Cantidad de crédito de fidelización a utilizar no puede exceder el máximo disponible",solicitudServicio.getMontoDisponible());
-//		validator.addTarget(pataconex).greater("La cantidad de pataconex ingresada excede el Precio de Venta Total. Por favor modifique el monto",solicitudServicio.getMontoDisponible());
+	public List<String> validarCompletitud() {
+		validator.clear();
+		camposObligatorios.clear();
+		camposObligatorios = camposTabDatos.getCamposObligatorios();
+		camposObligatorios.addAll(camposTabDatos.getCamposObligatoriosFormaPago());
+		for(Widget campo : camposObligatorios) {
+			if (campo instanceof TextBox)
+				validator.addTarget((TextBox)campo).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", ((TextBox)campo).getName()));
+			if (campo instanceof ListBox)
+				validator.addTarget(((ListBox)campo).getSelectedItemText()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}",((ListBox)campo).getName()));			
+		}
 		validator.fillResult();
 		return validator.getErrors();
+	}
+
+	public List<String> validarCamposTabDatos() {
+		validator.clear();
+
+		if (!camposTabDatos.getFechaNacimiento().getTextBox().getText().equals("")) 
+			validator.addTarget(camposTabDatos.getFechaNacimiento().getTextBox()).date(Sfa.constant().ERR_FECHA_NO_VALIDA().replaceAll("\\{1\\}", camposTabDatos.getFechaNacimiento().getTextBox().getName()));
+
+		if (!camposTabDatos.getEmailPersonal().getText().equals(""))
+		    validator.addTarget(camposTabDatos.getEmailPersonal()).mail(Sfa.constant().ERR_EMAIL_NO_VALIDO().replaceAll("\\{1\\}", camposTabDatos.getEmailPersonal().getName()));
+		if (!camposTabDatos.getEmailLaboral().getText().equals(""))
+			validator.addTarget(camposTabDatos.getEmailLaboral()).mail(Sfa.constant().ERR_EMAIL_NO_VALIDO().replaceAll("\\{1\\}", camposTabDatos.getEmailLaboral().getName()));
+
+		if(!camposTabDatos.getTelPrincipalTextBox().getArea().getText().equals("")) 
+			validator.addTarget(camposTabDatos.getTelPrincipalTextBox().getArea()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelPrincipalTextBox().getArea().getName()));
+		if(!camposTabDatos.getTelPrincipalTextBox().getNumero().getText().equals("")) 
+			validator.addTarget(camposTabDatos.getTelPrincipalTextBox().getNumero()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelPrincipalTextBox().getNumero().getName()));
+		if(!camposTabDatos.getTelPrincipalTextBox().getInterno().getText().equals(""))
+			validator.addTarget(camposTabDatos.getTelPrincipalTextBox().getInterno()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelPrincipalTextBox().getInterno().getName()));
+		if(!camposTabDatos.getTelAdicionalTextBox().getArea().getText().equals(""))
+			validator.addTarget(camposTabDatos.getTelAdicionalTextBox().getArea()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelAdicionalTextBox().getArea().getName()));
+		if(!camposTabDatos.getTelAdicionalTextBox().getNumero().getText().equals(""))
+			validator.addTarget(camposTabDatos.getTelAdicionalTextBox().getNumero()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelAdicionalTextBox().getNumero().getName()));
+		if(!camposTabDatos.getTelAdicionalTextBox().getInterno().getText().equals(""))
+			validator.addTarget(camposTabDatos.getTelAdicionalTextBox().getInterno()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelAdicionalTextBox().getInterno().getName()));
+		if(!camposTabDatos.getTelFaxTextBox().getArea().getText().equals(""))
+			validator.addTarget(camposTabDatos.getTelFaxTextBox().getArea()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelFaxTextBox().getArea().getName()));
+		if(!camposTabDatos.getTelFaxTextBox().getNumero().getText().equals(""))
+			validator.addTarget(camposTabDatos.getTelFaxTextBox().getNumero()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelFaxTextBox().getNumero().getName()));
+		if(!camposTabDatos.getTelFaxTextBox().getInterno().getText().equals(""))
+			validator.addTarget(camposTabDatos.getTelFaxTextBox().getInterno()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelFaxTextBox().getInterno().getName()));
+		if(!camposTabDatos.getTelCelularTextBox().getArea().getText().equals(""))
+			validator.addTarget(camposTabDatos.getTelCelularTextBox().getArea()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelCelularTextBox().getArea().getName()));
+		if(!camposTabDatos.getTelCelularTextBox().getNumero().getText().equals(""))
+			validator.addTarget(camposTabDatos.getTelCelularTextBox().getNumero()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelCelularTextBox().getNumero().getName()));
+		
+		if(!camposTabDatos.getNumeroTarjeta().getText().equals(""))
+			validator.addTarget(camposTabDatos.getNumeroTarjeta()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getNumeroTarjeta().getName()));
+		
+		validator.fillResult();
+		return validator.getErrors();
+	}
+	
+	public void validarTarjeta() {
+		if (!camposTabDatos.getNumeroTarjeta().getText().equals("")) {
+			CuentaRpcService.Util.getInstance().validarTarjeta(camposTabDatos.getNumeroTarjeta().getText(), new Integer(camposTabDatos.getMesVto().getSelectedItemId()), new Integer(camposTabDatos.getAnioVto().getSelectedItemId()), 	new DefaultWaitCallback() {
+				public void success(Object result) {
+					TarjetaCreditoValidatorResultDto tarjetaCreditoValidatorResult = (TarjetaCreditoValidatorResultDto) result;
+					if(tarjetaCreditoValidatorResult==null) {
+						ErrorDialog.getInstance().show(Sfa.constant().ERR_AL_VALIDAR_TARJETA());
+					}else if (tarjetaCreditoValidatorResult.getIsValid()) {
+						MessageWindow.alert("Debe ingresar un dia hábil");
+					} else {
+						ErrorDialog.getInstance().show(Sfa.constant().ERR_TARJETA_NO_VALIDA());
+					}
+				}
+			});
+		} else {
+			ErrorDialog.getInstance().show(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", camposTabDatos.getNumeroTarjeta().getName()));
+		}
 	}
 	
 	private CuentaDto getCuentaDtoFromEditor() {

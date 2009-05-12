@@ -125,7 +125,7 @@ public class CuentaEdicionTabPanel {
 			public void onClick(Widget arg0) {
 				if (!cuentaDatosForm.formularioDatosDirty()) {
 					ErrorDialog.getInstance().show("NO HAY DATOS PARA GUARDAR");
-				} else if (validarCompletitud()) {
+				} else if (validarCompletitud() && validarCamposTabDatos()) {
 					//ErrorDialog.getInstance().show("HAY CAMPOS OBLIGATORIOS SIN COMPLETAR");
 					guardar();
 				} 
@@ -134,7 +134,7 @@ public class CuentaEdicionTabPanel {
 		getCrearSS().addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				if (cuentaDatosForm.formularioDatosDirty()) {
-					ErrorDialog.getInstance().show("Hay Cambios sin Guardar");
+					ErrorDialog.getInstance().show(Sfa.constant().ERR_FORMULARIO_DIRTY());
 				} else { 
 					crearSS();
 				}
@@ -143,7 +143,7 @@ public class CuentaEdicionTabPanel {
 		getAgregar().addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				if (cuentaDatosForm.formularioDatosDirty()) {
-					ErrorDialog.getInstance().show("Hay Cambios sin Guardar");
+					ErrorDialog.getInstance().show(Sfa.constant().ERR_FORMULARIO_DIRTY());
 				} else {
 					agregar(null/*PersonaDto*/);
 				}
@@ -152,7 +152,7 @@ public class CuentaEdicionTabPanel {
 		getCancelar().addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				if (cuentaDatosForm.formularioDatosDirty()) {
-					ErrorDialog.getInstance().show("Hay Cambios sin Guardar");
+					ErrorDialog.getInstance().show(Sfa.constant().ERR_FORMULARIO_DIRTY());
 				} else {
 					cancelar();
 				}
@@ -171,24 +171,19 @@ public class CuentaEdicionTabPanel {
 	
 	private void guardar() {
 		ErrorDialog.getInstance().show("OK PARA GUARDAR DATOS (@TODO)");
-	}
-	
-	private void crearSS() {
-		ErrorDialog.getInstance().show("OK PARA CREAR SS (@TODO)");
-	}
-	/**
-	 * 
-	 * @param personaDto
-	 */
-	private void agregar(PersonaDto personaDto) {
-		ErrorDialog.getInstance().show("OK PARA AGREGAR DIVISIO/SUSCRIPTOR (@TODO)");
-//		CuentaRpcService.Util.getInstance().saveCuenta(personaDto,
-//				new DefaultWaitCallback() {
+//		CuentaRpcService.Util.getInstance().saveCuenta(personaDto,	new DefaultWaitCallback() {
 //			public void success(Object result) {
 //				PersonaDto personaDto = (PersonaDto) result;
 //				System.out.println("Apretaste Agregar");
 //			}
 //		});
+	}
+	
+	private void crearSS() {
+		ErrorDialog.getInstance().show("OK PARA CREAR SS (@TODO)");
+	}
+	private void agregar(PersonaDto personaDto) {
+		ErrorDialog.getInstance().show("OK PARA AGREGAR DIVISIO/SUSCRIPTOR (@TODO)");
 	}
 	private void cancelar() {
 		ErrorDialog.getInstance().show("OK PARA CANCELAR");
@@ -204,7 +199,13 @@ public class CuentaEdicionTabPanel {
 		}
 		return errors.isEmpty(); 
 	}
-	
+	private boolean validarCamposTabDatos() {
+		List<String> errors = cuentaDatosForm.validarCamposTabDatos();
+		if (!errors.isEmpty()) {
+			ErrorDialog.getInstance().show(errors);
+		} 
+		return errors.isEmpty(); 
+	}
 	
 	///////////////
 
