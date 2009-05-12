@@ -30,8 +30,9 @@ public class DomicilioUI extends NextelDialog {
 	private SimpleLink linkCerrar;
 	private SimpleLink linkAceptar;
 	private DomiciliosUIData domiciliosData;
-	private boolean editable; //Verificar q no sea la misma propiedad que locked del DomicilioCuentaDto!!!
+	private boolean noEditable; //Verificar q no sea la misma propiedad que locked del DomicilioCuentaDto!!!
 	private static DomicilioUI instance = new DomicilioUI();
+	private EliminarDomicilioConfirmacionUI deleteConfirmDialog = new EliminarDomicilioConfirmacionUI();
 
 	public static DomicilioUI getInstance() {
 		return instance;
@@ -63,10 +64,16 @@ public class DomicilioUI extends NextelDialog {
 	 * @author esalvador
 	 **/
 	public void cargarPopupCopiarDomicilio(DomiciliosCuentaDto domicilio) {
+		noEditable = (domicilio.isLocked());
 		domiciliosData.setDomicilio(domicilio);
-		linkAceptar.setVisible(true);
-		domiciliosData.enableFields();
 		showAndCenter();
+		if (noEditable){
+			domiciliosData.disableFields();
+			linkAceptar.setVisible(false);
+		}else{
+			domiciliosData.enableFields();
+			linkAceptar.setVisible(true);
+		}
 		setDialogTitle("Copiar Domicilio");
 	}
 	
@@ -74,10 +81,10 @@ public class DomicilioUI extends NextelDialog {
 	 * @author esalvador
 	 **/
 	public void cargarPopupEditarDomicilio(DomiciliosCuentaDto domicilio) {
-		editable = (domicilio.isLocked());
+		noEditable = (domicilio.isLocked());
 		domiciliosData.setDomicilio(domicilio);
 		showAndCenter();
-		if (!editable){
+		if (noEditable){
 			domiciliosData.disableFields();
 			linkAceptar.setVisible(false);
 		}else{
@@ -277,11 +284,18 @@ public class DomicilioUI extends NextelDialog {
 	}
 
 	public boolean isEditable() {
-		return editable;
+		return noEditable;
 	}
 
 	public void setEditable(boolean editable) {
-		this.editable = editable;
+		this.noEditable = editable;
 	}
-	
+
+	public EliminarDomicilioConfirmacionUI getDeleteConfirmDialog() {
+		return deleteConfirmDialog;
+	}
+
+	public void setDeleteConfirmDialog(EliminarDomicilioConfirmacionUI deleteConfirmDialog) {
+		this.deleteConfirmDialog = deleteConfirmDialog;
+	}
 }

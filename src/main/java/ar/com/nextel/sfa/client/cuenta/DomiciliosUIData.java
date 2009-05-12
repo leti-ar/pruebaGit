@@ -115,6 +115,27 @@ public class DomiciliosUIData extends UIData {
 		}
 	}
 
+	public DomiciliosCuentaDto getDomicilioCopiado() {
+		DomiciliosCuentaDto domicilioCopiado = new DomiciliosCuentaDto(); 
+		domicilioCopiado.setCalle(calle.getText());
+		domicilioCopiado.setEntre_calle(entreCalle.getText());
+		domicilioCopiado.setY_calle(ycalle.getText());
+		domicilioCopiado.setCodigo_postal(codigoPostal.getText());
+		domicilioCopiado.setLocalidad(localidad.getText());
+		domicilioCopiado.setPartido(partido.getText());
+		domicilioCopiado.setCpa(cpa.getText());
+		domicilioCopiado.setDepartamento(departamento.getText());
+		domicilioCopiado.setManzana(manzana.getText());
+		domicilioCopiado.setNumero(Long.parseLong(numero.getText()));
+		domicilioCopiado.setObservaciones(observaciones.getText());
+		domicilioCopiado.setPiso(piso.getText());
+		// domicilioNuevo.setProvincia(provincia);
+		domicilioCopiado.setPuerta(puerta.getText());
+		domicilioCopiado.setTorre(torre.getText());
+		domicilioCopiado.setTiposDomicilioAsociado(mapeaCombosFacturacionEntrega());
+		return domicilioCopiado;
+	}
+	
 	public DomiciliosCuentaDto getDomicilio() {
 		/** TODO: Deberia hacer alguna validacion?? */
 		/** TODO: Terminar este mapeo! */
@@ -133,7 +154,11 @@ public class DomiciliosUIData extends UIData {
 		// domicilioNuevo.setProvincia(provincia);
 		domicilio.setPuerta(puerta.getText());
 		domicilio.setTorre(torre.getText());
-		
+		domicilio.setTiposDomicilioAsociado(mapeaCombosFacturacionEntrega());
+		return domicilio;
+	}
+
+	public List<TipoDomicilioAsociadoDto> mapeaCombosFacturacionEntrega() {
 		/** Mapeo de Facturacion y Entrega!! */
 		// Creo los dos tipos de domicilio que seleccionaron en el Combo:
 		TipoDomicilioDto tipoDomicilioFacturacionNuevo = new TipoDomicilioDto();
@@ -177,11 +202,11 @@ public class DomiciliosUIData extends UIData {
 		List<TipoDomicilioAsociadoDto> listaTipoDomiciliosAsociados = new ArrayList();
 		listaTipoDomiciliosAsociados.add(tipoDomicilioAsociadoNuevoFacturacion);
 		listaTipoDomiciliosAsociados.add(tipoDomicilioAsociadoNuevoEntrega);
-		domicilio.setTiposDomicilioAsociado(listaTipoDomiciliosAsociados);
 		//
-		return domicilio;
+		
+		return listaTipoDomiciliosAsociados;
 	}
-
+	
 	public DomiciliosUIData() {
 		fields.add(calle);
 		fields.add(numero);

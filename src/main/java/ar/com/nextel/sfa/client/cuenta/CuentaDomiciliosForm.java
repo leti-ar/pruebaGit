@@ -60,7 +60,7 @@ public class CuentaDomiciliosForm extends Composite {
 		crearDomicilio.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				// Abajo se setea en el DomicilioUI la accion a tomar al apretar Aceptar.
-				DomicilioUI.getInstance().setComandoAceptar(getComandoNuevoYCopiarDomicilio());
+				DomicilioUI.getInstance().setComandoAceptar(getComandoNuevoDomicilio());
 				DomicilioUI.getInstance().cargarPopupNuevoDomicilio();
 			}
 		});
@@ -99,20 +99,18 @@ public class CuentaDomiciliosForm extends Composite {
 
 	/**
 	 * @author eSalvador
+	 * Devuelve el comando que Agrega un nuevo Domicilio a la Persona.
 	 **/
-	private Command getComandoNuevoYCopiarDomicilio() {
+	private Command getComandoNuevoDomicilio() {
+		/**TODO:Aca de beria hacer la validacion de datos de entrada, 
+		 **     y despues abrir el popup de Normalizacion.
+		 **     El addDomicilio a persona lo debe hacer el Aceptar del PopUp.*/
 		Command comandoAceptar = new Command() {
 			public void execute() {
-				// Aca le agrega un nuevo Domicilio a la Persona.
 				DomiciliosCuentaDto domicilioNuevo = DomicilioUI.getInstance().getDomiciliosData().getDomicilio();
 				PersonaDto persona = cuentaDto.getPersona();
-				/**TODO:Aca de beria hacer la validacion de datos de entrada, 
-				 **     y despues abrir el popup de Normalizacion.
-				 **     El addDomicilio a persona lo debe hacer el Aceptar del PopUp.*/
-					persona.getDomicilios().add(domicilioNuevo);
-				//
+				persona.getDomicilios().add(domicilioNuevo);
 				DomicilioUI.getInstance().hide();
-				// Refresca la grilla de domicilios
 				datosTabla.clear();
 				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().cargaTablaDomicilios(cuentaDto);
 			}
@@ -120,20 +118,54 @@ public class CuentaDomiciliosForm extends Composite {
 		return comandoAceptar;
 	}
 	
+	
 	/**
 	 * @author eSalvador
+	 * Devuelve el comando que Agrega el domicilio editado que le llega, con los datos nuevos.
 	 **/
-	private Command getComandoEditarDomicilio(DomiciliosCuentaDto domicilioAEditar) {
-		this.domicilioAEditar = domicilioAEditar;
+	private Command getComandoCopiarDomicilio() {
+		/**TODO:Aca deberia hacer la validacion de datos de entrada, 
+		 **     y despues abrir el popup de Normalizacion.
+		 **     El addDomicilio a persona lo debe hacer el Aceptar del PopUp.*/
 		Command comandoAceptar = new Command() {
 			public void execute() {
-				// Aca agrega el domicilio editado que le llega, con los datos nuevos.
-				/**TODO:Aca deberia hacer la validacion de datos de entrada, 
-				 **     y despues abrir el popup de Normalizacion.
-				 **     El addDomicilio a persona lo debe hacer el Aceptar del PopUp.*/
+				PersonaDto persona = cuentaDto.getPersona();
+				persona.getDomicilios().add(DomicilioUI.getInstance().getDomiciliosData().getDomicilioCopiado());
+				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConDomicilioCopiado();
 				DomicilioUI.getInstance().hide();
-				// Refresca la grilla de domicilios
-				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConNuevoDomicilio(cuentaDto);
+			}
+		};
+		return comandoAceptar;
+	}
+	
+	/**
+	 * @author eSalvador
+	 * Devuelve el comando que Agrega el domicilio editado que le llega, con los datos nuevos.
+	 **/
+	private Command getComandoEditarDomicilio() {
+		/**TODO:Aca deberia hacer la validacion de datos de entrada, 
+		 **     y despues abrir el popup de Normalizacion.
+		 **     El addDomicilio a persona lo debe hacer el Aceptar del PopUp.*/
+		Command comandoAceptar = new Command() {
+			public void execute() {
+				DomiciliosCuentaDto domicilioEditado = DomicilioUI.getInstance().getDomiciliosData().getDomicilio();
+				DomicilioUI.getInstance().hide();
+				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConNuevoDomicilio(domicilioEditado);
+			}
+		};
+		return comandoAceptar;
+	}
+	
+	/**
+	 * @author eSalvador
+	 * Devuelve el comando que Borra el domicilio seleccionado en la grilla de resultados.
+	 **/
+	private Command getComandoBorrarDomicilio() {
+		//TODO:Aca deberia hacer abrir el popup de confirmacion para borrar!!
+		Command comandoAceptar = new Command() {
+			public void execute() {
+				/**TODO: Terminar. Hacer efectivo el borrado del domicilio seleccionado!*/
+				//CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConNuevoDomicilio(domicilioEditado);
 			}
 		};
 		return comandoAceptar;
@@ -165,19 +197,26 @@ public class CuentaDomiciliosForm extends Composite {
 	 * Aca llama al validador para ver si tiene SSCerradas, y si tiene, advertir con un
 	 * popup, e inhabilitar los campos de edicion del Domicilio.
 	 **/
-	public void validaHabilitacionDeCampos(CuentaDto cuentaDto){
+	public void validaHabilitacionDeCampos(){
 		if (buscaSSCerradasAsociadas(cuentaDto.getCodigoVantive()).size() != 0) {
-			domicilioAEditar.setLocked(false);
-		} else {
 			domicilioAEditar.setLocked(true);
+		} else {
+			domicilioAEditar.setLocked(false);
 		}
 	}
 	
 	/**
 	 * @author eSalvador
+	 * Refresca la grilla de domicilios
 	 **/
-	public void refrescaTablaConNuevoDomicilio(CuentaDto cuentaDto){
-		validaHabilitacionDeCampos(cuentaDto);
+	public void refrescaTablaConNuevoDomicilio(DomiciliosCuentaDto domicilioNuevoOEditado){
+		this.domicilioAEditar = domicilioNuevoOEditado;
+		validaHabilitacionDeCampos();
+		datosTabla.clear();
+		CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().cargaTablaDomicilios(cuentaDto);
+	}
+	
+	public void refrescaTablaConDomicilioCopiado(){
 		datosTabla.clear();
 		CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().cargaTablaDomicilios(cuentaDto);
 	}
@@ -245,19 +284,20 @@ public class CuentaDomiciliosForm extends Composite {
 				if (row != 0) {
 					// Acciones a tomar cuando haga click en los lapices de edicion:
 					if (col == 0) {
-						DomicilioUI.getInstance().setComandoAceptar(getComandoEditarDomicilio(domicilio));
-						validaHabilitacionDeCampos(cuentaDto);
+						domicilioAEditar = domicilio;
+						DomicilioUI.getInstance().setComandoAceptar(getComandoEditarDomicilio());
+						validaHabilitacionDeCampos();
 						DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilio);
 					}
-
 					// Acciones a tomar cuando haga click en iconos de copiado de domicilios:
 					if (col == 1) {
-						DomicilioUI.getInstance().setComandoAceptar(getComandoNuevoYCopiarDomicilio());	
+						DomicilioUI.getInstance().setComandoAceptar(getComandoCopiarDomicilio());	
 						DomicilioUI.getInstance().cargarPopupCopiarDomicilio(domicilio);
 					}
 					// Acciones a tomar cuando haga click en iconos de borrado de domicilios:
 					if (col == 2) {
-						//TODO: Terminar!!!
+						DomicilioUI.getInstance().getDeleteConfirmDialog().setComandoAceptar(getComandoBorrarDomicilio());
+						DomicilioUI.getInstance().getDeleteConfirmDialog().showAndCenter();
 					}
 				}
 			}
