@@ -9,11 +9,11 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Widget;
 
 public class CuentaContactoForm extends Composite {
-	
+
 	private FlexTable mainPanel;
 
 	private static CuentaContactoForm instance = null;
-	
+
 	public static CuentaContactoForm getInstance() {
 		if(instance == null){
 			instance = new CuentaContactoForm();
@@ -66,10 +66,8 @@ public class CuentaContactoForm extends Composite {
 		table.setHTML(0, 3, Sfa.constant().apellido());
 		table.setHTML(0, 4, Sfa.constant().telefono());
 		table.setHTML(0, 5, Sfa.constant().whiteSpace());
-
-	}
-
-	/*
+		
+			/*
 	 * private void validarYAgregar(PersonaDto personaDto) {
 	 * CuentaRpcService.Util.getInstance().saveCuenta(personaDto, new
 	 * DefaultWaitCallback() { public void success(Object result) { PersonaDto
@@ -78,4 +76,7 @@ public class CuentaContactoForm extends Composite {
 	 * 
 	 * }
 	 */
+
+	}
+
 }
