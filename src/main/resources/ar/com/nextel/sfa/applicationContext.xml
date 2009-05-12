@@ -15,6 +15,7 @@
 	<tx:annotation-driven />
 
 	<import resource="classpath:spring-config.xml" />
+	<import resource="spring-download-config.xml" />
 
 	<bean id="dozerMapper" class="ar.com.nextel.sfa.server.util.MapperExtended">
 		<property name="mappingFiles">
