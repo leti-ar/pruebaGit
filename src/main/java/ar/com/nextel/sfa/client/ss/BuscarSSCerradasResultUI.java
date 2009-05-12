@@ -10,8 +10,10 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.util.WindowUtils;
 
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -38,6 +40,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 	private Double cantPataconex = new Double(0);
 	private int cantEqFirmados = 0;
 	private FlowPanel exportarExcel;
+	private SolicitudServicioCerradaDto solicitudServicioCerradaDto;
 
 	public Long getTotalRegistrosBusqueda() {
 		return totalRegistrosBusqueda;
@@ -66,6 +69,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 	};
 
 	private void searchSSCerradas(SolicitudServicioCerradaDto solicitudServicioCerradaDto, boolean firstTime) {
+		this.solicitudServicioCerradaDto = solicitudServicioCerradaDto;
 		SolicitudRpcService.Util.getInstance().searchSSCerrada(solicitudServicioCerradaDto,
 				new DefaultWaitCallback<List<SolicitudServicioCerradaResultDto>>() {
 					public void success(List<SolicitudServicioCerradaResultDto> result) {
@@ -84,21 +88,33 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 	public void setSolicitudServicioDto(
 			List<SolicitudServicioCerradaResultDto> solicitudServicioCerradaResultDto) {
 		this.solicitudesServicioCerradaResultDto = solicitudServicioCerradaResultDto;
-		add(loadExcel());
+		loadExcel();
 		add(loadTable());
 		setVisible(true);
 	}
 
-	private Widget loadExcel() {
+	private void loadExcel() {
 		if (exportarExcel != null) {
 			exportarExcel.unsinkEvents(Event.getEventsSunk(exportarExcel.getElement()));
 			exportarExcel.removeFromParent();
 		}
 		exportarExcel = new FlowPanel();
 		Image icon = IconFactory.excel();
-		icon.addStyleName("float-rigth");
-		exportarExcel.add(icon);
-		return exportarExcel;
+		icon.addStyleName("exportarExcelSS");
+		exportarExcel.add(icon);	
+		add(exportarExcel);
+		icon.addClickListener(new ClickListener() {
+			public void onClick(Widget sender) {
+				SolicitudRpcService.Util.getInstance().buildExcel(solicitudServicioCerradaDto, 
+				new DefaultWaitCallback<String>() {
+					public void success(String result) {
+						if (result != null) {
+							WindowUtils.redirect("/download/download?module=solicitudes&service=xls&name="+result+".xls");
+						}
+					}
+				}); 
+			}
+		});
 	}
 
 	private Widget loadTable() {
@@ -197,5 +213,5 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 	public void setCambiosSSCerradasResultUI(CambiosSSCerradasResultUI cambiosSSCerradasResultUI) {
 		this.cambiosSSCerradasResultUI = cambiosSSCerradasResultUI;
 	}
-
+	
 }
