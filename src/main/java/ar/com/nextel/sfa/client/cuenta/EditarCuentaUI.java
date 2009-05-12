@@ -33,8 +33,8 @@ public class EditarCuentaUI extends ApplicationUI {
 			CuentaRpcService.Util.getInstance().reservaCreacionCuenta(docDto,new DefaultWaitCallback<CuentaDto>() {
 				public void success(CuentaDto ctaDto) {
 					cuentaTab.setCuenta2editDto(ctaDto);
-					cuentaTab.getCuentaDatosForm().deshabilitarCamposAlAgregarCuenta();
 					cuentaTab.getCuentaDatosForm().setDefaultComboSexo(ctaDto.getPersona().getIdTipoDocumento(),ctaDto.getPersona().getDocumento().getNumero());
+					cuentaTab.getCuentaDatosForm().deshabilitarCamposAlAgregarCuenta();
 					cargaPaneles();
 				}
 			});	

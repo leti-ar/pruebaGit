@@ -3,8 +3,6 @@ package ar.com.nextel.sfa.client.cuenta;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.collections.set.CompositeSet.SetMutator;
-
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
@@ -58,6 +56,7 @@ public class CuentaUIData extends UIData {
 	private TextBox categoria        = new TextBox();
 	private TextBox nombreDivision   = new TextBox();
 	private TextBox iibb             = new TextBox();
+	private TextBox use              = new TextBox();
 	private TextBox cicloFacturacion = new TextBox();
 	private TextBox emailPersonal    = new TextBox();
 	private TextBox emailLaboral     = new TextBox();
@@ -74,7 +73,29 @@ public class CuentaUIData extends UIData {
 	
 	private TextBox vendedorNombre   = new TextBox();
 	private TextBox vendedorTelefono = new TextBox();
-	private Label   use              = new Label();
+	
+	
+	private Label   tipoDocLabel  = new Label(Sfa.constant().tipoDocumento());
+	private Label   numDocLabel   = new Label(Sfa.constant().numero());
+	private Label   razSocLabel   = new Label(Sfa.constant().razonSocial());
+	private Label   nombreLabel   = new Label(Sfa.constant().nombre());
+	private Label   apellidoLabel = new Label(Sfa.constant().apellido());
+	private Label   sexoLabel     = new Label(Sfa.constant().sexo());
+	private Label   fecNacLabel   = new Label(Sfa.constant().fechaNacimiento());
+	private Label   contrLabel    = new Label(Sfa.constant().contribuyente());
+	private Label   provAntLabel  = new Label(Sfa.constant().provedorAnterior());
+	private Label   rubroLabel    = new Label(Sfa.constant().rubro());
+	private Label   claseClLabel  = new Label(Sfa.constant().claseCliente());
+	private Label   categLabel    = new Label(Sfa.constant().categoria());
+	private Label   cicloFacLabel = new Label(Sfa.constant().cicloFacturacion());
+	private Label   verazLabel    = new Label(Sfa.constant().veraz());
+	private Label   useLabel      = new Label(Sfa.constant().use());
+	private Label   cargoLabel    = new Label(Sfa.constant().cargo());
+	private Label   iibbLabel     = new Label(Sfa.constant().iibb());
+	private Label   nomDivLabel   = new Label(Sfa.constant().nombreDivision());
+	private Label   cbuLabel      = new Label(Sfa.constant().cbu());
+	private Label   numTarLabel   = new Label(Sfa.constant().nroTarjeta());
+	private Label   prinLabel     = new Label(Sfa.constant().principal());
 	
 	private TextArea observaciones = new TextArea();
 	private SimpleDatePicker fechaNacimiento = new SimpleDatePicker(false);
@@ -86,12 +107,18 @@ public class CuentaUIData extends UIData {
 	List <Widget>camposObligatorios =  new ArrayList<Widget>(); 
 	List <Widget>camposObligatoriosFormaPago = new ArrayList<Widget>();
 	List <TipoTelefonoDto>tipoTelefono = new ArrayList<TipoTelefonoDto>();
-
+	
+	
 	public CuentaUIData() {
         init();
 	}
 
 	public void init() {
+		sexo.addChangeListener(new ChangeListener() {
+			public void onChange(Widget sender) {
+				CuentaDatosForm.getInstance().cambiarVisibilidadCamposSegunSexo(); 
+			}
+		});
 		formaPago.addChangeListener(new ChangeListener() {
 			public void onChange(Widget sender) {
 				CuentaDatosForm.getInstance().setVisiblePanelFormaPagoYActualizarCamposObligatorios(((ListBox) sender).getSelectedItemId());
@@ -123,43 +150,43 @@ public class CuentaUIData extends UIData {
 		});
 		
 		setAtributosDeCampos();
-		
 		setCombos();
+
 		cbu.setWidth("90%");
 		observaciones.addStyleName("textAreaCuentaData");
 		usuario.setEnabled(false);
 		fechaCreacion.setEnabled(false);
-		fields.add(tipoDocumento);
-		fields.add(numeroDocumento);
-		fields.add(razonSocial);
-		fields.add(nombre);
-		fields.add(apellido);
-		fields.add(sexo);
-		fields.add(fechaNacimiento);
-		fields.add(contribuyente);
-		fields.add(nombreDivision);
-		fields.add(cargo);
-		fields.add(use);
-		fields.add(proveedorAnterior);
-		fields.add(rubro);
-		fields.add(claseCliente);
-		fields.add(categoria);
-		fields.add(iibb);
-		fields.add(cicloFacturacion);
-		fields.add(veraz);
-		fields.add(observaciones);
-		fields.add(emailPersonal);
-		fields.add(emailLaboral);
-		fields.add(formaPago);
-		fields.add(vendedorNombre);
-		fields.add(vendedorTelefono);
-		fields.add(tipoCanalVentas);
-		fields.add(tipoCuentaBancaria);
-		fields.add(tipoTarjeta);
-		fields.add(mesVto);
-		fields.add(anioVto);
-		fields.add(cbu);
-		fields.add(numeroTarjeta);
+		
+//		fields.add(tipoDocumento);
+//		fields.add(numeroDocumento);
+//		fields.add(razonSocial);
+//		fields.add(nombre);
+//		fields.add(apellido);
+//		fields.add(sexo);
+//		fields.add(fechaNacimiento);
+//		fields.add(contribuyente);
+//		fields.add(nombreDivision);
+//		fields.add(cargo);
+//		fields.add(proveedorAnterior);
+//		fields.add(rubro);
+//		fields.add(claseCliente);
+//		fields.add(categoria);
+//		fields.add(iibb);
+//		fields.add(cicloFacturacion);
+//		fields.add(veraz);
+//		fields.add(observaciones);
+//		fields.add(emailPersonal);
+//		fields.add(emailLaboral);
+//		fields.add(formaPago);
+//		fields.add(vendedorNombre);
+//		fields.add(vendedorTelefono);
+//		fields.add(tipoCanalVentas);
+//		fields.add(tipoCuentaBancaria);
+//		fields.add(tipoTarjeta);
+//		fields.add(mesVto);
+//		fields.add(anioVto);
+//		fields.add(cbu);
+//		fields.add(numeroTarjeta);
 		
 	}
 	
@@ -214,6 +241,17 @@ public class CuentaUIData extends UIData {
 	
 	private void setAtributosDeCampos() {
 
+		//obligatorios (style)
+		nombreLabel.addStyleName("req");
+		apellidoLabel.addStyleName("req");
+		razSocLabel.addStyleName("req");		
+		contrLabel.addStyleName("req");
+		provAntLabel.addStyleName("req");
+		rubroLabel.addStyleName("req");
+		prinLabel.addStyleName("req");
+		cbuLabel.addStyleName("req");
+		numTarLabel.addStyleName("req");
+		
         //nombres
 		nombre.setName(Sfa.constant().nombre());
 		apellido.setName(Sfa.constant().apellido());
@@ -222,7 +260,6 @@ public class CuentaUIData extends UIData {
         fechaNacimiento.getTextBox().setName(Sfa.constant().fechaNacimiento());
 		proveedorAnterior.setName(Sfa.constant().provedorAnterior());
 		rubro.setName(Sfa.constant().rubro());
-
 		telPrincipalTextBox.getArea().setName(Sfa.constant().telefonoPanelTitle() + " " + Sfa.constant().principal()  + " " + Sfa.constant().area());
 		telPrincipalTextBox.getNumero().setName(Sfa.constant().telefonoPanelTitle()  + " " + Sfa.constant().principal() + " " + Sfa.constant().numero());		
 		telPrincipalTextBox.getInterno().setName(Sfa.constant().telefonoPanelTitle()  + " " + Sfa.constant().principal()  + " " + Sfa.constant().interno());
@@ -234,10 +271,8 @@ public class CuentaUIData extends UIData {
 		telFaxTextBox.getInterno().setName(Sfa.constant().telefonoPanelTitle() + " " + Sfa.constant().fax()  + " " + Sfa.constant().interno());
 		telCelularTextBox.getArea().setName(Sfa.constant().telefonoPanelTitle() + " " + Sfa.constant().celular()  + " " + Sfa.constant().area());
 		telCelularTextBox.getNumero().setName(Sfa.constant().telefonoPanelTitle() + " " + Sfa.constant().celular()  + " " + Sfa.constant().numero());
-		
 		emailPersonal.setName(Sfa.constant().emailPanelTitle() + " " + Sfa.constant().personal());
 		emailLaboral.setName(Sfa.constant().emailPanelTitle() + " " + Sfa.constant().laboral());
-		
 		cbu.setName(Sfa.constant().cbu());
 		numeroTarjeta.setName(Sfa.constant().nroTarjeta());
 		
@@ -283,164 +318,186 @@ public class CuentaUIData extends UIData {
 	
 	
 	/** Getters de todos los Widgets **/
+	public Label getCargoLabel() {
+		return cargoLabel;
+	}
+	public Label getTipoDocLabel() {
+		return tipoDocLabel;
+	}
+	public Label getNumDocLabel() {
+		return numDocLabel;
+	}
+	public Label getRazSocLabel() {
+		return razSocLabel;
+	}
+	public Label getNombreLabel() {
+		return nombreLabel;
+	}
+	public Label getApellidoLabel() {
+		return apellidoLabel;
+	}
+	public Label getSexoLabel() {
+		return sexoLabel;
+	}
+	public Label getFecNacLabel() {
+		return fecNacLabel;
+	}
+	public Label getContrLabel() {
+		return contrLabel;
+	}
+	public Label getProvAntLabel() {
+		return provAntLabel;
+	}
+	public Label getRubroLabel() {
+		return rubroLabel;
+	}
+	public Label getClaseClLabel() {
+		return claseClLabel;
+	}
+	public Label getCategLabel() {
+		return categLabel;
+	}
+	public Label getCicloFacLabel() {
+		return cicloFacLabel;
+	}
+	public Label getVerazLabel() {
+		return verazLabel;
+	}
+	public Label getIibbLabel() {
+		return iibbLabel;
+	}
+	public Label getNomDivLabel() {
+		return nomDivLabel;
+	}
+	public Label getPrincLabel() {
+		return prinLabel;
+	}
+	public Label getNumTarLabel() {
+		return numTarLabel;
+	}
+	public Label getCbuLabel() {
+		return cbuLabel;
+	}
 	public ListBox getTipoDocumento() {
 		return tipoDocumento;
 	}
-
 	public TextBox getNumeroDocumento() {
 		return numeroDocumento;
 	}
-
 	public TextBox getRazonSocial() {
 		return razonSocial;
 	}
-
 	public TextBox getNombre() {
 		return nombre;
 	}
-
 	public TextBox getApellido() {
 		return apellido;
 	}
-
 	public ListBox getSexo() {
 		return sexo;
 	}
-
 	public Widget getFechaNacimientoGrid() {
 		Grid datePickerFull = new Grid(1, 2);
 		datePickerFull.setWidget(0, 0, fechaNacimiento.getTextBox());
 		datePickerFull.setWidget(0, 1, fechaNacimiento);
 		return datePickerFull;
 	}
-
 	public SimpleDatePicker getFechaNacimiento() {
 		return fechaNacimiento;
 	}
-
 	public ListBox getContribuyente() {
 		return contribuyente;
 	}
-
 	public ListBox getProveedorAnterior() {
 		return proveedorAnterior;
 	}
-
 	public ListBox getRubro() {
 		return rubro;
 	}
-
 	public ListBox getClaseCliente() {
 		return claseCliente;
 	}
-
 	public TextBox getCategoria() {
 		return categoria;
 	}
-
 	public TextBox getCicloFacturacion() {
 		return cicloFacturacion;
 	}
-
 	public Label getVeraz() {
 		return veraz;
 	}
-
 	public TextArea getObservaciones() {
 		return observaciones;
 	}
-
 	public TextBox getEmailPersonal() {
 		return emailPersonal;
 	}
-
 	public TextBox getEmailLaboral() {
 		return emailLaboral;
 	}
-
 	public ListBox getFormaPago() {
 		return formaPago;
 	}
-
 	public TextBox getUsuario() {
 		return usuario;
 	}
-
 	public TextBox getFechaCreacion() {
 		return fechaCreacion;
 	}
-
 	public TextBox getIibb() {
 		return iibb;
 	}
-
 	public TextBox getVendedorNombre() {
 		return vendedorNombre;
 	}
-
 	public TextBox getVendedorTelefono() {
 		return vendedorTelefono;
 	}
-
 	public ListBox getCargo() {
 		return cargo;
 	}
-
 	public TextBox getNombreDivision() {
 		return nombreDivision;
 	}
-
-	public Label getUse() {
-		return use;
+	public Label getUseLabel() {
+		return useLabel;
 	}
 	public ListBox getTipoCuentaBancaria() {
 		return tipoCuentaBancaria;
 	}
-
 	public ListBox getTipoTarjeta() {
 		return tipoTarjeta;
 	}
-
 	public ListBox getTipoCanalVentas() {
 		return tipoCanalVentas;
 	}
-
 	public ListBox getMesVto() {
 		return mesVto;
 	}
-
 	public ListBox getAnioVto() {
 		return anioVto;
 	}
-
 	public TextBox getCbu() {
 		return cbu;
 	}
-
 	public TextBox getNumeroTarjeta() {
 		return numeroTarjeta;
 	}
-
 	public List<TipoTelefonoDto> getTipoTelefono() {
 		return tipoTelefono;
 	}
-
 	public TelefonoTextBox getTelPrincipalTextBox() {
 		return telPrincipalTextBox;
 	}
-
 	public TelefonoTextBox getTelAdicionalTextBox() {
 		return telAdicionalTextBox;
 	}
-
 	public TelefonoTextBox getTelCelularTextBox() {
 		return telCelularTextBox;
 	}
-
 	public TelefonoTextBox getTelFaxTextBox() {
 		return telFaxTextBox;
 	}
-
 	public List<Widget> getCamposObligatorios() {
 		camposObligatorios.clear();
 		camposObligatorios.add(nombre);
@@ -456,9 +513,10 @@ public class CuentaUIData extends UIData {
 	public List<Widget> getCamposObligatoriosFormaPago() {
 		return camposObligatoriosFormaPago;
 	}
-
 	public SimpleLink getValidarTarjeta() {
 		return validarTarjeta;
 	}
-	
+	public TextBox getUse() {
+		return use;
+	}
 }

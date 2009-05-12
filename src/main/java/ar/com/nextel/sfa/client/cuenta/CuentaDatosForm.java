@@ -3,7 +3,6 @@ package ar.com.nextel.sfa.client.cuenta;
 import java.util.ArrayList;
 import java.util.List;
 
-import ar.com.nextel.model.cuentas.beans.DatosDebitoTarjetaCredito;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
@@ -55,14 +54,13 @@ public class CuentaDatosForm extends Composite {
 	private FlexTable tarjetaTable        = new FlexTable();
 	private CuentaUIData camposTabDatos   = new CuentaUIData();
 	private DatosPagoDto datosPago;
-	private CuentaEdicionTabPanel cuentaTab = CuentaEdicionTabPanel.getInstance();
 	private List <Widget>camposObligatorios = new ArrayList<Widget>();
+	private TitledPanel datosCuentaPanel = new TitledPanel(Sfa.constant().cuentaPanelTitle());;
 	private GwtValidator validator = new GwtValidator();
 	
 	public static CuentaDatosForm getInstance() {
 		return instance;
 	}
-	
 	
 	private CuentaDatosForm() {
 		mainPanel    = new FlexTable();
@@ -81,70 +79,69 @@ public class CuentaDatosForm extends Composite {
 		datosCuentaTable = new FlexTable();
 		datosCuentaTable.setWidth("80%");
 		datosCuentaTable.addStyleName("layout");
-		
 		datosCuentaTable.getFlexCellFormatter().setColSpan(1, 1, 4);
 		camposTabDatos.getRazonSocial().setWidth("90%");
-		
-		TitledPanel datosCuentaPanel = new TitledPanel(Sfa.constant().cuentaPanelTitle());
-        int row = 0;
-		datosCuentaTable.setText(row, 0, Sfa.constant().tipoDocumento());
-		datosCuentaTable.setWidget(row, 1, camposTabDatos.getTipoDocumento());
-		datosCuentaTable.setText(row, 3, Sfa.constant().numero());
-		datosCuentaTable.setWidget(row, 4, camposTabDatos.getNumeroDocumento());
-		datosCuentaTable.getFlexCellFormatter().addStyleName(row, 3, "req");
-		row++; 
-		datosCuentaTable.setText(row, 0, Sfa.constant().razonSocial());
-		datosCuentaTable.setWidget(row, 1, camposTabDatos.getRazonSocial());
-		datosCuentaTable.getFlexCellFormatter().setColSpan(row, 1, 4);
-		datosCuentaTable.getFlexCellFormatter().addStyleName(row, 0, "req");
-		row++;
-		datosCuentaTable.setText(row, 0, Sfa.constant().nombre());
-		datosCuentaTable.setWidget(row, 1, camposTabDatos.getNombre());
-		datosCuentaTable.setText(row, 3, Sfa.constant().apellido());
-		datosCuentaTable.setWidget(row, 4, camposTabDatos.getApellido());
-		datosCuentaTable.getFlexCellFormatter().addStyleName(row, 0, "req");
-		datosCuentaTable.getFlexCellFormatter().addStyleName(row, 3, "req");
-		row++;
-		datosCuentaTable.setText(row, 0, Sfa.constant().sexo());
-		datosCuentaTable.setWidget(row, 1, camposTabDatos.getSexo());
-		datosCuentaTable.setText(row, 3, Sfa.constant().fechaNacimiento());
-		datosCuentaTable.setWidget(row, 4, camposTabDatos.getFechaNacimientoGrid());
-		row++;
-		datosCuentaTable.setText(row, 0, Sfa.constant().contribuyente());
-		datosCuentaTable.setWidget(row, 1, camposTabDatos.getContribuyente());
-		datosCuentaTable.setText(row, 3, Sfa.constant().cargo());
-		datosCuentaTable.setWidget(row, 4, camposTabDatos.getCargo());
-		datosCuentaTable.getFlexCellFormatter().addStyleName(row, 0, "req");
-		row++;
-		datosCuentaTable.setText(row, 0, Sfa.constant().iibb());
-		datosCuentaTable.setWidget(row, 1, camposTabDatos.getIibb());
-		datosCuentaTable.setText(row, 3, Sfa.constant().nombreDivision());
-		datosCuentaTable.setWidget(row, 4, camposTabDatos.getNombreDivision());
-		row++;
-		datosCuentaTable.setText(row, 0, Sfa.constant().provedorAnterior());
-		datosCuentaTable.setWidget(row, 1, camposTabDatos.getProveedorAnterior());
-		datosCuentaTable.setText(row, 3, Sfa.constant().rubro());
-		datosCuentaTable.setWidget(row, 4, camposTabDatos.getRubro());
-		datosCuentaTable.getFlexCellFormatter().addStyleName(row, 0, "req");
-		datosCuentaTable.getFlexCellFormatter().addStyleName(row, 3, "req");
-		row++;
-		datosCuentaTable.setText(row, 0, Sfa.constant().claseCliente());
-		datosCuentaTable.setWidget(row, 1, camposTabDatos.getClaseCliente());
-		datosCuentaTable.setText(row, 3, Sfa.constant().categoria());
-		datosCuentaTable.setWidget(row, 4, camposTabDatos.getCategoria());
-		row++;
-		datosCuentaTable.setText(row, 0, Sfa.constant().cicloFacturacion());
-		datosCuentaTable.setWidget(row, 1, camposTabDatos.getCicloFacturacion());
-		datosCuentaTable.setText(row, 3, Sfa.constant().veraz());
-		datosCuentaTable.setWidget(row, 4, camposTabDatos.getVeraz());
-		row++;
-		datosCuentaTable.setText(row, 0, Sfa.constant().use());
-		datosCuentaTable.setWidget(row, 1, camposTabDatos.getUse());
-		
+		armarTablaPanelDatos();
 		datosCuentaPanel.add(datosCuentaTable);
 		return datosCuentaPanel;
 	}
 
+	public void	armarTablaPanelDatos() {
+		datosCuentaTable.clear();
+		int row = 0;
+		datosCuentaTable.setWidget(row, 0, camposTabDatos.getTipoDocLabel());
+		datosCuentaTable.setWidget(row, 1, camposTabDatos.getTipoDocumento());
+		datosCuentaTable.setWidget(row, 3, camposTabDatos.getNumDocLabel());
+		datosCuentaTable.setWidget(row, 4, camposTabDatos.getNumeroDocumento());
+		row++; 
+		datosCuentaTable.setWidget(row, 0, camposTabDatos.getRazSocLabel());
+		datosCuentaTable.setWidget(row, 1, camposTabDatos.getRazonSocial());
+		datosCuentaTable.getFlexCellFormatter().setColSpan(row, 1, 4);
+		row++;
+		datosCuentaTable.setWidget(row, 0, camposTabDatos.getNombreLabel());
+		datosCuentaTable.setWidget(row, 1, camposTabDatos.getNombre());
+		datosCuentaTable.setWidget(row, 3, camposTabDatos.getApellidoLabel());
+		datosCuentaTable.setWidget(row, 4, camposTabDatos.getApellido());
+		row++;
+		datosCuentaTable.setWidget(row, 0, camposTabDatos.getSexoLabel());
+		datosCuentaTable.setWidget(row, 1, camposTabDatos.getSexo());
+		datosCuentaTable.setWidget(row, 3, camposTabDatos.getFecNacLabel());
+		datosCuentaTable.setWidget(row, 4, camposTabDatos.getFechaNacimientoGrid());
+		row++;
+		datosCuentaTable.setWidget(row, 0, camposTabDatos.getContrLabel());
+		datosCuentaTable.setWidget(row, 1, camposTabDatos.getContribuyente());
+		datosCuentaTable.setWidget(row, 3, camposTabDatos.getNomDivLabel());
+		datosCuentaTable.setWidget(row, 4, camposTabDatos.getNombreDivision());
+		row++;
+		if(camposTabDatos.getCargoLabel().isVisible()) {
+			datosCuentaTable.setWidget(row, 0, camposTabDatos.getCargoLabel());
+			datosCuentaTable.setWidget(row, 1, camposTabDatos.getCargo());
+			row++;
+		}
+		if(camposTabDatos.getIibbLabel().isVisible()) {
+			datosCuentaTable.setWidget(row, 0, camposTabDatos.getIibbLabel());
+			datosCuentaTable.setWidget(row, 1, camposTabDatos.getIibb());
+			row++;
+		}
+		datosCuentaTable.setWidget(row, 0, camposTabDatos.getProvAntLabel());
+		datosCuentaTable.setWidget(row, 1, camposTabDatos.getProveedorAnterior());
+		datosCuentaTable.setWidget(row, 3, camposTabDatos.getRubroLabel());
+		datosCuentaTable.setWidget(row, 4, camposTabDatos.getRubro());
+		row++;
+		datosCuentaTable.setWidget(row, 0, camposTabDatos.getClaseCliente());
+		datosCuentaTable.setWidget(row, 1, camposTabDatos.getClaseCliente());
+		datosCuentaTable.setWidget(row, 3, camposTabDatos.getCategLabel());
+		datosCuentaTable.setWidget(row, 4, camposTabDatos.getCategoria());
+		row++;
+		datosCuentaTable.setWidget(row, 0, camposTabDatos.getCicloFacLabel());
+		datosCuentaTable.setWidget(row, 1, camposTabDatos.getCicloFacturacion());
+		datosCuentaTable.setWidget(row, 3, camposTabDatos.getVerazLabel());
+		datosCuentaTable.setWidget(row, 4, camposTabDatos.getVeraz());
+		row++;
+		datosCuentaTable.setWidget(row, 0, camposTabDatos.getUseLabel());
+		datosCuentaTable.setWidget(row, 1, camposTabDatos.getUse());
+	}
+	
 	private Widget createTelefonoPanel() {
 		telefonoTable = new FlexTable();
 		telefonoTable.setWidth("80%");
@@ -430,10 +427,18 @@ public class CuentaDatosForm extends Composite {
 		campos.add(camposTabDatos.getCategoria());
 		campos.add(camposTabDatos.getClaseCliente());
 		campos.add(camposTabDatos.getCicloFacturacion());
+	    
+		FormUtils.disableFields(campos);
+	    
 		camposTabDatos.getIibb().setVisible(false);
 		camposTabDatos.getCargo().setVisible(false);
+		camposTabDatos.getNombreDivision().setVisible(false);
+		camposTabDatos.getIibbLabel().setVisible(false);
+		camposTabDatos.getCargoLabel().setVisible(false);
+		camposTabDatos.getNomDivLabel().setVisible(false);
 		
-	    FormUtils.disableFields(campos);
+		armarTablaPanelDatos();
+		
 	}
     
 	public boolean formularioDatosDirty() {
@@ -624,18 +629,20 @@ public class CuentaDatosForm extends Composite {
 		}
 	}
 	
+	public void cambiarVisibilidadCamposSegunSexo() {
+		camposTabDatos.getCargoLabel().setVisible(camposTabDatos.getSexo().getSelectedItemId().equals(Long.toString(SexoEnum.ORGANIZACION.getId())));
+		camposTabDatos.getCargo().setVisible(camposTabDatos.getSexo().getSelectedItemId().equals(Long.toString(SexoEnum.ORGANIZACION.getId())));
+		armarTablaPanelDatos();
+	}
+	
 	private CuentaDto getCuentaDtoFromEditor() {
 		CuentaDto cuentaDto = new CuentaDto();
-		
 		CategoriaCuentaDto catCtaDto = new CategoriaCuentaDto();
 		catCtaDto.setCode(getCamposTabDatos().getCategoria().getSelectedText());
 		catCtaDto.setDescripcion(getCamposTabDatos().getCategoria().getText());
 //		catCtaDto.setDescripcion(descripcion)(cuentaData.getCategoria().getText());
 //		cuentaDto.setCategoriaCuenta(cuentaData.getCategoria().getText());
-		
-		
 		return cuentaDto;
-		
 	}
 
 	public CuentaUIData getCamposTabDatos() {
