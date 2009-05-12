@@ -50,4 +50,6 @@ public interface SolicitudRpcService extends RemoteService {
 			GrupoSolicitudDto grupoSolicitudDto);
 	
 	public DetalleSolicitudServicioDto getDetalleSolicitudServicio(Long idSolicitudServicio) ;
+	
+	public String buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto); 
 }

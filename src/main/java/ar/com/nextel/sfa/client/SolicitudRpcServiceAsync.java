@@ -29,8 +29,10 @@ public interface SolicitudRpcServiceAsync {
 	public void saveSolicituServicio(SolicitudServicioDto solicitudServicioDto,
 			AsyncCallback<SolicitudServicioDto> callback);
 
-public void getDetalleSolicitudServicio(Long idSolicitudServicio, AsyncCallback<DetalleSolicitudServicioDto> callback);
+	public void getDetalleSolicitudServicio(Long idSolicitudServicio, AsyncCallback<DetalleSolicitudServicioDto> callback);
 
 	public void getLineasSolicitudServicioInitializer(GrupoSolicitudDto grupoSolicitudDto,
 			AsyncCallback<LineasSolicitudServicioInitializer> callback);
+
+	public void buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto, AsyncCallback<String> callback);
 }

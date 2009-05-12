@@ -63,5 +63,9 @@ public class SolicitudRpcServiceDelegate {
 			DefaultWaitCallback<LineasSolicitudServicioInitializer> callback) {
 		solicitudRpcServiceAsync.getLineasSolicitudServicioInitializer(grupoSolicitudDto, callback);
 	}
+	
+	public void buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto, DefaultWaitCallback<String> callback) {
+		solicitudRpcServiceAsync.buildExcel(solicitudServicioCerradaDto, callback);
+	}
 
 }

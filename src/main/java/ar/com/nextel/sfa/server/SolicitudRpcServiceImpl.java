@@ -26,28 +26,26 @@ import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.security.Usuario;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
-import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
+
 import ar.com.nextel.model.solicitudes.beans.TipoAnticipo;
-import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
-import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
-import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
-import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
+import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
-import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
-import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
+import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
+import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
+import ar.com.nextel.util.ExcelBuilder;
 import ar.com.nextel.sfa.server.businessservice.SolicitudBusinessService;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
@@ -67,26 +65,27 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 	private RegistroVendedores registroVendedores;
 	private GenericDao genericDao;
-    private SolicitudServicioBusinessOperator solicitudesBusinessOperator;
-    private VantiveSystem vantiveSystem;
-    private FinancialSystem financialSystem;
-    private SolicitudServicioRepository solicitudServicioRepository;
-	private SessionContextLoader sessionContextLoader;
+
+	private SolicitudServicioBusinessOperator solicitudesBusinessOperator;
+	private VantiveSystem vantiveSystem;
+	private FinancialSystem financialSystem;
+
+	private SolicitudServicioRepository solicitudServicioRepository;
 
 	public void init() throws ServletException {
 		super.init();
 		context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		mapper = (MapperExtended) context.getBean("dozerMapper");
-
-		solicitudesBusinessOperator = (SolicitudServicioBusinessOperator) context.getBean("solicitudServicioBusinessOperatorBean");
+		solicitudesBusinessOperator = (SolicitudServicioBusinessOperator) context
+				.getBean("solicitudServicioBusinessOperatorBean");
 		solicitudBusinessService = (SolicitudBusinessService) context.getBean("solicitudBusinessService");
 
 		registroVendedores = (RegistroVendedores) context.getBean("registroVendedores");
 		genericDao = (GenericDao) context.getBean("genericDao");
 		repository = (Repository) context.getBean("repository");
-		sessionContextLoader = (SessionContextLoader) context.getBean("sessionContextLoader");
-		
-		solicitudServicioRepository = (SolicitudServicioRepository) context.getBean("solicitudServicioRepositoryBean");
+
+		solicitudServicioRepository = (SolicitudServicioRepository) context
+				.getBean("solicitudServicioRepositoryBean");
 		vantiveSystem = (VantiveSystem) context.getBean("vantiveSystemBean");
 		financialSystem = (FinancialSystem) context.getBean("financialSystemBean");
 	}
@@ -117,90 +116,92 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		usuario.setUserName("acsa1");
 		Vendedor vendedor = registroVendedores.getVendedor(usuario);
 		solicitudServicioCerradaSearchCriteria.setVendedor(vendedor);
-		List<SolicitudServicio> list = new ArrayList();
+		List<SolicitudServicio> list = null;
 		try {
 			list = this.solicitudesBusinessOperator
 					.searchSolicitudesServicioHistoricas(solicitudServicioCerradaSearchCriteria);
 		} catch (Exception e) {
 			AppLogger.info("Error buscando Solicitudes de Servicio cerradas: " + e.getMessage());
 		}
-
 		List result = mapper.convertList(list, SolicitudServicioCerradaResultDto.class, "ssCerradaResult");
 		AppLogger.info("Busqueda de SS cerradas finalizada...");
 		return result;
 	}
 
-	
-	
 	public DetalleSolicitudServicioDto getDetalleSolicitudServicio(Long idSolicitudServicio) {
-        AppLogger.info("Iniciando consulta de estados de SS cerradas para idSS " + idSolicitudServicio);
-        SolicitudServicio solicitudServicio = solicitudServicioRepository.getSolicitudServicioPorId(idSolicitudServicio);        	
-        DetalleSolicitudServicioDto detalleSolicitudServicioDto = mapearSolicitud(solicitudServicio);
-                        
-        try {
-        	detalleSolicitudServicioDto.setCambiosEstadoSolicitud(getEstadoSolicitudServicioCerrada(solicitudServicio.getIdVantive()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        AppLogger.info("Consulta de estados de SS cerradas para idSS " + idSolicitudServicio + " finalizada.");
-        return detalleSolicitudServicioDto;
-    }
-	
-		
-    private DetalleSolicitudServicioDto mapearSolicitud(SolicitudServicio solicitudServicio) {
-    	DetalleSolicitudServicioDto detalleSolicitudServicioDto = new DetalleSolicitudServicioDto();
-    	detalleSolicitudServicioDto.setNumero(solicitudServicio.getNumero());
-    	detalleSolicitudServicioDto.setNumeroCuenta(solicitudServicio.getCuenta().getCodigoVantive());
-    	detalleSolicitudServicioDto.setRazonSocialCuenta(solicitudServicio.getCuenta().getPersona().getRazonSocial());
-    	return detalleSolicitudServicioDto;
-    }
-	
-	
-	
-	private List<CambiosSolicitudServicioDto> getEstadoSolicitudServicioCerrada(Long idVantiveSS) throws RpcExceptionMessages {
-    try {
-        List<EstadoSolicitudServicioCerradaDTO> resultDTO = null;
-        resultDTO = this.vantiveSystem.retrieveEstadosSolicitudServicioCerrada(idVantiveSS);
-        resultDTO.addAll(this.financialSystem.retrieveEstadosSolicitudServicioCerrada(idVantiveSS));
-        
-        Comparator<? super EstadoSolicitudServicioCerradaDTO> estadoComparator = new Comparator<EstadoSolicitudServicioCerradaDTO>() {
+		AppLogger.info("Iniciando consulta de estados de SS cerradas para idSS " + idSolicitudServicio);
+		SolicitudServicio solicitudServicio = solicitudServicioRepository
+				.getSolicitudServicioPorId(idSolicitudServicio);
+		DetalleSolicitudServicioDto detalleSolicitudServicioDto = mapearSolicitud(solicitudServicio);
 
-            public int compare(EstadoSolicitudServicioCerradaDTO estado1, EstadoSolicitudServicioCerradaDTO estado2) {
-                int ret = 0;
-                try {
-                    Date date1 = (estado1.getFechaCambioEstado() != null) ? DateUtils.getInstance().getDate(estado1.getFechaCambioEstado(), "dd/MM/yyyy") : null;
-                    Date date2 = (estado2.getFechaCambioEstado() != null) ? DateUtils.getInstance().getDate(estado2.getFechaCambioEstado(), "dd/MM/yyyy") : null;
-                    if (date1 == null || date2 == null) {
-                        return 1;
-                    } else {
-                        return DateUtils.getInstance().compareDatesByDay(date1, date2);
-                    }
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                return ret;
-            }
-        };
-        
-        Collections.sort(resultDTO, estadoComparator);
-        return this.transformEstadoSolicitudServicioCerradaDTOToCambioEstadoSolicitudWCTO(resultDTO);
-    } catch (Exception e) {
-        throw ExceptionUtil.wrap(e);
-    }
-}    
+		try {
+			detalleSolicitudServicioDto
+					.setCambiosEstadoSolicitud(getEstadoSolicitudServicioCerrada(solicitudServicio
+							.getIdVantive()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		AppLogger
+				.info("Consulta de estados de SS cerradas para idSS " + idSolicitudServicio + " finalizada.");
+		return detalleSolicitudServicioDto;
+	}
 
-	
-	private List<CambiosSolicitudServicioDto> transformEstadoSolicitudServicioCerradaDTOToCambioEstadoSolicitudWCTO(List<EstadoSolicitudServicioCerradaDTO> resultDTO) {
+	private DetalleSolicitudServicioDto mapearSolicitud(SolicitudServicio solicitudServicio) {
+		DetalleSolicitudServicioDto detalleSolicitudServicioDto = new DetalleSolicitudServicioDto();
+		detalleSolicitudServicioDto.setNumero(solicitudServicio.getNumero());
+		detalleSolicitudServicioDto.setNumeroCuenta(solicitudServicio.getCuenta().getCodigoVantive());
+		detalleSolicitudServicioDto.setRazonSocialCuenta(solicitudServicio.getCuenta().getPersona()
+				.getRazonSocial());
+		return detalleSolicitudServicioDto;
+	}
+
+	private List<CambiosSolicitudServicioDto> getEstadoSolicitudServicioCerrada(Long idVantiveSS)
+			throws RpcExceptionMessages {
+		try {
+			List<EstadoSolicitudServicioCerradaDTO> resultDTO = null;
+			resultDTO = this.vantiveSystem.retrieveEstadosSolicitudServicioCerrada(idVantiveSS);
+			resultDTO.addAll(this.financialSystem.retrieveEstadosSolicitudServicioCerrada(idVantiveSS));
+
+			Comparator<? super EstadoSolicitudServicioCerradaDTO> estadoComparator = new Comparator<EstadoSolicitudServicioCerradaDTO>() {
+
+				public int compare(EstadoSolicitudServicioCerradaDTO estado1,
+						EstadoSolicitudServicioCerradaDTO estado2) {
+					int ret = 0;
+					try {
+						Date date1 = (estado1.getFechaCambioEstado() != null) ? DateUtils.getInstance()
+								.getDate(estado1.getFechaCambioEstado(), "dd/MM/yyyy") : null;
+						Date date2 = (estado2.getFechaCambioEstado() != null) ? DateUtils.getInstance()
+								.getDate(estado2.getFechaCambioEstado(), "dd/MM/yyyy") : null;
+						if (date1 == null || date2 == null) {
+							return 1;
+						} else {
+							return DateUtils.getInstance().compareDatesByDay(date1, date2);
+						}
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+					return ret;
+				}
+			};
+
+			Collections.sort(resultDTO, estadoComparator);
+			return this.transformEstadoSolicitudServicioCerradaDTOToCambioEstadoSolicitudWCTO(resultDTO);
+		} catch (Exception e) {
+			throw ExceptionUtil.wrap(e);
+		}
+	}
+
+	private List<CambiosSolicitudServicioDto> transformEstadoSolicitudServicioCerradaDTOToCambioEstadoSolicitudWCTO(
+			List<EstadoSolicitudServicioCerradaDTO> resultDTO) {
 		List result = mapper.convertList(resultDTO, CambiosSolicitudServicioDto.class);
-        return result;
-    }
-	
-	
+		return result;
+	}
+
 	public BuscarSSCerradasInitializer getBuscarSSCerradasInitializer() {
 		BuscarSSCerradasInitializer buscarSSCerradasInitializer = new BuscarSSCerradasInitializer();
 
 		List<String> listaResult = new ArrayList<String>();
-		String cantResult = "10;25;50;75;100";
+		String cantResult = "10;25;50;75;100;500";
 		listaResult = Arrays.asList(cantResult.split(";"));
 		buscarSSCerradasInitializer.setCantidadesResultados(listaResult);
 
@@ -220,7 +221,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return buscarSSCerradasInitializer;
 	}
 
-
 	public SolicitudInitializer getSolicitudInitializer() {
 		SolicitudInitializer initializer = new SolicitudInitializer();
 		initializer.setOrigenesSolicitud(mapper.convertList(repository.getAll(OrigenSolicitud.class),
@@ -239,21 +239,36 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return solicitudServicioDto;
 	}
 
+	public String buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto) {
+		AppLogger.info("Iniciando busqueda de SS cerradas para crear excel...");
+		SolicitudServicioCerradaSearchCriteria solicitudServicioCerradaSearchCriteria = mapper.map(
+				solicitudServicioCerradaDto, SolicitudServicioCerradaSearchCriteria.class);
+		Usuario usuario = new Usuario();
+		usuario.setUserName("acsa1");
+		Vendedor vendedor = registroVendedores.getVendedor(usuario);
+		solicitudServicioCerradaSearchCriteria.setVendedor(vendedor);
+		List<SolicitudServicio> list = null;
+		try {
+			list = this.solicitudesBusinessOperator
+					.searchSolicitudesServicioHistoricas(solicitudServicioCerradaSearchCriteria);
+		} catch (Exception e) {
+			AppLogger.info("Error buscando Solicitudes de Servicio cerradas para crear excel: "
+					+ e.getMessage());
+		}
+		AppLogger.info("Creando archivo Excel...");
+		ExcelBuilder excel = new ExcelBuilder(vendedor.getUserName(), "SFA Revolution");
+		try {
+			excel.crearExcel(list);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		AppLogger.info("Archivo Excel creado.");
+		return vendedor.getUserName();
+	}
+
 	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(
 			GrupoSolicitudDto grupoSolicitudDto) {
-		LineasSolicitudServicioInitializer initializer = new LineasSolicitudServicioInitializer();
-		GrupoSolicitud grupoSolicitud = repository.retrieve(GrupoSolicitud.class, Long.valueOf(1));
-		List<TipoSolicitud> tiposSolicitudDeGrupo = grupoSolicitud
-				.calculateTiposSolicitud(sessionContextLoader.getVendedor().getSucursal());
-		System.out.println(new Date());
-		initializer.setTiposSolicitudes(mapper.convertList(tiposSolicitudDeGrupo, TipoSolicitudDto.class));
-		if (!initializer.getTiposSolicitudes().isEmpty()) {
-			TipoSolicitudDto firstTipoSolicitud = initializer.getTiposSolicitudes().get(0);
-			firstTipoSolicitud.setListasPrecios(mapper.convertList(tiposSolicitudDeGrupo.get(0)
-					.getListasPrecios(), ListaPreciosDto.class));
-
-		}
-		System.out.println(new Date());
-		return initializer;
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
