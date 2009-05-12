@@ -128,4 +128,14 @@ public class GwtValidator {
 		}
 	}
 
+	/**
+	 * 
+	 */
+	public void clear() {
+		if (targets!=null)
+			targets.clear();
+		if (errors!=null)
+			errors.clear();
+	}
+
 }
