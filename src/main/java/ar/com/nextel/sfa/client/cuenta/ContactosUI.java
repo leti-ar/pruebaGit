@@ -13,26 +13,28 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class CuentaCrearContactoPopUp extends NextelDialog {
+public class ContactosUI extends NextelDialog {
+	/**TODO: Renombrar a ContactosUI*/
 	
 	private FlexTable datosCuentaTable;
 	private FlexTable telefonoTable;
 	private CuentaUIData cuentaUIData;
+	//private ContactoUIData contactosData;
 	private SimpleLink aceptar;
 
-	private static CuentaCrearContactoPopUp cuentaCrearContactoPopUp = null;
+	private static ContactosUI cuentaCrearContactoPopUp = null;
 	
-	public static CuentaCrearContactoPopUp getInstance(){
+	public static ContactosUI getInstance(){
 		if(cuentaCrearContactoPopUp == null){
-			cuentaCrearContactoPopUp = new CuentaCrearContactoPopUp("Crear Contacto");
+			cuentaCrearContactoPopUp = new ContactosUI("Crear Contacto");
 		}
 		return cuentaCrearContactoPopUp;
 	}
 	
-	public CuentaCrearContactoPopUp(String title) {
+	public ContactosUI(String title) {
 		super(title);
 		setWidth("740px");
-		cuentaUIData = new CuentaUIData();
+		//cuentaUIData = new CuentaUIData();
 		TabPanel mainTabPanel = new TabPanel();
 		mainTabPanel.addStyleDependentName("gwt-TabPanelBottom crearCuentaTabPanel");
 		mainTabPanel.setWidth("98%");
@@ -56,7 +58,39 @@ public class CuentaCrearContactoPopUp extends NextelDialog {
 		setFooterVisible(false);
 	}
 	
+	public void cargaPopupNuevoContacto() {
+//		contactosData.clean();
+//		contactosData.setContacto(null);
+//		contactosData.setVisible(true);
+//		contactosData.enableFields();
+//		showAndCenter();
+//		setDialogTitle("Crear Contacto");
+	}
 
+	public void cargarPopupCopiarContacto(){//DomiciliosCuentaDto domicilio) {
+//		domiciliosData.setDomicilio(domicilio);
+//		linkAceptar.setVisible(true);
+//		domiciliosData.enableFields();
+//		showAndCenter();
+//		//TODO: Arreglar lo del Titulo!!!
+//		setDialogTitle("Copiar Domicilio");
+	}
+	
+	public void cargarPopupEditarConatcto(){//DomiciliosCuentaDto domicilio) {
+//		editable = (domicilio.isLocked());
+//		domiciliosData.setDomicilio(domicilio);
+//		showAndCenter();
+//		if (!editable){
+//			domiciliosData.disableFields();
+//			linkAceptar.setVisible(false);
+//		}else{
+//			domiciliosData.enableFields();
+//			linkAceptar.setVisible(true);
+//		}
+//		setDialogTitle("Editar Domicilio");
+	}
+			
+	
 	private Widget createDatosCuentaPanel() {
 		datosCuentaTable = new FlexTable();
 		datosCuentaTable.setWidth("100%");
