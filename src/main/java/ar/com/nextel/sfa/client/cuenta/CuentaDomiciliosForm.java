@@ -36,7 +36,8 @@ public class CuentaDomiciliosForm extends Composite {
 	private CuentaUIData cuentaUIData;
 	private List<SolicitudServicioCerradaDto> ssCerradasAsociadas = new ArrayList<SolicitudServicioCerradaDto>();
 	private DomiciliosCuentaDto domicilioAEditar;
-
+	private static final DeleteConfirmationDialog deleteConfirmDialog = new DeleteConfirmationDialog("Eliminar Domicilio");
+	
 	// TODO; Analizar!!
 	// private DomiciliosUIData domiciliosData;
 	private CuentaDto cuentaDto;
@@ -131,7 +132,7 @@ public class CuentaDomiciliosForm extends Composite {
 			public void execute() {
 				PersonaDto persona = cuentaDto.getPersona();
 				persona.getDomicilios().add(DomicilioUI.getInstance().getDomiciliosData().getDomicilioCopiado());
-				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConDomicilioCopiado();
+				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConDomiciliosModificados();
 				DomicilioUI.getInstance().hide();
 			}
 		};
@@ -160,12 +161,19 @@ public class CuentaDomiciliosForm extends Composite {
 	 * @author eSalvador
 	 * Devuelve el comando que Borra el domicilio seleccionado en la grilla de resultados.
 	 **/
-	private Command getComandoBorrarDomicilio() {
-		//TODO:Aca deberia hacer abrir el popup de confirmacion para borrar!!
+	private Command getComandoBorrarDomicilio(DomiciliosCuentaDto domicilio) {
+		domicilioAEditar = domicilio;
 		Command comandoAceptar = new Command() {
 			public void execute() {
-				/**TODO: Terminar. Hacer efectivo el borrado del domicilio seleccionado!*/
-				//CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConNuevoDomicilio(domicilioEditado);
+				//domicilioAEditar;
+				PersonaDto persona = cuentaDto.getPersona();
+				List<DomiciliosCuentaDto> domicilios = persona.getDomicilios();
+				for (int j = 0; j < domicilios.size(); j++) {
+					if (domicilios.get(j) == domicilioAEditar){
+						persona.removeDomicilio(domicilioAEditar);
+					} 
+				}
+				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConDomiciliosModificados();
 			}
 		};
 		return comandoAceptar;
@@ -216,7 +224,7 @@ public class CuentaDomiciliosForm extends Composite {
 		CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().cargaTablaDomicilios(cuentaDto);
 	}
 	
-	public void refrescaTablaConDomicilioCopiado(){
+	public void refrescaTablaConDomiciliosModificados(){
 		datosTabla.clear();
 		CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().cargaTablaDomicilios(cuentaDto);
 	}
@@ -276,7 +284,6 @@ public class CuentaDomiciliosForm extends Composite {
 		}
 	}
 	
-	
 	public void agregaTableListeners(){
 		datosTabla.addTableListener(new TableListener() {
 			public void onCellClicked(SourcesTableEvents arg0, int row, int col) {
@@ -296,12 +303,12 @@ public class CuentaDomiciliosForm extends Composite {
 					}
 					// Acciones a tomar cuando haga click en iconos de borrado de domicilios:
 					if (col == 2) {
-						DomicilioUI.getInstance().getDeleteConfirmDialog().setComandoAceptar(getComandoBorrarDomicilio());
-						DomicilioUI.getInstance().getDeleteConfirmDialog().showAndCenter();
+						deleteConfirmDialog.setTextoAConsultar(DeleteConfirmationDialog.ELIMINA_DOMICILIO);
+						deleteConfirmDialog.setComandoAceptar(getComandoBorrarDomicilio(domicilio));
+						deleteConfirmDialog.showAndCenter();
 					}
 				}
 			}
 		});
 	}
-	
 }

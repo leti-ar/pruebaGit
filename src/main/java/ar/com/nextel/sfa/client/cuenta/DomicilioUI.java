@@ -32,7 +32,6 @@ public class DomicilioUI extends NextelDialog {
 	private DomiciliosUIData domiciliosData;
 	private boolean noEditable; //Verificar q no sea la misma propiedad que locked del DomicilioCuentaDto!!!
 	private static DomicilioUI instance = new DomicilioUI();
-	private EliminarDomicilioConfirmacionUI deleteConfirmDialog = new EliminarDomicilioConfirmacionUI();
 
 	public static DomicilioUI getInstance() {
 		return instance;
@@ -289,13 +288,5 @@ public class DomicilioUI extends NextelDialog {
 
 	public void setEditable(boolean editable) {
 		this.noEditable = editable;
-	}
-
-	public EliminarDomicilioConfirmacionUI getDeleteConfirmDialog() {
-		return deleteConfirmDialog;
-	}
-
-	public void setDeleteConfirmDialog(EliminarDomicilioConfirmacionUI deleteConfirmDialog) {
-		this.deleteConfirmDialog = deleteConfirmDialog;
 	}
 }

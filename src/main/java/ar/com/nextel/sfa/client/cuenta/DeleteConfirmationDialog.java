@@ -12,24 +12,29 @@ import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 /**
  * @author esalvador 
  **/
-public class EliminarDomicilioConfirmacionUI extends NextelDialog{
+public class DeleteConfirmationDialog extends NextelDialog{
 
 	private Command comandoAceptar;
 	private FormButtonsBar footerBar;
 	private SimpleLink linkCerrar;
 	private SimpleLink linkAceptar;
 	private Label texto;
+	private String textoAConsultar;
+	private String titulo;
 	
-	public EliminarDomicilioConfirmacionUI() {
-		super("Eliminar Domicilio");
+	public final static String ELIMINA_DOMICILIO = "¿Esta seguro que desea eliminar el domicilio seleccionado?";
+
+	public DeleteConfirmationDialog(String titulo) {
+		super(titulo);
+		this.titulo = titulo;
 		init();
 	}
-
+	
 	private void init(){
 		footerBar = new FormButtonsBar();
 		linkCerrar = new SimpleLink("Cerrar");
 		linkAceptar = new SimpleLink("Aceptar");
-		texto = new Label("¿Está seguro que desea eliminar el domicilio?");
+		texto = new Label(this.textoAConsultar);
 		setWidth("300px");
 		setHeight("100px");
 		addStyleName("layout");
@@ -43,7 +48,6 @@ public class EliminarDomicilioConfirmacionUI extends NextelDialog{
 		footer.setVisible(false);
 		linkAceptar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				// TODO: Logica de Aceptar y guardar nuevo Domicilio!
 				if (comandoAceptar != null){
 					comandoAceptar.execute();
 				}
@@ -56,6 +60,14 @@ public class EliminarDomicilioConfirmacionUI extends NextelDialog{
 		});
 		this.showAndCenter();
 	}
+	
+	public String getTextoAConsultar() {
+		return textoAConsultar;
+	}
+
+	public void setTextoAConsultar(String textoAConsultar) {
+		this.textoAConsultar = textoAConsultar;
+	}
 
 	public Command getComandoAceptar() {
 		return comandoAceptar;
@@ -63,5 +75,13 @@ public class EliminarDomicilioConfirmacionUI extends NextelDialog{
 
 	public void setComandoAceptar(Command comandoAceptar) {
 		this.comandoAceptar = comandoAceptar;
+	}
+
+	public String getTitulo() {
+		return titulo;
+	}
+
+	public void setTitulo(String titulo) {
+		this.titulo = titulo;
 	}
 }

@@ -3,7 +3,6 @@ package ar.com.nextel.sfa.client.dto;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -29,6 +28,9 @@ public class PersonaDto implements IsSerializable {
 	}
 	public void setDomicilios(List<DomiciliosCuentaDto> domicilios) {
 		this.domicilios = domicilios;
+	}
+	public void removeDomicilio(DomiciliosCuentaDto domicilio) {
+		this.domicilios.remove(domicilio);
 	}
 	public Long getIdTipoDocumento() {
 		return idTipoDocumento;
