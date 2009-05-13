@@ -201,7 +201,7 @@ public class ContactosUI extends NextelDialog {
 		List<String> errors = contactosData.validarCampoObligatorio();
 		if (!errors.isEmpty()) {
 			if (showErrorDialog) {
-				ErrorDialog.getInstance().show(errors.toString());
+				ErrorDialog.getInstance().show(errors);
 			}
 		} else {
 			
@@ -212,7 +212,7 @@ public class ContactosUI extends NextelDialog {
 		List<String> errors = contactosData.validarVeraz();
 		if (!errors.isEmpty()) {
 			if (showErrorDialog) {
-				ErrorDialog.getInstance().show(errors.toString());
+				ErrorDialog.getInstance().show(errors);
 			}
 		} else {
 			

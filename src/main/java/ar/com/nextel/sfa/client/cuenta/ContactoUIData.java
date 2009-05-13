@@ -52,7 +52,7 @@ public class ContactoUIData extends UIData {
 			validator.addTarget(numeroDocumento).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));	
 		}
 		if (!validator.getErrors().isEmpty()) {
-			ErrorDialog.getInstance().show(validator.getErrors().get(0));
+			ErrorDialog.getInstance().show(validator.getErrors());
 		}
 		validator.fillResult();
 		return validator.getErrors();
