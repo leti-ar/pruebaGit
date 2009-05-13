@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.widget;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -38,11 +39,14 @@ public class MessageDialog extends CustomDialogBox implements ClickListener {
 		message = new HTML();
 		add(message);
 		message.addStyleName("message");
+		links = new ArrayList();
 		links.add(si = new SimpleLink(Sfa.constant().si()));
 		links.add(no = new SimpleLink(Sfa.constant().no()));
 		links.add(aceptar = new SimpleLink(Sfa.constant().aceptar()));
 		links.add(cancelar = new SimpleLink(Sfa.constant().cancelar()));
-
+		
+		addFormButtons(si);
+		addFormButtons(no);
 		addFormButtons(aceptar);
 		addFormButtons(cancelar);
 
@@ -53,6 +57,9 @@ public class MessageDialog extends CustomDialogBox implements ClickListener {
 		};
 
 		aceptar.addClickListener(this);
+		cancelar.addClickListener(this);
+		si.addClickListener(this);
+		no.addClickListener(this);
 	}
 
 	public void showAceptar(String msg, Command aceptarComm) {
@@ -76,6 +83,17 @@ public class MessageDialog extends CustomDialogBox implements ClickListener {
 		showAndCenter();
 	}
 
+	public void showSiNo(String msg, Command siComm, Command noComm) {
+		message.setHTML(msg);
+		siCommand = siComm;
+		noCommand = noComm;
+		aceptar.setVisible(false);
+		cancelar.setVisible(false);
+		si.setVisible(true);
+		no.setVisible(true);
+		showAndCenter();
+	}
+	
 	public void showSiNoCancelar(String msg, Command siComm, Command noComm, Command cancelarComm) {
 		message.setHTML(msg);
 		siCommand = siComm;
@@ -93,13 +111,13 @@ public class MessageDialog extends CustomDialogBox implements ClickListener {
 			if (aceptarCommand != null)
 				aceptarCommand.execute();
 		} else if (sender == cancelar) {
-			if (aceptarCommand != null)
+			if (cancelarCommand != null)
 				cancelarCommand.execute();
 		} else if (sender == si) {
-			if (aceptarCommand != null)
+			if (siCommand != null)
 				siCommand.execute();
 		} else if (sender == no) {
-			if (aceptarCommand != null)
+			if (noCommand != null)
 				noCommand.execute();
 		}
 	}

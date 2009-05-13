@@ -14,6 +14,7 @@ import ar.com.nextel.sfa.client.dto.TipoDomicilioAsociadoDto;
 import ar.com.nextel.sfa.client.dto.TipoDomicilioDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
+import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
 import com.google.gwt.user.client.Command;
@@ -27,6 +28,10 @@ import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
 
+
+/**
+ * @author eSalvador 
+ **/
 public class CuentaDomiciliosForm extends Composite {
 
 	private static CuentaDomiciliosForm instance = new CuentaDomiciliosForm();
@@ -36,7 +41,7 @@ public class CuentaDomiciliosForm extends Composite {
 	private CuentaUIData cuentaUIData;
 	private List<SolicitudServicioCerradaDto> ssCerradasAsociadas = new ArrayList<SolicitudServicioCerradaDto>();
 	private DomiciliosCuentaDto domicilioAEditar;
-	private static final DeleteConfirmationDialog deleteConfirmDialog = new DeleteConfirmationDialog("Eliminar Domicilio");
+	private int rowDomicilioABorrar;
 	
 	// TODO; Analizar!!
 	// private DomiciliosUIData domiciliosData;
@@ -132,7 +137,7 @@ public class CuentaDomiciliosForm extends Composite {
 			public void execute() {
 				PersonaDto persona = cuentaDto.getPersona();
 				persona.getDomicilios().add(DomicilioUI.getInstance().getDomiciliosData().getDomicilioCopiado());
-				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConDomiciliosModificados();
+				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConDomiciliosEditados();
 				DomicilioUI.getInstance().hide();
 			}
 		};
@@ -171,9 +176,10 @@ public class CuentaDomiciliosForm extends Composite {
 				for (int j = 0; j < domicilios.size(); j++) {
 					if (domicilios.get(j) == domicilioAEditar){
 						persona.removeDomicilio(domicilioAEditar);
-					} 
+					}
 				}
-				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConDomiciliosModificados();
+				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConDomiciliosBorrados(rowDomicilioABorrar);
+				MessageDialog.getInstance().hide();
 			}
 		};
 		return comandoAceptar;
@@ -224,8 +230,13 @@ public class CuentaDomiciliosForm extends Composite {
 		CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().cargaTablaDomicilios(cuentaDto);
 	}
 	
-	public void refrescaTablaConDomiciliosModificados(){
+	public void refrescaTablaConDomiciliosEditados(){
 		datosTabla.clear();
+		CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().cargaTablaDomicilios(cuentaDto);
+	}
+	
+	public void refrescaTablaConDomiciliosBorrados(int row){
+		datosTabla.removeRow(row);
 		CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().cargaTablaDomicilios(cuentaDto);
 	}
 	
@@ -303,9 +314,9 @@ public class CuentaDomiciliosForm extends Composite {
 					}
 					// Acciones a tomar cuando haga click en iconos de borrado de domicilios:
 					if (col == 2) {
-						deleteConfirmDialog.setTextoAConsultar(DeleteConfirmationDialog.ELIMINA_DOMICILIO);
-						deleteConfirmDialog.setComandoAceptar(getComandoBorrarDomicilio(domicilio));
-						deleteConfirmDialog.showAndCenter();
+						rowDomicilioABorrar = row;
+						MessageDialog.getInstance().setDialogTitle("Eliminar Domicilio");
+						MessageDialog.getInstance().showSiNo("¿Esta seguro que desea eliminar el domicilio seleccionado?",getComandoBorrarDomicilio(domicilio),MessageDialog.getInstance().getCloseCommand());
 					}
 				}
 			}
