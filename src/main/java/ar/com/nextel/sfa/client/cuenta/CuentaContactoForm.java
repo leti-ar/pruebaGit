@@ -66,17 +66,6 @@ public class CuentaContactoForm extends Composite {
 		table.setHTML(0, 3, Sfa.constant().apellido());
 		table.setHTML(0, 4, Sfa.constant().telefono());
 		table.setHTML(0, 5, Sfa.constant().whiteSpace());
-		
-			/*
-	 * private void validarYAgregar(PersonaDto personaDto) {
-	 * CuentaRpcService.Util.getInstance().saveCuenta(personaDto, new
-	 * DefaultWaitCallback() { public void success(Object result) { PersonaDto
-	 * personaDto = (PersonaDto) result;
-	 * System.out.println("Apretaste Agregar"); } }); }
-	 * 
-	 * }
-	 */
 
 	}
-
 }
