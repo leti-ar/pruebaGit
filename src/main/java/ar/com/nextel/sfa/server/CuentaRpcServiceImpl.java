@@ -21,6 +21,8 @@ import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorServ
 import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorServiceException;
 import ar.com.nextel.business.dao.GenericDao;
 import ar.com.nextel.business.describable.GetAllBusinessOperator;
+import ar.com.nextel.business.externalConnection.exception.MerlinException;
+import ar.com.nextel.business.personas.normalizarDomicilio.NormalizadorDomicilio;
 import ar.com.nextel.business.vendedores.RegistroVendedores;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.security.Usuario;
@@ -57,6 +59,7 @@ import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
+import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.FormaPagoDto;
 import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
@@ -80,6 +83,7 @@ import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.server.RemoteService;
+import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
 
 /**
  * @author eSalvador
@@ -103,6 +107,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 //    private VerazService veraz;
 	private NextelServices veraz;
  	private Repository repository;
+ 	private NormalizadorDomicilio normalizadorDomicilio;
 
 
 	@Override
@@ -123,6 +128,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 //		veraz = (VerazService) context.getBean("verazService");
 		veraz = (NextelServices) context.getBean("nextelServices");
 		repository = (Repository) context.getBean("repository");
+		normalizadorDomicilio = (NormalizadorDomicilio) context.getBean("normalizadorDomicilio");
 		
 		// Engancho el BOperator
 		setGetAllBusinessOperator((GetAllBusinessOperator) context
@@ -358,4 +364,18 @@ public class CuentaRpcServiceImpl extends RemoteService implements
     	doc.setNumero(docDto.getNumero());
     	return doc;
     }
+
+    /**
+     * @author eSalvador 
+     **/
+	public DomiciliosCuentaDto getDomicilioPorCPA(String cpa) throws RpcExceptionMessages {
+		DomiciliosCuentaDto comicilioNormalizado = null;
+		/**TODO: Terminar!*/
+		try {
+			comicilioNormalizado = mapper.map(normalizadorDomicilio.normalizarCPA(cpa), DomiciliosCuentaDto.class);
+		} catch (MerlinException e) {
+			throw ExceptionUtil.wrap(e);
+		}
+		return comicilioNormalizado;
+	}
 }

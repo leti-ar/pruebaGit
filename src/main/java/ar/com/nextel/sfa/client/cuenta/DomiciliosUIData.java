@@ -3,14 +3,19 @@ package ar.com.nextel.sfa.client.cuenta;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.TipoDomicilioAsociadoDto;
 import ar.com.nextel.sfa.client.dto.TipoDomicilioDto;
 import ar.com.nextel.sfa.client.widget.UIData;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.FocusListener;
+import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -229,8 +234,46 @@ public class DomiciliosUIData extends UIData {
 		fields.add(nombreUsuarioUltimaModificacion);
 		fields.add(entrega);
 		fields.add(facturacion);
+		this.addFocusListeners(fields);
 	}
 
+	/**
+	 * @author eSalvador: Metodo que agrega comportamiento al captar o perder el foco en los fields.
+	 **/
+	public void addFocusListeners(List<Widget> fields) {
+		FocusWidget field;
+		for (int i = 0; i < fields.size(); i++) {
+			field = (FocusWidget) fields.get(i);
+			field.addFocusListener(new FocusListener() {
+				public void onFocus(Widget arg0) {
+				}
+
+				public void onLostFocus(Widget w) {
+						validateFields(w);
+				}
+			});
+		}
+	}
+	
+	private void validateFields(Widget w){
+	/**TODO: Terminar validacion de fields del DomicilioUI. */
+		if(w == cpa){
+			//Aca llama al ServiceRpcCuenta
+			CuentaRpcService.Util.getInstance().getDomicilioPorCPA(cpa.getText(),
+					new DefaultWaitCallback<DomiciliosCuentaDto>() {
+						public void success(DomiciliosCuentaDto domicilioNormalizado) {
+							//cpa.setText(domicilioNormalizado.getCpa().toUpperCase());
+							//TODO: Borrar logueo!
+							GWT.log("Entro en SUCESS del onLostFocus del ValidateFields por CPA.", null);
+						}
+						public void onFailure(DomiciliosCuentaDto domicilioNormalizado) {
+							//TODO: Borrar logueo!
+							GWT.log("Entro en FAILURE del onLostFocus del ValidateFields por CPA.", null);
+						}
+					});
+		}
+	}
+	
 	public TextBox getCalle() {
 		calle.setWidth("300px");
 		return calle;

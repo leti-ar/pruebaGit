@@ -17,6 +17,7 @@ import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -28,7 +29,6 @@ import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
 
-
 /**
  * @author eSalvador 
  **/
@@ -38,16 +38,10 @@ public class CuentaDomiciliosForm extends Composite {
 	private FlowPanel mainPanel;
 	private FormButtonsBar footerBar;
 	private FlexTable datosTabla;
-	private CuentaUIData cuentaUIData;
 	private List<SolicitudServicioCerradaDto> ssCerradasAsociadas = new ArrayList<SolicitudServicioCerradaDto>();
 	private DomiciliosCuentaDto domicilioAEditar;
 	private int rowDomicilioABorrar;
-	
-	// TODO; Analizar!!
-	// private DomiciliosUIData domiciliosData;
 	private CuentaDto cuentaDto;
-
-	//
 
 	public static CuentaDomiciliosForm getInstance() {
 		return instance;
@@ -105,12 +99,13 @@ public class CuentaDomiciliosForm extends Composite {
 
 	/**
 	 * @author eSalvador
-	 * Devuelve el comando que Agrega un nuevo Domicilio a la Persona.
 	 **/
+	private void abrirPopupNormalizacion() {
+		/**TODO: Abrir NormalizarDomicilioUI*/
+		GWT.log("Entro en Normalizar PopUp!", null);
+	}
+	
 	private Command getComandoNuevoDomicilio() {
-		/**TODO:Aca de beria hacer la validacion de datos de entrada, 
-		 **     y despues abrir el popup de Normalizacion.
-		 **     El addDomicilio a persona lo debe hacer el Aceptar del PopUp.*/
 		Command comandoAceptar = new Command() {
 			public void execute() {
 				DomiciliosCuentaDto domicilioNuevo = DomicilioUI.getInstance().getDomiciliosData().getDomicilio();
@@ -124,43 +119,45 @@ public class CuentaDomiciliosForm extends Composite {
 		return comandoAceptar;
 	}
 	
-	
 	/**
 	 * @author eSalvador
 	 * Devuelve el comando que Agrega el domicilio editado que le llega, con los datos nuevos.
 	 **/
-	private Command getComandoCopiarDomicilio() {
-		/**TODO:Aca deberia hacer la validacion de datos de entrada, 
-		 **     y despues abrir el popup de Normalizacion.
-		 **     El addDomicilio a persona lo debe hacer el Aceptar del PopUp.*/
-		Command comandoAceptar = new Command() {
+	private Command getComandoCopiarDomicilio(DomiciliosCuentaDto domicilio) {
+		/**TODO: Hacer la validacion de datos de entrada, 
+		 **     y despues abrir el popup de Normalizacion. */
+		Command comandoCopiar = new Command() {
 			public void execute() {
+				//abrirPopupNormalizacion();
 				PersonaDto persona = cuentaDto.getPersona();
 				persona.getDomicilios().add(DomicilioUI.getInstance().getDomiciliosData().getDomicilioCopiado());
 				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConDomiciliosEditados();
 				DomicilioUI.getInstance().hide();
+				abrirPopupNormalizacion();
 			}
-		};
-		return comandoAceptar;
+		 };
+	return comandoCopiar;
 	}
 	
 	/**
 	 * @author eSalvador
 	 * Devuelve el comando que Agrega el domicilio editado que le llega, con los datos nuevos.
 	 **/
-	private Command getComandoEditarDomicilio() {
-		/**TODO:Aca deberia hacer la validacion de datos de entrada, 
-		 **     y despues abrir el popup de Normalizacion.
-		 **     El addDomicilio a persona lo debe hacer el Aceptar del PopUp.*/
-		Command comandoAceptar = new Command() {
-			public void execute() {
-				DomiciliosCuentaDto domicilioEditado = DomicilioUI.getInstance().getDomiciliosData().getDomicilio();
-				DomicilioUI.getInstance().hide();
-				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConNuevoDomicilio(domicilioEditado);
-			}
-		};
-		return comandoAceptar;
-	}
+//	private Command getComandoEditarDomicilio(DomiciliosCuentaDto domicilio) {
+//		/**TODO: Hacer la validacion de datos de entrada, 
+//		 **     y despues abrir el popup de Normalizacion.*/
+//		Command comandoAceptar;
+//		if (domicilio.isLocked()){
+//			comandoAceptar = new Command() {
+//				public void execute() {
+//					setCommandPopupDialog(getComandoEditar());
+//				}
+//			};
+//		}else{
+//			comandoAceptar = getComandoEditar();
+//		}
+//		return comandoAceptar;
+//	}
 	
 	/**
 	 * @author eSalvador
@@ -168,9 +165,35 @@ public class CuentaDomiciliosForm extends Composite {
 	 **/
 	private Command getComandoBorrarDomicilio(DomiciliosCuentaDto domicilio) {
 		domicilioAEditar = domicilio;
-		Command comandoAceptar = new Command() {
+		Command comandoAceptar;
+		if (domicilio.isLocked()){
+			comandoAceptar = new Command() {
+				public void execute() {
+					openPopupDialog(getDummyCommand());
+				}
+			};
+		}else{
+			comandoAceptar = getComandoBorrar();
+		}
+		return comandoAceptar;
+	}
+	
+	private Command getComandoEditar(){
+		Command comandoEditar = new Command() {
 			public void execute() {
-				//domicilioAEditar;
+				//abrirPopupNormalizacion();
+				DomiciliosCuentaDto domicilioEditado = DomicilioUI.getInstance().getDomiciliosData().getDomicilio();
+				DomicilioUI.getInstance().hide();
+				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConNuevoDomicilio(domicilioEditado);
+				abrirPopupNormalizacion();
+			}
+		 };
+	return comandoEditar;
+	}
+	
+	private Command getComandoBorrar(){
+		Command comandoEditar = new Command() {
+			public void execute() {
 				PersonaDto persona = cuentaDto.getPersona();
 				List<DomiciliosCuentaDto> domicilios = persona.getDomicilios();
 				for (int j = 0; j < domicilios.size(); j++) {
@@ -181,8 +204,37 @@ public class CuentaDomiciliosForm extends Composite {
 				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConDomiciliosBorrados(rowDomicilioABorrar);
 				MessageDialog.getInstance().hide();
 			}
+		 };
+	return comandoEditar;
+	}
+	
+	/**
+	 * @author eSalvador
+	 **/
+	private void openPopupDialog(Command comandoGenerico) {
+			MessageDialog.getInstance().setDialogTitle("Advertencia");
+			MessageDialog.getInstance().showAceptar("No puede modificar o borrar el domicilio. Ya se cerró una solicitud de servicio para la cuenta desde su creación.", comandoGenerico);
+	}
+	
+	
+	private Command getDummyCommand(){
+		Command dummyCommand = new Command() {
+			public void execute() {
+				MessageDialog.getInstance().hide();
+			}
 		};
-		return comandoAceptar;
+	return dummyCommand;
+	}
+	
+	private Command getOpenDomicilioUICommand(){
+		Command openUIommand = new Command() {
+			public void execute() {
+				DomicilioUI.getInstance().setComandoAceptar(getComandoEditar());
+				DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
+				MessageDialog.getInstance().hide();
+			}
+		};
+	return openUIommand;
 	}
 	
 	/**
@@ -300,17 +352,27 @@ public class CuentaDomiciliosForm extends Composite {
 			public void onCellClicked(SourcesTableEvents arg0, int row, int col) {
 				DomiciliosCuentaDto domicilio = cuentaDto.getPersona().getDomicilios().get(row - 1);
 				if (row != 0) {
-					// Acciones a tomar cuando haga click en los lapices de edicion:
+					//Acciones a tomar cuando haga click en los lapices de edicion:
 					if (col == 0) {
 						domicilioAEditar = domicilio;
-						DomicilioUI.getInstance().setComandoAceptar(getComandoEditarDomicilio());
-						validaHabilitacionDeCampos();
-						DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilio);
+						GWT.log("Domicilio.isLocked? : "+String.valueOf(domicilio.isLocked()), null);
+						if (!domicilio.isLocked()){
+							//Si le doy Ok al mensaje de Advertencia:
+							openPopupDialog(getOpenDomicilioUICommand());
+						}else{
+							//Esto REVISAR, creo q no va mas!!!
+							validaHabilitacionDeCampos();
+							DomicilioUI.getInstance().setComandoAceptar(getComandoEditar());
+							DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilio);
+						}
 					}
 					// Acciones a tomar cuando haga click en iconos de copiado de domicilios:
 					if (col == 1) {
-						DomicilioUI.getInstance().setComandoAceptar(getComandoCopiarDomicilio());	
+						/**TODO: Aca falta logica: Si esta lockeado el domicilio, llama antes al popUp de advertencia.*/
+						//getComandoYPopup();
+						DomicilioUI.getInstance().setComandoAceptar(getComandoCopiarDomicilio(domicilio));	
 						DomicilioUI.getInstance().cargarPopupCopiarDomicilio(domicilio);
+						//
 					}
 					// Acciones a tomar cuando haga click en iconos de borrado de domicilios:
 					if (col == 2) {
