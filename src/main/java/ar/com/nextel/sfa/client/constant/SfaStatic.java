@@ -1150,6 +1150,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String telefonoPanelTitle();
 
   /**
+   * Translated "Teléfonos".
+   * 
+   * @return translated "Teléfonos"
+   */
+  @DefaultStringValue("Teléfonos")
+  @Key("telefonos")
+  String telefonos();
+
+  /**
    * Translated "Término Pago:".
    * 
    * @return translated "Término Pago:"
