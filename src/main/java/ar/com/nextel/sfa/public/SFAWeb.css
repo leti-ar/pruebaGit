@@ -365,6 +365,17 @@ margin-bottom:8px;
 width:100%;
 }
 
+.linkVeraz{
+	background:transparent url(images/art-veraz.gif) no-repeat scroll 0 50%;
+	border:0 none;
+	cursor:pointer;
+	display:block;
+	float:left;
+	height:16px;
+	width:16px;
+	
+}
+
 .resultadoVerazAceptar {
 background:transparent url(images/icon-scoring-aceptado.jpg) no-repeat scroll 0 0;
 display:block;
