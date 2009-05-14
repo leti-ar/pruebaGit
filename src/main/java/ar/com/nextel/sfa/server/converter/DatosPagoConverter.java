@@ -2,7 +2,6 @@ package ar.com.nextel.sfa.server.converter;
 
 import org.dozer.CustomConverter;
 
-import ar.com.nextel.business.legacy.vantive.model.VantiveDatosDebitoTarjetaCredito;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoTarjetaCredito;
 import ar.com.nextel.model.cuentas.beans.DatosEfectivo;
@@ -26,25 +25,26 @@ public class DatosPagoConverter implements CustomConverter {
         FormaPagoDto fp = new FormaPagoDto();
 
         if (sourceFieldValue instanceof DatosEfectivo) {
-		    result =  new DatosEfectivoDto();//(DatosEfectivoDto) repository.createNewObject(DatosEfectivoDto.class);
+		    result =  new DatosEfectivoDto();
 		    fp.setId( ((DatosEfectivo)sourceFieldValue).getId());
 		    ((DatosEfectivoDto)result).setFormaPagoAsociada(fp);
-		    //((DatosEfectivoDto)result).setFormaPagoAsociada((FormaPagoDto) knownInstanceRetriever.getObject(KnownInstanceIdentifier.FORMA_PAGO_EFECTIVO));
     	} else if (sourceFieldValue instanceof DatosDebitoCuentaBancaria) {
-    	    result = new DatosDebitoCuentaBancariaDto();//(DatosDebitoCuentaBancariaDto) repository.createNewObject(DatosDebitoCuentaBancariaDto.class);
+    	    result = new DatosDebitoCuentaBancariaDto();
             ((DatosDebitoCuentaBancariaDto)result).setCbu( ((DatosDebitoCuentaBancaria) sourceFieldValue).getCbu());	    
-            TipoCuentaBancariaDto tcb = new TipoCuentaBancariaDto();//repository.createNewObject(TipoCuentaBancaria.class);
-            tcb.setCodigoVantive(((DatosDebitoCuentaBancariaDto) sourceFieldValue).getTipoCuentaBancaria().getCodigoVantive());
+            TipoCuentaBancariaDto tcb = new TipoCuentaBancariaDto();
+            tcb.setCodigoVantive(((DatosDebitoCuentaBancaria) sourceFieldValue).getTipoCuentaBancaria().getCodigoVantive());
+            tcb.setId(((DatosDebitoCuentaBancaria) sourceFieldValue).getTipoCuentaBancaria().getId());
             ((DatosDebitoCuentaBancariaDto)result).setTipoCuentaBancaria(tcb );
             fp.setId( ((DatosDebitoCuentaBancaria)sourceFieldValue).getId());
             ((DatosDebitoCuentaBancariaDto)result).setFormaPagoAsociada(fp);
-    	} else if (sourceFieldValue instanceof VantiveDatosDebitoTarjetaCredito) {
-    		result =  new DatosDebitoTarjetaCreditoDto();//(DatosDebitoTarjetaCredito) repository.createNewObject(DatosDebitoTarjetaCredito.class);
+    	} else if (sourceFieldValue instanceof DatosDebitoTarjetaCredito) {
+    		result =  new DatosDebitoTarjetaCreditoDto();
     		((DatosDebitoTarjetaCreditoDto)result).setAnoVencimientoTarjeta(((DatosDebitoTarjetaCredito) sourceFieldValue).getAnoVencimientoTarjeta());
     		((DatosDebitoTarjetaCreditoDto)result).setMesVencimientoTarjeta(((DatosDebitoTarjetaCredito) sourceFieldValue).getMesVencimientoTarjeta());
-    		((DatosDebitoTarjetaCreditoDto)result).setNumero(((VantiveDatosDebitoTarjetaCredito) sourceFieldValue).getNumero());
-    		TipoTarjetaDto tt =  new TipoTarjetaDto();//repository.createNewObject(TipoTarjeta.class);
+    		((DatosDebitoTarjetaCreditoDto)result).setNumero(((DatosDebitoTarjetaCredito) sourceFieldValue).getNumero());
+    		TipoTarjetaDto tt =  new TipoTarjetaDto();
     		tt.setCodigoVantive(((DatosDebitoTarjetaCredito) sourceFieldValue).getTipoTarjeta().getCodigoVantive());
+    		tt.setId(((DatosDebitoTarjetaCredito) sourceFieldValue).getTipoTarjeta().getId());
     		((DatosDebitoTarjetaCreditoDto)result).setTipoTarjeta(tt);
             fp.setId( ((DatosDebitoTarjetaCredito)sourceFieldValue).getId());
     		((DatosDebitoTarjetaCreditoDto)result).setFormaPagoAsociada(fp);
