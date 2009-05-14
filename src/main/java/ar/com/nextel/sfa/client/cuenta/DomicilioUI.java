@@ -197,7 +197,6 @@ public class DomicilioUI extends NextelDialog {
 		footer.setVisible(false);
 		linkAceptar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				// TODO: Logica de Aceptar y guardar nuevo Domicilio!
 				if (comandoAceptar != null){
 					comandoAceptar.execute();
 				}

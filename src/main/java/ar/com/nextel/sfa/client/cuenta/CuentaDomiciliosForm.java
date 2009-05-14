@@ -17,7 +17,6 @@ import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -102,7 +101,7 @@ public class CuentaDomiciliosForm extends Composite {
 	 **/
 	private void abrirPopupNormalizacion() {
 		/**TODO: Abrir NormalizarDomicilioUI*/
-		GWT.log("Entro en Normalizar PopUp!", null);
+		NormalizarDomicilioUI.getInstance().showAndCenter();
 	}
 	
 	private Command getComandoNuevoDomicilio() {

@@ -80,11 +80,6 @@ public class DomiciliosUIData extends UIData {
 			unidadFuncional.setText(domicilio.getUnidad_funcional());
 			observaciones.setText(domicilio.getObservaciones());
 
-			/**
-			 * TODO: Hacer el mapeo de tiposDomicilioAsociado, para cargar los combos de Entrega y
-			 * Facturacion: con lo que venga en Domicilio.
-			 */
-
 			for (int i = 0; i < domicilio.getTiposDomicilioAsociado().size(); i++) {
 				TipoDomicilioAsociadoDto tipoDomicilioAsociadoDto = domicilio.getTiposDomicilioAsociado()
 						.get(i);
@@ -138,6 +133,9 @@ public class DomiciliosUIData extends UIData {
 		domicilioCopiado.setPuerta(puerta.getText());
 		domicilioCopiado.setTorre(torre.getText());
 		domicilioCopiado.setTiposDomicilioAsociado(mapeaCombosFacturacionEntrega());
+		//Esto del locked se setea en FALSE para que le permita la edicion del mismo, hasta que se guarde la cuenta, cuando se setea en TRUE.
+		domicilioCopiado.setLocked(false);
+		//
 		return domicilioCopiado;
 	}
 	
@@ -160,6 +158,9 @@ public class DomiciliosUIData extends UIData {
 		domicilio.setPuerta(puerta.getText());
 		domicilio.setTorre(torre.getText());
 		domicilio.setTiposDomicilioAsociado(mapeaCombosFacturacionEntrega());
+		//Esto del locked se setea en FALSE para que le permita la edicion del mismo, hasta que se guarde la cuenta, cuando se setea en TRUE.
+		domicilio.setLocked(false);
+		//
 		return domicilio;
 	}
 

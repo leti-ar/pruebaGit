@@ -30,7 +30,9 @@ public class DomiciliosCuentaDto implements IsSerializable{
 	private String fecha_ultima_modificacion;
 	private String activo;
     private List<TipoDomicilioAsociadoDto> tiposDomicilioAsociado = new ArrayList<TipoDomicilioAsociadoDto>();
-	private boolean locked;
+	//Lo seteo en True por defecto, porque esto no se guarda en la base, 
+    //y cuando venga el dato, siempre estara deshabilitado, a menos que sea un domicilio Nuevo.
+    private boolean locked = true;
 	
 	public String getDomicilios() {
 	/** Muestra la concatenación de Calle, Número, Piso, Dpto., UF, Torre, Localidad, Partido, Provincia, Código Postal y CPA para cada domicilio habilitado.*/
