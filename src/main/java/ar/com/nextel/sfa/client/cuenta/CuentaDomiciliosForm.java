@@ -139,45 +139,6 @@ public class CuentaDomiciliosForm extends Composite {
 	return comandoCopiar;
 	}
 	
-	/**
-	 * @author eSalvador
-	 * Devuelve el comando que Agrega el domicilio editado que le llega, con los datos nuevos.
-	 **/
-//	private Command getComandoEditarDomicilio(DomiciliosCuentaDto domicilio) {
-//		/**TODO: Hacer la validacion de datos de entrada, 
-//		 **     y despues abrir el popup de Normalizacion.*/
-//		Command comandoAceptar;
-//		if (domicilio.isLocked()){
-//			comandoAceptar = new Command() {
-//				public void execute() {
-//					setCommandPopupDialog(getComandoEditar());
-//				}
-//			};
-//		}else{
-//			comandoAceptar = getComandoEditar();
-//		}
-//		return comandoAceptar;
-//	}
-	
-	/**
-	 * @author eSalvador
-	 * Devuelve el comando que Borra el domicilio seleccionado en la grilla de resultados.
-	 **/
-	private Command getComandoBorrarDomicilio(DomiciliosCuentaDto domicilio) {
-		domicilioAEditar = domicilio;
-		Command comandoAceptar;
-		if (domicilio.isLocked()){
-			comandoAceptar = new Command() {
-				public void execute() {
-					openPopupDialog(getDummyCommand());
-				}
-			};
-		}else{
-			comandoAceptar = getComandoBorrar();
-		}
-		return comandoAceptar;
-	}
-	
 	private Command getComandoEditar(){
 		Command comandoEditar = new Command() {
 			public void execute() {
@@ -192,7 +153,7 @@ public class CuentaDomiciliosForm extends Composite {
 	}
 	
 	private Command getComandoBorrar(){
-		Command comandoEditar = new Command() {
+		Command comandoBorrar = new Command() {
 			public void execute() {
 				PersonaDto persona = cuentaDto.getPersona();
 				List<DomiciliosCuentaDto> domicilios = persona.getDomicilios();
@@ -205,17 +166,22 @@ public class CuentaDomiciliosForm extends Composite {
 				MessageDialog.getInstance().hide();
 			}
 		 };
-	return comandoEditar;
+	return comandoBorrar;
 	}
 	
 	/**
 	 * @author eSalvador
 	 **/
-	private void openPopupDialog(Command comandoGenerico) {
+	private void openPopupAdviseDialog(Command comandoGenerico) {
 			MessageDialog.getInstance().setDialogTitle("Advertencia");
 			MessageDialog.getInstance().showAceptar("No puede modificar o borrar el domicilio. Ya se cerró una solicitud de servicio para la cuenta desde su creación.", comandoGenerico);
 	}
 	
+	private void openPopupDeleteDialog(Command comandoGenerico) {
+		MessageDialog.getInstance().setDialogTitle("Eliminar Domicilio");
+		MessageDialog.getInstance().showSiNo("¿Esta seguro que desea eliminar el domicilio seleccionado?",comandoGenerico,MessageDialog.getInstance().getCloseCommand());
+	}
+
 	
 	private Command getDummyCommand(){
 		Command dummyCommand = new Command() {
@@ -227,14 +193,23 @@ public class CuentaDomiciliosForm extends Composite {
 	}
 	
 	private Command getOpenDomicilioUICommand(){
-		Command openUIommand = new Command() {
+		Command openUICommand = new Command() {
 			public void execute() {
 				DomicilioUI.getInstance().setComandoAceptar(getComandoEditar());
 				DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
 				MessageDialog.getInstance().hide();
 			}
 		};
-	return openUIommand;
+	return openUICommand;
+	}
+	
+	private Command getOpenDialogAdviceCommand(){
+		Command openDialogCommand = new Command() {
+			public void execute() {
+				openPopupAdviseDialog(getDummyCommand());
+			}
+		};
+	return openDialogCommand;
 	}
 	
 	/**
@@ -355,12 +330,10 @@ public class CuentaDomiciliosForm extends Composite {
 					//Acciones a tomar cuando haga click en los lapices de edicion:
 					if (col == 0) {
 						domicilioAEditar = domicilio;
-						GWT.log("Domicilio.isLocked? : "+String.valueOf(domicilio.isLocked()), null);
-						if (!domicilio.isLocked()){
-							//Si le doy Ok al mensaje de Advertencia:
-							openPopupDialog(getOpenDomicilioUICommand());
+						if (domicilio.isLocked()){
+							openPopupAdviseDialog(getOpenDomicilioUICommand());
 						}else{
-							//Esto REVISAR, creo q no va mas!!!
+							//REVISAR esta validacion de campos, creo q no va mas!!!
 							validaHabilitacionDeCampos();
 							DomicilioUI.getInstance().setComandoAceptar(getComandoEditar());
 							DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilio);
@@ -368,17 +341,19 @@ public class CuentaDomiciliosForm extends Composite {
 					}
 					// Acciones a tomar cuando haga click en iconos de copiado de domicilios:
 					if (col == 1) {
-						/**TODO: Aca falta logica: Si esta lockeado el domicilio, llama antes al popUp de advertencia.*/
-						//getComandoYPopup();
 						DomicilioUI.getInstance().setComandoAceptar(getComandoCopiarDomicilio(domicilio));	
 						DomicilioUI.getInstance().cargarPopupCopiarDomicilio(domicilio);
-						//
 					}
 					// Acciones a tomar cuando haga click en iconos de borrado de domicilios:
 					if (col == 2) {
 						rowDomicilioABorrar = row;
-						MessageDialog.getInstance().setDialogTitle("Eliminar Domicilio");
-						MessageDialog.getInstance().showSiNo("¿Esta seguro que desea eliminar el domicilio seleccionado?",getComandoBorrarDomicilio(domicilio),MessageDialog.getInstance().getCloseCommand());
+						domicilioAEditar = domicilio;
+						if (domicilio.isLocked()){
+							openPopupDeleteDialog(getOpenDialogAdviceCommand());
+						}else{
+							openPopupDeleteDialog(getComandoBorrar());
+						}
+						
 					}
 				}
 			}
