@@ -40,6 +40,7 @@ import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.Rubro;
 import ar.com.nextel.model.personas.beans.Documento;
+import ar.com.nextel.model.personas.beans.GrupoDocumento;
 import ar.com.nextel.model.personas.beans.Persona;
 import ar.com.nextel.model.personas.beans.Sexo;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
@@ -173,11 +174,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 	 *         datos reales de la Db.
 	 **/
 	public BuscarCuentaInitializer getBuscarCuentaInitializer() {
-		//List<TipoDocumentoDto> listaTipoDoc = mapper.convertList(genericDao.getList(TipoDocumento.class),	TipoDocumentoDto.class);
-		List<GrupoDocumentoDto> listaGrupoDoc = new ArrayList<GrupoDocumentoDto>();
-		listaGrupoDoc.add(0, new GrupoDocumentoDto(1, "Documento"));
-		listaGrupoDoc.add(1, new GrupoDocumentoDto(2, "CUIT/CUIL"));
-		
+
+		List<GrupoDocumentoDto> listaGrupoDoc = mapper.convertList(repository.getAll(GrupoDocumento.class),	GrupoDocumentoDto.class);
 		List<CategoriaCuentaDto> listaCategorias = mapper.convertList(genericDao.getList(CategoriaCuenta.class),	CategoriaCuentaDto.class);
 
 		List<BusquedaPredefinidaDto> listaBusquedaPredef = new ArrayList<BusquedaPredefinidaDto>();
@@ -320,7 +318,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		solicitudCta.setDocumento(getDocumento(docDto));
 		try {
 			cuenta = cuentaBusinessService.reservarCrearCta(solicitudCta);
-			//cuenta = selectCuentaBusinessOperator.getCuentaYLockear(cuenta.getCodigoVantive(), vendedor);
+			cuenta = selectCuentaBusinessOperator.getCuentaYLockear(cuenta.getCodigoVantive(), vendedor);
 			cuentaDto = (CuentaDto) mapper.map(cuenta, CuentaDto.class);
 		} catch (BusinessException e) {
 			// TODO Auto-generated catch block
