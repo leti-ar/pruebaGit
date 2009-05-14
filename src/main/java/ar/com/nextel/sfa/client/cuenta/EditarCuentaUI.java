@@ -31,10 +31,9 @@ public class EditarCuentaUI extends ApplicationUI {
 			TipoDocumentoDto tipoDoc = new TipoDocumentoDto(Long.parseLong(HistoryUtils.getParam("tipoDoc")),null);
 			DocumentoDto docDto = new DocumentoDto(HistoryUtils.getParam("nroDoc"),tipoDoc);
 			CuentaRpcService.Util.getInstance().reservaCreacionCuenta(docDto,new DefaultWaitCallback<CuentaDto>() {
-				public void success(CuentaDto ctaDto) {
-					cuentaTab.setCuenta2editDto(ctaDto);
-					cuentaTab.getCuentaDatosForm().setDefaultComboSexo(ctaDto.getPersona().getIdTipoDocumento(),ctaDto.getPersona().getDocumento().getNumero());
-					cuentaTab.getCuentaDatosForm().deshabilitarCamposAlAgregarCuenta();
+				public void success(CuentaDto cuentaDto) {
+					cuentaTab.setCuenta2editDto(cuentaDto);
+					cuentaTab.getCuentaDatosForm().deshabilitarCamposAlAgregarCuenta(cuentaDto);
 					cargaPaneles();
 				}
 			});	
@@ -56,13 +55,13 @@ public class EditarCuentaUI extends ApplicationUI {
 				}else{
 					// Si algunos de los dos tiene datos validos, carga los paneles.
 					CuentaRpcService.Util.getInstance().selectCuenta(cuentaID, cod_vantive,new DefaultWaitCallback<CuentaDto>() {
-						public void success(CuentaDto cuentaDto) {
+						public void success(CuentaDto ctaDto) {
 							//De todas formas, el servicio puede NO devolver ninguna cuenta: (Se pone el panel invisible!).
-							if (cuentaDto == null){
+							if (ctaDto == null){
 								mainPanel.clear();
 								new BuscarCuentaUI().load();
-							}else{
-								cuentaTab.setCuenta2editDto(cuentaDto);
+							} else {
+								cuentaTab.setCuenta2editDto(ctaDto);
 								cargaPaneles();
 							}
 						}

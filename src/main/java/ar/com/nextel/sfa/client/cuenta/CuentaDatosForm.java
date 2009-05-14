@@ -53,6 +53,7 @@ public class CuentaDatosForm extends Composite {
 	private FlexTable cuentaBancariaTable = new FlexTable();
 	private FlexTable tarjetaTable        = new FlexTable();
 	private CuentaUIData camposTabDatos   = new CuentaUIData();
+	private CuentaEdicionTabPanel  cuentaTab = CuentaEdicionTabPanel.getInstance();
 	private DatosPagoDto datosPago;
 	private List <Widget>camposObligatorios = new ArrayList<Widget>();
 	private TitledPanel datosCuentaPanel = new TitledPanel(Sfa.constant().cuentaPanelTitle());;
@@ -302,6 +303,7 @@ public class CuentaDatosForm extends Composite {
 			camposTabDatos.getTipoDocumento().setSelectedItem(cuentaDto.getPersona().getDocumento().tipoDocumento) ;
 			camposTabDatos.getNumeroDocumento().setText(cuentaDto.getPersona().getDocumento().getNumero());
 		}
+		setDefaultComboSexo(cuentaDto.getPersona().getIdTipoDocumento(),cuentaDto.getPersona().getDocumento().getNumero());
 		camposTabDatos.getRazonSocial().setText(cuentaDto.getPersona().getRazonSocial());
 		camposTabDatos.getNombre().setText(cuentaDto.getPersona().getNombre());
 		camposTabDatos.getApellido().setText(cuentaDto.getPersona().getApellido());
@@ -358,35 +360,33 @@ public class CuentaDatosForm extends Composite {
     
     public void cargarPanelFormaPago(CuentaDto cuentaDto) {
         String id_formaPago = "";
-    	//if (cuentaDto.getDatosPago() instanceof DatosEfectivoDto) {
 		if (cuentaDto.getDatosPago().isEfectivo()) {
 			datosPago = (DatosEfectivoDto) cuentaDto.getDatosPago();
 			camposTabDatos.getFormaPago().setSelectedItem(((DatosEfectivoDto)datosPago).getFormaPagoAsociada());
-			id_formaPago = ((DatosEfectivoDto)datosPago).getFormaPagoAsociada().getItemValue();
+			id_formaPago = TipoFormaPagoEnum.EFECTIVO.getTipo();
 		}
-		//else if (cuentaDto.getDatosPago() instanceof DatosDebitoCuentaBancariaDto) {
 		else if (cuentaDto.getDatosPago().isDebitoCuentaBancaria()) {			
 			datosPago = (DatosDebitoCuentaBancariaDto) cuentaDto.getDatosPago();
 			camposTabDatos.getFormaPago().setSelectedItem(((DatosDebitoCuentaBancariaDto)datosPago).getFormaPagoAsociada());
-			camposTabDatos.getTipoCuentaBancaria().setSelectedItem(((DatosDebitoCuentaBancariaDto)datosPago).getTipoCuentaBancaria());
+			camposTabDatos.getTipoCuentaBancaria().selectByValue(((DatosDebitoCuentaBancariaDto)datosPago).getTipoCuentaBancaria().getItemValue());
 			camposTabDatos.getCbu().setText(((DatosDebitoCuentaBancariaDto)datosPago).getCbu());
-			id_formaPago = ((DatosDebitoCuentaBancariaDto)datosPago).getFormaPagoAsociada().getItemValue();
+			id_formaPago = TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo();
 		}
-		//else if (cuentaDto.getDatosPago() instanceof DatosDebitoTarjetaCreditoDto) {
 		else if (cuentaDto.getDatosPago().isDebitoTarjetaCredito()) {			
 			datosPago = (DatosDebitoTarjetaCreditoDto) cuentaDto.getDatosPago();
 			camposTabDatos.getFormaPago().setSelectedItem(((DatosDebitoTarjetaCreditoDto)datosPago).getFormaPagoAsociada());
 			camposTabDatos.getMesVto().setSelectedIndex(((DatosDebitoTarjetaCreditoDto)datosPago).getMesVencimientoTarjeta());
-			camposTabDatos.getAnioVto().setSelectedIndex(((DatosDebitoTarjetaCreditoDto)datosPago).getAnoVencimientoTarjeta());
+			camposTabDatos.getAnioVto().setText(Short.toString(((DatosDebitoTarjetaCreditoDto)datosPago).getAnoVencimientoTarjeta()));
 			camposTabDatos.getTipoTarjeta().setSelectedItem(((DatosDebitoTarjetaCreditoDto)datosPago).getTipoTarjeta());
 			camposTabDatos.getNumeroTarjeta().setText(((DatosDebitoTarjetaCreditoDto)datosPago).getNumero());
-			id_formaPago = ((DatosDebitoTarjetaCreditoDto)datosPago).getFormaPagoAsociada().getItemValue();
+			id_formaPago = TipoFormaPagoEnum.TARJETA_CREDITO.getTipo();
 		}    	
 		setVisiblePanelFormaPagoYActualizarCamposObligatorios(id_formaPago);
     }
     
     public void setVisiblePanelFormaPagoYActualizarCamposObligatorios(String id_formaPago) {
 		camposTabDatos.getCamposObligatoriosFormaPago().clear();
+		camposTabDatos.getFormaPago().selectByValue(id_formaPago);
     	if (id_formaPago.equals(TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo())) {
     		cuentaBancariaTable.setWidget(0, 1, camposTabDatos.getFormaPago());
     		efectivoTable.setVisible(false);
@@ -399,7 +399,7 @@ public class CuentaDatosForm extends Composite {
     		cuentaBancariaTable.setVisible(false);
     		tarjetaTable.setVisible(true);
     		camposTabDatos.getCamposObligatoriosFormaPago().add(camposTabDatos.getNumeroTarjeta());
-    		//camposTabDatos.getCamposObligatoriosFormaPago().add(camposTabDatos.getAnioVto());
+    		camposTabDatos.getCamposObligatoriosFormaPago().add(camposTabDatos.getAnioVto());
     	} else {  //	if (id_formaPago.equals(TipoFormaPagoEnum.EFECTIVO.getTipo())) {
         	efectivoTable.setWidget(0, 1, camposTabDatos.getFormaPago());
     		efectivoTable.setVisible(true);
@@ -419,7 +419,7 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getFechaCreacion().setText(DateTimeFormat.getMediumDateFormat().format(cuentaDto.getFechaCreacion()));
     }
     
-	public void deshabilitarCamposAlAgregarCuenta() {
+	public void deshabilitarCamposAlAgregarCuenta(CuentaDto cuentaDto) {
 		List <Widget>campos = new ArrayList<Widget>();
 		campos.add(camposTabDatos.getRazonSocial());
 		campos.add(camposTabDatos.getTipoDocumento());
@@ -436,14 +436,14 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getIibbLabel().setVisible(false);
 		camposTabDatos.getCargoLabel().setVisible(false);
 		camposTabDatos.getNomDivLabel().setVisible(false);
-		
+		camposTabDatos.getCargo().setVisible(cuentaDto.getPersona().getSexo().getItemValue().equals(Long.toString(SexoEnum.ORGANIZACION.getId())));
+		camposTabDatos.getCargoLabel().setVisible(cuentaDto.getPersona().getSexo().getItemValue().equals(Long.toString(SexoEnum.ORGANIZACION.getId())));
 		armarTablaPanelDatos();
-		
 	}
     
 	public boolean formularioDatosDirty() {
 		boolean retorno = false;
-		CuentaEdicionTabPanel  cuentaTab = CuentaEdicionTabPanel.getInstance();
+		
 		if ( (FormUtils.fieldDirty(camposTabDatos.getRazonSocial(), cuentaTab.getCuenta2editDto().getPersona().getRazonSocial()))
 		   ||(FormUtils.fieldDirty(camposTabDatos.getSexo(), cuentaTab.getCuenta2editDto().getPersona().getSexo().getItemValue()))
 		   ||(FormUtils.fieldDirty(camposTabDatos.getFechaNacimiento(), cuentaTab.getCuenta2editDto().getPersona().getFechaNacimiento()!=null?DateTimeFormat.getMediumDateFormat().format(cuentaTab.getCuenta2editDto().getPersona().getFechaNacimiento()):""))
@@ -469,13 +469,13 @@ public class CuentaDatosForm extends Composite {
 
 		if (camposTabDatos.getFormaPago().getSelectedItemId().equals(TipoFormaPagoEnum.TARJETA_CREDITO.getTipo())) {
 			if (cuentaTab.getCuenta2editDto().getDatosPago() instanceof DatosDebitoTarjetaCreditoDto) {
-				if	(FormUtils.fieldDirty(camposTabDatos.getNumeroTarjeta(), ((DatosDebitoTarjetaCreditoDto) cuentaTab.getCuenta2editDto().getDatosPago()).getNumero())) {
-					retorno = true;
-				}	
-			} else {
-				if ((!camposTabDatos.getCbu().getText().trim().equals("")))
-					return true;
-			}
+				if ( (FormUtils.fieldDirty(camposTabDatos.getNumeroTarjeta(), ((DatosDebitoTarjetaCreditoDto) cuentaTab.getCuenta2editDto().getDatosPago()).getNumero()))
+				   ||(FormUtils.fieldDirty(camposTabDatos.getAnioVto(), ((DatosDebitoTarjetaCreditoDto) cuentaTab.getCuenta2editDto().getDatosPago()).getAnoVencimientoTarjeta()+""))
+				)	retorno = true;
+			}	
+		} else {
+			if ((!camposTabDatos.getCbu().getText().trim().equals("")))
+				return true;
 		}
 		
 		//telefonos
@@ -605,6 +605,17 @@ public class CuentaDatosForm extends Composite {
 		
 		if(!camposTabDatos.getNumeroTarjeta().getText().equals(""))
 			validator.addTarget(camposTabDatos.getNumeroTarjeta()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getNumeroTarjeta().getName()));
+
+		if(!camposTabDatos.getAnioVto().getText().equals("")) {
+			try {
+				int valor = Integer.parseInt(camposTabDatos.getAnioVto().getText());
+				if (valor<camposTabDatos.getCurrentYear()||valor>(camposTabDatos.getCurrentYear()+5)) {
+					validator.addError(Sfa.constant().ERR_ANIO_NO_VALIDO());
+				}	
+			} catch (Exception e) {
+				validator.addError(Sfa.constant().ERR_ANIO_NO_VALIDO());
+			}
+		}
 		
 		validator.fillResult();
 		return validator.getErrors();
@@ -612,13 +623,13 @@ public class CuentaDatosForm extends Composite {
 	
 	public void validarTarjeta() {
 		if (!camposTabDatos.getNumeroTarjeta().getText().equals("")) {
-			CuentaRpcService.Util.getInstance().validarTarjeta(camposTabDatos.getNumeroTarjeta().getText(), new Integer(camposTabDatos.getMesVto().getSelectedItemId()), new Integer(camposTabDatos.getAnioVto().getSelectedItemId()), 	new DefaultWaitCallback() {
+			CuentaRpcService.Util.getInstance().validarTarjeta(camposTabDatos.getNumeroTarjeta().getText(), new Integer(camposTabDatos.getMesVto().getSelectedItemId()), new Integer(camposTabDatos.getAnioVto().getText()), new DefaultWaitCallback() {
 				public void success(Object result) {
 					TarjetaCreditoValidatorResultDto tarjetaCreditoValidatorResult = (TarjetaCreditoValidatorResultDto) result;
 					if(tarjetaCreditoValidatorResult==null) {
 						ErrorDialog.getInstance().show(Sfa.constant().ERR_AL_VALIDAR_TARJETA());
 					}else if (tarjetaCreditoValidatorResult.getIsValid()) {
-						MessageWindow.alert("Debe ingresar un dia hábil");
+						MessageWindow.alert(Sfa.constant().ERR_DIA_HABIL());
 					} else {
 						ErrorDialog.getInstance().show(Sfa.constant().ERR_TARJETA_NO_VALIDA());
 					}

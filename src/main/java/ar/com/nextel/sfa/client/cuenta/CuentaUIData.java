@@ -47,7 +47,6 @@ public class CuentaUIData extends UIData {
 	private ListBox tipoTarjeta       = new ListBox();
 	private ListBox tipoCanalVentas   = new ListBox();
 	private ListBox mesVto            = new ListBox();
-	private ListBox anioVto           = new ListBox();
 	
 	private TextBox numeroDocumento  = new TextBox();
 	private TextBox razonSocial      = new TextBox();
@@ -62,6 +61,7 @@ public class CuentaUIData extends UIData {
 	private TextBox emailLaboral     = new TextBox();
 	private TextBox cbu              = new TextBox();
 	private TextBox numeroTarjeta    = new TextBox();
+	private TextBox anioVto          = new TextBox();
 
 	private TelefonoTextBox telPrincipalTextBox = new TelefonoTextBox();
 	private TelefonoTextBox telAdicionalTextBox = new TelefonoTextBox();
@@ -100,14 +100,13 @@ public class CuentaUIData extends UIData {
 	private TextArea observaciones = new TextArea();
 	private SimpleDatePicker fechaNacimiento = new SimpleDatePicker(false);
 	private SimpleLink validarTarjeta = new SimpleLink(Sfa.constant().validarTarjeta(), "#", true);
-	
 	private Label veraz = new Label("TODO");
 
 	PersonaDto persona = new PersonaDto();
 	List <Widget>camposObligatorios =  new ArrayList<Widget>(); 
 	List <Widget>camposObligatoriosFormaPago = new ArrayList<Widget>();
 	List <TipoTelefonoDto>tipoTelefono = new ArrayList<TipoTelefonoDto>();
-	
+    private int currentYear;	
 	
 	public CuentaUIData() {
         init();
@@ -148,45 +147,8 @@ public class CuentaUIData extends UIData {
 				CuentaDatosForm.getInstance().validarTarjeta();
 			}
 		});
-		
 		setAtributosDeCampos();
 		setCombos();
-
-		cbu.setWidth("90%");
-		observaciones.addStyleName("textAreaCuentaData");
-		usuario.setEnabled(false);
-		fechaCreacion.setEnabled(false);
-		
-//		fields.add(tipoDocumento);
-//		fields.add(numeroDocumento);
-//		fields.add(razonSocial);
-//		fields.add(nombre);
-//		fields.add(apellido);
-//		fields.add(sexo);
-//		fields.add(fechaNacimiento);
-//		fields.add(contribuyente);
-//		fields.add(nombreDivision);
-//		fields.add(cargo);
-//		fields.add(proveedorAnterior);
-//		fields.add(rubro);
-//		fields.add(claseCliente);
-//		fields.add(categoria);
-//		fields.add(iibb);
-//		fields.add(cicloFacturacion);
-//		fields.add(veraz);
-//		fields.add(observaciones);
-//		fields.add(emailPersonal);
-//		fields.add(emailLaboral);
-//		fields.add(formaPago);
-//		fields.add(vendedorNombre);
-//		fields.add(vendedorTelefono);
-//		fields.add(tipoCanalVentas);
-//		fields.add(tipoCuentaBancaria);
-//		fields.add(tipoTarjeta);
-//		fields.add(mesVto);
-//		fields.add(anioVto);
-//		fields.add(cbu);
-//		fields.add(numeroTarjeta);
 		
 	}
 	
@@ -206,10 +168,7 @@ public class CuentaUIData extends UIData {
 					tipoCuentaBancaria.addAllItems(result.getTipoCuentaBancaria());
 					tipoTarjeta.addAllItems(result.getTipoTarjeta());
 					tipoCanalVentas.addAllItems(result.getTipoCanalVentas());
-			        for(int i=0;i<6;i++) {
-			        	String ano = Integer.toString(result.getAnio()+i);
-			 		    anioVto.addItem(ano, ano);
-			        }
+		        	currentYear = result.getAnio();
 				}
 			});
 		for(int i=1;i<13;i++) {
@@ -223,21 +182,21 @@ public class CuentaUIData extends UIData {
 		razonSocial.setText(nombre.getText() + " " + apellido.getText());
 	}
 	
-	public PersonaDto getPersona() {
-		persona.setApellido(apellido.getText());
-		//TODO: Revisar lo del Documento!
-		DocumentoDto doc = new DocumentoDto();
-		TipoDocumentoDto tipoDoc = new TipoDocumentoDto(Long.parseLong(tipoDocumento.getSelectedItem().getItemValue()),tipoDocumento.getSelectedItem().getItemText());
-		doc.setNumero(numeroDocumento.getText());
-		doc.setTipoDocumento(tipoDoc);
-		persona.setDocumento(doc);
-		//
-		persona.setFechaNacimiento(fechaNacimiento.getSelectedDate());
-		persona.setNombre(nombre.getText());
-		persona.setRazonSocial(razonSocial.getText());
-		persona.setSexo(new SexoDto(Long.parseLong(sexo.getSelectedItem().getItemValue()),sexo.getSelectedItem().getItemText()));
-		return persona;
-	}
+//	public PersonaDto getPersona() {
+//		persona.setApellido(apellido.getText());
+//		//TODO: Revisar lo del Documento!
+//		DocumentoDto doc = new DocumentoDto();
+//		TipoDocumentoDto tipoDoc = new TipoDocumentoDto(Long.parseLong(tipoDocumento.getSelectedItem().getItemValue()),tipoDocumento.getSelectedItem().getItemText());
+//		doc.setNumero(numeroDocumento.getText());
+//		doc.setTipoDocumento(tipoDoc);
+//		persona.setDocumento(doc);
+//		//
+//		persona.setFechaNacimiento(fechaNacimiento.getSelectedDate());
+//		persona.setNombre(nombre.getText());
+//		persona.setRazonSocial(razonSocial.getText());
+//		persona.setSexo(new SexoDto(Long.parseLong(sexo.getSelectedItem().getItemValue()),sexo.getSelectedItem().getItemText()));
+//		return persona;
+//	}
 	
 	private void setAtributosDeCampos() {
 
@@ -299,6 +258,17 @@ public class CuentaUIData extends UIData {
 		emailPersonal.setMaxLength(50);
 		cbu.setMaxLength(22);
 		
+		//formato
+		cbu.setWidth("90%");
+		observaciones.addStyleName("textAreaCuentaData");
+		usuario.setEnabled(false);
+		fechaCreacion.setEnabled(false);
+		mesVto.setWidth("60");
+		anioVto.setWidth("70");
+		proveedorAnterior.setWidth("150");
+		sexo.setWidth("150");
+		formaPago.setWidth("250");
+		tipoTarjeta.setWidth("60");
 	}
 	
 	private void setAtributosNumeroTarjeta() {
@@ -474,7 +444,7 @@ public class CuentaUIData extends UIData {
 	public ListBox getMesVto() {
 		return mesVto;
 	}
-	public ListBox getAnioVto() {
+	public TextBox getAnioVto() {
 		return anioVto;
 	}
 	public TextBox getCbu() {
@@ -518,5 +488,8 @@ public class CuentaUIData extends UIData {
 	}
 	public TextBox getUse() {
 		return use;
+	}
+	public int getCurrentYear() {
+		return currentYear;
 	}
 }

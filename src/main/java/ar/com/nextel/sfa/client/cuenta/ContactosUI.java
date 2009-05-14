@@ -178,7 +178,7 @@ public class ContactosUI extends NextelDialog {
 		telefonoPanel.addStyleDependentName("gwt-TabPanelBottom content");
 		telefonoPanel.add(telefonoTable);
 
-		telefonoTable.setWidget(0, 0, new Label(Sfa.constant().telefonos()));
+		telefonoTable.setWidget(0, 0, new Label(Sfa.constant().telefono()));
 		telefonoTable.setText(1, 0, Sfa.constant().principal());
 		telefonoTable.setWidget(1, 1, contactosData.getTelefonoPrincipal());
 		telefonoTable.setText(1, 2, Sfa.constant().adicional());

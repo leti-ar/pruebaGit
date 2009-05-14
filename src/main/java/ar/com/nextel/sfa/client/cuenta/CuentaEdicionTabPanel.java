@@ -208,7 +208,6 @@ public class CuentaEdicionTabPanel {
 	}
 	
 	///////////////
-
 	public CuentaDto getCuenta2editDto() {
 		return cuenta2editDto;
 	}
