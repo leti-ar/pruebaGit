@@ -62,8 +62,7 @@ public class VerazFilterUI extends Composite {
 			public void onClick (Widget arg0) {
 
 				/**Validar la completitud y formato de los campos**/
-				errorList.addAll(verazEditor.validarCompletitud());
-				errorList.addAll(verazEditor.validarFormato());
+				errorList.addAll(verazEditor.validarFormatoYCompletitud());
 
 				/**Mostrar los mensajes de error**/
 				if (!errorList.isEmpty()){

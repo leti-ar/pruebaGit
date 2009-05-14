@@ -56,26 +56,22 @@ public class VerazUIData extends UIData {
 	}
 
 		
-	public List<String> validarFormato() {		
-		if ( ("3".equals(tipoDocListBox.getSelectedItem().getItemValue()) ) || ("4".equals(tipoDocListBox.getSelectedItem().getItemValue()) ) ) {
+	public List<String> validarFormatoYCompletitud() {		
+		if ((tipoDocListBox.getSelectedItem() == null) || ("".equals(numeroDocTextBox.getText())) || (sexoListBox.getSelectedItem() == null)) {
+			errorList.add("Deben estar completos los campos tipo, número de documento y sexo para realizar la consulta a veraz");
+		}else if(("3".equals(tipoDocListBox.getSelectedItem().getItemValue())) || 
+				("4".equals(tipoDocListBox.getSelectedItem().getItemValue())) || 
+				("7".equals(tipoDocListBox.getSelectedItem().getItemValue()))) {
 			if (!validarTipoDoc(numeroDocTextBox)) {
-				errorList.add("El formato del número de CUIT/CUIL es incorrecto");
+				errorList.add("El formato del número de CUIT/CUIL es incorrecto. Debe ser xx-xxxxxxxx-x");
 			}
 
 		} else if (numeroDocTextBox.getText().length() > 10) {
-			errorList.add("El numero de documento debe tener 10 números como máximo");
+			errorList.add("El número de documento debe tener 10 dígitos como máximo");
 		}
 		return errorList;
 	}
 
-
-	public List<String> validarCompletitud() {
-		if ((tipoDocListBox.getSelectedItem() == null) || ("".equals(numeroDocTextBox.getText())) || (sexoListBox.getSelectedItem() == null)) {
-			errorList.add("Deben estar completos los campos tipo, número de documento y sexo para realizar la consulta a veraz");
-		}
-		return errorList;
-	}
-		
 		
 	private boolean validarTipoDoc(ValidationTextBox numeroDocTextBox) {
 		String cuit = new String("[0-9]{2,2}-[0-9]{8,8}-[0-9]{1,1}");
