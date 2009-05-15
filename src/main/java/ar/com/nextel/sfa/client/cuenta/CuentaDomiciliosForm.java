@@ -99,8 +99,9 @@ public class CuentaDomiciliosForm extends Composite {
 	/**
 	 * @author eSalvador
 	 **/
-	private void abrirPopupNormalizacion() {
+	private void abrirPopupNormalizacion(DomiciliosCuentaDto domicilio) {
 		/**TODO: Abrir NormalizarDomicilioUI*/
+		NormalizarDomicilioUI.getInstance().setDomicilios(domicilio);
 		NormalizarDomicilioUI.getInstance().showAndCenter();
 	}
 	
@@ -113,6 +114,7 @@ public class CuentaDomiciliosForm extends Composite {
 				DomicilioUI.getInstance().hide();
 				datosTabla.clear();
 				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().cargaTablaDomicilios(cuentaDto);
+				abrirPopupNormalizacion(domicilioNuevo);
 			}
 		};
 		return comandoAceptar;
@@ -132,7 +134,7 @@ public class CuentaDomiciliosForm extends Composite {
 				persona.getDomicilios().add(DomicilioUI.getInstance().getDomiciliosData().getDomicilioCopiado());
 				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConDomiciliosEditados();
 				DomicilioUI.getInstance().hide();
-				abrirPopupNormalizacion();
+				//abrirPopupNormalizacion(DomicilioUI.getInstance().getDomiciliosData().getDomicilioCopiado());
 			}
 		 };
 	return comandoCopiar;
@@ -145,7 +147,7 @@ public class CuentaDomiciliosForm extends Composite {
 				DomiciliosCuentaDto domicilioEditado = DomicilioUI.getInstance().getDomiciliosData().getDomicilio();
 				DomicilioUI.getInstance().hide();
 				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConNuevoDomicilio(domicilioEditado);
-				abrirPopupNormalizacion();
+				abrirPopupNormalizacion(domicilioEditado);
 			}
 		 };
 	return comandoEditar;

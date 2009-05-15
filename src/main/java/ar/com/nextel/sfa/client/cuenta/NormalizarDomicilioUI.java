@@ -1,9 +1,6 @@
 package ar.com.nextel.sfa.client.cuenta;
 
-import java.util.List;
-
-import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
+import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
@@ -13,7 +10,10 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.SourcesTableEvents;
+import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -31,10 +31,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	private SimpleLink linkAceptar;
 	private SimpleLink linkNoNormalizar;
 	private DomiciliosUIData domiciliosData;
-
-	//private TablePageBar tablePageBar;
-	private List<CuentaSearchResultDto> cuentas;
-	//
+	private DomiciliosCuentaDto domicilio;
 	
 	private static NormalizarDomicilioUI instance = new NormalizarDomicilioUI();
 
@@ -79,24 +76,20 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		linkCerrar = new SimpleLink("Cerrar");
 		grillaDomicilio = new SimplePanel();
 		domicilioResult = new FlexTable();
-		domicilioResult.addStyleName("gwt-BuscarCuentaResultPanel");
-		grillaDomicilio.addStyleName("resultTableWrapper");
+		addStyleName("gwt-NormalizarDomicilioUI");
+		grillaDomicilio.addStyleName("resultTableScroll");
 		grillaPpal = new Grid(5, 1);
-		setWidth("450px");
-		
-		grillaDomicilio.addStyleName("layout");
-		domicilioResult.setText(0, 0, "Seleccione alguna de estas opciones");
-		domicilioResult.setWidget(1, 0, linkAceptar); //TODO: Aca va insertado en la grilla, todos los DomiciliosCuentaDto.getDomicilios()
-		grillaDomicilio.setWidget(domicilioResult);
-		
-		grillaPpal.addStyleName("layout");
-		grillaPpal.getColumnFormatter().setWidth(0, "85px");
-		grillaPpal.addStyleName("layout");
+		setWidth("480px");
+
+		grillaPpal.getColumnFormatter().setWidth(0, "550px");
 		grillaPpal.setText(0, 0, "Domicilio Ingresado:");
-		grillaPpal.setWidget(1, 0, domiciliosData.getCalle()); //TODO: Aca van los datos del domicilio que llega! Averiguar cuales!
-		grillaPpal.setWidget(2, 0, grillaDomicilio); //TODO: Aca va la grilla!
+		grillaPpal.getRowFormatter().addStyleName(0, "layout");
+		grillaPpal.getCellFormatter().setHeight(1, 0, "25px");
+		grillaPpal.getRowFormatter().setStyleName(1, "gwt-TitledPanel");
+		grillaPpal.setWidget(1, 0, new Label());
+		grillaPpal.setWidget(2, 0, grillaDomicilio);
 		grillaPpal.setText(3, 0, "Motivo:");
-		grillaPpal.setWidget(4, 0, domiciliosData.getNumero()); //TODO: Aca va el motivo!
+		grillaPpal.setWidget(4, 0, new Label());
 		
 		add(grillaPpal);
 
@@ -132,11 +125,22 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		this.showAndCenter();
 	}
 	
-	public void setCuentas(List<CuentaSearchResultDto> cuentas) {
-		this.cuentas = cuentas;
+	public void setDomicilios(DomiciliosCuentaDto domicilio) {
+		this.domicilio = domicilio;
 		loadTable();
 	}
 
+	public void agregaTableListeners(){
+		domicilioResult.addTableListener(new TableListener() {
+			public void onCellClicked(SourcesTableEvents arg0, int row, int col) {
+				if (row != 0) {
+					//Cambiar de estilo cuando haga click en las celdas:
+					domicilioResult.getRowFormatter().setStyleName(row, "layout");
+				}
+			}
+		});
+	}
+	
 	private void loadTable() {
 		if (domicilioResult != null) {
 			domicilioResult.unsinkEvents(Event.getEventsSunk(domicilioResult.getElement()));
@@ -145,36 +149,27 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		domicilioResult = new FlexTable();
 		initTable(domicilioResult);
 		grillaDomicilio.setWidget(domicilioResult);
-		int row = 1;
-		for (CuentaSearchResultDto cuenta : cuentas) {
-			domicilioResult.setWidget(row, 0 , null); //TODO: Aca deberia poner un CheckBox en vez del NULL!
-			domicilioResult.setHTML(row, 1, cuenta.getNumero());
-			domicilioResult.setHTML(row, 2, cuenta.getRazonSocial());
-			domicilioResult.setHTML(row, 3, cuenta.getApellidoContacto());
-			domicilioResult.setHTML(row, 4, cuenta.getNumeroTelefono() != null ? cuenta.getNumeroTelefono() : "");
-			row++;
-		}
+		grillaPpal.getCellFormatter().addStyleName(0, 0, "layout");
+		grillaPpal.getCellFormatter().addStyleName(1, 0, "alignCenter");
+		grillaPpal.setText(1, 0, domicilio.getDomicilios());
+		domicilioResult.setHTML(1, 0, domicilio.getDomicilios());
 		setVisible(true);
+		agregaTableListeners();
 	}
 	
 	private void initTable(FlexTable domicilioResult){
 		//
-		String[] widths = { "24px", "24px", "24px", "150px", "250px",};
+		String[] widths = { "650px",};
 		for (int col = 0; col < widths.length; col++) {
 			domicilioResult.getColumnFormatter().setWidth(col, widths[col]);
 		}
 		domicilioResult.getColumnFormatter().addStyleName(0, "alignCenter");
 		domicilioResult.getColumnFormatter().addStyleName(1, "alignCenter");
-		domicilioResult.getColumnFormatter().addStyleName(2, "alignCenter");
 		domicilioResult.setCellPadding(0);
 		domicilioResult.setCellSpacing(0);
 		domicilioResult.addStyleName("gwt-BuscarCuentaResultTable");
 		domicilioResult.getRowFormatter().addStyleName(0, "header");
-		domicilioResult.setHTML(0, 0, Sfa.constant().whiteSpace()); //TODO: Aca deberia poner un CheckBox!
-		domicilioResult.setHTML(0, 1, "Número");
-		domicilioResult.setHTML(0, 2, "Razón Social");
-		domicilioResult.setHTML(0, 3, "Responsable");
-		domicilioResult.setHTML(0, 4, "Número de teléfono");
+		domicilioResult.setHTML(0, 0, "Seleccione alguna de estas opciones");
 	}
 	
 	@Override
