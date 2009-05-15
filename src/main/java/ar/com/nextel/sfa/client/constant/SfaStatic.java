@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.constant;
 
 /**
  * Interface to represent the constants contained in resource bundle:
- * 	'/home/esalvador/workspaceSFASVN/sfa-web2/target/classes/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
+ * 	'C:/DESA/SFA/sfa-web2/target/classes/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
  */
 public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
@@ -815,6 +815,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("<span class=\"req\">NºSS:</span>")
   @Key("nssReq")
   String nssReq();
+
+  /**
+   * Translated "Nuevo".
+   * 
+   * @return translated "Nuevo"
+   */
+  @DefaultStringValue("Nuevo")
+  @Key("nuevo")
+  String nuevo();
 
   /**
    * Translated "Número".
