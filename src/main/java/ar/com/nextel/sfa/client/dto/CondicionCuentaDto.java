@@ -7,6 +7,7 @@ public class CondicionCuentaDto implements IsSerializable {
 	private long id;
 	private String code;
 	private String descripcion;
+	private String codigoVantive;
 
 	public CondicionCuentaDto() {
 	}
@@ -33,5 +34,11 @@ public class CondicionCuentaDto implements IsSerializable {
 	}
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
+	}
+	public void setCodigoVantive(String codigoVantive) {
+		this.codigoVantive = codigoVantive;
+	}
+	public String getCodigoVantive() {
+		return codigoVantive;
 	}
 }

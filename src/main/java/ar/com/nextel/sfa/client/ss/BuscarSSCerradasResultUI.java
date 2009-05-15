@@ -181,22 +181,27 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 	private class Listener implements TableListener {
 
 		public void onCellClicked(SourcesTableEvents arg0, int arg1, int arg2) {
-			if (arg1 >= 1) {
-				String numeroSS = resultTable.getHTML(arg1, 1).toString();
-				SolicitudServicioCerradaResultDto solicitud = buscarSS(numeroSS);
-
+			String numeroSS = resultTable.getHTML(arg1, 1).toString();
+			SolicitudServicioCerradaResultDto solicitud = buscarSS(numeroSS);
+			if ((arg1 >= 1) && (arg2>=1)) {
 				SolicitudRpcService.Util.getInstance().getDetalleSolicitudServicio(solicitud.getId(),
 						new DefaultWaitCallback<DetalleSolicitudServicioDto>() {
 							public void success(DetalleSolicitudServicioDto result) {
 								cambiosSSCerradasResultUI.setSolicitudServicioCerradaDto(result);
 								cambiosSSCerradasResultUI.setVisible(true);
-
 							}
 						});
+			} else if ((arg1>=1) && (arg2==0)){
+			
+				if (solicitud.isCliente()) {
+			        // Si es cliente usamos el codigo Vantive, sino el Id (ya que no podemos 
+			        // guardar archivos con los caracteres de VANCUC
+					WindowUtils.redirect("/download/download?module=solicitudes&service=rtf&name="+solicitud.getIdVantive().toString()+"-5-"+numeroSS+".rtf");
+			        } else {
+			        	WindowUtils.redirect("/download/download?module=solicitudes&service=rtf&name="+solicitud.getId().toString()+"-5-"+numeroSS+".rtf");
+			        }
 			}
-
 		}
-
 	}
 
 	private SolicitudServicioCerradaResultDto buscarSS(String numeroSS) {

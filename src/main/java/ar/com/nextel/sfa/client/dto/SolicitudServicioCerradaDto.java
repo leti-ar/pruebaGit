@@ -10,7 +10,7 @@ public class SolicitudServicioCerradaDto implements IsSerializable {
 	private String numeroCuenta;
 	private String numeroSS;
 	private String razonSocial;
-	private Long cantidadEquipos;
+	//private Long cantidadEquipos;
 	private Boolean pataconex;
 	private Boolean firmas;
 	private Date fechaCierreDesde;
@@ -42,13 +42,13 @@ public class SolicitudServicioCerradaDto implements IsSerializable {
 		this.razonSocial = razonSocial;
 	}
 
-	public Long getCantidadEquipos() {
-		return cantidadEquipos;
-	}
-
-	public void setCantidadEquipos(Long cantidadEquipos) {
-		this.cantidadEquipos = cantidadEquipos;
-	}
+//	public Long getCantidadEquipos() {
+//		return cantidadEquipos;
+//	}
+//
+//	public void setCantidadEquipos(Long cantidadEquipos) {
+//		this.cantidadEquipos = cantidadEquipos;
+//	}
 
 	public Boolean getPataconex() {
 		return pataconex;
