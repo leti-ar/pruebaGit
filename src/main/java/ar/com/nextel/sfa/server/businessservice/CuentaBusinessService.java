@@ -26,7 +26,7 @@ public class CuentaBusinessService {
 	private Repository repository;
 
 	@Autowired
-	public void setReservaCreacionCuentaBusinessOperator( 
+	public void setReservaCreacionCuentaBusinessOperator(@Qualifier("reservaCreacionCuentaBusinessOperatorBean")
 			ReservaCreacionCuentaBusinessOperator reservaCreacionCuentaBusinessOperatorBean) {
 		this.reservaCreacionCuentaBusinessOperator = reservaCreacionCuentaBusinessOperatorBean;
 	}
