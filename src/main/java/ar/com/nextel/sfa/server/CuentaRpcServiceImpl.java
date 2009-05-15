@@ -23,6 +23,8 @@ import ar.com.nextel.business.dao.GenericDao;
 import ar.com.nextel.business.describable.GetAllBusinessOperator;
 import ar.com.nextel.business.externalConnection.exception.MerlinException;
 import ar.com.nextel.business.personas.normalizarDomicilio.NormalizadorDomicilio;
+import ar.com.nextel.business.personas.normalizarDomicilio.businessUnits.NormalizarDomicilioRequest;
+import ar.com.nextel.business.personas.normalizarDomicilio.result.NormalizarDomicilioResult;
 import ar.com.nextel.business.vendedores.RegistroVendedores;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.security.Usuario;
@@ -40,6 +42,7 @@ import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.Rubro;
 import ar.com.nextel.model.personas.beans.Documento;
+import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.personas.beans.GrupoDocumento;
 import ar.com.nextel.model.personas.beans.Persona;
 import ar.com.nextel.model.personas.beans.Sexo;
@@ -63,6 +66,7 @@ import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.FormaPagoDto;
 import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
+import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProveedorDto;
 import ar.com.nextel.sfa.client.dto.RubroDto;
@@ -365,17 +369,39 @@ public class CuentaRpcServiceImpl extends RemoteService implements
     	return doc;
     }
 
+    
+    /**
+     * @author eSalvador 
+     **/
+	public NormalizarDomicilioResultDto normalizarDomicilio(DomiciliosCuentaDto domicilioANormalizar) throws RpcExceptionMessages {
+		//DomiciliosCuentaDto domicilioNormalizado = null;
+		NormalizarDomicilioResultDto domicilioResultNormalizacion = null;
+		try {
+			NormalizarDomicilioRequest normalizarDomicilioRequest = new NormalizarDomicilioRequest();
+			normalizarDomicilioRequest.populateFromDomicilio(mapper.map(domicilioANormalizar, Domicilio.class));
+			domicilioResultNormalizacion =  mapper.map(normalizadorDomicilio.normalizarDomicilio(normalizarDomicilioRequest),NormalizarDomicilioResultDto.class);
+			//domicilioNormalizado = mapper.map(normalizadorDomicilio.normalizarDomicilio(normalizarDomicilioRequest).getDireccion(), DomiciliosCuentaDto.class);
+			
+		} catch (MerlinException e) {
+			throw ExceptionUtil.wrap(e);
+		}
+		//return domicilioNormalizado;
+		return domicilioResultNormalizacion;
+		
+	}
+
+    
     /**
      * @author eSalvador 
      **/
 	public DomiciliosCuentaDto getDomicilioPorCPA(String cpa) throws RpcExceptionMessages {
-		DomiciliosCuentaDto comicilioNormalizado = null;
+		DomiciliosCuentaDto domicilioNormalizado = null;
 		/**TODO: Terminar!*/
 		try {
-			comicilioNormalizado = mapper.map(normalizadorDomicilio.normalizarCPA(cpa), DomiciliosCuentaDto.class);
+			domicilioNormalizado = mapper.map(normalizadorDomicilio.normalizarCPA(cpa), DomiciliosCuentaDto.class);
 		} catch (MerlinException e) {
 			throw ExceptionUtil.wrap(e);
 		}
-		return comicilioNormalizado;
+		return domicilioNormalizado;
 	}
 }

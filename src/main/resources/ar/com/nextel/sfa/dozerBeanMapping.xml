@@ -240,5 +240,13 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>datosPago</b>
 		</field>
 	</mapping>
-	
+
+	<mapping>
+		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.MerlinDireccionDTO</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto</class-b>
+	</mapping>
+	<mapping>
+		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.NormalizarDomicilioResult</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto</class-b>
+	</mapping>	
 </mappings>

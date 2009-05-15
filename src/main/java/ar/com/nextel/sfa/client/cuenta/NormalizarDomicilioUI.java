@@ -30,7 +30,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	private SimpleLink linkCerrar;
 	private SimpleLink linkAceptar;
 	private SimpleLink linkNoNormalizar;
-	private DomiciliosUIData domiciliosData;
+	//private DomiciliosUIData domiciliosData;
 	private DomiciliosCuentaDto domicilio;
 	
 	private static NormalizarDomicilioUI instance = new NormalizarDomicilioUI();
@@ -69,7 +69,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	 *@author eSalvador
 	 **/
 	public void init() {
-		domiciliosData = new DomiciliosUIData();
+		//domiciliosData = new DomiciliosUIData();
 		footerBar = new FormButtonsBar();
 		linkNoNormalizar = new SimpleLink("No Normalizar");
 		linkAceptar = new SimpleLink("Aceptar");

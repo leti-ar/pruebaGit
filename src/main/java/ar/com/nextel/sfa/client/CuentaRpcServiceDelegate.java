@@ -80,4 +80,9 @@ public class CuentaRpcServiceDelegate {
 		WaitWindow.show();
 		cuentaRpcService.getDomicilioPorCPA(cpa, callback);
 	}
+	
+	public void normalizarDomicilio(DomiciliosCuentaDto domicilioANormalizar,DefaultWaitCallback callback) {
+		WaitWindow.show();
+		cuentaRpcService.normalizarDomicilio(domicilioANormalizar, callback);
+	}
 }
