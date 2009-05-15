@@ -40,6 +40,7 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 	private Button buscarButton;
 	private Button limpiarButton;
 
+
 	public BuscarSSCerradasFilterUIData() {
 
 		fields = new ArrayList<Widget>();
@@ -138,6 +139,7 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 	
 	public Widget getDesde() {
 		Grid datePickerFull = new Grid(1, 2);
+		desde.setWeekendSelectable(true);
 		datePickerFull.setWidget(0, 0, desde.getTextBox());
 		datePickerFull.setWidget(0, 1, desde);
 		return datePickerFull;
@@ -145,6 +147,7 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 
 	public Widget getHasta() {
 		Grid datePickerFull = new Grid(1, 2);
+		hasta.setWeekendSelectable(true);
 		datePickerFull.setWidget(0, 0, hasta.getTextBox());
 		datePickerFull.setWidget(0, 1, hasta);
 		return datePickerFull;
