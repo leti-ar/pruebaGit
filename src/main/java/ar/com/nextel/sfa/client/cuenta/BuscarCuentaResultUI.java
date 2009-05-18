@@ -6,17 +6,16 @@ import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
-import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
 import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
@@ -28,6 +27,13 @@ import com.google.gwt.user.client.ui.SimplePanel;
  */
 public class BuscarCuentaResultUI extends FlowPanel {
 
+	static final String LUPA_URL = "images/art-veraz.gif";
+	static final String LUPA_TITLE = "Ver Infocom";
+	static final String BLOQUEADO_URL = "images/icon-scoring-rechazado.gif";
+	static final String BLOQUEADO_TITLE = "Bloqueado para el usuario actual";
+	static final String LAPIZ_URL = "images/icon-scoring-revisado.png";
+	static final String LAPIZ_TITLE = "Editar";
+
 	private FlexTable resultTable;
 	private SimplePanel resultTableWrapper;
 	private TablePageBar tablePageBar;
@@ -35,14 +41,6 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	private CuentaSearchDto lastCuentaSearchDto;
 	private int numeroPagina = 1;
 	private Long totalRegistrosBusqueda;
-
-	public Long getTotalRegistrosBusqueda() {
-		return totalRegistrosBusqueda;
-	}
-
-	public void setTotalRegistrosBusqueda(Long totalRegistrosBusqueda) {
-		this.totalRegistrosBusqueda = totalRegistrosBusqueda;
-	}
 
 	public BuscarCuentaResultUI(BuscarCuentaController controller) {
 		super();
@@ -62,6 +60,14 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		add(resultTableWrapper);
 		add(tablePageBar);
 		setVisible(false);
+	}
+
+	public Long getTotalRegistrosBusqueda() {
+		return totalRegistrosBusqueda;
+	}
+
+	public void setTotalRegistrosBusqueda(Long totalRegistrosBusqueda) {
+		this.totalRegistrosBusqueda = totalRegistrosBusqueda;
 	}
 
 	/**
@@ -103,21 +109,26 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	}
 
 	private void loadTable() {
-		if (resultTable != null) {
-			resultTable.unsinkEvents(Event.getEventsSunk(resultTable.getElement()));
-			resultTable.removeFromParent();
-		}
-		resultTable = new FlexTable();
-		initTable(resultTable);
-		resultTableWrapper.setWidget(resultTable);
+		clearResultTable();
 		int row = 1;
 		for (CuentaSearchResultDto cuenta : cuentas) {
-			resultTable.setWidget(row, 0, new Hyperlink(IconFactory.lapiz().toString(),true,UILoader.EDITAR_CUENTA + "?cuenta_id=" + cuenta.getId()+"&cod_vantive="+cuenta.getCodigoVantive()));
+
+			Image lapizimg = new Image(LAPIZ_URL);
+			lapizimg.setTitle(LAPIZ_TITLE);
+			resultTable.setWidget(row, 0, new Hyperlink(lapizimg.toString(),true,UILoader.EDITAR_CUENTA + "?cuenta_id=" + cuenta.getId()+"&cod_vantive="+cuenta.getCodigoVantive()));
+		
+			Image lupaimg = new Image(LUPA_URL);
+			lupaimg.setTitle(LUPA_TITLE);
+			
 			if (cuenta.isPuedeVerInfocom()) {
-				resultTable.setWidget(row, 1, IconFactory.lupa());
+				resultTable.setWidget(row, 1, lupaimg);
 			}
+
+			Image bloqueadoimg = new Image(BLOQUEADO_URL);
+			bloqueadoimg.setTitle(BLOQUEADO_TITLE);
+
 			if (true) {
-				resultTable.setWidget(row, 2, IconFactory.locked());
+				resultTable.setWidget(row, 2, bloqueadoimg);
 			}
 			resultTable.setHTML(row, 3, cuenta.getNumero());
 			resultTable.setHTML(row, 4, cuenta.getRazonSocial());
@@ -126,6 +137,24 @@ public class BuscarCuentaResultUI extends FlowPanel {
 			row++;
 		}
 		setVisible(true);
+	}
+
+	/**
+	 * Limpia la tabla de resultados
+	 * 
+	 * Borrando las filas de la tabla en vez de recrear la tabla entera.
+	 */
+	private void clearResultTable() {
+		if (resultTable != null) {
+			// Empiezo en 1 porque el initTable pone la primer fila con los tíulos
+			for (int i = 1; i < resultTable.getRowCount(); i++) {
+				resultTable.removeRow(i);
+			}
+		} else {
+			resultTable = new FlexTable();
+			initTable(resultTable);
+			resultTableWrapper.setWidget(resultTable); 
+		}
 	}
 
 	private void initTable(FlexTable table) {
@@ -147,6 +176,5 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		table.setHTML(0, 4, "Razón Social");
 		table.setHTML(0, 5, "Responsable");
 		table.setHTML(0, 6, "Número de teléfono");
-
 	}
 }
