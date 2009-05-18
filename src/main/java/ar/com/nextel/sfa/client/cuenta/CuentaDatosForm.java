@@ -659,8 +659,7 @@ public class CuentaDatosForm extends Composite {
 	}
 	
 	public CuentaDto getCuentaDtoFromEditor() {
-		//PersonaDto personaDto = CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getPersona();
-		PersonaDto personaDto = new PersonaDto();
+		PersonaDto personaDto = CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getPersona();
 		
 		//panel datos
 		personaDto.setRazonSocial(camposTabDatos.getRazonSocial().getText());
