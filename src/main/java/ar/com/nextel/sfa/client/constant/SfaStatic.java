@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.constant;
 
 /**
  * Interface to represent the constants contained in resource bundle:
- * 	'C:/DESA/SFA/sfa-web2/target/classes/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
+ * 	'/home/jlgperez/workspaceSFASVN/sfa-web2/target/classes/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
  */
 public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
@@ -16,6 +16,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ERR_AL_VALIDAR_TARJETA();
 
   /**
+   * Translated "El año de vencimiento de la tarjeta no es válido".
+   * 
+   * @return translated "El año de vencimiento de la tarjeta no es válido"
+   */
+  @DefaultStringValue("El año de vencimiento de la tarjeta no es válido")
+  @Key("ERR_ANIO_NO_VALIDO")
+  String ERR_ANIO_NO_VALIDO();
+
+  /**
    * Translated "El campo {1} es obligatorio".
    * 
    * @return translated "El campo {1} es obligatorio"
@@ -23,6 +32,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("El campo {1} es obligatorio")
   @Key("ERR_CAMPO_OBLIGATORIO")
   String ERR_CAMPO_OBLIGATORIO();
+
+  /**
+   * Translated "Debe ingresar un dia hábil".
+   * 
+   * @return translated "Debe ingresar un dia hábil"
+   */
+  @DefaultStringValue("Debe ingresar un dia hábil")
+  @Key("ERR_DIA_HABIL")
+  String ERR_DIA_HABIL();
 
   /**
    * Translated "La cuenta debe tener un domicilio principal de entrega".
