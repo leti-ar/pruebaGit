@@ -2,15 +2,25 @@ package ar.com.nextel.sfa.client.dto;
 
 import java.util.List;
 
+import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ListaPreciosDto implements IsSerializable {
+public class ListaPreciosDto implements IsSerializable, ListBoxItem {
 
 	private Long id;
 	private String descripcion;
 	private List<TerminoPagoValidoDto> terminosPagoValido;
 	private List<ItemSolicitudTasadoDto> itemsListaPrecioVisibles;
 	private List<AjustesDto> ajustes;
+
+	public String getItemText() {
+		return descripcion;
+	}
+
+	public String getItemValue() {
+		return "" + id;
+	}
 
 	public Long getId() {
 		return id;
