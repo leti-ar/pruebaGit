@@ -1,6 +1,8 @@
 package ar.com.nextel.sfa.client.dto;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -39,7 +41,7 @@ public class SolicitudServicioDto implements IsSerializable {
 
 	private TipoAnticipoDto tipoAnticipo;
 
-	// private Set<LineaSolicitudServicio> lineas = new HashSet<LineaSolicitudServicio>();
+	private List<LineaSolicitudServicioDto> lineas = new ArrayList<LineaSolicitudServicioDto>();
 
 	private Boolean pinValidationSuccess;
 	private Boolean scoringValidationSuccess;
@@ -265,4 +267,11 @@ public class SolicitudServicioDto implements IsSerializable {
 		this.fechaCreacion = fechaCreacion;
 	}
 
+	public List<LineaSolicitudServicioDto> getLineas() {
+		return lineas;
+	}
+
+	public void setLineas(List<LineaSolicitudServicioDto> lineas) {
+		this.lineas = lineas;
+	}
 }
