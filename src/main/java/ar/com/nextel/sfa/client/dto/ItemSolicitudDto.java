@@ -1,22 +1,12 @@
 package ar.com.nextel.sfa.client.dto;
 
-import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ItemSolicitudDto implements IsSerializable, ListBoxItem {
+public class ItemSolicitudDto implements IsSerializable {
 
 	private Long id;
 	private String descripcion;
 	private Boolean sinModelo;
-
-	public String getItemText() {
-		return descripcion;
-	}
-
-	public String getItemValue() {
-		return "" + id;
-	}
 
 	public Long getId() {
 		return id;
