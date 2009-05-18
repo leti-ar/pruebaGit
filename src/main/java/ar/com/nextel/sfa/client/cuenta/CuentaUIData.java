@@ -149,6 +149,48 @@ public class CuentaUIData extends UIData {
 		});
 		setAtributosDeCampos();
 		setCombos();
+		fields.add(tipoDocumento);
+		fields.add(numeroDocumento);
+		fields.add(razonSocial);
+		fields.add(nombre);
+		fields.add(apellido);
+		fields.add(sexo);
+		fields.add(fechaNacimiento);
+		fields.add(contribuyente);
+		fields.add(nombreDivision);
+		fields.add(cargo);
+		fields.add(proveedorAnterior);
+		fields.add(rubro);
+		fields.add(claseCliente);
+		fields.add(categoria);
+		fields.add(iibb);
+		fields.add(cicloFacturacion);
+		fields.add(veraz);
+		fields.add(observaciones);
+		fields.add(telPrincipalTextBox.getArea());
+		fields.add(telPrincipalTextBox.getNumero());
+		fields.add(telPrincipalTextBox.getInterno());
+		fields.add(telAdicionalTextBox.getArea());
+		fields.add(telAdicionalTextBox.getNumero());
+		fields.add(telAdicionalTextBox.getInterno());
+		fields.add(telCelularTextBox.getArea());
+		fields.add(telCelularTextBox.getNumero());
+		fields.add(telFaxTextBox.getArea());
+		fields.add(telFaxTextBox.getNumero());
+		fields.add(telFaxTextBox.getInterno());
+		fields.add(emailPersonal);
+		fields.add(emailLaboral);
+		fields.add(formaPago);
+		fields.add(vendedorNombre);
+		fields.add(vendedorTelefono);
+		fields.add(tipoCanalVentas);
+		fields.add(tipoCuentaBancaria);
+		fields.add(tipoTarjeta);
+		fields.add(mesVto);
+		fields.add(anioVto);
+		fields.add(cbu);
+		fields.add(numeroTarjeta);
+
 		
 	}
 	

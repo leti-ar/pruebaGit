@@ -82,7 +82,7 @@ public class VerazUIData extends UIData {
 		PersonaDto personaDto = new PersonaDto();
 		DocumentoDto documentoDto = new DocumentoDto(numeroDocTextBox.getText(), (TipoDocumentoDto) tipoDocListBox.getSelectedItem());
 		personaDto.setDocumento(documentoDto);
-		personaDto.setIdTipoDocumento(documentoDto.getTipoDocumento().getCode());
+		personaDto.setIdTipoDocumento(documentoDto.getTipoDocumento().getId());
 		personaDto.setSexo((SexoDto) sexoListBox.getSelectedItem());
 		return personaDto;
 	}

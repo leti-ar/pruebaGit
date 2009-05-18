@@ -22,7 +22,7 @@ public interface CuentaRpcServiceAsync {
 
 	public void getBuscarCuentaInitializer(AsyncCallback<BuscarCuentaInitializer> callback);
 
-	public void saveCuenta(PersonaDto personaDto, AsyncCallback callback);
+	public void saveCuenta(CuentaDto cuentaDto, AsyncCallback callback);
 
 	public void searchCuenta(CuentaSearchDto cuentaSearchDto, AsyncCallback<List<CuentaSearchResultDto>> callback);
 	

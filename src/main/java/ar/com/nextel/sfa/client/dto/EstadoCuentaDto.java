@@ -2,20 +2,14 @@ package ar.com.nextel.sfa.client.dto;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class EstadoCuentaDto implements IsSerializable {
-    private String codigoVantive;
-    private String descripcion;
-	public String getCodigoVantive() {
-		return codigoVantive;
-	}
-	public void setCodigoVantive(String codigoVantive) {
-		this.codigoVantive = codigoVantive;
-	}
-	public String getDescripcion() {
-		return descripcion;
-	}
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
-	}
+public class EstadoCuentaDto extends EnumDto implements IsSerializable {
 
+	public EstadoCuentaDto() { }
+	
+	 public EstadoCuentaDto(long id, String desc) {
+		 super();
+		 this.id=id;
+		 this.descripcion=desc;
+	 }
+	
 }

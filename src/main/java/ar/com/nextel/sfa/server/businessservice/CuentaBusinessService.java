@@ -12,6 +12,7 @@ import ar.com.nextel.business.oportunidades.ReservaCreacionCuentaBusinessOperato
 import ar.com.nextel.business.oportunidades.ReservaCreacionCuentaBusinessOperatorResult;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
+import ar.com.nextel.model.personas.beans.Email;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 
@@ -51,4 +52,13 @@ public class CuentaBusinessService {
 		return reservarCrearCta.getCuenta();
 	}
 
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public Cuenta getCuenta(long id)  {
+		return repository.retrieve(Cuenta.class, id);
+	}
+	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void saveCuenta(Cuenta cuenta)  {
+		repository.save(cuenta);
+	}
 }

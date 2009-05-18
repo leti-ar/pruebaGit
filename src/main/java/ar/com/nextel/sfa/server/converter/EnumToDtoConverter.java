@@ -13,8 +13,8 @@ import ar.com.nextel.sfa.client.dto.EnumDto;
 @Component
 public class EnumToDtoConverter implements CustomConverter {
 
-	private Repository repository;
-	private DozerBeanMapper dozerMapper;
+	public Repository repository;
+	public DozerBeanMapper dozerMapper;
 
 	@Autowired
 	public void setDozerMapper(@Qualifier("dozerMapper") DozerBeanMapper dozerMapper) {

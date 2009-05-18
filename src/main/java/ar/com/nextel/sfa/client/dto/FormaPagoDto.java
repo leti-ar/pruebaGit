@@ -9,6 +9,16 @@ public class FormaPagoDto implements IsSerializable, ListBoxItem {
 	private long id;
 	private String codigoVantive;
     private String descripcion;
+    
+    public FormaPagoDto() { }
+    
+	public FormaPagoDto(long id, String codigoVantive, String descripcion) {
+		super();
+		this.codigoVantive = codigoVantive;
+		this.descripcion = descripcion;
+		this.id = id;
+	}
+	
 	public String getCodigoVantive() {
 		return codigoVantive;
 	}

@@ -26,7 +26,7 @@ public class CuentaEdicionTabPanel {
 	DualPanel clientePanel = new DualPanel();
 	private Label razonSocial = new Label();
 	private Label cliente = new Label();
-	private CuentaDto cuenta2editDto;
+	private CuentaDto cuenta2editDto = new CuentaDto();
 	private CuentaDatosForm      cuentaDatosForm      = CuentaDatosForm.getInstance();
 	private CuentaDomiciliosForm cuentaDomiciliosForm = CuentaDomiciliosForm.getInstance();
 	private CuentaContactoForm   cuentaContactoForm   = CuentaContactoForm.getInstance();
@@ -170,15 +170,8 @@ public class CuentaEdicionTabPanel {
 	}
 	
 	private void guardar() {
-		ErrorDialog.getInstance().show("OK PARA GUARDAR DATOS (@TODO)");
-//		CuentaRpcService.Util.getInstance().saveCuenta(personaDto,	new DefaultWaitCallback() {
-//			public void success(Object result) {
-//				PersonaDto personaDto = (PersonaDto) result;
-//				System.out.println("Apretaste Agregar");
-//			}
-//		});
+		cuentaDatosForm.saveCuenta();
 	}
-	
 	private void crearSS() {
 		ErrorDialog.getInstance().show("OK PARA CREAR SS (@TODO)");
 	}

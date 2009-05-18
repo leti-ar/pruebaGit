@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
@@ -40,9 +41,9 @@ public class CuentaRpcServiceDelegate {
 		cuentaRpcService.getAgregarCuentaInitializer(callback);
 	}
 	
-	public void saveCuenta (PersonaDto personaDto, DefaultWaitCallback callback) {
+	public void saveCuenta (CuentaDto cuentaDto, DefaultWaitCallback callback) {
 		WaitWindow.show();
-		cuentaRpcService.saveCuenta(personaDto, callback);
+		cuentaRpcService.saveCuenta(cuentaDto, callback);
 	}
 
 	

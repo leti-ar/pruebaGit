@@ -10,7 +10,15 @@ public class TipoCuentaBancariaDto implements ListBoxItem, IsSerializable {
 	private String codigoVantive;
     private String descripcion;
 
-    public String getItemText() {
+    public TipoCuentaBancariaDto() { }
+    
+    public TipoCuentaBancariaDto(long id,String codigoVantive, String descripcion) {
+		super();
+		this.codigoVantive = codigoVantive;
+		this.descripcion = descripcion;
+		this.id = id;
+	}
+	public String getItemText() {
 		return descripcion;
 	}
 	public String getItemValue() {

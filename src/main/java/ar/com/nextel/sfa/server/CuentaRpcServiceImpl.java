@@ -24,7 +24,6 @@ import ar.com.nextel.business.describable.GetAllBusinessOperator;
 import ar.com.nextel.business.externalConnection.exception.MerlinException;
 import ar.com.nextel.business.personas.normalizarDomicilio.NormalizadorDomicilio;
 import ar.com.nextel.business.personas.normalizarDomicilio.businessUnits.NormalizarDomicilioRequest;
-import ar.com.nextel.business.personas.normalizarDomicilio.result.NormalizarDomicilioResult;
 import ar.com.nextel.business.vendedores.RegistroVendedores;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.security.Usuario;
@@ -44,7 +43,6 @@ import ar.com.nextel.model.oportunidades.beans.Rubro;
 import ar.com.nextel.model.personas.beans.Documento;
 import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.personas.beans.GrupoDocumento;
-import ar.com.nextel.model.personas.beans.Persona;
 import ar.com.nextel.model.personas.beans.Sexo;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
@@ -90,7 +88,6 @@ import ar.com.nextel.util.StringUtil;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.server.RemoteService;
 import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
-
 
 /**
  * @author eSalvador
@@ -232,11 +229,12 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		return buscarDTOinit;
 	}
 
-	public PersonaDto saveCuenta(PersonaDto personaDto) {
-		Persona persona = new Persona();
-		mapper.map(personaDto, persona);
-		return personaDto;
-
+	public void saveCuenta(CuentaDto cuentaDto) {
+ 	    Cuenta cuenta = cuentaBusinessService.getCuenta(cuentaDto.getId());
+ 	    mapper.map(cuentaDto, cuenta);
+//      cuenta.setVendedor(getVendedor("acsa1"));
+//		cuenta.setLastModificationDate(Calendar.getInstance().getTime());
+		cuentaBusinessService.saveCuenta(cuenta);
 	}
 
 	public VerazInitializer getVerazInitializer() {
@@ -250,7 +248,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
         AppLogger.info("Iniciando consulta a Veraz...");
         VerazResponseDTO responseDTO = null;
         Sexo sexo = (Sexo) this.repository.retrieve(Sexo.class, personaDto.getSexo().getCode());
-		TipoDocumento tipoDocumento = (TipoDocumento) this.repository.retrieve(TipoDocumento.class, personaDto.getDocumento().getTipoDocumento().getCode());
+		TipoDocumento tipoDocumento = (TipoDocumento) this.repository.retrieve(TipoDocumento.class, personaDto.getDocumento().getTipoDocumento().getId());
 		long numeroDocumento = Long.parseLong(StringUtil.removeOcurrences(personaDto.getDocumento().getNumero(), '-'));
 		AppLogger.debug("Parametros consulta a Veraz: " + tipoDocumento.getCodigoVeraz() + " / " + numeroDocumento + " / " + sexo.getCodigoVeraz() + "..."); 	
 		Usuario usuario = new Usuario();
@@ -324,7 +322,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		solicitudCta.setDocumento(getDocumento(docDto));
 		try {
 			cuenta = cuentaBusinessService.reservarCrearCta(solicitudCta);
-			cuenta = selectCuentaBusinessOperator.getCuentaYLockear(cuenta.getCodigoVantive(), vendedor);
+			//cuenta = selectCuentaBusinessOperator.getCuentaYLockear(cuenta.getCodigoVantive(), vendedor);
 			cuentaDto = (CuentaDto) mapper.map(cuenta, CuentaDto.class);
 		} catch (BusinessException e) {
 			// TODO Auto-generated catch block
@@ -362,7 +360,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
      * @return
      */
     private Documento getDocumento(DocumentoDto docDto) {
-    	TipoDocumento tipoDoc = repository.retrieve(TipoDocumento.class,docDto.getTipoDocumento().getCode());
+    	TipoDocumento tipoDoc = repository.retrieve(TipoDocumento.class,docDto.getTipoDocumento().getId());
     	Documento doc = repository.createNewObject(Documento.class);
     	doc.setTipoDocumento(tipoDoc);
     	doc.setNumero(docDto.getNumero());

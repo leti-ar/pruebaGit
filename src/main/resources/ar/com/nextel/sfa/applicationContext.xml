@@ -27,6 +27,7 @@
 			<map>
 				<entry key="identifiableObjectToId" value-ref="identifiableObjectToIdConverter" />
 				<entry key="enumToDto" value-ref="enumToDtoConverter" />
+				<entry key="datosPagoConverter" value-ref="datosPagoConverter" />
 			</map>
 		</property>
 	</bean>

@@ -10,11 +10,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author jlgperez
  * 
  */
-public class CategoriaCuentaDto implements ListBoxItem, IsSerializable {
+public class CategoriaCuentaDto extends EnumDto implements ListBoxItem, IsSerializable {
 
-	private long id;
 	private String code;
-	private String descripcion;
 	
 	public static CategoriaCuentaDto GRAN_CUENTA = new CategoriaCuentaDto(1, "GRAN CUENTA","GRAN CUENTA");
 	public static CategoriaCuentaDto DIVISION    = new CategoriaCuentaDto(2, "DIVISION","DIVISION");
@@ -38,22 +36,6 @@ public class CategoriaCuentaDto implements ListBoxItem, IsSerializable {
 		return id + "";
 	}
 	
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public String getDescripcion() {
-		return descripcion;
-	}
-
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
-	}
-
 	public String getCode() {
 		return code;
 	}

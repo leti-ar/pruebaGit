@@ -4,18 +4,13 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ClaseCuentaDto implements IsSerializable, ListBoxItem  {
-
-	private long id;
-	private String code;
-	private String descripcion;
+public class ClaseCuentaDto extends EnumDto implements IsSerializable, ListBoxItem  {
 
 	public ClaseCuentaDto() {
 	}
-	public ClaseCuentaDto(long id, String code, String descripcion) {
+	public ClaseCuentaDto(long id, String descripcion) {
 		super();
 		this.id=id;
-		this.code=code;
 		this.descripcion=descripcion;
 	}
 	public String getItemText() {
@@ -23,23 +18,5 @@ public class ClaseCuentaDto implements IsSerializable, ListBoxItem  {
 	}
 	public String getItemValue() {
 		return id + "";
-	}
-	public long getId() {
-		return id;
-	}
-	public void setId(long id) {
-		this.id = id;
-	}
-	public String getCode() {
-		return code;
-	}
-	public void setCode(String code) {
-		this.code = code;
-	}
-	public String getDescripcion() {
-		return descripcion;
-	}
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
 	}
 }

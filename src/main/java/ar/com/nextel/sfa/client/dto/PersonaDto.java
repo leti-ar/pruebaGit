@@ -18,7 +18,8 @@ public class PersonaDto implements IsSerializable {
     private DocumentoDto documento;
     private String razonSocial;
     private Date fechaNacimiento;
-
+    private CargoDto cargo;
+    
     //TODO: Arreglar esto, no me esta mapeando este domicilios con el de Persona!!!
     private List<DomiciliosCuentaDto> domicilios = new ArrayList<DomiciliosCuentaDto>();
 
@@ -91,5 +92,11 @@ public class PersonaDto implements IsSerializable {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public CargoDto getCargo() {
+		return cargo;
+	}
+	public void setCargo(CargoDto cargo) {
+		this.cargo = cargo;
 	}
 }

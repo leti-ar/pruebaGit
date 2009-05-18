@@ -7,6 +7,16 @@ public class EmailDto implements IsSerializable {
 	private TipoEmailDto tipoEmail;
     private String email;
     private boolean enCarga = true;
+	
+    public EmailDto() {}
+    
+    public EmailDto(String email, boolean enCarga, TipoEmailDto tipoEmail) {
+		super();
+		this.email = email;
+		this.enCarga = enCarga;
+		this.tipoEmail = tipoEmail;
+	}
+    
 	public TipoEmailDto getTipoEmail() {
 		return tipoEmail;
 	}

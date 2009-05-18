@@ -10,7 +10,15 @@ public class CargoDto implements ListBoxItem, IsSerializable {
     private String codigo;
     private String descripcion;
 	
-    public String getItemText() {
+    public CargoDto() {}
+    
+    public CargoDto(long id, String descripcion) {
+		super();
+		this.id = id;
+		this.descripcion = descripcion;
+	}
+
+	public String getItemText() {
 		return descripcion;
 	}
 	public String getItemValue() {

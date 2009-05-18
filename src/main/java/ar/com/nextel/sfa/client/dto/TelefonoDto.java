@@ -11,55 +11,53 @@ public class TelefonoDto implements IsSerializable {
 	private Boolean principal = Boolean.FALSE;
 	private PersonaDto persona;
 
-	public TelefonoDto() {
+	public TelefonoDto() {}
+	
+	public TelefonoDto(String area, String interno, String numeroLocal,
+			PersonaDto persona, Boolean principal, TipoTelefonoDto tipoTelefono) {
+		super();
+		this.area = area;
+		this.interno = interno;
+		this.numeroLocal = numeroLocal;
+		this.persona = persona;
+		this.principal = principal;
+		this.tipoTelefono = tipoTelefono;
 	}
 
 	public TipoTelefonoDto getTipoTelefono() {
 		return tipoTelefono;
 	}
-
 	public void setTipoTelefono(TipoTelefonoDto tipoTelefono) {
 		this.tipoTelefono = tipoTelefono;
 	}
-
 	public String getNumeroLocal() {
 		return numeroLocal;
 	}
-
 	public void setNumeroLocal(String numeroLocal) {
 		this.numeroLocal = numeroLocal;
 	}
-
 	public String getArea() {
 		return area;
 	}
-
 	public void setArea(String area) {
 		this.area = area;
 	}
-
 	public String getInterno() {
 		return interno;
 	}
-
 	public void setInterno(String interno) {
 		this.interno = interno;
 	}
-
 	public Boolean getPrincipal() {
 		return principal;
 	}
-
 	public void setPrincipal(Boolean principal) {
 		this.principal = principal;
 	}
-
 	public PersonaDto getPersona() {
 		return persona;
 	}
-
 	public void setPersona(PersonaDto persona) {
 		this.persona = persona;
 	}
-
 }

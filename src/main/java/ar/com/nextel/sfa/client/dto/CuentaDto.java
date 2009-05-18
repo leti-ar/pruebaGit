@@ -31,27 +31,27 @@ public class CuentaDto implements IsSerializable {
     private TipoContribuyenteDto tipoContribuyente;
     private String use;
     private CicloFacturacionDto cicloFacturacion;
-    private String pinMaestro;
-    private EstadoCreditoFidelizacionDto estadoCreditoFidelizacion;
-    private Boolean esPropia;
-    private EstadoLockeoDto estadoLockeo;
-    private String  flota;
+//    private String pinMaestro;
+//    private EstadoCreditoFidelizacionDto estadoCreditoFidelizacion;
+//    private Boolean esPropia;
+//    private EstadoLockeoDto estadoLockeo;
+//    private String  flota;
     private String  observacionesTelMail;
-    private Double  limiteCredito;
-    private Long    firmas;
+//    private Double  limiteCredito;
+//    private Long    firmas;
     private String  nombreUsuarioCreacion;
     private Date    fechaCreacion;
 
     // Codigos que se migran de vantive
-    private String  codigoBSCS;
-    private String  customerClassCode;
-    private Long    idVantiveRA;
-    private Long    codigoFNCL;
-    private Long    codigoFNCLPadre;
-    private Long    codigoBSCSPadre;
-    private Boolean facturaElectronica;
-    private Boolean autorretiene;
-    private Boolean completa;
+//    private String  codigoBSCS;
+//    private String  customerClassCode;
+//    private Long    idVantiveRA;
+//    private Long    codigoFNCL;
+//    private Long    codigoFNCLPadre;
+//    private Long    codigoBSCSPadre;
+//    private Boolean facturaElectronica;
+//    private Boolean autorretiene;
+//    private Boolean completa;
 
     /* *********************************************** */
     public Long getId() {
@@ -205,55 +205,55 @@ public class CuentaDto implements IsSerializable {
 	public void setCicloFacturacion(CicloFacturacionDto cicloFacturacion) {
 		this.cicloFacturacion = cicloFacturacion;
 	}
-	public String getPinMaestro() {
-		return pinMaestro;
-	}
-	public void setPinMaestro(String pinMaestro) {
-		this.pinMaestro = pinMaestro;
-	}
-	public EstadoCreditoFidelizacionDto getEstadoCreditoFidelizacion() {
-		return estadoCreditoFidelizacion;
-	}
-	public void setEstadoCreditoFidelizacion(
-			EstadoCreditoFidelizacionDto estadoCreditoFidelizacion) {
-		this.estadoCreditoFidelizacion = estadoCreditoFidelizacion;
-	}
-	public Boolean getEsPropia() {
-		return esPropia;
-	}
-	public void setEsPropia(Boolean esPropia) {
-		this.esPropia = esPropia;
-	}
-	public EstadoLockeoDto getEstadoLockeo() {
-		return estadoLockeo;
-	}
-	public void setEstadoLockeo(EstadoLockeoDto estadoLockeo) {
-		this.estadoLockeo = estadoLockeo;
-	}
-	public String getFlota() {
-		return flota;
-	}
-	public void setFlota(String flota) {
-		this.flota = flota;
-	}
+//	public String getPinMaestro() {
+//		return pinMaestro;
+//	}
+//	public void setPinMaestro(String pinMaestro) {
+//		this.pinMaestro = pinMaestro;
+//	}
+//	public EstadoCreditoFidelizacionDto getEstadoCreditoFidelizacion() {
+//		return estadoCreditoFidelizacion;
+//	}
+//	public void setEstadoCreditoFidelizacion(
+//			EstadoCreditoFidelizacionDto estadoCreditoFidelizacion) {
+//		this.estadoCreditoFidelizacion = estadoCreditoFidelizacion;
+//	}
+//	public Boolean getEsPropia() {
+//		return esPropia;
+//	}
+//	public void setEsPropia(Boolean esPropia) {
+//		this.esPropia = esPropia;
+//	}
+//	public EstadoLockeoDto getEstadoLockeo() {
+//		return estadoLockeo;
+//	}
+//	public void setEstadoLockeo(EstadoLockeoDto estadoLockeo) {
+//		this.estadoLockeo = estadoLockeo;
+//	}
+//	public String getFlota() {
+//		return flota;
+//	}
+//	public void setFlota(String flota) {
+//		this.flota = flota;
+//	}
 	public String getObservacionesTelMail() {
 		return observacionesTelMail;
 	}
 	public void setObservacionesTelMail(String observacionesTelMail) {
 		this.observacionesTelMail = observacionesTelMail;
 	}
-	public Double getLimiteCredito() {
-		return limiteCredito;
-	}
-	public void setLimiteCredito(Double limiteCredito) {
-		this.limiteCredito = limiteCredito;
-	}
-	public Long getFirmas() {
-		return firmas;
-	}
-	public void setFirmas(Long firmas) {
-		this.firmas = firmas;
-	}
+//	public Double getLimiteCredito() {
+//		return limiteCredito;
+//	}
+//	public void setLimiteCredito(Double limiteCredito) {
+//		this.limiteCredito = limiteCredito;
+//	}
+//	public Long getFirmas() {
+//		return firmas;
+//	}
+//	public void setFirmas(Long firmas) {
+//		this.firmas = firmas;
+//	}
 	public String getNombreUsuarioCreacion() {
 		return nombreUsuarioCreacion;
 	}
@@ -266,58 +266,58 @@ public class CuentaDto implements IsSerializable {
 	public void setFechaCreacion(Date fechaCreacion) {
 		this.fechaCreacion = fechaCreacion;
 	}
-	public String getCodigoBSCS() {
-		return codigoBSCS;
-	}
-	public void setCodigoBSCS(String codigoBSCS) {
-		this.codigoBSCS = codigoBSCS;
-	}
-	public String getCustomerClassCode() {
-		return customerClassCode;
-	}
-	public void setCustomerClassCode(String customerClassCode) {
-		this.customerClassCode = customerClassCode;
-	}
-	public Long getIdVantiveRA() {
-		return idVantiveRA;
-	}
-	public void setIdVantiveRA(Long idVantiveRA) {
-		this.idVantiveRA = idVantiveRA;
-	}
-	public Long getCodigoFNCL() {
-		return codigoFNCL;
-	}
-	public void setCodigoFNCL(Long codigoFNCL) {
-		this.codigoFNCL = codigoFNCL;
-	}
-	public Long getCodigoFNCLPadre() {
-		return codigoFNCLPadre;
-	}
-	public void setCodigoFNCLPadre(Long codigoFNCLPadre) {
-		this.codigoFNCLPadre = codigoFNCLPadre;
-	}
-	public Long getCodigoBSCSPadre() {
-		return codigoBSCSPadre;
-	}
-	public void setCodigoBSCSPadre(Long codigoBSCSPadre) {
-		this.codigoBSCSPadre = codigoBSCSPadre;
-	}
-	public Boolean getFacturaElectronica() {
-		return facturaElectronica;
-	}
-	public void setFacturaElectronica(Boolean facturaElectronica) {
-		this.facturaElectronica = facturaElectronica;
-	}
-	public Boolean getAutorretiene() {
-		return autorretiene;
-	}
-	public void setAutorretiene(Boolean autorretiene) {
-		this.autorretiene = autorretiene;
-	}
-	public Boolean getCompleta() {
-		return completa;
-	}
-	public void setCompleta(Boolean completa) {
-		this.completa = completa;
-	}
+//	public String getCodigoBSCS() {
+//		return codigoBSCS;
+//	}
+//	public void setCodigoBSCS(String codigoBSCS) {
+//		this.codigoBSCS = codigoBSCS;
+//	}
+//	public String getCustomerClassCode() {
+//		return customerClassCode;
+//	}
+//	public void setCustomerClassCode(String customerClassCode) {
+//		this.customerClassCode = customerClassCode;
+//	}
+//	public Long getIdVantiveRA() {
+//		return idVantiveRA;
+//	}
+//	public void setIdVantiveRA(Long idVantiveRA) {
+//		this.idVantiveRA = idVantiveRA;
+//	}
+//	public Long getCodigoFNCL() {
+//		return codigoFNCL;
+//	}
+//	public void setCodigoFNCL(Long codigoFNCL) {
+//		this.codigoFNCL = codigoFNCL;
+//	}
+//	public Long getCodigoFNCLPadre() {
+//		return codigoFNCLPadre;
+//	}
+//	public void setCodigoFNCLPadre(Long codigoFNCLPadre) {
+//		this.codigoFNCLPadre = codigoFNCLPadre;
+//	}
+//	public Long getCodigoBSCSPadre() {
+//		return codigoBSCSPadre;
+//	}
+//	public void setCodigoBSCSPadre(Long codigoBSCSPadre) {
+//		this.codigoBSCSPadre = codigoBSCSPadre;
+//	}
+//	public Boolean getFacturaElectronica() {
+//		return facturaElectronica;
+//	}
+//	public void setFacturaElectronica(Boolean facturaElectronica) {
+//		this.facturaElectronica = facturaElectronica;
+//	}
+//	public Boolean getAutorretiene() {
+//		return autorretiene;
+//	}
+//	public void setAutorretiene(Boolean autorretiene) {
+//		this.autorretiene = autorretiene;
+//	}
+//	public Boolean getCompleta() {
+//		return completa;
+//	}
+//	public void setCompleta(Boolean completa) {
+//		this.completa = completa;
+//	}
 }

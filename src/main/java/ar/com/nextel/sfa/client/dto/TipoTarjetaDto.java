@@ -10,7 +10,14 @@ public class TipoTarjetaDto implements ListBoxItem, IsSerializable {
     private String descripcion;
     private Integer cantidadDigitos;
     
-    public String getItemText() {
+    public TipoTarjetaDto() { }
+
+    public TipoTarjetaDto(long id, String descripcion) {
+		super();
+		this.descripcion = descripcion;
+		this.id = id;
+	}
+	public String getItemText() {
 		return descripcion;
 	}
 	public String getItemValue() {
