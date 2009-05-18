@@ -4,26 +4,33 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ModalidadCobroDto implements IsSerializable, ListBoxItem  {
-    private String descripcion;
-    private String codigoBSCS;
-	public String getDescripcion() {
-		return descripcion;
-	}
+public class ModalidadCobroDto implements IsSerializable, ListBoxItem {
+
+	private Long id;
+	private String descripcion;
+
 	public String getItemText() {
 		return descripcion;
 	}
 
 	public String getItemValue() {
-		return codigoBSCS + "";
+		return "" + id;
 	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getDescripcion() {
+		return descripcion;
+	}
+
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
-	public String getCodigoBSCS() {
-		return codigoBSCS;
-	}
-	public void setCodigoBSCS(String codigoBSCS) {
-		this.codigoBSCS = codigoBSCS;
-	}
+
 }
