@@ -10,6 +10,7 @@ public class TipoSolicitudDto implements IsSerializable, ListBoxItem {
 
 	private Long id;
 	private Long idTipoSolicitudBase;
+	private String formaContratacion;
 	private String descripcion;
 	private List<ListaPreciosDto> listasPrecios;
 
@@ -19,6 +20,18 @@ public class TipoSolicitudDto implements IsSerializable, ListBoxItem {
 
 	public String getItemValue() {
 		return "" + id;
+	}
+
+	public boolean isVenta() {
+		return "venta".equals(formaContratacion != null ? formaContratacion.toLowerCase() : "");
+	}
+
+	public boolean isAlquiler() {
+		return "alquiler".equals(formaContratacion != null ? formaContratacion.toLowerCase() : "");
+	}
+
+	public boolean isActivacion() {
+		return "activacion".equals(formaContratacion != null ? formaContratacion.toLowerCase() : "");
 	}
 
 	public Long getId() {
@@ -43,6 +56,14 @@ public class TipoSolicitudDto implements IsSerializable, ListBoxItem {
 
 	public void setIdTipoSolicitudBase(Long idTipoSolicitudBase) {
 		this.idTipoSolicitudBase = idTipoSolicitudBase;
+	}
+
+	public String getFormaContratacion() {
+		return formaContratacion;
+	}
+
+	public void setFormaContratacion(String formaContratacion) {
+		this.formaContratacion = formaContratacion;
 	}
 
 	public List<ListaPreciosDto> getListasPrecios() {
