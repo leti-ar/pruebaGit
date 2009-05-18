@@ -60,6 +60,11 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		add(resultTableWrapper);
 		add(tablePageBar);
 		setVisible(false);
+		// @TODO Analizar uso de prefetch. Esto no sé si va acá, y si debo liberarlo
+		// Image.prefetch(LUPA_URL);
+		// Image.prefetch(LAPIZ_URL);
+		// Image.prefetch(BLOQUEADO_URL);
+		
 	}
 
 	public Long getTotalRegistrosBusqueda() {
