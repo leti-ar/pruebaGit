@@ -158,6 +158,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>tipoSolicitudBase</a>
 			<b>idTipoSolicitudBase</b>
 		</field>
+		<field>
+			<a>tipoSolicitudBase.formaContratacion</a>
+			<b>formaContratacion</b>
+		</field>
 		<field-exclude>
 			<a>listasPrecios</a>
 			<b>listasPrecios</b>
@@ -194,6 +198,52 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<class-b>ar.com.nextel.sfa.client.dto.AjustesDto
 		</class-b>
 	</mapping>
+
+	<mapping map-id="planesParaListBox" wildcard="false">
+		<class-a>ar.com.nextel.model.solicitudes.beans.Plan</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.PlanDto</class-b>
+		<field>
+			<a>id</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>descripcion</a>
+			<b>descripcion</b>
+		</field>
+		<field>
+			<a>modalidadesCobro</a>
+			<b>modalidadesCobro</b>
+		</field>
+		<field>
+			<a>servicioAdicionalPrecio.precioFinal</a>
+			<b>precio</b>
+		</field>			
+	</mapping>
+	
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.ModalidadCobro
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.ModalidadCobroDto
+		</class-b>
+	</mapping>
+	
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.ServicioAdicional
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.ServicioAdicionalDto
+		</class-b>
+	</mapping>	
+	
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto
+		</class-b>
+		<field>
+			<a>servicioAdicional.descripcion</a>
+			<b>descripcionServicioAdicional</b>
+		</field>
+	</mapping>	
 
 	<mapping map-id="cuentaSolicitud" wildcard="false">
 		<class-a>ar.com.nextel.model.cuentas.beans.Cuenta
