@@ -3,9 +3,13 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
+import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
+import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
+import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
+import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
@@ -156,11 +160,22 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 			DefaultWaitCallback<LineasSolicitudServicioInitializer> defaultWaitCallback) {
 		SolicitudRpcService.Util.getInstance().getLineasSolicitudServicioInitializer(null,
 				defaultWaitCallback);
-
 	}
 
 	public void getListaPrecios(TipoSolicitudDto tipoSolicitudDto,
-			DefaultWaitCallback<ListaPreciosDto> defaultWaitCallback) {
+			DefaultWaitCallback<List<ListaPreciosDto>> defaultWaitCallback) {
+		SolicitudRpcService.Util.getInstance().getListasDePrecios(tipoSolicitudDto, defaultWaitCallback);
+	}
 
+	public void getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,
+			DefaultWaitCallback<List<PlanDto>> callback) {
+		SolicitudRpcService.Util.getInstance().getPlanesPorItemYTipoPlan(itemSolicitudTasado, tipoPlan,
+				new Long(45287), callback);
+		//XXX: Hardcode Cuenta (Chorch)
+	}
+
+	public void getServiciosAdicionales(LineaSolicitudServicioDto linea,
+			DefaultWaitCallback<LineaSolicitudServicioDto> defaultWaitCallback) {
+		SolicitudRpcService.Util.getInstance().getServiciosAdicionales(linea, defaultWaitCallback);
 	}
 }

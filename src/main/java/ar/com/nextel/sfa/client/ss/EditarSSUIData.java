@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.DomicilioDto;
+import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
@@ -239,12 +240,12 @@ public class EditarSSUIData extends UIData {
 		if (solicitudServicio.getMontoDisponible() != null)
 			validator
 					.addTarget(credFidelizacion)
-					.greater(
+					.smallerOrEqual(
 							"La Cantidad de crédito de fidelización a utilizar no puede exceder el máximo disponible",
 							solicitudServicio.getMontoDisponible());
 		validator
 				.addTarget(pataconex)
-				.greater(
+				.smallerOrEqual(
 						"La cantidad de pataconex ingresada excede el Precio de Venta Total. Por favor modifique el monto",
 						solicitudServicio.getMontoDisponible());
 		validator.fillResult();
@@ -267,4 +268,11 @@ public class EditarSSUIData extends UIData {
 		}
 	}
 
+	public void addLineaSolicitudServicio(LineaSolicitudServicioDto linea) {
+		solicitudServicio.getLineas().add(linea);
+	}
+
+	public List<LineaSolicitudServicioDto> getLineaSolicitudServicio() {
+		return solicitudServicio.getLineas();
+	}
 }

@@ -1,6 +1,12 @@
 package ar.com.nextel.sfa.client.ss;
 
+import java.util.List;
+
+import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
+import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
+import ar.com.nextel.sfa.client.dto.PlanDto;
+import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -13,5 +19,11 @@ public interface EditarSSUIController {
 			DefaultWaitCallback<LineasSolicitudServicioInitializer> defaultWaitCallback);
 
 	void getListaPrecios(TipoSolicitudDto tipoSolicitudDto,
-			DefaultWaitCallback<ListaPreciosDto> defaultWaitCallback);
+			DefaultWaitCallback<List<ListaPreciosDto>> defaultWaitCallback);
+
+	public void getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,
+			DefaultWaitCallback<List<PlanDto>> callback);
+
+	void getServiciosAdicionales(LineaSolicitudServicioDto linea,
+			DefaultWaitCallback<LineaSolicitudServicioDto> defaultWaitCallback);
 }
