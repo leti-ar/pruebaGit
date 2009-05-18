@@ -7,7 +7,7 @@
 
 @IMPORT url("buttons.css");
 
-body,td, .normalText {
+body,td,.normalText {
 	font-family: Verdana, Arial, sans-serif;
 	font-size: 11px;
 	font-size-adjust: none;
@@ -17,14 +17,13 @@ body,td, .normalText {
 }
 
 A {
-	cursor: pointer;	
+	cursor: pointer;
 }
 
 *,body {
 	margin: 0px;
 	padding: 0px;
 }
-
 
 .alignCenter {
 	text-align: center;
@@ -84,7 +83,7 @@ A {
 	background-color: #FFF;
 }
 
-.gwt-TextBox,.gwt-ListBox { 
+.gwt-TextBox,.gwt-ListBox {
 	font-family: Verdana;
 	font-size: 11px;
 	font-weight: normal;
@@ -166,7 +165,7 @@ A {
 	line-height: 14px;
 }
 
-.gwt-BuscarCuentaResultTable td, .gwt-VerazResultTable td, .dataTable td {
+.gwt-BuscarCuentaResultTable td,.gwt-VerazResultTable td,.dataTable td {
 	border-right: 1px solid #EBEBEB;
 	border-bottom: 1px solid #EBEBEB;
 	height: 24px;
@@ -183,7 +182,7 @@ A {
 	height: 23px;
 }
 
-.layout td, .gwt-Label, .gwt-InlineLabel {
+.layout td,.gwt-Label,.gwt-InlineLabel {
 	font-family: Verdana, Geneva, Kalimati, sans-serif;
 	font-size: 11px;
 	font-weight: bold;
@@ -197,7 +196,7 @@ A {
 }
 
 .gwt-TabBarItem-selected {
-	background-image: url(images/tabs/tab-on.gif) ! IMPORTANT; 
+	background-image: url(images/tabs/tab-on.gif) ! IMPORTANT;
 	color: #A83C56 ! IMPORTANT;
 }
 
@@ -218,9 +217,9 @@ A {
 	width: 75px;
 }
 
-.gwt-TabBarRest, .gwt-TabBarFirst{
+.gwt-TabBarRest,.gwt-TabBarFirst {
 	border-bottom: 1px solid #ccc;
-	-moz-box-sizing: border-box;	
+	-moz-box-sizing: border-box;
 }
 
 .alignRight {
@@ -228,196 +227,196 @@ A {
 }
 
 .razonSocial .gwt-Label {
-font-weight:bold;
-margin:4px 0;
-padding-left:4px;
-width:90px;
+	font-weight: bold;
+	margin: 4px 0;
+	padding-left: 4px;
+	width: 90px;
 }
 
 .numeroCliente .gwt-Label {
-font-weight:bold;
-margin:4px 0;
-width:55px;
+	font-weight: bold;
+	margin: 4px 0;
+	width: 55px;
 }
 
 .link {
-color:#666666;
-display:inline;
-font-size:90%;
-font-weight:bold;
-line-height:25px;
-margin-left:5px;
-margin-right:5px;
-text-decoration:none;
-text-transform:uppercase;
+	color: #666666;
+	display: inline;
+	font-size: 90%;
+	font-weight: bold;
+	line-height: 25px;
+	margin-left: 5px;
+	margin-right: 5px;
+	text-decoration: none;
+	text-transform: uppercase;
 }
 
 .aButtons {
-background-image:url(images/bkg_frmButtons.gif);
-display:block;
-height:25px;
-line-height:25px;
-margin-top:8px;
-text-align:center;
-width:100%;
+	background-image: url(images/bkg_frmButtons.gif);
+	display: block;
+	height: 25px;
+	line-height: 25px;
+	margin-top: 8px;
+	text-align: center;
+	width: 100%;
 }
 
 .gwt-TabPanelBottom {
-background:#FFFFFF url(images/bkg_frmContent.gif) repeat-x scroll 0 0;
-padding: 5px;
+	background: #FFFFFF url(images/bkg_frmContent.gif) repeat-x scroll 0 0;
+	padding: 5px;
 }
 
-.content{
-	background:#E9E9E9;
+.content {
+	background: #E9E9E9;
 }
 
-.content .gwt-Label{
-	color:red;	
+.content .gwt-Label {
+	color: red;
 }
 
 .abmPanel {
-border:1px solid #981836;
-margin-bottom:8px;
-width:100%;
+	border: 1px solid #981836;
+	margin-bottom: 8px;
+	width: 100%;
 }
 
 .abmPanelChild {
-line-height:24px;
-margin:5px 0 0 2px;
-padding:0;
-text-align:left;
-width:48%;
+	line-height: 24px;
+	margin: 5px 0 0 2px;
+	padding: 0;
+	text-align: left;
+	width: 48%;
 }
 
-.req{
-color: red;	
+.req {
+	color: red;
 }
 
-.Gwt-EditarSSUI{
-background-color: #dddddd;	
+.Gwt-EditarSSUI {
+	background-color: #dddddd;
 }
 
-.crearDomicilioButton, .validarCompletitudButton{
-background-repeat:no-repeat;
-background-color: transparent;
-height: 17px;
-font-size:11px;
-font-style:italic;
-font-weight:bold;
-color: #333;
-line-height:15px;
-float: right;
-padding-left: 20px;
-margin-right: 8px;
-border: none 0px;
+.crearDomicilioButton,.crearLineaButton,.validarCompletitudButton {
+	background-repeat: no-repeat;
+	background-color: transparent;
+	height: 17px;
+	font-size: 11px;
+	font-style: italic;
+	font-weight: bold;
+	color: #333;
+	line-height: 15px;
+	float: right;
+	padding-left: 20px;
+	margin-right: 8px;
+	border: none 0px;
 }
 
-.crearDomicilioButton{
-	background-image:url(images/btn-table-nuevo.gif);
+.crearDomicilioButton,.crearLineaButton {
+	background-image: url(images/btn-table-nuevo.gif);
 	width: 115px;
 }
 
-.validarCompletitudButton{
-	background-image:url(images/btn-completitud.gif);
-	width: 170px;	
+.validarCompletitudButton {
+	background-image: url(images/btn-completitud.gif);
+	width: 170px;
 	margin-top: 5px;
 	position: absolute;
 	right: 10;
 }
 
-.validarCompletitudFailButton{
-	background-image:url(images/btn-completitudFail.gif) !important;
+.validarCompletitudFailButton {
+	background-image: url(images/btn-completitudFail.gif) !important;
 }
 
-.crearDomicilioBWrapper{
-height: 20px;
-}
-
-.bkgWhite{
-background-color: #FFFFFF
+.bkgWhite {
+	background-color: #FFFFFF
 }
 
 .abmPiePanel {
-border:0 none;
-margin-left:2px;
-text-align:left;
-width:48%;
+	border: 0 none;
+	margin-left: 2px;
+	text-align: left;
+	width: 48%;
 }
 
 .gwt-LabelVeraz {
-background-color:transparent;
-font-family:Verdana;
-font-size:11px;
-font-weight:bold;
-text-align:left;
-text-indent:4px;
-width:100px;
+	background-color: transparent;
+	font-family: Verdana;
+	font-size: 11px;
+	font-weight: bold;
+	text-align: left;
+	text-indent: 4px;
+	width: 100px;
 }
 
 .abmPanelVeraz {
-text-align: left;
-text-indent: 4px;
-border:1px solid #981836;
-background-color:#FFFFFF;
-margin-top:8px;
-border:1px solid #981836;
-margin-bottom:8px;
-width:100%;
+	text-align: left;
+	text-indent: 4px;
+	border: 1px solid #981836;
+	background-color: #FFFFFF;
+	margin-top: 8px;
+	border: 1px solid #981836;
+	margin-bottom: 8px;
+	width: 100%;
 }
 
-.linkVeraz{
-	background:transparent url(images/art-veraz.gif) no-repeat scroll 0 50%;
-	border:0 none;
-	cursor:pointer;
-	display:block;
-	float:left;
-	height:16px;
-	width:16px;
-	
+.linkVeraz {
+	background: transparent url(images/art-veraz.gif) no-repeat scroll 0 50%
+		;
+	border: 0 none;
+	cursor: pointer;
+	display: block;
+	float: left;
+	height: 16px;
+	width: 16px;
 }
 
 .resultadoVerazAceptar {
-background:transparent url(images/icon-scoring-aceptado.jpg) no-repeat scroll 0 0;
-display:block;
-height:22px;
-margin-left:4px;
-padding-left:24px;
-width:74px;
+	background: transparent url(images/icon-scoring-aceptado.jpg) no-repeat
+		scroll 0 0;
+	display: block;
+	height: 22px;
+	margin-left: 4px;
+	padding-left: 24px;
+	width: 74px;
 }
 
 .resultadoVerazRevisar {
-background:transparent url(images/icon-scoring-revisado.jpg) no-repeat scroll 0 0;
-display:block;
-height:22px;
-margin-left:4px;
-padding-left:24px;
-width:74px;
+	background: transparent url(images/icon-scoring-revisado.jpg) no-repeat
+		scroll 0 0;
+	display: block;
+	height: 22px;
+	margin-left: 4px;
+	padding-left: 24px;
+	width: 74px;
 }
 
 .resultadoVerazRechazar {
-background:transparent url(images/icon-scoring-rechazado.jpg) no-repeat scroll 0 0;
-display:block;
-height:22px;
-margin-left:4px;
-padding-left:24px;
-width:74px;
+	background: transparent url(images/icon-scoring-rechazado.jpg) no-repeat
+		scroll 0 0;
+	display: block;
+	height: 22px;
+	margin-left: 4px;
+	padding-left: 24px;
+	width: 74px;
 }
 
 .obsTextAreaCuentaDatos {
-  height : 35px;
-  width : 95%;
-  min-width : 95%;
-  border:1px solid #BCBCBC;
+	height: 35px;
+	width: 95%;
+	min-width: 95%;
+	border: 1px solid #BCBCBC;
 }
 
-.gwt-RazonSocialClienteBar{
+.gwt-RazonSocialClienteBar {
 	background-color: #FFF;
 	height: 17px;
 	line-height: 17px;
 	margin: 0px;
 	padding-left: 10px;
-	padding-right: 10px;	
+	padding-right: 10px;
 }
+
 .gwt-RazonSocialClienteBar .right {
 	float: right;
 	height: 17px;
@@ -425,12 +424,12 @@ width:74px;
 	line-height: 17px;
 }
 
-.resumenSSTableWrapper, .detalleSSTableWrapper {
+.resumenSSTableWrapper,.detalleSSTableWrapper {
 	overflow: auto;
 	padding-right: 15px;
 	height: 100px;
 }
 
-.crearCuentaTabPanel{
+.crearCuentaTabPanel {
 	margin: 16 0 40 0px;
 }
