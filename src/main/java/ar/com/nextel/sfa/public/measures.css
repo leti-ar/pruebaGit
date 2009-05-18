@@ -185,6 +185,7 @@ tr.pt15 td { padding-top: 15px; }
 
 
 /* Height */
+.h20	{ height: 20px; }
 .h100	{ height: 100px; }
 .h150	{ height: 150px; }
 .h200	{ height: 200px; }
