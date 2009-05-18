@@ -50,4 +50,8 @@ public class IconFactory {
 		return getIconBundle().excel().createImage();
 	}
 	
+	public static Image vistaPreliminar() {
+		return getIconBundle().vistaPreliminar().createImage();
+	}
+	
 }

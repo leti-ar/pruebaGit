@@ -22,4 +22,6 @@ public interface IconBundle extends ImageBundle {
 	AbstractImagePrototype tildeVerde();
 	
 	AbstractImagePrototype excel();
+	
+	AbstractImagePrototype vistaPreliminar();
 }
