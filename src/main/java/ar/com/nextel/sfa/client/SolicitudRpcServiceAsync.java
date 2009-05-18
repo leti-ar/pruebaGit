@@ -2,12 +2,18 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
-import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
+import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
+import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
+import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
+import ar.com.nextel.sfa.client.dto.TipoPlanDto;
+import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
@@ -29,10 +35,21 @@ public interface SolicitudRpcServiceAsync {
 	public void saveSolicituServicio(SolicitudServicioDto solicitudServicioDto,
 			AsyncCallback<SolicitudServicioDto> callback);
 
-	public void getDetalleSolicitudServicio(Long idSolicitudServicio, AsyncCallback<DetalleSolicitudServicioDto> callback);
+	public void getDetalleSolicitudServicio(Long idSolicitudServicio,
+			AsyncCallback<DetalleSolicitudServicioDto> callback);
 
 	public void getLineasSolicitudServicioInitializer(GrupoSolicitudDto grupoSolicitudDto,
 			AsyncCallback<LineasSolicitudServicioInitializer> callback);
 
-	public void buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto, AsyncCallback<String> callback);
+	public void getListasDePrecios(TipoSolicitudDto tipoSolicitudDto,
+			AsyncCallback<List<ListaPreciosDto>> callback);
+
+	public void buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto,
+			AsyncCallback<String> callback);
+
+	public void getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,
+			Long idCuenta, AsyncCallback<List<PlanDto>> callback);
+
+	public void getServiciosAdicionales(LineaSolicitudServicioDto linea,
+			AsyncCallback<LineaSolicitudServicioDto> defaultWaitCallback);
 }
