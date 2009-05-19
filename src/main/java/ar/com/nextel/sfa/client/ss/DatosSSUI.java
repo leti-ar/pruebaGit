@@ -6,6 +6,7 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
@@ -15,6 +16,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
@@ -27,7 +29,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 
 	private FlowPanel mainpanel;
 	private EditarSSUIData editarSSUIData;
-	private Grid detalleSS;
+	private FlexTable detalleSS;
 	private Grid serviciosAdicionales;
 	private EditarSSUIController controller;
 	private Button crearDomicilio;
@@ -98,7 +100,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		detalle.add(crearLineaWrapper);
 		SimplePanel wrapper = new SimplePanel();
 		wrapper.addStyleName("resumenSSTableWrapper mlr5");
-		detalleSS = new Grid(1, 14);
+		detalleSS = new FlexTable();
 		String[] titlesDetalle = { " ", " ", "Item", "Pcio Vta.", "Alias", "Plan", "Pcio Vta. Plan",
 				"Localidad", "Nº Reserva", "Tipo SS", "Cant.", "DDN", "DDI", "Roaming" };
 		for (int i = 0; i < titlesDetalle.length; i++) {
@@ -134,21 +136,33 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 
 	public void onClick(Widget sender) {
 		if (sender == crearLinea) {
-			openItemSolicitudDialog();
+			openItemSolicitudDialog(new LineaSolicitudServicioDto());
 		} else if (sender == crearDomicilio) {
 
 		}
 
 	}
 
-	public void onCellClicked(SourcesTableEvents sender, int row, int cell) {
+	public void onCellClicked(SourcesTableEvents sender, final int row, int col) {
 		if (row > 0) {
-			selectedDetalleRow = row;
-			loadServiciosAdicionales();
+			if (col > 1) {
+				selectedDetalleRow = row;
+				loadServiciosAdicionales();
+			} else if (col == 0) {
+				openItemSolicitudDialog(editarSSUIData.getLineaSolicitudServicio().get(row - 1));
+			} else if (col == 1) {
+				MessageDialog.getInstance().showAceptarCancelar("Desea eliminar el Item?", new Command() {
+					public void execute() {
+						editarSSUIData.removeLineaSolicitudServicio(row - 1);
+						detalleSS.removeRow(row);
+						MessageDialog.getInstance().hide();
+					};
+				}, MessageDialog.getInstance().getCloseCommand());
+			}
 		}
 	}
 
-	private void openItemSolicitudDialog() {
+	private void openItemSolicitudDialog(LineaSolicitudServicioDto linea) {
 		if (itemSolicitudDialog == null) {
 			itemSolicitudDialog = new ItemSolicitudDialog("Agregar Item", controller);
 			Command aceptarCommand = new Command() {
@@ -159,15 +173,13 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 			};
 			itemSolicitudDialog.setAceptarCommand(aceptarCommand);
 		}
-		itemSolicitudDialog.getItemSolicitudUIData().setLineaSolicitudServicio(
-				new LineaSolicitudServicioDto());
-		itemSolicitudDialog.showAndCenter();
+		itemSolicitudDialog.show(linea);
 	}
 
 	private void addLineaSolicitudServicio(LineaSolicitudServicioDto linea) {
-		editarSSUIData.addLineaSolicitudServicio(linea);
-		int newRow = detalleSS.getRowCount();
-		detalleSS.resizeRows(newRow + 1);
+		int newRow = editarSSUIData.addLineaSolicitudServicio(linea) + 1;
+		detalleSS.setWidget(newRow, 0, IconFactory.lapiz());
+		detalleSS.setWidget(newRow, 1, IconFactory.cancel());
 		detalleSS.setText(newRow, 2, linea.getItem().getDescripcion());
 		detalleSS.setText(newRow, 3, currencyFormat.format(linea.getPrecioVenta()));
 		detalleSS.setText(newRow, 4, linea.getAlias());
@@ -180,7 +192,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		detalleSS.setText(newRow, 11, linea.getDdn() ? "Si" : "No");
 		detalleSS.setText(newRow, 12, linea.getDdi() ? "Si" : "No");
 		detalleSS.setText(newRow, 13, linea.getRoaming() ? "Si" : "No");
-		onCellClicked(detalleSS, newRow, 1);
+		onCellClicked(detalleSS, newRow, 2);
 	}
 
 	private void loadServiciosAdicionales() {

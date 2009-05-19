@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
@@ -12,6 +13,7 @@ import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -32,6 +34,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 	private ItemSolicitudUIData itemSolicitudUIData;
 	private EditarSSUIController controller;
 	private Map<Long, TipoSolicitudDto> tiposSolicitudes = new HashMap<Long, TipoSolicitudDto>();
+	boolean tiposSolicitudLoaded = false;
 
 	public ItemSolicitudDialog(String title, EditarSSUIController controller) {
 		super(title);
@@ -41,7 +44,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 		cerrar = new SimpleLink("CERRAR");
 		itemSolicitudUIData = new ItemSolicitudUIData(controller);
 		tipoOrden = itemSolicitudUIData.getTipoOrden();
-		
+
 		tipoSolicitudPanel.setWidget(getItemYPlanSolicitudUI());
 		tipoOrden.addChangeListener(this);
 
@@ -61,8 +64,13 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 
 	public void onClick(Widget sender) {
 		if (sender == aceptar) {
-			aceptarCommand.execute();
-			hide();
+			List errors = itemSolicitudUIData.validate();
+			if (errors.isEmpty()) {
+				aceptarCommand.execute();
+				hide();
+			} else {
+				ErrorDialog.getInstance().show(errors);
+			}
 		} else if (sender == cerrar) {
 			hide();
 		}
@@ -138,5 +146,19 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 
 	public void setAceptarCommand(Command aceptarCommand) {
 		this.aceptarCommand = aceptarCommand;
+	}
+
+	public void show(LineaSolicitudServicioDto linea) {
+		itemSolicitudUIData.setLineaSolicitudServicio(linea);
+		if (linea.getTipoSolicitud() != null) {
+			tipoOrden.setSelectedItem(linea.getTipoSolicitud());
+
+		}
+		// Si ya esta cargado el ListBox actualizo el resto. Sino se actualizará al cargarse.
+		if (tipoOrden.getItemCount() > 0) {
+			onChange(tipoOrden);
+		}
+		showAndCenter();
+
 	}
 }

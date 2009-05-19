@@ -8,20 +8,23 @@ import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.LocalidadDto;
 import ar.com.nextel.sfa.client.dto.ModalidadCobroDto;
+import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.TerminoPagoValidoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
+import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
+import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
+import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLabel;
 
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -30,11 +33,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 	private ListBox listaPrecio;
 	private TextBox cantidad;
 	private ListBox tipoOrden;
-	private SoloItemSolicitudUI panelGeneric;
-	private FlowPanel alquilerVentaAMBA;
-	private FlowPanel ventaAccesorio;
-	private FlowPanel activacion;
-	private FlowPanel ventaLicencia;
 	private ListBox tipoPlan;
 	private ListBox plan;
 	private SimpleLabel precioListaItem;
@@ -72,7 +70,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 		fields.add(tipoOrden = new ListBox());
 		fields.add(listaPrecio = new ListBox());
 		listaPrecio.setWidth("400px");
-		fields.add(cantidad = new TextBox());
+		fields.add(cantidad = new RegexTextBox(RegularExpressionConstants.numeros));
 		fields.add(tipoPlan = new ListBox());
 		tipoPlan.setWidth("400px");
 		fields.add(plan = new ListBox());
@@ -130,13 +128,19 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 
 	public void onChange(Widget sender) {
 		if (sender == listaPrecio) {
-			item.clear();
-			terminoPago.clear();
+			// Cargo Items y Terminos de pago a partir de la Lista de Precios
+			if (item.getItemCount() > 0) {
+				item.clear();
+			}
+			if (terminoPago.getItemCount() > 0) {
+				terminoPago.clear();
+			}
 			ListaPreciosDto listaSelected = (ListaPreciosDto) listaPrecio.getSelectedItem();
 			item.addAllItems(listaSelected.getItemsListaPrecioVisibles());
 			terminoPago.addAllItems(listaSelected.getTerminosPagoValido());
 			onChange(item);
 		} else if (sender == item) {
+			// Seteo el precio del item, ajustado por el Termino de Pago y cargo el ListBox de Planes
 			ItemSolicitudTasadoDto is = (ItemSolicitudTasadoDto) item.getSelectedItem();
 			if (is != null) {
 				TerminoPagoValidoDto terminoSelected = (TerminoPagoValidoDto) terminoPago.getSelectedItem();
@@ -151,15 +155,19 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 				}
 			}
 		} else if (sender == tipoPlan) {
+			// Cargo los planes correspondientes
 			if (tipoPlan.getSelectedItem() != null && item.getSelectedItem() != null) {
 				controller.getPlanesPorItemYTipoPlan((ItemSolicitudTasadoDto) item.getSelectedItem(),
 						(TipoPlanDto) tipoPlan.getSelectedItem(), getActualizarPlanCallback());
 			}
 		} else if (sender == plan) {
+			// Cargo Modalidades de Cobro
 			if (plan.getSelectedItem() != null) {
 				PlanDto planDto = (PlanDto) plan.getSelectedItem();
 				precioListaPlan.setInnerHTML(currencyFormat.format(planDto.getPrecio()));
-				modalidadCobro.clear();
+				if (modalidadCobro.getItemCount() > 0) {
+					modalidadCobro.clear();
+				}
 				modalidadCobro.addAllItems(planDto.getModalidadesCobro());
 			}
 		}
@@ -168,7 +176,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 	public DefaultWaitCallback<List<PlanDto>> getActualizarPlanCallback() {
 		return new DefaultWaitCallback<List<PlanDto>>() {
 			public void success(List<PlanDto> result) {
-				plan.clear();
+				if (plan.getItemCount() > 0) {
+					plan.clear();
+				}
 				plan.addAllItems(result);
 				onChange(plan);
 			}
@@ -185,26 +195,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 
 	public ListBox getTipoOrden() {
 		return tipoOrden;
-	}
-
-	public SoloItemSolicitudUI getPanelGeneric() {
-		return panelGeneric;
-	}
-
-	public FlowPanel getAlquilerVentaAMBA() {
-		return alquilerVentaAMBA;
-	}
-
-	public FlowPanel getVentaAccesorio() {
-		return ventaAccesorio;
-	}
-
-	public FlowPanel getActivacion() {
-		return activacion;
-	}
-
-	public FlowPanel getVentaLicencia() {
-		return ventaLicencia;
 	}
 
 	public ListBox getTipoPlan() {
@@ -287,8 +277,23 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 		return confirmarReserva;
 	}
 
+	public List<String> validate() {
+		GwtValidator validator = new GwtValidator();
+		validator.addTarget(listaPrecio).required("Debe elegir una lista de precios");
+		validator.addTarget(item).required("item");
+		validator.addTarget(tipoPlan).required("tipoplan");
+		validator.addTarget(plan).required("plan");
+		validator.addTarget(localidad).required("localidad");
+		validator.addTarget(modalidadCobro).required("modalidadCobro");
+		validator.addTarget(cantidad).required("cant").greater("Cant > 0", 0);
+		validator.addTarget(alias).required("alias");
+		return validator.fillResult().getErrors();
+	}
+
 	public void load(List<ListaPreciosDto> listasPrecios) {
-		listaPrecio.clear();
+		if (listaPrecio.getItemCount() > 0) {
+			listaPrecio.clear();
+		}
 		listaPrecio.addAllItems(listasPrecios);
 		onChange(listaPrecio);
 	}
@@ -305,8 +310,43 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 		return idsTipoSolicitudBaseActivacion;
 	}
 
-	public void setLineaSolicitudServicio(LineaSolicitudServicioDto lineaSolicitudServicio) {
-		this.lineaSolicitudServicio = lineaSolicitudServicio;
+	public void setLineaSolicitudServicio(LineaSolicitudServicioDto linea) {
+		this.lineaSolicitudServicio = linea;
+		clearListBoxForSelect();
+		clean();
+		alias.setText(linea.getAlias());
+		cantidad.setText(linea.getCantidad() != null ? "" + linea.getCantidad() : "");
+		ddn.setChecked(linea.getDdn());
+		ddi.setChecked(linea.getDdi());
+		localidad.setSelectedItem(linea.getLocalidad());
+		reservar.setText(linea.getNumeroReserva());
+		reservarHidden.setText(linea.getNumeroReservaArea());
+		serie.setText(linea.getNumeroSerie());
+		sim.setText(linea.getNumeroSimcard());
+		roaming.setChecked(linea.getRoaming());
+		if (linea.getPlan() != null) {
+			tipoPlan.setSelectedItem(linea.getPlan().getTipoPlan());
+		}
+
+		// Los siguientes combos se seleccionan al cagar las opciones en los combos (ver preselecionados en
+		// ListBox)
+		listaPrecio.setSelectedItem(linea.getListaPrecios());
+		if (linea.getItem() != null) {
+			ItemSolicitudTasadoDto itemTasado = new ItemSolicitudTasadoDto();
+			itemTasado.setItem(linea.getItem());
+			item.setSelectedItem(itemTasado);
+		}
+		plan.setSelectedItem(linea.getPlan());
+		modalidadCobro.setSelectedItem(linea.getModalidadCobro());
+		modeloEq.setSelectedItem(linea.getModelo());
+	}
+
+	private void clearListBoxForSelect() {
+		listaPrecio.clear();
+		item.clear();
+		plan.clear();
+		modalidadCobro.clear();
+		modeloEq.clear();
 	}
 
 	public LineaSolicitudServicioDto getLineaSolicitudServicio() {
@@ -317,9 +357,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 		ItemSolicitudTasadoDto itemTasadoSelected = (ItemSolicitudTasadoDto) item.getSelectedItem();
 		lineaSolicitudServicio.setItem(itemTasadoSelected.getItem());
 		lineaSolicitudServicio.setListaPrecios((ListaPreciosDto) listaPrecio.getSelectedItem());
-		lineaSolicitudServicio.setLocalidad((LocalidadDto)localidad.getSelectedItem());
+		lineaSolicitudServicio.setLocalidad((LocalidadDto) localidad.getSelectedItem());
 		lineaSolicitudServicio.setModalidadCobro((ModalidadCobroDto) modalidadCobro.getSelectedItem());
-		// lineaSolicitudServicio.setNumeradorLinea(Long.parseLong(reservarHidden.getText()));
+		lineaSolicitudServicio.setModelo((ModeloDto) modeloEq.getSelectedItem());
 		lineaSolicitudServicio.setNumeroIMEI(imei.getText());
 		lineaSolicitudServicio.setNumeroReserva(reservar.getText());
 		lineaSolicitudServicio.setNumeroSerie(serie.getText());
@@ -339,6 +379,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 		}
 		lineaSolicitudServicio.setPrecioListaAjustado(precio);
 		lineaSolicitudServicio.setTipoSolicitud((TipoSolicitudDto) tipoOrden.getSelectedItem());
+		// Limpio los servicios adicionales para que los actualice
+		if (lineaSolicitudServicio.getServiciosAdicionales() != null) {
+			lineaSolicitudServicio.getServiciosAdicionales().clear();
+			lineaSolicitudServicio.setServiciosAdicionales(null);
+		}
 		return lineaSolicitudServicio;
 	}
 }

@@ -268,8 +268,25 @@ public class EditarSSUIData extends UIData {
 		}
 	}
 
-	public void addLineaSolicitudServicio(LineaSolicitudServicioDto linea) {
-		solicitudServicio.getLineas().add(linea);
+	public int addLineaSolicitudServicio(LineaSolicitudServicioDto linea) {
+		Long index = linea.getNumeradorLinea();
+		if (index == null) {
+			linea.setNumeradorLinea(Long.valueOf(solicitudServicio.getLineas().size()));
+			solicitudServicio.getLineas().add(linea);
+		} else {
+			solicitudServicio.getLineas().remove(index.intValue());
+			solicitudServicio.getLineas().add(index.intValue(), linea);
+		}
+		return linea.getNumeradorLinea().intValue();
+	}
+
+	/** Elimina la linea y renumera las restantes */
+	public int removeLineaSolicitudServicio(int index) {
+		solicitudServicio.getLineas().remove(index);
+		for (; index < solicitudServicio.getLineas().size(); index++) {
+			solicitudServicio.getLineas().get(index).setNumeradorLinea(Long.valueOf(index));
+		}
+		return index;
 	}
 
 	public List<LineaSolicitudServicioDto> getLineaSolicitudServicio() {
