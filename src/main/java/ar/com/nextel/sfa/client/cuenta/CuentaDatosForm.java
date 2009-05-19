@@ -3,7 +3,10 @@ package ar.com.nextel.sfa.client.cuenta;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.swt.widgets.MessageBox;
+
 import ar.com.nextel.sfa.client.CuentaRpcService;
+import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
@@ -11,6 +14,7 @@ import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoTarjetaCreditoDto;
 import ar.com.nextel.sfa.client.dto.DatosEfectivoDto;
 import ar.com.nextel.sfa.client.dto.DatosPagoDto;
+import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.EmailDto;
 import ar.com.nextel.sfa.client.dto.FormaPagoDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
@@ -21,28 +25,38 @@ import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.dto.TipoCuentaBancariaDto;
+import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoEmailDto;
 import ar.com.nextel.sfa.client.dto.TipoTarjetaDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
+import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.enums.SexoEnum;
 import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
 import ar.com.nextel.sfa.client.enums.TipoEmailEnum;
 import ar.com.nextel.sfa.client.enums.TipoFormaPagoEnum;
 import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
+import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.FormUtils;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
+import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.util.WindowUtils;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import ar.com.snoop.gwt.commons.client.window.MessageWindow;
 
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
+
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.Image;
 
 
 public class CuentaDatosForm extends Composite {
@@ -65,6 +79,9 @@ public class CuentaDatosForm extends Composite {
 	private List <Widget>camposObligatorios = new ArrayList<Widget>();
 	private TitledPanel datosCuentaPanel = new TitledPanel(Sfa.constant().cuentaPanelTitle());;
 	private GwtValidator validator = new GwtValidator();
+	
+	private List<String> estilos = new ArrayList<String>();
+	private int estiloUsado = 0;
 	
 	public static CuentaDatosForm getInstance() {
 		return instance;
@@ -143,7 +160,26 @@ public class CuentaDatosForm extends Composite {
 		row++;
 		datosCuentaTable.setWidget(row, 0, camposTabDatos.getCicloFacLabel());
 		datosCuentaTable.setWidget(row, 1, camposTabDatos.getCicloFacturacion());
+		Image iconoLupa = IconFactory.vistaPreliminar();
+		datosCuentaTable.setWidget(row, 2, iconoLupa);		
+		iconoLupa.addClickListener(new ClickListener() {
+			public void onClick (Widget sender) {
+				PersonaDto personaDto = camposTabDatos.getVerazSearch();
+				inicializarVeraz();
+				CuentaRpcService.Util.getInstance().consultarVeraz(personaDto, 
+				new DefaultWaitCallback<VerazResponseDto>() {
+				
+					public void success(VerazResponseDto result) {
+						if (result != null) {
+							setearValoresRtaVeraz(result);
+						}
+					}
+				});
+			}
+		});	
+		
 		datosCuentaTable.setWidget(row, 3, camposTabDatos.getVerazLabel());
+        inicializarVeraz();
 		datosCuentaTable.setWidget(row, 4, camposTabDatos.getVeraz());
 		row++;
 		datosCuentaTable.setWidget(row, 0, camposTabDatos.getUseLabel());
@@ -171,6 +207,14 @@ public class CuentaDatosForm extends Composite {
 		telefonoTable.getFlexCellFormatter().setColSpan(2, 1, 3);
 		telefonoTable.getFlexCellFormatter().addStyleName(0, 0, "req");
 		return telefonoPanel;
+	}
+	
+	private void inicializarVeraz() {
+		estilos.add("verazAceptar");
+        estilos.add("verazRevisar");
+        estilos.add("verazRechazar");
+		camposTabDatos.getVeraz().setText("");
+		camposTabDatos.getVeraz().removeStyleName(estilos.get(estiloUsado));
 	}
 
 	private Widget createEmailPanel() {
@@ -782,4 +826,41 @@ public class CuentaDatosForm extends Composite {
 		this.camposTabDatos = camposTabDatos;
 	}
 	
+	
+	private void setearValoresRtaVeraz(VerazResponseDto result) {
+		
+		//no entiendo para que pide los valores que tenia antes si después los pisa con los de la rta
+//		TextBox apellidoTextBox = camposTabDatos.getApellido();
+//        TextBox nombreTextBox = camposTabDatos.getNombre();
+//        TextBox razonSocialTextBox = camposTabDatos.getRazonSocial();
+//        Combo sexoCombo = granCuentaPanel.getSexoCombo();
+
+        camposTabDatos.getApellido().setText(result.getApellido());
+        camposTabDatos.getApellido().setEnabled(true);
+        
+        camposTabDatos.getNombre().setText(result.getNombre());
+        camposTabDatos.getNombre().setEnabled(true);
+        
+        camposTabDatos.getRazonSocial().setText(result.getRazonSocial());
+        
+        camposTabDatos.getSexo().setEnabled(true);
+        
+        if ("ACEPTAR".equals(result.getEstado())) {
+        	camposTabDatos.getVeraz().addStyleName(estilos.get(0));
+        	estiloUsado = 0;
+        } else if ("REVISAR".equals(result.getEstado())) {
+        	camposTabDatos.getVeraz().addStyleName(estilos.get(1));
+        	estiloUsado = 1;
+        }else {
+        	camposTabDatos.getVeraz().addStyleName(estilos.get(2));
+        	estiloUsado = 2;
+        }
+      
+        camposTabDatos.getVeraz().setText(result.getEstado());
+//        granCuentaPanel.getVerazPanel().getEstadoVerazTextBox().setText(result.getEstado());
+//        setResultStyle(granCuentaPanel.getVerazPanel().getEstadoVerazTextBox(), verazResponse);
+        
+        MessageDialog.getInstance().setDialogTitle("Resultado Veraz");
+        MessageDialog.getInstance().showAceptar(result.getMensaje(), MessageDialog.getInstance().getCloseCommand());
+	}
 }
