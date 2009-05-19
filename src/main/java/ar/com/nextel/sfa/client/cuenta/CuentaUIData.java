@@ -100,8 +100,8 @@ public class CuentaUIData extends UIData {
 	private TextArea observaciones = new TextArea();
 	private SimpleDatePicker fechaNacimiento = new SimpleDatePicker(false);
 	private SimpleLink validarTarjeta = new SimpleLink(Sfa.constant().validarTarjeta(), "#", true);
-	private Label veraz = new Label("TODO");
-
+	private Label veraz = new Label();
+	
 	PersonaDto persona = new PersonaDto();
 	List <Widget>camposObligatorios =  new ArrayList<Widget>(); 
 	List <Widget>camposObligatoriosFormaPago = new ArrayList<Widget>();
@@ -533,5 +533,14 @@ public class CuentaUIData extends UIData {
 	}
 	public int getCurrentYear() {
 		return currentYear;
+	}
+	
+	public PersonaDto getVerazSearch() {
+		PersonaDto personaDto = new PersonaDto();
+		DocumentoDto documentoDto = new DocumentoDto(numeroDocumento.getText(), (TipoDocumentoDto) tipoDocumento.getSelectedItem());
+		personaDto.setDocumento(documentoDto);
+		personaDto.setIdTipoDocumento(documentoDto.getTipoDocumento().getId());
+		personaDto.setSexo((SexoDto) sexo.getSelectedItem());
+		return personaDto;
 	}
 }
