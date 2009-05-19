@@ -37,7 +37,7 @@ public class LineaSolicitudServicioDto implements IsSerializable {
 	private Integer cantidad;
 
 	private LocalidadDto localidad;
-	// private Modelo modelo;
+	private ModeloDto modelo;
 
 	private EstadoVerificacionNegativeFilesDto estadoVerificacionNegativeFilesIMEI;
 	private EstadoVerificacionNegativeFilesDto estadoVerificacionNegativeFilesSIM;
@@ -280,4 +280,11 @@ public class LineaSolicitudServicioDto implements IsSerializable {
 		this.localidad = localidad;
 	}
 
+	public ModeloDto getModelo() {
+		return modelo;
+	}
+
+	public void setModelo(ModeloDto modelo) {
+		this.modelo = modelo;
+	}
 }
