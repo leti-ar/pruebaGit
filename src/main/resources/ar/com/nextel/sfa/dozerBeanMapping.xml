@@ -214,10 +214,14 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>modalidadesCobro</a>
 			<b>modalidadesCobro</b>
 		</field>
-		<field>
+		<field type="one-way">
 			<a>servicioAdicionalPrecio.precioFinal</a>
 			<b>precio</b>
-		</field>			
+		</field>
+		<field type="one-way">
+			<a>planBase.tipoPlan</a>
+			<b>tipoPlan</b>
+		</field>				
 	</mapping>
 	
 	<mapping>

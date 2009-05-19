@@ -11,6 +11,7 @@ public class PlanDto implements IsSerializable, ListBoxItem {
 	private String descripcion;
 	private Double precio;
 	private List<ModalidadCobroDto> modalidadesCobro;
+	private TipoPlanDto tipoPlan;
 
 	public String getItemText() {
 		return descripcion;
@@ -50,6 +51,14 @@ public class PlanDto implements IsSerializable, ListBoxItem {
 
 	public void setPrecio(Double precio) {
 		this.precio = precio;
+	}
+
+	public TipoPlanDto getTipoPlan() {
+		return tipoPlan;
+	}
+
+	public void setTipoPlan(TipoPlanDto tipoPlan) {
+		this.tipoPlan = tipoPlan;
 	}
 
 }
