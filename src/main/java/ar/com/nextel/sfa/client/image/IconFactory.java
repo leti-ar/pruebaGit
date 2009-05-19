@@ -7,6 +7,17 @@ public class IconFactory {
 
 	private static IconBundle iconBundle = null;
 
+	static final String LUPA_URL = "images/lupa.gif";
+	static final String LOCKED_URL = "images/locked.gif";
+	static final String LAPIZ_URL = "images/lapiz.gif";
+
+	static {
+		// @TODO Analizar uso de prefetch. No estoy liberando estos URLs
+		Image.prefetch(LUPA_URL);
+		Image.prefetch(LAPIZ_URL);
+		Image.prefetch(LOCKED_URL);		
+	}
+	
 	private static IconBundle getIconBundle() {
 		if (iconBundle == null) {
 			iconBundle = (IconBundle) GWT.create(IconBundle.class);
@@ -15,7 +26,13 @@ public class IconFactory {
 	}
 
 	public static Image lupa() {
-		return getIconBundle().lupa().createImage();
+		return new Image(LUPA_URL);
+	}
+
+	public static Image lupa(String title) {
+		Image img = IconFactory.lupa();
+		img.setTitle(title);
+		return img;
 	}
 
 	public static Image cancel() {
@@ -23,11 +40,23 @@ public class IconFactory {
 	}
 
 	public static Image lapiz() {
-		return getIconBundle().lapiz().createImage();
+		return new Image(LAPIZ_URL);		
+	}
+
+	public static Image lapiz(String title) {
+		Image img = IconFactory.lapiz();
+		img.setTitle(title);
+		return img;
 	}
 
 	public static Image locked() {
-		return getIconBundle().locked().createImage();
+		return new Image(LAPIZ_URL);
+	}
+
+	public static Image locked(String title) {
+		Image img = IconFactory.locked();
+		img.setTitle(title);
+		return img;
 	}
 
 	public static Image word() {
