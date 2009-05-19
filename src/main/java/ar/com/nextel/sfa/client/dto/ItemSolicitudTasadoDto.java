@@ -10,14 +10,16 @@ public class ItemSolicitudTasadoDto implements IsSerializable, ListBoxItem {
 	private Double precioLista;
 	private ItemSolicitudDto item;
 
+	/** Descripcion del ItemSolicitudDto */
 	public String getItemText() {
 		return item.getDescripcion();
 	}
-	
+
+	/** Id del ItemSolicitudDto */
 	public String getItemValue() {
-		return "" + id;
+		return "" + item.getId();
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
