@@ -85,7 +85,5 @@ div.popFooter A,div.popFormButtons A {
 .gwt-CustomDialogBox .message{
 	text-align: center;
 	margin: 10px;
-	width: 300px;
-	height: 150px;
 	overflow: auto;
 }

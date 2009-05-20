@@ -16,8 +16,6 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
@@ -121,7 +119,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		for (CuentaSearchResultDto cuenta : cuentas) {
 			// Uso un ImageAnchor porque usar un Hyperlink causa problemas con la carga de la imagen. La primera vez no llega a cargarla. rgm
 
-			resultTable.setWidget(row, 0, new ImageAnchor(IconFactory.lapiz(LAPIZ_TITLE),UILoader.EDITAR_CUENTA + "?cuenta_id="
+			resultTable.setWidget(row, 0, new ImageAnchor(IconFactory.lapiz(LAPIZ_TITLE),"#" + UILoader.EDITAR_CUENTA + "?cuenta_id="
 							+ cuenta.getId() + "&cod_vantive="
 							+ cuenta.getCodigoVantive()));
 
