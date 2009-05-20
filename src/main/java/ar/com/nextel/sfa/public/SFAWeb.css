@@ -176,6 +176,12 @@ A {
 	overflow: auto;
 }
 
+.gwt-NormalizarDomicilioUI .resultTableScroll {
+	height: 150px;
+	overflow: scroll;
+	border: medium;
+}
+
 .layout td {
 	padding-bottom: 2px;
 	padding-top: 2px;
