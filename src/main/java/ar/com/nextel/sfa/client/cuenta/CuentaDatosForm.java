@@ -170,7 +170,7 @@ public class CuentaDatosForm extends Composite {
 			public void onClick (Widget sender) {
 				PersonaDto personaDto = getVerazSearch(camposTabDatos.getNumeroDocumento(), 
 						camposTabDatos.getTipoDocumento(), camposTabDatos.getSexo());
-				inicializarVeraz(camposTabDatos.getVerazLabel());
+				inicializarVeraz(camposTabDatos.getVeraz());
 				CuentaRpcService.Util.getInstance().consultarVeraz(personaDto, 
 						new DefaultWaitCallback<VerazResponseDto>() {
 
