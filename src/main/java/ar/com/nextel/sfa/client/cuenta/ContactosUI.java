@@ -22,6 +22,7 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -39,7 +40,7 @@ public class ContactosUI extends NextelDialog {
 
 	private CuentaDatosForm cuentaDatosForm;
 	
-	private Image iconoLupa = IconFactory.vistaPreliminar();
+	private HTML iconoLupa = IconFactory.vistaPreliminar();
 	
 	private List<String> estilos = new ArrayList<String>();
 	private int estiloUsado = 0;

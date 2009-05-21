@@ -3,6 +3,8 @@ package ar.com.nextel.sfa.client.cuenta;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 import org.eclipse.swt.widgets.MessageBox;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
@@ -55,6 +57,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -84,8 +87,6 @@ public class CuentaDatosForm extends Composite {
 	
 	private List<String> estilos = new ArrayList<String>();
 	private int estiloUsado = 0;
-	
-	private VerazUIData verazUIData;
 	
 	public static CuentaDatosForm getInstance() {
 		return instance;
@@ -164,7 +165,7 @@ public class CuentaDatosForm extends Composite {
 		row++;
 		datosCuentaTable.setWidget(row, 0, camposTabDatos.getCicloFacLabel());
 		datosCuentaTable.setWidget(row, 1, camposTabDatos.getCicloFacturacion());
-		Image iconoLupa = IconFactory.vistaPreliminar();
+		HTML iconoLupa = IconFactory.vistaPreliminar();
 		datosCuentaTable.setWidget(row, 2, iconoLupa);		
 		iconoLupa.addClickListener(new ClickListener() {
 			public void onClick (Widget sender) {
