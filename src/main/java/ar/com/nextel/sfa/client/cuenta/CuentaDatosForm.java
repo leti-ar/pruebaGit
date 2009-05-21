@@ -168,7 +168,7 @@ public class CuentaDatosForm extends Composite {
 		datosCuentaTable.setWidget(row, 2, iconoLupa);		
 		iconoLupa.addClickListener(new ClickListener() {
 			public void onClick (Widget sender) {
-				PersonaDto personaDto = verazUIData.getVerazSearch(camposTabDatos.getNumeroDocumento(), 
+				PersonaDto personaDto = getVerazSearch(camposTabDatos.getNumeroDocumento(), 
 						camposTabDatos.getTipoDocumento(), camposTabDatos.getSexo());
 				inicializarVeraz(camposTabDatos.getVerazLabel());
 				CuentaRpcService.Util.getInstance().consultarVeraz(personaDto, 
@@ -190,6 +190,17 @@ public class CuentaDatosForm extends Composite {
 		row++;
 		datosCuentaTable.setWidget(row, 0, camposTabDatos.getUseLabel());
 		datosCuentaTable.setWidget(row, 1, camposTabDatos.getUse());
+	}
+	
+	public PersonaDto getVerazSearch(TextBox numDoc, ListBox tipoDoc, ListBox sexo) {
+		//if ((numDoc!=null) && (tipoDoc!=null) && (sexo!=null)) {
+			PersonaDto personaDto = new PersonaDto();
+			DocumentoDto documentoDto = new DocumentoDto(numDoc.getText(), (TipoDocumentoDto) tipoDoc.getSelectedItem());
+			personaDto.setDocumento(documentoDto);
+			personaDto.setIdTipoDocumento(documentoDto.getTipoDocumento().getId());
+			personaDto.setSexo((SexoDto) sexo.getSelectedItem());
+		//} 
+		return personaDto;
 	}
 	
 	private Widget createTelefonoPanel() {
