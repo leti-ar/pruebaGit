@@ -102,7 +102,6 @@ public class CuentaUIData extends UIData {
 	private SimpleDatePicker fechaNacimiento = new SimpleDatePicker(false);
 	private SimpleLink validarTarjeta = new SimpleLink(Sfa.constant().validarTarjeta(), "#", true);
 	private Label veraz = new Label();
-	private VerazUIData verazUIData;
 	
 	PersonaDto persona = new PersonaDto();
 	List <Widget>camposObligatorios =  new ArrayList<Widget>(); 
