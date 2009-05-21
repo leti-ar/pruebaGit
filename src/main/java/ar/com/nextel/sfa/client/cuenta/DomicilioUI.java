@@ -3,11 +3,14 @@ package ar.com.nextel.sfa.client.cuenta;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
+import ar.com.nextel.sfa.client.dto.ProvinciaDto;
 import ar.com.nextel.sfa.client.dto.TipoDomicilioDto;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
 import com.google.gwt.user.client.Command;
@@ -146,43 +149,28 @@ public class DomicilioUI extends NextelDialog {
 		gridDown.setWidget(1, 2, domiciliosData.getLocalidad());
 		gridDown.setText(1, 3, Sfa.constant().cp());
 		gridDown.setWidget(1, 4, domiciliosData.getCodigoPostal());
+		cargaComboProvinciasDto();
 		gridDown.setText(2, 1, Sfa.constant().provincia());
-		// TODO: Cambiar a provincia cuando arregle el otro!
-		gridDown.setWidget(2, 2, domiciliosData.getPuerta());
+		gridDown.setWidget(2, 2, domiciliosData.getProvincia());
 		//
 		gridDown.setText(2, 3, Sfa.constant().partido());
 		gridDown.setWidget(2, 4, domiciliosData.getPartido());
-		//
 		tiposDomicilioDtoInit();
-		//
 		gridDown.setText(3, 1, Sfa.constant().entrega());
 		gridDown.setWidget(3, 2, domiciliosData.getEntrega());
 		gridDown.setText(3, 3, Sfa.constant().facturacion());
 		gridDown.setWidget(3, 4, domiciliosData.getFacturacion());
-		
 		gridDown.setText(4, 2, Sfa.constant().validado());
 		gridDown.setWidget(4, 3, domiciliosData.getValidado());
-		// marco.setText(9, 0, Sfa.constant().obs_domicilio());
-		// marco.setWidget(10, 0, domiciliosData.getObservaciones());
-		// marco.setText(11, 0, Sfa.constant().usuario_domicilio());
-		// //TODO: Cambiar a usuario_domicilio cuando arregle el otro!
-		// marco.setWidget(11, 1, domiciliosData.getPartido());
-		// marco.setText(11, 3, Sfa.constant().fecha_Modificacion());
-		// //TODO: Cambiar a fecha_Modificacion cuando arregle el otro!
-		// marco.setWidget(11, 4, domiciliosData.getPartido());
-		// mainPanel.add(marco);
-
-		//
 		gridObs.addStyleName("layout");
 		gridObs.setText(0, 1, Sfa.constant().obs_domicilio());
 		gridObs.setWidget(1, 1, domiciliosData.getObservaciones());
-		//
 		gridUser.addStyleName("layout");
 		gridUser.setText(0, 1, Sfa.constant().usuario_domicilio());
 		gridUser.setWidget(0, 2, domiciliosData.getNombreUsuarioUltimaModificacion());
 		gridUser.setText(0, 3, Sfa.constant().fecha_Modificacion());
-		// gridUser.setWidget(0, 4, domiciliosData.get);
-		//
+		gridUser.setWidget(0, 4, domiciliosData.getFechaUltimaModificacion());
+
 		add(gridUp);
 		add(gridMed);
 		add(gridDown);
@@ -208,6 +196,18 @@ public class DomicilioUI extends NextelDialog {
 			}
 		});
 		this.showAndCenter();
+	}
+	
+	/**
+	 * @author eSalvador
+	 */
+	private void cargaComboProvinciasDto(){
+		CuentaRpcService.Util.getInstance().getProvinciasInitializer(new DefaultWaitCallback<List<ProvinciaDto>>() {
+			@Override
+			public void success(List<ProvinciaDto> result) {
+				domiciliosData.getProvincia().addAllItems(result);
+			}
+		});
 	}
 	
 	/**

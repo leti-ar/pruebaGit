@@ -104,6 +104,7 @@ public class CuentaDomiciliosForm extends Composite {
 	private void abrirPopupNormalizacion(DomiciliosCuentaDto domicilio, Command comandoNoNormalizar, Command comandoAceptar) {
 		/**OJO, Tener en cuenta ACA, de pasar DOS domicilios: 1 con los datos cargados en el DomicilioUI para cargar el Label,
 		 *       y 2, el normalizado, para cargar la grilla!! */
+		domicilio.setNo_normalizar("T");
 		NormalizarDomicilioUI.getInstance().setDomicilios(domicilio);
 		/***/
 		NormalizarDomicilioUI.getInstance().setComandoNoNormalizar(comandoNoNormalizar);
@@ -144,13 +145,19 @@ public class CuentaDomiciliosForm extends Composite {
 							public void success(NormalizarDomicilioResultDto result) {
 								GWT.log("Entro en SUCCESS de NormalizarDomicilioResultDto", null);
 								
-								//tipo; // exito|no_parseado|no_encontrado|dudas
+								//tipo: exito|no_parseado|no_encontrado|dudas
 								if (result.getTipo().equals("exito")){
 									PersonaDto persona = cuentaDto.getPersona();
 									persona.getDomicilios().add(domicilioAEditar);
 									CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConDomiciliosEditados();
 									DomicilioUI.getInstance().hide();
 									NormalizarDomicilioUI.getInstance().hide();
+								}else if(result.getTipo().equals("no_encontrado")){
+									GWT.log("Devolvio no_encontrado el SUCCESS de NormalizarDomicilioResultDto", null);
+								}else if(result.getTipo().equals("dudas")){
+									GWT.log("Devolvio dudas el SUCCESS de NormalizarDomicilioResultDto", null);
+								}else if(result.getTipo().equals("no_parseado")){
+									GWT.log("Devolvio no_parseado el SUCCESS de NormalizarDomicilioResultDto", null);
 								}
 							}
 							@Override
@@ -233,6 +240,7 @@ public class CuentaDomiciliosForm extends Composite {
 	
 	private void openPopupDeleteDialog(Command comandoGenerico) {
 		MessageDialog.getInstance().setDialogTitle("Eliminar Domicilio");
+		MessageDialog.getInstance().setSize("300px", "100px");
 		MessageDialog.getInstance().showSiNo("¿Esta seguro que desea eliminar el domicilio seleccionado?",comandoGenerico,MessageDialog.getInstance().getCloseCommand());
 	}
 

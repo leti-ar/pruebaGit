@@ -6,6 +6,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
+import ar.com.nextel.sfa.client.dto.ProvinciaDto;
 import ar.com.nextel.sfa.client.dto.TipoDomicilioAsociadoDto;
 import ar.com.nextel.sfa.client.dto.TipoDomicilioDto;
 import ar.com.nextel.sfa.client.widget.UIData;
@@ -16,6 +17,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -24,9 +26,8 @@ import com.google.gwt.user.client.ui.Widget;
  * @author eSalvador
  **/
 public class DomiciliosUIData extends UIData {
-	//
+
 	private DomiciliosCuentaDto domicilio;
-	// /
 	TextBox calle = new TextBox();
 	TextBox numero = new TextBox();
 	TextBox piso = new TextBox();
@@ -43,20 +44,18 @@ public class DomiciliosUIData extends UIData {
 	TextBox localidad = new TextBox();
 	TextBox partido = new TextBox();
 	PersonaDto persona = new PersonaDto();
-
-	// TODO: Sacar los combos hardcodeados!
 	ListBox facturacion = new ListBox();
 	ListBox entrega = new ListBox();
-	// ProvinciaDto provincia = new ProvinciaDto();
+	ListBox provincia = new ListBox();
+
 	// EstadoDomicilioDto estado = new EstadoDomicilioDto();
 	// Boolean noNormalizar;
-	//
+
 	CheckBox validado = new CheckBox();
 	TextBox codigoFNCL = new TextBox();
 	CheckBox enCarga = new CheckBox();
-	TextBox nombreUsuarioUltimaModificacion = new TextBox();
-
-	// /
+	Label nombreUsuarioUltimaModificacion = new Label();
+	Label fechaUltimaModificacion = new Label();
 
 	public void setDomicilio(DomiciliosCuentaDto domicilio) {
 		if (domicilio == null) {
@@ -79,13 +78,13 @@ public class DomiciliosUIData extends UIData {
 			torre.setText(domicilio.getTorre());
 			unidadFuncional.setText(domicilio.getUnidad_funcional());
 			observaciones.setText(domicilio.getObservaciones());
-
+			nombreUsuarioUltimaModificacion.setText(domicilio.getNombre_usuario_ultima_modificacion());
+			fechaUltimaModificacion.setText(domicilio.getFecha_ultima_modificacion());
+			
 			for (int i = 0; i < domicilio.getTiposDomicilioAsociado().size(); i++) {
 				TipoDomicilioAsociadoDto tipoDomicilioAsociadoDto = domicilio.getTiposDomicilioAsociado()
 						.get(i);
-
 				/** Logica para tipoDomicilio: */
-
 				// Si el tipoDomicilio es 0 = No
 				if (tipoDomicilioAsociadoDto.getTipoDomicilio().getId() == 0) {
 					if (tipoDomicilioAsociadoDto.getTipoDomicilio().getDescripcion().equals("FacturacionNo")) {
@@ -129,9 +128,11 @@ public class DomiciliosUIData extends UIData {
 		domicilioCopiado.setNumero(Long.parseLong(numero.getText()));
 		domicilioCopiado.setObservaciones(observaciones.getText());
 		domicilioCopiado.setPiso(piso.getText());
-		// domicilioNuevo.setProvincia(provincia);
+		domicilioCopiado.setProvincia((ProvinciaDto)provincia.getSelectedItem());
 		domicilioCopiado.setPuerta(puerta.getText());
 		domicilioCopiado.setTorre(torre.getText());
+		domicilioCopiado.setNombre_usuario_ultima_modificacion(nombreUsuarioUltimaModificacion.getText());
+		domicilioCopiado.setFecha_ultima_modificacion(fechaUltimaModificacion.getText());
 		domicilioCopiado.setTiposDomicilioAsociado(mapeaCombosFacturacionEntrega());
 		//Esto del locked se setea en FALSE para que le permita la edicion del mismo, hasta que se guarde la cuenta, cuando se setea en TRUE.
 		domicilioCopiado.setLocked(false);
@@ -141,7 +142,6 @@ public class DomiciliosUIData extends UIData {
 	
 	public DomiciliosCuentaDto getDomicilio() {
 		/** TODO: Deberia hacer alguna validacion?? */
-		/** TODO: Terminar este mapeo! */
 		domicilio.setCalle(calle.getText());
 		domicilio.setEntre_calle(entreCalle.getText());
 		domicilio.setY_calle(ycalle.getText());
@@ -154,9 +154,11 @@ public class DomiciliosUIData extends UIData {
 		domicilio.setNumero(Long.parseLong(numero.getText()));
 		domicilio.setObservaciones(observaciones.getText());
 		domicilio.setPiso(piso.getText());
-		// domicilioNuevo.setProvincia(provincia);
+		domicilio.setProvincia((ProvinciaDto)provincia.getSelectedItem());
 		domicilio.setPuerta(puerta.getText());
 		domicilio.setTorre(torre.getText());
+		domicilio.setNombre_usuario_ultima_modificacion(nombreUsuarioUltimaModificacion.getText());
+		domicilio.setFecha_ultima_modificacion(fechaUltimaModificacion.getText());
 		domicilio.setTiposDomicilioAsociado(mapeaCombosFacturacionEntrega());
 		//Esto del locked se setea en FALSE para que le permita la edicion del mismo, hasta que se guarde la cuenta, cuando se setea en TRUE.
 		domicilio.setLocked(false);
@@ -232,9 +234,9 @@ public class DomiciliosUIData extends UIData {
 		fields.add((Widget) validado);
 		fields.add(codigoFNCL);
 		fields.add(enCarga);
-		fields.add(nombreUsuarioUltimaModificacion);
 		fields.add(entrega);
 		fields.add(facturacion);
+		fields.add(provincia);
 		this.addFocusListeners(fields);
 	}
 
@@ -368,7 +370,16 @@ public class DomiciliosUIData extends UIData {
 		return entrega;
 	}
 
-	public TextBox getNombreUsuarioUltimaModificacion() {
+	public Label getNombreUsuarioUltimaModificacion() {
+		nombreUsuarioUltimaModificacion.setWidth("60px");
 		return nombreUsuarioUltimaModificacion;
+	}
+
+	public Label getFechaUltimaModificacion() {
+		return fechaUltimaModificacion;
+	}
+
+	public ListBox getProvincia() {
+		return provincia;
 	}
 }

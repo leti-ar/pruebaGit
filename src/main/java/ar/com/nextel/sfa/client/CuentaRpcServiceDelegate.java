@@ -86,4 +86,9 @@ public class CuentaRpcServiceDelegate {
 		WaitWindow.show();
 		cuentaRpcService.normalizarDomicilio(domicilioANormalizar, callback);
 	}
+	
+	public void getProvinciasInitializer(DefaultWaitCallback callback) {
+		WaitWindow.show();
+		cuentaRpcService.getProvinciasInitializer(callback);
+	}	
 }

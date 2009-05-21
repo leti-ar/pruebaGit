@@ -43,6 +43,7 @@ import ar.com.nextel.model.oportunidades.beans.Rubro;
 import ar.com.nextel.model.personas.beans.Documento;
 import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.personas.beans.GrupoDocumento;
+import ar.com.nextel.model.personas.beans.Provincia;
 import ar.com.nextel.model.personas.beans.Sexo;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
@@ -67,6 +68,7 @@ import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProveedorDto;
+import ar.com.nextel.sfa.client.dto.ProvinciaDto;
 import ar.com.nextel.sfa.client.dto.RubroDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
@@ -378,7 +380,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 			NormalizarDomicilioRequest normalizarDomicilioRequest = new NormalizarDomicilioRequest();
 			normalizarDomicilioRequest.populateFromDomicilio(mapper.map(domicilioANormalizar, Domicilio.class));
 			domicilioResultNormalizacion =  mapper.map(normalizadorDomicilio.normalizarDomicilio(normalizarDomicilioRequest),NormalizarDomicilioResultDto.class);
-			//domicilioNormalizado = mapper.map(normalizadorDomicilio.normalizarDomicilio(normalizarDomicilioRequest).getDireccion(), DomiciliosCuentaDto.class);
 			
 		} catch (MerlinException e) {
 			throw ExceptionUtil.wrap(e);
@@ -401,5 +402,13 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 			throw ExceptionUtil.wrap(e);
 		}
 		return domicilioNormalizado;
+	}
+
+	/**
+     * @author eSalvador 
+     **/
+	public List<ProvinciaDto> getProvinciasInitializer() {
+		List<ProvinciaDto> listaProvincias = mapper.convertList(repository.getAll(Provincia.class), ProvinciaDto.class);
+		return listaProvincias;
 	}
 }
