@@ -12,6 +12,7 @@ import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
 import ar.com.nextel.sfa.client.enums.TipoTarjetaEnum;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
+import ar.com.nextel.sfa.client.veraz.VerazUIData;
 import ar.com.nextel.sfa.client.widget.TelefonoTextBox;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -101,6 +102,7 @@ public class CuentaUIData extends UIData {
 	private SimpleDatePicker fechaNacimiento = new SimpleDatePicker(false);
 	private SimpleLink validarTarjeta = new SimpleLink(Sfa.constant().validarTarjeta(), "#", true);
 	private Label veraz = new Label();
+	private VerazUIData verazUIData;
 	
 	PersonaDto persona = new PersonaDto();
 	List <Widget>camposObligatorios =  new ArrayList<Widget>(); 
@@ -533,14 +535,5 @@ public class CuentaUIData extends UIData {
 	}
 	public int getCurrentYear() {
 		return currentYear;
-	}
-	
-	public PersonaDto getVerazSearch() {
-		PersonaDto personaDto = new PersonaDto();
-		DocumentoDto documentoDto = new DocumentoDto(numeroDocumento.getText(), (TipoDocumentoDto) tipoDocumento.getSelectedItem());
-		personaDto.setDocumento(documentoDto);
-		personaDto.setIdTipoDocumento(documentoDto.getTipoDocumento().getId());
-		personaDto.setSexo((SexoDto) sexo.getSelectedItem());
-		return personaDto;
 	}
 }
