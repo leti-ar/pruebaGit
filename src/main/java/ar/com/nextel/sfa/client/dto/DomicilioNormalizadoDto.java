@@ -1,9 +1,11 @@
 package ar.com.nextel.sfa.client.dto;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
  * @author eSalvador 
  **/
-public class DomicilioNormalizadoDto {
+public class DomicilioNormalizadoDto  implements IsSerializable{
 
     // Direccion principal
     private String calle;

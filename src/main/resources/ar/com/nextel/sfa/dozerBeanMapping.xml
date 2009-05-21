@@ -389,34 +389,25 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<field custom-converter-id="enumToDto">
 			<a>tipoContribuyente</a>
 			<b>tipoContribuyente</b>
-		</field><!--
-		<field custom-converter-id="enumToDto">
-			<a>persona.telefonos.tipoTelefono</a>
-			<b>persona.telefonos.tipoTelefono</b>
 		</field>
-		 
-		<field custom-converter-id="enumToDto">
-			<a>persona.emails.tipoEmail</a>
-			<b>persona.emails.tipoEmail</b>
-		</field>
-		<field custom-converter-id="enumToDto">
-			<a>persona.documento.tipoDocumento</a>
-			<b>persona.documento.tipoDocumento</b>
-		</field>
-         --><!--
-		<field custom-converter-id="enumToDto">
-			<a>cicloFacturacion</a>
-			<b>cicloFacturacion</b>
-		</field>
-	--></mapping>
+	</mapping>
 	
 	<mapping>
 		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.MerlinDireccionDTO</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto</class-b>
 	</mapping>
+		<mapping>
+		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.MerlinDireccionDTO</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.DomicilioNormalizadoDto</class-b>
+	</mapping>
 	<mapping>
 		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.NormalizarDomicilioResult</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto</class-b>
+	</mapping>
+	<mapping>
+		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.MotivoDudaDTO</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.NormalizacionDomicilioMotivoDto</class-b>
 	</mapping>	
+		
 	
 </mappings>

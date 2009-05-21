@@ -1,15 +1,11 @@
 package ar.com.nextel.sfa.client.dto;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-
-import ar.com.nextel.util.documento.DocumentHelper;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * @author eSalvador 
  **/
-public class NormalizacionDomicilioMotivoDto {
+public class NormalizacionDomicilioMotivoDto  implements IsSerializable{
 
     private String motivo;
     private static final String EXACT_MATCH = "exact_match";
@@ -33,11 +29,11 @@ public class NormalizacionDomicilioMotivoDto {
         return buffer.toString();
     }
 
-    public void fromXml(String xml) throws DocumentException {
-        Document document = DocumentHelper.createDocument("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" + xml);
-        Element motivoDuda = document.getRootElement();
-        this.setMotivo(motivoDuda.attributeValue("valor"));
-    }
+//    public void fromXml(String xml) throws DocumentException {
+//        Document document = DocumentHelper.createDocument("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" + xml);
+//        Element motivoDuda = document.getRootElement();
+//        this.setMotivo(motivoDuda.attributeValue("valor"));
+//    }
 
     public void setMotivo(String motivo) {
         if (EXACT_MATCH.equals(motivo)) {
