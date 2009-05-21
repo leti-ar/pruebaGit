@@ -5,21 +5,27 @@ import java.util.List;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 
+import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
+import ar.com.nextel.sfa.client.initializer.VerazInitializer;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.TelefonoTextBox;
 import ar.com.nextel.sfa.client.widget.UIData;
+import ar.com.nextel.sfa.client.widget.ValidationTextBox;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
+import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 public class ContactoUIData extends UIData {
 
-	ListBox tipoDocumento = new ListBox();
+	ListBox tipoDocumento = new ListBox("");
 	TextBox numeroDocumento = new TextBox();
 	TextBox nombre = new TextBox();
 	TextBox apellido = new TextBox();
-	ListBox sexo = new ListBox();
-	ListBox cargo = new ListBox();
+	ListBox sexo = new ListBox("");
+	ListBox cargo = new ListBox("");
 	TelefonoTextBox telefonoPrincipal = new TelefonoTextBox();
 	TelefonoTextBox telefonoCelular = new TelefonoTextBox();
 	TelefonoTextBox telefonoAdicional = new TelefonoTextBox();
@@ -27,6 +33,7 @@ public class ContactoUIData extends UIData {
 	TextBox emailPersonal = new TextBox();
 	TextBox emailLaboral = new TextBox();
 	Label veraz = new Label();
+
 	
 	public void setContacto(/*ContactoDto contactoDto*/){
 		/**Seteo los combo y textBox para editar el contacto*/
@@ -71,12 +78,25 @@ public class ContactoUIData extends UIData {
 		fields.add(fax);
 		fields.add(emailPersonal);
 		fields.add(emailLaboral);
-		
+
 		tipoDocumento.setWidth("125px");
 		sexo.setWidth("100px");
 		cargo.setWidth("250px");
+
+		CuentaRpcService.Util.getInstance().CrearContactoInitializer(
+				new DefaultWaitCallback<CrearContactoInitializer>() {
+					public void success(CrearContactoInitializer result) {
+						setCombos(result);
+					}
+				});
 	}
-	
+
+	private void setCombos(CrearContactoInitializer datos) {
+		tipoDocumento.addAllItems(datos.getTiposDocumento());
+		sexo.addAllItems(datos.getSexos());
+		cargo.addAllItems(datos.getCargos());
+	}
+
 
 	public ListBox getTipoDocumento() {
 		return tipoDocumento;
