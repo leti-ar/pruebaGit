@@ -7,7 +7,6 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
-import ar.com.nextel.sfa.client.widget.ImageAnchor;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
 import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -117,12 +116,10 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		clearResultTable();
 		int row = 1;
 		for (CuentaSearchResultDto cuenta : cuentas) {
-			// Uso un ImageAnchor porque usar un Hyperlink causa problemas con la carga de la imagen. La primera vez no llega a cargarla. rgm
-
-			resultTable.setWidget(row, 0, new ImageAnchor(IconFactory.lapiz(LAPIZ_TITLE),"#" + UILoader.EDITAR_CUENTA + "?cuenta_id="
-							+ cuenta.getId() + "&cod_vantive="
-							+ cuenta.getCodigoVantive()));
-
+			resultTable.setWidget(row, 0, IconFactory.lapizAnchor(UILoader.EDITAR_CUENTA + "?cuenta_id="
+					+ cuenta.getId() + "&cod_vantive="
+					+ cuenta.getCodigoVantive(), LAPIZ_TITLE) );
+			
 			if (cuenta.isPuedeVerInfocom()) {
 				resultTable.setWidget(row, 1, IconFactory.lupa(LUPA_TITLE));
 			}
@@ -138,6 +135,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 							.getNumeroTelefono() : "");
 			row++;
 		}
+
 		setVisible(true);
 	}
 

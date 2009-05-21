@@ -16,6 +16,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
@@ -99,7 +100,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 		exportarExcel = new SimplePanel();
 		exportarExcel.setHeight("23px");
 		exportarExcel.setWidth("1089");
-		Image icon = IconFactory.excel();
+		HTML icon = IconFactory.excel();
 		icon.addStyleName("exportarExcelSS");
 		exportarExcel.add(icon);	
 		resultTableWrapper.add(exportarExcel);

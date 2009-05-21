@@ -1,0 +1,59 @@
+/*
+
+Esta hoja de estilos define los estilos que representan los íconos almacenados en iconos.gif, y que
+son accedidos usualmente desde IconFactory.
+
+iconos.gif es un gif de 16px de alto por (16*n)px de ancho, donde n es la cantidad de íconos que guarda el archivo.
+Los íconos tienen, por lo tanto, 16px * 16px, y se guardan horizontalmente
+Todos los íconos tienen que tener el mismo valor de transparencia
+
+
+Para crear los gifs que agrupan iconos, podemos usar Paint o probar con IrfanView:
+
+Abrir Irfanview.
+Create Panorama Image
+Elegir todas las imagenes a agregar
+Ordenarlas alfabéticamente
+Create Image
+ir a File and Save As, grabarlo como GIF con transparencia habilitada. Tildar la opción de "Elegir el transparent color al grabar",
+grabarlo y elegir el color transparente ( en el icons.gif, es el negro de fondo que tiene índice 0 )
+
+
+En el css, ordenar las definiciones de los css.
+Si definimos los estilos css con el mismo nombre de las imágenes, podemos ordenar las definiciones de los estilos
+alfabéticamente y quedan en el mismo orden
+
+rgm
+
+*/
+
+.gwt-Icon {
+	cursor: pointer;
+}
+
+.gwt-IconButton {
+	cursor: hand;
+}
+.icon-cancel, .icon-copiar, .icon-excel, .icon-lapiz, .icon-locked, .icon-lupa, .icon-silvioSoldan, .icon-tildeVerde, .icon-vistaPreliminar, .icon-word {
+	width: 16px;
+	height: 16px;
+	background-image: url("images/icons.gif");
+	border: none;
+	background-color: transparent;
+	background-repeat: no-repeat;
+/*	margin-right: 10px; */
+}
+
+
+.icon-cancel { background-position: 0 0;}
+.icon-copiar { background-position: -16 0;}
+.icon-excel { background-position: -32 0;}
+.icon-lapiz { background-position: -48 0;}
+.icon-locked { background-position: -64 0;}
+.icon-lupa { background-position: -80 0;}
+.icon-silvioSoldan { background-position: -96 0;}
+.icon-tildeVerde { background-position: -112 0; }
+.icon-vistaPreliminar { background-position: -128 0;}
+.icon-word { background-position: -144 0;}
+
+

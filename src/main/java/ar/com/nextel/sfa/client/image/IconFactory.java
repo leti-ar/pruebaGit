@@ -1,86 +1,176 @@
 package ar.com.nextel.sfa.client.image;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Hyperlink;
 
+/**
+ * IconFactory crea widgets HTML e Hyperlinks que muestran un ícono.
+ * Provee variantes para poder acceder a los widgets simples, con titles ( tooltip ) y otros agregados.
+ * 
+ * IconFactory usa los estilos, definidos como constantes, que están definidos en iconos.css.
+ * 
+ * @author Ramiro 
+ *
+ */
 public class IconFactory {
 
-	private static IconBundle iconBundle = null;
+	private static final String GWT_ICON_BUTTON_STYLE = "gwt-IconButton";
+	private static final String ICON_VISTA_PRELIMINAR_STYLE = "icon-vistaPreliminar";
+	private static final String ICON_EXCEL_STYLE = "icon-excel";
+	private static final String ICON_TILDE_VERDE_STYLE = "icon-tildeVerde";
+	private static final String ICON_COPIAR_STYLE = "icon-copiar";
+	private static final String ICON_SILVIO_SOLDAN_STYLE = "icon-silvioSoldan";
+	private static final String ICON_WORD_STYLE = "icon-word";
+	private static final String ICON_LOCKED_STYLE = "icon-locked";
+	private static final String ICON_LAPIZ_STYLE = "icon-lapiz";
+	private static final String ICON_CANCEL_STYLE = "icon-cancel";
+	private static final String ICON_LUPA_STYLE = "icon-lupa";
 
-	static final String LUPA_URL = "images/lupa.gif";
-	static final String LOCKED_URL = "images/locked.gif";
-	static final String LAPIZ_URL = "images/lapiz.gif";
+	public static HTML lupa() {
+		return createDiv(ICON_LUPA_STYLE);
+	}
 
-	static {
-		// @TODO Analizar uso de prefetch. No estoy liberando estos URLs
-		Image.prefetch(LUPA_URL);
-		Image.prefetch(LAPIZ_URL);
-		Image.prefetch(LOCKED_URL);		
+	public static HTML lupa(String title) {
+		return createDiv(ICON_LUPA_STYLE,title);
+	}
+
+	public static HTML cancel() {
+		return createDiv(ICON_CANCEL_STYLE);
+	}
+
+	public static HTML cancel(String title) {
+		return createDiv(ICON_CANCEL_STYLE,title);
+	}
+
+	public static HTML lapiz() {
+		return createDiv(ICON_LAPIZ_STYLE);
+	}
+
+	public static HTML lapiz(String title) {
+		return createDiv(ICON_LAPIZ_STYLE,title);
+	}
+
+	public static Hyperlink lapizAnchor(String targetHistoryToken) {
+		return IconFactory.createAnchor(targetHistoryToken, ICON_LAPIZ_STYLE);
 	}
 	
-	private static IconBundle getIconBundle() {
-		if (iconBundle == null) {
-			iconBundle = (IconBundle) GWT.create(IconBundle.class);
-		}
-		return iconBundle;
-	}
-
-	public static Image lupa() {
-		return new Image(LUPA_URL);
-	}
-
-	public static Image lupa(String title) {
-		Image img = IconFactory.lupa();
-		img.setTitle(title);
-		return img;
-	}
-
-	public static Image cancel() {
-		return getIconBundle().cancel().createImage();
-	}
-
-	public static Image lapiz() {
-		return new Image(LAPIZ_URL);		
-	}
-
-	public static Image lapiz(String title) {
-		Image img = IconFactory.lapiz();
-		img.setTitle(title);
-		return img;
-	}
-
-	public static Image locked() {
-		return new Image(LAPIZ_URL);
-	}
-
-	public static Image locked(String title) {
-		Image img = IconFactory.locked();
-		img.setTitle(title);
-		return img;
-	}
-
-	public static Image word() {
-		return getIconBundle().word().createImage();
-	}
-
-	public static Image silvioSoldan() {
-		return getIconBundle().silvioSoldan().createImage();
-	}
-
-	public static Image copiar() {
-		return getIconBundle().copiar().createImage();
+	public static Hyperlink lapizAnchor(String targetHistoryToken, String title) {
+		return IconFactory.createAnchor(targetHistoryToken, ICON_LAPIZ_STYLE, title);
 	}
 	
-	public static Image tildeVerde() {
-		return getIconBundle().tildeVerde().createImage();
+	public static HTML locked() {
+		return createDiv(ICON_LOCKED_STYLE);
+	}
+
+	public static HTML locked(String title) {
+		return createDiv(ICON_LOCKED_STYLE,title);
+	}
+
+	public static HTML word() {
+		return createDiv(ICON_WORD_STYLE);
+	}
+
+	public static HTML word(String title) {
+		return createDiv(ICON_WORD_STYLE,title);
+	}
+
+	public static HTML silvioSoldan() {
+		return createDiv(ICON_SILVIO_SOLDAN_STYLE);
+	}
+
+	public static HTML silvioSoldan(String title) {
+		return createDiv(ICON_SILVIO_SOLDAN_STYLE,title);
+	}	
+	
+	public static Hyperlink silvioSoldanAnchor(String targetHistoryToken) {
+		return IconFactory.createAnchor(targetHistoryToken, ICON_SILVIO_SOLDAN_STYLE);
 	}
 	
-	public static Image excel() {
-		return getIconBundle().excel().createImage();
+	public static Hyperlink silvioSoldanAnchor(String targetHistoryToken, String title) {
+		return IconFactory.createAnchor(targetHistoryToken, ICON_SILVIO_SOLDAN_STYLE,title);
 	}
 	
-	public static Image vistaPreliminar() {
-		return getIconBundle().vistaPreliminar().createImage();
+	public static HTML copiar() {
+		return createDiv(ICON_COPIAR_STYLE);
 	}
 	
+	public static HTML copiar(String title) {
+		return createDiv(ICON_COPIAR_STYLE,title);
+	}
+	
+	public static HTML tildeVerde() {
+		return createDiv(ICON_TILDE_VERDE_STYLE);
+	}
+	
+	public static HTML tildeVerde(String title) {
+		return createDiv(ICON_TILDE_VERDE_STYLE,title);
+	}
+	
+	public static HTML excel() {
+		return createDiv(ICON_EXCEL_STYLE);
+	}
+	
+	public static HTML excel(String title) {
+		return createDiv(ICON_EXCEL_STYLE,title);
+	}
+	
+	public static HTML vistaPreliminar() {
+		return createDiv(ICON_VISTA_PRELIMINAR_STYLE);
+	}
+
+	public static HTML vistaPreliminar(String title) {
+		return createDiv(ICON_VISTA_PRELIMINAR_STYLE,title);
+	}
+
+
+	/**
+	 * Retorna un widget HTML ( DIV ) con el estilo que recibe como parámetro
+	 * @return
+	 */
+	private static HTML createDiv(String style) {
+		HTML div = new HTML();
+		div.addStyleName(style);
+		return div;
+	}
+	
+	/**
+	 * Retorna un widget HTML ( DIV ) con el estilo que recibe como parámetro,
+	 * y el title ( tooltip )
+	 * @return
+	 */
+	private static HTML createDiv(String style, String title) {
+		HTML div = IconFactory.createDiv(style);
+		div.setTitle(title);
+		return div;
+	}
+	
+	/**
+	 * Retorna un Hyperlink configurado con los parámetros
+	 *  
+	 * @param targetHistoryToken Destino del link
+	 * @param iconStyle Icono del anchor
+	 * @return
+	 */
+	private static Hyperlink createAnchor(String targetHistoryToken,String iconStyle) {
+		Hyperlink hl = new Hyperlink();
+		hl.addStyleName(iconStyle);
+		hl.addStyleName(GWT_ICON_BUTTON_STYLE);
+		hl.setTargetHistoryToken(targetHistoryToken);
+		return hl;
+	}
+
+	/**
+	 * Retorna un Hyperlink configurado con los parámetros
+	 * 
+	 * @param targetHistoryToken Destino del link
+	 * @param iconStyle Icono del anchor
+	 * @param title Title ( tooltip )
+	 * @return
+	 */
+	private static Hyperlink createAnchor(String targetHistoryToken,String iconStyle, String title) {
+		Hyperlink hl = IconFactory.createAnchor(targetHistoryToken,iconStyle);
+		hl.setTitle(title);
+		return hl;
+	}
+
 }

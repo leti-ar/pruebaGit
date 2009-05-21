@@ -33,7 +33,6 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 	}
 
 	public void unload() {
-
 	}
 
 	public void searchCuentas(BuscarCuentaFilterUIData buscadorCuentasFilterEditor) {

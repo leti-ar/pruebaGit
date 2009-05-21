@@ -7,6 +7,8 @@
 
 @IMPORT url("buttons.css");
 
+@IMPORT url("icons.css");
+
 body,td,.normalText {
 	font-family: Verdana, Arial, sans-serif;
 	font-size: 11px;

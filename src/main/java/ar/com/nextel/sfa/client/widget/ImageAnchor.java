@@ -9,7 +9,7 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * Anchor con un Image. Para usar en vez de un Hyperlink
  * 
- * @TODO Debería ir a gwtcommons una vez pulido
+ * @TODO Debería ir a gwtcommons una vez pulido, y mergear con SimpleLink
  * 
  * @author ramirogm
  * @author http://groups.google.com/group/Google-Web-Toolkit/browse_thread/thread/4783c9b0cc35e081/a28bac8e0a1457b5
