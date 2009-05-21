@@ -1,6 +1,11 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import ar.com.nextel.sfa.client.dto.DomicilioNormalizadoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
+import ar.com.nextel.sfa.client.dto.NormalizacionDomicilioMotivoDto;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
@@ -30,8 +35,13 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	private SimpleLink linkCerrar;
 	private SimpleLink linkAceptar;
 	private SimpleLink linkNoNormalizar;
-	//private DomiciliosUIData domiciliosData;
 	private DomiciliosCuentaDto domicilio;
+	private List<DomicilioNormalizadoDto> domiciliosEnDuda;
+	//
+	private boolean normalizado = true;
+    private List<DomicilioNormalizadoDto> dudas = new ArrayList();
+    private List<NormalizacionDomicilioMotivoDto> motivos = new ArrayList();
+	//
 	
 	private static NormalizarDomicilioUI instance = new NormalizarDomicilioUI();
 
@@ -47,6 +57,21 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	@Override
 	public void clear() {
 		super.clear();
+	}
+	
+	private void setearFormatoNormalizador(){
+		if(!normalizado){
+			grillaDomicilio.setVisible(false);
+			linkAceptar.setVisible(false);
+			grillaPpal.setText(3, 0, "No se pudo normalizar el domicilio");
+			//OJO con el get(0):
+			grillaPpal.setText(4, 0, motivos.get(0).getMotivo());
+		}else{
+			grillaDomicilio.setVisible(true);
+			linkAceptar.setVisible(true);
+			grillaPpal.setText(3, 0, "");
+			grillaPpal.setText(4, 0, "");
+		}
 	}
 	
 	/**
@@ -78,7 +103,8 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		domicilioResult = new FlexTable();
 		addStyleName("gwt-NormalizarDomicilioUI");
 		grillaDomicilio.addStyleName("resultTableScroll");
-		grillaPpal = new Grid(5, 1);
+		grillaPpal = new Grid(6, 1);
+		grillaDomicilio.setVisible(true);
 		setWidth("480px");
 
 		grillaPpal.getColumnFormatter().setWidth(0, "550px");
@@ -88,13 +114,15 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		grillaPpal.getRowFormatter().setStyleName(1, "gwt-TitledPanel");
 		grillaPpal.setWidget(1, 0, new Label());
 		grillaPpal.setWidget(2, 0, grillaDomicilio);
-		grillaPpal.setText(3, 0, "Motivo:");
-		grillaPpal.setWidget(4, 0, new Label());
+		grillaPpal.setText(3, 0, "");
+		grillaPpal.setText(4, 0, "Motivo:");
+		grillaPpal.setWidget(5, 0, new Label());
 		
 		add(grillaPpal);
 
 		linkNoNormalizar.setStyleName("link");
 		linkAceptar.setStyleName("link");
+		linkAceptar.setVisible(true);
 		linkCerrar.setStyleName("link");
 
 		footerBar.addLink(linkNoNormalizar);
@@ -127,9 +155,16 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	
 	public void setDomicilios(DomiciliosCuentaDto domicilio) {
 		this.domicilio = domicilio;
+		setearFormatoNormalizador();
 		loadTable();
 	}
 
+	public void setDomiciliosConDudas(List<DomicilioNormalizadoDto> domicilios) {
+		this.domiciliosEnDuda = domicilios;
+		setearFormatoNormalizador();
+		loadTableConVariosDomicilios();
+	}
+	
 	public void agregaTableListeners(){
 		domicilioResult.addTableListener(new TableListener() {
 			public void onCellClicked(SourcesTableEvents arg0, int row, int col) {
@@ -140,6 +175,27 @@ public class NormalizarDomicilioUI extends NextelDialog {
 			}
 		});
 	}
+
+	private void loadTableConVariosDomicilios() {
+		if (domicilioResult != null) {
+			domicilioResult.unsinkEvents(Event.getEventsSunk(domicilioResult.getElement()));
+			domicilioResult.removeFromParent();
+		}
+		domicilioResult = new FlexTable();
+		initTable(domicilioResult);
+		grillaDomicilio.setWidget(domicilioResult);
+		grillaPpal.getCellFormatter().addStyleName(0, 0, "layout");
+		grillaPpal.getCellFormatter().addStyleName(1, 0, "alignCenter");
+		grillaPpal.setText(1, 0, domicilio.getDomicilios());
+		for (int i = 0; i < domiciliosEnDuda.size(); i++) {
+			domicilioResult.setHTML(i+1, 0, domiciliosEnDuda.get(i).getDomicilioCompleto());
+		}
+		setVisible(true);
+		agregaTableListeners();
+	}
+
+	
+
 	
 	private void loadTable() {
 		if (domicilioResult != null) {
@@ -176,4 +232,41 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	public void showAndCenter() {
 		super.showAndCenter();
 	}
+
+	public boolean isNormalizado() {
+		return normalizado;
+	}
+
+	public void setNormalizado(boolean normalizado) {
+		this.normalizado = normalizado;
+	}
+
+	public List<DomicilioNormalizadoDto> getDudas() {
+		return dudas;
+	}
+
+	public void setDudas(List<DomicilioNormalizadoDto> dudas) {
+		this.dudas = dudas;
+	}
+
+	public List<NormalizacionDomicilioMotivoDto> getMotivos() {
+		return motivos;
+	}
+
+	public void setMotivos(List<NormalizacionDomicilioMotivoDto> motivos) {
+		this.motivos = motivos;
+	}
+
+	public List<DomicilioNormalizadoDto> getDomiciliosEnDuda() {
+		return domiciliosEnDuda;
+	}
+
+	public void setDomiciliosEnDuda(List<DomicilioNormalizadoDto> domiciliosEnDuda) {
+		this.domiciliosEnDuda = domiciliosEnDuda;
+	}
+	
+	public void setDomicilio(DomiciliosCuentaDto domicilio) {
+		this.domicilio = domicilio;
+	}
+	
 }

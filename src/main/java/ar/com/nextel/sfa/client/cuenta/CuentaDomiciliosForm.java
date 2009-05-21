@@ -7,6 +7,7 @@ import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.DomicilioNormalizadoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
@@ -61,7 +62,7 @@ public class CuentaDomiciliosForm extends Composite {
 		Button crearDomicilio = new Button("Crear nuevo");
 		crearDomicilio.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				DomicilioUI.getInstance().setComandoAceptar(getComandoOpenNuevoNormalizador());
+				DomicilioUI.getInstance().setComandoAceptar(getComandoNormalizarNuevoServiceCall());
 				DomicilioUI.getInstance().cargarPopupNuevoDomicilio();
 			}
 		});
@@ -101,11 +102,16 @@ public class CuentaDomiciliosForm extends Composite {
 	/**
 	 * @author eSalvador
 	 **/
-	private void abrirPopupNormalizacion(DomiciliosCuentaDto domicilio, Command comandoNoNormalizar, Command comandoAceptar) {
+	private void abrirPopupNormalizacion(DomiciliosCuentaDto domicilio, List<DomicilioNormalizadoDto> domiciliosConDudas, Command comandoNoNormalizar, Command comandoAceptar) {
 		/**OJO, Tener en cuenta ACA, de pasar DOS domicilios: 1 con los datos cargados en el DomicilioUI para cargar el Label,
 		 *       y 2, el normalizado, para cargar la grilla!! */
-		domicilio.setNo_normalizar("T");
-		NormalizarDomicilioUI.getInstance().setDomicilios(domicilio);
+		if(domicilio != null){
+			domicilio.setNo_normalizar("T");
+			NormalizarDomicilioUI.getInstance().setDomicilios(domicilio);
+		}else if (domiciliosConDudas != null){
+			NormalizarDomicilioUI.getInstance().setDomicilio(domicilioAEditar);
+			NormalizarDomicilioUI.getInstance().setDomiciliosConDudas(domiciliosConDudas);
+		}
 		/***/
 		NormalizarDomicilioUI.getInstance().setComandoNoNormalizar(comandoNoNormalizar);
 		/**TODO: Terminar!*/
@@ -113,7 +119,146 @@ public class CuentaDomiciliosForm extends Composite {
 		NormalizarDomicilioUI.getInstance().showAndCenter();
 	}
 	
-	private Command getComandoNuevoDomicilio() {
+	/**
+	 * @author eSalvador
+	 * Devuelve el comando que Agrega el domicilio editado que le llega, con los datos nuevos.
+	 **/
+	private Command getComandoNormalizarCopiadoServiceCall() {
+		/**TODO: Hacer la validacion de datos de entrada antes de abrir el popup de Normalizacion. */ 
+		Command comandoCopiar = new Command() {
+			public void execute() {
+				domicilioAEditar = DomicilioUI.getInstance().getDomiciliosData().getDomicilio(); 	
+				CuentaRpcService.Util.getInstance().normalizarDomicilio(domicilioAEditar,
+						new DefaultWaitCallback<NormalizarDomicilioResultDto>() {
+							public void success(NormalizarDomicilioResultDto result) {
+								
+								//tipo: exito|no_parseado|no_encontrado|dudas
+								if (result.getTipo().equals("exito")){
+									domicilioAEditar = result.getDireccion();
+									NormalizarDomicilioUI.getInstance().setNormalizado(true);
+									abrirPopupNormalizacion(domicilioAEditar, null,getComandoAgregarDomicilioCopiado(),null);//TODO: Setearle el comando Aceptar en vez de null.
+								}else if(result.getTipo().equals("no_encontrado")){
+									setMotivosNoNormalizacion(result);
+									abrirPopupNormalizacion(domicilioAEditar,null,getComandoAgregarDomicilioCopiado(),null);//TODO: Setearle el comando Aceptar en vez de null.
+								}else if(result.getTipo().equals("dudas")){
+									NormalizarDomicilioUI.getInstance().setNormalizado(true);
+									abrirPopupNormalizacion(null,result.getDudas(),getComandoAgregarDomicilioCopiado(),null);
+								}else if(result.getTipo().equals("no_parseado")){
+									setMotivosNoNormalizacion(result);
+									abrirPopupNormalizacion(domicilioAEditar,null,getComandoAgregarDomicilioCopiado(),null);//TODO: Setearle el comando Aceptar en vez de null.
+									GWT.log("Devolvio no_parseado el SUCCESS de NormalizarDomicilioResultDto", null);
+								}
+							}
+							@Override
+							public void failure(Throwable exception) {
+								GWT.log("Entro en FAILURE de NormalizarDomicilioResultDto: "+ exception.getMessage(), exception.getCause());
+							}
+						});
+			}
+		 };
+	return comandoCopiar;
+	}
+	
+	private Command getComandoNormalizarEdicionServiceCall() {
+		/**TODO: Hacer la validacion de datos de entrada antes de abrir el popup de Normalizacion. */ 
+		Command comandoEditar = new Command() {
+			public void execute() {
+				domicilioAEditar = DomicilioUI.getInstance().getDomiciliosData().getDomicilio(); 	
+				CuentaRpcService.Util.getInstance().normalizarDomicilio(domicilioAEditar,
+						new DefaultWaitCallback<NormalizarDomicilioResultDto>() {
+							public void success(NormalizarDomicilioResultDto result) {
+								
+								//tipo: exito|no_parseado|no_encontrado|dudas
+								if (result.getTipo().equals("exito")){
+									domicilioAEditar = result.getDireccion();
+									NormalizarDomicilioUI.getInstance().setNormalizado(true);
+									abrirPopupNormalizacion(domicilioAEditar, null,getComandoAgregarDomicilioEditado(),null);//TODO: Setearle el comando Aceptar en vez de null.
+								}else if(result.getTipo().equals("no_encontrado")){
+									setMotivosNoNormalizacion(result);
+									abrirPopupNormalizacion(domicilioAEditar,null,getComandoAgregarDomicilioEditado(),null);//TODO: Setearle el comando Aceptar en vez de null.
+								}else if(result.getTipo().equals("dudas")){
+									NormalizarDomicilioUI.getInstance().setNormalizado(true);
+									abrirPopupNormalizacion(null,result.getDudas(),getComandoAgregarDomicilioEditado(),null);
+								}else if(result.getTipo().equals("no_parseado")){
+									setMotivosNoNormalizacion(result);
+									abrirPopupNormalizacion(domicilioAEditar,null,getComandoAgregarDomicilioEditado(),null);//TODO: Setearle el comando Aceptar en vez de null.
+									GWT.log("Devolvio no_parseado el SUCCESS de NormalizarDomicilioResultDto", null);
+								}
+							}
+							@Override
+							public void failure(Throwable exception) {
+								GWT.log("Entro en FAILURE de NormalizarDomicilioResultDto: "+ exception.getMessage(), exception.getCause());
+							}
+						});
+			}
+		 };
+	return comandoEditar;
+	}
+	
+	private Command getComandoNormalizarNuevoServiceCall() {
+		/**TODO: Hacer la validacion de datos de entrada antes de abrir el popup de Normalizacion. */ 
+		Command comandoEditar = new Command() {
+			public void execute() {
+				domicilioAEditar = DomicilioUI.getInstance().getDomiciliosData().getDomicilio();	
+				CuentaRpcService.Util.getInstance().normalizarDomicilio(domicilioAEditar,
+						new DefaultWaitCallback<NormalizarDomicilioResultDto>() {
+							public void success(NormalizarDomicilioResultDto result) {
+								
+								//tipo: exito|no_parseado|no_encontrado|dudas
+								if (result.getTipo().equals("exito")){
+									domicilioAEditar = result.getDireccion();
+									NormalizarDomicilioUI.getInstance().setNormalizado(true);
+									abrirPopupNormalizacion(domicilioAEditar, null,getComandoAgregarNuevoDomicilio(),null);//TODO: Setearle el comando Aceptar en vez de null.
+								}else if(result.getTipo().equals("no_encontrado")){
+									setMotivosNoNormalizacion(result);
+									abrirPopupNormalizacion(domicilioAEditar,null,getComandoAgregarNuevoDomicilio(),null);//TODO: Setearle el comando Aceptar en vez de null.
+								}else if(result.getTipo().equals("dudas")){
+									NormalizarDomicilioUI.getInstance().setNormalizado(true);
+									abrirPopupNormalizacion(null,result.getDudas(),getComandoAgregarNuevoDomicilio(),null);
+								}else if(result.getTipo().equals("no_parseado")){
+									setMotivosNoNormalizacion(result);
+									abrirPopupNormalizacion(domicilioAEditar,null,getComandoAgregarNuevoDomicilio(),null);//TODO: Setearle el comando Aceptar en vez de null.
+									GWT.log("Devolvio no_parseado el SUCCESS de NormalizarDomicilioResultDto", null);
+								}
+							}
+							@Override
+							public void failure(Throwable exception) {
+								GWT.log("Entro en FAILURE de NormalizarDomicilioResultDto: "+ exception.getMessage(), exception.getCause());
+							}
+						});
+			}
+		 };
+	return comandoEditar;
+	}	
+
+	
+	private Command getComandoAgregarDomicilioCopiado(){
+		Command agregaDomicilioCopiado = new Command(){
+
+			public void execute() {
+				PersonaDto persona = cuentaDto.getPersona();
+				persona.getDomicilios().add(domicilioAEditar);
+				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConDomiciliosEditados();
+				DomicilioUI.getInstance().hide();
+				NormalizarDomicilioUI.getInstance().hide();
+			}
+		};
+		return agregaDomicilioCopiado;
+	}
+
+	private Command getComandoAgregarDomicilioEditado(){
+		Command agregaDomicilioEditado = new Command() {
+			public void execute() {
+				DomiciliosCuentaDto domicilioEditado = DomicilioUI.getInstance().getDomiciliosData().getDomicilio();
+				DomicilioUI.getInstance().hide();
+				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConNuevoDomicilio(domicilioEditado);
+				NormalizarDomicilioUI.getInstance().hide();
+			}
+		 };
+	return agregaDomicilioEditado;
+	}
+
+	private Command getComandoAgregarNuevoDomicilio() {
 		Command comandoAceptar = new Command() {
 			public void execute() {
 				DomiciliosCuentaDto domicilioNuevo = DomicilioUI.getInstance().getDomiciliosData().getDomicilio();
@@ -129,90 +274,24 @@ public class CuentaDomiciliosForm extends Composite {
 		return comandoAceptar;
 	}
 	
-	/**
-	 * @author eSalvador
-	 * Devuelve el comando que Agrega el domicilio editado que le llega, con los datos nuevos.
-	 **/
-	private Command getComandoCopiarDomicilio() {
-		/**TODO: Hacer la validacion de datos de entrada, 
-		 **     y despues abrir el popup de Normalizacion. */
-		domicilioAEditar = DomicilioUI.getInstance().getDomiciliosData().getDomicilioCopiado(); 
-		Command comandoCopiar = new Command() {
-			public void execute() {
-				CuentaRpcService.Util.getInstance().normalizarDomicilio(domicilioAEditar,
-						new DefaultWaitCallback<NormalizarDomicilioResultDto>() {
-							@Override
-							public void success(NormalizarDomicilioResultDto result) {
-								GWT.log("Entro en SUCCESS de NormalizarDomicilioResultDto", null);
-								
-								//tipo: exito|no_parseado|no_encontrado|dudas
-								if (result.getTipo().equals("exito")){
-									PersonaDto persona = cuentaDto.getPersona();
-									persona.getDomicilios().add(domicilioAEditar);
-									CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConDomiciliosEditados();
-									DomicilioUI.getInstance().hide();
-									NormalizarDomicilioUI.getInstance().hide();
-								}else if(result.getTipo().equals("no_encontrado")){
-									GWT.log("Devolvio no_encontrado el SUCCESS de NormalizarDomicilioResultDto", null);
-								}else if(result.getTipo().equals("dudas")){
-									GWT.log("Devolvio dudas el SUCCESS de NormalizarDomicilioResultDto", null);
-								}else if(result.getTipo().equals("no_parseado")){
-									GWT.log("Devolvio no_parseado el SUCCESS de NormalizarDomicilioResultDto", null);
-								}
-							}
-							@Override
-							public void failure(Throwable exception) {
-								GWT.log("Entro en FAILURE de NormalizarDomicilioResultDto: "+ exception.getMessage(), exception.getCause());
-							}
-						});
-			}
-		 };
-	return comandoCopiar;
+	private void setMotivosNoNormalizacion(NormalizarDomicilioResultDto result){
+		NormalizarDomicilioUI.getInstance().setNormalizado(false);
+		NormalizarDomicilioUI.getInstance().setMotivos(result.getMotivos());
+		NormalizarDomicilioUI.getInstance().setDudas(result.getDudas());
 	}
 	
-	private Command getComandoEditar(){
-		Command comandoEditar = new Command() {
-			public void execute() {
-				DomiciliosCuentaDto domicilioEditado = DomicilioUI.getInstance().getDomiciliosData().getDomicilio();
-				DomicilioUI.getInstance().hide();
-				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConNuevoDomicilio(domicilioEditado);
-				NormalizarDomicilioUI.getInstance().hide();
-			}
-		 };
-	return comandoEditar;
-	}
-	
-	private Command getComandoOpenEditNormalizador(){
-		Command comandoNormalizar = new Command() {
-			public void execute() {
-				/**TODO: Hacer que llame al validador o normalizador correspondiente antes de abrir el popUp de Normalizar
-				 *       Y con un IF, Si valida, abre el popUp, sino lanza un ErrorDialog, con el motivo y demas...*/
-				abrirPopupNormalizacion(DomicilioUI.getInstance().getDomiciliosData().getDomicilio(), getComandoEditar(),null);//TODO: Setearle el comando Aceptar en vez de null.
-			}
-		 };
-	return comandoNormalizar;
-	}
-	
-	private Command getComandoOpenNuevoNormalizador(){
-		Command comandoNormalizar = new Command() {
-			public void execute() {
-				/**TODO: Hacer que llame al validador o normalizador correspondiente antes de abrir el popUp de Normalizar
-				 *       Y con un IF, Si valida, abre el popUp, sino lanza un ErrorDialog, con el motivo y demas...*/
-				abrirPopupNormalizacion(DomicilioUI.getInstance().getDomiciliosData().getDomicilio(),getComandoNuevoDomicilio(),null);//TODO: Setearle el comando Aceptar en vez de null.
-			}
-		 };
-	return comandoNormalizar;
-	}
-	
-	private Command getComandoOpenCopiarNormalizador(){
-		Command comandoNormalizar = new Command() {
-			public void execute() {
-				DomiciliosCuentaDto domicilioANormalizar = DomicilioUI.getInstance().getDomiciliosData().getDomicilioCopiado();
-				abrirPopupNormalizacion(domicilioANormalizar, getComandoCopiarDomicilio(),null);//TODO: Setearle el comando Aceptar en vez de null.
-			}
-		 };
-	return comandoNormalizar;
-	}
+//	private Command getComandoOpenNuevoNormalizador(){
+//		Command comandoNormalizar = new Command() {
+//			public void execute() {
+//				/**TODO: Hacer que llame al validador o normalizador correspondiente antes de abrir el popUp de Normalizar
+//				 *       Y con un IF, Si valida, abre el popUp, sino lanza un ErrorDialog, con el motivo y demas...*/
+//				//TODO: SACAR HardCode!!!
+//				NormalizarDomicilioUI.getInstance().setNormalizado(true);
+//				abrirPopupNormalizacion(DomicilioUI.getInstance().getDomiciliosData().getDomicilio(),null,getComandoNuevoDomicilio(),null);//TODO: Setearle el comando Aceptar en vez de null.
+//			}
+//		 };
+//	return comandoNormalizar;
+//	}
 	
 	private Command getComandoBorrar(){
 		Command comandoBorrar = new Command() {
@@ -258,7 +337,7 @@ public class CuentaDomiciliosForm extends Composite {
 	private Command getOpenDomicilioUICommand(){
 		Command openUICommand = new Command() {
 			public void execute() {
-				DomicilioUI.getInstance().setComandoAceptar(getComandoOpenEditNormalizador());
+				DomicilioUI.getInstance().setComandoAceptar(getDummyCommand());
 				DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
 				MessageDialog.getInstance().hide();
 			}
@@ -397,13 +476,13 @@ public class CuentaDomiciliosForm extends Composite {
 							openPopupAdviseDialog(getOpenDomicilioUICommand());
 						}else{
 							validaHabilitacionDeCampos();
-							DomicilioUI.getInstance().setComandoAceptar(getComandoOpenEditNormalizador());
+							DomicilioUI.getInstance().setComandoAceptar(getComandoNormalizarEdicionServiceCall());
 							DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilio);
 						}
 					}
 					// Acciones a tomar cuando haga click en iconos de copiado de domicilios:
 					if (col == 1) {
-						DomicilioUI.getInstance().setComandoAceptar(getComandoOpenCopiarNormalizador());
+						DomicilioUI.getInstance().setComandoAceptar(getComandoNormalizarCopiadoServiceCall());
 						DomicilioUI.getInstance().cargarPopupCopiarDomicilio(domicilio);
 					}
 					// Acciones a tomar cuando haga click en iconos de borrado de domicilios:

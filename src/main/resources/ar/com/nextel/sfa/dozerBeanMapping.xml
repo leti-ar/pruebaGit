@@ -401,13 +401,12 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<class-b>ar.com.nextel.sfa.client.dto.DomicilioNormalizadoDto</class-b>
 	</mapping>
 	<mapping>
-		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.NormalizarDomicilioResult</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto</class-b>
-	</mapping>
-	<mapping>
 		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.MotivoDudaDTO</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.NormalizacionDomicilioMotivoDto</class-b>
 	</mapping>	
-		
+	<mapping>
+		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.NormalizarDomicilioResult</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto</class-b>
+	</mapping>
 	
 </mappings>

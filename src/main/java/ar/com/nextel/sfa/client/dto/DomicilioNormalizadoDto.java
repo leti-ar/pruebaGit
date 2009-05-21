@@ -28,63 +28,18 @@ public class DomicilioNormalizadoDto  implements IsSerializable{
     private String desde;
     private String hasta;
 
+	public String getDomicilioCompleto() {
+		/** Muestra la concatenación de Calle, Número, Piso, Dpto., UF, Torre, Localidad, Partido, Provincia, Código Postal y CPA para cada domicilio habilitado.*/
+		//String domicilios = this.calle + " " + (this.numero!=null? this.numero:"") + " " + (this.piso!=null? this.piso:"") + " " + (this.departamento!=null? this.departamento:"") + " " + (this.torre!=null? this.torre:"") + " " + this.localidad + " " + this.partido + " " + this.provincia.getDescripcion() + " " + (this.codigo_postal!=null? this.codigo_postal:"") + " " + this.cpa;	
+		
+		//TODO: Va el de arriba!!!
+		String domicilio = this.calle + " " + (this.numero!=null? this.numero:"") + " " + (this.piso!=null? this.piso:"") + " " + (this.depto!=null? this.depto:"") + " " + (this.edificio!=null? this.edificio:"") + " " + this.localidad + " " + (this.cp!=null? this.cp:"") + " " + this.cpa;
+		return domicilio;
+		}
+    
     public String getBarrio() {
         return barrio;
     }
-
-//    public String toXml() {
-//        StringBuffer buffer = new StringBuffer();
-//        buffer.append("<direccion>");
-//        buffer.append("<calle>" + this.getCalle() + "</calle>");
-//        buffer.append("<barrio>" + this.getBarrio() + "</barrio>");
-//        buffer.append("<cp>" + this.getCp() + "</cp>");
-//        buffer.append("<cpa>" + this.getCpa() + "</cpa>");
-//        buffer.append("<depto>" + this.getDepto() + "</depto>");
-//        buffer.append("<desde>" + this.getDesde() + "</desde>");
-//        buffer.append("<distancia>" + this.getDistancia() + "</distancia>");
-//        buffer.append("<edificio>" + this.getEdificio() + "</edificio>");
-//        buffer.append("<entre1>" + this.getEntre1() + "</entre1>");
-//        buffer.append("<entre2>" + this.getEntre2() + "</entre2>");
-//        buffer.append("<hasta>" + this.getHasta() + "</hasta>");
-//        buffer.append("<localidad>" + this.getLocalidad() + "</localidad>");
-//        buffer.append("<numero>" + this.getNumero() + "</numero>");
-//        buffer.append("<obs>" + this.getObs() + "</obs>");
-//        buffer.append("<partido>" + this.getPartido() + "</partido>");
-//        buffer.append("<piso>" + this.getPiso() + "</piso>");
-//        buffer.append("<provincia>" + this.getProvincia().getId() + "</provincia>");
-//        buffer.append("<sinonimo>" + this.getSinonimo() + "</sinonimo>");
-//        buffer.append("</direccion>");
-//        return buffer.toString();
-//    }
-
-//    public void fromXml(String xml, Map provincias) throws DocumentException {
-//        Document document = DocumentHelper.createDocument("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" + xml);
-//        Element ndireccion = document.getRootElement();
-//        Element ndireccionPrincipal = ndireccion.element("ndireccion_principal");
-//        Element ndireccionComplemento = ndireccion.element("ndireccion_complemento");
-//
-//        // Direccion principal
-//        this.calle = ndireccionPrincipal.element("calle").getText();
-//        this.numero = ndireccionPrincipal.element("numero").getText();
-//        this.piso = ndireccionPrincipal.element("piso").getText();
-//        this.depto = ndireccionPrincipal.element("depto").getText();
-//        this.edificio = ndireccionPrincipal.element("edificio").getText();
-//        this.localidad = ndireccionPrincipal.element("localidad").getText();
-//        this.barrio = ndireccionPrincipal.element("barrio").getText();
-//        this.partido = ndireccionPrincipal.element("partido").getText();
-//        String provinciaString = ndireccionPrincipal.element("provincia").getText();
-//        this.provincia = (ProvinciaDto) provincias.get(provinciaString);
-//        this.cp = ndireccionPrincipal.element("cp").getText();
-//        this.cpa = ndireccionPrincipal.element("cpa").getText();
-//
-//        // Direccion complemento
-//        this.distancia = ndireccionComplemento.element("distancia").getText();
-//        this.sinonimo = ndireccionComplemento.element("sinonimo").getText();
-//        this.entre1 = ndireccionComplemento.element("entre1").getText();
-//        this.entre2 = ndireccionComplemento.element("entre2").getText();
-//        this.desde = ndireccionComplemento.element("desde").getText();
-//        this.hasta = ndireccionComplemento.element("hasta").getText();
-//    }
 
     public void setBarrio(String barrio) {
         this.barrio = barrio;

@@ -383,7 +383,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements
      * @author eSalvador 
      **/
 	public NormalizarDomicilioResultDto normalizarDomicilio(DomiciliosCuentaDto domicilioANormalizar) throws RpcExceptionMessages {
-		//DomiciliosCuentaDto domicilioNormalizado = null;
 		NormalizarDomicilioResultDto domicilioResultNormalizacion = null;
 		try {
 			NormalizarDomicilioRequest normalizarDomicilioRequest = new NormalizarDomicilioRequest();
@@ -393,9 +392,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		} catch (MerlinException e) {
 			throw ExceptionUtil.wrap(e);
 		}
-		//return domicilioNormalizado;
 		return domicilioResultNormalizacion;
-		
 	}
 
     
