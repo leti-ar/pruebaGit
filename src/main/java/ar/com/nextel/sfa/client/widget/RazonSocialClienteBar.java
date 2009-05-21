@@ -11,14 +11,16 @@ import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class RazonSocialClienteBar extends Composite {
 
 	private FlowPanel left;
 	private HTML razonSocial;
 	private HTML cliente;
-	private SimpleLink cuentaLink;
+	private Hyperlink cuentaLink;
 
 	public RazonSocialClienteBar() {
 		left = new FlowPanel();
@@ -29,7 +31,7 @@ public class RazonSocialClienteBar extends Composite {
 		right.addStyleName("right");
 		left.add(new InlineLabel(Sfa.constant().razonSocial()));
 		left.add(razonSocial = new HTML());
-		cuentaLink = new SimpleLink(IconFactory.silvioSoldan(), "#" + UILoader.EDITAR_CUENTA, false);
+		cuentaLink = IconFactory.silvioSoldanAnchor(String.valueOf(UILoader.EDITAR_CUENTA));
 		right.add(cuentaLink);
 		right.add(new InlineLabel(Sfa.constant().cliente()));
 		right.add(cliente = new HTML());
