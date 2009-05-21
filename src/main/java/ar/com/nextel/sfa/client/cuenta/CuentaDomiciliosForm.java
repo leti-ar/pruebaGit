@@ -162,7 +162,8 @@ public class CuentaDomiciliosForm extends Composite {
 							}
 							@Override
 							public void failure(Throwable exception) {
-								GWT.log("Entro en FAILURE de NormalizarDomicilioResultDto", null);							}
+								GWT.log("Entro en FAILURE de NormalizarDomicilioResultDto: "+ exception.getMessage(), exception.getCause());
+							}
 						});
 			}
 		 };
