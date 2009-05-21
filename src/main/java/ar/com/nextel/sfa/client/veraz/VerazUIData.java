@@ -9,6 +9,7 @@ import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.initializer.VerazInitializer;
+import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.nextel.sfa.client.widget.ValidationTextBox;
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItemImpl;
@@ -77,13 +78,15 @@ public class VerazUIData extends UIData {
 		String cuit = new String("[0-9]{2,2}-[0-9]{8,8}-[0-9]{1,1}");
 		return numeroDocTextBox.validatePattern(cuit);
 	}
-	
-	public PersonaDto getVerazSearch() {
-		PersonaDto personaDto = new PersonaDto();
-		DocumentoDto documentoDto = new DocumentoDto(numeroDocTextBox.getText(), (TipoDocumentoDto) tipoDocListBox.getSelectedItem());
-		personaDto.setDocumento(documentoDto);
-		personaDto.setIdTipoDocumento(documentoDto.getTipoDocumento().getId());
-		personaDto.setSexo((SexoDto) sexoListBox.getSelectedItem());
+
+	public PersonaDto getVerazSearch(TextBox numDoc, ListBox tipoDoc, ListBox sexo) {
+		//if ((numDoc!=null) && (tipoDoc!=null) && (sexo!=null)) {
+			PersonaDto personaDto = new PersonaDto();
+			DocumentoDto documentoDto = new DocumentoDto(numDoc.getText(), (TipoDocumentoDto) tipoDoc.getSelectedItem());
+			personaDto.setDocumento(documentoDto);
+			personaDto.setIdTipoDocumento(documentoDto.getTipoDocumento().getId());
+			personaDto.setSexo((SexoDto) sexo.getSelectedItem());
+		//} 
 		return personaDto;
 	}
 
