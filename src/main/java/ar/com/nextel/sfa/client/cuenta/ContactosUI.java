@@ -1,9 +1,21 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.dto.DocumentoDto;
+import ar.com.nextel.sfa.client.dto.PersonaDto;
+import ar.com.nextel.sfa.client.dto.SexoDto;
+import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
+import ar.com.nextel.sfa.client.dto.VerazResponseDto;
+import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.veraz.VerazUIData;
+import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
@@ -12,7 +24,9 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.Image;
 
 public class ContactosUI extends NextelDialog {
 
@@ -22,8 +36,14 @@ public class ContactosUI extends NextelDialog {
 	private SimpleLink aceptar;
 	private SimpleLink cancelar;
 	private SimpleLink agregar;
-	private SimpleLink veraz;
 
+	private CuentaDatosForm cuentaDatosForm;
+	
+	private Image iconoLupa = IconFactory.vistaPreliminar();
+	
+	private List<String> estilos = new ArrayList<String>();
+	private int estiloUsado = 0;
+	
 	private static ContactosUI cuentaCrearContactoPopUp = null;
 
 	public static ContactosUI getInstance() {
@@ -33,21 +53,22 @@ public class ContactosUI extends NextelDialog {
 		return cuentaCrearContactoPopUp;
 	}
 	
-	 ClickListener listener = new ClickListener(){
-		public void onClick(Widget sender){
-		if(sender == aceptar){
-			validarCampoObligatorio(true);
-		}
-		else if(sender == veraz){
-			validarVeraz(true);
-		}
-		else if(sender == cancelar){
-			hide();
-		}
-		else{
-			DomicilioUI.getInstance().showAndCenter();
-		}
-	}};
+	//juntarlo con e clicklistener del boton 
+//	ClickListener listener = new ClickListener(){
+//		public void onClick(Widget sender){
+//		if(sender == aceptar){
+//			validarCampoObligatorio(true);
+//		}
+//		else if(sender == iconoLupa){
+//			validarVeraz(true);
+//		}
+//		else if(sender == cancelar){
+//			hide();
+//		}
+//		else{
+//			DomicilioUI.getInstance().showAndCenter();
+//		}
+//	}};
 
 
 	public ContactosUI() {
@@ -69,10 +90,10 @@ public class ContactosUI extends NextelDialog {
 		add(mainTabPanel);
 
 		aceptar = new SimpleLink("Aceptar");
-		aceptar.addClickListener(listener);
+		//aceptar.addClickListener(listener);
 
 		cancelar = new SimpleLink("Cerrar");
-		cancelar.addClickListener(listener);
+		//cancelar.addClickListener(listener);
 		
 		addFormButtons(aceptar);
 		addFormButtons(cancelar);
@@ -90,7 +111,13 @@ public class ContactosUI extends NextelDialog {
 	}
 
 	public void cargarPopupEditarConatcto(/*
-										 * ContactoDto contacto, boolean
+										 * ContactoDto contacto, booleanosCuentaTable.setWidget(4, 1, contactosData.getCargo());
+		FlexTable verazTable = new FlexTable();
+		verazTable.setWidget(0, 0, iconoLupa);
+		verazTable.setText(0, 1, Sfa.constant().veraz());
+		verazTable.setWidget(0, 2, contactosData.getVeraz());
+		datosCuentaPanel.add(datosCuentaTable);
+		datosCuentaPanel.add(verazTable);
 										 * editable
 										 */) {
 		contactosData.setContacto(/* contacto */);
@@ -111,12 +138,9 @@ public class ContactosUI extends NextelDialog {
 		datosCuentaTable.getFlexCellFormatter().setColSpan(1, 1, 4);
 		datosCuentaTable.setCellSpacing(5);
 		
-		veraz = new SimpleLink();
-		veraz.addClickListener(listener);
-		veraz.addStyleName("linkVeraz");
-
 		FlowPanel datosCuentaPanel = new FlowPanel();
 		datosCuentaPanel.addStyleName("gwt-TabPanelBottom content");
+	
 		datosCuentaTable.setText(0, 0, Sfa.constant().tipoDocumento());
 		datosCuentaTable.setWidget(0, 1, contactosData.getTipoDocumento());
 		datosCuentaTable.setWidget(0, 3, new Label(Sfa.constant().numero()));
@@ -130,13 +154,89 @@ public class ContactosUI extends NextelDialog {
 		datosCuentaTable.setText(4, 0, Sfa.constant().cargo());
 		datosCuentaTable.setWidget(4, 1, contactosData.getCargo());
 		FlexTable verazTable = new FlexTable();
-		verazTable.setWidget(0, 0, veraz);
+		verazTable.setWidget(0, 0, iconoLupa);
 		verazTable.setText(0, 1, Sfa.constant().veraz());
 		verazTable.setWidget(0, 2, contactosData.getVeraz());
-
+	
 		datosCuentaPanel.add(datosCuentaTable);
 		datosCuentaPanel.add(verazTable);
+		
+		iconoLupa.addClickListener(new ClickListener() {
+			public void onClick (Widget sender) {
+				PersonaDto personaDto = getVerazSearch(contactosData.getNumeroDocumento(), contactosData.getTipoDocumento(), contactosData.getSexo());
+				inicializarVeraz(contactosData.getVeraz());
+				CuentaRpcService.Util.getInstance().consultarVeraz(personaDto, 
+				new DefaultWaitCallback<VerazResponseDto>() {
+				
+					public void success(VerazResponseDto result) {
+						if (result != null) {
+							setearValoresRtaVeraz(result, contactosData.getApellido(), contactosData.getNombre(), 
+									null, contactosData.getSexo(), contactosData.getVeraz());
+						}
+					}
+				});
+			}
+		});	
+
 		return datosCuentaPanel;
+	}
+	
+	public void inicializarVeraz(Label verazLabel) {
+		estilos.add("verazAceptar");
+        estilos.add("verazRevisar");
+        estilos.add("verazRechazar");
+        verazLabel.setText("");
+        verazLabel.removeStyleName(estilos.get(estiloUsado));
+	}
+	
+public void setearValoresRtaVeraz(VerazResponseDto result, TextBox apellido, TextBox nombre, TextBox razonSocial, ListBox sexo, Label veraz) {
+		
+		//no entiendo para que pide los valores que tenia antes si después los pisa con los de la rta
+//		TextBox apellidoTextBox = camposTabDatos.getApellido();
+//        TextBox nombreTextBox = camposTabDatos.getNombre();
+//        TextBox razonSocialTextBox = camposTabDatos.getRazonSocial();
+//        Combo sexoCombo = granCuentaPanel.getSexoCombo();
+
+        apellido.setText(result.getApellido());
+        apellido.setEnabled(true);
+        
+        nombre.setText(result.getNombre());
+        nombre.setEnabled(true);
+        
+        if (razonSocial!=null) {
+        razonSocial.setText(result.getRazonSocial());
+        }
+        
+        sexo.setEnabled(true);
+        
+        if ("ACEPTAR".equals(result.getEstado())) {
+        	veraz.addStyleName(estilos.get(0));
+        	estiloUsado = 0;
+        } else if ("REVISAR".equals(result.getEstado())) {
+        	veraz.addStyleName(estilos.get(1));
+        	estiloUsado = 1;
+        }else {
+        	veraz.addStyleName(estilos.get(2));
+        	estiloUsado = 2;
+        }
+      
+        veraz.setText(result.getEstado());
+//        granCuentaPanel.getVerazPanel().getEstadoVerazTextBox().setText(result.getEstado());
+//        setResultStyle(granCuentaPanel.getVerazPanel().getEstadoVerazTextBox(), verazResponse);
+        
+        MessageDialog.getInstance().setDialogTitle("Resultado Veraz");
+        MessageDialog.getInstance().showAceptar(result.getMensaje(), MessageDialog.getInstance().getCloseCommand());
+	}
+	
+	private PersonaDto getVerazSearch(TextBox numDoc, ListBox tipoDoc, ListBox sexo) {
+		//if ((numDoc!=null) && (tipoDoc!=null) && (sexo!=null)) {
+			PersonaDto personaDto = new PersonaDto();
+			DocumentoDto documentoDto = new DocumentoDto(numDoc.getText(), (TipoDocumentoDto) tipoDoc.getSelectedItem());
+			personaDto.setDocumento(documentoDto);
+			personaDto.setIdTipoDocumento(documentoDto.getTipoDocumento().getId());
+			personaDto.setSexo((SexoDto) sexo.getSelectedItem());
+		//} 
+		return personaDto;
 	}
 
 	private Widget createDomicilioPanel() {
@@ -144,7 +244,7 @@ public class ContactosUI extends NextelDialog {
 		domicilioPanel.addStyleDependentName("gwt-TabPanelBottom content");
 		agregar = new SimpleLink("Crear Nuevo");
 		agregar.addStyleName("crearDomicilioButton");
-		agregar.addClickListener(listener);
+		//agregar.addClickListener(listener);
 		domicilioPanel.add(agregar);
 
 		FlexTable domicilioTable = new FlexTable();
