@@ -23,10 +23,17 @@ public class SolicitudExcelService extends ServiceConfig {
 	@Override
 	public File getFile(String name) {
 		/*
+		 * 
 		 * El path del archivo debe coincidir con el path especificado por el
-		 * siguiente par�metro: GlobalParameterIdentifier.REPORTS_DIR
+		 * siguiente parámetro: GlobalParameterIdentifier.REPORTS_DIR
+		 * 
+		 * @TODO Revisar este parche, que puse porque ponerle "/tmp/" no es multiplataforma, ni prolijo! rgm
 		 */
-		return new File("/tmp/", name);
+		String tmp = System.getenv("TMP");
+		if ((tmp == null) || ( tmp.length()==0)) {
+			tmp = "/tmp";
+		}
+		return new File(tmp, name);
 	}
 
 	/*
