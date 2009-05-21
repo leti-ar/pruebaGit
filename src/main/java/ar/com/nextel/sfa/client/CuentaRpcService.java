@@ -14,6 +14,7 @@ import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
+import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
 import ar.com.nextel.sfa.client.initializer.VerazInitializer;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 
@@ -59,6 +60,8 @@ public interface CuentaRpcService extends RemoteService {
 	public DomiciliosCuentaDto getDomicilioPorCPA(String cpa) throws RpcExceptionMessages;
 	
 	public NormalizarDomicilioResultDto normalizarDomicilio(DomiciliosCuentaDto domicilioANormalizar) throws RpcExceptionMessages;
+	
+	public CrearContactoInitializer getCrearContactoInitializer(); 
 	
 	public List<ProvinciaDto> getProvinciasInitializer();
 }

@@ -2,6 +2,8 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
@@ -13,6 +15,7 @@ import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.VerazInitializer;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
+import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
 
 public class CuentaRpcServiceDelegate {
 
@@ -85,6 +88,11 @@ public class CuentaRpcServiceDelegate {
 	public void normalizarDomicilio(DomiciliosCuentaDto domicilioANormalizar,DefaultWaitCallback callback) {
 		WaitWindow.show();
 		cuentaRpcService.normalizarDomicilio(domicilioANormalizar, callback);
+	}
+	
+	public void CrearContactoInitializer(DefaultWaitCallback<CrearContactoInitializer> callback) {
+		WaitWindow.show();
+		cuentaRpcService.getCrearContactoInitializer(callback);
 	}
 	
 	public void getProvinciasInitializer(DefaultWaitCallback callback) {

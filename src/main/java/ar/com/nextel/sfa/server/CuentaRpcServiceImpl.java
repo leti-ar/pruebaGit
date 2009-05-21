@@ -82,6 +82,7 @@ import ar.com.nextel.sfa.client.dto.TipoTarjetaDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
+import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
 import ar.com.nextel.sfa.client.initializer.VerazInitializer;
 import ar.com.nextel.sfa.server.businessservice.CuentaBusinessService;
 import ar.com.nextel.sfa.server.util.MapperExtended;
@@ -244,6 +245,14 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		verazInitializer.setTiposDocumento(mapper.convertList(genericDao.getList(TipoDocumento.class),TipoDocumentoDto.class));
 		verazInitializer.setSexos(mapper.convertList(genericDao.getList(Sexo.class),SexoDto.class));
 		return verazInitializer;
+	}
+	
+	public CrearContactoInitializer getCrearContactoInitializer() {
+		CrearContactoInitializer crearContactoInitializer = new CrearContactoInitializer();
+		crearContactoInitializer.setTiposDocumento(mapper.convertList(genericDao.getList(TipoDocumento.class),TipoDocumentoDto.class));
+		crearContactoInitializer.setSexos(mapper.convertList(genericDao.getList(Sexo.class),SexoDto.class));
+		crearContactoInitializer.setCargos(mapper.convertList(genericDao.getList(Cargo.class),CargoDto.class));
+		return crearContactoInitializer;
 	}
 	
 	public VerazResponseDto consultarVeraz(PersonaDto personaDto) {
