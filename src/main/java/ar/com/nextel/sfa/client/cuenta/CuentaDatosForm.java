@@ -38,6 +38,7 @@ import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.FormUtils;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
+import ar.com.nextel.sfa.client.veraz.VerazUIData;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
@@ -54,6 +55,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.Image;
@@ -82,6 +84,8 @@ public class CuentaDatosForm extends Composite {
 	
 	private List<String> estilos = new ArrayList<String>();
 	private int estiloUsado = 0;
+	
+	private VerazUIData verazUIData;
 	
 	public static CuentaDatosForm getInstance() {
 		return instance;
@@ -164,14 +168,16 @@ public class CuentaDatosForm extends Composite {
 		datosCuentaTable.setWidget(row, 2, iconoLupa);		
 		iconoLupa.addClickListener(new ClickListener() {
 			public void onClick (Widget sender) {
-				PersonaDto personaDto = camposTabDatos.getVerazSearch();
-				inicializarVeraz();
+				PersonaDto personaDto = verazUIData.getVerazSearch(camposTabDatos.getNumeroDocumento(), 
+						camposTabDatos.getTipoDocumento(), camposTabDatos.getSexo());
+				inicializarVeraz(camposTabDatos.getVerazLabel());
 				CuentaRpcService.Util.getInstance().consultarVeraz(personaDto, 
-				new DefaultWaitCallback<VerazResponseDto>() {
-				
+						new DefaultWaitCallback<VerazResponseDto>() {
+
 					public void success(VerazResponseDto result) {
 						if (result != null) {
-							setearValoresRtaVeraz(result);
+							setearValoresRtaVeraz(result, camposTabDatos.getApellido(), camposTabDatos.getNombre(), 
+									camposTabDatos.getRazonSocial(), camposTabDatos.getSexo(), camposTabDatos.getVeraz());
 						}
 					}
 				});
@@ -179,7 +185,7 @@ public class CuentaDatosForm extends Composite {
 		});	
 		
 		datosCuentaTable.setWidget(row, 3, camposTabDatos.getVerazLabel());
-        inicializarVeraz();
+        inicializarVeraz(camposTabDatos.getVeraz());
 		datosCuentaTable.setWidget(row, 4, camposTabDatos.getVeraz());
 		row++;
 		datosCuentaTable.setWidget(row, 0, camposTabDatos.getUseLabel());
@@ -209,12 +215,12 @@ public class CuentaDatosForm extends Composite {
 		return telefonoPanel;
 	}
 	
-	private void inicializarVeraz() {
+	public void inicializarVeraz(Label verazLabel) {
 		estilos.add("verazAceptar");
         estilos.add("verazRevisar");
         estilos.add("verazRechazar");
-		camposTabDatos.getVeraz().setText("");
-		camposTabDatos.getVeraz().removeStyleName(estilos.get(estiloUsado));
+        verazLabel.setText("");
+        verazLabel.removeStyleName(estilos.get(estiloUsado));
 	}
 
 	private Widget createEmailPanel() {
@@ -827,7 +833,7 @@ public class CuentaDatosForm extends Composite {
 	}
 	
 	
-	private void setearValoresRtaVeraz(VerazResponseDto result) {
+	public void setearValoresRtaVeraz(VerazResponseDto result, TextBox apellido, TextBox nombre, TextBox razonSocial, ListBox sexo, Label veraz) {
 		
 		//no entiendo para que pide los valores que tenia antes si después los pisa con los de la rta
 //		TextBox apellidoTextBox = camposTabDatos.getApellido();
@@ -835,28 +841,30 @@ public class CuentaDatosForm extends Composite {
 //        TextBox razonSocialTextBox = camposTabDatos.getRazonSocial();
 //        Combo sexoCombo = granCuentaPanel.getSexoCombo();
 
-        camposTabDatos.getApellido().setText(result.getApellido());
-        camposTabDatos.getApellido().setEnabled(true);
+        apellido.setText(result.getApellido());
+        apellido.setEnabled(true);
         
-        camposTabDatos.getNombre().setText(result.getNombre());
-        camposTabDatos.getNombre().setEnabled(true);
+        nombre.setText(result.getNombre());
+        nombre.setEnabled(true);
         
-        camposTabDatos.getRazonSocial().setText(result.getRazonSocial());
+        if (razonSocial!=null) {
+        razonSocial.setText(result.getRazonSocial());
+        }
         
-        camposTabDatos.getSexo().setEnabled(true);
+        sexo.setEnabled(true);
         
         if ("ACEPTAR".equals(result.getEstado())) {
-        	camposTabDatos.getVeraz().addStyleName(estilos.get(0));
+        	veraz.addStyleName(estilos.get(0));
         	estiloUsado = 0;
         } else if ("REVISAR".equals(result.getEstado())) {
-        	camposTabDatos.getVeraz().addStyleName(estilos.get(1));
+        	veraz.addStyleName(estilos.get(1));
         	estiloUsado = 1;
         }else {
-        	camposTabDatos.getVeraz().addStyleName(estilos.get(2));
+        	veraz.addStyleName(estilos.get(2));
         	estiloUsado = 2;
         }
       
-        camposTabDatos.getVeraz().setText(result.getEstado());
+        veraz.setText(result.getEstado());
 //        granCuentaPanel.getVerazPanel().getEstadoVerazTextBox().setText(result.getEstado());
 //        setResultStyle(granCuentaPanel.getVerazPanel().getEstadoVerazTextBox(), verazResponse);
         
