@@ -11,7 +11,6 @@ import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
-import ar.com.nextel.sfa.client.veraz.VerazUIData;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -19,24 +18,26 @@ import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.Image;
 
-public class ContactosUI extends NextelDialog {
+public class ContactosUI extends NextelDialog implements ClickListener {
 
 	private FlexTable datosCuentaTable;
 	private FlexTable telefonoTable;
 	private ContactoUIData contactosData;
 	private SimpleLink aceptar;
 	private SimpleLink cancelar;
-	private SimpleLink agregar;
+	private Button agregar;
+	private DomicilioUI domicilioUI;
 
 	private CuentaDatosForm cuentaDatosForm;
 	
@@ -236,11 +237,17 @@ public void setearValoresRtaVeraz(VerazResponseDto result, TextBox apellido, Tex
 
 	private Widget createDomicilioPanel() {
 		FlowPanel domicilioPanel = new FlowPanel();
-		domicilioPanel.addStyleDependentName("gwt-TabPanelBottom content");
-		agregar = new SimpleLink("Crear Nuevo");
+		agregar = new Button("Crear Nuevo");
+		agregar.addClickListener(this);
 		agregar.addStyleName("crearDomicilioButton");
-		//agregar.addClickListener(listener);
-		domicilioPanel.add(agregar);
+		SimplePanel crearNuevo = new SimplePanel(); 
+		
+		
+		crearNuevo.setHeight("17px");
+		crearNuevo.setWidth("750");
+		domicilioPanel.addStyleDependentName("gwt-TabPanelBottom content");
+		crearNuevo.add(agregar);
+		domicilioPanel.add(crearNuevo);
 
 		FlexTable domicilioTable = new FlexTable();
 		String[] widths = { "24px", "100px" };
@@ -254,7 +261,7 @@ public void setearValoresRtaVeraz(VerazResponseDto result, TextBox apellido, Tex
 		domicilioTable.addStyleName("gwt-BuscarCuentaResultTable");
 		domicilioTable.getRowFormatter().addStyleName(0, "header");
 		domicilioTable.setWidth("100%");
-		domicilioTable.setText(0, 0, Sfa.constant().whiteSpace());
+		domicilioTable.setHTML(0, 0, Sfa.constant().whiteSpace());
 		domicilioTable.setText(0, 1, Sfa.constant().domicilios());
 		domicilioPanel.add(domicilioTable);
 
@@ -301,5 +308,11 @@ public void setearValoresRtaVeraz(VerazResponseDto result, TextBox apellido, Tex
 		} else {
 			
 		}
+	}
+
+	public void onClick(Widget sender) {
+		if (sender == agregar) {
+			domicilioUI = new DomicilioUI();
+		} 
 	}
 }
