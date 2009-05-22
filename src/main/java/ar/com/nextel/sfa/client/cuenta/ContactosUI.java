@@ -54,22 +54,19 @@ public class ContactosUI extends NextelDialog {
 		return cuentaCrearContactoPopUp;
 	}
 	
-	//juntarlo con e clicklistener del boton 
-//	ClickListener listener = new ClickListener(){
-//		public void onClick(Widget sender){
-//		if(sender == aceptar){
-//			validarCampoObligatorio(true);
-//		}
-//		else if(sender == iconoLupa){
-//			validarVeraz(true);
-//		}
-//		else if(sender == cancelar){
-//			hide();
-//		}
-//		else{
-//			DomicilioUI.getInstance().showAndCenter();
-//		}
-//	}};
+
+	ClickListener listener = new ClickListener(){
+		public void onClick(Widget sender){
+		if(sender == aceptar){
+			validarCampoObligatorio(true);
+		}
+		else if(sender == cancelar){
+			hide();
+		}
+		else{
+			DomicilioUI.getInstance().showAndCenter();
+		}
+	}};
 
 
 	public ContactosUI() {
@@ -91,10 +88,10 @@ public class ContactosUI extends NextelDialog {
 		add(mainTabPanel);
 
 		aceptar = new SimpleLink("Aceptar");
-		//aceptar.addClickListener(listener);
+		aceptar.addClickListener(listener);
 
 		cancelar = new SimpleLink("Cerrar");
-		//cancelar.addClickListener(listener);
+		cancelar.addClickListener(listener);
 		
 		addFormButtons(aceptar);
 		addFormButtons(cancelar);
@@ -222,9 +219,6 @@ public void setearValoresRtaVeraz(VerazResponseDto result, TextBox apellido, Tex
         }
       
         veraz.setText(result.getEstado());
-//        granCuentaPanel.getVerazPanel().getEstadoVerazTextBox().setText(result.getEstado());
-//        setResultStyle(granCuentaPanel.getVerazPanel().getEstadoVerazTextBox(), verazResponse);
-        
         MessageDialog.getInstance().setDialogTitle("Resultado Veraz");
         MessageDialog.getInstance().showAceptar(result.getMensaje(), MessageDialog.getInstance().getCloseCommand());
 	}
@@ -300,17 +294,6 @@ public void setearValoresRtaVeraz(VerazResponseDto result, TextBox apellido, Tex
 	
 	private void validarCampoObligatorio(boolean showErrorDialog) {
 		List<String> errors = contactosData.validarCampoObligatorio();
-		if (!errors.isEmpty()) {
-			if (showErrorDialog) {
-				ErrorDialog.getInstance().show(errors);
-			}
-		} else {
-			
-		}
-	}
-	
-	private void validarVeraz(boolean showErrorDialog){
-		List<String> errors = contactosData.validarVeraz();
 		if (!errors.isEmpty()) {
 			if (showErrorDialog) {
 				ErrorDialog.getInstance().show(errors);
