@@ -46,7 +46,7 @@ public interface CuentaRpcService extends RemoteService {
 	
 	public AgregarCuentaInitializer getAgregarCuentaInitializer();
 		
-	public void saveCuenta(CuentaDto cuentaDto);
+	public CuentaDto saveCuenta(CuentaDto cuentaDto);
 	
 	public VerazInitializer getVerazInitializer();
 	

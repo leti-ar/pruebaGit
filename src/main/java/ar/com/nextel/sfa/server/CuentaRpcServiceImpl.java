@@ -32,6 +32,7 @@ import ar.com.nextel.model.cuentas.beans.CategoriaCuenta;
 import ar.com.nextel.model.cuentas.beans.ClaseCuenta;
 import ar.com.nextel.model.cuentas.beans.CondicionCuenta;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
+import ar.com.nextel.model.cuentas.beans.DatosPago;
 import ar.com.nextel.model.cuentas.beans.FormaPago;
 import ar.com.nextel.model.cuentas.beans.Proveedor;
 import ar.com.nextel.model.cuentas.beans.TipoCanalVentas;
@@ -45,6 +46,7 @@ import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.personas.beans.GrupoDocumento;
 import ar.com.nextel.model.personas.beans.Provincia;
 import ar.com.nextel.model.personas.beans.Sexo;
+import ar.com.nextel.model.personas.beans.Telefono;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
@@ -63,6 +65,7 @@ import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
+import ar.com.nextel.sfa.client.dto.EmailDto;
 import ar.com.nextel.sfa.client.dto.FormaPagoDto;
 import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
@@ -75,12 +78,15 @@ import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
 import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
+import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.dto.TipoCanalVentasDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.dto.TipoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoTarjetaDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
+import ar.com.nextel.sfa.client.enums.TipoEmailEnum;
+import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
@@ -233,12 +239,10 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		return buscarDTOinit;
 	}
 
-	public void saveCuenta(CuentaDto cuentaDto) {
- 	    Cuenta cuenta = cuentaBusinessService.getCuenta(cuentaDto.getId());
- 	    mapper.map(cuentaDto, cuenta);
-//      cuenta.setVendedor(getVendedor("acsa1"));
-//		cuenta.setLastModificationDate(Calendar.getInstance().getTime());
-		cuentaBusinessService.saveCuenta(cuenta);
+	public CuentaDto saveCuenta(CuentaDto cuentaDto) {
+		Cuenta cuenta = cuentaBusinessService.saveCuenta(cuentaDto,mapper);
+		cuentaDto = mapper.map(cuenta, CuentaDto.class);
+		return cuentaDto;
 	}
 
 	public VerazInitializer getVerazInitializer() {
@@ -259,7 +263,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 	public VerazResponseDto consultarVeraz(PersonaDto personaDto) {
         AppLogger.info("Iniciando consulta a Veraz...");
         VerazResponseDTO responseDTO = null;
-        Sexo sexo = (Sexo) this.repository.retrieve(Sexo.class, personaDto.getSexo().getCode());
+        Sexo sexo = (Sexo) this.repository.retrieve(Sexo.class, personaDto.getSexo().getId());
 		TipoDocumento tipoDocumento = (TipoDocumento) this.repository.retrieve(TipoDocumento.class, personaDto.getDocumento().getTipoDocumento().getId());
 		long numeroDocumento = Long.parseLong(StringUtil.removeOcurrences(personaDto.getDocumento().getNumero(), '-'));
 		AppLogger.debug("Parametros consulta a Veraz: " + tipoDocumento.getCodigoVeraz() + " / " + numeroDocumento + " / " + sexo.getCodigoVeraz() + "..."); 	
@@ -418,4 +422,5 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		List<ProvinciaDto> listaProvincias = mapper.convertList(repository.getAll(Provincia.class), ProvinciaDto.class);
 		return listaProvincias;
 	}
+
 }

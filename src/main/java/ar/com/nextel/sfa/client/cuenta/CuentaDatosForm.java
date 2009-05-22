@@ -5,10 +5,12 @@ import java.util.List;
 
 
 
+
+
+
 import org.eclipse.swt.widgets.MessageBox;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
-import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
@@ -45,23 +47,19 @@ import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
-import ar.com.snoop.gwt.commons.client.util.WindowUtils;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import ar.com.snoop.gwt.commons.client.window.MessageWindow;
-
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.Image;
 
 
 public class CuentaDatosForm extends Composite {
@@ -171,7 +169,7 @@ public class CuentaDatosForm extends Composite {
 			public void onClick (Widget sender) {
 				PersonaDto personaDto = getVerazSearch(camposTabDatos.getNumeroDocumento(), 
 						camposTabDatos.getTipoDocumento(), camposTabDatos.getSexo());
-				inicializarVeraz(camposTabDatos.getVeraz());
+				inicializarVeraz(camposTabDatos.getVerazLabel());
 				CuentaRpcService.Util.getInstance().consultarVeraz(personaDto, 
 						new DefaultWaitCallback<VerazResponseDto>() {
 
@@ -377,6 +375,7 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getNombre().setText(cuentaDto.getPersona().getNombre());
 		camposTabDatos.getApellido().setText(cuentaDto.getPersona().getApellido());
 		camposTabDatos.getSexo().setSelectedItem(cuentaDto.getPersona().getSexo());
+		camposTabDatos.getRubro().setSelectedItem(cuentaDto.getRubro());
 		camposTabDatos.getFechaNacimiento().setSelectedDate(cuentaDto.getPersona().getFechaNacimiento());
 		camposTabDatos.getContribuyente().setSelectedItem(cuentaDto.getTipoContribuyente());
 		camposTabDatos.getCargo().setSelectedItem(cuentaDto.getPersona().getCargo());
@@ -432,19 +431,19 @@ public class CuentaDatosForm extends Composite {
         String id_formaPago = "";
 		if (cuentaDto.getDatosPago().isEfectivo()) {
 			datosPago = (DatosEfectivoDto) cuentaDto.getDatosPago();
-			camposTabDatos.getFormaPago().setSelectedItem(((DatosEfectivoDto)datosPago).getFormaPagoAsociada());
+			camposTabDatos.getFormaPago().setSelectedItem(((DatosEfectivoDto)datosPago).formaPagoAsociada());
 			id_formaPago = TipoFormaPagoEnum.EFECTIVO.getTipo();
 		}
 		else if (cuentaDto.getDatosPago().isDebitoCuentaBancaria()) {			
 			datosPago = (DatosDebitoCuentaBancariaDto) cuentaDto.getDatosPago();
-			camposTabDatos.getFormaPago().setSelectedItem(((DatosDebitoCuentaBancariaDto)datosPago).getFormaPagoAsociada());
+			camposTabDatos.getFormaPago().setSelectedItem(((DatosDebitoCuentaBancariaDto)datosPago).formaPagoAsociada());
 			camposTabDatos.getTipoCuentaBancaria().selectByValue(((DatosDebitoCuentaBancariaDto)datosPago).getTipoCuentaBancaria().getItemValue());
 			camposTabDatos.getCbu().setText(((DatosDebitoCuentaBancariaDto)datosPago).getCbu());
 			id_formaPago = TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo();
 		}
 		else if (cuentaDto.getDatosPago().isDebitoTarjetaCredito()) {			
 			datosPago = (DatosDebitoTarjetaCreditoDto) cuentaDto.getDatosPago();
-			camposTabDatos.getFormaPago().setSelectedItem(((DatosDebitoTarjetaCreditoDto)datosPago).getFormaPagoAsociada());
+			camposTabDatos.getFormaPago().setSelectedItem(((DatosDebitoTarjetaCreditoDto)datosPago).formaPagoAsociada());
 			camposTabDatos.getMesVto().setSelectedIndex(((DatosDebitoTarjetaCreditoDto)datosPago).getMesVencimientoTarjeta());
 			camposTabDatos.getAnioVto().setText(Short.toString(((DatosDebitoTarjetaCreditoDto)datosPago).getAnoVencimientoTarjeta()));
 			camposTabDatos.getTipoTarjeta().setSelectedItem(((DatosDebitoTarjetaCreditoDto)datosPago).getTipoTarjeta());
@@ -543,11 +542,14 @@ public class CuentaDatosForm extends Composite {
 				if ( (FormUtils.fieldDirty(camposTabDatos.getNumeroTarjeta(), ((DatosDebitoTarjetaCreditoDto) cuentaTab.getCuenta2editDto().getDatosPago()).getNumero()))
 				   ||(FormUtils.fieldDirty(camposTabDatos.getAnioVto(), ((DatosDebitoTarjetaCreditoDto) cuentaTab.getCuenta2editDto().getDatosPago()).getAnoVencimientoTarjeta()+""))
 				)	retorno = true;
-			}	
-		} else {
-			if ((!camposTabDatos.getCbu().getText().trim().equals("")))
-				return true;
-		}
+			} else {
+				if ((!camposTabDatos.getNumeroTarjeta().getText().trim().equals("")))
+					return true;
+			}
+		} //else {
+//			if ((!camposTabDatos.getCbu().getText().trim().equals("")))
+//				return true;
+//		}
 		
 		//telefonos
         //si la cuenta no tiene telefonos ingresados, simplemente se fija que el campo sea distinto de ""
@@ -739,17 +741,18 @@ public class CuentaDatosForm extends Composite {
 
 		//Panel Telefono/Fax
 		List <TelefonoDto>phonos = new ArrayList<TelefonoDto>();
-        if (!camposTabDatos.getTelPrincipalTextBox().getNumero().getText().equals("")) {
+       if (!camposTabDatos.getTelPrincipalTextBox().getNumero().getText().equals("")) {
         	TipoTelefonoDto tipoTel = new TipoTelefonoDto(TipoTelefonoEnum.PRINCIPAL.getTipo(),TipoTelefonoEnum.PRINCIPAL.toString());
-        	phonos.add(new TelefonoDto(
+        	TelefonoDto tel =new TelefonoDto(
         			camposTabDatos.getTelPrincipalTextBox().getArea().getText(),
         			camposTabDatos.getTelPrincipalTextBox().getInterno().getText(),
         			camposTabDatos.getTelPrincipalTextBox().getNumero().getText(),
         			personaDto,
         			Boolean.TRUE,
         			tipoTel
-        		)
-        	);
+        		);
+        	tel.setPersona(personaDto);
+        	phonos.add(tel);
          }
         if (!camposTabDatos.getTelAdicionalTextBox().getNumero().getText().equals("")) {
         	TipoTelefonoDto tipoTel = new TipoTelefonoDto(TipoTelefonoEnum.ADICIONAL.getTipo(),TipoTelefonoEnum.ADICIONAL.toString());
@@ -788,36 +791,44 @@ public class CuentaDatosForm extends Composite {
         	);
          }
         CuentaEdicionTabPanel.getInstance().getCuenta2editDto().setObservacionesTelMail(camposTabDatos.getObservaciones().getText()); 
+        personaDto.setTelefonos(phonos);
         
         //Panel Emails
 		List <EmailDto>mails = new ArrayList<EmailDto>();
         if (!camposTabDatos.getEmailPersonal().getText().equals("")) {
        	   TipoEmailDto tipoEmail = new TipoEmailDto(TipoEmailEnum.PERSONAL.getTipo(),TipoEmailEnum.PERSONAL.toString());
-        	mails.add(new EmailDto(camposTabDatos.getEmailLaboral().getText(),false,tipoEmail ));	
+        	mails.add(new EmailDto(camposTabDatos.getEmailPersonal().getText(),false,tipoEmail ));	
         }
         if (!camposTabDatos.getEmailLaboral().getText().equals("")) {
         	   TipoEmailDto tipoEmail = new TipoEmailDto(TipoEmailEnum.LABORAL.getTipo(),TipoEmailEnum.LABORAL.toString());
          	mails.add(new EmailDto(camposTabDatos.getEmailLaboral().getText(),false,tipoEmail ));	
         }
-        personaDto.setEmails(mails);
-        personaDto.setTelefonos(phonos);
+        personaDto.setEmails(mails);        
+        
 		
        //Panel Formas de Pago
-        CuentaEdicionTabPanel.getInstance().getCuenta2editDto().setFormaPago(new FormaPagoDto(Long.parseLong(camposTabDatos.getFormaPago().getSelectedItemId()),camposTabDatos.getFormaPago().getSelectedItemText(),camposTabDatos.getFormaPago().getSelectedItemText()));
         DatosPagoDto datosPago = null;
         if (camposTabDatos.getFormaPago().getSelectedItemId().equals(TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo())) {
+        	CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getFormaPago().setId(Long.parseLong(TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo()));
         	datosPago = new DatosDebitoCuentaBancariaDto();
+        	((DatosDebitoCuentaBancariaDto)datosPago).setId(CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getDatosPago().getId());
         	((DatosDebitoCuentaBancariaDto)datosPago).setFormaPagoAsociada(CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getFormaPago());
         	((DatosDebitoCuentaBancariaDto)datosPago).setCbu(camposTabDatos.getCbu().getText());
         	((DatosDebitoCuentaBancariaDto)datosPago).setTipoCuentaBancaria(new TipoCuentaBancariaDto(Long.parseLong(camposTabDatos.getTipoCuentaBancaria().getSelectedItemId()),camposTabDatos.getTipoCuentaBancaria().getSelectedItemText(),camposTabDatos.getTipoCuentaBancaria().getSelectedItemText()));
+        	
         } else if (camposTabDatos.getFormaPago().getSelectedItemId().equals(TipoFormaPagoEnum.TARJETA_CREDITO.getTipo())) {
         	datosPago = new DatosDebitoTarjetaCreditoDto();
+        	((DatosDebitoTarjetaCreditoDto)datosPago).setId(CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getDatosPago().getId());
+        	CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getFormaPago().setId(Long.parseLong(TipoFormaPagoEnum.TARJETA_CREDITO.getTipo()));
         	((DatosDebitoTarjetaCreditoDto)datosPago).setFormaPagoAsociada(CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getFormaPago());
+        	((DatosDebitoTarjetaCreditoDto)datosPago).setNumero(camposTabDatos.getNumeroTarjeta().getText());
         	((DatosDebitoTarjetaCreditoDto)datosPago).setAnoVencimientoTarjeta(Short.parseShort(camposTabDatos.getAnioVto().getText()));
         	((DatosDebitoTarjetaCreditoDto)datosPago).setMesVencimientoTarjeta(Short.parseShort(camposTabDatos.getMesVto().getSelectedItemId()));
         	((DatosDebitoTarjetaCreditoDto)datosPago).setTipoTarjeta(new TipoTarjetaDto(Long.parseLong(camposTabDatos.getTipoTarjeta().getSelectedItemId()),camposTabDatos.getTipoTarjeta().getSelectedItemText()));
         } else {//if (camposTabDatos.getFormaPago().getSelectedItemId().equals(TipoFormaPagoEnum.EFECTIVO)) {
         	datosPago = new DatosEfectivoDto();
+        	((DatosEfectivoDto)datosPago).setId(CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getDatosPago().getId());
+        	CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getFormaPago().setId(Long.parseLong(TipoFormaPagoEnum.EFECTIVO.getTipo()));
         	((DatosEfectivoDto)datosPago).setFormaPagoAsociada(CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getFormaPago());
         	CuentaEdicionTabPanel.getInstance().getCuenta2editDto().setDatosPago(datosPago);
         }
@@ -830,6 +841,8 @@ public class CuentaDatosForm extends Composite {
 		CuentaDto ctaDto = getCuentaDtoFromEditor();
 		CuentaRpcService.Util.getInstance().saveCuenta(ctaDto,new DefaultWaitCallback() {
 			public void success(Object result) {
+				//CuentaEdicionTabPanel.getInstance().setCuenta2editDto((CuentaDto) result);
+				//ponerDatosBusquedaEnFormulario((CuentaDto) result);
 				ErrorDialog.getInstance().show("GUARDADO OK");
 			}
 		});
@@ -847,11 +860,11 @@ public class CuentaDatosForm extends Composite {
 	
 	public void setearValoresRtaVeraz(VerazResponseDto result, TextBox apellido, TextBox nombre, TextBox razonSocial, ListBox sexo, Label veraz) {
 		
-		//para que pide los valores que tenia antes si después los pisa con los de la rta??
+		//no entiendo para que pide los valores que tenia antes si después los pisa con los de la rta
 //		TextBox apellidoTextBox = camposTabDatos.getApellido();
-//      TextBox nombreTextBox = camposTabDatos.getNombre();
-//      TextBox razonSocialTextBox = camposTabDatos.getRazonSocial();
-//      Combo sexoCombo = granCuentaPanel.getSexoCombo();
+//        TextBox nombreTextBox = camposTabDatos.getNombre();
+//        TextBox razonSocialTextBox = camposTabDatos.getRazonSocial();
+//        Combo sexoCombo = granCuentaPanel.getSexoCombo();
 
         apellido.setText(result.getApellido());
         apellido.setEnabled(true);
@@ -877,6 +890,9 @@ public class CuentaDatosForm extends Composite {
         }
       
         veraz.setText(result.getEstado());
+//        granCuentaPanel.getVerazPanel().getEstadoVerazTextBox().setText(result.getEstado());
+//        setResultStyle(granCuentaPanel.getVerazPanel().getEstadoVerazTextBox(), verazResponse);
+        
         MessageDialog.getInstance().setDialogTitle("Resultado Veraz");
         MessageDialog.getInstance().showAceptar(result.getMensaje(), MessageDialog.getInstance().getCloseCommand());
 	}

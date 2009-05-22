@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public abstract class AbstractDatosPagoDto implements DatosPagoDto, IsSerializable {
 
+	public long id;
 	/**
      * @see ar.com.nextel.model.cuentas.beans.DatosPago#isDebitoCuentaBancaria()
      */

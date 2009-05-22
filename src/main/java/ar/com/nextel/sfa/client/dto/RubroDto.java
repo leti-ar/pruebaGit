@@ -23,7 +23,4 @@ public class RubroDto extends EnumDto implements ListBoxItem, IsSerializable {
 		return id + "";
 	}
 
-	public String getCode() {
-		return id + "";
-	}
 }

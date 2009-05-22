@@ -30,7 +30,8 @@ public class TipoTarjetaDto implements ListBoxItem, IsSerializable {
 		this.id = id;
 	}
 	public String getCodigoVantive() {
-		return codigoVantive;
+		//return codigoVantive;
+		return descripcion;
 	}
 	public void setCodigoVantive(String codigoVantive) {
 		this.codigoVantive = codigoVantive;

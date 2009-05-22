@@ -1,5 +1,7 @@
 package ar.com.nextel.sfa.client.dto;
 
+import ar.com.nextel.sfa.client.enums.TipoFormaPagoEnum;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class DatosDebitoTarjetaCreditoDto  extends AbstractDatosPagoDto implements IsSerializable {
@@ -35,13 +37,21 @@ public class DatosDebitoTarjetaCreditoDto  extends AbstractDatosPagoDto implemen
 	public void setMesVencimientoTarjeta(Short mesVencimientoTarjeta) {
 		this.mesVencimientoTarjeta = mesVencimientoTarjeta;
 	}
-	public FormaPagoDto getFormaPagoAsociada() {
-		return formaPagoAsociada;
-	}
 	public FormaPagoDto formaPagoAsociada() {
+    	if (formaPagoAsociada==null) {
+    		formaPagoAsociada = new FormaPagoDto();
+    		formaPagoAsociada.setId(Long.parseLong(TipoFormaPagoEnum.TARJETA_CREDITO.getTipo()));
+    		formaPagoAsociada.setDescripcion(TipoFormaPagoEnum.TARJETA_CREDITO.toString());
+    	}
 		return formaPagoAsociada;
 	}
 	public void setFormaPagoAsociada(FormaPagoDto formaPagoAsociada) {
 		this.formaPagoAsociada = formaPagoAsociada;
 	}
+    public Long getId() {
+    	return this.id;
+    }
+    public void setId(Long id) {
+    	this.id = id;
+    }
 }

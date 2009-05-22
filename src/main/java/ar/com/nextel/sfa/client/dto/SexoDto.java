@@ -4,18 +4,14 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
-public class SexoDto implements ListBoxItem, IsSerializable {
+public class SexoDto extends EnumDto implements ListBoxItem, IsSerializable {
 
-	private long code;
-	private String descripcion;
-	
 	public SexoDto() {
 	}
 	
-	
-	public SexoDto(long code, String descripcion) {
+	public SexoDto(long id, String descripcion) {
 		super();
-		this.code = code;
+		this.id = id;
 		this.descripcion = descripcion;
 	}
 	
@@ -24,23 +20,7 @@ public class SexoDto implements ListBoxItem, IsSerializable {
 	}
 
 	public String getItemValue() {
-		return code + "";
-	}
-
-	public long getCode() {
-		return code;
-	}
-
-	public void setCode(long code) {
-		this.code = code;
-	}
-
-	public String getDescripcion() {
-		return descripcion;
-	}
-
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
+		return id + "";
 	}
 
 

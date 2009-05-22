@@ -3,38 +3,34 @@ package ar.com.nextel.sfa.server.converter;
 import org.dozer.CustomConverter;
 import org.dozer.DozerBeanMapper;
 import org.dozer.MappingException;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoTarjetaCredito;
 import ar.com.nextel.model.cuentas.beans.DatosEfectivo;
 import ar.com.nextel.model.cuentas.beans.DatosPago;
-import ar.com.nextel.model.cuentas.beans.FormaPago;
 import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoTarjetaCreditoDto;
 import ar.com.nextel.sfa.client.dto.DatosEfectivoDto;
 import ar.com.nextel.sfa.client.dto.DatosPagoDto;
-import ar.com.nextel.sfa.client.dto.FormaPagoDto;
 import ar.com.nextel.sfa.client.dto.TipoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.TipoTarjetaDto;
-import ar.com.nextel.sfa.client.enums.TipoFormaPagoEnum;
-import ar.com.nextel.util.ApplicationContextUtil;
-
 
 @Component
 public class DatosPagoConverter implements CustomConverter {
 
 	public Repository repository;
 	public DozerBeanMapper dozerMapper;
-	
+
 	@Autowired
-	public void setDozerMapper(@Qualifier("dozerMapper") DozerBeanMapper dozerMapper) {
+	public void setDozerMapper(
+			@Qualifier("dozerMapper") DozerBeanMapper dozerMapper) {
 		this.dozerMapper = dozerMapper;
 	}
 
@@ -43,79 +39,100 @@ public class DatosPagoConverter implements CustomConverter {
 		this.repository = repository;
 	}
 
-    public Object convert(Object existingDestinationFieldValue, Object sourceFieldValue, Class destClass, Class sourceClass) {
-        Object result = null;
+	public Object convert(Object existingDestinationFieldValue, Object sourceFieldValue, Class destClass, Class sourceClass) {
+		Object result = null;
+		if (sourceFieldValue instanceof HibernateProxy) {
+            HibernateProxy hibernateProxy = (HibernateProxy) sourceFieldValue;
+            result = (DatosPagoDto) convertDatosPagoToDto(hibernateProxy.getHibernateLazyInitializer().getImplementation());
+        } else {
+        	result = (DatosPago) convertDtoToDatosPago(sourceFieldValue);
+        }
+		return result;
+	}    
         
-        //server -> cliente
-        if (sourceFieldValue instanceof DatosEfectivo) {
+    private Object convertDatosPagoToDto(Object source) {
+    	Object result = null;
+    	if (source instanceof DatosEfectivo) {
 		    try {
-				result = (DatosEfectivoDto)dozerMapper.map((DatosEfectivo)sourceFieldValue, destClass);
-				//((DatosEfectivoDto)result).setFormaPagoAsociada((FormaPagoDto)dozerMapper.map(((DatosEfectivo)sourceFieldValue).formaPagoAsociada()), FormaPagoDto.class);
+				result = (DatosEfectivoDto)dozerMapper.map((DatosEfectivo)source, DatosEfectivoDto.class);
 			} catch (MappingException e) {
 			    result = new DatosEfectivoDto();
-			    ((DatosEfectivoDto)result).setFormaPagoAsociada(new FormaPagoDto(Long.parseLong(TipoFormaPagoEnum.EFECTIVO.getTipo()),"",TipoFormaPagoEnum.EFECTIVO.toString()));
-			    return (DatosPagoDto) result;
+			    ((DatosEfectivoDto)result).setId(((DatosEfectivo)source).getId());
 			}
-    	} else if (sourceFieldValue instanceof DatosDebitoCuentaBancaria) {
-    	    result = new DatosDebitoCuentaBancariaDto();
-            ((DatosDebitoCuentaBancariaDto)result).setCbu( ((DatosDebitoCuentaBancaria) sourceFieldValue).getCbu());	    
-            TipoCuentaBancariaDto tcb = new TipoCuentaBancariaDto();
-            tcb.setCodigoVantive(((DatosDebitoCuentaBancaria) sourceFieldValue).getTipoCuentaBancaria().getCodigoVantive());
-            tcb.setId(((DatosDebitoCuentaBancaria) sourceFieldValue).getTipoCuentaBancaria().getId());
-            ((DatosDebitoCuentaBancariaDto)result).setTipoCuentaBancaria(tcb );
-            ((DatosDebitoCuentaBancariaDto)result).setFormaPagoAsociada(new FormaPagoDto(Long.parseLong(TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo()),"",TipoFormaPagoEnum.CUENTA_BANCARIA.toString()));
-            return (DatosPagoDto) result;
-    	} else if (sourceFieldValue instanceof DatosDebitoTarjetaCredito) {
-    		result = new DatosDebitoTarjetaCreditoDto();
-    		((DatosDebitoTarjetaCreditoDto)result).setAnoVencimientoTarjeta(((DatosDebitoTarjetaCredito) sourceFieldValue).getAnoVencimientoTarjeta());
-    		((DatosDebitoTarjetaCreditoDto)result).setMesVencimientoTarjeta(((DatosDebitoTarjetaCredito) sourceFieldValue).getMesVencimientoTarjeta());
-    		((DatosDebitoTarjetaCreditoDto)result).setNumero(((DatosDebitoTarjetaCredito) sourceFieldValue).getNumero());
-    		TipoTarjetaDto tt =  new TipoTarjetaDto();
-    		tt.setCodigoVantive(((DatosDebitoTarjetaCredito) sourceFieldValue).getTipoTarjeta().getCodigoVantive());
-    		tt.setId(((DatosDebitoTarjetaCredito) sourceFieldValue).getTipoTarjeta().getId());
-    		((DatosDebitoTarjetaCreditoDto)result).setTipoTarjeta(tt);
-    		((DatosDebitoTarjetaCreditoDto)result).setFormaPagoAsociada(new FormaPagoDto(Long.parseLong(TipoFormaPagoEnum.TARJETA_CREDITO.getTipo()),"",TipoFormaPagoEnum.TARJETA_CREDITO.toString()));
-    		return (DatosPagoDto) result;
-
-   		//cliente -> server
-    	} else if (sourceFieldValue instanceof DatosEfectivoDto) {
-    		result = repository.createNewObject(DatosEfectivo.class);
-    		FormaPago fp = repository.retrieve(FormaPago.class, Long.parseLong(TipoFormaPagoEnum.EFECTIVO.getTipo()));
-    		((DatosEfectivo)result).setFormaPagoAsociada(fp);
-    		return (DatosPago) result;
-    	} else if (sourceFieldValue instanceof DatosDebitoCuentaBancariaDto) {
-    		result = repository.createNewObject(DatosDebitoCuentaBancaria.class);
-    		FormaPago fp = repository.retrieve(FormaPago.class, Long.parseLong(TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo()));
-    		((DatosDebitoCuentaBancaria)result).setCbu( ((DatosDebitoCuentaBancariaDto) sourceFieldValue).getCbu());	    
-    		TipoCuentaBancaria tcb = repository.retrieve(TipoCuentaBancaria.class, ((DatosDebitoCuentaBancariaDto) sourceFieldValue).getTipoCuentaBancaria().getId());
-    		((DatosDebitoCuentaBancaria)result).setTipoCuentaBancaria(tcb );
-    		((DatosDebitoCuentaBancaria)result).setFormaPagoAsociada(fp);
-    		
-//    		result = repository.createNewObject(DatosDebitoCuentaBancaria.class);
-//    		FormaPago fp = repository.retrieve(FormaPago.class, Long.parseLong(TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo()));
-//    		((DatosDebitoCuentaBancaria)existingDestinationFieldValue).setFormaPagoAsociada(fp);
-//    		((DatosDebitoCuentaBancaria)existingDestinationFieldValue).setCbu(((DatosDebitoCuentaBancariaDto) sourceFieldValue).getCbu());
-//    		TipoCuentaBancaria tcb = repository.retrieve(TipoCuentaBancaria.class, ((DatosDebitoCuentaBancariaDto) sourceFieldValue).getTipoCuentaBancaria().getId());
-//    		((DatosDebitoCuentaBancaria)existingDestinationFieldValue).setTipoCuentaBancaria(tcb);
-  		
-  		
-    		
-    		
-    		return (DatosPago) result;
-    	} else if (sourceFieldValue instanceof DatosDebitoTarjetaCreditoDto) {
-    		result = repository.createNewObject(DatosDebitoTarjetaCredito.class);
-    		FormaPago fp = repository.retrieve(FormaPago.class, Long.parseLong(TipoFormaPagoEnum.TARJETA_CREDITO.getTipo()));
-    		((DatosDebitoTarjetaCredito)result).setAnoVencimientoTarjeta(((DatosDebitoTarjetaCreditoDto) sourceFieldValue).getAnoVencimientoTarjeta());
-    		((DatosDebitoTarjetaCredito)result).setMesVencimientoTarjeta(((DatosDebitoTarjetaCreditoDto) sourceFieldValue).getMesVencimientoTarjeta());
-    		((DatosDebitoTarjetaCredito)result).setNumero(((DatosDebitoTarjetaCreditoDto) sourceFieldValue).getNumero());
-    		TipoTarjeta tt =  repository.retrieve(TipoTarjeta.class, ((DatosDebitoTarjetaCreditoDto) sourceFieldValue).getTipoTarjeta().getId());
-    		((DatosDebitoTarjetaCredito)result).setTipoTarjeta(tt);
-    		((DatosDebitoTarjetaCredito)result).setFormaPagoAsociada(fp);
-    		return (DatosPago) result;
+    	} else if (source instanceof DatosDebitoCuentaBancaria) {
+    		try {
+    			result = (DatosDebitoCuentaBancariaDto)dozerMapper.map((DatosDebitoCuentaBancaria)source, DatosDebitoCuentaBancariaDto.class);
+    		} catch (MappingException e) {
+    			result = new DatosDebitoCuentaBancariaDto();
+    			((DatosDebitoCuentaBancariaDto)result).setId(((DatosDebitoCuentaBancaria)source).getId());
+    			((DatosDebitoCuentaBancariaDto)result).setCbu( ((DatosDebitoCuentaBancaria) source).getCbu());	    
+    			TipoCuentaBancariaDto tcb = new TipoCuentaBancariaDto();
+    			tcb.setCodigoVantive(((DatosDebitoCuentaBancaria) source).getTipoCuentaBancaria().getCodigoVantive());
+    			tcb.setId(((DatosDebitoCuentaBancaria) source).getTipoCuentaBancaria().getId());
+    			((DatosDebitoCuentaBancariaDto)result).setTipoCuentaBancaria(tcb );
+    		}
+    	} else if (source instanceof DatosDebitoTarjetaCredito) {
+    		try {
+    			result = (DatosDebitoTarjetaCreditoDto)dozerMapper.map((DatosDebitoTarjetaCredito)source, DatosDebitoTarjetaCreditoDto.class);
+    		} catch (MappingException e) {
+    			result = new DatosDebitoTarjetaCreditoDto();
+    			((DatosDebitoTarjetaCreditoDto)result).setId(((DatosDebitoTarjetaCredito)source).getId());
+    			((DatosDebitoTarjetaCreditoDto)result).setAnoVencimientoTarjeta(((DatosDebitoTarjetaCredito) source).getAnoVencimientoTarjeta());
+    			((DatosDebitoTarjetaCreditoDto)result).setMesVencimientoTarjeta(((DatosDebitoTarjetaCredito) source).getMesVencimientoTarjeta());
+    			((DatosDebitoTarjetaCreditoDto)result).setNumero(((DatosDebitoTarjetaCredito) source).getNumero());
+    			TipoTarjetaDto tt =  new TipoTarjetaDto();
+    			tt.setCodigoVantive(((DatosDebitoTarjetaCredito) source).getTipoTarjeta().getCodigoVantive());
+    			tt.setId(((DatosDebitoTarjetaCredito) source).getTipoTarjeta().getId());
+    			((DatosDebitoTarjetaCreditoDto)result).setTipoTarjeta(tt);
+    		}
     	}
+    	return result;
 
-        return result;
+    }	
+	
+    private Object convertDtoToDatosPago(Object sourceFieldValue) {
+    	Object result = null;
+
+    	if (sourceFieldValue instanceof DatosEfectivoDto) {
+    		try {
+    			result = (DatosEfectivo)dozerMapper.map((DatosEfectivoDto)sourceFieldValue, DatosEfectivo.class);
+    		} catch (MappingException e) {
+    			result = repository.createNewObject(DatosEfectivo.class);
+    			((DatosEfectivo)result).setId(((DatosEfectivoDto)sourceFieldValue).getId());
+    		}
+
+    	} else if (sourceFieldValue instanceof DatosDebitoCuentaBancariaDto) {
+    		try {
+    			result = (DatosDebitoCuentaBancaria)dozerMapper.map((DatosDebitoCuentaBancariaDto)sourceFieldValue, DatosDebitoCuentaBancaria.class);
+    		} catch (MappingException e) {
+    			result = repository.createNewObject(DatosDebitoCuentaBancaria.class);
+    			((DatosDebitoCuentaBancaria)result).setId(((DatosDebitoCuentaBancariaDto)sourceFieldValue).getId());
+    			((DatosDebitoCuentaBancaria)result).setCbu(((DatosDebitoCuentaBancariaDto)sourceFieldValue).getCbu());	    
+    			TipoCuentaBancaria tcb = repository.retrieve(TipoCuentaBancaria.class, ((DatosDebitoCuentaBancariaDto) sourceFieldValue).getTipoCuentaBancaria().getId());
+    			((DatosDebitoCuentaBancaria)result).setTipoCuentaBancaria(tcb );
+    		}
+
+    	} else if (sourceFieldValue instanceof DatosDebitoTarjetaCreditoDto) {
+    		try {
+    			result = (DatosDebitoTarjetaCredito)dozerMapper.map((DatosDebitoTarjetaCreditoDto)sourceFieldValue, DatosDebitoTarjetaCredito.class);
+    		} catch (MappingException e) {
+    			result = repository.createNewObject(DatosDebitoTarjetaCredito.class);
+    			((DatosDebitoTarjetaCredito)result).setId(((DatosDebitoTarjetaCreditoDto)sourceFieldValue).getId());
+    			((DatosDebitoTarjetaCredito)result).setAnoVencimientoTarjeta(((DatosDebitoTarjetaCreditoDto) sourceFieldValue).getAnoVencimientoTarjeta());
+    			((DatosDebitoTarjetaCredito)result).setMesVencimientoTarjeta(((DatosDebitoTarjetaCreditoDto) sourceFieldValue).getMesVencimientoTarjeta());
+    			((DatosDebitoTarjetaCredito)result).setNumero(((DatosDebitoTarjetaCreditoDto) sourceFieldValue).getNumero());
+    			TipoTarjeta tt =  repository.retrieve(TipoTarjeta.class, ((DatosDebitoTarjetaCreditoDto) sourceFieldValue).getTipoTarjeta().getId());
+    			((DatosDebitoTarjetaCredito)result).setTipoTarjeta(tt);
+    		}
+    	}
+    	return result;
+    }	
+
+    private DatosPago convertDatosPago(DatosPago datosPago) {
+        if (datosPago instanceof HibernateProxy) {
+            HibernateProxy hibernateProxy = (HibernateProxy) datosPago;
+            return (DatosPago) hibernateProxy.getHibernateLazyInitializer().getImplementation();
+        }
+        return datosPago;
     }
-    
-
 }
