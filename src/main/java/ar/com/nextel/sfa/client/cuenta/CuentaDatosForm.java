@@ -847,11 +847,11 @@ public class CuentaDatosForm extends Composite {
 	
 	public void setearValoresRtaVeraz(VerazResponseDto result, TextBox apellido, TextBox nombre, TextBox razonSocial, ListBox sexo, Label veraz) {
 		
-		//no entiendo para que pide los valores que tenia antes si después los pisa con los de la rta
+		//para que pide los valores que tenia antes si después los pisa con los de la rta??
 //		TextBox apellidoTextBox = camposTabDatos.getApellido();
-//        TextBox nombreTextBox = camposTabDatos.getNombre();
-//        TextBox razonSocialTextBox = camposTabDatos.getRazonSocial();
-//        Combo sexoCombo = granCuentaPanel.getSexoCombo();
+//      TextBox nombreTextBox = camposTabDatos.getNombre();
+//      TextBox razonSocialTextBox = camposTabDatos.getRazonSocial();
+//      Combo sexoCombo = granCuentaPanel.getSexoCombo();
 
         apellido.setText(result.getApellido());
         apellido.setEnabled(true);
@@ -877,9 +877,6 @@ public class CuentaDatosForm extends Composite {
         }
       
         veraz.setText(result.getEstado());
-//        granCuentaPanel.getVerazPanel().getEstadoVerazTextBox().setText(result.getEstado());
-//        setResultStyle(granCuentaPanel.getVerazPanel().getEstadoVerazTextBox(), verazResponse);
-        
         MessageDialog.getInstance().setDialogTitle("Resultado Veraz");
         MessageDialog.getInstance().showAceptar(result.getMensaje(), MessageDialog.getInstance().getCloseCommand());
 	}
