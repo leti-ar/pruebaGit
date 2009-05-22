@@ -33,7 +33,7 @@ public class DomicilioUI extends NextelDialog {
 	private SimpleLink linkCerrar;
 	private SimpleLink linkAceptar;
 	private DomiciliosUIData domiciliosData;
-	private boolean noEditable; //Verificar q no sea la misma propiedad que locked del DomicilioCuentaDto!!!
+	private boolean noEditable; //NO es la misma propiedad que locked de DomicilioCuentaDto. Se usa para otra cosa, local!*/
 	private static DomicilioUI instance = new DomicilioUI();
 
 	public static DomicilioUI getInstance() {

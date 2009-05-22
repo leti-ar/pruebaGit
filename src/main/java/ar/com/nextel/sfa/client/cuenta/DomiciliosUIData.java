@@ -5,15 +5,18 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
+import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
 import ar.com.nextel.sfa.client.dto.TipoDomicilioAsociadoDto;
 import ar.com.nextel.sfa.client.dto.TipoDomicilioDto;
+import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -258,23 +261,42 @@ public class DomiciliosUIData extends UIData {
 		}
 	}
 	
+	private Command getComandoAceptarAlert(){
+		Command comandoAceptar = new Command(){
+			public void execute() {
+				MessageDialog.getInstance().hide();
+			}
+		};
+		return comandoAceptar;
+	}
+	
 	private void validateFields(Widget w){
 	/**TODO: Terminar validacion de fields del DomicilioUI. */
 		if(w == cpa){
+			if (cpa.getText().equals("")){
+				MessageDialog.getInstance().setDialogTitle("SFA - Alert");
+				MessageDialog.getInstance().showAceptar("Debe ingresar un CPA correcto.", getComandoAceptarAlert());
+			}else{
 			//Aca llama al ServiceRpcCuenta
 			CuentaRpcService.Util.getInstance().getDomicilioPorCPA(cpa.getText(),
-					new DefaultWaitCallback<DomiciliosCuentaDto>() {
-						public void success(DomiciliosCuentaDto domicilioNormalizado) {
-							//cpa.setText(domicilioNormalizado.getCpa().toUpperCase());
+					new DefaultWaitCallback<NormalizarCPAResultDto>() {
+						public void success(NormalizarCPAResultDto domicilioNormalizado) {
+							codigoPostal.setText(domicilioNormalizado.getCodigoPostal());
+							calle.setText(domicilioNormalizado.getCalle());
+							localidad.setText(domicilioNormalizado.getLocalidad());
+							partido.setText(domicilioNormalizado.getPartido());
+							//TODO: Falta lo de Provincia!!!
+							
 							//TODO: Borrar logueo!
 							GWT.log("Entro en SUCESS del onLostFocus del ValidateFields por CPA.", null);
 						}
-						public void onFailure(DomiciliosCuentaDto domicilioNormalizado) {
+						public void onFailure(NormalizarCPAResultDto domicilioNormalizado) {
 							//TODO: Borrar logueo!
 							GWT.log("Entro en FAILURE del onLostFocus del ValidateFields por CPA.", null);
 						}
 					});
-		}
+		     }
+	  }
 	}
 	
 	public TextBox getCalle() {

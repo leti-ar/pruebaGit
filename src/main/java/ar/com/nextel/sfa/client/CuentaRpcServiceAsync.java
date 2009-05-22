@@ -7,6 +7,7 @@ import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
+import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
 import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
@@ -38,7 +39,7 @@ public interface CuentaRpcServiceAsync {
 	
 	public void validarTarjeta(String numeroTarjeta, Integer mesVto, Integer anoVto,AsyncCallback<TarjetaCreditoValidatorResultDto> callback);
 	
-	public void getDomicilioPorCPA(String cpa, AsyncCallback<DomiciliosCuentaDto> callback);
+	public void getDomicilioPorCPA(String cpa, AsyncCallback<NormalizarCPAResultDto> callback);
 
 	public void normalizarDomicilio(DomiciliosCuentaDto domicilioANormalizar, AsyncCallback<NormalizarDomicilioResultDto> callback);
 	

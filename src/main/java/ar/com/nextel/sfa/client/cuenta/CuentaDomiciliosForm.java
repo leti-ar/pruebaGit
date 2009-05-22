@@ -146,7 +146,6 @@ public class CuentaDomiciliosForm extends Composite {
 								}else if(result.getTipo().equals("no_parseado")){
 									setMotivosNoNormalizacion(result);
 									abrirPopupNormalizacion(domicilioAEditar,null,getComandoAgregarDomicilioCopiado(),null);//TODO: Setearle el comando Aceptar en vez de null.
-									GWT.log("Devolvio no_parseado el SUCCESS de NormalizarDomicilioResultDto", null);
 								}
 							}
 							@Override
@@ -182,12 +181,11 @@ public class CuentaDomiciliosForm extends Composite {
 								}else if(result.getTipo().equals("no_parseado")){
 									setMotivosNoNormalizacion(result);
 									abrirPopupNormalizacion(domicilioAEditar,null,getComandoAgregarDomicilioEditado(),null);//TODO: Setearle el comando Aceptar en vez de null.
-									GWT.log("Devolvio no_parseado el SUCCESS de NormalizarDomicilioResultDto", null);
 								}
 							}
 							@Override
 							public void failure(Throwable exception) {
-								GWT.log("Entro en FAILURE de NormalizarDomicilioResultDto: "+ exception.getMessage(), exception.getCause());
+								GWT.log(exception.getMessage(), exception.getCause());
 							}
 						});
 			}
@@ -218,7 +216,6 @@ public class CuentaDomiciliosForm extends Composite {
 								}else if(result.getTipo().equals("no_parseado")){
 									setMotivosNoNormalizacion(result);
 									abrirPopupNormalizacion(domicilioAEditar,null,getComandoAgregarNuevoDomicilio(),null);//TODO: Setearle el comando Aceptar en vez de null.
-									GWT.log("Devolvio no_parseado el SUCCESS de NormalizarDomicilioResultDto", null);
 								}
 							}
 							@Override
@@ -279,19 +276,6 @@ public class CuentaDomiciliosForm extends Composite {
 		NormalizarDomicilioUI.getInstance().setMotivos(result.getMotivos());
 		NormalizarDomicilioUI.getInstance().setDudas(result.getDudas());
 	}
-	
-//	private Command getComandoOpenNuevoNormalizador(){
-//		Command comandoNormalizar = new Command() {
-//			public void execute() {
-//				/**TODO: Hacer que llame al validador o normalizador correspondiente antes de abrir el popUp de Normalizar
-//				 *       Y con un IF, Si valida, abre el popUp, sino lanza un ErrorDialog, con el motivo y demas...*/
-//				//TODO: SACAR HardCode!!!
-//				NormalizarDomicilioUI.getInstance().setNormalizado(true);
-//				abrirPopupNormalizacion(DomicilioUI.getInstance().getDomiciliosData().getDomicilio(),null,getComandoNuevoDomicilio(),null);//TODO: Setearle el comando Aceptar en vez de null.
-//			}
-//		 };
-//	return comandoNormalizar;
-//	}
 	
 	private Command getComandoBorrar(){
 		Command comandoBorrar = new Command() {

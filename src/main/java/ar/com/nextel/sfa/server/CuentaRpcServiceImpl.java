@@ -65,6 +65,7 @@ import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.FormaPagoDto;
 import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
+import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
 import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProveedorDto;
@@ -399,15 +400,15 @@ public class CuentaRpcServiceImpl extends RemoteService implements
     /**
      * @author eSalvador 
      **/
-	public DomiciliosCuentaDto getDomicilioPorCPA(String cpa) throws RpcExceptionMessages {
-		DomiciliosCuentaDto domicilioNormalizado = null;
+	public NormalizarCPAResultDto getDomicilioPorCPA(String cpa) throws RpcExceptionMessages {
+		NormalizarCPAResultDto resultConCPANormalizado = null;
 		/**TODO: Terminar!*/
 		try {
-			domicilioNormalizado = mapper.map(normalizadorDomicilio.normalizarCPA(cpa), DomiciliosCuentaDto.class);
+			resultConCPANormalizado = mapper.map(normalizadorDomicilio.normalizarCPA(cpa), NormalizarCPAResultDto.class);
 		} catch (MerlinException e) {
 			throw ExceptionUtil.wrap(e);
 		}
-		return domicilioNormalizado;
+		return resultConCPANormalizado;
 	}
 
 	/**

@@ -2,8 +2,6 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
@@ -12,10 +10,10 @@ import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
+import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
 import ar.com.nextel.sfa.client.initializer.VerazInitializer;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
-import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
 
 public class CuentaRpcServiceDelegate {
 
