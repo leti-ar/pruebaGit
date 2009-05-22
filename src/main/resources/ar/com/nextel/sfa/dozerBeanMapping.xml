@@ -48,7 +48,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>id</a>
 			<b>code</b>
 		</field>
-	</mapping>-->
+	</mapping>--><!--
 
 	<mapping>
 		<class-a>ar.com.nextel.model.personas.beans.Sexo
@@ -61,7 +61,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</field>
 	</mapping>
 
-	<mapping>
+	--><mapping>
 		<class-a>ar.com.nextel.model.cuentas.beans.ClaseCuenta
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.ClaseCuentaDto
@@ -310,8 +310,15 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<class-b>ar.com.nextel.sfa.client.dto.DatosDebitoTarjetaCreditoDto</class-b>
 	</mapping>
 	-->
-	
-	  <mapping>
+	<mapping>
+		<class-a>ar.com.nextel.model.personas.beans.Persona</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.PersonaDto</class-b>
+		<field custom-converter-id="enumToDto">
+			<a>sexo</a>
+			<b>sexo</b>
+		</field>
+	</mapping>
+	<mapping>
 		<class-a>ar.com.nextel.model.personas.beans.Telefono</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.TelefonoDto</class-b>
 		<field custom-converter-id="enumToDto">
@@ -350,7 +357,6 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 	</mapping>
 
 
-		
 	<mapping>
 		<class-a>ar.com.nextel.model.cuentas.beans.Cuenta</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.CuentaDto</class-b>
@@ -369,12 +375,12 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<field custom-converter-id="enumToDto">
 			<a>categoriaCuenta</a>
 			<b>categoriaCuenta</b>
-		</field>
+		</field><!--
 		<field custom-converter-id="enumToDto">
 			<a>condicionCuenta</a>
 			<b>condicionCuenta</b>
 		</field>
-		<field custom-converter-id="enumToDto">
+		--><field custom-converter-id="enumToDto">
 			<a>estadoCuenta</a>
 			<b>estadoCuenta</b>
 		</field>
@@ -390,8 +396,8 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>tipoContribuyente</a>
 			<b>tipoContribuyente</b>
 		</field>
-	</mapping>
-	
+    </mapping>
+		
 	<mapping>
 		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.MerlinDireccionDTO</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto</class-b>
@@ -412,4 +418,5 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.businessUnits.NormalizarCPAResult</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto</class-b>
 	</mapping>
+
 </mappings>
