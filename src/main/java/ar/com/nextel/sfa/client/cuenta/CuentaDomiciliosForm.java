@@ -19,6 +19,7 @@ import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
@@ -103,10 +104,8 @@ public class CuentaDomiciliosForm extends Composite {
 	 * @author eSalvador
 	 **/
 	private void abrirPopupNormalizacion(DomiciliosCuentaDto domicilio, List<DomicilioNormalizadoDto> domiciliosConDudas, Command comandoNoNormalizar, Command comandoAceptar) {
-		/**OJO, Tener en cuenta ACA, de pasar DOS domicilios: 1 con los datos cargados en el DomicilioUI para cargar el Label,
-		 *       y 2, el normalizado, para cargar la grilla!! */
 		if(domicilio != null){
-			domicilio.setNo_normalizar("T");
+			domicilio.setNo_normalizar(true);
 			NormalizarDomicilioUI.getInstance().setDomicilios(domicilio);
 		}else if (domiciliosConDudas != null){
 			NormalizarDomicilioUI.getInstance().setDomicilio(domicilioAEditar);
@@ -119,33 +118,44 @@ public class CuentaDomiciliosForm extends Composite {
 		NormalizarDomicilioUI.getInstance().showAndCenter();
 	}
 	
+	private boolean camposValidos(){
+		boolean valido = true;
+		List<String> errores = DomicilioUI.getInstance().getDomiciliosData().validarCamposObligatorios();
+		if (errores.size() != 0){
+			valido = false;
+			ErrorDialog.getInstance().setDialogTitle("Error");
+			ErrorDialog.getInstance().show(errores);
+		}
+		return valido;
+	}
+	
 	/**
 	 * @author eSalvador
 	 * Devuelve el comando que Agrega el domicilio editado que le llega, con los datos nuevos.
 	 **/
 	private Command getComandoNormalizarCopiadoServiceCall() {
-		/**TODO: Hacer la validacion de datos de entrada antes de abrir el popup de Normalizacion. */ 
 		Command comandoCopiar = new Command() {
 			public void execute() {
-				domicilioAEditar = DomicilioUI.getInstance().getDomiciliosData().getDomicilio(); 	
+				if (camposValidos()){
+				domicilioAEditar = DomicilioUI.getInstance().getDomiciliosData().getDomicilioCopiado(); 	
 				CuentaRpcService.Util.getInstance().normalizarDomicilio(domicilioAEditar,
 						new DefaultWaitCallback<NormalizarDomicilioResultDto>() {
 							public void success(NormalizarDomicilioResultDto result) {
 								
 								//tipo: exito|no_parseado|no_encontrado|dudas
 								if (result.getTipo().equals("exito")){
-									domicilioAEditar = result.getDireccion();
+									//domicilioAEditar = result.getDireccion();
 									NormalizarDomicilioUI.getInstance().setNormalizado(true);
-									abrirPopupNormalizacion(domicilioAEditar, null,getComandoAgregarDomicilioCopiado(),null);//TODO: Setearle el comando Aceptar en vez de null.
+									abrirPopupNormalizacion(result.getDireccion(), null,getComandoAgregarDomicilioCopiado(),null);//TODO: Setearle el comando Aceptar en vez de null.
 								}else if(result.getTipo().equals("no_encontrado")){
 									setMotivosNoNormalizacion(result);
-									abrirPopupNormalizacion(domicilioAEditar,null,getComandoAgregarDomicilioCopiado(),null);//TODO: Setearle el comando Aceptar en vez de null.
+									abrirPopupNormalizacion(result.getDireccion(),null,getComandoAgregarDomicilioCopiado(),null);//TODO: Setearle el comando Aceptar en vez de null.
 								}else if(result.getTipo().equals("dudas")){
 									NormalizarDomicilioUI.getInstance().setNormalizado(true);
 									abrirPopupNormalizacion(null,result.getDudas(),getComandoAgregarDomicilioCopiado(),null);
 								}else if(result.getTipo().equals("no_parseado")){
 									setMotivosNoNormalizacion(result);
-									abrirPopupNormalizacion(domicilioAEditar,null,getComandoAgregarDomicilioCopiado(),null);//TODO: Setearle el comando Aceptar en vez de null.
+									abrirPopupNormalizacion(result.getDireccion(),null,getComandoAgregarDomicilioCopiado(),null);//TODO: Setearle el comando Aceptar en vez de null.
 								}
 							}
 							@Override
@@ -154,14 +164,15 @@ public class CuentaDomiciliosForm extends Composite {
 							}
 						});
 			}
-		 };
+		   } 
+		};
 	return comandoCopiar;
 	}
 	
 	private Command getComandoNormalizarEdicionServiceCall() {
-		/**TODO: Hacer la validacion de datos de entrada antes de abrir el popup de Normalizacion. */ 
 		Command comandoEditar = new Command() {
 			public void execute() {
+				if (camposValidos()){
 				domicilioAEditar = DomicilioUI.getInstance().getDomiciliosData().getDomicilio(); 	
 				CuentaRpcService.Util.getInstance().normalizarDomicilio(domicilioAEditar,
 						new DefaultWaitCallback<NormalizarDomicilioResultDto>() {
@@ -188,15 +199,16 @@ public class CuentaDomiciliosForm extends Composite {
 								GWT.log(exception.getMessage(), exception.getCause());
 							}
 						});
-			}
+			  }
+		    }
 		 };
 	return comandoEditar;
 	}
 	
 	private Command getComandoNormalizarNuevoServiceCall() {
-		/**TODO: Hacer la validacion de datos de entrada antes de abrir el popup de Normalizacion. */ 
 		Command comandoEditar = new Command() {
 			public void execute() {
+				if (camposValidos()){
 				domicilioAEditar = DomicilioUI.getInstance().getDomiciliosData().getDomicilio();	
 				CuentaRpcService.Util.getInstance().normalizarDomicilio(domicilioAEditar,
 						new DefaultWaitCallback<NormalizarDomicilioResultDto>() {
@@ -223,6 +235,7 @@ public class CuentaDomiciliosForm extends Composite {
 								GWT.log("Entro en FAILURE de NormalizarDomicilioResultDto: "+ exception.getMessage(), exception.getCause());
 							}
 						});
+				}
 			}
 		 };
 	return comandoEditar;

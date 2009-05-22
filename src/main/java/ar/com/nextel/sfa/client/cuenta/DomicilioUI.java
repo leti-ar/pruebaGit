@@ -8,6 +8,7 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
 import ar.com.nextel.sfa.client.dto.TipoDomicilioDto;
+import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -16,6 +17,7 @@ import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -36,6 +38,12 @@ public class DomicilioUI extends NextelDialog {
 	private boolean noEditable; //Es la misma propiedad que locked de DomicilioCuentaDto. Se usa para habilitar/deshabilitar los campos.*/
 	private static DomicilioUI instance = new DomicilioUI();
 
+	Label calleLabel = new Label(Sfa.constant().calle());
+	Label numCalleLabel = new Label(Sfa.constant().numeroCalle());
+	Label localidadLabel = new Label(Sfa.constant().localidad());
+	Label cpLabel = new Label(Sfa.constant().cp());
+	Label provinciaLabel = new Label(Sfa.constant().provincia());
+	
 	public static DomicilioUI getInstance() {
 		return instance;
 	}
@@ -110,15 +118,22 @@ public class DomicilioUI extends NextelDialog {
 		gridObs = new Grid(2, 3);
 		gridUser = new Grid(1, 5);
 		setWidth("635px");
-
+		
+		//Campos Obligatorios:
+		calleLabel.addStyleName("req");
+		numCalleLabel.addStyleName("req");
+		localidadLabel.addStyleName("req");
+		cpLabel.addStyleName("req");
+		provinciaLabel.addStyleName("req");
+		//
 		gridUp.getColumnFormatter().setWidth(1, "85px");
 		gridUp.getColumnFormatter().setWidth(3, "85px");
 		gridUp.addStyleName("layout");
 		gridUp.setText(1, 1, Sfa.constant().cpa());
 		gridUp.setWidget(1, 2, domiciliosData.getCpa());
-		gridUp.setText(2, 1, Sfa.constant().calle());
+		gridUp.setWidget(2, 1, calleLabel);
 		gridUp.setWidget(2, 2, domiciliosData.getCalle());
-		gridUp.setText(2, 3, Sfa.constant().numeroCalle());
+		gridUp.setWidget(2, 3, numCalleLabel);
 		gridUp.setWidget(2, 4, domiciliosData.getNumero());
 		//
 		gridMed.getColumnFormatter().setWidth(1, "85px");
@@ -145,12 +160,12 @@ public class DomicilioUI extends NextelDialog {
 		gridDown.setWidget(0, 2, domiciliosData.getEntreCalle());
 		gridDown.setText(0, 3, Sfa.constant().y_calle());
 		gridDown.setWidget(0, 4, domiciliosData.getYcalle());
-		gridDown.setText(1, 1, Sfa.constant().localidad());
+		gridDown.setWidget(1, 1, localidadLabel);
 		gridDown.setWidget(1, 2, domiciliosData.getLocalidad());
-		gridDown.setText(1, 3, Sfa.constant().cp());
+		gridDown.setWidget(1, 3, cpLabel);
 		gridDown.setWidget(1, 4, domiciliosData.getCodigoPostal());
 		cargaComboProvinciasDto();
-		gridDown.setText(2, 1, Sfa.constant().provincia());
+		gridDown.setWidget(2, 1, provinciaLabel);
 		gridDown.setWidget(2, 2, domiciliosData.getProvincia());
 		//
 		gridDown.setText(2, 3, Sfa.constant().partido());
@@ -160,7 +175,8 @@ public class DomicilioUI extends NextelDialog {
 		gridDown.setWidget(3, 2, domiciliosData.getEntrega());
 		gridDown.setText(3, 3, Sfa.constant().facturacion());
 		gridDown.setWidget(3, 4, domiciliosData.getFacturacion());
-		gridDown.setText(4, 2, Sfa.constant().validado());
+		gridDown.setText(4, 1, Sfa.constant().validado1());
+		gridDown.setText(4, 2, Sfa.constant().validado2());
 		gridDown.setWidget(4, 3, domiciliosData.getValidado());
 		gridObs.addStyleName("layout");
 		gridObs.setText(0, 1, Sfa.constant().obs_domicilio());

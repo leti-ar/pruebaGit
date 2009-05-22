@@ -23,8 +23,10 @@ public class DomiciliosCuentaDto implements IsSerializable{
 	private String cpa;
 	private String torre;
 	private String unidad_funcional;
-	private String no_normalizar;
-	private String validado;
+	private Boolean no_normalizar;
+	private Boolean validado;
+//	private String no_normalizar;
+//	private String validado;
 	private String en_carga;
 	private String nombre_usuario_ultima_modificacion;
 	private String fecha_ultima_modificacion;
@@ -148,16 +150,16 @@ public class DomiciliosCuentaDto implements IsSerializable{
 	public void setUnidad_funcional(String unidad_funcional) {
 		this.unidad_funcional = unidad_funcional;
 	}
-	public String getNo_normalizar() {
+	public Boolean getNo_normalizar() {
 		return no_normalizar;
 	}
-	public void setNo_normalizar(String no_normalizar) {
+	public void setNo_normalizar(Boolean no_normalizar) {
 		this.no_normalizar = no_normalizar;
 	}
-	public String getValidado() {
+	public Boolean getValidado() {
 		return validado;
 	}
-	public void setValidado(String validado) {
+	public void setValidado(Boolean validado) {
 		this.validado = validado;
 	}
 	public String getEn_carga() {

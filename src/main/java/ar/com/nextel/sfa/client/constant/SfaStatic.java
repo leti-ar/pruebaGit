@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.constant;
 
 /**
  * Interface to represent the constants contained in resource bundle:
- * 	'/home/jlgperez/workspaceSFASVN/sfa-web2/target/classes/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
+ * 	'/home/esalvador/workspaceSFASVN/sfa-web2/target/classes/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
  */
 public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
@@ -1294,13 +1294,22 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String usuario_domicilio();
 
   /**
-   * Translated "Validado por EECC/Agente:".
+   * Translated "Validado por".
    * 
-   * @return translated "Validado por EECC/Agente:"
+   * @return translated "Validado por"
    */
-  @DefaultStringValue("Validado por EECC/Agente:")
-  @Key("validado")
-  String validado();
+  @DefaultStringValue("Validado por")
+  @Key("validado1")
+  String validado1();
+
+  /**
+   * Translated "EECC/Agente:".
+   * 
+   * @return translated "EECC/Agente:"
+   */
+  @DefaultStringValue("EECC/Agente:")
+  @Key("validado2")
+  String validado2();
 
   /**
    * Translated "Validar tarjeta".

@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
+import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
 import ar.com.nextel.sfa.client.dto.TipoDomicilioAsociadoDto;
 import ar.com.nextel.sfa.client.dto.TipoDomicilioDto;
+import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.UIData;
+import ar.com.nextel.sfa.client.widget.ValidationTextBox;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 
@@ -31,7 +34,7 @@ public class DomiciliosUIData extends UIData {
 
 	private DomiciliosCuentaDto domicilio;
 	TextBox calle = new TextBox();
-	TextBox numero = new TextBox();
+	ValidationTextBox numero = new ValidationTextBox("[0-9]*");
 	TextBox piso = new TextBox();
 	TextBox codigoPostal = new TextBox();
 	TextBox departamento = new TextBox();
@@ -58,7 +61,7 @@ public class DomiciliosUIData extends UIData {
 	CheckBox enCarga = new CheckBox();
 	Label nombreUsuarioUltimaModificacion = new Label();
 	Label fechaUltimaModificacion = new Label();
-
+	
 	public void setDomicilio(DomiciliosCuentaDto domicilio) {
 		if (domicilio == null) {
 			this.domicilio = new DomiciliosCuentaDto();
@@ -79,6 +82,11 @@ public class DomiciliosUIData extends UIData {
 			cpa.setText(domicilio.getCpa());
 			torre.setText(domicilio.getTorre());
 			unidadFuncional.setText(domicilio.getUnidad_funcional());
+			if (domicilio.getValidado()){
+				validado.setChecked(true);
+			}else{
+				validado.setChecked(false);
+			}
 			observaciones.setText(domicilio.getObservaciones());
 			nombreUsuarioUltimaModificacion.setText(domicilio.getNombre_usuario_ultima_modificacion());
 			fechaUltimaModificacion.setText(domicilio.getFecha_ultima_modificacion());
@@ -127,12 +135,19 @@ public class DomiciliosUIData extends UIData {
 		domicilioCopiado.setCpa(cpa.getText());
 		domicilioCopiado.setDepartamento(departamento.getText());
 		domicilioCopiado.setManzana(manzana.getText());
-		domicilioCopiado.setNumero(Long.parseLong(numero.getText()));
+		if (!"".equals(numero.getText())){
+			domicilioCopiado.setNumero(Long.parseLong(numero.getText()));
+		}
 		domicilioCopiado.setObservaciones(observaciones.getText());
 		domicilioCopiado.setPiso(piso.getText());
 		domicilioCopiado.setProvincia((ProvinciaDto)provincia.getSelectedItem());
 		domicilioCopiado.setPuerta(puerta.getText());
 		domicilioCopiado.setTorre(torre.getText());
+		if (validado.isChecked()){
+			domicilioCopiado.setValidado(true);
+		}else{
+			domicilioCopiado.setValidado(false);
+		}
 		domicilioCopiado.setNombre_usuario_ultima_modificacion(nombreUsuarioUltimaModificacion.getText());
 		domicilioCopiado.setFecha_ultima_modificacion(fechaUltimaModificacion.getText());
 		domicilioCopiado.setTiposDomicilioAsociado(mapeaCombosFacturacionEntrega());
@@ -153,12 +168,19 @@ public class DomiciliosUIData extends UIData {
 		domicilio.setCpa(cpa.getText());
 		domicilio.setDepartamento(departamento.getText());
 		domicilio.setManzana(manzana.getText());
-		domicilio.setNumero(Long.parseLong(numero.getText()));
+		if (!"".equals(numero.getText())){
+			domicilio.setNumero(Long.parseLong(numero.getText()));
+		}
 		domicilio.setObservaciones(observaciones.getText());
 		domicilio.setPiso(piso.getText());
 		domicilio.setProvincia((ProvinciaDto)provincia.getSelectedItem());
 		domicilio.setPuerta(puerta.getText());
 		domicilio.setTorre(torre.getText());
+		if (validado.isChecked()){
+			domicilio.setValidado(true);
+		}else{
+			domicilio.setValidado(false);
+		}
 		domicilio.setNombre_usuario_ultima_modificacion(nombreUsuarioUltimaModificacion.getText());
 		domicilio.setFecha_ultima_modificacion(fechaUltimaModificacion.getText());
 		domicilio.setTiposDomicilioAsociado(mapeaCombosFacturacionEntrega());
@@ -219,6 +241,8 @@ public class DomiciliosUIData extends UIData {
 	
 	public DomiciliosUIData() {
 		fields.add(calle);
+		numero.setMaxLength(5);
+		numero.setExcluyente(true);
 		fields.add(numero);
 		fields.add(piso);
 		fields.add(codigoPostal);
@@ -239,6 +263,7 @@ public class DomiciliosUIData extends UIData {
 		fields.add(entrega);
 		fields.add(facturacion);
 		fields.add(provincia);
+		//fields.add(validado);
 		this.addFocusListeners(fields);
 	}
 
@@ -285,48 +310,28 @@ public class DomiciliosUIData extends UIData {
 							localidad.setText(domicilioNormalizado.getLocalidad());
 							partido.setText(domicilioNormalizado.getPartido());
 							if (domicilioNormalizado.getIdProvincia() != null){
-								provincia.setSelectedIndex(getProvinciaSelected(Integer.parseInt(domicilioNormalizado.getIdProvincia().toString())));
+								provincia.selectByValue(domicilioNormalizado.getIdProvincia().toString());
 							}
 						}
 					});
 		     }
 	  }
+		if(w == numero){
+			if (numero.getText().length() == 0){
+				MessageDialog.getInstance().setDialogTitle("SFA - Alert");
+				MessageDialog.getInstance().showAceptar("Debe ingresar un Numero correcto.", getComandoAceptarAlert());
+			}
+		}
 	}
 	
-	private int getProvinciaSelected(int idProvincia){
-		int index = 0;
-		switch (idProvincia) {
-		case 2:
-			//BA:
-			index = 0;
-		case 5:
-			//CAPFED:
-			index = 1;
-		case 6:
-			//CORDOBA:
-			index = 2;
-		case 8:
-			//ERIOS:
-			index = 3;
-		case 9:
-			//MENDOZA:
-			index = 4;
-		case 15:
-			//SAN JUAN:
-			index = 5;
-		case 16:
-			//SAN LUIS:
-			index = 6;
-		case 17:
-			//SANTA FE:
-			index = 7;
-		case 19:
-			//CORRIENTES:
-			index = 8;
-		default:
-			break;
-		}
-		return index;
+	public List<String> validarCamposObligatorios() {
+		GwtValidator validator = new GwtValidator();
+			validator.addTarget(numero).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", Sfa.constant().numero()));
+			validator.addTarget(calle).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", Sfa.constant().calle()));
+			validator.addTarget(localidad).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", Sfa.constant().localidad()));
+			validator.addTarget(codigoPostal).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", Sfa.constant().cp()));
+		validator.fillResult();
+		return validator.getErrors();
 	}
 	
 	public TextBox getCalle() {
