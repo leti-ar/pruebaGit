@@ -15,7 +15,6 @@ import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FocusListener;
@@ -273,7 +272,7 @@ public class DomiciliosUIData extends UIData {
 	private void validateFields(Widget w){
 	/**TODO: Terminar validacion de fields del DomicilioUI. */
 		if(w == cpa){
-			if (cpa.getText().equals("")){
+			if (cpa.getText().equals("") || (cpa.getText().length() < 5)){
 				MessageDialog.getInstance().setDialogTitle("SFA - Alert");
 				MessageDialog.getInstance().showAceptar("Debe ingresar un CPA correcto.", getComandoAceptarAlert());
 			}else{
@@ -285,18 +284,49 @@ public class DomiciliosUIData extends UIData {
 							calle.setText(domicilioNormalizado.getCalle());
 							localidad.setText(domicilioNormalizado.getLocalidad());
 							partido.setText(domicilioNormalizado.getPartido());
-							//TODO: Falta lo de Provincia!!!
-							
-							//TODO: Borrar logueo!
-							GWT.log("Entro en SUCESS del onLostFocus del ValidateFields por CPA.", null);
-						}
-						public void onFailure(NormalizarCPAResultDto domicilioNormalizado) {
-							//TODO: Borrar logueo!
-							GWT.log("Entro en FAILURE del onLostFocus del ValidateFields por CPA.", null);
+							if (domicilioNormalizado.getIdProvincia() != null){
+								provincia.setSelectedIndex(getProvinciaSelected(Integer.parseInt(domicilioNormalizado.getIdProvincia().toString())));
+							}
 						}
 					});
 		     }
 	  }
+	}
+	
+	private int getProvinciaSelected(int idProvincia){
+		int index = 0;
+		switch (idProvincia) {
+		case 2:
+			//BA:
+			index = 0;
+		case 5:
+			//CAPFED:
+			index = 1;
+		case 6:
+			//CORDOBA:
+			index = 2;
+		case 8:
+			//ERIOS:
+			index = 3;
+		case 9:
+			//MENDOZA:
+			index = 4;
+		case 15:
+			//SAN JUAN:
+			index = 5;
+		case 16:
+			//SAN LUIS:
+			index = 6;
+		case 17:
+			//SANTA FE:
+			index = 7;
+		case 19:
+			//CORRIENTES:
+			index = 8;
+		default:
+			break;
+		}
+		return index;
 	}
 	
 	public TextBox getCalle() {

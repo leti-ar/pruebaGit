@@ -33,7 +33,7 @@ public class DomicilioUI extends NextelDialog {
 	private SimpleLink linkCerrar;
 	private SimpleLink linkAceptar;
 	private DomiciliosUIData domiciliosData;
-	private boolean noEditable; //NO es la misma propiedad que locked de DomicilioCuentaDto. Se usa para otra cosa, local!*/
+	private boolean noEditable; //Es la misma propiedad que locked de DomicilioCuentaDto. Se usa para habilitar/deshabilitar los campos.*/
 	private static DomicilioUI instance = new DomicilioUI();
 
 	public static DomicilioUI getInstance() {
