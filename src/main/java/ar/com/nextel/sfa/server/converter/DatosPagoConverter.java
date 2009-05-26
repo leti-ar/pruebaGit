@@ -44,7 +44,9 @@ public class DatosPagoConverter implements CustomConverter {
 		if (sourceFieldValue instanceof HibernateProxy) {
             HibernateProxy hibernateProxy = (HibernateProxy) sourceFieldValue;
             result = (DatosPagoDto) convertDatosPagoToDto(hibernateProxy.getHibernateLazyInitializer().getImplementation());
-        } else {
+		} else if (sourceFieldValue instanceof DatosEfectivo) {
+			result = (DatosPagoDto) convertDatosPagoToDto(sourceFieldValue);
+		} else {
         	result = (DatosPago) convertDtoToDatosPago(sourceFieldValue);
         }
 		return result;
