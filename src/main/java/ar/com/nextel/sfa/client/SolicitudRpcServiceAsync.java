@@ -8,6 +8,7 @@ import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
@@ -51,5 +52,5 @@ public interface SolicitudRpcServiceAsync {
 			Long idCuenta, AsyncCallback<List<PlanDto>> callback);
 
 	public void getServiciosAdicionales(LineaSolicitudServicioDto linea, Long idCuenta,
-			AsyncCallback<LineaSolicitudServicioDto> defaultWaitCallback);
+			AsyncCallback<List<ServicioAdicionalLineaSolicitudServicioDto>> defaultWaitCallback);
 }

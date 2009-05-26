@@ -8,6 +8,7 @@ import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
@@ -64,5 +65,5 @@ public interface SolicitudRpcService extends RemoteService {
 	public List<PlanDto> getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado,
 			TipoPlanDto tipoPlan, Long idCuenta);
 
-	public LineaSolicitudServicioDto getServiciosAdicionales(LineaSolicitudServicioDto linea, Long idCuenta);
+	public List<ServicioAdicionalLineaSolicitudServicioDto> getServiciosAdicionales(LineaSolicitudServicioDto linea, Long idCuenta);
 }

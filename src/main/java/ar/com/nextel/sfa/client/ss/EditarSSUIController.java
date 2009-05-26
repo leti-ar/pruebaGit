@@ -6,6 +6,7 @@ import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
@@ -25,5 +26,5 @@ public interface EditarSSUIController {
 			DefaultWaitCallback<List<PlanDto>> callback);
 
 	void getServiciosAdicionales(LineaSolicitudServicioDto linea,
-			DefaultWaitCallback<LineaSolicitudServicioDto> defaultWaitCallback);
+			DefaultWaitCallback<List<ServicioAdicionalLineaSolicitudServicioDto>> defaultWaitCallback);
 }
