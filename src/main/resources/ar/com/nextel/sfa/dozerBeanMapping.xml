@@ -147,6 +147,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>cabecera</a>
 			<b>idCabecera</b>
 		</field>
+		<field custom-converter-id="collectionServicioAdicionalConverter">
+			<a>plainServiciosAdicionales</a>
+			<b>serviciosAdicionales</b>
+		</field>		
 		<field custom-converter-id="enumToDto">
 			<a>tipoSolicitud</a>
 			<b>tipoSolicitud</b>
@@ -275,6 +279,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto
 		</class-b>
+		<field custom-converter-id="enumToDto">
+			<a>servicioAdicional</a>
+			<b>servicioAdicional</b>
+		</field>
 		<field>
 			<a>servicioAdicional.descripcion</a>
 			<b>descripcionServicioAdicional</b>
