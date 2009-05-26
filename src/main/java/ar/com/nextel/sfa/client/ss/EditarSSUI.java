@@ -7,6 +7,7 @@ import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
@@ -133,7 +134,6 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 	}
 
 	private void guardar() {
-		datos.updateCheckedServiciosAdicionales();
 		SolicitudRpcService.Util.getInstance().saveSolicituServicio(editarSSUIData.getSolicitudServicio(),
 				new DefaultWaitCallback<SolicitudServicioDto>() {
 					public void success(SolicitudServicioDto result) {
@@ -177,7 +177,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 	}
 
 	public void getServiciosAdicionales(LineaSolicitudServicioDto linea,
-			DefaultWaitCallback<LineaSolicitudServicioDto> defaultWaitCallback) {
+			DefaultWaitCallback<List<ServicioAdicionalLineaSolicitudServicioDto>> defaultWaitCallback) {
 		SolicitudRpcService.Util.getInstance().getServiciosAdicionales(linea, editarSSUIData.getCuentaId(),
 				defaultWaitCallback);
 	}
