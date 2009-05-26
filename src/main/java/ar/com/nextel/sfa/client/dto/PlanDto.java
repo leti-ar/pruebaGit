@@ -6,9 +6,8 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class PlanDto implements IsSerializable, ListBoxItem {
-	private Long id;
-	private String descripcion;
+public class PlanDto extends EnumDto implements IsSerializable, ListBoxItem {
+
 	private Double precio;
 	private List<ModalidadCobroDto> modalidadesCobro;
 	private TipoPlanDto tipoPlan;
@@ -19,22 +18,6 @@ public class PlanDto implements IsSerializable, ListBoxItem {
 
 	public String getItemValue() {
 		return "" + id;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getDescripcion() {
-		return descripcion;
-	}
-
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
 	}
 
 	public List<ModalidadCobroDto> getModalidadesCobro() {

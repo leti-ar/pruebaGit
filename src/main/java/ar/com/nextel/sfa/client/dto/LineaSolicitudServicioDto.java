@@ -4,10 +4,10 @@ import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class LineaSolicitudServicioDto implements IsSerializable {
+public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDto {
 
 	private Long id;
-	private SolicitudServicioDto cabecera;
+	private Long idCabecera;
 
 	private TipoSolicitudDto tipoSolicitud;
 	private ItemSolicitudDto item;
@@ -54,12 +54,12 @@ public class LineaSolicitudServicioDto implements IsSerializable {
 		this.id = id;
 	}
 
-	public SolicitudServicioDto getCabecera() {
-		return cabecera;
+	public Long getIdCabecera() {
+		return idCabecera;
 	}
 
-	public void setCabecera(SolicitudServicioDto cabecera) {
-		this.cabecera = cabecera;
+	public void setIdCabecera(Long idCabecera) {
+		this.idCabecera = idCabecera;
 	}
 
 	public TipoSolicitudDto getTipoSolicitud() {
@@ -206,13 +206,13 @@ public class LineaSolicitudServicioDto implements IsSerializable {
 		this.numeroSerie = numeroSerie;
 	}
 
-	public List<NumeroANIDto> getNumerosANI() {
-		return numerosANI;
-	}
-
-	public void setNumerosANI(List<NumeroANIDto> numerosANI) {
-		this.numerosANI = numerosANI;
-	}
+//	public List<NumeroANIDto> getNumerosANI() {
+//		return numerosANI;
+//	}
+//
+//	public void setNumerosANI(List<NumeroANIDto> numerosANI) {
+//		this.numerosANI = numerosANI;
+//	}
 
 	public String getAlias() {
 		return alias;

@@ -6,12 +6,10 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class TipoSolicitudDto implements IsSerializable, ListBoxItem {
+public class TipoSolicitudDto extends EnumDto implements IsSerializable, ListBoxItem {
 
-	private Long id;
 	private Long idTipoSolicitudBase;
 	private String formaContratacion;
-	private String descripcion;
 	private List<ListaPreciosDto> listasPrecios;
 
 	public String getItemText() {
@@ -32,22 +30,6 @@ public class TipoSolicitudDto implements IsSerializable, ListBoxItem {
 
 	public boolean isActivacion() {
 		return "activacion".equals(formaContratacion != null ? formaContratacion.toLowerCase() : "");
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getDescripcion() {
-		return descripcion;
-	}
-
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
 	}
 
 	public Long getIdTipoSolicitudBase() {

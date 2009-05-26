@@ -15,7 +15,7 @@ public class SolicitudServicioDto implements IsSerializable {
 	private Long id;
 	private VendedorDto vendedor;
 	private GrupoSolicitudDto grupoSolicitud;
-	// private CuentaDto cuenta;
+	private CuentaDto cuenta;
 	private String numero;
 	private String numeroFlota;
 
@@ -273,5 +273,13 @@ public class SolicitudServicioDto implements IsSerializable {
 
 	public void setLineas(List<LineaSolicitudServicioDto> lineas) {
 		this.lineas = lineas;
+	}
+
+	public CuentaDto getCuenta() {
+		return cuenta;
+	}
+
+	public void setCuenta(CuentaDto cuenta) {
+		this.cuenta = cuenta;
 	}
 }
