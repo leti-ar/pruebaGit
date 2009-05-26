@@ -126,7 +126,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>fechaVencimientoCreditoFidelizacion</b>
 		</field>
 		<!--Debo mapearlo a mano por los unmodifiableSet-->
-		<field custom-converter-id="collectionOwnedConverter">
+		<field custom-converter-id="collectionLineaSolicitudServicioConverter">
 			<a>plainLineas</a>
 			<b>lineas</b>
 		</field>
@@ -395,8 +395,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<field custom-converter-id="enumToDto"> <a>condicionCuenta</a> <b>condicionCuenta</b> </field> <f
 		-->
 		<field custom-converter-id="enumToDto">
-			a>estadoCuenta
-		</a>
+			<a>estadoCuenta</a>
 			<b>estadoCuenta</b>
 		</field>
 		<field custom-converter-id="enumToDto">

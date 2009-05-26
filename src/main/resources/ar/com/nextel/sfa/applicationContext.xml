@@ -28,8 +28,18 @@
 				<entry key="identifiableObjectToId" value-ref="identifiableObjectToIdConverter" />
 				<entry key="enumToDto" value-ref="enumToDtoConverter" />
 				<entry key="datosPagoConverter" value-ref="datosPagoConverter" />
-				<entry key="collectionOwnedConverter" value-ref="collectionOwnedConverter" />
+				<entry key="collectionLineaSolicitudServicioConverter" value-ref="collectionLineaSolicitudServicioConverter" />
 			</map>
+		</property>
+	</bean>
+
+	<bean id="collectionLineaSolicitudServicioConverter" class="ar.com.nextel.sfa.server.converter.CollectionOwnedConverter">
+		<property name="dozerMapper" ref="dozerMapper" />
+		<property name="modelClass">
+			<bean class="ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio"></bean>
+		</property>
+		<property name="dtoClass">
+			<bean class="ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto"></bean>
 		</property>
 	</bean>
 
