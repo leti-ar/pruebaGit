@@ -2,8 +2,9 @@ package ar.com.nextel.sfa.client.dto;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ServicioAdicionalLineaSolicitudServicioDto implements IsSerializable {
+public class ServicioAdicionalLineaSolicitudServicioDto implements IsSerializable, IdentifiableDto {
 
+	private Long id;
 	private Double precioVenta;
 	private ServicioAdicionalDto servicioAdicional;
 
@@ -20,6 +21,10 @@ public class ServicioAdicionalLineaSolicitudServicioDto implements IsSerializabl
 	private Boolean checked;
 	private Boolean obligatorio;
 
+	public Long getId() {
+		return id;
+	}
+	
 	public Long getOrdenAparicion() {
 		return ordenAparicion;
 	}
@@ -131,5 +136,27 @@ public class ServicioAdicionalLineaSolicitudServicioDto implements IsSerializabl
 	public void setServicioAdicional(ServicioAdicionalDto servicioAdicional) {
 		this.servicioAdicional = servicioAdicional;
 	}
+
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((servicioAdicional.getId() == null) ? 0 : servicioAdicional.getId().hashCode());
+		return result;
+	}
+
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		ServicioAdicionalLineaSolicitudServicioDto other = (ServicioAdicionalLineaSolicitudServicioDto) obj;
+		if (servicioAdicional.getId() == null) {
+			if (other.servicioAdicional.getId() != null)
+				return false;
+		} else if (!servicioAdicional.getId().equals(other.servicioAdicional.getId()))
+			return false;
+		return true;
+	}
+
 
 }
