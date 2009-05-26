@@ -37,6 +37,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 	private ItemSolicitudDialog itemSolicitudDialog;
 	private NumberFormat currencyFormat = NumberFormat.getCurrencyFormat();
 	private int selectedDetalleRow = 0;
+	private boolean blockServicioAdicionalLoad = false;
 
 	public DatosSSUI(EditarSSUIController controller) {
 		mainpanel = new FlowPanel();
@@ -118,6 +119,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		detalle.add(new Label("Servicios Adicionales"));
 
 		serviciosAdicionales = new Grid(1, 4);
+		serviciosAdicionales.addTableListener(this);
 		String[] titlesServAd = { " ", "Servicio adicional", "Precio de lista", "Precio de venta" };
 		for (int i = 0; i < titlesServAd.length; i++) {
 			serviciosAdicionales.setHTML(0, i, titlesServAd[i]);
@@ -144,36 +146,39 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 	}
 
 	public void onCellClicked(SourcesTableEvents sender, final int row, int col) {
-		if (row > 0) {
-			if (col > 1) {
-				updateCheckedServiciosAdicionales();
-				selectedDetalleRow = row;
-				loadServiciosAdicionales();
-			} else if (col == 0) {
-				openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
-			} else if (col == 1) {
-				MessageDialog.getInstance().showAceptarCancelar("Desea eliminar el Item?", new Command() {
-					public void execute() {
-						editarSSUIData.removeLineaSolicitudServicio(row - 1);
-						detalleSS.removeRow(row);
-						MessageDialog.getInstance().hide();
-					};
-				}, MessageDialog.getInstance().getCloseCommand());
+		if (detalleSS == sender) {
+			if (row > 0) {
+				if (col > 1) {
+					if (!blockServicioAdicionalLoad) {
+						selectedDetalleRow = row;
+						loadServiciosAdicionales();
+					}
+				} else if (col == 0) {
+					openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
+				} else if (col == 1) {
+					MessageDialog.getInstance().showAceptarCancelar("Desea eliminar el Item?", new Command() {
+						public void execute() {
+							editarSSUIData.removeLineaSolicitudServicio(row - 1);
+							detalleSS.removeRow(row);
+							MessageDialog.getInstance().hide();
+						};
+					}, MessageDialog.getInstance().getCloseCommand());
+				}
 			}
-		}
-	}
-
-	/** Actualiza los servicios adicionales que fueron agregados y removidos */
-	public void updateCheckedServiciosAdicionales() {
-		if (selectedDetalleRow == 0) {
-			return;
-		}
-		List<ServicioAdicionalLineaSolicitudServicioDto> serviciosAd = editarSSUIData
-				.getLineasSolicitudServicio().get(selectedDetalleRow - 1).getServiciosAdicionales();
-		for (int i = 1; i < serviciosAdicionales.getRowCount(); i++) {
-			CheckBox check = (CheckBox) serviciosAdicionales.getWidget(i, 0);
-			if (check.isEnabled()) {
-				serviciosAd.get(i - 1).setChecked(check.isChecked());
+		} else if (serviciosAdicionales == sender) {
+			if (col == 0 && row > 0) {
+				CheckBox check = (CheckBox) serviciosAdicionales.getWidget(row, col);
+				ServicioAdicionalLineaSolicitudServicioDto servicioSelected;
+				servicioSelected = editarSSUIData.getServiciosAdicionales().get(selectedDetalleRow - 1).get(
+						row - 1);
+				List<ServicioAdicionalLineaSolicitudServicioDto> saGuardados = editarSSUIData
+						.getLineasSolicitudServicio().get(selectedDetalleRow - 1).getServiciosAdicionales();
+				if (saGuardados.contains(servicioSelected)) {
+					saGuardados.get(saGuardados.indexOf(servicioSelected)).setChecked(check.isChecked());
+				} else {
+					servicioSelected.setChecked(check.isChecked());
+					saGuardados.add(servicioSelected);
+				}
 			}
 		}
 	}
@@ -205,6 +210,9 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		for (LineaSolicitudServicioDto linea : editarSSUIData.getLineasSolicitudServicio()) {
 			drawDetalleSSRow(linea, editarSSUIData.getLineasSolicitudServicio().indexOf(linea) + 1);
 		}
+		if (!editarSSUIData.getLineasSolicitudServicio().isEmpty()) {
+			onCellClicked(detalleSS, 1, 2);
+		}
 	}
 
 	private void drawDetalleSSRow(LineaSolicitudServicioDto linea, int newRow) {
@@ -227,23 +235,37 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 	private void loadServiciosAdicionales() {
 		LineaSolicitudServicioDto linea = editarSSUIData.getLineasSolicitudServicio().get(
 				selectedDetalleRow - 1);
-		if (linea.getServiciosAdicionales() != null) {
-			renderServiciosAdicionalesTable(linea.getServiciosAdicionales());
+		List servicios = editarSSUIData.getServiciosAdicionales().get(selectedDetalleRow - 1);
+		if (!servicios.isEmpty()) {
+			renderServiciosAdicionalesTable(selectedDetalleRow - 1);
 		} else {
-			controller.getServiciosAdicionales(linea, new DefaultWaitCallback<LineaSolicitudServicioDto>() {
-				public void success(LineaSolicitudServicioDto lineaConServAdicionales) {
-					editarSSUIData.getLineasSolicitudServicio().get(selectedDetalleRow - 1)
-							.setServiciosAdicionales(lineaConServAdicionales.getServiciosAdicionales());
-					renderServiciosAdicionalesTable(lineaConServAdicionales.getServiciosAdicionales());
-				}
-			});
+			controller.getServiciosAdicionales(linea,
+					new DefaultWaitCallback<List<ServicioAdicionalLineaSolicitudServicioDto>>() {
+						public void success(List<ServicioAdicionalLineaSolicitudServicioDto> list) {
+							editarSSUIData.getServiciosAdicionales().get(selectedDetalleRow - 1).addAll(list);
+							blockServicioAdicionalLoad = false;
+							renderServiciosAdicionalesTable(selectedDetalleRow - 1);
+						}
+
+						public void failure(Throwable caught) {
+							blockServicioAdicionalLoad = false;
+							super.failure(caught);
+						}
+					});
 		}
 	}
 
-	private void renderServiciosAdicionalesTable(List<ServicioAdicionalLineaSolicitudServicioDto> servicios) {
-		serviciosAdicionales.resizeRows(servicios.size() + 1);
+	private void renderServiciosAdicionalesTable(int lineaIndex) {
+		List<ServicioAdicionalLineaSolicitudServicioDto> allServiciosAdicionales = editarSSUIData
+				.getServiciosAdicionales().get(lineaIndex);
+		LineaSolicitudServicioDto linea = editarSSUIData.getLineasSolicitudServicio().get(lineaIndex);
+		serviciosAdicionales.resizeRows(allServiciosAdicionales.size() + 1);
 		int row = 1;
-		for (ServicioAdicionalLineaSolicitudServicioDto servicioAdicional : servicios) {
+		for (ServicioAdicionalLineaSolicitudServicioDto servicioAdicional : allServiciosAdicionales) {
+			int saIndex = linea.getServiciosAdicionales().indexOf(servicioAdicional);
+			if (saIndex > 0) {
+				servicioAdicional = linea.getServiciosAdicionales().get(saIndex);
+			}
 			CheckBox check = new CheckBox();
 			if (servicioAdicional.getObligatorio()) {
 				check.setEnabled(false);
