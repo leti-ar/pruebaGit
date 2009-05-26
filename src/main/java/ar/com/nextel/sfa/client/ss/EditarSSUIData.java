@@ -1,10 +1,12 @@
 package ar.com.nextel.sfa.client.ss;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.DomicilioDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
@@ -44,10 +46,13 @@ public class EditarSSUIData extends UIData {
 	private NumberFormat decFormatter = NumberFormat.getDecimalFormat();
 	private NumberFormat currFormatter = NumberFormat.getCurrencyFormat();
 	private DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateFormat();
+	private List<List<ServicioAdicionalLineaSolicitudServicioDto>> serviciosAdicionales;
 
 	private SolicitudServicioDto solicitudServicio;
 
 	public EditarSSUIData() {
+		serviciosAdicionales = new ArrayList();
+
 		fields.add(nss = new RegexTextBox(RegularExpressionConstants.getCantCaracteres(10)));
 		fields.add(nflota = new RegexTextBox(RegularExpressionConstants.getCantCaracteres(5)));
 		fields.add(origen = new ListBox());
@@ -156,7 +161,10 @@ public class EditarSSUIData extends UIData {
 	}
 
 	public void setSolicitud(SolicitudServicioDto solicitud) {
-
+		serviciosAdicionales.clear();
+		for (int i = 0; i < solicitud.getLineas().size(); i++) {
+			serviciosAdicionales.add(new ArrayList());
+		}
 		solicitudServicio = solicitud;
 		nss.setText(solicitud.getNumero());
 		nflota.setText(solicitud.getNumeroFlota());
@@ -277,9 +285,12 @@ public class EditarSSUIData extends UIData {
 		if (index == null) {
 			linea.setNumeradorLinea(Long.valueOf(solicitudServicio.getLineas().size()));
 			solicitudServicio.getLineas().add(linea);
+			serviciosAdicionales.add(new ArrayList());
 		} else {
 			solicitudServicio.getLineas().remove(index.intValue());
 			solicitudServicio.getLineas().add(index.intValue(), linea);
+			linea.getServiciosAdicionales().clear();
+			serviciosAdicionales.get(index.intValue()).clear();
 		}
 		return linea.getNumeradorLinea().intValue();
 	}
@@ -295,5 +306,9 @@ public class EditarSSUIData extends UIData {
 
 	public List<LineaSolicitudServicioDto> getLineasSolicitudServicio() {
 		return solicitudServicio.getLineas();
+	}
+
+	public List<List<ServicioAdicionalLineaSolicitudServicioDto>> getServiciosAdicionales() {
+		return serviciosAdicionales;
 	}
 }
