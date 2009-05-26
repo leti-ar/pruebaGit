@@ -321,8 +321,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		// Se realiaza el mapeo de la coleccion a mano para poder filtrar los items por warehouse
 		for (ListaPrecios listaPrecios : listasPrecios) {
 			ListaPreciosDto lista = mapper.map(listaPrecios, ListaPreciosDto.class);
-			if (tipoSolicitud.getId().equals(
-					knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION)))
+//			if (tipoSolicitud.getId().equals(
+//					knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION)))
 				// if(!tipoSolicitudActivacion){
 				lista.setItemsListaPrecioVisibles(mapper.convertList(listaPrecios
 						.getItemsTasados(tipoSolicitud), ItemSolicitudTasadoDto.class));
@@ -352,11 +352,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return mapper.convertList(planes, PlanDto.class, "planesParaListBox");
 	}
 
-	public LineaSolicitudServicioDto getServiciosAdicionales(LineaSolicitudServicioDto linea) {
+	public LineaSolicitudServicioDto getServiciosAdicionales(LineaSolicitudServicioDto linea, Long idCuenta) {
 		Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales = solicitudServicioRepository
 				.getServiciosAdicionales(linea.getTipoSolicitud().getId(), linea.getPlan().getId(), linea
-						.getItem().getId(), new Long(45287));
-		// XXX: Hardcode Cuenta (Chorch)
+						.getItem().getId(), idCuenta);
 		linea.setServiciosAdicionales(mapper.convertList(serviciosAdicionales,
 				ServicioAdicionalLineaSolicitudServicioDto.class));
 		return linea;

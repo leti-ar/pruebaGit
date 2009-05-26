@@ -64,5 +64,5 @@ public interface SolicitudRpcService extends RemoteService {
 	public List<PlanDto> getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado,
 			TipoPlanDto tipoPlan, Long idCuenta);
 
-	public LineaSolicitudServicioDto getServiciosAdicionales(LineaSolicitudServicioDto linea);
+	public LineaSolicitudServicioDto getServiciosAdicionales(LineaSolicitudServicioDto linea, Long idCuenta);
 }

@@ -50,6 +50,6 @@ public interface SolicitudRpcServiceAsync {
 	public void getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,
 			Long idCuenta, AsyncCallback<List<PlanDto>> callback);
 
-	public void getServiciosAdicionales(LineaSolicitudServicioDto linea,
+	public void getServiciosAdicionales(LineaSolicitudServicioDto linea, Long idCuenta,
 			AsyncCallback<LineaSolicitudServicioDto> defaultWaitCallback);
 }

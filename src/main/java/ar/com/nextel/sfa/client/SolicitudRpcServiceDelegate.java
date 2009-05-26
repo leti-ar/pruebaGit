@@ -90,10 +90,10 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.getPlanesPorItemYTipoPlan(itemSolicitudTasado, tipoPlan, idCuenta, callback);
 	}
 
-	public void getServiciosAdicionales(LineaSolicitudServicioDto linea,
+	public void getServiciosAdicionales(LineaSolicitudServicioDto linea, Long idCuenta,
 			DefaultWaitCallback<LineaSolicitudServicioDto> defaultWaitCallback) {
 		WaitWindow.show();
-		solicitudRpcServiceAsync.getServiciosAdicionales(linea, defaultWaitCallback);
+		solicitudRpcServiceAsync.getServiciosAdicionales(linea, idCuenta, defaultWaitCallback);
 	}
 
 }
