@@ -4,8 +4,8 @@
 http://dozer.sourceforge.net/schema/beanmapping.xsd"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
-<configuration>
-</configuration>
+	<configuration>
+	</configuration>
 	<mapping>
 		<class-a>ar.com.nextel.sfa.client.dto.CuentaSearchDto
 		</class-a>
@@ -25,19 +25,18 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>grupoDocumentoId</b>
 		</field>
 		<!--
-			Según
-			ar.com.nextel.business.cuentas.search.predicates.CuentaSearchRequestDocumentValidator
-			que usa el Grupo Documento
+			Según ar.com.nextel.business.cuentas.search.predicates.CuentaSearchRequestDocumentValidator que usa el
+			Grupo Documento
 		-->
 		<!--
-			Esto no está habilitado porque la UI actualmente siempre FIJA el tipo
-			de documento a DNI, porque no admite no tener un elemento
-			seleccionado dentro del combo. rgm
+			Esto no está habilitado porque la UI actualmente siempre FIJA el tipo de documento a DNI, porque no admite
+			no tener un elemento seleccionado dentro del combo. rgm
 		-->
 		<!--
 			<field> <a>tipoDocumento.code</a> <b>grupoDocumentoId</b> </field>
 		-->
 	</mapping>
+
 
 	<mapping>
 		<class-a>ar.com.nextel.model.cuentas.beans.ClaseCuenta
@@ -59,23 +58,20 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto
 		</class-b>
-		<field
-			custom-converter-id="identifiableObjectToId">
+		<field custom-converter-id="identifiableObjectToId">
 			<a>grupoSolicitud</a>
 			<b>idGrupoSolicitud</b>
 		</field>
-		<field
-			custom-converter-id="identifiableObjectToId">
+		<field custom-converter-id="identifiableObjectToId">
 			<a>cuentaPotencial</a>
 			<b>idCuentaPotencial</b>
 		</field>
-		<field
-			custom-converter-id="identifiableObjectToId">
+		<field custom-converter-id="identifiableObjectToId">
 			<a>cuenta</a>
 			<b>idCuenta</b>
 		</field>
 	</mapping>
-	
+
 	<mapping map-id="ssCerradaResult">
 		<class-a>
 			ar.com.nextel.model.solicitudes.beans.SolicitudServicio
@@ -86,12 +82,12 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>idVantive</a>
 			<b>idSolicitudServicio</b>
 		</field>
-		<field>
+		<field><!-- no deberia usar un mapping especifico? -->
 			<a>cuenta</a>
 			<b>cuenta</b>
 		</field>
 	</mapping>
-	
+
 	<mapping>
 		<class-a>
 			ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO
@@ -105,6 +101,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.SolicitudServicioDto
 		</class-b>
+		<field map-id="cuentaSolicitud" type="one-way">
+			<a>cuenta</a>
+			<b>cuenta</b>
+		</field>
 		<field>
 			<a>montoCreditoFideliacion</a>
 			<b>montoCreditoFidelizacion</b>
@@ -120,10 +120,64 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<field custom-converter-id="enumToDto">
 			<a>tipoAnticipo</a>
 			<b>tipoAnticipo</b>
-		</field>	
+		</field>
 		<field>
 			<a>cuenta.estadoCreditoFidelizacion.vencimiento</a>
 			<b>fechaVencimientoCreditoFidelizacion</b>
+		</field>
+		<!--Debo mapearlo a mano por los unmodifiableSet-->
+		<field custom-converter-id="collectionOwnedConverter">
+			<a>plainLineas</a>
+			<b>lineas</b>
+		</field>
+	</mapping>
+
+	<mapping>
+		<class-a>ar.com.nextel.framework.IdentifiableObject
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.IdentifiableDto
+		</class-b>
+	</mapping>
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto
+		</class-b>
+		<field custom-converter-id="identifiableObjectToId">
+			<a>cabecera</a>
+			<b>idCabecera</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>tipoSolicitud</a>
+			<b>tipoSolicitud</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>item</a>
+			<b>item</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>plan</a>
+			<b>plan</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>localidad</a>
+			<b>localidad</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>modelo</a>
+			<b>modelo</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>listaPrecios</a>
+			<b>listaPrecios</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>terminoPago</a>
+			<b>terminoPago</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>modalidadCobro</a>
+			<b>modalidadCobro</b>
 		</field>
 	</mapping>
 
@@ -145,7 +199,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>listasPrecios</b>
 		</field-exclude>
 	</mapping>
-	
+
 	<mapping>
 		<class-a>ar.com.nextel.model.solicitudes.beans.ListaPrecios
 		</class-a>
@@ -169,7 +223,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.ItemSolicitudDto
 		</class-b>
-	</mapping>	
+	</mapping>
 	<mapping>
 		<class-a>ar.com.nextel.model.solicitudes.beans.Ajuste
 		</class-a>
@@ -199,23 +253,23 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<field type="one-way">
 			<a>planBase.tipoPlan</a>
 			<b>tipoPlan</b>
-		</field>				
+		</field>
 	</mapping>
-	
+
 	<mapping>
 		<class-a>ar.com.nextel.model.solicitudes.beans.ModalidadCobro
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.ModalidadCobroDto
 		</class-b>
 	</mapping>
-	
+
 	<mapping>
 		<class-a>ar.com.nextel.model.solicitudes.beans.ServicioAdicional
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.ServicioAdicionalDto
 		</class-b>
-	</mapping>	
-	
+	</mapping>
+
 	<mapping>
 		<class-a>ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio
 		</class-a>
@@ -225,7 +279,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>servicioAdicional.descripcion</a>
 			<b>descripcionServicioAdicional</b>
 		</field>
-	</mapping>	
+	</mapping>
 
 	<mapping map-id="cuentaSolicitud" wildcard="false">
 		<class-a>ar.com.nextel.model.cuentas.beans.Cuenta
@@ -240,7 +294,8 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 
 	<mapping>
 		<class-a>ar.com.nextel.model.personas.beans.Domicilio</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto</class-b>
+		<class-b>ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto
+		</class-b>
 		<field type="one-way">
 			<a>lockedBySolicitud</a>
 			<b>locked</b>
@@ -251,12 +306,16 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</field>
 	</mapping>
 	<mapping>
-		<class-a>ar.com.nextel.model.personas.beans.TipoDomicilioAsociado</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.TipoDomicilioAsociadoDto</class-b>
+		<class-a>ar.com.nextel.model.personas.beans.TipoDomicilioAsociado
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.TipoDomicilioAsociadoDto
+		</class-b>
 	</mapping>
 	<mapping>
-		<class-a>ar.com.nextel.model.personas.beans.TipoDomicilio</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.TipoDomicilioDto</class-b>
+		<class-a>ar.com.nextel.model.personas.beans.TipoDomicilio
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.TipoDomicilioDto
+		</class-b>
 	</mapping>
 	<mapping>
 		<class-a>ar.com.nextel.model.cuentas.beans.Cargo</class-a>
@@ -279,7 +338,8 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</field>
 	</mapping>
 	<mapping>
-		<class-a>ar.com.nextel.model.personas.beans.TipoTelefono</class-a>
+		<class-a>ar.com.nextel.model.personas.beans.TipoTelefono
+		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.TipoTelefonoDto</class-b>
 	</mapping>
 
@@ -304,9 +364,12 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</field>
 	</mapping>
 	<mapping>
-		<class-a>ar.com.nextel.model.personas.beans.TipoDocumento</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.TipoDocumentoDto</class-b>
+		<class-a>ar.com.nextel.model.personas.beans.TipoDocumento
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.TipoDocumentoDto
+		</class-b>
 	</mapping>
+
 
 
 	<mapping>
@@ -327,13 +390,13 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<field custom-converter-id="enumToDto">
 			<a>categoriaCuenta</a>
 			<b>categoriaCuenta</b>
-		</field><!--
-		<field custom-converter-id="enumToDto">
-			<a>condicionCuenta</a>
-			<b>condicionCuenta</b>
 		</field>
-		--><field custom-converter-id="enumToDto">
-			<a>estadoCuenta</a>
+		<!--
+			<field custom-converter-id="enumToDto"> <a>condicionCuenta</a> <b>condicionCuenta</b> </field> <f
+		-->
+		<field custom-converter-id="enumToDto">
+			a>estadoCuenta
+		</a>
 			<b>estadoCuenta</b>
 		</field>
 		<field custom-converter-id="enumToDto">
@@ -348,27 +411,36 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>tipoContribuyente</a>
 			<b>tipoContribuyente</b>
 		</field>
-    </mapping>
-		
-	<mapping>
-		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.MerlinDireccionDTO</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto</class-b>
-	</mapping>
-		<mapping>
-		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.MerlinDireccionDTO</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.DomicilioNormalizadoDto</class-b>
-	</mapping>
-	<mapping>
-		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.MotivoDudaDTO</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.NormalizacionDomicilioMotivoDto</class-b>
-	</mapping>	
-	<mapping>
-		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.NormalizarDomicilioResult</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto</class-b>
-	</mapping>
-		<mapping>
-		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.businessUnits.NormalizarCPAResult</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto</class-b>
 	</mapping>
 
+	<mapping>
+		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.MerlinDireccionDTO
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto
+		</class-b>
+	</mapping>
+	<mapping>
+		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.MerlinDireccionDTO
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.DomicilioNormalizadoDto
+		</class-b>
+	</mapping>
+	<mapping>
+		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.MotivoDudaDTO
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.NormalizacionDomicilioMotivoDto
+		</class-b>
+	</mapping>
+	<mapping>
+		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.NormalizarDomicilioResult
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto
+		</class-b>
+	</mapping>
+	<mapping>
+		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.businessUnits.NormalizarCPAResult
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto
+		</class-b>
+	</mapping>
 </mappings>
