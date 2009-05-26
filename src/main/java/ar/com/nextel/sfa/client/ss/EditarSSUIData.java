@@ -210,6 +210,10 @@ public class EditarSSUIData extends UIData {
 		});
 	}
 
+	public Long getCuentaId() {
+		return solicitudServicio.getCuenta().getId();
+	}
+
 	public SolicitudServicioDto getSolicitudServicio() {
 		solicitudServicio.setNumero(nss.getText());
 		solicitudServicio.setNumeroFlota(nflota.getText());
@@ -289,7 +293,7 @@ public class EditarSSUIData extends UIData {
 		return index;
 	}
 
-	public List<LineaSolicitudServicioDto> getLineaSolicitudServicio() {
+	public List<LineaSolicitudServicioDto> getLineasSolicitudServicio() {
 		return solicitudServicio.getLineas();
 	}
 }

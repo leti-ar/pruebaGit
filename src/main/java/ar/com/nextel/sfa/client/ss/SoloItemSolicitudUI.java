@@ -30,11 +30,15 @@ public class SoloItemSolicitudUI extends Composite {
 
 	private void initGenericPanel() {
 		Grid primerTabla = new Grid(1, 2);
+		primerTabla.addStyleName("layout");
+		primerTabla.getCellFormatter().setWidth(0, 0, "100px");
 		primerTabla.setWidget(0, 0, new InlineLabel(Sfa.constant().listaPrecio()));
 		primerTabla.setWidget(0, 1, itemSolicitudData.getListaPrecio());
 		mainPanel.add(primerTabla);
 
 		activacionModeloImei = new Grid(2, 2);
+		activacionModeloImei.addStyleName("layout");
+		activacionModeloImei.getCellFormatter().setWidth(0, 0, "100px");
 		activacionModeloImei.setVisible(false);
 		activacionModeloImei.setHTML(0, 0, Sfa.constant().imei());
 		activacionModeloImei.setWidget(0, 1, itemSolicitudData.getImei());
@@ -43,12 +47,17 @@ public class SoloItemSolicitudUI extends Composite {
 
 		mainPanel.add(activacionModeloImei);
 		Grid segundaTabla = new Grid(2, 2);
+		segundaTabla.addStyleName("layout");
+		segundaTabla.getCellFormatter().setWidth(0, 0, "100px");
 		segundaTabla.setWidget(0, 0, new InlineLabel(Sfa.constant().item()));
 		segundaTabla.setWidget(0, 1, itemSolicitudData.getItem());
 		segundaTabla.setWidget(1, 0, new InlineLabel(Sfa.constant().terminoPago()));
 		segundaTabla.setWidget(1, 1, itemSolicitudData.getTerminoPago());
 		mainPanel.add(segundaTabla);
+		
 		precioCantidad = new Grid(1, 4);
+		precioCantidad.addStyleName("layout");
+		precioCantidad.getCellFormatter().setWidth(0, 0, "100px");
 		precioCantidad.setWidget(0, 0, new InlineLabel(Sfa.constant().precioLista()));
 		precioCantidad.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
 		precioCantidad.setWidget(0, 2, new InlineLabel(Sfa.constant().cantidad()));
@@ -56,6 +65,8 @@ public class SoloItemSolicitudUI extends Composite {
 		mainPanel.add(precioCantidad);
 
 		activacionSimSeriePin = new Grid(2, 4);
+		activacionSimSeriePin.addStyleName("layout");
+		activacionSimSeriePin.getCellFormatter().setWidth(0, 0, "100px");
 		activacionSimSeriePin.setVisible(false);
 		activacionSimSeriePin.setHTML(0, 0, Sfa.constant().precioLista());
 		activacionSimSeriePin.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());

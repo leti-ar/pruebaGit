@@ -146,10 +146,11 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 	public void onCellClicked(SourcesTableEvents sender, final int row, int col) {
 		if (row > 0) {
 			if (col > 1) {
+				updateCheckedServiciosAdicionales();
 				selectedDetalleRow = row;
 				loadServiciosAdicionales();
 			} else if (col == 0) {
-				openItemSolicitudDialog(editarSSUIData.getLineaSolicitudServicio().get(row - 1));
+				openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
 			} else if (col == 1) {
 				MessageDialog.getInstance().showAceptarCancelar("Desea eliminar el Item?", new Command() {
 					public void execute() {
@@ -158,6 +159,21 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 						MessageDialog.getInstance().hide();
 					};
 				}, MessageDialog.getInstance().getCloseCommand());
+			}
+		}
+	}
+
+	/** Actualiza los servicios adicionales que fueron agregados y removidos */
+	public void updateCheckedServiciosAdicionales() {
+		if (selectedDetalleRow == 0) {
+			return;
+		}
+		List<ServicioAdicionalLineaSolicitudServicioDto> serviciosAd = editarSSUIData
+				.getLineasSolicitudServicio().get(selectedDetalleRow - 1).getServiciosAdicionales();
+		for (int i = 1; i < serviciosAdicionales.getRowCount(); i++) {
+			CheckBox check = (CheckBox) serviciosAdicionales.getWidget(i, 0);
+			if (check.isEnabled()) {
+				serviciosAd.get(i - 1).setChecked(check.isChecked());
 			}
 		}
 	}
@@ -178,6 +194,20 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 
 	private void addLineaSolicitudServicio(LineaSolicitudServicioDto linea) {
 		int newRow = editarSSUIData.addLineaSolicitudServicio(linea) + 1;
+		drawDetalleSSRow(linea, newRow);
+		onCellClicked(detalleSS, newRow, 2);
+	}
+
+	public void redrawDetalleSSTable() {
+		while (detalleSS.getRowCount() > 1) {
+			detalleSS.removeRow(1);
+		}
+		for (LineaSolicitudServicioDto linea : editarSSUIData.getLineasSolicitudServicio()) {
+			drawDetalleSSRow(linea, editarSSUIData.getLineasSolicitudServicio().indexOf(linea) + 1);
+		}
+	}
+
+	private void drawDetalleSSRow(LineaSolicitudServicioDto linea, int newRow) {
 		detalleSS.setWidget(newRow, 0, IconFactory.lapiz());
 		detalleSS.setWidget(newRow, 1, IconFactory.cancel());
 		detalleSS.setText(newRow, 2, linea.getItem().getDescripcion());
@@ -192,18 +222,17 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		detalleSS.setText(newRow, 11, linea.getDdn() ? "Si" : "No");
 		detalleSS.setText(newRow, 12, linea.getDdi() ? "Si" : "No");
 		detalleSS.setText(newRow, 13, linea.getRoaming() ? "Si" : "No");
-		onCellClicked(detalleSS, newRow, 2);
 	}
 
 	private void loadServiciosAdicionales() {
-		LineaSolicitudServicioDto linea = editarSSUIData.getLineaSolicitudServicio().get(
+		LineaSolicitudServicioDto linea = editarSSUIData.getLineasSolicitudServicio().get(
 				selectedDetalleRow - 1);
 		if (linea.getServiciosAdicionales() != null) {
 			renderServiciosAdicionalesTable(linea.getServiciosAdicionales());
 		} else {
 			controller.getServiciosAdicionales(linea, new DefaultWaitCallback<LineaSolicitudServicioDto>() {
 				public void success(LineaSolicitudServicioDto lineaConServAdicionales) {
-					editarSSUIData.getLineaSolicitudServicio().get(selectedDetalleRow - 1)
+					editarSSUIData.getLineasSolicitudServicio().get(selectedDetalleRow - 1)
 							.setServiciosAdicionales(lineaConServAdicionales.getServiciosAdicionales());
 					renderServiciosAdicionalesTable(lineaConServAdicionales.getServiciosAdicionales());
 				}
@@ -222,7 +251,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 			} else if (servicioAdicional.getChecked()) {
 				check.setChecked(true);
 			}
-			serviciosAdicionales.setHTML(row, 0, check.toString());
+			serviciosAdicionales.setWidget(row, 0, check);
 			serviciosAdicionales.setHTML(row, 1, servicioAdicional.getDescripcionServicioAdicional());
 			serviciosAdicionales.setHTML(row, 2, currencyFormat.format(servicioAdicional.getPrecioLista()));
 			serviciosAdicionales.setHTML(row, 3, currencyFormat.format(servicioAdicional.getPrecioLista()));

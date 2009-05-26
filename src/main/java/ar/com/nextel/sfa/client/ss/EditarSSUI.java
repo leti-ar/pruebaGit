@@ -71,6 +71,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 							// razonSocialClienteBar
 							editarSSUIData.setSolicitud(solicitud);
 							validarCompletitud(false);
+							datos.redrawDetalleSSTable();
 						}
 					});
 			editarSSUIData.clean();
@@ -132,9 +133,11 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 	}
 
 	private void guardar() {
+		datos.updateCheckedServiciosAdicionales();
 		SolicitudRpcService.Util.getInstance().saveSolicituServicio(editarSSUIData.getSolicitudServicio(),
 				new DefaultWaitCallback<SolicitudServicioDto>() {
 					public void success(SolicitudServicioDto result) {
+						editarSSUIData.setSolicitud(result);
 						Window.alert("Se ha guardado la solicitud con exito");
 					}
 				});
@@ -170,12 +173,13 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 	public void getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,
 			DefaultWaitCallback<List<PlanDto>> callback) {
 		SolicitudRpcService.Util.getInstance().getPlanesPorItemYTipoPlan(itemSolicitudTasado, tipoPlan,
-				new Long(45287), callback);
-		//XXX: Hardcode Cuenta (Chorch)
+				editarSSUIData.getCuentaId(), callback);
 	}
 
 	public void getServiciosAdicionales(LineaSolicitudServicioDto linea,
 			DefaultWaitCallback<LineaSolicitudServicioDto> defaultWaitCallback) {
-		SolicitudRpcService.Util.getInstance().getServiciosAdicionales(linea, defaultWaitCallback);
+		SolicitudRpcService.Util.getInstance().getServiciosAdicionales(linea, editarSSUIData.getCuentaId(),
+				defaultWaitCallback);
 	}
+
 }
