@@ -12,7 +12,7 @@ public class NormalizarDomicilioResultDto implements IsSerializable{
 
     private String tipo; // exito|no_parseado|no_encontrado|dudas
 
-    private List<DomicilioNormalizadoDto> dudas; // DomicilioNormalizadoDto
+    private List<DomiciliosCuentaDto> dudas; // DomiciliosCuentaDto
 
     private List<NormalizacionDomicilioMotivoDto> motivos; // NormalizacionDomicilioMotivoDto
 
@@ -48,7 +48,7 @@ public class NormalizarDomicilioResultDto implements IsSerializable{
     /**
      * @return Retorna el/la dudas.
      */
-    public List<DomicilioNormalizadoDto> getDudas() {
+    public List<DomiciliosCuentaDto> getDudas() {
         return dudas;
     }
 
@@ -56,7 +56,7 @@ public class NormalizarDomicilioResultDto implements IsSerializable{
      * @param dudas
      *            El/La dudas a setear.
      */
-    public void setDudas(List<DomicilioNormalizadoDto> dudas) {
+    public void setDudas(List<DomiciliosCuentaDto> dudas) {
         this.dudas = dudas;
     }
 

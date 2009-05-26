@@ -3,7 +3,6 @@ package ar.com.nextel.sfa.client.cuenta;
 import java.util.ArrayList;
 import java.util.List;
 
-import ar.com.nextel.sfa.client.dto.DomicilioNormalizadoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.NormalizacionDomicilioMotivoDto;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
@@ -36,13 +35,14 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	private SimpleLink linkAceptar;
 	private SimpleLink linkNoNormalizar;
 	private DomiciliosCuentaDto domicilio;
-	private List<DomicilioNormalizadoDto> domiciliosEnDuda;
+	private List<DomiciliosCuentaDto> domiciliosEnDuda;
 	//
-	private boolean normalizado = true;
-    private List<DomicilioNormalizadoDto> dudas = new ArrayList();
+	private boolean normalizado = true;	
+    //private List<DomiciliosCuentaDto> dudas = new ArrayList();
     private List<NormalizacionDomicilioMotivoDto> motivos = new ArrayList();
 	//
-	
+	private int rowSelected;
+    
 	private static NormalizarDomicilioUI instance = new NormalizarDomicilioUI();
 
 	public static NormalizarDomicilioUI getInstance() {
@@ -159,7 +159,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		loadTable();
 	}
 
-	public void setDomiciliosConDudas(List<DomicilioNormalizadoDto> domicilios) {
+	public void setDomiciliosConDudas(List<DomiciliosCuentaDto> domicilios) {
 		this.domiciliosEnDuda = domicilios;
 		setearFormatoNormalizador();
 		loadTableConVariosDomicilios();
@@ -169,9 +169,15 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		domicilioResult.addTableListener(new TableListener() {
 			public void onCellClicked(SourcesTableEvents arg0, int row, int col) {
 				if (row != 0) {
-					//Cambiar de estilo cuando haga click en las celdas:
-					domicilioResult.getRowFormatter().setStyleName(row, "layout");
+					//Limpio todas las celdas al estilo original,
+					for (int i = 1; i < domicilioResult.getRowCount(); i++) {
+						domicilioResult.getRowFormatter().removeStyleName(i, "selectedRow");	
+					}
+					//...y despues cambio de estilo la celda que se le hace click:
+					domicilioResult.getRowFormatter().setStyleName(row, "selectedRow");
+					rowSelected = row;
 				}
+				
 			}
 		});
 	}
@@ -188,13 +194,11 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		grillaPpal.getCellFormatter().addStyleName(1, 0, "alignCenter");
 		grillaPpal.setText(1, 0, domicilio.getDomicilios());
 		for (int i = 0; i < domiciliosEnDuda.size(); i++) {
-			domicilioResult.setHTML(i+1, 0, domiciliosEnDuda.get(i).getDomicilioCompleto());
+			domicilioResult.setHTML(i+1, 0, domiciliosEnDuda.get(i).getDomicilios());
 		}
 		setVisible(true);
 		agregaTableListeners();
 	}
-
-	
 
 	
 	private void loadTable() {
@@ -241,13 +245,13 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		this.normalizado = normalizado;
 	}
 
-	public List<DomicilioNormalizadoDto> getDudas() {
-		return dudas;
-	}
-
-	public void setDudas(List<DomicilioNormalizadoDto> dudas) {
-		this.dudas = dudas;
-	}
+//	public List<DomiciliosCuentaDto> getDudas() {
+//		return dudas;
+//	}
+//
+//	public void setDudas(List<DomiciliosCuentaDto> dudas) {
+//		this.dudas = dudas;
+//	}
 
 	public List<NormalizacionDomicilioMotivoDto> getMotivos() {
 		return motivos;
@@ -257,16 +261,31 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		this.motivos = motivos;
 	}
 
-	public List<DomicilioNormalizadoDto> getDomiciliosEnDuda() {
+	public List<DomiciliosCuentaDto> getDomiciliosEnDuda() {
 		return domiciliosEnDuda;
 	}
 
-	public void setDomiciliosEnDuda(List<DomicilioNormalizadoDto> domiciliosEnDuda) {
+	public void setDomiciliosEnDuda(List<DomiciliosCuentaDto> domiciliosEnDuda) {
 		this.domiciliosEnDuda = domiciliosEnDuda;
 	}
 	
 	public void setDomicilio(DomiciliosCuentaDto domicilio) {
 		this.domicilio = domicilio;
 	}
+
+	public DomiciliosCuentaDto getDomicilio() {
+		return domicilio;
+	}
+
+	public int getRowSelected() {
+		return rowSelected;
+	}
+
+	public void setRowSelected(int rowSelected) {
+		this.rowSelected = rowSelected;
+	}
 	
+	public DomiciliosCuentaDto getDomicilioEnDudaSelected(){
+		return domiciliosEnDuda.get(rowSelected);
+	}
 }

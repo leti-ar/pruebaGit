@@ -143,11 +143,7 @@ public class DomiciliosUIData extends UIData {
 		domicilioCopiado.setProvincia((ProvinciaDto)provincia.getSelectedItem());
 		domicilioCopiado.setPuerta(puerta.getText());
 		domicilioCopiado.setTorre(torre.getText());
-		if (validado.isChecked()){
-			domicilioCopiado.setValidado(true);
-		}else{
-			domicilioCopiado.setValidado(false);
-		}
+		domicilioCopiado.setValidado(validado.isChecked());
 		domicilioCopiado.setNombre_usuario_ultima_modificacion(nombreUsuarioUltimaModificacion.getText());
 		domicilioCopiado.setFecha_ultima_modificacion(fechaUltimaModificacion.getText());
 		domicilioCopiado.setTiposDomicilioAsociado(mapeaCombosFacturacionEntrega());
@@ -176,11 +172,7 @@ public class DomiciliosUIData extends UIData {
 		domicilio.setProvincia((ProvinciaDto)provincia.getSelectedItem());
 		domicilio.setPuerta(puerta.getText());
 		domicilio.setTorre(torre.getText());
-		if (validado.isChecked()){
-			domicilio.setValidado(true);
-		}else{
-			domicilio.setValidado(false);
-		}
+		domicilio.setValidado(validado.isChecked());
 		domicilio.setNombre_usuario_ultima_modificacion(nombreUsuarioUltimaModificacion.getText());
 		domicilio.setFecha_ultima_modificacion(fechaUltimaModificacion.getText());
 		domicilio.setTiposDomicilioAsociado(mapeaCombosFacturacionEntrega());

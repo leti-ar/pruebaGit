@@ -423,18 +423,33 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>tipoContribuyente</b>
 		</field>
 	</mapping>
-
 	<mapping>
-		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.MerlinDireccionDTO
-		</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto
-		</class-b>
-	</mapping>
-	<mapping>
-		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.MerlinDireccionDTO
-		</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.DomicilioNormalizadoDto
-		</class-b>
+		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.MerlinDireccionDTO</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto</class-b>
+		<field>
+			<a>cp</a>
+			<b>codigo_postal</b>
+		</field>
+		<field>
+			<a>depto</a>
+			<b>departamento</b>
+		</field>
+		<field>
+			<a>obs</a>
+			<b>observaciones</b>
+		</field>
+		<field>
+			<a>edificio</a>
+			<b>torre</b>
+		</field>
+		<field>
+			<a>entre1</a>
+			<b>entre_calle</b>
+		</field>
+		<field>
+			<a>entre2</a>
+			<b>y_calle</b>
+		</field>
 	</mapping>
 	<mapping>
 		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.MotivoDudaDTO

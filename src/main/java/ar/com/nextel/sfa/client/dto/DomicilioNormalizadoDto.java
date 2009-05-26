@@ -1,5 +1,8 @@
 package ar.com.nextel.sfa.client.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -27,6 +30,8 @@ public class DomicilioNormalizadoDto  implements IsSerializable{
     private String entre2;
     private String desde;
     private String hasta;
+    // Tipo de direccion Asociada
+    private List<TipoDomicilioAsociadoDto> tiposDomicilioAsociado = new ArrayList<TipoDomicilioAsociadoDto>();
 
 	public String getDomicilioCompleto() {
 		/** Muestra la concatenación de Calle, Número, Piso, Dpto., UF, Torre, Localidad, Partido, Provincia, Código Postal y CPA para cada domicilio habilitado.*/
@@ -180,4 +185,12 @@ public class DomicilioNormalizadoDto  implements IsSerializable{
     public void setProvincia(ProvinciaDto provincia) {
         this.provincia = provincia;
     }
+
+	public List<TipoDomicilioAsociadoDto> getTiposDomicilioAsociado() {
+		return tiposDomicilioAsociado;
+	}
+
+	public void setTiposDomicilioAsociado(List<TipoDomicilioAsociadoDto> tiposDomicilioAsociado) {
+		this.tiposDomicilioAsociado = tiposDomicilioAsociado;
+	}
 }
