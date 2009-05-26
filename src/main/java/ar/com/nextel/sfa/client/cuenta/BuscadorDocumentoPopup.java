@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client.cuenta;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
@@ -11,6 +12,7 @@ import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -45,7 +47,7 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 				}
 			}
 		});		
-		
+	
 		cerrar.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
 				hide();
@@ -66,7 +68,7 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 		buscadorDocumentoTable.setWidth("100%");
 		tipoDocumento    = new ListBox();
 		numeroDocTextBox = new TextBox();
-		numeroDocTextBox.setMaxLength(10);
+		numeroDocTextBox.setMaxLength(13);
 		tipoDocLabel   = new Label(Sfa.constant().tipoDocumento().trim());
 		numeroDocLabel = new Label(Sfa.constant().numero().trim());
 		
@@ -100,7 +102,12 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 		if (numeroDocTextBox.getText().equals("")) {
 			validator.addError(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
 		} else {
-			validator.addTarget(numeroDocTextBox).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));	
+			if (tipoDocumento.getSelectedItemId().equals(Long.toString(TipoDocumentoEnum.CUIL.getTipo())) ||
+					tipoDocumento.getSelectedItemId().equals(Long.toString(TipoDocumentoEnum.CUIT.getTipo()))) {
+				validator.addTarget(numeroDocTextBox).cuil(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
+			} else {
+				validator.addTarget(numeroDocTextBox).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
+			}
 		}
 		validator.fillResult();
 		if (!validator.getErrors().isEmpty()) {
@@ -108,4 +115,5 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 		}	
 		return validator.getErrors().isEmpty();
 	}
+
 }

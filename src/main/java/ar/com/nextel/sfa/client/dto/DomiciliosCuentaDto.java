@@ -5,8 +5,9 @@ import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class DomiciliosCuentaDto implements IsSerializable{
+public class DomiciliosCuentaDto implements IsSerializable, IdentifiableDto {
 	
+	private Long id;
 	private String calle;
 	private Long numero;
 	private String piso;
@@ -292,5 +293,12 @@ public class DomiciliosCuentaDto implements IsSerializable{
         }
         return false;
     }
-    
+
+	public Long getId() {
+		return this.id;
+	}
+    public void setId(Long id) {
+		this.id = id;
+	}
+	
 }

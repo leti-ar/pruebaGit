@@ -45,7 +45,7 @@ public class CuentaDomiciliosForm extends Composite {
 	private List<SolicitudServicioCerradaDto> ssCerradasAsociadas = new ArrayList<SolicitudServicioCerradaDto>();
 	private DomiciliosCuentaDto domicilioAEditar;
 	private int rowDomicilioABorrar;
-	private CuentaDto cuentaDto;
+	public CuentaDto cuentaDto;
 
 	public static CuentaDomiciliosForm getInstance() {
 		return instance;

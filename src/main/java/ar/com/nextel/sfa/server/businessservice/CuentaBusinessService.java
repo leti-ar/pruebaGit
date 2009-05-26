@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.server.businessservice;
 
+import org.dozer.MappingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -19,12 +20,15 @@ import ar.com.nextel.model.cuentas.beans.DatosPago;
 import ar.com.nextel.model.cuentas.beans.FormaPago;
 import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
+import ar.com.nextel.model.personas.beans.Domicilio;
+import ar.com.nextel.model.personas.beans.Provincia;
 import ar.com.nextel.model.personas.beans.Telefono;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoTarjetaCreditoDto;
+import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EmailDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.enums.TipoEmailEnum;
@@ -89,7 +93,6 @@ public class CuentaBusinessService {
 		cuenta.setFormaPago(formaPagoNueva);
 
 		if(cuentaDto.getDatosPago() instanceof DatosDebitoCuentaBancariaDto) { 
-//			repository.save(((DatosDebitoCuentaBancaria)cuenta.getDatosPago()).getTipoCuentaBancaria());
 			TipoCuentaBancaria tipoCuenta = (TipoCuentaBancaria) repository.retrieve(TipoCuentaBancaria.class, ((DatosDebitoCuentaBancariaDto)cuentaDto.getDatosPago()).getTipoCuentaBancaria().getId());
 			((DatosDebitoCuentaBancaria)cuenta.getDatosPago()).setTipoCuentaBancaria(tipoCuenta);
 		} else if(cuentaDto.getDatosPago() instanceof DatosDebitoTarjetaCreditoDto) { 
@@ -98,24 +101,31 @@ public class CuentaBusinessService {
 		}
 
 		//FIXME: revisar mapeo de Cuenta/Persona en dozer para no tener que hacer esto
+//		for(DomiciliosCuentaDto domicilio : cuentaDto.getPersona().getDomicilios()) {
+//			addDomicilioAPersona(domicilio, cuenta, mapper );
+//		}
 		for (TelefonoDto tel : cuentaDto.getPersona().getTelefonos()) {
-			agregarTelefonosAPersona(tel,cuenta,mapper);
+			addTelefonosAPersona(tel,cuenta,mapper);
 		}
 		for (EmailDto email : cuentaDto.getPersona().getEmails()) {
-			agregarEmailsAPersona(email,cuenta);
+			addEmailsAPersona(email,cuenta);
 		}
 		//--------------------------------------------------------
-
-		//cuenta.setVendedor(getVendedor("acsa1"));
-		//cuenta.setLastModificationDate(Calendar.getInstance().getTime());
+		repository.save(cuenta.getDomicilios());
 		repository.save(cuenta.getDatosPago());
 		repository.save(cuenta);
 		return cuenta;
 	}
 	
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void saveObject(Object obj)  {
-		repository.save(obj);
+	/**
+	 * 
+	 */
+	private void addDomicilioAPersona(DomiciliosCuentaDto domicilio, Cuenta cuenta, MapperExtended mapper ) {
+		Domicilio domi = mapper.map(domicilio, Domicilio.class);
+		domi.setProvincia((Provincia) repository.retrieve(Provincia.class, domicilio.getProvincia().getId()));
+		domi.setPersona(cuenta.getPersona());
+		repository.save(domi);
+		cuenta.getPersona().getPlainDomicilios().add(domi);
 	}
 	
 	/**
@@ -123,7 +133,7 @@ public class CuentaBusinessService {
 	 * @param tel
 	 * @param cuenta
 	 */
-	private void agregarTelefonosAPersona(TelefonoDto tel, Cuenta cuenta,MapperExtended mapper) {
+	private void addTelefonosAPersona(TelefonoDto tel, Cuenta cuenta, MapperExtended mapper) {
 		if (tel.getTipoTelefono().getId()==TipoTelefonoEnum.PRINCIPAL.getTipo()) {
 			if (cuenta.getPersona().getTelefonoPrincipal()!=null) {
 				cuenta.getPersona().getTelefonoPrincipal().setArea(tel.getArea());
@@ -165,7 +175,7 @@ public class CuentaBusinessService {
 	 * @param mail
 	 * @param cuenta
 	 */
-	private void agregarEmailsAPersona(EmailDto mail, Cuenta cuenta) {
+	private void addEmailsAPersona(EmailDto mail, Cuenta cuenta) {
 		if (mail.getTipoEmail().getId()==TipoEmailEnum.PERSONAL.getTipo()) {
 			if (cuenta.getPersona().getEmailPersonal()!=null) {
 				cuenta.getPersona().getEmailPersonal().setEmail(mail.getEmail());
@@ -183,4 +193,6 @@ public class CuentaBusinessService {
 		
 	}
 
+	
+	
 }

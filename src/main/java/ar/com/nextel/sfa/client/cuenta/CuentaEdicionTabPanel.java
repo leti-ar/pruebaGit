@@ -2,11 +2,13 @@ package ar.com.nextel.sfa.client.cuenta;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
@@ -170,8 +172,19 @@ public class CuentaEdicionTabPanel {
 	}
 	
 	private void guardar() {
-		cuentaDatosForm.saveCuenta();
+		CuentaDto ctaDto = cuentaDatosForm.getCuentaDtoFromEditor();
+        //agrego domicilios
+		ctaDto.getPersona().setDomicilios(CuentaDomiciliosForm.getInstance().cuentaDto.getPersona().getDomicilios());
+		
+		CuentaRpcService.Util.getInstance().saveCuenta(ctaDto,new DefaultWaitCallback() {
+			public void success(Object result) {
+				//CuentaEdicionTabPanel.getInstance().setCuenta2editDto((CuentaDto) result);
+				//ponerDatosBusquedaEnFormulario((CuentaDto) result);
+				ErrorDialog.getInstance().show("GUARDADO OK");
+			}
+		});
 	}
+	
 	private void crearSS() {
 		ErrorDialog.getInstance().show("OK PARA CREAR SS (@TODO)");
 	}

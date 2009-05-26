@@ -156,7 +156,7 @@ public class CuentaDatosForm extends Composite {
 		datosCuentaTable.setWidget(row, 3, camposTabDatos.getRubroLabel());
 		datosCuentaTable.setWidget(row, 4, camposTabDatos.getRubro());
 		row++;
-		datosCuentaTable.setWidget(row, 0, camposTabDatos.getClaseCliente());
+		datosCuentaTable.setWidget(row, 0, camposTabDatos.getClaseClLabel());
 		datosCuentaTable.setWidget(row, 1, camposTabDatos.getClaseCliente());
 		datosCuentaTable.setWidget(row, 3, camposTabDatos.getCategLabel());
 		datosCuentaTable.setWidget(row, 4, camposTabDatos.getCategoria());
@@ -485,10 +485,14 @@ public class CuentaDatosForm extends Composite {
 
     public void cargarPanelUsuario(CuentaDto cuentaDto) {
 		camposTabDatos.getUsuario().setText(cuentaDto.getNombreUsuarioCreacion());
-		camposTabDatos.getFechaCreacion().setText(DateTimeFormat.getMediumDateFormat().format(cuentaDto.getFechaCreacion()));
+		if (cuentaDto.getFechaCreacion()!=null) 
+			camposTabDatos.getFechaCreacion().setText(DateTimeFormat.getMediumDateFormat().format(cuentaDto.getFechaCreacion()));
     }
     
-	public void deshabilitarCamposAlAgregarCuenta(CuentaDto cuentaDto) {
+	public void setAtributosCamposAlAgregarCuenta(CuentaDto cuentaDto) {
+        boolean docTipoCUIL = cuentaDto.getPersona().getDocumento().getTipoDocumento().getId()==TipoDocumentoEnum.CUIL.getTipo() ||
+                              cuentaDto.getPersona().getDocumento().getTipoDocumento().getId()==TipoDocumentoEnum.CUIT.getTipo();
+		
 		List <Widget>campos = new ArrayList<Widget>();
 		campos.add(camposTabDatos.getRazonSocial());
 		campos.add(camposTabDatos.getTipoDocumento());
@@ -498,15 +502,19 @@ public class CuentaDatosForm extends Composite {
 		campos.add(camposTabDatos.getCicloFacturacion());
 	    
 		FormUtils.disableFields(campos);
-	    
-		camposTabDatos.getIibb().setVisible(false);
-		camposTabDatos.getCargo().setVisible(false);
+		
+		camposTabDatos.getIibb().setVisible(docTipoCUIL);
+		camposTabDatos.getIibbLabel().setVisible(docTipoCUIL);
+		
 		camposTabDatos.getNombreDivision().setVisible(false);
-		camposTabDatos.getIibbLabel().setVisible(false);
-		camposTabDatos.getCargoLabel().setVisible(false);
 		camposTabDatos.getNomDivLabel().setVisible(false);
+		
+		camposTabDatos.getUse().setVisible(!docTipoCUIL);
+		camposTabDatos.getUseLabel().setVisible(!docTipoCUIL);
+
 		camposTabDatos.getCargo().setVisible(cuentaDto.getPersona().getSexo().getItemValue().equals(Long.toString(SexoEnum.ORGANIZACION.getId())));
 		camposTabDatos.getCargoLabel().setVisible(cuentaDto.getPersona().getSexo().getItemValue().equals(Long.toString(SexoEnum.ORGANIZACION.getId())));
+
 		armarTablaPanelDatos();
 	}
     
@@ -631,6 +639,10 @@ public class CuentaDatosForm extends Composite {
 	    }
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public List<String> validarCompletitud() {
 		validator.clear();
 		camposObligatorios.clear();
@@ -646,9 +658,18 @@ public class CuentaDatosForm extends Composite {
 		return validator.getErrors();
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public List<String> validarCamposTabDatos() {
 		validator.clear();
 
+		if (!camposTabDatos.getNombre().getText().equals("")) 
+			validator.addTarget(camposTabDatos.getNombre()).alphabetic(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getNombre().getName()));
+		if (!camposTabDatos.getApellido().getText().equals("")) 
+			validator.addTarget(camposTabDatos.getApellido()).alphabetic(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getApellido().getName()));
+		
 		if (!camposTabDatos.getFechaNacimiento().getTextBox().getText().equals("")) 
 			validator.addTarget(camposTabDatos.getFechaNacimiento().getTextBox()).date(Sfa.constant().ERR_FECHA_NO_VALIDA().replaceAll("\\{1\\}", camposTabDatos.getFechaNacimiento().getTextBox().getName()));
 
@@ -697,6 +718,9 @@ public class CuentaDatosForm extends Composite {
 		return validator.getErrors();
 	}
 	
+	/**
+	 * 
+	 */
 	public void validarTarjeta() {
 		if (!camposTabDatos.getNumeroTarjeta().getText().equals("")) {
 			CuentaRpcService.Util.getInstance().validarTarjeta(camposTabDatos.getNumeroTarjeta().getText(), new Integer(camposTabDatos.getMesVto().getSelectedItemId()), new Integer(camposTabDatos.getAnioVto().getText()), new DefaultWaitCallback() {
@@ -716,12 +740,19 @@ public class CuentaDatosForm extends Composite {
 		}
 	}
 	
+	/**
+	 * 
+	 */
 	public void cambiarVisibilidadCamposSegunSexo() {
 		camposTabDatos.getCargoLabel().setVisible(camposTabDatos.getSexo().getSelectedItemId().equals(Long.toString(SexoEnum.ORGANIZACION.getId())));
 		camposTabDatos.getCargo().setVisible(camposTabDatos.getSexo().getSelectedItemId().equals(Long.toString(SexoEnum.ORGANIZACION.getId())));
 		armarTablaPanelDatos();
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public CuentaDto getCuentaDtoFromEditor() {
 		PersonaDto personaDto = CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getPersona();
 		
@@ -837,16 +868,16 @@ public class CuentaDatosForm extends Composite {
 		return CuentaEdicionTabPanel.getInstance().getCuenta2editDto();
 	}
 
-	public void saveCuenta() {
-		CuentaDto ctaDto = getCuentaDtoFromEditor();
-		CuentaRpcService.Util.getInstance().saveCuenta(ctaDto,new DefaultWaitCallback() {
-			public void success(Object result) {
-				//CuentaEdicionTabPanel.getInstance().setCuenta2editDto((CuentaDto) result);
-				//ponerDatosBusquedaEnFormulario((CuentaDto) result);
-				ErrorDialog.getInstance().show("GUARDADO OK");
-			}
-		});
-	}
+//	public void saveCuenta() {
+//		CuentaDto ctaDto = getCuentaDtoFromEditor();
+//		CuentaRpcService.Util.getInstance().saveCuenta(ctaDto,new DefaultWaitCallback() {
+//			public void success(Object result) {
+//				//CuentaEdicionTabPanel.getInstance().setCuenta2editDto((CuentaDto) result);
+//				//ponerDatosBusquedaEnFormulario((CuentaDto) result);
+//				ErrorDialog.getInstance().show("GUARDADO OK");
+//			}
+//		});
+//	}
 	
 	
 	public CuentaUIData getCamposTabDatos() {

@@ -328,6 +328,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>sexo</a>
 			<b>sexo</b>
 		</field>
+		<field custom-converter-id="collectionDomiciliosServicioConverter">		
+			<a>plainDomicilios</a>
+			<b>domicilios</b>
+		</field>
 	</mapping>
 	<mapping>
 		<class-a>ar.com.nextel.model.personas.beans.Telefono</class-a>
