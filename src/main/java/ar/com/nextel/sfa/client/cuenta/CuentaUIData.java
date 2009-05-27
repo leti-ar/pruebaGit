@@ -225,22 +225,6 @@ public class CuentaUIData extends UIData {
 		razonSocial.setText(nombre.getText() + " " + apellido.getText());
 	}
 	
-//	public PersonaDto getPersona() {
-//		persona.setApellido(apellido.getText());
-//		//TODO: Revisar lo del Documento!
-//		DocumentoDto doc = new DocumentoDto();
-//		TipoDocumentoDto tipoDoc = new TipoDocumentoDto(Long.parseLong(tipoDocumento.getSelectedItem().getItemValue()),tipoDocumento.getSelectedItem().getItemText());
-//		doc.setNumero(numeroDocumento.getText());
-//		doc.setTipoDocumento(tipoDoc);
-//		persona.setDocumento(doc);
-//		//
-//		persona.setFechaNacimiento(fechaNacimiento.getSelectedDate());
-//		persona.setNombre(nombre.getText());
-//		persona.setRazonSocial(razonSocial.getText());
-//		persona.setSexo(new SexoDto(Long.parseLong(sexo.getSelectedItem().getItemValue()),sexo.getSelectedItem().getItemText()));
-//		return persona;
-//	}
-	
 	private void setAtributosDeCampos() {
 
 		//obligatorios (style)

@@ -148,7 +148,7 @@ public class DomiciliosUIData extends UIData {
 		domicilioCopiado.setFecha_ultima_modificacion(fechaUltimaModificacion.getText());
 		domicilioCopiado.setTiposDomicilioAsociado(mapeaCombosFacturacionEntrega());
 		//Esto del locked se setea en FALSE para que le permita la edicion del mismo, hasta que se guarde la cuenta, cuando se setea en TRUE.
-		domicilioCopiado.setLocked(false);
+		  //domicilioCopiado.setLocked(false);
 		//
 		return domicilioCopiado;
 	}
@@ -177,7 +177,7 @@ public class DomiciliosUIData extends UIData {
 		domicilio.setFecha_ultima_modificacion(fechaUltimaModificacion.getText());
 		domicilio.setTiposDomicilioAsociado(mapeaCombosFacturacionEntrega());
 		//Esto del locked se setea en FALSE para que le permita la edicion del mismo, hasta que se guarde la cuenta, cuando se setea en TRUE.
-		domicilio.setLocked(false);
+  		  //domicilio.setLocked(false);
 		//
 		return domicilio;
 	}

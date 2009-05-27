@@ -258,13 +258,14 @@ public class CuentaDomiciliosForm extends Composite {
 				DomiciliosCuentaDto domicilioNormalizadoCopiado = null;
 				if (estadoNormalizacion.equals("dudas")){
 					domicilioNormalizadoCopiado = NormalizarDomicilioUI.getInstance().getDomicilioEnDudaSelected();
-					domicilioAEditar = domicilioNormalizadoCopiado;
+					//domicilioAEditar = domicilioNormalizadoCopiado;
 				}else  if (estadoNormalizacion.equals("exito")){
 					domicilioNormalizadoCopiado = NormalizarDomicilioUI.getInstance().getDomicilio();
+					domicilioNormalizadoCopiado = mapeoDomicilioNormalizadoCopiado(domicilioNormalizadoCopiado);
 				}
 				PersonaDto persona = cuentaDto.getPersona();
 				persona.getDomicilios().add(domicilioNormalizadoCopiado);
-				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConDomiciliosEditados();
+				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConNuevoDomicilio(domicilioNormalizadoCopiado);
 				DomicilioUI.getInstance().hide();
 				NormalizarDomicilioUI.getInstance().hide();
 			}
@@ -281,9 +282,7 @@ public class CuentaDomiciliosForm extends Composite {
 					domicilioNormalizado = NormalizarDomicilioUI.getInstance().getDomicilioEnDudaSelected();
 				}else if (estadoNormalizacion.equals("exito")){
 					domicilioNormalizado = NormalizarDomicilioUI.getInstance().getDomicilio();
-					//Mapeo para no perder datos: TERMINAR EN LOS DEMAS:
-					domicilioNormalizado.setValidado(domicilioAEditar.getValidado());
-					//
+					domicilioNormalizado = mapeoDomicilioNormalizado(domicilioNormalizado);
 					PersonaDto persona = cuentaDto.getPersona();
 					int index = persona.getDomicilios().indexOf(domicilioAEditar);
 					persona.getDomicilios().remove(index);
@@ -308,6 +307,31 @@ public class CuentaDomiciliosForm extends Composite {
 		 };
 	return agregaDomicilioEditado;
 	}
+
+	
+	private DomiciliosCuentaDto mapeoDomicilioNormalizado(DomiciliosCuentaDto domicilioNormalizado){
+		   DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomiciliosData().getDomicilio();
+		   domicilioNormalizado.setValidado(domicilioAEditar.getValidado());
+		   domicilioNormalizado.setTiposDomicilioAsociado(domicilio.getTiposDomicilioAsociado());
+		   domicilioNormalizado.setEn_carga(domicilioAEditar.getEn_carga());
+		   domicilioNormalizado.setNombre_usuario_ultima_modificacion(domicilioAEditar.getNombre_usuario_ultima_modificacion());
+		   domicilioNormalizado.setFecha_ultima_modificacion(domicilioAEditar.getFecha_ultima_modificacion());
+		   domicilioNormalizado.setActivo(domicilioAEditar.getActivo());
+		   domicilioNormalizado.setObservaciones(domicilioAEditar.getObservaciones());
+		   return domicilioNormalizado;
+	}
+	
+	private DomiciliosCuentaDto mapeoDomicilioNormalizadoCopiado(DomiciliosCuentaDto domicilioNormalizado){
+		   DomiciliosCuentaDto domicilioCopiado = DomicilioUI.getInstance().getDomiciliosData().getDomicilioCopiado();;
+		   domicilioNormalizado.setValidado(domicilioAEditar.getValidado());
+		   domicilioNormalizado.setTiposDomicilioAsociado(domicilioCopiado.getTiposDomicilioAsociado());
+		   domicilioNormalizado.setEn_carga(domicilioAEditar.getEn_carga());
+		   domicilioNormalizado.setNombre_usuario_ultima_modificacion(domicilioAEditar.getNombre_usuario_ultima_modificacion());
+		   domicilioNormalizado.setFecha_ultima_modificacion(domicilioAEditar.getFecha_ultima_modificacion());
+		   domicilioNormalizado.setActivo(domicilioAEditar.getActivo());
+		   domicilioNormalizado.setObservaciones(domicilioAEditar.getObservaciones());
+		   return domicilioNormalizado;
+	}
 	
 	private Command getComandoAgregarNuevoDomicilio(String estadoNorm) {
 		estadoNormalizacion = estadoNorm;
@@ -318,7 +342,8 @@ public class CuentaDomiciliosForm extends Composite {
 					domicilioNormalizadoNuevo = NormalizarDomicilioUI.getInstance().getDomicilioEnDudaSelected();
 				}else if (estadoNormalizacion.equals("exito")){
 					domicilioNormalizadoNuevo = NormalizarDomicilioUI.getInstance().getDomicilio();
-					domicilioAEditar = domicilioNormalizadoNuevo; 
+					domicilioNormalizadoNuevo = mapeoDomicilioNormalizado(domicilioNormalizadoNuevo);
+					domicilioAEditar = domicilioNormalizadoNuevo;
 				}
 				PersonaDto persona = cuentaDto.getPersona();
 				persona.getDomicilios().add(domicilioNormalizadoNuevo);
@@ -437,16 +462,17 @@ public class CuentaDomiciliosForm extends Composite {
 
 	/**
 	 * @author eSalvador
-	 * Aca llama al validador para ver si tiene SSCerradas, y si tiene, advertir con un
+	 * Aca llama al validador para ver si tiene SSCerradas asociadas al domicilio, y si tiene, advertir con un
 	 * popup, e inhabilitar los campos de edicion del Domicilio.
 	 **/
-	public void validaHabilitacionDeCampos(){
-		if (buscaSSCerradasAsociadas(cuentaDto.getCodigoVantive()).size() != 0) {
-			domicilioAEditar.setLocked(true);
-		} else {
-			domicilioAEditar.setLocked(false);
-		}
-	}
+//	public void validaHabilitacionDeCampos(){
+//		if (buscaSSCerradasAsociadas(cuentaDto.getCodigoVantive()).size() != 0) {
+//			domicilioAEditar.setLocked(true);
+//		} else {
+//			domicilioAEditar.setLocked(false);
+//		}
+		//domicilioAEditar.isLocked();
+//	}
 	
 	/**
 	 * @author eSalvador
@@ -454,7 +480,7 @@ public class CuentaDomiciliosForm extends Composite {
 	 **/
 	public void refrescaTablaConNuevoDomicilio(DomiciliosCuentaDto domicilioNuevoOEditado){
 		domicilioAEditar = domicilioNuevoOEditado;
-		validaHabilitacionDeCampos();
+		//validaHabilitacionDeCampos();
 		datosTabla.clear();
 		CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().cargaTablaDomicilios(cuentaDto);
 	}
@@ -474,11 +500,18 @@ public class CuentaDomiciliosForm extends Composite {
 	 **/
 	public void cargaTablaDomicilios(final CuentaDto cuentaDto) {
 		this.cuentaDto = cuentaDto;
-
+		
 		List<DomiciliosCuentaDto> domicilios;
 		domicilios = cuentaDto.getPersona().getDomicilios();
 		agregaTableListeners();
 		
+		//Limpia la tabla de domicilios incialmente, si esta con datos:
+		if (datosTabla.getRowCount() > 1){
+			for (int j = 1; j < (datosTabla.getRowCount() - 1); j++) {
+				datosTabla.removeRow(j);
+			}
+		}
+		//
 		for (int i = 0; i < domicilios.size(); i++) {
 			if (domicilios.get(i) != null) {
 				// Carga los iconos:
@@ -535,7 +568,7 @@ public class CuentaDomiciliosForm extends Composite {
 						if (domicilio.isLocked()){
 							openPopupAdviseDialog(getOpenDomicilioUICommand());
 						}else{
-							validaHabilitacionDeCampos();
+							//validaHabilitacionDeCampos();
 							DomicilioUI.getInstance().setComandoAceptar(getComandoAceptarEdicionServiceCall());
 							DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
 						}

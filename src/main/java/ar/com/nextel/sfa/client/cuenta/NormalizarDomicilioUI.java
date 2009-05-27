@@ -277,6 +277,13 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		return domicilio;
 	}
 
+	public DomiciliosCuentaDto getDomicilioCopiado() {
+		DomiciliosCuentaDto domicilioCopiado = new DomiciliosCuentaDto(); 
+		domicilioCopiado.setCalle(domicilio.getCalle());
+		
+		return domicilioCopiado;
+	}
+	
 	public int getRowSelected() {
 		return rowSelected;
 	}

@@ -8,6 +8,9 @@ import ar.com.nextel.sfa.client.enums.EstadoDomicilioEnum;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+/**
+ * @author eSalvador 
+ **/
 public class DomiciliosCuentaDto implements IsSerializable, IdentifiableDto {
 	
 	private Long id;
@@ -41,7 +44,9 @@ public class DomiciliosCuentaDto implements IsSerializable, IdentifiableDto {
     private List<TipoDomicilioAsociadoDto> tiposDomicilioAsociado = new ArrayList<TipoDomicilioAsociadoDto>();
 	//Lo seteo en True por defecto, porque esto no se guarda en la base, 
     //y cuando venga el dato, siempre estara deshabilitado, a menos que sea un domicilio Nuevo.
-    private boolean locked = true;
+    //private boolean locked = true;
+    
+    private boolean locked;
 	
 	public String getDomicilios() {
 	/** Muestra la concatenación de Calle, Número, Piso, Dpto., UF, Torre, Localidad, Partido, Provincia, Código Postal y CPA para cada domicilio habilitado.*/
@@ -52,14 +57,6 @@ public class DomiciliosCuentaDto implements IsSerializable, IdentifiableDto {
 		
 	return domicilios;
 	}
-	
-//	public List<TipoDomicilioAsociadoDto> getTiposDomicilioAsociado() {
-//		return tiposDomicilioAsociado;
-//	}
-
-//	public void setTiposDomicilioAsociado(Set<TipoDomicilioAsociadoDto> tipoDomicilioAsociado) {
-//		this.tiposDomicilioAsociado = tipoDomicilioAsociado;
-//	}
 	
 	public String getCalle() {
 		return calle;
@@ -214,26 +211,6 @@ public class DomiciliosCuentaDto implements IsSerializable, IdentifiableDto {
         this.tiposDomicilioAsociado = tiposDomicilioAsociado;
     }
 
-    /**
-     * @param tipoDomicilioAsociado
-//     */
-//    public void addTipoDomicilioAsociado(TipoDomicilioAsociadoDto tipoDomicilioAsociado) {
-//        boolean added = this.tiposDomicilioAsociado.add(tipoDomicilioAsociado);
-//        if (added && tipoDomicilioAsociado != null) {
-//            tipoDomicilioAsociado.setDomicilio(this);
-//        }
-//    }
-
-    /**
-     * Agrega la colecci�n de tipoDomicilioAsociado a los tipo domicilio asociado al domicilio
-     * 
-     * @param tipoDomicilioAsociados
-     */
-//    public void addTipoDomicilioAsociados(Collection<TipoDomicilioAsociadoDto> tipoDomicilioAsociados) {
-//        for (TipoDomicilioAsociadoDto tipoDomicilioAsociado : tipoDomicilioAsociados) {
-//            this.addTipoDomicilioAsociado(tipoDomicilioAsociado);
-//        }
-//    }
 
     /**
      * @param tipoDomicilioAsociado
@@ -266,18 +243,7 @@ public class DomiciliosCuentaDto implements IsSerializable, IdentifiableDto {
         }
         return tipoDomicilioAsociado;
     }
-    
-    /**
-     * Copia todos los tipos de domicilio asociados.
-     * 
-     * @param nuevoDomicilio nuevo domicilio a agregar los tipos de documento
-     */
-//    private void copyAllTiposDomicilioAsociados(DomiciliosCuentaDto nuevoDomicilio) {
-//        for (TipoDomicilioAsociadoDto tipo : this.getTiposDomicilioAsociado()) {
-//        	TipoDomicilioAsociadoDto nuevoTipo = tipo.copy();
-//            nuevoDomicilio.addTipoDomicilioAsociado(nuevoTipo);
-//        }
-//    }
+
     
     public boolean esPrincipalDeEntrega(TipoDomicilioDto tipoDomicilioEntregaDto) {
         return esPrincipalDe(tipoDomicilioEntregaDto);
