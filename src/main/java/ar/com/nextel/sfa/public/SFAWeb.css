@@ -281,7 +281,7 @@ A {
 .content .gwt-Label {
 	color: red;
 }
-
+	
 .abmPanel {
 	border: 1px solid #981836;
 	margin-bottom: 8px;
@@ -304,6 +304,7 @@ A {
 	background-color: #dddddd;
 }
 
+
 .crearDomicilioButton,.crearLineaButton,.validarCompletitudButton {
 	background-repeat: no-repeat;
 	background-color: transparent;
@@ -317,6 +318,8 @@ A {
 	padding-left: 20px;
 	margin-right: 8px;
 	border: none 0px;
+	color:gray;
+	text-align: right;
 }
 
 .crearDomicilioButton,.crearLineaButton {
@@ -440,4 +443,32 @@ A {
 
 .crearCuentaTabPanel {
 	margin: 16 0 40 0px;
+}
+
+.exportarExcelSS {
+float: right;
+}
+
+.verazRechazar {
+background-color:#FE003E;
+border:2px solid #FE003E;
+color:#FFFFFF;
+margin-left:27px;
+width:90px;
+}
+
+.verazRevisar {
+background-color:#FFC000;
+border:2px solid #FFC000;
+color:#FFFFFF;
+margin-left:27px;
+width:90px;
+}
+
+.verazAceptar {
+background-color:#CAE8A9;
+border:2px solid #CAE8A9;
+color:#189D21;
+margin-left:27px;
+width:90px;
 }
