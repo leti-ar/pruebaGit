@@ -96,7 +96,7 @@ public class BuscarCuentaFilterUI extends Composite {
 					}
 					ErrorDialog.getInstance().show(error.toString());
 				}else{		
-					controller.searchCuentas(buscadorCuentasFilterEditor);	
+					controller.searchCuentas(buscadorCuentasFilterEditor.getCuentaSearch());	
 				}
 			}
 		});

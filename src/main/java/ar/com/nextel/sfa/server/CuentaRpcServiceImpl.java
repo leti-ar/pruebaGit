@@ -25,6 +25,7 @@ import ar.com.nextel.business.externalConnection.exception.MerlinException;
 import ar.com.nextel.business.personas.normalizarDomicilio.NormalizadorDomicilio;
 import ar.com.nextel.business.personas.normalizarDomicilio.businessUnits.NormalizarDomicilioRequest;
 import ar.com.nextel.business.vendedores.RegistroVendedores;
+import ar.com.nextel.components.filter.Filter;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.security.Usuario;
 import ar.com.nextel.model.cuentas.beans.Cargo;
@@ -150,7 +151,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 	}
 
 	public List<CuentaSearchResultDto> searchCuenta(CuentaSearchDto cuentaSearchDto) {
-		List dtoResult = new ArrayList();
+		List<CuentaSearchResultDto> dtoResult = new ArrayList<CuentaSearchResultDto>();
 		CuentaSearchData cuentaSearchData = (CuentaSearchData) mapper.map(
 				cuentaSearchDto, CuentaSearchData.class);
 
@@ -163,8 +164,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		SessionContextLoader sessContext = (SessionContextLoader) context
 				.getBean("sessionContextLoader");
 		sessContext.getSessionContext().setVendedor(vendedor);
-		List filtros = (List) context
-				.getBean("vendedorCuentaSearchFilterDefinitions");
+		List<Filter> filtros = (List<Filter>) context
+				.getBean("vendedorCuentaSearchFilterDefinitions"); 
 		try {
 			List<CuentaSearchResult> result = searchCuentaBusinessOperator
 					.searchCuentas(cuentaSearchData, vendedor, filtros,

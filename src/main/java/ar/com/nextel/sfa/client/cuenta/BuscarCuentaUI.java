@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 
 /**
@@ -35,7 +36,7 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 	public void unload() {
 	}
 
-	public void searchCuentas(BuscarCuentaFilterUIData buscadorCuentasFilterEditor) {
-		buscarCuentaResultPanel.searchCuentas(buscadorCuentasFilterEditor.getCuentaSearch());
+	public void searchCuentas(CuentaSearchDto cuentaSearchDto) {
+		buscarCuentaResultPanel.searchCuentas(cuentaSearchDto);
 	}
 }
