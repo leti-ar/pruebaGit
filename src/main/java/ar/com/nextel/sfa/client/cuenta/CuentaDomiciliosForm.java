@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client.cuenta;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.com.nextel.framework.repository.hibernate.mapping.personas.DomicilioCollectionHibernateMappingSFATestCase;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -14,10 +15,13 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.TipoDomicilioAsociadoDto;
 import ar.com.nextel.sfa.client.dto.TipoDomicilioDto;
+import ar.com.nextel.sfa.client.enums.TipoDomicilioAsociadoEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.core.client.GWT;
@@ -30,6 +34,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -593,4 +598,31 @@ public class CuentaDomiciliosForm extends Composite {
 			}
 		});
 	}
+	
+	public List<String> validarCompletitud() {
+		GwtValidator validator = CuentaEdicionTabPanel.getInstance().getValidator();
+		validator.clear();
+        boolean hayDomicilioEntrega = false;
+        boolean hayDomicilioFacturacion = false;
+        
+		List<DomiciliosCuentaDto> listaDomicilios = cuentaDto.getPersona().getDomicilios();
+		if (listaDomicilios==null || listaDomicilios.size()<0) {
+			validator.addError(Sfa.constant().ERR_DOMICILIO_ENTREGA());
+			validator.addError(Sfa.constant().ERR_DOMICILIO_FACTURACION());
+		} else {
+			for (DomiciliosCuentaDto domi : listaDomicilios) {
+				 for (TipoDomicilioAsociadoDto tipoDom :domi.getTiposDomicilioAsociado()) {
+					 hayDomicilioEntrega = tipoDom.getTipoDomicilio().getId()==TipoDomicilioAsociadoEnum.ENTREGA.getId();
+					 hayDomicilioFacturacion = tipoDom.getTipoDomicilio().getId()==TipoDomicilioAsociadoEnum.FACTURACION.getId();
+				 }
+			}
+			if (!hayDomicilioEntrega) 
+				validator.addError(Sfa.constant().ERR_DOMICILIO_ENTREGA());
+			if (!hayDomicilioFacturacion) 			
+				validator.addError(Sfa.constant().ERR_DOMICILIO_FACTURACION());
+		}
+		validator.fillResult();
+		return validator.getErrors();
+	}
+	
 }

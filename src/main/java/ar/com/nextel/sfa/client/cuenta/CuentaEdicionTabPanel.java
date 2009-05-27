@@ -5,7 +5,9 @@ import java.util.List;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
+import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -35,8 +37,10 @@ public class CuentaEdicionTabPanel {
 	private TabPanel tabPanel;
 	private FormButtonsBar footerBar;
 	
-	private Button validarCompletitudButton;
-	private static final String VALIDAR_COMPLETITUD_FAIL_STYLE = "validarCompletitudFailButton";
+	public Button validarCompletitudButton;
+	public static final String VALIDAR_COMPLETITUD_FAIL_STYLE = "validarCompletitudFailButton";
+	private GwtValidator validator = new GwtValidator();
+	
 	private SimpleLink guardar  = new SimpleLink(Sfa.constant().guardar() , "#", true);
 	private SimpleLink crearSS  = new SimpleLink(Sfa.constant().crear()+Sfa.constant().whiteSpace()+Sfa.constant().ss(), "#", true);
 	private SimpleLink agregar  = new SimpleLink(Sfa.constant().agregar() , "#", true);
@@ -127,7 +131,7 @@ public class CuentaEdicionTabPanel {
 			public void onClick(Widget arg0) {
 				if (!cuentaDatosForm.formularioDatosDirty()) {
 					ErrorDialog.getInstance().show("NO HAY DATOS PARA GUARDAR");
-				} else if (validarCompletitud() && validarCamposTabDatos()) {
+				} else if (validarCamposTabDatos()) {
 					//ErrorDialog.getInstance().show("HAY CAMPOS OBLIGATORIOS SIN COMPLETAR");
 					guardar();
 				} 
@@ -196,21 +200,29 @@ public class CuentaEdicionTabPanel {
 	}
 	
 	private boolean validarCompletitud() {
-		List<String> errors = cuentaDatosForm.validarCompletitud();
-		if (!errors.isEmpty()) {
+		List<String> errorDatos = cuentaDatosForm.validarCompletitud();
+		List<String> errorDomicilios = CuentaDomiciliosForm.getInstance().validarCompletitud();
+		if (!errorDatos.isEmpty()) {
 			validarCompletitudButton.addStyleName(VALIDAR_COMPLETITUD_FAIL_STYLE);
-			ErrorDialog.getInstance().show(errors);
+			ErrorDialog.getInstance().show(errorDatos);
+		}else if (!errorDomicilios.isEmpty()) {
+			validarCompletitudButton.addStyleName(VALIDAR_COMPLETITUD_FAIL_STYLE);
+			ErrorDialog.getInstance().show(errorDomicilios);
 		} else {
 			validarCompletitudButton.removeStyleName(VALIDAR_COMPLETITUD_FAIL_STYLE);
 		}
-		return errors.isEmpty(); 
+		return errorDatos.isEmpty() && errorDomicilios.isEmpty(); 
 	}
+	
 	private boolean validarCamposTabDatos() {
-		List<String> errors = cuentaDatosForm.validarCamposTabDatos();
-		if (!errors.isEmpty()) {
-			ErrorDialog.getInstance().show(errors);
-		} 
-		return errors.isEmpty(); 
+		List<String> errorCompletitud = cuentaDatosForm.validarCompletitud();
+		List<String> errorDatos = cuentaDatosForm.validarCamposTabDatos();
+		if (!errorCompletitud.isEmpty()) {
+			ErrorDialog.getInstance().show(errorCompletitud);
+		} else if (!errorDatos.isEmpty()) {
+			ErrorDialog.getInstance().show(errorDatos);
+	    }
+		return errorCompletitud.isEmpty() && errorDatos.isEmpty(); 
 	}
 	
 	///////////////
@@ -277,4 +289,8 @@ public class CuentaEdicionTabPanel {
 	public SimpleLink getCancelar() {
 		return cancelar;
 	}
+	public GwtValidator getValidator() {
+		return validator;
+	}
+	
 }

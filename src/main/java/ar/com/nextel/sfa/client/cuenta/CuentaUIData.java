@@ -191,7 +191,6 @@ public class CuentaUIData extends UIData {
 		fields.add(anioVto);
 		fields.add(cbu);
 		fields.add(numeroTarjeta);
-
 		
 	}
 	

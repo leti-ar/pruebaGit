@@ -33,6 +33,7 @@ public class EditarCuentaUI extends ApplicationUI {
 			CuentaRpcService.Util.getInstance().reservaCreacionCuenta(docDto,new DefaultWaitCallback<CuentaDto>() {
 				public void success(CuentaDto cuentaDto) {
 					cuentaTab.setCuenta2editDto(cuentaDto);
+					cuentaTab.validarCompletitudButton.addStyleName(cuentaTab.VALIDAR_COMPLETITUD_FAIL_STYLE);
 					cuentaTab.getCuentaDatosForm().setAtributosCamposAlAgregarCuenta(cuentaDto);
 					cargaPaneles();
 				}

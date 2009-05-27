@@ -81,7 +81,7 @@ public class CuentaDatosForm extends Composite {
 	private DatosPagoDto datosPago;
 	private List <Widget>camposObligatorios = new ArrayList<Widget>();
 	private TitledPanel datosCuentaPanel = new TitledPanel(Sfa.constant().cuentaPanelTitle());;
-	private GwtValidator validator = new GwtValidator();
+
 	
 	private List<String> estilos = new ArrayList<String>();
 	private int estiloUsado = 0;
@@ -514,7 +514,7 @@ public class CuentaDatosForm extends Composite {
 
 		camposTabDatos.getCargo().setVisible(cuentaDto.getPersona().getSexo().getItemValue().equals(Long.toString(SexoEnum.ORGANIZACION.getId())));
 		camposTabDatos.getCargoLabel().setVisible(cuentaDto.getPersona().getSexo().getItemValue().equals(Long.toString(SexoEnum.ORGANIZACION.getId())));
-
+		
 		armarTablaPanelDatos();
 	}
     
@@ -644,7 +644,9 @@ public class CuentaDatosForm extends Composite {
 	 * @return
 	 */
 	public List<String> validarCompletitud() {
+		GwtValidator validator = CuentaEdicionTabPanel.getInstance().getValidator();
 		validator.clear();
+
 		camposObligatorios.clear();
 		camposObligatorios = camposTabDatos.getCamposObligatorios();
 		camposObligatorios.addAll(camposTabDatos.getCamposObligatoriosFormaPago());
@@ -663,6 +665,7 @@ public class CuentaDatosForm extends Composite {
 	 * @return
 	 */
 	public List<String> validarCamposTabDatos() {
+		GwtValidator validator = CuentaEdicionTabPanel.getInstance().getValidator();
 		validator.clear();
 
 		if (!camposTabDatos.getNombre().getText().equals("")) 
