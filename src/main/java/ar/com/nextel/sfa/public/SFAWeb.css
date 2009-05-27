@@ -28,6 +28,18 @@ A {
 }
 
 .alignCenter {
+	text-align: center !important;
+}
+
+.alignRight {
+	text-align: right !important;
+}
+
+.alignLeft {
+	text-align: left !important;
+}
+
+.dataTable TD {
 	text-align: center;
 }
 
@@ -199,7 +211,7 @@ A {
 }
 
 .selectedRow td {
-  background-color: #EFDAE0;
+	background-color: #EFDAE0;
 }
 
 .WaitWindow {
@@ -232,10 +244,6 @@ A {
 .gwt-TabBarRest,.gwt-TabBarFirst {
 	border-bottom: 1px solid #ccc;
 	-moz-box-sizing: border-box;
-}
-
-.alignRight {
-	text-align: right;
 }
 
 .razonSocial .gwt-Label {
@@ -285,7 +293,7 @@ A {
 .content .gwt-Label {
 	color: red;
 }
-	
+
 .abmPanel {
 	border: 1px solid #981836;
 	margin-bottom: 8px;
@@ -308,7 +316,6 @@ A {
 	background-color: #dddddd;
 }
 
-
 .crearDomicilioButton,.crearLineaButton,.validarCompletitudButton {
 	background-repeat: no-repeat;
 	background-color: transparent;
@@ -322,7 +329,7 @@ A {
 	padding-left: 20px;
 	margin-right: 8px;
 	border: none 0px;
-	color:gray;
+	color: gray;
 	text-align: right;
 }
 
@@ -425,7 +432,7 @@ A {
 
 .gwt-RazonSocialClienteBar {
 	background-color: #FFF;
-	height: 17px;
+	height: 20px;
 	line-height: 17px;
 	margin: 0px;
 	padding-left: 10px;
@@ -450,29 +457,29 @@ A {
 }
 
 .exportarExcelSS {
-float: right;
+	float: right;
 }
 
 .verazRechazar {
-background-color:#FE003E;
-border:2px solid #FE003E;
-color:#FFFFFF;
-margin-left:27px;
-width:90px;
+	background-color: #FE003E;
+	border: 2px solid #FE003E;
+	color: #FFFFFF;
+	margin-left: 27px;
+	width: 90px;
 }
 
 .verazRevisar {
-background-color:#FFC000;
-border:2px solid #FFC000;
-color:#FFFFFF;
-margin-left:27px;
-width:90px;
+	background-color: #FFC000;
+	border: 2px solid #FFC000;
+	color: #FFFFFF;
+	margin-left: 27px;
+	width: 90px;
 }
 
 .verazAceptar {
-background-color:#CAE8A9;
-border:2px solid #CAE8A9;
-color:#189D21;
-margin-left:27px;
-width:90px;
+	background-color: #CAE8A9;
+	border: 2px solid #CAE8A9;
+	color: #189D21;
+	margin-left: 27px;
+	width: 90px;
 }
