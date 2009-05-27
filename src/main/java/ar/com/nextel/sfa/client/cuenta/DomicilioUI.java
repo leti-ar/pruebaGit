@@ -8,7 +8,6 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
 import ar.com.nextel.sfa.client.dto.TipoDomicilioDto;
-import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -236,13 +235,11 @@ public class DomicilioUI extends NextelDialog {
 		TipoDomicilioDto tipoDomicilioItem1 = new TipoDomicilioDto();
 		tipoDomicilioItem1.setId(new Long(1));
 		tipoDomicilioItem1.setDescripcion("Bill To");
-		tipoDomicilioItem1.setCodigoVantive("Bill To");
 		cargaComboTipoDomicilioFacturacionDto(tipoDomicilioItem1);
 
 		TipoDomicilioDto tipoDomicilioItem2 = new TipoDomicilioDto();
 		tipoDomicilioItem2.setId(new Long(4));
 		tipoDomicilioItem2.setDescripcion("Ship To");
-		tipoDomicilioItem2.setCodigoVantive("Ship To");
 		cargaComboTipoDomicilioEntregaDto(tipoDomicilioItem2);
 		
 		listaTiposDomicilioDto.add(tipoDomicilioItem1);

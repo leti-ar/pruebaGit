@@ -263,7 +263,6 @@ public class CuentaDomiciliosForm extends Composite {
 				DomiciliosCuentaDto domicilioNormalizadoCopiado = null;
 				if (estadoNormalizacion.equals("dudas")){
 					domicilioNormalizadoCopiado = NormalizarDomicilioUI.getInstance().getDomicilioEnDudaSelected();
-					//domicilioAEditar = domicilioNormalizadoCopiado;
 				}else  if (estadoNormalizacion.equals("exito")){
 					domicilioNormalizadoCopiado = NormalizarDomicilioUI.getInstance().getDomicilio();
 					domicilioNormalizadoCopiado = mapeoDomicilioNormalizadoCopiado(domicilioNormalizadoCopiado);
@@ -528,6 +527,7 @@ public class CuentaDomiciliosForm extends Composite {
 				if (true) {
 					datosTabla.setWidget(i + 1, 2, IconFactory.cancel());
 				}
+			if (domicilios.get(i).getTiposDomicilioAsociado() != null) {
 				List<TipoDomicilioAsociadoDto> listaTipoDomicilioAsociado = domicilios.get(i).getTiposDomicilioAsociado();
 				for (int j = 0; j < listaTipoDomicilioAsociado.size(); j++) {
 					/** Logica para mostrar tipoDomicilio en la grilla de Resultados: */
@@ -557,6 +557,7 @@ public class CuentaDomiciliosForm extends Composite {
 						}
 					}
 				}
+			}
 				datosTabla.setHTML(i + 1, 5, domicilios.get(i).getDomicilios());
 			}
 		}

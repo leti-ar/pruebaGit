@@ -90,7 +90,7 @@ public class DomiciliosUIData extends UIData {
 			observaciones.setText(domicilio.getObservaciones());
 			nombreUsuarioUltimaModificacion.setText(domicilio.getNombre_usuario_ultima_modificacion());
 			fechaUltimaModificacion.setText(domicilio.getFecha_ultima_modificacion());
-			
+			if (domicilio.getTiposDomicilioAsociado() != null){
 			for (int i = 0; i < domicilio.getTiposDomicilioAsociado().size(); i++) {
 				TipoDomicilioAsociadoDto tipoDomicilioAsociadoDto = domicilio.getTiposDomicilioAsociado()
 						.get(i);
@@ -121,6 +121,7 @@ public class DomiciliosUIData extends UIData {
 					}
 				}
 			}
+		  }
 		}
 	}
 

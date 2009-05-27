@@ -20,13 +20,13 @@ import ar.com.nextel.model.cuentas.beans.FormaPago;
 import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.model.personas.beans.Domicilio;
-import ar.com.nextel.model.personas.beans.Provincia;
 import ar.com.nextel.model.personas.beans.Telefono;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoTarjetaCreditoDto;
+import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EmailDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.enums.TipoEmailEnum;
@@ -104,7 +104,7 @@ public class CuentaBusinessService {
 		}
 		for (EmailDto email : cuentaDto.getPersona().getEmails()) {
 			addEmailsAPersona(email,cuenta);
-		}
+		}		
 		//--------------------------------------------------------
 		
 		repository.save(cuenta.getDatosPago());
@@ -176,7 +176,4 @@ public class CuentaBusinessService {
 		}
 		
 	}
-
-	
-	
 }
