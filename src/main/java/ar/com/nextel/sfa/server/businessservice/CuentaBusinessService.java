@@ -1,6 +1,5 @@
 package ar.com.nextel.sfa.server.businessservice;
 
-import org.dozer.MappingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,6 @@ import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoTarjetaCreditoDto;
-import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EmailDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.enums.TipoEmailEnum;
@@ -80,7 +78,7 @@ public class CuentaBusinessService {
 	}
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public Cuenta saveCuenta(CuentaDto cuentaDto,MapperExtended mapper)  {
+	public Long saveCuenta(CuentaDto cuentaDto,MapperExtended mapper)  {
 		Cuenta cuenta = repository.retrieve(Cuenta.class, cuentaDto.getId());
 		DatosPago datosPagoOriginal = (DatosPago) repository.retrieve(AbstractDatosPago.class, cuenta.getDatosPago().getId());
 		cuenta.setDatosPago(null);
@@ -101,9 +99,6 @@ public class CuentaBusinessService {
 		}
 
 		//FIXME: revisar mapeo de Cuenta/Persona en dozer para no tener que hacer esto
-//		for(DomiciliosCuentaDto domicilio : cuentaDto.getPersona().getDomicilios()) {
-//			addDomicilioAPersona(domicilio, cuenta, mapper );
-//		}
 		for (TelefonoDto tel : cuentaDto.getPersona().getTelefonos()) {
 			addTelefonosAPersona(tel,cuenta,mapper);
 		}
@@ -111,21 +106,10 @@ public class CuentaBusinessService {
 			addEmailsAPersona(email,cuenta);
 		}
 		//--------------------------------------------------------
-		repository.save(cuenta.getDomicilios());
+		
 		repository.save(cuenta.getDatosPago());
 		repository.save(cuenta);
-		return cuenta;
-	}
-	
-	/**
-	 * 
-	 */
-	private void addDomicilioAPersona(DomiciliosCuentaDto domicilio, Cuenta cuenta, MapperExtended mapper ) {
-		Domicilio domi = mapper.map(domicilio, Domicilio.class);
-		domi.setProvincia((Provincia) repository.retrieve(Provincia.class, domicilio.getProvincia().getId()));
-		domi.setPersona(cuenta.getPersona());
-		repository.save(domi);
-		cuenta.getPersona().getPlainDomicilios().add(domi);
+		return cuenta.getId();
 	}
 	
 	/**

@@ -241,8 +241,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 	}
 
 	public CuentaDto saveCuenta(CuentaDto cuentaDto) {
-		Cuenta cuenta = cuentaBusinessService.saveCuenta(cuentaDto,mapper);
-		cuentaDto = mapper.map(cuenta, CuentaDto.class);
+		Long idCuenta = cuentaBusinessService.saveCuenta(cuentaDto,mapper);
+		//cuentaDto = mapper.map(repository.retrieve(Cuenta.class, idCuenta), CuentaDto.class);
 		return cuentaDto;
 	}
 

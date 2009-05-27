@@ -299,7 +299,6 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>id</b>
 		</field>
 	</mapping>
-
 	<mapping>
 		<class-a>ar.com.nextel.model.personas.beans.Domicilio</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto
@@ -311,6 +310,14 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<field type="one-way">
 			<a>tiposDomicilioAsociado</a>
 			<b>tiposDomicilioAsociado</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>provincia</a>
+			<b>provincia</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>estado</a>
+			<b>estado</b>
 		</field>
 	</mapping>
 	<mapping>

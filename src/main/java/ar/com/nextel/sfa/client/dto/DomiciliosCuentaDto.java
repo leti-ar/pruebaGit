@@ -3,6 +3,9 @@ package ar.com.nextel.sfa.client.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.com.nextel.model.personas.beans.EstadoDomicilio;
+import ar.com.nextel.sfa.client.enums.EstadoDomicilioEnum;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class DomiciliosCuentaDto implements IsSerializable, IdentifiableDto {
@@ -32,6 +35,9 @@ public class DomiciliosCuentaDto implements IsSerializable, IdentifiableDto {
 	private String nombre_usuario_ultima_modificacion;
 	private String fecha_ultima_modificacion;
 	private String activo;
+	private EstadoDomicilioDto estado = new EstadoDomicilioDto(new Long(EstadoDomicilioEnum.ACTIVO.getId()),EstadoDomicilioEnum.ACTIVO.toString());
+	
+	
     private List<TipoDomicilioAsociadoDto> tiposDomicilioAsociado = new ArrayList<TipoDomicilioAsociadoDto>();
 	//Lo seteo en True por defecto, porque esto no se guarda en la base, 
     //y cuando venga el dato, siempre estara deshabilitado, a menos que sea un domicilio Nuevo.
@@ -300,5 +306,13 @@ public class DomiciliosCuentaDto implements IsSerializable, IdentifiableDto {
     public void setId(Long id) {
 		this.id = id;
 	}
+    public EstadoDomicilioDto getEstado() {
+		//return new EstadoDomicilioDto(EstadoDomicilioEnum.ACTIVO.getId(),EstadoDomicilioEnum.ACTIVO.toString()); 
+    	return estado;
+	}
+    public void setEstado(EstadoDomicilioDto estado) {
+		this.estado = estado;
+	}
+    
 	
 }
