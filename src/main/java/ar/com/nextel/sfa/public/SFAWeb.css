@@ -198,6 +198,10 @@ A {
 	text-indent: 4px;
 }
 
+.selectedRow td {
+  background-color: #EFDAE0;
+}
+
 .WaitWindow {
 	background-color: #AA0000;
 	color: #FFFFFF;
