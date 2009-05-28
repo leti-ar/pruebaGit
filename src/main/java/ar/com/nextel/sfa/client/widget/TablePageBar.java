@@ -43,10 +43,10 @@ public class TablePageBar extends Composite {
 		cantLabel = new InlineHTML("de " + cantPaginas);
 		mainPanel.add(first);
 		mainPanel.add(prev);
-		mainPanel.add(next);
-		mainPanel.add(last);
 		mainPanel.add(pagLabel);
 		mainPanel.add(cantLabel);
+		mainPanel.add(next);
+		mainPanel.add(last);
 		first.addStyleName("btn-first");
 		prev.addStyleName("btn-prev");
 		next.addStyleName("btn-next");

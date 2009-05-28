@@ -7,6 +7,7 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
 import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -152,7 +153,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 				resultTable.removeRow(i);
 			}
 		} else {
-			resultTable = new FlexTable();
+			resultTable = new NextelTable();
 			initTable(resultTable);
 			resultTableWrapper.setWidget(resultTable);
 		}

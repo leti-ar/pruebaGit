@@ -221,6 +221,10 @@ A {
 	overflow: auto;
 }
 
+.gwt-BuscarCuentaResultPanel{
+	text-align: left;
+}
+
 .gwt-NormalizarDomicilioUI .resultTableScroll {
 	height: 150px;
 	overflow: scroll;
