@@ -290,10 +290,7 @@ public class DomiciliosUIData extends UIData {
 	private void validateFields(Widget w){
 	/**TODO: Terminar validacion de fields del DomicilioUI. */
 		if(w == cpa){
-			if (cpa.getText().equals("") || (cpa.getText().length() < 5)){
-				MessageDialog.getInstance().setDialogTitle("SFA - Alert");
-				MessageDialog.getInstance().showAceptar("Debe ingresar un CPA correcto.", getComandoAceptarAlert());
-			}else{
+			if (!cpa.getText().equals("")){
 			//Aca llama al ServiceRpcCuenta
 			CuentaRpcService.Util.getInstance().getDomicilioPorCPA(cpa.getText(),
 					new DefaultWaitCallback<NormalizarCPAResultDto>() {
