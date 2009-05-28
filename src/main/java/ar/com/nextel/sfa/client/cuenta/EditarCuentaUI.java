@@ -35,6 +35,7 @@ public class EditarCuentaUI extends ApplicationUI {
 					cuentaTab.setCuenta2editDto(cuentaDto);
 					cuentaTab.validarCompletitudButton.addStyleName(cuentaTab.VALIDAR_COMPLETITUD_FAIL_STYLE);
 					cuentaTab.getCuentaDatosForm().setAtributosCamposAlAgregarCuenta(cuentaDto);
+					cuentaTab.getCuentaDatosForm().armarTablaPanelDatos();
 					cargaPaneles();
 				}
 			});	

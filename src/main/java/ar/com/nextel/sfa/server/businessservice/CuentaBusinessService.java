@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ar.com.nextel.business.cuentas.create.CreateCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
+import ar.com.nextel.business.cuentas.select.SelectCuentaBusinessOperator;
 import ar.com.nextel.business.oportunidades.ReservaCreacionCuentaBusinessOperator;
 import ar.com.nextel.business.oportunidades.ReservaCreacionCuentaBusinessOperatorResult;
 import ar.com.nextel.framework.repository.Repository;
@@ -19,14 +20,13 @@ import ar.com.nextel.model.cuentas.beans.DatosPago;
 import ar.com.nextel.model.cuentas.beans.FormaPago;
 import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
-import ar.com.nextel.model.personas.beans.Domicilio;
+import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.personas.beans.Telefono;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoTarjetaCreditoDto;
-import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EmailDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.enums.TipoEmailEnum;
@@ -56,6 +56,7 @@ public class CuentaBusinessService {
 			CreateCuentaBusinessOperator createCuentaBusinessOperatorBean) {
 		this.createCuentaBusinessOperator = createCuentaBusinessOperatorBean;
 	}
+	
 	@Autowired	
 	public void setSessionContextLoader(SessionContextLoader sessionContextLoader) {
 		this.sessionContextLoader = sessionContextLoader;
@@ -73,8 +74,8 @@ public class CuentaBusinessService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public Cuenta getCuenta(long id)  {
-		return repository.retrieve(Cuenta.class, id); 
+	public void saveCuenta(Cuenta cuenta) throws BusinessException {
+		repository.save(cuenta);
 	}
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
@@ -106,7 +107,6 @@ public class CuentaBusinessService {
 			addEmailsAPersona(email,cuenta);
 		}		
 		//--------------------------------------------------------
-		
 		repository.save(cuenta.getDatosPago());
 		repository.save(cuenta);
 		return cuenta.getId();

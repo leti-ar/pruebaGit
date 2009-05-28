@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -64,8 +65,10 @@ public class CuentaEdicionTabPanel {
 		initValidarCompletitud();
 		initTabPanel();
 		initFooter();
+		
 		marco = new FlexTable();
 		marco.setWidth("100%");
+
 		marco.setWidget(0, 0, new HTML("<br/>"));
 		marco.setWidget(1, 0, razonSocialPanel);
 		marco.setWidget(1, 1, clientePanel);
@@ -76,6 +79,7 @@ public class CuentaEdicionTabPanel {
 		marco.getFlexCellFormatter().setColSpan(3, 0, 2);
 		marco.getFlexCellFormatter().setColSpan(4, 0, 2);
 		
+		marco.getFlexCellFormatter().setHorizontalAlignment(1, 1, HorizontalPanel.ALIGN_RIGHT);
 	}
 	
     private void initValidarCompletitud() {
@@ -106,12 +110,13 @@ public class CuentaEdicionTabPanel {
 	 * 
 	 */
 	private void initRazonSocialClientePanel() {
-		Label razonSocialLabel = new Label(Sfa.constant().razonSocial());
-		Label clienteLabel     = new Label(Sfa.constant().cliente());
+		Label razonSocialLabel = new Label(Sfa.constant().razonSocial()+":");
+		Label clienteLabel     = new Label(Sfa.constant().cliente()+":");
 		razonSocialPanel.setLeft(razonSocialLabel);
 		razonSocialPanel.setRight(razonSocial);
 		clientePanel.setLeft(clienteLabel);
 		clientePanel.setRight(cliente);		
+		clientePanel.setWidth("250");
 	}
 	
 	/**

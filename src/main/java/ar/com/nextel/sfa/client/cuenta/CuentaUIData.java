@@ -293,6 +293,7 @@ public class CuentaUIData extends UIData {
 		sexo.setWidth("150");
 		formaPago.setWidth("250");
 		tipoTarjeta.setWidth("60");
+		
 	}
 	
 	private void setAtributosNumeroTarjeta() {

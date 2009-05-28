@@ -339,7 +339,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		solicitudCta.setDocumento(getDocumento(docDto));
 		try {
 			cuenta = cuentaBusinessService.reservarCrearCta(solicitudCta);
-			//cuenta = selectCuentaBusinessOperator.getCuentaYLockear(cuenta.getCodigoVantive(), vendedor);
+			cuentaBusinessService.saveCuenta(selectCuentaBusinessOperator.getCuentaYLockear(cuenta.getCodigoVantive(), vendedor));
 			cuentaDto = (CuentaDto) mapper.map(cuenta, CuentaDto.class);
 		} catch (BusinessException e) {
 			// TODO Auto-generated catch block
