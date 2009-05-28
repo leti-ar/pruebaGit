@@ -5,14 +5,10 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
-import ar.com.nextel.sfa.client.dto.SexoDto;
-import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
 import ar.com.nextel.sfa.client.enums.TipoTarjetaEnum;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
-import ar.com.nextel.sfa.client.veraz.VerazUIData;
 import ar.com.nextel.sfa.client.widget.TelefonoTextBox;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
