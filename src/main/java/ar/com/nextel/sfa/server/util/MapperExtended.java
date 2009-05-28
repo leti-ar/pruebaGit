@@ -41,7 +41,8 @@ public class MapperExtended extends DozerBeanMapper {
 		List<T> salida = new ArrayList();
 		if (lista != null) {
 			for (Iterator iter = lista.iterator(); iter.hasNext();) {
-				salida.add((T) map(iter.next(), clase, mapId));
+				Object o = iter.next();
+				salida.add((T) map(o, clase, mapId));
 			}
 		}
 		return salida;
