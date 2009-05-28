@@ -1,22 +1,33 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.dto.CargoDto;
+import ar.com.nextel.sfa.client.dto.ContactoDto;
+import ar.com.nextel.sfa.client.dto.DocumentoDto;
+import ar.com.nextel.sfa.client.dto.EmailDto;
+import ar.com.nextel.sfa.client.dto.PersonaDto;
+import ar.com.nextel.sfa.client.dto.SexoDto;
+import ar.com.nextel.sfa.client.dto.TelefonoDto;
+import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
+import ar.com.nextel.sfa.client.dto.TipoEmailDto;
+import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
+import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
+import ar.com.nextel.sfa.client.enums.TipoEmailEnum;
+import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
-import ar.com.nextel.sfa.client.initializer.VerazInitializer;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.TelefonoTextBox;
 import ar.com.nextel.sfa.client.widget.UIData;
-import ar.com.nextel.sfa.client.widget.ValidationTextBox;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
-import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
+
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextBox;
 
 public class ContactoUIData extends UIData {
 
@@ -33,20 +44,14 @@ public class ContactoUIData extends UIData {
 	TextBox emailPersonal = new TextBox();
 	TextBox emailLaboral = new TextBox();
 	Label veraz = new Label();
-
 	
-	public void setContacto(/*ContactoDto contactoDto*/){
-		/**Seteo los combo y textBox para editar el contacto*/
-	}
+	private DomicilioUI domicilioUI;
 	
-//	public ContactoDto getContacto(){
-//		/**Obtengo los datos del contacto para poder guardarlos*/
-//	}
 
 	public List<String> validarCampoObligatorio() {
 		GwtValidator validator = new GwtValidator();
-		validator.addTarget(nombre).required("El campo" + Sfa.constant().nombre() + "es obligatorio");
-		validator.addTarget(apellido).required("El campo" + Sfa.constant().apellido() + "es obligatorio");
+		validator.addTarget(nombre).required("El campo " + Sfa.constant().nombre() + " es obligatorio");
+		validator.addTarget(apellido).required("El campo " + Sfa.constant().apellido() + " es obligatorio");
 		validator.fillResult();
 		return validator.getErrors();
 	}
@@ -63,6 +68,10 @@ public class ContactoUIData extends UIData {
 		}
 		validator.fillResult();
 		return validator.getErrors();
+	}
+	
+	public void setContacto() {
+		System.out.println("Acá hay que llenar la tabla con la info del contacto que agregaron recién");
 	}
 	
 	public ContactoUIData() {
@@ -96,7 +105,107 @@ public class ContactoUIData extends UIData {
 		sexo.addAllItems(datos.getSexos());
 		cargo.addAllItems(datos.getCargos());
 	}
+	
+	
+	public ContactoDto getContactoDto() {
+		ContactoDto contactoDto = new ContactoDto();
+		contactoDto.setPersonaDto(this.getPersonaDto());
+		return contactoDto;
+	}
+	
+	public PersonaDto getPersonaDto() {
+		PersonaDto persona = new PersonaDto();
+		persona.setApellido(apellido.getText());
+		persona.setNombre(nombre.getText());
+		persona.setCargo((CargoDto)cargo.getSelectedItem());
+		persona.setIdTipoDocumento((Long.parseLong(tipoDocumento.getSelectedItem().getItemValue())));
+		//arreglar este que sigue
+		persona.setDocumento(getDocumentoDto());
+		//pasarle una lista de domicilios, hacer que cuando agregas un nuevo domicilio se carguen en la tabla de la pantalla
+		//persona.setDomicilios(domicilioUI.getInstance().getDomiciliosData().getDomicilio());
+		persona.setEmails(getEmailDto());
+		persona.setSexo((SexoDto)sexo.getSelectedItem());
+		persona.setTelefonos(getTelefonoDto());
+		return persona;
+	}
+	
+	
+	public DocumentoDto getDocumentoDto() {
+		DocumentoDto documentoDto = new DocumentoDto();
+		documentoDto.setTipoDocumento(getTipoDocumentoDto());
+		documentoDto.setNumero(this.numeroDocumento.getText());
+		return documentoDto;		
+	}	
+	
+	//en el combo tengo los nombres de los tipos de documento, como lo relaciono con lo que tiene el TipoDocumentoEnum?? (ahora le paso siempre DNI)
+	public TipoDocumentoDto getTipoDocumentoDto() {
+		TipoDocumentoDto tipoDocumentoDto = new TipoDocumentoDto();
+		tipoDocumentoDto.setId(TipoDocumentoEnum.DNI.getTipo());
+		tipoDocumentoDto.setDescripcion("DNI");
+		return tipoDocumentoDto;
+	}
+	
+	public List<EmailDto> getEmailDto() {
+		List<EmailDto> emails = new ArrayList();
+		EmailDto emailPersonalDto = new EmailDto();
+		emailPersonalDto.setTipoEmail(getTipoEmailDto(TipoEmailEnum.PERSONAL.getTipo(),"Personal"));
+		emailPersonalDto.setEmail(emailPersonal.getText());
+		EmailDto emailLaboralDto = new EmailDto();
+		emailLaboralDto.setTipoEmail(getTipoEmailDto(TipoEmailEnum.LABORAL.getTipo(),"Laboral"));
+		emailLaboralDto.setEmail(emailLaboral.getText());
+		emails.add(emailPersonalDto);
+		emails.add(emailLaboralDto);
+		return emails;
+	}
+	
+	
+	public List<TelefonoDto> getTelefonoDto() {
+		List<TelefonoDto> telefonos = new ArrayList();
+		TelefonoDto telefonoPrincipalDto = new TelefonoDto();
+		telefonoPrincipalDto.setTipoTelefono(getTipoTelefonoDto(TipoTelefonoEnum.PRINCIPAL.getTipo(),"Principal"));
+		telefonoPrincipalDto.setNumeroLocal(telefonoPrincipal.getNumero().getText());
+		telefonoPrincipalDto.setArea(telefonoPrincipal.getArea().getText());
+		telefonoPrincipalDto.setInterno(telefonoPrincipal.getInterno().getText());
+		telefonoPrincipalDto.setPrincipal(true);
+		
+		TelefonoDto telefonoCelularDto = new TelefonoDto();
+		telefonoCelularDto.setTipoTelefono(getTipoTelefonoDto(TipoTelefonoEnum.CELULAR.getTipo(),"Celular"));
+		telefonoCelularDto.setArea(telefonoCelular.getArea().getText());
+		telefonoCelularDto.setNumeroLocal(telefonoCelular.getNumero().getText());
+		
+		TelefonoDto telefonoAdicionalDto = new TelefonoDto();
+		telefonoAdicionalDto.setTipoTelefono(getTipoTelefonoDto(TipoTelefonoEnum.ADICIONAL.getTipo(),"Adicional"));
+		telefonoAdicionalDto.setNumeroLocal(telefonoAdicional.getNumero().getText());
+		telefonoAdicionalDto.setArea(telefonoAdicional.getArea().getText());
+		telefonoAdicionalDto.setInterno(telefonoAdicional.getInterno().getText());
+		
+		TelefonoDto telefonoFaxDto = new TelefonoDto();
+		telefonoFaxDto.setTipoTelefono(getTipoTelefonoDto(TipoTelefonoEnum.FAX.getTipo(),"Fax"));
+		telefonoFaxDto.setNumeroLocal(fax.getNumero().getText());
+		telefonoFaxDto.setArea(fax.getArea().getText());
+		telefonoFaxDto.setInterno(fax.getInterno().getText());	
+		
+		telefonos.add(telefonoPrincipalDto);
+		telefonos.add(telefonoCelularDto);
+		telefonos.add(telefonoAdicionalDto);
+		telefonos.add(telefonoFaxDto);		
+		return telefonos;
+	}
+	
 
+	public TipoTelefonoDto getTipoTelefonoDto(long tipoEnum, String tipo ) {
+		TipoTelefonoDto tipoTelefonoDto = new TipoTelefonoDto();
+		tipoTelefonoDto.setId(tipoEnum);
+		tipoTelefonoDto.setDescripcion(tipo);
+		return tipoTelefonoDto;
+	}
+	
+	public TipoEmailDto getTipoEmailDto(long tipoEnum, String tipo) {
+		TipoEmailDto tipoEmailDto = new TipoEmailDto();
+		tipoEmailDto.setId(tipoEnum);
+		tipoEmailDto.setDescripcion(tipo);
+		return tipoEmailDto;
+	}
 
 	public ListBox getTipoDocumento() {
 		return tipoDocumento;
