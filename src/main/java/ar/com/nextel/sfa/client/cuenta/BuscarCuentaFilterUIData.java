@@ -238,6 +238,11 @@ public class BuscarCuentaFilterUIData extends UIData {
 			((FocusWidget) w).setEnabled(true);
 		}
 		
+		//Combo predefinidasCombo == ""
+		if ((w == predefinidasCombo) && (predefinidasCombo.getSelectedIndex() == 0)){
+			setEnableFields(true);
+		}
+		
 		//Si Combo Categoría selecciona vacio, y responsableTextBox Y razonSocialTextBox ambos estan vacios, se habilitan todos.
 		if ((w == categoriaCombo) && (categoriaCombo.isItemSelected(0))){
 			ValidationTextBox boxRS = (ValidationTextBox) razonSocialTextBox;
