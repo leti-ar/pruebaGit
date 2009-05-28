@@ -3,7 +3,6 @@ package ar.com.nextel.sfa.client.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import ar.com.nextel.model.personas.beans.EstadoDomicilio;
 import ar.com.nextel.sfa.client.enums.EstadoDomicilioEnum;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -32,12 +31,11 @@ public class DomiciliosCuentaDto implements IsSerializable, IdentifiableDto {
 	private String unidad_funcional;
 	private Boolean no_normalizar;
 	private Boolean validado = false;
-//	private String no_normalizar;
-//	private String validado;
 	private String en_carga;
 	private String nombre_usuario_ultima_modificacion;
 	private String fecha_ultima_modificacion;
 	private String activo;
+	private Long vantiveId;
 	private EstadoDomicilioDto estado = new EstadoDomicilioDto(new Long(EstadoDomicilioEnum.ACTIVO.getId()),EstadoDomicilioEnum.ACTIVO.toString());
 	
 	
@@ -279,6 +277,12 @@ public class DomiciliosCuentaDto implements IsSerializable, IdentifiableDto {
     public void setEstado(EstadoDomicilioDto estado) {
 		this.estado = estado;
 	}
-    
-	
+
+	public Long getVantiveId() {
+		return vantiveId;
+	}
+
+	public void setVantiveId(Long vantiveId) {
+		this.vantiveId = vantiveId;
+	}
 }

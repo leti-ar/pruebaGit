@@ -1,18 +1,13 @@
 package ar.com.nextel.sfa.client.cuenta;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import ar.com.nextel.framework.repository.hibernate.mapping.personas.DomicilioCollectionHibernateMappingSFATestCase;
 import ar.com.nextel.sfa.client.CuentaRpcService;
-import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
-import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
-import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.TipoDomicilioAsociadoDto;
 import ar.com.nextel.sfa.client.dto.TipoDomicilioDto;
 import ar.com.nextel.sfa.client.enums.TipoDomicilioAsociadoEnum;
@@ -21,7 +16,6 @@ import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
-import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.core.client.GWT;
@@ -34,7 +28,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -46,7 +39,7 @@ public class CuentaDomiciliosForm extends Composite {
 	private FlowPanel mainPanel;
 	private FormButtonsBar footerBar;
 	private FlexTable datosTabla;
-	private List<SolicitudServicioCerradaDto> ssCerradasAsociadas = new ArrayList<SolicitudServicioCerradaDto>();
+//	private List<SolicitudServicioCerradaDto> ssCerradasAsociadas = new ArrayList<SolicitudServicioCerradaDto>();
 	private DomiciliosCuentaDto domicilioAEditar;
 	private int rowDomicilioABorrar;
 	public CuentaDto cuentaDto;
@@ -446,23 +439,23 @@ public class CuentaDomiciliosForm extends Composite {
 	/**
 	 *@author eSalvador
 	 **/
-	private List<SolicitudServicioCerradaDto> buscaSSCerradasAsociadas(String idCuenta) {
-		// Defino el Dto para la busqueda:
-		SolicitudServicioCerradaDto ssCerradaDto = new SolicitudServicioCerradaDto();
-		ssCerradaDto.setNumeroCuenta(idCuenta);
-		ssCerradaDto.setCantidadResultados(new Long(10));
-		// Llamo al servicio buscando SSCerradas:
-		SolicitudRpcService.Util.getInstance().searchSSCerrada(ssCerradaDto,
-				new DefaultWaitCallback<List<SolicitudServicioCerradaResultDto>>() {
-					@Override
-					public void success(List<SolicitudServicioCerradaResultDto> result) {
-						for (int i = 0; i < result.size(); i++) {
-							ssCerradasAsociadas.add((SolicitudServicioCerradaDto) result);
-						}
-					}
-				});
-		return ssCerradasAsociadas;
-	}
+//	private List<SolicitudServicioCerradaDto> buscaSSCerradasAsociadas(String idCuenta) {
+//		// Defino el Dto para la busqueda:
+//		SolicitudServicioCerradaDto ssCerradaDto = new SolicitudServicioCerradaDto();
+//		ssCerradaDto.setNumeroCuenta(idCuenta);
+//		ssCerradaDto.setCantidadResultados(new Long(10));
+//		// Llamo al servicio buscando SSCerradas:
+//		SolicitudRpcService.Util.getInstance().searchSSCerrada(ssCerradaDto,
+//				new DefaultWaitCallback<List<SolicitudServicioCerradaResultDto>>() {
+//					@Override
+//					public void success(List<SolicitudServicioCerradaResultDto> result) {
+//						for (int i = 0; i < result.size(); i++) {
+//							ssCerradasAsociadas.add((SolicitudServicioCerradaDto) result);
+//						}
+//					}
+//				});
+//		return ssCerradasAsociadas;
+//	}
 
 	/**
 	 * @author eSalvador
@@ -588,9 +581,11 @@ public class CuentaDomiciliosForm extends Composite {
 					if (col == 2) {
 						rowDomicilioABorrar = row;
 						domicilioAEditar = domicilio;
-						if (domicilio.isLocked()){
+						//if (domicilio.isLocked()){
+						/**TODO: Terminar de probar esto BIEN!*/
+						if (domicilio.getVantiveId() != null){
 							openPopupDeleteDialog(getOpenDialogAdviceCommand());
-						}else{
+						}else{ 
 							openPopupDeleteDialog(getComandoBorrar());
 						}
 						

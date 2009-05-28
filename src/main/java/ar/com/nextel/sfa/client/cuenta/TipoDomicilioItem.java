@@ -1,7 +1,5 @@
 package ar.com.nextel.sfa.client.cuenta;
 
-import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
-import ar.com.nextel.sfa.client.dto.TipoDomicilioAsociadoDto;
 import ar.com.nextel.sfa.client.dto.TipoDomicilioDto;
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItemImpl;
 
@@ -29,11 +27,11 @@ public class TipoDomicilioItem extends ListBoxItemImpl{
 		this.principal = principal;
 	}
 	
-	public void apply(DomiciliosCuentaDto domicilio){
-		/**TODO: Logica de cuando aprete el boton Guardar! */
-		TipoDomicilioDto tipoDomicilioDto = new TipoDomicilioDto();
-		TipoDomicilioAsociadoDto tipoDomicilioAsociado = domicilio.getTipoDomicilioAsociado(tipoDomicilioDto);
-	}
+//	public void apply(DomiciliosCuentaDto domicilio){
+//		/**TODO: Logica de cuando aprete el boton Guardar! */
+//		TipoDomicilioDto tipoDomicilioDto = new TipoDomicilioDto();
+//		TipoDomicilioAsociadoDto tipoDomicilioAsociado = domicilio.getTipoDomicilioAsociado(tipoDomicilioDto);
+//	}
 
 	public String getText() {
 		return text;
