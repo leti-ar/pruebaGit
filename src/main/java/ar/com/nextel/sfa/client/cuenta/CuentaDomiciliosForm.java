@@ -612,10 +612,12 @@ public class CuentaDomiciliosForm extends Composite {
 			validator.addError(Sfa.constant().ERR_DOMICILIO_FACTURACION());
 		} else {
 			for (DomiciliosCuentaDto domi : listaDomicilios) {
-				 for (TipoDomicilioAsociadoDto tipoDom :domi.getTiposDomicilioAsociado()) {
-					 hayDomicilioEntrega = tipoDom.getTipoDomicilio().getId()==TipoDomicilioAsociadoEnum.ENTREGA.getId();
-					 hayDomicilioFacturacion = tipoDom.getTipoDomicilio().getId()==TipoDomicilioAsociadoEnum.FACTURACION.getId();
-				 }
+				if( domi.getTiposDomicilioAsociado()!=null) {
+					for (TipoDomicilioAsociadoDto tipoDom :domi.getTiposDomicilioAsociado()) {
+						hayDomicilioEntrega = tipoDom.getTipoDomicilio().getId()==TipoDomicilioAsociadoEnum.ENTREGA.getId();
+						hayDomicilioFacturacion = tipoDom.getTipoDomicilio().getId()==TipoDomicilioAsociadoEnum.FACTURACION.getId();
+					}
+				}
 			}
 			if (!hayDomicilioEntrega) 
 				validator.addError(Sfa.constant().ERR_DOMICILIO_ENTREGA());

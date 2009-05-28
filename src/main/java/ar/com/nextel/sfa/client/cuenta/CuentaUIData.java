@@ -260,6 +260,8 @@ public class CuentaUIData extends UIData {
 		emailLaboral.setName(Sfa.constant().emailPanelTitle() + " " + Sfa.constant().laboral());
 		cbu.setName(Sfa.constant().cbu());
 		numeroTarjeta.setName(Sfa.constant().nroTarjeta());
+		numeroTarjeta.setName(Sfa.constant().nroTarjeta());
+		anioVto.setName(Sfa.constant().vtoAnio());
 		
 		//maxLenght
 		nombre.setMaxLength(19);

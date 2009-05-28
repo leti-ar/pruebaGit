@@ -444,7 +444,7 @@ public class CuentaDatosForm extends Composite {
 		else if (cuentaDto.getDatosPago().isDebitoTarjetaCredito()) {			
 			datosPago = (DatosDebitoTarjetaCreditoDto) cuentaDto.getDatosPago();
 			camposTabDatos.getFormaPago().setSelectedItem(((DatosDebitoTarjetaCreditoDto)datosPago).formaPagoAsociada());
-			camposTabDatos.getMesVto().setSelectedIndex(((DatosDebitoTarjetaCreditoDto)datosPago).getMesVencimientoTarjeta());
+			camposTabDatos.getMesVto().setSelectedIndex(((DatosDebitoTarjetaCreditoDto)datosPago).getMesVencimientoTarjeta()-1);
 			camposTabDatos.getAnioVto().setText(Short.toString(((DatosDebitoTarjetaCreditoDto)datosPago).getAnoVencimientoTarjeta()));
 			camposTabDatos.getTipoTarjeta().setSelectedItem(((DatosDebitoTarjetaCreditoDto)datosPago).getTipoTarjeta());
 			camposTabDatos.getNumeroTarjeta().setText(((DatosDebitoTarjetaCreditoDto)datosPago).getNumero());
@@ -521,7 +521,8 @@ public class CuentaDatosForm extends Composite {
 	public boolean formularioDatosDirty() {
 		boolean retorno = false;
 		CuentaEdicionTabPanel cuentaTab = CuentaEdicionTabPanel.getInstance();
-		
+
+		//PANEL DATOS		
 		if ( (FormUtils.fieldDirty(camposTabDatos.getRazonSocial(), cuentaTab.getCuenta2editDto().getPersona().getRazonSocial()))
 		   ||(FormUtils.fieldDirty(camposTabDatos.getSexo(), cuentaTab.getCuenta2editDto().getPersona().getSexo().getItemValue()))
 		   ||(FormUtils.fieldDirty(camposTabDatos.getFechaNacimiento(), cuentaTab.getCuenta2editDto().getPersona().getFechaNacimiento()!=null?DateTimeFormat.getMediumDateFormat().format(cuentaTab.getCuenta2editDto().getPersona().getFechaNacimiento()):""))
@@ -534,9 +535,12 @@ public class CuentaDatosForm extends Composite {
 		   ||(FormUtils.fieldDirty(camposTabDatos.getObservaciones(), cuentaTab.getCuenta2editDto().getObservacionesTelMail()))
 		) return true;
 
+		//PANEL FORMA DE PAGO
 		if (camposTabDatos.getFormaPago().getSelectedItemId().equals(TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo())) {
 			if (cuentaTab.getCuenta2editDto().getDatosPago() instanceof DatosDebitoCuentaBancariaDto) {
-				if	(FormUtils.fieldDirty(camposTabDatos.getCbu(), ((DatosDebitoCuentaBancariaDto) cuentaTab.getCuenta2editDto().getDatosPago()).getCbu())) {
+				if	(FormUtils.fieldDirty(camposTabDatos.getCbu(), ((DatosDebitoCuentaBancariaDto) cuentaTab.getCuenta2editDto().getDatosPago()).getCbu())
+					 ||	FormUtils.fieldDirty(camposTabDatos.getTipoCuentaBancaria(),((DatosDebitoCuentaBancariaDto) cuentaTab.getCuenta2editDto().getDatosPago()).getTipoCuentaBancaria().getItemValue())
+				    ) {
 					retorno = true;
 				}	
 			} else {
@@ -544,85 +548,110 @@ public class CuentaDatosForm extends Composite {
 					return true;
 			}
 		}
-
 		if (camposTabDatos.getFormaPago().getSelectedItemId().equals(TipoFormaPagoEnum.TARJETA_CREDITO.getTipo())) {
 			if (cuentaTab.getCuenta2editDto().getDatosPago() instanceof DatosDebitoTarjetaCreditoDto) {
 				if ( (FormUtils.fieldDirty(camposTabDatos.getNumeroTarjeta(), ((DatosDebitoTarjetaCreditoDto) cuentaTab.getCuenta2editDto().getDatosPago()).getNumero()))
 				   ||(FormUtils.fieldDirty(camposTabDatos.getAnioVto(), ((DatosDebitoTarjetaCreditoDto) cuentaTab.getCuenta2editDto().getDatosPago()).getAnoVencimientoTarjeta()+""))
+				   ||(FormUtils.fieldDirty(camposTabDatos.getMesVto(), ((DatosDebitoTarjetaCreditoDto) cuentaTab.getCuenta2editDto().getDatosPago()).getMesVencimientoTarjeta()+""))
+				   ||(FormUtils.fieldDirty(camposTabDatos.getTipoTarjeta(), ((DatosDebitoTarjetaCreditoDto) cuentaTab.getCuenta2editDto().getDatosPago()).getTipoTarjeta().getItemValue()))
 				)	retorno = true;
 			} else {
-				if ((!camposTabDatos.getNumeroTarjeta().getText().trim().equals("")))
-					return true;
+				if ((!camposTabDatos.getNumeroTarjeta().getText().trim().equals(""))
+					||(camposTabDatos.getAnioVto().getText().trim().endsWith(""))	
+				  )	return true;
 			}
-		} //else {
-//			if ((!camposTabDatos.getCbu().getText().trim().equals("")))
-//				return true;
-//		}
+		} 
 		
-		//telefonos
-        //si la cuenta no tiene telefonos ingresados, simplemente se fija que el campo sea distinto de ""
-		if (cuentaTab.getCuenta2editDto().getPersona().getTelefonos().size()<1) {
-			if ((!camposTabDatos.getTelPrincipalTextBox().getArea().getText().trim().equals("")) 
-				||(!camposTabDatos.getTelPrincipalTextBox().getNumero().getText().trim().equals(""))
-				||(!camposTabDatos.getTelPrincipalTextBox().getInterno().getText().trim().equals("")) 
-			    ||(!camposTabDatos.getTelAdicionalTextBox().getArea().getText().trim().equals(""))
-				||(!camposTabDatos.getTelAdicionalTextBox().getNumero().getText().trim().equals(""))
-				||(!camposTabDatos.getTelAdicionalTextBox().getInterno().getText().trim().equals(""))
-			    ||(!camposTabDatos.getTelCelularTextBox().getArea().getText().trim().equals(""))
-				||(!camposTabDatos.getTelCelularTextBox().getNumero().getText().trim().equals(""))
-			    ||(!camposTabDatos.getTelFaxTextBox().getArea().getText().trim().equals(""))
-				||(!camposTabDatos.getTelFaxTextBox().getNumero().getText().trim().equals(""))
-				||(!camposTabDatos.getTelFaxTextBox().getInterno().getText().trim().equals(""))
-			) retorno = true;
-		} else {
-            for (TelefonoDto telefono : cuentaTab.getCuenta2editDto().getPersona().getTelefonos()) {
-				TipoTelefonoDto tipoTelefono = telefono.getTipoTelefono();
+		//PANEL TELEFONOS
+		boolean noTienePrincipal = true;
+		boolean noTieneAdicional = true;
+		boolean noTieneCelular   = true;
+		boolean noTieneFax       = true;
 
-				if ( tipoTelefono.getId()==TipoTelefonoEnum.PRINCIPAL.getTipo()) {
-					if ( (FormUtils.fieldDirty(camposTabDatos.getTelPrincipalTextBox().getArea(),telefono.getArea())) 
+		//compara con el dto
+		for (TelefonoDto telefono : cuentaTab.getCuenta2editDto().getPersona().getTelefonos()) {
+			TipoTelefonoDto tipoTelefono = telefono.getTipoTelefono();
+
+			if ( tipoTelefono.getId()==TipoTelefonoEnum.PRINCIPAL.getTipo()) {
+				if ( (FormUtils.fieldDirty(camposTabDatos.getTelPrincipalTextBox().getArea(),telefono.getArea())) 
 						||(FormUtils.fieldDirty(camposTabDatos.getTelPrincipalTextBox().getNumero(),telefono.getNumeroLocal()))
 						||(FormUtils.fieldDirty(camposTabDatos.getTelPrincipalTextBox().getInterno(),telefono.getInterno())) 
-					) retorno = true;   
-				}
-				if ( tipoTelefono.getId()==TipoTelefonoEnum.PARTICULAR.getTipo() ||
-						tipoTelefono.getId()==TipoTelefonoEnum.ADICIONAL.getTipo()) {
-					if ( (FormUtils.fieldDirty(camposTabDatos.getTelAdicionalTextBox().getArea(),telefono.getArea()))
+				) retorno = true;   
+				noTienePrincipal = false;
+			} 
+			if ( tipoTelefono.getId()==TipoTelefonoEnum.PARTICULAR.getTipo() ||
+					tipoTelefono.getId()==TipoTelefonoEnum.ADICIONAL.getTipo()) {
+				if ( (FormUtils.fieldDirty(camposTabDatos.getTelAdicionalTextBox().getArea(),telefono.getArea()))
 						||(FormUtils.fieldDirty(camposTabDatos.getTelAdicionalTextBox().getNumero(),telefono.getNumeroLocal()))
 						||(FormUtils.fieldDirty(camposTabDatos.getTelAdicionalTextBox().getInterno(),telefono.getInterno()))
-					) retorno = true;
-				}
-				if ( tipoTelefono.getId()==TipoTelefonoEnum.CELULAR.getTipo()) {
-					if ( (FormUtils.fieldDirty(camposTabDatos.getTelCelularTextBox().getArea(),telefono.getArea()))
+				) retorno = true;
+				noTieneAdicional = false;
+			} 
+			if ( tipoTelefono.getId()==TipoTelefonoEnum.CELULAR.getTipo()) {
+				if ( (FormUtils.fieldDirty(camposTabDatos.getTelCelularTextBox().getArea(),telefono.getArea()))
 						||(FormUtils.fieldDirty(camposTabDatos.getTelCelularTextBox().getNumero(),telefono.getNumeroLocal()))
-					) retorno = true;
-				}
-				if ( tipoTelefono.getId()==TipoTelefonoEnum.FAX.getTipo()) {
-					if ( (FormUtils.fieldDirty(camposTabDatos.getTelFaxTextBox().getArea(),telefono.getArea()))
+				) retorno = true;
+				noTieneCelular = false;
+			}
+			if ( tipoTelefono.getId()==TipoTelefonoEnum.FAX.getTipo()) {
+				if ( (FormUtils.fieldDirty(camposTabDatos.getTelFaxTextBox().getArea(),telefono.getArea()))
 						||(FormUtils.fieldDirty(camposTabDatos.getTelFaxTextBox().getNumero(),telefono.getNumeroLocal()))
 						||(FormUtils.fieldDirty(camposTabDatos.getTelFaxTextBox().getInterno(),telefono.getInterno()))
-					) retorno = true;
-				}
+				) retorno = true;
+				noTieneFax = false;
 			}
+		}
+		//chequea si hay nuevos
+		if (noTienePrincipal) {
+			if ((!camposTabDatos.getTelPrincipalTextBox().getArea().getText().trim().equals("")) 
+					||(!camposTabDatos.getTelPrincipalTextBox().getNumero().getText().trim().equals(""))
+					||(!camposTabDatos.getTelPrincipalTextBox().getInterno().getText().trim().equals(""))
+			) retorno = true;
+		}
+		if (noTieneAdicional) {
+			if ((!camposTabDatos.getTelAdicionalTextBox().getArea().getText().trim().equals(""))
+					||(!camposTabDatos.getTelAdicionalTextBox().getNumero().getText().trim().equals(""))
+					||(!camposTabDatos.getTelAdicionalTextBox().getInterno().getText().trim().equals(""))
+			) retorno = true;
+		}
+		if (noTieneCelular) {
+			if ((!camposTabDatos.getTelCelularTextBox().getArea().getText().trim().equals(""))
+					||(!camposTabDatos.getTelCelularTextBox().getNumero().getText().trim().equals(""))
+			) retorno = true;
+		}
+		if (noTieneFax) {
+			if ((!camposTabDatos.getTelFaxTextBox().getArea().getText().trim().equals(""))
+					||(!camposTabDatos.getTelFaxTextBox().getNumero().getText().trim().equals(""))
+					||(!camposTabDatos.getTelFaxTextBox().getInterno().getText().trim().equals(""))
+			) retorno = true;
 		}
 		
-		//mails
-		if (cuentaTab.getCuenta2editDto().getPersona().getEmails().size()>0) {
-            for (EmailDto email : cuentaTab.getCuenta2editDto().getPersona().getEmails()) {
-				TipoEmailDto tipo = email.getTipoEmail();
-                if (tipo.getId()==TipoEmailEnum.PERSONAL.getTipo()) {
-    				if ( (FormUtils.fieldDirty(camposTabDatos.getEmailPersonal(),email.getEmail()))) 
-    					retorno = true;
-                }
-                if (tipo.getId()==TipoEmailEnum.LABORAL.getTipo()) {
-    				if ( (FormUtils.fieldDirty(camposTabDatos.getEmailLaboral(),email.getEmail()))) 
-    					retorno = true;
-                }
-            }
-		} else {
-			if (!camposTabDatos.getEmailLaboral().getText().equals("")||!camposTabDatos.getEmailPersonal().getText().equals("")) {
-				retorno = true;
+	//PANEL MAILS
+		boolean noTienePersonal = true;
+		boolean noTieneLaboral  = true;
+
+		for (EmailDto email : cuentaTab.getCuenta2editDto().getPersona().getEmails()) {
+			TipoEmailDto tipo = email.getTipoEmail();
+			if (tipo.getId()==TipoEmailEnum.PERSONAL.getTipo()) {
+				if ( (FormUtils.fieldDirty(camposTabDatos.getEmailPersonal(),email.getEmail()))) 
+					retorno = true;
+				noTienePersonal = false;
+			}
+			if (tipo.getId()==TipoEmailEnum.LABORAL.getTipo()) {
+				if ( (FormUtils.fieldDirty(camposTabDatos.getEmailLaboral(),email.getEmail()))) 
+					retorno = true;
+				noTieneLaboral  = false;
 			}
 		}
+		if (noTienePersonal) {
+			if (!camposTabDatos.getEmailPersonal().getText().equals("")) 
+				retorno = true;
+		}	
+		if (noTieneLaboral) {
+			if (!camposTabDatos.getEmailLaboral().getText().equals("")) 
+				retorno = true;
+		}
+
 		return retorno;
 	}
 	
@@ -871,18 +900,6 @@ public class CuentaDatosForm extends Composite {
 		return CuentaEdicionTabPanel.getInstance().getCuenta2editDto();
 	}
 
-//	public void saveCuenta() {
-//		CuentaDto ctaDto = getCuentaDtoFromEditor();
-//		CuentaRpcService.Util.getInstance().saveCuenta(ctaDto,new DefaultWaitCallback() {
-//			public void success(Object result) {
-//				//CuentaEdicionTabPanel.getInstance().setCuenta2editDto((CuentaDto) result);
-//				//ponerDatosBusquedaEnFormulario((CuentaDto) result);
-//				ErrorDialog.getInstance().show("GUARDADO OK");
-//			}
-//		});
-//	}
-	
-	
 	public CuentaUIData getCamposTabDatos() {
 		return camposTabDatos;
 	}
@@ -890,7 +907,6 @@ public class CuentaDatosForm extends Composite {
 	public void setCamposTabDatos(CuentaUIData camposTabDatos) {
 		this.camposTabDatos = camposTabDatos;
 	}
-	
 	
 	public void setearValoresRtaVeraz(VerazResponseDto result, TextBox apellido, TextBox nombre, TextBox razonSocial, ListBox sexo, Label veraz) {
 		

@@ -1,11 +1,11 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
-import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
@@ -45,6 +45,8 @@ public class CuentaEdicionTabPanel {
 	private SimpleLink crearSS  = new SimpleLink(Sfa.constant().crear()+Sfa.constant().whiteSpace()+Sfa.constant().ss(), "#", true);
 	private SimpleLink agregar  = new SimpleLink(Sfa.constant().agregar() , "#", true);
 	private SimpleLink cancelar = new SimpleLink(Sfa.constant().cancelar(), "#", true);
+	List<String> erroresValidacion = new ArrayList<String>();
+
 
 	public static CuentaEdicionTabPanel getInstance() {
 		return instance;
@@ -182,8 +184,8 @@ public class CuentaEdicionTabPanel {
 		
 		CuentaRpcService.Util.getInstance().saveCuenta(ctaDto,new DefaultWaitCallback() {
 			public void success(Object result) {
-				//CuentaEdicionTabPanel.getInstance().setCuenta2editDto((CuentaDto) result);
-				//ponerDatosBusquedaEnFormulario((CuentaDto) result);
+				CuentaEdicionTabPanel.getInstance().setCuenta2editDto((CuentaDto) result);
+				cuentaDatosForm.ponerDatosBusquedaEnFormulario((CuentaDto) result);
 				ErrorDialog.getInstance().show("GUARDADO OK");
 			}
 		});
@@ -200,29 +202,26 @@ public class CuentaEdicionTabPanel {
 	}
 	
 	private boolean validarCompletitud() {
-		List<String> errorDatos = cuentaDatosForm.validarCompletitud();
-		List<String> errorDomicilios = CuentaDomiciliosForm.getInstance().validarCompletitud();
-		if (!errorDatos.isEmpty()) {
+		erroresValidacion.clear();
+		erroresValidacion.addAll(cuentaDatosForm.validarCompletitud());
+		erroresValidacion.addAll(CuentaDomiciliosForm.getInstance().validarCompletitud());
+		if (!erroresValidacion.isEmpty()) {
 			validarCompletitudButton.addStyleName(VALIDAR_COMPLETITUD_FAIL_STYLE);
-			ErrorDialog.getInstance().show(errorDatos);
-		}else if (!errorDomicilios.isEmpty()) {
-			validarCompletitudButton.addStyleName(VALIDAR_COMPLETITUD_FAIL_STYLE);
-			ErrorDialog.getInstance().show(errorDomicilios);
+			ErrorDialog.getInstance().show(erroresValidacion);
 		} else {
 			validarCompletitudButton.removeStyleName(VALIDAR_COMPLETITUD_FAIL_STYLE);
 		}
-		return errorDatos.isEmpty() && errorDomicilios.isEmpty(); 
+		return erroresValidacion.isEmpty(); 
 	}
 	
 	private boolean validarCamposTabDatos() {
-		List<String> errorCompletitud = cuentaDatosForm.validarCompletitud();
-		List<String> errorDatos = cuentaDatosForm.validarCamposTabDatos();
-		if (!errorCompletitud.isEmpty()) {
-			ErrorDialog.getInstance().show(errorCompletitud);
-		} else if (!errorDatos.isEmpty()) {
-			ErrorDialog.getInstance().show(errorDatos);
-	    }
-		return errorCompletitud.isEmpty() && errorDatos.isEmpty(); 
+		erroresValidacion.clear();
+		erroresValidacion.addAll(cuentaDatosForm.validarCompletitud());
+		erroresValidacion.addAll(cuentaDatosForm.validarCamposTabDatos());
+		if (!erroresValidacion.isEmpty()) {
+			ErrorDialog.getInstance().show(erroresValidacion);
+		}
+		return erroresValidacion.isEmpty(); 
 	}
 	
 	///////////////
