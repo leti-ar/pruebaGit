@@ -7,6 +7,7 @@ import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.NormalizacionDomicilioMotivoDto;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
+import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
 import com.google.gwt.user.client.Command;
@@ -16,8 +17,6 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.SourcesTableEvents;
-import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -27,7 +26,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 
 	private Grid grillaPpal;
 	private SimplePanel grillaDomicilio;
-	private FlexTable domicilioResult;
+	private NextelTable domicilioResult;
 	private Command comandoAceptar;
 	private Command comandoNoNormalizar;
 	private FormButtonsBar footerBar;
@@ -100,7 +99,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		linkAceptar = new SimpleLink("Aceptar");
 		linkCerrar = new SimpleLink("Cerrar");
 		grillaDomicilio = new SimplePanel();
-		domicilioResult = new FlexTable();
+		domicilioResult = new NextelTable();
 		addStyleName("gwt-NormalizarDomicilioUI");
 		grillaDomicilio.addStyleName("resultTableScroll");
 		grillaPpal = new Grid(6, 1);
@@ -164,30 +163,13 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		setearFormatoNormalizador();
 		loadTableConVariosDomicilios();
 	}
-	
-	public void agregaTableListeners(){
-		domicilioResult.addTableListener(new TableListener() {
-			public void onCellClicked(SourcesTableEvents arg0, int row, int col) {
-				if (row != 0) {
-					//Limpio todas las celdas al estilo original,
-					for (int i = 1; i < domicilioResult.getRowCount(); i++) {
-						domicilioResult.getRowFormatter().removeStyleName(i, "selectedRow");	
-					}
-					//...y despues cambio de estilo la celda que se le hace click:
-					domicilioResult.getRowFormatter().setStyleName(row, "selectedRow");
-					rowSelected = row;
-				}
-				
-			}
-		});
-	}
 
 	private void loadTableConVariosDomicilios() {
 		if (domicilioResult != null) {
 			domicilioResult.unsinkEvents(Event.getEventsSunk(domicilioResult.getElement()));
 			domicilioResult.removeFromParent();
 		}
-		domicilioResult = new FlexTable();
+		domicilioResult = new NextelTable();
 		initTable(domicilioResult);
 		grillaDomicilio.setWidget(domicilioResult);
 		grillaPpal.getCellFormatter().addStyleName(0, 0, "layout");
@@ -197,7 +179,6 @@ public class NormalizarDomicilioUI extends NextelDialog {
 			domicilioResult.setHTML(i+1, 0, domiciliosEnDuda.get(i).getDomicilios());
 		}
 		setVisible(true);
-		agregaTableListeners();
 	}
 
 	
@@ -206,7 +187,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 			domicilioResult.unsinkEvents(Event.getEventsSunk(domicilioResult.getElement()));
 			domicilioResult.removeFromParent();
 		}
-		domicilioResult = new FlexTable();
+		domicilioResult = new NextelTable();
 		initTable(domicilioResult);
 		grillaDomicilio.setWidget(domicilioResult);
 		grillaPpal.getCellFormatter().addStyleName(0, 0, "layout");
@@ -214,7 +195,6 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		grillaPpal.setText(1, 0, domicilio.getDomicilios());
 		domicilioResult.setHTML(1, 0, domicilio.getDomicilios());
 		setVisible(true);
-		agregaTableListeners();
 	}
 	
 	private void initTable(FlexTable domicilioResult){
@@ -285,7 +265,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	}
 	
 	public int getRowSelected() {
-		return rowSelected;
+		return domicilioResult.getRowSelected();
 	}
 
 	public void setRowSelected(int rowSelected) {

@@ -10,7 +10,7 @@ public class NextelTable extends RowFlexTable implements RowListener {
 	private String[] rowStyles = { "TableRow1", "TableRow2" };
 	private String headerStyle = "TableHeader";
 	private String selectedStyle;
-	private int oldRowSelected = 0; 
+	private int rowSelected = 0;
 
 
 	public NextelTable(boolean showPointer) {
@@ -67,10 +67,10 @@ public class NextelTable extends RowFlexTable implements RowListener {
 	public void onRowClick(Widget sender, int row) {
 		if (row >= dataStarRow) {
 			getRowFormatter().addStyleName(row, "selectedRow");
-			if (oldRowSelected != 0) {
-				getRowFormatter().removeStyleName(oldRowSelected,"selectedRow");
+			if (rowSelected != 0) {
+				getRowFormatter().removeStyleName(rowSelected,"selectedRow");
 			}
-			oldRowSelected = row;
+			rowSelected = row;
 		}
 	}
 	
@@ -99,5 +99,12 @@ public class NextelTable extends RowFlexTable implements RowListener {
 			}
 			formatter.addStyleName(i, rowStyles[i % rowStyles.length]);
 		}
+	}
+	public int getRowSelected() {
+		return rowSelected;
+	}
+
+	public void setRowSelected(int rowSelected) {
+		this.rowSelected = rowSelected;
 	}
 }
