@@ -43,6 +43,37 @@ A {
 	text-align: center;
 }
 
+.TableHeader {
+	background-color: #A53953;
+	text-align: center;
+	color: white;
+	font-weight: bold;
+}
+/** Estilos tablas */
+.TableHeader A:link,
+.TableHeader A:active,
+.TableHeader A:visited { color: #fff; text-decoration:none; }
+
+.TableHeader A:hover { text-decoration:underline; }
+
+.TableRow1 {
+	background-color: white;
+}
+
+.TableRow2 {
+	background-color: #DCDCDC;
+}
+
+.TableRowSelected {
+	background-color: #EFDAE0;
+	cursor: pointer;
+}
+
+.NoPointerTableRowSelected {
+	background-color: #EFDAE0;
+}
+/** Fin Estilos tablas */
+
 .gwt-HeaderMenu .menu {
 	background-color: #981836;
 	background-image: url(images/toolbar/back-menu-bar.gif);
