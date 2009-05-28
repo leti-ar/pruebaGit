@@ -5,7 +5,9 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
+import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
@@ -38,8 +40,12 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	private SimpleLink cancelar;
 	private Button agregar;
 	private DomicilioUI domicilioUI;
+	private DomiciliosCuentaDto domicilioAEditar;
+	private CuentaDto cuentaDto;
 
 	private CuentaDatosForm cuentaDatosForm;
+	private CuentaContactoForm cuentaContactoForm;
+	private FlexTable domicilioTable;
 	
 	private HTML iconoLupa = IconFactory.vistaPreliminar();
 	
@@ -188,40 +194,30 @@ public class ContactosUI extends NextelDialog implements ClickListener {
         verazLabel.removeStyleName(estilos.get(estiloUsado));
 	}
 	
-public void setearValoresRtaVeraz(VerazResponseDto result, TextBox apellido, TextBox nombre, TextBox razonSocial, ListBox sexo, Label veraz) {
-		
-		//no entiendo para que pide los valores que tenia antes si después los pisa con los de la rta
-//		TextBox apellidoTextBox = camposTabDatos.getApellido();
-//        TextBox nombreTextBox = camposTabDatos.getNombre();
-//        TextBox razonSocialTextBox = camposTabDatos.getRazonSocial();
-//        Combo sexoCombo = granCuentaPanel.getSexoCombo();
+	public void setearValoresRtaVeraz(VerazResponseDto result, TextBox apellido, TextBox nombre, TextBox razonSocial, ListBox sexo, Label veraz) {
+		apellido.setText(result.getApellido());
+		apellido.setEnabled(true);        
+		nombre.setText(result.getNombre());
+		nombre.setEnabled(true);        
+		if (razonSocial!=null) {
+			razonSocial.setText(result.getRazonSocial());
+		}
+		sexo.setEnabled(true);
 
-        apellido.setText(result.getApellido());
-        apellido.setEnabled(true);
-        
-        nombre.setText(result.getNombre());
-        nombre.setEnabled(true);
-        
-        if (razonSocial!=null) {
-        razonSocial.setText(result.getRazonSocial());
-        }
-        
-        sexo.setEnabled(true);
-        
-        if ("ACEPTAR".equals(result.getEstado())) {
-        	veraz.addStyleName(estilos.get(0));
-        	estiloUsado = 0;
-        } else if ("REVISAR".equals(result.getEstado())) {
-        	veraz.addStyleName(estilos.get(1));
-        	estiloUsado = 1;
-        }else {
-        	veraz.addStyleName(estilos.get(2));
-        	estiloUsado = 2;
-        }
-      
-        veraz.setText(result.getEstado());
-        MessageDialog.getInstance().setDialogTitle("Resultado Veraz");
-        MessageDialog.getInstance().showAceptar(result.getMensaje(), MessageDialog.getInstance().getCloseCommand());
+		if ("ACEPTAR".equals(result.getEstado())) {
+			veraz.addStyleName(estilos.get(0));
+			estiloUsado = 0;
+		} else if ("REVISAR".equals(result.getEstado())) {
+			veraz.addStyleName(estilos.get(1));
+			estiloUsado = 1;
+		}else {
+			veraz.addStyleName(estilos.get(2));
+			estiloUsado = 2;
+		}
+
+		veraz.setText(result.getEstado());
+		MessageDialog.getInstance().setDialogTitle("Resultado Veraz");
+		MessageDialog.getInstance().showAceptar(result.getMensaje(), MessageDialog.getInstance().getCloseCommand());
 	}
 	
 	private PersonaDto getVerazSearch(TextBox numDoc, ListBox tipoDoc, ListBox sexo) {
@@ -237,19 +233,25 @@ public void setearValoresRtaVeraz(VerazResponseDto result, TextBox apellido, Tex
 
 	private Widget createDomicilioPanel() {
 		FlowPanel domicilioPanel = new FlowPanel();
+		FlexTable domicilioTable = new FlexTable();
 		agregar = new Button("Crear Nuevo");
-		agregar.addClickListener(this);
+		agregar.addClickListener(new ClickListener() {
+			public void onClick(Widget arg0) {
+//				DomicilioUI.getInstance().setComandoAceptar(getComandoNormalizarNuevoServiceCall());
+//				DomicilioUI.getInstance().cargarPopupNuevoDomicilio();
+			}
+		});
+		
+		
 		agregar.addStyleName("crearDomicilioButton");
 		SimplePanel crearNuevo = new SimplePanel(); 
-		
-		
+				
 		crearNuevo.setHeight("17px");
 		crearNuevo.setWidth("750");
 		domicilioPanel.addStyleDependentName("gwt-TabPanelBottom content");
 		crearNuevo.add(agregar);
 		domicilioPanel.add(crearNuevo);
-
-		FlexTable domicilioTable = new FlexTable();
+	
 		String[] widths = { "24px", "100px" };
 		for (int col = 0; col < widths.length; col++) {
 			domicilioTable.getColumnFormatter().setWidth(col, widths[col]);
@@ -306,13 +308,94 @@ public void setearValoresRtaVeraz(VerazResponseDto result, TextBox apellido, Tex
 				ErrorDialog.getInstance().show(errors);
 			}
 		} else {
-			
+			cuentaContactoForm.getInstance().setearContactos(contactosData.getContactoDto());
+			this.hide();
 		}
 	}
 
-	public void onClick(Widget sender) {
-		if (sender == agregar) {
-			domicilioUI = new DomicilioUI();
-		} 
+	
+	public DomicilioUI getDomicilioUI() {
+		return this.domicilioUI;
 	}
+	
+//	private Command getComandoNormalizarNuevoServiceCall() {
+//		/**TODO: Hacer la validacion de datos de entrada antes de abrir el popup de Normalizacion. */ 
+//		Command comandoEditar = new Command() {
+//			public void execute() {
+//				domicilioAEditar = DomicilioUI.getInstance().getDomiciliosData().getDomicilio();	
+//				CuentaRpcService.Util.getInstance().normalizarDomicilio(domicilioAEditar,
+//						new DefaultWaitCallback<NormalizarDomicilioResultDto>() {
+//							public void success(NormalizarDomicilioResultDto result) {
+//								
+//								//tipo: exito|no_parseado|no_encontrado|dudas
+//								if (result.getTipo().equals("exito")){
+//									domicilioAEditar = result.getDireccion();
+//									NormalizarDomicilioUI.getInstance().setNormalizado(true);
+//									abrirPopupNormalizacion(domicilioAEditar, null,getComandoAgregarNuevoDomicilio(),null);//TODO: Setearle el comando Aceptar en vez de null.
+//								}else if(result.getTipo().equals("no_encontrado")){
+//									setMotivosNoNormalizacion(result);
+//									abrirPopupNormalizacion(domicilioAEditar,null,getComandoAgregarNuevoDomicilio(),null);//TODO: Setearle el comando Aceptar en vez de null.
+//								}else if(result.getTipo().equals("dudas")){
+//									NormalizarDomicilioUI.getInstance().setNormalizado(true);
+//									abrirPopupNormalizacion(null,result.getDudas(),getComandoAgregarNuevoDomicilio(),null);
+//								}else if(result.getTipo().equals("no_parseado")){
+//									setMotivosNoNormalizacion(result);
+//									abrirPopupNormalizacion(domicilioAEditar,null,getComandoAgregarNuevoDomicilio(),null);//TODO: Setearle el comando Aceptar en vez de null.
+//								}
+//							}
+//							@Override
+//							public void failure(Throwable exception) {
+//								GWT.log("Entro en FAILURE de NormalizarDomicilioResultDto: "+ exception.getMessage(), exception.getCause());
+//							}
+//						});
+//			}
+//		 };
+//	return comandoEditar;
+//	}	
+	
+//	private Command getComandoAgregarNuevoDomicilio() {
+//		Command comandoAceptar = new Command() {
+//			public void execute() {
+//				DomiciliosCuentaDto domicilioNuevo = DomicilioUI.getInstance().getDomiciliosData().getDomicilio();
+//				domicilioAEditar = domicilioNuevo;
+//				PersonaDto persona = cuentaDto.getPersona();
+//				persona.getDomicilios().add(domicilioNuevo);
+//				DomicilioUI.getInstance().hide();
+//				domicilioTable.clear();
+//				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().cargaTablaDomicilios(cuentaDto);
+//				NormalizarDomicilioUI.getInstance().hide();
+//			}
+//		};
+//		return comandoAceptar;
+//	}
+//	
+//	private void abrirPopupNormalizacion(DomiciliosCuentaDto domicilio, List<DomicilioNormalizadoDto> domiciliosConDudas, Command comandoNoNormalizar, Command comandoAceptar) {
+//		/**OJO, Tener en cuenta ACA, de pasar DOS domicilios: 1 con los datos cargados en el DomicilioUI para cargar el Label,
+//		 *       y 2, el normalizado, para cargar la grilla!! */
+//		if(domicilio != null){
+//			domicilio.setNo_normalizar("T");
+//			NormalizarDomicilioUI.getInstance().setDomicilios(domicilio);
+//		}else if (domiciliosConDudas != null){
+//			NormalizarDomicilioUI.getInstance().setDomicilio(domicilioAEditar);
+//			NormalizarDomicilioUI.getInstance().setDomiciliosConDudas(domiciliosConDudas);
+//		}
+//		/***/
+//		NormalizarDomicilioUI.getInstance().setComandoNoNormalizar(comandoNoNormalizar);
+//		/**TODO: Terminar!*/
+//		//NormalizarDomicilioUI.getInstance().setComandoAceptar(comandoAceptar);
+//		NormalizarDomicilioUI.getInstance().showAndCenter();
+//	}
+//	
+//	private void setMotivosNoNormalizacion(NormalizarDomicilioResultDto result){
+//		NormalizarDomicilioUI.getInstance().setNormalizado(false);
+//		NormalizarDomicilioUI.getInstance().setMotivos(result.getMotivos());
+//		NormalizarDomicilioUI.getInstance().setDudas(result.getDudas());
+//	}
+
+
+	public void onClick(Widget arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }
