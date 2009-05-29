@@ -1,8 +1,11 @@
 package ar.com.nextel.sfa.client.ss;
 
+import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
 
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
@@ -15,13 +18,16 @@ import com.google.gwt.user.client.ui.Widget;
 public class VariosSSUI extends Composite {
 
 	private FlowPanel mainpanel;
-	//private EditarSSUIController controller;
+	private EditarSSUIController controller;
 	private EditarSSUIData editarSSUIData;
+	private Grid resumenSS;
+	private NumberFormat currencyFormat = NumberFormat.getCurrencyFormat();
 
 	public VariosSSUI(EditarSSUIController controller) {
 		mainpanel = new FlowPanel();
+		this.controller = controller;
 		initWidget(mainpanel);
-		//this.controller = controller;
+		// this.controller = controller;
 		this.editarSSUIData = controller.getEditarSSUIData();
 
 		mainpanel.add(getCreditoFidelizacion());
@@ -107,7 +113,7 @@ public class VariosSSUI extends Composite {
 	private Widget getResumenTable() {
 		SimplePanel wrapper = new SimplePanel();
 		wrapper.addStyleName("detalleSSTableWrapper mlr5");
-		Grid resumenSS = new Grid(1, 8);
+		resumenSS = new Grid(1, 8);
 		String[] titles = { "Item", "Cant.", "Forma Contrat.", "Precio Item", "Plan", "Precio Plan",
 				"Precio Gtía.", "Serv. Adic." };
 		for (int i = 0; i < titles.length; i++) {
@@ -127,5 +133,25 @@ public class VariosSSUI extends Composite {
 		HTML consultarVeraz = new HTML("Consultar Veraz");
 		scoringPanel.add(consultarVeraz);
 		return scoringPanel;
+	}
+
+	/** Realiza la actualizacion visual necesaria para mostrar los datos correctos */
+	public void refresh() {
+		int row = 1;
+		resumenSS.resizeRows(row);
+		for (LineaSolicitudServicioDto linea : editarSSUIData.getLineasSolicitudServicio()) {
+			linea.refreshPrecioServiciosAdicionales();
+			resumenSS.resizeRows(row + 1);
+			resumenSS.setHTML(row, 0, linea.getItem().getDescripcion());
+			resumenSS.setHTML(row, 1, "" + linea.getCantidad());
+			resumenSS.setHTML(row, 2, linea.getModalidadCobro().getDescripcion());
+			resumenSS.setHTML(row, 3, currencyFormat.format(linea.getPrecioLista()));
+			resumenSS.setHTML(row, 4, linea.getPlan().getDescripcion());
+			resumenSS.setHTML(row, 5, currencyFormat.format(linea.getPrecioListaPlan()));
+			resumenSS.setHTML(row, 6, currencyFormat.format(linea.getPrecioGarantiaLista()));
+			resumenSS.setHTML(row, 7, currencyFormat.format(linea.getPrecioServiciosAdicionalesLista()));
+			row++;
+		}
+		editarSSUIData.recarcularValores();
 	}
 }
