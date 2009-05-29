@@ -3,7 +3,7 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.ArrayList;
 import java.util.List;
 
-import ar.com.nextel.sfa.client.dto.DomicilioDto;
+import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
@@ -53,8 +53,8 @@ public class EditarSSUIData extends UIData {
 	public EditarSSUIData() {
 		serviciosAdicionales = new ArrayList();
 
-		fields.add(nss = new RegexTextBox(RegularExpressionConstants.getCantCaracteres(10)));
-		fields.add(nflota = new RegexTextBox(RegularExpressionConstants.getCantCaracteres(5)));
+		fields.add(nss = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(10)));
+		fields.add(nflota = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(5)));
 		fields.add(origen = new ListBox());
 		fields.add(entrega = new ListBox());
 		entrega.setWidth("480px");
@@ -168,10 +168,10 @@ public class EditarSSUIData extends UIData {
 		solicitudServicio = solicitud;
 		nss.setText(solicitud.getNumero());
 		nflota.setText(solicitud.getNumeroFlota());
-		// entrega.clear();
-		// facturacion.clear();
-		// entrega.addAllItems(solicitud.getCuenta().getPersona().getDomicilios);
-		// facturacion.addAllItems(solicitud.getCuenta().getPersona().getDomicilios);
+		entrega.clear();
+		facturacion.clear();
+		entrega.addAllItems(solicitud.getCuenta().getPersona().getDomicilios());
+		facturacion.addAllItems(solicitud.getCuenta().getPersona().getDomicilios());
 		entrega.setSelectedItem(solicitud.getDomicilioEnvio());
 		facturacion.setSelectedItem(solicitud.getDomicilioFacturacion());
 		aclaracion.setText(solicitud.getAclaracionEntrega());
@@ -189,10 +189,7 @@ public class EditarSSUIData extends UIData {
 		double pataconexValue = solicitud.getPataconex() != null ? solicitud.getPataconex() : 0;
 		pataconex.setText(decFormatter.format(pataconexValue));
 		firmarss.setChecked(solicitud.getFirmar());
-
 		observaciones.setText(solicitud.getObservaciones());
-		// precioListaText;
-		// desvioText;
 
 		if (anticipo.getItemCount() != 0) {
 			origen.setSelectedItem(solicitud.getOrigen());
@@ -200,9 +197,7 @@ public class EditarSSUIData extends UIData {
 		} else {
 			deferredLoad();
 		}
-
 		recarcularValores();
-		// precioVentaText;
 	}
 
 	private void deferredLoad() {
@@ -226,8 +221,8 @@ public class EditarSSUIData extends UIData {
 		solicitudServicio.setNumero(nss.getText());
 		solicitudServicio.setNumeroFlota(nflota.getText());
 		solicitudServicio.setOrigen((OrigenSolicitudDto) origen.getSelectedItem());
-		solicitudServicio.setDomicilioEnvio((DomicilioDto) entrega.getSelectedItem());
-		solicitudServicio.setDomicilioFacturacion((DomicilioDto) facturacion.getSelectedItem());
+		solicitudServicio.setDomicilioEnvio((DomiciliosCuentaDto) entrega.getSelectedItem());
+		solicitudServicio.setDomicilioFacturacion((DomiciliosCuentaDto) facturacion.getSelectedItem());
 		solicitudServicio.setAclaracionEntrega(aclaracion.getText());
 		if (!"".equals(credFidelizacion.getText().trim())) {
 			solicitudServicio.setMontoCreditoFidelizacion(Double.parseDouble(credFidelizacion.getText()));
@@ -261,13 +256,36 @@ public class EditarSSUIData extends UIData {
 						"La cantidad de pataconex ingresada excede el Precio de Venta Total. Por favor modifique el monto",
 						solicitudServicio.getMontoDisponible());
 		validator.fillResult();
+		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
+			boolean hasAlquiler = false;
+			for (ServicioAdicionalLineaSolicitudServicioDto servicioAdicional : linea
+					.getServiciosAdicionales()) {
+				if (servicioAdicional.isEsAlquiler() && servicioAdicional.isChecked()) {
+					hasAlquiler = true;
+					break;
+				}
+			}
+			if (!hasAlquiler) {
+				validator.addError("Falta Alquiler");
+			}
+		}
 		return validator.getErrors();
 	}
 
 	public void recarcularValores() {
-		precioListaText.setHTML("$ 0.00");
-		desvioText.setHTML("$ 0.00");
-		precioVentaText.setHTML("$ 0.00");
+		double precioLista = 0;
+		double precioVenta = 0;
+		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
+			linea.refreshPrecioServiciosAdicionales();
+			precioLista = precioLista + linea.getPrecioLista() + linea.getPrecioServiciosAdicionalesLista()
+					+ linea.getPrecioGarantiaLista();
+			precioVenta = precioVenta + linea.getPrecioVenta() + linea.getPrecioGarantiaVenta()
+					+ linea.getPrecioGarantiaVenta();
+		}
+
+		precioListaText.setHTML(currFormatter.format(precioLista));
+		desvioText.setHTML(currFormatter.format(precioLista - precioVenta));
+		precioVentaText.setHTML(currFormatter.format(precioVenta));
 		if (solicitudServicio.getMontoCreditoFidelizacion() != null) {
 			credFidelText.setHTML(currFormatter.format(solicitudServicio.getMontoCreditoFidelizacion()));
 		} else {
@@ -310,5 +328,20 @@ public class EditarSSUIData extends UIData {
 
 	public List<List<ServicioAdicionalLineaSolicitudServicioDto>> getServiciosAdicionales() {
 		return serviciosAdicionales;
+	}
+
+	/**
+	 * Carga la lista de todos los servicios adicionales para una LineaSolicitudServicioDto. Tambien agrega a
+	 * la linea los servicios adicionales obligatorios
+	 */
+	public void loadServiciosAdicionales(int index, List<ServicioAdicionalLineaSolicitudServicioDto> list) {
+		serviciosAdicionales.get(index).addAll(list);
+		List serviciosAdGuardados = getLineasSolicitudServicio().get(index).getServiciosAdicionales();
+		for (ServicioAdicionalLineaSolicitudServicioDto servicioAd : list) {
+			if(servicioAd.isChecked() && !serviciosAdGuardados.contains(servicioAd)){
+				serviciosAdGuardados.add(servicioAd);
+			}
+		}
+		
 	}
 }
