@@ -12,19 +12,23 @@ public class ServicioAdicionalLineaSolicitudServicioDto implements IsSerializabl
 	private String codigoBSCS;
 	private Double precioLista;
 	private String descripcionServicioAdicional;
-	private Boolean unicaVez;
-	private Boolean esGarantia;
-	private Boolean esAlquiler;
-	private Boolean esWap;
-	private Boolean esTethered;
-	private Boolean requiereDAE;
-	private Boolean checked;
-	private Boolean obligatorio;
+	private boolean unicaVez = false;
+	private boolean esGarantia = false;
+	private boolean esAlquiler = false;
+	private boolean esWap = false;
+	private boolean esTethered = false;
+	private boolean requiereDAE = false;
+	private boolean checked = false;
+	private boolean obligatorio = false;
 
 	public Long getId() {
 		return id;
 	}
-	
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	public Long getOrdenAparicion() {
 		return ordenAparicion;
 	}
@@ -57,67 +61,67 @@ public class ServicioAdicionalLineaSolicitudServicioDto implements IsSerializabl
 		this.descripcionServicioAdicional = descripcionServicioAdicional;
 	}
 
-	public Boolean getUnicaVez() {
+	public boolean isUnicaVez() {
 		return unicaVez;
 	}
 
-	public void setUnicaVez(Boolean unicaVez) {
+	public void setUnicaVez(boolean unicaVez) {
 		this.unicaVez = unicaVez;
 	}
 
-	public Boolean getEsGarantia() {
+	public boolean isEsGarantia() {
 		return esGarantia;
 	}
 
-	public void setEsGarantia(Boolean esGarantia) {
+	public void setEsGarantia(boolean esGarantia) {
 		this.esGarantia = esGarantia;
 	}
 
-	public Boolean getEsAlquiler() {
+	public boolean isEsAlquiler() {
 		return esAlquiler;
 	}
 
-	public void setEsAlquiler(Boolean esAlquiler) {
+	public void setEsAlquiler(boolean esAlquiler) {
 		this.esAlquiler = esAlquiler;
 	}
 
-	public Boolean getEsWap() {
+	public boolean isEsWap() {
 		return esWap;
 	}
 
-	public void setEsWap(Boolean esWap) {
+	public void setEsWap(boolean esWap) {
 		this.esWap = esWap;
 	}
 
-	public Boolean getEsTethered() {
+	public boolean isEsTethered() {
 		return esTethered;
 	}
 
-	public void setEsTethered(Boolean esTethered) {
+	public void setEsTethered(boolean esTethered) {
 		this.esTethered = esTethered;
 	}
 
-	public Boolean getRequiereDAE() {
+	public boolean isRequiereDAE() {
 		return requiereDAE;
 	}
 
-	public void setRequiereDAE(Boolean requiereDAE) {
+	public void setRequiereDAE(boolean requiereDAE) {
 		this.requiereDAE = requiereDAE;
 	}
 
-	public Boolean getChecked() {
+	public boolean isChecked() {
 		return checked;
 	}
 
-	public void setChecked(Boolean checked) {
+	public void setChecked(boolean checked) {
 		this.checked = checked;
 	}
 
-	public Boolean getObligatorio() {
+	public boolean isObligatorio() {
 		return obligatorio;
 	}
 
-	public void setObligatorio(Boolean obligatorio) {
+	public void setObligatorio(boolean obligatorio) {
 		this.obligatorio = obligatorio;
 	}
 
@@ -140,7 +144,8 @@ public class ServicioAdicionalLineaSolicitudServicioDto implements IsSerializabl
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((servicioAdicional.getId() == null) ? 0 : servicioAdicional.getId().hashCode());
+		result = prime * result
+				+ ((servicioAdicional.getId() == null) ? 0 : servicioAdicional.getId().hashCode());
 		return result;
 	}
 
@@ -157,6 +162,5 @@ public class ServicioAdicionalLineaSolicitudServicioDto implements IsSerializabl
 			return false;
 		return true;
 	}
-
 
 }
