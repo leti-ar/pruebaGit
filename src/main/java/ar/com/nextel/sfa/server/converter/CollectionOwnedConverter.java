@@ -13,7 +13,6 @@ import java.util.List;
 import org.dozer.CustomConverter;
 
 import ar.com.nextel.framework.IdentifiableObject;
-import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.support.owner.CollectionOwned;
 import ar.com.nextel.sfa.client.dto.IdentifiableDto;
