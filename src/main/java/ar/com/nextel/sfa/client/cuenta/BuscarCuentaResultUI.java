@@ -13,7 +13,6 @@ import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -104,13 +103,6 @@ public class BuscarCuentaResultUI extends FlowPanel {
 									.show(
 											"No se encontraron datos con el criterio utilizado.");
 						}
-						//TODO: Borrar!!!
-						for (int i = 0; i < result.size(); i++) {
-							//if (result.get(i).getLockingState() != 3){
-								GWT.log("Locking State = " + result.get(i).getLockingState(), null);
-							//}
-						}
-						//
 						setCuentas(result);
 						// setTotalRegistrosBusqueda(CuentaRpcService.Util.getInstance().searchTotalCuentas(cuentaSearchDto));
 					}
