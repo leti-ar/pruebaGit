@@ -38,6 +38,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 	private NumberFormat currencyFormat = NumberFormat.getCurrencyFormat();
 	private int selectedDetalleRow = 0;
 	private boolean blockServicioAdicionalLoad = false;
+	private static final String SELECTED_ROW = "selectedRow";
 
 	public DatosSSUI(EditarSSUIController controller) {
 		mainpanel = new FlowPanel();
@@ -102,8 +103,9 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		SimplePanel wrapper = new SimplePanel();
 		wrapper.addStyleName("resumenSSTableWrapper mlr5");
 		detalleSS = new FlexTable();
-		String[] titlesDetalle = { " ", " ", "Item", "Pcio Vta.", "Alias", "Plan", "Pcio Vta. Plan",
-				"Localidad", "Nº Reserva", "Tipo SS", "Cant.", "DDN", "DDI", "Roaming" };
+		String[] titlesDetalle = { Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), "Item",
+				"Pcio Vta.", "Alias", "Plan", "Pcio Vta. Plan", "Localidad", "Nº Reserva", "Tipo SS",
+				"Cant.", "DDN", "DDI", "Roaming" };
 		for (int i = 0; i < titlesDetalle.length; i++) {
 			detalleSS.setHTML(0, i, titlesDetalle[i]);
 		}
@@ -120,7 +122,8 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 
 		serviciosAdicionales = new Grid(1, 4);
 		serviciosAdicionales.addTableListener(this);
-		String[] titlesServAd = { " ", "Servicio adicional", "Precio de lista", "Precio de venta" };
+		String[] titlesServAd = { Sfa.constant().whiteSpace(), "Servicio adicional", "Precio de lista",
+				"Precio de venta" };
 		for (int i = 0; i < titlesServAd.length; i++) {
 			serviciosAdicionales.setHTML(0, i, titlesServAd[i]);
 		}
@@ -129,10 +132,14 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		serviciosAdicionales.addStyleName("dataTable");
 		serviciosAdicionales.setWidth("98%");
 		serviciosAdicionales.getRowFormatter().addStyleName(0, "header");
+		serviciosAdicionales.getCellFormatter().setWidth(0, 0, "15px");
+		serviciosAdicionales.getCellFormatter().setWidth(0, 2, "120px");
+		serviciosAdicionales.getCellFormatter().setWidth(0, 3, "120px");
 		SimplePanel wrapper2 = new SimplePanel();
 		wrapper2.addStyleName("resumenSSTableWrapper mlr5");
 		wrapper2.setWidget(serviciosAdicionales);
 		detalle.add(wrapper2);
+
 		return detalle;
 	}
 
@@ -150,6 +157,8 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 			if (row > 0) {
 				if (col > 1) {
 					if (!blockServicioAdicionalLoad) {
+						detalleSS.getRowFormatter().removeStyleName(selectedDetalleRow, SELECTED_ROW);
+						detalleSS.getRowFormatter().addStyleName(row, SELECTED_ROW);
 						selectedDetalleRow = row;
 						loadServiciosAdicionales();
 					}
@@ -230,6 +239,8 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		detalleSS.setText(newRow, 11, linea.getDdn() ? "Si" : "No");
 		detalleSS.setText(newRow, 12, linea.getDdi() ? "Si" : "No");
 		detalleSS.setText(newRow, 13, linea.getRoaming() ? "Si" : "No");
+		detalleSS.getCellFormatter().addStyleName(newRow, 3, "alignRight");
+		detalleSS.getCellFormatter().addStyleName(newRow, 6, "alignRight");
 	}
 
 	private void loadServiciosAdicionales() {
@@ -242,7 +253,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 			controller.getServiciosAdicionales(linea,
 					new DefaultWaitCallback<List<ServicioAdicionalLineaSolicitudServicioDto>>() {
 						public void success(List<ServicioAdicionalLineaSolicitudServicioDto> list) {
-							editarSSUIData.getServiciosAdicionales().get(selectedDetalleRow - 1).addAll(list);
+							editarSSUIData.loadServiciosAdicionales(selectedDetalleRow - 1, list);
 							blockServicioAdicionalLoad = false;
 							renderServiciosAdicionalesTable(selectedDetalleRow - 1);
 						}
@@ -263,20 +274,23 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		int row = 1;
 		for (ServicioAdicionalLineaSolicitudServicioDto servicioAdicional : allServiciosAdicionales) {
 			int saIndex = linea.getServiciosAdicionales().indexOf(servicioAdicional);
-			if (saIndex > 0) {
+			if (saIndex >= 0) {
 				servicioAdicional = linea.getServiciosAdicionales().get(saIndex);
 			}
 			CheckBox check = new CheckBox();
-			if (servicioAdicional.getObligatorio()) {
+			if (servicioAdicional.isObligatorio()) {
 				check.setEnabled(false);
 				check.setChecked(true);
-			} else if (servicioAdicional.getChecked()) {
+			} else if (servicioAdicional.isChecked()) {
 				check.setChecked(true);
 			}
 			serviciosAdicionales.setWidget(row, 0, check);
 			serviciosAdicionales.setHTML(row, 1, servicioAdicional.getDescripcionServicioAdicional());
 			serviciosAdicionales.setHTML(row, 2, currencyFormat.format(servicioAdicional.getPrecioLista()));
 			serviciosAdicionales.setHTML(row, 3, currencyFormat.format(servicioAdicional.getPrecioLista()));
+			serviciosAdicionales.getCellFormatter().addStyleName(row, 1, "alignLeft");
+			serviciosAdicionales.getCellFormatter().addStyleName(row, 2, "alignRight");
+			serviciosAdicionales.getCellFormatter().addStyleName(row, 3, "alignRight");
 			row++;
 		}
 	}
