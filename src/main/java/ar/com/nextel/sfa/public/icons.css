@@ -44,6 +44,9 @@ rgm
 /*	margin-right: 10px; */
 }
 
+.icon-locked-other{
+   background-image: url("images/locked-others.gif");
+}
 
 .icon-cancel { background-position: 0 0;}
 .icon-copiar { background-position: -16 0;}

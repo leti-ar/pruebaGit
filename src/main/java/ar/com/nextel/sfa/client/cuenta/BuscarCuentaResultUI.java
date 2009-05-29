@@ -13,6 +13,7 @@ import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -31,6 +32,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	static final String LUPA_TITLE = "Ver Infocom";
 	static final String BLOQUEADO_TITLE = "Bloqueado para el usuario actual";
 	static final String LAPIZ_TITLE = "Editar";
+	static final String OTRO_BLOQUEO_TITLE = "Bloqueado por otro usuario";
 
 	private FlexTable resultTable;
 	private SimplePanel resultTableWrapper;
@@ -102,6 +104,13 @@ public class BuscarCuentaResultUI extends FlowPanel {
 									.show(
 											"No se encontraron datos con el criterio utilizado.");
 						}
+						//TODO: Borrar!!!
+						for (int i = 0; i < result.size(); i++) {
+							//if (result.get(i).getLockingState() != 3){
+								GWT.log("Locking State = " + result.get(i).getLockingState(), null);
+							//}
+						}
+						//
 						setCuentas(result);
 						// setTotalRegistrosBusqueda(CuentaRpcService.Util.getInstance().searchTotalCuentas(cuentaSearchDto));
 					}
@@ -124,10 +133,15 @@ public class BuscarCuentaResultUI extends FlowPanel {
 			if (cuenta.isPuedeVerInfocom()) {
 				resultTable.setWidget(row, 1, IconFactory.lupa(LUPA_TITLE));
 			}
-
-			if (true) {
+			
+			//LockingState == 1: Es cuando esta lockeado por el mismo usuario logueado (Verificar).
+			if (cuenta.getLockingState() == 1) {
 				resultTable.setWidget(row, 2, IconFactory.locked(BLOQUEADO_TITLE));
+			}else if (cuenta.getLockingState() == 2) {
+		    //LockingState == 2: Es cuando esta lockeado por otro usuario. 
+				resultTable.setWidget(row, 2, IconFactory.lockedOther(OTRO_BLOQUEO_TITLE));
 			}
+
 			resultTable.setHTML(row, 3, cuenta.getNumero());
 			resultTable.setHTML(row, 4, cuenta.getRazonSocial());
 			resultTable.setHTML(row, 5, cuenta.getApellidoContacto());

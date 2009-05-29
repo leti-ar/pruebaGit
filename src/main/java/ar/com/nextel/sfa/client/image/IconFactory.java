@@ -22,10 +22,20 @@ public class IconFactory {
 	private static final String ICON_SILVIO_SOLDAN_STYLE = "icon-silvioSoldan";
 	private static final String ICON_WORD_STYLE = "icon-word";
 	private static final String ICON_LOCKED_STYLE = "icon-locked";
+	private static final String ICON_LOCKED_OTHER_STYLE = "icon-locked-other";
 	private static final String ICON_LAPIZ_STYLE = "icon-lapiz";
 	private static final String ICON_CANCEL_STYLE = "icon-cancel";
 	private static final String ICON_LUPA_STYLE = "icon-lupa";
 
+	public static HTML lockedOther() {
+		return createDiv(ICON_LOCKED_OTHER_STYLE);
+	}
+
+	public static HTML lockedOther(String title) {
+		return createDiv(ICON_LOCKED_OTHER_STYLE,title);
+	}
+
+	
 	public static HTML lupa() {
 		return createDiv(ICON_LUPA_STYLE);
 	}
