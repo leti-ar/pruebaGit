@@ -6,36 +6,36 @@ import java.util.Map;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
-import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.Widget;
 
 public class RazonSocialClienteBar extends Composite {
 
 	private FlowPanel left;
-	private HTML razonSocial;
-	private HTML cliente;
+	private InlineHTML razonSocial;
+	private InlineHTML cliente;
 	private Hyperlink cuentaLink;
+	private String url = "" + UILoader.EDITAR_CUENTA;
 
 	public RazonSocialClienteBar() {
 		left = new FlowPanel();
 		initWidget(left);
-		FlowPanel right = new FlowPanel();
+		Grid right = new Grid(1, 3);
 		left.add(right);
 		addStyleName("gwt-RazonSocialClienteBar");
 		right.addStyleName("right");
-		left.add(new InlineLabel(Sfa.constant().razonSocial()));
-		left.add(razonSocial = new HTML());
-		cuentaLink = IconFactory.silvioSoldanAnchor(String.valueOf(UILoader.EDITAR_CUENTA));
-		right.add(cuentaLink);
-		right.add(new InlineLabel(Sfa.constant().cliente()));
-		right.add(cliente = new HTML());
-
+		left.add(new InlineLabel(Sfa.constant().razonSocial() + ": "));
+		left.add(razonSocial = new InlineHTML());
+		cuentaLink = IconFactory.silvioSoldanAnchor(url);
+		right.setWidget(0, 0, cuentaLink);
+		right.setWidget(0, 1, new InlineLabel(Sfa.constant().cliente() + ": "));
+		right.setWidget(0, 2, cliente = new InlineHTML());
+		right.getCellFormatter().setWidth(0, 2, "180px");
 	}
 
 	public void setRazonSocial(String razonSocial) {
