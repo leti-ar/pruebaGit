@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.enums.EstadoDomicilioEnum;
+import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * @author eSalvador 
  **/
-public class DomiciliosCuentaDto implements IsSerializable, IdentifiableDto {
+public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem {
 	
 	private Long id;
 	private String calle;
@@ -285,4 +286,13 @@ public class DomiciliosCuentaDto implements IsSerializable, IdentifiableDto {
 	public void setVantiveId(Long vantiveId) {
 		this.vantiveId = vantiveId;
 	}
+    
+    public String getItemText() {
+    	return getDomicilios();
+    }
+    
+    public String getItemValue() {
+    	return "" + id;
+    }
+	
 }
