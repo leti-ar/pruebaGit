@@ -101,6 +101,14 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.SolicitudServicioDto
 		</class-b>
+		<field-exclude>
+			<a>domicilioFacturacion</a>
+			<b>domicilioFacturacion</b>
+		</field-exclude>
+		<field-exclude>
+			<a>domicilioEnvio</a>
+			<b>domicilioEnvio</b>
+		</field-exclude>
 		<field map-id="cuentaSolicitud" type="one-way">
 			<a>cuenta</a>
 			<b>cuenta</b>
@@ -150,7 +158,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<field custom-converter-id="collectionServicioAdicionalConverter">
 			<a>plainServiciosAdicionales</a>
 			<b>serviciosAdicionales</b>
-		</field>		
+		</field>
 		<field custom-converter-id="enumToDto">
 			<a>tipoSolicitud</a>
 			<b>tipoSolicitud</b>
@@ -283,10 +291,26 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>servicioAdicional</a>
 			<b>servicioAdicional</b>
 		</field>
-		<field>
+		<field type="one-way">
 			<a>servicioAdicional.descripcion</a>
 			<b>descripcionServicioAdicional</b>
 		</field>
+		<field type="one-way">
+			<a>servicioAdicional.esAlquiler</a>
+			<b>esAlquiler</b>
+		</field>
+		<field type="one-way">
+			<a>servicioAdicional.esGarantia</a>
+			<b>esGarantia</b>
+		</field>
+		<field type="one-way">
+			<a>servicioAdicional.esWap</a>
+			<b>esWap</b>
+		</field>
+		<field type="one-way">
+			<a>servicioAdicional.esTethered</a>
+			<b>esTethered</b>
+		</field>		
 	</mapping>
 
 	<mapping map-id="cuentaSolicitud" wildcard="false">
@@ -297,6 +321,30 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<field>
 			<a>id</a>
 			<b>id</b>
+		</field>
+		<field>
+			<a>persona</a>
+			<b>persona</b>
+		</field>
+		<field>
+			<a>codigoVantive</a>
+			<b>codigoVantive</b>
+		</field>
+		<field>
+			<a>idVantive</a>
+			<b>idVantive</b>
+		</field>
+	</mapping>
+	<mapping map-id="personaSolicitud" wildcard="false">
+		<class-a>ar.com.nextel.model.personas.beans.Persona</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.PersonaDto</class-b>
+		<field custom-converter-id="collectionDomiciliosServicioConverter">
+			<a>plainDomicilios</a>
+			<b>domicilios</b>
+		</field>
+		<field>
+			<a>razonSocial</a>
+			<b>razonSocial</b>
 		</field>
 	</mapping>
 	<mapping>
@@ -343,7 +391,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>sexo</a>
 			<b>sexo</b>
 		</field>
-		<field custom-converter-id="collectionDomiciliosServicioConverter">		
+		<field custom-converter-id="collectionDomiciliosServicioConverter">
 			<a>plainDomicilios</a>
 			<b>domicilios</b>
 		</field>
@@ -431,8 +479,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</field>
 	</mapping>
 	<mapping>
-		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.MerlinDireccionDTO</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto</class-b>
+		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.MerlinDireccionDTO
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto
+		</class-b>
 		<field>
 			<a>cp</a>
 			<b>codigo_postal</b>
