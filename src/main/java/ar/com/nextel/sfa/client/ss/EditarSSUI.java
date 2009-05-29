@@ -26,6 +26,8 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -68,8 +70,11 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 			SolicitudRpcService.Util.getInstance().createSolicitudServicio(solicitudServicioRequestDto,
 					new DefaultWaitCallback<SolicitudServicioDto>() {
 						public void success(SolicitudServicioDto solicitud) {
-							// if(solicitud.ge)
-							// razonSocialClienteBar
+							razonSocialClienteBar.setCliente(solicitud.getCuenta().getCodigoVantive());
+							razonSocialClienteBar.setRazonSocial(solicitud.getCuenta().getPersona()
+									.getRazonSocial());
+							razonSocialClienteBar.setIdCuenta(solicitud.getCuenta().getId(), solicitud
+									.getCuenta().getIdVantive());
 							editarSSUIData.setSolicitud(solicitud);
 							validarCompletitud(false);
 							datos.redrawDetalleSSTable();
@@ -96,6 +101,16 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 		tabs.add(datos = new DatosSSUI(this), "Datos");
 		tabs.add(varios = new VariosSSUI(this), "Varios");
 		tabs.selectTab(0);
+		tabs.addTabListener(new TabListener(){
+			public void onTabSelected(SourcesTabEvents tab, int index) {
+				if(index == 1){
+					varios.refresh();
+				}
+			}
+			public boolean onBeforeTabSelected(SourcesTabEvents arg0, int arg1) {
+				return true;
+			}
+		});
 		SolicitudRpcService.Util.getInstance().getSolicitudInitializer(
 				new DefaultWaitCallback<SolicitudInitializer>() {
 					public void success(SolicitudInitializer initializer) {
