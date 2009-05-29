@@ -62,6 +62,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 	private EditarSSUIController controller;
 	private NumberFormat currencyFormat = NumberFormat.getCurrencyFormat();
 
+	private Long idPlanAnterior;
+	private Long idItemAnterior;
+
 	public ItemSolicitudUIData(EditarSSUIController controller) {
 
 		this.controller = controller;
@@ -334,12 +337,15 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 		// Los siguientes combos se seleccionan al cagar las opciones en los combos (ver preselecionados en
 		// ListBox)
 		listaPrecio.setSelectedItem(linea.getListaPrecios());
+		idItemAnterior = null;
 		if (linea.getItem() != null) {
 			ItemSolicitudTasadoDto itemTasado = new ItemSolicitudTasadoDto();
 			itemTasado.setItem(linea.getItem());
 			item.setSelectedItem(itemTasado);
+			idItemAnterior = linea.getItem().getId();
 		}
 		plan.setSelectedItem(linea.getPlan());
+		idPlanAnterior = linea.getPlan() != null ? linea.getPlan().getId() : null;
 		modalidadCobro.setSelectedItem(linea.getModalidadCobro());
 		modeloEq.setSelectedItem(linea.getModelo());
 	}
@@ -383,9 +389,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 		lineaSolicitudServicio.setPrecioListaAjustado(precio);
 		lineaSolicitudServicio.setTipoSolicitud((TipoSolicitudDto) tipoOrden.getSelectedItem());
 		// Limpio los servicios adicionales para que los actualice
-		if (lineaSolicitudServicio.getServiciosAdicionales() != null) {
+		if (!(lineaSolicitudServicio.getPlan().getId().equals(idPlanAnterior) && lineaSolicitudServicio
+				.getItem().getId().equals(idItemAnterior))) {
 			lineaSolicitudServicio.getServiciosAdicionales().clear();
-			lineaSolicitudServicio.setServiciosAdicionales(null);
 		}
 		return lineaSolicitudServicio;
 	}
