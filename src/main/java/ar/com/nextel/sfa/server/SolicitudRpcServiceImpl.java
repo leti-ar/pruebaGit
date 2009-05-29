@@ -29,6 +29,7 @@ import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRet
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.security.Usuario;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
+import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.personas.beans.Localidad;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
@@ -239,10 +240,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 	public SolicitudInitializer getSolicitudInitializer() {
 		SolicitudInitializer initializer = new SolicitudInitializer();
-		initializer.setOrigenesSolicitud(mapper.convertList(repository.getAll(OrigenSolicitud.class),
-				OrigenSolicitudDto.class));
-		initializer.setTiposAnticipo(mapper.convertList(repository.getAll(TipoAnticipo.class),
-				TipoAnticipoDto.class));
+		List origenes = repository.getAll(OrigenSolicitud.class);
+		initializer.setOrigenesSolicitud(mapper.convertList(origenes, OrigenSolicitudDto.class));
+		List tiposAnticipo = repository.getAll(TipoAnticipo.class);
+		initializer.setTiposAnticipo(mapper.convertList(tiposAnticipo, TipoAnticipoDto.class));
 		return initializer;
 	}
 
@@ -250,6 +251,14 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		SolicitudServicio solicitudServicio = repository.retrieve(SolicitudServicio.class,
 				solicitudServicioDto.getId());
 		mapper.map(solicitudServicioDto, solicitudServicio);
+		if (solicitudServicio.getDomicilioEnvio() != null) {
+			solicitudServicio.setDomicilioEnvio(repository.retrieve(Domicilio.class, solicitudServicio
+					.getDomicilioEnvio().getId()));
+		}
+		if (solicitudServicio.getDomicilioFacturacion() != null) {
+			solicitudServicio.setDomicilioFacturacion(repository.retrieve(Domicilio.class, solicitudServicio
+					.getDomicilioFacturacion().getId()));
+		}
 		solicitudBusinessService.saveSolicitudServicio(solicitudServicio);
 		solicitudServicioDto = mapper.map(solicitudServicio, SolicitudServicioDto.class);
 		return solicitudServicioDto;
