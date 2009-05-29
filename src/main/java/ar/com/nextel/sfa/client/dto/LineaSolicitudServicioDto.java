@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -13,7 +14,7 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 	private ItemSolicitudDto item;
 	private PlanDto plan;
 
-	private List<ServicioAdicionalLineaSolicitudServicioDto> serviciosAdicionales;
+	private List<ServicioAdicionalLineaSolicitudServicioDto> serviciosAdicionales = new ArrayList();
 
 	private ListaPreciosDto listaPrecios;
 	private TerminoPagoDto terminoPago;
@@ -25,6 +26,11 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 	private Double precioListaPlan;
 	private Double precioListaAjustado;
 	private Double precioVentaPlan;
+
+	private double precioServiciosAdicionalesLista = 0;
+	private double precioServiciosAdicionalesVenta = 0;
+	private ServicioAdicionalLineaSolicitudServicioDto garantia = null;
+
 	private ModalidadCobroDto modalidadCobro;
 
 	private String numeroReserva;
@@ -206,13 +212,13 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 		this.numeroSerie = numeroSerie;
 	}
 
-//	public List<NumeroANIDto> getNumerosANI() {
-//		return numerosANI;
-//	}
-//
-//	public void setNumerosANI(List<NumeroANIDto> numerosANI) {
-//		this.numerosANI = numerosANI;
-//	}
+	// public List<NumeroANIDto> getNumerosANI() {
+	// return numerosANI;
+	// }
+	//
+	// public void setNumerosANI(List<NumeroANIDto> numerosANI) {
+	// this.numerosANI = numerosANI;
+	// }
 
 	public String getAlias() {
 		return alias;
@@ -287,4 +293,50 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 	public void setModelo(ModeloDto modelo) {
 		this.modelo = modelo;
 	}
+
+	/** Actualiza precioServiciosAdicionalesLista, precioServiciosAdicionalesVenta y precioGarantia */
+	public void refreshPrecioServiciosAdicionales() {
+		precioServiciosAdicionalesLista = 0;
+		precioServiciosAdicionalesVenta = 0;
+
+		for (ServicioAdicionalLineaSolicitudServicioDto servicioAd : serviciosAdicionales) {
+			if (servicioAd.isChecked()) {
+				if (!servicioAd.isEsGarantia()) {
+					precioServiciosAdicionalesLista = precioServiciosAdicionalesLista
+							+ servicioAd.getPrecioLista();
+					precioServiciosAdicionalesVenta = precioServiciosAdicionalesVenta
+							+ servicioAd.getPrecioVenta();
+				} else {
+					garantia = servicioAd;
+				}
+			}
+		}
+	}
+	
+	// XXX: "Mirar el valor de los servicios adicionales"
+
+	/** Obtiene precioServiciosAdicionalesLista. Llamar primero a refreshPrecioServiciosAdicionales */
+	public double getPrecioServiciosAdicionalesLista() {
+		return precioServiciosAdicionalesLista;
+	}
+
+	/** Obtiene precioServiciosAdicionalesVenta. Llamar primero a refreshPrecioServiciosAdicionales */
+	public double getPrecioServiciosAdicionalesVenta() {
+		return precioServiciosAdicionalesVenta;
+	}
+
+	/** Obtiene precioGarantiaLista. Llamar primero a refreshPrecioServiciosAdicionales */
+	public double getPrecioGarantiaLista() {
+		if (garantia != null)
+			return garantia.getPrecioLista();
+		return 0;
+	}
+
+	/** Obtiene precioGarantiaVenta. Llamar primero a refreshPrecioServiciosAdicionales */
+	public double getPrecioGarantiaVenta() {
+		if (garantia != null)
+			return garantia.getPrecioVenta();
+		return 0;
+	}
+
 }
