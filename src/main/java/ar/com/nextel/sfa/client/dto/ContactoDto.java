@@ -22,5 +22,26 @@ public class ContactoDto implements IsSerializable {
 	public void setPersonaDto(PersonaDto personaDto) {
 		this.personaDto = personaDto;
 	}
-		
+	
+	public String getApellido() {
+		return personaDto.getApellido();
+	}
+	
+	public String getNombre() {
+		return personaDto.getNombre();
+	}
+	
+	public String getNumeroDocumento() {
+		return personaDto.getDocumento().getNumero();
+	}
+	
+	public TipoDocumentoDto getTipoDocumento() {
+		return personaDto.getDocumento().getTipoDocumento();
+	}
+	
+	public List<EmailDto> getEmails() {
+		return personaDto.getEmails();
+	}
+	
+	
 }
