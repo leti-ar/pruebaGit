@@ -93,14 +93,17 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 	public void onChange(Widget sender) {
 		TipoSolicitudDto tipoSolicitud = (TipoSolicitudDto) tipoOrden.getSelectedItem();
 		if (itemSolicitudUIData.getIdsTipoSolicitudBaseItemYPlan().contains(
-				tipoSolicitud.getIdTipoSolicitudBase())) {
+				tipoSolicitud.getTipoSolicitudBase().getId())) {
 			tipoSolicitudPanel.setWidget(getItemYPlanSolicitudUI());
+			itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.ITEM_PLAN);
 		} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseItem().contains(
-				tipoSolicitud.getIdTipoSolicitudBase())) {
+				tipoSolicitud.getTipoSolicitudBase().getId())) {
 			tipoSolicitudPanel.setWidget(getSoloItemSolicitudUI());
+			itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.SOLO_ITEM);
 		} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseActivacion().contains(
-				tipoSolicitud.getIdTipoSolicitudBase())) {
+				tipoSolicitud.getTipoSolicitudBase().getId())) {
 			tipoSolicitudPanel.setWidget(getItemSolicitudActivacionUI());
+			itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.ACTIVACION);
 		} else {
 			tipoSolicitudPanel.clear();
 		}

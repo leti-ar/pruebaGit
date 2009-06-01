@@ -8,7 +8,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class TipoSolicitudDto extends EnumDto implements IsSerializable, ListBoxItem {
 
-	private Long idTipoSolicitudBase;
+	private TipoSolicitudBaseDto tipoSolicitudBase;
 	private String formaContratacion;
 	private List<ListaPreciosDto> listasPrecios;
 
@@ -32,12 +32,12 @@ public class TipoSolicitudDto extends EnumDto implements IsSerializable, ListBox
 		return "activacion".equals(formaContratacion != null ? formaContratacion.toLowerCase() : "");
 	}
 
-	public Long getIdTipoSolicitudBase() {
-		return idTipoSolicitudBase;
+	public TipoSolicitudBaseDto getTipoSolicitudBase() {
+		return tipoSolicitudBase;
 	}
 
-	public void setIdTipoSolicitudBase(Long idTipoSolicitudBase) {
-		this.idTipoSolicitudBase = idTipoSolicitudBase;
+	public void setTipoSolicitudBase(TipoSolicitudBaseDto tipoSolicitudBase) {
+		this.tipoSolicitudBase = tipoSolicitudBase;
 	}
 
 	public String getFormaContratacion() {
