@@ -526,4 +526,15 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<class-b>ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto
 		</class-b>
 	</mapping>
+	
+	<mapping>
+		<class-a>ar.com.nextel.model.cuentas.beans.CicloFacturacion</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.CicloFacturacionDto
+		</class-b>
+		<field type="one-way">
+			<a>descripcion</a>
+			<b>descripcion</b>
+		</field>
+	</mapping>
+	
 </mappings>
