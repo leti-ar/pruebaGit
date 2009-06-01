@@ -1,8 +1,5 @@
 package ar.com.nextel.sfa.client.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ar.com.nextel.sfa.client.enums.EstadoDomicilioEnum;
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
@@ -38,9 +35,11 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem {
 	private String activo;
 	private Long vantiveId;
 	private EstadoDomicilioDto estado = new EstadoDomicilioDto(new Long(EstadoDomicilioEnum.ACTIVO.getId()),EstadoDomicilioEnum.ACTIVO.toString());
+	private Long idEntrega;
+	private Long idFacturacion;
 	
-	
-    private List<TipoDomicilioAsociadoDto> tiposDomicilioAsociado = new ArrayList<TipoDomicilioAsociadoDto>();
+    //private List<TipoDomicilioAsociadoDto> tiposDomicilioAsociado = new ArrayList<TipoDomicilioAsociadoDto>();
+
 	//Lo seteo en True por defecto, porque esto no se guarda en la base, 
     //y cuando venga el dato, siempre estara deshabilitado, a menos que sea un domicilio Nuevo.
     //private boolean locked = true;
@@ -195,75 +194,53 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem {
 	public void setLocked(boolean locked) {
 		this.locked = locked;
 	}
-	
-    /**
-     * @return Retorna el/la tipoDomicilio.
-     */
-    public List<TipoDomicilioAsociadoDto> getTiposDomicilioAsociado() {
-        return tiposDomicilioAsociado;
-    }
-
-    /**
-     * @param tiposDomicilio El/La tipoDomicilio a setear.
-     */
-    public void setTiposDomicilioAsociado(List<TipoDomicilioAsociadoDto> tiposDomicilioAsociado) {
-        this.tiposDomicilioAsociado = tiposDomicilioAsociado;
-    }
-
-
-    /**
-     * @param tipoDomicilioAsociado
-     */
-    public void removeTipoDomicilioAsociado(TipoDomicilioAsociadoDto tipoDomicilioAsociado) {
-        this.tiposDomicilioAsociado.remove(tipoDomicilioAsociado);
-    }
-
-    /**
-     * Devuelve los tipos domicilio activos asociados a este domicilio
-     * 
-     * @return
-     */
-    public List<TipoDomicilioAsociadoDto> getTiposDomicilioAsociadosActivos() {
-    	List<TipoDomicilioAsociadoDto> result = new ArrayList<TipoDomicilioAsociadoDto>();
-        for (TipoDomicilioAsociadoDto tipoDomicilioAsociado : this.tiposDomicilioAsociado) {
-            if (tipoDomicilioAsociado.getActivo().booleanValue()) {
-                result.add(tipoDomicilioAsociado);
-            }
-        }
-        return result;
-    }
-    
-    public TipoDomicilioAsociadoDto getTipoDomicilioAsociado(TipoDomicilioDto tipoDomicilio) {
-    	TipoDomicilioAsociadoDto tipoDomicilioAsociado = null;
-        for (TipoDomicilioAsociadoDto currentTipoDomicilioAsociado : this.tiposDomicilioAsociado) {
-            if (currentTipoDomicilioAsociado.getTipoDomicilio().equals(tipoDomicilio)) {
-                tipoDomicilioAsociado = currentTipoDomicilioAsociado;
-            }
-        }
-        return tipoDomicilioAsociado;
-    }
+//
+//    /**
+//     * Devuelve los tipos domicilio activos asociados a este domicilio
+//     * 
+//     * @return
+//     */
+//    public List<TipoDomicilioAsociadoDto> getTiposDomicilioAsociadosActivos() {
+//    	List<TipoDomicilioAsociadoDto> result = new ArrayList<TipoDomicilioAsociadoDto>();
+//        for (TipoDomicilioAsociadoDto tipoDomicilioAsociado : this.tiposDomicilioAsociado) {
+//            if (tipoDomicilioAsociado.getActivo().booleanValue()) {
+//                result.add(tipoDomicilioAsociado);
+//            }
+//        }
+//        return result;
+//    }
+//    
+//    public TipoDomicilioAsociadoDto getTipoDomicilioAsociado(TipoDomicilioDto tipoDomicilio) {
+//    	TipoDomicilioAsociadoDto tipoDomicilioAsociado = null;
+//        for (TipoDomicilioAsociadoDto currentTipoDomicilioAsociado : this.tiposDomicilioAsociado) {
+//            if (currentTipoDomicilioAsociado.getTipoDomicilio().equals(tipoDomicilio)) {
+//                tipoDomicilioAsociado = currentTipoDomicilioAsociado;
+//            }
+//        }
+//        return tipoDomicilioAsociado;
+//    }
 
     
-    public boolean esPrincipalDeEntrega(TipoDomicilioDto tipoDomicilioEntregaDto) {
-        return esPrincipalDe(tipoDomicilioEntregaDto);
-    }
+//    public boolean esPrincipalDeEntrega(TipoDomicilioDto tipoDomicilioEntregaDto) {
+//        return esPrincipalDe(tipoDomicilioEntregaDto);
+//    }
+//    
+//    public boolean esPrincipalDeFacturacion(TipoDomicilioDto tipoDomicilioFacturacionDto) {
+//        return esPrincipalDe(tipoDomicilioFacturacionDto);
+//    }
     
-    public boolean esPrincipalDeFacturacion(TipoDomicilioDto tipoDomicilioFacturacionDto) {
-        return esPrincipalDe(tipoDomicilioFacturacionDto);
-    }
-    
-    private boolean esPrincipalDe(TipoDomicilioDto tipoDomicilio) {
-        List<TipoDomicilioAsociadoDto> tiposDomicilioAsociadosActivos = this.getTiposDomicilioAsociadosActivos();
-        
-        for (TipoDomicilioAsociadoDto tipoDomicilioAsoc : tiposDomicilioAsociadosActivos) {
-            if  (tipoDomicilioAsoc.getPrincipal()) {
-            		//OJO con esto de abajo, puede ser que no sea TRUE!!!
-            		//&& tipoDomicilioAsoc.getTipoDomicilio().getCodigoVantive().equals(tipoDomicilio.getCodigoVantive())) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    private boolean esPrincipalDe(TipoDomicilioDto tipoDomicilio) {
+//        List<TipoDomicilioAsociadoDto> tiposDomicilioAsociadosActivos = this.getTiposDomicilioAsociadosActivos();
+//        
+//        for (TipoDomicilioAsociadoDto tipoDomicilioAsoc : tiposDomicilioAsociadosActivos) {
+//            if  (tipoDomicilioAsoc.getPrincipal()) {
+//            		//OJO con esto de abajo, puede ser que no sea TRUE!!!
+//            		//&& tipoDomicilioAsoc.getTipoDomicilio().getCodigoVantive().equals(tipoDomicilio.getCodigoVantive())) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
 	public Long getId() {
 		return this.id;
@@ -294,5 +271,20 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem {
     public String getItemValue() {
     	return "" + id;
     }
-	
+
+	public Long getIdEntrega() {
+		return idEntrega;
+	}
+
+	public void setIdEntrega(Long idEntrega) {
+		this.idEntrega = idEntrega;
+	}
+
+	public Long getIdFacturacion() {
+		return idFacturacion;
+	}
+
+	public void setIdFacturacion(Long idFacturacion) {
+		this.idFacturacion = idFacturacion;
+	}
 }

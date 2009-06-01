@@ -8,9 +8,6 @@ import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
-import ar.com.nextel.sfa.client.dto.TipoDomicilioAsociadoDto;
-import ar.com.nextel.sfa.client.dto.TipoDomicilioDto;
-import ar.com.nextel.sfa.client.enums.TipoDomicilioAsociadoEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
@@ -211,7 +208,7 @@ public class CuentaDomiciliosForm extends Composite {
 								
 								//tipo: exito|no_parseado|no_encontrado|dudas
 								if (result.getTipo().equals("exito")){
-									domicilioAEditar = result.getDireccion();
+									mapeaIdCombosTipoDomicilio(result);
 									NormalizarDomicilioUI.getInstance().setNormalizado(true);
 									abrirPopupNormalizacion(domicilioAEditar, null,getComandoAgregarNuevoDomicilioSinNormalizar(),getComandoAgregarNuevoDomicilio(result.getTipo()));
 								}else if(result.getTipo().equals("no_encontrado")){
@@ -235,6 +232,15 @@ public class CuentaDomiciliosForm extends Composite {
 	return comandoEditar;
 	}	
 
+	private DomiciliosCuentaDto mapeaIdCombosTipoDomicilio(NormalizarDomicilioResultDto result){
+		Long idEntrega = domicilioAEditar.getIdEntrega();
+		Long idFacturacion = domicilioAEditar.getIdFacturacion();
+		domicilioAEditar = result.getDireccion();
+		domicilioAEditar.setIdEntrega(idEntrega);
+		domicilioAEditar.setIdFacturacion(idFacturacion);
+		return domicilioAEditar;
+	}
+	
 	private Command getComandoAgregarDomicilioCopiadoSinNormalizar(){
 		Command agregaDomicilioCopiado = new Command(){
 
@@ -307,9 +313,11 @@ public class CuentaDomiciliosForm extends Composite {
 
 	
 	private DomiciliosCuentaDto mapeoDomicilioNormalizado(DomiciliosCuentaDto domicilioNormalizado){
-		   DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomiciliosData().getDomicilio();
 		   domicilioNormalizado.setValidado(domicilioAEditar.getValidado());
-		   domicilioNormalizado.setTiposDomicilioAsociado(domicilio.getTiposDomicilioAsociado());
+		   //REVISAR:
+		   domicilioNormalizado.setIdEntrega(domicilioAEditar.getIdEntrega());
+		   domicilioNormalizado.setIdFacturacion(domicilioAEditar.getIdFacturacion());
+		   //
 		   domicilioNormalizado.setEn_carga(domicilioAEditar.getEn_carga());
 		   domicilioNormalizado.setNombre_usuario_ultima_modificacion(domicilioAEditar.getNombre_usuario_ultima_modificacion());
 		   domicilioNormalizado.setFecha_ultima_modificacion(domicilioAEditar.getFecha_ultima_modificacion());
@@ -319,9 +327,11 @@ public class CuentaDomiciliosForm extends Composite {
 	}
 	
 	private DomiciliosCuentaDto mapeoDomicilioNormalizadoCopiado(DomiciliosCuentaDto domicilioNormalizado){
-		   DomiciliosCuentaDto domicilioCopiado = DomicilioUI.getInstance().getDomiciliosData().getDomicilioCopiado();;
 		   domicilioNormalizado.setValidado(domicilioAEditar.getValidado());
-		   domicilioNormalizado.setTiposDomicilioAsociado(domicilioCopiado.getTiposDomicilioAsociado());
+		   //REVISAR:
+		   domicilioNormalizado.setIdEntrega(domicilioAEditar.getIdEntrega());
+		   domicilioNormalizado.setIdFacturacion(domicilioAEditar.getIdFacturacion());
+		   //
 		   domicilioNormalizado.setEn_carga(domicilioAEditar.getEn_carga());
 		   domicilioNormalizado.setNombre_usuario_ultima_modificacion(domicilioAEditar.getNombre_usuario_ultima_modificacion());
 		   domicilioNormalizado.setFecha_ultima_modificacion(domicilioAEditar.getFecha_ultima_modificacion());
@@ -520,37 +530,34 @@ public class CuentaDomiciliosForm extends Composite {
 				if (true) {
 					datosTabla.setWidget(i + 1, 2, IconFactory.cancel());
 				}
-			if (domicilios.get(i).getTiposDomicilioAsociado() != null) {
-				List<TipoDomicilioAsociadoDto> listaTipoDomicilioAsociado = domicilios.get(i).getTiposDomicilioAsociado();
-				for (int j = 0; j < listaTipoDomicilioAsociado.size(); j++) {
+				
+				if ((domicilios.get(i).getIdEntrega() != null) && (domicilios.get(i).getIdFacturacion() != null)){
+				
+				Long idEntrega = domicilios.get(i).getIdEntrega();
+				Long idFacturacion = domicilios.get(i).getIdFacturacion();
 					/** Logica para mostrar tipoDomicilio en la grilla de Resultados: */
-					TipoDomicilioDto tipoDomicilio = listaTipoDomicilioAsociado.get(j).getTipoDomicilio();
+
 					datosTabla.getCellFormatter().addStyleName(i + 1, 3, "alignCenter");
 					datosTabla.getCellFormatter().addStyleName(i + 1, 4, "alignCenter");
 
 					//Entrega;
-					if (tipoDomicilio.getId() == 4) { 
-						if (listaTipoDomicilioAsociado.get(j).getPrincipal()){
-							datosTabla.setHTML(i + 1, 3, "Principal");	
-						} else {
-							datosTabla.setHTML(i + 1, 3, "Si");
-						}
-					}else if (tipoDomicilio.getId() == 1) {
-						// Facturacion:
-						if (listaTipoDomicilioAsociado.get(j).getPrincipal()){
-							datosTabla.setHTML(i + 1, 4, "Principal");
-						} else {
-							datosTabla.setHTML(i + 1, 4, "Si");
-						}
-					}else if (tipoDomicilio.getId() == 0){
-						if (tipoDomicilio.getDescripcion().equals("FacturacionNo")){
-							datosTabla.setHTML(i + 1, 4, "No");	
-						}else if (tipoDomicilio.getDescripcion().equals("EntregaNo")){
-							datosTabla.setHTML(i + 1, 3, "No");
-						}
+					if (idEntrega == 2) { 
+						datosTabla.setHTML(i + 1, 3, "Principal");	
+					} else if(idEntrega == 0) {
+						datosTabla.setHTML(i + 1, 3, "Si");
+					} else if(idEntrega == 1) {
+						datosTabla.setHTML(i + 1, 3, "No");
+					}
+					
+					// Facturacion:
+					if  (idFacturacion == 2){
+						datosTabla.setHTML(i + 1, 4, "Principal");
+					} else if(idFacturacion == 0){
+						datosTabla.setHTML(i + 1, 4, "Si");
+					}else if(idFacturacion == 1) {
+						datosTabla.setHTML(i + 1, 4, "No");
 					}
 				}
-			}
 				datosTabla.setHTML(i + 1, 5, domicilios.get(i).getDomicilios());
 			}
 		}
@@ -564,7 +571,8 @@ public class CuentaDomiciliosForm extends Composite {
 					//Acciones a tomar cuando haga click en los lapices de edicion:
 					if (col == 0) {
 						domicilioAEditar = domicilio;
-						if (domicilio.isLocked()){
+						/**TODO: Terminar de probar esto BIEN!*/
+						if (domicilio.getVantiveId() != null){
 							openPopupAdviseDialog(getOpenDomicilioUICommand());
 						}else{
 							//validaHabilitacionDeCampos();
@@ -581,7 +589,6 @@ public class CuentaDomiciliosForm extends Composite {
 					if (col == 2) {
 						rowDomicilioABorrar = row;
 						domicilioAEditar = domicilio;
-						//if (domicilio.isLocked()){
 						/**TODO: Terminar de probar esto BIEN!*/
 						if (domicilio.getVantiveId() != null){
 							openPopupDeleteDialog(getOpenDialogAdviceCommand());
@@ -607,12 +614,14 @@ public class CuentaDomiciliosForm extends Composite {
 			validator.addError(Sfa.constant().ERR_DOMICILIO_FACTURACION());
 		} else {
 			for (DomiciliosCuentaDto domi : listaDomicilios) {
-				if( domi.getTiposDomicilioAsociado()!=null) {
-					for (TipoDomicilioAsociadoDto tipoDom :domi.getTiposDomicilioAsociado()) {
-						hayDomicilioEntrega = tipoDom.getTipoDomicilio().getId()==TipoDomicilioAsociadoEnum.ENTREGA.getId();
-						hayDomicilioFacturacion = tipoDom.getTipoDomicilio().getId()==TipoDomicilioAsociadoEnum.FACTURACION.getId();
-					}
-				}
+				
+			/**TODO: Arreglar esto de abajo! Avisarle a Raul que se comento porque se cambio Todo lo de TipoDomicilioAsociado! */
+//				if( domi.getTiposDomicilioAsociado()!=null) {
+//					for (TipoDomicilioAsociadoDto tipoDom :domi.getTiposDomicilioAsociado()) {
+//						hayDomicilioEntrega = tipoDom.getTipoDomicilio().getId()==TipoDomicilioAsociadoEnum.ENTREGA.getId();
+//						hayDomicilioFacturacion = tipoDom.getTipoDomicilio().getId()==TipoDomicilioAsociadoEnum.FACTURACION.getId();
+//					}
+//				}
 			}
 			if (!hayDomicilioEntrega) 
 				validator.addError(Sfa.constant().ERR_DOMICILIO_ENTREGA());

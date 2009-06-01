@@ -1,6 +1,5 @@
 package ar.com.nextel.sfa.client.cuenta;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
@@ -9,8 +8,6 @@ import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
-import ar.com.nextel.sfa.client.dto.TipoDomicilioAsociadoDto;
-import ar.com.nextel.sfa.client.dto.TipoDomicilioDto;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.UIData;
@@ -90,38 +87,26 @@ public class DomiciliosUIData extends UIData {
 			observaciones.setText(domicilio.getObservaciones());
 			nombreUsuarioUltimaModificacion.setText(domicilio.getNombre_usuario_ultima_modificacion());
 			fechaUltimaModificacion.setText(domicilio.getFecha_ultima_modificacion());
-			if (domicilio.getTiposDomicilioAsociado() != null){
-			for (int i = 0; i < domicilio.getTiposDomicilioAsociado().size(); i++) {
-				TipoDomicilioAsociadoDto tipoDomicilioAsociadoDto = domicilio.getTiposDomicilioAsociado()
-						.get(i);
-				/** Logica para tipoDomicilio: */
-				// Si el tipoDomicilio es 0 = No
-				if (tipoDomicilioAsociadoDto.getTipoDomicilio().getId() == 0) {
-					if (tipoDomicilioAsociadoDto.getTipoDomicilio().getDescripcion().equals("FacturacionNo")) {
-						facturacion.setSelectedIndex(2);
-					} else if (tipoDomicilioAsociadoDto.getTipoDomicilio().getDescripcion().equals("EntregaNo")) {
-						entrega.setSelectedIndex(2);
-					}
-				} else // Si el tipoDomicilio es 1 = Facturacion
-				if (tipoDomicilioAsociadoDto.getTipoDomicilio().getId() == 1) {
-					// Y ademas Principal:
-					if (tipoDomicilioAsociadoDto.getPrincipal()) {
-						facturacion.setSelectedIndex(0);
-					} else {
-						facturacion.setSelectedIndex(1);
-					}
-				} else // Si el tipoDomicilio es 4 = Entrega
-				if (tipoDomicilioAsociadoDto.getTipoDomicilio().getId() == 4) {
-					// Si es entrega:
-					if (tipoDomicilioAsociadoDto.getPrincipal()) {
-						// Y ademas Principal:
-						entrega.setSelectedIndex(0);
-					} else {
-						entrega.setSelectedIndex(1);
-					}
-				}
+
+			Long idEntrega = domicilio.getIdEntrega();
+			Long idFacturacion = domicilio.getIdFacturacion();
+			//PRINCIPAL(2L, "Principal"), SI(0L, "Si"), NO(1L, "No");
+			
+			/** Logica para tipoDomicilio: */
+			if ("0".equals(idEntrega)){
+				entrega.selectByValue("1");
+			}else if("1".equals(idEntrega)){
+				entrega.selectByValue("2");
+			}else if("2".equals(idEntrega)){
+				entrega.selectByValue("0");
 			}
-		  }
+			if ("0".equals(idFacturacion)){
+				facturacion.selectByValue("1");
+			}else if("1".equals(idFacturacion)){
+				facturacion.selectByValue("2");
+			}else if("2".equals(idFacturacion)){
+				facturacion.selectByValue("0");
+			}
 		}
 	}
 
@@ -147,7 +132,9 @@ public class DomiciliosUIData extends UIData {
 		domicilioCopiado.setValidado(validado.isChecked());
 		domicilioCopiado.setNombre_usuario_ultima_modificacion(nombreUsuarioUltimaModificacion.getText());
 		domicilioCopiado.setFecha_ultima_modificacion(fechaUltimaModificacion.getText());
-		domicilioCopiado.setTiposDomicilioAsociado(mapeaCombosFacturacionEntrega());
+		domicilioCopiado.setIdEntrega(getIdComboEntrega());
+		domicilioCopiado.setIdFacturacion(getIdComboFacturacion());
+		
 		//Esto del locked se setea en FALSE para que le permita la edicion del mismo, hasta que se guarde la cuenta, cuando se setea en TRUE.
 		  //domicilioCopiado.setLocked(false);
 		//
@@ -176,60 +163,41 @@ public class DomiciliosUIData extends UIData {
 		domicilio.setValidado(validado.isChecked());
 		domicilio.setNombre_usuario_ultima_modificacion(nombreUsuarioUltimaModificacion.getText());
 		domicilio.setFecha_ultima_modificacion(fechaUltimaModificacion.getText());
-		domicilio.setTiposDomicilioAsociado(mapeaCombosFacturacionEntrega());
+		domicilio.setIdEntrega(getIdComboEntrega());
+		domicilio.setIdFacturacion(getIdComboFacturacion());
+		
 		//Esto del locked se setea en FALSE para que le permita la edicion del mismo, hasta que se guarde la cuenta, cuando se setea en TRUE.
   		  //domicilio.setLocked(false);
 		//
 		return domicilio;
 	}
 
-	public List<TipoDomicilioAsociadoDto> mapeaCombosFacturacionEntrega() {
-		/** Mapeo de Facturacion y Entrega!! */
-		// Creo los dos tipos de domicilio que seleccionaron en el Combo:
-		TipoDomicilioDto tipoDomicilioFacturacionNuevo = new TipoDomicilioDto();
-		TipoDomicilioItem facturacionObjectSelected = (TipoDomicilioItem) facturacion.getSelectedItem();
-		tipoDomicilioFacturacionNuevo.setId(Long.parseLong(facturacionObjectSelected.getItemValue()));
-		if (facturacionObjectSelected.getTextoAMostrar().equals("No")) {
-			tipoDomicilioFacturacionNuevo.setDescripcion(facturacionObjectSelected.getTextoNo());
-		} else {
-			tipoDomicilioFacturacionNuevo.setDescripcion(facturacion.getSelectedItemText());
-		}
-		TipoDomicilioItem entregaObjectSelected = (TipoDomicilioItem) entrega.getSelectedItem();
-		TipoDomicilioDto tipoDomicilioEntregaNuevo = new TipoDomicilioDto();
-		tipoDomicilioEntregaNuevo.setId(Long.parseLong(entrega.getSelectedItemId()));
-		if (entregaObjectSelected.getTextoAMostrar().equals("No")) {
-			tipoDomicilioEntregaNuevo.setDescripcion(entregaObjectSelected.getTextoNo());
-		} else {
-			tipoDomicilioEntregaNuevo.setDescripcion(entrega.getSelectedItemText());
-		}
-		// Creo un tipo de domicilioAsociado:
-		TipoDomicilioAsociadoDto tipoDomicilioAsociadoNuevoFacturacion = new TipoDomicilioAsociadoDto();
-		tipoDomicilioAsociadoNuevoFacturacion.setTipoDomicilio(tipoDomicilioFacturacionNuevo);
-		if (facturacion.getSelectedItemText().equals("Principal")) {
-			tipoDomicilioAsociadoNuevoFacturacion.setPrincipal(true);
-		} else {
-			tipoDomicilioAsociadoNuevoFacturacion.setPrincipal(false);
-		}
-		tipoDomicilioAsociadoNuevoFacturacion.setCodigoFNCL(codigoFNCL.getSelectedText());
-		tipoDomicilioAsociadoNuevoFacturacion.setActivo(true);
-		//
-		TipoDomicilioAsociadoDto tipoDomicilioAsociadoNuevoEntrega = new TipoDomicilioAsociadoDto();
-		if (entrega.getSelectedItemText().equals("Principal")) {
-			tipoDomicilioAsociadoNuevoEntrega.setPrincipal(true);
-		} else {
-			tipoDomicilioAsociadoNuevoEntrega.setPrincipal(false);
-		}
-		tipoDomicilioAsociadoNuevoEntrega.setCodigoFNCL(codigoFNCL.getSelectedText());
-		tipoDomicilioAsociadoNuevoEntrega.setActivo(true);
-		tipoDomicilioAsociadoNuevoEntrega.setTipoDomicilio(tipoDomicilioEntregaNuevo);
-		//
-		// Le agrego los tipoDomicilioAsociado al nuevo Domicilio:
-		List<TipoDomicilioAsociadoDto> listaTipoDomiciliosAsociados = new ArrayList();
-		listaTipoDomiciliosAsociados.add(tipoDomicilioAsociadoNuevoFacturacion);
-		listaTipoDomiciliosAsociados.add(tipoDomicilioAsociadoNuevoEntrega);
-		//
+	public Long getIdComboEntrega() {
+		/** Mapeo de Entrega. */
+		int idEntrega = 3;
 		
-		return listaTipoDomiciliosAsociados;
+		if ("1".equals(entrega.getSelectedItemId())) {
+			idEntrega = 0;
+		} else if("2".equals(entrega.getSelectedItemId())){
+			idEntrega = 1;
+		} else if("0".equals(entrega.getSelectedItemId())){
+			idEntrega = 2;
+		}
+		return new Long(idEntrega);
+	}
+	
+	public Long getIdComboFacturacion() {
+		/** Mapeo de Facturacion. */
+		int idFacturacion = 3;
+		
+		if ("1".equals(facturacion.getSelectedItemId())) {
+			idFacturacion = 0;
+		} else if("2".equals(facturacion.getSelectedItemId())){
+			idFacturacion = 1;
+		} else if("0".equals(facturacion.getSelectedItemId())){
+			idFacturacion = 2;
+		}
+		return new Long(idFacturacion);
 	}
 	
 	public DomiciliosUIData() {

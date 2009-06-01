@@ -31,20 +31,20 @@
 				<entry key="collectionLineaSolicitudServicioConverter" value-ref="collectionLineaSolicitudServicioConverter" />
 				<entry key="collectionServicioAdicionalConverter" value-ref="collectionServicioAdicionalConverter" />
                 <entry key="collectionDomiciliosServicioConverter" value-ref="collectionDomiciliosServicioConverter" />
-                <entry key="collectionTiposDomicilioAsociadoServicioConverter" value-ref="collectionTiposDomicilioAsociadoServicioConverter" />
+<!--                <entry key="collectionTiposDomicilioAsociadoServicioConverter" value-ref="collectionTiposDomicilioAsociadoServicioConverter" />-->
 			</map>
 		</property>
 	</bean>
 
-	<bean id="collectionTiposDomicilioAsociadoServicioConverter" class="ar.com.nextel.sfa.server.converter.CollectionOwnedConverter">
-		<property name="dozerMapper" ref="dozerMapper" />
-		<property name="modelClass">
-			<bean class="ar.com.nextel.model.personas.beans.TipoDomicilioAsociado"></bean>
-		</property>
-		<property name="dtoClass">
-			<bean class="ar.com.nextel.sfa.client.dto.TipoDomicilioAsociadoDto"></bean>
-		</property>
-	</bean>
+<!--	<bean id="collectionTiposDomicilioAsociadoServicioConverter" class="ar.com.nextel.sfa.server.converter.CollectionOwnedConverter">-->
+<!--		<property name="dozerMapper" ref="dozerMapper" />-->
+<!--		<property name="modelClass">-->
+<!--			<bean class="ar.com.nextel.model.personas.beans.TipoDomicilioAsociado"></bean>-->
+<!--		</property>-->
+<!--		<property name="dtoClass">-->
+<!--			<bean class="ar.com.nextel.sfa.client.dto.TipoDomicilioAsociadoDto"></bean>-->
+<!--		</property>-->
+<!--	</bean>-->
 
 	<bean id="collectionLineaSolicitudServicioConverter" class="ar.com.nextel.sfa.server.converter.CollectionOwnedConverter">
 		<property name="dozerMapper" ref="dozerMapper" />

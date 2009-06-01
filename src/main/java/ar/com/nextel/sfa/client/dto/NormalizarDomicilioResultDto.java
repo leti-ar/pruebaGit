@@ -16,26 +16,12 @@ public class NormalizarDomicilioResultDto implements IsSerializable{
 
     private List<NormalizacionDomicilioMotivoDto> motivos; // NormalizacionDomicilioMotivoDto
 
-    //private MerlinDireccionDTO direccion;
     private DomiciliosCuentaDto direccion;
 
     public NormalizarDomicilioResultDto() {
         this.dudas = new ArrayList();
         this.motivos = new ArrayList();
     }
-
-//
-//    public boolean isCorrect() {
-//        return "exito".equals(tipo);
-//    }
-//
-//    public boolean hasDoubts() {
-//        return "dudas".equals(tipo);
-//    }
-//
-//    public boolean notFound() {
-//        return "no_encontrado".equals(tipo);
-//    }
 
     public DomiciliosCuentaDto getDireccion() {
         return direccion;
