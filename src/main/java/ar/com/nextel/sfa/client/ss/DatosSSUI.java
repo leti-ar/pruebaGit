@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.ss;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -207,9 +208,30 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 	}
 
 	private void addLineaSolicitudServicio(LineaSolicitudServicioDto linea) {
-		int newRow = editarSSUIData.addLineaSolicitudServicio(linea) + 1;
-		drawDetalleSSRow(linea, newRow);
-		onCellClicked(detalleSS, newRow, 2);
+		ArrayList<LineaSolicitudServicioDto> nuevasLineas = new ArrayList();
+		nuevasLineas.add(linea);
+		if (linea.getPlan() != null) {
+			int catLineas = linea.getCantidad();
+			if (catLineas > 1) {
+				linea.setCantidad(1);
+				for (int i = 0; i < catLineas - 1; i++) {
+					LineaSolicitudServicioDto lineaCloned = linea.clone();
+					lineaCloned.setNumeradorLinea(null);
+					nuevasLineas.add(lineaCloned);
+				}
+			}
+
+		}
+		int firstNewRow = 0;
+		for (int i = 0; i < nuevasLineas.size(); i++) {
+			int newRow = editarSSUIData.addLineaSolicitudServicio(nuevasLineas.get(i)) + 1;
+			if (firstNewRow == 0) {
+				firstNewRow = newRow;
+			}
+			drawDetalleSSRow(linea, newRow);
+		}
+
+		onCellClicked(detalleSS, firstNewRow, 2);
 	}
 
 	public void redrawDetalleSSTable() {
@@ -229,10 +251,12 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		detalleSS.setWidget(newRow, 1, IconFactory.cancel());
 		detalleSS.setText(newRow, 2, linea.getItem().getDescripcion());
 		detalleSS.setText(newRow, 3, currencyFormat.format(linea.getPrecioVenta()));
-		detalleSS.setText(newRow, 4, linea.getAlias());
-		detalleSS.setText(newRow, 5, linea.getPlan().getDescripcion());
-		detalleSS.setText(newRow, 6, currencyFormat.format(linea.getPrecioVentaPlan()));
-		detalleSS.setText(newRow, 7, linea.getLocalidad().getDescripcion());
+		detalleSS.setText(newRow, 4, linea.getAlias() != null ? linea.getAlias() : "");
+		detalleSS.setText(newRow, 5, linea.getPlan() != null ? linea.getPlan().getDescripcion() : "");
+		detalleSS.setText(newRow, 6, linea.getPlan() != null ? currencyFormat.format(linea
+				.getPrecioVentaPlan()) : "");
+		detalleSS.setText(newRow, 7, linea.getLocalidad() != null ? linea.getLocalidad().getDescripcion()
+				: "");
 		detalleSS.setText(newRow, 8, linea.getNumeroReserva());
 		detalleSS.setText(newRow, 9, linea.getTipoSolicitud().getDescripcion());
 		detalleSS.setText(newRow, 10, "" + linea.getCantidad());
@@ -246,6 +270,10 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 	private void loadServiciosAdicionales() {
 		LineaSolicitudServicioDto linea = editarSSUIData.getLineasSolicitudServicio().get(
 				selectedDetalleRow - 1);
+		if (linea.getPlan() == null) {
+			serviciosAdicionales.resizeRows(1);
+			return;
+		}
 		List servicios = editarSSUIData.getServiciosAdicionales().get(selectedDetalleRow - 1);
 		if (!servicios.isEmpty()) {
 			renderServiciosAdicionalesTable(selectedDetalleRow - 1);
