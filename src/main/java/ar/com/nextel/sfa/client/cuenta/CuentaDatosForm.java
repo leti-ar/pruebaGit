@@ -55,16 +55,16 @@ import com.google.gwt.user.client.ui.Widget;
 public class CuentaDatosForm extends Composite {
 
 	private static CuentaDatosForm instance = new CuentaDatosForm();
-	private FlexTable mainPanel;
-	private FlexTable datosCuentaTable;
 	
-	private FlexTable formaDePagoTable;
-	private FlexTable vendedorTable;
 	private DualPanel fechaUsuarioTable;
 	private FlexTable usuario;
 	private FlexTable fechaCreacion;
+	private FlexTable mainPanel           = new FlexTable();
+	private FlexTable datosCuentaTable    = new FlexTable();
 	private FlexTable emailTable          = new FlexTable();
 	private FlexTable telefonoTable       = new FlexTable();
+	private FlexTable formaDePagoTable    = new FlexTable();
+	private FlexTable vendedorTable       = new FlexTable();
 	private FlexTable efectivoTable       = new FlexTable();
 	private FlexTable cuentaBancariaTable = new FlexTable();
 	private FlexTable tarjetaTable        = new FlexTable();
@@ -74,7 +74,8 @@ public class CuentaDatosForm extends Composite {
 	private List <Widget>camposObligatorios = new ArrayList<Widget>();
 	private TitledPanel datosCuentaPanel = new TitledPanel(Sfa.constant().cuentaPanelTitle());
 	private boolean showCamposUSE = false;
-	private static final String ANCHO_PRIMER_COLUMNA = "110";
+	private static final String ANCHO_PRIMER_COLUMNA = "11%";
+	private static final String ANCHO_TABLA_PANEL    = "80%";
 	
 	private List<String> estilos = new ArrayList<String>();
 	private int estiloUsado = 0;
@@ -84,10 +85,8 @@ public class CuentaDatosForm extends Composite {
 	}
 	
 	private CuentaDatosForm() {
-		mainPanel    = new FlexTable();
 		initWidget(mainPanel);
 		mainPanel.setWidth("100%");
-		mainPanel.addStyleName("abmPanel2");
 		mainPanel.setWidget(0,0,createDatosCuentaPanel());
 		mainPanel.setWidget(1,0,createTelefonoPanel());
 		mainPanel.setWidget(2,0,createEmailPanel());
@@ -97,10 +96,6 @@ public class CuentaDatosForm extends Composite {
 	}
 	
 	private Widget createDatosCuentaPanel() {
-		datosCuentaTable = new FlexTable();
-		datosCuentaTable.setWidth("80%");
-		datosCuentaTable.addStyleName("layout");
-		datosCuentaTable.getFlexCellFormatter().setColSpan(1, 1, 4);
 		camposTabDatos.getRazonSocial().setWidth("90%");
 		armarTablaPanelDatos();
 		datosCuentaPanel.add(datosCuentaTable);
@@ -109,6 +104,10 @@ public class CuentaDatosForm extends Composite {
 
 	public void	armarTablaPanelDatos() {
 		datosCuentaTable.clear();
+		datosCuentaTable.setCellSpacing(7);
+		datosCuentaTable.setWidth(ANCHO_TABLA_PANEL);
+		datosCuentaTable.getFlexCellFormatter().setColSpan(1, 1, 4);
+
 		int row = 0;
 		datosCuentaTable.setWidget(row, 0, camposTabDatos.getTipoDocLabel());
 		datosCuentaTable.setWidget(row, 1, camposTabDatos.getTipoDocumento());
@@ -217,7 +216,7 @@ public class CuentaDatosForm extends Composite {
 	}
 	
 	private Widget createTelefonoPanel() {
-		telefonoTable.setWidth("68%");
+		telefonoTable.setWidth(ANCHO_TABLA_PANEL);
 		telefonoTable.addStyleName("layout");
 		TitledPanel telefonoPanel = new TitledPanel(Sfa.constant().telefonoPanelTitle());
 		telefonoPanel.add(telefonoTable);
@@ -242,7 +241,7 @@ public class CuentaDatosForm extends Composite {
 	}
 	
 	private Widget createEmailPanel() {
-		emailTable.setWidth("60%");
+		emailTable.setWidth(ANCHO_TABLA_PANEL);
 		emailTable.addStyleName("layout");
 		TitledPanel emailPanel = new TitledPanel(Sfa.constant().emailPanelTitle());
 		emailPanel.add(emailTable);
@@ -258,7 +257,7 @@ public class CuentaDatosForm extends Composite {
 
 	private Widget createFormaDePagoPanel() {
 		formaDePagoTable = new FlexTable();
-		formaDePagoTable.setWidth("70%");
+		formaDePagoTable.setWidth(ANCHO_TABLA_PANEL);
 		formaDePagoTable.setWidget(0, 0, getCuentaBancariaPanel());
 		formaDePagoTable.setWidget(1, 0, getTarjetaCreditoPanel());
 		formaDePagoTable.setWidget(2, 0, getEfectivoPanel());
@@ -274,8 +273,6 @@ public class CuentaDatosForm extends Composite {
 		efectivoTable.addStyleName("layout");
 		efectivoTable.setText(0, 0, Sfa.constant().modalidad());
 		efectivoTable.setWidget(0, 1, camposTabDatos.getFormaPago());
-		efectivoTable.setText(0, 3, null);
-		efectivoTable.setText(0, 4, null);
 		efectivoTable.getFlexCellFormatter().setHorizontalAlignment(0, 0, HorizontalPanel.ALIGN_LEFT);
 		efectivoTable.getFlexCellFormatter().setHorizontalAlignment(0, 1, HorizontalPanel.ALIGN_LEFT);
 		efectivoTable.getFlexCellFormatter().setWidth(0, 0, ANCHO_PRIMER_COLUMNA);
@@ -283,7 +280,7 @@ public class CuentaDatosForm extends Composite {
 	}
 	
 	public FlexTable getCuentaBancariaPanel() {
-		cuentaBancariaTable.setWidth("100%");
+		cuentaBancariaTable.setWidth(ANCHO_TABLA_PANEL);
 		cuentaBancariaTable.addStyleName("layout");
 		cuentaBancariaTable.setVisible(false);
 		
@@ -310,7 +307,7 @@ public class CuentaDatosForm extends Composite {
 	}
 	
 	public FlexTable getTarjetaCreditoPanel() {
-		tarjetaTable.setWidth("100%");
+		tarjetaTable.setWidth(ANCHO_TABLA_PANEL);
 		tarjetaTable.addStyleName("layout");
 		tarjetaTable.setVisible(false);
 		
@@ -340,7 +337,7 @@ public class CuentaDatosForm extends Composite {
 	
 	private Widget createVendedorPanel() {
 		vendedorTable = new FlexTable();
-		vendedorTable.setWidth("80%");
+		vendedorTable.setWidth(ANCHO_TABLA_PANEL);
 		vendedorTable.addStyleName("layout");
 		
 		vendedorPanel.add(vendedorTable);
