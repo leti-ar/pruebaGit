@@ -70,9 +70,6 @@ public class ContactoUIData extends UIData {
 		return validator.getErrors();
 	}
 	
-	public void setContacto() {
-		System.out.println("Acá hay que llenar la tabla con la info del contacto que agregaron recién");
-	}
 	
 	public ContactoUIData() {
 		fields.add(tipoDocumento);
@@ -119,7 +116,6 @@ public class ContactoUIData extends UIData {
 		persona.setNombre(nombre.getText());
 		persona.setCargo((CargoDto)cargo.getSelectedItem());
 		persona.setIdTipoDocumento((Long.parseLong(tipoDocumento.getSelectedItem().getItemValue())));
-		//arreglar este que sigue
 		persona.setDocumento(getDocumentoDto());
 		//pasarle una lista de domicilios, hacer que cuando agregas un nuevo domicilio se carguen en la tabla de la pantalla
 		//persona.setDomicilios(domicilioUI.getInstance().getDomiciliosData().getDomicilio());
@@ -137,11 +133,11 @@ public class ContactoUIData extends UIData {
 		return documentoDto;		
 	}	
 	
-	//en el combo tengo los nombres de los tipos de documento, como lo relaciono con lo que tiene el TipoDocumentoEnum?? (ahora le paso siempre DNI)
+	
 	public TipoDocumentoDto getTipoDocumentoDto() {
 		TipoDocumentoDto tipoDocumentoDto = new TipoDocumentoDto();
-		tipoDocumentoDto.setId(TipoDocumentoEnum.DNI.getTipo());
-		tipoDocumentoDto.setDescripcion("DNI");
+		tipoDocumentoDto.setId(Long.parseLong(tipoDocumento.getSelectedItem().getItemValue()));
+		tipoDocumentoDto.setDescripcion(numeroDocumento.getText());
 		return tipoDocumentoDto;
 	}
 	
