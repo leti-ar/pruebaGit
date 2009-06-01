@@ -16,9 +16,12 @@ import ar.com.nextel.components.accessMode.AccessAuthorization;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.EstadoCreditoFidelizacion;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
+import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
+import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
+import ar.com.nextel.sfa.server.util.MapperExtended;
 
 @Service
 public class SolicitudBusinessService {
@@ -115,7 +118,18 @@ public class SolicitudBusinessService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public SolicitudServicio saveSolicitudServicio(SolicitudServicio solicitudServicio){
+	public SolicitudServicio saveSolicitudServicio(SolicitudServicioDto solicitudServicioDto, MapperExtended mapper){
+		SolicitudServicio solicitudServicio = repository.retrieve(SolicitudServicio.class,
+				solicitudServicioDto.getId());
+		mapper.map(solicitudServicioDto, solicitudServicio);
+		if (solicitudServicio.getDomicilioEnvio() != null) {
+			solicitudServicio.setDomicilioEnvio(repository.retrieve(Domicilio.class, solicitudServicio
+					.getDomicilioEnvio().getId()));
+		}
+		if (solicitudServicio.getDomicilioFacturacion() != null) {
+			solicitudServicio.setDomicilioFacturacion(repository.retrieve(Domicilio.class, solicitudServicio
+					.getDomicilioFacturacion().getId()));
+		}
 		repository.save(solicitudServicio);
 		return solicitudServicio;
 	}
