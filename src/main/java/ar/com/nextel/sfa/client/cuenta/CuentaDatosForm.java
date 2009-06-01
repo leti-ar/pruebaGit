@@ -171,14 +171,14 @@ public class CuentaDatosForm extends Composite {
 			public void onClick (Widget sender) {
 				PersonaDto personaDto = getVerazSearch(camposTabDatos.getNumeroDocumento(), 
 						camposTabDatos.getTipoDocumento(), camposTabDatos.getSexo());
-				inicializarVeraz(camposTabDatos.getVerazLabel());
+				inicializarVeraz(camposTabDatos.getVerazRta());
 				CuentaRpcService.Util.getInstance().consultarVeraz(personaDto, 
 						new DefaultWaitCallback<VerazResponseDto>() {
 
 					public void success(VerazResponseDto result) {
 						if (result != null) {
 							setearValoresRtaVeraz(result, camposTabDatos.getApellido(), camposTabDatos.getNombre(), 
-									camposTabDatos.getRazonSocial(), camposTabDatos.getSexo(), camposTabDatos.getVeraz());
+									camposTabDatos.getRazonSocial(), camposTabDatos.getSexo(), camposTabDatos.getVerazRta());
 						}
 					}
 				});
@@ -186,8 +186,8 @@ public class CuentaDatosForm extends Composite {
 		});	
 		
 		datosCuentaTable.setWidget(row, 3, camposTabDatos.getVerazLabel());
-        inicializarVeraz(camposTabDatos.getVeraz());
-		datosCuentaTable.setWidget(row, 4, camposTabDatos.getVeraz());
+        inicializarVeraz(camposTabDatos.getVerazRta());
+		datosCuentaTable.setWidget(row, 4, camposTabDatos.getVerazRta());
 		if (showCamposUSE) {
 			row++;
 			datosCuentaTable.setWidget(row, 0, camposTabDatos.getUseLabel());
