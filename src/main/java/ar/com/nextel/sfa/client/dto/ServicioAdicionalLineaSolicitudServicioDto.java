@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.dto;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ServicioAdicionalLineaSolicitudServicioDto implements IsSerializable, IdentifiableDto {
+public class ServicioAdicionalLineaSolicitudServicioDto implements IsSerializable, IdentifiableDto, Cloneable {
 
 	private Long id;
 	private Double precioVenta;
@@ -161,6 +161,26 @@ public class ServicioAdicionalLineaSolicitudServicioDto implements IsSerializabl
 		} else if (!servicioAdicional.getId().equals(other.servicioAdicional.getId()))
 			return false;
 		return true;
+	}
+	
+	public ServicioAdicionalLineaSolicitudServicioDto clone(){
+		ServicioAdicionalLineaSolicitudServicioDto servicio = new ServicioAdicionalLineaSolicitudServicioDto();
+		servicio.precioVenta = precioVenta;
+		servicio.servicioAdicional = servicioAdicional;
+
+		servicio.ordenAparicion = ordenAparicion;
+		servicio.codigoBSCS = codigoBSCS;
+		servicio.precioLista = precioLista;
+		servicio.descripcionServicioAdicional = descripcionServicioAdicional;
+		servicio.unicaVez = unicaVez;
+		servicio.esGarantia = esGarantia;
+		servicio.esAlquiler = esAlquiler;
+		servicio.esWap = esWap;
+		servicio.esTethered = esTethered;
+		servicio.requiereDAE = requiereDAE;
+		servicio.checked = checked;
+		servicio.obligatorio = obligatorio;
+		return servicio;
 	}
 
 }

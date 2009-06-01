@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDto {
+public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDto, Cloneable {
 
 	private Long id;
 	private Long idCabecera;
@@ -21,11 +21,11 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 	// private List<DescuentoLinea> descuentos;
 
 	private Long numeradorLinea;
-	private Double precioLista;
-	private Double precioVenta;
-	private Double precioListaPlan;
-	private Double precioListaAjustado;
-	private Double precioVentaPlan;
+	private double precioLista = 0d;
+	private double precioVenta = 0d;
+	private double precioListaPlan = 0d;
+	private double precioListaAjustado = 0d;
+	private double precioVentaPlan = 0d;
 
 	private double precioServiciosAdicionalesLista = 0;
 	private double precioServiciosAdicionalesVenta = 0;
@@ -124,43 +124,43 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 		this.numeradorLinea = numeradorLinea;
 	}
 
-	public Double getPrecioLista() {
+	public double getPrecioLista() {
 		return precioLista;
 	}
 
-	public void setPrecioLista(Double precioLista) {
+	public void setPrecioLista(double precioLista) {
 		this.precioLista = precioLista;
 	}
 
-	public Double getPrecioVenta() {
+	public double getPrecioVenta() {
 		return precioVenta;
 	}
 
-	public void setPrecioVenta(Double precioVenta) {
+	public void setPrecioVenta(double precioVenta) {
 		this.precioVenta = precioVenta;
 	}
 
-	public Double getPrecioListaPlan() {
+	public double getPrecioListaPlan() {
 		return precioListaPlan;
 	}
 
-	public void setPrecioListaPlan(Double precioListaPlan) {
+	public void setPrecioListaPlan(double precioListaPlan) {
 		this.precioListaPlan = precioListaPlan;
 	}
 
-	public Double getPrecioListaAjustado() {
+	public double getPrecioListaAjustado() {
 		return precioListaAjustado;
 	}
 
-	public void setPrecioListaAjustado(Double precioListaAjustado) {
+	public void setPrecioListaAjustado(double precioListaAjustado) {
 		this.precioListaAjustado = precioListaAjustado;
 	}
 
-	public Double getPrecioVentaPlan() {
+	public double getPrecioVentaPlan() {
 		return precioVentaPlan;
 	}
 
-	public void setPrecioVentaPlan(Double precioVentaPlan) {
+	public void setPrecioVentaPlan(double precioVentaPlan) {
 		this.precioVentaPlan = precioVentaPlan;
 	}
 
@@ -312,7 +312,7 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 			}
 		}
 	}
-	
+
 	// XXX: "Mirar el valor de los servicios adicionales"
 
 	/** Obtiene precioServiciosAdicionalesLista. Llamar primero a refreshPrecioServiciosAdicionales */
@@ -339,4 +339,44 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 		return 0;
 	}
 
+	public LineaSolicitudServicioDto clone() {
+		LineaSolicitudServicioDto linea = new LineaSolicitudServicioDto();
+
+		linea.tipoSolicitud = tipoSolicitud;
+		linea.item = item;
+		linea.plan = plan;
+
+		for (ServicioAdicionalLineaSolicitudServicioDto servicio : serviciosAdicionales) {
+			linea.getServiciosAdicionales().add(servicio.clone());
+		}
+
+		linea.listaPrecios = listaPrecios;
+		linea.terminoPago = terminoPago;
+		linea.numeradorLinea = numeradorLinea;
+		linea.precioLista = precioLista;
+		linea.precioVenta = precioVenta;
+		linea.precioListaPlan = precioListaPlan;
+		linea.precioListaAjustado = precioListaAjustado;
+		linea.precioVentaPlan = precioVentaPlan;
+		linea.precioServiciosAdicionalesLista = precioServiciosAdicionalesLista;
+		linea.precioServiciosAdicionalesVenta = precioServiciosAdicionalesVenta;
+		linea.garantia = garantia;
+		linea.modalidadCobro = modalidadCobro;
+		linea.numeroReserva = numeroReserva;
+		linea.numeroReservaArea = numeroReservaArea;
+		linea.numeroIMEI = numeroIMEI;
+		linea.numeroSimcard = numeroSimcard;
+		linea.numeroSerie = numeroSerie;
+		linea.numerosANI = numerosANI;
+		linea.alias = alias;
+		linea.cantidad = cantidad;
+		linea.localidad = localidad;
+		linea.modelo = modelo;
+		linea.estadoVerificacionNegativeFilesIMEI = estadoVerificacionNegativeFilesIMEI;
+		linea.estadoVerificacionNegativeFilesSIM = estadoVerificacionNegativeFilesSIM;
+		linea.ddn = ddn;
+		linea.ddi = ddi;
+		linea.roaming = roaming;
+		return linea;
+	}
 }
