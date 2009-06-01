@@ -121,7 +121,6 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		aceptar.setVisible(true);
 		contactosData.enableFields();
 		showAndCenter();
-		// setDialogTitle("Crear Contacto");
 	}
 
 	public void cargarPopupEditarContacto(ContactoDto contacto, int fila) {
@@ -173,26 +172,6 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		showAndCenter();
 	}
 			
-//			booleanosCuentaTable.setWidget(4, 1, contactosData.getCargo());
-//		FlexTable verazTable = new FlexTable();
-//		verazTable.setWidget(0, 0, iconoLupa);
-//		verazTable.setText(0, 1, Sfa.constant().veraz());
-//		verazTable.setWidget(0, 2, contactosData.getVeraz());
-//		datosCuentaPanel.add(datosCuentaTable);
-//		datosCuentaPanel.add(verazTable);
-//										 * editable
-//										 */) {
-//		contactosData.setContacto(/* contacto */);
-//		// if (!editable){
-//		// contactosData.disableFields();
-//		// aceptar.setVisible(false);
-//		// }else{
-//		// contactosData.enableFields();
-//		// aceptar.setVisible(true);
-//		// }
-//		// setDialogTitle("Editar Contacto");
-//		showAndCenter();
-//	}
 
 	private Widget createDatosCuentaPanel() {
 		datosCuentaTable = new FlexTable();
@@ -365,7 +344,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 				ErrorDialog.getInstance().show(errors);
 			}
 		} else {
-			cuentaContactoForm.getInstance().setearContactos(contactosData.getContactoDto());
+			cuentaContactoForm.getInstance().setearContactos(contactosData.getContactoDto(), contactoABorrar);
 			this.hide();
 		}
 	}
