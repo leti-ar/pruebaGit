@@ -1,15 +1,19 @@
 package ar.com.nextel.sfa.client.cuenta;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.dto.ContactoDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
+import ar.com.nextel.sfa.client.dto.EmailDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
+import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
@@ -47,6 +51,8 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	private CuentaContactoForm cuentaContactoForm;
 	private FlexTable domicilioTable;
 	
+	private int contactoABorrar = -1;
+	
 	private HTML iconoLupa = IconFactory.vistaPreliminar();
 	
 	private List<String> estilos = new ArrayList<String>();
@@ -65,6 +71,9 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	ClickListener listener = new ClickListener(){
 		public void onClick(Widget sender){
 		if(sender == aceptar){
+			if (contactoABorrar != -1) {
+				cuentaContactoForm.getInstance().eliminarContacto(contactoABorrar);
+			}
 			validarCampoObligatorio(true);
 		}
 		else if(sender == cancelar){
@@ -115,27 +124,75 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		// setDialogTitle("Crear Contacto");
 	}
 
-	public void cargarPopupEditarConatcto(/*
-										 * ContactoDto contacto, booleanosCuentaTable.setWidget(4, 1, contactosData.getCargo());
-		FlexTable verazTable = new FlexTable();
-		verazTable.setWidget(0, 0, iconoLupa);
-		verazTable.setText(0, 1, Sfa.constant().veraz());
-		verazTable.setWidget(0, 2, contactosData.getVeraz());
-		datosCuentaPanel.add(datosCuentaTable);
-		datosCuentaPanel.add(verazTable);
-										 * editable
-										 */) {
-		contactosData.setContacto(/* contacto */);
-		// if (!editable){
-		// contactosData.disableFields();
-		// aceptar.setVisible(false);
-		// }else{
-		// contactosData.enableFields();
-		// aceptar.setVisible(true);
-		// }
-		// setDialogTitle("Editar Contacto");
+	public void cargarPopupEditarContacto(ContactoDto contacto, int fila) {
+		contactoABorrar = fila;
+		//completo la pantalla de info gral
+		contactosData.enableFields();
+		contactosData.setApellido(contacto.getApellido());
+		contactosData.setNombre(contacto.getNombre());
+		contactosData.setNumeroDocumento(contacto.getNumeroDocumento());
+		contactosData.setTipoDocumento(contacto.getTipoDocumento());
+		//completo la pantalla de telefonos
+		List<TelefonoDto> listaTelefonos = new ArrayList();
+		listaTelefonos = contacto.getPersonaDto().getTelefonos();
+		if (listaTelefonos != null) {
+			for (Iterator iter = listaTelefonos.iterator(); iter.hasNext();) {
+				TelefonoDto telefonoDto = (TelefonoDto) iter.next();
+
+				if (telefonoDto.getPrincipal()) {
+					contactosData.setTelefonoPrincipalArea(telefonoDto.getArea());
+					contactosData.setTelefonoPrincipalNumero(telefonoDto.getNumeroLocal());
+					contactosData.setTelefonoPrincipalInterno(telefonoDto.getInterno());
+				} else if ("Adicional".equals(telefonoDto.getTipoTelefono().getDescripcion())) {
+					contactosData.setTelefonoAdicionalArea(telefonoDto.getArea());
+					contactosData.setTelefonoAdicionalNumero(telefonoDto.getNumeroLocal());
+					contactosData.setTelefonoAdicionalInterno(telefonoDto.getInterno());
+				} else if ("Celular".equals(telefonoDto.getTipoTelefono().getDescripcion())) {
+					contactosData.setTelefonoCelularArea(telefonoDto.getArea());
+					contactosData.setTelefonoCelularNumero(telefonoDto.getNumeroLocal());
+				} else if ("Fax".equals(telefonoDto.getTipoTelefono().getDescripcion())) {
+					contactosData.setFaxArea(telefonoDto.getArea());
+					contactosData.setFaxNumero(telefonoDto.getNumeroLocal());
+					contactosData.setFaxInterno(telefonoDto.getInterno());
+				}			
+			}
+		}
+		//completo los emails
+		List<EmailDto> listaEmails = new ArrayList();
+		listaEmails = contacto.getEmails();
+		if (listaEmails != null) {
+			for (Iterator iter = listaEmails.iterator(); iter.hasNext();) {
+				EmailDto emailDto = (EmailDto) iter.next();
+				if ("Personal".equals(emailDto.getTipoEmail())) {
+					contactosData.setEmailPersonal(emailDto.getEmail());
+				} else 
+					contactosData.setEmailLaboral(emailDto.getEmail());
+			}
+		}
+
 		showAndCenter();
 	}
+			
+//			booleanosCuentaTable.setWidget(4, 1, contactosData.getCargo());
+//		FlexTable verazTable = new FlexTable();
+//		verazTable.setWidget(0, 0, iconoLupa);
+//		verazTable.setText(0, 1, Sfa.constant().veraz());
+//		verazTable.setWidget(0, 2, contactosData.getVeraz());
+//		datosCuentaPanel.add(datosCuentaTable);
+//		datosCuentaPanel.add(verazTable);
+//										 * editable
+//										 */) {
+//		contactosData.setContacto(/* contacto */);
+//		// if (!editable){
+//		// contactosData.disableFields();
+//		// aceptar.setVisible(false);
+//		// }else{
+//		// contactosData.enableFields();
+//		// aceptar.setVisible(true);
+//		// }
+//		// setDialogTitle("Editar Contacto");
+//		showAndCenter();
+//	}
 
 	private Widget createDatosCuentaPanel() {
 		datosCuentaTable = new FlexTable();

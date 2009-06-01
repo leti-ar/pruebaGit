@@ -59,6 +59,15 @@ public class CuentaContactoForm extends Composite {
 		});
 
 	}
+	
+	/* lo que tengo que hacer para la edición de contactos es:
+	 * cuando me aprietan el lapicito de crear tengo que poner algo en true, cuando me aprietan el Aceptar de ContactosUI 
+	 * recorro la lista de contactos preguntando si alguno es true. Si alguno está en true es porque viene de una edicion 
+	 * entonces reemplazo ese (no lo borro y lo vuelvo a crear, le reemplazo los valores, es el mismo objeto). Si no es 
+	 * true es porque es uno nuevo y lo tengo que agregar a la lista. El problema es cuando por ejemplo no aprietan el Aceptar 
+	 * y salen con el Cerrar por ejemplo porque me queda eso en true. Para eso lo que hago es además guardarme la fila del lapicito 
+	 * que apretó (inicialmente está en -1). Entonces si es true voy a buscar el numero de la fila a editar ahi. 
+	 */
 
 	private void initTable(FlexTable table) {
 
@@ -111,8 +120,17 @@ public class CuentaContactoForm extends Composite {
 	
 	private class Listener implements TableListener {
 		public void onCellClicked(SourcesTableEvents arg0, int fila, int columna) {
+			//boton editar
+			if ((fila>=1) && (columna==0)) {
+				ContactosUI.getInstance().cargarPopupEditarContacto(listaContactos.get(fila-1), fila-1);
+//				ContactoDto nuevoContacto = 
+//				listaContactos.add(fila-1, nuevoContacto);
+//				ContactosUI.getInstance()
+				
+				//actualizar la lista de contactos con el nuevo contactoDto
+			}
+			//boton eliminar
 			if ((fila>=1) && (columna==1)) {
-				//ContactoDto contactoSelected = listaContactos.get(fila-1);
 				MessageDialog.getInstance().setDialogTitle("Eliminar Contacto");
 				MessageDialog.getInstance().setSize("300px", "100px");
 				MessageDialog.getInstance().showAceptarCancelar("¿Esta seguro que desea eliminar el contacto seleccionado?",getComandoAceptar(fila-1),MessageDialog.getInstance().getCloseCommand());
@@ -123,7 +141,7 @@ public class CuentaContactoForm extends Composite {
 	private Command getComandoAceptar(final int numeroContacto){
 		Command comandoAceptar = new Command() {
 			public void execute() {
-				listaContactos.remove(numeroContacto);
+				eliminarContacto(numeroContacto);
 				MessageDialog.getInstance().hide();
 				cargarTabla();
 			}
@@ -144,5 +162,9 @@ public class CuentaContactoForm extends Composite {
 			}
 		}
 		return null;
+	}
+	
+	public void eliminarContacto(int numeroContacto) {
+		listaContactos.remove(numeroContacto);
 	}
 }

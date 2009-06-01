@@ -38,7 +38,7 @@ public class ContactoUIData extends UIData {
 	ListBox sexo = new ListBox("");
 	ListBox cargo = new ListBox("");
 	TelefonoTextBox telefonoPrincipal = new TelefonoTextBox();
-	TelefonoTextBox telefonoCelular = new TelefonoTextBox();
+	TelefonoTextBox telefonoCelular = new TelefonoTextBox(false);
 	TelefonoTextBox telefonoAdicional = new TelefonoTextBox();
 	TelefonoTextBox fax = new TelefonoTextBox();
 	TextBox emailPersonal = new TextBox();
@@ -234,7 +234,7 @@ public class ContactoUIData extends UIData {
 	public TelefonoTextBox getTelefonoPrincipal() {
 		return telefonoPrincipal;
 	}
-
+	
 	public TelefonoTextBox getTelefonoCelular() {
 		return telefonoCelular;
 	}
@@ -258,5 +258,73 @@ public class ContactoUIData extends UIData {
 	public Label getVeraz(){
 		return veraz;
 	}
-
+	
+	public void setTelefonoPrincipalArea(String string) {
+		telefonoPrincipal.getArea().setText(string);
+	}
+	
+	public void setTelefonoPrincipalNumero(String string) {
+		telefonoPrincipal.getNumero().setText(string);
+	}
+	
+	public void setTelefonoPrincipalInterno(String string) {
+		telefonoPrincipal.getInterno().setText(string);
+	}
+	
+	public void setTelefonoAdicionalArea(String string) {
+		telefonoAdicional.getArea().setText(string);
+	}
+	
+	public void setTelefonoAdicionalNumero(String string) {
+		telefonoAdicional.getNumero().setText(string);
+	}
+	
+	public void setTelefonoAdicionalInterno(String string) {
+		telefonoAdicional.getInterno().setText(string);
+	}
+	
+	public void setTelefonoCelularArea(String string) {
+		telefonoCelular.getArea().setText(string);
+	}
+	
+	public void setTelefonoCelularNumero(String string) {
+		telefonoCelular.getNumero().setText(string);
+	}
+	
+	public void setFaxArea(String string) {
+		fax.getArea().setText(string);
+	}
+	
+	public void setFaxNumero(String string) {
+		fax.getNumero().setText(string);
+	}
+	
+	public void setFaxInterno(String string) {
+		fax.getInterno().setText(string);
+	}
+	
+	public void setApellido (String string) {
+		apellido.setText(string);
+	}
+	
+	public void setNombre (String string) {
+		nombre.setText(string);
+	}
+	
+	public void setNumeroDocumento (String string) {
+		numeroDocumento.setText(string);
+	}
+	
+	public void setTipoDocumento (TipoDocumentoDto item) {
+		tipoDocumento.setSelectedItem(item);
+	}
+	
+	public void setEmailPersonal(String string) {
+		emailPersonal.setText(string);
+	}
+	
+	public void setEmailLaboral(String string) {
+		emailLaboral.setText(string);
+	}
+		
 }
