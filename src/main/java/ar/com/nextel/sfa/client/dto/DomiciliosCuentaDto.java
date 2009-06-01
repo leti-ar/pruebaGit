@@ -8,7 +8,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 /**
  * @author eSalvador 
  **/
-public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem {
+public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, IdentifiableDto {
 	
 	private Long id;
 	private String calle;
