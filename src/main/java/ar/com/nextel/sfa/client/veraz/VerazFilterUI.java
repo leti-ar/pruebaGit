@@ -63,10 +63,11 @@ public class VerazFilterUI extends Composite {
 		verazEditor.getValidarVerazLink().addClickListener(new ClickListener() {
 			public void onClick (Widget arg0) {
 
-				/**Validar la completitud y formato de los campos**/
+				errorList.clear();
+				/**Valida la completitud y formato de los campos**/
 				errorList.addAll(verazEditor.validarFormatoYCompletitud());
 
-				/**Mostrar los mensajes de error**/
+				/**Muestra los mensajes de error**/
 				if (!errorList.isEmpty()){
 					for (int i = 0; i < errorList.size(); i++) {
 						String error = errorList.get(i);

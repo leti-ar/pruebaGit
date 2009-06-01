@@ -58,6 +58,7 @@ public class VerazUIData extends UIData {
 
 		
 	public List<String> validarFormatoYCompletitud() {		
+		errorList.clear();
 		if ((tipoDocListBox.getSelectedItem() == null) || ("".equals(numeroDocTextBox.getText())) || (sexoListBox.getSelectedItem() == null)) {
 			errorList.add("Deben estar completos los campos tipo, número de documento y sexo para realizar la consulta a veraz");
 		}else if(("3".equals(tipoDocListBox.getSelectedItem().getItemValue())) || 
