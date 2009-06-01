@@ -65,6 +65,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 	private Long idPlanAnterior;
 	private Long idItemAnterior;
 
+	public static final int SOLO_ITEM = 0;
+	public static final int ITEM_PLAN = 1;
+	public static final int ACTIVACION = 2;
+	private int tipoEdicion;
+
 	public ItemSolicitudUIData(EditarSSUIController controller) {
 
 		this.controller = controller;
@@ -283,16 +288,22 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 		return confirmarReserva;
 	}
 
+	public void setTipoEdicion(int tipoEdicion) {
+		this.tipoEdicion = tipoEdicion;
+	}
+
 	public List<String> validate() {
 		GwtValidator validator = new GwtValidator();
 		validator.addTarget(listaPrecio).required("Debe elegir una lista de precios");
 		validator.addTarget(item).required("item");
-		validator.addTarget(tipoPlan).required("tipoplan");
-		validator.addTarget(plan).required("plan");
-		validator.addTarget(localidad).required("localidad");
-		validator.addTarget(modalidadCobro).required("modalidadCobro");
+		if (tipoEdicion == ITEM_PLAN || tipoEdicion == ACTIVACION) {
+			validator.addTarget(tipoPlan).required("tipoplan");
+			validator.addTarget(plan).required("plan");
+			validator.addTarget(localidad).required("localidad");
+			validator.addTarget(modalidadCobro).required("modalidadCobro");
+			validator.addTarget(alias).required("alias");
+		}
 		validator.addTarget(cantidad).required("cant").greater("Cant > 0", 0);
-		validator.addTarget(alias).required("alias");
 		return validator.fillResult().getErrors();
 	}
 
@@ -365,34 +376,43 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 		lineaSolicitudServicio.setDdn(ddn.isChecked());
 		ItemSolicitudTasadoDto itemTasadoSelected = (ItemSolicitudTasadoDto) item.getSelectedItem();
 		lineaSolicitudServicio.setItem(itemTasadoSelected.getItem());
-		lineaSolicitudServicio.setListaPrecios((ListaPreciosDto) listaPrecio.getSelectedItem());
-		lineaSolicitudServicio.setLocalidad((LocalidadDto) localidad.getSelectedItem());
-		lineaSolicitudServicio.setModalidadCobro((ModalidadCobroDto) modalidadCobro.getSelectedItem());
-		lineaSolicitudServicio.setModelo((ModeloDto) modeloEq.getSelectedItem());
-		lineaSolicitudServicio.setNumeroIMEI(imei.getText());
-		lineaSolicitudServicio.setNumeroReserva(reservar.getText());
-		lineaSolicitudServicio.setNumeroSerie(serie.getText());
-		lineaSolicitudServicio.setNumeroSimcard(sim.getText());
-		PlanDto planSelected = (PlanDto) plan.getSelectedItem();
-		lineaSolicitudServicio.setPlan(planSelected);
 		lineaSolicitudServicio.setPrecioLista(itemTasadoSelected.getPrecioLista());
 		lineaSolicitudServicio.setPrecioVenta(itemTasadoSelected.getPrecioLista());
-		lineaSolicitudServicio.setPrecioListaPlan(planSelected.getPrecio());
-		lineaSolicitudServicio.setPrecioVentaPlan(planSelected.getPrecio());
-		lineaSolicitudServicio.setRoaming(roaming.isChecked());
-		TerminoPagoValidoDto terminoSelected = (TerminoPagoValidoDto) terminoPago.getSelectedItem();
-		lineaSolicitudServicio.setTerminoPago(terminoSelected.getTerminoPago());
-		double precio = itemTasadoSelected.getPrecioLista();
-		if (terminoSelected.getAjuste() != null) {
-			precio = terminoSelected.getAjuste() * precio;
+		lineaSolicitudServicio.setListaPrecios((ListaPreciosDto) listaPrecio.getSelectedItem());
+		if (tipoEdicion == ITEM_PLAN || tipoEdicion == ACTIVACION) {
+			lineaSolicitudServicio.setLocalidad((LocalidadDto) localidad.getSelectedItem());
+			lineaSolicitudServicio.setModalidadCobro((ModalidadCobroDto) modalidadCobro.getSelectedItem());
+			lineaSolicitudServicio.setModelo((ModeloDto) modeloEq.getSelectedItem());
+			lineaSolicitudServicio.setNumeroIMEI(imei.getText());
+			lineaSolicitudServicio.setNumeroReserva(reservar.getText());
+			lineaSolicitudServicio.setNumeroSerie(serie.getText());
+			lineaSolicitudServicio.setNumeroSimcard(sim.getText());
+			PlanDto planSelected = (PlanDto) plan.getSelectedItem();
+			lineaSolicitudServicio.setPlan(planSelected);
+			if(planSelected != null){
+			lineaSolicitudServicio.setPrecioListaPlan(planSelected.getPrecio());
+			lineaSolicitudServicio.setPrecioVentaPlan(planSelected.getPrecio());
+			} else {
+				lineaSolicitudServicio.setPrecioListaPlan(0d);
+				lineaSolicitudServicio.setPrecioVentaPlan(0d);
+			}
+			lineaSolicitudServicio.setRoaming(roaming.isChecked());
+			TerminoPagoValidoDto terminoSelected = (TerminoPagoValidoDto) terminoPago.getSelectedItem();
+			lineaSolicitudServicio.setTerminoPago(terminoSelected.getTerminoPago());
+			double precio = itemTasadoSelected.getPrecioLista();
+			if (terminoSelected.getAjuste() != null) {
+				precio = terminoSelected.getAjuste() * precio;
+			}
+			lineaSolicitudServicio.setPrecioListaAjustado(precio);
+			if (!(lineaSolicitudServicio.getPlan().getId().equals(idPlanAnterior) && lineaSolicitudServicio
+					.getItem().getId().equals(idItemAnterior))) {
+				lineaSolicitudServicio.getServiciosAdicionales().clear();
+			}
+		} else {
+			lineaSolicitudServicio.setPrecioListaAjustado(itemTasadoSelected.getPrecioLista());
 		}
-		lineaSolicitudServicio.setPrecioListaAjustado(precio);
 		lineaSolicitudServicio.setTipoSolicitud((TipoSolicitudDto) tipoOrden.getSelectedItem());
 		// Limpio los servicios adicionales para que los actualice
-		if (!(lineaSolicitudServicio.getPlan().getId().equals(idPlanAnterior) && lineaSolicitudServicio
-				.getItem().getId().equals(idItemAnterior))) {
-			lineaSolicitudServicio.getServiciosAdicionales().clear();
-		}
 		return lineaSolicitudServicio;
 	}
 }

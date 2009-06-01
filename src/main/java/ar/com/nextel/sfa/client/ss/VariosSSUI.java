@@ -144,9 +144,10 @@ public class VariosSSUI extends Composite {
 			resumenSS.resizeRows(row + 1);
 			resumenSS.setHTML(row, 0, linea.getItem().getDescripcion());
 			resumenSS.setHTML(row, 1, "" + linea.getCantidad());
-			resumenSS.setHTML(row, 2, linea.getModalidadCobro().getDescripcion());
+			resumenSS.setHTML(row, 2, linea.getModalidadCobro() != null ? linea.getModalidadCobro()
+					.getDescripcion() : "");
 			resumenSS.setHTML(row, 3, currencyFormat.format(linea.getPrecioLista()));
-			resumenSS.setHTML(row, 4, linea.getPlan().getDescripcion());
+			resumenSS.setHTML(row, 4, linea.getPlan() != null ? linea.getPlan().getDescripcion() : "");
 			resumenSS.setHTML(row, 5, currencyFormat.format(linea.getPrecioListaPlan()));
 			resumenSS.setHTML(row, 6, currencyFormat.format(linea.getPrecioGarantiaLista()));
 			resumenSS.setHTML(row, 7, currencyFormat.format(linea.getPrecioServiciosAdicionalesLista()));

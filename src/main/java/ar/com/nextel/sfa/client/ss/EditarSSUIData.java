@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
@@ -47,6 +48,8 @@ public class EditarSSUIData extends UIData {
 	private NumberFormat currFormatter = NumberFormat.getCurrencyFormat();
 	private DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateFormat();
 	private List<List<ServicioAdicionalLineaSolicitudServicioDto>> serviciosAdicionales;
+
+	private static final String FORMA_CONTRATACION_ALQUILER = "Alquiler";
 
 	private SolicitudServicioDto solicitudServicio;
 
@@ -257,16 +260,20 @@ public class EditarSSUIData extends UIData {
 						solicitudServicio.getMontoDisponible());
 		validator.fillResult();
 		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
-			boolean hasAlquiler = false;
-			for (ServicioAdicionalLineaSolicitudServicioDto servicioAdicional : linea
-					.getServiciosAdicionales()) {
-				if (servicioAdicional.isEsAlquiler() && servicioAdicional.isChecked()) {
-					hasAlquiler = true;
-					break;
+			// Pregunta si es de alquiler y busca si tiene uno seleccionado
+			if (linea.getTipoSolicitud().getTipoSolicitudBase().getFormaContratacion().equals(
+					FORMA_CONTRATACION_ALQUILER)) {
+				boolean hasAlquiler = false;
+				for (ServicioAdicionalLineaSolicitudServicioDto servicioAdicional : linea
+						.getServiciosAdicionales()) {
+					if (servicioAdicional.isEsAlquiler() && servicioAdicional.isChecked()) {
+						hasAlquiler = true;
+						break;
+					}
 				}
-			}
-			if (!hasAlquiler) {
-				validator.addError("Falta Alquiler");
+				if (!hasAlquiler) {
+					validator.addError("Falta Alquiler");
+				}
 			}
 		}
 		return validator.getErrors();
@@ -277,10 +284,10 @@ public class EditarSSUIData extends UIData {
 		double precioVenta = 0;
 		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
 			linea.refreshPrecioServiciosAdicionales();
-			precioLista = precioLista + linea.getPrecioLista() + linea.getPrecioServiciosAdicionalesLista()
-					+ linea.getPrecioGarantiaLista();
-			precioVenta = precioVenta + linea.getPrecioVenta() + linea.getPrecioGarantiaVenta()
-					+ linea.getPrecioGarantiaVenta();
+			precioLista = precioLista + linea.getPrecioLista() + linea.getPrecioListaPlan()
+					+ linea.getPrecioServiciosAdicionalesLista() + linea.getPrecioGarantiaLista();
+			precioVenta = precioVenta + linea.getPrecioVenta() + linea.getPrecioVentaPlan()
+					+ linea.getPrecioServiciosAdicionalesVenta() + linea.getPrecioGarantiaVenta();
 		}
 
 		precioListaText.setHTML(currFormatter.format(precioLista));
@@ -338,10 +345,10 @@ public class EditarSSUIData extends UIData {
 		serviciosAdicionales.get(index).addAll(list);
 		List serviciosAdGuardados = getLineasSolicitudServicio().get(index).getServiciosAdicionales();
 		for (ServicioAdicionalLineaSolicitudServicioDto servicioAd : list) {
-			if(servicioAd.isChecked() && !serviciosAdGuardados.contains(servicioAd)){
+			if (servicioAd.isChecked() && !serviciosAdGuardados.contains(servicioAd)) {
 				serviciosAdGuardados.add(servicioAd);
 			}
 		}
-		
+
 	}
 }
