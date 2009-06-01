@@ -97,7 +97,7 @@ public class CuentaUIData extends UIData {
 	private TextArea observaciones = new TextArea();
 	private SimpleDatePicker fechaNacimiento = new SimpleDatePicker(false);
 	private SimpleLink validarTarjeta = new SimpleLink(Sfa.constant().validarTarjeta(), "#", true);
-	private Label veraz = new Label();
+	private Label verazRta = new Label();
 	
 	PersonaDto persona = new PersonaDto();
 	List <Widget>camposObligatorios =  new ArrayList<Widget>(); 
@@ -162,7 +162,7 @@ public class CuentaUIData extends UIData {
 		fields.add(categoria);
 		fields.add(iibb);
 		fields.add(cicloFacturacion);
-		fields.add(veraz);
+		fields.add(verazRta);
 		fields.add(observaciones);
 		fields.add(telPrincipalTextBox.getArea());
 		fields.add(telPrincipalTextBox.getNumero());
@@ -418,8 +418,8 @@ public class CuentaUIData extends UIData {
 	public TextBox getCicloFacturacion() {
 		return cicloFacturacion;
 	}
-	public Label getVeraz() {
-		return veraz;
+	public Label getVerazRta() {
+		return verazRta;
 	}
 	public TextArea getObservaciones() {
 		return observaciones;
