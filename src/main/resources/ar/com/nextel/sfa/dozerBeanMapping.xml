@@ -198,9 +198,9 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.TipoSolicitudDto
 		</class-b>
-		<field custom-converter-id="identifiableObjectToId">
+		<field custom-converter-id="enumToDto">
 			<a>tipoSolicitudBase</a>
-			<b>idTipoSolicitudBase</b>
+			<b>tipoSolicitudBase</b>
 		</field>
 		<field>
 			<a>tipoSolicitudBase.formaContratacion</a>
@@ -210,6 +210,13 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>listasPrecios</a>
 			<b>listasPrecios</b>
 		</field-exclude>
+	</mapping>
+
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.TipoSolicitudBase
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.TipoSolicitudBaseDto
+		</class-b>
 	</mapping>
 
 	<mapping>
@@ -310,7 +317,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<field type="one-way">
 			<a>servicioAdicional.esTethered</a>
 			<b>esTethered</b>
-		</field>		
+		</field>
 	</mapping>
 
 	<mapping map-id="cuentaSolicitud" wildcard="false">
