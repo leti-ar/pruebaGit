@@ -370,23 +370,15 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>estado</a>
 			<b>estado</b>
 		</field>
+		<field custom-converter-id="identifiableObjectToId">
+			<a>estadoEntrega</a>
+			<b>idEntrega</b>
+		</field>
+		<field custom-converter-id="identifiableObjectToId">
+			<a>estadoFacturacion</a>
+			<b>idFacturacion</b>
+		</field>
 	</mapping>
-<!--	<mapping>-->
-<!--		<class-a>ar.com.nextel.model.personas.beans.TipoDomicilioAsociado</class-a>-->
-<!--		<class-b>ar.com.nextel.sfa.client.dto.TipoDomicilioAsociadoDto</class-b>-->
-<!--		<field custom-converter-id="enumToDto">-->
-<!--			<a>tipoDomicilio</a>-->
-<!--			<b>tipoDomicilio</b>-->
-<!--		</field>-->
-<!--	</mapping>-->
-<!--	<mapping>-->
-<!--		<class-a>ar.com.nextel.model.personas.beans.TipoDomicilio</class-a>-->
-<!--		<class-b>ar.com.nextel.sfa.client.dto.TipoDomicilioDto</class-b>-->
-<!--		<field custom-converter-id="enumToDto">-->
-<!--			<a>codigoVantive</a>-->
-<!--			<b>id</b>-->
-<!--		</field>-->
-<!--	</mapping>-->
 	<mapping>
 		<class-a>ar.com.nextel.model.cuentas.beans.Cargo</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.CargoDto</class-b>

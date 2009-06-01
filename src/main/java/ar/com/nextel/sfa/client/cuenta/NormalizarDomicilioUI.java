@@ -273,6 +273,6 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	}
 	
 	public DomiciliosCuentaDto getDomicilioEnDudaSelected(){
-		return domiciliosEnDuda.get(rowSelected);
+		return domiciliosEnDuda.get(getRowSelected());
 	}
 }

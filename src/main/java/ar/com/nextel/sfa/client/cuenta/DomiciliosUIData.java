@@ -90,22 +90,24 @@ public class DomiciliosUIData extends UIData {
 
 			Long idEntrega = domicilio.getIdEntrega();
 			Long idFacturacion = domicilio.getIdFacturacion();
-			//PRINCIPAL(2L, "Principal"), SI(0L, "Si"), NO(1L, "No");
-			
-			/** Logica para tipoDomicilio: */
-			if ("0".equals(idEntrega)){
-				entrega.selectByValue("1");
-			}else if("1".equals(idEntrega)){
-				entrega.selectByValue("2");
-			}else if("2".equals(idEntrega)){
-				entrega.selectByValue("0");
-			}
-			if ("0".equals(idFacturacion)){
-				facturacion.selectByValue("1");
-			}else if("1".equals(idFacturacion)){
-				facturacion.selectByValue("2");
-			}else if("2".equals(idFacturacion)){
-				facturacion.selectByValue("0");
+
+			/**Este IF esta para que no reviente por NullPointerExc.*/
+			if((idEntrega != null) && (idFacturacion != null)){
+				//PRINCIPAL(2L, "Principal"), SI(0L, "Si"), NO(1L, "No");
+				if (idEntrega == 0){
+					entrega.selectByValue("1");
+				}else if(idEntrega == 1){
+					entrega.selectByValue("2");
+				}else if(idEntrega == 2){
+					entrega.selectByValue("0");
+				}
+				if (idFacturacion == 0){
+					facturacion.selectByValue("1");
+				}else if(idFacturacion == 1){
+					facturacion.selectByValue("2");
+				}else if(idFacturacion == 2){
+					facturacion.selectByValue("0");
+				}
 			}
 		}
 	}

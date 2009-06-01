@@ -50,6 +50,7 @@ public class CuentaDomiciliosForm extends Composite {
 		mainPanel = new FlowPanel();
 		footerBar = new FormButtonsBar();
 		datosTabla = new FlexTable();
+		agregaTableListeners();
 		initWidget(mainPanel);
 		mainPanel.clear();
 		mainPanel.setWidth("100%");
@@ -264,7 +265,7 @@ public class CuentaDomiciliosForm extends Composite {
 					domicilioNormalizadoCopiado = NormalizarDomicilioUI.getInstance().getDomicilioEnDudaSelected();
 				}else  if (estadoNormalizacion.equals("exito")){
 					domicilioNormalizadoCopiado = NormalizarDomicilioUI.getInstance().getDomicilio();
-					domicilioNormalizadoCopiado = mapeoDomicilioNormalizadoCopiado(domicilioNormalizadoCopiado);
+					domicilioNormalizadoCopiado = mapeoDomicilioNormalizado(domicilioNormalizadoCopiado);
 				}
 				PersonaDto persona = cuentaDto.getPersona();
 				persona.getDomicilios().add(domicilioNormalizadoCopiado);
@@ -313,7 +314,10 @@ public class CuentaDomiciliosForm extends Composite {
 
 	
 	private DomiciliosCuentaDto mapeoDomicilioNormalizado(DomiciliosCuentaDto domicilioNormalizado){
-		   domicilioNormalizado.setValidado(domicilioAEditar.getValidado());
+		   DomiciliosUIData datosDomicilioNuevo = DomicilioUI.getInstance().getDomiciliosData();  
+		   //Mapeos a Mano para no perder Datos:
+		   domicilioNormalizado.setObservaciones(datosDomicilioNuevo.getObservaciones().getText());
+		   domicilioNormalizado.setValidado(datosDomicilioNuevo.getValidado().isChecked());
 		   //REVISAR:
 		   domicilioNormalizado.setIdEntrega(domicilioAEditar.getIdEntrega());
 		   domicilioNormalizado.setIdFacturacion(domicilioAEditar.getIdFacturacion());
@@ -322,21 +326,7 @@ public class CuentaDomiciliosForm extends Composite {
 		   domicilioNormalizado.setNombre_usuario_ultima_modificacion(domicilioAEditar.getNombre_usuario_ultima_modificacion());
 		   domicilioNormalizado.setFecha_ultima_modificacion(domicilioAEditar.getFecha_ultima_modificacion());
 		   domicilioNormalizado.setActivo(domicilioAEditar.getActivo());
-		   domicilioNormalizado.setObservaciones(domicilioAEditar.getObservaciones());
-		   return domicilioNormalizado;
-	}
-	
-	private DomiciliosCuentaDto mapeoDomicilioNormalizadoCopiado(DomiciliosCuentaDto domicilioNormalizado){
-		   domicilioNormalizado.setValidado(domicilioAEditar.getValidado());
-		   //REVISAR:
-		   domicilioNormalizado.setIdEntrega(domicilioAEditar.getIdEntrega());
-		   domicilioNormalizado.setIdFacturacion(domicilioAEditar.getIdFacturacion());
-		   //
-		   domicilioNormalizado.setEn_carga(domicilioAEditar.getEn_carga());
-		   domicilioNormalizado.setNombre_usuario_ultima_modificacion(domicilioAEditar.getNombre_usuario_ultima_modificacion());
-		   domicilioNormalizado.setFecha_ultima_modificacion(domicilioAEditar.getFecha_ultima_modificacion());
-		   domicilioNormalizado.setActivo(domicilioAEditar.getActivo());
-		   domicilioNormalizado.setObservaciones(domicilioAEditar.getObservaciones());
+		   //domicilioNormalizado.setObservaciones(domicilioAEditar.getObservaciones());
 		   return domicilioNormalizado;
 	}
 	
@@ -510,7 +500,6 @@ public class CuentaDomiciliosForm extends Composite {
 		
 		List<DomiciliosCuentaDto> domicilios;
 		domicilios = cuentaDto.getPersona().getDomicilios();
-		agregaTableListeners();
 		
 		//Limpia la tabla de domicilios incialmente, si esta con datos:
 		if (datosTabla.getRowCount() > 1){
@@ -571,11 +560,9 @@ public class CuentaDomiciliosForm extends Composite {
 					//Acciones a tomar cuando haga click en los lapices de edicion:
 					if (col == 0) {
 						domicilioAEditar = domicilio;
-						/**TODO: Terminar de probar esto BIEN!*/
 						if (domicilio.getVantiveId() != null){
 							openPopupAdviseDialog(getOpenDomicilioUICommand());
 						}else{
-							//validaHabilitacionDeCampos();
 							DomicilioUI.getInstance().setComandoAceptar(getComandoAceptarEdicionServiceCall());
 							DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
 						}
@@ -589,7 +576,7 @@ public class CuentaDomiciliosForm extends Composite {
 					if (col == 2) {
 						rowDomicilioABorrar = row;
 						domicilioAEditar = domicilio;
-						/**TODO: Terminar de probar esto BIEN!*/
+						/**TODO: Descomentar esto de abajo, esta BIEN! Se comento para borrar domicilios Viejos! */
 						if (domicilio.getVantiveId() != null){
 							openPopupDeleteDialog(getOpenDialogAdviceCommand());
 						}else{ 

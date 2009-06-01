@@ -256,19 +256,6 @@ public class DomicilioUI extends NextelDialog {
 		return domiciliosData;
 	}
 	
-	private void showAndCenterConValidaciones() {
-		//
-		//
-		super.showAndCenter();
-	}
-
-	private void showAndCenterSinValidaciones() {
-		//
-		//
-		super.showAndCenter();
-	}
-	
-	/**TODO: Quitar!!!*/
 	@Override
 	public void showAndCenter() {
 		super.showAndCenter();
