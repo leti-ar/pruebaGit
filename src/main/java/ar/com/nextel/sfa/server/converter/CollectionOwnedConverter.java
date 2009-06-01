@@ -75,12 +75,19 @@ public class CollectionOwnedConverter implements CustomConverter {
 			}
 		}
 		destination.clear();
-		// Uso for para que funcione el interceptor
+		// Les asigno un fake Id a los nuevos para que me deje agregar varios objetos con id en null en el
+		// Set. Esto es por un problema de arquitectura que redefinio los equals.
+		long fakeId = 0;
+		// Uso "for" y "add" para que funcione el interceptor
 		for (Object object : newDestination) {
+			boolean needFakeId = ((IdentifiableObject) object).getId() == null;
+			if (needFakeId)
+				((IdentifiableObject) object).setId(fakeId--);
 			destination.add(object);
+			if (needFakeId)
+				((IdentifiableObject) object).setId(null);
 		}
 		return ((CollectionOwned) destination).getCollection();
-
 	}
 
 	private IdentifiableObject getById(Collection<IdentifiableObject> collection, Long id) {
