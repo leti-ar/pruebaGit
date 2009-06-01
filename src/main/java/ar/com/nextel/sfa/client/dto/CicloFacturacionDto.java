@@ -2,11 +2,13 @@ package ar.com.nextel.sfa.client.dto;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class CicloFacturacionDto implements IsSerializable{
+public class CicloFacturacionDto implements IsSerializable {
     private Integer diaInicio;
     private Integer diaCierre;
     private Integer diaProceso;
     private String  codigoFNCL;
+    private String  descripcion;
+    
 	public Integer getDiaInicio() {
 		return diaInicio;
 	}
@@ -30,5 +32,11 @@ public class CicloFacturacionDto implements IsSerializable{
 	}
 	public void setCodigoFNCL(String codigoFNCL) {
 		this.codigoFNCL = codigoFNCL;
+	}
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+	public String getDescripcion() {
+		return descripcion;
 	}
 }

@@ -68,6 +68,7 @@ public class CuentaDatosForm extends Composite {
 	private FlexTable efectivoTable       = new FlexTable();
 	private FlexTable cuentaBancariaTable = new FlexTable();
 	private FlexTable tarjetaTable        = new FlexTable();
+	private HTML iconoLupa = IconFactory.vistaPreliminar();
 	private TitledPanel vendedorPanel     = new TitledPanel(Sfa.constant().vendedorPanelTitle());
 	private CuentaUIData camposTabDatos   = new CuentaUIData();
 	private DatosPagoDto datosPago;
@@ -165,7 +166,7 @@ public class CuentaDatosForm extends Composite {
 		datosCuentaTable.setWidget(row, 0, camposTabDatos.getCicloFacLabel());
 		datosCuentaTable.setWidget(row, 1, camposTabDatos.getCicloFacturacion());
 		datosCuentaTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
-		HTML iconoLupa = IconFactory.vistaPreliminar();
+		
 		datosCuentaTable.setWidget(row, 2, iconoLupa);		
 		iconoLupa.addClickListener(new ClickListener() {
 			public void onClick (Widget sender) {
@@ -280,7 +281,7 @@ public class CuentaDatosForm extends Composite {
 	}
 	
 	public FlexTable getCuentaBancariaPanel() {
-		cuentaBancariaTable.setWidth(ANCHO_TABLA_PANEL);
+		cuentaBancariaTable.setWidth("100%");
 		cuentaBancariaTable.addStyleName("layout");
 		cuentaBancariaTable.setVisible(false);
 		
@@ -307,7 +308,7 @@ public class CuentaDatosForm extends Composite {
 	}
 	
 	public FlexTable getTarjetaCreditoPanel() {
-		tarjetaTable.setWidth(ANCHO_TABLA_PANEL);
+		tarjetaTable.setWidth("100%");
 		tarjetaTable.addStyleName("layout");
 		tarjetaTable.setVisible(false);
 		
@@ -379,14 +380,12 @@ public class CuentaDatosForm extends Composite {
 	}
 
 	public void ponerDatosBusquedaEnFormulario(CuentaDto cuentaDto) {
-		//if (cuentaDto.getPersona()!=null) {
 		cargarPanelDatos(cuentaDto);
 		cargarPanelTelefonoFax(cuentaDto);
 		cargarPanelEmails(cuentaDto);
 		cargarPanelFormaPago(cuentaDto);
 		cargarPanelVendedor(cuentaDto);
 		cargarPanelUsuario(cuentaDto);
-		//}
 	}
 	
 	public void cargarPanelDatos(CuentaDto cuentaDto) {
@@ -408,7 +407,7 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getProveedorAnterior().setSelectedItem(cuentaDto.getProveedorInicial());
 		camposTabDatos.getCategoria().setText(cuentaDto.getCategoriaCuenta().getDescripcion());
 		camposTabDatos.getClaseCliente().setSelectedItem(cuentaDto.getClaseCuenta());
-		camposTabDatos.getCicloFacturacion().setText(cuentaDto.getCicloFacturacion().getCodigoFNCL());
+		camposTabDatos.getCicloFacturacion().setText(cuentaDto.getCicloFacturacion().getDescripcion());
 		camposTabDatos.getUse().setText(cuentaDto.getUse());
 	}
 	
@@ -513,7 +512,17 @@ public class CuentaDatosForm extends Composite {
 			camposTabDatos.getFechaCreacion().setText(DateTimeFormat.getMediumDateFormat().format(cuentaDto.getFechaCreacion()));
     }
     
+    /**
+     * 
+     * @param cuentaDto
+     */
 	public void setAtributosCamposAlAgregarCuenta(CuentaDto cuentaDto) {
+		
+		camposTabDatos.enableFields();
+		iconoLupa.setVisible(true);
+		camposTabDatos.getVerazRta().setVisible(true);
+		camposTabDatos.getVerazLabel().setVisible(true);
+		
         boolean docTipoCUIL = cuentaDto.getPersona().getDocumento().getTipoDocumento().getId()==TipoDocumentoEnum.CUIL.getTipo() ||
                               cuentaDto.getPersona().getDocumento().getTipoDocumento().getId()==TipoDocumentoEnum.CUIT.getTipo();
 		
@@ -530,8 +539,8 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getIibb().setVisible(docTipoCUIL);
 		camposTabDatos.getIibbLabel().setVisible(docTipoCUIL);
 		
-		camposTabDatos.getNombreDivision().setVisible(false);
-		camposTabDatos.getNomDivLabel().setVisible(false);
+		camposTabDatos.getNombreDivision().setVisible(false /*TODO*/);
+		camposTabDatos.getNomDivLabel().setVisible(false /*TODO*/);
 		
 		camposTabDatos.getUse().setVisible(!docTipoCUIL);
 		camposTabDatos.getUseLabel().setVisible(!docTipoCUIL);
@@ -540,9 +549,59 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getCargoLabel().setVisible(cuentaDto.getPersona().getSexo().getItemValue().equals(Long.toString(SexoEnum.ORGANIZACION.getId())));
 		
 		vendedorPanel.setVisible(false);
+	}
+
+	/**
+	 * 
+	 * @param cuentaDto
+	 */
+	public void setAtributosCamposAlMostrarResuladoBusqueda(CuentaDto cuentaDto) {
+		
+		setAtributosCamposAlAgregarCuenta(cuentaDto);
+		
+		List <Widget>campos = new ArrayList<Widget>();
+		campos.add(camposTabDatos.getNombre());
+		campos.add(camposTabDatos.getApellido());
+		campos.add(camposTabDatos.getSexo());
+		campos.add(camposTabDatos.getFechaNacimiento());
+		campos.add(camposTabDatos.getProveedorAnterior());
+		campos.add(camposTabDatos.getContribuyente());
+		campos.add(camposTabDatos.getRubro());
+		campos.add(camposTabDatos.getIibb());
+		campos.add(camposTabDatos.getClaseCliente());
+		campos.add(camposTabDatos.getCategoria());
+		
+		campos.add(camposTabDatos.getTelPrincipalTextBox().getArea());
+		campos.add(camposTabDatos.getTelPrincipalTextBox().getNumero());
+		campos.add(camposTabDatos.getTelPrincipalTextBox().getInterno());
+		campos.add(camposTabDatos.getObservaciones());
+
+		if (!camposTabDatos.getEmailPersonal().getText().equals("")) 
+			campos.add(camposTabDatos.getEmailPersonal());
+
+		campos.add(camposTabDatos.getFormaPago());
+		campos.add(camposTabDatos.getCbu());
+		campos.add(camposTabDatos.getTipoCuentaBancaria());
+		campos.add(camposTabDatos.getTipoTarjeta());
+		campos.add(camposTabDatos.getNumeroTarjeta());
+		campos.add(camposTabDatos.getAnioVto());
+		campos.add(camposTabDatos.getMesVto());
+
+		campos.add(camposTabDatos.getVendedorNombre());
+		campos.add(camposTabDatos.getVendedorTelefono());
+		campos.add(camposTabDatos.getTipoCanalVentas());
+		
+		FormUtils.disableFields(campos);
+
+		iconoLupa.setVisible(false);
+		camposTabDatos.getVerazRta().setVisible(false);
+		camposTabDatos.getVerazLabel().setVisible(false);
+		
+		vendedorPanel.setVisible(/*vendedorCuenta==vendedorLogueado*/ true);
 		
 	}
-    
+	
+	
 	public boolean formularioDatosDirty() {
 		boolean retorno = false;
 		CuentaEdicionTabPanel cuentaTab = CuentaEdicionTabPanel.getInstance();

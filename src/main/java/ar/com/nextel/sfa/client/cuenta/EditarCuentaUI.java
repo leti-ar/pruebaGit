@@ -64,6 +64,7 @@ public class EditarCuentaUI extends ApplicationUI {
 								new BuscarCuentaUI().load();
 							} else {
 								cuentaTab.setCuenta2editDto(ctaDto);
+								cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusqueda(ctaDto);
 								cargaPaneles();
 							}
 						}
