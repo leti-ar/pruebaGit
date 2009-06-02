@@ -13,6 +13,7 @@ import java.util.List;
 import org.dozer.CustomConverter;
 
 import ar.com.nextel.framework.IdentifiableObject;
+import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.support.owner.CollectionOwned;
 import ar.com.nextel.sfa.client.dto.IdentifiableDto;
@@ -27,6 +28,7 @@ public class CollectionOwnedConverter implements CustomConverter {
 	private MapperExtended mapper;
 	private Class modelClass = LineaSolicitudServicio.class;
 	private Class dtoClass = LineaSolicitudServicioDto.class;
+	private Repository repository;
 
 	public void setDozerMapper(MapperExtended dozerMapper) {
 		this.mapper = dozerMapper;
@@ -38,6 +40,10 @@ public class CollectionOwnedConverter implements CustomConverter {
 
 	public void setDtoClass(Object object) {
 		dtoClass = object.getClass();
+	}
+
+	public void setRepository(Repository repository) {
+		this.repository = repository;
 	}
 
 	public Object convert(Object destination, Object source, Class destClass, Class sourceClass) {
@@ -71,7 +77,9 @@ public class CollectionOwnedConverter implements CustomConverter {
 				mapper.map(sourceItem, destItem);
 				newDestination.add(destItem);
 			} else {
-				newDestination.add(mapper.map(sourceItem, modelClass));
+				Object o = repository.createNewObject(modelClass);
+				mapper.map(sourceItem, o);
+				newDestination.add(o);
 			}
 		}
 		destination.clear();
