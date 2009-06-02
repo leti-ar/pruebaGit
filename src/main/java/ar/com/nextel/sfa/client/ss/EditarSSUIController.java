@@ -16,15 +16,17 @@ public interface EditarSSUIController {
 
 	EditarSSUIData getEditarSSUIData();
 
-	void getLineasSolicitudServicioInitializer(
+	public void getLineasSolicitudServicioInitializer(
 			DefaultWaitCallback<LineasSolicitudServicioInitializer> defaultWaitCallback);
 
-	void getListaPrecios(TipoSolicitudDto tipoSolicitudDto,
+	public void getListaPrecios(TipoSolicitudDto tipoSolicitudDto,
 			DefaultWaitCallback<List<ListaPreciosDto>> defaultWaitCallback);
 
 	public void getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,
 			DefaultWaitCallback<List<PlanDto>> callback);
 
-	void getServiciosAdicionales(LineaSolicitudServicioDto linea,
+	public void getServiciosAdicionales(LineaSolicitudServicioDto linea,
 			DefaultWaitCallback<List<ServicioAdicionalLineaSolicitudServicioDto>> defaultWaitCallback);
+
+	public String getNombreProximoMovil();
 }

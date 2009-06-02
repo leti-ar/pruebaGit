@@ -163,6 +163,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 	}
 
 	public void show(LineaSolicitudServicioDto linea) {
+		itemSolicitudUIData.setNombreMovil(controller.getNombreProximoMovil());
 		itemSolicitudUIData.setLineaSolicitudServicio(linea);
 		if (linea.getTipoSolicitud() != null) {
 			tipoOrden.setSelectedItem(linea.getTipoSolicitud());

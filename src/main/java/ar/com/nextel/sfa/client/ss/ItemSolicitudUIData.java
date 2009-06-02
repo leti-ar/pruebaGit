@@ -61,6 +61,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 	private LineaSolicitudServicioDto lineaSolicitudServicio;
 	private EditarSSUIController controller;
 	private NumberFormat currencyFormat = NumberFormat.getCurrencyFormat();
+	private String nombreMovil;
 
 	private Long idPlanAnterior;
 	private Long idItemAnterior;
@@ -331,7 +332,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 		this.lineaSolicitudServicio = linea;
 		clearListBoxForSelect();
 		clean();
-		alias.setText(linea.getAlias());
+		if (linea.getAlias() == null || "".equals(linea.getAlias().trim())) {
+			alias.setText(nombreMovil);
+		} else {
+			alias.setText(linea.getAlias());
+		}
 		cantidad.setText(linea.getCantidad() != null ? "" + linea.getCantidad() : "");
 		ddn.setChecked(linea.getDdn());
 		ddi.setChecked(linea.getDdi());
@@ -370,7 +375,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 	}
 
 	public LineaSolicitudServicioDto getLineaSolicitudServicio() {
-		lineaSolicitudServicio.setAlias(alias.getText());
+		lineaSolicitudServicio.setAlias("");
 		lineaSolicitudServicio.setCantidad(Integer.parseInt(cantidad.getText()));
 		lineaSolicitudServicio.setDdi(ddi.isChecked());
 		lineaSolicitudServicio.setDdn(ddn.isChecked());
@@ -380,6 +385,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 		lineaSolicitudServicio.setPrecioVenta(itemTasadoSelected.getPrecioLista());
 		lineaSolicitudServicio.setListaPrecios((ListaPreciosDto) listaPrecio.getSelectedItem());
 		if (tipoEdicion == ITEM_PLAN || tipoEdicion == ACTIVACION) {
+			lineaSolicitudServicio.setAlias(alias.getText());
 			lineaSolicitudServicio.setLocalidad((LocalidadDto) localidad.getSelectedItem());
 			lineaSolicitudServicio.setModalidadCobro((ModalidadCobroDto) modalidadCobro.getSelectedItem());
 			lineaSolicitudServicio.setModelo((ModeloDto) modeloEq.getSelectedItem());
@@ -389,9 +395,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 			lineaSolicitudServicio.setNumeroSimcard(sim.getText());
 			PlanDto planSelected = (PlanDto) plan.getSelectedItem();
 			lineaSolicitudServicio.setPlan(planSelected);
-			if(planSelected != null){
-			lineaSolicitudServicio.setPrecioListaPlan(planSelected.getPrecio());
-			lineaSolicitudServicio.setPrecioVentaPlan(planSelected.getPrecio());
+			if (planSelected != null) {
+				lineaSolicitudServicio.setPrecioListaPlan(planSelected.getPrecio());
+				lineaSolicitudServicio.setPrecioVentaPlan(planSelected.getPrecio());
 			} else {
 				lineaSolicitudServicio.setPrecioListaPlan(0d);
 				lineaSolicitudServicio.setPrecioVentaPlan(0d);
@@ -414,5 +420,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 		lineaSolicitudServicio.setTipoSolicitud((TipoSolicitudDto) tipoOrden.getSelectedItem());
 		// Limpio los servicios adicionales para que los actualice
 		return lineaSolicitudServicio;
+	}
+
+	public void setNombreMovil(String nombreMovil) {
+		this.nombreMovil = nombreMovil;
 	}
 }

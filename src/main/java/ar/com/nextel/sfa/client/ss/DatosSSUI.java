@@ -271,11 +271,14 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		}
 		int firstNewRow = 0;
 		for (int i = 0; i < nuevasLineas.size(); i++) {
-			int newRow = editarSSUIData.addLineaSolicitudServicio(nuevasLineas.get(i)) + 1;
+			LineaSolicitudServicioDto nueva = nuevasLineas.get(i);
+			int newRow = editarSSUIData.addLineaSolicitudServicio(nueva) + 1;
 			if (firstNewRow == 0) {
 				firstNewRow = newRow;
+			} else {
+				nueva.setAlias(editarSSUIData.getNombreMovil());
 			}
-			drawDetalleSSRow(linea, newRow);
+			drawDetalleSSRow(nueva, newRow);
 		}
 
 		onCellClicked(detalleSS, firstNewRow, 2);

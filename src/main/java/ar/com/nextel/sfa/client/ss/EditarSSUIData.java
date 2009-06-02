@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
@@ -242,21 +243,22 @@ public class EditarSSUIData extends UIData {
 	public List<String> validarCompletitud() {
 		recarcularValores();
 		GwtValidator validator = new GwtValidator();
-		validator.addTarget(nss).required("Debe ingresar un Nº de Solicitud").maxLength(10,
-				"El Nº de solicitud debe tener menos de 10 dígitos");
-		validator.addTarget(entrega).required("Debe ingresar un domicilio de entrega");
-		validator.addTarget(facturacion).required("Debe ingresar un domicilio de facturación");
+		validator.addTarget(nss).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", "Nº de Solicitud")).maxLength(
+				10, "El Nº de solicitud debe tener menos de 10 dígitos");
+		validator.addTarget(entrega).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", "Entrega"));
+		validator.addTarget(facturacion).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", "Facturación"));
 		if (solicitudServicio.getMontoDisponible() != null)
 			validator
 					.addTarget(credFidelizacion)
 					.smallerOrEqual(
-							"La Cantidad de crédito de fidelización a utilizar no puede exceder el máximo disponible",
+							"La cantidad de Crédito de Fidelización a utilizar no puede exceder el máximo disponible.",
 							solicitudServicio.getMontoDisponible());
-		validator
-				.addTarget(pataconex)
-				.smallerOrEqual(
-						"La cantidad de pataconex ingresada excede el Precio de Venta Total. Por favor modifique el monto",
-						solicitudServicio.getMontoDisponible());
+		validator.addTarget(pataconex).smallerOrEqual(
+				"La cantidad de Pataconex ingresada excede el Precio de Venta Total.",
+				solicitudServicio.getMontoDisponible());
 		validator.fillResult();
 		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
 			// Pregunta si es de alquiler y busca si tiene uno seleccionado
@@ -271,7 +273,8 @@ public class EditarSSUIData extends UIData {
 					}
 				}
 				if (!hasAlquiler) {
-					validator.addError("Falta Alquiler");
+					validator.addError("El ítem " + linea.getAlias()
+							+ " debe tener un servicio adicional de tipo Alquiler Única Vez seleccionado");
 				}
 			}
 		}
@@ -362,5 +365,24 @@ public class EditarSSUIData extends UIData {
 			servicio.setPrecioVenta(valor);
 			getLineasSolicitudServicio().get(indexLinea).getServiciosAdicionales().add(servicio);
 		}
+	}
+
+	public String getNombreMovil() {
+		String nombreMovil = "";
+		boolean encontrado = false;
+		for (int i = 0; i < 1000; i++) {
+			nombreMovil = "Movil" + (i + 1);
+			encontrado = false;
+			for (LineaSolicitudServicioDto linea : getLineasSolicitudServicio()) {
+				if (nombreMovil.equals(linea.getAlias())) {
+					encontrado = true;
+					break;
+				}
+			}
+			if (!encontrado) {
+				return nombreMovil;
+			}
+		}
+		return nombreMovil;
 	}
 }

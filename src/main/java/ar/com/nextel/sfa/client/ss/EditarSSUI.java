@@ -197,4 +197,8 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 				defaultWaitCallback);
 	}
 
+	public String getNombreProximoMovil() {
+		return editarSSUIData.getNombreMovil();
+	}
+
 }
