@@ -199,8 +199,7 @@ public class CuentaDomiciliosForm extends Composite {
 	return comandoEditar;
 	}
 	
-	/**TODO: Debe ser Private este metodo, cuando Meli termine su parte.*/
-	public Command getComandoAceptarNuevoDomicilioServiceCall() {
+	private Command getComandoAceptarNuevoDomicilioServiceCall() {
 		Command comandoEditar = new Command() {
 			public void execute() {
 				if (camposValidos()){
