@@ -33,7 +33,6 @@ import ar.com.nextel.model.cuentas.beans.CategoriaCuenta;
 import ar.com.nextel.model.cuentas.beans.ClaseCuenta;
 import ar.com.nextel.model.cuentas.beans.CondicionCuenta;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
-import ar.com.nextel.model.cuentas.beans.DatosPago;
 import ar.com.nextel.model.cuentas.beans.FormaPago;
 import ar.com.nextel.model.cuentas.beans.Proveedor;
 import ar.com.nextel.model.cuentas.beans.TipoCanalVentas;
@@ -47,7 +46,6 @@ import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.personas.beans.GrupoDocumento;
 import ar.com.nextel.model.personas.beans.Provincia;
 import ar.com.nextel.model.personas.beans.Sexo;
-import ar.com.nextel.model.personas.beans.Telefono;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
@@ -66,7 +64,6 @@ import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
-import ar.com.nextel.sfa.client.dto.EmailDto;
 import ar.com.nextel.sfa.client.dto.FormaPagoDto;
 import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
@@ -79,15 +76,12 @@ import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
 import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
-import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.dto.TipoCanalVentasDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.dto.TipoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoTarjetaDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
-import ar.com.nextel.sfa.client.enums.TipoEmailEnum;
-import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
@@ -392,9 +386,12 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		NormalizarDomicilioResultDto domicilioResultNormalizacion = null;
 		try {
 			NormalizarDomicilioRequest normalizarDomicilioRequest = new NormalizarDomicilioRequest();
-			normalizarDomicilioRequest.populateFromDomicilio(mapper.map(domicilioANormalizar, Domicilio.class));
+			Domicilio domicilio = repository.createNewObject(Domicilio.class);
+			mapper.map(domicilioANormalizar, domicilio);
+
+			normalizarDomicilioRequest.populateFromDomicilio(domicilio);
 			domicilioResultNormalizacion =  mapper.map(normalizadorDomicilio.normalizarDomicilio(normalizarDomicilioRequest),NormalizarDomicilioResultDto.class);
-			
+	
 		} catch (MerlinException e) {
 			throw ExceptionUtil.wrap(e);
 		}

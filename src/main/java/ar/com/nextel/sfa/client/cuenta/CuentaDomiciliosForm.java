@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
@@ -99,16 +100,10 @@ public class CuentaDomiciliosForm extends Composite {
 	/**
 	 * @author eSalvador
 	 **/
-	private void abrirPopupNormalizacion(DomiciliosCuentaDto domicilio, List<DomiciliosCuentaDto> domiciliosConDudas, Command comandoNoNormalizar, Command comandoAceptar) {
-		if(domicilio != null){
-			//Aca si apreta el boton NoNormalizar
-			domicilio.setNo_normalizar(true);
-			NormalizarDomicilioUI.getInstance().setDomicilios(domicilio);
-		}else if (domiciliosConDudas != null){
-			//Aca si apreta el boton Aceptar
-			NormalizarDomicilioUI.getInstance().setDomicilio(domicilioAEditar);
-			NormalizarDomicilioUI.getInstance().setDomiciliosConDudas(domiciliosConDudas);
-		}
+	private void abrirPopupNormalizacion(List<DomiciliosCuentaDto> domiciliosAGrilla, Command comandoNoNormalizar, Command comandoAceptar) {
+	//Aca si apreta el boton Aceptar
+		NormalizarDomicilioUI.getInstance().setDomicilio(domicilioAEditar);
+		NormalizarDomicilioUI.getInstance().agregaDomiciliosAGrilla(domiciliosAGrilla);
 		NormalizarDomicilioUI.getInstance().setComandoAceptar(comandoAceptar);
 		NormalizarDomicilioUI.getInstance().setComandoNoNormalizar(comandoNoNormalizar);
 		NormalizarDomicilioUI.getInstance().showAndCenter();
@@ -136,20 +131,23 @@ public class CuentaDomiciliosForm extends Composite {
 				CuentaRpcService.Util.getInstance().normalizarDomicilio(domicilioAEditar,
 						new DefaultWaitCallback<NormalizarDomicilioResultDto>() {
 							public void success(NormalizarDomicilioResultDto result) {
+							   
+							   List<DomiciliosCuentaDto> listaDomicilios = new ArrayList();
+							   listaDomicilios.add(result.getDireccion());
 								
 								//tipo: exito|no_parseado|no_encontrado|dudas
 								if (result.getTipo().equals("exito")){
 									NormalizarDomicilioUI.getInstance().setNormalizado(true);
-									abrirPopupNormalizacion(result.getDireccion(), null,getComandoAgregarDomicilioCopiadoSinNormalizar(),getComandoAgregarDomicilioCopiado(result.getTipo()));
+									abrirPopupNormalizacion(listaDomicilios,getComandoAgregarDomicilioCopiadoSinNormalizar(),getComandoAgregarDomicilioCopiado(result.getTipo()));
 								}else if(result.getTipo().equals("no_encontrado")){
 									setMotivosNoNormalizacion(result);
-									abrirPopupNormalizacion(result.getDireccion(),null,getComandoAgregarDomicilioCopiadoSinNormalizar(),getComandoAgregarDomicilioCopiado(result.getTipo()));
+									abrirPopupNormalizacion(listaDomicilios,getComandoAgregarDomicilioCopiadoSinNormalizar(),getComandoAgregarDomicilioCopiado(result.getTipo()));
 								}else if(result.getTipo().equals("dudas")){
 									NormalizarDomicilioUI.getInstance().setNormalizado(true);
-									abrirPopupNormalizacion(null,result.getDudas(),getComandoAgregarDomicilioCopiadoSinNormalizar(),getComandoAgregarDomicilioCopiado(result.getTipo()));
+									abrirPopupNormalizacion(result.getDudas(),getComandoAgregarDomicilioCopiadoSinNormalizar(),getComandoAgregarDomicilioCopiado(result.getTipo()));
 								}else if(result.getTipo().equals("no_parseado")){
 									setMotivosNoNormalizacion(result);
-									abrirPopupNormalizacion(result.getDireccion(),null,getComandoAgregarDomicilioCopiadoSinNormalizar(),getComandoAgregarDomicilioCopiado(result.getTipo()));
+									abrirPopupNormalizacion(listaDomicilios,getComandoAgregarDomicilioCopiadoSinNormalizar(),getComandoAgregarDomicilioCopiado(result.getTipo()));
 								}
 							}
 							@Override
@@ -171,20 +169,23 @@ public class CuentaDomiciliosForm extends Composite {
 						new DefaultWaitCallback<NormalizarDomicilioResultDto>() {
 							public void success(NormalizarDomicilioResultDto result) {
 								
+								List<DomiciliosCuentaDto> listaDomicilios = new ArrayList();
+								listaDomicilios.add(result.getDireccion());
+								
 								//tipo: exito|no_parseado|no_encontrado|dudas
 								if (result.getTipo().equals("exito")){
 									//domicilioAEditar = result.getDireccion();
 									NormalizarDomicilioUI.getInstance().setNormalizado(true);
-									abrirPopupNormalizacion(result.getDireccion(), null,getComandoAgregarDomicilioEditadoSinNormalizar(),getComandoAgregarDomicilioEditado(result.getTipo()));
+									abrirPopupNormalizacion(listaDomicilios ,getComandoAgregarDomicilioEditadoSinNormalizar(),getComandoAgregarDomicilioEditado(result.getTipo()));
 								}else if(result.getTipo().equals("no_encontrado")){
 									setMotivosNoNormalizacion(result);
-									abrirPopupNormalizacion(result.getDireccion(),null,getComandoAgregarDomicilioEditadoSinNormalizar(),getComandoAgregarDomicilioEditado(result.getTipo()));
+									abrirPopupNormalizacion(listaDomicilios,getComandoAgregarDomicilioEditadoSinNormalizar(),getComandoAgregarDomicilioEditado(result.getTipo()));
 								}else if(result.getTipo().equals("dudas")){
 									NormalizarDomicilioUI.getInstance().setNormalizado(true);
-									abrirPopupNormalizacion(null,result.getDudas(),getComandoAgregarDomicilioEditadoSinNormalizar(),getComandoAgregarDomicilioEditado(result.getTipo()));
+									abrirPopupNormalizacion(result.getDudas(),getComandoAgregarDomicilioEditadoSinNormalizar(),getComandoAgregarDomicilioEditado(result.getTipo()));
 								}else if(result.getTipo().equals("no_parseado")){
 									setMotivosNoNormalizacion(result);
-									abrirPopupNormalizacion(result.getDireccion(),null,getComandoAgregarDomicilioEditadoSinNormalizar(),getComandoAgregarDomicilioEditado(result.getTipo()));
+									abrirPopupNormalizacion(listaDomicilios,getComandoAgregarDomicilioEditadoSinNormalizar(),getComandoAgregarDomicilioEditado(result.getTipo()));
 								}
 							}
 							@Override
@@ -198,6 +199,7 @@ public class CuentaDomiciliosForm extends Composite {
 	return comandoEditar;
 	}
 	
+	/**TODO: Debe ser Private este metodo, cuando Meli termine su parte.*/
 	public Command getComandoAceptarNuevoDomicilioServiceCall() {
 		Command comandoEditar = new Command() {
 			public void execute() {
@@ -207,20 +209,23 @@ public class CuentaDomiciliosForm extends Composite {
 						new DefaultWaitCallback<NormalizarDomicilioResultDto>() {
 							public void success(NormalizarDomicilioResultDto result) {
 								
+								List<DomiciliosCuentaDto> listaDomicilios = new ArrayList();
+								listaDomicilios.add(domicilioAEditar);
+								
 								//tipo: exito|no_parseado|no_encontrado|dudas
 								if (result.getTipo().equals("exito")){
 									mapeaIdCombosTipoDomicilio(result);
 									NormalizarDomicilioUI.getInstance().setNormalizado(true);
-									abrirPopupNormalizacion(domicilioAEditar, null,getComandoAgregarNuevoDomicilioSinNormalizar(),getComandoAgregarNuevoDomicilio(result.getTipo()));
+									abrirPopupNormalizacion(listaDomicilios,getComandoAgregarNuevoDomicilioSinNormalizar(),getComandoAgregarNuevoDomicilio(result.getTipo()));
 								}else if(result.getTipo().equals("no_encontrado")){
 									setMotivosNoNormalizacion(result);
-									abrirPopupNormalizacion(domicilioAEditar,null,getComandoAgregarNuevoDomicilioSinNormalizar(),getComandoAgregarNuevoDomicilio(result.getTipo()));
+									abrirPopupNormalizacion(listaDomicilios,getComandoAgregarNuevoDomicilioSinNormalizar(),getComandoAgregarNuevoDomicilio(result.getTipo()));
 								}else if(result.getTipo().equals("dudas")){
 									NormalizarDomicilioUI.getInstance().setNormalizado(true);
-									abrirPopupNormalizacion(null,result.getDudas(),getComandoAgregarNuevoDomicilioSinNormalizar(),getComandoAgregarNuevoDomicilio(result.getTipo()));
+									abrirPopupNormalizacion(result.getDudas(),getComandoAgregarNuevoDomicilioSinNormalizar(),getComandoAgregarNuevoDomicilio(result.getTipo()));
 								}else if(result.getTipo().equals("no_parseado")){
 									setMotivosNoNormalizacion(result);
-									abrirPopupNormalizacion(domicilioAEditar,null,getComandoAgregarNuevoDomicilioSinNormalizar(),getComandoAgregarNuevoDomicilio(result.getTipo()));
+									abrirPopupNormalizacion(listaDomicilios,getComandoAgregarNuevoDomicilioSinNormalizar(),getComandoAgregarNuevoDomicilio(result.getTipo()));
 								}
 							}
 							@Override
@@ -262,7 +267,8 @@ public class CuentaDomiciliosForm extends Composite {
 			public void execute() {
 				DomiciliosCuentaDto domicilioNormalizadoCopiado = null;
 				if (estadoNormalizacion.equals("dudas")){
-					domicilioNormalizadoCopiado = NormalizarDomicilioUI.getInstance().getDomicilioEnDudaSelected();
+					domicilioNormalizadoCopiado = NormalizarDomicilioUI.getInstance().getDomicilioEnGrillaSelected();
+					domicilioNormalizadoCopiado = mapeoDomicilioNormalizado(domicilioNormalizadoCopiado);
 				}else  if (estadoNormalizacion.equals("exito")){
 					domicilioNormalizadoCopiado = NormalizarDomicilioUI.getInstance().getDomicilio();
 					domicilioNormalizadoCopiado = mapeoDomicilioNormalizado(domicilioNormalizadoCopiado);
@@ -283,7 +289,8 @@ public class CuentaDomiciliosForm extends Composite {
 			public void execute() {
 				DomiciliosCuentaDto domicilioNormalizado = null;
 				if (estadoNormalizacion.equals("dudas")){
-					domicilioNormalizado = NormalizarDomicilioUI.getInstance().getDomicilioEnDudaSelected();
+					domicilioNormalizado = NormalizarDomicilioUI.getInstance().getDomicilioEnGrillaSelected();
+					domicilioNormalizado = mapeoDomicilioNormalizado(domicilioNormalizado);
 				}else if (estadoNormalizacion.equals("exito")){
 					domicilioNormalizado = NormalizarDomicilioUI.getInstance().getDomicilio();
 					domicilioNormalizado = mapeoDomicilioNormalizado(domicilioNormalizado);
@@ -326,7 +333,6 @@ public class CuentaDomiciliosForm extends Composite {
 		   domicilioNormalizado.setNombre_usuario_ultima_modificacion(domicilioAEditar.getNombre_usuario_ultima_modificacion());
 		   domicilioNormalizado.setFecha_ultima_modificacion(domicilioAEditar.getFecha_ultima_modificacion());
 		   domicilioNormalizado.setActivo(domicilioAEditar.getActivo());
-		   //domicilioNormalizado.setObservaciones(domicilioAEditar.getObservaciones());
 		   return domicilioNormalizado;
 	}
 	
@@ -336,7 +342,8 @@ public class CuentaDomiciliosForm extends Composite {
 			public void execute() {
 				DomiciliosCuentaDto domicilioNormalizadoNuevo = null;
 				if (estadoNormalizacion.equals("dudas")){
-					domicilioNormalizadoNuevo = NormalizarDomicilioUI.getInstance().getDomicilioEnDudaSelected();
+					domicilioNormalizadoNuevo = NormalizarDomicilioUI.getInstance().getDomicilioEnGrillaSelected();
+					domicilioNormalizadoNuevo = mapeoDomicilioNormalizado(domicilioNormalizadoNuevo);
 				}else if (estadoNormalizacion.equals("exito")){
 					domicilioNormalizadoNuevo = NormalizarDomicilioUI.getInstance().getDomicilio();
 					domicilioNormalizadoNuevo = mapeoDomicilioNormalizado(domicilioNormalizadoNuevo);
@@ -372,7 +379,7 @@ public class CuentaDomiciliosForm extends Composite {
 	private void setMotivosNoNormalizacion(NormalizarDomicilioResultDto result){
 		NormalizarDomicilioUI.getInstance().setNormalizado(false);
 		NormalizarDomicilioUI.getInstance().setMotivos(result.getMotivos());
-		NormalizarDomicilioUI.getInstance().setDomiciliosEnDuda(result.getDudas());
+		NormalizarDomicilioUI.getInstance().setDomiciliosEnGrilla(result.getDudas());
 	}
 	
 	private Command getComandoBorrar(){
@@ -576,7 +583,6 @@ public class CuentaDomiciliosForm extends Composite {
 					if (col == 2) {
 						rowDomicilioABorrar = row;
 						domicilioAEditar = domicilio;
-						/**TODO: Descomentar esto de abajo, esta BIEN! Se comento para borrar domicilios Viejos! */
 						if (domicilio.getVantiveId() != null){
 							openPopupDeleteDialog(getOpenDialogAdviceCommand());
 						}else{ 

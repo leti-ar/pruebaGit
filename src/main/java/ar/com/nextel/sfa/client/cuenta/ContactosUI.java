@@ -278,6 +278,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		agregar = new Button("Crear Nuevo");
 		agregar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
+			 /**TODO: NO OLVIDAR Cambiar el metodo getComandoAceptarNuevoDomicilioServiceCall() a Private en la clase CuentaDomiciliosForm */
 				DomicilioUI.getInstance().setComandoAceptar(cuentaDomiciliosForm.getInstance().getComandoAceptarNuevoDomicilioServiceCall());
 				DomicilioUI.getInstance().hideLabelsParaContactos();
 				DomicilioUI.getInstance().cargarPopupNuevoDomicilioParaContactos();

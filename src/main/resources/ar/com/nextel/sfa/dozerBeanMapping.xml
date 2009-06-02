@@ -370,12 +370,12 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>estado</a>
 			<b>estado</b>
 		</field>
-		<field custom-converter-id="identifiableObjectToId">
-			<a>estadoEntrega</a>
+		<field custom-converter-id="estadoTipoDomicilioOwnedConverter">
+			<a get-method="getEstadoEntrega" set-method="setEstadoEntrega">estadoEntrega</a>
 			<b>idEntrega</b>
 		</field>
-		<field custom-converter-id="identifiableObjectToId">
-			<a>estadoFacturacion</a>
+		<field custom-converter-id="estadoTipoDomicilioOwnedConverter">
+			<a get-method="getEstadoFacturacion" set-method="setEstadoFacturacion">estadoFacturacion</a>
 			<b>idFacturacion</b>
 		</field>
 	</mapping>

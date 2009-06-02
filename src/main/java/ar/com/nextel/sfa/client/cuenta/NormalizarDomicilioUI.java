@@ -11,7 +11,6 @@ import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Grid;
@@ -34,10 +33,9 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	private SimpleLink linkAceptar;
 	private SimpleLink linkNoNormalizar;
 	private DomiciliosCuentaDto domicilio;
-	private List<DomiciliosCuentaDto> domiciliosEnDuda;
+	private List<DomiciliosCuentaDto> domiciliosEnGrilla;
 	//
 	private boolean normalizado = true;	
-    //private List<DomiciliosCuentaDto> dudas = new ArrayList();
     private List<NormalizacionDomicilioMotivoDto> motivos = new ArrayList();
 	//
 	private int rowSelected;
@@ -151,54 +149,26 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		});
 		this.showAndCenter();
 	}
-	
-	public void setDomicilios(DomiciliosCuentaDto domicilio) {
-		this.domicilio = domicilio;
-		setearFormatoNormalizador();
-		loadTable();
-	}
 
-	public void setDomiciliosConDudas(List<DomiciliosCuentaDto> domicilios) {
-		this.domiciliosEnDuda = domicilios;
+	public void agregaDomiciliosAGrilla(List<DomiciliosCuentaDto> domicilios) {
+		this.domiciliosEnGrilla = domicilios;
 		setearFormatoNormalizador();
 		loadTableConVariosDomicilios();
 	}
 
 	private void loadTableConVariosDomicilios() {
-		if (domicilioResult != null) {
-			domicilioResult.unsinkEvents(Event.getEventsSunk(domicilioResult.getElement()));
-			domicilioResult.removeFromParent();
-		}
-		domicilioResult = new NextelTable();
 		initTable(domicilioResult);
 		grillaDomicilio.setWidget(domicilioResult);
 		grillaPpal.getCellFormatter().addStyleName(0, 0, "layout");
 		grillaPpal.getCellFormatter().addStyleName(1, 0, "alignCenter");
 		grillaPpal.setText(1, 0, domicilio.getDomicilios());
-		for (int i = 0; i < domiciliosEnDuda.size(); i++) {
-			domicilioResult.setHTML(i+1, 0, domiciliosEnDuda.get(i).getDomicilios());
+		for (int i = 0; i < domiciliosEnGrilla.size(); i++) {
+			domicilioResult.setHTML(i+1, 0, this.domiciliosEnGrilla.get(i).getDomicilios());
 		}
-		setVisible(true);
-	}
-
-	
-	private void loadTable() {
-		if (domicilioResult != null) {
-			domicilioResult.unsinkEvents(Event.getEventsSunk(domicilioResult.getElement()));
-			domicilioResult.removeFromParent();
-		}
-		domicilioResult = new NextelTable();
-		initTable(domicilioResult);
-		grillaDomicilio.setWidget(domicilioResult);
-		grillaPpal.getCellFormatter().addStyleName(0, 0, "layout");
-		grillaPpal.getCellFormatter().addStyleName(1, 0, "alignCenter");
-		grillaPpal.setText(1, 0, domicilio.getDomicilios());
-		domicilioResult.setHTML(1, 0, domicilio.getDomicilios());
 		setVisible(true);
 	}
 	
 	private void initTable(FlexTable domicilioResult){
-		//
 		String[] widths = { "650px",};
 		for (int col = 0; col < widths.length; col++) {
 			domicilioResult.getColumnFormatter().setWidth(col, widths[col]);
@@ -225,14 +195,6 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		this.normalizado = normalizado;
 	}
 
-//	public List<DomiciliosCuentaDto> getDudas() {
-//		return dudas;
-//	}
-//
-//	public void setDudas(List<DomiciliosCuentaDto> dudas) {
-//		this.dudas = dudas;
-//	}
-
 	public List<NormalizacionDomicilioMotivoDto> getMotivos() {
 		return motivos;
 	}
@@ -241,12 +203,12 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		this.motivos = motivos;
 	}
 
-	public List<DomiciliosCuentaDto> getDomiciliosEnDuda() {
-		return domiciliosEnDuda;
+	public List<DomiciliosCuentaDto> getDomiciliosEnGrilla() {
+		return domiciliosEnGrilla;
 	}
 
-	public void setDomiciliosEnDuda(List<DomiciliosCuentaDto> domiciliosEnDuda) {
-		this.domiciliosEnDuda = domiciliosEnDuda;
+	public void setDomiciliosEnGrilla(List<DomiciliosCuentaDto> domiciliosEnGrilla) {
+		this.domiciliosEnGrilla = domiciliosEnGrilla;
 	}
 	
 	public void setDomicilio(DomiciliosCuentaDto domicilio) {
@@ -272,7 +234,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		this.rowSelected = rowSelected;
 	}
 	
-	public DomiciliosCuentaDto getDomicilioEnDudaSelected(){
-		return domiciliosEnDuda.get(getRowSelected());
+	public DomiciliosCuentaDto getDomicilioEnGrillaSelected(){
+		return domiciliosEnGrilla.get(getRowSelected()-1);
 	}
 }

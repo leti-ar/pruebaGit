@@ -168,10 +168,6 @@ public class DomiciliosUIData extends UIData {
 		domicilio.setFecha_ultima_modificacion(fechaUltimaModificacion.getText());
 		domicilio.setIdEntrega(getIdComboEntrega());
 		domicilio.setIdFacturacion(getIdComboFacturacion());
-		
-		//Esto del locked se setea en FALSE para que le permita la edicion del mismo, hasta que se guarde la cuenta, cuando se setea en TRUE.
-  		  //domicilio.setLocked(false);
-		//
 		return domicilio;
 	}
 
