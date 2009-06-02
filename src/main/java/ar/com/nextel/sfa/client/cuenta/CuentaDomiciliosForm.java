@@ -198,7 +198,7 @@ public class CuentaDomiciliosForm extends Composite {
 	return comandoEditar;
 	}
 	
-	private Command getComandoAceptarNuevoDomicilioServiceCall() {
+	public Command getComandoAceptarNuevoDomicilioServiceCall() {
 		Command comandoEditar = new Command() {
 			public void execute() {
 				if (camposValidos()){

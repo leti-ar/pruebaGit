@@ -40,6 +40,21 @@ public class DomicilioUI extends NextelDialog {
 	Label localidadLabel = new Label(Sfa.constant().localidad());
 	Label cpLabel = new Label(Sfa.constant().cp());
 	Label provinciaLabel = new Label(Sfa.constant().provincia());
+	Label labelEntrega = new Label(Sfa.constant().entrega());
+	Label labelFacturacion = new Label(Sfa.constant().facturacion());
+	Label labelValidado1 = new Label(Sfa.constant().validado1());
+	Label labelValidado2 = new Label (Sfa.constant().validado2());
+	Label labelUsuario = new Label (Sfa.constant().usuario_domicilio());
+	Label labelFecha = new Label (Sfa.constant().fecha_Modificacion());
+	
+	public void hideLabelsParaContactos() {
+		labelEntrega.setVisible(false);
+		labelUsuario.setVisible(false);
+		labelFecha.setVisible(false);
+		labelFacturacion.setVisible(false);
+		labelValidado1.setVisible(false);
+		labelValidado2.setVisible(false);
+	}
 	
 	public static DomicilioUI getInstance() {
 		return instance;
@@ -55,6 +70,20 @@ public class DomicilioUI extends NextelDialog {
 		super.clear();
 	}
 
+	/**
+	 * @author esalvador
+	 **/
+	public void cargarPopupNuevoDomicilioParaContactos() {
+		domiciliosData.clean();
+		domiciliosData.setDomicilio(null);
+		linkAceptar.setVisible(true);
+		domiciliosData.hideLabelsParaContactos();
+		domiciliosData.enableFields();
+		showAndCenter();
+		setDialogTitle("Crear Domicilio");
+	}	
+	
+	
 	/**
 	 * @author esalvador
 	 **/
@@ -166,20 +195,20 @@ public class DomicilioUI extends NextelDialog {
 		gridDown.setText(2, 3, Sfa.constant().partido());
 		gridDown.setWidget(2, 4, domiciliosData.getPartido());
 		tiposDomicilioDtoInit();
-		gridDown.setText(3, 1, Sfa.constant().entrega());
+		gridDown.setWidget(3, 1, labelEntrega);
 		gridDown.setWidget(3, 2, domiciliosData.getEntrega());
-		gridDown.setText(3, 3, Sfa.constant().facturacion());
+		gridDown.setWidget(3, 3, labelFacturacion);
 		gridDown.setWidget(3, 4, domiciliosData.getFacturacion());
-		gridDown.setText(4, 1, Sfa.constant().validado1());
-		gridDown.setText(4, 2, Sfa.constant().validado2());
+		gridDown.setWidget(4, 1, labelValidado1);
+		gridDown.setWidget(4, 2, labelValidado2);
 		gridDown.setWidget(4, 3, domiciliosData.getValidado());
 		gridObs.addStyleName("layout");
 		gridObs.setText(0, 1, Sfa.constant().obs_domicilio());
 		gridObs.setWidget(1, 1, domiciliosData.getObservaciones());
 		gridUser.addStyleName("layout");
-		gridUser.setText(0, 1, Sfa.constant().usuario_domicilio());
+		gridUser.setWidget(0, 1, labelUsuario);
 		gridUser.setWidget(0, 2, domiciliosData.getNombreUsuarioUltimaModificacion());
-		gridUser.setText(0, 3, Sfa.constant().fecha_Modificacion());
+		gridUser.setWidget(0, 3, labelFecha);
 		gridUser.setWidget(0, 4, domiciliosData.getFechaUltimaModificacion());
 
 		add(gridUp);

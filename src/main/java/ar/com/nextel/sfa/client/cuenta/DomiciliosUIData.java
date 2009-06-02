@@ -59,6 +59,7 @@ public class DomiciliosUIData extends UIData {
 	Label nombreUsuarioUltimaModificacion = new Label();
 	Label fechaUltimaModificacion = new Label();
 	
+	
 	public void setDomicilio(DomiciliosCuentaDto domicilio) {
 		if (domicilio == null) {
 			this.domicilio = new DomiciliosCuentaDto();
@@ -399,4 +400,12 @@ public class DomiciliosUIData extends UIData {
 	public ListBox getProvincia() {
 		return provincia;
 	}
+	
+	public void hideLabelsParaContactos() {
+		facturacion.setVisible(false);
+		entrega.setVisible(false);
+		validado.setVisible(false);
+		nombreUsuarioUltimaModificacion.setVisible(false);	
+		fechaUltimaModificacion.setVisible(false);
+	}	
 }
