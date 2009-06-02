@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.cuenta.DomicilioUI;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
@@ -20,6 +21,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
@@ -39,6 +41,11 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 	private NumberFormat currencyFormat = NumberFormat.getCurrencyFormat();
 	private int selectedDetalleRow = 0;
 	private boolean blockServicioAdicionalLoad = false;
+	private HTML editarDomicioFacturacion;
+	private HTML borrarDomicioFacturacion;
+	private HTML editarDomicioEntrega;
+	private HTML borrarDomicioEntrega;
+
 	private static final String SELECTED_ROW = "selectedRow";
 
 	public DatosSSUI(EditarSSUIController controller) {
@@ -72,18 +79,27 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		SimplePanel crearDomicilioWrapper = new SimplePanel();
 		crearDomicilioWrapper.add(crearDomicilio);
 		crearDomicilioWrapper.addStyleName("h20");
-
 		domicilio.add(crearDomicilioWrapper);
+
+		editarDomicioFacturacion = IconFactory.lapiz();
+		borrarDomicioFacturacion = IconFactory.cancel();
+		editarDomicioEntrega = IconFactory.lapiz();
+		borrarDomicioEntrega = IconFactory.cancel();
+		editarDomicioFacturacion.addClickListener(this);
+		borrarDomicioFacturacion.addClickListener(this);
+		editarDomicioEntrega.addClickListener(this);
+		borrarDomicioEntrega.addClickListener(this);
+
 		Grid layoutDomicilio = new Grid(3, 4);
 		layoutDomicilio.addStyleName("layout");
 		layoutDomicilio.setHTML(0, 0, Sfa.constant().entregaReq());
 		layoutDomicilio.setWidget(0, 1, editarSSUIData.getEntrega());
-		layoutDomicilio.setWidget(0, 2, IconFactory.lapiz());
-		layoutDomicilio.setWidget(0, 3, IconFactory.cancel());
+		layoutDomicilio.setWidget(0, 2, editarDomicioFacturacion);
+		layoutDomicilio.setWidget(0, 3, borrarDomicioFacturacion);
 		layoutDomicilio.setHTML(1, 0, Sfa.constant().facturacionReq());
 		layoutDomicilio.setWidget(1, 1, editarSSUIData.getFacturacion());
-		layoutDomicilio.setWidget(1, 2, IconFactory.lapiz());
-		layoutDomicilio.setWidget(1, 3, IconFactory.cancel());
+		layoutDomicilio.setWidget(1, 2, editarDomicioEntrega);
+		layoutDomicilio.setWidget(1, 3, borrarDomicioEntrega);
 		layoutDomicilio.setHTML(2, 0, Sfa.constant().aclaracion());
 		layoutDomicilio.setWidget(2, 1, editarSSUIData.getAclaracion());
 		layoutDomicilio.getColumnFormatter().setWidth(1, "500px");
@@ -148,9 +164,16 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		if (sender == crearLinea) {
 			openItemSolicitudDialog(new LineaSolicitudServicioDto());
 		} else if (sender == crearDomicilio) {
+			DomicilioUI.getInstance();
+		} else if (sender == editarDomicioFacturacion) {
+
+		} else if (sender == borrarDomicioFacturacion) {
+
+		} else if (sender == editarDomicioEntrega) {
+
+		} else if (sender == borrarDomicioEntrega) {
 
 		}
-
 	}
 
 	public void onCellClicked(SourcesTableEvents sender, final int row, int col) {
