@@ -31,7 +31,9 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -50,6 +52,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	private CuentaDatosForm cuentaDatosForm;
 	private CuentaContactoForm cuentaContactoForm;
 	private FlexTable domicilioTable;
+	private CuentaDomiciliosForm cuentaDomiciliosForm;
 	
 	private int contactoABorrar = -1;
 	
@@ -57,6 +60,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	
 	private List<String> estilos = new ArrayList<String>();
 	private int estiloUsado = 0;
+	private List<DomiciliosCuentaDto> listaDomicilios;
 	
 	private static ContactosUI cuentaCrearContactoPopUp = null;
 
@@ -270,11 +274,13 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	private Widget createDomicilioPanel() {
 		FlowPanel domicilioPanel = new FlowPanel();
 		FlexTable domicilioTable = new FlexTable();
+		domicilioTable.addTableListener(new Listener());
 		agregar = new Button("Crear Nuevo");
 		agregar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-//				DomicilioUI.getInstance().setComandoAceptar(getComandoNormalizarNuevoServiceCall());
-//				DomicilioUI.getInstance().cargarPopupNuevoDomicilio();
+				DomicilioUI.getInstance().setComandoAceptar(cuentaDomiciliosForm.getInstance().getComandoAceptarNuevoDomicilioServiceCall());
+				DomicilioUI.getInstance().hideLabelsParaContactos();
+				DomicilioUI.getInstance().cargarPopupNuevoDomicilioParaContactos();
 			}
 		});
 		
@@ -307,6 +313,40 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		return domicilioPanel;
 	}
 
+
+	public void setearDomicilio(CuentaDto cuentaDto) {
+		listaDomicilios = new ArrayList();
+		listaDomicilios = cuentaDto.getPersona().getDomicilios();
+		int row = 1; 
+		if (listaDomicilios != null) {
+			for (Iterator iter = listaDomicilios.iterator(); iter.hasNext();) {
+				DomiciliosCuentaDto domicilioCuentaDto = (DomiciliosCuentaDto) iter.next();
+				domicilioTable.setWidget(row, 0, IconFactory.lapiz());
+				domicilioTable.setText(row, 1, armarDomicilio(domicilioCuentaDto));			
+				row++;
+			}
+		}
+	}
+
+	private class Listener implements TableListener {
+		public void onCellClicked(SourcesTableEvents arg0, int fila, int columna) {
+			//boton editar
+			if ((fila>=1) && (columna==0)) {
+				DomicilioUI.getInstance().cargarPopupEditarDomicilio(listaDomicilios.get(fila-1));
+			}
+		}
+	}
+	
+	private String armarDomicilio(DomiciliosCuentaDto domicilioCuentaDto) {
+		String domicilio = domicilioCuentaDto.getCalle().toUpperCase() + " " + String.valueOf(domicilioCuentaDto.getNumero()) + " Piso " 
+		+ domicilioCuentaDto.getPiso() + " Dto. " + domicilioCuentaDto.getDepartamento() + " UF " + domicilioCuentaDto.getUnidad_funcional() 
+		+ " Torre " + domicilioCuentaDto.getTorre() + " " + domicilioCuentaDto.getLocalidad() + " - " + domicilioCuentaDto.getPartido() 
+		+ " - " + domicilioCuentaDto.getProvincia().getDescripcion() + " (" + domicilioCuentaDto.getCodigo_postal() + ")";
+		
+		return domicilio;
+	}
+	
+	
 	private Widget createTelefonoPanel() {
 		telefonoTable = new FlexTable();
 		telefonoTable.getFlexCellFormatter().setColSpan(1, 1, 4);
@@ -354,80 +394,6 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		return this.domicilioUI;
 	}
 	
-//	private Command getComandoNormalizarNuevoServiceCall() {
-//		/**TODO: Hacer la validacion de datos de entrada antes de abrir el popup de Normalizacion. */ 
-//		Command comandoEditar = new Command() {
-//			public void execute() {
-//				domicilioAEditar = DomicilioUI.getInstance().getDomiciliosData().getDomicilio();	
-//				CuentaRpcService.Util.getInstance().normalizarDomicilio(domicilioAEditar,
-//						new DefaultWaitCallback<NormalizarDomicilioResultDto>() {
-//							public void success(NormalizarDomicilioResultDto result) {
-//								
-//								//tipo: exito|no_parseado|no_encontrado|dudas
-//								if (result.getTipo().equals("exito")){
-//									domicilioAEditar = result.getDireccion();
-//									NormalizarDomicilioUI.getInstance().setNormalizado(true);
-//									abrirPopupNormalizacion(domicilioAEditar, null,getComandoAgregarNuevoDomicilio(),null);//TODO: Setearle el comando Aceptar en vez de null.
-//								}else if(result.getTipo().equals("no_encontrado")){
-//									setMotivosNoNormalizacion(result);
-//									abrirPopupNormalizacion(domicilioAEditar,null,getComandoAgregarNuevoDomicilio(),null);//TODO: Setearle el comando Aceptar en vez de null.
-//								}else if(result.getTipo().equals("dudas")){
-//									NormalizarDomicilioUI.getInstance().setNormalizado(true);
-//									abrirPopupNormalizacion(null,result.getDudas(),getComandoAgregarNuevoDomicilio(),null);
-//								}else if(result.getTipo().equals("no_parseado")){
-//									setMotivosNoNormalizacion(result);
-//									abrirPopupNormalizacion(domicilioAEditar,null,getComandoAgregarNuevoDomicilio(),null);//TODO: Setearle el comando Aceptar en vez de null.
-//								}
-//							}
-//							@Override
-//							public void failure(Throwable exception) {
-//								GWT.log("Entro en FAILURE de NormalizarDomicilioResultDto: "+ exception.getMessage(), exception.getCause());
-//							}
-//						});
-//			}
-//		 };
-//	return comandoEditar;
-//	}	
-	
-//	private Command getComandoAgregarNuevoDomicilio() {
-//		Command comandoAceptar = new Command() {
-//			public void execute() {
-//				DomiciliosCuentaDto domicilioNuevo = DomicilioUI.getInstance().getDomiciliosData().getDomicilio();
-//				domicilioAEditar = domicilioNuevo;
-//				PersonaDto persona = cuentaDto.getPersona();
-//				persona.getDomicilios().add(domicilioNuevo);
-//				DomicilioUI.getInstance().hide();
-//				domicilioTable.clear();
-//				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().cargaTablaDomicilios(cuentaDto);
-//				NormalizarDomicilioUI.getInstance().hide();
-//			}
-//		};
-//		return comandoAceptar;
-//	}
-//	
-//	private void abrirPopupNormalizacion(DomiciliosCuentaDto domicilio, List<DomicilioNormalizadoDto> domiciliosConDudas, Command comandoNoNormalizar, Command comandoAceptar) {
-//		/**OJO, Tener en cuenta ACA, de pasar DOS domicilios: 1 con los datos cargados en el DomicilioUI para cargar el Label,
-//		 *       y 2, el normalizado, para cargar la grilla!! */
-//		if(domicilio != null){
-//			domicilio.setNo_normalizar("T");
-//			NormalizarDomicilioUI.getInstance().setDomicilios(domicilio);
-//		}else if (domiciliosConDudas != null){
-//			NormalizarDomicilioUI.getInstance().setDomicilio(domicilioAEditar);
-//			NormalizarDomicilioUI.getInstance().setDomiciliosConDudas(domiciliosConDudas);
-//		}
-//		/***/
-//		NormalizarDomicilioUI.getInstance().setComandoNoNormalizar(comandoNoNormalizar);
-//		/**TODO: Terminar!*/
-//		//NormalizarDomicilioUI.getInstance().setComandoAceptar(comandoAceptar);
-//		NormalizarDomicilioUI.getInstance().showAndCenter();
-//	}
-//	
-//	private void setMotivosNoNormalizacion(NormalizarDomicilioResultDto result){
-//		NormalizarDomicilioUI.getInstance().setNormalizado(false);
-//		NormalizarDomicilioUI.getInstance().setMotivos(result.getMotivos());
-//		NormalizarDomicilioUI.getInstance().setDudas(result.getDudas());
-//	}
-
 
 	public void onClick(Widget arg0) {
 		// TODO Auto-generated method stub
