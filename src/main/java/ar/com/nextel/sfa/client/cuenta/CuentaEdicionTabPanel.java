@@ -68,7 +68,6 @@ public class CuentaEdicionTabPanel {
 		
 		marco = new FlexTable();
 		marco.setWidth("100%");
-
 		marco.setWidget(0, 0, new HTML("<br/>"));
 		marco.setWidget(1, 0, razonSocialPanel);
 		marco.setWidget(1, 1, clientePanel);
@@ -79,6 +78,7 @@ public class CuentaEdicionTabPanel {
 		marco.getFlexCellFormatter().setColSpan(3, 0, 2);
 		marco.getFlexCellFormatter().setColSpan(4, 0, 2);
 		
+		marco.getFlexCellFormatter().setHorizontalAlignment(1, 0, HorizontalPanel.ALIGN_LEFT);
 		marco.getFlexCellFormatter().setHorizontalAlignment(1, 1, HorizontalPanel.ALIGN_RIGHT);
 	}
 	
@@ -114,9 +114,13 @@ public class CuentaEdicionTabPanel {
 		Label clienteLabel     = new Label(Sfa.constant().cliente()+":");
 		razonSocialPanel.setLeft(razonSocialLabel);
 		razonSocialPanel.setRight(razonSocial);
+		razonSocialPanel.getRight().addStyleName("fontNormalGris");
+		razonSocialPanel.setWidth("50%");
+		
 		clientePanel.setLeft(clienteLabel);
 		clientePanel.setRight(cliente);		
-		clientePanel.setWidth("250");
+		clientePanel.getRight().addStyleName("fontNormalGris");
+		clientePanel.setWidth("50%");
 	}
 	
 	/**

@@ -615,7 +615,7 @@ public class CuentaDatosForm extends Composite {
 		   ||(FormUtils.fieldDirty(camposTabDatos.getRubro(), cuentaTab.getCuenta2editDto().getRubro().getItemValue()))
 		   ||(FormUtils.fieldDirty(camposTabDatos.getClaseCliente(), cuentaTab.getCuenta2editDto().getClaseCuenta().getItemValue()))
 		   ||(FormUtils.fieldDirty(camposTabDatos.getCategoria(), cuentaTab.getCuenta2editDto().getCategoriaCuenta().getItemText()))
-   		   ||(FormUtils.fieldDirty(camposTabDatos.getCicloFacturacion(), cuentaTab.getCuenta2editDto().getCicloFacturacion().getCodigoFNCL()))
+   		   //||(FormUtils.fieldDirty(camposTabDatos.getCicloFacturacion(), cuentaTab.getCuenta2editDto().getCicloFacturacion().getDescripcion()))
 		   ||(FormUtils.fieldDirty(camposTabDatos.getObservaciones(), cuentaTab.getCuenta2editDto().getObservacionesTelMail()))
 		) return true;
 
