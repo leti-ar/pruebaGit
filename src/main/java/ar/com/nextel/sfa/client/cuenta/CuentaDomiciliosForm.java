@@ -199,7 +199,8 @@ public class CuentaDomiciliosForm extends Composite {
 	return comandoEditar;
 	}
 	
-	private Command getComandoAceptarNuevoDomicilioServiceCall() {
+	/**TODO: Debe ser Private este metodo, cuando Meli termine su parte.*/
+	public Command getComandoAceptarNuevoDomicilioServiceCall() {
 		Command comandoEditar = new Command() {
 			public void execute() {
 				if (camposValidos()){
@@ -266,17 +267,23 @@ public class CuentaDomiciliosForm extends Composite {
 			public void execute() {
 				DomiciliosCuentaDto domicilioNormalizadoCopiado = null;
 				if (estadoNormalizacion.equals("dudas")){
-					domicilioNormalizadoCopiado = NormalizarDomicilioUI.getInstance().getDomicilioEnGrillaSelected();
-					domicilioNormalizadoCopiado = mapeoDomicilioNormalizado(domicilioNormalizadoCopiado);
+					if (NormalizarDomicilioUI.getInstance().getRowSelected() == 0){
+						openPopupSelectDomicilioDialog();
+					}else{
+						domicilioNormalizadoCopiado = NormalizarDomicilioUI.getInstance().getDomicilioEnGrillaSelected();
+						domicilioNormalizadoCopiado = mapeoDomicilioNormalizado(domicilioNormalizadoCopiado);
+						DomicilioUI.getInstance().hide();
+						NormalizarDomicilioUI.getInstance().hide();
+					}
 				}else  if (estadoNormalizacion.equals("exito")){
 					domicilioNormalizadoCopiado = NormalizarDomicilioUI.getInstance().getDomicilio();
 					domicilioNormalizadoCopiado = mapeoDomicilioNormalizado(domicilioNormalizadoCopiado);
+					DomicilioUI.getInstance().hide();
+					NormalizarDomicilioUI.getInstance().hide();
 				}
 				PersonaDto persona = cuentaDto.getPersona();
 				persona.getDomicilios().add(domicilioNormalizadoCopiado);
 				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConNuevoDomicilio(domicilioNormalizadoCopiado);
-				DomicilioUI.getInstance().hide();
-				NormalizarDomicilioUI.getInstance().hide();
 			}
 		};
 		return agregaDomicilioCopiado;
@@ -288,8 +295,14 @@ public class CuentaDomiciliosForm extends Composite {
 			public void execute() {
 				DomiciliosCuentaDto domicilioNormalizado = null;
 				if (estadoNormalizacion.equals("dudas")){
-					domicilioNormalizado = NormalizarDomicilioUI.getInstance().getDomicilioEnGrillaSelected();
-					domicilioNormalizado = mapeoDomicilioNormalizado(domicilioNormalizado);
+					if (NormalizarDomicilioUI.getInstance().getRowSelected() == 0){
+						openPopupSelectDomicilioDialog();
+					}else{
+						domicilioNormalizado = NormalizarDomicilioUI.getInstance().getDomicilioEnGrillaSelected();
+						domicilioNormalizado = mapeoDomicilioNormalizado(domicilioNormalizado);
+						DomicilioUI.getInstance().hide();
+						NormalizarDomicilioUI.getInstance().hide();
+					}
 				}else if (estadoNormalizacion.equals("exito")){
 					domicilioNormalizado = NormalizarDomicilioUI.getInstance().getDomicilio();
 					domicilioNormalizado = mapeoDomicilioNormalizado(domicilioNormalizado);
@@ -297,10 +310,10 @@ public class CuentaDomiciliosForm extends Composite {
 					int index = persona.getDomicilios().indexOf(domicilioAEditar);
 					persona.getDomicilios().remove(index);
 					persona.getDomicilios().add(index, domicilioNormalizado);
+					DomicilioUI.getInstance().hide();
+					NormalizarDomicilioUI.getInstance().hide();
 				}
-				DomicilioUI.getInstance().hide();
 				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConNuevoDomicilio(domicilioNormalizado);
-				NormalizarDomicilioUI.getInstance().hide();
 			}
 		 };
 	return agregaDomicilioEditado;
@@ -324,6 +337,7 @@ public class CuentaDomiciliosForm extends Composite {
 		   //Mapeos a Mano para no perder Datos:
 		   domicilioNormalizado.setObservaciones(datosDomicilioNuevo.getObservaciones().getText());
 		   domicilioNormalizado.setValidado(datosDomicilioNuevo.getValidado().isChecked());
+		   //domicilioNormalizado.setCodigo_postal(domicilioAEditar.getCodigo_postal());
 		   //REVISAR:
 		   domicilioNormalizado.setIdEntrega(domicilioAEditar.getIdEntrega());
 		   domicilioNormalizado.setIdFacturacion(domicilioAEditar.getIdFacturacion());
@@ -341,19 +355,25 @@ public class CuentaDomiciliosForm extends Composite {
 			public void execute() {
 				DomiciliosCuentaDto domicilioNormalizadoNuevo = null;
 				if (estadoNormalizacion.equals("dudas")){
-					domicilioNormalizadoNuevo = NormalizarDomicilioUI.getInstance().getDomicilioEnGrillaSelected();
-					domicilioNormalizadoNuevo = mapeoDomicilioNormalizado(domicilioNormalizadoNuevo);
+					if (NormalizarDomicilioUI.getInstance().getRowSelected() == 0){
+						openPopupSelectDomicilioDialog();
+					}else{
+						domicilioNormalizadoNuevo = NormalizarDomicilioUI.getInstance().getDomicilioEnGrillaSelected();
+						domicilioNormalizadoNuevo = mapeoDomicilioNormalizado(domicilioNormalizadoNuevo);
+						DomicilioUI.getInstance().hide();
+						NormalizarDomicilioUI.getInstance().hide();
+					}
 				}else if (estadoNormalizacion.equals("exito")){
 					domicilioNormalizadoNuevo = NormalizarDomicilioUI.getInstance().getDomicilio();
 					domicilioNormalizadoNuevo = mapeoDomicilioNormalizado(domicilioNormalizadoNuevo);
 					domicilioAEditar = domicilioNormalizadoNuevo;
+					DomicilioUI.getInstance().hide();
+					NormalizarDomicilioUI.getInstance().hide();
 				}
 				PersonaDto persona = cuentaDto.getPersona();
 				persona.getDomicilios().add(domicilioNormalizadoNuevo);
-				DomicilioUI.getInstance().hide();
 				datosTabla.clear();
 				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().cargaTablaDomicilios(cuentaDto);
-				NormalizarDomicilioUI.getInstance().hide();
 			}
 		};
 		return comandoAceptar;
@@ -401,11 +421,22 @@ public class CuentaDomiciliosForm extends Composite {
 	/**
 	 * @author eSalvador
 	 **/
+	private void openPopupSelectDomicilioDialog() {
+			MessageDialog.getInstance().setDialogTitle("Error");
+			MessageDialog.getInstance().showAceptar("Para realizar la acción debe seleccionar una fila de la tabla.", getDummyCommand());
+	}	
+	
+	/**
+	 * @author eSalvador
+	 **/
 	private void openPopupAdviseDialog(Command comandoGenerico) {
 			MessageDialog.getInstance().setDialogTitle("Advertencia");
 			MessageDialog.getInstance().showAceptar("No puede modificar o borrar el domicilio. Ya se cerró una solicitud de servicio para la cuenta desde su creación.", comandoGenerico);
 	}
 	
+	/**
+	 * @author eSalvador
+	 **/
 	private void openPopupDeleteDialog(Command comandoGenerico) {
 		MessageDialog.getInstance().setDialogTitle("Eliminar Domicilio");
 		MessageDialog.getInstance().setSize("300px", "100px");

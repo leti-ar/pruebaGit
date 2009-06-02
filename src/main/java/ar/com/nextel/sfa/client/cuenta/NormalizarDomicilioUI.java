@@ -151,6 +151,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	}
 
 	public void agregaDomiciliosAGrilla(List<DomiciliosCuentaDto> domicilios) {
+		this.domiciliosEnGrilla = new ArrayList();
 		this.domiciliosEnGrilla = domicilios;
 		setearFormatoNormalizador();
 		loadTableConVariosDomicilios();
