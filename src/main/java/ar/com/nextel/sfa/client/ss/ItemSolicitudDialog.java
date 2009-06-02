@@ -8,6 +8,7 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
+import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -18,6 +19,7 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -35,6 +37,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 	private EditarSSUIController controller;
 	private Map<Long, TipoSolicitudDto> tiposSolicitudes = new HashMap<Long, TipoSolicitudDto>();
 	boolean tiposSolicitudLoaded = false;
+	private HTML nuevoItem;
 
 	public ItemSolicitudDialog(String title, EditarSSUIController controller) {
 		super(title);
@@ -48,6 +51,10 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 		tipoSolicitudPanel.setWidget(getItemYPlanSolicitudUI());
 		tipoOrden.addChangeListener(this);
 
+		nuevoItem = IconFactory.word("Nuevo Item");
+		nuevoItem.addClickListener(this);
+		nuevoItem.addStyleName("floatRight");
+		add(nuevoItem);
 		add(new InlineLabel(Sfa.constant().tipoOrden()));
 		add(tipoOrden);
 		add(tipoSolicitudPanel);
@@ -63,11 +70,15 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 	}
 
 	public void onClick(Widget sender) {
-		if (sender == aceptar) {
+		if (sender == aceptar || sender == nuevoItem) {
 			List errors = itemSolicitudUIData.validate();
 			if (errors.isEmpty()) {
 				aceptarCommand.execute();
-				hide();
+				if (sender == aceptar) {
+					hide();
+				} else if (sender == nuevoItem) {
+					show(new LineaSolicitudServicioDto());
+				}
 			} else {
 				ErrorDialog.getInstance().show(errors);
 			}
