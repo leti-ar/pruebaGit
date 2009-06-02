@@ -8,9 +8,11 @@ import ar.com.nextel.sfa.client.cuenta.DomicilioUI;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Command;
@@ -20,12 +22,17 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusListener;
+import com.google.gwt.user.client.ui.FocusListenerAdapter;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.KeyboardListener;
+import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class DatosSSUI extends Composite implements ClickListener, TableListener {
@@ -45,6 +52,9 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 	private HTML borrarDomicioFacturacion;
 	private HTML editarDomicioEntrega;
 	private HTML borrarDomicioEntrega;
+	private FocusListener focusListener;
+	private int editingServicioAdRow = -1;
+	private RegexTextBox precioVenta;
 
 	private static final String SELECTED_ROW = "selectedRow";
 
@@ -180,6 +190,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		if (detalleSS == sender) {
 			if (row > 0) {
 				if (col > 1) {
+					// Carga servicios adicionales en la tabla
 					if (!blockServicioAdicionalLoad) {
 						detalleSS.getRowFormatter().removeStyleName(selectedDetalleRow, SELECTED_ROW);
 						detalleSS.getRowFormatter().addStyleName(row, SELECTED_ROW);
@@ -187,8 +198,10 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 						loadServiciosAdicionales();
 					}
 				} else if (col == 0) {
+					// Abre panel de edicion de la LineaSolicitudServicio
 					openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
 				} else if (col == 1) {
+					// Elimina la LineaSolicitudServicio
 					MessageDialog.getInstance().showAceptarCancelar("Desea eliminar el Item?", new Command() {
 						public void execute() {
 							editarSSUIData.removeLineaSolicitudServicio(row - 1);
@@ -200,6 +213,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 			}
 		} else if (serviciosAdicionales == sender) {
 			if (col == 0 && row > 0) {
+				// agrega o quita servicio adicional
 				CheckBox check = (CheckBox) serviciosAdicionales.getWidget(row, col);
 				ServicioAdicionalLineaSolicitudServicioDto servicioSelected;
 				servicioSelected = editarSSUIData.getServiciosAdicionales().get(selectedDetalleRow - 1).get(
@@ -212,6 +226,16 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 					servicioSelected.setChecked(check.isChecked());
 					saGuardados.add(servicioSelected);
 				}
+			} else if (col == 3 && row > 0) {
+				// Muestra textbox de edicion de precio de venta
+				ServicioAdicionalLineaSolicitudServicioDto servicioSelected;
+				servicioSelected = editarSSUIData.getServiciosAdicionales().get(selectedDetalleRow - 1).get(
+						row - 1);
+				getPrecioVentaTextBox().setText(
+						NumberFormat.getDecimalFormat().format(servicioSelected.getPrecioVenta()));
+				editingServicioAdRow = row;
+				serviciosAdicionales.setWidget(row, 3, getPrecioVentaTextBox());
+				getPrecioVentaTextBox().setFocus(true);
 			}
 		}
 	}
@@ -344,5 +368,54 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 			serviciosAdicionales.getCellFormatter().addStyleName(row, 3, "alignRight");
 			row++;
 		}
+	}
+
+	private FocusListener getFocusListener() {
+		if (focusListener == null) {
+			focusListener = new FocusListenerAdapter() {
+				public void onLostFocus(Widget sender) {
+					TextBox textBox = (TextBox) sender;
+					ServicioAdicionalLineaSolicitudServicioDto servicioSelected;
+					servicioSelected = editarSSUIData.getServiciosAdicionales().get(selectedDetalleRow - 1)
+							.get(editingServicioAdRow - 1);
+					double valor = servicioSelected.getPrecioVenta();
+					MessageDialog.getInstance().setDialogTitle("Error");
+					try {
+						valor = NumberFormat.getDecimalFormat().parse(textBox.getText());
+					} catch (NumberFormatException e) {
+						MessageDialog.getInstance().showAceptar("Ingrese un monto válido",
+								MessageDialog.getInstance().getCloseCommand());
+					}
+					if (valor > servicioSelected.getPrecioVenta()) {
+						MessageDialog.getInstance().showAceptar(
+								"El desvío debe ser menor o igual al precio de lista del servicio adicional",
+								MessageDialog.getInstance().getCloseCommand());
+						valor = servicioSelected.getPrecioVenta();
+					}
+					serviciosAdicionales.setHTML(editingServicioAdRow, 3, NumberFormat.getCurrencyFormat()
+							.format(valor));
+					editarSSUIData.getModificarValorServicioAdicional(selectedDetalleRow - 1,
+							editingServicioAdRow - 1, valor);
+					editingServicioAdRow = -1;
+				}
+			};
+		}
+		return focusListener;
+	}
+
+	private TextBox getPrecioVentaTextBox() {
+		if (precioVenta == null) {
+			precioVenta = new RegexTextBox(RegularExpressionConstants.importe);
+			precioVenta.addFocusListener(getFocusListener());
+			precioVenta.setWidth("110px");
+			precioVenta.addKeyboardListener(new KeyboardListenerAdapter() {
+				public void onKeyPress(Widget sender, char keyCode, int modifiers) {
+					if (KeyboardListener.KEY_ENTER == keyCode) {
+						getFocusListener().onLostFocus(precioVenta);
+					}
+				}
+			});
+		}
+		return precioVenta;
 	}
 }

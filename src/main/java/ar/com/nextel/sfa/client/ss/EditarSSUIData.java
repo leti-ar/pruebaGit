@@ -3,7 +3,6 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.ArrayList;
 import java.util.List;
 
-import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
@@ -341,14 +340,27 @@ public class EditarSSUIData extends UIData {
 	 * Carga la lista de todos los servicios adicionales para una LineaSolicitudServicioDto. Tambien agrega a
 	 * la linea los servicios adicionales obligatorios
 	 */
-	public void loadServiciosAdicionales(int index, List<ServicioAdicionalLineaSolicitudServicioDto> list) {
-		serviciosAdicionales.get(index).addAll(list);
-		List serviciosAdGuardados = getLineasSolicitudServicio().get(index).getServiciosAdicionales();
+	public void loadServiciosAdicionales(int indexLinea, List<ServicioAdicionalLineaSolicitudServicioDto> list) {
+		serviciosAdicionales.get(indexLinea).addAll(list);
+		List serviciosAdGuardados = getLineasSolicitudServicio().get(indexLinea).getServiciosAdicionales();
 		for (ServicioAdicionalLineaSolicitudServicioDto servicioAd : list) {
 			if (servicioAd.isChecked() && !serviciosAdGuardados.contains(servicioAd)) {
 				serviciosAdGuardados.add(servicioAd);
 			}
 		}
+	}
 
+	public void getModificarValorServicioAdicional(int indexLinea, int indexSA, double valor) {
+		ServicioAdicionalLineaSolicitudServicioDto servicio = serviciosAdicionales.get(indexLinea).get(
+				indexSA);
+		List<ServicioAdicionalLineaSolicitudServicioDto> serviciosAdGuardados = getLineasSolicitudServicio()
+				.get(indexLinea).getServiciosAdicionales();
+		int indexSAGuardado = serviciosAdGuardados.indexOf(servicio);
+		if (indexSAGuardado >= 0) {
+			serviciosAdGuardados.get(indexSAGuardado).setPrecioVenta(valor);
+		} else {
+			servicio.setPrecioVenta(valor);
+			getLineasSolicitudServicio().get(indexLinea).getServiciosAdicionales().add(servicio);
+		}
 	}
 }
