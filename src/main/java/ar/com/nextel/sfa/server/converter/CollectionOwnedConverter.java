@@ -72,14 +72,16 @@ public class CollectionOwnedConverter implements CustomConverter {
 		List newDestination = new ArrayList();
 		for (Iterator iterator = source.iterator(); iterator.hasNext();) {
 			IdentifiableDto sourceItem = (IdentifiableDto) iterator.next();
-			IdentifiableObject destItem = getById(destination, sourceItem.getId());
-			if (destItem != null) {
-				mapper.map(sourceItem, destItem);
-				newDestination.add(destItem);
-			} else {
-				Object o = repository.createNewObject(modelClass);
-				mapper.map(sourceItem, o);
-				newDestination.add(o);
+			if (sourceItem != null) {
+				IdentifiableObject destItem = getById(destination, sourceItem.getId());
+				if (destItem != null) {
+					mapper.map(sourceItem, destItem);
+					newDestination.add(destItem);
+				} else {
+					Object o = repository.createNewObject(modelClass);
+					mapper.map(sourceItem, o);
+					newDestination.add(o);
+				}
 			}
 		}
 		destination.clear();
