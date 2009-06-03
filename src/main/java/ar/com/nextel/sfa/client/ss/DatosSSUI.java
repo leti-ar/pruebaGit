@@ -208,7 +208,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 							detalleSS.removeRow(row);
 							MessageDialog.getInstance().hide();
 						};
-					}, MessageDialog.getInstance().getCloseCommand());
+					}, MessageDialog.getCloseCommand());
 				}
 			}
 		} else if (serviciosAdicionales == sender) {
@@ -228,6 +228,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 				}
 			} else if (col == 3 && row > 0) {
 				// Muestra textbox de edicion de precio de venta
+				blockServicioAdicionalLoad = true;
 				ServicioAdicionalLineaSolicitudServicioDto servicioSelected;
 				servicioSelected = editarSSUIData.getServiciosAdicionales().get(selectedDetalleRow - 1).get(
 						row - 1);
@@ -240,6 +241,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		}
 	}
 
+	/** Crea y abre el Dialog para editar la LineaSolicitudServicioDto */
 	private void openItemSolicitudDialog(LineaSolicitudServicioDto linea) {
 		if (itemSolicitudDialog == null) {
 			itemSolicitudDialog = new ItemSolicitudDialog("Agregar Item", controller);
@@ -254,6 +256,10 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		itemSolicitudDialog.show(linea);
 	}
 
+	/**
+	 * Agrega una LineaSolicitudServicioDto tanto a la tabla como a la Solicitud de Servicio. Maneja la lógica
+	 * de la clonación de items con plan cuando la cantidad es mayor a 1.
+	 */
 	private void addLineaSolicitudServicio(LineaSolicitudServicioDto linea) {
 		ArrayList<LineaSolicitudServicioDto> nuevasLineas = new ArrayList();
 		nuevasLineas.add(linea);
@@ -284,6 +290,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		onCellClicked(detalleSS, firstNewRow, 2);
 	}
 
+	/** Limpia y recarga la tabla de Detalle de Solicitud de Servicio completamente */
 	public void redrawDetalleSSTable() {
 		while (detalleSS.getRowCount() > 1) {
 			detalleSS.removeRow(1);
@@ -296,6 +303,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		}
 	}
 
+	/** Agrega una fila a la tabla de Detalle de Solicitud de Servicio en la posicion indicada */
 	private void drawDetalleSSRow(LineaSolicitudServicioDto linea, int newRow) {
 		detalleSS.setWidget(newRow, 0, IconFactory.lapiz());
 		detalleSS.setWidget(newRow, 1, IconFactory.cancel());
@@ -317,6 +325,10 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		detalleSS.getCellFormatter().addStyleName(newRow, 6, "alignRight");
 	}
 
+	/**
+	 * Carga la tabla de Servicios Adicionales con los correspondientes a la linea seleccionada en la tabla
+	 * Detalle. Si no están en el cliente los trae del server
+	 */
 	private void loadServiciosAdicionales() {
 		LineaSolicitudServicioDto linea = editarSSUIData.getLineasSolicitudServicio().get(
 				selectedDetalleRow - 1);
@@ -344,6 +356,10 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		}
 	}
 
+	/**
+	 * Actualiza gráficamente la Tabla de Servicios Adicionales. Recibe la posición de la
+	 * LineaSolicitudServicioDto dentro de la lista "lineas" de SolicitudServicioDto.
+	 */
 	private void renderServiciosAdicionalesTable(int lineaIndex) {
 		List<ServicioAdicionalLineaSolicitudServicioDto> allServiciosAdicionales = editarSSUIData
 				.getServiciosAdicionales().get(lineaIndex);
@@ -365,7 +381,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 			serviciosAdicionales.setWidget(row, 0, check);
 			serviciosAdicionales.setHTML(row, 1, servicioAdicional.getDescripcionServicioAdicional());
 			serviciosAdicionales.setHTML(row, 2, currencyFormat.format(servicioAdicional.getPrecioLista()));
-			serviciosAdicionales.setHTML(row, 3, currencyFormat.format(servicioAdicional.getPrecioLista()));
+			serviciosAdicionales.setHTML(row, 3, currencyFormat.format(servicioAdicional.getPrecioVenta()));
 			serviciosAdicionales.getCellFormatter().addStyleName(row, 1, "alignLeft");
 			serviciosAdicionales.getCellFormatter().addStyleName(row, 2, "alignRight");
 			serviciosAdicionales.getCellFormatter().addStyleName(row, 3, "alignRight");
@@ -373,10 +389,12 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		}
 	}
 
-	private FocusListener getFocusListener() {
+	/** Listener para el TextBox que modifica el valor del Precio de Venta de los Servicios Adicionales */
+	private FocusListener getTextBoxFocusListener() {
 		if (focusListener == null) {
 			focusListener = new FocusListenerAdapter() {
 				public void onLostFocus(Widget sender) {
+					blockServicioAdicionalLoad = false;
 					TextBox textBox = (TextBox) sender;
 					ServicioAdicionalLineaSolicitudServicioDto servicioSelected;
 					servicioSelected = editarSSUIData.getServiciosAdicionales().get(selectedDetalleRow - 1)
@@ -387,12 +405,12 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 						valor = NumberFormat.getDecimalFormat().parse(textBox.getText());
 					} catch (NumberFormatException e) {
 						MessageDialog.getInstance().showAceptar("Ingrese un monto válido",
-								MessageDialog.getInstance().getCloseCommand());
+								MessageDialog.getCloseCommand());
 					}
 					if (valor > servicioSelected.getPrecioVenta()) {
 						MessageDialog.getInstance().showAceptar(
 								"El desvío debe ser menor o igual al precio de lista del servicio adicional",
-								MessageDialog.getInstance().getCloseCommand());
+								MessageDialog.getCloseCommand());
 						valor = servicioSelected.getPrecioVenta();
 					}
 					serviciosAdicionales.setHTML(editingServicioAdRow, 3, NumberFormat.getCurrencyFormat()
@@ -406,15 +424,16 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		return focusListener;
 	}
 
+	/** TextBox que modifica el valor del Precio de Venta de los Servicios Adicionales */
 	private TextBox getPrecioVentaTextBox() {
 		if (precioVenta == null) {
 			precioVenta = new RegexTextBox(RegularExpressionConstants.importe);
-			precioVenta.addFocusListener(getFocusListener());
+			precioVenta.addFocusListener(getTextBoxFocusListener());
 			precioVenta.setWidth("110px");
 			precioVenta.addKeyboardListener(new KeyboardListenerAdapter() {
 				public void onKeyPress(Widget sender, char keyCode, int modifiers) {
 					if (KeyboardListener.KEY_ENTER == keyCode) {
-						getFocusListener().onLostFocus(precioVenta);
+						getTextBoxFocusListener().onLostFocus(precioVenta);
 					}
 				}
 			});
