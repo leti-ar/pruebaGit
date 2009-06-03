@@ -24,7 +24,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class NormalizarDomicilioUI extends NextelDialog {
 
 	private Grid grillaPpal;
-	private SimplePanel grillaDomicilio;
+	private SimplePanel domicilioResultWrapper;
 	private NextelTable domicilioResult;
 	private Command comandoAceptar;
 	private Command comandoNoNormalizar;
@@ -58,13 +58,13 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	
 	private void setearFormatoNormalizador(){
 		if(!normalizado){
-			grillaDomicilio.setVisible(false);
+			domicilioResultWrapper.setVisible(false);
 			linkAceptar.setVisible(false);
 			grillaPpal.setText(3, 0, "No se pudo normalizar el domicilio");
 			//OJO con el get(0):
 			grillaPpal.setText(4, 0, motivos.get(0).getMotivo());
 		}else{
-			grillaDomicilio.setVisible(true);
+			domicilioResultWrapper.setVisible(true);
 			linkAceptar.setVisible(true);
 			grillaPpal.setText(3, 0, "");
 			grillaPpal.setText(4, 0, "");
@@ -96,12 +96,12 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		linkNoNormalizar = new SimpleLink("No Normalizar");
 		linkAceptar = new SimpleLink("Aceptar");
 		linkCerrar = new SimpleLink("Cerrar");
-		grillaDomicilio = new SimplePanel();
-		domicilioResult = new NextelTable();
+		domicilioResultWrapper = new SimplePanel();
+//		domicilioResult = new NextelTable();
 		addStyleName("gwt-NormalizarDomicilioUI");
-		grillaDomicilio.addStyleName("resultTableScroll");
+		domicilioResultWrapper.addStyleName("resultTableScroll");
 		grillaPpal = new Grid(6, 1);
-		grillaDomicilio.setVisible(true);
+		domicilioResultWrapper.setVisible(true);
 		setWidth("480px");
 
 		grillaPpal.getColumnFormatter().setWidth(0, "550px");
@@ -110,7 +110,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		grillaPpal.getCellFormatter().setHeight(1, 0, "25px");
 		grillaPpal.getRowFormatter().setStyleName(1, "gwt-TitledPanel");
 		grillaPpal.setWidget(1, 0, new Label());
-		grillaPpal.setWidget(2, 0, grillaDomicilio);
+		grillaPpal.setWidget(2, 0, domicilioResultWrapper);
 		grillaPpal.setText(3, 0, "");
 		grillaPpal.setText(4, 0, "Motivo:");
 		grillaPpal.setWidget(5, 0, new Label());
@@ -158,8 +158,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	}
 
 	private void loadTableConVariosDomicilios() {
-		initTable(domicilioResult);
-		grillaDomicilio.setWidget(domicilioResult);
+		initTable();
 		grillaPpal.getCellFormatter().addStyleName(0, 0, "layout");
 		grillaPpal.getCellFormatter().addStyleName(1, 0, "alignCenter");
 		grillaPpal.setText(1, 0, domicilio.getDomicilios());
@@ -169,7 +168,8 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		setVisible(true);
 	}
 	
-	private void initTable(FlexTable domicilioResult){
+	private void initTable(){
+		domicilioResult = new NextelTable();
 		String[] widths = { "650px",};
 		for (int col = 0; col < widths.length; col++) {
 			domicilioResult.getColumnFormatter().setWidth(col, widths[col]);
@@ -181,6 +181,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		domicilioResult.addStyleName("gwt-BuscarCuentaResultTable");
 		domicilioResult.getRowFormatter().addStyleName(0, "header");
 		domicilioResult.setHTML(0, 0, "Seleccione alguna de estas opciones");
+		domicilioResultWrapper.setWidget(domicilioResult);
 	}
 	
 	@Override
