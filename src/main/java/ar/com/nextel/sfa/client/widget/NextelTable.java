@@ -10,17 +10,16 @@ public class NextelTable extends RowFlexTable implements RowListener {
 	private String[] rowStyles = { "TableRow1", "TableRow2" };
 	private String headerStyle = "TableHeader";
 	private String selectedStyle;
-	private int rowSelected = 0;
-
+	private int rowSelected = -1;
 
 	public NextelTable(boolean showPointer) {
 		this(1);
-		selectedStyle = showPointer ? "TableRowSelected": "NoPointerTableRowSelected";
+		selectedStyle = showPointer ? "TableRowSelected" : "NoPointerTableRowSelected";
 	}
-	
+
 	public NextelTable() {
 		this(1);
-		selectedStyle = "TableRowSelected"; 
+		selectedStyle = "TableRowSelected";
 	}
 
 	public NextelTable(int dataStarRow) {
@@ -29,7 +28,7 @@ public class NextelTable extends RowFlexTable implements RowListener {
 		this.dataStarRow = dataStarRow;
 		addRowListener(this);
 		getRowFormatter().addStyleName(0, headerStyle);
-		//addRowClickListener();
+		// addRowClickListener();
 	}
 
 	public void setHTML(int row, int column, String html) {
@@ -65,15 +64,9 @@ public class NextelTable extends RowFlexTable implements RowListener {
 	}
 
 	public void onRowClick(Widget sender, int row) {
-		if (row >= dataStarRow) {
-			if (rowSelected != 0) {
-				getRowFormatter().removeStyleName(rowSelected,"selectedRow");
-			}
-			getRowFormatter().addStyleName(row, "selectedRow");
-			rowSelected = row;
-		}
+		setRowSelected(row);
 	}
-	
+
 	public int insertRow(int beforeRow) {
 		int index = super.insertRow(beforeRow);
 		// Le resto 1 porque ya inserte al menos una
@@ -89,7 +82,7 @@ public class NextelTable extends RowFlexTable implements RowListener {
 			refreshRowStyles(row);
 		}
 	}
-	
+
 	/** Recarga los estilos de las filas para mantener la coherencia al insertar o borrar filas del medio */
 	public void refreshRowStyles(int from) {
 		for (int i = from; i < getRowCount(); i++) {
@@ -100,11 +93,20 @@ public class NextelTable extends RowFlexTable implements RowListener {
 			formatter.addStyleName(i, rowStyles[i % rowStyles.length]);
 		}
 	}
+
 	public int getRowSelected() {
 		return rowSelected;
 	}
 
-	public void setRowSelected(int rowSelected) {
-		this.rowSelected = rowSelected;
+	public void setRowSelected(int row) {
+		if (row >= dataStarRow && row < getRowCount()) {
+			if (rowSelected >= dataStarRow) {
+				getRowFormatter().removeStyleName(rowSelected, "selectedRow");
+			}
+			getRowFormatter().addStyleName(row, "selectedRow");
+			rowSelected = row;
+		} else {
+			rowSelected = -1;
+		}
 	}
 }
