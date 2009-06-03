@@ -194,7 +194,6 @@ public class DomicilioUI extends NextelDialog {
 		//
 		gridDown.setText(2, 3, Sfa.constant().partido());
 		gridDown.setWidget(2, 4, domiciliosData.getPartido());
-		tiposDomicilioDtoInit();
 		gridDown.setWidget(3, 1, labelEntrega);
 		gridDown.setWidget(3, 2, domiciliosData.getEntrega());
 		gridDown.setWidget(3, 3, labelFacturacion);
@@ -249,30 +248,7 @@ public class DomicilioUI extends NextelDialog {
 			}
 		});
 	}
-	
-	/**
-	 * @author eSalvador
-	 */
-	private void tiposDomicilioDtoInit(){
-		cargaComboTipoDomicilioEntregaDto();
-		cargaComboTipoDomicilioFacturacionDto();
-	}
-	
-	/**
-	 * @author eSalvador
-	 */
-	private void cargaComboTipoDomicilioEntregaDto(){
-		domiciliosData.getEntrega().addItem("Principal","0");
-		domiciliosData.getEntrega().addItem("Si","1");
-		domiciliosData.getEntrega().addItem("No","2");
-	}
 
-	private void cargaComboTipoDomicilioFacturacionDto(){
-		domiciliosData.getFacturacion().addItem("Principal","0");
-		domiciliosData.getFacturacion().addItem("Si","1");
-		domiciliosData.getFacturacion().addItem("No","2");
-	}
-	
 	/**
 	 * @author eSalvador
 	 * Metodo que setea la accion a tomar por el botón Aceptar del popup DomicilioUI.
