@@ -66,10 +66,10 @@ public class NextelTable extends RowFlexTable implements RowListener {
 
 	public void onRowClick(Widget sender, int row) {
 		if (row >= dataStarRow) {
-			getRowFormatter().addStyleName(row, "selectedRow");
 			if (rowSelected != 0) {
 				getRowFormatter().removeStyleName(rowSelected,"selectedRow");
 			}
+			getRowFormatter().addStyleName(row, "selectedRow");
 			rowSelected = row;
 		}
 	}
