@@ -1,4 +1,5 @@
 ¿Cómo se arma el EAR?
+  Borre la carpeta /src/main/webapp/.gwt-tmp
   Coloquese dentro de la carpeta "deploy" y ejecute "mvn install" (o "mvn clean install"). 
   Esto hará que se compilen los proyectos en el siguiente orden:
   
