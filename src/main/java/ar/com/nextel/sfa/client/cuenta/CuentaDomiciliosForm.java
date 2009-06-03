@@ -592,8 +592,8 @@ public class CuentaDomiciliosForm extends Composite {
 	public void agregaTableListeners(){
 		datosTabla.addTableListener(new TableListener() {
 			public void onCellClicked(SourcesTableEvents arg0, int row, int col) {
-				DomiciliosCuentaDto domicilio = cuentaDto.getPersona().getDomicilios().get(row - 1);
 				if (row != 0) {
+					DomiciliosCuentaDto domicilio = cuentaDto.getPersona().getDomicilios().get(row - 1);
 					//Acciones a tomar cuando haga click en los lapices de edicion:
 					if (col == 0) {
 						domicilioAEditar = domicilio;
