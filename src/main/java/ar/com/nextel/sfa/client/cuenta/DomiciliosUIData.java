@@ -32,20 +32,20 @@ public class DomiciliosUIData extends UIData {
 
 	private DomiciliosCuentaDto domicilio;
 	TextBox calle = new TextBox();
-	ValidationTextBox numero = new ValidationTextBox("[0-9]*");
+	ValidationTextBox numero = new ValidationTextBox("[0-9a-zA-Z]*");
 	TextBox piso = new TextBox();
-	TextBox codigoPostal = new TextBox();
-	TextBox departamento = new TextBox();
+	ValidationTextBox codigoPostal = new ValidationTextBox("[0-9]*");
+	ValidationTextBox departamento = new ValidationTextBox("[0-9a-zA-Z]*");
 	TextBox entreCalle = new TextBox();
-	TextBox manzana = new TextBox();
+	ValidationTextBox manzana = new ValidationTextBox("[0-9a-zA-Z]*");
 	TextBox puerta = new TextBox();
 	TextBox ycalle = new TextBox();
-	TextBox cpa = new TextBox();
-	TextBox torre = new TextBox();
-	TextBox unidadFuncional = new TextBox();
+	ValidationTextBox cpa = new ValidationTextBox("[0-9a-zA-Z]*");
+	ValidationTextBox torre = new ValidationTextBox("[0-9a-zA-Z]*");
+	ValidationTextBox unidadFuncional = new ValidationTextBox("[0-9a-zA-Z]*");
 	TextArea observaciones = new TextArea();
-	TextBox localidad = new TextBox();
-	TextBox partido = new TextBox();
+	ValidationTextBox localidad = new ValidationTextBox("[0-9a-zA-Z]*");
+	ValidationTextBox partido = new ValidationTextBox("[0-9a-zA-Z]*");
 	PersonaDto persona = new PersonaDto();
 	ListBox facturacion = new ListBox();
 	ListBox entrega = new ListBox();
@@ -60,9 +60,8 @@ public class DomiciliosUIData extends UIData {
 	Label fechaUltimaModificacion = new Label();
 
 	public DomiciliosUIData() {
+		configFields();
 		fields.add(calle);
-		numero.setMaxLength(5);
-		numero.setExcluyente(true);
 		fields.add(numero);
 		fields.add(piso);
 		fields.add(codigoPostal);
@@ -83,7 +82,6 @@ public class DomiciliosUIData extends UIData {
 		fields.add(entrega);
 		fields.add(facturacion);
 		fields.add(provincia);
-		// fields.add(validado);
 		this.addFocusListeners(fields);
 
 		entrega.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
@@ -188,6 +186,23 @@ public class DomiciliosUIData extends UIData {
 		return domicilio;
 	}
 
+
+	/**
+	 * @author eSalvador 
+	 **/
+	private void configFields(){
+		numero.setMaxLength(5);
+		numero.setExcluyente(true);
+		departamento.setMaxLength(3);
+		unidadFuncional.setMaxLength(3);
+		torre.setMaxLength(2);
+		manzana.setMaxLength(2);
+		localidad.setMaxLength(40);
+		partido.setMaxLength(40);
+		cpa.setMaxLength(10);
+		codigoPostal.setMaxLength(5);
+	}
+	
 	/**
 	 * @author eSalvador: Metodo que agrega comportamiento al captar o perder el foco en los fields.
 	 **/
@@ -214,26 +229,25 @@ public class DomiciliosUIData extends UIData {
 		};
 		return comandoAceptar;
 	}
-
-	private void validateFields(Widget w) {
-		/** TODO: Terminar validacion de fields del DomicilioUI. */
-		if (w == cpa) {
-			if (!cpa.getText().equals("")) {
-				// Aca llama al ServiceRpcCuenta
-				CuentaRpcService.Util.getInstance().getDomicilioPorCPA(cpa.getText(),
-						new DefaultWaitCallback<NormalizarCPAResultDto>() {
-							public void success(NormalizarCPAResultDto domicilioNormalizado) {
-								codigoPostal.setText(domicilioNormalizado.getCodigoPostal());
-								calle.setText(domicilioNormalizado.getCalle());
-								localidad.setText(domicilioNormalizado.getLocalidad());
-								partido.setText(domicilioNormalizado.getPartido());
-								if (domicilioNormalizado.getIdProvincia() != null) {
-									provincia.selectByValue(domicilioNormalizado.getIdProvincia().toString());
-								}
+	
+	private void validateFields(Widget w){
+	/**TODO: Terminar validacion de fields del DomicilioUI. */
+		if(w == cpa){
+			if ((!cpa.getText().equals("")) && (cpa.getText().length() == 5)){
+			//Aca llama al ServiceRpcCuenta
+			CuentaRpcService.Util.getInstance().getDomicilioPorCPA(cpa.getText(),
+					new DefaultWaitCallback<NormalizarCPAResultDto>() {
+						public void success(NormalizarCPAResultDto domicilioNormalizado) {
+							codigoPostal.setText(domicilioNormalizado.getCodigoPostal());
+							calle.setText(domicilioNormalizado.getCalle());
+							localidad.setText(domicilioNormalizado.getLocalidad());
+							partido.setText(domicilioNormalizado.getPartido());
+							if (domicilioNormalizado.getIdProvincia() != null){
+								provincia.selectByValue(domicilioNormalizado.getIdProvincia().toString());
 							}
-						});
-			}
-		}
+						}
+			});
+		}}
 		if (w == numero) {
 			if (numero.getText().length() == 0) {
 				MessageDialog.getInstance().setDialogTitle("SFA - Alert");
