@@ -12,7 +12,6 @@ import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -151,7 +150,6 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	}
 
 	public void agregaDomiciliosAGrilla(List<DomiciliosCuentaDto> domicilios) {
-		this.domiciliosEnGrilla = new ArrayList();
 		this.domiciliosEnGrilla = domicilios;
 		setearFormatoNormalizador();
 		loadTableConVariosDomicilios();

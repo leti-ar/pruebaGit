@@ -127,37 +127,37 @@ public class DomiciliosUIData extends UIData {
 		}
 	}
 
-	public DomiciliosCuentaDto getDomicilioCopiado() {
-		DomiciliosCuentaDto domicilioCopiado = new DomiciliosCuentaDto();
-		domicilioCopiado.setCalle(calle.getText());
-		domicilioCopiado.setEntre_calle(entreCalle.getText());
-		domicilioCopiado.setY_calle(ycalle.getText());
-		domicilioCopiado.setCodigo_postal(codigoPostal.getText());
-		domicilioCopiado.setLocalidad(localidad.getText());
-		domicilioCopiado.setPartido(partido.getText());
-		domicilioCopiado.setCpa(cpa.getText());
-		domicilioCopiado.setDepartamento(departamento.getText());
-		domicilioCopiado.setManzana(manzana.getText());
-		if (!"".equals(numero.getText())) {
-			domicilioCopiado.setNumero(Long.parseLong(numero.getText()));
-		}
-		domicilioCopiado.setObservaciones(observaciones.getText());
-		domicilioCopiado.setPiso(piso.getText());
-		domicilioCopiado.setProvincia((ProvinciaDto) provincia.getSelectedItem());
-		domicilioCopiado.setPuerta(puerta.getText());
-		domicilioCopiado.setTorre(torre.getText());
-		domicilioCopiado.setValidado(validado.isChecked());
-		domicilioCopiado.setNombre_usuario_ultima_modificacion(nombreUsuarioUltimaModificacion.getText());
-		domicilioCopiado.setFecha_ultima_modificacion(fechaUltimaModificacion.getText());
-		domicilioCopiado.setIdEntrega(Long.parseLong(entrega.getSelectedItem().getItemValue()));
-		domicilioCopiado.setIdFacturacion(Long.parseLong(facturacion.getSelectedItem().getItemValue()));
-
-		// Esto del locked se setea en FALSE para que le permita la edicion del mismo, hasta que se guarde la
-		// cuenta, cuando se setea en TRUE.
-		// domicilioCopiado.setLocked(false);
-		//
-		return domicilioCopiado;
-	}
+//	public DomiciliosCuentaDto getDomicilioCopiado() {
+//		DomiciliosCuentaDto domicilioCopiado = new DomiciliosCuentaDto();
+//		domicilioCopiado.setCalle(calle.getText());
+//		domicilioCopiado.setEntre_calle(entreCalle.getText());
+//		domicilioCopiado.setY_calle(ycalle.getText());
+//		domicilioCopiado.setCodigo_postal(codigoPostal.getText());
+//		domicilioCopiado.setLocalidad(localidad.getText());
+//		domicilioCopiado.setPartido(partido.getText());
+//		domicilioCopiado.setCpa(cpa.getText());
+//		domicilioCopiado.setDepartamento(departamento.getText());
+//		domicilioCopiado.setManzana(manzana.getText());
+//		if (!"".equals(numero.getText())) {
+//			domicilioCopiado.setNumero(Long.parseLong(numero.getText()));
+//		}
+//		domicilioCopiado.setObservaciones(observaciones.getText());
+//		domicilioCopiado.setPiso(piso.getText());
+//		domicilioCopiado.setProvincia((ProvinciaDto) provincia.getSelectedItem());
+//		domicilioCopiado.setPuerta(puerta.getText());
+//		domicilioCopiado.setTorre(torre.getText());
+//		domicilioCopiado.setValidado(validado.isChecked());
+//		domicilioCopiado.setNombre_usuario_ultima_modificacion(nombreUsuarioUltimaModificacion.getText());
+//		domicilioCopiado.setFecha_ultima_modificacion(fechaUltimaModificacion.getText());
+//		domicilioCopiado.setIdEntrega(Long.parseLong(entrega.getSelectedItem().getItemValue()));
+//		domicilioCopiado.setIdFacturacion(Long.parseLong(facturacion.getSelectedItem().getItemValue()));
+//
+//		// Esto del locked se setea en FALSE para que le permita la edicion del mismo, hasta que se guarde la
+//		// cuenta, cuando se setea en TRUE.
+//		// domicilioCopiado.setLocked(false);
+//		//
+//		return domicilioCopiado;
+//	}
 
 	public DomiciliosCuentaDto getDomicilio() {
 		/** TODO: Deberia hacer alguna validacion?? */

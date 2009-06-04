@@ -8,7 +8,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 /**
  * @author eSalvador 
  **/
-public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, IdentifiableDto {
+public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, IdentifiableDto, Cloneable {
 	
 	private Long id;
 	private String calle;
@@ -194,53 +194,33 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 	public void setLocked(boolean locked) {
 		this.locked = locked;
 	}
-//
-//    /**
-//     * Devuelve los tipos domicilio activos asociados a este domicilio
-//     * 
-//     * @return
-//     */
-//    public List<TipoDomicilioAsociadoDto> getTiposDomicilioAsociadosActivos() {
-//    	List<TipoDomicilioAsociadoDto> result = new ArrayList<TipoDomicilioAsociadoDto>();
-//        for (TipoDomicilioAsociadoDto tipoDomicilioAsociado : this.tiposDomicilioAsociado) {
-//            if (tipoDomicilioAsociado.getActivo().booleanValue()) {
-//                result.add(tipoDomicilioAsociado);
-//            }
-//        }
-//        return result;
-//    }
-//    
-//    public TipoDomicilioAsociadoDto getTipoDomicilioAsociado(TipoDomicilioDto tipoDomicilio) {
-//    	TipoDomicilioAsociadoDto tipoDomicilioAsociado = null;
-//        for (TipoDomicilioAsociadoDto currentTipoDomicilioAsociado : this.tiposDomicilioAsociado) {
-//            if (currentTipoDomicilioAsociado.getTipoDomicilio().equals(tipoDomicilio)) {
-//                tipoDomicilioAsociado = currentTipoDomicilioAsociado;
-//            }
-//        }
-//        return tipoDomicilioAsociado;
-//    }
 
-    
-//    public boolean esPrincipalDeEntrega(TipoDomicilioDto tipoDomicilioEntregaDto) {
-//        return esPrincipalDe(tipoDomicilioEntregaDto);
-//    }
-//    
-//    public boolean esPrincipalDeFacturacion(TipoDomicilioDto tipoDomicilioFacturacionDto) {
-//        return esPrincipalDe(tipoDomicilioFacturacionDto);
-//    }
-    
-//    private boolean esPrincipalDe(TipoDomicilioDto tipoDomicilio) {
-//        List<TipoDomicilioAsociadoDto> tiposDomicilioAsociadosActivos = this.getTiposDomicilioAsociadosActivos();
-//        
-//        for (TipoDomicilioAsociadoDto tipoDomicilioAsoc : tiposDomicilioAsociadosActivos) {
-//            if  (tipoDomicilioAsoc.getPrincipal()) {
-//            		//OJO con esto de abajo, puede ser que no sea TRUE!!!
-//            		//&& tipoDomicilioAsoc.getTipoDomicilio().getCodigoVantive().equals(tipoDomicilio.getCodigoVantive())) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
+	public DomiciliosCuentaDto clone(){
+		DomiciliosCuentaDto domicilioCopiado = new DomiciliosCuentaDto();
+		domicilioCopiado.setCalle(calle);
+		domicilioCopiado.setEntre_calle(entre_calle);
+		domicilioCopiado.setY_calle(y_calle);
+		domicilioCopiado.setCodigo_postal(codigo_postal);
+		domicilioCopiado.setLocalidad(localidad);
+		domicilioCopiado.setPartido(partido);
+		domicilioCopiado.setCpa(cpa);
+		domicilioCopiado.setDepartamento(departamento);
+		domicilioCopiado.setManzana(manzana);
+		if (!"".equals(numero)) {
+			domicilioCopiado.setNumero(numero);
+		}
+		domicilioCopiado.setObservaciones(observaciones);
+		domicilioCopiado.setPiso(piso);
+		domicilioCopiado.setProvincia(provincia);
+		domicilioCopiado.setPuerta(puerta);
+		domicilioCopiado.setTorre(torre);
+		domicilioCopiado.setValidado(validado);
+		domicilioCopiado.setNombre_usuario_ultima_modificacion(nombre_usuario_ultima_modificacion);
+		domicilioCopiado.setFecha_ultima_modificacion(fecha_ultima_modificacion);
+		domicilioCopiado.setIdEntrega(idEntrega);
+		domicilioCopiado.setIdFacturacion(idFacturacion);
+		return domicilioCopiado;
+	}
 
 	public Long getId() {
 		return this.id;

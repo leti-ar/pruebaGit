@@ -404,7 +404,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements
      **/
 	public NormalizarCPAResultDto getDomicilioPorCPA(String cpa) throws RpcExceptionMessages {
 		NormalizarCPAResultDto resultConCPANormalizado = null;
-		/**TODO: Terminar!*/
 		try {
 			resultConCPANormalizado = mapper.map(normalizadorDomicilio.normalizarCPA(cpa), NormalizarCPAResultDto.class);
 		} catch (MerlinException e) {
