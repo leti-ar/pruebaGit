@@ -19,9 +19,8 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
- * Muestra la tabla con los resultados de la busqueda de cuentas. También maneja
- * la logica de busqueda para facilitar el paginado de la tabla (Así queda
- * centralizada la llamada al servicio)
+ * Muestra la tabla con los resultados de la busqueda de cuentas. También maneja la logica de busqueda para
+ * facilitar el paginado de la tabla (Así queda centralizada la llamada al servicio)
  * 
  * @author jlgperez
  * 
@@ -33,7 +32,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	static final String LAPIZ_TITLE = "Editar";
 	static final String OTRO_BLOQUEO_TITLE = "Bloqueado por otro usuario";
 
-	private FlexTable resultTable;
+	private NextelTable resultTable;
 	private SimplePanel resultTableWrapper;
 	private TablePageBar tablePageBar;
 	private List<CuentaSearchResultDto> cuentas;
@@ -71,37 +70,32 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	}
 
 	/**
-	 * Metodo publico que contiene lo que se desea ejecutar la primera vez que
-	 * se busca. (o sea, cuando se hace click al boton Buscar)
+	 * Metodo publico que contiene lo que se desea ejecutar la primera vez que se busca. (o sea, cuando se
+	 * hace click al boton Buscar)
 	 * 
 	 * @param: cuentaSearchDto
 	 * */
 	public void searchCuentas(CuentaSearchDto cuentaSearchDto) {
 		tablePageBar.setOffset(0);
-		tablePageBar.setCantResultadosVisibles(cuentaSearchDto
-				.getCantidadResultados());
+		tablePageBar.setCantResultadosVisibles(cuentaSearchDto.getCantidadResultados());
 		this.lastCuentaSearchDto = cuentaSearchDto;
 		this.searchCuentas(cuentaSearchDto, true);
 	}
 
 	/**
-	 * Metodo privado que contiene lo que se desea ejecutar cada vez que se
-	 * busca sin ser la primera vez. (o sea, cada vez que se hace click en los
-	 * botones del paginador)
+	 * Metodo privado que contiene lo que se desea ejecutar cada vez que se busca sin ser la primera vez. (o
+	 * sea, cada vez que se hace click en los botones del paginador)
 	 * 
 	 * @param: cuentaSearchDto
 	 * @param: firstTime
 	 **/
-	private void searchCuentas(CuentaSearchDto cuentaSearchDto,
-			boolean firstTime) {
+	private void searchCuentas(CuentaSearchDto cuentaSearchDto, boolean firstTime) {
 		CuentaRpcService.Util.getInstance().searchCuenta(cuentaSearchDto,
 				new DefaultWaitCallback<List<CuentaSearchResultDto>>() {
 					public void success(List<CuentaSearchResultDto> result) {
 						if (result.isEmpty()) {
-							ErrorDialog
-									.getInstance()
-									.show(
-											"No se encontraron datos con el criterio utilizado.");
+							ErrorDialog.getInstance().show(
+									"No se encontraron datos con el criterio utilizado.");
 						}
 						setCuentas(result);
 						// setTotalRegistrosBusqueda(CuentaRpcService.Util.getInstance().searchTotalCuentas(cuentaSearchDto));
@@ -119,27 +113,24 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		int row = 1;
 		for (CuentaSearchResultDto cuenta : cuentas) {
 			resultTable.setWidget(row, 0, IconFactory.lapizAnchor(UILoader.EDITAR_CUENTA + "?cuenta_id="
-					+ cuenta.getId() + "&cod_vantive="
-					+ cuenta.getCodigoVantive(), LAPIZ_TITLE) );
-			
+					+ cuenta.getId() + "&cod_vantive=" + cuenta.getCodigoVantive(), LAPIZ_TITLE));
+
 			if (cuenta.isPuedeVerInfocom()) {
 				resultTable.setWidget(row, 1, IconFactory.lupa(LUPA_TITLE));
 			}
-			
-			//LockingState == 1: Es cuando esta lockeado por el mismo usuario logueado (Verificar).
+
+			// LockingState == 1: Es cuando esta lockeado por el mismo usuario logueado (Verificar).
 			if (cuenta.getLockingState() == 1) {
 				resultTable.setWidget(row, 2, IconFactory.locked(BLOQUEADO_TITLE));
-			}else if (cuenta.getLockingState() == 2) {
-		    //LockingState == 2: Es cuando esta lockeado por otro usuario. 
+			} else if (cuenta.getLockingState() == 2) {
+				// LockingState == 2: Es cuando esta lockeado por otro usuario.
 				resultTable.setWidget(row, 2, IconFactory.lockedOther(OTRO_BLOQUEO_TITLE));
 			}
 
 			resultTable.setHTML(row, 3, cuenta.getNumero());
 			resultTable.setHTML(row, 4, cuenta.getRazonSocial());
 			resultTable.setHTML(row, 5, cuenta.getApellidoContacto());
-			resultTable.setHTML(row, 6,
-					cuenta.getNumeroTelefono() != null ? cuenta
-							.getNumeroTelefono() : "");
+			resultTable.setHTML(row, 6, cuenta.getNumeroTelefono() != null ? cuenta.getNumeroTelefono() : "");
 			row++;
 		}
 
@@ -155,8 +146,8 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		if (resultTable != null) {
 			// Empiezo en 1 porque el initTable pone la primer fila con los
 			// tíulos
-			for (int i = 1; i < resultTable.getRowCount(); i++) {
-				resultTable.removeRow(i);
+			while (resultTable.getRowCount() > 1) {
+				resultTable.removeRow(1);
 			}
 		} else {
 			resultTable = new NextelTable();
@@ -166,8 +157,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	}
 
 	private void initTable(FlexTable table) {
-		String[] widths = { "24px", "24px", "24px", "150px", "250px", "195px",
-				"170px", };
+		String[] widths = { "24px", "24px", "24px", "150px", "250px", "195px", "170px", };
 		for (int col = 0; col < widths.length; col++) {
 			table.getColumnFormatter().setWidth(col, widths[col]);
 		}
@@ -185,5 +175,14 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		table.setHTML(0, 4, "Razón Social");
 		table.setHTML(0, 5, "Responsable");
 		table.setHTML(0, 6, "Número de teléfono");
+	}
+
+	/** Retorna el id de la Cuenta selecionada o null si no hay nada seleccionado */
+	public Long getSelectedCuentaId() {
+		Long idCuenta = null;
+		if (resultTable != null && resultTable.getRowSelected() > 0) {
+			idCuenta = cuentas.get(resultTable.getRowSelected() - 1).getId();
+		}
+		return idCuenta;
 	}
 }
