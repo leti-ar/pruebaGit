@@ -58,8 +58,8 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 			init();
 		}
 		String cuenta = HistoryUtils.getParam(ID_CUENTA);
+		mainPanel.setVisible(false);
 		if (cuenta == null) {
-			mainPanel.setVisible(false);
 			ErrorDialog.getInstance().show("No ingreso la cuenta para la cual desea cargar la solicitud");
 		} else {
 			SolicitudServicioRequestDto solicitudServicioRequestDto = new SolicitudServicioRequestDto();
@@ -78,10 +78,14 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 							editarSSUIData.setSolicitud(solicitud);
 							validarCompletitud(false);
 							datos.redrawDetalleSSTable();
+							mainPanel.setVisible(true);
+						}
+						public void failure(Throwable caught) {
+							History.back();
+							super.failure(caught);
 						}
 					});
 			editarSSUIData.clean();
-			mainPanel.setVisible(true);
 		}
 	}
 
