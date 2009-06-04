@@ -94,10 +94,13 @@ public class NextelTable extends RowFlexTable implements RowListener {
 		}
 	}
 
+	/** Retorna el numero de linea seleccionado. Si no hay elementos seleccionados retorna negativo. */
 	public int getRowSelected() {
 		return rowSelected;
 	}
 
+	// TODO: guarda al insertar y sacar filas
+	/** Setea la fila seleccionada (con estilos) */
 	public void setRowSelected(int row) {
 		if (row >= dataStarRow && row < getRowCount()) {
 			if (rowSelected >= dataStarRow) {
