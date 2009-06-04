@@ -29,7 +29,6 @@ import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRet
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.security.Usuario;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
-import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.personas.beans.Localidad;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
@@ -41,6 +40,7 @@ import ar.com.nextel.model.solicitudes.beans.TipoAnticipo;
 import ar.com.nextel.model.solicitudes.beans.TipoPlan;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
+import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
@@ -115,7 +115,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		SolicitudServicio solicitud = null;
 		try {
 			solicitud = solicitudBusinessService.createSolicitudServicio(request);
+		} catch (BusinessException e) {
+			throw ExceptionUtil.wrap((String)e.getParameters().get(0), e);
 		} catch (Exception e) {
+			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
 		SolicitudServicioDto solicitudServicioDto = mapper.map(solicitud, SolicitudServicioDto.class);
