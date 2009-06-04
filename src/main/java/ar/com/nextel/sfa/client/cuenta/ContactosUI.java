@@ -24,6 +24,7 @@ import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -117,7 +118,6 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		addFormButtons(cancelar);
 		setFormButtonsVisible(true);
 		setFooterVisible(false);
-
 	}
 
 	public void cargaPopupNuevoContacto() {
@@ -271,6 +271,15 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		return personaDto;
 	}
 
+	/**
+	 * @author eSalvador
+	 * Refresca la grilla de domicilios
+	 **/
+	public void refrescaTablaConNuevoDomicilio(){
+		datosCuentaTable.clear();
+		cargaTablaDomicilios(cuentaDto);
+	}
+	
 	private Widget createDomicilioPanel() {
 		FlowPanel domicilioPanel = new FlowPanel();
 		FlexTable domicilioTable = new FlexTable();
@@ -278,9 +287,17 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		agregar = new Button("Crear Nuevo");
 		agregar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				DomicilioUI.getInstance().setComandoAceptar(DomicilioUI.getInstance().getComandoAceptarNuevoDomicilioServiceCall());
+				DomicilioUI.getInstance().setComandoAceptar(new Command(){
+					public void execute() {
+						   DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
+						   /**Aca deberia sacarse la lista de domicilios de los contactos, NO de la persona!*/
+						   //PersonaDto persona = cuentaDto.getPersona();
+						   //persona.getDomicilios().add(domicilio);
+						   refrescaTablaConNuevoDomicilio();
+					}
+				});
 				DomicilioUI.getInstance().hideLabelsParaContactos();
-				DomicilioUI.getInstance().cargarPopupNuevoDomicilioParaContactos();
+				DomicilioUI.getInstance().cargarPopupNuevoDomicilio();
 			}
 		});
 		
@@ -396,8 +413,66 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	
 
 	public void onClick(Widget arg0) {
-		// TODO Auto-generated method stub
-		
 	}
-	
+
+	/**
+	 * @author eSalvador
+	 * Este metodo debe llamarse cuando se quiera refrescar la lista de domicilios agregados.
+	 **/
+	private void cargaTablaDomicilios(final CuentaDto cuentaDto) {
+		this.cuentaDto = cuentaDto;
+		
+		List<DomiciliosCuentaDto> domicilios;
+		domicilios = cuentaDto.getPersona().getDomicilios();
+		
+		//Limpia la tabla de domicilios incialmente, si esta con datos:
+		if (datosCuentaTable.getRowCount() > 1){
+			for (int j = 1; j < (datosCuentaTable.getRowCount() - 1); j++) {
+				datosCuentaTable.removeRow(j);
+			}
+		}
+		//
+		for (int i = 0; i < domicilios.size(); i++) {
+			if (domicilios.get(i) != null) {
+				// Carga los iconos:
+				datosCuentaTable.setWidget(i + 1, 0, IconFactory.lapiz());
+
+				// if (cuenta.isPuedeVerInfocom()) {
+				datosCuentaTable.setWidget(i + 1, 1, IconFactory.copiar());
+				// }
+				if (true) {
+					datosCuentaTable.setWidget(i + 1, 2, IconFactory.cancel());
+				}
+				
+				if ((domicilios.get(i).getIdEntrega() != null) && (domicilios.get(i).getIdFacturacion() != null)){
+				
+				Long idEntrega = domicilios.get(i).getIdEntrega();
+				Long idFacturacion = domicilios.get(i).getIdFacturacion();
+					/** Logica para mostrar tipoDomicilio en la grilla de Resultados: */
+
+				datosCuentaTable.getCellFormatter().addStyleName(i + 1, 3, "alignCenter");
+				datosCuentaTable.getCellFormatter().addStyleName(i + 1, 4, "alignCenter");
+
+					//Entrega;
+					if (idEntrega == 2) { 
+						datosCuentaTable.setHTML(i + 1, 3, "Principal");	
+					} else if(idEntrega == 0) {
+						datosCuentaTable.setHTML(i + 1, 3, "Si");
+					} else if(idEntrega == 1) {
+						datosCuentaTable.setHTML(i + 1, 3, "No");
+					}
+					
+					// Facturacion:
+					if  (idFacturacion == 2){
+						datosCuentaTable.setHTML(i + 1, 4, "Principal");
+					} else if(idFacturacion == 0){
+						datosCuentaTable.setHTML(i + 1, 4, "Si");
+					}else if(idFacturacion == 1) {
+						datosCuentaTable.setHTML(i + 1, 4, "No");
+					}
+				}
+				datosCuentaTable.setHTML(i + 1, 5, domicilios.get(i).getDomicilios());
+			}
+		}
+	}
 }
