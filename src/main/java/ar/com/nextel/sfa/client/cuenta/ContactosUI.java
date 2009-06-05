@@ -539,7 +539,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	
 	private String comprobarPartido(String partido) {
 		if (!"".equals(partido)) {
-			return partido + " ";
+			return "- " + partido + " -" + " ";
 		} else 
 			return "";
 	}

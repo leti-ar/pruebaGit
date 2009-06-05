@@ -178,6 +178,7 @@ public class DomiciliosUIData extends UIData {
 		domicilio.setProvincia((ProvinciaDto) provincia.getSelectedItem());
 		domicilio.setPuerta(puerta.getText());
 		domicilio.setTorre(torre.getText());
+		domicilio.setUnidad_funcional(unidadFuncional.getText());
 		domicilio.setValidado(validado.isChecked());
 		domicilio.setNombre_usuario_ultima_modificacion(nombreUsuarioUltimaModificacion.getText());
 		domicilio.setFecha_ultima_modificacion(fechaUltimaModificacion.getText());
