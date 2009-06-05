@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.dto.ContactoDto;
+import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
@@ -23,7 +23,7 @@ public class CuentaContactoForm extends Composite {
 
 	private FlexTable mainPanel;
 	FlexTable datosTabla = new FlexTable();
-	private List<ContactoDto> listaContactos = new ArrayList();
+	private List<ContactoCuentaDto> listaContactos = new ArrayList();
 		
 	private static CuentaContactoForm instance = null;
 
@@ -87,11 +87,11 @@ public class CuentaContactoForm extends Composite {
 		int row = 1;
 		if (listaContactos != null) {
 			for (Iterator iter = listaContactos.iterator(); iter.hasNext();) {
-				ContactoDto contacto = (ContactoDto) iter.next();
+				ContactoCuentaDto contacto = (ContactoCuentaDto) iter.next();
 				datosTabla.setWidget(row, 0, IconFactory.lapiz());
 				datosTabla.setWidget(row, 1, IconFactory.cancel());
-				datosTabla.setHTML(row, 2, contacto.getPersonaDto().getNombre());
-				datosTabla.setHTML(row, 3, contacto.getPersonaDto().getApellido());
+				datosTabla.setHTML(row, 2, contacto.getPersona().getNombre());
+				datosTabla.setHTML(row, 3, contacto.getPersona().getApellido());
 				datosTabla.setHTML(row, 4, obtenerTelefonoPrincipal(contacto));
 				datosTabla.setHTML(row, 5, Sfa.constant().whiteSpace());
 				row++;
@@ -103,7 +103,7 @@ public class CuentaContactoForm extends Composite {
 	}		
 	
 		
-	public void setearContactos(ContactoDto contactoDto, int contactoABorrar) {
+	public void setearContactos(ContactoCuentaDto contactoDto, int contactoABorrar) {
 		if (contactoABorrar == -1) {
 			listaContactos.add(contactoDto);
 		} else 
@@ -138,22 +138,51 @@ public class CuentaContactoForm extends Composite {
 	return comandoAceptar;
 	}	
 	
-	public String obtenerTelefonoPrincipal(ContactoDto contactoDto) {
+	public String obtenerTelefonoPrincipal(ContactoCuentaDto contactoDto) {
 		List<TelefonoDto> listaTelefonos = new ArrayList();
-		listaTelefonos = contactoDto.getPersonaDto().getTelefonos();
+		listaTelefonos = contactoDto.getPersona().getTelefonos();
 		
 		if (listaTelefonos != null) {
 			for (Iterator iter = listaTelefonos.iterator(); iter.hasNext();) {
 				TelefonoDto telefonoDto = (TelefonoDto) iter.next();
 				if (telefonoDto.getPrincipal()) {
-					return ("(" + telefonoDto.getArea() + ") " + telefonoDto.getNumeroLocal() + "(" + telefonoDto.getInterno() + ")");
+					return comprobarArea(telefonoDto.getArea()) + comprobarNumero(telefonoDto.getNumeroLocal()) + comprobarInterno(telefonoDto.getInterno());
 				}
 			}
 		}
 		return null;
 	}
 	
+	private String comprobarArea(String area) {
+		if (!"".equals(area)) {
+			return "(" + area + ")" + " ";
+		} else
+			return "";
+	}
+	
+	private String comprobarNumero(String numero) {
+		if (!"".equals(numero)) {
+			return numero + " ";
+		} else
+			return "";
+	}
+	
+	private String comprobarInterno(String interno) {
+		if (!"".equals(interno)) {
+			return "(" + interno + ")" + " ";
+		} else
+			return "";
+	}
+	
 	public void eliminarContacto(int numeroContacto) {
 		listaContactos.remove(numeroContacto);
+	}
+
+	public List<ContactoCuentaDto> getListaContactos() {
+		return listaContactos;
+	}
+
+	public void setListaContactos(List<ContactoCuentaDto> listaContactos) {
+		this.listaContactos = listaContactos;
 	}
 }

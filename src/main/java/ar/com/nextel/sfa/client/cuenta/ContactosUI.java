@@ -6,8 +6,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.dto.ContactoDto;
-import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EmailDto;
@@ -48,7 +47,8 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	private Button agregar;
 	private DomicilioUI domicilioUI;
 	private DomiciliosCuentaDto domicilioAEditar;
-	private CuentaDto cuentaDto;
+	//private CuentaDto cuentaDto;
+	private ContactoCuentaDto contactoCuentaDto;
 
 	private CuentaDatosForm cuentaDatosForm;
 	private CuentaContactoForm cuentaContactoForm;
@@ -76,6 +76,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	ClickListener listener = new ClickListener(){
 		public void onClick(Widget sender){
 		if(sender == aceptar){
+			contactoCuentaDto = contactosData.getContactoDto();
 			if (contactoABorrar != -1) {
 				cuentaContactoForm.getInstance().eliminarContacto(contactoABorrar);
 			}
@@ -121,13 +122,15 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	}
 
 	public void cargaPopupNuevoContacto() {
+		//Instancia un nuevo Contacto vacio
+		this.contactoCuentaDto = new ContactoCuentaDto();
 		contactosData.clean();
 		aceptar.setVisible(true);
 		contactosData.enableFields();
 		showAndCenter();
 	}
 
-	public void cargarPopupEditarContacto(ContactoDto contacto, int fila) {
+	public void cargarPopupEditarContacto(ContactoCuentaDto contacto, int fila) {
 		contactoABorrar = fila;
 		//completo la pantalla de info gral
 		contactosData.enableFields();
@@ -137,7 +140,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		contactosData.setTipoDocumento(contacto.getTipoDocumento());
 		//completo la pantalla de telefonos
 		List<TelefonoDto> listaTelefonos = new ArrayList();
-		listaTelefonos = contacto.getPersonaDto().getTelefonos();
+		listaTelefonos = contacto.getPersona().getTelefonos();
 		if (listaTelefonos != null) {
 			for (Iterator iter = listaTelefonos.iterator(); iter.hasNext();) {
 				TelefonoDto telefonoDto = (TelefonoDto) iter.next();
@@ -276,13 +279,14 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	 * Refresca la grilla de domicilios
 	 **/
 	public void refrescaTablaConNuevoDomicilio(){
-		datosCuentaTable.clear();
-		cargaTablaDomicilios(cuentaDto);
+		domicilioTable.clear();
+		//cargaTablaDomicilios();
+		setearDomicilio();
 	}
 	
 	private Widget createDomicilioPanel() {
 		FlowPanel domicilioPanel = new FlowPanel();
-		FlexTable domicilioTable = new FlexTable();
+		domicilioTable = new FlexTable();
 		domicilioTable.addTableListener(new Listener());
 		agregar = new Button("Crear Nuevo");
 		agregar.addClickListener(new ClickListener() {
@@ -291,8 +295,10 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 					public void execute() {
 						   DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
 						   /**Aca deberia sacarse la lista de domicilios de los contactos, NO de la persona!*/
-						   //PersonaDto persona = cuentaDto.getPersona();
-						   //persona.getDomicilios().add(domicilio);
+//						   ContactoCuentaDto contacto = new ContactoCuentaDto();
+//						   PersonaDto persona = contacto.getPersona();
+//						   persona.getDomicilios().add(domicilio);
+						   contactosData.setDomicilio(domicilio);
 						   refrescaTablaConNuevoDomicilio();
 					}
 				});
@@ -331,12 +337,12 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	}
 
 
-	public void setearDomicilio(CuentaDto cuentaDto) {
-		listaDomicilios = new ArrayList();
-		listaDomicilios = cuentaDto.getPersona().getDomicilios();
+	public void setearDomicilio() {
+		listaDomicilios = contactosData.getContactoDto().getPersona().getDomicilios();
+		//listaDomicilios = contactoCuentaDto.getPersona().getDomicilios();
 		int row = 1; 
 		if (listaDomicilios != null) {
-			for (Iterator iter = listaDomicilios.iterator(); iter.hasNext();) {
+			for (Iterator<DomiciliosCuentaDto> iter = listaDomicilios.iterator(); iter.hasNext();) {
 				DomiciliosCuentaDto domicilioCuentaDto = (DomiciliosCuentaDto) iter.next();
 				domicilioTable.setWidget(row, 0, IconFactory.lapiz());
 				domicilioTable.setText(row, 1, armarDomicilio(domicilioCuentaDto));			
@@ -354,11 +360,18 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		}
 	}
 	
+		
 	private String armarDomicilio(DomiciliosCuentaDto domicilioCuentaDto) {
-		String domicilio = domicilioCuentaDto.getCalle().toUpperCase() + " " + String.valueOf(domicilioCuentaDto.getNumero()) + " Piso " 
-		+ domicilioCuentaDto.getPiso() + " Dto. " + domicilioCuentaDto.getDepartamento() + " UF " + domicilioCuentaDto.getUnidad_funcional() 
-		+ " Torre " + domicilioCuentaDto.getTorre() + " " + domicilioCuentaDto.getLocalidad() + " - " + domicilioCuentaDto.getPartido() 
-		+ " - " + domicilioCuentaDto.getProvincia().getDescripcion() + " (" + domicilioCuentaDto.getCodigo_postal() + ")";
+		String domicilio = comprobarCalle(domicilioCuentaDto.getCalle()) 
+			+ comprobarNumero(domicilioCuentaDto.getNumero()) 
+			+ comprobarPiso(domicilioCuentaDto.getPiso()) 
+			+ comprobarDto(domicilioCuentaDto.getDepartamento()) 
+			+ comprobarUnidad(domicilioCuentaDto.getUnidad_funcional()) 
+			+ comprobarTorre(domicilioCuentaDto.getTorre()) 
+			+ comprobarLocalidad(domicilioCuentaDto.getLocalidad()) 
+			+ comprobarPartido(domicilioCuentaDto.getPartido()) 
+			+ comprobarProvincia(domicilioCuentaDto.getProvincia().getDescripcion()) 
+			+ comprobarCodigoPostal(domicilioCuentaDto.getCpa(),domicilioCuentaDto.getCodigo_postal());
 		
 		return domicilio;
 	}
@@ -401,7 +414,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 				ErrorDialog.getInstance().show(errors);
 			}
 		} else {
-			cuentaContactoForm.getInstance().setearContactos(contactosData.getContactoDto(), contactoABorrar);
+			cuentaContactoForm.getInstance().setearContactos(contactoCuentaDto, contactoABorrar);
 			this.hide();
 		}
 	}
@@ -417,13 +430,12 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 
 	/**
 	 * @author eSalvador
-	 * Este metodo debe llamarse cuando se quiera refrescar la lista de domicilios agregados.
 	 **/
-	private void cargaTablaDomicilios(final CuentaDto cuentaDto) {
-		this.cuentaDto = cuentaDto;
-		
+	private void cargaTablaDomicilios() {
+		//this.contactoCuentaDto = contactoCuentaDto;
+	
 		List<DomiciliosCuentaDto> domicilios;
-		domicilios = cuentaDto.getPersona().getDomicilios();
+		domicilios = contactoCuentaDto.getPersona().getDomicilios();
 		
 		//Limpia la tabla de domicilios incialmente, si esta con datos:
 		if (datosCuentaTable.getRowCount() > 1){
@@ -474,5 +486,78 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 				datosCuentaTable.setHTML(i + 1, 5, domicilios.get(i).getDomicilios());
 			}
 		}
+	}
+	
+	private String comprobarCalle(String calle) {
+		if (!"".equals(calle)) {
+			return calle.toUpperCase() + " ";
+		} else 
+			return "";
+	}
+
+	private String comprobarNumero(Long numero) {
+		if (numero!=null) {
+			return String.valueOf(numero) + " ";
+		} else 
+			return "";
+	}
+	
+	private String comprobarPiso(String piso) {
+		if (!"".equals(piso)) {
+			return "Piso " + piso + " ";
+		} else 
+			return "";
+	}
+	
+	private String comprobarDto(String dto) {
+		if (!"".equals(dto)) {
+			return "Dto. " + dto + " ";
+		} else 
+			return "";
+	}
+	
+	private String comprobarUnidad(String unidad) {
+		if (!"".equals(unidad)) {
+			return "UF " + unidad + " ";
+		} else 
+			return "";
+	}
+	
+	private String comprobarTorre(String torre) {
+		if (!"".equals(torre)) {
+			return "Torre " + torre + " ";
+		} else 
+			return "";
+	}
+	
+	private String comprobarLocalidad(String localidad) {
+		if (!"".equals(localidad)) {
+			return localidad + " ";
+		} else 
+			return "";
+	}
+	
+	private String comprobarPartido(String partido) {
+		if (!"".equals(partido)) {
+			return partido + " ";
+		} else 
+			return "";
+	}
+	
+	private String comprobarProvincia(String provincia) {
+		if (!"".equals(provincia)) {
+			return provincia + " ";
+		} else 
+			return "";
+	}
+
+	private String comprobarCodigoPostal(String cpa, String cp) {
+		if (!"".equals(cpa)) {
+			return "(" + cpa + ")";
+		} else 
+			if (!"".equals(cp)) { 
+				return "(" + cp + ")";
+			}
+		return "";
 	}
 }

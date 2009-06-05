@@ -6,8 +6,9 @@ import java.util.List;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CargoDto;
-import ar.com.nextel.sfa.client.dto.ContactoDto;
+import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
+import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EmailDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
@@ -46,7 +47,7 @@ public class ContactoUIData extends UIData {
 	Label veraz = new Label();
 	
 	private DomicilioUI domicilioUI;
-	
+	private List<DomiciliosCuentaDto> domicilios = new ArrayList();
 
 	public List<String> validarCampoObligatorio() {
 		GwtValidator validator = new GwtValidator();
@@ -104,9 +105,12 @@ public class ContactoUIData extends UIData {
 	}
 	
 	
-	public ContactoDto getContactoDto() {
-		ContactoDto contactoDto = new ContactoDto();
-		contactoDto.setPersonaDto(this.getPersonaDto());
+	public ContactoCuentaDto getContactoDto() {
+		ContactoCuentaDto contactoDto = new ContactoCuentaDto();
+		contactoDto.setPersona(this.getPersonaDto());
+		//Averiguar de donde sacar el ID:
+		contactoDto.setId(new Long(1));
+		//
 		return contactoDto;
 	}
 	
@@ -118,13 +122,22 @@ public class ContactoUIData extends UIData {
 		persona.setIdTipoDocumento((Long.parseLong(tipoDocumento.getSelectedItem().getItemValue())));
 		persona.setDocumento(getDocumentoDto());
 		//pasarle una lista de domicilios, hacer que cuando agregas un nuevo domicilio se carguen en la tabla de la pantalla
-		//persona.setDomicilios(domicilioUI.getInstance().getDomiciliosData().getDomicilio());
+		persona.setDomicilios(getDomicilios());
+		//
 		persona.setEmails(getEmailDto());
 		persona.setSexo((SexoDto)sexo.getSelectedItem());
 		persona.setTelefonos(getTelefonoDto());
 		return persona;
 	}
 	
+	public List<DomiciliosCuentaDto> getDomicilios(){
+		return domicilios;
+	}
+
+	public void setDomicilio(DomiciliosCuentaDto domicilio){
+		domicilios.add(domicilio);
+	}
+
 	
 	public DocumentoDto getDocumentoDto() {
 		DocumentoDto documentoDto = new DocumentoDto();
