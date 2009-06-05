@@ -551,12 +551,7 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getCargoLabel().setVisible(cuentaDto.getPersona().getSexo().getItemValue().equals(Long.toString(SexoEnum.ORGANIZACION.getId())));
 		
 		vendedorPanel.setVisible(false);
-	
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.ACCESO.getValue())) {
-			String ver = "yes";
-		} else {
-			String ver = "no";
-		}
+
 	}
 
 	/**

@@ -61,6 +61,10 @@
 		<filter-name>AuthorizationFilter</filter-name>
 		<url-pattern>*.csv</url-pattern>
 	</filter-mapping>
+	<filter-mapping>
+		<filter-name>AuthorizationFilter</filter-name>
+		<url-pattern>*.html</url-pattern>
+	</filter-mapping>
 
     <!-- Hibernate -->
 	<filter-mapping>
