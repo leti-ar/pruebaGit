@@ -77,7 +77,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 									.getCuenta().getIdVantive());
 							editarSSUIData.setSolicitud(solicitud);
 							validarCompletitud(false);
-							datos.redrawDetalleSSTable();
+							datos.refreshDetalleSSTable();
 							mainPanel.setVisible(true);
 						}
 						public void failure(Throwable caught) {

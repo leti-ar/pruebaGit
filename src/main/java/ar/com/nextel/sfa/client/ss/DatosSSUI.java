@@ -5,7 +5,9 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.cuenta.DomicilioUI;
+import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
@@ -55,6 +57,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 	private FocusListener focusListener;
 	private int editingServicioAdRow = -1;
 	private RegexTextBox precioVenta;
+	private DomiciliosCuentaDto domicilioAEditar = null;
 
 	private static final String SELECTED_ROW = "selectedRow";
 
@@ -104,12 +107,12 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		layoutDomicilio.addStyleName("layout");
 		layoutDomicilio.setHTML(0, 0, Sfa.constant().entregaReq());
 		layoutDomicilio.setWidget(0, 1, editarSSUIData.getEntrega());
-		layoutDomicilio.setWidget(0, 2, editarDomicioFacturacion);
-		layoutDomicilio.setWidget(0, 3, borrarDomicioFacturacion);
+		layoutDomicilio.setWidget(0, 2, editarDomicioEntrega );
+		layoutDomicilio.setWidget(0, 3, borrarDomicioEntrega );
 		layoutDomicilio.setHTML(1, 0, Sfa.constant().facturacionReq());
 		layoutDomicilio.setWidget(1, 1, editarSSUIData.getFacturacion());
-		layoutDomicilio.setWidget(1, 2, editarDomicioEntrega);
-		layoutDomicilio.setWidget(1, 3, borrarDomicioEntrega);
+		layoutDomicilio.setWidget(1, 2, editarDomicioFacturacion);
+		layoutDomicilio.setWidget(1, 3, borrarDomicioFacturacion);
 		layoutDomicilio.setHTML(2, 0, Sfa.constant().aclaracion());
 		layoutDomicilio.setWidget(2, 1, editarSSUIData.getAclaracion());
 		layoutDomicilio.getColumnFormatter().setWidth(1, "500px");
@@ -173,17 +176,46 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 	public void onClick(Widget sender) {
 		if (sender == crearLinea) {
 			openItemSolicitudDialog(new LineaSolicitudServicioDto());
-		} else if (sender == crearDomicilio) {
-			DomicilioUI.getInstance();
-		} else if (sender == editarDomicioFacturacion) {
-
-		} else if (sender == borrarDomicioFacturacion) {
-
-		} else if (sender == editarDomicioEntrega) {
-
-		} else if (sender == borrarDomicioEntrega) {
-
+		} else if (sender == crearDomicilio || sender == editarDomicioFacturacion
+				|| sender == editarDomicioEntrega) {
+			onClickEdicionDomicilios(sender);
+		} else if (sender == borrarDomicioFacturacion || sender == borrarDomicioEntrega) {
+			if (sender == borrarDomicioFacturacion) {
+				domicilioAEditar = (DomiciliosCuentaDto) editarSSUIData.getFacturacion().getSelectedItem();
+			} else if (sender == borrarDomicioEntrega) {
+				domicilioAEditar = (DomiciliosCuentaDto) editarSSUIData.getEntrega().getSelectedItem();
+			}
+			DomicilioUI.getInstance().openPopupDeleteDialog(editarSSUIData.getCuenta().getPersona(),
+					domicilioAEditar, new Command(){
+				public void execute() {
+					editarSSUIData.refreshDomiciliosListBox();
+				}
+			});
 		}
+	}
+
+	public void onClickEdicionDomicilios(Widget sender) {
+		DomicilioUI.getInstance().setComandoAceptar(getCommandGuardarDomicilio());
+		if (sender == crearDomicilio) {
+			DomicilioUI.getInstance().cargarPopupNuevoDomicilio(new DomiciliosCuentaDto());
+		} else if (sender == editarDomicioEntrega) {
+			DomicilioUI.getInstance().cargarPopupEditarDomicilio(
+					(DomiciliosCuentaDto) editarSSUIData.getEntrega().getSelectedItem());
+		} else if (sender == editarDomicioFacturacion) {
+			DomicilioUI.getInstance().cargarPopupEditarDomicilio(
+					(DomiciliosCuentaDto) editarSSUIData.getFacturacion().getSelectedItem());
+		}
+	}
+
+	private Command getCommandGuardarDomicilio() {
+		return new Command() {
+			public void execute() {
+				DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
+				PersonaDto persona = editarSSUIData.getCuenta().getPersona();
+				persona.getDomicilios().add(domicilio);
+				editarSSUIData.refreshDomiciliosListBox();
+			}
+		};
 	}
 
 	public void onCellClicked(SourcesTableEvents sender, final int row, int col) {
@@ -291,7 +323,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 	}
 
 	/** Limpia y recarga la tabla de Detalle de Solicitud de Servicio completamente */
-	public void redrawDetalleSSTable() {
+	public void refreshDetalleSSTable() {
 		while (detalleSS.getRowCount() > 1) {
 			detalleSS.removeRow(1);
 		}
@@ -338,14 +370,14 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		}
 		List servicios = editarSSUIData.getServiciosAdicionales().get(selectedDetalleRow - 1);
 		if (!servicios.isEmpty()) {
-			renderServiciosAdicionalesTable(selectedDetalleRow - 1);
+			refreshServiciosAdicionalesTable(selectedDetalleRow - 1);
 		} else {
 			controller.getServiciosAdicionales(linea,
 					new DefaultWaitCallback<List<ServicioAdicionalLineaSolicitudServicioDto>>() {
 						public void success(List<ServicioAdicionalLineaSolicitudServicioDto> list) {
 							editarSSUIData.loadServiciosAdicionales(selectedDetalleRow - 1, list);
 							blockServicioAdicionalLoad = false;
-							renderServiciosAdicionalesTable(selectedDetalleRow - 1);
+							refreshServiciosAdicionalesTable(selectedDetalleRow - 1);
 						}
 
 						public void failure(Throwable caught) {
@@ -360,7 +392,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 	 * Actualiza gráficamente la Tabla de Servicios Adicionales. Recibe la posición de la
 	 * LineaSolicitudServicioDto dentro de la lista "lineas" de SolicitudServicioDto.
 	 */
-	private void renderServiciosAdicionalesTable(int lineaIndex) {
+	private void refreshServiciosAdicionalesTable(int lineaIndex) {
 		List<ServicioAdicionalLineaSolicitudServicioDto> allServiciosAdicionales = editarSSUIData
 				.getServiciosAdicionales().get(lineaIndex);
 		LineaSolicitudServicioDto linea = editarSSUIData.getLineasSolicitudServicio().get(lineaIndex);

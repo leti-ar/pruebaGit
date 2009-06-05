@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
+import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
@@ -384,5 +386,29 @@ public class EditarSSUIData extends UIData {
 			}
 		}
 		return nombreMovil;
+	}
+
+	public CuentaDto getCuenta() {
+		return solicitudServicio.getCuenta();
+	}
+
+	public void refreshDomiciliosListBox() {
+		entrega.clear();
+		facturacion.clear();
+		List<DomiciliosCuentaDto> domicilios = solicitudServicio.getCuenta().getPersona().getDomicilios();
+		for (DomiciliosCuentaDto domicilio : domicilios) {
+			if (domicilio.getIdEntrega().equals(EstadoTipoDomicilioDto.PRINCIPAL.getId())) {
+				entrega.addItem(domicilio);
+				entrega.setSelectedItem(domicilio);
+			} else if (domicilio.getIdEntrega().equals(EstadoTipoDomicilioDto.SI.getId())) {
+				entrega.addItem(domicilio);
+			}
+			if (domicilio.getIdFacturacion().equals(EstadoTipoDomicilioDto.PRINCIPAL.getId())) {
+				facturacion.addItem(domicilio);
+				facturacion.setSelectedItem(domicilio);
+			} else if (domicilio.getIdFacturacion().equals(EstadoTipoDomicilioDto.SI.getId())) {
+				facturacion.addItem(domicilio);
+			}
+		}
 	}
 }
