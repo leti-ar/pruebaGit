@@ -54,8 +54,6 @@ public class CuentaDomiciliosForm extends Composite {
 		Button crearDomicilio = new Button("Crear nuevo");
 		crearDomicilio.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				//DomicilioUI.getInstance().setCuentaDto(cuentaDto);
-				DomicilioUI.getInstance().setDomicilioAEditar(new DomiciliosCuentaDto());
 				DomicilioUI.getInstance().setComandoAceptar(new Command(){
 					public void execute() {
 						   DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
@@ -64,7 +62,7 @@ public class CuentaDomiciliosForm extends Composite {
 						   refrescaTablaConNuevoDomicilio();
 						}
 				});
-				DomicilioUI.getInstance().cargarPopupNuevoDomicilio();
+				DomicilioUI.getInstance().cargarPopupNuevoDomicilio(new DomiciliosCuentaDto());
 			}
 		});
 		crearDomicilio.addStyleName("crearDomicilioButton");
@@ -207,7 +205,6 @@ public class CuentaDomiciliosForm extends Composite {
 						domicilioCopiado.setId(null);
 						domicilioCopiado.setNombre_usuario_ultima_modificacion(null);
 						domicilioCopiado.setFecha_ultima_modificacion(null);
-						DomicilioUI.getInstance().setDomicilioAEditar(domicilioCopiado);
 						DomicilioUI.getInstance().setComandoAceptar(new Command(){
 							public void execute() {
 								   DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
@@ -216,21 +213,18 @@ public class CuentaDomiciliosForm extends Composite {
 								   refrescaTablaConNuevoDomicilio();
 								}
 							});
-						DomicilioUI.getInstance().cargarPopupCopiarDomicilio();
+						DomicilioUI.getInstance().cargarPopupCopiarDomicilio(domicilioCopiado);
 					}
 					// Acciones a tomar cuando haga click en iconos de borrado de domicilios:
 					if (col == 2) {
-						DomicilioUI.getInstance().setRowDomicilioABorrar(row);
+						final int rowABorrar = row;
 						DomicilioUI.getInstance().hide();
 						domicilioAEditar = domicilio;
-						DomicilioUI.getInstance().setCuentaDto(cuentaDto);
-						DomicilioUI.getInstance().setDomicilioAEditar(domicilioAEditar);
-						if (domicilio.getVantiveId() != null){
-							DomicilioUI.getInstance().openPopupDeleteDialog(DomicilioUI.getInstance().getOpenDialogAdviceCommand());
-						}else{ 
-							DomicilioUI.getInstance().openPopupDeleteDialog(DomicilioUI.getInstance().getComandoBorrar());
-						}
-						
+						DomicilioUI.getInstance().openPopupDeleteDialog(cuentaDto.getPersona(), domicilioAEditar, new Command(){
+							public void execute() {
+								refrescaTablaConDomiciliosBorrados(rowABorrar);
+							}
+						});
 					}
 				}
 			}

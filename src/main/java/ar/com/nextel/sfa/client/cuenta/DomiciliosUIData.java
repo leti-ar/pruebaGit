@@ -98,7 +98,7 @@ public class DomiciliosUIData extends UIData {
 			codigoPostal.setText(domicilio.getCodigo_postal());
 			localidad.setText(domicilio.getLocalidad());
 			partido.setText(domicilio.getPartido());
-			numero.setText(domicilio.getNumero().toString());
+			numero.setText(domicilio.getNumero() != null ? "" + domicilio.getNumero() : "");
 			piso.setText(domicilio.getPiso());
 			departamento.setText(domicilio.getDepartamento());
 			entreCalle.setText(domicilio.getEntre_calle());
@@ -108,56 +108,16 @@ public class DomiciliosUIData extends UIData {
 			cpa.setText(domicilio.getCpa());
 			torre.setText(domicilio.getTorre());
 			unidadFuncional.setText(domicilio.getUnidad_funcional());
-			if (domicilio.getValidado()) {
-				validado.setChecked(true);
-			} else {
-				validado.setChecked(false);
-			}
+			validado.setChecked(domicilio.getValidado());
 			observaciones.setText(domicilio.getObservaciones());
 			nombreUsuarioUltimaModificacion.setText(domicilio.getNombre_usuario_ultima_modificacion());
 			fechaUltimaModificacion.setText(domicilio.getFecha_ultima_modificacion());
-
-			Long idEntrega = domicilio.getIdEntrega();
-			Long idFacturacion = domicilio.getIdFacturacion();
-
 			// VER EstadoTipoDomicilioDto
-			entrega.selectByValue("" + idEntrega);
-			facturacion.selectByValue("" + idFacturacion);
+			entrega.selectByValue("" + domicilio.getIdEntrega());
+			facturacion.selectByValue("" + domicilio.getIdFacturacion());
 
 		}
 	}
-
-//	public DomiciliosCuentaDto getDomicilioCopiado() {
-//		DomiciliosCuentaDto domicilioCopiado = new DomiciliosCuentaDto();
-//		domicilioCopiado.setCalle(calle.getText());
-//		domicilioCopiado.setEntre_calle(entreCalle.getText());
-//		domicilioCopiado.setY_calle(ycalle.getText());
-//		domicilioCopiado.setCodigo_postal(codigoPostal.getText());
-//		domicilioCopiado.setLocalidad(localidad.getText());
-//		domicilioCopiado.setPartido(partido.getText());
-//		domicilioCopiado.setCpa(cpa.getText());
-//		domicilioCopiado.setDepartamento(departamento.getText());
-//		domicilioCopiado.setManzana(manzana.getText());
-//		if (!"".equals(numero.getText())) {
-//			domicilioCopiado.setNumero(Long.parseLong(numero.getText()));
-//		}
-//		domicilioCopiado.setObservaciones(observaciones.getText());
-//		domicilioCopiado.setPiso(piso.getText());
-//		domicilioCopiado.setProvincia((ProvinciaDto) provincia.getSelectedItem());
-//		domicilioCopiado.setPuerta(puerta.getText());
-//		domicilioCopiado.setTorre(torre.getText());
-//		domicilioCopiado.setValidado(validado.isChecked());
-//		domicilioCopiado.setNombre_usuario_ultima_modificacion(nombreUsuarioUltimaModificacion.getText());
-//		domicilioCopiado.setFecha_ultima_modificacion(fechaUltimaModificacion.getText());
-//		domicilioCopiado.setIdEntrega(Long.parseLong(entrega.getSelectedItem().getItemValue()));
-//		domicilioCopiado.setIdFacturacion(Long.parseLong(facturacion.getSelectedItem().getItemValue()));
-//
-//		// Esto del locked se setea en FALSE para que le permita la edicion del mismo, hasta que se guarde la
-//		// cuenta, cuando se setea en TRUE.
-//		// domicilioCopiado.setLocked(false);
-//		//
-//		return domicilioCopiado;
-//	}
 
 	public DomiciliosCuentaDto getDomicilio() {
 		/** TODO: Deberia hacer alguna validacion?? */
@@ -187,11 +147,10 @@ public class DomiciliosUIData extends UIData {
 		return domicilio;
 	}
 
-
 	/**
-	 * @author eSalvador 
+	 * @author eSalvador
 	 **/
-	private void configFields(){
+	private void configFields() {
 		numero.setMaxLength(5);
 		numero.setExcluyente(true);
 		departamento.setMaxLength(3);
@@ -203,7 +162,7 @@ public class DomiciliosUIData extends UIData {
 		cpa.setMaxLength(10);
 		codigoPostal.setMaxLength(5);
 	}
-	
+
 	/**
 	 * @author eSalvador: Metodo que agrega comportamiento al captar o perder el foco en los fields.
 	 **/
@@ -230,25 +189,26 @@ public class DomiciliosUIData extends UIData {
 		};
 		return comandoAceptar;
 	}
-	
-	private void validateFields(Widget w){
-	/**TODO: Terminar validacion de fields del DomicilioUI. */
-		if(w == cpa){
-			if ((!cpa.getText().equals("")) && (cpa.getText().length() > 4)){
-			//Aca llama al ServiceRpcCuenta
-			CuentaRpcService.Util.getInstance().getDomicilioPorCPA(cpa.getText(),
-					new DefaultWaitCallback<NormalizarCPAResultDto>() {
-						public void success(NormalizarCPAResultDto domicilioNormalizado) {
-							codigoPostal.setText(domicilioNormalizado.getCodigoPostal());
-							calle.setText(domicilioNormalizado.getCalle());
-							localidad.setText(domicilioNormalizado.getLocalidad());
-							partido.setText(domicilioNormalizado.getPartido());
-							if (domicilioNormalizado.getIdProvincia() != null){
-								provincia.selectByValue(domicilioNormalizado.getIdProvincia().toString());
+
+	private void validateFields(Widget w) {
+		/** TODO: Terminar validacion de fields del DomicilioUI. */
+		if (w == cpa) {
+			if ((!cpa.getText().equals("")) && (cpa.getText().length() > 4)) {
+				// Aca llama al ServiceRpcCuenta
+				CuentaRpcService.Util.getInstance().getDomicilioPorCPA(cpa.getText(),
+						new DefaultWaitCallback<NormalizarCPAResultDto>() {
+							public void success(NormalizarCPAResultDto domicilioNormalizado) {
+								codigoPostal.setText(domicilioNormalizado.getCodigoPostal());
+								calle.setText(domicilioNormalizado.getCalle());
+								localidad.setText(domicilioNormalizado.getLocalidad());
+								partido.setText(domicilioNormalizado.getPartido());
+								if (domicilioNormalizado.getIdProvincia() != null) {
+									provincia.selectByValue(domicilioNormalizado.getIdProvincia().toString());
+								}
 							}
-						}
-			});
-		}}
+						});
+			}
+		}
 		if (w == numero) {
 			if (numero.getText().length() == 0) {
 				MessageDialog.getInstance().setDialogTitle("SFA - Alert");

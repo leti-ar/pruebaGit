@@ -5,7 +5,6 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
@@ -41,10 +40,10 @@ public class DomicilioUI extends NextelDialog {
 	private boolean noEditable;
 	private static DomicilioUI instance = new DomicilioUI();
 	private DomiciliosCuentaDto domicilioAEditar;
-	//private String estadoNormalizacion;
+	// private String estadoNormalizacion;
 	private int rowDomicilioABorrar;
-	public CuentaDto cuentaDto;
-	
+	private PersonaDto persona;
+
 	Label calleLabel = new Label(Sfa.constant().calle());
 	Label numCalleLabel = new Label(Sfa.constant().numeroCalle());
 	Label localidadLabel = new Label(Sfa.constant().localidad());
@@ -53,10 +52,10 @@ public class DomicilioUI extends NextelDialog {
 	Label labelEntrega = new Label(Sfa.constant().entrega());
 	Label labelFacturacion = new Label(Sfa.constant().facturacion());
 	Label labelValidado1 = new Label(Sfa.constant().validado1());
-	Label labelValidado2 = new Label (Sfa.constant().validado2());
-	Label labelUsuario = new Label (Sfa.constant().usuario_domicilio());
-	Label labelFecha = new Label (Sfa.constant().fecha_Modificacion());
-	
+	Label labelValidado2 = new Label(Sfa.constant().validado2());
+	Label labelUsuario = new Label(Sfa.constant().usuario_domicilio());
+	Label labelFecha = new Label(Sfa.constant().fecha_Modificacion());
+
 	public void hideLabelsParaContactos() {
 		labelEntrega.setVisible(false);
 		labelUsuario.setVisible(false);
@@ -65,7 +64,7 @@ public class DomicilioUI extends NextelDialog {
 		labelValidado1.setVisible(false);
 		labelValidado2.setVisible(false);
 	}
-	
+
 	public static DomicilioUI getInstance() {
 		return instance;
 	}
@@ -75,63 +74,38 @@ public class DomicilioUI extends NextelDialog {
 		init();
 	}
 
-	@Override
 	public void clear() {
 		super.clear();
 	}
 
-	public CuentaDto getCuentaDto() {
-		return cuentaDto;
+	public void cargarPopupNuevoDomicilio(DomiciliosCuentaDto domicilio) {
+		cargarPopupDomicilio(domicilio, "Crear Domicilio");
 	}
 
-	public void setCuentaDto(CuentaDto cuentaDto) {
-		this.cuentaDto = cuentaDto;
+	public void cargarPopupCopiarDomicilio(DomiciliosCuentaDto domicilio) {
+		cargarPopupDomicilio(domicilio, "Copiar Domicilio");
 	}
 
-	/**
-	 * @author esalvador
-	 **/
-	public void cargarPopupNuevoDomicilio() {
-		domiciliosData.clean();
-		domiciliosData.setDomicilio(null);
-		linkAceptar.setVisible(true);
-		domiciliosData.enableFields();
-		showAndCenter();
-		setDialogTitle("Crear Domicilio");
-	}
-
-	/**
-	 * @author esalvador
-	 **/
-	public void cargarPopupCopiarDomicilio() {
-		domiciliosData.setDomicilio(domicilioAEditar);
-		showAndCenter();
-		domiciliosData.enableFields();
-		linkAceptar.setVisible(true);
-		setDialogTitle("Copiar Domicilio");
-	}
-	
-	/**
-	 * @author esalvador
-	 **/
 	public void cargarPopupEditarDomicilio(DomiciliosCuentaDto domicilio) {
-		if (domicilio.getVantiveId() != null){
-			noEditable = true;	
-		}else{
-			noEditable = false;
-		}
+		cargarPopupDomicilio(domicilio, "Editar Domicilio");
+	}
+
+	public void cargarPopupDomicilio(DomiciliosCuentaDto domicilio, String title) {
+		noEditable = domicilio.getVantiveId() != null;
+		domicilioAEditar = domicilio;
+		domiciliosData.clean();
 		domiciliosData.setDomicilio(domicilio);
 		showAndCenter();
-		if (noEditable){
+		if (noEditable) {
 			domiciliosData.disableFields();
 			linkAceptar.setVisible(false);
-		}else{
+		} else {
 			domiciliosData.enableFields();
 			linkAceptar.setVisible(true);
 		}
-		setDialogTitle("Editar Domicilio");
+		setDialogTitle(title);
 	}
-	
+
 	/**
 	 *@author eSalvador
 	 **/
@@ -146,8 +120,8 @@ public class DomicilioUI extends NextelDialog {
 		gridObs = new Grid(2, 3);
 		gridUser = new Grid(1, 5);
 		setWidth("635px");
-		
-		//Campos Obligatorios:
+
+		// Campos Obligatorios:
 		calleLabel.addStyleName("req");
 		numCalleLabel.addStyleName("req");
 		localidadLabel.addStyleName("req");
@@ -228,7 +202,7 @@ public class DomicilioUI extends NextelDialog {
 		footer.setVisible(false);
 		linkAceptar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				if (comandoAceptar != null){
+				if (comandoAceptar != null) {
 					getComandoAceptarDomicilioServiceCall().execute();
 				}
 			}
@@ -240,22 +214,21 @@ public class DomicilioUI extends NextelDialog {
 		});
 		this.showAndCenter();
 	}
-	
-	/**
-	 * @author eSalvador
-	 */
-	private void cargaComboProvinciasDto(){
-		CuentaRpcService.Util.getInstance().getProvinciasInitializer(new DefaultWaitCallback<List<ProvinciaDto>>() {
-			@Override
-			public void success(List<ProvinciaDto> result) {
-				domiciliosData.getProvincia().addAllItems(result);
-			}
-		});
-	}
 
 	/**
 	 * @author eSalvador
-	 * Metodo que setea la accion a tomar por el botón Aceptar del popup DomicilioUI.
+	 */
+	private void cargaComboProvinciasDto() {
+		CuentaRpcService.Util.getInstance().getProvinciasInitializer(
+				new DefaultWaitCallback<List<ProvinciaDto>>() {
+					public void success(List<ProvinciaDto> result) {
+						domiciliosData.getProvincia().addAllItems(result);
+					}
+				});
+	}
+
+	/**
+	 * @author eSalvador Metodo que setea la accion a tomar por el botón Aceptar del popup DomicilioUI.
 	 **/
 	public void setComandoAceptar(Command comandoAceptar) {
 		this.comandoAceptar = comandoAceptar;
@@ -264,12 +237,11 @@ public class DomicilioUI extends NextelDialog {
 	public DomiciliosUIData getDomiciliosData() {
 		return domiciliosData;
 	}
-	
-	@Override
+
 	public void showAndCenter() {
 		super.showAndCenter();
 	}
-	
+
 	public boolean isEditable() {
 		return noEditable;
 	}
@@ -277,7 +249,7 @@ public class DomicilioUI extends NextelDialog {
 	public void setEditable(boolean editable) {
 		this.noEditable = editable;
 	}
-	
+
 	public int getRowDomicilioABorrar() {
 		return rowDomicilioABorrar;
 	}
@@ -301,61 +273,72 @@ public class DomicilioUI extends NextelDialog {
 		Command comandoCopiar = new Command() {
 			public void execute() {
 				domicilioAEditar = getDomiciliosData().getDomicilio();
-				if (camposValidos()){
-				CuentaRpcService.Util.getInstance().normalizarDomicilio(domicilioAEditar,
-						new DefaultWaitCallback<NormalizarDomicilioResultDto>() {
-							public void success(NormalizarDomicilioResultDto result) {
-							   
-							   List<DomiciliosCuentaDto> listaDomicilios = new ArrayList();
-							   listaDomicilios.add(result.getDireccion());
-								
-								//tipo: exito|no_parseado|no_encontrado|dudas
-								if (result.getTipo().equals("exito")){
-									NormalizarDomicilioUI.getInstance().setNormalizado(true);
-									abrirPopupNormalizacion(listaDomicilios,getComandoAgregarDomicilioSinNormalizar(),getComandoAgregarDomicilio());
-								}else if(result.getTipo().equals("no_encontrado")){
-									setMotivosNoNormalizacion(result);
-									abrirPopupNormalizacion(listaDomicilios,getComandoAgregarDomicilioSinNormalizar(),getComandoAgregarDomicilio());
-								}else if(result.getTipo().equals("dudas")){
-									NormalizarDomicilioUI.getInstance().setNormalizado(true);
-									abrirPopupNormalizacion(result.getDudas(),getComandoAgregarDomicilioSinNormalizar(),getComandoAgregarDomicilio());
-								}else if(result.getTipo().equals("no_parseado")){
-									setMotivosNoNormalizacion(result);
-									abrirPopupNormalizacion(listaDomicilios,getComandoAgregarDomicilioSinNormalizar(),getComandoAgregarDomicilio());
+				if (camposValidos()) {
+					CuentaRpcService.Util.getInstance().normalizarDomicilio(domicilioAEditar,
+							new DefaultWaitCallback<NormalizarDomicilioResultDto>() {
+								public void success(NormalizarDomicilioResultDto result) {
+
+									List<DomiciliosCuentaDto> listaDomicilios = new ArrayList();
+									listaDomicilios.add(result.getDireccion());
+
+									// tipo: exito|no_parseado|no_encontrado|dudas
+									if (result.getTipo().equals("exito")) {
+										NormalizarDomicilioUI.getInstance().setNormalizado(true);
+										abrirPopupNormalizacion(listaDomicilios,
+												getComandoAgregarDomicilioSinNormalizar(),
+												getComandoAgregarDomicilio());
+									} else if (result.getTipo().equals("no_encontrado")) {
+										setMotivosNoNormalizacion(result);
+										abrirPopupNormalizacion(listaDomicilios,
+												getComandoAgregarDomicilioSinNormalizar(),
+												getComandoAgregarDomicilio());
+									} else if (result.getTipo().equals("dudas")) {
+										NormalizarDomicilioUI.getInstance().setNormalizado(true);
+										abrirPopupNormalizacion(result.getDudas(),
+												getComandoAgregarDomicilioSinNormalizar(),
+												getComandoAgregarDomicilio());
+									} else if (result.getTipo().equals("no_parseado")) {
+										setMotivosNoNormalizacion(result);
+										abrirPopupNormalizacion(listaDomicilios,
+												getComandoAgregarDomicilioSinNormalizar(),
+												getComandoAgregarDomicilio());
+									}
 								}
-							}
-							@Override
-							public void failure(Throwable exception) {
-							}
-						});
+
+								@Override
+								public void failure(Throwable exception) {
+								}
+							});
+				}
 			}
-		   } 
 		};
-	return comandoCopiar;
+		return comandoCopiar;
 	}
 
-	private DomiciliosCuentaDto mapeoDomicilioNormalizado(DomiciliosCuentaDto domicilioNormalizado){
-		   DomiciliosUIData datosDomicilioNuevo = DomicilioUI.getInstance().getDomiciliosData();  
-		   //Mapeos a Mano para no perder Datos: REVISAR:
-		   domicilioNormalizado.setObservaciones(datosDomicilioNuevo.getObservaciones().getText());
-		   domicilioNormalizado.setValidado(datosDomicilioNuevo.getValidado().isChecked());
-		   //
-		   domicilioNormalizado.setIdEntrega(domicilioAEditar.getIdEntrega());
-		   domicilioNormalizado.setIdFacturacion(domicilioAEditar.getIdFacturacion());
-		   domicilioNormalizado.setEn_carga(domicilioAEditar.getEn_carga());
-		   domicilioNormalizado.setNombre_usuario_ultima_modificacion(domicilioAEditar.getNombre_usuario_ultima_modificacion());
-		   domicilioNormalizado.setFecha_ultima_modificacion(domicilioAEditar.getFecha_ultima_modificacion());
-		   domicilioNormalizado.setActivo(domicilioAEditar.getActivo());
-		   return domicilioNormalizado;
+	private DomiciliosCuentaDto mapeoDomicilioNormalizado(DomiciliosCuentaDto domicilioNormalizado) {
+		DomiciliosUIData datosDomicilioNuevo = DomicilioUI.getInstance().getDomiciliosData();
+		// Mapeos a Mano para no perder Datos: REVISAR:
+		domicilioNormalizado.setObservaciones(datosDomicilioNuevo.getObservaciones().getText());
+		domicilioNormalizado.setValidado(datosDomicilioNuevo.getValidado().isChecked());
+		//
+		domicilioNormalizado.setIdEntrega(domicilioAEditar.getIdEntrega());
+		domicilioNormalizado.setIdFacturacion(domicilioAEditar.getIdFacturacion());
+		domicilioNormalizado.setEn_carga(domicilioAEditar.getEn_carga());
+		domicilioNormalizado.setNombre_usuario_ultima_modificacion(domicilioAEditar
+				.getNombre_usuario_ultima_modificacion());
+		domicilioNormalizado.setFecha_ultima_modificacion(domicilioAEditar.getFecha_ultima_modificacion());
+		domicilioNormalizado.setActivo(domicilioAEditar.getActivo());
+		return domicilioNormalizado;
 	}
-	
+
 	private Command getComandoAgregarDomicilio() {
 		Command comandoAceptarNormalizado = new Command() {
 			public void execute() {
-				if (NormalizarDomicilioUI.getInstance().getRowSelected() < 0){
+				if (NormalizarDomicilioUI.getInstance().getRowSelected() < 0) {
 					openPopupSelectDomicilioDialog();
-				}else{
-					DomiciliosCuentaDto domicilioNormalizado = NormalizarDomicilioUI.getInstance().getDomicilioEnGrillaSelected();
+				} else {
+					DomiciliosCuentaDto domicilioNormalizado = NormalizarDomicilioUI.getInstance()
+							.getDomicilioEnGrillaSelected();
 					domicilioAEditar = mapeoDomicilioNormalizado(domicilioNormalizado);
 					DomicilioUI.getInstance().hide();
 					NormalizarDomicilioUI.getInstance().hide();
@@ -365,7 +348,7 @@ public class DomicilioUI extends NextelDialog {
 		};
 		return comandoAceptarNormalizado;
 	}
-	
+
 	private Command getComandoAgregarDomicilioSinNormalizar() {
 		Command comandoAceptarSinNormalizar = new Command() {
 			public void execute() {
@@ -376,39 +359,41 @@ public class DomicilioUI extends NextelDialog {
 		};
 		return comandoAceptarSinNormalizar;
 	}
-	
+
 	/**
 	 * @author eSalvador
 	 **/
-	private void abrirPopupNormalizacion(List<DomiciliosCuentaDto> domiciliosAGrilla, Command comandoNoNormalizar, Command comandoAceptar) {
+	private void abrirPopupNormalizacion(List<DomiciliosCuentaDto> domiciliosAGrilla,
+			Command comandoNoNormalizar, Command comandoAceptar) {
 		NormalizarDomicilioUI.getInstance().setDomicilio(domicilioAEditar);
 		NormalizarDomicilioUI.getInstance().agregaDomiciliosAGrilla(domiciliosAGrilla);
 		NormalizarDomicilioUI.getInstance().setComandoAceptar(comandoAceptar);
 		NormalizarDomicilioUI.getInstance().setComandoNoNormalizar(comandoNoNormalizar);
 		NormalizarDomicilioUI.getInstance().showAndCenter();
 	}
-	
-	public Command getComandoBorrar(){
+
+	private Command getComandoBorrar(final Command afterDelete) {
 		Command comandoBorrar = new Command() {
 			public void execute() {
-				PersonaDto persona = cuentaDto.getPersona();
 				List<DomiciliosCuentaDto> domicilios = persona.getDomicilios();
 				for (int j = 0; j < domicilios.size(); j++) {
-					if (domicilios.get(j) == domicilioAEditar){
+					if (domicilios.get(j) == domicilioAEditar) {
 						persona.removeDomicilio(domicilioAEditar);
 					}
 				}
-				CuentaEdicionTabPanel.getInstance().getCuentaDomicilioForm().refrescaTablaConDomiciliosBorrados(rowDomicilioABorrar);
+				if (afterDelete != null) {
+					afterDelete.execute();
+				}
 				MessageDialog.getInstance().hide();
 			}
-		 };
-	return comandoBorrar;
+		};
+		return comandoBorrar;
 	}
-		
-	private boolean camposValidos(){
+
+	private boolean camposValidos() {
 		boolean valido = true;
 		List<String> errores = DomicilioUI.getInstance().getDomiciliosData().validarCamposObligatorios();
-		if (errores.size() != 0){
+		if (errores.size() != 0) {
 			valido = false;
 			ErrorDialog.getInstance().setDialogTitle("Error");
 			ErrorDialog.getInstance().show(errores);
@@ -416,69 +401,76 @@ public class DomicilioUI extends NextelDialog {
 		return valido;
 	}
 
-	private void setMotivosNoNormalizacion(NormalizarDomicilioResultDto result){
+	private void setMotivosNoNormalizacion(NormalizarDomicilioResultDto result) {
 		NormalizarDomicilioUI.getInstance().setNormalizado(false);
 		NormalizarDomicilioUI.getInstance().setMotivos(result.getMotivos());
 		NormalizarDomicilioUI.getInstance().setDomiciliosEnGrilla(result.getDudas());
 	}
-	
+
 	/**
 	 * @author eSalvador
 	 **/
 	public void openPopupSelectDomicilioDialog() {
-			MessageDialog.getInstance().setDialogTitle("Error");
-			MessageDialog.getInstance().showAceptar("Para realizar la acción debe seleccionar una fila de la tabla.", getDummyCommand());
-	}	
-	
+		MessageDialog.getInstance().setDialogTitle("Error");
+		MessageDialog.getInstance().showAceptar(
+				"Para realizar la acción debe seleccionar una fila de la tabla.",
+				MessageDialog.getCloseCommand());
+	}
+
 	/**
 	 * @author eSalvador
 	 **/
 	public void openPopupAdviseDialog(Command comandoGenerico) {
-			MessageDialog.getInstance().setDialogTitle("Advertencia");
-			MessageDialog.getInstance().showAceptar("No puede modificar o borrar el domicilio. Ya se cerró una solicitud de servicio para la cuenta desde su creación.", comandoGenerico);
-	}
-	
-	/**
-	 * @author eSalvador
-	 **/
-	public void openPopupDeleteDialog(Command comandoGenerico) {
-		MessageDialog.getInstance().setDialogTitle("Eliminar Domicilio");
-		MessageDialog.getInstance().setSize("300px", "100px");
-		MessageDialog.getInstance();
-		MessageDialog.getInstance().showSiNo("¿Esta seguro que desea eliminar el domicilio seleccionado?",comandoGenerico,MessageDialog.getCloseCommand());
+		MessageDialog.getInstance().setDialogTitle("Advertencia");
+		MessageDialog.getInstance().showAceptar(
+				"No puede modificar o borrar el domicilio. "
+						+ "Ya se cerró una solicitud de servicio para la cuenta desde su creación.",
+				comandoGenerico);
 	}
 
-	
-	private Command getDummyCommand(){
-		Command dummyCommand = new Command() {
-			public void execute() {
-				MessageDialog.getInstance().hide();
-			}
-		};
-	return dummyCommand;
+	/**
+	 * @author eSalvador
+	 * @param command
+	 **/
+	public void openPopupDeleteDialog(PersonaDto persona, DomiciliosCuentaDto domicilio, Command afterDelete) {
+		MessageDialog.getInstance().setDialogTitle("Eliminar Domicilio");
+		MessageDialog.getInstance().setSize("300px", "100px");
+		if (domicilio.getVantiveId() == null) {
+			domicilioAEditar = domicilio;
+			this.persona = persona;
+			MessageDialog.getInstance().showSiNo(
+					"¿Esta seguro que desea eliminar el domicilio seleccionado?",
+					getComandoBorrar(afterDelete), MessageDialog.getCloseCommand());
+		} else {
+			openPopupAdviseDialog(MessageDialog.getCloseCommand());
+		}
 	}
-	
-	public Command getOpenDomicilioUICommand(){
+
+	private void openPopupDeleteDialog(Command comandoGenerico) {
+		MessageDialog.getInstance().setDialogTitle("Eliminar Domicilio");
+		MessageDialog.getInstance().setSize("300px", "100px");
+		MessageDialog.getInstance().showSiNo("¿Esta seguro que desea eliminar el domicilio seleccionado?",
+				comandoGenerico, MessageDialog.getCloseCommand());
+	}
+
+	public Command getOpenDomicilioUICommand() {
 		Command openUICommand = new Command() {
 			public void execute() {
-				DomicilioUI.getInstance().setComandoAceptar(getDummyCommand());
+				DomicilioUI.getInstance().setComandoAceptar(MessageDialog.getCloseCommand());
 				DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
 				MessageDialog.getInstance().hide();
 			}
 		};
-	return openUICommand;
+		return openUICommand;
 	}
-	
-	public Command getOpenDialogAdviceCommand(){
+
+	private Command getOpenDialogAdviceCommand() {
 		Command openDialogCommand = new Command() {
 			public void execute() {
-				openPopupAdviseDialog(getDummyCommand());
+				openPopupAdviseDialog(MessageDialog.getCloseCommand());
 			}
 		};
-	return openDialogCommand;
-	}	
-	
-	public void refrescaTablaConNuevoDomicilio(DomiciliosCuentaDto domicilioNuevo){
-	
+		return openDialogCommand;
 	}
+
 }
