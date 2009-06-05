@@ -9,16 +9,20 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import winit.uc.exception.UCException;
 import ar.com.nextel.business.vendedores.RegistroVendedores;
 import ar.com.nextel.framework.security.Usuario;
-import ar.com.nextel.model.cuentas.beans.Vendedor;
+import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
+import ar.com.nextel.services.usercenter.SFAUserCenter;
+import ar.com.nextel.services.usercenter.factory.SFAUserCenterFactory;
 
 /**
  * Este filtro prepara el contexto de ejecución de la aplicación
@@ -29,13 +33,16 @@ public class ExecutionContextFilter implements Filter {
 	private static final Log log = LogFactory.getLog(ExecutionContextFilter.class);
 	private RegistroVendedores registroVendedores;
 	private SessionContextLoader sessionContext;
+ 	private SFAUserCenterFactory sfaUserCenterFactory;
+ 	private SFAUserCenter sfaUserCenter;
+    private boolean usarUserCenter = true;
 
 	public void init(FilterConfig config) throws ServletException {
 		ServletContext sc = config.getServletContext();
 		ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(sc);
-
 		registroVendedores = (RegistroVendedores) springContext.getBean("registroVendedores");
 		sessionContext = (SessionContextLoader) springContext.getBean("sessionContextLoader");
+		sfaUserCenterFactory = (SFAUserCenterFactory) springContext.getBean("userCenterFactory");
 	}
 
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -43,15 +50,34 @@ public class ExecutionContextFilter implements Filter {
 
 		prepareExecutionContext(request);
 		chain.doFilter(request, response);
-		diposeExecutionContext();
+		if (!usarUserCenter)
+			diposeExecutionContext();
 	}
 
 	private void prepareExecutionContext(ServletRequest request) {
-		if (sessionContext.getSessionContext().getVendedor() == null) {
+
+		if (usarUserCenter) {
+			try {
+				sfaUserCenter =  sfaUserCenterFactory.createUserCenter((HttpServletRequest) request);
+				if (sessionContext.getSessionContext().get(SessionContext.USUARIO) == null) {
+					sessionContext.getSessionContext().put(SessionContext.USUARIO, sfaUserCenter.getUsuario());
+				}
+				if (sessionContext.getSessionContext().getVendedor() == null) {
+					sessionContext.getSessionContext().setVendedor(registroVendedores.getVendedor(sfaUserCenter.getUsuario()));
+				}
+			} catch (UCException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+		} else {
 			Usuario usuario = new Usuario();
 			usuario.setUserName("acsa1");
-			Vendedor vendedor = registroVendedores.getVendedor(usuario);
-			sessionContext.getSessionContext().setVendedor(vendedor);
+			if (sessionContext.getSessionContext().get(SessionContext.USUARIO) == null) {
+				sessionContext.getSessionContext().put(SessionContext.USUARIO, usuario);
+			}
+			if (sessionContext.getSessionContext().getVendedor() == null) {
+				sessionContext.getSessionContext().setVendedor(registroVendedores.getVendedor(usuario));
+			}
 		}
 	}
 

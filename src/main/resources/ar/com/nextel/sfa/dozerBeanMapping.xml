@@ -541,4 +541,15 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</field>
 	</mapping>
 	
+	<mapping>
+		<class-a>ar.com.nextel.model.cuentas.beans.Vendedor</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.VendedorDto
+		</class-b>
+		<field>
+			<a>usuarioActivo</a>
+			<b>usuarioDto</b>
+		</field>
+	</mapping>
+	
+	
 </mappings>

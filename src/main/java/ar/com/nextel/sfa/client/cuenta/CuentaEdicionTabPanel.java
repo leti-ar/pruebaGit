@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client.cuenta;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.com.nextel.components.message.Message;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
@@ -10,6 +11,7 @@ import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
+import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -141,7 +143,7 @@ public class CuentaEdicionTabPanel {
 		getGuardar().addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				if (!cuentaDatosForm.formularioDatosDirty()) {
-					ErrorDialog.getInstance().show("NO HAY DATOS PARA GUARDAR");
+					ErrorDialog.getInstance().show("NO HAY DATOS NUEVOS PARA GUARDAR");
 				} else if (validarCamposTabDatos()) {
 					//ErrorDialog.getInstance().show("HAY CAMPOS OBLIGATORIOS SIN COMPLETAR");
 					guardar();
@@ -195,7 +197,8 @@ public class CuentaEdicionTabPanel {
 			public void success(Object result) {
 				CuentaEdicionTabPanel.getInstance().setCuenta2editDto((CuentaDto) result);
 				cuentaDatosForm.ponerDatosBusquedaEnFormulario((CuentaDto) result);
-				ErrorDialog.getInstance().show("GUARDADO OK");
+				razonSocial.setText(((CuentaDto) result).getPersona().getRazonSocial());
+				MessageDialog.getInstance().showAceptar("", "      La cuenta se guardó con exito     ", MessageDialog.getCloseCommand());
 			}
 		});
 	}

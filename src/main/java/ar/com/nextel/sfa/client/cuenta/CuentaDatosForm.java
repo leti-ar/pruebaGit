@@ -5,6 +5,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
@@ -26,6 +27,7 @@ import ar.com.nextel.sfa.client.dto.TipoEmailDto;
 import ar.com.nextel.sfa.client.dto.TipoTarjetaDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
+import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.enums.SexoEnum;
 import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
 import ar.com.nextel.sfa.client.enums.TipoEmailEnum;
@@ -549,6 +551,12 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getCargoLabel().setVisible(cuentaDto.getPersona().getSexo().getItemValue().equals(Long.toString(SexoEnum.ORGANIZACION.getId())));
 		
 		vendedorPanel.setVisible(false);
+	
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.ACCESO.getValue())) {
+			String ver = "yes";
+		} else {
+			String ver = "no";
+		}
 	}
 
 	/**
@@ -597,7 +605,10 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getVerazRta().setVisible(false);
 		camposTabDatos.getVerazLabel().setVisible(false);
 		
-		vendedorPanel.setVisible(/*vendedorCuenta==vendedorLogueado*/ true);
+		vendedorPanel.setVisible( ClientContext.getInstance().getUsuario().getUserName().
+				                   equalsIgnoreCase(
+	                    		  cuentaDto.getVendedor().getNombre())
+	                    		);
 		
 	}
 	

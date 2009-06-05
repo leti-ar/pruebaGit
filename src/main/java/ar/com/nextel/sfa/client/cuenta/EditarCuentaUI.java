@@ -1,11 +1,21 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.IncrementalCommand;
+import com.google.gwt.user.client.ui.RootPanel;
+
 import ar.com.nextel.sfa.client.CuentaRpcService;
+import ar.com.nextel.sfa.client.SFAWeb;
+import ar.com.nextel.sfa.client.UserCenterRpcService;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
+import ar.com.nextel.sfa.client.dto.UserCenterDto;
+import ar.com.nextel.sfa.client.dto.UsuarioDto;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
+import ar.com.nextel.sfa.client.widget.HeaderMenu;
 import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -17,7 +27,7 @@ public class EditarCuentaUI extends ApplicationUI {
 
 
 	private final CuentaEdicionTabPanel cuentaTab = CuentaEdicionTabPanel.getInstance();
-	
+//	private UserCenterDto userCenter;
 	
 	public EditarCuentaUI() {
 		super();
@@ -25,6 +35,13 @@ public class EditarCuentaUI extends ApplicationUI {
 
 	public void load() {
 		cuentaTab.clean();
+		
+//		UserCenterRpcService.Util.getInstance().getUsuarioLogueado(new DefaultWaitCallback() {
+//			public void success(Object result) {
+//				userCenter = (UserCenterDto) result;
+//				String nombre = userCenter.getUsuario().getUserName();
+//			}
+//		});
 		
 		//viene de popup "Agregar"
 		if (HistoryUtils.getParam("nroDoc")!=null) {		

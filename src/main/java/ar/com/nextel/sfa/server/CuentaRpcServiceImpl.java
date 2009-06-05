@@ -53,6 +53,7 @@ import ar.com.nextel.services.nextelServices.NextelServices;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazRequestDTO;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.services.nextelServices.veraz.exception.VerazException;
+import ar.com.nextel.services.usercenter.SFAUserCenter;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.dto.BusquedaPredefinidaDto;
 import ar.com.nextel.sfa.client.dto.CargoDto;
@@ -117,16 +118,15 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 	private NextelServices veraz;
  	private Repository repository;
  	private NormalizadorDomicilio normalizadorDomicilio;
-
+ 	private SessionContextLoader sessionContext;
 
 	@Override
 	public void init() throws ServletException {
 		super.init();
-		context = WebApplicationContextUtils
-				.getWebApplicationContext(getServletContext());
+		context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+		sessionContext = (SessionContextLoader) context.getBean("sessionContextLoader");
 		registroVendedores = (RegistroVendedores) context.getBean("registroVendedores");
 		searchCuentaBusinessOperator = (SearchCuentaBusinessOperator) context.getBean("searchCuentaBusinessOperatorBean");
-		
 		selectCuentaBusinessOperator  = (SelectCuentaBusinessOperator)  context.getBean("selectCuentaBusinessOperator");
 		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");
 		tarjetaCreditoValidatorService = (TarjetaCreditoValidatorServiceAxisImpl) context.getBean("tarjetaCreditoValidatorService");
@@ -302,7 +302,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 			}else{
 				cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(cuentaId);
 				if (!cod_vantive.equals("***") && (!cod_vantive.equals("null"))){
-					cuenta = selectCuentaBusinessOperator.getCuentaYLockear(cod_vantive, getVendedor("acsa1"));
+					cuenta = selectCuentaBusinessOperator.getCuentaYLockear(cod_vantive, this.getVendedor());
 				}
 				CondicionCuenta cd1= cuenta.getCondicionCuenta();
 				Long id = cd1.getId();
@@ -327,7 +327,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 	public CuentaDto reservaCreacionCuenta(DocumentoDto docDto) {
 		Cuenta cuenta = null;
 		CuentaDto cuentaDto = null;
-		Vendedor vendedor = getVendedor("acsa1");
+		Vendedor vendedor = getVendedor();
 		SolicitudCuenta solicitudCta = repository.createNewObject(SolicitudCuenta.class);
 		solicitudCta.setVendedor(vendedor);
 		solicitudCta.setDocumento(getDocumento(docDto));
@@ -342,6 +342,9 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		return cuentaDto;
 	}
 	
+	/**
+	 * 
+	 */
 	public TarjetaCreditoValidatorResultDto validarTarjeta(String numeroTarjeta, Integer mesVto, Integer anoVto) {
 		TarjetaCreditoValidatorResultDto resultDto = null;
 		try {
@@ -363,6 +366,15 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		Usuario usuario = new Usuario();
 		usuario.setUserName(usu);
 		return registroVendedores.getVendedor(usuario);
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    private Vendedor getVendedor() {
+    	return sessionContext.getSessionContext().getVendedor();
+    	//return registroVendedores.getVendedor(((SFAUserCenter) sessionContext.getSessionContext().get("USER_CENTER")).getUsuario());
     }
     
     /**
