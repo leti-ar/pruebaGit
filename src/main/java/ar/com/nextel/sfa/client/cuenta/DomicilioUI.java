@@ -40,7 +40,8 @@ public class DomicilioUI extends NextelDialog {
 	private boolean noEditable;
 	private static DomicilioUI instance = new DomicilioUI();
 	private DomiciliosCuentaDto domicilioAEditar;
-	// private String estadoNormalizacion;
+	private boolean tienePrincipalFacturacion;
+	private boolean tienePrincipalEntrega;
 	private int rowDomicilioABorrar;
 	private PersonaDto persona;
 
@@ -470,7 +471,26 @@ public class DomicilioUI extends NextelDialog {
 				openPopupAdviseDialog(MessageDialog.getCloseCommand());
 			}
 		};
-		return openDialogCommand;
+	return openDialogCommand;
+	}	
+
+	public void setYaTieneDomiciliosPrincipales(boolean ppalEntrega, boolean ppalfacturacion){
+		this.tienePrincipalEntrega = ppalEntrega;
+		this.tienePrincipalFacturacion = ppalfacturacion;
+	}
+	
+	public boolean getTieneDomiciliosPrincipales(){
+		boolean tienePpales = false;
+		if((domiciliosData.getFacturacion().getSelectedItemId().equals("2")) && (tienePrincipalFacturacion)){
+			tienePpales = true;	
+		}
+		if((domiciliosData.getEntrega().getSelectedItemId().equals("2")) && (tienePrincipalEntrega)){
+			tienePpales = true;
+		}
+		return tienePpales;
+	}
+	
+	public void refrescaTablaConNuevoDomicilio(DomiciliosCuentaDto domicilioNuevo){
 	}
 
 }

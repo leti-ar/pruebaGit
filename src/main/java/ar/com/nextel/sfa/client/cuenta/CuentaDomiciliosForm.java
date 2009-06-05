@@ -31,11 +31,10 @@ public class CuentaDomiciliosForm extends Composite {
 	private FlowPanel mainPanel;
 	private FormButtonsBar footerBar;
 	private FlexTable datosTabla;
-//	private List<SolicitudServicioCerradaDto> ssCerradasAsociadas = new ArrayList<SolicitudServicioCerradaDto>();
 	private DomiciliosCuentaDto domicilioAEditar;
-//	private int rowDomicilioABorrar;
 	public CuentaDto cuentaDto;
-//	private String estadoNormalizacion;
+	private boolean tienePrincipalFacturacion = false;
+	private boolean tienePrincipalEntrega  = false;
 
 	public static CuentaDomiciliosForm getInstance() {
 		return instance;
@@ -54,6 +53,7 @@ public class CuentaDomiciliosForm extends Composite {
 		Button crearDomicilio = new Button("Crear nuevo");
 		crearDomicilio.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
+				DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,tienePrincipalFacturacion);
 				DomicilioUI.getInstance().setComandoAceptar(new Command(){
 					public void execute() {
 						   DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
@@ -151,7 +151,8 @@ public class CuentaDomiciliosForm extends Composite {
 
 					//Entrega;
 					if (idEntrega == 2) { 
-						datosTabla.setHTML(i + 1, 3, "Principal");	
+						datosTabla.setHTML(i + 1, 3, "Principal");
+						setTienePrincipalEntrega(true);
 					} else if(idEntrega == 0) {
 						datosTabla.setHTML(i + 1, 3, "Si");
 					} else if(idEntrega == 1) {
@@ -161,6 +162,7 @@ public class CuentaDomiciliosForm extends Composite {
 					// Facturacion:
 					if  (idFacturacion == 2){
 						datosTabla.setHTML(i + 1, 4, "Principal");
+						setTienePrincipalFacturacion(true);
 					} else if(idFacturacion == 0){
 						datosTabla.setHTML(i + 1, 4, "Si");
 					}else if(idFacturacion == 1) {
@@ -181,6 +183,7 @@ public class CuentaDomiciliosForm extends Composite {
 					if (col == 0) {
 						domicilioAEditar = domicilio;
 						DomicilioUI.getInstance().setDomicilioAEditar(domicilioAEditar);
+						DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,tienePrincipalFacturacion);
 						DomicilioUI.getInstance().hide();
 						if (domicilio.getVantiveId() != null){
 							DomicilioUI.getInstance().openPopupAdviseDialog(DomicilioUI.getInstance().getOpenDomicilioUICommand());
@@ -205,6 +208,7 @@ public class CuentaDomiciliosForm extends Composite {
 						domicilioCopiado.setId(null);
 						domicilioCopiado.setNombre_usuario_ultima_modificacion(null);
 						domicilioCopiado.setFecha_ultima_modificacion(null);
+						DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,tienePrincipalFacturacion);
 						DomicilioUI.getInstance().setComandoAceptar(new Command(){
 							public void execute() {
 								   DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
@@ -267,5 +271,13 @@ public class CuentaDomiciliosForm extends Composite {
 
 	public void setDatosTabla(FlexTable datosTabla) {
 		this.datosTabla = datosTabla;
+	}
+
+	public void setTienePrincipalFacturacion(boolean tienePrincipalFacturacion) {
+		this.tienePrincipalFacturacion = tienePrincipalFacturacion;
+	}
+
+	public void setTienePrincipalEntrega(boolean tienePrincipalEntrega) {
+		this.tienePrincipalEntrega = tienePrincipalEntrega;
 	}
 }
