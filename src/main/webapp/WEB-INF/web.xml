@@ -44,13 +44,25 @@
 		<filter-class>ar.com.nextel.sfa.server.filter.ExecutionContextFilter</filter-class>
 	</filter>
 
-	<!-- WINIT -->
+<!-- winit -->
 	<filter-mapping>
 		<filter-name>AuthorizationFilter</filter-name>
-		<url-pattern>/*</url-pattern>
+		<url-pattern>*.rpc</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>AuthorizationFilter</filter-name>
+		<url-pattern>*.pdf</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>AuthorizationFilter</filter-name>
+		<url-pattern>*.rtf</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>AuthorizationFilter</filter-name>
+		<url-pattern>*.csv</url-pattern>
 	</filter-mapping>
 
-	<!-- Hibernate -->
+    <!-- Hibernate -->
 	<filter-mapping>
 		<filter-name>hibernateFilter</filter-name>
 		<url-pattern>*.rpc</url-pattern>
@@ -59,20 +71,33 @@
 		<filter-name>hibernateFilter</filter-name>
 		<url-pattern>*.pdf</url-pattern>
 	</filter-mapping>
-	<filter-mapping>
+		<filter-mapping>
 		<filter-name>hibernateFilter</filter-name>
 		<url-pattern>*.rtf</url-pattern>
-	</filter-mapping>	
-	<filter-mapping>
+	</filter-mapping>
+		<filter-mapping>
 		<filter-name>hibernateFilter</filter-name>
 		<url-pattern>*.csv</url-pattern>
-	</filter-mapping>	
+	</filter-mapping>
 
-	<!-- SFA -->
+	<!-- Levanta el contexto -->
 	<filter-mapping>
 		<filter-name>executionContextFilter</filter-name>
 		<url-pattern>*.rpc</url-pattern>
 	</filter-mapping>
+	<filter-mapping>
+		<filter-name>executionContextFilter</filter-name>
+		<url-pattern>*.rtf</url-pattern>
+	</filter-mapping>
+		<filter-mapping>
+		<filter-name>executionContextFilter</filter-name>
+		<url-pattern>*.pdf</url-pattern>
+	</filter-mapping>
+		<filter-mapping>
+		<filter-name>executionContextFilter</filter-name>
+		<url-pattern>*.csv</url-pattern>
+	</filter-mapping>
+
 
 	<servlet>
 		<servlet-name>CuentaRpcService</servlet-name>
@@ -139,41 +164,6 @@
 		<servlet-name>download</servlet-name>
 		<url-pattern>/download/*</url-pattern>
 	</servlet-mapping>
-	
-	<resource-ref id="sfaDS">
-		<description>sfaDS</description>
-		<res-ref-name>jdbc/sfaDS</res-ref-name>
-		<res-type>javax.sql.DataSource</res-type>
-		<res-auth>Container</res-auth>
-	</resource-ref>
-	
-	<resource-ref id="vantiveDS">
-		<description>vantiveDS</description>
-		<res-ref-name>jdbc/vantiveDS</res-ref-name>
-		<res-type>javax.sql.DataSource</res-type>
-		<res-auth>Container</res-auth>
-	</resource-ref>
-	
-	<resource-ref id="mibasDS">
-		<description>mibasDS</description>
-		<res-ref-name>jdbc/mibasDS</res-ref-name>
-		<res-type>javax.sql.DataSource</res-type>
-		<res-auth>Container</res-auth>
-	</resource-ref>
-	
-	<resource-ref id="avalonDS">
-		<description>avalonDS</description>
-		<res-ref-name>jdbc/avalonDS</res-ref-name>
-		<res-type>javax.sql.DataSource</res-type>
-		<res-auth>Container</res-auth>
-	</resource-ref>
-	
-	<resource-ref id="scnDS">
-        <description>scnDS</description>
-        <res-ref-name>jdbc/scnDS</res-ref-name>
-        <res-type>javax.sql.DataSource</res-type>
-        <res-auth>Container</res-auth>
-	</resource-ref>
 
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
