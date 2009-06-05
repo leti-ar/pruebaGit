@@ -517,6 +517,9 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	}
 	
 	private String comprobarUnidad(String unidad) {
+		if (unidad==null) {
+			return "";
+		}
 		if (!"".equals(unidad)) {
 			return "UF " + unidad + " ";
 		} else 

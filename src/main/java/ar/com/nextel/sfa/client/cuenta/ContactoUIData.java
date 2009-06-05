@@ -32,7 +32,7 @@ import com.google.gwt.user.client.ui.TextBox;
 
 public class ContactoUIData extends UIData {
 
-	ListBox tipoDocumento = new ListBox("");
+	ListBox tipoDocumento = new ListBox();
 	TextBox numeroDocumento = new TextBox();
 	TextBox nombre = new TextBox();
 	TextBox apellido = new TextBox();
@@ -121,9 +121,7 @@ public class ContactoUIData extends UIData {
 		persona.setCargo((CargoDto)cargo.getSelectedItem());
 		persona.setIdTipoDocumento((Long.parseLong(tipoDocumento.getSelectedItem().getItemValue())));
 		persona.setDocumento(getDocumentoDto());
-		//pasarle una lista de domicilios, hacer que cuando agregas un nuevo domicilio se carguen en la tabla de la pantalla
 		persona.setDomicilios(getDomicilios());
-		//
 		persona.setEmails(getEmailDto());
 		persona.setSexo((SexoDto)sexo.getSelectedItem());
 		persona.setTelefonos(getTelefonoDto());
