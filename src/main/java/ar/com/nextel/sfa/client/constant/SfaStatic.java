@@ -61,6 +61,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ERR_DOMICILIO_FACTURACION();
 
   /**
+   * Translated "No se puede agregar un domicilio principal para la cuenta.".
+   * 
+   * @return translated "No se puede agregar un domicilio principal para la cuenta."
+   */
+  @DefaultStringValue("No se puede agregar un domicilio principal para la cuenta.")
+  @Key("ERR_DOMICILIO_PPAL_DUPLICADO")
+  String ERR_DOMICILIO_PPAL_DUPLICADO();
+
+  /**
    * Translated "El campo {1}: no tiene un email válido.".
    * 
    * @return translated "El campo {1}: no tiene un email válido."
