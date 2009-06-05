@@ -68,7 +68,7 @@ public class CuentaDomiciliosForm extends Composite {
 		crearDomicilio.addStyleName("crearDomicilioButton");
 		SimplePanel crearDomicilioWrapper = new SimplePanel();
 		crearDomicilioWrapper.add(crearDomicilio);
-		crearDomicilioWrapper.addStyleName("crearDomicilioBWrapper");
+		crearDomicilioWrapper.addStyleName("h20");
 		mainPanel.add(crearDomicilioWrapper);
 		//
 		initTable(datosTabla);
