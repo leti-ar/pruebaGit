@@ -3,9 +3,11 @@ package ar.com.nextel.sfa.client.cuenta;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.NormalizacionDomicilioMotivoDto;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
+import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
@@ -33,6 +35,8 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	private SimpleLink linkNoNormalizar;
 	private DomiciliosCuentaDto domicilio;
 	private List<DomiciliosCuentaDto> domiciliosEnGrilla;
+	boolean tienePrincipalEntrega;
+	boolean tienePrincipalFacturacion;
 	//
 	private boolean normalizado = true;	
     private List<NormalizacionDomicilioMotivoDto> motivos = new ArrayList();
@@ -128,16 +132,25 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		footer.setVisible(false);
 		linkNoNormalizar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				// Logica para NoNormalizar Domicilio!
 				if (comandoNoNormalizar != null){
-					comandoNoNormalizar.execute();
+					if (!DomicilioUI.getInstance().getTieneDomiciliosPrincipales()){
+						comandoNoNormalizar.execute();	
+					}else{
+						MessageDialog.getInstance().setDialogTitle("Error");
+						MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DOMICILIO_PPAL_DUPLICADO(), MessageDialog.getCloseCommand());	
+					}
 				}
 			}
 		});
 		linkAceptar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				if (comandoAceptar != null){
-					comandoAceptar.execute();
+					if (!DomicilioUI.getInstance().getTieneDomiciliosPrincipales()){
+						comandoAceptar.execute();	
+					}else{
+						MessageDialog.getInstance().setDialogTitle("Error");
+						MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DOMICILIO_PPAL_DUPLICADO(), MessageDialog.getCloseCommand());
+					}
 				}
 			}
 		});
@@ -149,6 +162,11 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		this.showAndCenter();
 	}
 
+	private boolean tieneDomiciliosPrincipalesDuplicados(){
+		
+		return false;
+	}
+	
 	public void agregaDomiciliosAGrilla(List<DomiciliosCuentaDto> domicilios) {
 		this.domiciliosEnGrilla = domicilios;
 		setearFormatoNormalizador();
@@ -180,6 +198,11 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		domicilioResult.getRowFormatter().addStyleName(0, "header");
 		domicilioResult.setHTML(0, 0, "Seleccione alguna de estas opciones");
 		domicilioResultWrapper.setWidget(domicilioResult);
+	}
+	
+	public void setTienePrincipales(boolean ppalEntrega, boolean ppalfacturacion){
+		this.tienePrincipalEntrega = ppalEntrega;
+		this.tienePrincipalFacturacion = ppalfacturacion;
 	}
 	
 	@Override
