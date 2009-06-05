@@ -5,6 +5,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
+import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
@@ -248,14 +249,14 @@ public class CuentaDomiciliosForm extends Composite {
 			validator.addError(Sfa.constant().ERR_DOMICILIO_FACTURACION());
 		} else {
 			for (DomiciliosCuentaDto domi : listaDomicilios) {
-				
-			/**TODO: Arreglar esto de abajo! Avisarle a Raul que se comento porque se cambio Todo lo de TipoDomicilioAsociado! */
-//				if( domi.getTiposDomicilioAsociado()!=null) {
-//					for (TipoDomicilioAsociadoDto tipoDom :domi.getTiposDomicilioAsociado()) {
-//						hayDomicilioEntrega = tipoDom.getTipoDomicilio().getId()==TipoDomicilioAsociadoEnum.ENTREGA.getId();
-//						hayDomicilioFacturacion = tipoDom.getTipoDomicilio().getId()==TipoDomicilioAsociadoEnum.FACTURACION.getId();
-//					}
-//				}
+				if ((domi.getIdEntrega() != null) && (domi.getIdFacturacion() != null)){
+						if (!domi.getIdEntrega().equals(EstadoTipoDomicilioDto.NO.getId())){
+							hayDomicilioEntrega = new Boolean(true);
+						};
+						if (!domi.getIdFacturacion().equals(EstadoTipoDomicilioDto.NO.getId())){
+							hayDomicilioFacturacion = new Boolean(true);
+						};
+				}
 			}
 			if (!hayDomicilioEntrega) 
 				validator.addError(Sfa.constant().ERR_DOMICILIO_ENTREGA());

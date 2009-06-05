@@ -43,20 +43,20 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ERR_DIA_HABIL();
 
   /**
-   * Translated "La cuenta debe tener un domicilio principal de entrega".
+   * Translated "La cuenta debe tener un domicilio de entrega.".
    * 
-   * @return translated "La cuenta debe tener un domicilio principal de entrega"
+   * @return translated "La cuenta debe tener un domicilio de entrega."
    */
-  @DefaultStringValue("La cuenta debe tener un domicilio principal de entrega")
+  @DefaultStringValue("La cuenta debe tener un domicilio de entrega.")
   @Key("ERR_DOMICILIO_ENTREGA")
   String ERR_DOMICILIO_ENTREGA();
 
   /**
-   * Translated "La cuenta debe tener un domicilio principal de facturación".
+   * Translated "La cuenta debe tener un domicilio de facturación.".
    * 
-   * @return translated "La cuenta debe tener un domicilio principal de facturación"
+   * @return translated "La cuenta debe tener un domicilio de facturación."
    */
-  @DefaultStringValue("La cuenta debe tener un domicilio principal de facturación")
+  @DefaultStringValue("La cuenta debe tener un domicilio de facturación.")
   @Key("ERR_DOMICILIO_FACTURACION")
   String ERR_DOMICILIO_FACTURACION();
 
@@ -68,6 +68,24 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("El campo {1}: no tiene un email válido.")
   @Key("ERR_EMAIL_NO_VALIDO")
   String ERR_EMAIL_NO_VALIDO();
+
+  /**
+   * Translated "La cuenta debe tener un domicilio principal de entrega.".
+   * 
+   * @return translated "La cuenta debe tener un domicilio principal de entrega."
+   */
+  @DefaultStringValue("La cuenta debe tener un domicilio principal de entrega.")
+  @Key("ERR_FALTA_DOMICILIO_ENTREGA")
+  String ERR_FALTA_DOMICILIO_ENTREGA();
+
+  /**
+   * Translated "La cuenta debe tener un domicilio principal de facturación.".
+   * 
+   * @return translated "La cuenta debe tener un domicilio principal de facturación."
+   */
+  @DefaultStringValue("La cuenta debe tener un domicilio principal de facturación.")
+  @Key("ERR_FALTA_DOMICILIO_FACTURACION")
+  String ERR_FALTA_DOMICILIO_FACTURACION();
 
   /**
    * Translated "El campo {1}: no tiene una fecha válida. Formato válido: \"dd/mm/aaaa\"".
