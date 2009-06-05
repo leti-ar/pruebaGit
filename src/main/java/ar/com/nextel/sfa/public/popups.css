@@ -34,8 +34,8 @@ div.popFormButtons {
 	margin-top: 8px;
 	text-align: center;
 	background-image: url(images/bkg_frmButtons.gif);
-	background-repeat: repeat-x; 
-	text-align : center;
+	background-repeat: repeat-x;
+	text-align: center;
 	margin-top: 8px;
 	text-align: center;
 }
@@ -82,8 +82,26 @@ div.popFooter A,div.popFormButtons A {
 	margin: 10px;
 }
 
-.gwt-CustomDialogBox .message{
+.gwt-CustomDialogBox .message {
 	text-align: center;
 	margin: 10px;
 	overflow: auto;
+}
+
+.dropUpStyle {
+	background-color: #DFDFDF;
+	background-image: url(images/toolbar/back-dropUp.gif);
+	background-repeat: repeat-x;
+	border: 1px solid #B2B2B4;
+	padding: 5px;
+}
+
+.dropUpStyle a:hover {
+	text-decoration: underline !important;
+}
+
+.dropUpStyle a {
+	font-size: 10px;
+	line-height: 170%;
+	text-decoration: none !important;
 }
