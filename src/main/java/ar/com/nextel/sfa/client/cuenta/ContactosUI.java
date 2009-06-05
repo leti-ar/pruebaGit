@@ -303,7 +303,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 					}
 				});
 				DomicilioUI.getInstance().hideLabelsParaContactos();
-				DomicilioUI.getInstance().cargarPopupNuevoDomicilio(new DomiciliosCuentaDto());
+				DomicilioUI.getInstance().cargarPopupNuevoDomicilio();
 			}
 		});
 		
@@ -317,7 +317,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		crearNuevo.add(agregar);
 		domicilioPanel.add(crearNuevo);
 	
-		String[] widths = { "24px", "100px" };
+		String[] widths = { "24px", "100%" };
 		for (int col = 0; col < widths.length; col++) {
 			domicilioTable.getColumnFormatter().setWidth(col, widths[col]);
 		}
