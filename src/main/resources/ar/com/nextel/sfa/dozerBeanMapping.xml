@@ -439,9 +439,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<class-b>ar.com.nextel.sfa.client.dto.TipoDocumentoDto
 		</class-b>
 	</mapping>
-
-
-
+	<mapping>
+		<class-a>ar.com.nextel.model.cuentas.beans.ContactoCuenta</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.ContactoCuentaDto</class-b>
+	</mapping>
 	<mapping>
 		<class-a>ar.com.nextel.model.cuentas.beans.Cuenta</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.CuentaDto</class-b>
