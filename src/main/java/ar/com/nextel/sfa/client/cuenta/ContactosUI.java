@@ -303,7 +303,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 					}
 				});
 				DomicilioUI.getInstance().hideLabelsParaContactos();
-				DomicilioUI.getInstance().cargarPopupNuevoDomicilio();
+				DomicilioUI.getInstance().cargarPopupNuevoDomicilio(new DomiciliosCuentaDto());
 			}
 		});
 		
