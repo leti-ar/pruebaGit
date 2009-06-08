@@ -271,7 +271,7 @@ public class DomicilioUI extends NextelDialog {
 	 * @author eSalvador
 	 **/
 	public Command getComandoAceptarDomicilioServiceCall() {
-		Command comandoCopiar = new Command() {
+		Command comandoAceptar = new Command() {
 			public void execute() {
 				domicilioAEditar = getDomiciliosData().getDomicilio();
 				if (camposValidos()) {
@@ -313,7 +313,7 @@ public class DomicilioUI extends NextelDialog {
 				}
 			}
 		};
-		return comandoCopiar;
+		return comandoAceptar;
 	}
 
 	private DomiciliosCuentaDto mapeoDomicilioNormalizado(DomiciliosCuentaDto domicilioNormalizado) {

@@ -50,10 +50,12 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	//private CuentaDto cuentaDto;
 	private ContactoCuentaDto contactoCuentaDto;
 
-	private CuentaDatosForm cuentaDatosForm;
+	//private CuentaDatosForm cuentaDatosForm;
 	private CuentaContactoForm cuentaContactoForm;
 	private FlexTable domicilioTable;
-	private CuentaDomiciliosForm cuentaDomiciliosForm;
+	//private CuentaDomiciliosForm cuentaDomiciliosForm;
+	private boolean tienePrincipalFacturacion = false;
+	private boolean tienePrincipalEntrega  = false;
 	
 	private int contactoABorrar = -1;
 	
@@ -280,7 +282,6 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	 **/
 	public void refrescaTablaConNuevoDomicilio(){
 		domicilioTable.clear();
-		//cargaTablaDomicilios();
 		setearDomicilio();
 	}
 	
@@ -306,7 +307,6 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 				DomicilioUI.getInstance().cargarPopupNuevoDomicilio(new DomiciliosCuentaDto());
 			}
 		});
-		
 		
 		agregar.addStyleName("crearDomicilioButton");
 		SimplePanel crearNuevo = new SimplePanel(); 
@@ -340,6 +340,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	public void setearDomicilio() {
 		listaDomicilios = contactosData.getContactoDto().getPersona().getDomicilios();
 		//listaDomicilios = contactoCuentaDto.getPersona().getDomicilios();
+		domicilioTable.clear();
 		int row = 1; 
 		if (listaDomicilios != null) {
 			for (Iterator<DomiciliosCuentaDto> iter = listaDomicilios.iterator(); iter.hasNext();) {
@@ -353,14 +354,69 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 
 	private class Listener implements TableListener {
 		public void onCellClicked(SourcesTableEvents arg0, int fila, int columna) {
-			//boton editar
-			if ((fila>=1) && (columna==0)) {
-				DomicilioUI.getInstance().cargarPopupEditarDomicilio(listaDomicilios.get(fila-1));
+			if (fila != 0) {
+				DomiciliosCuentaDto domicilio = contactosData.getPersonaDto().getDomicilios().get(fila - 1);
+				//DomiciliosCuentaDto domicilio = listaDomicilios.get(fila-1);
+				//Acciones a tomar cuando haga click en los lapices de edicion:
+				if (columna == 0) {
+					domicilioAEditar = domicilio;
+					DomicilioUI.getInstance().setDomicilioAEditar(domicilioAEditar);
+					DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,tienePrincipalFacturacion);
+					DomicilioUI.getInstance().hide();
+					if (domicilio.getVantiveId() != null){
+						DomicilioUI.getInstance().openPopupAdviseDialog(DomicilioUI.getInstance().getOpenDomicilioUICommand());
+					}else{
+						DomicilioUI.getInstance().setComandoAceptar(new Command(){
+							public void execute() {
+								PersonaDto persona = contactosData.getPersonaDto();
+								int index = persona.getDomicilios().indexOf(domicilioAEditar);
+								persona.getDomicilios().remove(index);
+								persona.getDomicilios().add(index, DomicilioUI.getInstance().getDomicilioAEditar());
+								domicilioAEditar = DomicilioUI.getInstance().getDomicilioAEditar();
+								refrescaTablaConNuevoDomicilio();
+								}
+							});
+						DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
+					}
+				}
+				// Acciones a tomar cuando haga click en iconos de copiado de domicilios:
+				if (columna == 1) {
+					domicilioAEditar = domicilio;
+					DomiciliosCuentaDto domicilioCopiado = domicilioAEditar.clone();
+					domicilioCopiado.setId(null);
+					domicilioCopiado.setNombre_usuario_ultima_modificacion(null);
+					domicilioCopiado.setFecha_ultima_modificacion(null);
+					DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,tienePrincipalFacturacion);
+					DomicilioUI.getInstance().setComandoAceptar(new Command(){
+						public void execute() {
+							   DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
+							   PersonaDto persona = contactosData.getPersonaDto();
+							   persona.getDomicilios().add(domicilio);
+							   refrescaTablaConNuevoDomicilio();
+							}
+						});
+					DomicilioUI.getInstance().cargarPopupCopiarDomicilio(domicilioCopiado);
+				}
+				// Acciones a tomar cuando haga click en iconos de borrado de domicilios:
+				if (columna == 2) {
+					final int rowABorrar = fila;
+					DomicilioUI.getInstance().hide();
+					domicilioAEditar = domicilio;
+					DomicilioUI.getInstance().openPopupDeleteDialog(contactosData.getPersonaDto(), domicilioAEditar, new Command(){
+						public void execute() {
+							refrescaTablaConDomiciliosBorrados(rowABorrar);
+						}
+					});
+				}
 			}
 		}
 	}
 	
-		
+	public void refrescaTablaConDomiciliosBorrados(int row){
+		domicilioTable.removeRow(row);
+		setearDomicilio();
+	}
+	
 	private String armarDomicilio(DomiciliosCuentaDto domicilioCuentaDto) {
 		String domicilio = comprobarCalle(domicilioCuentaDto.getCalle()) 
 			+ comprobarNumero(domicilioCuentaDto.getNumero()) 
