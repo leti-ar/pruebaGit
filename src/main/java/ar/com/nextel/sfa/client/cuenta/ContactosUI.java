@@ -379,35 +379,6 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 						DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
 					}
 				}
-				// Acciones a tomar cuando haga click en iconos de copiado de domicilios:
-				if (columna == 1) {
-					domicilioAEditar = domicilio;
-					DomiciliosCuentaDto domicilioCopiado = domicilioAEditar.clone();
-					domicilioCopiado.setId(null);
-					domicilioCopiado.setNombre_usuario_ultima_modificacion(null);
-					domicilioCopiado.setFecha_ultima_modificacion(null);
-					DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,tienePrincipalFacturacion);
-					DomicilioUI.getInstance().setComandoAceptar(new Command(){
-						public void execute() {
-							   DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
-							   PersonaDto persona = contactosData.getPersonaDto();
-							   persona.getDomicilios().add(domicilio);
-							   refrescaTablaConNuevoDomicilio();
-							}
-						});
-					DomicilioUI.getInstance().cargarPopupCopiarDomicilio(domicilioCopiado);
-				}
-				// Acciones a tomar cuando haga click en iconos de borrado de domicilios:
-				if (columna == 2) {
-					final int rowABorrar = fila;
-					DomicilioUI.getInstance().hide();
-					domicilioAEditar = domicilio;
-					DomicilioUI.getInstance().openPopupDeleteDialog(contactosData.getPersonaDto(), domicilioAEditar, new Command(){
-						public void execute() {
-							refrescaTablaConDomiciliosBorrados(rowABorrar);
-						}
-					});
-				}
 			}
 		}
 	}
