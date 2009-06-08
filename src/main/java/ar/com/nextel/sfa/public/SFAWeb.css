@@ -502,6 +502,12 @@ A {
 	float: right;
 }
 
+.fontNormalGris {
+	text-align: left;
+	font-weight: normal;
+	color: gray;
+}
+
 .verazRechazar {
 	background-color: #FE003E;
 	border: 2px solid #FE003E;
