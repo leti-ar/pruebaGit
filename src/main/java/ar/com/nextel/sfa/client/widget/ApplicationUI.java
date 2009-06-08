@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
  */
 public abstract class ApplicationUI extends Composite {
 
+	protected boolean firstLoad = true;
 	private SimplePanel page;
 	protected FlowPanel mainPanel;
 
@@ -24,8 +25,34 @@ public abstract class ApplicationUI extends Composite {
 		addStyleName("Gwt-ApplicationUI");
 	}
 
-	public abstract void load();
+	/**
+	 * Lanza la carga de la pagina. Se utiliza solo en el UILoader
+	 * 
+	 * @return true si se pudo cargar
+	 */
+	public boolean loadApplication() {
+		if (firstLoad) {
+			firstLoad = false;
+			firstLoad();
+		}
+		return load();
+	}
 
-	public abstract void unload();
+	/** Se ejecuta la primera vez que se carga el módulo */
+	public abstract void firstLoad();
+
+	/**
+	 * Se ejecuta antes de cargar el módulo
+	 * 
+	 * @return true si se pudo descargar
+	 */
+	public abstract boolean load();
+
+	/**
+	 * Se ejecuta antes de descargar el módulo
+	 * 
+	 * @return true si se pudo descargar
+	 */
+	public abstract boolean unload();
 
 }

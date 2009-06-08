@@ -10,7 +10,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class BuscarOportunidadUI extends ApplicationUI {
 
-	protected boolean firstLoad = true;
 	private BuscarOportunidadFilterUI buscarOportunidadFilterForm;
 	private BuscarOportunidadResultUI buscarOportunidadResultPanel;
 
@@ -18,26 +17,28 @@ public class BuscarOportunidadUI extends ApplicationUI {
 		super();
 	}
 
-	public void load() {
-		if (firstLoad) {
-			firstLoad = false;
-			buscarOportunidadFilterForm = new BuscarOportunidadFilterUI();
-			buscarOportunidadResultPanel = new BuscarOportunidadResultUI();
-			buscarOportunidadFilterForm.setBuscarOportunidadResultPanel(buscarOportunidadResultPanel);
+	public void firstLoad() {
+		buscarOportunidadFilterForm = new BuscarOportunidadFilterUI();
+		buscarOportunidadResultPanel = new BuscarOportunidadResultUI();
+		buscarOportunidadFilterForm.setBuscarOportunidadResultPanel(buscarOportunidadResultPanel);
 
-			mainPanel.add(buscarOportunidadFilterForm);
-			mainPanel.add(buscarOportunidadResultPanel);
-			mainPanel.addStyleName("gwt-central-panel");
+		mainPanel.add(buscarOportunidadFilterForm);
+		mainPanel.add(buscarOportunidadResultPanel);
+		mainPanel.addStyleName("gwt-central-panel");
 
-			Button aceptar = new Button(Sfa.constant().aceptar(), new ClickListener() {
-				public void onClick(Widget sender) {
-					UILoader.getInstance().setPage(UILoader.BUSCAR_OPP);
-				}
-			});
-			mainPanel.add(aceptar);
+		Button aceptar = new Button(Sfa.constant().aceptar(), new ClickListener() {
+			public void onClick(Widget sender) {
+				UILoader.getInstance().setPage(UILoader.BUSCAR_OPP);
 			}
-		}
+		});
+		mainPanel.add(aceptar);
+	}
 
-	public void unload() {
+	public boolean load() {
+		return true;
+	}
+
+	public boolean unload() {
+		return true;
 	}
 }

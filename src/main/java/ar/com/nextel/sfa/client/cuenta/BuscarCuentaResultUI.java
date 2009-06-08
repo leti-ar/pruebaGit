@@ -39,9 +39,11 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	private CuentaSearchDto lastCuentaSearchDto;
 	private int numeroPagina = 1;
 	private Long totalRegistrosBusqueda;
+	private BuscarCuentaController controller;
 
 	public BuscarCuentaResultUI(BuscarCuentaController controller) {
 		super();
+		this.controller = controller;
 		addStyleName("gwt-BuscarCuentaResultPanel");
 		resultTableWrapper = new SimplePanel();
 		resultTableWrapper.addStyleName("resultTableWrapper");
@@ -98,6 +100,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 									"No se encontraron datos con el criterio utilizado.");
 						}
 						setCuentas(result);
+						controller.setResultadoVisible(true);
 						// setTotalRegistrosBusqueda(CuentaRpcService.Util.getInstance().searchTotalCuentas(cuentaSearchDto));
 					}
 				});

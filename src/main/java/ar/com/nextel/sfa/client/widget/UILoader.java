@@ -54,14 +54,16 @@ public class UILoader extends SimplePanel implements HistoryListener {
 	}
 
 	/**
-	 * Muestra una página y oculta el menu.
+	 * Oculta la página anterior (Si es que puede), muestra una nueva y oculta el menu.
 	 * 
 	 * @param page
 	 *            Código de la página que desea mostrar.
 	 */
 	public void setPage(int page) {
 		if (getWidget() != null) {
-			((ApplicationUI) getWidget()).unload();
+			if(!((ApplicationUI) getWidget()).unload()){
+				return;
+			}
 		}
 		if (page == SOLO_MENU) {
 			SFAWeb.getHeaderMenu().setVisible(true);
@@ -74,7 +76,7 @@ public class UILoader extends SimplePanel implements HistoryListener {
 		}
 		// if(pages[page] != null){
 		setWidget(pages[page]);
-		pages[page].load();
+		pages[page].loadApplication();
 		// } else {
 		// GWT.log("Page does not exsist. Check PageLoader.createPageWidget()", null);
 		// }

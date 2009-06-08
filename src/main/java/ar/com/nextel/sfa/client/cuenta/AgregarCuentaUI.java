@@ -6,7 +6,6 @@ import ar.com.nextel.sfa.client.widget.NextelDialog;
 
 public class AgregarCuentaUI extends ApplicationUI {
 
-	protected boolean firstLoad = true;
     private static AgregarCuentaUI instance = new AgregarCuentaUI();;
     NextelDialog buscadorDocumentoPopup;
     
@@ -25,11 +24,17 @@ public class AgregarCuentaUI extends ApplicationUI {
 			//mainPanel.add(CuentaEdicionTabPanel.getInstance().getCuentaEdicionPanel());
 //      }
 	}
-	public void load() {
+	
+	public boolean load() {
 		buscadorDocumentoPopup.showAndCenter();
+		return true;
 	}
-	public void unload() {
-
+	
+	public void firstLoad() {
+	}
+	
+	public boolean unload() {
+		return true;
 	}
 
 }

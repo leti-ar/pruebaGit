@@ -11,7 +11,6 @@ import ar.com.nextel.sfa.client.widget.ApplicationUI;
  */
 public class BuscarSSCerradaUI extends ApplicationUI {
 
-	protected boolean firstLoad = true;
 	private BuscarSSCerradasFilterUI buscadorSSCerradasFilterForm;
 	private BuscarSSCerradasResultUI buscarSSCerradasResultPanel;
 	private BuscarSSTotalesResultUI buscarSSTotalesResultUI;
@@ -21,28 +20,29 @@ public class BuscarSSCerradaUI extends ApplicationUI {
 		super();
 	}
 
-	public void load() {
-		if (firstLoad) {
-			firstLoad = false;
-			buscadorSSCerradasFilterForm = new BuscarSSCerradasFilterUI();
-			buscarSSCerradasResultPanel = new BuscarSSCerradasResultUI();
-			buscarSSTotalesResultUI = new BuscarSSTotalesResultUI();
-			cambiosSSCerradasResultUI = new CambiosSSCerradasResultUI();
-			buscarSSTotalesResultUI.setVisible(false);
-			buscadorSSCerradasFilterForm.setBuscarCuentaResultPanel(buscarSSCerradasResultPanel);
-			buscarSSCerradasResultPanel.setBuscarSSTotalesResultUI(buscarSSTotalesResultUI);
-			cambiosSSCerradasResultUI.setVisible(false);
-			buscarSSCerradasResultPanel.setCambiosSSCerradasResultUI(cambiosSSCerradasResultUI);
-
-			mainPanel.add(buscadorSSCerradasFilterForm);
-			mainPanel.add(buscarSSCerradasResultPanel);
-			mainPanel.add(buscarSSTotalesResultUI);
-			mainPanel.add(cambiosSSCerradasResultUI);
-			mainPanel.addStyleName("gwt-central-panel");
-		}
+	public void firstLoad() {
+		buscadorSSCerradasFilterForm = new BuscarSSCerradasFilterUI();
+		buscarSSCerradasResultPanel = new BuscarSSCerradasResultUI();
+		buscarSSTotalesResultUI = new BuscarSSTotalesResultUI();
+		cambiosSSCerradasResultUI = new CambiosSSCerradasResultUI();
+		buscarSSTotalesResultUI.setVisible(false);
+		buscadorSSCerradasFilterForm.setBuscarCuentaResultPanel(buscarSSCerradasResultPanel);
+		buscarSSCerradasResultPanel.setBuscarSSTotalesResultUI(buscarSSTotalesResultUI);
+		cambiosSSCerradasResultUI.setVisible(false);
+		buscarSSCerradasResultPanel.setCambiosSSCerradasResultUI(cambiosSSCerradasResultUI);
+		
+		mainPanel.add(buscadorSSCerradasFilterForm);
+		mainPanel.add(buscarSSCerradasResultPanel);
+		mainPanel.add(buscarSSTotalesResultUI);
+		mainPanel.add(cambiosSSCerradasResultUI);
+		mainPanel.addStyleName("gwt-central-panel");
+	}
+	
+	public boolean load() {
+		return true;
 	}
 
-	public void unload() {
-
+	public boolean unload() {
+		return true;
 	}
 }

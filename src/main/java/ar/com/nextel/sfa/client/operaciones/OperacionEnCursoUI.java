@@ -9,39 +9,40 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Esta página contiene el formulario de busquedas de Operaciones (OppFilterForm) y la tabla de
- * resultados (OppResultPanel)
+ * Esta página contiene el formulario de busquedas de Operaciones (OppFilterForm) y la tabla de resultados
+ * (OppResultPanel)
  * 
  * @author eSalvador
  * 
  */
 public class OperacionEnCursoUI extends ApplicationUI {
 
-	protected boolean firstLoad = true;
-	//private OppFilterForm oppFilterForm;
+	// private OppFilterForm oppFilterForm;
 	private OperacionEnCursoResultUI oppResultPanel;
 
 	public OperacionEnCursoUI() {
 		super();
 	}
 
-	public void load() {
-		if (firstLoad) {
-			oppResultPanel = new OperacionEnCursoResultUI();
-			firstLoad = false;
+	public void firstLoad() {
+		oppResultPanel = new OperacionEnCursoResultUI();
 
-			mainPanel.add(oppResultPanel);
-			mainPanel.addStyleName("gwt-central-panel");
-			Button aceptar = new Button(Sfa.constant().aceptar(), new ClickListener() {
-				public void onClick(Widget sender) {
-					UILoader.getInstance().setPage(UILoader.OP_EN_CURSO);
-				}
-			});
-			mainPanel.add(aceptar);
-		}
-		oppResultPanel.searchOperaciones();
+		mainPanel.add(oppResultPanel);
+		mainPanel.addStyleName("gwt-central-panel");
+		Button aceptar = new Button(Sfa.constant().aceptar(), new ClickListener() {
+			public void onClick(Widget sender) {
+				UILoader.getInstance().setPage(UILoader.OP_EN_CURSO);
+			}
+		});
+		mainPanel.add(aceptar);
 	}
 
-	public void unload() {
+	public boolean load() {
+		oppResultPanel.searchOperaciones();
+		return true;
+	}
+
+	public boolean unload() {
+		return true;
 	}
 }

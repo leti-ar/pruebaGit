@@ -9,4 +9,6 @@ public interface BuscarCuentaController {
 
 	public void searchCuentas(CuentaSearchDto cuentaSearchDto);
 	
+	public void setResultadoVisible(boolean visible);
+	
 }

@@ -22,7 +22,6 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaController, ClickListener {
 
-	protected boolean firstLoad = true;
 	private BuscarCuentaFilterUI buscadorCuentaFilterForm;
 	private BuscarCuentaResultUI buscarCuentaResultPanel;
 	private FormButtonsBar formButtonsBar;
@@ -41,51 +40,51 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 		super();
 	}
 
-	public void load() {
-		if (firstLoad) {
-			firstLoad = false;
-			buscadorCuentaFilterForm = new BuscarCuentaFilterUI(this);
-			buscarCuentaResultPanel = new BuscarCuentaResultUI(this);
-			buscadorCuentaFilterForm.setBuscarCuentaResultPanel(buscarCuentaResultPanel);
+	public void firstLoad() {
+		buscadorCuentaFilterForm = new BuscarCuentaFilterUI(this);
+		buscarCuentaResultPanel = new BuscarCuentaResultUI(this);
+		buscadorCuentaFilterForm.setBuscarCuentaResultPanel(buscarCuentaResultPanel);
 
-			mainPanel.add(buscadorCuentaFilterForm);
-			mainPanel.add(buscarCuentaResultPanel);
-			mainPanel.addStyleName("gwt-central-panel");
+		mainPanel.add(buscadorCuentaFilterForm);
+		mainPanel.add(buscarCuentaResultPanel);
+		mainPanel.addStyleName("gwt-central-panel");
 
-			formButtonsBar = new FormButtonsBar();
-			formButtonsBar.setVisible(false);
-			mainPanel.add(formButtonsBar);
-			formButtonsBar.addStyleName("mt10");
-			crearSSButton = new SimpleLink("^Crear SS", "#", true);
-			agregarCuentaButton = new SimpleLink("^Agregar", "#", true);
-			formButtonsBar.addLink(crearSSButton);
-			formButtonsBar.addLink(agregarCuentaButton);
-			crearSSButton.addClickListener(this);
-			agregarCuentaButton.addClickListener(this);
+		formButtonsBar = new FormButtonsBar();
+		formButtonsBar.setVisible(false);
+		mainPanel.add(formButtonsBar);
+		formButtonsBar.addStyleName("mt10");
+		crearSSButton = new SimpleLink("^Crear SS", "#", true);
+		agregarCuentaButton = new SimpleLink("^Agregar", "#", true);
+		formButtonsBar.addLink(crearSSButton);
+		formButtonsBar.addLink(agregarCuentaButton);
+		crearSSButton.addClickListener(this);
+		agregarCuentaButton.addClickListener(this);
 
-			popupCrearSS = new PopupPanel(true);
-			popupAgregarCuenta = new PopupPanel(true);
-			popupCrearSS.addStyleName("dropUpStyle");
-			popupAgregarCuenta.addStyleName("dropUpStyle");
+		popupCrearSS = new PopupPanel(true);
+		popupAgregarCuenta = new PopupPanel(true);
+		popupCrearSS.addStyleName("dropUpStyle");
+		popupAgregarCuenta.addStyleName("dropUpStyle");
 
-			FlowPanel linksCrearSS = new FlowPanel();
-			linksCrearSS.add(crearEquipos = new Hyperlink("Equipos/Accesorios", "" + UILoader.BUSCAR_CUENTA));
-			linksCrearSS.add(crearCDW = new Hyperlink("CDW", "" + UILoader.BUSCAR_CUENTA));
-			linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.BUSCAR_CUENTA));
-			popupCrearSS.setWidget(linksCrearSS);
-			crearEquipos.addClickListener(this);
-			crearCDW.addClickListener(this);
-			crearMDS.addClickListener(this);
+		FlowPanel linksCrearSS = new FlowPanel();
+		linksCrearSS.add(crearEquipos = new Hyperlink("Equipos/Accesorios", "" + UILoader.BUSCAR_CUENTA));
+		linksCrearSS.add(crearCDW = new Hyperlink("CDW", "" + UILoader.BUSCAR_CUENTA));
+		linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.BUSCAR_CUENTA));
+		popupCrearSS.setWidget(linksCrearSS);
+		crearEquipos.addClickListener(this);
+		crearCDW.addClickListener(this);
+		crearMDS.addClickListener(this);
 
-			FlowPanel linksAgregarCuenta = new FlowPanel();
-			linksAgregarCuenta.add(agregarDivision = new Hyperlink("División", "" + UILoader.BUSCAR_CUENTA));
-			linksAgregarCuenta.add(agregarSuscriptor = new Hyperlink("Suscriptor", ""
-					+ UILoader.BUSCAR_CUENTA));
-			popupAgregarCuenta.setWidget(linksAgregarCuenta);
-			agregarDivision.addClickListener(this);
-			agregarSuscriptor.addClickListener(this);
+		FlowPanel linksAgregarCuenta = new FlowPanel();
+		linksAgregarCuenta.add(agregarDivision = new Hyperlink("División", "" + UILoader.BUSCAR_CUENTA));
+		linksAgregarCuenta.add(agregarSuscriptor = new Hyperlink("Suscriptor", "" + UILoader.BUSCAR_CUENTA));
+		popupAgregarCuenta.setWidget(linksAgregarCuenta);
+		agregarDivision.addClickListener(this);
+		agregarSuscriptor.addClickListener(this);
 
-		}
+	}
+
+	public boolean load() {
+		return true;
 	}
 
 	public void onClick(Widget sender) {
@@ -115,11 +114,17 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 
 	}
 
-	public void unload() {
+	public boolean unload() {
+		return true;
 	}
 
 	public void searchCuentas(CuentaSearchDto cuentaSearchDto) {
 		buscarCuentaResultPanel.searchCuentas(cuentaSearchDto);
-		formButtonsBar.setVisible(true);
+
+	}
+
+	public void setResultadoVisible(boolean visible) {
+		buscarCuentaResultPanel.setVisible(visible);
+		formButtonsBar.setVisible(visible);
 	}
 }

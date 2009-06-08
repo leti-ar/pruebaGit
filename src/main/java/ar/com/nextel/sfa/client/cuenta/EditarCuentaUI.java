@@ -33,7 +33,7 @@ public class EditarCuentaUI extends ApplicationUI {
 		super();
 	}
 
-	public void load() {
+	public boolean load() {
 		cuentaTab.clean();
 		
 //		UserCenterRpcService.Util.getInstance().getUsuarioLogueado(new DefaultWaitCallback() {
@@ -89,6 +89,10 @@ public class EditarCuentaUI extends ApplicationUI {
 				}
 			}
 		}
+		return true;
+	}
+
+	public void firstLoad() {
 	}
 
 	/**
@@ -111,6 +115,7 @@ public class EditarCuentaUI extends ApplicationUI {
 		mainPanel.add(cuentaTab.getCuentaEdicionPanel());
 	}
 
-	public void unload() {
+	public boolean unload() {
+		return true;
 	}
 }

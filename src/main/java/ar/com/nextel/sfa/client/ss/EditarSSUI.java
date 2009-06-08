@@ -35,7 +35,6 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 
 	public static final String ID_CUENTA = "idCuenta";
 
-	protected boolean firstLoad = true;
 	private TabPanel tabs;
 	private DatosSSUI datos;
 	private VariosSSUI varios;
@@ -52,11 +51,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 		addStyleName("Gwt-EditarSSUI");
 	}
 
-	public void load() {
-		if (firstLoad) {
-			firstLoad = false;
-			init();
-		}
+	public boolean load() {
 		String cuenta = HistoryUtils.getParam(ID_CUENTA);
 		mainPanel.setVisible(false);
 		if (cuenta == null) {
@@ -80,6 +75,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 							datos.refreshDetalleSSTable();
 							mainPanel.setVisible(true);
 						}
+
 						public void failure(Throwable caught) {
 							History.back();
 							super.failure(caught);
@@ -87,9 +83,10 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 					});
 			editarSSUIData.clean();
 		}
+		return true;
 	}
 
-	private void init() {
+	public void firstLoad() {
 		razonSocialClienteBar = new RazonSocialClienteBar();
 		mainPanel.add(razonSocialClienteBar);
 
@@ -105,12 +102,13 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 		tabs.add(datos = new DatosSSUI(this), "Datos");
 		tabs.add(varios = new VariosSSUI(this), "Varios");
 		tabs.selectTab(0);
-		tabs.addTabListener(new TabListener(){
+		tabs.addTabListener(new TabListener() {
 			public void onTabSelected(SourcesTabEvents tab, int index) {
-				if(index == 1){
+				if (index == 1) {
 					varios.refresh();
 				}
 			}
+
 			public boolean onBeforeTabSelected(SourcesTabEvents arg0, int arg1) {
 				return true;
 			}
@@ -138,7 +136,8 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 		editarSSUIData.getAnticipo().addAllItems(initializer.getTiposAnticipo());
 	}
 
-	public void unload() {
+	public boolean unload() {
+		return true;
 	}
 
 	public void onClick(Widget sender) {

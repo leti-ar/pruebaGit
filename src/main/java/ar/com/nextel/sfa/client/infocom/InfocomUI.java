@@ -7,29 +7,27 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 
-public class InfocomUI extends ApplicationUI  {
+public class InfocomUI extends ApplicationUI {
 	private FlowPanel contenedorPanel;
 	private ScoringInfocomUI scoringInfocomUI;
-	
-	
+
 	public InfocomUI() {
 		super();
 	}
 
-
 	@Override
-	public void load() {
+	public boolean load() {
 		contenedorPanel = new FlowPanel();
 		contenedorPanel.addStyleName("gwt-ContendorPanel");
 		scoringInfocomUI = new ScoringInfocomUI();
-		Grid header = new Grid(1,2);
+		Grid header = new Grid(1, 2);
 		FlowPanel razonSocial = new FlowPanel();
 		razonSocial.addStyleName("razonSocial");
 		razonSocial.add(new Label("Razon Social"));
 		Label razonLabel = new Label("ABAD, ANTONIO L");
 		razonSocial.add(razonLabel);
 		header.setWidget(0, 0, razonSocial);
-		
+
 		FlowPanel numeroCliente = new FlowPanel();
 		numeroCliente.addStyleName("numeroCliente");
 		numeroCliente.add(new Label("Cliente:"));
@@ -37,19 +35,20 @@ public class InfocomUI extends ApplicationUI  {
 		numeroCliente.add(clienteLabel);
 		header.setWidget(0, 1, numeroCliente);
 		mainPanel.add(header);
-		
+
 		HTML html = new HTML();
 		html.setHTML("<br clear='all' />");
 		contenedorPanel.add(html);
 		contenedorPanel.add(scoringInfocomUI);
 		mainPanel.add(contenedorPanel);
+		return true;
 	}
 
-	@Override
-	public void unload() {
-		// TODO Auto-generated method stub
-		
+	public void firstLoad() {
 	}
-	
+
+	public boolean unload() {
+		return true;
+	}
 
 }
