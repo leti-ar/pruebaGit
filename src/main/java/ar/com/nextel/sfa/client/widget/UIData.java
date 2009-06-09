@@ -5,6 +5,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.util.FormUtils;
 
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -16,6 +17,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class UIData {
 	protected List<Widget> fields = new ArrayList<Widget>();
+	private List<Label> listaLabels = new ArrayList();
 
 	public void clean() {
 		FormUtils.clearFields(fields);
@@ -26,6 +28,9 @@ public class UIData {
 	 */
 	public void cleanAndEnableFields() {
 		FormUtils.cleanAndEnableFields(fields);
+		for (int i = 0; i < listaLabels.size(); i++) {
+			listaLabels.get(i).removeStyleName("gwt-labelDisabled");	
+		}
 	}
 	
 	/**
@@ -40,5 +45,13 @@ public class UIData {
 	 */
 	public void disableFields() {
 		FormUtils.disableFields(fields);
+	}
+
+	public List<Label> getListaLabels() {
+		return listaLabels;
+	}
+
+	public void setListaLabels(List<Label> listaLabels) {
+		this.listaLabels = listaLabels;
 	}
 }

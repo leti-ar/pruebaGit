@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -51,28 +52,29 @@ public class BuscarCuentaFilterUI extends Composite {
 		layout.setWidth("98%");
 
 		layout.getFlexCellFormatter().setColSpan(0, 1, 3);
-
-		layout.setHTML(0, 0, Sfa.constant().razonSocial());
+		
+		List<Label> listaLabels = cargaLabels(buscadorCuentasFilterEditor.getListaLabels());
+		layout.setWidget(0, 0, listaLabels.get(0));
 		layout.setWidget(0, 1, buscadorCuentasFilterEditor.getRazonSocialTextBox());
-		layout.setHTML(0, 2, Sfa.constant().numeroCliente());
+		layout.setWidget(0, 2, listaLabels.get(1));
 		layout.setWidget(0, 3, buscadorCuentasFilterEditor.getNumeroCuentaTextBox());
-		layout.setHTML(1, 0, Sfa.constant().numeroNextel());
+		layout.setWidget(1, 0, listaLabels.get(2));
 		layout.setWidget(1, 1, buscadorCuentasFilterEditor.getNumeroNextelTextBox());
-		layout.setHTML(1, 2, Sfa.constant().flotaId());
+		layout.setWidget(1, 2, listaLabels.get(3));
 		layout.setWidget(1, 3, buscadorCuentasFilterEditor.getFlotaIdTextBox());
-		layout.setHTML(1, 4, Sfa.constant().ss());
+		layout.setWidget(1, 4, listaLabels.get(4));
 		layout.setWidget(1, 5, buscadorCuentasFilterEditor.getNumeroSolicitudServicioTextBox());
-		layout.setHTML(2, 0, Sfa.constant().responsable());
+		layout.setWidget(2, 0, listaLabels.get(5));
 		layout.setWidget(2, 1, buscadorCuentasFilterEditor.getResponsableTextBox());
-		layout.setHTML(2, 2, Sfa.constant().tipoDocumento());
+		layout.setWidget(2, 2, listaLabels.get(6));
 		layout.setWidget(2, 3, buscadorCuentasFilterEditor.getGrupoDocumentoCombo());
-		layout.setHTML(2, 4, Sfa.constant().numeroDocumento());
+		layout.setWidget(2, 4, listaLabels.get(7));
 		layout.setWidget(2, 5, buscadorCuentasFilterEditor.getNumeroDocumentoTextBox());
-		layout.setHTML(3, 0, Sfa.constant().predefinidas());
+		layout.setWidget(3, 0, listaLabels.get(8));
 		layout.setWidget(3, 1, buscadorCuentasFilterEditor.getPredefinidasCombo());
-		layout.setHTML(3, 2, Sfa.constant().categoria());
+		layout.setWidget(3, 2, listaLabels.get(9));
 		layout.setWidget(3, 3, buscadorCuentasFilterEditor.getCategoriaCombo());
-		layout.setHTML(3, 4, Sfa.constant().resultados());
+		layout.setWidget(3, 4, listaLabels.get(10));
 		layout.setWidget(3, 5, buscadorCuentasFilterEditor.getResultadosCombo());
 
 		mainPanel.add(layout);
@@ -96,15 +98,28 @@ public class BuscarCuentaFilterUI extends Composite {
 					}
 					ErrorDialog.getInstance().show(error.toString());
 				}else{		
-					controller.searchCuentas(buscadorCuentasFilterEditor.getCuentaSearch());	
+					controller.searchCuentas(buscadorCuentasFilterEditor.getCuentaSearch());
 				}
 			}
 		});
-
 	}
 
+	private List<Label> cargaLabels(List<Label> listaLabels){
+		listaLabels.add(new Label(Sfa.constant().razonSocial())); //0
+		listaLabels.add(new Label(Sfa.constant().numeroCliente()));//1
+		listaLabels.add(new Label(Sfa.constant().numeroNextel()));//2
+		listaLabels.add(new Label(Sfa.constant().flotaId()));//3
+		listaLabels.add(new Label(Sfa.constant().ss()));//4
+		listaLabels.add(new Label(Sfa.constant().responsable()));//5
+		listaLabels.add(new Label(Sfa.constant().tipoDocumento()));//6
+		listaLabels.add(new Label(Sfa.constant().numeroDocumento()));//7
+		listaLabels.add(new Label(Sfa.constant().predefinidas()));//8
+		listaLabels.add(new Label(Sfa.constant().categoria()));//9
+		listaLabels.add(new Label(Sfa.constant().resultados()));//10
+		return listaLabels;
+	}
+	
 	public void setBuscarCuentaResultPanel(BuscarCuentaResultUI buscarCuentaResultPanel) {
 		this.buscarCuentaResultPanel = buscarCuentaResultPanel;
 	}
-
 }

@@ -147,7 +147,6 @@ public class BuscarCuentaFilterUIData extends UIData {
 			if (!validationTextBoxs(w)){
 				return false;
 			}
-			setEnableFields(habilitar);
 			((FocusWidget) w).setEnabled(true);
 		//FIN - Si es TextBox
 
@@ -169,7 +168,47 @@ public class BuscarCuentaFilterUIData extends UIData {
 	private boolean validationTextBoxs(Widget w) {
 		boolean flag = true;
 		/** Validaciones de TextBoxs especiales combinadas:*/
-	
+	  ValidationTextBox box = (ValidationTextBox) w;
+
+	  if ((w == razonSocialTextBox)) {
+		  if ("".equals(((ValidationTextBox)responsableTextBox).getText())) {
+			  setEnableFields(true);
+		  }
+	  }
+	  
+	  if ((w == responsableTextBox)) {
+		  if ("".equals(((ValidationTextBox)razonSocialTextBox).getText())) {
+			  setEnableFields(true);
+		  }
+	  }
+	  
+	  if ("".equals(box.getText()) && (w != responsableTextBox) && (w != razonSocialTextBox)) {
+		  setEnableFields(true);
+	  }else{  
+		  if (w == flotaIdTextBox){
+			setEnableFields(false);
+			((FocusWidget) w).setEnabled(true);
+			setLabelVisibility(3,true);
+		}
+		
+		if (w == numeroSolicitudServicioTextBox){
+			setEnableFields(false);
+			((FocusWidget) w).setEnabled(true);
+			setLabelVisibility(4,true);
+		}
+		
+		if (w == numeroCuentaTextBox){
+			setEnableFields(false);
+			((FocusWidget) w).setEnabled(true);
+			setLabelVisibility(1,true);
+		}
+		
+		if (w == numeroNextelTextBox){
+			setEnableFields(false);
+			((FocusWidget) w).setEnabled(true);
+			setLabelVisibility(2,true);
+		}
+		
 		//Si w es Num.deDoc, el combo de Tipo de Doc. esta Enabled y además alguno de los demas textBox
 		//esta deshabilitado, no hacer nada (O sea, saltear. Rerornar FALSE) 
 		if (w == numeroDocumentoTextBox && (grupoDocumentoCombo.isEnabled()) && (!numeroSolicitudServicioTextBox.isEnabled())){
@@ -178,10 +217,11 @@ public class BuscarCuentaFilterUIData extends UIData {
 		
 		//Si w es numeroDocumentoTextBox y está vacío, y el combo tipoDocumento esta habilitado:
 		if ((w == numeroDocumentoTextBox) && (grupoDocumentoCombo.isEnabled())){
-			ValidationTextBox box = (ValidationTextBox) w;
 			if (!"".equals(box.getText())) {
 				setEnableFields(false);
 				((FocusWidget) w).setEnabled(true);
+				setLabelVisibility(6,true);
+				setLabelVisibility(7,true);
 				grupoDocumentoCombo.setEnabled(true);
 				flag = false;
 			}
@@ -189,12 +229,14 @@ public class BuscarCuentaFilterUIData extends UIData {
 		
 		//Si w es responsableTextBox o razonSocialTextBox: se deshabilitaran todos los campos exceptuando “Responsable”, “Razon Social” y comboCategoria.
 		if ((w == responsableTextBox) || (w == razonSocialTextBox)){
-			ValidationTextBox box = (ValidationTextBox) w;
 			if (!"".equals(box.getText())) {
 				setEnableFields(false);
 				this.responsableTextBox.setEnabled(true);
 				this.razonSocialTextBox.setEnabled(true);
 				this.categoriaCombo.setEnabled(true);
+				setLabelVisibility(0,true);
+				setLabelVisibility(5,true);
+				setLabelVisibility(9,true);
 				razonSocialTextBox.setText(razonSocialTextBox.getText().toUpperCase());
 				responsableTextBox.setText(responsableTextBox.getText().toUpperCase());
 				flag = false;
@@ -203,10 +245,15 @@ public class BuscarCuentaFilterUIData extends UIData {
 				this.responsableTextBox.setEnabled(true);
 				this.razonSocialTextBox.setEnabled(true);
 				this.categoriaCombo.setEnabled(true);
+				setLabelVisibility(0,true);
+				setLabelVisibility(5,true);
+				setLabelVisibility(9,true);
 				flag = false;
 			}
 		}
+	  }
 		//Si w es Categoria y el combo de Responsable esta Enabled, no hacer nada.
+	  
 		return flag;
 	}
 	
@@ -223,6 +270,9 @@ public class BuscarCuentaFilterUIData extends UIData {
 			this.responsableTextBox.setEnabled(true);
 			this.razonSocialTextBox.setEnabled(true);
 			((FocusWidget) w).setEnabled(true);
+			setLabelVisibility(0,true);
+			setLabelVisibility(9,true);
+			setLabelVisibility(5,true);
 		}
 		
 		//Combo Tipo de documento: no deshabilita el campo Número de documento
@@ -230,12 +280,15 @@ public class BuscarCuentaFilterUIData extends UIData {
 			setEnableFields(false);
 			this.numeroDocumentoTextBox.setEnabled(true);
 			((FocusWidget) w).setEnabled(true);
+			setLabelVisibility(6,true);
+			setLabelVisibility(7,true);
 		}
 		
 		//Combo predefinidasCombo: ??
 		if (w == predefinidasCombo){
 			setEnableFields(false);
 			((FocusWidget) w).setEnabled(true);
+			setLabelVisibility(8,true);
 		}
 		
 		//Combo predefinidasCombo == ""
@@ -294,12 +347,11 @@ public class BuscarCuentaFilterUIData extends UIData {
 				}
 			}
 		}
-		
 		return list;
 	}
 	
 	/**
-	 * @author eSalvador Metodo privado que ...
+	 * @author eSalvador
 	 **/
 	private boolean validaFlotaId(ValidationTextBox flota) {
 		String flotaModelo = new String("[0-9]{3,5}[\\*]{1}[0-9]{1,5}");
@@ -314,10 +366,26 @@ public class BuscarCuentaFilterUIData extends UIData {
 		for (Widget widget : fields) {
 			if (widget instanceof ExcluyenteWidget) {
 				((FocusWidget) widget).setEnabled(enabled);
+				for (int i = 0; i < getListaLabels().size(); i++) {
+					if (enabled){
+						getListaLabels().get(i).removeStyleName("gwt-labelDisabled");	
+					}else{
+						getListaLabels().get(i).addStyleName("gwt-labelDisabled");
+					}
+				}
 			}
 		}
 	}
 
+	private void setLabelVisibility(int index,boolean enabled){
+		List<Label> labels = getListaLabels();
+		if(enabled){
+			labels.get(index).removeStyleName("gwt-labelDisabled");	
+		}else{
+			labels.get(index).addStyleName("gwt-labelDisabled");	
+		}
+	}
+	
 	/**
 	 * @author eSalvador
 	 **/
