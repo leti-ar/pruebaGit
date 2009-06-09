@@ -101,15 +101,15 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.SolicitudServicioDto
 		</class-b>
-		<field-exclude>
-			<a>domicilioFacturacion</a>
-			<b>domicilioFacturacion</b>
-		</field-exclude>
-		<field-exclude>
-			<a>domicilioEnvio</a>
-			<b>domicilioEnvio</b>
-		</field-exclude>
-		<field map-id="cuentaSolicitud" type="one-way">
+		<field type="one-way">
+			<a>domicilioFacturacion.id</a>
+			<b>idDomicilioFacturacion</b>
+		</field>
+		<field type="one-way">
+			<a>domicilioEnvio.id</a>
+			<b>idDomicilioEnvio</b>
+		</field>
+		<field map-id="cuentaSolicitud">
 			<a>cuenta</a>
 			<b>cuenta</b>
 		</field>
@@ -325,19 +325,19 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.CuentaDto
 		</class-b>
-		<field>
+		<field type="one-way">
 			<a>id</a>
 			<b>id</b>
 		</field>
-		<field>
+		<field map-id="personaSolicitud">
 			<a>persona</a>
 			<b>persona</b>
 		</field>
-		<field>
+		<field type="one-way">
 			<a>codigoVantive</a>
 			<b>codigoVantive</b>
 		</field>
-		<field>
+		<field type="one-way">
 			<a>idVantive</a>
 			<b>idVantive</b>
 		</field>
