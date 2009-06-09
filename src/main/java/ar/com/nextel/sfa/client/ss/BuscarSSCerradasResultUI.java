@@ -9,6 +9,7 @@ import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.WindowUtils;
 
@@ -73,17 +74,22 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 		this.solicitudServicioCerradaDto = solicitudServicioCerradaDto;
 		SolicitudRpcService.Util.getInstance().searchSSCerrada(solicitudServicioCerradaDto,
 				new DefaultWaitCallback<List<SolicitudServicioCerradaResultDto>>() {
-					public void success(List<SolicitudServicioCerradaResultDto> result) {
-						if (result != null) {
-							loadExcel();
-							setSolicitudServicioDto(result);
-							buscarSSTotalesResultUI.setValues(cantEquipos.toString(), cantPataconex.toString(), String.valueOf(cantEqFirmados));
-							buscarSSTotalesResultUI.setVisible(true);
-
-						}
-
-					}
-				});
+			public void success(List<SolicitudServicioCerradaResultDto> result) {
+				if (result != null) {
+					if (result.size()==0) {
+						MessageDialog.getInstance().showAceptar("No se encontraron datos con el " +
+								"criterio utilizado", MessageDialog.getCloseCommand());
+						cantEquipos = new Long(0);
+						cantPataconex = new Double(0);
+						cantEqFirmados = 0;		
+					}					
+					loadExcel();
+					setSolicitudServicioDto(result);
+					buscarSSTotalesResultUI.setValues(cantEquipos.toString(), cantPataconex.toString(), String.valueOf(cantEqFirmados));
+					buscarSSTotalesResultUI.setVisible(true);					
+				}
+			}
+		});
 	}
 
 	public void setSolicitudServicioDto(List<SolicitudServicioCerradaResultDto> solicitudServicioCerradaResultDto) {
