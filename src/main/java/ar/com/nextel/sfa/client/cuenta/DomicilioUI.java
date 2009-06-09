@@ -321,7 +321,7 @@ public class DomicilioUI extends NextelDialog {
 		// Mapeos a Mano para no perder Datos: REVISAR:
 		domicilioNormalizado.setObservaciones(datosDomicilioNuevo.getObservaciones().getText());
 		domicilioNormalizado.setValidado(datosDomicilioNuevo.getValidado().isChecked());
-		//
+		domicilioNormalizado.setId(domicilioAEditar.getId());
 		domicilioNormalizado.setIdEntrega(domicilioAEditar.getIdEntrega());
 		domicilioNormalizado.setIdFacturacion(domicilioAEditar.getIdFacturacion());
 		domicilioNormalizado.setEn_carga(domicilioAEditar.getEn_carga());
