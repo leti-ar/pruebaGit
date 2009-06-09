@@ -9,9 +9,11 @@ import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItemImpl;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.util.DateUtil;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
 
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Grid;
@@ -39,6 +41,8 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 	
 	private Button buscarButton;
 	private Button limpiarButton;
+	
+	private DateTimeFormat dateFormatter = DateTimeFormat.getFormat("dd/MM/yyyy");
 
 
 	public BuscarSSCerradasFilterUIData() {
@@ -140,6 +144,10 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 	public Widget getDesde() {
 		Grid datePickerFull = new Grid(1, 2);
 		desde.setWeekendSelectable(true);
+		//sacarle 8 dias
+		desde.setSelectedDate(DateUtil.addDays(DateUtil.today(), -8));
+		desde.setSelectedDate(DateUtil.addDays(DateUtil.today(), -8));
+		desde.getTextBox().setText(dateFormatter.format(DateUtil.addDays(DateUtil.today(), -8)));
 		datePickerFull.setWidget(0, 0, desde.getTextBox());
 		datePickerFull.setWidget(0, 1, desde);
 		return datePickerFull;
@@ -148,6 +156,8 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 	public Widget getHasta() {
 		Grid datePickerFull = new Grid(1, 2);
 		hasta.setWeekendSelectable(true);
+		hasta.setSelectedDate(DateUtil.today());
+		hasta.getTextBox().setText(dateFormatter.format(DateUtil.today()));
 		datePickerFull.setWidget(0, 0, hasta.getTextBox());
 		datePickerFull.setWidget(0, 1, hasta);
 		return datePickerFull;
