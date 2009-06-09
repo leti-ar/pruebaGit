@@ -23,8 +23,8 @@ public class SolicitudServicioDto implements IsSerializable {
 	private OrigenSolicitudDto origen;
 	// private Vendedor vendedorDae;
 
-	private DomiciliosCuentaDto domicilioFacturacion;
-	private DomiciliosCuentaDto domicilioEnvio;
+	private Long idDomicilioFacturacion;
+	private Long idDomicilioEnvio;
 	private String aclaracionEntrega;
 	private String email;
 	private String emailLicencias;
@@ -107,20 +107,20 @@ public class SolicitudServicioDto implements IsSerializable {
 		this.origen = origen;
 	}
 
-	public DomiciliosCuentaDto getDomicilioFacturacion() {
-		return domicilioFacturacion;
+	public Long getIdDomicilioFacturacion() {
+		return idDomicilioFacturacion;
 	}
 
-	public void setDomicilioFacturacion(DomiciliosCuentaDto domicilioFacturacion) {
-		this.domicilioFacturacion = domicilioFacturacion;
+	public void setIdDomicilioFacturacion(Long idDomicilioFacturacion) {
+		this.idDomicilioFacturacion = idDomicilioFacturacion;
 	}
 
-	public DomiciliosCuentaDto getDomicilioEnvio() {
-		return domicilioEnvio;
+	public Long getIdDomicilioEnvio() {
+		return idDomicilioEnvio;
 	}
 
-	public void setDomicilioEnvio(DomiciliosCuentaDto domicilioEnvio) {
-		this.domicilioEnvio = domicilioEnvio;
+	public void setIdDomicilioEnvio(Long idDomicilioEnvio) {
+		this.idDomicilioEnvio = idDomicilioEnvio;
 	}
 
 	public String getAclaracionEntrega() {
