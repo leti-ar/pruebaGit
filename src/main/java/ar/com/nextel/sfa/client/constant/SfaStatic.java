@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.constant;
 
 /**
  * Interface to represent the constants contained in resource bundle:
- * 	'/home/esalvador/workspaceSFASVN/sfa-web2/target/classes/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
+ * 	'/home/jlgperez/workspaceSFASVN/sfa-web2/target/classes/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
  */
 public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
@@ -32,6 +32,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("El campo {1} es obligatorio")
   @Key("ERR_CAMPO_OBLIGATORIO")
   String ERR_CAMPO_OBLIGATORIO();
+
+  /**
+   * Translated "El campo {1} debe ser mayor a 0 (cero).".
+   * 
+   * @return translated "El campo {1} debe ser mayor a 0 (cero)."
+   */
+  @DefaultStringValue("El campo {1} debe ser mayor a 0 (cero).")
+  @Key("ERR_CANT_CERO")
+  String ERR_CANT_CERO();
 
   /**
    * Translated "Debe ingresar un dia hábil".
@@ -79,6 +88,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ERR_EMAIL_NO_VALIDO();
 
   /**
+   * Translated "El ítem {1} debe tener un servicio adicional de tipo Alquiler Única Vez seleccionado.".
+   * 
+   * @return translated "El ítem {1} debe tener un servicio adicional de tipo Alquiler Única Vez seleccionado."
+   */
+  @DefaultStringValue("El ítem {1} debe tener un servicio adicional de tipo Alquiler Única Vez seleccionado.")
+  @Key("ERR_FALTA_ALQUILER")
+  String ERR_FALTA_ALQUILER();
+
+  /**
    * Translated "La cuenta debe tener un domicilio principal de entrega.".
    * 
    * @return translated "La cuenta debe tener un domicilio principal de entrega."
@@ -106,6 +124,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ERR_FECHA_NO_VALIDA();
 
   /**
+   * Translated "La cantidad de Crédito de Fidelización a utilizar no puede exceder el máximo disponible.".
+   * 
+   * @return translated "La cantidad de Crédito de Fidelización a utilizar no puede exceder el máximo disponible."
+   */
+  @DefaultStringValue("La cantidad de Crédito de Fidelización a utilizar no puede exceder el máximo disponible.")
+  @Key("ERR_FIDELIZACION")
+  String ERR_FIDELIZACION();
+
+  /**
    * Translated "El formato del campo {1} no es válido".
    * 
    * @return translated "El formato del campo {1} no es válido"
@@ -124,6 +151,24 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ERR_FORMULARIO_DIRTY();
 
   /**
+   * Translated "El Nº de solicitud debe tener menos de 10 dígitos.".
+   * 
+   * @return translated "El Nº de solicitud debe tener menos de 10 dígitos."
+   */
+  @DefaultStringValue("El Nº de solicitud debe tener menos de 10 dígitos.")
+  @Key("ERR_NSS_LONG")
+  String ERR_NSS_LONG();
+
+  /**
+   * Translated "La cantidad de Pataconex ingresada excede el Precio de Venta Total.".
+   * 
+   * @return translated "La cantidad de Pataconex ingresada excede el Precio de Venta Total."
+   */
+  @DefaultStringValue("La cantidad de Pataconex ingresada excede el Precio de Venta Total.")
+  @Key("ERR_PATACONEX")
+  String ERR_PATACONEX();
+
+  /**
    * Translated "Tarjeta no válida: La tarjeta ingresada no es válida. (se)".
    * 
    * @return translated "Tarjeta no válida: La tarjeta ingresada no es válida. (se)"
@@ -131,6 +176,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Tarjeta no válida: La tarjeta ingresada no es válida. (se)")
   @Key("ERR_TARJETA_NO_VALIDA")
   String ERR_TARJETA_NO_VALIDA();
+
+  /**
+   * Translated "¿Desea guardar los cambios?".
+   * 
+   * @return translated "¿Desea guardar los cambios?"
+   */
+  @DefaultStringValue("¿Desea guardar los cambios?")
+  @Key("MSG_PREGUNTA_GUARDAR")
+  String MSG_PREGUNTA_GUARDAR();
 
   /**
    * Translated "Tarjeta válida: La tarjeta ingresada es válida. (se)".
