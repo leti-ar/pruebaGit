@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
@@ -295,16 +296,26 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 
 	public List<String> validate() {
 		GwtValidator validator = new GwtValidator();
-		validator.addTarget(listaPrecio).required("Debe elegir una lista de precios");
-		validator.addTarget(item).required("item");
+		String v1 = "\\{1\\}";
+		validator.addTarget(listaPrecio).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Lista de Precios"));
+		validator.addTarget(item).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Item"));
 		if (tipoEdicion == ITEM_PLAN || tipoEdicion == ACTIVACION) {
-			validator.addTarget(tipoPlan).required("tipoplan");
-			validator.addTarget(plan).required("plan");
-			validator.addTarget(localidad).required("localidad");
-			validator.addTarget(modalidadCobro).required("modalidadCobro");
-			validator.addTarget(alias).required("alias");
+			validator.addTarget(tipoPlan).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Tipo Plan"));
+			validator.addTarget(plan).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Plan"));
+			validator.addTarget(localidad).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Localidad"));
+			validator.addTarget(modalidadCobro).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "CPP/MPP"));
+			validator.addTarget(alias).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Alias"));
 		}
-		validator.addTarget(cantidad).required("cant").greater("Cant > 0", 0);
+		validator.addTarget(cantidad).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Cantidad")).greater(
+				Sfa.constant().ERR_CANT_CERO().replaceAll(v1, "Cantidad"), 0);
 		return validator.fillResult().getErrors();
 	}
 

@@ -42,7 +42,7 @@ public class OperacionEnCursoUI extends ApplicationUI {
 		return true;
 	}
 
-	public boolean unload() {
+	public boolean unload(String token) {
 		return true;
 	}
 }

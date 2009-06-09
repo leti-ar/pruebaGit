@@ -22,11 +22,16 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.InlineHTML;
+import com.google.gwt.user.client.ui.SourcesChangeEvents;
+import com.google.gwt.user.client.ui.SourcesClickEvents;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.Widget;
 
-public class EditarSSUIData extends UIData {
+public class EditarSSUIData extends UIData implements ChangeListener, ClickListener {
 
 	private RegexTextBox nss;
 	private RegexTextBox nflota;
@@ -50,6 +55,7 @@ public class EditarSSUIData extends UIData {
 	private NumberFormat currFormatter = NumberFormat.getCurrencyFormat();
 	private DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateFormat();
 	private List<List<ServicioAdicionalLineaSolicitudServicioDto>> serviciosAdicionales;
+	private boolean saved = true;
 
 	private static final String FORMA_CONTRATACION_ALQUILER = "Alquiler";
 
@@ -76,6 +82,16 @@ public class EditarSSUIData extends UIData {
 		observaciones.setWidth("480px");
 		observaciones.setHeight("35px");
 
+		// Change listener
+		for (Widget field : fields) {
+			if (field instanceof SourcesChangeEvents) {
+				((SourcesChangeEvents) field).addChangeListener(this);
+			} else if (field instanceof SourcesClickEvents) {
+				((SourcesClickEvents) field).addClickListener(this);
+
+			}
+		}
+
 		credFidelDisponibleText = new InlineHTML("$ 0.00");
 		credFidelVencimientoText = new InlineHTML("");
 		precioListaText = new InlineHTML("$ 0.00");
@@ -91,6 +107,14 @@ public class EditarSSUIData extends UIData {
 		credFidelText.addStyleName("normalText");
 		pataconexText.addStyleName("normalText");
 		precioVentaText.addStyleName("normalText");
+	}
+
+	public void onChange(Widget sender) {
+		saved = false;
+	}
+
+	public void onClick(Widget sender) {
+		saved = false;
 	}
 
 	public RegexTextBox getNss() {
@@ -166,6 +190,7 @@ public class EditarSSUIData extends UIData {
 	}
 
 	public void setSolicitud(SolicitudServicioDto solicitud) {
+		saved = true;
 		serviciosAdicionales.clear();
 		for (int i = 0; i < solicitud.getLineas().size(); i++) {
 			serviciosAdicionales.add(new ArrayList());
@@ -245,21 +270,18 @@ public class EditarSSUIData extends UIData {
 	public List<String> validarCompletitud() {
 		recarcularValores();
 		GwtValidator validator = new GwtValidator();
+		String v1 = "\\{1\\}";
 		validator.addTarget(nss).required(
-				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", "Nº de Solicitud")).maxLength(
-				10, "El Nº de solicitud debe tener menos de 10 dígitos");
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Nº de Solicitud")).maxLength(10,
+				Sfa.constant().ERR_NSS_LONG());
 		validator.addTarget(entrega).required(
-				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", "Entrega"));
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Entrega"));
 		validator.addTarget(facturacion).required(
-				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", "Facturación"));
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Facturación"));
 		if (solicitudServicio.getMontoDisponible() != null)
-			validator
-					.addTarget(credFidelizacion)
-					.smallerOrEqual(
-							"La cantidad de Crédito de Fidelización a utilizar no puede exceder el máximo disponible.",
-							solicitudServicio.getMontoDisponible());
-		validator.addTarget(pataconex).smallerOrEqual(
-				"La cantidad de Pataconex ingresada excede el Precio de Venta Total.",
+			validator.addTarget(credFidelizacion).smallerOrEqual(Sfa.constant().ERR_FIDELIZACION(),
+					solicitudServicio.getMontoDisponible());
+		validator.addTarget(pataconex).smallerOrEqual(Sfa.constant().ERR_PATACONEX(),
 				solicitudServicio.getMontoDisponible());
 		validator.fillResult();
 		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
@@ -275,8 +297,7 @@ public class EditarSSUIData extends UIData {
 					}
 				}
 				if (!hasAlquiler) {
-					validator.addError("El ítem " + linea.getAlias()
-							+ " debe tener un servicio adicional de tipo Alquiler Única Vez seleccionado");
+					validator.addError(Sfa.constant().ERR_FALTA_ALQUILER().replaceAll(v1, linea.getAlias()));
 				}
 			}
 		}
@@ -310,6 +331,7 @@ public class EditarSSUIData extends UIData {
 	}
 
 	public int addLineaSolicitudServicio(LineaSolicitudServicioDto linea) {
+		saved = false;
 		Long index = linea.getNumeradorLinea();
 		if (index == null) {
 			linea.setNumeradorLinea(Long.valueOf(solicitudServicio.getLineas().size()));
@@ -326,6 +348,7 @@ public class EditarSSUIData extends UIData {
 
 	/** Elimina la linea y renumera las restantes */
 	public int removeLineaSolicitudServicio(int index) {
+		saved = false;
 		solicitudServicio.getLineas().remove(index);
 		for (; index < solicitudServicio.getLineas().size(); index++) {
 			solicitudServicio.getLineas().get(index).setNumeradorLinea(Long.valueOf(index));
@@ -356,6 +379,7 @@ public class EditarSSUIData extends UIData {
 	}
 
 	public void getModificarValorServicioAdicional(int indexLinea, int indexSA, double valor) {
+		saved = false;
 		ServicioAdicionalLineaSolicitudServicioDto servicio = serviciosAdicionales.get(indexLinea).get(
 				indexSA);
 		List<ServicioAdicionalLineaSolicitudServicioDto> serviciosAdGuardados = getLineasSolicitudServicio()
@@ -411,4 +435,13 @@ public class EditarSSUIData extends UIData {
 			}
 		}
 	}
+
+	public void setSaved(boolean saved) {
+		this.saved = saved;
+	}
+
+	public boolean isSaved() {
+		return saved;
+	}
+
 }

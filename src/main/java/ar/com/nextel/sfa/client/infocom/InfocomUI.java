@@ -47,7 +47,7 @@ public class InfocomUI extends ApplicationUI {
 	public void firstLoad() {
 	}
 
-	public boolean unload() {
+	public boolean unload(String token) {
 		return true;
 	}
 

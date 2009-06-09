@@ -38,7 +38,7 @@ public class BuscarOportunidadUI extends ApplicationUI {
 		return true;
 	}
 
-	public boolean unload() {
+	public boolean unload(String token) {
 		return true;
 	}
 }

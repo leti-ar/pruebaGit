@@ -51,8 +51,11 @@ public abstract class ApplicationUI extends Composite {
 	/**
 	 * Se ejecuta antes de descargar el módulo
 	 * 
+	 * @param token
+	 *            de la página a la que me dirijo luego de la descarga. Puede ser null.
+	 * 
 	 * @return true si se pudo descargar
 	 */
-	public abstract boolean unload();
+	public abstract boolean unload(String token);
 
 }

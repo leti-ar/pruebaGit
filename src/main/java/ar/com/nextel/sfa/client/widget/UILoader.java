@@ -53,15 +53,19 @@ public class UILoader extends SimplePanel implements HistoryListener {
 		return pageLoader;
 	}
 
+	public void setPage(int page){
+		setPage(page, null);
+	}
 	/**
 	 * Oculta la página anterior (Si es que puede), muestra una nueva y oculta el menu.
 	 * 
 	 * @param page
 	 *            Código de la página que desea mostrar.
+	 * @param token 
 	 */
-	public void setPage(int page) {
+	public void setPage(int page, String token) {
 		if (getWidget() != null) {
-			if(!((ApplicationUI) getWidget()).unload()){
+			if(!((ApplicationUI) getWidget()).unload(token)){
 				return;
 			}
 		}
@@ -123,10 +127,10 @@ public class UILoader extends SimplePanel implements HistoryListener {
 	public void onHistoryChanged(String historyToken) {
 		String token = HistoryUtils.getToken(historyToken);
 		if (token == null || "".equals(token)) {
-			setPage(SOLO_MENU);
+			setPage(SOLO_MENU, token);
 		} else {
 			int nToken = Integer.parseInt(token);
-			setPage(nToken);
+			setPage(nToken, token);
 		}
 	}
 }

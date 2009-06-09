@@ -115,7 +115,7 @@ public class EditarCuentaUI extends ApplicationUI {
 		mainPanel.add(cuentaTab.getCuentaEdicionPanel());
 	}
 
-	public boolean unload() {
+	public boolean unload(String token) {
 		return true;
 	}
 }

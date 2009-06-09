@@ -114,7 +114,7 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 
 	}
 
-	public boolean unload() {
+	public boolean unload(String token) {
 		return true;
 	}
 

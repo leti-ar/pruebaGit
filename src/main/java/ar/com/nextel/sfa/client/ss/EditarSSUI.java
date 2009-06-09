@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
+import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
@@ -17,11 +18,13 @@ import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
+import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.RazonSocialClienteBar;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
@@ -34,6 +37,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSSUIController {
 
 	public static final String ID_CUENTA = "idCuenta";
+	private static final String validarCompletitudFailStyle = "validarCompletitudFailButton";
 
 	private TabPanel tabs;
 	private DatosSSUI datos;
@@ -44,7 +48,6 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 	private SimpleLink guardarButton;
 	private SimpleLink cancelarButton;
 	private Button validarCompletitud;
-	private static final String validarCompletitudFailStyle = "validarCompletitudFailButton";
 
 	public EditarSSUI() {
 		super();
@@ -65,13 +68,14 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 			SolicitudRpcService.Util.getInstance().createSolicitudServicio(solicitudServicioRequestDto,
 					new DefaultWaitCallback<SolicitudServicioDto>() {
 						public void success(SolicitudServicioDto solicitud) {
+							editarSSUIData.setSaved(true);
 							razonSocialClienteBar.setCliente(solicitud.getCuenta().getCodigoVantive());
 							razonSocialClienteBar.setRazonSocial(solicitud.getCuenta().getPersona()
 									.getRazonSocial());
 							razonSocialClienteBar.setIdCuenta(solicitud.getCuenta().getId(), solicitud
 									.getCuenta().getIdVantive());
 							editarSSUIData.setSolicitud(solicitud);
-							validarCompletitud(false);
+							validate(false);
 							datos.refreshDetalleSSTable();
 							mainPanel.setVisible(true);
 						}
@@ -136,8 +140,33 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 		editarSSUIData.getAnticipo().addAllItems(initializer.getTiposAnticipo());
 	}
 
-	public boolean unload() {
+	public boolean unload(String token) {
+		if (!editarSSUIData.isSaved()) {
+			MessageDialog.getInstance().showSiNoCancelar(Sfa.constant().guardar(),
+					Sfa.constant().MSG_PREGUNTA_GUARDAR(), new SaveSSCommand(true, token),
+					new SaveSSCommand(false, token), MessageDialog.getCloseCommand());
+			return false;
+		}
 		return true;
+	}
+
+	private class SaveSSCommand implements Command {
+
+		private boolean save = true;
+		private String token;
+
+		public SaveSSCommand(boolean save, String token) {
+			this.save = save;
+			this.token = token;
+		}
+
+		public void execute() {
+			if (save) {
+				guardar();
+			}
+			editarSSUIData.setSaved(true);
+			History.newItem(token);
+		}
 	}
 
 	public void onClick(Widget sender) {
@@ -147,7 +176,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 			History.newItem("");
 			History.fireCurrentHistoryState();
 		} else if (sender == validarCompletitud) {
-			validarCompletitud(true);
+			validate(true);
 		}
 	}
 
@@ -157,11 +186,12 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 					public void success(SolicitudServicioDto result) {
 						editarSSUIData.setSolicitud(result);
 						Window.alert("Se ha guardado la solicitud con exito");
+						editarSSUIData.setSaved(true);
 					}
 				});
 	}
 
-	private void validarCompletitud(boolean showErrorDialog) {
+	private void validate(boolean showErrorDialog) {
 		List<String> errors = editarSSUIData.validarCompletitud();
 		if (!errors.isEmpty()) {
 			validarCompletitud.addStyleName(validarCompletitudFailStyle);
