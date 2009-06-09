@@ -142,7 +142,7 @@ public class CuentaEdicionTabPanel {
 
 		getGuardar().addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				if (!cuentaDatosForm.formularioDatosDirty()) {
+				if (!cuentaDatosForm.formularioDatosDirty() && (!cuentaDomiciliosForm.formularioDatosDirty())) {
 					ErrorDialog.getInstance().show("NO HAY DATOS NUEVOS PARA GUARDAR");
 				} else if (validarCamposTabDatos()) {
 					//ErrorDialog.getInstance().show("HAY CAMPOS OBLIGATORIOS SIN COMPLETAR");
@@ -199,6 +199,7 @@ public class CuentaEdicionTabPanel {
 				cuentaDatosForm.ponerDatosBusquedaEnFormulario((CuentaDto) result);
 				razonSocial.setText(((CuentaDto) result).getPersona().getRazonSocial());
 				MessageDialog.getInstance().showAceptar("", "      La cuenta se guardó con exito     ", MessageDialog.getCloseCommand());
+				cuentaDomiciliosForm.setHuboCambios(false);
 			}
 		});
 	}

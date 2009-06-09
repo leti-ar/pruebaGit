@@ -35,6 +35,7 @@ public class CuentaDomiciliosForm extends Composite {
 	public CuentaDto cuentaDto;
 	private boolean tienePrincipalFacturacion = false;
 	private boolean tienePrincipalEntrega  = false;
+	private boolean huboCambios = false;
 
 	public static CuentaDomiciliosForm getInstance() {
 		return instance;
@@ -60,6 +61,7 @@ public class CuentaDomiciliosForm extends Composite {
 						   PersonaDto persona = cuentaDto.getPersona();
 						   persona.getDomicilios().add(domicilio);
 						   refrescaTablaConNuevoDomicilio();
+						   huboCambios = true;
 						}
 				});
 				DomicilioUI.getInstance().cargarPopupNuevoDomicilio(new DomiciliosCuentaDto());
@@ -75,7 +77,8 @@ public class CuentaDomiciliosForm extends Composite {
 		mainPanel.add(datosTabla);
 		mainPanel.add(footerBar);
 	}
-
+	
+	
 	private void initTable(FlexTable table) {
 
 		String[] widths = { "24px", "24px", "24px", "100px", "100px", "75%", "50px" };
@@ -196,6 +199,7 @@ public class CuentaDomiciliosForm extends Composite {
 									persona.getDomicilios().add(index, DomicilioUI.getInstance().getDomicilioAEditar());
 									domicilioAEditar = DomicilioUI.getInstance().getDomicilioAEditar();
 									refrescaTablaConNuevoDomicilio();
+									huboCambios = true;
 									}
 								});
 							DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
@@ -215,6 +219,7 @@ public class CuentaDomiciliosForm extends Composite {
 								   PersonaDto persona = cuentaDto.getPersona();
 								   persona.getDomicilios().add(domicilio);
 								   refrescaTablaConNuevoDomicilio();
+								   huboCambios = true;
 								}
 							});
 						DomicilioUI.getInstance().cargarPopupCopiarDomicilio(domicilioCopiado);
@@ -227,6 +232,7 @@ public class CuentaDomiciliosForm extends Composite {
 						DomicilioUI.getInstance().openPopupDeleteDialog(cuentaDto.getPersona(), domicilioAEditar, new Command(){
 							public void execute() {
 								refrescaTablaConDomiciliosBorrados(rowABorrar);
+								huboCambios = true;
 							}
 						});
 					}
@@ -265,6 +271,10 @@ public class CuentaDomiciliosForm extends Composite {
 		return validator.getErrors();
 	}
 
+	public boolean formularioDatosDirty() {
+		return huboCambios;
+	}
+	
 	public FlexTable getDatosTabla() {
 		return datosTabla;
 	}
@@ -280,4 +290,8 @@ public class CuentaDomiciliosForm extends Composite {
 	public void setTienePrincipalEntrega(boolean tienePrincipalEntrega) {
 		this.tienePrincipalEntrega = tienePrincipalEntrega;
 	}
+
+	public void setHuboCambios(boolean huboCambios) {
+		this.huboCambios = huboCambios;
+	}	
 }
