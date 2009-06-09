@@ -156,7 +156,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 	}
 
 	private void initTable(FlexTable table) {
-		String[] widths = { "24px", "150px", "150px", "150px", "250px", "195px", "170px", };
+		String[] widths = { "24px", "150px", "200px", "320px", "100px", "100px", "100px", };
 		for (int col = 0; col < widths.length; col++) {
 			table.getColumnFormatter().setWidth(col, widths[col]);
 		}
