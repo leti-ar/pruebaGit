@@ -7,7 +7,6 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.cuenta.DomicilioUI;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
-import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
@@ -107,8 +106,8 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		layoutDomicilio.addStyleName("layout");
 		layoutDomicilio.setHTML(0, 0, Sfa.constant().entregaReq());
 		layoutDomicilio.setWidget(0, 1, editarSSUIData.getEntrega());
-		layoutDomicilio.setWidget(0, 2, editarDomicioEntrega );
-		layoutDomicilio.setWidget(0, 3, borrarDomicioEntrega );
+		layoutDomicilio.setWidget(0, 2, editarDomicioEntrega);
+		layoutDomicilio.setWidget(0, 3, borrarDomicioEntrega);
 		layoutDomicilio.setHTML(1, 0, Sfa.constant().facturacionReq());
 		layoutDomicilio.setWidget(1, 1, editarSSUIData.getFacturacion());
 		layoutDomicilio.setWidget(1, 2, editarDomicioFacturacion);
@@ -186,33 +185,31 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 				domicilioAEditar = (DomiciliosCuentaDto) editarSSUIData.getEntrega().getSelectedItem();
 			}
 			DomicilioUI.getInstance().openPopupDeleteDialog(editarSSUIData.getCuenta().getPersona(),
-					domicilioAEditar, new Command(){
-				public void execute() {
-					editarSSUIData.refreshDomiciliosListBox();
-				}
-			});
+					domicilioAEditar, new Command() {
+						public void execute() {
+							editarSSUIData.refreshDomiciliosListBox();
+						}
+					});
 		}
 	}
 
 	public void onClickEdicionDomicilios(Widget sender) {
 		DomicilioUI.getInstance().setComandoAceptar(getCommandGuardarDomicilio());
 		if (sender == crearDomicilio) {
-			DomicilioUI.getInstance().cargarPopupNuevoDomicilio(new DomiciliosCuentaDto());
+			domicilioAEditar = new DomiciliosCuentaDto();
 		} else if (sender == editarDomicioEntrega) {
-			DomicilioUI.getInstance().cargarPopupEditarDomicilio(
-					(DomiciliosCuentaDto) editarSSUIData.getEntrega().getSelectedItem());
+			domicilioAEditar = (DomiciliosCuentaDto) editarSSUIData.getEntrega().getSelectedItem();
 		} else if (sender == editarDomicioFacturacion) {
-			DomicilioUI.getInstance().cargarPopupEditarDomicilio(
-					(DomiciliosCuentaDto) editarSSUIData.getFacturacion().getSelectedItem());
+			domicilioAEditar = (DomiciliosCuentaDto) editarSSUIData.getFacturacion().getSelectedItem();
 		}
+		DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
 	}
 
 	private Command getCommandGuardarDomicilio() {
 		return new Command() {
 			public void execute() {
 				DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
-				PersonaDto persona = editarSSUIData.getCuenta().getPersona();
-				persona.getDomicilios().add(domicilio);
+				editarSSUIData.addDomicilio(domicilio);
 				editarSSUIData.refreshDomiciliosListBox();
 			}
 		};

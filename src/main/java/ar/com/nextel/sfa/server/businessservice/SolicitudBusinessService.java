@@ -43,22 +43,22 @@ public class SolicitudBusinessService {
 		this.financialSystem = financialSystemBean;
 	}
 
-	@Autowired	
+	@Autowired
 	public void setSessionContextLoader(SessionContextLoader sessionContextLoader) {
 		this.sessionContextLoader = sessionContextLoader;
 	}
-	
+
 	@Autowired
-	public void setRepository(@Qualifier("repository")Repository repository) {
+	public void setRepository(@Qualifier("repository") Repository repository) {
 		this.repository = repository;
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public SolicitudServicio createSolicitudServicio(SolicitudServicioRequest solicitudServicioRequest) throws BusinessException {
+	public SolicitudServicio createSolicitudServicio(SolicitudServicioRequest solicitudServicioRequest)
+			throws BusinessException {
 
 		SolicitudServicioProviderResult providerResult = null;
-			providerResult = this.solicitudesBusinessOperator
-					.provideSolicitudServicio(solicitudServicioRequest);
+		providerResult = this.solicitudesBusinessOperator.provideSolicitudServicio(solicitudServicioRequest);
 
 		SolicitudServicio solicitud = providerResult.getSolicitudServicio();
 
@@ -118,17 +118,39 @@ public class SolicitudBusinessService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public SolicitudServicio saveSolicitudServicio(SolicitudServicioDto solicitudServicioDto, MapperExtended mapper){
+	public SolicitudServicio saveSolicitudServicio(SolicitudServicioDto solicitudServicioDto,
+			MapperExtended mapper) {
 		SolicitudServicio solicitudServicio = repository.retrieve(SolicitudServicio.class,
 				solicitudServicioDto.getId());
+		solicitudServicio.setDomicilioEnvio(null);
+		solicitudServicio.setDomicilioFacturacion(null);
 		mapper.map(solicitudServicioDto, solicitudServicio);
-		if (solicitudServicio.getDomicilioEnvio() != null) {
-			solicitudServicio.setDomicilioEnvio(repository.retrieve(Domicilio.class, solicitudServicio
-					.getDomicilioEnvio().getId()));
+
+		if (solicitudServicioDto.getIdDomicilioEnvio() != null) {
+			for (Domicilio domicilioE : solicitudServicio.getCuenta().getPersona().getDomicilios()) {
+				if (solicitudServicioDto.getIdDomicilioEnvio().equals(domicilioE.getId())) {
+					solicitudServicio.setDomicilioEnvio(domicilioE);
+					break;
+				}
+			}
+		} else {
+			solicitudServicio.setDomicilioEnvio(null);
 		}
-		if (solicitudServicio.getDomicilioFacturacion() != null) {
-			solicitudServicio.setDomicilioFacturacion(repository.retrieve(Domicilio.class, solicitudServicio
-					.getDomicilioFacturacion().getId()));
+		if (solicitudServicioDto.getIdDomicilioFacturacion() != null) {
+			for (Domicilio domicilioF : solicitudServicio.getCuenta().getPersona().getDomicilios()) {
+				if (solicitudServicioDto.getIdDomicilioFacturacion().equals(domicilioF.getId())) {
+					solicitudServicio.setDomicilioFacturacion(domicilioF);
+					break;
+				}
+			}
+		} else {
+			solicitudServicio.setDomicilioFacturacion(null);
+		}
+		// esto limpia los ids negativos temporales
+		for (Domicilio domicilio : solicitudServicio.getCuenta().getPersona().getDomicilios()) {
+			if (domicilio.getId() != null && domicilio.getId() < 0) {
+				domicilio.setId(null);
+			}
 		}
 		repository.save(solicitudServicio);
 		return solicitudServicio;

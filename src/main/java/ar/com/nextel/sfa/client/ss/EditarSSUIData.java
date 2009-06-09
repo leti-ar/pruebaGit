@@ -3,12 +3,15 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jaxen.function.IdFunction;
+
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
+import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
@@ -56,6 +59,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 	private DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateFormat();
 	private List<List<ServicioAdicionalLineaSolicitudServicioDto>> serviciosAdicionales;
 	private boolean saved = true;
+	private long lastFakeId = -1;
 
 	private static final String FORMA_CONTRATACION_ALQUILER = "Alquiler";
 
@@ -191,6 +195,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 
 	public void setSolicitud(SolicitudServicioDto solicitud) {
 		saved = true;
+		lastFakeId = -1;
 		serviciosAdicionales.clear();
 		for (int i = 0; i < solicitud.getLineas().size(); i++) {
 			serviciosAdicionales.add(new ArrayList());
@@ -200,10 +205,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 		nflota.setText(solicitud.getNumeroFlota());
 		entrega.clear();
 		facturacion.clear();
-		entrega.addAllItems(solicitud.getCuenta().getPersona().getDomicilios());
-		facturacion.addAllItems(solicitud.getCuenta().getPersona().getDomicilios());
-		entrega.setSelectedItem(solicitud.getDomicilioEnvio());
-		facturacion.setSelectedItem(solicitud.getDomicilioFacturacion());
+		refreshDomiciliosListBox();
+		entrega.selectByValue("" + solicitud.getIdDomicilioEnvio());
+		facturacion.selectByValue("" + solicitud.getIdDomicilioFacturacion());
 		aclaracion.setText(solicitud.getAclaracionEntrega());
 		credFidelDisponibleText.setHTML(solicitud.getMontoDisponible() != null ? currFormatter
 				.format(solicitud.getMontoDisponible()) : "0");
@@ -251,8 +255,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 		solicitudServicio.setNumero(nss.getText());
 		solicitudServicio.setNumeroFlota(nflota.getText());
 		solicitudServicio.setOrigen((OrigenSolicitudDto) origen.getSelectedItem());
-		solicitudServicio.setDomicilioEnvio((DomiciliosCuentaDto) entrega.getSelectedItem());
-		solicitudServicio.setDomicilioFacturacion((DomiciliosCuentaDto) facturacion.getSelectedItem());
+		solicitudServicio.setIdDomicilioEnvio(entrega.getSelectedItemId() != null ? Long.valueOf(entrega
+				.getSelectedItemId()) : null);
+		solicitudServicio.setIdDomicilioFacturacion(facturacion.getSelectedItemId() != null ? Long
+				.valueOf(facturacion.getSelectedItemId()) : null);
 		solicitudServicio.setAclaracionEntrega(aclaracion.getText());
 		if (!"".equals(credFidelizacion.getText().trim())) {
 			solicitudServicio.setMontoCreditoFidelizacion(Double.parseDouble(credFidelizacion.getText()));
@@ -442,6 +448,18 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 
 	public boolean isSaved() {
 		return saved;
+	}
+
+	public void addDomicilio(DomiciliosCuentaDto domicilio) {
+		PersonaDto persona = solicitudServicio.getCuenta().getPersona();
+		if(domicilio.getId() == null){
+			domicilio.setId(lastFakeId--);
+			persona.getDomicilios().add(domicilio);
+		} else {
+			int index = persona.getDomicilios().indexOf(domicilio);
+			persona.getDomicilios().remove(index);
+			persona.getDomicilios().add(index, domicilio);
+		}
 	}
 
 }
