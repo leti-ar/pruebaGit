@@ -107,12 +107,6 @@ public class CuentaDomiciliosForm extends Composite {
 	 * Refresca la grilla de domicilios
 	 **/
 	public void refrescaTablaConNuevoDomicilio(){
-		datosTabla.clear();
-		cargaTablaDomicilios(cuentaDto);
-	}
-	
-	public void refrescaTablaConDomiciliosBorrados(int row){
-		datosTabla.removeRow(row);
 		cargaTablaDomicilios(cuentaDto);
 	}
 	
@@ -121,6 +115,8 @@ public class CuentaDomiciliosForm extends Composite {
 	 **/
 	public void cargaTablaDomicilios(final CuentaDto cuentaDto) {
 		this.cuentaDto = cuentaDto;
+		setTienePrincipalEntrega(false);
+		setTienePrincipalFacturacion(false);
 		
 		List<DomiciliosCuentaDto> domicilios;
 		domicilios = cuentaDto.getPersona().getDomicilios();
@@ -235,7 +231,7 @@ public class CuentaDomiciliosForm extends Composite {
 						domicilioAEditar = domicilio;
 						DomicilioUI.getInstance().openPopupDeleteDialog(cuentaDto.getPersona(), domicilioAEditar, new Command(){
 							public void execute() {
-								refrescaTablaConDomiciliosBorrados(rowABorrar);
+								refrescaTablaConNuevoDomicilio();
 								huboCambios = true;
 							}
 						});
