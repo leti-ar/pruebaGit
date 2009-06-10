@@ -12,7 +12,7 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 
 	private Long id;
 	private String calle;
-	private Long numero;
+	private String numero;
 	private String piso;
 	private String codigo_postal;
 	private String departamento;
@@ -66,11 +66,11 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 		this.calle = calle;
 	}
 
-	public Long getNumero() {
+	public String getNumero() {
 		return numero;
 	}
 
-	public void setNumero(Long numero) {
+	public void setNumero(String numero) {
 		this.numero = numero;
 	}
 

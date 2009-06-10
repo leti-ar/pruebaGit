@@ -16,7 +16,6 @@ import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoEmailDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
-import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
 import ar.com.nextel.sfa.client.enums.TipoEmailEnum;
 import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
@@ -46,7 +45,6 @@ public class ContactoUIData extends UIData {
 	TextBox emailLaboral = new TextBox();
 	Label veraz = new Label();
 	
-	private DomicilioUI domicilioUI;
 	private List<DomiciliosCuentaDto> domicilios = new ArrayList();
 
 	public List<String> validarCampoObligatorio() {

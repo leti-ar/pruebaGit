@@ -130,9 +130,7 @@ public class DomiciliosUIData extends UIData {
 		domicilio.setCpa(cpa.getText());
 		domicilio.setDepartamento(departamento.getText());
 		domicilio.setManzana(manzana.getText());
-		if (!"".equals(numero.getText())) {
-			domicilio.setNumero(Long.parseLong(numero.getText()));
-		}
+		domicilio.setNumero(numero.getText());
 		domicilio.setObservaciones(observaciones.getText());
 		domicilio.setPiso(piso.getText());
 		domicilio.setProvincia((ProvinciaDto) provincia.getSelectedItem());
@@ -338,11 +336,11 @@ public class DomiciliosUIData extends UIData {
 		return provincia;
 	}
 
-	public void hideLabelsParaContactos() {
-		facturacion.setVisible(false);
-		entrega.setVisible(false);
-		validado.setVisible(false);
-		nombreUsuarioUltimaModificacion.setVisible(false);
-		fechaUltimaModificacion.setVisible(false);
-	}
+//	public void hideLabelsParaContactos() {
+//		facturacion.setVisible(false);
+//		entrega.setVisible(false);
+//		validado.setVisible(false);
+//		nombreUsuarioUltimaModificacion.setVisible(false);
+//		fechaUltimaModificacion.setVisible(false);
+//	}
 }

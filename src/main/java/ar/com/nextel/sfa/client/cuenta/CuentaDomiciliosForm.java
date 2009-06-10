@@ -64,6 +64,7 @@ public class CuentaDomiciliosForm extends Composite {
 						   huboCambios = true;
 						}
 				});
+				DomicilioUI.getInstance().setParentContacto(false);
 				DomicilioUI.getInstance().cargarPopupNuevoDomicilio(new DomiciliosCuentaDto());
 			}
 		});
@@ -189,6 +190,7 @@ public class CuentaDomiciliosForm extends Composite {
 						DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,tienePrincipalFacturacion);
 						DomicilioUI.getInstance().hide();
 						if (domicilio.getVantiveId() != null){
+							DomicilioUI.getInstance().setParentContacto(false);
 							DomicilioUI.getInstance().openPopupAdviseDialog(DomicilioUI.getInstance().getOpenDomicilioUICommand());
 						}else{
 							DomicilioUI.getInstance().setComandoAceptar(new Command(){
@@ -202,6 +204,7 @@ public class CuentaDomiciliosForm extends Composite {
 									huboCambios = true;
 									}
 								});
+							DomicilioUI.getInstance().setParentContacto(false);
 							DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
 						}
 					}
@@ -222,6 +225,7 @@ public class CuentaDomiciliosForm extends Composite {
 								   huboCambios = true;
 								}
 							});
+						DomicilioUI.getInstance().setParentContacto(false);
 						DomicilioUI.getInstance().cargarPopupCopiarDomicilio(domicilioCopiado);
 					}
 					// Acciones a tomar cuando haga click en iconos de borrado de domicilios:

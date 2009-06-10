@@ -80,7 +80,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		if(sender == aceptar){
 			contactoCuentaDto = contactosData.getContactoDto();
 			if (contactoABorrar != -1) {
-				cuentaContactoForm.getInstance().eliminarContacto(contactoABorrar);
+				CuentaContactoForm.getInstance().eliminarContacto(contactoABorrar);
 			}
 			validarCampoObligatorio(true);
 		}
@@ -88,6 +88,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 			hide();
 		}
 		else{
+			DomicilioUI.getInstance().setParentContacto(true);
 			DomicilioUI.getInstance().showAndCenter();
 		}
 	}};
@@ -262,7 +263,8 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 
 		veraz.setText(result.getEstado());
 		MessageDialog.getInstance().setDialogTitle("Resultado Veraz");
-		MessageDialog.getInstance().showAceptar(result.getMensaje(), MessageDialog.getInstance().getCloseCommand());
+		MessageDialog.getInstance();
+		MessageDialog.getInstance().showAceptar(result.getMensaje(), MessageDialog.getCloseCommand());
 	}
 	
 	private PersonaDto getVerazSearch(TextBox numDoc, ListBox tipoDoc, ListBox sexo) {
@@ -295,15 +297,12 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 				DomicilioUI.getInstance().setComandoAceptar(new Command(){
 					public void execute() {
 						   DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
-						   /**Aca deberia sacarse la lista de domicilios de los contactos, NO de la persona!*/
-//						   ContactoCuentaDto contacto = new ContactoCuentaDto();
-//						   PersonaDto persona = contacto.getPersona();
-//						   persona.getDomicilios().add(domicilio);
 						   contactosData.setDomicilio(domicilio);
 						   refrescaTablaConNuevoDomicilio();
 					}
 				});
-				DomicilioUI.getInstance().hideLabelsParaContactos();
+				DomicilioUI.getInstance().setParentContacto(true);
+				DomicilioUI.getInstance().showAndCenter();
 				DomicilioUI.getInstance().cargarPopupNuevoDomicilio(new DomiciliosCuentaDto());
 			}
 		});
@@ -364,6 +363,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 					DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,tienePrincipalFacturacion);
 					DomicilioUI.getInstance().hide();
 					if (domicilio.getVantiveId() != null){
+						DomicilioUI.getInstance().setParentContacto(true);
 						DomicilioUI.getInstance().openPopupAdviseDialog(DomicilioUI.getInstance().getOpenDomicilioUICommand());
 					}else{
 						DomicilioUI.getInstance().setComandoAceptar(new Command(){
@@ -377,6 +377,8 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 								}
 							});
 						DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
+						DomicilioUI.getInstance().setParentContacto(true);
+						DomicilioUI.getInstance().showAndCenter();
 					}
 				}
 			}
@@ -441,7 +443,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 				ErrorDialog.getInstance().show(errors);
 			}
 		} else {
-			cuentaContactoForm.getInstance().setearContactos(contactoCuentaDto, contactoABorrar);
+			CuentaContactoForm.getInstance().setearContactos(contactoCuentaDto, contactoABorrar);
 			this.hide();
 		}
 	}
@@ -522,9 +524,9 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 			return "";
 	}
 
-	private String comprobarNumero(Long numero) {
+	private String comprobarNumero(String numero) {
 		if (numero!=null) {
-			return String.valueOf(numero) + " ";
+			return numero + " ";
 		} else 
 			return "";
 	}

@@ -44,6 +44,7 @@ public class DomicilioUI extends NextelDialog {
 	private boolean tienePrincipalEntrega;
 	private int rowDomicilioABorrar;
 	private PersonaDto persona;
+	private boolean parentContacto;
 
 	Label calleLabel = new Label(Sfa.constant().calle());
 	Label numCalleLabel = new Label(Sfa.constant().numeroCalle());
@@ -56,15 +57,6 @@ public class DomicilioUI extends NextelDialog {
 	Label labelValidado2 = new Label(Sfa.constant().validado2());
 	Label labelUsuario = new Label(Sfa.constant().usuario_domicilio());
 	Label labelFecha = new Label(Sfa.constant().fecha_Modificacion());
-
-	public void hideLabelsParaContactos() {
-		labelEntrega.setVisible(false);
-		labelUsuario.setVisible(false);
-		labelFecha.setVisible(false);
-		labelFacturacion.setVisible(false);
-		labelValidado1.setVisible(false);
-		labelValidado2.setVisible(false);
-	}
 
 	public static DomicilioUI getInstance() {
 		return instance;
@@ -213,6 +205,7 @@ public class DomicilioUI extends NextelDialog {
 				hide();
 			}
 		});
+		setParentContacto(false);
 		this.showAndCenter();
 	}
 
@@ -240,9 +233,14 @@ public class DomicilioUI extends NextelDialog {
 	}
 
 	public void showAndCenter() {
+		if (parentContacto){
+			ocultaFieldsParaContactos();
+		}else{
+			habilitaFieldsParaContactos();
+		}
 		super.showAndCenter();
 	}
-
+	
 	public boolean isEditable() {
 		return noEditable;
 	}
@@ -447,13 +445,6 @@ public class DomicilioUI extends NextelDialog {
 		}
 	}
 
-	private void openPopupDeleteDialog(Command comandoGenerico) {
-		MessageDialog.getInstance().setDialogTitle("Eliminar Domicilio");
-		MessageDialog.getInstance().setSize("300px", "100px");
-		MessageDialog.getInstance().showSiNo("¿Esta seguro que desea eliminar el domicilio seleccionado?",
-				comandoGenerico, MessageDialog.getCloseCommand());
-	}
-
 	public Command getOpenDomicilioUICommand() {
 		Command openUICommand = new Command() {
 			public void execute() {
@@ -464,15 +455,6 @@ public class DomicilioUI extends NextelDialog {
 		};
 		return openUICommand;
 	}
-
-	private Command getOpenDialogAdviceCommand() {
-		Command openDialogCommand = new Command() {
-			public void execute() {
-				openPopupAdviseDialog(MessageDialog.getCloseCommand());
-			}
-		};
-	return openDialogCommand;
-	}	
 
 	public void setYaTieneDomiciliosPrincipales(boolean ppalEntrega, boolean ppalfacturacion){
 		this.tienePrincipalEntrega = ppalEntrega;
@@ -490,7 +472,38 @@ public class DomicilioUI extends NextelDialog {
 		return tienePpales;
 	}
 	
+	public boolean isParentContacto() {
+		return parentContacto;
+	}
+
+	public void setParentContacto(boolean parentContacto) {
+		this.parentContacto = parentContacto;
+	}
+
 	public void refrescaTablaConNuevoDomicilio(DomiciliosCuentaDto domicilioNuevo){
 	}
 
+	public void ocultaFieldsParaContactos() {
+		labelEntrega.setVisible(false);
+		labelUsuario.setVisible(false);
+		labelFecha.setVisible(false);
+		labelFacturacion.setVisible(false);
+		labelValidado1.setVisible(false);
+		labelValidado2.setVisible(false);
+		getDomiciliosData().getEntrega().setVisible(false);
+		getDomiciliosData().getFacturacion().setVisible(false);
+		getDomiciliosData().getValidado().setVisible(false);
+	}
+
+	public void habilitaFieldsParaContactos() {
+		labelEntrega.setVisible(true);
+		labelUsuario.setVisible(true);
+		labelFecha.setVisible(true);
+		labelFacturacion.setVisible(true);
+		labelValidado1.setVisible(true);
+		labelValidado2.setVisible(true);
+		getDomiciliosData().getEntrega().setVisible(true);
+		getDomiciliosData().getFacturacion().setVisible(true);
+		getDomiciliosData().getValidado().setVisible(true);
+	}	
 }
