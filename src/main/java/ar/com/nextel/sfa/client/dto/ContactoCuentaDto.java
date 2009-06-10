@@ -4,10 +4,11 @@ import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ContactoCuentaDto implements IsSerializable {
+public class ContactoCuentaDto implements IsSerializable , IdentifiableDto, Cloneable {
 
 	private Long id;
 	private PersonaDto persona;
+	private CuentaDto cuenta;
 	
 	
 	public Long getId() {
@@ -42,6 +43,13 @@ public class ContactoCuentaDto implements IsSerializable {
 	public List<EmailDto> getEmails() {
 		return persona.getEmails();
 	}
-	
-	
+
+	public CuentaDto getCuenta() {
+		return cuenta;
+	}
+
+	public void setCuenta(CuentaDto cuenta) {
+		this.cuenta = cuenta;
+	}
+
 }

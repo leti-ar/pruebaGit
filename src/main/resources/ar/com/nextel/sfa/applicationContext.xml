@@ -32,7 +32,8 @@
 				<entry key="collectionServicioAdicionalConverter" value-ref="collectionServicioAdicionalConverter" />
 				<entry key="collectionDomiciliosServicioConverter" value-ref="collectionDomiciliosServicioConverter" />
 				<entry key="estadoTipoDomicilioOwnedConverter" value-ref="estadoTipoDomicilioOwnedConverter" />
-			</map>
+			    <entry key="collectionContactoCuentaConverter" value-ref="collectionContactoCuentaConverter" />
+		    </map>
 		</property>
 	</bean>
 	
@@ -61,7 +62,6 @@
 		</property>
 	</bean>
 
-
 	<bean id="collectionServicioAdicionalConverter" class="ar.com.nextel.sfa.server.converter.CollectionOwnedConverter">
 		<property name="dozerMapper" ref="dozerMapper" />
 		<property name="repository" ref="repository" />
@@ -72,4 +72,16 @@
 			<bean class="ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto"></bean>
 		</property>
 	</bean>
+
+	<bean id="collectionContactoCuentaConverter" class="ar.com.nextel.sfa.server.converter.CollectionOwnedConverter">
+		<property name="dozerMapper" ref="dozerMapper" />
+		<property name="repository" ref="repository" />
+		<property name="modelClass">
+			<bean class="ar.com.nextel.model.cuentas.beans.ContactoCuenta"></bean>
+		</property>
+		<property name="dtoClass">
+			<bean class="ar.com.nextel.sfa.client.dto.ContactoCuentaDto"></bean>
+		</property>
+	</bean>
+
 </beans>

@@ -44,6 +44,7 @@ public class ContactoUIData extends UIData {
 	TextBox emailPersonal = new TextBox();
 	TextBox emailLaboral = new TextBox();
 	Label veraz = new Label();
+	Long newContactosId = 0L;
 	
 	private List<DomiciliosCuentaDto> domicilios = new ArrayList();
 
@@ -105,9 +106,12 @@ public class ContactoUIData extends UIData {
 	
 	public ContactoCuentaDto getContactoDto() {
 		ContactoCuentaDto contactoDto = new ContactoCuentaDto();
+		contactoDto.setCuenta(CuentaEdicionTabPanel.getInstance().getCuenta2editDto());
+		newContactosId--;
+		contactoDto.setId(newContactosId);
 		contactoDto.setPersona(this.getPersonaDto());
 		//Averiguar de donde sacar el ID:
-		contactoDto.setId(new Long(1));
+		//contactoDto.setId(new Long(1));
 		//
 		return contactoDto;
 	}

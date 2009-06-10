@@ -8,26 +8,28 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ar.com.nextel.business.cuentas.create.CreateCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
-import ar.com.nextel.business.cuentas.select.SelectCuentaBusinessOperator;
 import ar.com.nextel.business.oportunidades.ReservaCreacionCuentaBusinessOperator;
 import ar.com.nextel.business.oportunidades.ReservaCreacionCuentaBusinessOperatorResult;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.AbstractDatosPago;
+import ar.com.nextel.model.cuentas.beans.ContactoCuenta;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoTarjetaCredito;
 import ar.com.nextel.model.cuentas.beans.DatosPago;
 import ar.com.nextel.model.cuentas.beans.FormaPago;
+import ar.com.nextel.model.cuentas.beans.GranCuenta;
 import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
-import ar.com.nextel.model.cuentas.beans.Vendedor;
+import ar.com.nextel.model.personas.beans.Persona;
 import ar.com.nextel.model.personas.beans.Telefono;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
-import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoTarjetaCreditoDto;
 import ar.com.nextel.sfa.client.dto.EmailDto;
+import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.enums.TipoEmailEnum;
 import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
@@ -38,7 +40,6 @@ public class CuentaBusinessService {
 	
 	@Qualifier("createCuentaBusinessOperator")
 	private CreateCuentaBusinessOperator createCuentaBusinessOperator;
-//	private EdicionCuentaBusinessOperator edicionCuentaBusinessOperator;
 	
 	@Qualifier("reservaCreacionCuentaBusinessOperator")
 	private ReservaCreacionCuentaBusinessOperator reservaCreacionCuentaBusinessOperator;
@@ -56,12 +57,10 @@ public class CuentaBusinessService {
 			CreateCuentaBusinessOperator createCuentaBusinessOperatorBean) {
 		this.createCuentaBusinessOperator = createCuentaBusinessOperatorBean;
 	}
-	
 	@Autowired	
 	public void setSessionContextLoader(SessionContextLoader sessionContextLoader) {
 		this.sessionContextLoader = sessionContextLoader;
 	}
-	
 	@Autowired
 	public void setRepository(@Qualifier("repository")Repository repository) {
 		this.repository = repository;
@@ -79,8 +78,10 @@ public class CuentaBusinessService {
 	}
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public Long saveCuenta(CuentaDto cuentaDto,MapperExtended mapper)  {
-		Cuenta cuenta = repository.retrieve(Cuenta.class, cuentaDto.getId());
+	public Long saveCuenta(GranCuentaDto cuentaDto,MapperExtended mapper)  {
+		GranCuenta cuenta = repository.retrieve(GranCuenta.class, cuentaDto.getId());
+
+        //DATOS PAGO
 		DatosPago datosPagoOriginal = (DatosPago) repository.retrieve(AbstractDatosPago.class, cuenta.getDatosPago().getId());
 		cuenta.setDatosPago(null);
 		repository.delete(datosPagoOriginal);
@@ -88,6 +89,7 @@ public class CuentaBusinessService {
 
 		mapper.map(cuentaDto, cuenta);
 
+		//FORMA PAGO
 		FormaPago formaPagoNueva = (FormaPago) repository.retrieve(FormaPago.class, cuentaDto.getFormaPago().getId());
 		cuenta.setFormaPago(formaPagoNueva);
 
@@ -99,14 +101,27 @@ public class CuentaBusinessService {
 			((DatosDebitoTarjetaCredito)cuenta.getDatosPago()).setTipoTarjeta(tipoTarjeta);
 		}
 
-		//FIXME: revisar mapeo de Cuenta/Persona en dozer para no tener que hacer esto
-		for (TelefonoDto tel : cuentaDto.getPersona().getTelefonos()) {
-			addTelefonosAPersona(tel,cuenta,mapper);
-		}
+		//FIXME: revisar mapeo de Persona en dozer para no tener que hacer esto ***********************
+		for (TelefonoDto tel : cuentaDto.getPersona().getTelefonos()) {                                
+			addTelefonosAPersona(tel,cuenta.getPersona(),mapper);                                      
+		}                                                                                              
 		for (EmailDto email : cuentaDto.getPersona().getEmails()) {
-			addEmailsAPersona(email,cuenta);
-		}		
-		//--------------------------------------------------------
+			addEmailsAPersona(email,cuenta.getPersona());
+		}
+		for(ContactoCuenta cont : cuenta.getContactos()) {
+			Persona persona = cont.getPersona();
+			for (ContactoCuentaDto contDto : cuentaDto.getContactos()) {
+				if (cont.getId()==contDto.getId())  {
+					for (TelefonoDto tel : contDto.getPersona().getTelefonos()) {
+						addTelefonosAPersona(tel,persona,mapper);
+					}
+					for (EmailDto email : contDto.getPersona().getEmails()) {
+						addEmailsAPersona(email,persona);
+					}
+				}
+			}
+		}
+		//**********************************************************************************************
 		repository.save(cuenta.getDatosPago());
 		repository.save(cuenta);
 		return cuenta.getId();
@@ -117,40 +132,40 @@ public class CuentaBusinessService {
 	 * @param tel
 	 * @param cuenta
 	 */
-	private void addTelefonosAPersona(TelefonoDto tel, Cuenta cuenta, MapperExtended mapper) {
+	private void addTelefonosAPersona(TelefonoDto tel, Persona persona, MapperExtended mapper) {
 		if (tel.getTipoTelefono().getId()==TipoTelefonoEnum.PRINCIPAL.getTipo()) {
-			if (cuenta.getPersona().getTelefonoPrincipal()!=null) {
-				cuenta.getPersona().getTelefonoPrincipal().setArea(tel.getArea());
-				cuenta.getPersona().getTelefonoPrincipal().setNumeroLocal(tel.getNumeroLocal());
-				cuenta.getPersona().getTelefonoPrincipal().setInterno(tel.getInterno());
+			if (persona.getTelefonoPrincipal()!=null) {
+				persona.getTelefonoPrincipal().setArea(tel.getArea());
+				persona.getTelefonoPrincipal().setNumeroLocal(tel.getNumeroLocal());
+				persona.getTelefonoPrincipal().setInterno(tel.getInterno());
 			} else {
-				cuenta.getPersona().setTelefonoPrincipal(mapper.map(tel, Telefono.class));	
+				persona.setTelefonoPrincipal(mapper.map(tel, Telefono.class));	
 			}
 		}
 		else if (tel.getTipoTelefono().getId()==TipoTelefonoEnum.ADICIONAL.getTipo()) {
-			if (cuenta.getPersona().getTelefonoAdicional()!=null) {
-				cuenta.getPersona().getTelefonoAdicional().setArea(tel.getArea());
-				cuenta.getPersona().getTelefonoAdicional().setNumeroLocal(tel.getNumeroLocal());
-				cuenta.getPersona().getTelefonoAdicional().setInterno(tel.getInterno());
+			if (persona.getTelefonoAdicional()!=null) {
+				persona.getTelefonoAdicional().setArea(tel.getArea());
+				persona.getTelefonoAdicional().setNumeroLocal(tel.getNumeroLocal());
+				persona.getTelefonoAdicional().setInterno(tel.getInterno());
 			} else {
-				cuenta.getPersona().setTelefonoAdicional(mapper.map(tel, Telefono.class));	
+				persona.setTelefonoAdicional(mapper.map(tel, Telefono.class));	
 			}
 		}
 		else if (tel.getTipoTelefono().getId()==TipoTelefonoEnum.CELULAR.getTipo()) {
-			if (cuenta.getPersona().getTelefonoCelular()!=null) {
-				cuenta.getPersona().getTelefonoCelular().setArea(tel.getArea());
-				cuenta.getPersona().getTelefonoCelular().setNumeroLocal(tel.getNumeroLocal());
+			if (persona.getTelefonoCelular()!=null) {
+				persona.getTelefonoCelular().setArea(tel.getArea());
+				persona.getTelefonoCelular().setNumeroLocal(tel.getNumeroLocal());
 			} else {
-				cuenta.getPersona().setTelefonoCelular(mapper.map(tel, Telefono.class));	
+				persona.setTelefonoCelular(mapper.map(tel, Telefono.class));	
 			}
 		}
 		else if (tel.getTipoTelefono().getId()==TipoTelefonoEnum.FAX.getTipo()) {
-			if (cuenta.getPersona().getTelefonoFax()!=null) {
-				cuenta.getPersona().getTelefonoFax().setArea(tel.getArea());
-				cuenta.getPersona().getTelefonoFax().setNumeroLocal(tel.getNumeroLocal());
-				cuenta.getPersona().getTelefonoFax().setInterno(tel.getInterno());
+			if (persona.getTelefonoFax()!=null) {
+				persona.getTelefonoFax().setArea(tel.getArea());
+				persona.getTelefonoFax().setNumeroLocal(tel.getNumeroLocal());
+				persona.getTelefonoFax().setInterno(tel.getInterno());
 			} else {
-				cuenta.getPersona().setTelefonoFax(mapper.map(tel, Telefono.class));	
+				persona.setTelefonoFax(mapper.map(tel, Telefono.class));	
 			}
 		}
 	}
@@ -159,19 +174,19 @@ public class CuentaBusinessService {
 	 * @param mail
 	 * @param cuenta
 	 */
-	private void addEmailsAPersona(EmailDto mail, Cuenta cuenta) {
+	private void addEmailsAPersona(EmailDto mail, Persona persona) {
 		if (mail.getTipoEmail().getId()==TipoEmailEnum.PERSONAL.getTipo()) {
-			if (cuenta.getPersona().getEmailPersonal()!=null) {
-				cuenta.getPersona().getEmailPersonal().setEmail(mail.getEmail());
+			if (persona.getEmailPersonal()!=null) {
+				persona.getEmailPersonal().setEmail(mail.getEmail());
 			} else {
-				cuenta.getPersona().setEmailPersonalAddress(mail.getEmail());	
+				persona.setEmailPersonalAddress(mail.getEmail());	
 			}
 		}
 		else if (mail.getTipoEmail().getId()==TipoEmailEnum.LABORAL.getTipo()) {
-			if (cuenta.getPersona().getEmailLaboral()!=null) {
-				cuenta.getPersona().getEmailLaboral().setEmail(mail.getEmail());
+			if (persona.getEmailLaboral()!=null) {
+				persona.getEmailLaboral().setEmail(mail.getEmail());
 			} else {
-				cuenta.getPersona().setEmailLaboralAddress(mail.getEmail());	
+				persona.setEmailLaboralAddress(mail.getEmail());	
 			}
 		}
 		

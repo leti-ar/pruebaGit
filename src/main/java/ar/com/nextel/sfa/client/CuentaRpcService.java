@@ -2,11 +2,12 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
-import ar.com.nextel.sfa.client.dto.CuentaDto;
+
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
+import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
 import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
@@ -46,15 +47,15 @@ public interface CuentaRpcService extends RemoteService {
 	
 	public AgregarCuentaInitializer getAgregarCuentaInitializer();
 		
-	public CuentaDto saveCuenta(CuentaDto cuentaDto);
+	public GranCuentaDto saveCuenta(GranCuentaDto cuentaDto);
 	
 	public VerazInitializer getVerazInitializer();
 	
 	public VerazResponseDto consultarVeraz(PersonaDto personaDto);
 	
-	public CuentaDto selectCuenta(Long cuentaId, String cod_vantiveu);
+	public GranCuentaDto selectCuenta(Long cuentaId, String cod_vantiveu);
 	
-	public CuentaDto reservaCreacionCuenta(DocumentoDto documentoDto);
+	public GranCuentaDto reservaCreacionCuenta(DocumentoDto documentoDto);
 	
 	public TarjetaCreditoValidatorResultDto validarTarjeta(String numeroTarjeta, Integer mesVto, Integer anoVto);
 	
