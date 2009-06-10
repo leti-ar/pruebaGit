@@ -15,6 +15,7 @@ import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
+import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
@@ -147,19 +148,18 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		if (listaTelefonos != null) {
 			for (Iterator iter = listaTelefonos.iterator(); iter.hasNext();) {
 				TelefonoDto telefonoDto = (TelefonoDto) iter.next();
-
-				if (telefonoDto.getPrincipal()) {
+				if (telefonoDto.getTipoTelefono().getId()==TipoTelefonoEnum.PRINCIPAL.getTipo()) {
 					contactosData.setTelefonoPrincipalArea(telefonoDto.getArea());
 					contactosData.setTelefonoPrincipalNumero(telefonoDto.getNumeroLocal());
 					contactosData.setTelefonoPrincipalInterno(telefonoDto.getInterno());
-				} else if ("Adicional".equals(telefonoDto.getTipoTelefono().getDescripcion())) {
+				} else 	if (telefonoDto.getTipoTelefono().getId()==TipoTelefonoEnum.ADICIONAL.getTipo()) {
 					contactosData.setTelefonoAdicionalArea(telefonoDto.getArea());
 					contactosData.setTelefonoAdicionalNumero(telefonoDto.getNumeroLocal());
 					contactosData.setTelefonoAdicionalInterno(telefonoDto.getInterno());
-				} else if ("Celular".equals(telefonoDto.getTipoTelefono().getDescripcion())) {
+				} else 	if (telefonoDto.getTipoTelefono().getId()==TipoTelefonoEnum.CELULAR.getTipo()) {
 					contactosData.setTelefonoCelularArea(telefonoDto.getArea());
 					contactosData.setTelefonoCelularNumero(telefonoDto.getNumeroLocal());
-				} else if ("Fax".equals(telefonoDto.getTipoTelefono().getDescripcion())) {
+				} else 	if (telefonoDto.getTipoTelefono().getId()==TipoTelefonoEnum.FAX.getTipo()) {
 					contactosData.setFaxArea(telefonoDto.getArea());
 					contactosData.setFaxNumero(telefonoDto.getNumeroLocal());
 					contactosData.setFaxInterno(telefonoDto.getInterno());
