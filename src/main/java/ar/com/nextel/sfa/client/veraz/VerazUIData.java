@@ -35,8 +35,8 @@ public class VerazUIData extends UIData {
 	
 	public VerazUIData() {
 		
-		fields.add(tipoDocListBox = new ListBox(""));
-		fields.add(sexoListBox = new ListBox(""));
+		fields.add(tipoDocListBox = new ListBox());
+		fields.add(sexoListBox = new ListBox());
 		fields.add(numeroDocTextBox = new ValidationTextBox("[0-9]*[\\-]{0,1}[0-9]*[﻿\\-]{0,1}[0-9]*"));
 		validarVerazLink = new SimpleLink("Validar Veraz", "#", true);
 		agregarProspectLink = new SimpleLink("Agregar Prospect", "#", true);
@@ -54,6 +54,7 @@ public class VerazUIData extends UIData {
 	private void setCombos(VerazInitializer datos) {
 		tipoDocListBox.addAllItems(datos.getTiposDocumento());
 		sexoListBox.addAllItems(datos.getSexos());
+		sexoListBox.setSelectedIndex(2);
 	}
 
 		
