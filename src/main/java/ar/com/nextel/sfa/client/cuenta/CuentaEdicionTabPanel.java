@@ -305,5 +305,7 @@ public class CuentaEdicionTabPanel {
 	public GwtValidator getValidator() {
 		return validator;
 	}
-	
+	public TabPanel getTabPanel() {
+		return tabPanel;
+	}
 }
