@@ -297,25 +297,27 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 	}
 	
 	public GranCuentaDto selectCuenta(Long cuentaId, String cod_vantive) {
-		GranCuenta cuenta = null;
+		GranCuenta granCuenta = new GranCuenta();
+		Cuenta cuenta = null;
 		GranCuentaDto ctaDTO = null;
 		try {
 			if (cuentaId == 0){
 				//TODO: Analizar y borrar si no va!!
 				throw new RpcExceptionMessages("No tiene permisos para ver esta cuenta.");
 			} else {
-				cuenta = (GranCuenta)selectCuentaBusinessOperator.getCuentaSinLockear(cuentaId);
+				cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(cuentaId);
 				if (!cod_vantive.equals("***") && (!cod_vantive.equals("null"))){
-					cuenta = (GranCuenta)selectCuentaBusinessOperator.getCuentaYLockear(cod_vantive, this.getVendedor());
+					cuenta = selectCuentaBusinessOperator.getCuentaYLockear(cod_vantive, this.getVendedor());
 				}
+				granCuenta = (GranCuenta) repository.retrieve(Cuenta.class, cuenta.getId());
 				//agrego contactos
-				cuenta.addContactosCuenta(contactosCuentaBusinessOperator.obtenerContactosCuentas(cuenta.getId()));
-				CondicionCuenta cd1= cuenta.getCondicionCuenta();
+				granCuenta.addContactosCuenta(contactosCuentaBusinessOperator.obtenerContactosCuentas(cuenta.getId()));
+				CondicionCuenta cd1= granCuenta.getCondicionCuenta();
 				Long id = cd1.getId();
 				String code = cd1.getCodigoVantive();
 				String desc = cd1.getDescripcion();
 				CondicionCuentaDto cd2 = new CondicionCuentaDto(id,code,desc);
-				ctaDTO = (GranCuentaDto) mapper.map(cuenta, GranCuentaDto.class);
+				ctaDTO = (GranCuentaDto) mapper.map(granCuenta, GranCuentaDto.class);
 				ctaDTO.setCondicionCuenta(cd2);
 			}
 		} catch (Exception e1) {
