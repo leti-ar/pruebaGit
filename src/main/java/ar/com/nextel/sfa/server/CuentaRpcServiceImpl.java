@@ -298,20 +298,18 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 	
 	public GranCuentaDto selectCuenta(Long cuentaId, String cod_vantive) {
 		GranCuenta granCuenta = new GranCuenta();
-		Cuenta cuenta = null;
 		GranCuentaDto ctaDTO = null;
 		try {
 			if (cuentaId == 0){
 				//TODO: Analizar y borrar si no va!!
 				throw new RpcExceptionMessages("No tiene permisos para ver esta cuenta.");
 			} else {
-				cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(cuentaId);
+				granCuenta = (GranCuenta)selectCuentaBusinessOperator.getCuentaSinLockear(cuentaId);
 				if (!cod_vantive.equals("***") && (!cod_vantive.equals("null"))){
-					cuenta = selectCuentaBusinessOperator.getCuentaYLockear(cod_vantive, this.getVendedor());
+					granCuenta = (GranCuenta)selectCuentaBusinessOperator.getCuentaYLockear(cod_vantive, this.getVendedor());
 				}
-				granCuenta = (GranCuenta) repository.retrieve(Cuenta.class, cuenta.getId());
 				//agrego contactos
-				granCuenta.addContactosCuenta(contactosCuentaBusinessOperator.obtenerContactosCuentas(cuenta.getId()));
+				granCuenta.addContactosCuenta(contactosCuentaBusinessOperator.obtenerContactosCuentas(cuentaId));
 				CondicionCuenta cd1= granCuenta.getCondicionCuenta();
 				Long id = cd1.getId();
 				String code = cd1.getCodigoVantive();
