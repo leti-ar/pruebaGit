@@ -144,10 +144,8 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 	public Widget getDesde() {
 		Grid datePickerFull = new Grid(1, 2);
 		desde.setWeekendSelectable(true);
-		//sacarle 8 dias
-		desde.setSelectedDate(DateUtil.addDays(DateUtil.today(), -8));
-		desde.setSelectedDate(DateUtil.addDays(DateUtil.today(), -8));
-		desde.getTextBox().setText(dateFormatter.format(DateUtil.addDays(DateUtil.today(), -8)));
+		desde.setSelectedDate(DateUtil.getStartDayOfMonth(DateUtil.today()));
+		desde.getTextBox().setText(dateFormatter.format(DateUtil.getStartDayOfMonth(DateUtil.today())));
 		datePickerFull.setWidget(0, 0, desde.getTextBox());
 		datePickerFull.setWidget(0, 1, desde);
 		return datePickerFull;
