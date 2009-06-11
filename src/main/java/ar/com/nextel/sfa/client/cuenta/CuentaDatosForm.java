@@ -599,9 +599,9 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getVerazRta().setVisible(false);
 		camposTabDatos.getVerazLabel().setVisible(false);
 		
-		vendedorPanel.setVisible( ClientContext.getInstance().getUsuario().getUserName().
-				                   equalsIgnoreCase(
-	                    		  cuentaDto.getVendedor().getNombre())
+		vendedorPanel.setVisible( ClientContext.getInstance().getUsuario().getId().
+				                   equals(
+	                    		  cuentaDto.getVendedor().getId())
 	                    		);
 		
 	}
