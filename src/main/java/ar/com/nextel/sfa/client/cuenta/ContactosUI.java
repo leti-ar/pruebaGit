@@ -128,7 +128,13 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	public void cargaPopupNuevoContacto() {
 		//Instancia un nuevo Contacto vacio
 		this.contactoCuentaDto = new ContactoCuentaDto();
-		contactosData.clean();
+		contactosData.clean(); 		
+		//Limpia la tabla de domicilios incialmente, si esta con datos:
+		if (domicilioTable.getRowCount() > 1){
+			for (int j = 1; j <= (domicilioTable.getRowCount() - 1); j++) {
+				domicilioTable.removeRow(j);
+			}
+		}
 		aceptar.setVisible(true);
 		contactosData.enableFields();
 		showAndCenter();
@@ -345,7 +351,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 			for (Iterator<DomiciliosCuentaDto> iter = listaDomicilios.iterator(); iter.hasNext();) {
 				DomiciliosCuentaDto domicilioCuentaDto = (DomiciliosCuentaDto) iter.next();
 				domicilioTable.setWidget(row, 0, IconFactory.lapiz());
-				domicilioTable.setText(row, 1, armarDomicilio(domicilioCuentaDto));			
+				domicilioTable.setHTML(row, 1, armarDomicilio(domicilioCuentaDto));			
 				row++;
 			}
 		}
