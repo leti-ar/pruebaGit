@@ -7,7 +7,6 @@ import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CargoDto;
-import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoTarjetaCreditoDto;
 import ar.com.nextel.sfa.client.dto.DatosEfectivoDto;
@@ -381,7 +380,7 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.clean();
 	}
 
-	public void ponerDatosBusquedaEnFormulario(CuentaDto cuentaDto) {
+	public void ponerDatosBusquedaEnFormulario(GranCuentaDto cuentaDto) {
 		cargarPanelDatos(cuentaDto);
 		cargarPanelTelefonoFax(cuentaDto);
 		cargarPanelEmails(cuentaDto);
@@ -390,7 +389,7 @@ public class CuentaDatosForm extends Composite {
 		cargarPanelUsuario(cuentaDto);
 	}
 	
-	public void cargarPanelDatos(CuentaDto cuentaDto) {
+	public void cargarPanelDatos(GranCuentaDto cuentaDto) {
 		if (cuentaDto.getPersona().getDocumento()!=null) {
 			camposTabDatos.getTipoDocumento().setSelectedItem(cuentaDto.getPersona().getDocumento().tipoDocumento) ;
 			camposTabDatos.getNumeroDocumento().setText(cuentaDto.getPersona().getDocumento().getNumero());
@@ -413,7 +412,7 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getUse().setText(cuentaDto.getUse());
 	}
 	
-	public void cargarPanelTelefonoFax(CuentaDto cuentaDto) {
+	public void cargarPanelTelefonoFax(GranCuentaDto cuentaDto) {
 		for ( TelefonoDto telefono : cuentaDto.getPersona().getTelefonos()) {
 			TipoTelefonoDto tipoTelefono = telefono.getTipoTelefono();
 			if ( tipoTelefono.getId()==TipoTelefonoEnum.PRINCIPAL.getTipo()) {
@@ -440,7 +439,7 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getObservaciones().setText(cuentaDto.getObservacionesTelMail());
 	}
 	
-    public void cargarPanelEmails(CuentaDto cuentaDto) {
+    public void cargarPanelEmails(GranCuentaDto cuentaDto) {
         for (EmailDto email : cuentaDto.getPersona().getEmails()) {
 		    TipoEmailDto tipoEmail = email.getTipoEmail();
 		    if (tipoEmail.getId()==TipoEmailEnum.PERSONAL.getTipo()) {
@@ -452,7 +451,7 @@ public class CuentaDatosForm extends Composite {
 		}    	
     }
     
-    public void cargarPanelFormaPago(CuentaDto cuentaDto) {
+    public void cargarPanelFormaPago(GranCuentaDto cuentaDto) {
         String id_formaPago = "";
 		if (cuentaDto.getDatosPago().isEfectivo()) {
 			datosPago = (DatosEfectivoDto) cuentaDto.getDatosPago();
@@ -502,13 +501,13 @@ public class CuentaDatosForm extends Composite {
     	}
     }
 
-    public void cargarPanelVendedor(CuentaDto cuentaDto) {
+    public void cargarPanelVendedor(GranCuentaDto cuentaDto) {
 		camposTabDatos.getVendedorNombre().setText(cuentaDto.getVendedor()!=null?cuentaDto.getVendedor().getNombre():"");
 		camposTabDatos.getVendedorTelefono().setText(cuentaDto.getVendedor()!=null?cuentaDto.getVendedor().getTelefono():"");
 		camposTabDatos.getTipoCanalVentas().setSelectedItem(cuentaDto.getTipoCanalVentas());
     }
 
-    public void cargarPanelUsuario(CuentaDto cuentaDto) {
+    public void cargarPanelUsuario(GranCuentaDto cuentaDto) {
 		camposTabDatos.getUsuario().setText(cuentaDto.getNombreUsuarioCreacion());
 		if (cuentaDto.getFechaCreacion()!=null) 
 			camposTabDatos.getFechaCreacion().setText(DateTimeFormat.getMediumDateFormat().format(cuentaDto.getFechaCreacion()));
@@ -518,7 +517,7 @@ public class CuentaDatosForm extends Composite {
      * 
      * @param cuentaDto
      */
-	public void setAtributosCamposAlAgregarCuenta(CuentaDto cuentaDto) {
+	public void setAtributosCamposAlAgregarCuenta(GranCuentaDto cuentaDto) {
 		
 		camposTabDatos.enableFields();
 		iconoLupa.setVisible(true);
@@ -558,7 +557,7 @@ public class CuentaDatosForm extends Composite {
 	 * 
 	 * @param cuentaDto
 	 */
-	public void setAtributosCamposAlMostrarResuladoBusqueda(CuentaDto cuentaDto) {
+	public void setAtributosCamposAlMostrarResuladoBusqueda(GranCuentaDto cuentaDto) {
 		
 		setAtributosCamposAlAgregarCuenta(cuentaDto);
 		

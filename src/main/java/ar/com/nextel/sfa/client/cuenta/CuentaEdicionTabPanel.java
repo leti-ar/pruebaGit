@@ -196,7 +196,7 @@ public class CuentaEdicionTabPanel {
 		CuentaRpcService.Util.getInstance().saveCuenta(ctaDto,new DefaultWaitCallback() {
 			public void success(Object result) {
 				CuentaEdicionTabPanel.getInstance().setCuenta2editDto((GranCuentaDto) result);
-				cuentaDatosForm.ponerDatosBusquedaEnFormulario((CuentaDto) result);
+				cuentaDatosForm.ponerDatosBusquedaEnFormulario((GranCuentaDto) result);
 				razonSocial.setText(((CuentaDto) result).getPersona().getRazonSocial());
 				MessageDialog.getInstance().showAceptar("", "      La cuenta se guardó con exito     ", MessageDialog.getCloseCommand());
 				cuentaDomiciliosForm.setHuboCambios(false);
