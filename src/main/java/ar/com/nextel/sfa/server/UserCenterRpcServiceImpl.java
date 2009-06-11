@@ -10,6 +10,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import winit.uc.facade.UCFacade;
+import ar.com.nextel.business.vendedores.RegistroVendedores;
+import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.security.Usuario;
 import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
@@ -18,6 +20,7 @@ import ar.com.nextel.sfa.client.dto.UserCenterDto;
 import ar.com.nextel.sfa.client.dto.UsuarioDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.server.util.MapperExtended;
+import ar.com.nextel.util.ApplicationContextUtil;
 import ar.com.snoop.gwt.commons.server.RemoteService;
 
 public class UserCenterRpcServiceImpl extends RemoteService implements UserCenterRpcService {
@@ -27,6 +30,7 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 	private MapperExtended mapper;
  	private SessionContextLoader sessionContext;
  	private UCFacade ucFacade;
+ 	private Repository repository;
  	
 	@Override
 	public void init() throws ServletException {
@@ -34,6 +38,7 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 		context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		mapper = (MapperExtended) context.getBean("dozerMapper");
 		sessionContext = (SessionContextLoader) context.getBean("sessionContextLoader");
+		repository = (Repository) context.getBean("repository");
 	}
 	
 	/**
@@ -51,7 +56,9 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 		}
 		sessionContext.getSessionContext().put(SessionContext.PERMISOS, mapaPermisosServer);
 		UserCenterDto userCenter = new UserCenterDto();
-		userCenter.setUsuario(mapper.map((Usuario) sessionContext.getSessionContext().get(SessionContext.USUARIO), UsuarioDto.class));
+		Usuario usuario = (Usuario) sessionContext.getSessionContext().get(SessionContext.USUARIO);
+		userCenter.setUsuario(mapper.map(usuario, UsuarioDto.class));
+		userCenter.getUsuario().setId(ApplicationContextUtil.getInstance().getRegistroVendedores().getVendedor(usuario).getId());
 		userCenter.setMapaPermisos(mapaPermisosClient);
 		return userCenter; 
 	}
