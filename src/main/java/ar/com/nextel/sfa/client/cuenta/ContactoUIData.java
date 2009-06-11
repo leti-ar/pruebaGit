@@ -35,7 +35,7 @@ public class ContactoUIData extends UIData {
 	TextBox numeroDocumento = new TextBox();
 	TextBox nombre = new TextBox();
 	TextBox apellido = new TextBox();
-	ListBox sexo = new ListBox("");
+	ListBox sexo = new ListBox();
 	ListBox cargo = new ListBox("");
 	TelefonoTextBox telefonoPrincipal = new TelefonoTextBox();
 	TelefonoTextBox telefonoCelular = new TelefonoTextBox(false);
@@ -88,6 +88,14 @@ public class ContactoUIData extends UIData {
 		tipoDocumento.setWidth("125px");
 		sexo.setWidth("100px");
 		cargo.setWidth("250px");
+		
+		numeroDocumento.setMaxLength(10);
+		nombre.setMaxLength(19);
+		apellido.setMaxLength(19);
+		
+		emailPersonal.setMaxLength(50);
+		emailLaboral.setMaxLength(50);
+		
 
 		CuentaRpcService.Util.getInstance().CrearContactoInitializer(
 				new DefaultWaitCallback<CrearContactoInitializer>() {
@@ -99,6 +107,7 @@ public class ContactoUIData extends UIData {
 
 	private void setCombos(CrearContactoInitializer datos) {
 		tipoDocumento.addAllItems(datos.getTiposDocumento());
+		//en el initializer del server, yo se los id de los 2 que tengo que sacar, los saco de la lista y listo. Aca llegan 2 solitos.
 		sexo.addAllItems(datos.getSexos());
 		cargo.addAllItems(datos.getCargos());
 	}
