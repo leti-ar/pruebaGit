@@ -8,9 +8,9 @@ import com.google.gwt.user.client.ui.TextBox;
 public class TelefonoTextBox extends Composite {
 
 	private FlowPanel mainpanel;
-	private TextBox area;
-	private TextBox numero;
-	private TextBox interno;
+	private TextBox area; 
+	private TextBox numero; 
+	private TextBox interno; 
 
 	public TelefonoTextBox() {
 		this(true);
@@ -23,7 +23,9 @@ public class TelefonoTextBox extends Composite {
 		numero = new TextBox();
 
 		area.setWidth("40px");
+		area.setMaxLength(5);
 		numero.setWidth("80px");
+		numero.setMaxLength(8);
 
 		mainpanel.add(area);
 		mainpanel.add(new InlineHTML("-"));
@@ -32,6 +34,7 @@ public class TelefonoTextBox extends Composite {
 		if (showInterno) {
 			interno = new TextBox();
 			interno.setWidth("35px");
+			interno.setMaxLength(4);
 			mainpanel.add(new InlineHTML("-"));
 			mainpanel.add(interno);
 		}
