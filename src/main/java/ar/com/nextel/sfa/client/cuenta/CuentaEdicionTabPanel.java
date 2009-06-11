@@ -6,6 +6,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
@@ -32,7 +33,7 @@ public class CuentaEdicionTabPanel {
 	DualPanel clientePanel = new DualPanel();
 	private Label razonSocial = new Label();
 	private Label cliente = new Label();
-	private CuentaDto cuenta2editDto = new CuentaDto();
+	private GranCuentaDto cuenta2editDto = new GranCuentaDto();
 	private CuentaDatosForm      cuentaDatosForm      = CuentaDatosForm.getInstance();
 	private CuentaDomiciliosForm cuentaDomiciliosForm = CuentaDomiciliosForm.getInstance();
 	private CuentaContactoForm   cuentaContactoForm   = CuentaContactoForm.getInstance();
@@ -188,13 +189,13 @@ public class CuentaEdicionTabPanel {
 	}
 	
 	private void guardar() {
-		CuentaDto ctaDto = cuentaDatosForm.getCuentaDtoFromEditor();
+		GranCuentaDto ctaDto = cuentaDatosForm.getCuentaDtoFromEditor();
         //agrego domicilios
 		ctaDto.getPersona().setDomicilios(CuentaDomiciliosForm.getInstance().cuentaDto.getPersona().getDomicilios());
 		
 		CuentaRpcService.Util.getInstance().saveCuenta(ctaDto,new DefaultWaitCallback() {
 			public void success(Object result) {
-				CuentaEdicionTabPanel.getInstance().setCuenta2editDto((CuentaDto) result);
+				CuentaEdicionTabPanel.getInstance().setCuenta2editDto((GranCuentaDto) result);
 				cuentaDatosForm.ponerDatosBusquedaEnFormulario((CuentaDto) result);
 				razonSocial.setText(((CuentaDto) result).getPersona().getRazonSocial());
 				MessageDialog.getInstance().showAceptar("", "      La cuenta se guardó con exito     ", MessageDialog.getCloseCommand());
@@ -237,10 +238,10 @@ public class CuentaEdicionTabPanel {
 	}
 	
 	///////////////
-	public CuentaDto getCuenta2editDto() {
+	public GranCuentaDto getCuenta2editDto() {
 		return cuenta2editDto;
 	}
-	public void setCuenta2editDto(CuentaDto ctaDto) {
+	public void setCuenta2editDto(GranCuentaDto ctaDto) {
 		this.cuenta2editDto = ctaDto;
 	}
 	public FlexTable getCuentaEdicionPanel() {

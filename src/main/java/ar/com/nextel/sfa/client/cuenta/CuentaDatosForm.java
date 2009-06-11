@@ -14,6 +14,7 @@ import ar.com.nextel.sfa.client.dto.DatosEfectivoDto;
 import ar.com.nextel.sfa.client.dto.DatosPagoDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.EmailDto;
+import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProveedorDto;
 import ar.com.nextel.sfa.client.dto.RubroDto;
@@ -874,7 +875,7 @@ public class CuentaDatosForm extends Composite {
 	 * 
 	 * @return
 	 */
-	public CuentaDto getCuentaDtoFromEditor() {
+	public GranCuentaDto getCuentaDtoFromEditor() {
 		PersonaDto personaDto = CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getPersona();
 		
 		//panel datos

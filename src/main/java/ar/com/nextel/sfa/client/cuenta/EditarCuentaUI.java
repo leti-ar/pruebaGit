@@ -2,8 +2,8 @@ package ar.com.nextel.sfa.client.cuenta;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.context.ClientContext;
-import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
+import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
@@ -32,8 +32,8 @@ public class EditarCuentaUI extends ApplicationUI {
 		if (HistoryUtils.getParam("nroDoc")!=null) {
 			TipoDocumentoDto tipoDoc = new TipoDocumentoDto(Long.parseLong(HistoryUtils.getParam("tipoDoc")),null);
 			DocumentoDto docDto = new DocumentoDto(HistoryUtils.getParam("nroDoc"),tipoDoc);
-			CuentaRpcService.Util.getInstance().reservaCreacionCuenta(docDto,new DefaultWaitCallback<CuentaDto>() {
-				public void success(CuentaDto cuentaDto) {
+			CuentaRpcService.Util.getInstance().reservaCreacionCuenta(docDto,new DefaultWaitCallback<GranCuentaDto>() {
+				public void success(GranCuentaDto cuentaDto) {
 					cuentaTab.setCuenta2editDto(cuentaDto);
 					cuentaTab.validarCompletitudButton.addStyleName(cuentaTab.VALIDAR_COMPLETITUD_FAIL_STYLE);
 					cuentaTab.getCuentaDatosForm().setAtributosCamposAlAgregarCuenta(cuentaDto);
@@ -45,8 +45,8 @@ public class EditarCuentaUI extends ApplicationUI {
 			Long cuentaID = Long.parseLong(HistoryUtils.getParam("cuenta_id"));
 			String cod_vantive = HistoryUtils.getParam("cod_vantive");
 				// Si algunos de los dos tiene datos validos, carga los paneles.
-				CuentaRpcService.Util.getInstance().selectCuenta(cuentaID, cod_vantive,new DefaultWaitCallback<CuentaDto>() {
-					public void success(CuentaDto ctaDto) {
+				CuentaRpcService.Util.getInstance().selectCuenta(cuentaID, cod_vantive,new DefaultWaitCallback<GranCuentaDto>() {
+					public void success(GranCuentaDto ctaDto) {
 						if (!ClientContext.getInstance().getUsuario().getId().equals(ctaDto.getVendedor().getId())) {
 							History.back();
 							ErrorDialog.getInstance().show("No tiene permiso para ver esa cuenta.");
