@@ -11,12 +11,14 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.RootPanel;
 
+
 /**
  * Entry point principal de la aplicación web SFA Revolution
  */
 public class SFAWeb implements EntryPoint {
 
 	private static HeaderMenu headerMenu;
+	
 	private boolean usarUserCenter = true;
 
 	public void onModuleLoad() {
@@ -39,18 +41,18 @@ public class SFAWeb implements EntryPoint {
 	}
 	
 	private void cargarMenuConDatosUserCenter() {
-		UserCenterRpcService.Util.getInstance().getUserCenter(new DefaultWaitCallback() {
-			public void success(Object result) {
+		UserCenterRpcService.Util.getInstance().getUserCenter(new DefaultWaitCallback<UserCenterDto>() {
+			public void success(UserCenterDto result) {
 				setDatosUsuario((UserCenterDto) result);
-                addHeaderMenu();
+				addHeaderMenu();
 			}
 		});		
 	}
 
 	private void cargarMenuConDevUserData() {
-		UserCenterRpcService.Util.getInstance().getDevUserData(new DefaultWaitCallback() {
-			public void success(Object result) {
-				setDatosUsuario((UserCenterDto) result);
+		UserCenterRpcService.Util.getInstance().getDevUserData(new DefaultWaitCallback<UserCenterDto>() {
+			public void success(UserCenterDto result) {
+				setDatosUsuario(result);
                 addHeaderMenu();
 			}
 		});
@@ -64,5 +66,4 @@ public class SFAWeb implements EntryPoint {
 	public static HeaderMenu getHeaderMenu() {
 		return headerMenu;
 	}
-
 }
