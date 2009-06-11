@@ -33,9 +33,9 @@ import ar.com.nextel.model.cuentas.beans.Cargo;
 import ar.com.nextel.model.cuentas.beans.CategoriaCuenta;
 import ar.com.nextel.model.cuentas.beans.ClaseCuenta;
 import ar.com.nextel.model.cuentas.beans.CondicionCuenta;
-import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.FormaPago;
 import ar.com.nextel.model.cuentas.beans.GranCuenta;
+import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.Proveedor;
 import ar.com.nextel.model.cuentas.beans.TipoCanalVentas;
 import ar.com.nextel.model.cuentas.beans.TipoContribuyente;
@@ -240,10 +240,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 
 	public GranCuentaDto saveCuenta(GranCuentaDto cuentaDto) {
 		Long idCuenta = cuentaBusinessService.saveCuenta(cuentaDto,mapper);
-
-		//FIXME: revisar mapeo dozer para que la respuesta no explote
-		//cuentaDto = mapper.map(repository.retrieve(Cuenta.class, idCuenta), CuentaDto.class);
-		
+		cuentaDto = mapper.map(repository.retrieve(GranCuenta.class, idCuenta), GranCuentaDto.class);
 		return cuentaDto;
 	}
 
