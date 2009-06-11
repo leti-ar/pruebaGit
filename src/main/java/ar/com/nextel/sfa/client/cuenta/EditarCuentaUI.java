@@ -79,13 +79,11 @@ public class EditarCuentaUI extends ApplicationUI {
 		if (cuentaTab.getCuenta2editDto().getPersona() != null) {
 			cuentaTab.getCuentaDomicilioForm().cargaTablaDomicilios(cuentaTab.getCuenta2editDto());
 		}
-		//TODO: Revisar esto: La CuentaDto no tiene CONTACTOS!!!! Antes no pinchaba porque estaba mal, se referenciaba a una GRAN CUENTA!!! ARREGLAR!!!
-
 		//carga info pestaña Contactos
-		//if (cuentaTab.getCuenta2editDto().getContactos() != null) {
-		//	cuentaTab.getCuentaContactoForm().setListaContactos(cuentaTab.getCuenta2editDto().getContactos());
+		if (cuentaTab.getCuenta2editDto().getContactos() != null) {
+			cuentaTab.getCuentaContactoForm().setListaContactos(cuentaTab.getCuenta2editDto().getContactos());
 			cuentaTab.getCuentaContactoForm().cargarTabla();
-		//}
+		}
 			
 		mainPanel.add(cuentaTab.getCuentaEdicionPanel());
 	}
