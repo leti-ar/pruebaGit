@@ -5,7 +5,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.dto.GranCuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
@@ -32,7 +32,7 @@ public class CuentaEdicionTabPanel {
 	DualPanel clientePanel = new DualPanel();
 	private Label razonSocial = new Label();
 	private Label cliente = new Label();
-	private GranCuentaDto cuenta2editDto = new GranCuentaDto();
+	private CuentaDto cuenta2editDto = new CuentaDto();
 	private CuentaDatosForm      cuentaDatosForm      = CuentaDatosForm.getInstance();
 	private CuentaDomiciliosForm cuentaDomiciliosForm = CuentaDomiciliosForm.getInstance();
 	private CuentaContactoForm   cuentaContactoForm   = CuentaContactoForm.getInstance();
@@ -188,17 +188,15 @@ public class CuentaEdicionTabPanel {
 	}
 	
 	private void guardar() {
-		GranCuentaDto ctaDto = cuentaDatosForm.getCuentaDtoFromEditor();
+		CuentaDto ctaDto = cuentaDatosForm.getCuentaDtoFromEditor();
         //agrego domicilios
 		ctaDto.getPersona().setDomicilios(CuentaDomiciliosForm.getInstance().cuentaDto.getPersona().getDomicilios());
-		//agrego contactos
-		ctaDto.setContactos(CuentaContactoForm.getInstance().getListaContactos());
 		
-		CuentaRpcService.Util.getInstance().saveCuenta(ctaDto, new DefaultWaitCallback() {
+		CuentaRpcService.Util.getInstance().saveCuenta(ctaDto,new DefaultWaitCallback() {
 			public void success(Object result) {
-				CuentaEdicionTabPanel.getInstance().setCuenta2editDto((GranCuentaDto) result);
-				cuentaDatosForm.ponerDatosBusquedaEnFormulario((GranCuentaDto) result);
-				razonSocial.setText(((GranCuentaDto) result).getPersona().getRazonSocial());
+				CuentaEdicionTabPanel.getInstance().setCuenta2editDto((CuentaDto) result);
+				cuentaDatosForm.ponerDatosBusquedaEnFormulario((CuentaDto) result);
+				razonSocial.setText(((CuentaDto) result).getPersona().getRazonSocial());
 				MessageDialog.getInstance().showAceptar("", "      La cuenta se guardó con exito     ", MessageDialog.getCloseCommand());
 				cuentaDomiciliosForm.setHuboCambios(false);
 			}
@@ -239,10 +237,10 @@ public class CuentaEdicionTabPanel {
 	}
 	
 	///////////////
-	public GranCuentaDto getCuenta2editDto() {
+	public CuentaDto getCuenta2editDto() {
 		return cuenta2editDto;
 	}
-	public void setCuenta2editDto(GranCuentaDto ctaDto) {
+	public void setCuenta2editDto(CuentaDto ctaDto) {
 		this.cuenta2editDto = ctaDto;
 	}
 	public FlexTable getCuentaEdicionPanel() {
@@ -305,7 +303,5 @@ public class CuentaEdicionTabPanel {
 	public GwtValidator getValidator() {
 		return validator;
 	}
-	public TabPanel getTabPanel() {
-		return tabPanel;
-	}
+	
 }
