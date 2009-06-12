@@ -66,7 +66,7 @@ public class EditarCuentaUI extends ApplicationUI {
 							cuentaDto = ctaDto;
 						}
 						/**TODO: Investigar mas adelante, si no se deberia comparar por ID en vez de por UserName!!! */
-						if (!ClientContext.getInstance().getUsuario().getUserName().equals(cuentaDto.getVendedor().getUsuarioDto().getUserName())) {
+						if (!ClientContext.getInstance().getUsuario().getId().equals(cuentaDto.getVendedor().getId())) {
 							ErrorDialog.getInstance().show("No tiene permiso para ver esa cuenta.");
 							History.back();
 						}else{
