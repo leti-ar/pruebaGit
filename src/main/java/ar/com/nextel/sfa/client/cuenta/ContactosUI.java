@@ -22,7 +22,6 @@ import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
-import ar.com.snoop.gwt.commons.client.widget.button.LimpiarButton;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.Command;
@@ -130,13 +129,6 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		//Instancia un nuevo Contacto vacio
 		this.contactoCuentaDto = new ContactoCuentaDto();
 		contactosData.clean(); 		
-		limpiarDomicilios();
-		aceptar.setVisible(true);
-		contactosData.enableFields();
-		showAndCenter();
-	}
-
-	private void limpiarDomicilios() {
 		//Limpia la tabla de domicilios incialmente, si esta con datos:
 		if (domicilioTable.getRowCount() > 1){
 			int cantFilas = (domicilioTable.getRowCount()) - 1;
@@ -146,15 +138,33 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		}
 
 		//domicilioTable.clear();
+		if (listaDomicilios != null) {
+		listaDomicilios.clear();
+		}
+		aceptar.setVisible(true);
+		contactosData.enableFields();
+		showAndCenter();
+	}
+
+	public void cargarPopupEditarContacto(ContactoCuentaDto contacto, int fila) {
+		contactoABorrar = fila;
+		
+		//Limpia la tabla de domicilios incialmente, si esta con datos:
+		if (domicilioTable.getRowCount() > 1){
+			int cantFilas = (domicilioTable.getRowCount()) - 1;
+			for (int j = 1; j <= cantFilas; j++) {
+				domicilioTable.removeRow(1);
+			}
+		}
+		//domicilioTable.clear();
 //		if (listaDomicilios != null) {
 //		listaDomicilios.clear();
 //		}
-	}
-	
-	
-	public void cargarPopupEditarContacto(ContactoCuentaDto contacto, int fila) {
-		contactoABorrar = fila;
-		limpiarDomicilios();
+//		aceptar.setVisible(true);
+//		contactosData.enableFields();
+//		showAndCenter();
+		
+		
 		//completo la pantalla de info gral
 		contactosData.enableFields();
 		contactosData.setApellido(contacto.getApellido());
@@ -197,8 +207,9 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 					contactosData.setEmailLaboral(emailDto.getEmail());
 			}
 		}
-		
-		//setearDomicilio();
+		//completo los domicilios
+		//listaDomicilios.addAll(contacto.getPersona().getDomicilios());
+		setearDomicilio();
 		
 		showAndCenter();
 	}
