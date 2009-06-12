@@ -11,6 +11,7 @@ public class PlanDto extends EnumDto implements IsSerializable, ListBoxItem {
 	private Double precio;
 	private List<ModalidadCobroDto> modalidadesCobro;
 	private TipoPlanDto tipoPlan;
+	private TipoTelefoniaDto tipoTelefonia;
 
 	public String getItemText() {
 		return descripcion;
@@ -42,6 +43,14 @@ public class PlanDto extends EnumDto implements IsSerializable, ListBoxItem {
 
 	public void setTipoPlan(TipoPlanDto tipoPlan) {
 		this.tipoPlan = tipoPlan;
+	}
+
+	public TipoTelefoniaDto getTipoTelefonia() {
+		return tipoTelefonia;
+	}
+
+	public void setTipoTelefonia(TipoTelefoniaDto tipoTelefonia) {
+		this.tipoTelefonia = tipoTelefonia;
 	}
 
 }
