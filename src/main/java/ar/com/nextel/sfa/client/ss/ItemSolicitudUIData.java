@@ -205,10 +205,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 							setEnableReservaRelatedInputs(false);
 							desreservar.setVisible(true);
 							confirmarReserva.setVisible(false);
-							String numeroText = "" + result.getReservedNumber();
-							reservarHidden.setText(numeroText.substring(0, numeroText.length() - 4));
-							reservar.setText(numeroText.substring(numeroText.length() - 4, numeroText
-									.length()));
+							setNumeroTelefonicoCompleto("" + result.getReservedNumber());
 						}
 					}
 				});
@@ -227,15 +224,15 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	}
 
 	private void desreservar() {
-		String numeroText = reservarHidden.getText() + reservar.getText();
-		controller.desreservarNumeroTelefonico(Long.parseLong(numeroText), new DefaultWaitCallback() {
-			public void success(Object result) {
-				setEnableReservaRelatedInputs(true);
-				desreservar.setVisible(false);
-				confirmarReserva.setVisible(true);
-				reservarHidden.setText("");
-			}
-		});
+		controller.desreservarNumeroTelefonico(Long.parseLong(getNumeroTelefonicoCompleto()),
+				new DefaultWaitCallback() {
+					public void success(Object result) {
+						setEnableReservaRelatedInputs(true);
+						desreservar.setVisible(false);
+						confirmarReserva.setVisible(true);
+						reservarHidden.setText("");
+					}
+				});
 	}
 
 	private void setEnableReservaRelatedInputs(boolean enable) {
@@ -307,6 +304,22 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				onChange(plan);
 			}
 		};
+	}
+
+	private String getNumeroTelefonicoCompleto() {
+		return reservarHidden.getText() + reservar.getText();
+	}
+
+	private void setNumeroTelefonicoCompleto(String numero) {
+		if (numero != null) {
+			if (numero.length() > 4) {
+				reservarHidden.setText(numero.substring(0, numero.length() - 4));
+				reservar.setText(numero.substring(numero.length() - 4, numero.length()));
+			} else {
+				reservarHidden.setText("");
+				reservar.setText(numero);
+			}
+		}
 	}
 
 	public ListBox getListaPrecio() {
@@ -464,8 +477,13 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		ddn.setChecked(linea.getDdn());
 		ddi.setChecked(linea.getDdi());
 		localidad.setSelectedItem(linea.getLocalidad());
-		reservar.setText(linea.getNumeroReserva());
-		reservarHidden.setText(linea.getNumeroReservaArea());
+		setNumeroTelefonicoCompleto(linea.getNumeroReserva());
+		boolean tieneNReserva = linea.getNumeroReserva() != null && linea.getNumeroReserva().length() > 4;
+		setEnableReservaRelatedInputs(!tieneNReserva);
+		desreservar.setVisible(tieneNReserva);
+		confirmarReserva.setVisible(!tieneNReserva);
+		// reservar.setText(linea.getNumeroReserva());
+		// reservarHidden.setText(linea.getNumeroReservaArea());
 		serie.setText(linea.getNumeroSerie());
 		sim.setText(linea.getNumeroSimcard());
 		roaming.setChecked(linea.getRoaming());
@@ -513,7 +531,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			lineaSolicitudServicio.setModalidadCobro((ModalidadCobroDto) modalidadCobro.getSelectedItem());
 			lineaSolicitudServicio.setModelo((ModeloDto) modeloEq.getSelectedItem());
 			lineaSolicitudServicio.setNumeroIMEI(imei.getText());
-			lineaSolicitudServicio.setNumeroReserva(reservar.getText());
+			lineaSolicitudServicio.setNumeroReserva(getNumeroTelefonicoCompleto());
+			lineaSolicitudServicio.setNumeroReservaArea(reservarHidden.getText());
 			lineaSolicitudServicio.setNumeroSerie(serie.getText());
 			lineaSolicitudServicio.setNumeroSimcard(sim.getText());
 			PlanDto planSelected = (PlanDto) plan.getSelectedItem();
