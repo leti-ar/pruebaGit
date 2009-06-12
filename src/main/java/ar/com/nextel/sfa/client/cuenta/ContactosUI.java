@@ -22,6 +22,7 @@ import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
+import ar.com.snoop.gwt.commons.client.widget.button.LimpiarButton;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.Command;
@@ -129,19 +130,31 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		//Instancia un nuevo Contacto vacio
 		this.contactoCuentaDto = new ContactoCuentaDto();
 		contactosData.clean(); 		
-		//Limpia la tabla de domicilios incialmente, si esta con datos:
-		if (domicilioTable.getRowCount() > 1){
-			for (int j = 1; j <= (domicilioTable.getRowCount() - 1); j++) {
-				domicilioTable.removeRow(j);
-			}
-		}
+		limpiarDomicilios();
 		aceptar.setVisible(true);
 		contactosData.enableFields();
 		showAndCenter();
 	}
 
+	private void limpiarDomicilios() {
+		//Limpia la tabla de domicilios incialmente, si esta con datos:
+		if (domicilioTable.getRowCount() > 1){
+			int cantFilas = (domicilioTable.getRowCount()) - 1;
+			for (int j = 1; j <= cantFilas; j++) {
+				domicilioTable.removeRow(1);
+			}
+		}
+
+		//domicilioTable.clear();
+//		if (listaDomicilios != null) {
+//		listaDomicilios.clear();
+//		}
+	}
+	
+	
 	public void cargarPopupEditarContacto(ContactoCuentaDto contacto, int fila) {
 		contactoABorrar = fila;
+		limpiarDomicilios();
 		//completo la pantalla de info gral
 		contactosData.enableFields();
 		contactosData.setApellido(contacto.getApellido());
@@ -184,7 +197,9 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 					contactosData.setEmailLaboral(emailDto.getEmail());
 			}
 		}
-
+		
+		//setearDomicilio();
+		
 		showAndCenter();
 	}
 			
@@ -197,7 +212,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		
 		FlowPanel datosCuentaPanel = new FlowPanel();
 		datosCuentaPanel.addStyleName("gwt-TabPanelBottom content");
-	
+
 		datosCuentaTable.setText(0, 0, Sfa.constant().tipoDocumento());
 		datosCuentaTable.setWidget(0, 1, contactosData.getTipoDocumento());
 		datosCuentaTable.setWidget(0, 3, new Label(Sfa.constant().numero()));
@@ -305,6 +320,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 						   DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
 						   contactosData.setDomicilio(domicilio);
 						   refrescaTablaConNuevoDomicilio();
+						   //contactosData.getDomicilios();
 					}
 				});
 				DomicilioUI.getInstance().setParentContacto(true);
@@ -345,7 +361,6 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	public void setearDomicilio() {
 		listaDomicilios = contactosData.getContactoDto().getPersona().getDomicilios();
 		//listaDomicilios = contactoCuentaDto.getPersona().getDomicilios();
-		domicilioTable.clear();
 		int row = 1; 
 		if (listaDomicilios != null) {
 			for (Iterator<DomiciliosCuentaDto> iter = listaDomicilios.iterator(); iter.hasNext();) {
