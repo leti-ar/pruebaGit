@@ -3,10 +3,11 @@ package ar.com.nextel.sfa.client.ss;
 import ar.com.nextel.sfa.client.constant.Sfa;
 
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Panel de edicion de linea de solicitud que contiene Item (Mediante SoloItemSolicitudUI) y Plan, como por
@@ -47,34 +48,42 @@ public class ItemYPlanSolicitudUI extends Composite {
 		table.setHTML(3, 0, Sfa.constant().localidad());
 		table.setWidget(3, 1, itemSolicitudUIData.getLocalidad());
 		mainPanel.add(table);
-		Grid segundaTabla = new Grid(2, 4);
+		FlexTable segundaTabla = new FlexTable();
 		segundaTabla.addStyleName("layout");
 		segundaTabla.getCellFormatter().setWidth(0, 0, "100px");
+		segundaTabla.getCellFormatter().setWidth(0, 1, "125px");
+		segundaTabla.getCellFormatter().setWidth(0, 2, "100px");
+		((FlexTable) segundaTabla).getFlexCellFormatter().setColSpan(1, 1, 3);
 		segundaTabla.setHTML(0, 0, Sfa.constant().cppMpp());
 		segundaTabla.setWidget(0, 1, itemSolicitudUIData.getModalidadCobro());
 		segundaTabla.setHTML(0, 2, Sfa.constant().alias());
 		segundaTabla.setWidget(0, 3, itemSolicitudUIData.getAlias());
 		segundaTabla.setHTML(1, 0, Sfa.constant().reservarN());
-		segundaTabla.setWidget(1, 1, itemSolicitudUIData.getReservarHidden());
-		segundaTabla.setWidget(1, 2, itemSolicitudUIData.getReservar());
-		segundaTabla.setWidget(1, 2, itemSolicitudUIData.getConfirmarReserva());
+		segundaTabla.setWidget(1, 1, getReservaPanel());
 		mainPanel.add(segundaTabla);
 		Grid terceraTabla = new Grid(1, 6);
-		terceraTabla.addStyleName("layout");
+		terceraTabla.addStyleName("layout ml10");
 		terceraTabla.getCellFormatter().setWidth(0, 0, "100px");
-		terceraTabla.setWidget(0, 0, new InlineLabel(Sfa.constant().ddn()));
-		terceraTabla.setWidget(0, 1, itemSolicitudUIData.getDdn());
-		terceraTabla.setWidget(0, 2, new InlineLabel(Sfa.constant().ddi()));
-		terceraTabla.setWidget(0, 3, itemSolicitudUIData.getDdi());
-		terceraTabla.setWidget(0, 4, new InlineLabel(Sfa.constant().roaming()));
-		terceraTabla.setWidget(0, 5, itemSolicitudUIData.getRoaming());
+		terceraTabla.getCellFormatter().setWidth(0, 1, "100px");
+		terceraTabla.setWidget(0, 0, itemSolicitudUIData.getDdn());
+		terceraTabla.setWidget(0, 1, itemSolicitudUIData.getDdi());
+		terceraTabla.setWidget(0, 2, itemSolicitudUIData.getRoaming());
 		mainPanel.add(terceraTabla);
 	}
 
-	public void load(){
+	private Widget getReservaPanel() {
+		FlowPanel reservaPanel = new FlowPanel();
+		reservaPanel.add(itemSolicitudUIData.getReservarHidden());
+		reservaPanel.add(itemSolicitudUIData.getReservar());
+		reservaPanel.add(itemSolicitudUIData.getConfirmarReserva());
+		reservaPanel.add(itemSolicitudUIData.getDesreservar());
+		return reservaPanel;
+	}
+
+	public void load() {
 		soloItemSolicitudWrapper.setWidget(soloItemSolicitudUI);
 	}
-	
+
 	public ItemYPlanSolicitudUI setActivacionVisible(boolean visible) {
 		soloItemSolicitudUI.setActivacionVisible(visible);
 		return this;

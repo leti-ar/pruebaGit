@@ -11,6 +11,7 @@ import ar.com.nextel.sfa.client.dto.LocalidadDto;
 import ar.com.nextel.sfa.client.dto.ModalidadCobroDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
+import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.TerminoPagoValidoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
@@ -21,15 +22,18 @@ import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLabel;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ItemSolicitudUIData extends UIData implements ChangeListener {
+public class ItemSolicitudUIData extends UIData implements ChangeListener, ClickListener {
 
 	private ListBox listaPrecio;
 	private TextBox cantidad;
@@ -54,6 +58,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 	private TextBox serie;
 	private TextBox pin;
 	private Button confirmarReserva;
+	private Button desreservar;
 
 	private List idsTipoSolicitudBaseItemYPlan;
 	private List idsTipoSolicitudBaseItem;
@@ -63,6 +68,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 	private EditarSSUIController controller;
 	private NumberFormat currencyFormat = NumberFormat.getCurrencyFormat();
 	private String nombreMovil;
+	private ReservarNumeroDialog reservarNumeroDialog;
+	private Command reservarCommnad = null;
 
 	private Long idPlanAnterior;
 	private Long idItemAnterior;
@@ -70,6 +77,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 	public static final int SOLO_ITEM = 0;
 	public static final int ITEM_PLAN = 1;
 	public static final int ACTIVACION = 2;
+	private static final String v1 = "\\{1\\}";
 	private int tipoEdicion;
 
 	public ItemSolicitudUIData(EditarSSUIController controller) {
@@ -96,25 +104,40 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 		fields.add(sim = new TextBox());
 		fields.add(serie = new TextBox());
 		fields.add(pin = new TextBox());
-		fields.add(confirmarReserva = new Button("Ok"));
 		fields.add(ddn = new CheckBox());
 		fields.add(ddi = new CheckBox());
 		fields.add(roaming = new CheckBox());
+		confirmarReserva = new Button("Ok");
+		desreservar = new Button("Des");
 
 		listaPrecio.setWidth("400px");
 		item.setWidth("400px");
+		cantidad.setWidth("70px");
 		terminoPago.setWidth("400px");
 		tipoPlan.setWidth("400px");
 		modeloEq.setWidth("400px");
 		plan.setWidth("400px");
 		localidad.setWidth("400px");
-		reservarHidden.setWidth("50px");
+		alias.setWidth("70px");
+		reservarHidden.setWidth("70px");
+		reservarHidden.setEnabled(false);
+		reservarHidden.addStyleName("m0p0");
 		reservar.setWidth("50px");
+		reservar.addStyleName("m0p0");
 		confirmarReserva.addStyleName("btn-bkg");
+		confirmarReserva.addStyleName("ml10");
+		desreservar.addStyleName("btn-bkg");
+		desreservar.addStyleName("ml10");
+		desreservar.setVisible(false);
+		ddn.setText(Sfa.constant().ddn());
+		ddi.setText(Sfa.constant().ddi());
+		roaming.setText(Sfa.constant().roaming());
 
 		listaPrecio.addChangeListener(this);
 		item.addChangeListener(this);
 		tipoPlan.addChangeListener(this);
+		confirmarReserva.addClickListener(this);
+		desreservar.addClickListener(this);
 
 		initIdsTipoSolicitudBase();
 	}
@@ -137,6 +160,94 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 
 		idsTipoSolicitudBaseActivacion.add(Long.valueOf(9)); // 9-TIPO_SOLICITUD_BASE_ACTIVACION
 		idsTipoSolicitudBaseActivacion.add(Long.valueOf(13)); // 13-TIPO_SOLICITUD_BASE_ACTIVACION_G4
+	}
+
+	public void onClick(Widget sender) {
+		if (sender == confirmarReserva) {
+			reservar();
+		} else if (sender == desreservar) {
+			desreservar();
+		}
+	}
+
+	private void reservar() {
+		GwtValidator validator = new GwtValidator();
+		validator.addTarget(plan).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Plan"));
+		validator.addTarget(modalidadCobro).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "CPP/MPP"));
+		validator.addTarget(localidad).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Localidad"));
+		validator.addTarget(cantidad).equals("1", Sfa.constant().ERR_CANT_UNO());
+		validator.addTarget(reservar).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Reservar Nº"));
+
+		if (validator.fillResult().getErrors().isEmpty()) {
+			reservarServiceCall(Long.parseLong(reservar.getText()));
+		} else {
+			ErrorDialog.getInstance().show(validator.getErrors(), false);
+		}
+	}
+
+	private void reservarServiceCall(Long numeroTelefonico) {
+		PlanDto planDto = (PlanDto) plan.getSelectedItem();
+		ModalidadCobroDto modalidadCobroDto = (ModalidadCobroDto) modalidadCobro.getSelectedItem();
+		LocalidadDto localidadDto = (LocalidadDto) localidad.getSelectedItem();
+		controller.reservarNumeroTelefonico(numeroTelefonico, planDto.getTipoTelefonia().getId(),
+				modalidadCobroDto.getId(), localidadDto.getId(),
+				new DefaultWaitCallback<ResultadoReservaNumeroTelefonoDto>() {
+					public void success(ResultadoReservaNumeroTelefonoDto result) {
+						if (result.getReservedNumber() == 0) {
+							if (reservarNumeroDialog == null) {
+								reservarNumeroDialog = new ReservarNumeroDialog();
+							}
+							reservarNumeroDialog.show(result.getAvailableNumbers(), getReservarCommnad());
+						} else {
+							setEnableReservaRelatedInputs(false);
+							desreservar.setVisible(true);
+							confirmarReserva.setVisible(false);
+							String numeroText = "" + result.getReservedNumber();
+							reservarHidden.setText(numeroText.substring(0, numeroText.length() - 4));
+							reservar.setText(numeroText.substring(numeroText.length() - 4, numeroText
+									.length()));
+						}
+					}
+				});
+
+	}
+
+	private Command getReservarCommnad() {
+		if (reservarCommnad == null) {
+			reservarCommnad = new Command() {
+				public void execute() {
+					reservarServiceCall(reservarNumeroDialog.getSelectedNumber());
+				}
+			};
+		}
+		return reservarCommnad;
+	}
+
+	private void desreservar() {
+		String numeroText = reservarHidden.getText() + reservar.getText();
+		controller.desreservarNumeroTelefonico(Long.parseLong(numeroText), new DefaultWaitCallback() {
+			public void success(Object result) {
+				setEnableReservaRelatedInputs(true);
+				desreservar.setVisible(false);
+				confirmarReserva.setVisible(true);
+				reservarHidden.setText("");
+			}
+		});
+	}
+
+	private void setEnableReservaRelatedInputs(boolean enable) {
+		tipoOrden.setEnabled(enable);
+		listaPrecio.setEnabled(enable);
+		cantidad.setEnabled(enable);
+		item.setEnabled(enable);
+		tipoPlan.setEnabled(enable);
+		plan.setEnabled(enable);
+		localidad.setEnabled(enable);
+		modalidadCobro.setEnabled(enable);
+		reservar.setEnabled(enable);
 	}
 
 	public void onChange(Widget sender) {
@@ -290,22 +401,23 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 		return confirmarReserva;
 	}
 
+	public Button getDesreservar() {
+		return desreservar;
+	}
+
 	public void setTipoEdicion(int tipoEdicion) {
 		this.tipoEdicion = tipoEdicion;
 	}
 
 	public List<String> validate() {
 		GwtValidator validator = new GwtValidator();
-		String v1 = "\\{1\\}";
 		validator.addTarget(listaPrecio).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Lista de Precios"));
-		validator.addTarget(item).required(
-				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Item"));
+		validator.addTarget(item).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Item"));
 		if (tipoEdicion == ITEM_PLAN || tipoEdicion == ACTIVACION) {
 			validator.addTarget(tipoPlan).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Tipo Plan"));
-			validator.addTarget(plan).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Plan"));
+			validator.addTarget(plan).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Plan"));
 			validator.addTarget(localidad).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Localidad"));
 			validator.addTarget(modalidadCobro).required(
@@ -315,7 +427,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener {
 		}
 		validator.addTarget(cantidad).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Cantidad")).greater(
-				Sfa.constant().ERR_CANT_CERO().replaceAll(v1, "Cantidad"), 0);
+				Sfa.constant().ERR_CANT_MA_CERO().replaceAll(v1, "Cantidad"), 0);
 		return validator.fillResult().getErrors();
 	}
 

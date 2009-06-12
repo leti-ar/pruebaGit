@@ -19,6 +19,7 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -41,6 +42,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 
 	public ItemSolicitudDialog(String title, EditarSSUIController controller) {
 		super(title);
+		addStyleName("gwt-ItemSolicitudDialog");
 		this.controller = controller;
 		tipoSolicitudPanel = new SimplePanel();
 		aceptar = new SimpleLink("ACEPTAR");
@@ -51,12 +53,17 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 		tipoSolicitudPanel.setWidget(getItemYPlanSolicitudUI());
 		tipoOrden.addChangeListener(this);
 
+		FlowPanel topBar = new FlowPanel();
+		topBar.addStyleName("topBar");
 		nuevoItem = IconFactory.word("Nuevo Item");
 		nuevoItem.addClickListener(this);
 		nuevoItem.addStyleName("floatRight");
-		add(nuevoItem);
-		add(new InlineLabel(Sfa.constant().tipoOrden()));
-		add(tipoOrden);
+		topBar.add(nuevoItem);
+		Widget tipoOrdenLabel = new InlineLabel(Sfa.constant().tipoOrden());
+		tipoOrdenLabel.addStyleName("mr30");
+		topBar.add(tipoOrdenLabel);
+		topBar.add(tipoOrden);
+		add(topBar);
 		add(tipoSolicitudPanel);
 		addFormButtons(aceptar);
 		addFormButtons(cerrar);
