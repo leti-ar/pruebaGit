@@ -13,22 +13,23 @@ public class NextelTable extends RowFlexTable implements RowListener {
 	private int rowSelected = -1;
 
 	public NextelTable(boolean showPointer) {
-		this(1);
+		this();
 		selectedStyle = showPointer ? "TableRowSelected" : "NoPointerTableRowSelected";
 	}
 
 	public NextelTable() {
 		this(1);
-		selectedStyle = "TableRowSelected";
 	}
 
 	public NextelTable(int dataStarRow) {
 		super();
+		selectedStyle = "TableRowSelected";
 		addStyleName("gwt-NextelTable");
 		this.dataStarRow = dataStarRow;
 		addRowListener(this);
-		getRowFormatter().addStyleName(0, headerStyle);
-		// addRowClickListener();
+		for (int i = 0; i < dataStarRow; i++) {
+			getRowFormatter().addStyleName(i, headerStyle);
+		}
 	}
 
 	public void setHTML(int row, int column, String html) {
