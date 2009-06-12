@@ -6,6 +6,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.cuenta.DomicilioUI;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
+import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
@@ -195,6 +196,15 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 
 	public void onClickEdicionDomicilios(Widget sender) {
 		DomicilioUI.getInstance().setComandoAceptar(getCommandGuardarDomicilio());
+		boolean principalEntrega = false;
+		boolean principalFacturacion = false;
+		for (DomiciliosCuentaDto domicilio : editarSSUIData.getCuenta().getPersona().getDomicilios()) {
+			principalEntrega = principalEntrega
+					|| EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdEntrega());
+			principalFacturacion = principalFacturacion
+					|| EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdFacturacion());
+		}
+		DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(principalEntrega, principalFacturacion);
 		if (sender == crearDomicilio) {
 			domicilioAEditar = new DomiciliosCuentaDto();
 		} else if (sender == editarDomicioEntrega) {
