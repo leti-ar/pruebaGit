@@ -9,6 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.financial.dto.EncabezadoCreditoDTO;
 import ar.com.nextel.business.legacy.financial.exception.FinancialSystemException;
+import ar.com.nextel.business.personas.reservaNumeroTelefono.ReservaNumeroTelefonoBusinessOperator;
+import ar.com.nextel.business.personas.reservaNumeroTelefono.result.DesreservaNumeroTelefonoBusinessResult;
+import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
 import ar.com.nextel.business.solicitudes.provider.SolicitudServicioProviderResult;
@@ -27,6 +30,7 @@ import ar.com.nextel.sfa.server.util.MapperExtended;
 public class SolicitudBusinessService {
 
 	private SolicitudServicioBusinessOperator solicitudesBusinessOperator;
+	private ReservaNumeroTelefonoBusinessOperator reservaNumeroTelefonoBusinessOperator;
 	private FinancialSystem financialSystem;
 	private SessionContextLoader sessionContextLoader;
 	private Repository repository;
@@ -36,6 +40,12 @@ public class SolicitudBusinessService {
 	public void setSolicitudesBusinessOperator(
 			SolicitudServicioBusinessOperator solicitudServicioBusinessOperatorBean) {
 		this.solicitudesBusinessOperator = solicitudServicioBusinessOperatorBean;
+	}
+
+	@Autowired
+	public void setReservaNumeroTelefonoBusinessOperator(
+			ReservaNumeroTelefonoBusinessOperator reservaNumeroTelefonoBusinessOperator) {
+		this.reservaNumeroTelefonoBusinessOperator = reservaNumeroTelefonoBusinessOperator;
 	}
 
 	@Autowired
@@ -55,7 +65,7 @@ public class SolicitudBusinessService {
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public SolicitudServicio createSolicitudServicio(SolicitudServicioRequest solicitudServicioRequest)
-			throws BusinessException {
+			throws BusinessException, FinancialSystemException {
 
 		SolicitudServicioProviderResult providerResult = null;
 		providerResult = this.solicitudesBusinessOperator.provideSolicitudServicio(solicitudServicioRequest);
@@ -97,18 +107,14 @@ public class SolicitudBusinessService {
 		return solicitud;
 	}
 
-	private void addCreditoFidelizacion(SolicitudServicio solicitudServicio) {
+	private void addCreditoFidelizacion(SolicitudServicio solicitudServicio) throws FinancialSystemException {
 		String numeroCuenta = solicitudServicio.getCuenta().getCodigoVantive();
-		try {
-			EncabezadoCreditoDTO creditoFidelizacion = getCreditoFidelizacion(numeroCuenta);
-			EstadoCreditoFidelizacion estadoCreditoFidelizacion = new EstadoCreditoFidelizacion(
-					solicitudServicio.getCuenta(), creditoFidelizacion.getMonto().doubleValue(),
-					creditoFidelizacion.getFechaVencimiento());
+		EncabezadoCreditoDTO creditoFidelizacion = getCreditoFidelizacion(numeroCuenta);
+		EstadoCreditoFidelizacion estadoCreditoFidelizacion = new EstadoCreditoFidelizacion(solicitudServicio
+				.getCuenta(), creditoFidelizacion.getMonto().doubleValue(), creditoFidelizacion
+				.getFechaVencimiento());
 
-			solicitudServicio.getCuenta().setEstadoCreditoFidelizacion(estadoCreditoFidelizacion);
-		} catch (FinancialSystemException e) {
-			e.printStackTrace();
-		}
+		solicitudServicio.getCuenta().setEstadoCreditoFidelizacion(estadoCreditoFidelizacion);
 	}
 
 	private EncabezadoCreditoDTO getCreditoFidelizacion(String numeroCuenta) throws FinancialSystemException {
@@ -154,5 +160,21 @@ public class SolicitudBusinessService {
 		}
 		repository.save(solicitudServicio);
 		return solicitudServicio;
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public ReservaNumeroTelefonoBusinessResult reservarNumeroTelefonico(long numero, long idTipoTelefonia,
+			long idModalidadCobro, long idLocalidad) throws BusinessException {
+		ReservaNumeroTelefonoBusinessResult result;
+		result = reservaNumeroTelefonoBusinessOperator.reservarNumeroTelefono(numero, idTipoTelefonia,
+				idModalidadCobro, idLocalidad, sessionContextLoader.getVendedor());
+		return result;
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void desreservarNumeroTelefono(long numero) throws BusinessException {
+		reservaNumeroTelefonoBusinessOperator.desreservarNumeroTelefono(numero, sessionContextLoader
+				.getVendedor());
+
 	}
 }

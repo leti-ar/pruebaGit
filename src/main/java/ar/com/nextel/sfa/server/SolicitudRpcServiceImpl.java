@@ -20,6 +20,7 @@ import ar.com.nextel.business.dao.GenericDao;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.vantive.VantiveSystem;
 import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO;
+import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
 import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepository;
@@ -52,6 +53,7 @@ import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.LocalidadDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
+import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
@@ -116,7 +118,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		try {
 			solicitud = solicitudBusinessService.createSolicitudServicio(request);
 		} catch (BusinessException e) {
-			throw ExceptionUtil.wrap((String)e.getParameters().get(0), e);
+			throw ExceptionUtil.wrap((String) e.getParameters().get(0), e);
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
@@ -148,7 +150,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return result;
 	}
 
-	public DetalleSolicitudServicioDto getDetalleSolicitudServicio(Long idSolicitudServicio) {
+	public DetalleSolicitudServicioDto getDetalleSolicitudServicio(Long idSolicitudServicio)
+			throws RpcExceptionMessages {
 		AppLogger.info("Iniciando consulta de estados de SS cerradas para idSS " + idSolicitudServicio);
 		SolicitudServicio solicitudServicio = solicitudServicioRepository
 				.getSolicitudServicioPorId(idSolicitudServicio);
@@ -159,7 +162,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					.setCambiosEstadoSolicitud(getEstadoSolicitudServicioCerrada(solicitudServicio
 							.getIdVantive()));
 		} catch (Exception e) {
-			e.printStackTrace();
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
 		}
 		AppLogger
 				.info("Consulta de estados de SS cerradas para idSS " + idSolicitudServicio + " finalizada.");
@@ -198,7 +202,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 							return DateUtils.getInstance().compareDatesByDay(date1, date2);
 						}
 					} catch (ParseException e) {
-						e.printStackTrace();
+						AppLogger.error(e);
 					}
 					return ret;
 				}
@@ -362,4 +366,23 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return mapper.convertList(serviciosAdicionales, ServicioAdicionalLineaSolicitudServicioDto.class);
 	}
 
+	public ResultadoReservaNumeroTelefonoDto reservarNumeroTelefonico(long numero, long idTipoTelefonia,
+			long idModalidadCobro, long idLocalidad) throws RpcExceptionMessages {
+		ReservaNumeroTelefonoBusinessResult result = null;
+		try {
+			result = solicitudBusinessService.reservarNumeroTelefonico(numero, idTipoTelefonia,
+					idModalidadCobro, idLocalidad);
+		} catch (BusinessException e) {
+			throw ExceptionUtil.wrap(e);
+		}
+		return mapper.map(result, ResultadoReservaNumeroTelefonoDto.class);
+	}
+
+	public void desreservarNumeroTelefono(long numero) throws RpcExceptionMessages {
+		try {
+			solicitudBusinessService.desreservarNumeroTelefono(numero);
+		} catch (BusinessException e) {
+			throw ExceptionUtil.wrap(e);
+		}
+	}
 }
