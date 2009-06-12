@@ -7,21 +7,26 @@ import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
-import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
+import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -42,14 +47,25 @@ public class CuentaEdicionTabPanel {
 	
 	public Button validarCompletitudButton;
 	public static final String VALIDAR_COMPLETITUD_FAIL_STYLE = "validarCompletitudFailButton";
+	public static final String ID_CUENTA = "idCuenta";
 	private GwtValidator validator = new GwtValidator();
 	
-	private SimpleLink guardar  = new SimpleLink(Sfa.constant().guardar() , "#", true);
-	private SimpleLink crearSS  = new SimpleLink(Sfa.constant().crear()+Sfa.constant().whiteSpace()+Sfa.constant().ss(), "#", true);
-	private SimpleLink agregar  = new SimpleLink(Sfa.constant().agregar() , "#", true);
-	private SimpleLink cancelar = new SimpleLink(Sfa.constant().cancelar(), "#", true);
-	List<String> erroresValidacion = new ArrayList<String>();
+	private SimpleLink guardar;
+	private SimpleLink crearSSButton;
+	private SimpleLink agregarCuentaButton;
+	private PopupPanel popupCrearSS;
+	private PopupPanel popupAgregarCuenta;
+	private Hyperlink  crearEquipos;
+	private Hyperlink  crearCDW;
+	private Hyperlink  crearMDS;
+	private Hyperlink  agregarDivision;
+	private Hyperlink  agregarSuscriptor;
+	private SimpleLink cancelar;
 
+	List<String> erroresValidacion = new ArrayList<String>();
+    private Command aceptarCommand;
+    private Command cancelarCommand;
+	
 
 	public static CuentaEdicionTabPanel getInstance() {
 		return instance;
@@ -82,6 +98,18 @@ public class CuentaEdicionTabPanel {
 		
 		marco.getFlexCellFormatter().setHorizontalAlignment(1, 0, HorizontalPanel.ALIGN_LEFT);
 		marco.getFlexCellFormatter().setHorizontalAlignment(1, 1, HorizontalPanel.ALIGN_RIGHT);
+		
+		cancelarCommand = new Command() {
+			public void execute() {
+				MessageDialog.getInstance().hide();
+			}
+		};
+		aceptarCommand = new Command() {
+			public void execute() {
+                cancelar();
+			}
+		};
+		
 	}
 	
     private void initValidarCompletitud() {
@@ -130,17 +158,37 @@ public class CuentaEdicionTabPanel {
 	 */	
 	private void initFooter() {
 		footerBar    = new FormButtonsBar();
-		getGuardar().setStyleName("link");
-		getCrearSS().setStyleName("link");
-		getAgregar().setStyleName("link");
-		getCancelar().setStyleName("link");
-		
-		footerBar.addLink(getGuardar());
-		footerBar.addLink(getCrearSS());
-		footerBar.addLink(getAgregar());
-		footerBar.addLink(getCancelar());		
+		guardar  = new SimpleLink(Sfa.constant().guardar() , "#", true);
+		guardar.setStyleName("link");
 
-		getGuardar().addClickListener(new ClickListener() {
+		crearSSButton = new SimpleLink("^Crear SS", "#", true);
+		agregarCuentaButton = new SimpleLink("^Agregar", "#", true);
+
+		popupCrearSS = new PopupPanel(true);
+		popupAgregarCuenta = new PopupPanel(true);
+		popupCrearSS.addStyleName("dropUpStyle");
+		popupAgregarCuenta.addStyleName("dropUpStyle");
+
+		FlowPanel linksCrearSS = new FlowPanel();
+		linksCrearSS.add(crearEquipos = new Hyperlink("Equipos/Accesorios", "" + UILoader.BUSCAR_CUENTA));
+		linksCrearSS.add(crearCDW = new Hyperlink("CDW", "" + UILoader.BUSCAR_CUENTA));
+		linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.BUSCAR_CUENTA));
+		popupCrearSS.setWidget(linksCrearSS);
+		
+		FlowPanel linksAgregarCuenta = new FlowPanel();
+		linksAgregarCuenta.add(agregarDivision = new Hyperlink("División", "" + UILoader.BUSCAR_CUENTA));
+		linksAgregarCuenta.add(agregarSuscriptor = new Hyperlink("Suscriptor", "" + UILoader.BUSCAR_CUENTA));
+		popupAgregarCuenta.setWidget(linksAgregarCuenta);
+		
+		cancelar = new SimpleLink(Sfa.constant().cancelar(), "#", true);
+		cancelar.setStyleName("link");
+		
+		footerBar.addLink(guardar);
+		footerBar.addLink(crearSSButton);
+		footerBar.addLink(agregarCuentaButton);
+		footerBar.addLink(cancelar);		
+
+		guardar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				if (!cuentaDatosForm.formularioDatosDirty() && (!cuentaDomiciliosForm.formularioDatosDirty())) {
 					ErrorDialog.getInstance().show("NO HAY DATOS NUEVOS PARA GUARDAR");
@@ -150,28 +198,58 @@ public class CuentaEdicionTabPanel {
 				} 
 			}
 		});
-		getCrearSS().addClickListener(new ClickListener() {
+		crearSSButton.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				if (cuentaDatosForm.formularioDatosDirty()) {
-					ErrorDialog.getInstance().show(Sfa.constant().ERR_FORMULARIO_DIRTY());
-				} else { 
-					crearSS();
-				}
-			}
-		});
-		getAgregar().addClickListener(new ClickListener() {
-			public void onClick(Widget arg0) {
-				if (cuentaDatosForm.formularioDatosDirty()) {
-					ErrorDialog.getInstance().show(Sfa.constant().ERR_FORMULARIO_DIRTY());
+				Long idCuenta = cuenta2editDto.getId();
+				if (idCuenta != null) {
+					String targetHistoryToken = UILoader.AGREGAR_SOLICITUD + "?" + ID_CUENTA + "=" + idCuenta;
+					crearEquipos.setTargetHistoryToken(targetHistoryToken);
+					// crearCDW.setTargetHistoryToken(targetHistoryToken);
+					// crearMDS.setTargetHistoryToken(targetHistoryToken);
+					popupCrearSS.show();
+					popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton
+							.getAbsoluteTop() - 50);
 				} else {
-					agregar(null/*PersonaDto*/);
+					MessageDialog.getInstance().showAceptar("Error", "Debe seleccionar una Cuenta",
+							MessageDialog.getCloseCommand());
 				}
 			}
 		});
-		getCancelar().addClickListener(new ClickListener() {
+		agregarCuentaButton.addClickListener(new ClickListener() {
+			public void onClick(Widget arg0) {
+				popupAgregarCuenta.show();
+				popupAgregarCuenta.setPopupPosition(agregarCuentaButton.getAbsoluteLeft(), agregarCuentaButton.getAbsoluteTop() - 35);
+			}
+		});
+		crearEquipos.addClickListener(new ClickListener() {
+			public void onClick(Widget arg0) {
+				popupCrearSS.hide();
+			}
+		});
+		crearCDW.addClickListener(new ClickListener() {
+			public void onClick(Widget arg0) {
+				popupCrearSS.hide();
+			}
+		});
+		crearMDS.addClickListener(new ClickListener() {
+			public void onClick(Widget arg0) {
+				popupCrearSS.hide();
+			}
+		});
+		agregarDivision.addClickListener(new ClickListener() {
+			public void onClick(Widget arg0) {
+				popupCrearSS.hide();
+			}
+		});
+		agregarSuscriptor.addClickListener(new ClickListener() {
+			public void onClick(Widget arg0) {
+				popupCrearSS.hide();
+			}
+		});
+		cancelar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				if (cuentaDatosForm.formularioDatosDirty()) {
-					ErrorDialog.getInstance().show(Sfa.constant().ERR_FORMULARIO_DIRTY());
+					MessageDialog.getInstance().showAceptarCancelar("", Sfa.constant().ERR_FORMULARIO_DIRTY(), aceptarCommand,cancelarCommand);
 				} else {
 					cancelar();
 				}
@@ -204,14 +282,9 @@ public class CuentaEdicionTabPanel {
 		});
 	}
 	
-	private void crearSS() {
-		ErrorDialog.getInstance().show("OK PARA CREAR SS (@TODO)");
-	}
-	private void agregar(PersonaDto personaDto) {
-		ErrorDialog.getInstance().show("OK PARA AGREGAR DIVISIO/SUSCRIPTOR (@TODO)");
-	}
 	private void cancelar() {
-		ErrorDialog.getInstance().show("OK PARA CANCELAR");
+		MessageDialog.getInstance().hide();
+		History.newItem("");
 	}
 	
 	private boolean validarCompletitud() {
@@ -276,30 +349,6 @@ public class CuentaEdicionTabPanel {
 	}
 	public void setCuentaContactoForm(CuentaContactoForm cuentaContactoForm) {
 		this.cuentaContactoForm = cuentaContactoForm;
-	}
-	public void setGuardar(SimpleLink guardar) {
-		this.guardar = guardar;
-	}
-	public SimpleLink getGuardar() {
-		return guardar;
-	}
-	public void setCrearSS(SimpleLink crearSS) {
-		this.crearSS = crearSS;
-	}
-	public SimpleLink getCrearSS() {
-		return crearSS;
-	}
-	public void setAgregar(SimpleLink agregar) {
-		this.agregar = agregar;
-	}
-	public SimpleLink getAgregar() {
-		return agregar;
-	}
-	public void setCancelar(SimpleLink cancelar) {
-		this.cancelar = cancelar;
-	}
-	public SimpleLink getCancelar() {
-		return cancelar;
 	}
 	public GwtValidator getValidator() {
 		return validator;

@@ -309,7 +309,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 					granCuenta = (GranCuenta)selectCuentaBusinessOperator.getCuentaYLockear(cod_vantive, this.getVendedor());
 				}
 				//agrego contactos
-				granCuenta.addContactosCuenta(contactosCuentaBusinessOperator.obtenerContactosCuentas(cuentaId));
+				granCuenta.addContactosCuenta(contactosCuentaBusinessOperator.obtenerContactosCuentas(granCuenta.getCuentaRaiz().getId()));
 				CondicionCuenta cd1= granCuenta.getCondicionCuenta();
 				Long id = cd1.getId();
 				String code = cd1.getCodigoVantive();

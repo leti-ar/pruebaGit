@@ -47,10 +47,13 @@ public class EditarCuentaUI extends ApplicationUI {
 				// Si algunos de los dos tiene datos validos, carga los paneles.
 				CuentaRpcService.Util.getInstance().selectCuenta(cuentaID, cod_vantive,new DefaultWaitCallback<GranCuentaDto>() {
 					public void success(GranCuentaDto ctaDto) {
-						if (!ClientContext.getInstance().getUsuario().getId().equals(ctaDto.getVendedor().getId())) {
+						if (ctaDto==null) {
+							History.back();
+							ErrorDialog.getInstance().show("La edición de Division/Suscriptor aun fue desarrollada.");
+						} else if (!ClientContext.getInstance().getUsuario().getId().equals(ctaDto.getVendedor().getId())) {
 							History.back();
 							ErrorDialog.getInstance().show("No tiene permiso para ver esa cuenta.");
-						}else{
+						} else{
 							cuentaTab.setCuenta2editDto(ctaDto);
 							cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusqueda(ctaDto);
 							cargaPaneles();
