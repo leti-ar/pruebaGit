@@ -39,8 +39,17 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
    * @return translated "El campo {1} debe ser mayor a 0 (cero)."
    */
   @DefaultStringValue("El campo {1} debe ser mayor a 0 (cero).")
-  @Key("ERR_CANT_CERO")
-  String ERR_CANT_CERO();
+  @Key("ERR_CANT_MA_CERO")
+  String ERR_CANT_MA_CERO();
+
+  /**
+   * Translated "El campo Cantidad: Debe ser 1 para una reserva de número.".
+   * 
+   * @return translated "El campo Cantidad: Debe ser 1 para una reserva de número."
+   */
+  @DefaultStringValue("El campo Cantidad: Debe ser 1 para una reserva de número.")
+  @Key("ERR_CANT_UNO")
+  String ERR_CANT_UNO();
 
   /**
    * Translated "Debe ingresar un dia hábil".
@@ -160,6 +169,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ERR_NSS_LONG();
 
   /**
+   * Translated "El número de línea no se encuentra disponible.".
+   * 
+   * @return translated "El número de línea no se encuentra disponible."
+   */
+  @DefaultStringValue("El número de línea no se encuentra disponible.")
+  @Key("ERR_NUMERO_NO_DISPONIBLE")
+  String ERR_NUMERO_NO_DISPONIBLE();
+
+  /**
    * Translated "La cantidad de Pataconex ingresada excede el Precio de Venta Total.".
    * 
    * @return translated "La cantidad de Pataconex ingresada excede el Precio de Venta Total."
@@ -167,6 +185,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("La cantidad de Pataconex ingresada excede el Precio de Venta Total.")
   @Key("ERR_PATACONEX")
   String ERR_PATACONEX();
+
+  /**
+   * Translated "Debe seleccionar una de las opciones".
+   * 
+   * @return translated "Debe seleccionar una de las opciones"
+   */
+  @DefaultStringValue("Debe seleccionar una de las opciones")
+  @Key("ERR_REQUIRED_SELECTION")
+  String ERR_REQUIRED_SELECTION();
 
   /**
    * Translated "Tarjeta no válida: La tarjeta ingresada no es válida. (se)".
