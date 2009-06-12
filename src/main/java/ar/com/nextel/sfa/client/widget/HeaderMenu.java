@@ -58,10 +58,10 @@ public class HeaderMenu extends Composite {
 		mainMenu.addItem("SS", new OpenPageCommand(UILoader.BUSCAR_SOLICITUD));
 		mainMenu.addSeparator();
 		mainMenu.addItem("Veraz", new OpenPageCommand(UILoader.VERAZ));
-		mainMenu.addSeparator();
-		mainMenu.addItem("OPP", new OpenPageCommand(UILoader.BUSCAR_OPP));
-		mainMenu.addSeparator();
-		mainMenu.addItem("Op. en Curso", new OpenPageCommand(UILoader.OP_EN_CURSO));
+//		mainMenu.addSeparator();
+//		mainMenu.addItem("OPP", new OpenPageCommand(UILoader.BUSCAR_OPP));
+//		mainMenu.addSeparator();
+//		mainMenu.addItem("Op. en Curso", new OpenPageCommand(UILoader.OP_EN_CURSO));
 
 		menuCuentas.addItem("Buscar", new OpenPageCommand(UILoader.BUSCAR_CUENTA));
 		menuCuentas.addItem("Agregar", new OpenPageCommand(UILoader.AGREGAR_CUENTA));
