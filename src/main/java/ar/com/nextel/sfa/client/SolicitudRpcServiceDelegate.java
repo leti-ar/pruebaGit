@@ -8,6 +8,7 @@ import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
+import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
@@ -95,6 +96,18 @@ public class SolicitudRpcServiceDelegate {
 			DefaultWaitCallback<List<ServicioAdicionalLineaSolicitudServicioDto>> defaultWaitCallback) {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.getServiciosAdicionales(linea, idCuenta, defaultWaitCallback);
+	}
+
+	public void reservarNumeroTelefonico(long numero, long idTipoTelefonia, long idModalidadCobro,
+			long idLocalidad, DefaultWaitCallback<ResultadoReservaNumeroTelefonoDto> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.reservarNumeroTelefonico(numero, idTipoTelefonia, idModalidadCobro,
+				idLocalidad, callback);
+	}
+
+	public void desreservarNumeroTelefono(long numero, DefaultWaitCallback callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.desreservarNumeroTelefono(numero, callback);
 	}
 
 }

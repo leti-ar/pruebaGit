@@ -8,6 +8,7 @@ import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
+import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
@@ -56,7 +57,7 @@ public interface SolicitudRpcService extends RemoteService {
 	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(
 			GrupoSolicitudDto grupoSolicitudDto);
 
-	public DetalleSolicitudServicioDto getDetalleSolicitudServicio(Long idSolicitudServicio);
+	public DetalleSolicitudServicioDto getDetalleSolicitudServicio(Long idSolicitudServicio) throws RpcExceptionMessages ;
 
 	public List<ListaPreciosDto> getListasDePrecios(TipoSolicitudDto tipoSolicitudDto);
 
@@ -66,4 +67,9 @@ public interface SolicitudRpcService extends RemoteService {
 			TipoPlanDto tipoPlan, Long idCuenta);
 
 	public List<ServicioAdicionalLineaSolicitudServicioDto> getServiciosAdicionales(LineaSolicitudServicioDto linea, Long idCuenta);
+	
+	public ResultadoReservaNumeroTelefonoDto reservarNumeroTelefonico(long numero, long idTipoTelefonia,
+			long idModalidadCobro, long idLocalidad) throws RpcExceptionMessages;
+	
+	public void desreservarNumeroTelefono(long numero) throws RpcExceptionMessages;
 }

@@ -8,6 +8,7 @@ import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
+import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
@@ -53,4 +54,9 @@ public interface SolicitudRpcServiceAsync {
 
 	public void getServiciosAdicionales(LineaSolicitudServicioDto linea, Long idCuenta,
 			AsyncCallback<List<ServicioAdicionalLineaSolicitudServicioDto>> defaultWaitCallback);
+
+	public void reservarNumeroTelefonico(long numero, long idTipoTelefonia, long idModalidadCobro,
+			long idLocalidad, AsyncCallback<ResultadoReservaNumeroTelefonoDto> callback);
+
+	public void desreservarNumeroTelefono(long numero, AsyncCallback callback);
 }

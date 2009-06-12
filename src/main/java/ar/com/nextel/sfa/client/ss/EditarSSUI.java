@@ -8,6 +8,7 @@ import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
+import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
@@ -234,4 +235,13 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 		return editarSSUIData.getNombreMovil();
 	}
 
+	public void reservarNumeroTelefonico(long numero, long idTipoTelefonia, long idModalidadCobro,
+			long idLocalidad, DefaultWaitCallback<ResultadoReservaNumeroTelefonoDto> callback) {
+		SolicitudRpcService.Util.getInstance().reservarNumeroTelefonico(numero, idTipoTelefonia,
+				idModalidadCobro, idLocalidad, callback);
+	}
+
+	public void desreservarNumeroTelefonico(long numero, DefaultWaitCallback callback) {
+		SolicitudRpcService.Util.getInstance().desreservarNumeroTelefono(numero, callback);
+	}
 }
