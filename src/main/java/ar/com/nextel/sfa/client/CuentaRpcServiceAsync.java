@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
@@ -26,7 +27,7 @@ public interface CuentaRpcServiceAsync {
 
 	public void getBuscarCuentaInitializer(AsyncCallback<BuscarCuentaInitializer> callback);
 
-	public void saveCuenta(GranCuentaDto cuentaDto, AsyncCallback<GranCuentaDto> callback);
+	public void saveGranCuenta(GranCuentaDto cuentaDto, AsyncCallback<GranCuentaDto> callback);
 
 	public void searchCuenta(CuentaSearchDto cuentaSearchDto, AsyncCallback<List<CuentaSearchResultDto>> callback);
 	
@@ -34,7 +35,7 @@ public interface CuentaRpcServiceAsync {
 	
 	public void consultarVeraz(PersonaDto personaDto, AsyncCallback<VerazResponseDto> callback);
 	
-	public void selectCuenta(Long cuentaId, String cod_vantive,AsyncCallback<GranCuentaDto> callback);
+	public void selectCuenta(Long cuentaId, String cod_vantive,AsyncCallback<CuentaDto> callback);
 	
 	public void reservaCreacionCuenta(DocumentoDto docDto, AsyncCallback<GranCuentaDto> callback);
 	

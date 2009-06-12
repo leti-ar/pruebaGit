@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -7,6 +8,7 @@ import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
+import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
@@ -57,8 +59,14 @@ public class CuentaDomiciliosForm extends Composite {
 				DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,tienePrincipalFacturacion);
 				DomicilioUI.getInstance().setComandoAceptar(new Command(){
 					public void execute() {
+							PersonaDto persona = null;
+							if ("SUSCRIPTOR".equals(getTipoCuenta(cuentaDto))){
+								persona = ((SuscriptorDto)cuentaDto).getGranCuenta().getPersona();
+							}else if ("GRAN CUENTA".equals(getTipoCuenta(cuentaDto))){
+								persona = cuentaDto.getPersona();
+							}
 						   DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
-						   PersonaDto persona = cuentaDto.getPersona();
+						   persona = cuentaDto.getPersona();
 						   persona.getDomicilios().add(domicilio);
 						   refrescaTablaConNuevoDomicilio();
 						   huboCambios = true;
@@ -118,8 +126,12 @@ public class CuentaDomiciliosForm extends Composite {
 		setTienePrincipalEntrega(false);
 		setTienePrincipalFacturacion(false);
 		
-		List<DomiciliosCuentaDto> domicilios;
-		domicilios = cuentaDto.getPersona().getDomicilios();
+		List<DomiciliosCuentaDto> domicilios = new ArrayList();
+		if ("SUSCRIPTOR".equals(getTipoCuenta(cuentaDto))){
+			domicilios = ((SuscriptorDto)cuentaDto).getGranCuenta().getPersona().getDomicilios();
+		}else if ("GRAN CUENTA".equals(getTipoCuenta(cuentaDto))){
+			domicilios = cuentaDto.getPersona().getDomicilios();
+		}
 		
 		//Limpia la tabla de domicilios incialmente, si esta con datos:
 		if (datosTabla.getRowCount() > 1){
@@ -178,7 +190,12 @@ public class CuentaDomiciliosForm extends Composite {
 		datosTabla.addTableListener(new TableListener() {
 			public void onCellClicked(SourcesTableEvents arg0, int row, int col) {
 				if (row != 0) {
-					DomiciliosCuentaDto domicilio = cuentaDto.getPersona().getDomicilios().get(row - 1);
+					DomiciliosCuentaDto domicilio = null;
+					if ("SUSCRIPTOR".equals(getTipoCuenta(cuentaDto))){
+						domicilio = ((SuscriptorDto)cuentaDto).getGranCuenta().getPersona().getDomicilios().get(row - 1);
+					}else if ("GRAN CUENTA".equals(getTipoCuenta(cuentaDto))){
+						domicilio = cuentaDto.getPersona().getDomicilios().get(row - 1);
+					}
 					//Acciones a tomar cuando haga click en los lapices de edicion:
 					if (col == 0) {
 						domicilioAEditar = domicilio;
@@ -191,7 +208,12 @@ public class CuentaDomiciliosForm extends Composite {
 						}else{
 							DomicilioUI.getInstance().setComandoAceptar(new Command(){
 								public void execute() {
-									PersonaDto persona = cuentaDto.getPersona();
+									PersonaDto persona = null;
+									if ("SUSCRIPTOR".equals(getTipoCuenta(cuentaDto))){
+										persona = ((SuscriptorDto)cuentaDto).getGranCuenta().getPersona();
+									}else if ("GRAN CUENTA".equals(getTipoCuenta(cuentaDto))){
+										persona = cuentaDto.getPersona();
+									}
 									int index = persona.getDomicilios().indexOf(domicilioAEditar);
 									persona.getDomicilios().remove(index);
 									persona.getDomicilios().add(index, DomicilioUI.getInstance().getDomicilioAEditar());
@@ -214,8 +236,14 @@ public class CuentaDomiciliosForm extends Composite {
 						DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,tienePrincipalFacturacion);
 						DomicilioUI.getInstance().setComandoAceptar(new Command(){
 							public void execute() {
+									PersonaDto persona = null;
+									if ("SUSCRIPTOR".equals(getTipoCuenta(cuentaDto))){
+										persona = ((SuscriptorDto)cuentaDto).getGranCuenta().getPersona();
+									}else if ("GRAN CUENTA".equals(getTipoCuenta(cuentaDto))){
+										persona = cuentaDto.getPersona();
+									}
 								   DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
-								   PersonaDto persona = cuentaDto.getPersona();
+								   persona = cuentaDto.getPersona();
 								   persona.getDomicilios().add(domicilio);
 								   refrescaTablaConNuevoDomicilio();
 								   huboCambios = true;
@@ -229,7 +257,13 @@ public class CuentaDomiciliosForm extends Composite {
 						final int rowABorrar = row;
 						DomicilioUI.getInstance().hide();
 						domicilioAEditar = domicilio;
-						DomicilioUI.getInstance().openPopupDeleteDialog(cuentaDto.getPersona(), domicilioAEditar, new Command(){
+						PersonaDto persona = null;
+						if ("SUSCRIPTOR".equals(getTipoCuenta(cuentaDto))){
+							persona = ((SuscriptorDto)cuentaDto).getGranCuenta().getPersona();
+						}else if ("GRAN CUENTA".equals(getTipoCuenta(cuentaDto))){
+							persona = cuentaDto.getPersona();
+						}
+						DomicilioUI.getInstance().openPopupDeleteDialog(persona, domicilioAEditar, new Command(){
 							public void execute() {
 								refrescaTablaConNuevoDomicilio();
 								huboCambios = true;
@@ -239,6 +273,20 @@ public class CuentaDomiciliosForm extends Composite {
 				}
 			}
 		});
+	}
+	
+	private String getTipoCuenta(CuentaDto cuentaDto){
+		String tipoCuenta = "";
+		if (cuentaDto.getCategoriaCuenta() != null){
+			if("SUSCRIPTOR".equals(cuentaDto.getCategoriaCuenta().getDescripcion())){
+				tipoCuenta = "SUSCRIPTOR";
+			}else if("GRAN CUENTA".equals(cuentaDto.getCategoriaCuenta().getDescripcion())){
+				tipoCuenta = "GRAN CUENTA";
+			}
+		}else{
+			tipoCuenta = "SUSCRIPTOR";
+		}
+		return tipoCuenta;
 	}
 	
 	public List<String> validarCompletitud() {

@@ -6,7 +6,10 @@ import java.util.List;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
+import ar.com.nextel.sfa.client.dto.PersonaDto;
+import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
@@ -38,7 +41,7 @@ public class CuentaEdicionTabPanel {
 	DualPanel clientePanel = new DualPanel();
 	private Label razonSocial = new Label();
 	private Label cliente = new Label();
-	private GranCuentaDto cuenta2editDto = new GranCuentaDto();
+	private CuentaDto cuenta2editDto = new CuentaDto();
 	private CuentaDatosForm      cuentaDatosForm      = CuentaDatosForm.getInstance();
 	private CuentaDomiciliosForm cuentaDomiciliosForm = CuentaDomiciliosForm.getInstance();
 	private CuentaContactoForm   cuentaContactoForm   = CuentaContactoForm.getInstance();
@@ -267,14 +270,33 @@ public class CuentaEdicionTabPanel {
 	}
 	
 	private void guardar() {
-		GranCuentaDto ctaDto = cuentaDatosForm.getCuentaDtoFromEditor();
+		CuentaDto ctaDto = cuentaDatosForm.getCuentaDtoFromEditor();
+		if ("GRAN CUENTA".equals(ctaDto.getCategoriaCuenta().getDescripcion())){
+			guardaGranCuenta();
+		}else if ("SUSCRIPTOR".equals(ctaDto.getCategoriaCuenta())){
+			guardaSuscriptor();
+		}else if ("DIVISION".equals(ctaDto.getCategoriaCuenta())){
+			guardaDivision();
+		}
+	}
+
+	/**
+	 *@author eSalvador
+	 * TODO:Terminar en la segunda iteracion del proyecto.  
+	 **/
+	private void guardaSuscriptor(){
+		
+	}
+
+	private void guardaGranCuenta(){
+		GranCuentaDto ctaDto = (GranCuentaDto)cuentaDatosForm.getCuentaDtoFromEditor();
         //agrego domicilios
 		ctaDto.getPersona().setDomicilios(CuentaDomiciliosForm.getInstance().cuentaDto.getPersona().getDomicilios());
 		
-		CuentaRpcService.Util.getInstance().saveCuenta(ctaDto,new DefaultWaitCallback() {
+		CuentaRpcService.Util.getInstance().saveGranCuenta(ctaDto,new DefaultWaitCallback() {
 			public void success(Object result) {
-				CuentaEdicionTabPanel.getInstance().setCuenta2editDto((GranCuentaDto) result);
-				cuentaDatosForm.ponerDatosBusquedaEnFormulario((GranCuentaDto) result);
+				CuentaEdicionTabPanel.getInstance().setCuenta2editDto((CuentaDto)result);
+				cuentaDatosForm.ponerDatosBusquedaEnFormulario((CuentaDto) result);
 				razonSocial.setText(((CuentaDto) result).getPersona().getRazonSocial());
 				MessageDialog.getInstance().showAceptar("", "      La cuenta se guardó con exito     ", MessageDialog.getCloseCommand());
 				cuentaDomiciliosForm.setHuboCambios(false);
@@ -282,6 +304,20 @@ public class CuentaEdicionTabPanel {
 		});
 	}
 	
+	/**
+	 *@author eSalvador
+	 * TODO:Terminar en la segunda iteracion del proyecto.  
+	 **/
+	private void guardaDivision(){
+		
+	}
+	
+	private void crearSS() {
+		ErrorDialog.getInstance().show("OK PARA CREAR SS (@TODO)");
+	}
+	private void agregar(PersonaDto personaDto) {
+		ErrorDialog.getInstance().show("OK PARA AGREGAR DIVISIO/SUSCRIPTOR (@TODO)");
+	}
 	private void cancelar() {
 		MessageDialog.getInstance().hide();
 		History.newItem("");
@@ -311,12 +347,29 @@ public class CuentaEdicionTabPanel {
 	}
 	
 	///////////////
-	public GranCuentaDto getCuenta2editDto() {
+	public CuentaDto getCuenta2editDto() {
 		return cuenta2editDto;
 	}
-	public void setCuenta2editDto(GranCuentaDto ctaDto) {
-		this.cuenta2editDto = ctaDto;
+	
+	public void setCuenta2editDto(CuentaDto ctaDto) {
+		/**Esto va porque si se accede a este metodo desde la Creacion de una cuenta, aun no se tiene una categoria.
+		 * MODIFICAR cuando se agregue la creacion de Division y Suscriptor.*/
+		if (ctaDto != null){
+			String categoriaCuenta = ctaDto.getCategoriaCuenta().getDescripcion();
+			if ("SUSCRIPTOR".equals(categoriaCuenta)){
+				SuscriptorDto suscriptor = new SuscriptorDto();
+				suscriptor.setGranCuenta(ctaDto);
+				GranCuentaDto granCuenta = new GranCuentaDto();
+				granCuenta.addSuscriptor(suscriptor);
+				this.cuenta2editDto = (CuentaDto)granCuenta;
+			}else if("GRAN CUENTA".equals(categoriaCuenta)){
+				this.cuenta2editDto = ctaDto;
+			}else if("DIVISION".equals(categoriaCuenta)){
+				((GranCuentaDto)this.cuenta2editDto).addDivision((DivisionDto)ctaDto);
+			}
+		}
 	}
+	
 	public FlexTable getCuentaEdicionPanel() {
 		return marco;
 	}

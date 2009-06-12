@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GranCuentaDto extends CuentaDto {
@@ -41,4 +42,16 @@ public class GranCuentaDto extends CuentaDto {
 	public void setSuscriptores(List<SuscriptorDto> suscriptores) {
 		this.suscriptores = suscriptores;
 	}
+	public void addSuscriptor(SuscriptorDto suscriptor) {
+		if (suscriptores == null){
+		   suscriptores = new ArrayList<SuscriptorDto>();
+		}
+		this.suscriptores.add(suscriptor);
+	}
+	public void addDivision(DivisionDto division) {
+		if (divisiones == null){
+			divisiones = new ArrayList<DivisionDto>();
+		this.divisiones.add(division);
+		}
+	}	
 }

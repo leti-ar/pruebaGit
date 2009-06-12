@@ -33,10 +33,12 @@ import ar.com.nextel.model.cuentas.beans.Cargo;
 import ar.com.nextel.model.cuentas.beans.CategoriaCuenta;
 import ar.com.nextel.model.cuentas.beans.ClaseCuenta;
 import ar.com.nextel.model.cuentas.beans.CondicionCuenta;
+import ar.com.nextel.model.cuentas.beans.Cuenta;
+import ar.com.nextel.model.cuentas.beans.Division;
 import ar.com.nextel.model.cuentas.beans.FormaPago;
 import ar.com.nextel.model.cuentas.beans.GranCuenta;
-import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.Proveedor;
+import ar.com.nextel.model.cuentas.beans.Suscriptor;
 import ar.com.nextel.model.cuentas.beans.TipoCanalVentas;
 import ar.com.nextel.model.cuentas.beans.TipoContribuyente;
 import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
@@ -61,8 +63,10 @@ import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
 import ar.com.nextel.sfa.client.dto.ClaseCuentaDto;
 import ar.com.nextel.sfa.client.dto.CondicionCuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
+import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.FormaPagoDto;
@@ -77,6 +81,7 @@ import ar.com.nextel.sfa.client.dto.RubroDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
+import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
 import ar.com.nextel.sfa.client.dto.TipoCanalVentasDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
@@ -238,11 +243,26 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		return buscarDTOinit;
 	}
 
-	public GranCuentaDto saveCuenta(GranCuentaDto cuentaDto) {
+	public GranCuentaDto saveGranCuenta(GranCuentaDto cuentaDto) {
 		Long idCuenta = cuentaBusinessService.saveCuenta(cuentaDto,mapper);
 		cuentaDto = mapper.map(repository.retrieve(GranCuenta.class, idCuenta), GranCuentaDto.class);
 		return cuentaDto;
 	}
+	/**
+	 *@author eSalvador
+	 * TODO:Terminar en la segunda iteracion del proyecto.  
+	 **/
+//	public GranCuentaDto saveCuentaSuscriptor(SuscriptorDto cuentaDto) {
+//		Long idCuenta = cuentaBusinessService.saveCuenta(cuentaDto,mapper);
+//		cuentaDto = mapper.map(repository.retrieve(GranCuenta.class, idCuenta), GranCuentaDto.class);
+//		return cuentaDto;
+//	}
+//	
+//	public GranCuentaDto saveCuentaDivision(DivisionDto cuentaDivisionDto) {
+//		Long idCuenta = cuentaBusinessService.saveCuenta(cuentaDivisionDto,mapper);
+//		cuentaDto = mapper.map(repository.retrieve(GranCuenta.class, idCuenta), GranCuentaDto.class);
+//		return cuentaDto;
+//	}
 
 	public VerazInitializer getVerazInitializer() {
 		VerazInitializer verazInitializer = new VerazInitializer();
@@ -296,30 +316,64 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		return null;
 	}
 	
-	public GranCuentaDto selectCuenta(Long cuentaId, String cod_vantive) {
+	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive) {
 		GranCuenta granCuenta = new GranCuenta();
-		GranCuentaDto ctaDTO = null;
+		Suscriptor suscriptor = new Suscriptor();
+		Division division = new Division();
+		Cuenta cuenta = null;
+		CuentaDto ctaDTO = null;
+		GranCuentaDto granCtaDTO = null;
+		DivisionDto ctaDivisionDTO = null;
+		SuscriptorDto ctaSuscriptorDTO = null;
 		try {
 			if (cuentaId == 0){
-				//TODO: Analizar y borrar si no va!!
 				throw new RpcExceptionMessages("No tiene permisos para ver esta cuenta.");
 			} else {
-				granCuenta = (GranCuenta)selectCuentaBusinessOperator.getCuentaSinLockear(cuentaId);
-				if (!cod_vantive.equals("***") && (!cod_vantive.equals("null"))){
-					granCuenta = (GranCuenta)selectCuentaBusinessOperator.getCuentaYLockear(cod_vantive, this.getVendedor());
+				if (cuentaId != null){
+					cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(cuentaId);
+				}else if (!cod_vantive.equals("***") && (!cod_vantive.equals("null"))){
+					cuenta = selectCuentaBusinessOperator.getCuentaYLockear(cod_vantive, this.getVendedor());
+					//granCuenta = (GranCuenta)selectCuentaBusinessOperator.getCuentaSinLockear(cod_vantive);
 				}
-				//agrego contactos
-				granCuenta.addContactosCuenta(contactosCuentaBusinessOperator.obtenerContactosCuentas(granCuenta.getCuentaRaiz().getId()));
-				CondicionCuenta cd1= granCuenta.getCondicionCuenta();
-				Long id = cd1.getId();
-				String code = cd1.getCodigoVantive();
-				String desc = cd1.getDescripcion();
-				CondicionCuentaDto cd2 = new CondicionCuentaDto(id,code,desc);
-				ctaDTO = (GranCuentaDto) mapper.map(granCuenta, GranCuentaDto.class);
-				ctaDTO.setCondicionCuenta(cd2);
+				String categoriaCuenta = cuenta.getCategoriaCuenta().getDescripcion();
+				if ("SUSCRIPTOR".equals(categoriaCuenta)){
+					//suscriptor.addContactosCuenta(contactosCuentaBusinessOperator.obtenerContactosCuentas(suscriptor.getCuentaRaiz().getId()));
+					suscriptor = (Suscriptor)cuenta;
+					CondicionCuenta cd1= cuenta.getCondicionCuenta();
+					Long id = cd1.getId();
+					String code = cd1.getCodigoVantive();
+					String desc = cd1.getDescripcion();
+					CondicionCuentaDto cd2 = new CondicionCuentaDto(id,code,desc);
+					ctaSuscriptorDTO = (SuscriptorDto) mapper.map(suscriptor, SuscriptorDto.class);
+					ctaSuscriptorDTO.setCondicionCuenta(cd2);
+					ctaDTO = ctaSuscriptorDTO;
+				}else if("GRAN CUENTA".equals(categoriaCuenta)){
+					granCuenta = (GranCuenta)cuenta;
+					granCuenta.addContactosCuenta(contactosCuentaBusinessOperator.obtenerContactosCuentas(granCuenta.getCuentaRaiz().getId()));
+					CondicionCuenta cd1= granCuenta.getCondicionCuenta();
+					Long id = cd1.getId();
+					String code = cd1.getCodigoVantive();
+					String desc = cd1.getDescripcion();
+					CondicionCuentaDto cd2 = new CondicionCuentaDto(id,code,desc);
+					granCtaDTO = (GranCuentaDto) mapper.map(granCuenta, GranCuentaDto.class);
+					granCtaDTO.setCondicionCuenta(cd2);
+					ctaDTO = granCtaDTO;
+				}else if("DIVISION".equals(categoriaCuenta)){
+					//division = (Division)cuenta;
+					//CondicionCuenta cd1= cuenta.getCondicionCuenta();
+					//Long id = cd1.getId();
+					//String code = cd1.getCodigoVantive();
+					//String desc = cd1.getDescripcion();
+					//CondicionCuentaDto cd2 = new CondicionCuentaDto(id,code,desc);
+					//ctaDivisionDTO = (DivisionDto) mapper.map(division, DivisionDto.class);
+					//ctaDivisionDTO.setCondicionCuenta(cd2);
+					/**TODO: Borrar y descomentar! */
+					CuentaDto cuentaTemp = new CuentaDto();
+					cuentaTemp.setCategoriaCuenta(new CategoriaCuentaDto().DIVISION);
+					ctaDTO = cuentaTemp;
+				}
 			}
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		return ctaDTO;
@@ -440,5 +494,4 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		List<ProvinciaDto> listaProvincias = mapper.convertList(repository.getAll(Provincia.class), ProvinciaDto.class);
 		return listaProvincias;
 	}
-
 }
