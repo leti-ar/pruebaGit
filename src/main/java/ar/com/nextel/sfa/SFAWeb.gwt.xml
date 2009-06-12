@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <module>
 
-      <!-- Inherit the core Web Toolkit stuff.                        -->
-      <inherits name="com.google.gwt.user.User"/>
-      <inherits name="com.google.gwt.i18n.I18N"/>
-      <inherits name="ar.com.snoop.gwt.commons.GwtCommons"/>    	
+	<!-- Inherit the core Web Toolkit stuff.                        -->
+	<inherits name="com.google.gwt.user.User" />
+	<inherits name="com.google.gwt.i18n.I18N" />
+	<inherits name="ar.com.snoop.gwt.commons.GwtCommons" />
+	<!-- Enable debug ID. -->
+	<inherits name="com.google.gwt.user.Debug" />
+	<set-property name="gwt.enableDebugId" value="true" />
 
       <!-- Specify the app entry point class.                         -->
       <entry-point class="ar.com.nextel.sfa.client.SFAWeb"/>

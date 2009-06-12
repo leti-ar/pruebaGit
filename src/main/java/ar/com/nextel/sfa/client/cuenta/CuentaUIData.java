@@ -99,7 +99,7 @@ public class CuentaUIData extends UIData {
 	private SimpleLink validarTarjeta = new SimpleLink(Sfa.constant().validarTarjeta(), "#", true);
 	private Label verazRta = new Label();
 	
-	PersonaDto persona = new PersonaDto();
+	PersonaDto persona = new PersonaDto(); // @TODO Para qué se usa? Sin modificador de visibilidad?
 	List <Widget>camposObligatorios =  new ArrayList<Widget>(); 
 	List <Widget>camposObligatoriosFormaPago = new ArrayList<Widget>();
 	List <TipoTelefonoDto>tipoTelefono = new ArrayList<TipoTelefonoDto>();
@@ -296,6 +296,9 @@ public class CuentaUIData extends UIData {
 		
 	}
 	
+	/*
+	 * TODO Pasar esto a una constante, no va en una UIData. rgm
+	 */
 	private void setAtributosNumeroTarjeta() {
 		if(tipoTarjeta.getSelectedItemId().equals(TipoTarjetaEnum.VIS.getId())
 		 ||tipoTarjeta.getSelectedItemId().equals(TipoTarjetaEnum.MAS.getId())

@@ -4,6 +4,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
@@ -111,6 +112,9 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		loadTable();
 	}
 
+	/**
+	 * Crea una fila en la tabla por cada cuenta del CuentaSearchResultDto
+	 */
 	private void loadTable() {
 		clearResultTable();
 		int row = 1;
@@ -155,6 +159,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		} else {
 			resultTable = new NextelTable();
 			initTable(resultTable);
+			resultTable.ensureDebugId(DebugConstants.BUSQUEDA_CUENTAS_TABLE_RESULT);
 			resultTableWrapper.setWidget(resultTable);
 		}
 	}

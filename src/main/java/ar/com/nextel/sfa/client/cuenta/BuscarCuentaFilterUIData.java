@@ -5,6 +5,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.dto.BusquedaPredefinidaDto;
 import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
@@ -56,7 +57,10 @@ public class BuscarCuentaFilterUIData extends UIData {
 		limpiarButton = new Button(Sfa.constant().limpiar());
 		buscarButton.addStyleName("btn-bkg");
 		limpiarButton.addStyleName("btn-bkg");
-
+		buscarButton.ensureDebugId(DebugConstants.BUSQUEDA_CUENTAS_BOTON_BUSCAR);
+		flotaIdTextBox.ensureDebugId(DebugConstants.BUSQUEDA_CUENTAS_TEXTBOX_FLOTAID);
+		predefinidasCombo.ensureDebugId(DebugConstants.BUSQUEDA_CUENTAS_COMBO_PREDEFINIDAS);
+		
 		limpiarButton.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
 				cleanAndEnableFields();
@@ -341,7 +345,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 		if(vacio){
 			list.add("Por favor ingrese por lo menos un criterio de busqueda.");
 		}else{
-			if(flotaIdTextBox.isEnabled()){
+			if(flotaIdTextBox.isEnabled())  {
 				if(!validaFlotaId(flotaIdTextBox)){
 					list.add("Formato incorrecto de Flota*Id.");
 				}

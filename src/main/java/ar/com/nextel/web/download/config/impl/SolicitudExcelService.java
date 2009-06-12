@@ -27,7 +27,7 @@ public class SolicitudExcelService extends ServiceConfig {
 		 * El path del archivo debe coincidir con el path especificado por el
 		 * siguiente parámetro: GlobalParameterIdentifier.REPORTS_DIR
 		 * 
-		 * @TODO Revisar este parche, que puse porque ponerle "/tmp/" no es multiplataforma, ni prolijo! rgm
+		 * TODO Revisar este parche, que puse porque ponerle "/tmp/" no es multiplataforma, ni prolijo! rgm
 		 */
 		String tmp = System.getenv("TMP");
 		if ((tmp == null) || ( tmp.length()==0)) {

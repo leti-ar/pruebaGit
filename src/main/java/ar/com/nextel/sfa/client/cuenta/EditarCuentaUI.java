@@ -65,6 +65,7 @@ public class EditarCuentaUI extends ApplicationUI {
 	}
 
 	/**
+	 * TODO Mover esto a cuentaTab? .rgm
 	 * @author eSalvador 
 	 **/
 	private void cargaPaneles() {

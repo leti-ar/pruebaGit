@@ -1,5 +1,7 @@
 package ar.com.nextel.sfa.client.widget;
 
+import ar.com.nextel.sfa.client.debug.DebugConstants;
+
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -51,6 +53,12 @@ public class TablePageBar extends Composite {
 		prev.addStyleName("btn-prev");
 		next.addStyleName("btn-next");
 		last.addStyleName("btn-last");
+		// Seteo los debug Ids para c/u de los botones al mismo nombre que el estilo
+		first.ensureDebugId(DebugConstants.TABLE_PAGE_BAR_FIRST);
+		prev.ensureDebugId(DebugConstants.TABLE_PAGE_BAR_PREV);
+		next.ensureDebugId(DebugConstants.TABLE_PAGE_BAR_NEXT);
+		last.ensureDebugId(DebugConstants.TABLE_PAGE_BAR_LAST);
+
 		pagLabel.addStyleName("ml10");
 
 		this.addListener();
