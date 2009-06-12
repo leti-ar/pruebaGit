@@ -124,6 +124,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		reservarHidden.addStyleName("m0p0");
 		reservar.setWidth("50px");
 		reservar.addStyleName("m0p0");
+		reservar.setMaxLength(4);
 		confirmarReserva.addStyleName("btn-bkg");
 		confirmarReserva.addStyleName("ml10");
 		desreservar.addStyleName("btn-bkg");
@@ -179,7 +180,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Localidad"));
 		validator.addTarget(cantidad).equals("1", Sfa.constant().ERR_CANT_UNO());
 		validator.addTarget(reservar).required(
-				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Reservar Nº"));
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Reservar Nº")).length(4,
+				Sfa.constant().ERR_NUMERO_RESRVA());
 
 		if (validator.fillResult().getErrors().isEmpty()) {
 			reservarServiceCall(Long.parseLong(reservar.getText()));
@@ -437,6 +439,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "CPP/MPP"));
 			validator.addTarget(alias).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Alias"));
+			if (!"".equals(reservar.getText().trim())) {
+				validator.addTarget(reservar).length(4, Sfa.constant().ERR_NUMERO_RESRVA());
+			}
 		}
 		validator.addTarget(cantidad).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Cantidad")).greater(
