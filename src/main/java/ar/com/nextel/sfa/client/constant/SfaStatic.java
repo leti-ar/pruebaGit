@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.constant;
 
 /**
  * Interface to represent the constants contained in resource bundle:
- * 	'C:/SFA/LocalSFA_v2/sfa_web2/java/sfa-web2/src/main/java/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
+ * 	'/home/jlgperez/workspaceSFASVN/sfa-web2/src/main/java/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
  */
 public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
@@ -43,11 +43,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ERR_CANT_MA_CERO();
 
   /**
-   * Translated "El campo Cantidad: Debe ser 1 para una reserva de número.".
+   * Translated "El campo Cantidad debe ser 1 para una reserva de número.".
    * 
-   * @return translated "El campo Cantidad: Debe ser 1 para una reserva de número."
+   * @return translated "El campo Cantidad debe ser 1 para una reserva de número."
    */
-  @DefaultStringValue("El campo Cantidad: Debe ser 1 para una reserva de número.")
+  @DefaultStringValue("El campo Cantidad debe ser 1 para una reserva de número.")
   @Key("ERR_CANT_UNO")
   String ERR_CANT_UNO();
 
@@ -176,6 +176,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("El número de línea no se encuentra disponible.")
   @Key("ERR_NUMERO_NO_DISPONIBLE")
   String ERR_NUMERO_NO_DISPONIBLE();
+
+  /**
+   * Translated "El campo Reservar N° debe tener cuatro dígitos numéricos.".
+   * 
+   * @return translated "El campo Reservar N° debe tener cuatro dígitos numéricos."
+   */
+  @DefaultStringValue("El campo Reservar N° debe tener cuatro dígitos numéricos.")
+  @Key("ERR_NUMERO_RESRVA")
+  String ERR_NUMERO_RESRVA();
 
   /**
    * Translated "La cantidad de Pataconex ingresada excede el Precio de Venta Total.".
