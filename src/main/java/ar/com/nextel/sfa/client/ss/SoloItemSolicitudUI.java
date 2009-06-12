@@ -58,6 +58,8 @@ public class SoloItemSolicitudUI extends Composite {
 		precioCantidad = new Grid(1, 4);
 		precioCantidad.addStyleName("layout");
 		precioCantidad.getCellFormatter().setWidth(0, 0, "100px");
+		precioCantidad.getCellFormatter().setWidth(0, 1, "125px");
+		precioCantidad.getCellFormatter().setWidth(0, 2, "100px");
 		precioCantidad.setWidget(0, 0, new InlineLabel(Sfa.constant().precioLista()));
 		precioCantidad.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
 		precioCantidad.setWidget(0, 2, new InlineLabel(Sfa.constant().cantidad()));
