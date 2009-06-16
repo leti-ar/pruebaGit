@@ -98,9 +98,6 @@ public class CuentaContactoForm extends Composite {
 				row++;
 			} 
 		} 
-		while(datosTabla.getRowCount() > row){
-			datosTabla.removeRow(row++);
-		}
 	}		
 	
 		
