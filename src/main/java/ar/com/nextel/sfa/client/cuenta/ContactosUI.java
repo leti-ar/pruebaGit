@@ -148,7 +148,6 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 
 	public void cargarPopupEditarContacto(ContactoCuentaDto contacto, int fila) {
 		contactoABorrar = fila;
-		
 		//Limpia la tabla de domicilios incialmente, si esta con datos:
 		if (domicilioTable.getRowCount() > 1){
 			int cantFilas = (domicilioTable.getRowCount()) - 1;
@@ -246,23 +245,30 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		
 		iconoLupa.addClickListener(new ClickListener() {
 			public void onClick (Widget sender) {
-				PersonaDto personaDto = getVerazSearch(contactosData.getNumeroDocumento(), contactosData.getTipoDocumento(), contactosData.getSexo());
-				inicializarVeraz(contactosData.getVeraz());
-				CuentaRpcService.Util.getInstance().consultarVeraz(personaDto, 
-				new DefaultWaitCallback<VerazResponseDto>() {
-				
-					public void success(VerazResponseDto result) {
-						if (result != null) {
-							setearValoresRtaVeraz(result, contactosData.getApellido(), contactosData.getNombre(), 
-									null, contactosData.getSexo(), contactosData.getVeraz());
+				if ("".equals(contactosData.getNumeroDocumento().getText())) {
+					MessageDialog.getInstance();
+					MessageDialog.getInstance().showAceptar("Debe ingresar un número de documento", MessageDialog.getCloseCommand());
+				} else {
+					PersonaDto personaDto = getVerazSearch(contactosData.getNumeroDocumento(), contactosData.getTipoDocumento(), contactosData.getSexo());
+					inicializarVeraz(contactosData.getVeraz());
+					CuentaRpcService.Util.getInstance().consultarVeraz(personaDto, 
+							new DefaultWaitCallback<VerazResponseDto>() {
+						public void success(VerazResponseDto result) {
+							if (result != null) {
+								setearValoresRtaVeraz(result, contactosData.getApellido(), contactosData.getNombre(), 
+										null, contactosData.getSexo(), contactosData.getVeraz());
+							}
 						}
-					}
-				});
+					});
+				}
 			}
-		});	
-
+		});
+		
 		return datosCuentaPanel;
 	}
+
+		
+		
 	
 	public void inicializarVeraz(Label verazLabel) {
 		estilos.add("verazAceptar");
@@ -300,14 +306,12 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	}
 	
 	private PersonaDto getVerazSearch(TextBox numDoc, ListBox tipoDoc, ListBox sexo) {
-		//if ((numDoc!=null) && (tipoDoc!=null) && (sexo!=null)) {
-			PersonaDto personaDto = new PersonaDto();
-			DocumentoDto documentoDto = new DocumentoDto(numDoc.getText(), (TipoDocumentoDto) tipoDoc.getSelectedItem());
-			personaDto.setDocumento(documentoDto);
-			personaDto.setIdTipoDocumento(documentoDto.getTipoDocumento().getId());
-			personaDto.setSexo((SexoDto) sexo.getSelectedItem());
-		//} 
-		return personaDto;
+		PersonaDto personaDto = new PersonaDto();
+		DocumentoDto documentoDto = new DocumentoDto(numDoc.getText(), (TipoDocumentoDto) tipoDoc.getSelectedItem());
+		personaDto.setDocumento(documentoDto);
+		personaDto.setIdTipoDocumento(documentoDto.getTipoDocumento().getId());
+		personaDto.setSexo((SexoDto) sexo.getSelectedItem());
+		return personaDto;	
 	}
 
 	/**
