@@ -271,7 +271,6 @@ public class CuentaEdicionTabPanel {
 		razonSocial.setText("");
 		cliente.setText("");
 		cuentaDatosForm.reset();
-		cuentaContactoForm.reset();
 	}
 	
 	private void guardar() {
