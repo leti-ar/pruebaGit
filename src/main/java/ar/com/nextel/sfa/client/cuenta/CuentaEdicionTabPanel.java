@@ -268,9 +268,10 @@ public class CuentaEdicionTabPanel {
 	 * 
 	 */
 	public void clean() {
-		cuentaDatosForm.reset();
 		razonSocial.setText("");
 		cliente.setText("");
+		cuentaDatosForm.reset();
+		cuentaContactoForm.reset();
 	}
 	
 	private void guardar() {
@@ -413,6 +414,9 @@ public class CuentaEdicionTabPanel {
 	}
 	public GwtValidator getValidator() {
 		return validator;
+	}
+	public TabPanel getTabPanel() {
+		return tabPanel;
 	}
 	
 }
