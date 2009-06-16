@@ -7,6 +7,7 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
+import ar.com.nextel.sfa.client.enums.BuscoCuentaPorDniEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
@@ -41,8 +42,10 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	private int numeroPagina = 1;
 	private Long totalRegistrosBusqueda;
 	private BuscarCuentaController controller;
-
+	
 	public BuscarCuentaResultUI(BuscarCuentaController controller) {
+		
+		
 		super();
 		this.controller = controller;
 		addStyleName("gwt-BuscarCuentaResultPanel");
@@ -112,6 +115,16 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		loadTable();
 	}
 
+	private String getCondicionBusquedaPorDni(){
+		String cond = "0";
+		if ((lastCuentaSearchDto.getNumeroDocumento() == "")||(lastCuentaSearchDto.getNumeroDocumento() == null)) {
+			cond = BuscoCuentaPorDniEnum.NO.getCondicion();
+		}else{
+			cond = BuscoCuentaPorDniEnum.SI.getCondicion();
+		}
+		return cond;
+	}
+	
 	/**
 	 * Crea una fila en la tabla por cada cuenta del CuentaSearchResultDto
 	 */
@@ -120,7 +133,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		int row = 1;
 		for (CuentaSearchResultDto cuenta : cuentas) {
 			resultTable.setWidget(row, 0, IconFactory.lapizAnchor(UILoader.EDITAR_CUENTA + "?cuenta_id="
-					+ cuenta.getId() + "&cod_vantive=" + cuenta.getCodigoVantive(), LAPIZ_TITLE));
+					+ cuenta.getId() + "&cod_vantive=" + cuenta.getCodigoVantive() + "&por_dni=" + getCondicionBusquedaPorDni(), LAPIZ_TITLE));
 
 			if (cuenta.isPuedeVerInfocom()) {
 				resultTable.setWidget(row, 1, IconFactory.lupa(LUPA_TITLE));

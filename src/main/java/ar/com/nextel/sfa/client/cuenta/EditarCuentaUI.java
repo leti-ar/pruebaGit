@@ -65,11 +65,11 @@ public class EditarCuentaUI extends ApplicationUI {
 						}else if ("GRAN CUENTA".equals(getTipoCuenta(ctaDto))){
 							cuentaDto = ctaDto;
 						}
-						/**TODO: Investigar mas adelante, si no se deberia comparar por ID en vez de por UserName!!! */
-						if (!ClientContext.getInstance().getUsuario().getId().equals(cuentaDto.getVendedor().getId())) {
+						String buscoPorDni = HistoryUtils.getParam("por_dni");
+						if (!ClientContext.getInstance().getUsuario().getUserName().equals(cuentaDto.getVendedor().getUsuarioDto().getUserName()) && (buscoPorDni.equals("0"))) {
 							ErrorDialog.getInstance().show("No tiene permiso para ver esa cuenta.");
 							History.back();
-						}else{
+						}else {
 							String categoriaCuenta = cuentaDto.getCategoriaCuenta().getDescripcion();
 							if ("SUSCRIPTOR".equals(categoriaCuenta)){
 								cuentaTab.setCuenta2editDto(cuentaDto);
@@ -82,6 +82,7 @@ public class EditarCuentaUI extends ApplicationUI {
 								cargaPanelesGranCuenta();
 							}
 							if ("DIVISION".equals(categoriaCuenta)){
+								//AUN NO FUNCIONA ESTO!!! Se arreglara en la segunda iteracion del proyecto!!
 								//cuentaTab.setCuenta2editDto(cuentaDto);
 								//cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusqueda(cuentaDto);
 								//cargaPanelesDivision();

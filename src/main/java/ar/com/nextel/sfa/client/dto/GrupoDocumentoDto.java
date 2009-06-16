@@ -8,15 +8,15 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  **/
 public class GrupoDocumentoDto implements ListBoxItem, IsSerializable {
 
-	private long code;
+	private Long id;
 	private String descripcion;
 
 	public GrupoDocumentoDto() {
 	}
 
-	public GrupoDocumentoDto(long code, String descripcion) {
+	public GrupoDocumentoDto(long id, String descripcion) {
 		super();
-		this.code = code;
+		this.id = id;
 		this.descripcion = descripcion;
 	}
 
@@ -25,15 +25,15 @@ public class GrupoDocumentoDto implements ListBoxItem, IsSerializable {
 	}
 
 	public String getItemValue() {
-		return code + "";
+		return id + "";
 	}
 
-	public long getCode() {
-		return code;
+	public Long getId() {
+		return id;
 	}
 
-	public void setCode(long code) {
-		this.code = code;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getDescripcion() {
