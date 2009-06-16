@@ -72,6 +72,9 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 
 	private void searchSSCerradas(SolicitudServicioCerradaDto solicitudServicioCerradaDto, boolean firstTime) {
 		this.solicitudServicioCerradaDto = solicitudServicioCerradaDto;
+		cantEquipos = new Long(0);
+		cantPataconex = new Double(0);
+		cantEqFirmados = 0;		
 		SolicitudRpcService.Util.getInstance().searchSSCerrada(solicitudServicioCerradaDto,
 				new DefaultWaitCallback<List<SolicitudServicioCerradaResultDto>>() {
 			public void success(List<SolicitudServicioCerradaResultDto> result) {
@@ -79,9 +82,6 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 					if (result.size()==0) {
 						MessageDialog.getInstance().showAceptar("No se encontraron datos con el " +
 								"criterio utilizado", MessageDialog.getCloseCommand());
-						cantEquipos = new Long(0);
-						cantPataconex = new Double(0);
-						cantEqFirmados = 0;		
 					}					
 					loadExcel();
 					setSolicitudServicioDto(result);
