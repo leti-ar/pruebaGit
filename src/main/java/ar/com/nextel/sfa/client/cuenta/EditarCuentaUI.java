@@ -13,7 +13,6 @@ import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
 
 /**
@@ -31,6 +30,7 @@ public class EditarCuentaUI extends ApplicationUI {
 
 	public boolean load() {
 		cuentaTab.clean();
+		cuentaTab.getTabPanel().selectTab(0);
 		
 		//viene de popup "Agregar"
 		if (HistoryUtils.getParam("nroDoc")!=null) {
