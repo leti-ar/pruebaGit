@@ -193,28 +193,32 @@ public class CuentaEdicionTabPanel {
 
 		guardar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				if (!cuentaDatosForm.formularioDatosDirty() && (!cuentaDomiciliosForm.formularioDatosDirty())) {
-					ErrorDialog.getInstance().show("NO HAY DATOS NUEVOS PARA GUARDAR");
+				if (!editorDirty()) {
+					MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), Sfa.constant().MSG_NO_HAY_DATOS_NUEVOS(), cancelarCommand);
 				} else if (validarCamposTabDatos()) {
-					//ErrorDialog.getInstance().show("HAY CAMPOS OBLIGATORIOS SIN COMPLETAR");
 					guardar();
 				} 
 			}
 		});
 		crearSSButton.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				Long idCuenta = cuenta2editDto.getId();
-				if (idCuenta != null) {
-					String targetHistoryToken = UILoader.AGREGAR_SOLICITUD + "?" + ID_CUENTA + "=" + idCuenta;
-					crearEquipos.setTargetHistoryToken(targetHistoryToken);
-					// crearCDW.setTargetHistoryToken(targetHistoryToken);
-					// crearMDS.setTargetHistoryToken(targetHistoryToken);
-					popupCrearSS.show();
-					popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton
-							.getAbsoluteTop() - 50);
+				
+				if (editorDirty()) {
+					MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), Sfa.constant().ERR_CREAR_SS_EDITOR_CUENTA_DIRTY(), cancelarCommand);
 				} else {
-					MessageDialog.getInstance().showAceptar("Error", "Debe seleccionar una Cuenta",
-							MessageDialog.getCloseCommand());
+					Long idCuenta = cuenta2editDto.getId();
+					if (idCuenta != null) {
+						String targetHistoryToken = UILoader.AGREGAR_SOLICITUD + "?" + ID_CUENTA + "=" + idCuenta;
+						crearEquipos.setTargetHistoryToken(targetHistoryToken);
+						// crearCDW.setTargetHistoryToken(targetHistoryToken);
+						// crearMDS.setTargetHistoryToken(targetHistoryToken);
+						popupCrearSS.show();
+						popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton
+								.getAbsoluteTop() - 50);
+					} else {
+						MessageDialog.getInstance().showAceptar("Error", "Debe seleccionar una Cuenta",
+								MessageDialog.getCloseCommand());
+					}
 				}
 			}
 		});
@@ -251,8 +255,8 @@ public class CuentaEdicionTabPanel {
 		});
 		cancelar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				if (cuentaDatosForm.formularioDatosDirty()) {
-					MessageDialog.getInstance().showAceptarCancelar("", Sfa.constant().ERR_FORMULARIO_DIRTY(), aceptarCommand,cancelarCommand);
+				if (editorDirty()) {
+					MessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_DIALOG_TITLE(), Sfa.constant().ERR_FORMULARIO_DIRTY(), aceptarCommand,cancelarCommand);
 				} else {
 					cancelar();
 				}
@@ -344,6 +348,10 @@ public class CuentaEdicionTabPanel {
 			ErrorDialog.getInstance().show(erroresValidacion);
 		}
 		return erroresValidacion.isEmpty(); 
+	}
+	
+	private boolean editorDirty() {
+		return cuentaDatosForm.formularioDatosDirty() || cuentaDomiciliosForm.formularioDatosDirty();
 	}
 	
 	///////////////
