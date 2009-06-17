@@ -49,7 +49,6 @@ public class CuentaDomiciliosForm extends Composite {
 		datosTabla = new FlexTable();
 		agregaTableListeners();
 		initWidget(mainPanel);
-		mainPanel.clear();
 		mainPanel.setWidth("100%");
 		mainPanel.addStyleName("gwt-BuscarCuentaResultTable");
 		//
@@ -122,6 +121,7 @@ public class CuentaDomiciliosForm extends Composite {
 	 * @author eSalvador
 	 **/
 	public void cargaTablaDomicilios(final CuentaDto cuentaDto) {
+		//datosTabla = new FlexTable();
 		this.cuentaDto = cuentaDto;
 		setTienePrincipalEntrega(false);
 		setTienePrincipalFacturacion(false);
@@ -132,14 +132,7 @@ public class CuentaDomiciliosForm extends Composite {
 		}else if ("GRAN CUENTA".equals(getTipoCuenta(cuentaDto))){
 			domicilios = cuentaDto.getPersona().getDomicilios();
 		}
-		
-		//Limpia la tabla de domicilios incialmente, si esta con datos:
-		if (datosTabla.getRowCount() > 1){
-			for (int j = 1; j < (datosTabla.getRowCount() - 1); j++) {
-				datosTabla.removeRow(j);
-			}
-		}
-		//
+		limpiaTablaDomicilios();
 		for (int i = 0; i < domicilios.size(); i++) {
 			if (domicilios.get(i) != null) {
 				// Carga los iconos:
@@ -182,6 +175,15 @@ public class CuentaDomiciliosForm extends Composite {
 					}
 				}
 				datosTabla.setHTML(i + 1, 5, domicilios.get(i).getDomicilios());
+			}
+		}
+	}
+	
+	public void limpiaTablaDomicilios(){
+	//Limpia la tabla de domicilios incialmente, si esta con datos:
+		if (datosTabla.getRowCount() > 1){
+			for (int j = 1; j < (datosTabla.getRowCount()); j++) {
+				datosTabla.removeRow(j);
 			}
 		}
 	}
@@ -341,5 +343,9 @@ public class CuentaDomiciliosForm extends Composite {
 
 	public void setHuboCambios(boolean huboCambios) {
 		this.huboCambios = huboCambios;
-	}	
+	}
+
+	public void setDomicilioAEditar(DomiciliosCuentaDto domicilioAEditar) {
+		this.domicilioAEditar = domicilioAEditar;
+	}
 }

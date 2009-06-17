@@ -203,7 +203,6 @@ public class EditarCuentaUI extends ApplicationUI {
 			cuentaTab.getCuentaContactoForm().setListaContactos(granCuenta.getContactos());
 			cuentaTab.getCuentaContactoForm().cargarTabla();
 		}
-			
 		mainPanel.add(cuentaTab.getCuentaEdicionPanel());
 	}
 
