@@ -6,6 +6,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
+import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
@@ -45,6 +46,8 @@ public class DomicilioUI extends NextelDialog {
 	private int rowDomicilioABorrar;
 	private PersonaDto persona;
 	private boolean parentContacto;
+	private boolean isDomicilioPpalEntrega;
+	private boolean isDomicilioPpalFacturacion;
 
 	Label calleLabel = new Label(Sfa.constant().calle());
 	Label numCalleLabel = new Label(Sfa.constant().numeroCalle());
@@ -84,6 +87,8 @@ public class DomicilioUI extends NextelDialog {
 	}
 
 	public void cargarPopupDomicilio(DomiciliosCuentaDto domicilio, String title) {
+		isDomicilioPpalEntrega = EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdEntrega());
+		isDomicilioPpalFacturacion = EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdFacturacion());
 		noEditable = domicilio.getVantiveId() != null;
 		domicilioAEditar = domicilio;
 		domiciliosData.clean();
@@ -463,15 +468,16 @@ public class DomicilioUI extends NextelDialog {
 	
 	public boolean getTieneDomiciliosPrincipales(){
 		boolean tienePpales = false;
-		if((domiciliosData.getFacturacion().getSelectedItemId().equals("2")) && (tienePrincipalFacturacion)){
+		
+		if (!isDomicilioPpalFacturacion && domiciliosData.getFacturacion().getSelectedItemId().equals("2") && (tienePrincipalFacturacion)){
 			tienePpales = true;	
 		}
-		if((domiciliosData.getEntrega().getSelectedItemId().equals("2")) && (tienePrincipalEntrega)){
+		if (!isDomicilioPpalEntrega &&  domiciliosData.getEntrega().getSelectedItemId().equals("2") && (tienePrincipalEntrega)){
 			tienePpales = true;
 		}
 		return tienePpales;
 	}
-	
+
 	public boolean isParentContacto() {
 		return parentContacto;
 	}
@@ -481,6 +487,14 @@ public class DomicilioUI extends NextelDialog {
 	}
 
 	public void refrescaTablaConNuevoDomicilio(DomiciliosCuentaDto domicilioNuevo){
+	}
+
+	public void setDomicilioPpalEntrega(boolean isDomicilioPpalEntrega) {
+		this.isDomicilioPpalEntrega = isDomicilioPpalEntrega;
+	}
+
+	public void setDomicilioPpalFacturacion(boolean isDomicilioPpalFacturacion) {
+		this.isDomicilioPpalFacturacion = isDomicilioPpalFacturacion;
 	}
 
 	public void ocultaFieldsParaContactos() {
