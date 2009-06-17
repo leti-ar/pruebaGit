@@ -84,6 +84,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 				CuentaContactoForm.getInstance().eliminarContacto(contactoABorrar);
 			}
 			validarCampoObligatorio(true);
+
 		}
 		else if(sender == cancelar){
 			hide();
@@ -92,6 +93,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 			DomicilioUI.getInstance().setParentContacto(true);
 			DomicilioUI.getInstance().showAndCenter();
 		}
+		CuentaContactoForm.getInstance().setFormDirty(!contactosData.isSaved());
 	}};
 
 

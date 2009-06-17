@@ -120,9 +120,7 @@ public class CuentaEdicionTabPanel {
 		validarCompletitudButton.addStyleName("validarCompletitudButton");
 		validarCompletitudButton.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-			    if (validarCompletitud()) {
-					ErrorDialog.getInstance().show("COMPLETITUD OK");
-				}
+				validarCompletitud();
 			}
 		});
     }
@@ -164,8 +162,8 @@ public class CuentaEdicionTabPanel {
 		guardar  = new SimpleLink(Sfa.constant().guardar() , "#", true);
 		guardar.setStyleName("link");
 
-		crearSSButton = new SimpleLink("^Crear SS", "#", true);
-		agregarCuentaButton = new SimpleLink("^Agregar", "#", true);
+		crearSSButton = new SimpleLink(Sfa.constant().crearSS(), "#", true);
+		agregarCuentaButton = new SimpleLink(Sfa.constant().agregarDivSusc(), "#", true);
 
 		popupCrearSS = new PopupPanel(true);
 		popupAgregarCuenta = new PopupPanel(true);
@@ -179,8 +177,8 @@ public class CuentaEdicionTabPanel {
 		popupCrearSS.setWidget(linksCrearSS);
 		
 		FlowPanel linksAgregarCuenta = new FlowPanel();
-		linksAgregarCuenta.add(agregarDivision = new Hyperlink("División", "" + UILoader.BUSCAR_CUENTA));
-		linksAgregarCuenta.add(agregarSuscriptor = new Hyperlink("Suscriptor", "" + UILoader.BUSCAR_CUENTA));
+		linksAgregarCuenta.add(agregarDivision = new Hyperlink(Sfa.constant().division(), "" + UILoader.BUSCAR_CUENTA));
+		linksAgregarCuenta.add(agregarSuscriptor = new Hyperlink(Sfa.constant().suscriptor(), "" + UILoader.BUSCAR_CUENTA));
 		popupAgregarCuenta.setWidget(linksAgregarCuenta);
 		
 		cancelar = new SimpleLink(Sfa.constant().cancelar(), "#", true);
@@ -304,6 +302,7 @@ public class CuentaEdicionTabPanel {
 				razonSocial.setText(((CuentaDto) result).getPersona().getRazonSocial());
 				MessageDialog.getInstance().showAceptar("", "      La cuenta se guardó con exito     ", MessageDialog.getCloseCommand());
 				cuentaDomiciliosForm.setHuboCambios(false);
+				CuentaContactoForm.getInstance().setFormDirty(false);
 			}
 		});
 	}
@@ -327,7 +326,7 @@ public class CuentaEdicionTabPanel {
 		History.newItem("");
 	}
 	
-	private boolean validarCompletitud() {
+	private void validarCompletitud() {
 		erroresValidacion.clear();
 		erroresValidacion.addAll(cuentaDatosForm.validarCompletitud());
 		erroresValidacion.addAll(CuentaDomiciliosForm.getInstance().validarCompletitud());
@@ -337,7 +336,7 @@ public class CuentaEdicionTabPanel {
 		} else {
 			validarCompletitudButton.removeStyleName(VALIDAR_COMPLETITUD_FAIL_STYLE);
 		}
-		return erroresValidacion.isEmpty(); 
+		//return erroresValidacion.isEmpty(); 
 	}
 	
 	private boolean validarCamposTabDatos() {
@@ -351,7 +350,9 @@ public class CuentaEdicionTabPanel {
 	}
 	
 	private boolean editorDirty() {
-		return cuentaDatosForm.formularioDatosDirty() || cuentaDomiciliosForm.formularioDatosDirty();
+		return cuentaDatosForm.formularioDatosDirty() 
+		    || cuentaDomiciliosForm.formularioDatosDirty() 
+		    || cuentaContactoForm.formContactosDirty();
 	}
 	
 	///////////////

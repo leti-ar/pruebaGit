@@ -26,10 +26,15 @@ import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SourcesChangeEvents;
+import com.google.gwt.user.client.ui.SourcesClickEvents;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
-public class ContactoUIData extends UIData {
+public class ContactoUIData extends UIData implements ChangeListener, ClickListener {
 
 	ListBox tipoDocumento = new ListBox();
 	TextBox numeroDocumento = new TextBox();
@@ -45,6 +50,7 @@ public class ContactoUIData extends UIData {
 	TextBox emailLaboral = new TextBox();
 	Label veraz = new Label();
 	Long newContactosId = 0L;
+	boolean saved = true;
 	
 	private List<DomiciliosCuentaDto> domicilios = new ArrayList();
 
@@ -85,6 +91,17 @@ public class ContactoUIData extends UIData {
 		fields.add(emailPersonal);
 		fields.add(emailLaboral);
 
+		// Change listener
+		for (Widget field : fields) {
+			if (field instanceof SourcesChangeEvents) {
+				((SourcesChangeEvents) field).addChangeListener(this);
+			} else if (field instanceof SourcesClickEvents) {
+				((SourcesClickEvents) field).addClickListener(this);
+
+			}
+		}
+		
+		
 		tipoDocumento.setWidth("125px");
 		sexo.setWidth("100px");
 		cargo.setWidth("250px");
@@ -105,6 +122,14 @@ public class ContactoUIData extends UIData {
 				});
 	}
 
+	public void onChange(Widget sender) {
+		saved = false;
+	}
+	
+	public void onClick(Widget sender) {
+		saved = false;
+	}
+	
 	private void setCombos(CrearContactoInitializer datos) {
 		tipoDocumento.addAllItems(datos.getTiposDocumento());
 		//en el initializer del server, yo se los id de los 2 que tengo que sacar, los saco de la lista y listo. Aca llegan 2 solitos.
@@ -345,4 +370,12 @@ public class ContactoUIData extends UIData {
 		emailLaboral.setText(string);
 	}
 		
+	public void setSaved(boolean saved) {
+		this.saved = saved;
+	}
+
+	public boolean isSaved() {
+		return saved;
+	}
+
 }

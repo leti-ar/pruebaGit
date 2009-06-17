@@ -24,7 +24,8 @@ public class CuentaContactoForm extends Composite {
 	private FlexTable mainPanel;
 	FlexTable datosTabla = new FlexTable();
 	private List<ContactoCuentaDto> listaContactos = new ArrayList();
-		
+	private boolean formDirty = false;	
+	
 	private static CuentaContactoForm instance = null;
 
 	public static CuentaContactoForm getInstance() {
@@ -130,6 +131,7 @@ public class CuentaContactoForm extends Composite {
 			public void execute() {
 				eliminarContacto(numeroContacto);
 				MessageDialog.getInstance().hide();
+				setFormDirty(true);
 				cargarTabla();
 			}
 		};
@@ -183,4 +185,15 @@ public class CuentaContactoForm extends Composite {
 	public void setListaContactos(List<ContactoCuentaDto> listaContactos) {
 		this.listaContactos = listaContactos;
 	}
+	
+	public boolean isFormDirty() {
+		return formDirty;
+	}
+	public void setFormDirty(boolean formDirty) {
+		this.formDirty = formDirty;
+	}
+	public boolean formContactosDirty() {
+		return formDirty;
+	}
+	
 }

@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
@@ -53,8 +54,8 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 		formButtonsBar.setVisible(false);
 		mainPanel.add(formButtonsBar);
 		formButtonsBar.addStyleName("mt10");
-		crearSSButton = new SimpleLink("^Crear SS", "#", true);
-		agregarCuentaButton = new SimpleLink("^Agregar", "#", true);
+		crearSSButton = new SimpleLink(Sfa.constant().crearSS(), "#", true);
+		agregarCuentaButton = new SimpleLink(Sfa.constant().agregarDivSusc(), "#", true);
 		formButtonsBar.addLink(crearSSButton);
 		formButtonsBar.addLink(agregarCuentaButton);
 		crearSSButton.addClickListener(this);
@@ -75,8 +76,8 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 		crearMDS.addClickListener(this);
 
 		FlowPanel linksAgregarCuenta = new FlowPanel();
-		linksAgregarCuenta.add(agregarDivision = new Hyperlink("División", "" + UILoader.BUSCAR_CUENTA));
-		linksAgregarCuenta.add(agregarSuscriptor = new Hyperlink("Suscriptor", "" + UILoader.BUSCAR_CUENTA));
+		linksAgregarCuenta.add(agregarDivision = new Hyperlink(Sfa.constant().division(), "" + UILoader.BUSCAR_CUENTA));
+		linksAgregarCuenta.add(agregarSuscriptor = new Hyperlink(Sfa.constant().suscriptor(), "" + UILoader.BUSCAR_CUENTA));
 		popupAgregarCuenta.setWidget(linksAgregarCuenta);
 		agregarDivision.addClickListener(this);
 		agregarSuscriptor.addClickListener(this);

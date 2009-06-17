@@ -20,17 +20,14 @@ import com.google.gwt.user.client.History;
  **/
 public class EditarCuentaUI extends ApplicationUI {
 
-
 	private final CuentaEdicionTabPanel cuentaTab = CuentaEdicionTabPanel.getInstance();
-//	private UserCenterDto userCenter;
 	
 	public EditarCuentaUI() {
 		super();
 	}
 
 	public boolean load() {
-		cuentaTab.clean();
-		cuentaTab.getTabPanel().selectTab(0);
+		resetEditor();
 		
 		//viene de popup "Agregar"
 		if (HistoryUtils.getParam("nroDoc")!=null) {
@@ -101,6 +98,21 @@ public class EditarCuentaUI extends ApplicationUI {
 		return true;
 	}
 
+	/**
+	 * 
+	 */
+	private void resetEditor() {
+		cuentaTab.clean();
+		cuentaTab.getTabPanel().selectTab(0);
+		CuentaDomiciliosForm.getInstance().setHuboCambios(false);
+		CuentaContactoForm.getInstance().setFormDirty(false);
+	}
+	
+	/**
+	 * 
+	 * @param cuentaDto
+	 * @return
+	 */
 	private String getTipoCuenta(CuentaDto cuentaDto){
 		String tipoCuenta = "";
 		if (cuentaDto.getCategoriaCuenta() != null){
@@ -142,7 +154,6 @@ public class EditarCuentaUI extends ApplicationUI {
 //			cuentaTab.getCuentaContactoForm().setListaContactos(cuentaTab.getCuenta2editDto().getContactos());
 //			cuentaTab.getCuentaContactoForm().cargarTabla();
 //		}
-			
 		mainPanel.add(cuentaTab.getCuentaEdicionPanel());
 	}
 	
