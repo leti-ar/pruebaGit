@@ -161,11 +161,6 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		});
 		this.showAndCenter();
 	}
-
-	private boolean tieneDomiciliosPrincipalesDuplicados(){
-		
-		return false;
-	}
 	
 	public void agregaDomiciliosAGrilla(List<DomiciliosCuentaDto> domicilios) {
 		this.domiciliosEnGrilla = domicilios;
