@@ -220,10 +220,7 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 	
 	
 	public TipoDocumentoDto getTipoDocumentoDto() {
-		//setear directamente el tipo de documento en lugar de hacer uno nuevo y setearle el id y la descripcion
-		TipoDocumentoDto tipoDocumentoDto = new TipoDocumentoDto();
-		tipoDocumentoDto.setId(Long.parseLong(tipoDocumento.getSelectedItem().getItemValue()));
-		tipoDocumentoDto.setDescripcion(numeroDocumento.getText());
+		TipoDocumentoDto tipoDocumentoDto = (TipoDocumentoDto) tipoDocumento.getSelectedItem();
 		return tipoDocumentoDto;
 	}
 	
