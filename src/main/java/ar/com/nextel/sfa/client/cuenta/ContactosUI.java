@@ -48,7 +48,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	private FlexTable domicilioTable;
 	private boolean tienePrincipalFacturacion = false;
 	private boolean tienePrincipalEntrega  = false;
-	private TabPanel mainTabPanel;
+	private TabPanel mainTabPanel = new TabPanel();
 	
 	private int contactoABorrar = -1;
 	
