@@ -160,6 +160,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ERR_FORMULARIO_DIRTY();
 
   /**
+   * Translated "El campo IMEI debe tener 15 dígitos.".
+   * 
+   * @return translated "El campo IMEI debe tener 15 dígitos."
+   */
+  @DefaultStringValue("El campo IMEI debe tener 15 dígitos.")
+  @Key("ERR_IMEI_LENGHT")
+  String ERR_IMEI_LENGHT();
+
+  /**
    * Translated "El Nº de solicitud debe tener menos de 10 dígitos.".
    * 
    * @return translated "El Nº de solicitud debe tener menos de 10 dígitos."
@@ -183,8 +192,8 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
    * @return translated "El campo Reservar N° debe tener cuatro dígitos numéricos."
    */
   @DefaultStringValue("El campo Reservar N° debe tener cuatro dígitos numéricos.")
-  @Key("ERR_NUMERO_RESRVA")
-  String ERR_NUMERO_RESRVA();
+  @Key("ERR_NUMERO_RESERVA")
+  String ERR_NUMERO_RESERVA();
 
   /**
    * Translated "La cantidad de Pataconex ingresada excede el Precio de Venta Total.".
@@ -212,6 +221,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Tarjeta no válida: La tarjeta ingresada no es válida. (se)")
   @Key("ERR_TARJETA_NO_VALIDA")
   String ERR_TARJETA_NO_VALIDA();
+
+  /**
+   * Translated "El número de línea quedó reservado.<br>Para modificar alguno de los campos grisados, debe liberar la reserva de número realizada.".
+   * 
+   * @return translated "El número de línea quedó reservado.<br>Para modificar alguno de los campos grisados, debe liberar la reserva de número realizada."
+   */
+  @DefaultStringValue("El número de línea quedó reservado.<br>Para modificar alguno de los campos grisados, debe liberar la reserva de número realizada.")
+  @Key("MSG_NUMERO_RESERVADO")
+  String MSG_NUMERO_RESERVADO();
 
   /**
    * Translated "¿Desea guardar los cambios?".
@@ -1508,6 +1526,24 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Resultado Veraz")
   @Key("verazTitledPanel")
   String verazTitledPanel();
+
+  /**
+   * Translated "Verificar IMEI".
+   * 
+   * @return translated "Verificar IMEI"
+   */
+  @DefaultStringValue("Verificar IMEI")
+  @Key("verificarImei")
+  String verificarImei();
+
+  /**
+   * Translated "Verificar SIM".
+   * 
+   * @return translated "Verificar SIM"
+   */
+  @DefaultStringValue("Verificar SIM")
+  @Key("verificarSim")
+  String verificarSim();
 
   /**
    * Translated "Vto. año".
