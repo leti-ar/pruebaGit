@@ -335,12 +335,4 @@ public class DomiciliosUIData extends UIData {
 	public ListBox getProvincia() {
 		return provincia;
 	}
-
-//	public void hideLabelsParaContactos() {
-//		facturacion.setVisible(false);
-//		entrega.setVisible(false);
-//		validado.setVisible(false);
-//		nombreUsuarioUltimaModificacion.setVisible(false);
-//		fechaUltimaModificacion.setVisible(false);
-//	}
 }
