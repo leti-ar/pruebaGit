@@ -8,9 +8,9 @@ import com.google.gwt.user.client.ui.TextBox;
 public class TelefonoTextBox extends Composite {
 
 	private FlowPanel mainpanel;
-	private TextBox area; 
-	private TextBox numero; 
-	private TextBox interno; 
+	private ValidationTextBox area; 
+	private ValidationTextBox numero; 
+	private ValidationTextBox interno; 
 
 	public TelefonoTextBox() {
 		this(true);
@@ -19,8 +19,8 @@ public class TelefonoTextBox extends Composite {
 	public TelefonoTextBox(boolean showInterno) {
 		mainpanel = new FlowPanel();
 		initWidget(mainpanel);
-		area = new TextBox();
-		numero = new TextBox();
+		area = new ValidationTextBox("{0,5}[0-9]*");
+		numero = new ValidationTextBox("{0,8}[0-9]*");
 
 		area.setWidth("40px");
 		area.setMaxLength(5);
@@ -32,7 +32,7 @@ public class TelefonoTextBox extends Composite {
 		mainpanel.add(numero);
 
 		if (showInterno) {
-			interno = new TextBox();
+			interno = new ValidationTextBox("{0,4}[0-9]*");
 			interno.setWidth("35px");
 			interno.setMaxLength(4);
 			mainpanel.add(new InlineHTML("-"));
@@ -51,24 +51,24 @@ public class TelefonoTextBox extends Composite {
 	public TextBox getArea() {
 		return area;
 	}
-
-	public void setArea(TextBox area) {
-		this.area = area;
-	}
-
+	
 	public TextBox getNumero() {
 		return numero;
 	}
-
-	public void setNumero(TextBox numero) {
-		this.numero = numero;
-	}
-
+	
 	public TextBox getInterno() {
 		return interno;
 	}
 
-	public void setInterno(TextBox interno) {
+	public void setArea(ValidationTextBox area) {
+		this.area = area;
+	}
+
+	public void setNumero(ValidationTextBox numero) {
+		this.numero = numero;
+	}
+
+	public void setInterno(ValidationTextBox interno) {
 		this.interno = interno;
 	}
 
