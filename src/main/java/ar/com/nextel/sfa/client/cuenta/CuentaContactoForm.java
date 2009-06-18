@@ -67,12 +67,6 @@ public class CuentaContactoForm extends Composite {
 
 		crear.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				/**
-				 * TODO: Antes aca deberias setear la accion a tomar cuando se apreta eel boton Aceptar,
-				 * dependiendo si es Copiar o Nuevo contacto. (crear un metodo que setee el comando en el
-				 * ContactosUI, y setearlo!)
-				 */
-
 				contactoAEditar = new ContactoCuentaDto();
 				contactosUI.cargarPopupEditarContacto(contactoAEditar);
 			}
