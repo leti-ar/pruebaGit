@@ -199,4 +199,15 @@ public class CuentaContactoForm extends Composite {
 	public void setListaContactos(List<ContactoCuentaDto> listaContactos) {
 		this.listaContactos = listaContactos;
 	}
+	public boolean isFormDirty() {
+		return formDirty;
+	}
+	public void setFormDirty(boolean formDirty) {
+		this.formDirty = formDirty;
+	}
+	public boolean formContactosDirty() {
+		return formDirty;
+	}
+	
+	
 }
