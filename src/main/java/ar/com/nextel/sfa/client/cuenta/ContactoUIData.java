@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.client.cuenta;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
@@ -36,6 +37,21 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class ContactoUIData extends UIData implements ChangeListener, ClickListener {
 
+	private ListBox tipoDocumento = new ListBox();
+	private TextBox numeroDocumento = new TextBox();
+	private TextBox nombre = new TextBox();
+	private TextBox apellido = new TextBox();
+	private ListBox sexo = new ListBox();
+	private ListBox cargo = new ListBox("");
+	private TelefonoTextBox telefonoPrincipal = new TelefonoTextBox();
+	private TelefonoTextBox telefonoCelular = new TelefonoTextBox(false);
+	private TelefonoTextBox telefonoAdicional = new TelefonoTextBox();
+	private TelefonoTextBox fax = new TelefonoTextBox();
+	private TextBox emailPersonal = new TextBox();
+	private TextBox emailLaboral = new TextBox();
+	private Label veraz = new Label();
+	private Long newContactosId = 0L;
+	private ContactoCuentaDto contactoCuentaDto;
 	ListBox tipoDocumento = new ListBox();
 	TextBox numeroDocumento = new TextBox();
 	TextBox nombre = new TextBox();
@@ -52,8 +68,6 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 	Long newContactosId = 0L;
 	boolean saved = true;
 	
-	private List<DomiciliosCuentaDto> domicilios = new ArrayList();
-
 	public List<String> validarCampoObligatorio() {
 		GwtValidator validator = new GwtValidator();
 		validator.addTarget(nombre).required("El campo " + Sfa.constant().nombre() + " es obligatorio");
@@ -138,15 +152,65 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 	}
 	
 	
+	public void setContactoDto(ContactoCuentaDto contactoCuentaDto){
+		this.contactoCuentaDto = contactoCuentaDto;
+		enableFields();
+		//completo la pantalla de info gral
+		if(contactoCuentaDto.getPersona()!=null){
+			apellido.setText(contactoCuentaDto.getPersona().getApellido());
+			nombre.setText(contactoCuentaDto.getPersona().getNombre());
+			numeroDocumento.setText(contactoCuentaDto.getPersona().getDocumento().getNumero());
+			tipoDocumento.setSelectedItem(contactoCuentaDto.getPersona().getDocumento().getTipoDocumento());
+			//completo la pantalla de telefonos
+			List<TelefonoDto> listaTelefonos = new ArrayList();
+			listaTelefonos = contactoCuentaDto.getPersona().getTelefonos();
+			if (listaTelefonos != null) {
+				for (Iterator iter = listaTelefonos.iterator(); iter.hasNext();) {
+					TelefonoDto telefonoDto = (TelefonoDto) iter.next();
+					if (telefonoDto.getTipoTelefono().getId()==TipoTelefonoEnum.PRINCIPAL.getTipo()) {
+						telefonoPrincipal.getArea().setText(telefonoDto.getArea());
+						telefonoPrincipal.getNumero().setText(telefonoDto.getNumeroLocal());
+						telefonoPrincipal.getInterno().setText(telefonoDto.getInterno());
+					} else 	if (telefonoDto.getTipoTelefono().getId()==TipoTelefonoEnum.ADICIONAL.getTipo()) {
+						telefonoAdicional.getArea().setText(telefonoDto.getArea());
+						telefonoAdicional.getNumero().setText(telefonoDto.getNumeroLocal());
+						telefonoAdicional.getInterno().setText(telefonoDto.getInterno());
+					} else 	if (telefonoDto.getTipoTelefono().getId()==TipoTelefonoEnum.CELULAR.getTipo()) {
+						telefonoCelular.getArea().setText(telefonoDto.getArea());
+						telefonoCelular.getNumero().setText(telefonoDto.getNumeroLocal());
+					} else 	if (telefonoDto.getTipoTelefono().getId()==TipoTelefonoEnum.FAX.getTipo()) {
+						fax.getArea().setText(telefonoDto.getArea());
+						fax.getNumero().setText(telefonoDto.getNumeroLocal());
+						fax.getInterno().setText(telefonoDto.getInterno());
+					}			
+				}
+			}
+			//completo los emails
+			List<EmailDto> listaEmails = new ArrayList();
+			listaEmails = contactoCuentaDto.getPersona().getEmails();
+			if (listaEmails != null) {
+				for (Iterator iter = listaEmails.iterator(); iter.hasNext();) {
+					EmailDto emailDto = (EmailDto) iter.next();
+					if ("Personal".equals(emailDto.getTipoEmail())) {
+						emailPersonal.setText(emailDto.getEmail());
+					} else 
+						emailLaboral.setText(emailDto.getEmail());
+				}
+			}
+
+			
+		} else {
+			contactoCuentaDto.setPersona(new PersonaDto());
+			contactoCuentaDto.getPersona().setDocumento(new DocumentoDto());			
+		}
+	}
+	
 	public ContactoCuentaDto getContactoDto() {
-		ContactoCuentaDto contactoDto = new ContactoCuentaDto();
+		ContactoCuentaDto contactoDto = contactoCuentaDto;
 		contactoDto.setCuenta(CuentaEdicionTabPanel.getInstance().getCuenta2editDto());
 		newContactosId--;
 		contactoDto.setId(newContactosId);
 		contactoDto.setPersona(this.getPersonaDto());
-		//Averiguar de donde sacar el ID:
-		//contactoDto.setId(new Long(1));
-		//
 		return contactoDto;
 	}
 	
@@ -165,13 +229,8 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 	}
 	
 	public List<DomiciliosCuentaDto> getDomicilios(){
-		return domicilios;
+		return contactoCuentaDto.getPersona().getDomicilios();
 	}
-
-	public void setDomicilio(DomiciliosCuentaDto domicilio){
-		domicilios.add(domicilio);
-	}
-
 	
 	public DocumentoDto getDocumentoDto() {
 		DocumentoDto documentoDto = new DocumentoDto();
@@ -182,6 +241,7 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 	
 	
 	public TipoDocumentoDto getTipoDocumentoDto() {
+		//setear directamente el tipo de documento en lugar de hacer uno nuevo y setearle el id y la descripcion
 		TipoDocumentoDto tipoDocumentoDto = new TipoDocumentoDto();
 		tipoDocumentoDto.setId(Long.parseLong(tipoDocumento.getSelectedItem().getItemValue()));
 		tipoDocumentoDto.setDescripcion(numeroDocumento.getText());

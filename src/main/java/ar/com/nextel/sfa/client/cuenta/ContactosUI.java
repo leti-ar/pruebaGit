@@ -48,13 +48,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	private Button agregar;
 	private DomicilioUI domicilioUI;
 	private DomiciliosCuentaDto domicilioAEditar;
-	//private CuentaDto cuentaDto;
-	private ContactoCuentaDto contactoCuentaDto;
-
-	//private CuentaDatosForm cuentaDatosForm;
-	private CuentaContactoForm cuentaContactoForm;
 	private FlexTable domicilioTable;
-	//private CuentaDomiciliosForm cuentaDomiciliosForm;
 	private boolean tienePrincipalFacturacion = false;
 	private boolean tienePrincipalEntrega  = false;
 	
@@ -64,25 +58,21 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	
 	private List<String> estilos = new ArrayList<String>();
 	private int estiloUsado = 0;
-	private List<DomiciliosCuentaDto> listaDomicilios;
+	private Command aceptarCommand;
 	
 	private static ContactosUI cuentaCrearContactoPopUp = null;
-
-	public static ContactosUI getInstance() {
-		if (cuentaCrearContactoPopUp == null) {
-			cuentaCrearContactoPopUp = new ContactosUI();
-		}
-		return cuentaCrearContactoPopUp;
-	}
-	
 
 	ClickListener listener = new ClickListener(){
 		public void onClick(Widget sender){
 		if(sender == aceptar){
-			contactoCuentaDto = contactosData.getContactoDto();
-			if (contactoABorrar != -1) {
-				CuentaContactoForm.getInstance().eliminarContacto(contactoABorrar);
+			List errors = contactosData.validarCampoObligatorio();
+			if(errors.isEmpty()){
+				aceptarCommand.execute();
+				hide();
+			} else {
+				ErrorDialog.getInstance().show(errors);
 			}
+
 			validarCampoObligatorio(true);
 
 		}
@@ -127,92 +117,41 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		setFooterVisible(false);
 	}
 
-	public void cargaPopupNuevoContacto() {
-		//Instancia un nuevo Contacto vacio
-		this.contactoCuentaDto = new ContactoCuentaDto();
-		contactosData.clean(); 		
-		//Limpia la tabla de domicilios
-//		if (domicilioTable.getRowCount() > 1){
-//			int cantFilas = (domicilioTable.getRowCount()) - 1;
-//			for (int j = 1; j <= cantFilas; j++) {
-//				domicilioTable.removeRow(1);
-//			}
+//	@Deprecated
+//	public void cargaPopupNuevoContacto() {
+//		//Instancia un nuevo Contacto vacio
+//		contactosData.clean(); 		
+//		contactosData.setContactoDto(new ContactoCuentaDto());
+//		//Limpia la tabla de domicilios
+////		if (domicilioTable.getRowCount() > 1){
+////			int cantFilas = (domicilioTable.getRowCount()) - 1;
+////			for (int j = 1; j <= cantFilas; j++) {
+////				domicilioTable.removeRow(1);
+////			}
+////		}
+//		while(domicilioTable.getRowCount() > 1){
+//			domicilioTable.removeRow(1);
 //		}
-		while(domicilioTable.getRowCount() > 1){
-			domicilioTable.removeRow(1);
-		}
-
-		//domicilioTable.clear();
-		if (listaDomicilios != null) {
-		listaDomicilios.clear();
-		}
-		aceptar.setVisible(true);
-		contactosData.enableFields();
-		showAndCenter();
-	}
-
-	public void cargarPopupEditarContacto(ContactoCuentaDto contacto, int fila) {
-		contactoABorrar = fila;
-		contactoCuentaDto = contacto;
-		//Limpia la tabla de domicilios
-		while(domicilioTable.getRowCount() > 1){
-			domicilioTable.removeRow(1);
-		}
-		//domicilioTable.clear();
+//
+//		//domicilioTable.clear();
 //		if (listaDomicilios != null) {
 //		listaDomicilios.clear();
 //		}
 //		aceptar.setVisible(true);
 //		contactosData.enableFields();
 //		showAndCenter();
-		
-		
-		//completo la pantalla de info gral
+//	}
+
+	public void cargarPopupEditarContacto(ContactoCuentaDto contacto) {
+		contactosData.clean(); 	
+		//Limpia la tabla de domicilios
+		while(domicilioTable.getRowCount() > 1){
+			domicilioTable.removeRow(1);
+		}
+		contactosData.setContactoDto(contacto);
+		aceptar.setVisible(true);
 		contactosData.enableFields();
-		contactosData.setApellido(contacto.getApellido());
-		contactosData.setNombre(contacto.getNombre());
-		contactosData.setNumeroDocumento(contacto.getNumeroDocumento());
-		contactosData.setTipoDocumento(contacto.getTipoDocumento());
-		//completo la pantalla de telefonos
-		List<TelefonoDto> listaTelefonos = new ArrayList();
-		listaTelefonos = contacto.getPersona().getTelefonos();
-		if (listaTelefonos != null) {
-			for (Iterator iter = listaTelefonos.iterator(); iter.hasNext();) {
-				TelefonoDto telefonoDto = (TelefonoDto) iter.next();
-				if (telefonoDto.getTipoTelefono().getId()==TipoTelefonoEnum.PRINCIPAL.getTipo()) {
-					contactosData.setTelefonoPrincipalArea(telefonoDto.getArea());
-					contactosData.setTelefonoPrincipalNumero(telefonoDto.getNumeroLocal());
-					contactosData.setTelefonoPrincipalInterno(telefonoDto.getInterno());
-				} else 	if (telefonoDto.getTipoTelefono().getId()==TipoTelefonoEnum.ADICIONAL.getTipo()) {
-					contactosData.setTelefonoAdicionalArea(telefonoDto.getArea());
-					contactosData.setTelefonoAdicionalNumero(telefonoDto.getNumeroLocal());
-					contactosData.setTelefonoAdicionalInterno(telefonoDto.getInterno());
-				} else 	if (telefonoDto.getTipoTelefono().getId()==TipoTelefonoEnum.CELULAR.getTipo()) {
-					contactosData.setTelefonoCelularArea(telefonoDto.getArea());
-					contactosData.setTelefonoCelularNumero(telefonoDto.getNumeroLocal());
-				} else 	if (telefonoDto.getTipoTelefono().getId()==TipoTelefonoEnum.FAX.getTipo()) {
-					contactosData.setFaxArea(telefonoDto.getArea());
-					contactosData.setFaxNumero(telefonoDto.getNumeroLocal());
-					contactosData.setFaxInterno(telefonoDto.getInterno());
-				}			
-			}
-		}
-		//completo los emails
-		List<EmailDto> listaEmails = new ArrayList();
-		listaEmails = contacto.getEmails();
-		if (listaEmails != null) {
-			for (Iterator iter = listaEmails.iterator(); iter.hasNext();) {
-				EmailDto emailDto = (EmailDto) iter.next();
-				if ("Personal".equals(emailDto.getTipoEmail())) {
-					contactosData.setEmailPersonal(emailDto.getEmail());
-				} else 
-					contactosData.setEmailLaboral(emailDto.getEmail());
-			}
-		}
-		//completo los domicilios
-		//listaDomicilios.addAll(contacto.getPersona().getDomicilios());
-		setearDomicilio();
-		
+		setearDomicilio();		
 		showAndCenter();
 	}
 			
@@ -270,8 +209,6 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		return datosCuentaPanel;
 	}
 
-		
-		
 	
 	public void inicializarVeraz(Label verazLabel) {
 		estilos.add("verazAceptar");
@@ -336,7 +273,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 				DomicilioUI.getInstance().setComandoAceptar(new Command(){
 					public void execute() {
 						   DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
-						   contactosData.setDomicilio(domicilio);
+						   contactosData.getDomicilios().add(domicilio);
 						   refrescaTablaConNuevoDomicilio();
 						   //contactosData.getDomicilios();
 					}
@@ -377,11 +314,9 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 
 
 	public void setearDomicilio() {
-		listaDomicilios = contactosData.getContactoDto().getPersona().getDomicilios();
-		//listaDomicilios = contactoCuentaDto.getPersona().getDomicilios();
 		int row = 1; 
-		if (listaDomicilios != null) {
-			for (Iterator<DomiciliosCuentaDto> iter = listaDomicilios.iterator(); iter.hasNext();) {
+		if (contactosData.getDomicilios() != null) {
+			for (Iterator<DomiciliosCuentaDto> iter = contactosData.getDomicilios().iterator(); iter.hasNext();) {
 				DomiciliosCuentaDto domicilioCuentaDto = (DomiciliosCuentaDto) iter.next();
 				domicilioTable.setWidget(row, 0, IconFactory.lapiz());
 				domicilioTable.setHTML(row, 1, armarDomicilio(domicilioCuentaDto));			
@@ -394,7 +329,6 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		public void onCellClicked(SourcesTableEvents arg0, int fila, int columna) {
 			if (fila != 0) {
 				DomiciliosCuentaDto domicilio = contactosData.getPersonaDto().getDomicilios().get(fila - 1);
-				//DomiciliosCuentaDto domicilio = listaDomicilios.get(fila-1);
 				//Acciones a tomar cuando haga click en los lapices de edicion:
 				if (columna == 0) {
 					domicilioAEditar = domicilio;
@@ -411,7 +345,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 								int index = persona.getDomicilios().indexOf(domicilioAEditar);
 								persona.getDomicilios().remove(index);
 								persona.getDomicilios().add(index, DomicilioUI.getInstance().getDomicilioAEditar());
-								domicilioAEditar = DomicilioUI.getInstance().getDomicilioAEditar();
+								domicilioAEditar = null;
 								refrescaTablaConNuevoDomicilio();
 								}
 							});
@@ -475,19 +409,6 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		return telefonoPanel;
 	}
 	
-	private void validarCampoObligatorio(boolean showErrorDialog) {
-		List<String> errors = contactosData.validarCampoObligatorio();
-		if (!errors.isEmpty()) {
-			if (showErrorDialog) {
-				ErrorDialog.getInstance().show(errors);
-			}
-		} else {
-			CuentaContactoForm.getInstance().setearContactos(contactoCuentaDto, contactoABorrar);
-			this.hide();
-		}
-	}
-
-	
 	public DomicilioUI getDomicilioUI() {
 		return this.domicilioUI;
 	}
@@ -495,67 +416,15 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 
 	public void onClick(Widget arg0) {
 	}
-
-	/**
-	 * @author eSalvador
-	 **/
-	private void cargaTablaDomicilios() {
-		//this.contactoCuentaDto = contactoCuentaDto;
 	
-		List<DomiciliosCuentaDto> domicilios;
-		domicilios = contactoCuentaDto.getPersona().getDomicilios();
-		
-		//Limpia la tabla de domicilios incialmente, si esta con datos:
-		if (datosCuentaTable.getRowCount() > 1){
-			for (int j = 1; j < (datosCuentaTable.getRowCount() - 1); j++) {
-				datosCuentaTable.removeRow(j);
-			}
-		}
-		//
-		for (int i = 0; i < domicilios.size(); i++) {
-			if (domicilios.get(i) != null) {
-				// Carga los iconos:
-				datosCuentaTable.setWidget(i + 1, 0, IconFactory.lapiz());
-
-				// if (cuenta.isPuedeVerInfocom()) {
-				datosCuentaTable.setWidget(i + 1, 1, IconFactory.copiar());
-				// }
-				if (true) {
-					datosCuentaTable.setWidget(i + 1, 2, IconFactory.cancel());
-				}
-				
-				if ((domicilios.get(i).getIdEntrega() != null) && (domicilios.get(i).getIdFacturacion() != null)){
-				
-				Long idEntrega = domicilios.get(i).getIdEntrega();
-				Long idFacturacion = domicilios.get(i).getIdFacturacion();
-					/** Logica para mostrar tipoDomicilio en la grilla de Resultados: */
-
-				datosCuentaTable.getCellFormatter().addStyleName(i + 1, 3, "alignCenter");
-				datosCuentaTable.getCellFormatter().addStyleName(i + 1, 4, "alignCenter");
-
-					//Entrega;
-					if (idEntrega == 2) { 
-						datosCuentaTable.setHTML(i + 1, 3, "Principal");	
-					} else if(idEntrega == 0) {
-						datosCuentaTable.setHTML(i + 1, 3, "Si");
-					} else if(idEntrega == 1) {
-						datosCuentaTable.setHTML(i + 1, 3, "No");
-					}
-					
-					// Facturacion:
-					if  (idFacturacion == 2){
-						datosCuentaTable.setHTML(i + 1, 4, "Principal");
-					} else if(idFacturacion == 0){
-						datosCuentaTable.setHTML(i + 1, 4, "Si");
-					}else if(idFacturacion == 1) {
-						datosCuentaTable.setHTML(i + 1, 4, "No");
-					}
-				}
-				datosCuentaTable.setHTML(i + 1, 5, domicilios.get(i).getDomicilios());
-			}
-		}
+	public void setAceptarCommand(Command aceptarCommand) {
+		this.aceptarCommand = aceptarCommand;
 	}
 	
+	public ContactoCuentaDto getContacto(){
+		return contactosData.getContactoDto();
+	}
+
 	private String comprobarCalle(String calle) {
 		if (!"".equals(calle)) {
 			return calle.toUpperCase() + " ";
