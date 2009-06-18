@@ -10,6 +10,7 @@ public class VendedorDto implements IsSerializable {
     private String apellido;
     private String email;
     private String telefono;
+    private LocalidadDto localidad;
 
 	public Long getId() {
 		return id;
@@ -58,6 +59,13 @@ public class VendedorDto implements IsSerializable {
 	public void setTelefono(String telefono) {
 		this.telefono = telefono;
 	}
-	
+
+	public LocalidadDto getLocalidad() {
+		return localidad;
+	}
+
+	public void setLocalidad(LocalidadDto localidad) {
+		this.localidad = localidad;
+	}
 
 }
