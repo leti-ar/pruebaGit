@@ -50,8 +50,7 @@ public class ExecutionContextFilter implements Filter {
 
 		prepareExecutionContext(request);
 		chain.doFilter(request, response);
-		if (!usarUserCenter)
-			diposeExecutionContext();
+		diposeExecutionContext();
 	}
 
 	private void prepareExecutionContext(ServletRequest request) {
