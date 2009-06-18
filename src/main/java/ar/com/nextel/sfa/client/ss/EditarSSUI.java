@@ -7,6 +7,7 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
+import ar.com.nextel.sfa.client.dto.ModelosResultDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
@@ -27,7 +28,6 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
@@ -186,7 +186,8 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 				new DefaultWaitCallback<SolicitudServicioDto>() {
 					public void success(SolicitudServicioDto result) {
 						editarSSUIData.setSolicitud(result);
-						Window.alert("Se ha guardado la solicitud con exito");
+						MessageDialog.getInstance().showAceptar("Guargado Exitoso",
+								"Se ha guardado la solicitud con exito", MessageDialog.getCloseCommand());
 						editarSSUIData.setSaved(true);
 					}
 				});
@@ -243,5 +244,14 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 
 	public void desreservarNumeroTelefonico(long numero, DefaultWaitCallback callback) {
 		SolicitudRpcService.Util.getInstance().desreservarNumeroTelefono(numero, callback);
+	}
+
+	public void getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios,
+			DefaultWaitCallback<ModelosResultDto> callback) {
+		SolicitudRpcService.Util.getInstance().getModelos(imei, idTipoSolicitud, idListaPrecios, callback);
+	}
+
+	public void verificarSim(String sim, DefaultWaitCallback<String> callback) {
+		SolicitudRpcService.Util.getInstance().verificarSim(sim, callback);
 	}
 }
