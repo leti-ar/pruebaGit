@@ -22,21 +22,23 @@ import com.google.gwt.user.client.ui.Widget;
 public class CuentaContactoForm extends Composite {
 
 	private FlexTable mainPanel;
-	FlexTable datosTabla = new FlexTable();
+	private FlexTable datosTabla = new FlexTable();
 	private List<ContactoCuentaDto> listaContactos = new ArrayList();
+	private ContactosUI contactosUI;
 	private boolean formDirty = false;	
 	
 	private static CuentaContactoForm instance = null;
+	private ContactoCuentaDto contactoAEditar;
 
 	public static CuentaContactoForm getInstance() {
-		if(instance == null){
+		if (instance == null) {
 			instance = new CuentaContactoForm();
 		}
 		return instance;
 	}
 
 	private CuentaContactoForm() {
-
+		contactosUI = new ContactosUI();
 		mainPanel = new FlexTable();
 		mainPanel.setWidth("100%");
 		initWidget(mainPanel);
@@ -50,18 +52,33 @@ public class CuentaContactoForm extends Composite {
 		mainPanel.getColumnFormatter().addStyleName(0, "alignRight");
 		mainPanel.getRowFormatter().addStyleName(0, "alignRight");
 		mainPanel.setWidget(1, 0, datosTabla);
+		contactosUI.setAceptarCommand(new Command() {
+			public void execute() {
+				int index = listaContactos.indexOf(contactoAEditar);
+				if (index >= 0) {
+					listaContactos.remove(index);
+					listaContactos.add(index, contactosUI.getContacto());
+				} else {
+					listaContactos.add(contactosUI.getContacto());
+				}
+				cargarTabla();
+			}
+		});
 
 		crear.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				/**TODO: Antes aca deberias setear la accion a tomar cuando se apreta eel boton Aceptar, dependiendo si es Copiar o Nuevo contacto.
-				 * (crear un metodo que setee el comando en el ContactosUI, y setearlo!)*/
-	
-				ContactosUI.getInstance().cargaPopupNuevoContacto();
+				/**
+				 * TODO: Antes aca deberias setear la accion a tomar cuando se apreta eel boton Aceptar,
+				 * dependiendo si es Copiar o Nuevo contacto. (crear un metodo que setee el comando en el
+				 * ContactosUI, y setearlo!)
+				 */
+
+				contactoAEditar = new ContactoCuentaDto();
+				contactosUI.cargarPopupEditarContacto(contactoAEditar);
 			}
 		});
 
 	}
-	
 
 	private void initTable(FlexTable table) {
 
@@ -83,10 +100,12 @@ public class CuentaContactoForm extends Composite {
 		table.setHTML(0, 4, Sfa.constant().telefono());
 		table.setHTML(0, 5, Sfa.constant().whiteSpace());
 	}
-	
-	
+
 	public void cargarTabla() {
 		int row = 1;
+		while (datosTabla.getRowCount() > 1) {
+			datosTabla.removeRow(1);
+		}
 		if (listaContactos != null) {
 			for (Iterator iter = listaContactos.iterator(); iter.hasNext();) {
 				ContactoCuentaDto contacto = (ContactoCuentaDto) iter.next();
@@ -97,83 +116,78 @@ public class CuentaContactoForm extends Composite {
 				datosTabla.setHTML(row, 4, obtenerTelefonoPrincipal(contacto));
 				datosTabla.setHTML(row, 5, Sfa.constant().whiteSpace());
 				row++;
-			} 
-		} 
-	}		
-	
-		
-	public void setearContactos(ContactoCuentaDto contactoDto, int contactoABorrar) {
-		if (contactoABorrar == -1) {
-			listaContactos.add(contactoDto);
-		} else 
-			listaContactos.add(contactoABorrar, contactoDto);
-		cargarTabla();
-	}
-
-	
-	private class Listener implements TableListener {
-		public void onCellClicked(SourcesTableEvents arg0, int fila, int columna) {
-			//boton editar
-			if ((fila>=1) && (columna==0)) {
-				ContactosUI.getInstance().cargarPopupEditarContacto(listaContactos.get(fila-1), fila-1);
-			}
-			//boton eliminar
-			if ((fila>=1) && (columna==1)) {
-				MessageDialog.getInstance().setDialogTitle("Eliminar Contacto");
-				MessageDialog.getInstance().setSize("300px", "100px");
-				MessageDialog.getInstance().showAceptarCancelar("¿Esta seguro que desea eliminar el contacto seleccionado?",getComandoAceptar(fila-1),MessageDialog.getInstance().getCloseCommand());
 			}
 		}
 	}
-	
-	private Command getComandoAceptar(final int numeroContacto){
+
+	private class Listener implements TableListener {
+		public void onCellClicked(SourcesTableEvents arg0, int fila, int columna) {
+			// boton editar
+			if ((fila >= 1) && (columna == 0)) {
+				contactoAEditar = listaContactos.get(fila -1);
+				contactosUI.cargarPopupEditarContacto(contactoAEditar);
+				//contactosUI.cargarPopupEditarContacto(listaContactos.get(fila - 1));
+			}
+			// boton eliminar
+			if ((fila >= 1) && (columna == 1)) {
+				MessageDialog.getInstance().setDialogTitle("Eliminar Contacto");
+				MessageDialog.getInstance().setSize("300px", "100px");
+				MessageDialog.getInstance().showAceptarCancelar(
+						"¿Esta seguro que desea eliminar el contacto seleccionado?",
+						getComandoAceptar(fila - 1), MessageDialog.getInstance().getCloseCommand());
+			}
+		}
+	}
+
+	private Command getComandoAceptar(final int numeroContacto) {
 		Command comandoAceptar = new Command() {
 			public void execute() {
 				eliminarContacto(numeroContacto);
 				MessageDialog.getInstance().hide();
-				setFormDirty(true);
 				cargarTabla();
 			}
 		};
-	return comandoAceptar;
-	}	
-	
+		return comandoAceptar;
+	}
+
 	public String obtenerTelefonoPrincipal(ContactoCuentaDto contactoDto) {
 		List<TelefonoDto> listaTelefonos = new ArrayList();
 		listaTelefonos = contactoDto.getPersona().getTelefonos();
-		
+
 		if (listaTelefonos != null) {
 			for (Iterator iter = listaTelefonos.iterator(); iter.hasNext();) {
 				TelefonoDto telefonoDto = (TelefonoDto) iter.next();
 				if (telefonoDto.getPrincipal()) {
-					return comprobarArea(telefonoDto.getArea()) + comprobarNumero(telefonoDto.getNumeroLocal()) + comprobarInterno(telefonoDto.getInterno());
+					return comprobarArea(telefonoDto.getArea())
+							+ comprobarNumero(telefonoDto.getNumeroLocal())
+							+ comprobarInterno(telefonoDto.getInterno());
 				}
 			}
 		}
 		return null;
 	}
-	
+
 	private String comprobarArea(String area) {
 		if (!"".equals(area)) {
 			return "(" + area + ")" + " ";
 		} else
 			return "";
 	}
-	
+
 	private String comprobarNumero(String numero) {
 		if (!"".equals(numero)) {
 			return numero + " ";
 		} else
 			return "";
 	}
-	
+
 	private String comprobarInterno(String interno) {
 		if (!"".equals(interno)) {
 			return "(" + interno + ")" + " ";
 		} else
 			return "";
 	}
-	
+
 	public void eliminarContacto(int numeroContacto) {
 		listaContactos.remove(numeroContacto);
 	}
@@ -185,15 +199,4 @@ public class CuentaContactoForm extends Composite {
 	public void setListaContactos(List<ContactoCuentaDto> listaContactos) {
 		this.listaContactos = listaContactos;
 	}
-	
-	public boolean isFormDirty() {
-		return formDirty;
-	}
-	public void setFormDirty(boolean formDirty) {
-		this.formDirty = formDirty;
-	}
-	public boolean formContactosDirty() {
-		return formDirty;
-	}
-	
 }

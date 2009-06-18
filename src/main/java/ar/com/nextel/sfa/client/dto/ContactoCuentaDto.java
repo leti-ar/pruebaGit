@@ -10,6 +10,8 @@ public class ContactoCuentaDto implements IsSerializable , IdentifiableDto, Clon
 	private PersonaDto persona;
 	private CuentaDto cuenta;
 	
+	public ContactoCuentaDto() {
+	}
 	
 	public Long getId() {
 		return id;
