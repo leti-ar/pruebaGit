@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.server;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -89,6 +90,7 @@ import ar.com.nextel.sfa.client.dto.TipoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoTarjetaDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
+import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
@@ -274,7 +276,11 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 	public CrearContactoInitializer getCrearContactoInitializer() {
 		CrearContactoInitializer crearContactoInitializer = new CrearContactoInitializer();
 		crearContactoInitializer.setTiposDocumento(mapper.convertList(genericDao.getList(TipoDocumento.class),TipoDocumentoDto.class));
-		crearContactoInitializer.setSexos(mapper.convertList(genericDao.getList(Sexo.class),SexoDto.class));
+		List<SexoDto> listaSexos = mapper.convertList(genericDao.getList(Sexo.class),SexoDto.class);
+		//borra los sexos Indefinido y Organizacion que no tienen que visualizarse
+		listaSexos.remove(0);
+		listaSexos.remove(2);
+		crearContactoInitializer.setSexos(listaSexos);
 		crearContactoInitializer.setCargos(mapper.convertList(genericDao.getList(Cargo.class),CargoDto.class));
 		return crearContactoInitializer;
 	}
