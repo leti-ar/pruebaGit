@@ -10,7 +10,6 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import winit.uc.facade.UCFacade;
-import ar.com.nextel.business.vendedores.RegistroVendedores;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.security.Usuario;
 import ar.com.nextel.services.components.sessionContext.SessionContext;
@@ -18,6 +17,7 @@ import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.sfa.client.UserCenterRpcService;
 import ar.com.nextel.sfa.client.dto.UserCenterDto;
 import ar.com.nextel.sfa.client.dto.UsuarioDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.ApplicationContextUtil;
@@ -28,10 +28,10 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 	private static final long serialVersionUID = 1L;
 	private WebApplicationContext context;
 	private MapperExtended mapper;
- 	private SessionContextLoader sessionContext;
- 	private UCFacade ucFacade;
- 	private Repository repository;
- 	
+	private SessionContextLoader sessionContext;
+	private UCFacade ucFacade;
+	private Repository repository;
+
 	@Override
 	public void init() throws ServletException {
 		super.init();
@@ -40,49 +40,51 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 		sessionContext = (SessionContextLoader) context.getBean("sessionContextLoader");
 		repository = (Repository) context.getBean("repository");
 	}
-	
+
 	/**
 	 * 
 	 */
 	public UserCenterDto getUserCenter() {
-		Map <String, Boolean>mapaPermisosServer = new HashMap<String, Boolean>(); //se cargan todos
-		Map <String, Boolean>mapaPermisosClient = new HashMap<String, Boolean>(); //se cargan solo los usados en el cliente.
+		Map<String, Boolean> mapaPermisosServer = new HashMap<String, Boolean>(); // se cargan todos
+		Map<String, Boolean> mapaPermisosClient = new HashMap<String, Boolean>(); // se cargan solo los usados
+																					// en el cliente.
 		for (PermisosEnum permiso : PermisosEnum.values()) {
 			String tag = permiso.getValue();
 			Boolean result = checkPermiso(tag, permiso.getAccion());
-			mapaPermisosServer.put (tag, result);
-			if(permiso.isForBrowser()) 
-				mapaPermisosClient.put (tag,result);
+			mapaPermisosServer.put(tag, result);
+			if (permiso.isForBrowser())
+				mapaPermisosClient.put(tag, result);
 		}
 		sessionContext.getSessionContext().put(SessionContext.PERMISOS, mapaPermisosServer);
 		UserCenterDto userCenter = new UserCenterDto();
 		Usuario usuario = (Usuario) sessionContext.getSessionContext().get(SessionContext.USUARIO);
 		userCenter.setUsuario(mapper.map(usuario, UsuarioDto.class));
-		userCenter.getUsuario().setId(ApplicationContextUtil.getInstance().getRegistroVendedores().getVendedor(usuario).getId());
+		userCenter.getUsuario().setId(
+				ApplicationContextUtil.getInstance().getRegistroVendedores().getVendedor(usuario).getId());
 		userCenter.setMapaPermisos(mapaPermisosClient);
-		return userCenter; 
+		userCenter.setVendedor(mapper.map(sessionContext.getVendedor(), VendedorDto.class));
+		return userCenter;
 	}
-	
+
 	/**
 	 * Permisos para desarrollo
 	 */
 	public UserCenterDto getDevUserData() {
-		Map <String, Boolean>mapaPermisos = new HashMap<String, Boolean>();
+		Map<String, Boolean> mapaPermisos = new HashMap<String, Boolean>();
 		for (PermisosEnum permiso : PermisosEnum.values()) {
 			String tag = permiso.getValue();
-			if (tag.equals("MI_DEV_TAG")
-				|| tag.equals("MI_OTRO_DEV_TAG")
-				) 
-				mapaPermisos.put(tag,Boolean.FALSE);	
-			else	 
-				mapaPermisos.put(tag,Boolean.TRUE);
+			if (tag.equals("MI_DEV_TAG") || tag.equals("MI_OTRO_DEV_TAG"))
+				mapaPermisos.put(tag, Boolean.FALSE);
+			else
+				mapaPermisos.put(tag, Boolean.TRUE);
 		}
 		sessionContext.getSessionContext().put(SessionContext.PERMISOS, mapaPermisos);
 		UserCenterDto userCenter = new UserCenterDto();
-		userCenter.setUsuario(mapper.map((Usuario) sessionContext.getSessionContext().get(SessionContext.USUARIO), UsuarioDto.class));
+		userCenter.setUsuario(mapper.map((Usuario) sessionContext.getSessionContext().get(
+				SessionContext.USUARIO), UsuarioDto.class));
 		userCenter.getUsuario().setId(57L);
 		userCenter.setMapaPermisos(mapaPermisos);
-        return userCenter; 
+		return userCenter;
 	}
 
 	/**
@@ -109,11 +111,11 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 			// } catch (UCAuthorizationException e) {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-//			throw new GeneralException(e.getMessage(), e);
+			// throw new GeneralException(e.getMessage(), e);
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * 
 	 */

@@ -61,6 +61,7 @@ public class SFAWeb implements EntryPoint {
 	private void setDatosUsuario(UserCenterDto userCenter) {
 		ClientContext.getInstance().setUsuario(userCenter.getUsuario());
 		ClientContext.getInstance().setMapaPermisos(userCenter.getMapaPermisos());
+		ClientContext.getInstance().setVendedor(userCenter.getVendedor());
 	}
 	
 	public static HeaderMenu getHeaderMenu() {
