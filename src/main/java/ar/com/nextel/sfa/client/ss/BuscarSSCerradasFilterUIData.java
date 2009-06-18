@@ -54,8 +54,8 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 		fields.add(pataconesCombo = new ListBox("Todos"));
 		fields.add(firmasCombo = new ListBox("Todos"));
 		fields.add(resultadosCombo = new ListBox());
-		fields.add(desde = new SimpleDatePicker(false));
-		fields.add(hasta = new SimpleDatePicker(false));
+		fields.add(desde = new SimpleDatePicker(false, true));
+		fields.add(hasta = new SimpleDatePicker(false, true));
 
 		buscarButton = new Button(Sfa.constant().buscar());
 		limpiarButton = new Button(Sfa.constant().limpiar());

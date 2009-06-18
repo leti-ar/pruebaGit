@@ -95,7 +95,7 @@ public class CuentaUIData extends UIData {
 	private Label prinLabel     = new Label(Sfa.constant().principal());
 	
 	private TextArea observaciones = new TextArea();
-	private SimpleDatePicker fechaNacimiento = new SimpleDatePicker(false);
+	private SimpleDatePicker fechaNacimiento = new SimpleDatePicker(false, true);
 	private SimpleLink validarTarjeta = new SimpleLink(Sfa.constant().validarTarjeta(), "#", true);
 	private Label verazRta = new Label();
 	

@@ -126,8 +126,8 @@ public class BuscarOportunidadFilterUIData extends UIData {
 		fields.add(tipoDocListBox = new ListBox());
 		fields.add(numeroDocumentoTextBox = new TextBox());
 		fields.add(estadoOPPListBox = new ListBox());
-		fields.add(desdeDate = new SimpleDatePicker(false));
-		fields.add(hastaDate = new SimpleDatePicker(false));
+		fields.add(desdeDate = new SimpleDatePicker(false, true));
+		fields.add(hastaDate = new SimpleDatePicker(false, true));
 
 		buscarButton = new Button(Sfa.constant().buscar());
 		limpiarButton = new Button(Sfa.constant().limpiar());
