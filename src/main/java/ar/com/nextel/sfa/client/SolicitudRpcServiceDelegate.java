@@ -2,11 +2,14 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
+import ar.com.nextel.sfa.client.dto.ModelosResultDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
@@ -110,4 +113,14 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.desreservarNumeroTelefono(numero, callback);
 	}
 
+	public void getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios,
+			DefaultWaitCallback<ModelosResultDto> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getModelos(imei, idTipoSolicitud, idListaPrecios, callback);
+	}
+
+	public void verificarSim(String sim, DefaultWaitCallback<String> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.verificarSim(sim, callback);
+	}
 }

@@ -7,6 +7,8 @@ import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
+import ar.com.nextel.sfa.client.dto.ModeloDto;
+import ar.com.nextel.sfa.client.dto.ModelosResultDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
@@ -57,7 +59,8 @@ public interface SolicitudRpcService extends RemoteService {
 	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(
 			GrupoSolicitudDto grupoSolicitudDto);
 
-	public DetalleSolicitudServicioDto getDetalleSolicitudServicio(Long idSolicitudServicio) throws RpcExceptionMessages ;
+	public DetalleSolicitudServicioDto getDetalleSolicitudServicio(Long idSolicitudServicio)
+			throws RpcExceptionMessages;
 
 	public List<ListaPreciosDto> getListasDePrecios(TipoSolicitudDto tipoSolicitudDto);
 
@@ -66,10 +69,16 @@ public interface SolicitudRpcService extends RemoteService {
 	public List<PlanDto> getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado,
 			TipoPlanDto tipoPlan, Long idCuenta);
 
-	public List<ServicioAdicionalLineaSolicitudServicioDto> getServiciosAdicionales(LineaSolicitudServicioDto linea, Long idCuenta);
-	
+	public List<ServicioAdicionalLineaSolicitudServicioDto> getServiciosAdicionales(
+			LineaSolicitudServicioDto linea, Long idCuenta);
+
 	public ResultadoReservaNumeroTelefonoDto reservarNumeroTelefonico(long numero, long idTipoTelefonia,
 			long idModalidadCobro, long idLocalidad) throws RpcExceptionMessages;
-	
+
 	public void desreservarNumeroTelefono(long numero) throws RpcExceptionMessages;
+
+	public ModelosResultDto getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios)
+			throws RpcExceptionMessages;
+	
+	public String verificarSim(String sim) throws RpcExceptionMessages;
 }

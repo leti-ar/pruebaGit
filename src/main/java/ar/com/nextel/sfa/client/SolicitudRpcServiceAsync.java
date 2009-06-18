@@ -7,6 +7,7 @@ import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
+import ar.com.nextel.sfa.client.dto.ModelosResultDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
@@ -19,6 +20,7 @@ import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
+import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -59,4 +61,9 @@ public interface SolicitudRpcServiceAsync {
 			long idLocalidad, AsyncCallback<ResultadoReservaNumeroTelefonoDto> callback);
 
 	public void desreservarNumeroTelefono(long numero, AsyncCallback callback);
+
+	public void getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios,
+			AsyncCallback<ModelosResultDto> callback);
+
+	public void verificarSim(String sim, AsyncCallback<String> callback);
 }

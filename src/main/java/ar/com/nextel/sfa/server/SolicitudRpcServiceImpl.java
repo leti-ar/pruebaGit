@@ -23,6 +23,8 @@ import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaD
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
+import ar.com.nextel.business.solicitudes.negativeFiles.NegativeFilesBusinessOperator;
+import ar.com.nextel.business.solicitudes.negativeFiles.result.NegativeFilesBusinessResult;
 import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepository;
 import ar.com.nextel.business.solicitudes.search.dto.SolicitudServicioCerradaSearchCriteria;
 import ar.com.nextel.business.vendedores.RegistroVendedores;
@@ -51,6 +53,8 @@ import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.LocalidadDto;
+import ar.com.nextel.sfa.client.dto.ModeloDto;
+import ar.com.nextel.sfa.client.dto.ModelosResultDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
@@ -88,6 +92,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private KnownInstanceRetriever knownInstanceRetriever;
 	private SessionContextLoader sessionContextLoader;
 	private SolicitudServicioRepository solicitudServicioRepository;
+	private NegativeFilesBusinessOperator negativeFilesBusinessOperator;
 
 	public void init() throws ServletException {
 		super.init();
@@ -107,6 +112,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		financialSystem = (FinancialSystem) context.getBean("financialSystemBean");
 		knownInstanceRetriever = (KnownInstanceRetriever) context.getBean("knownInstancesRetriever");
 		sessionContextLoader = (SessionContextLoader) context.getBean("sessionContextLoader");
+		negativeFilesBusinessOperator = (NegativeFilesBusinessOperator) context
+				.getBean("negativeFilesBusinessOperator");
 	}
 
 	public SolicitudServicioDto createSolicitudServicio(
@@ -323,19 +330,15 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		Set<ListaPrecios> listasPrecios = tipoSolicitud.getListasPrecios();
 		List<ListaPreciosDto> listasPreciosDto = new ArrayList<ListaPreciosDto>();
 
-		// boolean tipoSolicitudActivacion = isTipoSolicitudActivacion(tipoSolicitud);
+		boolean activacion = tipoSolicitud.getTipoSolicitudBase().getId().equals(
+				knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION));
 		// Se realiaza el mapeo de la coleccion a mano para poder filtrar los items por warehouse
 		for (ListaPrecios listaPrecios : listasPrecios) {
 			ListaPreciosDto lista = mapper.map(listaPrecios, ListaPreciosDto.class);
-			// if (tipoSolicitud.getId().equals(
-			// knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION)))
-			// if(!tipoSolicitudActivacion){
-			lista.setItemsListaPrecioVisibles(mapper.convertList(listaPrecios.getItemsTasados(tipoSolicitud),
-					ItemSolicitudTasadoDto.class));
-			// } else{
-			// lista.setItemsListaPrecioVisibles(mapper.convertList(listaPrecios
-			// .getItemsTasados(tipoSolicitud), ItemSolicitudTasadoDto.class));
-			// }
+			if (!activacion) {
+				lista.setItemsListaPrecioVisibles(mapper.convertList(listaPrecios
+						.getItemsTasados(tipoSolicitud), ItemSolicitudTasadoDto.class));
+			}
 			listasPreciosDto.add(lista);
 		}
 
@@ -384,5 +387,42 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		} catch (BusinessException e) {
 			throw ExceptionUtil.wrap(e);
 		}
+	}
+
+	public ModelosResultDto getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios)
+			throws RpcExceptionMessages {
+		ModelosResultDto modelosResultDto = new ModelosResultDto();
+		modelosResultDto.setModelos(mapper.convertList(solicitudServicioRepository.getModelos(imei),
+				ModeloDto.class));
+		for (ModeloDto modelo : modelosResultDto.getModelos()) {
+			modelo.setItems(mapper.convertList(solicitudServicioRepository.getItems(idTipoSolicitud,
+					idListaPrecios, modelo.getId()), ItemSolicitudTasadoDto.class));
+		}
+		NegativeFilesBusinessResult negativeFilesResult = null;
+		try {
+			negativeFilesResult = negativeFilesBusinessOperator.verificarNegativeFiles(imei);
+			if (negativeFilesResult != null) {
+				modelosResultDto.setResult(negativeFilesResult.getAvalonResultDto().isResult());
+				modelosResultDto.setMessage(negativeFilesResult.getAvalonResultDto().getMessage());
+			}
+		} catch (BusinessException e) {
+			throw ExceptionUtil.wrap(e);
+		}
+
+		return modelosResultDto;
+	}
+
+	/** Retorna null si la SIM es correcta. De lo contrario retorna el mensaje de error */
+	public String verificarSim(String sim) throws RpcExceptionMessages {
+		NegativeFilesBusinessResult negativeFilesResult = null;
+		try {
+			negativeFilesResult = negativeFilesBusinessOperator.verificarNegativeFiles(sim);
+		} catch (BusinessException e) {
+			throw ExceptionUtil.wrap(e);
+		}
+		if (negativeFilesResult != null) {
+			return negativeFilesResult.getAvalonResultDto().getMessage();
+		}
+		return null;
 	}
 }
