@@ -55,7 +55,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 
 		FlowPanel topBar = new FlowPanel();
 		topBar.addStyleName("topBar");
-		nuevoItem = IconFactory.word("Nuevo Item");
+		nuevoItem = IconFactory.nuevo("Nuevo Item");
 		nuevoItem.addClickListener(this);
 		nuevoItem.addStyleName("floatRight");
 		topBar.add(nuevoItem);
@@ -145,20 +145,20 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 		if (soloItemSolicitudUI == null) {
 			soloItemSolicitudUI = new SoloItemSolicitudUI(itemSolicitudUIData);
 		}
-		return soloItemSolicitudUI.setActivacionVisible(false);
+		return soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_CON_TOTAL);
 	}
 
 	private ItemYPlanSolicitudUI getItemYPlanSolicitudUI() {
 		if (itemYPlanSolicitudUI == null) {
 			itemYPlanSolicitudUI = new ItemYPlanSolicitudUI(getSoloItemSolicitudUI(), itemSolicitudUIData);
 		}
-		soloItemSolicitudUI.setActivacionVisible(false);
+		soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_SIMPLE);
 		itemYPlanSolicitudUI.load();
 		return itemYPlanSolicitudUI;
 	}
 
 	private ItemYPlanSolicitudUI getItemSolicitudActivacionUI() {
-		return getItemYPlanSolicitudUI().setActivacionVisible(true);
+		return getItemYPlanSolicitudUI().setActivacionVisible();
 	}
 
 	public ItemSolicitudUIData getItemSolicitudUIData() {

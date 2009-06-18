@@ -5,6 +5,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
+import ar.com.nextel.sfa.client.dto.ModelosResultDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
@@ -35,4 +36,9 @@ public interface EditarSSUIController {
 			long idLocalidad, DefaultWaitCallback<ResultadoReservaNumeroTelefonoDto> callback);
 
 	public void desreservarNumeroTelefonico(long numero, DefaultWaitCallback callback);
+
+	public void getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios,
+			DefaultWaitCallback<ModelosResultDto> callback);
+
+	public void verificarSim(String sim, DefaultWaitCallback<String> callback);
 }

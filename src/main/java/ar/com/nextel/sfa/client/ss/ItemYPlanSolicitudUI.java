@@ -84,8 +84,8 @@ public class ItemYPlanSolicitudUI extends Composite {
 		soloItemSolicitudWrapper.setWidget(soloItemSolicitudUI);
 	}
 
-	public ItemYPlanSolicitudUI setActivacionVisible(boolean visible) {
-		soloItemSolicitudUI.setActivacionVisible(visible);
+	public ItemYPlanSolicitudUI setActivacionVisible() {
+		soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_ACTIVACION);
 		return this;
 	}
 

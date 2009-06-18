@@ -4,19 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.LocalidadDto;
 import ar.com.nextel.sfa.client.dto.ModalidadCobroDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
+import ar.com.nextel.sfa.client.dto.ModelosResultDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.TerminoPagoValidoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
+import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
+import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
@@ -30,6 +34,8 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -59,6 +65,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private TextBox pin;
 	private Button confirmarReserva;
 	private Button desreservar;
+	private InlineHTML totalLabel;
 
 	private List idsTipoSolicitudBaseItemYPlan;
 	private List idsTipoSolicitudBaseItem;
@@ -70,6 +77,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private String nombreMovil;
 	private ReservarNumeroDialog reservarNumeroDialog;
 	private Command reservarCommnad = null;
+	private HTML verificarImeiWrapper;
+	private HTML verificarSimWrapper;
 
 	private Long idPlanAnterior;
 	private Long idItemAnterior;
@@ -107,14 +116,20 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		fields.add(ddn = new CheckBox());
 		fields.add(ddi = new CheckBox());
 		fields.add(roaming = new CheckBox());
+		totalLabel = new InlineHTML(currencyFormat.format(0d));
 		confirmarReserva = new Button("Ok");
 		desreservar = new Button("Des");
+		verificarImeiWrapper = new HTML();
+		verificarSimWrapper = new HTML();
 
 		listaPrecio.setWidth("400px");
 		item.setWidth("400px");
 		cantidad.setWidth("70px");
 		terminoPago.setWidth("400px");
 		tipoPlan.setWidth("400px");
+		imei.setWidth("370px");
+		imei.setMaxLength(15);
+		sim.setMaxLength(15);
 		modeloEq.setWidth("400px");
 		plan.setWidth("400px");
 		localidad.setWidth("400px");
@@ -133,12 +148,18 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		ddn.setText(Sfa.constant().ddn());
 		ddi.setText(Sfa.constant().ddi());
 		roaming.setText(Sfa.constant().roaming());
+		verificarImeiWrapper.setHTML(IconFactory.comprobarNegro(Sfa.constant().verificarImei()).toString());
+		verificarSimWrapper.setHTML(IconFactory.comprobarNegro(Sfa.constant().verificarSim()).toString());
 
 		listaPrecio.addChangeListener(this);
 		item.addChangeListener(this);
 		tipoPlan.addChangeListener(this);
 		confirmarReserva.addClickListener(this);
 		desreservar.addClickListener(this);
+		cantidad.addChangeListener(this);
+		modeloEq.addChangeListener(this);
+		verificarImeiWrapper.addClickListener(this);
+		verificarSimWrapper.addClickListener(this);
 
 		initIdsTipoSolicitudBase();
 	}
@@ -168,7 +189,12 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			reservar();
 		} else if (sender == desreservar) {
 			desreservar();
+		} else if (sender == verificarImeiWrapper) {
+			comprobarImeiYTraerModelos();
+		} else if (sender == verificarSimWrapper) {
+			verificarSim();
 		}
+
 	}
 
 	private void reservar() {
@@ -181,7 +207,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		validator.addTarget(cantidad).equals("1", Sfa.constant().ERR_CANT_UNO());
 		validator.addTarget(reservar).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Reservar Nº")).length(4,
-				Sfa.constant().ERR_NUMERO_RESRVA());
+				Sfa.constant().ERR_NUMERO_RESERVA());
 
 		if (validator.fillResult().getErrors().isEmpty()) {
 			reservarServiceCall(Long.parseLong(reservar.getText()));
@@ -208,6 +234,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 							desreservar.setVisible(true);
 							confirmarReserva.setVisible(false);
 							setNumeroTelefonicoCompleto("" + result.getReservedNumber());
+							MessageDialog.getInstance().showAceptar("Reserva Exitosa",
+									Sfa.constant().MSG_NUMERO_RESERVADO(), MessageDialog.getCloseCommand());
 						}
 					}
 				});
@@ -249,6 +277,47 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		reservar.setEnabled(enable);
 	}
 
+	/** Comprueba la validez del IMEI y carga los combos de Modelo e Item */
+	private void comprobarImeiYTraerModelos() {
+		if (imei.getText().length() != 15) {
+			ErrorDialog.getInstance().show(Sfa.constant().ERR_IMEI_LENGHT(), false);
+		} else {
+			Long idListaPrecio = ((ListaPreciosDto) listaPrecio.getSelectedItem()).getId();
+			Long idTipoSolicitud = ((TipoSolicitudDto) tipoOrden.getSelectedItem()).getId();
+			controller.getModelos(imei.getText(), idTipoSolicitud, idListaPrecio,
+					new DefaultWaitCallback<ModelosResultDto>() {
+						public void success(ModelosResultDto modelosResult) {
+							if (!modelosResult.isResult()) {
+								ErrorDialog.getInstance().show(modelosResult.getMessage(), false);
+								verificarImeiWrapper.setHTML(IconFactory.comprobarRojo(
+										Sfa.constant().verificarImei()).toString());
+							} else {
+								verificarImeiWrapper.setHTML(IconFactory.comprobarVerde(
+										Sfa.constant().verificarImei()).toString());
+							}
+							modeloEq.clear();
+							modeloEq.addAllItems(modelosResult.getModelos());
+							onChange(modeloEq);
+						}
+					});
+		}
+	}
+
+	private void verificarSim() {
+		controller.verificarSim(sim.getText(), new DefaultWaitCallback<String>() {
+			public void success(String result) {
+				if (result != null) {
+					ErrorDialog.getInstance().show(result, false);
+					verificarSimWrapper.setHTML(IconFactory.comprobarRojo(Sfa.constant().verificarSim())
+							.toString());
+				} else {
+					verificarSimWrapper.setHTML(IconFactory.comprobarVerde(Sfa.constant().verificarSim())
+							.toString());
+				}
+			}
+		});
+	}
+
 	public void onChange(Widget sender) {
 		if (sender == listaPrecio) {
 			// Cargo Items y Terminos de pago a partir de la Lista de Precios
@@ -277,14 +346,15 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 							getActualizarPlanCallback());
 				}
 			}
+			refreshTotalLabel();
 		} else if (sender == tipoPlan) {
-			// Cargo los planes correspondientes
+			// Cargo los planes correspondientes al tipo de plan seleccionado
 			if (tipoPlan.getSelectedItem() != null && item.getSelectedItem() != null) {
 				controller.getPlanesPorItemYTipoPlan((ItemSolicitudTasadoDto) item.getSelectedItem(),
 						(TipoPlanDto) tipoPlan.getSelectedItem(), getActualizarPlanCallback());
 			}
 		} else if (sender == plan) {
-			// Cargo Modalidades de Cobro
+			// Cargo Modalidades de Cobro posibles
 			if (plan.getSelectedItem() != null) {
 				PlanDto planDto = (PlanDto) plan.getSelectedItem();
 				precioListaPlan.setInnerHTML(currencyFormat.format(planDto.getPrecio()));
@@ -292,6 +362,16 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 					modalidadCobro.clear();
 				}
 				modalidadCobro.addAllItems(planDto.getModalidadesCobro());
+			}
+		} else if (sender == cantidad) {
+			refreshTotalLabel();
+		} else if (sender == modeloEq) {
+			// Cargo los items correspondientes al modelo seleccionado
+			ModeloDto modelo = (ModeloDto) modeloEq.getSelectedItem();
+			if (modelo != null) {
+				item.clear();
+				item.addAllItems(modelo.getItems());
+				onChange(item);
 			}
 		}
 	}
@@ -420,6 +500,14 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		return desreservar;
 	}
 
+	public HTML getVerificarImeiWrapper() {
+		return verificarImeiWrapper;
+	}
+
+	public HTML getVerificarSimWrapper() {
+		return verificarSimWrapper;
+	}
+
 	public void setTipoEdicion(int tipoEdicion) {
 		this.tipoEdicion = tipoEdicion;
 	}
@@ -440,12 +528,14 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			validator.addTarget(alias).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Alias"));
 			if (!"".equals(reservar.getText().trim())) {
-				validator.addTarget(reservar).length(4, Sfa.constant().ERR_NUMERO_RESRVA());
+				validator.addTarget(reservar).length(4, Sfa.constant().ERR_NUMERO_RESERVA());
 			}
 		}
-		validator.addTarget(cantidad).required(
-				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Cantidad")).greater(
-				Sfa.constant().ERR_CANT_MA_CERO().replaceAll(v1, "Cantidad"), 0);
+		if (tipoEdicion != ACTIVACION) {
+			validator.addTarget(cantidad).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Cantidad")).greater(
+					Sfa.constant().ERR_CANT_MA_CERO().replaceAll(v1, "Cantidad"), 0);
+		}
 		return validator.fillResult().getErrors();
 	}
 
@@ -481,7 +571,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		cantidad.setText(linea.getCantidad() != null ? "" + linea.getCantidad() : "");
 		ddn.setChecked(linea.getDdn());
 		ddi.setChecked(linea.getDdi());
-		localidad.setSelectedItem(linea.getLocalidad());
+		if (linea.getLocalidad() != null) {
+			localidad.setSelectedItem(linea.getLocalidad());
+		} else {
+			localidad.setSelectedItem(ClientContext.getInstance().getVendedor().getLocalidad());
+		}
 		setNumeroTelefonicoCompleto(linea.getNumeroReserva());
 		boolean tieneNReserva = linea.getNumeroReserva() != null && linea.getNumeroReserva().length() > 4;
 		setEnableReservaRelatedInputs(!tieneNReserva);
@@ -512,6 +606,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		modeloEq.setSelectedItem(linea.getModelo());
 	}
 
+	/** Limpia las selecciones de los combos */
 	private void clearListBoxForSelect() {
 		listaPrecio.clear();
 		item.clear();
@@ -571,5 +666,19 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 	public void setNombreMovil(String nombreMovil) {
 		this.nombreMovil = nombreMovil;
+	}
+
+	private void refreshTotalLabel() {
+		if (!"".equals(cantidad.getText().trim()) && item.getSelectedItem() != null) {
+			ItemSolicitudTasadoDto itemSelected = (ItemSolicitudTasadoDto) item.getSelectedItem();
+			double precio = itemSelected.getPrecioLista() * Double.parseDouble(cantidad.getText());
+			totalLabel.setText(currencyFormat.format(precio));
+		} else {
+			totalLabel.setText(currencyFormat.format(0d));
+		}
+	}
+
+	public Widget getTotalLabel() {
+		return totalLabel;
 	}
 }
