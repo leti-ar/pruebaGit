@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
@@ -52,14 +53,21 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		resultTableWrapper = new SimplePanel();
 		resultTableWrapper.addStyleName("resultTableWrapper");
 		tablePageBar = new TablePageBar();
-		tablePageBar.setLastVisible(false);
 		tablePageBar.setBeforeClickCommand(new Command() {
 			public void execute() {
 				lastCuentaSearchDto.setOffset(tablePageBar.getOffset());
-				// tablePageBar.setCantPaginas(getTotalRegistrosBusqueda().intValue()
-				// /
-				// tablePageBar.getCantResultados());
-				searchCuentas(lastCuentaSearchDto, false);
+				List cuentasActuales = new ArrayList<CuentaSearchResultDto>(); 
+				if (tablePageBar.getPagina() <= (tablePageBar.getCantPaginas())){
+					for (int i = (tablePageBar.getPagina()-1) *10; i < (tablePageBar.getPagina())*10; i++) {
+						cuentasActuales.add(cuentas.get(i));
+					}
+				loadTable(cuentasActuales);
+				}else{
+					tablePageBar.setPagina(tablePageBar.getPagina()-1);
+					ErrorDialog.getInstance().setTitle("Error");
+					ErrorDialog.getInstance().show("No hay más registros disponibles en esta búsqueda.");
+				}
+				
 			}
 		});
 		add(resultTableWrapper);
@@ -83,7 +91,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	 * */
 	public void searchCuentas(CuentaSearchDto cuentaSearchDto) {
 		tablePageBar.setOffset(0);
-		tablePageBar.setCantResultadosVisibles(cuentaSearchDto.getCantidadResultados());
+		tablePageBar.setCantResultados(cuentaSearchDto.getCantidadResultados());
 		this.lastCuentaSearchDto = cuentaSearchDto;
 		this.searchCuentas(cuentaSearchDto, true);
 	}
@@ -105,14 +113,18 @@ public class BuscarCuentaResultUI extends FlowPanel {
 						}
 						setCuentas(result);
 						controller.setResultadoVisible(true);
-						// setTotalRegistrosBusqueda(CuentaRpcService.Util.getInstance().searchTotalCuentas(cuentaSearchDto));
 					}
 				});
 	}
 
 	public void setCuentas(List<CuentaSearchResultDto> cuentas) {
 		this.cuentas = cuentas;
-		loadTable();
+		tablePageBar.setPagina(1);
+		List<CuentaSearchResultDto> cuentasActuales = new ArrayList<CuentaSearchResultDto>(); 
+		for (int i = 0; i < 10; i++) {
+			cuentasActuales.add(cuentas.get(i));
+		} 
+		loadTable(cuentasActuales);
 	}
 
 	private String getCondicionBusquedaPorDni(){
@@ -128,32 +140,31 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	/**
 	 * Crea una fila en la tabla por cada cuenta del CuentaSearchResultDto
 	 */
-	private void loadTable() {
+	private void loadTable(List<CuentaSearchResultDto> cuentasActuales) {
 		clearResultTable();
-		int row = 1;
-		for (CuentaSearchResultDto cuenta : cuentas) {
-			resultTable.setWidget(row, 0, IconFactory.lapizAnchor(UILoader.EDITAR_CUENTA + "?cuenta_id="
-					+ cuenta.getId() + "&cod_vantive=" + cuenta.getCodigoVantive() + "&por_dni=" + getCondicionBusquedaPorDni(), LAPIZ_TITLE));
+		for (int i = 0; i < 10; i++) {
+			if (cuentasActuales.size() != 0){
+			resultTable.setWidget(i+1, 0, IconFactory.lapizAnchor(UILoader.EDITAR_CUENTA + "?cuenta_id="
+					+ cuentasActuales.get(i).getId() + "&cod_vantive=" + cuentas.get(i).getCodigoVantive() + "&por_dni=" + getCondicionBusquedaPorDni(), LAPIZ_TITLE));
 
-			if (cuenta.isPuedeVerInfocom()) {
-				resultTable.setWidget(row, 1, IconFactory.lupa(LUPA_TITLE));
+			if (cuentasActuales.get(i).isPuedeVerInfocom()) {
+				resultTable.setWidget(i+1, 1, IconFactory.lupa(LUPA_TITLE));
 			}
 
 			// LockingState == 1: Es cuando esta lockeado por el mismo usuario logueado (Verificar).
-			if (cuenta.getLockingState() == 1) {
-				resultTable.setWidget(row, 2, IconFactory.locked(BLOQUEADO_TITLE));
-			} else if (cuenta.getLockingState() == 2) {
+			if (cuentasActuales.get(i).getLockingState() == 1) {
+				resultTable.setWidget(i+1, 2, IconFactory.locked(BLOQUEADO_TITLE));
+			} else if (cuentas.get(i).getLockingState() == 2) {
 				// LockingState == 2: Es cuando esta lockeado por otro usuario.
-				resultTable.setWidget(row, 2, IconFactory.lockedOther(OTRO_BLOQUEO_TITLE));
+				resultTable.setWidget(i+1, 2, IconFactory.lockedOther(OTRO_BLOQUEO_TITLE));
 			}
 
-			resultTable.setHTML(row, 3, cuenta.getNumero());
-			resultTable.setHTML(row, 4, cuenta.getRazonSocial());
-			resultTable.setHTML(row, 5, cuenta.getApellidoContacto());
-			resultTable.setHTML(row, 6, cuenta.getNumeroTelefono() != null ? cuenta.getNumeroTelefono() : "");
-			row++;
+			resultTable.setHTML(i+1, 3, cuentasActuales.get(i).getNumero());
+			resultTable.setHTML(i+1, 4, cuentasActuales.get(i).getRazonSocial());
+			resultTable.setHTML(i+1, 5, cuentasActuales.get(i).getApellidoContacto());
+			resultTable.setHTML(i+1, 6, cuentasActuales.get(i).getNumeroTelefono() != null ? cuentas.get(i).getNumeroTelefono() : "");
+			}
 		}
-
 		setVisible(true);
 	}
 
@@ -164,8 +175,6 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	 */
 	private void clearResultTable() {
 		if (resultTable != null) {
-			// Empiezo en 1 porque el initTable pone la primer fila con los
-			// tíulos
 			while (resultTable.getRowCount() > 1) {
 				resultTable.removeRow(1);
 			}

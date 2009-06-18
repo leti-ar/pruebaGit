@@ -64,7 +64,7 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 	 * */
 	public void searchOportunidades(OportunidadSearchDto oportunidadSearchDto) {
 		tablePageBar.setOffset(0);
-		tablePageBar.setCantResultadosVisibles(oportunidadSearchDto.getCantidadResultados());
+		tablePageBar.setCantResultados(oportunidadSearchDto.getCantidadResultados());
 		this.lastOportunidadSearchDto = oportunidadSearchDto;
 		this.searchOportunidades(oportunidadSearchDto, true);
 	}

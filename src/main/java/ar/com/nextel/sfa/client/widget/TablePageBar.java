@@ -27,7 +27,7 @@ public class TablePageBar extends Composite {
 	private InlineHTML pagLabel;
 	private InlineHTML cantLabel;
 	private int cantResultados;
-	private int cantResultadosVisibles;
+	//private int cantResultadosVisibles;
 	private int offset = 0;
 	private int pagina = 1;
 	private int cantPaginas = 1;
@@ -79,7 +79,9 @@ public class TablePageBar extends Composite {
 
 	public void setPagina(int pagina) {
 		this.pagina = pagina;
+		this.cantPaginas = (cantResultados / 10); 
 		pagLabel.setText("Pág " + pagina);
+		cantLabel.setText("de " + cantPaginas);
 	}
 
 	public int getCantPaginas() {
@@ -88,10 +90,6 @@ public class TablePageBar extends Composite {
 
 	public void setCantPaginas(int cantPaginas) {
 		this.cantPaginas = cantPaginas;
-	}
-
-	public void setCantResultadosVisibles(int cantResultados) {
-		this.cantResultadosVisibles = cantResultados;
 	}
 
 	public int getOffset() {
@@ -110,11 +108,7 @@ public class TablePageBar extends Composite {
 		ClickListener listener = new ClickListener() {
 			public void onClick(Widget sender) {
 				if (sender == next) {
-					// TODO: Esto queda comentado por si en algun momento traemos la cant de resultados
-					// if(pagina == cantResultados / cantResultadosVisibles + 1){
-					// return;
-					// }
-					setOffset(getOffset() + cantResultadosVisibles + 1);
+					setOffset(getOffset() + 11);
 					setPagina(getPagina() + 1);
 				} else if (sender == first) {
 					if (getPagina() == 1) {
@@ -123,13 +117,13 @@ public class TablePageBar extends Composite {
 					setOffset(0);
 					setPagina(1);
 				} else if (sender == last) {
-					// setOffset(cantResultados / cantResultadosVisibles * cantResultados);
-					// setPagina(cantResultados / cantResultadosVisibles + 1);
+					setOffset(cantResultados - 10);
+					setPagina(cantResultados / 10);
 				} else if (sender == prev) {
 					if (getPagina() == 1) {
 						return;
 					}
-					setOffset(getOffset() - cantResultadosVisibles - 1);
+					setOffset(getOffset() - 11);
 					setPagina(getPagina() - 1);
 				}
 				if (beforeClickCommand != null) {
