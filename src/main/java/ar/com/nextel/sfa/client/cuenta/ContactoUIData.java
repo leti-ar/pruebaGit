@@ -40,8 +40,8 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 
 	private ListBox tipoDocumento = new ListBox();
 	private TextBox numeroDocumento = new TextBox();
-	private ValidationTextBox nombre = new ValidationTextBox("[0-9]");
-	private ValidationTextBox apellido = new ValidationTextBox("[0-9]");
+	private ValidationTextBox nombre = new ValidationTextBox("[a-zA-Z\\%]*");
+	private ValidationTextBox apellido = new ValidationTextBox("[a-zA-Z\\%]*");
 	private ListBox sexo = new ListBox();
 	private ListBox cargo = new ListBox("");
 	private TelefonoTextBox telefonoPrincipal = new TelefonoTextBox();
