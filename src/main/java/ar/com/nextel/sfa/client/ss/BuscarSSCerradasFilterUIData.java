@@ -65,6 +65,10 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 		limpiarButton.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
 				clean();
+				desde.setSelectedDate(DateUtil.getStartDayOfMonth(DateUtil.today()));
+				desde.getTextBox().setText(dateFormatter.format(DateUtil.getStartDayOfMonth(DateUtil.today())));
+				hasta.setSelectedDate(DateUtil.today());
+				hasta.getTextBox().setText(dateFormatter.format(DateUtil.today()));
 			}
 		});
 
