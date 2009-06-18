@@ -52,20 +52,6 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 	private Label veraz = new Label();
 	private Long newContactosId = 0L;
 	private ContactoCuentaDto contactoCuentaDto;
-	ListBox tipoDocumento = new ListBox();
-	TextBox numeroDocumento = new TextBox();
-	TextBox nombre = new TextBox();
-	TextBox apellido = new TextBox();
-	ListBox sexo = new ListBox();
-	ListBox cargo = new ListBox("");
-	TelefonoTextBox telefonoPrincipal = new TelefonoTextBox();
-	TelefonoTextBox telefonoCelular = new TelefonoTextBox(false);
-	TelefonoTextBox telefonoAdicional = new TelefonoTextBox();
-	TelefonoTextBox fax = new TelefonoTextBox();
-	TextBox emailPersonal = new TextBox();
-	TextBox emailLaboral = new TextBox();
-	Label veraz = new Label();
-	Long newContactosId = 0L;
 	boolean saved = true;
 	
 	public List<String> validarCampoObligatorio() {
