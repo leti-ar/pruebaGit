@@ -234,13 +234,13 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 	
 	public List<EmailDto> getEmailDto() {
 		List<EmailDto> emails = new ArrayList<EmailDto>();
-		if(!emailPersonal.getText().equals("")) {
+		if(!emailPersonal.getText().trim().equals("")) {
 			EmailDto emailPersonalDto = new EmailDto();
 			emailPersonalDto.setTipoEmail(getTipoEmailDto(TipoEmailEnum.PERSONAL.getTipo(),"Personal"));
 			emailPersonalDto.setEmail(emailPersonal.getText());
 			emails.add(emailPersonalDto);
 		}
-		if(!emailLaboral.getText().equals("")) {
+		if(!emailLaboral.getText().trim().equals("")) {
 			EmailDto emailLaboralDto = new EmailDto();
 			emailLaboralDto.setTipoEmail(getTipoEmailDto(TipoEmailEnum.LABORAL.getTipo(),"Laboral"));
 			emailLaboralDto.setEmail(emailLaboral.getText());
@@ -253,7 +253,7 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 	public List<TelefonoDto> getTelefonoDto() {
 		List<TelefonoDto> telefonos = new ArrayList<TelefonoDto>();
 		
-		if (!telefonoPrincipal.getNumero().getText().equals("")) {
+		if (!telefonoPrincipal.getNumero().getText().trim().equals("")) {
 			TelefonoDto telefonoPrincipalDto = new TelefonoDto();
 			telefonoPrincipalDto.setTipoTelefono(getTipoTelefonoDto(TipoTelefonoEnum.PRINCIPAL.getTipo(),"Principal"));
 			telefonoPrincipalDto.setNumeroLocal(telefonoPrincipal.getNumero().getText());
@@ -262,14 +262,14 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 			telefonoPrincipalDto.setPrincipal(true);
 			telefonos.add(telefonoPrincipalDto);
 		}
-		if (!telefonoCelular.getNumero().getText().equals("")) {
+		if (!telefonoCelular.getNumero().getText().trim().equals("")) {
 			TelefonoDto telefonoCelularDto = new TelefonoDto();
 			telefonoCelularDto.setTipoTelefono(getTipoTelefonoDto(TipoTelefonoEnum.CELULAR.getTipo(),"Celular"));
 			telefonoCelularDto.setArea(telefonoCelular.getArea().getText());
 			telefonoCelularDto.setNumeroLocal(telefonoCelular.getNumero().getText());
 			telefonos.add(telefonoCelularDto);
 		}
-		if (!telefonoAdicional.getNumero().getText().equals("")) {
+		if (!telefonoAdicional.getNumero().getText().trim().equals("")) {
 			TelefonoDto telefonoAdicionalDto = new TelefonoDto();
 			telefonoAdicionalDto.setTipoTelefono(getTipoTelefonoDto(TipoTelefonoEnum.ADICIONAL.getTipo(),"Adicional"));
 			telefonoAdicionalDto.setNumeroLocal(telefonoAdicional.getNumero().getText());
@@ -277,7 +277,7 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 			telefonoAdicionalDto.setInterno(telefonoAdicional.getInterno().getText());
 			telefonos.add(telefonoAdicionalDto);
 		}
-		if (!fax.getNumero().getText().equals("")) {
+		if (!fax.getNumero().getText().trim().equals("")) {
 			TelefonoDto telefonoFaxDto = new TelefonoDto();
 			telefonoFaxDto.setTipoTelefono(getTipoTelefonoDto(TipoTelefonoEnum.FAX.getTipo(),"Fax"));
 			telefonoFaxDto.setNumeroLocal(fax.getNumero().getText());
