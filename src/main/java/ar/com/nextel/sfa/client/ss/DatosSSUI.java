@@ -148,7 +148,9 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		wrapper.setWidget(detalleSS);
 		detalle.add(wrapper);
 
-		detalle.add(new Label("Servicios Adicionales"));
+		Label serviciosAdicionalesLabel = new Label("Servicios Adicionales");
+		serviciosAdicionalesLabel.addStyleName("mt5 mb5");
+		detalle.add(serviciosAdicionalesLabel);
 
 		serviciosAdicionales = new Grid(1, 4);
 		serviciosAdicionales.addTableListener(this);

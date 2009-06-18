@@ -41,7 +41,7 @@ public class VariosSSUI extends Composite {
 
 	private Widget getPataconex() {
 		TitledPanel pataconexPanel = new TitledPanel(Sfa.constant().pataconexTitle());
-		InlineLabel pataconexLabel = new InlineLabel(Sfa.constant().pataconex());
+		InlineLabel pataconexLabel = new InlineLabel(Sfa.constant().autilizar());
 		pataconexLabel.addStyleName("mlr5");
 		pataconexPanel.add(pataconexLabel);
 		pataconexPanel.add(editarSSUIData.getPataconex());
@@ -89,6 +89,7 @@ public class VariosSSUI extends Composite {
 		TitledPanel resumenPanel = new TitledPanel(Sfa.constant().resumentSSTitle());
 		resumenPanel.add(getResumenTable());
 		Label totalesLabel = new Label(Sfa.constant().totales());
+		totalesLabel.addStyleName("mt5 mb5");
 		resumenPanel.add(totalesLabel);
 		Grid totales = new Grid(2, 6);
 		totales.addStyleName("layout");
