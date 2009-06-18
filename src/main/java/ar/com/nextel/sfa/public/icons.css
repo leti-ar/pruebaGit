@@ -34,7 +34,9 @@ rgm
 .gwt-IconButton {
 	cursor: hand;
 }
-.icon-cancel, .icon-copiar, .icon-excel, .icon-lapiz, .icon-locked, .icon-lupa, .icon-silvioSoldan, .icon-tildeVerde, .icon-vistaPreliminar, .icon-word {
+.icon-cancel, .icon-copiar, .icon-excel, .icon-lapiz, .icon-locked, .icon-lupa, .icon-silvioSoldan, 
+.icon-tildeVerde, .icon-vistaPreliminar, .icon-word, .icon-nuevo, .icon-comprobar-negro, .icon-comprobar-verde,
+.icon-comprobar-rojo {
 	width: 16px;
 	height: 16px;
 	background-image: url("images/icons.gif");
@@ -58,5 +60,9 @@ rgm
 .icon-tildeVerde { background-position: -112 0; }
 .icon-vistaPreliminar { background-position: -128 0;}
 .icon-word { background-position: -144 0;}
+.icon-nuevo { background-position: -160 0;}
+.icon-comprobar-negro { background-position: -176 0;}
+.icon-comprobar-rojo { background-position: -192 0;}
+.icon-comprobar-verde { background-position: -208 0;}
 
 

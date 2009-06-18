@@ -489,6 +489,10 @@ A {
 }
 
 .resumenSSTableWrapper,.detalleSSTableWrapper {
+	border-bottom: 1px #999 solid;
+	border-right: 1px #999 solid;
+	border-left: 1px #ccc solid;
+	border-top: 1px #ccc solid;
 	overflow: auto;
 	padding-right: 15px;
 	height: 100px;
