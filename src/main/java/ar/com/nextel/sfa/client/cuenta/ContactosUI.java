@@ -72,9 +72,6 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 			} else {
 				ErrorDialog.getInstance().show(errors);
 			}
-
-			validarCampoObligatorio(true);
-
 		}
 		else if(sender == cancelar){
 			hide();
