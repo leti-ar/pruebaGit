@@ -100,8 +100,7 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 
 			}
 		}
-		
-		
+				
 		tipoDocumento.setWidth("125px");
 		sexo.setWidth("100px");
 		cargo.setWidth("250px");
@@ -113,7 +112,6 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 		emailPersonal.setMaxLength(50);
 		emailLaboral.setMaxLength(50);
 		
-
 		CuentaRpcService.Util.getInstance().CrearContactoInitializer(
 				new DefaultWaitCallback<CrearContactoInitializer>() {
 					public void success(CrearContactoInitializer result) {
@@ -132,12 +130,10 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 	
 	private void setCombos(CrearContactoInitializer datos) {
 		tipoDocumento.addAllItems(datos.getTiposDocumento());
-		//en el initializer del server, yo se los id de los 2 que tengo que sacar, los saco de la lista y listo. Aca llegan 2 solitos.
 		sexo.addAllItems(datos.getSexos());
 		cargo.addAllItems(datos.getCargos());
 	}
-	
-	
+		
 	public void setContactoDto(ContactoCuentaDto contactoCuentaDto){
 		this.contactoCuentaDto = contactoCuentaDto;
 		enableFields();

@@ -126,7 +126,6 @@ public class CuentaContactoForm extends Composite {
 			if ((fila >= 1) && (columna == 0)) {
 				contactoAEditar = listaContactos.get(fila -1);
 				contactosUI.cargarPopupEditarContacto(contactoAEditar);
-				//contactosUI.cargarPopupEditarContacto(listaContactos.get(fila - 1));
 			}
 			// boton eliminar
 			if ((fila >= 1) && (columna == 1)) {

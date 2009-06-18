@@ -9,13 +9,10 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
-import ar.com.nextel.sfa.client.dto.EmailDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
-import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
-import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
@@ -113,31 +110,6 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		setFormButtonsVisible(true);
 		setFooterVisible(false);
 	}
-
-//	@Deprecated
-//	public void cargaPopupNuevoContacto() {
-//		//Instancia un nuevo Contacto vacio
-//		contactosData.clean(); 		
-//		contactosData.setContactoDto(new ContactoCuentaDto());
-//		//Limpia la tabla de domicilios
-////		if (domicilioTable.getRowCount() > 1){
-////			int cantFilas = (domicilioTable.getRowCount()) - 1;
-////			for (int j = 1; j <= cantFilas; j++) {
-////				domicilioTable.removeRow(1);
-////			}
-////		}
-//		while(domicilioTable.getRowCount() > 1){
-//			domicilioTable.removeRow(1);
-//		}
-//
-//		//domicilioTable.clear();
-//		if (listaDomicilios != null) {
-//		listaDomicilios.clear();
-//		}
-//		aceptar.setVisible(true);
-//		contactosData.enableFields();
-//		showAndCenter();
-//	}
 
 	public void cargarPopupEditarContacto(ContactoCuentaDto contacto) {
 		contactosData.clean(); 	
@@ -272,7 +244,6 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 						   DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
 						   contactosData.getDomicilios().add(domicilio);
 						   refrescaTablaConNuevoDomicilio();
-						   //contactosData.getDomicilios();
 					}
 				});
 				DomicilioUI.getInstance().setParentContacto(true);
