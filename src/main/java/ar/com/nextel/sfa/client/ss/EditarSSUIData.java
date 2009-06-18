@@ -220,6 +220,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 		double credFidelizacionValue = solicitud.getMontoCreditoFidelizacion() != null ? solicitud
 				.getMontoCreditoFidelizacion() : 0;
 		credFidelizacion.setText(decFormatter.format(credFidelizacionValue));
+		if(credFidelizacionValue > 0){
+			credFidelizacion.setEnabled(true);
+		} else {
+			credFidelizacion.setEnabled(false);
+		}
 		double pataconexValue = solicitud.getPataconex() != null ? solicitud.getPataconex() : 0;
 		pataconex.setText(decFormatter.format(pataconexValue));
 		firmarss.setChecked(solicitud.getFirmar());
