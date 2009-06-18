@@ -48,6 +48,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	private FlexTable domicilioTable;
 	private boolean tienePrincipalFacturacion = false;
 	private boolean tienePrincipalEntrega  = false;
+	private TabPanel mainTabPanel;
 	
 	private int contactoABorrar = -1;
 	
@@ -89,7 +90,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	private void init() {
 		setWidth("740px");
 		contactosData = new ContactoUIData();
-		TabPanel mainTabPanel = new TabPanel();
+		//TabPanel mainTabPanel = new TabPanel();
 		mainTabPanel
 				.addStyleDependentName("gwt-TabPanelBottom crearCuentaTabPanel");
 		mainTabPanel.setWidth("98%");
@@ -120,7 +121,8 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		contactosData.setContactoDto(contacto);
 		aceptar.setVisible(true);
 		contactosData.enableFields();
-		setearDomicilio();		
+		setearDomicilio();
+		mainTabPanel.selectTab(0);
 		showAndCenter();
 	}
 			
