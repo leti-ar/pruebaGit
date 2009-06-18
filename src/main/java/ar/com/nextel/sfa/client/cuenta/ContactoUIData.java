@@ -23,6 +23,7 @@ import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.TelefonoTextBox;
 import ar.com.nextel.sfa.client.widget.UIData;
+import ar.com.nextel.sfa.client.widget.ValidationTextBox;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -39,8 +40,8 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 
 	private ListBox tipoDocumento = new ListBox();
 	private TextBox numeroDocumento = new TextBox();
-	private TextBox nombre = new TextBox();
-	private TextBox apellido = new TextBox();
+	private ValidationTextBox nombre = new ValidationTextBox("[0-9]");
+	private ValidationTextBox apellido = new ValidationTextBox("[0-9]");
 	private ListBox sexo = new ListBox();
 	private ListBox cargo = new ListBox("");
 	private TelefonoTextBox telefonoPrincipal = new TelefonoTextBox();
