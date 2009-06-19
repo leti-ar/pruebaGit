@@ -39,6 +39,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	private NextelTable resultTable;
 	private SimplePanel resultTableWrapper;
 	private Label resultTotalCuentas;
+	private Label mostrandoCantRegistros;
 	private TablePageBar tablePageBar;
 	private List<CuentaSearchResultDto> cuentas;
 	private CuentaSearchDto lastCuentaSearchDto;
@@ -54,6 +55,9 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		resultTotalCuentas = new Label(Sfa.constant().totalCuentasBuscadas());
 		resultTotalCuentas.setVisible(false);
 		resultTotalCuentas.addStyleName("titulo");
+		resultTotalCuentas = new Label(Sfa.constant().registrosMostrados());
+		mostrandoCantRegistros.addStyleName("titulo");
+		mostrandoCantRegistros.setVisible(false);
 		resultTableWrapper = new SimplePanel();
 		resultTableWrapper.addStyleName("resultTableWrapper");
 		tablePageBar = new TablePageBar();
@@ -77,6 +81,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		add(resultTotalCuentas);
 		add(resultTableWrapper);
 		add(tablePageBar);
+		add(mostrandoCantRegistros);
 		setVisible(false);
 	}
 
@@ -124,11 +129,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	
 	public void setCuentas(List<CuentaSearchResultDto> cuentas) {
 		this.cuentas = cuentas;
-		if (cuentas.size() < 10){
-			resultTotalCuentas.setText(Sfa.constant().totalCuentasBuscadas() + String.valueOf(cuentas.size()-1));
-		}else{
-			resultTotalCuentas.setText(Sfa.constant().totalCuentasBuscadas() + String.valueOf(cuentas.size()));
-		}
+		resultTotalCuentas.setText(Sfa.constant().totalCuentasBuscadas() + String.valueOf(cuentas.size()));
 		resultTotalCuentas.setVisible(true);
 		tablePageBar.setPagina(1);
 		List<CuentaSearchResultDto> cuentasActuales = new ArrayList<CuentaSearchResultDto>(); 
@@ -138,7 +139,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 					cuentasActuales.add(cuentas.get(i));
 				}				
 			}else{
-				for (int i = 0; i < cuentas.size()-1; i++) {
+				for (int i = 0; i < cuentas.size(); i++) {
 					cuentasActuales.add(cuentas.get(i));
 				}				
 			}
