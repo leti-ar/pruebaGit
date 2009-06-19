@@ -9,6 +9,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class ModeloDto extends EnumDto implements ListBoxItem, IsSerializable {
 
 	private List<ItemSolicitudTasadoDto> items;
+	private boolean esBlackberry;
 
 	public String getItemText() {
 		return descripcion;
@@ -24,6 +25,14 @@ public class ModeloDto extends EnumDto implements ListBoxItem, IsSerializable {
 
 	public void setItems(List<ItemSolicitudTasadoDto> items) {
 		this.items = items;
+	}
+
+	public boolean isEsBlackberry() {
+		return esBlackberry;
+	}
+
+	public void setEsBlackberry(boolean esBlackberry) {
+		this.esBlackberry = esBlackberry;
 	}
 
 }
