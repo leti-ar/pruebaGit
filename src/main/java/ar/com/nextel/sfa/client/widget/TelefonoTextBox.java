@@ -1,5 +1,7 @@
 package ar.com.nextel.sfa.client.widget;
 
+import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
+
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineHTML;
@@ -11,6 +13,7 @@ public class TelefonoTextBox extends Composite {
 	private ValidationTextBox area; 
 	private ValidationTextBox numero; 
 	private ValidationTextBox interno; 
+	private RegularExpressionConstants regularExpression;
 
 	public TelefonoTextBox() {
 		this(true);
@@ -19,8 +22,8 @@ public class TelefonoTextBox extends Composite {
 	public TelefonoTextBox(boolean showInterno) {
 		mainpanel = new FlowPanel();
 		initWidget(mainpanel);
-		area = new ValidationTextBox("{0,5}[0-9]*");
-		numero = new ValidationTextBox("{0,8}[0-9]*");
+		area = new ValidationTextBox(regularExpression.getNumerosLimitado(5));
+		numero = new ValidationTextBox(regularExpression.getNumerosLimitado(8));
 
 		area.setWidth("40px");
 		area.setMaxLength(5);
@@ -32,7 +35,7 @@ public class TelefonoTextBox extends Composite {
 		mainpanel.add(numero);
 
 		if (showInterno) {
-			interno = new ValidationTextBox("{0,4}[0-9]*");
+			interno = new ValidationTextBox(regularExpression.getNumerosLimitado(4));
 			interno.setWidth("35px");
 			interno.setMaxLength(4);
 			mainpanel.add(new InlineHTML("-"));
