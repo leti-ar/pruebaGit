@@ -55,7 +55,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		resultTotalCuentas = new Label(Sfa.constant().totalCuentasBuscadas());
 		resultTotalCuentas.setVisible(false);
 		resultTotalCuentas.addStyleName("titulo");
-		resultTotalCuentas = new Label(Sfa.constant().registrosMostrados());
+		mostrandoCantRegistros = new Label(Sfa.constant().registrosMostrados());
 		mostrandoCantRegistros.addStyleName("titulo");
 		mostrandoCantRegistros.setVisible(false);
 		resultTableWrapper = new SimplePanel();
