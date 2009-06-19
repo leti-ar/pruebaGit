@@ -1,52 +1,12 @@
 package ar.com.nextel.sfa.test;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 
-import com.thoughtworks.selenium.*;
-import java.util.regex.Pattern;
-
-import org.apache.tools.ant.taskdefs.WaitFor;
-
 /**
- * Test de Selenium
- * 
- * Prerequisitos:
- * 
- * 1 ) levantar el server antes!
- * 
- * via mvn, con mvn selenium:start-server
- * 
- * O si lo queremos levantar standalone de linea de comando:
- * "%JAVA_HOME%"\bin\java -cp seleniumrc/selenium-server.jar  org.openqa.selenium.server.SeleniumServer
- * 
- * Por ejemplo:
- * 
- * C:\lib\PushToTest_TestMaker\TestNetwork\TestNode>selenium.cmd
- * 
- * 2) La app debe estar compilada
- * 
- * 
- * Si se ejecuta desde PTT, incluyendo el código como un jar, y si hacemos algún cambio, 
- * recordar recrear el jar.
- * Por ejemplo:
- *
- * 
- * C:\SFA\LocalSFA_v2\sfa_web2\java\sfa-web2\target\classes>c:\jdk1.6.0_10\bin\jar -cvf testsfa.jar .
- * 
+ 
  * @author ramiro
  *
  */
-public class BuscarCuentasTest extends SeleneseTestCase {
-	
-	private static final String IEXPLORE = "*iexplore";
-	private static final String IEHTA = "*iehta";
-	private static final String FIREFOX_CHROME = "*chrome";
-	private static final String FIREFOX = "*firefox";
-	
-	public static String LOCAL_SFA_ROOT_URL = "http://localhost:8888/";
-	public static String NB34_SFA_ROOT_URL = "http://nb34:8888/";
-	public static String TEST_SFA_ROOT_URL = "http://baslije4.nextel.com.ar:7877/sfa-web2/";
-	
-	public static String SFA_APP_URL = "ar.com.nextel.sfa.SFAWeb/SFAWeb.html";
+public class BuscarCuentasTest extends SfaSeleniumTest {
 	
 	public static void main(String args[] ) {
 		BuscarCuentasTest bct = new BuscarCuentasTest();
@@ -76,18 +36,22 @@ public class BuscarCuentasTest extends SeleneseTestCase {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public void setUp() throws Exception {
-		System.out.println("BuscarCuentasTest.setUp");
-		setUp(NB34_SFA_ROOT_URL, IEXPLORE);
+		// Ejecutamos en forma remota
+		setUp(TEST_SFA_ROOT_URL,IEXPLORE);
 	}
-
+	
 	public void testBusquedaYRecorrido() throws Exception {
-		//selenium.setSpeed("500");
-		System.out.println("BuscarCuentasTest.testBusquedaYRecorrido");
+		selenium.setSpeed("500");
 		selenium.open(SFA_APP_URL);
 		for (int i = 0; i < 3; i++) {
+			loginIfNeeded();
+									
 			selenium.click("gwt-uid-1");
-			selenium.click("gwt-uid-6");
+			selenium.click("gwt-uid-4");
 			while (selenium.isTextPresent("Cargando")){}
 	
 			selenium.highlight(DebugConstants.GWT_BUSQUEDA_CUENTAS_COMBO_PREDEFINIDAS);
@@ -133,8 +97,9 @@ public class BuscarCuentasTest extends SeleneseTestCase {
 	public void testBusquedaSinCriterio() throws Exception {
 		selenium.setSpeed("500");
 		selenium.open(SFA_APP_URL);
+		loginIfNeeded();
 		selenium.click("gwt-uid-1");
-		selenium.click("gwt-uid-6");
+		selenium.click("gwt-uid-4");
 		while (selenium.isTextPresent("Cargando")){}
 
 		selenium.click(DebugConstants.GWT_BUSQUEDA_CUENTAS_BOTON_BUSCAR);
