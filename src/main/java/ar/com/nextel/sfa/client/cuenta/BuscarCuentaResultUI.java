@@ -19,6 +19,7 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
@@ -37,19 +38,22 @@ public class BuscarCuentaResultUI extends FlowPanel {
 
 	private NextelTable resultTable;
 	private SimplePanel resultTableWrapper;
+	private Label resultTotalCuentas;
 	private TablePageBar tablePageBar;
 	private List<CuentaSearchResultDto> cuentas;
 	private CuentaSearchDto lastCuentaSearchDto;
 	private int numeroPagina = 1;
 	private Long totalRegistrosBusqueda;
 	private BuscarCuentaController controller;
-	
+
 	public BuscarCuentaResultUI(BuscarCuentaController controller) {
-		
 		
 		super();
 		this.controller = controller;
 		addStyleName("gwt-BuscarCuentaResultPanel");
+		resultTotalCuentas = new Label(Sfa.constant().totalCuentasBuscadas());
+		resultTotalCuentas.setVisible(false);
+		resultTotalCuentas.addStyleName("titulo");
 		resultTableWrapper = new SimplePanel();
 		resultTableWrapper.addStyleName("resultTableWrapper");
 		tablePageBar = new TablePageBar();
@@ -70,6 +74,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 				
 			}
 		});
+		add(resultTotalCuentas);
 		add(resultTableWrapper);
 		add(tablePageBar);
 		setVisible(false);
@@ -116,13 +121,28 @@ public class BuscarCuentaResultUI extends FlowPanel {
 					}
 				});
 	}
-
+	
 	public void setCuentas(List<CuentaSearchResultDto> cuentas) {
 		this.cuentas = cuentas;
+		if (cuentas.size() < 10){
+			resultTotalCuentas.setText(Sfa.constant().totalCuentasBuscadas() + String.valueOf(cuentas.size()-1));
+		}else{
+			resultTotalCuentas.setText(Sfa.constant().totalCuentasBuscadas() + String.valueOf(cuentas.size()));
+		}
+		resultTotalCuentas.setVisible(true);
 		tablePageBar.setPagina(1);
 		List<CuentaSearchResultDto> cuentasActuales = new ArrayList<CuentaSearchResultDto>(); 
-		for (int i = 0; i < 10; i++) {
-			cuentasActuales.add(cuentas.get(i));
+		if (cuentas.size() != 0){
+			if (cuentas.size() >= 10){
+				for (int i = 0; i < 10; i++) {
+					cuentasActuales.add(cuentas.get(i));
+				}				
+			}else{
+				for (int i = 0; i < cuentas.size()-1; i++) {
+					cuentasActuales.add(cuentas.get(i));
+				}				
+			}
+
 		} 
 		loadTable(cuentasActuales);
 	}
@@ -142,7 +162,14 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	 */
 	private void loadTable(List<CuentaSearchResultDto> cuentasActuales) {
 		clearResultTable();
-		for (int i = 0; i < 10; i++) {
+		int totalABuscar;
+		if(cuentasActuales.size() < 10){
+			totalABuscar = cuentasActuales.size();
+		}else{
+			totalABuscar = 10;			
+		}
+			
+		for (int i = 0; i < totalABuscar; i++) {
 			if (cuentasActuales.size() != 0){
 			resultTable.setWidget(i+1, 0, IconFactory.lapizAnchor(UILoader.EDITAR_CUENTA + "?cuenta_id="
 					+ cuentasActuales.get(i).getId() + "&cod_vantive=" + cuentas.get(i).getCodigoVantive() + "&por_dni=" + getCondicionBusquedaPorDni(), LAPIZ_TITLE));
