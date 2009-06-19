@@ -1,17 +1,19 @@
 package ar.com.nextel.sfa.client.ss;
 
-import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
+import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -130,8 +132,19 @@ public class VariosSSUI extends Composite {
 	}
 
 	private Widget getScoring() {
-		TitledPanel scoringPanel = new TitledPanel(Sfa.constant().firmaTitle());
-		HTML consultarVeraz = new HTML("Consultar Veraz");
+		TitledPanel scoringPanel = new TitledPanel(Sfa.constant().consultarScoringTitle());
+		final SimpleLink consultarVeraz = new SimpleLink("Consultar Veraz");
+		consultarVeraz.addStyleName("ml5");
+		final PopupPanel popupCrearSS = new PopupPanel(true);
+		popupCrearSS.addStyleName("dropUpStyle");
+		popupCrearSS.setWidget(new HTML("No implementado"));
+		consultarVeraz.addClickListener(new ClickListener() {
+			public void onClick(Widget arg0) {
+				popupCrearSS.setPopupPosition(consultarVeraz.getAbsoluteLeft(), consultarVeraz
+						.getAbsoluteTop());
+				popupCrearSS.show();
+			}
+		});
 		scoringPanel.add(consultarVeraz);
 		return scoringPanel;
 	}
