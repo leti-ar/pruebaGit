@@ -66,8 +66,14 @@ public class BuscarCuentaResultUI extends FlowPanel {
 				lastCuentaSearchDto.setOffset(tablePageBar.getOffset());
 				List cuentasActuales = new ArrayList<CuentaSearchResultDto>(); 
 				if (tablePageBar.getPagina() <= (tablePageBar.getCantPaginas())){
-					for (int i = (tablePageBar.getPagina()-1) *10; i < (tablePageBar.getPagina())*10; i++) {
-						cuentasActuales.add(cuentas.get(i));
+					if (cuentas.size() >= 10){
+						for (int i = (tablePageBar.getPagina()-1) *10; i < (tablePageBar.getPagina())*10; i++) {
+							cuentasActuales.add(cuentas.get(i));
+						}				
+					}else{
+						for (int i = (tablePageBar.getPagina()-1) *10; i < (tablePageBar.getPagina())*cuentas.size(); i++) { 
+							cuentasActuales.add(cuentas.get(i));
+						}				
 					}
 				loadTable(cuentasActuales);
 				}else{

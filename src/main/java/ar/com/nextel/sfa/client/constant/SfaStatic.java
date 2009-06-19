@@ -1249,6 +1249,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String razonSocial();
 
   /**
+   * Translated "Mostrando Registros".
+   * 
+   * @return translated "Mostrando Registros"
+   */
+  @DefaultStringValue("Mostrando Registros")
+  @Key("registrosMostrados")
+  String registrosMostrados();
+
+  /**
    * Translated "Reservar N°:".
    * 
    * @return translated "Reservar N°:"
