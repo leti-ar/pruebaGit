@@ -304,6 +304,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 	private void addLineaSolicitudServicio(LineaSolicitudServicioDto linea) {
 		ArrayList<LineaSolicitudServicioDto> nuevasLineas = new ArrayList();
 		nuevasLineas.add(linea);
+		// Si tiene plan (no es un accesorio por ej)
 		if (linea.getPlan() != null) {
 			int catLineas = linea.getCantidad();
 			if (catLineas > 1) {
