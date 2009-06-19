@@ -45,7 +45,7 @@ public class ItemYPlanSolicitudUI extends Composite {
 		table.setWidget(1, 1, itemSolicitudUIData.getPlan());
 		table.setHTML(2, 0, Sfa.constant().precioLista());
 		table.setWidget(2, 1, itemSolicitudUIData.getPrecioListaPlan());
-		table.setHTML(3, 0, Sfa.constant().localidad());
+		table.setHTML(3, 0, Sfa.constant().localidadReq());
 		table.setWidget(3, 1, itemSolicitudUIData.getLocalidad());
 		mainPanel.add(table);
 		FlexTable segundaTabla = new FlexTable();

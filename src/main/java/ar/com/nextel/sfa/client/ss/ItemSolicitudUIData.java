@@ -87,6 +87,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	public static final int ITEM_PLAN = 1;
 	public static final int ACTIVACION = 2;
 	private static final String v1 = "\\{1\\}";
+	private static final String v2 = "\\{2\\}";
 	private int tipoEdicion;
 
 	public ItemSolicitudUIData(EditarSSUIController controller) {
@@ -96,7 +97,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		fields = new ArrayList<Widget>();
 		fields.add(tipoOrden = new ListBox());
 		fields.add(listaPrecio = new ListBox());
-		fields.add(cantidad = new RegexTextBox(RegularExpressionConstants.numeros));
+		fields.add(cantidad = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(4)));
 		fields.add(tipoPlan = new ListBox());
 		fields.add(plan = new ListBox());
 		fields.add(precioListaItem = new SimpleLabel());
@@ -106,13 +107,13 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		fields.add(alias = new TextBox());
 		fields.add(reservarHidden = new TextBox());
 		fields.add(reservar = new TextBox());
-		fields.add(imei = new TextBox());
+		fields.add(imei = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(15)));
 		fields.add(modeloEq = new ListBox());
 		fields.add(item = new ListBox());
 		fields.add(terminoPago = new ListBox());
-		fields.add(sim = new TextBox());
-		fields.add(serie = new TextBox());
-		fields.add(pin = new TextBox());
+		fields.add(sim = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(15)));
+		fields.add(serie = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(10)));
+		fields.add(pin = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(8)));
 		fields.add(ddn = new CheckBox());
 		fields.add(ddi = new CheckBox());
 		fields.add(roaming = new CheckBox());
@@ -150,7 +151,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		roaming.setText(Sfa.constant().roaming());
 		verificarImeiWrapper.setHTML(IconFactory.comprobarNegro(Sfa.constant().verificarImei()).toString());
 		verificarSimWrapper.setHTML(IconFactory.comprobarNegro(Sfa.constant().verificarSim()).toString());
-
+		verificarSimWrapper.addStyleName("pl10");
+		
 		listaPrecio.addChangeListener(this);
 		item.addChangeListener(this);
 		tipoPlan.addChangeListener(this);
@@ -160,6 +162,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		modeloEq.addChangeListener(this);
 		verificarImeiWrapper.addClickListener(this);
 		verificarSimWrapper.addClickListener(this);
+		roaming.addClickListener(this);
 
 		initIdsTipoSolicitudBase();
 	}
@@ -193,6 +196,13 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			comprobarImeiYTraerModelos();
 		} else if (sender == verificarSimWrapper) {
 			verificarSim();
+		} else if (sender == roaming) {
+			if(roaming.isChecked()){
+				ddi.setChecked(true);
+				ddi.setEnabled(false);
+			} else {
+				ddi.setEnabled(true);
+			}
 		}
 
 	}
@@ -280,7 +290,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	/** Comprueba la validez del IMEI y carga los combos de Modelo e Item */
 	private void comprobarImeiYTraerModelos() {
 		if (imei.getText().length() != 15) {
-			ErrorDialog.getInstance().show(Sfa.constant().ERR_IMEI_LENGHT(), false);
+			ErrorDialog.getInstance().show(
+					Sfa.constant().ERR_LENGHT().replaceAll(v1, "IMEI").replaceAll(v2, "15"), false);
 		} else {
 			Long idListaPrecio = ((ListaPreciosDto) listaPrecio.getSelectedItem()).getId();
 			Long idTipoSolicitud = ((TipoSolicitudDto) tipoOrden.getSelectedItem()).getId();
@@ -334,6 +345,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		} else if (sender == item) {
 			// Seteo el precio del item, ajustado por el Termino de Pago y cargo el ListBox de Planes
 			ItemSolicitudTasadoDto is = (ItemSolicitudTasadoDto) item.getSelectedItem();
+			setDisableAndCheckedRoaming(false);
 			if (is != null) {
 				TerminoPagoValidoDto terminoSelected = (TerminoPagoValidoDto) terminoPago.getSelectedItem();
 				double precio = is.getPrecioLista();
@@ -345,7 +357,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 					controller.getPlanesPorItemYTipoPlan(is, (TipoPlanDto) tipoPlan.getSelectedItem(),
 							getActualizarPlanCallback());
 				}
-			}
+				ddn.setChecked(true);
+			} 
 			refreshTotalLabel();
 		} else if (sender == tipoPlan) {
 			// Cargo los planes correspondientes al tipo de plan seleccionado
@@ -372,8 +385,27 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				item.clear();
 				item.addAllItems(modelo.getItems());
 				onChange(item);
+				// Habilito PIN si es Blackberry o N Serie si es otro
+				if (modelo.isEsBlackberry()) {
+					serie.setEnabled(false);
+					pin.setEnabled(true);
+					setDisableAndCheckedRoaming(true);
+				} else {
+					serie.setEnabled(true);
+					pin.setEnabled(false);
+					setDisableAndCheckedRoaming(false);
+				}
 			}
 		}
+	}
+	
+	private void setDisableAndCheckedRoaming(boolean checked){
+		ddn.setChecked(checked);
+		ddi.setChecked(checked);
+		roaming.setChecked(checked);
+		ddn.setEnabled(!checked);
+		ddi.setEnabled(!checked);
+		roaming.setEnabled(!checked);
 	}
 
 	public DefaultWaitCallback<List<PlanDto>> getActualizarPlanCallback() {
@@ -535,6 +567,22 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			validator.addTarget(cantidad).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Cantidad")).greater(
 					Sfa.constant().ERR_CANT_MA_CERO().replaceAll(v1, "Cantidad"), 0);
+		} else {
+			ModeloDto modelo = (ModeloDto) modeloEq.getSelectedItem();
+			if (modelo != null) {
+				if (modelo.isEsBlackberry()) {
+					validator.addTarget(pin).required(
+							Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "PIN")).length(8,
+							Sfa.constant().ERR_LENGHT().replaceAll(v1, "PIN").replaceAll(v2, "8"));
+				} else {
+					validator.addTarget(serie).required(
+							Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Nº Serie")).length(10,
+							Sfa.constant().ERR_LENGHT().replaceAll(v1, "Nº Serie").replaceAll(v2, "10"));
+				}
+			}
+			validator.addTarget(imei).required(
+					Sfa.constant().ERR_LENGHT().replaceAll(v1, "IMEI").replaceAll(v2, "15"));
+			validator.addTarget(sim).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM"));
 		}
 		return validator.fillResult().getErrors();
 	}
@@ -561,6 +609,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 	public void setLineaSolicitudServicio(LineaSolicitudServicioDto linea) {
 		this.lineaSolicitudServicio = linea;
+		serie.setEnabled(true);
+		pin.setEnabled(true);
 		clearListBoxForSelect();
 		clean();
 		if (linea.getAlias() == null || "".equals(linea.getAlias().trim())) {
@@ -617,24 +667,27 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 	public LineaSolicitudServicioDto getLineaSolicitudServicio() {
 		lineaSolicitudServicio.setAlias("");
-		lineaSolicitudServicio.setCantidad(Integer.parseInt(cantidad.getText()));
-		lineaSolicitudServicio.setDdi(ddi.isChecked());
-		lineaSolicitudServicio.setDdn(ddn.isChecked());
 		ItemSolicitudTasadoDto itemTasadoSelected = (ItemSolicitudTasadoDto) item.getSelectedItem();
 		lineaSolicitudServicio.setItem(itemTasadoSelected.getItem());
 		lineaSolicitudServicio.setPrecioLista(itemTasadoSelected.getPrecioLista());
 		lineaSolicitudServicio.setPrecioVenta(itemTasadoSelected.getPrecioLista());
 		lineaSolicitudServicio.setListaPrecios((ListaPreciosDto) listaPrecio.getSelectedItem());
+		if (tipoEdicion == ACTIVACION) {
+			lineaSolicitudServicio.setModelo((ModeloDto) modeloEq.getSelectedItem());
+			lineaSolicitudServicio.setNumeroIMEI(imei.getText());
+			lineaSolicitudServicio.setNumeroSerie(serie.getText());
+			lineaSolicitudServicio.setNumeroSimcard(sim.getText());
+			lineaSolicitudServicio.setCantidad(1);
+		} else {
+			lineaSolicitudServicio.setCantidad(Integer.parseInt(cantidad.getText()));
+
+		}
 		if (tipoEdicion == ITEM_PLAN || tipoEdicion == ACTIVACION) {
 			lineaSolicitudServicio.setAlias(alias.getText());
 			lineaSolicitudServicio.setLocalidad((LocalidadDto) localidad.getSelectedItem());
 			lineaSolicitudServicio.setModalidadCobro((ModalidadCobroDto) modalidadCobro.getSelectedItem());
-			lineaSolicitudServicio.setModelo((ModeloDto) modeloEq.getSelectedItem());
-			lineaSolicitudServicio.setNumeroIMEI(imei.getText());
 			lineaSolicitudServicio.setNumeroReserva(getNumeroTelefonicoCompleto());
 			lineaSolicitudServicio.setNumeroReservaArea(reservarHidden.getText());
-			lineaSolicitudServicio.setNumeroSerie(serie.getText());
-			lineaSolicitudServicio.setNumeroSimcard(sim.getText());
 			PlanDto planSelected = (PlanDto) plan.getSelectedItem();
 			lineaSolicitudServicio.setPlan(planSelected);
 			if (planSelected != null) {
@@ -644,6 +697,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				lineaSolicitudServicio.setPrecioListaPlan(0d);
 				lineaSolicitudServicio.setPrecioVentaPlan(0d);
 			}
+			lineaSolicitudServicio.setDdi(ddi.isChecked());
+			lineaSolicitudServicio.setDdn(ddn.isChecked());
 			lineaSolicitudServicio.setRoaming(roaming.isChecked());
 			TerminoPagoValidoDto terminoSelected = (TerminoPagoValidoDto) terminoPago.getSelectedItem();
 			lineaSolicitudServicio.setTerminoPago(terminoSelected.getTerminoPago());
