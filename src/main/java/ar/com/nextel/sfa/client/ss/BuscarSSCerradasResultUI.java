@@ -2,7 +2,6 @@ package ar.com.nextel.sfa.client.ss;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -20,7 +19,6 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
@@ -76,31 +74,34 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 		this.solicitudServicioCerradaDto = solicitudServicioCerradaDto;
 		cantEquipos = new Long(0);
 		cantPataconex = new Double(0);
-		cantEqFirmados = 0;		
+		cantEqFirmados = 0;
 		SolicitudRpcService.Util.getInstance().searchSSCerrada(solicitudServicioCerradaDto,
 				new DefaultWaitCallback<List<SolicitudServicioCerradaResultDto>>() {
-			public void success(List<SolicitudServicioCerradaResultDto> result) {
-				if (result != null) {
-					if (result.size()==0) {
-						MessageDialog.getInstance().showAceptar("No se encontraron datos con el " +
-								"criterio utilizado", MessageDialog.getCloseCommand());
-					}					
-					loadExcel();
-					setSolicitudServicioDto(result);
-					buscarSSTotalesResultUI.setValues(cantEquipos.toString(), cantPataconex.toString(), String.valueOf(cantEqFirmados));
-					buscarSSTotalesResultUI.setVisible(true);					
-				}
-			}
-		});
+					public void success(List<SolicitudServicioCerradaResultDto> result) {
+						if (result != null) {
+							if (result.size() == 0) {
+								MessageDialog.getInstance().showAceptar(
+										"No se encontraron datos con el " + "criterio utilizado",
+										MessageDialog.getCloseCommand());
+							}
+							loadExcel();
+							setSolicitudServicioDto(result);
+							buscarSSTotalesResultUI.setValues(cantEquipos.toString(), cantPataconex
+									.toString(), String.valueOf(cantEqFirmados));
+							buscarSSTotalesResultUI.setVisible(true);
+						}
+					}
+				});
 	}
 
-	public void setSolicitudServicioDto(List<SolicitudServicioCerradaResultDto> solicitudServicioCerradaResultDto) {
+	public void setSolicitudServicioDto(
+			List<SolicitudServicioCerradaResultDto> solicitudServicioCerradaResultDto) {
 		this.solicitudesServicioCerradaResultDto = solicitudServicioCerradaResultDto;
 		add(loadTable());
 		setVisible(true);
 	}
 
-	private void loadExcel() {
+	private Widget loadExcel() {
 		if (exportarExcel != null) {
 			exportarExcel.unsinkEvents(Event.getEventsSunk(exportarExcel.getElement()));
 			exportarExcel.removeFromParent();
@@ -110,21 +111,24 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 		exportarExcel.setWidth("1089");
 		HTML icon = IconFactory.excel();
 		icon.addStyleName("exportarExcelSS");
-		exportarExcel.add(icon);	
+		exportarExcel.add(icon);
 		resultTableWrapper.add(exportarExcel);
 		icon.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
-				SolicitudRpcService.Util.getInstance().buildExcel(solicitudServicioCerradaDto, 
-				new DefaultWaitCallback<String>() {
-					public void success(String result) {
-						if (result != null) {
-							String contextRoot =getContextRoot(GWT.getModuleBaseURL());
-							WindowUtils.redirect("/"+contextRoot+"/download/download?module=solicitudes&service=xls&name="+result+".xls");
-						}
-					}
-				}); 
+				SolicitudRpcService.Util.getInstance().buildExcel(solicitudServicioCerradaDto,
+						new DefaultWaitCallback<String>() {
+							public void success(String result) {
+								if (result != null) {
+									String contextRoot = getContextRoot(GWT.getModuleBaseURL());
+									WindowUtils.redirect("/" + contextRoot
+											+ "/download/download?module=solicitudes&service=xls&name="
+											+ result + ".xls");
+								}
+							}
+						});
 			}
 		});
+		return exportarExcel;
 	}
 
 	private Widget loadTable() {
@@ -192,7 +196,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 		public void onCellClicked(SourcesTableEvents arg0, int arg1, int arg2) {
 			String numeroSS = resultTable.getHTML(arg1, 1).toString();
 			SolicitudServicioCerradaResultDto solicitud = buscarSS(numeroSS);
-			if ((arg1 >= 1) && (arg2>=1)) {
+			if ((arg1 >= 1) && (arg2 >= 1)) {
 				SolicitudRpcService.Util.getInstance().getDetalleSolicitudServicio(solicitud.getId(),
 						new DefaultWaitCallback<DetalleSolicitudServicioDto>() {
 							public void success(DetalleSolicitudServicioDto result) {
@@ -200,8 +204,8 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 								cambiosSSCerradasResultUI.setVisible(true);
 							}
 						});
-			} else if ((arg1>=1) && (arg2==0)){
-			
+			} else if ((arg1 >= 1) && (arg2 == 0)) {
+
 				String contextRoot = getContextRoot(GWT.getModuleBaseURL());
 				if (solicitud.isCliente()) {
 					// Si es cliente usamos el codigo Vantive, sino el Id (ya que no podemos
@@ -233,20 +237,10 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 	public void setCambiosSSCerradasResultUI(CambiosSSCerradasResultUI cambiosSSCerradasResultUI) {
 		this.cambiosSSCerradasResultUI = cambiosSSCerradasResultUI;
 	}
-	
-	private String getContextRoot(String url){
-		StringTokenizer stringTokenizer = new StringTokenizer("/");
-		String contextRoot = null;
-		int i=0;
-		while (stringTokenizer.hasMoreElements()) {
-			i++;
-			String tmp = (String) stringTokenizer.nextElement();
-			if(i==3){
-				contextRoot = tmp;
-			}
-		}
-		return contextRoot;
-	}
 
+	private String getContextRoot(String url) {
+		String[] urlSplited = url.split("/");
+		return urlSplited[3];
+	}
 
 }
