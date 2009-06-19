@@ -218,6 +218,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			Collections.sort(resultDTO, estadoComparator);
 			return this.transformEstadoSolicitudServicioCerradaDTOToCambioEstadoSolicitudWCTO(resultDTO);
 		} catch (Exception e) {
+			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
 	}
