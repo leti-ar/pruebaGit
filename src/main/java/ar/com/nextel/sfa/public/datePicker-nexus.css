@@ -31,7 +31,7 @@ TABLE.monthDates TD {
 	border-left: 1px solid #980023;
 	border-top:1px solid #980023;
 	background-color: #FAFAFA;
-	background-image: url(../images/sombra_calendarPanel.jpg);
+	background-image: url(images/sombra_calendarPanel.jpg);
 	background-repeat: repeat-x;
 	background-position: top;
  }
@@ -59,10 +59,10 @@ TABLE.monthDates TD {
 	text-decoration:underline;
 	cursor:pointer;cursor:hand;
  }
- 
+
  .cancelLink	{
 	cursor:pointer;cursor:hand;
-	background-image: url(/images/icono_cancelar.gif);
+	background-image: url(images/cancel.gif);
     float: right;
     height: 12px;
     width: 12px;
@@ -70,7 +70,7 @@ TABLE.monthDates TD {
  
  .acceptLink	{
 	cursor:pointer;cursor:hand;
-	background-image: url(../images/icono_aceptar.gif);
+	background-image: url(images/tildeVerde.gif);
     float: right;
     height: 12px;
     width: 12px;
