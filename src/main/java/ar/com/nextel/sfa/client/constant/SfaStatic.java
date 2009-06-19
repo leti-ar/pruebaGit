@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.constant;
 
 /**
  * Interface to represent the constants contained in resource bundle:
- * 	'/home/jlgperez/workspaceSFASVN/sfa-web2/src/main/java/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
+ * 	'/home/esalvador/workspaceSFASVN/sfa-web2/target/classes/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
  */
 public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
@@ -50,6 +50,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("El campo Cantidad debe ser 1 para una reserva de número.")
   @Key("ERR_CANT_UNO")
   String ERR_CANT_UNO();
+
+  /**
+   * Translated "La cuenta tiene cambios sin guardar. Guarde o descarte los cambios antes de crear una solicitud de servicio.".
+   * 
+   * @return translated "La cuenta tiene cambios sin guardar. Guarde o descarte los cambios antes de crear una solicitud de servicio."
+   */
+  @DefaultStringValue("La cuenta tiene cambios sin guardar. Guarde o descarte los cambios antes de crear una solicitud de servicio.")
+  @Key("ERR_CREAR_SS_EDITOR_CUENTA_DIRTY")
+  String ERR_CREAR_SS_EDITOR_CUENTA_DIRTY();
 
   /**
    * Translated "Debe ingresar un dia hábil".
@@ -232,6 +241,24 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String MSG_NUMERO_RESERVADO();
 
   /**
+   * Translated "Mensaje".
+   * 
+   * @return translated "Mensaje"
+   */
+  @DefaultStringValue("Mensaje")
+  @Key("MSG_DIALOG_TITLE")
+  String MSG_DIALOG_TITLE();
+
+  /**
+   * Translated "No hay datos nuevos para guardar".
+   * 
+   * @return translated "No hay datos nuevos para guardar"
+   */
+  @DefaultStringValue("No hay datos nuevos para guardar")
+  @Key("MSG_NO_HAY_DATOS_NUEVOS")
+  String MSG_NO_HAY_DATOS_NUEVOS();
+
+  /**
    * Translated "¿Desea guardar los cambios?".
    * 
    * @return translated "¿Desea guardar los cambios?"
@@ -293,6 +320,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Agregar")
   @Key("agregar")
   String agregar();
+
+  /**
+   * Translated "^Agregar".
+   * 
+   * @return translated "^Agregar"
+   */
+  @DefaultStringValue("^Agregar")
+  @Key("agregarDivSusc")
+  String agregarDivSusc();
 
   /**
    * Translated "Alias:".
@@ -529,6 +565,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String crear();
 
   /**
+   * Translated "^Crear SS".
+   * 
+   * @return translated "^Crear SS"
+   */
+  @DefaultStringValue("^Crear SS")
+  @Key("crearSS")
+  String crearSS();
+
+  /**
    * Translated "Cred.Fidel.:".
    * 
    * @return translated "Cred.Fidel.:"
@@ -617,6 +662,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Disponible:")
   @Key("disponible")
   String disponible();
+
+  /**
+   * Translated "División".
+   * 
+   * @return translated "División"
+   */
+  @DefaultStringValue("División")
+  @Key("division")
+  String division();
 
   /**
    * Translated "Domicilio".
@@ -1283,6 +1337,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("SS:")
   @Key("ss")
   String ss();
+
+  /**
+   * Translated "Suscriptor".
+   * 
+   * @return translated "Suscriptor"
+   */
+  @DefaultStringValue("Suscriptor")
+  @Key("suscriptor")
+  String suscriptor();
 
   /**
    * Translated "Tarjeta Tipo".
