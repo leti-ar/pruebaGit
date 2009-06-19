@@ -169,13 +169,13 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ERR_FORMULARIO_DIRTY();
 
   /**
-   * Translated "El campo IMEI debe tener 15 dígitos.".
+   * Translated "El campo {1} debe tener {2} dígitos.".
    * 
-   * @return translated "El campo IMEI debe tener 15 dígitos."
+   * @return translated "El campo {1} debe tener {2} dígitos."
    */
-  @DefaultStringValue("El campo IMEI debe tener 15 dígitos.")
-  @Key("ERR_IMEI_LENGHT")
-  String ERR_IMEI_LENGHT();
+  @DefaultStringValue("El campo {1} debe tener {2} dígitos.")
+  @Key("ERR_LENGHT")
+  String ERR_LENGHT();
 
   /**
    * Translated "El Nº de solicitud debe tener menos de 10 dígitos.".
@@ -421,13 +421,13 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String cancelar();
 
   /**
-   * Translated "Cantidad:".
+   * Translated "<span class=\"req\">Cantidad:</span>".
    * 
-   * @return translated "Cantidad:"
+   * @return translated "<span class=\"req\">Cantidad:</span>"
    */
-  @DefaultStringValue("Cantidad:")
-  @Key("cantidad")
-  String cantidad();
+  @DefaultStringValue("<span class=\"req\">Cantidad:</span>")
+  @Key("cantidadReq")
+  String cantidadReq();
 
   /**
    * Translated "Cargo".
@@ -511,6 +511,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String cliente();
 
   /**
+   * Translated "Consultar Scoring".
+   * 
+   * @return translated "Consultar Scoring"
+   */
+  @DefaultStringValue("Consultar Scoring")
+  @Key("consultarScoringTitle")
+  String consultarScoringTitle();
+
+  /**
    * Translated "Contactos".
    * 
    * @return translated "Contactos"
@@ -547,11 +556,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String cpa();
 
   /**
-   * Translated "CPP/MPP:".
+   * Translated "<span class=\"req\">CPP/MPP:</span>".
    * 
-   * @return translated "CPP/MPP:"
+   * @return translated "<span class=\"req\">CPP/MPP:</span>"
    */
-  @DefaultStringValue("CPP/MPP:")
+  @DefaultStringValue("<span class=\"req\">CPP/MPP:</span>")
   @Key("cppMpp")
   String cppMpp();
 
@@ -880,11 +889,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String iibb();
 
   /**
-   * Translated "IMEI:".
+   * Translated "<span class=\"req\">IMEI:</span>".
    * 
-   * @return translated "IMEI:"
+   * @return translated "<span class=\"req\">IMEI:</span>"
    */
-  @DefaultStringValue("IMEI:")
+  @DefaultStringValue("<span class=\"req\">IMEI:</span>")
   @Key("imei")
   String imei();
 
@@ -898,11 +907,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String interno();
 
   /**
-   * Translated "Item:".
+   * Translated "<span class=\"req\">Item:</span>".
    * 
-   * @return translated "Item:"
+   * @return translated "<span class=\"req\">Item:</span>"
    */
-  @DefaultStringValue("Item:")
+  @DefaultStringValue("<span class=\"req\">Item:</span>")
   @Key("item")
   String item();
 
@@ -943,6 +952,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String localidad();
 
   /**
+   * Translated "<span class=\"req\">Localidad:</span>".
+   * 
+   * @return translated "<span class=\"req\">Localidad:</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Localidad:</span>")
+  @Key("localidadReq")
+  String localidadReq();
+
+  /**
    * Translated "Mzna.:".
    * 
    * @return translated "Mzna.:"
@@ -961,11 +979,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String modalidad();
 
   /**
-   * Translated "Modelo Eq.:".
+   * Translated "<span class=\"req\">Modelo Eq.:</span>".
    * 
-   * @return translated "Modelo Eq.:"
+   * @return translated "<span class=\"req\">Modelo Eq.:</span>"
    */
-  @DefaultStringValue("Modelo Eq.:")
+  @DefaultStringValue("<span class=\"req\">Modelo Eq.:</span>")
   @Key("modeloEq")
   String modeloEq();
 
@@ -1141,11 +1159,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String personal();
 
   /**
-   * Translated "Nº Pin:".
+   * Translated "<span class=\"req\">Nº Pin:</span>".
    * 
-   * @return translated "Nº Pin:"
+   * @return translated "<span class=\"req\">Nº Pin:</span>"
    */
-  @DefaultStringValue("Nº Pin:")
+  @DefaultStringValue("<span class=\"req\">Nº Pin:</span>")
   @Key("pin")
   String pin();
 
@@ -1159,11 +1177,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String piso();
 
   /**
-   * Translated "Plan:".
+   * Translated "<span class=\"req\">Plan:</span>".
    * 
-   * @return translated "Plan:"
+   * @return translated "<span class=\"req\">Plan:</span>"
    */
-  @DefaultStringValue("Plan:")
+  @DefaultStringValue("<span class=\"req\">Plan:</span>")
   @Key("plan")
   String plan();
 
@@ -1384,11 +1402,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String telefonos();
 
   /**
-   * Translated "Término Pago:".
+   * Translated "<span class=\"req\">Término Pago:</span>".
    * 
-   * @return translated "Término Pago:"
+   * @return translated "<span class=\"req\">Término Pago:</span>"
    */
-  @DefaultStringValue("Término Pago:")
+  @DefaultStringValue("<span class=\"req\">Término Pago:</span>")
   @Key("terminoPago")
   String terminoPago();
 
