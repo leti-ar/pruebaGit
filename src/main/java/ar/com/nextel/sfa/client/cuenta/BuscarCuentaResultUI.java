@@ -76,8 +76,18 @@ public class BuscarCuentaResultUI extends FlowPanel {
 						}				
 					}
 				loadTable(cuentasActuales);
+//				}else if((cuentas.size() - (tablePageBar.getCantRegistrosParcF()-10)) < 10){
+//					for (int i = 1; i < (cuentas.size()); i++) { 
+//						cuentasActuales.add(cuentas.get(i));
+//					}
+//					//tablePageBar.setCantRegistrosParcF(tablePageBar.getCantRegistrosParcF()-10);
+//					loadTable(cuentasActuales);
+//					tablePageBar.refrescaLabelRegistros();
 				}else{
 					tablePageBar.setPagina(tablePageBar.getPagina()-1);
+					tablePageBar.setCantRegistrosParcI(tablePageBar.getCantRegistrosParcI()-10);
+					tablePageBar.setCantRegistrosParcF(tablePageBar.getCantRegistrosParcF()-10);
+					tablePageBar.refrescaLabelRegistros();
 					ErrorDialog.getInstance().setTitle("Error");
 					ErrorDialog.getInstance().show("No hay más registros disponibles en esta búsqueda.");
 				}
@@ -143,13 +153,18 @@ public class BuscarCuentaResultUI extends FlowPanel {
 			if (cuentas.size() >= 10){
 				for (int i = 0; i < 10; i++) {
 					cuentasActuales.add(cuentas.get(i));
-				}				
+				}
+				tablePageBar.setCantRegistrosParcI(1);
+				tablePageBar.setCantRegistrosParcF(cuentasActuales.size());
 			}else{
 				for (int i = 0; i < cuentas.size(); i++) {
 					cuentasActuales.add(cuentas.get(i));
-				}				
+				}
+				tablePageBar.setCantRegistrosParcI(1);
+				tablePageBar.setCantRegistrosParcF(cuentasActuales.size());
 			}
-
+			tablePageBar.setCantRegistrosTot(cuentas.size());
+			tablePageBar.refrescaLabelRegistros();
 		} 
 		loadTable(cuentasActuales);
 	}
