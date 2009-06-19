@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client.ss;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -13,6 +14,7 @@ import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.WindowUtils;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -116,7 +118,8 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 				new DefaultWaitCallback<String>() {
 					public void success(String result) {
 						if (result != null) {
-							WindowUtils.redirect("download/download?module=solicitudes&service=xls&name="+result+".xls");
+							String contextRoot =getContextRoot(GWT.getModuleBaseURL());
+							WindowUtils.redirect("/"+contextRoot+"/download/download?module=solicitudes&service=xls&name="+result+".xls");
 						}
 					}
 				}); 
@@ -199,13 +202,19 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 						});
 			} else if ((arg1>=1) && (arg2==0)){
 			
+				String contextRoot = getContextRoot(GWT.getModuleBaseURL());
 				if (solicitud.isCliente()) {
-			        // Si es cliente usamos el codigo Vantive, sino el Id (ya que no podemos 
-			        // guardar archivos con los caracteres de VANCUC
-					WindowUtils.redirect("download/download?module=solicitudes&service=rtf&name="+solicitud.getIdVantive().toString()+"-5-"+numeroSS+".rtf");
-			        } else {
-			        	WindowUtils.redirect("download/download?module=solicitudes&service=rtf&name="+solicitud.getId().toString()+"-5-"+numeroSS+".rtf");
-			        }
+					// Si es cliente usamos el codigo Vantive, sino el Id (ya que no podemos
+					// guardar archivos con los caracteres de VANCUC
+
+					WindowUtils.redirect("/" + contextRoot
+							+ "/download/download?module=solicitudes&service=rtf&name="
+							+ solicitud.getIdVantive().toString() + "-5-" + numeroSS + ".rtf");
+				} else {
+					WindowUtils.redirect("/" + contextRoot
+							+ "/download/download?module=solicitudes&service=rtf&name="
+							+ solicitud.getId().toString() + "-5-" + numeroSS + ".rtf");
+				}
 			}
 		}
 	}
@@ -225,4 +234,19 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 		this.cambiosSSCerradasResultUI = cambiosSSCerradasResultUI;
 	}
 	
+	private String getContextRoot(String url){
+		StringTokenizer stringTokenizer = new StringTokenizer("/");
+		String contextRoot = null;
+		int i=0;
+		while (stringTokenizer.hasMoreElements()) {
+			i++;
+			String tmp = (String) stringTokenizer.nextElement();
+			if(i==3){
+				contextRoot = tmp;
+			}
+		}
+		return contextRoot;
+	}
+
+
 }
