@@ -116,7 +116,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 				new DefaultWaitCallback<String>() {
 					public void success(String result) {
 						if (result != null) {
-							WindowUtils.redirect("/download/download?module=solicitudes&service=xls&name="+result+".xls");
+							WindowUtils.redirect("download/download?module=solicitudes&service=xls&name="+result+".xls");
 						}
 					}
 				}); 
@@ -202,9 +202,9 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 				if (solicitud.isCliente()) {
 			        // Si es cliente usamos el codigo Vantive, sino el Id (ya que no podemos 
 			        // guardar archivos con los caracteres de VANCUC
-					WindowUtils.redirect("/download/download?module=solicitudes&service=rtf&name="+solicitud.getIdVantive().toString()+"-5-"+numeroSS+".rtf");
+					WindowUtils.redirect("download/download?module=solicitudes&service=rtf&name="+solicitud.getIdVantive().toString()+"-5-"+numeroSS+".rtf");
 			        } else {
-			        	WindowUtils.redirect("/download/download?module=solicitudes&service=rtf&name="+solicitud.getId().toString()+"-5-"+numeroSS+".rtf");
+			        	WindowUtils.redirect("download/download?module=solicitudes&service=rtf&name="+solicitud.getId().toString()+"-5-"+numeroSS+".rtf");
 			        }
 			}
 		}
