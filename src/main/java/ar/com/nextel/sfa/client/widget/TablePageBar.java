@@ -87,7 +87,11 @@ public class TablePageBar extends Composite {
 
 	public void setPagina(int pagina) {
 		this.pagina = pagina;
-		this.cantPaginas = (cantResultados / 10); 
+		if((cantResultados == 25) || (cantResultados == 75)){
+			this.cantPaginas = (cantResultados + 5) / 10; 
+		}else{
+			this.cantPaginas = (cantResultados / 10);
+		}
 		pagLabel.setText("Pág " + pagina);
 		cantLabel.setText(" de " + cantPaginas);
 	}
@@ -121,10 +125,18 @@ public class TablePageBar extends Composite {
 			public void onClick(Widget sender) {
 				if (sender == next) {
 					setOffset(getOffset() + 11);
-					setPagina(getPagina() + 1);
-					setCantRegistrosParcI(cantRegistrosParcI+10);
-					setCantRegistrosParcF(cantRegistrosParcF+10);					
-					refrescaLabelRegistros();
+						if (((getPagina()+1) == getCantPaginas()) && ((cantResultados == 25) || (cantResultados == 75))){
+						setPagina(getPagina() + 1);
+						setCantRegistrosTot(cantRegistrosTot);
+						setCantRegistrosParcI(cantRegistrosTot - 4);
+						setCantRegistrosParcF(cantRegistrosTot);
+					}else{
+						setPagina(getPagina() + 1);
+						setCantRegistrosTot(cantRegistrosTot);
+						setCantRegistrosParcF(cantRegistrosParcF+10);
+						setCantRegistrosParcI(cantRegistrosParcI+10);
+					}
+				refrescaLabelRegistros();
 				} else if (sender == first) {
 					if (getPagina() == 1) {
 						return;
@@ -136,9 +148,21 @@ public class TablePageBar extends Composite {
 					refrescaLabelRegistros();
 				} else if (sender == last) {
 					setOffset(cantResultados - 10);
-					setPagina(cantResultados / 10);
-					setCantRegistrosParcI(cantRegistrosTot - 10);
-					setCantRegistrosParcF(cantRegistrosTot);					
+					if((cantResultados == 25) || (cantResultados == 75)){
+						setPagina((cantResultados + 5)/10);
+						setCantRegistrosTot(cantRegistrosTot);
+						setCantRegistrosParcI(cantRegistrosTot - 4);
+						setCantRegistrosParcF(cantResultados);
+					}else{
+						setPagina(cantResultados / 10);
+						setCantRegistrosTot(cantRegistrosTot);
+						if (cantRegistrosParcF == cantRegistrosTot){
+							setCantRegistrosParcI(cantRegistrosParcI);	
+						}else{
+							setCantRegistrosParcI(cantRegistrosTot - 9);
+						}
+						setCantRegistrosParcF(cantRegistrosTot);
+					}
 					refrescaLabelRegistros();
 				} else if (sender == prev) {
 					if (getPagina() == 1) {
@@ -146,8 +170,12 @@ public class TablePageBar extends Composite {
 					}
 					setOffset(getOffset() - 11);
 					setPagina(getPagina() - 1);
+					if(((cantResultados == 25) || (cantResultados == 75)) && (cantRegistrosParcF == cantRegistrosTot)){
+						setCantRegistrosParcF(cantRegistrosParcF-5);
+					}else{
+						setCantRegistrosParcF(cantRegistrosParcF-10);						
+					}
 					setCantRegistrosParcI(cantRegistrosParcI-10);
-					setCantRegistrosParcF(cantRegistrosParcF-10);
 					refrescaLabelRegistros();
 				}
 				if (beforeClickCommand != null) {
@@ -202,5 +230,9 @@ public class TablePageBar extends Composite {
 
 	public void setCantRegistrosParcF(int cantRegistrosParcF) {
 		this.cantRegistrosParcF = cantRegistrosParcF;
+	}
+
+	public int getCantResultados() {
+		return cantResultados;
 	}
 }
