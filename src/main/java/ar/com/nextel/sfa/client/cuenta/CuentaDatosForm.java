@@ -172,22 +172,27 @@ public class CuentaDatosForm extends Composite {
 		datosCuentaTable.setWidget(row, 2, iconoLupa);		
 		iconoLupa.addClickListener(new ClickListener() {
 			public void onClick (Widget sender) {
-				PersonaDto personaDto = getVerazSearch(camposTabDatos.getNumeroDocumento(), 
-						camposTabDatos.getTipoDocumento(), camposTabDatos.getSexo());
-				inicializarVeraz(camposTabDatos.getVerazRta());
-				CuentaRpcService.Util.getInstance().consultarVeraz(personaDto, 
-						new DefaultWaitCallback<VerazResponseDto>() {
+				if ("".equals(camposTabDatos.getNumeroDocumento().getText())) {
+					MessageDialog.getInstance();
+					MessageDialog.getInstance().showAceptar("Debe ingresar un número de documento", MessageDialog.getCloseCommand());
+				} else {
+					PersonaDto personaDto = getVerazSearch(camposTabDatos.getNumeroDocumento(), 
+							camposTabDatos.getTipoDocumento(), camposTabDatos.getSexo());
+					inicializarVeraz(camposTabDatos.getVerazRta());
+					CuentaRpcService.Util.getInstance().consultarVeraz(personaDto, 
+							new DefaultWaitCallback<VerazResponseDto>() {
 
-					public void success(VerazResponseDto result) {
-						if (result != null) {
-							setearValoresRtaVeraz(result, camposTabDatos.getApellido(), camposTabDatos.getNombre(), 
-									camposTabDatos.getRazonSocial(), camposTabDatos.getSexo(), camposTabDatos.getVerazRta());
+						public void success(VerazResponseDto result) {
+							if (result != null) {
+								setearValoresRtaVeraz(result, camposTabDatos.getApellido(), camposTabDatos.getNombre(), 
+										camposTabDatos.getRazonSocial(), camposTabDatos.getSexo(), camposTabDatos.getVerazRta());
+							}
 						}
-					}
-				});
+					});
+				}
 			}
 		});	
-		
+
 		datosCuentaTable.setWidget(row, 3, camposTabDatos.getVerazLabel());
         inicializarVeraz(camposTabDatos.getVerazRta());
 		datosCuentaTable.setWidget(row, 4, camposTabDatos.getVerazRta());
