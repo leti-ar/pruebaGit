@@ -13,8 +13,8 @@ import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.WindowUtils;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -119,7 +119,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 						new DefaultWaitCallback<String>() {
 							public void success(String result) {
 								if (result != null) {
-									String contextRoot = getContextRoot(GWT.getModuleBaseURL());
+									String contextRoot = getContextRoot();
 									WindowUtils.redirect("/" + contextRoot
 											+ "/download/download?module=solicitudes&service=xls&name="
 											+ result + ".xls");
@@ -206,7 +206,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 						});
 			} else if ((arg1 >= 1) && (arg2 == 0)) {
 
-				String contextRoot = getContextRoot(GWT.getModuleBaseURL());
+				String contextRoot = getContextRoot();
 				if (solicitud.isCliente()) {
 					// Si es cliente usamos el codigo Vantive, sino el Id (ya que no podemos
 					// guardar archivos con los caracteres de VANCUC
@@ -238,7 +238,8 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 		this.cambiosSSCerradasResultUI = cambiosSSCerradasResultUI;
 	}
 
-	private String getContextRoot(String url) {
+	private String getContextRoot() {
+		String url = Window.Location.getHref();
 		String[] urlSplited = url.split("/");
 		return urlSplited[3];
 	}
