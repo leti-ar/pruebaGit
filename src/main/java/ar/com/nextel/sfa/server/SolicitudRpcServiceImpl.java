@@ -141,9 +141,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		AppLogger.info("Iniciando busqueda de SS cerradas...");
 		SolicitudServicioCerradaSearchCriteria solicitudServicioCerradaSearchCriteria = mapper.map(
 				solicitudServicioCerradaDto, SolicitudServicioCerradaSearchCriteria.class);
-		Usuario usuario = new Usuario();
-		usuario.setUserName("acsa1");
-		Vendedor vendedor = registroVendedores.getVendedor(usuario);
+		Vendedor vendedor = sessionContextLoader.getVendedor();
 		solicitudServicioCerradaSearchCriteria.setVendedor(vendedor);
 		List<SolicitudServicio> list = null;
 		try {
@@ -273,9 +271,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		AppLogger.info("Iniciando busqueda de SS cerradas para crear excel...");
 		SolicitudServicioCerradaSearchCriteria solicitudServicioCerradaSearchCriteria = mapper.map(
 				solicitudServicioCerradaDto, SolicitudServicioCerradaSearchCriteria.class);
-		Usuario usuario = new Usuario();
-		usuario.setUserName("acsa1");
-		Vendedor vendedor = registroVendedores.getVendedor(usuario);
+		Vendedor vendedor = sessionContextLoader.getVendedor();
 		solicitudServicioCerradaSearchCriteria.setVendedor(vendedor);
 		List<SolicitudServicio> list = null;
 		try {

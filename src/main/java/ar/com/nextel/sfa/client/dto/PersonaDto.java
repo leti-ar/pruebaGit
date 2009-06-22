@@ -99,4 +99,32 @@ public class PersonaDto implements IsSerializable {
 	public void setCargo(CargoDto cargo) {
 		this.cargo = cargo;
 	}
+	
+//	private Long ;
+//    private Long idTipoDocumento;
+//    private String apellido;
+//    private String nombre;
+//    private List<TelefonoDto> telefonos; 
+//    private List<EmailDto> emails; 
+//    private SexoDto sexo;
+//    private DocumentoDto documento;
+//    private String razonSocial;
+//    private Date fechaNacimiento;
+//    private CargoDto cargo;
+    
+	public String toString() {
+		StringBuilder persona = new StringBuilder();
+		persona.append("\nID: " + id);
+		persona.append("\nIdTipoDocumento: " + idTipoDocumento);
+		persona.append("\nApellido: " + apellido);
+		persona.append("\nNombre: " + nombre);
+		persona.append("\nSexo: " + sexo);
+		persona.append("\nDocumento: " + documento);
+		persona.append("\nRazonSocial: " + razonSocial);
+		persona.append("\nFechaNacimiento: " + fechaNacimiento);
+		persona.append("\nCargo: " + cargo);
+		return persona.toString();
+	}
+	
+	
 }

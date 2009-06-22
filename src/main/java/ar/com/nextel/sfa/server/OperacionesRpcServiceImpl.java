@@ -14,6 +14,7 @@ import ar.com.nextel.framework.security.Usuario;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.CuentaPotencial;
 import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
+import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.sfa.client.OperacionesRpcService;
 import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
@@ -29,25 +30,21 @@ import ar.com.snoop.gwt.commons.server.RemoteService;
 public class OperacionesRpcServiceImpl extends RemoteService implements OperacionesRpcService{
 
 	private WebApplicationContext context;
-	private RegistroVendedores registroVendedores;
+	private SessionContextLoader sessionContextLoader;
 
 	@Override
 	public void init() throws ServletException {
 		// TODO: Investigar como se llega al modelo y como se implementa en el proyecto viejo,
 		super.init();
 		context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-		registroVendedores = (RegistroVendedores) context.getBean("registroVendedores");
+		sessionContextLoader = (SessionContextLoader) context.getBean("sessionContextLoader");
 	}
 
 	public List<OperacionEnCursoDto> searchOpEnCurso()
 			throws RpcExceptionMessages {
 		List<OperacionEnCursoDto> opResult = new ArrayList<OperacionEnCursoDto>();
 		OperacionEnCursoDto operacionDto = new OperacionEnCursoDto();
-		
-		//TODO: Cambiar este hardcodeo de abajo por la obtencion del Vendedor correspondiente.
-		Usuario usuario = new Usuario();
-		usuario.setUserName("acsa1");
-		Vendedor vendedor = registroVendedores.getVendedor(usuario);
+		Vendedor vendedor = sessionContextLoader.getVendedor();
 		
 		Iterator iterator = vendedor.getOperacionesEnCurso().iterator();
 		for (; iterator.hasNext();) {       
@@ -63,12 +60,7 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 	public List<CuentaPotencialDto> searchReservas() throws RpcExceptionMessages {
 		List<CuentaPotencialDto> reservasResult = new ArrayList<CuentaPotencialDto>();
 		CuentaPotencialDto reservaDto = new CuentaPotencialDto();
-		
-		//TODO: Cambiar este hardcodeo de abajo por la obtencion del Vendedor correspondiente.
-		Usuario usuario = new Usuario();
-		usuario.setUserName("acsa1");
-		Vendedor vendedor = registroVendedores.getVendedor(usuario);
-		//
+		Vendedor vendedor = sessionContextLoader.getVendedor();
 		
 		for (CuentaPotencial cuentaPotencial : vendedor.getCuentasPotenciales()) {
 			//PersonaDto persDto = mapeoPersona(cuentaPotencial);

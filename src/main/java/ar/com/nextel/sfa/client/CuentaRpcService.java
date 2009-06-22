@@ -41,29 +41,32 @@ public interface CuentaRpcService extends RemoteService {
 		}
 	}
 
-	public List<CuentaSearchResultDto> searchCuenta(CuentaSearchDto cuentaSearchDto);
-	
-	public BuscarCuentaInitializer getBuscarCuentaInitializer();
-	
-	public AgregarCuentaInitializer getAgregarCuentaInitializer();
-		
-	public GranCuentaDto saveGranCuenta(GranCuentaDto cuentaDto);
-	
-	public VerazInitializer getVerazInitializer();
-	
-	public VerazResponseDto consultarVeraz(PersonaDto personaDto);
-	
-	public CuentaDto selectCuenta(Long cuentaId, String cod_vantiveu);
-	
-	public GranCuentaDto reservaCreacionCuenta(DocumentoDto documentoDto);
-	
-	public TarjetaCreditoValidatorResultDto validarTarjeta(String numeroTarjeta, Integer mesVto, Integer anoVto);
-	
+	public List<CuentaSearchResultDto> searchCuenta(CuentaSearchDto cuentaSearchDto)
+			throws RpcExceptionMessages;
+
+	public BuscarCuentaInitializer getBuscarCuentaInitializer() throws RpcExceptionMessages;
+
+	public AgregarCuentaInitializer getAgregarCuentaInitializer() throws RpcExceptionMessages;
+
+	public GranCuentaDto saveGranCuenta(GranCuentaDto cuentaDto) throws RpcExceptionMessages;
+
+	public VerazInitializer getVerazInitializer() throws RpcExceptionMessages;
+
+	public VerazResponseDto consultarVeraz(PersonaDto personaDto) throws RpcExceptionMessages;
+
+	public CuentaDto selectCuenta(Long cuentaId, String cod_vantiveu) throws RpcExceptionMessages;
+
+	public GranCuentaDto reservaCreacionCuenta(DocumentoDto documentoDto) throws RpcExceptionMessages;
+
+	public TarjetaCreditoValidatorResultDto validarTarjeta(String numeroTarjeta, Integer mesVto,
+			Integer anoVto) throws RpcExceptionMessages;
+
 	public NormalizarCPAResultDto getDomicilioPorCPA(String cpa) throws RpcExceptionMessages;
-	
-	public NormalizarDomicilioResultDto normalizarDomicilio(DomiciliosCuentaDto domicilioANormalizar) throws RpcExceptionMessages;
-	
-	public CrearContactoInitializer getCrearContactoInitializer(); 
-	
-	public List<ProvinciaDto> getProvinciasInitializer();
+
+	public NormalizarDomicilioResultDto normalizarDomicilio(DomiciliosCuentaDto domicilioANormalizar)
+			throws RpcExceptionMessages;
+
+	public CrearContactoInitializer getCrearContactoInitializer() throws RpcExceptionMessages;
+
+	public List<ProvinciaDto> getProvinciasInitializer() throws RpcExceptionMessages;
 }

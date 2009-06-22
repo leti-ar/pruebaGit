@@ -128,13 +128,13 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 	private NextelServices veraz;
  	private Repository repository;
  	private NormalizadorDomicilio normalizadorDomicilio;
- 	private SessionContextLoader sessionContext;
+ 	private SessionContextLoader sessionContextLoader;
 
 	@Override
 	public void init() throws ServletException {
 		super.init();
 		context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-		sessionContext     = (SessionContextLoader) context.getBean("sessionContextLoader");
+		sessionContextLoader = (SessionContextLoader) context.getBean("sessionContextLoader");
 		registroVendedores = (RegistroVendedores)   context.getBean("registroVendedores");
 		searchCuentaBusinessOperator = (SearchCuentaBusinessOperator) context.getBean("searchCuentaBusinessOperatorBean");
 		selectCuentaBusinessOperator = (SelectCuentaBusinessOperator) context.getBean("selectCuentaBusinessOperator");
@@ -163,9 +163,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		cuentaSearchData.setCantidadResultados(cuentaSearchDto
 				.getCantidadResultados());
 
-		Usuario usuario = new Usuario();
-		usuario.setUserName("acsa1");
-		Vendedor vendedor = registroVendedores.getVendedor(usuario);
+		Vendedor vendedor = getVendedor();
 		SessionContextLoader sessContext = (SessionContextLoader) context
 				.getBean("sessionContextLoader");
 		sessContext.getSessionContext().setVendedor(vendedor);
@@ -285,16 +283,14 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		return crearContactoInitializer;
 	}
 	
-	public VerazResponseDto consultarVeraz(PersonaDto personaDto) {
+	public VerazResponseDto consultarVeraz(PersonaDto personaDto) throws RpcExceptionMessages  {
         AppLogger.info("Iniciando consulta a Veraz...");
         VerazResponseDTO responseDTO = null;
         Sexo sexo = (Sexo) this.repository.retrieve(Sexo.class, personaDto.getSexo().getId());
 		TipoDocumento tipoDocumento = (TipoDocumento) this.repository.retrieve(TipoDocumento.class, personaDto.getDocumento().getTipoDocumento().getId());
 		long numeroDocumento = Long.parseLong(StringUtil.removeOcurrences(personaDto.getDocumento().getNumero(), '-'));
 		AppLogger.debug("Parametros consulta a Veraz: " + tipoDocumento.getCodigoVeraz() + " / " + numeroDocumento + " / " + sexo.getCodigoVeraz() + "..."); 	
-		Usuario usuario = new Usuario();
-		usuario.setUserName("acsa1");
-		Vendedor vendedor = registroVendedores.getVendedor(usuario);
+		Vendedor vendedor = getVendedor();
 		
 		VerazRequestDTO verazRequestDTO =  new VerazRequestDTO();
 		verazRequestDTO.setNroDoc(numeroDocumento);
@@ -304,9 +300,10 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		
 		try {
 			responseDTO = this.veraz.searchPerson(verazRequestDTO);
-		} catch (VerazException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			AppLogger.error(e);
+			AppLogger.error("Error consultando Veraz para la siguiente persona: \n" + personaDto.toString());
+			throw ExceptionUtil.wrap(e);
 		}
 		
 		VerazResponseDto responseDto = mapper.map(responseDTO, VerazResponseDto.class);
@@ -442,7 +439,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
      * @return
      */
     private Vendedor getVendedor() {
-    	return sessionContext.getSessionContext().getVendedor();
+    	return sessionContextLoader.getSessionContext().getVendedor();
     	//return registroVendedores.getVendedor(((SFAUserCenter) sessionContext.getSessionContext().get("USER_CENTER")).getUsuario());
     }
     

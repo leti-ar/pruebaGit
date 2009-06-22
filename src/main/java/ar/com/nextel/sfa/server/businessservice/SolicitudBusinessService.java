@@ -10,7 +10,6 @@ import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.financial.dto.EncabezadoCreditoDTO;
 import ar.com.nextel.business.legacy.financial.exception.FinancialSystemException;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.ReservaNumeroTelefonoBusinessOperator;
-import ar.com.nextel.business.personas.reservaNumeroTelefono.result.DesreservaNumeroTelefonoBusinessResult;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
@@ -82,14 +81,6 @@ public class SolicitudBusinessService {
 			throw new BusinessException(null, accessAuthorization.getReason());
 		}
 
-		// sessContext = (SessionContextLoader) context
-		// .getBean("sessionContextLoader");;
-		// RegistroVendedores registroVendedores;
-		// Usuario usuario = new Usuario();
-		// usuario.setUserName("acsa1");
-		// sessContext.getSessionContext().setVendedor(registroVendedores.getVendedor(usuario));
-
-		// Logica de negocio. Buscar lugar mas apto para ponerlo.
 		Vendedor vendedor = sessionContextLoader.getVendedor();
 
 		// if(no tiene permiso de edicion){

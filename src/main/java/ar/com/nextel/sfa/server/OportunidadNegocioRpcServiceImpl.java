@@ -38,6 +38,7 @@ public class OportunidadNegocioRpcServiceImpl extends RemoteService implements O
 	private MapperExtended mapper;
 	//private Long totalCuentaRegs;
 	private GetAllBusinessOperator getAllBusinessOperator;
+	private SessionContextLoader sessionContextLoader;
 	
 	@Override
 	public void init() throws ServletException {
@@ -49,6 +50,7 @@ public class OportunidadNegocioRpcServiceImpl extends RemoteService implements O
 				.getBean("searchOportunidadBusinessOperatorBean");
 //		transformer = (Transformer) context
 //				.getBean("cuentaToSearchResultTransformer");
+		sessionContextLoader = (SessionContextLoader) context.getBean("sessionContextLoader");
 		mapper = (MapperExtended) context.getBean("dozerMapper");
 		// Engancho el BOperator
 		setGetAllBusinessOperator((GetAllBusinessOperator) context
@@ -82,10 +84,8 @@ public class OportunidadNegocioRpcServiceImpl extends RemoteService implements O
 		List dtoResult = new ArrayList();
 		OportunidadSearchData oppSearchData = (OportunidadSearchData) mapper.map(
 				oportunidadSearchDto, OportunidadSearchData.class);
-
-		Usuario usuario = new Usuario();
-		usuario.setUserName("acsa1");
-		Vendedor vendedor = registroVendedores.getVendedor(usuario);
+		
+		Vendedor vendedor = sessionContextLoader.getVendedor();
 		SessionContextLoader sessContext = (SessionContextLoader) context
 				.getBean("sessionContextLoader");
 		sessContext.getSessionContext().setVendedor(vendedor);
