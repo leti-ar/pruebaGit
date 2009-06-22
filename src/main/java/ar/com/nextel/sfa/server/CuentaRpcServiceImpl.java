@@ -3,7 +3,6 @@ package ar.com.nextel.sfa.server;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -57,7 +56,6 @@ import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.services.nextelServices.NextelServices;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazRequestDTO;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
-import ar.com.nextel.services.nextelServices.veraz.exception.VerazException;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.dto.BusquedaPredefinidaDto;
 import ar.com.nextel.sfa.client.dto.CargoDto;
@@ -90,7 +88,6 @@ import ar.com.nextel.sfa.client.dto.TipoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoTarjetaDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
-import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
@@ -296,7 +293,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		verazRequestDTO.setNroDoc(numeroDocumento);
 		verazRequestDTO.setSexo(sexo.getCodigoVeraz());
 		verazRequestDTO.setTipoDoc(tipoDocumento.getCodigoVeraz());
-		verazRequestDTO.setVerazVersion(vendedor.getVerazVersion());
+		//verazRequestDTO.setVerazVersion(vendedor.getVerazVersion());
 		
 		try {
 			responseDTO = this.veraz.searchPerson(verazRequestDTO);
