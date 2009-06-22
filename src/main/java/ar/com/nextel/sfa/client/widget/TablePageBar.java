@@ -123,12 +123,14 @@ public class TablePageBar extends Composite {
 	public void addListener() {
 		ClickListener listener = new ClickListener() {
 			public void onClick(Widget sender) {
+			/**TODO: Terminar BIEN en la segunda iteacion!!! No ANDA del todo BIEN la colocacion del numero total de registros en la busqueda.
+			 *        Hay que sacar el HardCode, y hacerlo bien generico para no ensuciar tanto el codigo.*/
 				if (sender == next) {
 					setOffset(getOffset() + 11);
 						if (((getPagina()+1) == getCantPaginas()) && ((cantResultados == 25) || (cantResultados == 75))){
 						setPagina(getPagina() + 1);
 						setCantRegistrosTot(cantRegistrosTot);
-						setCantRegistrosParcI(cantRegistrosTot - 4);
+						setCantRegistrosParcI(cantRegistrosParcF + 1);
 						setCantRegistrosParcF(cantRegistrosTot);
 					}else{
 						setPagina(getPagina() + 1);
@@ -151,8 +153,21 @@ public class TablePageBar extends Composite {
 					if((cantResultados == 25) || (cantResultados == 75)){
 						setPagina((cantResultados + 5)/10);
 						setCantRegistrosTot(cantRegistrosTot);
-						setCantRegistrosParcI(cantRegistrosTot - 4);
-						setCantRegistrosParcF(cantResultados);
+						if (cantResultados==25){
+							if (cantRegistrosTot != 25){
+								setCantRegistrosParcI(cantRegistrosTot - (25-cantRegistrosTot));
+							}else{
+								setCantRegistrosParcI(cantRegistrosTot - 4);
+							}
+							setCantRegistrosParcF(cantRegistrosTot);
+						}else if (cantResultados==75){
+							if (cantRegistrosTot != 75){
+								setCantRegistrosParcI(cantRegistrosTot - (75-cantRegistrosTot));
+							}else{
+								setCantRegistrosParcI(cantRegistrosTot - 4);
+							}
+							setCantRegistrosParcF(cantRegistrosTot);
+						}
 					}else{
 						setPagina(cantResultados / 10);
 						setCantRegistrosTot(cantRegistrosTot);
@@ -171,7 +186,7 @@ public class TablePageBar extends Composite {
 					setOffset(getOffset() - 11);
 					setPagina(getPagina() - 1);
 					if(((cantResultados == 25) || (cantResultados == 75)) && (cantRegistrosParcF == cantRegistrosTot)){
-						setCantRegistrosParcF(cantRegistrosParcF-5);
+						setCantRegistrosParcF(cantRegistrosParcI-1);
 					}else{
 						setCantRegistrosParcF(cantRegistrosParcF-10);						
 					}
