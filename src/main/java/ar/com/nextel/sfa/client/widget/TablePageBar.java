@@ -47,7 +47,7 @@ public class TablePageBar extends Composite {
 		next = new Button();
 		last = new Button();
 		pagLabel = new InlineHTML("Pág " + pagina);
-		cantLabel = new InlineHTML("de " + cantPaginas);
+		cantLabel = new InlineHTML(" de " + cantPaginas);
 		registrosMostrados = new HTML(Sfa.constant().registrosMostrados() + " " + cantRegistrosParcI + " - " + cantRegistrosParcF +" de " + cantRegistrosTot);
 		mainPanel.add(registrosMostrados);
 		mainPanel.add(first);
@@ -89,7 +89,7 @@ public class TablePageBar extends Composite {
 		this.pagina = pagina;
 		this.cantPaginas = (cantResultados / 10); 
 		pagLabel.setText("Pág " + pagina);
-		cantLabel.setText("de " + cantPaginas);
+		cantLabel.setText(" de " + cantPaginas);
 	}
 	
 	public void refrescaLabelRegistros(){
