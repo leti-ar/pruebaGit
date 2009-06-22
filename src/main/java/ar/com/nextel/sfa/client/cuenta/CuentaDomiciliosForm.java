@@ -245,6 +245,13 @@ public class CuentaDomiciliosForm extends Composite {
 										persona = cuentaDto.getPersona();
 									}
 								   DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
+								   //Pregunta, si alguno es Principal ya teniendo uno, le setea por defecto un SI
+								   if (tienePrincipalEntrega && (domicilio.getIdEntrega() == 2)){
+									   domicilio.setIdEntrega(new Long(0));
+								   }
+								   if (tienePrincipalFacturacion && (domicilio.getIdFacturacion() == 2)){
+									   domicilio.setIdFacturacion(new Long(0));
+								   }
 								   persona = cuentaDto.getPersona();
 								   persona.getDomicilios().add(domicilio);
 								   refrescaTablaConNuevoDomicilio();
