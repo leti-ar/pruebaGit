@@ -239,11 +239,11 @@ public class CuentaDomiciliosForm extends Composite {
 						domicilioCopiado.setId(null);
 						domicilioCopiado.setNombre_usuario_ultima_modificacion(null);
 						domicilioCopiado.setFecha_ultima_modificacion(null);
-						if (domicilioCopiado.getIdEntrega() == 2) {
-							domicilioCopiado.setIdEntrega(new Long(0));
+						if (EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilioCopiado.getIdEntrega())) {
+							domicilioCopiado.setIdEntrega(EstadoTipoDomicilioDto.SI.getId());
 						}
-						if (domicilioCopiado.getIdFacturacion() == 2) {
-							domicilioCopiado.setIdFacturacion(new Long(0));
+						if (EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilioCopiado.getIdFacturacion())) {
+							domicilioCopiado.setIdFacturacion(EstadoTipoDomicilioDto.SI.getId());
 						}
 						DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,
 								tienePrincipalFacturacion);
