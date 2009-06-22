@@ -25,7 +25,7 @@ import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * @author eSalvador 
+ * @author eSalvador
  **/
 public class CuentaDomiciliosForm extends Composite {
 
@@ -36,7 +36,7 @@ public class CuentaDomiciliosForm extends Composite {
 	private DomiciliosCuentaDto domicilioAEditar;
 	public CuentaDto cuentaDto;
 	private boolean tienePrincipalFacturacion = false;
-	private boolean tienePrincipalEntrega  = false;
+	private boolean tienePrincipalEntrega = false;
 	private boolean huboCambios = false;
 
 	public static CuentaDomiciliosForm getInstance() {
@@ -55,21 +55,22 @@ public class CuentaDomiciliosForm extends Composite {
 		Button crearDomicilio = new Button("Crear nuevo");
 		crearDomicilio.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,tienePrincipalFacturacion);
-				DomicilioUI.getInstance().setComandoAceptar(new Command(){
+				DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,
+						tienePrincipalFacturacion);
+				DomicilioUI.getInstance().setComandoAceptar(new Command() {
 					public void execute() {
-							PersonaDto persona = null;
-							if ("SUSCRIPTOR".equals(getTipoCuenta(cuentaDto))){
-								persona = ((SuscriptorDto)cuentaDto).getGranCuenta().getPersona();
-							}else if ("GRAN CUENTA".equals(getTipoCuenta(cuentaDto))){
-								persona = cuentaDto.getPersona();
-							}
-						   DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
-						   persona = cuentaDto.getPersona();
-						   persona.getDomicilios().add(domicilio);
-						   refrescaTablaConNuevoDomicilio();
-						   huboCambios = true;
+						PersonaDto persona = null;
+						if ("SUSCRIPTOR".equals(getTipoCuenta(cuentaDto))) {
+							persona = ((SuscriptorDto) cuentaDto).getGranCuenta().getPersona();
+						} else if ("GRAN CUENTA".equals(getTipoCuenta(cuentaDto))) {
+							persona = cuentaDto.getPersona();
 						}
+						DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
+						persona = cuentaDto.getPersona();
+						persona.getDomicilios().add(domicilio);
+						refrescaTablaConNuevoDomicilio();
+						huboCambios = true;
+					}
 				});
 				DomicilioUI.getInstance().setParentContacto(false);
 				DomicilioUI.getInstance().cargarPopupNuevoDomicilio(new DomiciliosCuentaDto());
@@ -85,8 +86,7 @@ public class CuentaDomiciliosForm extends Composite {
 		mainPanel.add(datosTabla);
 		mainPanel.add(footerBar);
 	}
-	
-	
+
 	private void initTable(FlexTable table) {
 
 		String[] widths = { "24px", "24px", "24px", "100px", "100px", "75%", "50px" };
@@ -110,26 +110,25 @@ public class CuentaDomiciliosForm extends Composite {
 	}
 
 	/**
-	 * @author eSalvador
-	 * Refresca la grilla de domicilios
+	 * @author eSalvador Refresca la grilla de domicilios
 	 **/
-	public void refrescaTablaConNuevoDomicilio(){
+	public void refrescaTablaConNuevoDomicilio() {
 		cargaTablaDomicilios(cuentaDto);
 	}
-	
+
 	/**
 	 * @author eSalvador
 	 **/
 	public void cargaTablaDomicilios(final CuentaDto cuentaDto) {
-		//datosTabla = new FlexTable();
+		// datosTabla = new FlexTable();
 		this.cuentaDto = cuentaDto;
 		setTienePrincipalEntrega(false);
 		setTienePrincipalFacturacion(false);
-		
+
 		List<DomiciliosCuentaDto> domicilios = new ArrayList();
-		if ("SUSCRIPTOR".equals(getTipoCuenta(cuentaDto))){
-			domicilios = ((SuscriptorDto)cuentaDto).getGranCuenta().getPersona().getDomicilios();
-		}else if ("GRAN CUENTA".equals(getTipoCuenta(cuentaDto))){
+		if ("SUSCRIPTOR".equals(getTipoCuenta(cuentaDto))) {
+			domicilios = ((SuscriptorDto) cuentaDto).getGranCuenta().getPersona().getDomicilios();
+		} else if ("GRAN CUENTA".equals(getTipoCuenta(cuentaDto))) {
 			domicilios = cuentaDto.getPersona().getDomicilios();
 		}
 		limpiaTablaDomicilios();
@@ -144,33 +143,34 @@ public class CuentaDomiciliosForm extends Composite {
 				if (true) {
 					datosTabla.setWidget(i + 1, 2, IconFactory.cancel());
 				}
-				
-				if ((domicilios.get(i).getIdEntrega() != null) && (domicilios.get(i).getIdFacturacion() != null)){
-				
-				Long idEntrega = domicilios.get(i).getIdEntrega();
-				Long idFacturacion = domicilios.get(i).getIdFacturacion();
+
+				if ((domicilios.get(i).getIdEntrega() != null)
+						&& (domicilios.get(i).getIdFacturacion() != null)) {
+
+					Long idEntrega = domicilios.get(i).getIdEntrega();
+					Long idFacturacion = domicilios.get(i).getIdFacturacion();
 					/** Logica para mostrar tipoDomicilio en la grilla de Resultados: */
 
 					datosTabla.getCellFormatter().addStyleName(i + 1, 3, "alignCenter");
 					datosTabla.getCellFormatter().addStyleName(i + 1, 4, "alignCenter");
 
-					//Entrega;
-					if (idEntrega == 2) { 
+					// Entrega;
+					if (idEntrega == 2) {
 						datosTabla.setHTML(i + 1, 3, "Principal");
 						setTienePrincipalEntrega(true);
-					} else if(idEntrega == 0) {
+					} else if (idEntrega == 0) {
 						datosTabla.setHTML(i + 1, 3, "Si");
-					} else if(idEntrega == 1) {
+					} else if (idEntrega == 1) {
 						datosTabla.setHTML(i + 1, 3, "No");
 					}
-					
+
 					// Facturacion:
-					if  (idFacturacion == 2){
+					if (idFacturacion == 2) {
 						datosTabla.setHTML(i + 1, 4, "Principal");
 						setTienePrincipalFacturacion(true);
-					} else if(idFacturacion == 0){
+					} else if (idFacturacion == 0) {
 						datosTabla.setHTML(i + 1, 4, "Si");
-					}else if(idFacturacion == 1) {
+					} else if (idFacturacion == 1) {
 						datosTabla.setHTML(i + 1, 4, "No");
 					}
 				}
@@ -178,52 +178,56 @@ public class CuentaDomiciliosForm extends Composite {
 			}
 		}
 	}
-	
-	public void limpiaTablaDomicilios(){
-	//Limpia la tabla de domicilios incialmente, si esta con datos:
-		if (datosTabla.getRowCount() > 1){
+
+	public void limpiaTablaDomicilios() {
+		// Limpia la tabla de domicilios incialmente, si esta con datos:
+		if (datosTabla.getRowCount() > 1) {
 			for (int j = 1; j < (datosTabla.getRowCount()); j++) {
 				datosTabla.removeRow(j);
 			}
 		}
 	}
-	
-	public void agregaTableListeners(){
+
+	public void agregaTableListeners() {
 		datosTabla.addTableListener(new TableListener() {
 			public void onCellClicked(SourcesTableEvents arg0, int row, int col) {
 				if (row != 0) {
 					DomiciliosCuentaDto domicilio = null;
-					if ("SUSCRIPTOR".equals(getTipoCuenta(cuentaDto))){
-						domicilio = ((SuscriptorDto)cuentaDto).getGranCuenta().getPersona().getDomicilios().get(row - 1);
-					}else if ("GRAN CUENTA".equals(getTipoCuenta(cuentaDto))){
+					if ("SUSCRIPTOR".equals(getTipoCuenta(cuentaDto))) {
+						domicilio = ((SuscriptorDto) cuentaDto).getGranCuenta().getPersona().getDomicilios()
+								.get(row - 1);
+					} else if ("GRAN CUENTA".equals(getTipoCuenta(cuentaDto))) {
 						domicilio = cuentaDto.getPersona().getDomicilios().get(row - 1);
 					}
-					//Acciones a tomar cuando haga click en los lapices de edicion:
+					// Acciones a tomar cuando haga click en los lapices de edicion:
 					if (col == 0) {
 						domicilioAEditar = domicilio;
 						DomicilioUI.getInstance().setDomicilioAEditar(domicilioAEditar);
-						DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,tienePrincipalFacturacion);
+						DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,
+								tienePrincipalFacturacion);
 						DomicilioUI.getInstance().hide();
-						if (domicilio.getVantiveId() != null){
+						if (domicilio.getVantiveId() != null) {
 							DomicilioUI.getInstance().setParentContacto(false);
-							DomicilioUI.getInstance().openPopupAdviseDialog(DomicilioUI.getInstance().getOpenDomicilioUICommand());
-						}else{
-							DomicilioUI.getInstance().setComandoAceptar(new Command(){
+							DomicilioUI.getInstance().openPopupAdviseDialog(
+									DomicilioUI.getInstance().getOpenDomicilioUICommand());
+						} else {
+							DomicilioUI.getInstance().setComandoAceptar(new Command() {
 								public void execute() {
 									PersonaDto persona = null;
-									if ("SUSCRIPTOR".equals(getTipoCuenta(cuentaDto))){
-										persona = ((SuscriptorDto)cuentaDto).getGranCuenta().getPersona();
-									}else if ("GRAN CUENTA".equals(getTipoCuenta(cuentaDto))){
+									if ("SUSCRIPTOR".equals(getTipoCuenta(cuentaDto))) {
+										persona = ((SuscriptorDto) cuentaDto).getGranCuenta().getPersona();
+									} else if ("GRAN CUENTA".equals(getTipoCuenta(cuentaDto))) {
 										persona = cuentaDto.getPersona();
 									}
 									int index = persona.getDomicilios().indexOf(domicilioAEditar);
 									persona.getDomicilios().remove(index);
-									persona.getDomicilios().add(index, DomicilioUI.getInstance().getDomicilioAEditar());
+									persona.getDomicilios().add(index,
+											DomicilioUI.getInstance().getDomicilioAEditar());
 									domicilioAEditar = DomicilioUI.getInstance().getDomicilioAEditar();
 									refrescaTablaConNuevoDomicilio();
 									huboCambios = true;
-									}
-								});
+								}
+							});
 							DomicilioUI.getInstance().setParentContacto(false);
 							DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
 						}
@@ -235,29 +239,30 @@ public class CuentaDomiciliosForm extends Composite {
 						domicilioCopiado.setId(null);
 						domicilioCopiado.setNombre_usuario_ultima_modificacion(null);
 						domicilioCopiado.setFecha_ultima_modificacion(null);
-						DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,tienePrincipalFacturacion);
-						DomicilioUI.getInstance().setComandoAceptar(new Command(){
+						if (domicilioCopiado.getIdEntrega() == 2) {
+							domicilioCopiado.setIdEntrega(new Long(0));
+						}
+						if (domicilioCopiado.getIdFacturacion() == 2) {
+							domicilioCopiado.setIdFacturacion(new Long(0));
+						}
+						DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,
+								tienePrincipalFacturacion);
+						DomicilioUI.getInstance().setComandoAceptar(new Command() {
 							public void execute() {
-									PersonaDto persona = null;
-									if ("SUSCRIPTOR".equals(getTipoCuenta(cuentaDto))){
-										persona = ((SuscriptorDto)cuentaDto).getGranCuenta().getPersona();
-									}else if ("GRAN CUENTA".equals(getTipoCuenta(cuentaDto))){
-										persona = cuentaDto.getPersona();
-									}
-								   DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
-								   //Pregunta, si alguno es Principal ya teniendo uno, le setea por defecto un SI
-								   if (tienePrincipalEntrega && (domicilio.getIdEntrega() == 2)){
-									   domicilio.setIdEntrega(new Long(0));
-								   }
-								   if (tienePrincipalFacturacion && (domicilio.getIdFacturacion() == 2)){
-									   domicilio.setIdFacturacion(new Long(0));
-								   }
-								   persona = cuentaDto.getPersona();
-								   persona.getDomicilios().add(domicilio);
-								   refrescaTablaConNuevoDomicilio();
-								   huboCambios = true;
+								PersonaDto persona = null;
+								if ("SUSCRIPTOR".equals(getTipoCuenta(cuentaDto))) {
+									persona = ((SuscriptorDto) cuentaDto).getGranCuenta().getPersona();
+								} else if ("GRAN CUENTA".equals(getTipoCuenta(cuentaDto))) {
+									persona = cuentaDto.getPersona();
 								}
-							});
+								DomiciliosCuentaDto domicilio = DomicilioUI.getInstance()
+										.getDomicilioAEditar();
+								persona = cuentaDto.getPersona();
+								persona.getDomicilios().add(domicilio);
+								refrescaTablaConNuevoDomicilio();
+								huboCambios = true;
+							}
+						});
 						DomicilioUI.getInstance().setParentContacto(false);
 						DomicilioUI.getInstance().cargarPopupCopiarDomicilio(domicilioCopiado);
 					}
@@ -267,61 +272,64 @@ public class CuentaDomiciliosForm extends Composite {
 						DomicilioUI.getInstance().hide();
 						domicilioAEditar = domicilio;
 						PersonaDto persona = null;
-						if ("SUSCRIPTOR".equals(getTipoCuenta(cuentaDto))){
-							persona = ((SuscriptorDto)cuentaDto).getGranCuenta().getPersona();
-						}else if ("GRAN CUENTA".equals(getTipoCuenta(cuentaDto))){
+						if ("SUSCRIPTOR".equals(getTipoCuenta(cuentaDto))) {
+							persona = ((SuscriptorDto) cuentaDto).getGranCuenta().getPersona();
+						} else if ("GRAN CUENTA".equals(getTipoCuenta(cuentaDto))) {
 							persona = cuentaDto.getPersona();
 						}
-						DomicilioUI.getInstance().openPopupDeleteDialog(persona, domicilioAEditar, new Command(){
-							public void execute() {
-								refrescaTablaConNuevoDomicilio();
-								huboCambios = true;
-							}
-						});
+						DomicilioUI.getInstance().openPopupDeleteDialog(persona, domicilioAEditar,
+								new Command() {
+									public void execute() {
+										refrescaTablaConNuevoDomicilio();
+										huboCambios = true;
+									}
+								});
 					}
 				}
 			}
 		});
 	}
-	
-	private String getTipoCuenta(CuentaDto cuentaDto){
+
+	private String getTipoCuenta(CuentaDto cuentaDto) {
 		String tipoCuenta = "";
-		if (cuentaDto.getCategoriaCuenta() != null){
-			if("SUSCRIPTOR".equals(cuentaDto.getCategoriaCuenta().getDescripcion())){
+		if (cuentaDto.getCategoriaCuenta() != null) {
+			if ("SUSCRIPTOR".equals(cuentaDto.getCategoriaCuenta().getDescripcion())) {
 				tipoCuenta = "SUSCRIPTOR";
-			}else if("GRAN CUENTA".equals(cuentaDto.getCategoriaCuenta().getDescripcion())){
+			} else if ("GRAN CUENTA".equals(cuentaDto.getCategoriaCuenta().getDescripcion())) {
 				tipoCuenta = "GRAN CUENTA";
 			}
-		}else{
+		} else {
 			tipoCuenta = "SUSCRIPTOR";
 		}
 		return tipoCuenta;
 	}
-	
+
 	public List<String> validarCompletitud() {
 		GwtValidator validator = CuentaEdicionTabPanel.getInstance().getValidator();
 		validator.clear();
-        boolean hayDomicilioEntrega = false;
-        boolean hayDomicilioFacturacion = false;
-        
+		boolean hayDomicilioEntrega = false;
+		boolean hayDomicilioFacturacion = false;
+
 		List<DomiciliosCuentaDto> listaDomicilios = cuentaDto.getPersona().getDomicilios();
-		if (listaDomicilios==null || listaDomicilios.size()<0) {
+		if (listaDomicilios == null || listaDomicilios.size() < 0) {
 			validator.addError(Sfa.constant().ERR_DOMICILIO_ENTREGA());
 			validator.addError(Sfa.constant().ERR_DOMICILIO_FACTURACION());
 		} else {
 			for (DomiciliosCuentaDto domi : listaDomicilios) {
-				if ((domi.getIdEntrega() != null) && (domi.getIdFacturacion() != null)){
-						if (!domi.getIdEntrega().equals(EstadoTipoDomicilioDto.NO.getId())){
-							hayDomicilioEntrega = new Boolean(true);
-						};
-						if (!domi.getIdFacturacion().equals(EstadoTipoDomicilioDto.NO.getId())){
-							hayDomicilioFacturacion = new Boolean(true);
-						};
+				if ((domi.getIdEntrega() != null) && (domi.getIdFacturacion() != null)) {
+					if (!domi.getIdEntrega().equals(EstadoTipoDomicilioDto.NO.getId())) {
+						hayDomicilioEntrega = new Boolean(true);
+					}
+					;
+					if (!domi.getIdFacturacion().equals(EstadoTipoDomicilioDto.NO.getId())) {
+						hayDomicilioFacturacion = new Boolean(true);
+					}
+					;
 				}
 			}
-			if (!hayDomicilioEntrega) 
+			if (!hayDomicilioEntrega)
 				validator.addError(Sfa.constant().ERR_DOMICILIO_ENTREGA());
-			if (!hayDomicilioFacturacion) 			
+			if (!hayDomicilioFacturacion)
 				validator.addError(Sfa.constant().ERR_DOMICILIO_FACTURACION());
 		}
 		validator.fillResult();
@@ -331,7 +339,7 @@ public class CuentaDomiciliosForm extends Composite {
 	public boolean formularioDatosDirty() {
 		return huboCambios;
 	}
-	
+
 	public FlexTable getDatosTabla() {
 		return datosTabla;
 	}
