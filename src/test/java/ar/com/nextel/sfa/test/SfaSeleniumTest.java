@@ -1,10 +1,7 @@
 package ar.com.nextel.sfa.test;
 
-import junit.framework.TestCase;
-
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.SeleneseTestCase;
-import com.thoughtworks.selenium.Selenium;
 
 /**
  * Test de Selenium
@@ -37,10 +34,23 @@ import com.thoughtworks.selenium.Selenium;
  */
 public abstract class SfaSeleniumTest extends SeleneseTestCase {
 
+	/**
+	 * ¿Imprimo lo que espera cada vez que aparece la ventana "Cargando"?
+	 */
+	public static boolean DEBUG_PRINT_WAIT_TIMES = false;
+
+	/**
+	 * Usuario que se loguea a UserCenter
+	 */
+	public  static final String SFA_USER = "acsa1";
+
+	/**
+	 * Password del usuario que se loguea a UserCenter
+	 */
+	public static final String SFA_PASSWORD = "Abc1234";
+	
 	private static final String SFA_PAGE_TITLE = "SFA :: Revolution";
 	private static final String LOGIN_PAGE_TITLE = "Logueo de Usuarios";
-	private static final String SFA_PASSWORD = "Abc1234";
-	private static final String SFA_USER = "acsa1";
 	
 	public static final String IEXPLORE = "*iexplore";
 	public static final String IEHTA = "*iehta";
@@ -52,6 +62,7 @@ public abstract class SfaSeleniumTest extends SeleneseTestCase {
 	public static final String NB34_SFA_ROOT_URL = "http://nb34:8888/";
 	public static final String TEST_SFA_ROOT_URL = "http://baslije4.nextel.com.ar:7877/sfa-web2/";
 	public static final String WKSRGM_ROOT_URL = "http://wksrgm.nextel.com.ar:8888/";
+	public static final String NB34_ROOT_URL = "http://nb34.nextel.com.ar:8888/";
 	
 	public static final String SFA_APP_URL = "ar.com.nextel.sfa.SFAWeb/SFAWeb.html";
 
@@ -76,7 +87,7 @@ public abstract class SfaSeleniumTest extends SeleneseTestCase {
 	/**
 	 * Setea el test para poder ejecutar tests remotos
 	 * 
-	 * TODO No funciona porque heredo de SeleneseTestCase
+	 * FIXME No funciona porque heredo de SeleneseTestCase
 	 * 
 	 * @param serverHost
 	 * @param serverPort
@@ -88,7 +99,11 @@ public abstract class SfaSeleniumTest extends SeleneseTestCase {
 		selenium = new DefaultSelenium(serverHost, serverPort, browserStartCommand, browserURL);
 	}
 	
-
+	/**
+	 * Loguea al usuario en UserCenter si el selenium está en la aplicación de login
+	 * 
+	 * TODO Completar los hooks para otras páginas si es necesario? rgm
+	 */
 	protected void loginIfNeeded() {
 		String[] windowTitles = selenium.getAllWindowTitles();
 		if (windowTitles.length == 0 ) {
@@ -107,6 +122,46 @@ public abstract class SfaSeleniumTest extends SeleneseTestCase {
 				
 			}
 		}
+	}
+
+	/**
+	 * Espera a continuar mientras en la página se muestre el cartel "cargando"
+	 */
+	protected void waitWhileCargando() {
+		while ( selenium.isTextPresent("Cargando")) {}
+	}
+
+	/**
+	 * Espera mientras en la página se muestre el cartel "cargando", o que ocurra un timeout en milisegundos,
+	 * lo que ocurra primero.
+	 * 
+	 * @param timeout
+	 * @return el tiempo transcurrido en espera ( redondeado a timeut/10 )
+	 * @throws TimeoutExceededException cuando se pasa del timeout y el cartel sigue prendido
+	 */
+	protected long waitWhileCargando(long timeout)
+			throws TimeoutExceededException {
+
+		long init = System.currentTimeMillis();
+		long deadline =  init + timeout;
+		boolean timeleft = true;
+		boolean cartelPrendido = false;
+
+		// TODO Esta constante sale de gwtcommons?? .rgm
+		while ((cartelPrendido = selenium.isTextPresent("Cargando"))
+				&& (timeleft = System.currentTimeMillis() < deadline)) {
+			try {
+				Thread.sleep(timeout / 10);
+			} catch (InterruptedException e) {
+				// No me importa
+			}
+
+		}
+		if (!timeleft && cartelPrendido) {
+			throw new TimeoutExceededException();
+		}
+		if ( DEBUG_PRINT_WAIT_TIMES) System.out.println("Waited for: " + (System.currentTimeMillis() - init) + " ms.");
+		return System.currentTimeMillis() - init;
 	}
 
 }
