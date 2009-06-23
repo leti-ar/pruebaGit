@@ -25,12 +25,14 @@ public class DebugConstants {
 	public static final String COMBO = "Combo";
 	public static final String TABLE = "Table";
 	public static final String MENU = "MenuItem";
+	public static final String POPUP = "PopUp";
 
 	public static final String GWTPREFIX = UIObject.DEBUG_ID_PREFIX;
 	
 	public static final String SFA_DEBUGID_PREFIX = "sfa";
 	
 	public static final String BUSQUEDA_CUENTAS_MODULE_ID = "busquedaCuentas";
+	public static final String AGREGAR_CUENTAS_MODULE_ID = "agregarCuentas";
 
 	public static final String CUENTAS = "Cuentas";
 	public static final String SS = "SS";
@@ -73,4 +75,15 @@ public class DebugConstants {
 	public static final String GWT_TABLE_PAGE_BAR_NEXT = GWTPREFIX + TABLE_PAGE_BAR_NEXT;
 	public static final String GWT_TABLE_PAGE_BAR_FIRST = GWTPREFIX + TABLE_PAGE_BAR_FIRST;
 	public static final String GWT_TABLE_PAGE_BAR_LAST = GWTPREFIX + TABLE_PAGE_BAR_LAST;
+	
+	
+	//AGREGAR CUENTA
+	public static final String AGREGAR_CUENTAS_POPUP_COMBO_TIPO_DOC_ID = SFA_DEBUGID_PREFIX + SEP + AGREGAR_CUENTAS_MODULE_ID + SEP + POPUP  + SEP + COMBO + SEP + "tipoDocId";
+	public static final String GWT_AGREGAR_CUENTAS_POPUP_COMBO_TIPO_DOC_ID =  GWTPREFIX + AGREGAR_CUENTAS_POPUP_COMBO_TIPO_DOC_ID;
+
+	public static final String AGREGAR_CUENTAS_POPUP_TEXTBOX_NUM_DOC_ID = SFA_DEBUGID_PREFIX + SEP + AGREGAR_CUENTAS_MODULE_ID + SEP + POPUP  + SEP + TEXTBOX + SEP + "numDocId";	
+	public static final String GWT_AGREGAR_CUENTAS_POPUP_TEXTBOX_NUM_DOC_ID = GWTPREFIX + AGREGAR_CUENTAS_POPUP_TEXTBOX_NUM_DOC_ID;	
+
+	
+	
 }
