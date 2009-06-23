@@ -12,6 +12,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <packaging>war</packaging>
   <version>2.0-SNAPSHOT</version>
   <name>SFA Revolution</name>
+  <description>
+	SFA Revolution 2009
+  </description>
+  <url>http://sfasrv1.snoop.com.ar:8080/job/site%20sfa-web2/site/</url>
   <!--  include pluginRepository and repository for GWT-Maven -->
   <!-- No cargo ning�n repositorio, para que los traiga del proxy que tenga configurado en el settings.xml -->
   <!--
@@ -337,7 +341,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <!-- Skip the normal tests, we'll run them in the integration-test phase -->
-          <skip>true</skip>
+          <skip>false</skip>
         </configuration>
         <executions>
           <execution>
@@ -460,5 +464,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <url>
       http://server04:8081/nexus/content/repositories/SnoopREPOSnap/</url>
     </snapshotRepository>
+	<!-- TODO Definir a donde manda el site -->
+	<!--
+		<site>
+			<id>maven-websites</id> 
+			<url>scp://192.168.1.151/var/www/proyectos/nombreDelProyecto/</url>
+		</site>
+	-->	
   </distributionManagement>
 </project>
