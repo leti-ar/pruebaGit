@@ -8,6 +8,8 @@ import ar.com.nextel.sfa.client.debug.DebugConstants;
  */
 public class BuscarCuentasTest extends SfaSeleniumTest {
 	
+	
+		
 	public static void main(String args[] ) {
 		BuscarCuentasTest bct = new BuscarCuentasTest();
 		try {
@@ -41,17 +43,20 @@ public class BuscarCuentasTest extends SfaSeleniumTest {
 	 */
 	public void setUp() throws Exception {
 		// Ejecutamos en forma remota
-		setUp(TEST_SFA_ROOT_URL,IEXPLORE);
+		setUp(WKSRGM_ROOT_URL,IEXPLORE);
 	}
 	
 	public void testBusquedaYRecorrido() throws Exception {
 		selenium.setSpeed("500");
 		selenium.open(SFA_APP_URL);
+		
 		for (int i = 0; i < 3; i++) {
 			loginIfNeeded();
 									
-			selenium.click("gwt-uid-1");
-			selenium.click("gwt-uid-4");
+			while ( selenium.isTextPresent("Cargando")) {}
+
+			selenium.click(DebugConstants.GWT_MENU_CUENTAS);
+			selenium.click(DebugConstants.GWT_MENU_CUENTAS_BUSCAR);
 			while (selenium.isTextPresent("Cargando")){}
 	
 			selenium.highlight(DebugConstants.GWT_BUSQUEDA_CUENTAS_COMBO_PREDEFINIDAS);
@@ -98,8 +103,10 @@ public class BuscarCuentasTest extends SfaSeleniumTest {
 		selenium.setSpeed("500");
 		selenium.open(SFA_APP_URL);
 		loginIfNeeded();
-		selenium.click("gwt-uid-1");
-		selenium.click("gwt-uid-4");
+		while ( selenium.isTextPresent("Cargando")) {}
+
+		selenium.click(DebugConstants.GWT_MENU_CUENTAS);
+		selenium.click(DebugConstants.GWT_MENU_CUENTAS_BUSCAR);
 		while (selenium.isTextPresent("Cargando")){}
 
 		selenium.click(DebugConstants.GWT_BUSQUEDA_CUENTAS_BOTON_BUSCAR);

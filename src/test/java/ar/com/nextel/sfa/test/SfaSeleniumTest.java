@@ -51,8 +51,11 @@ public abstract class SfaSeleniumTest extends SeleneseTestCase {
 	public static final String LOCAL_SFA_ROOT_URL = "http://localhost:8888/";
 	public static final String NB34_SFA_ROOT_URL = "http://nb34:8888/";
 	public static final String TEST_SFA_ROOT_URL = "http://baslije4.nextel.com.ar:7877/sfa-web2/";
+	public static final String WKSRGM_ROOT_URL = "http://wksrgm.nextel.com.ar:8888/";
+	
 	public static final String SFA_APP_URL = "ar.com.nextel.sfa.SFAWeb/SFAWeb.html";
 
+	
 	public SfaSeleniumTest() {
 		super();
 	}

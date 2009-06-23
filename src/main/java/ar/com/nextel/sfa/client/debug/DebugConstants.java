@@ -24,6 +24,7 @@ public class DebugConstants {
 	public static final String TEXTBOX = "TextBox";
 	public static final String COMBO = "Combo";
 	public static final String TABLE = "Table";
+	public static final String MENU = "MenuItem";
 
 	public static final String GWTPREFIX = UIObject.DEBUG_ID_PREFIX;
 	
@@ -31,6 +32,24 @@ public class DebugConstants {
 	
 	public static final String BUSQUEDA_CUENTAS_MODULE_ID = "busquedaCuentas";
 
+	public static final String CUENTAS = "Cuentas";
+	public static final String SS = "SS";
+	public static final String VERAZ = "Veraz";
+
+	// Constantes de los MenuItems
+
+	public static final String MENU_CUENTAS = SFA_DEBUGID_PREFIX + SEP + MENU + SEP + CUENTAS;
+	public static final String MENU_CUENTAS_BUSCAR = SFA_DEBUGID_PREFIX + SEP + MENU + SEP + CUENTAS + SEP + "buscar";
+	public static final String MENU_CUENTAS_AGREGAR = SFA_DEBUGID_PREFIX + SEP + MENU + SEP + CUENTAS + SEP + "agregar";
+	public static final String MENU_SS_BUSCAR = SFA_DEBUGID_PREFIX + SEP + MENU + SEP + SS + SEP + "buscar";
+	public static final String MENU_VERAZ_VERAZ = SFA_DEBUGID_PREFIX + SEP + MENU + SEP + VERAZ + SEP + VERAZ;
+	
+	public static final String GWT_MENU_CUENTAS = GWTPREFIX + MENU_CUENTAS;
+	public static final String GWT_MENU_CUENTAS_BUSCAR = GWTPREFIX + MENU_CUENTAS_BUSCAR;
+	public static final String GWT_MENU_CUENTAS_AGREGAR = GWTPREFIX + MENU_CUENTAS_AGREGAR;
+	public static final String GWT_MENU_SS_BUSCAR = GWTPREFIX + MENU_SS_BUSCAR;
+	public static final String GWT_MENU_VERAZ_VERAZ = GWTPREFIX + MENU_VERAZ_VERAZ;
+	
 	// Constantes de los componentes
 	
 	public static final String BUSQUEDA_CUENTAS_BOTON_BUSCAR = SFA_DEBUGID_PREFIX + SEP + BUSQUEDA_CUENTAS_MODULE_ID + SEP + BUTTON + SEP + "buscar";

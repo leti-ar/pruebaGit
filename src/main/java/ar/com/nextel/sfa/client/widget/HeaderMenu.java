@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.client.widget;
 
 import ar.com.nextel.sfa.client.command.OpenPageCommand;
+import ar.com.nextel.sfa.client.debug.DebugConstants;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -8,6 +9,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.MenuBar;
+import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -48,23 +50,45 @@ public class HeaderMenu extends Composite {
 		initMenu();
 	}
 
+	/**
+	 * Crea el menú de la aplicación, configurando los submenúes
+	 * 
+	 */
 	private void initMenu() {
 		MenuBar menuCuentas = new MenuBar(true);
 		menuCuentas.addStyleName("submenuPrincipal");
 		menuCuentas.setAnimationEnabled(true);
+		
+		// NOTA: si se establecen debug IDs, setear primero los de los Menues y después lo de los submenues. rgm
+		MenuItem cuentasMenuItem = mainMenu.addItem("Cuentas", menuCuentas);
+		cuentasMenuItem.ensureDebugId(DebugConstants.MENU_CUENTAS);
 
-		mainMenu.addItem("Cuentas", menuCuentas);
+		MenuItem cuentasBuscar = new MenuItem("Buscar", new OpenPageCommand(UILoader.BUSCAR_CUENTA));
+		cuentasBuscar.ensureDebugId(DebugConstants.MENU_CUENTAS_BUSCAR);
+		menuCuentas.addItem(cuentasBuscar);
+
+		MenuItem cuentasAgregar = new MenuItem("Agregar", new OpenPageCommand(UILoader.AGREGAR_CUENTA));
+		cuentasAgregar.ensureDebugId(DebugConstants.MENU_CUENTAS_AGREGAR);
+		menuCuentas.addItem(cuentasAgregar);
+
+		
 		mainMenu.addSeparator();
-		mainMenu.addItem("SS", new OpenPageCommand(UILoader.BUSCAR_SOLICITUD));
+		
+		MenuItem ssBuscar = new MenuItem("SS", new OpenPageCommand(UILoader.BUSCAR_SOLICITUD));
+		ssBuscar.ensureDebugId(DebugConstants.MENU_SS_BUSCAR);
+		mainMenu.addItem(ssBuscar);
+		
 		mainMenu.addSeparator();
-		mainMenu.addItem("Veraz", new OpenPageCommand(UILoader.VERAZ));
+		
+		MenuItem verazVeraz = new MenuItem("Veraz", new OpenPageCommand(UILoader.VERAZ));
+		verazVeraz.ensureDebugId(DebugConstants.MENU_VERAZ_VERAZ);
+		mainMenu.addItem(verazVeraz);
+		
 //		mainMenu.addSeparator();
 //		mainMenu.addItem("OPP", new OpenPageCommand(UILoader.BUSCAR_OPP));
 //		mainMenu.addSeparator();
 //		mainMenu.addItem("Op. en Curso", new OpenPageCommand(UILoader.OP_EN_CURSO));
 
-		menuCuentas.addItem("Buscar", new OpenPageCommand(UILoader.BUSCAR_CUENTA));
-		menuCuentas.addItem("Agregar", new OpenPageCommand(UILoader.AGREGAR_CUENTA));
 
 	}
 
