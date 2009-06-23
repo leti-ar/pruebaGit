@@ -31,7 +31,7 @@ public class BuscarCuentasTest extends SfaSeleniumTest {
 
 			selenium.click(DebugConstants.GWT_MENU_CUENTAS);
 			selenium.click(DebugConstants.GWT_MENU_CUENTAS_BUSCAR);
-			waitWhileCargando(10000);
+			waitWhileCargando(1000);
 	
 			selenium.highlight(DebugConstants.GWT_BUSQUEDA_CUENTAS_COMBO_PREDEFINIDAS);
 			selenium.select(DebugConstants.GWT_BUSQUEDA_CUENTAS_COMBO_PREDEFINIDAS, "label=Últimas consultadas");
