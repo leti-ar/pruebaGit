@@ -309,6 +309,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <configuration>
           <source>1.5</source>
           <target>1.5</target>
+		  <encoding>UTF-8</encoding> 
         </configuration>
       </plugin>
       <plugin>
@@ -356,6 +357,13 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
           </execution>
         </executions>
       </plugin>
+	  <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-site-plugin</artifactId>
+		<configuration>
+		  <outputEncoding>UTF-8</outputEncoding>
+		</configuration>
+	  </plugin>	  
     </plugins>
   </build>
   <!--  profiles (with activation per platform) -->
