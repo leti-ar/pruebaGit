@@ -39,6 +39,7 @@ public class HeaderMenu extends Composite {
 		mainPanel.add(menuWrapper);
 		menuButton.setVisible(false);
 		menuButton.addStyleName("btn-menu");
+		menuButton.ensureDebugId(DebugConstants.MENU_BOTON_ABRIR);
 		RootPanel.get().add(menuButton);
 		menuButton.addClickListener(new ClickListener() {
 			public void onClick(Widget button) {

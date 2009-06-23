@@ -40,12 +40,14 @@ public class DebugConstants {
 
 	// Constantes de los MenuItems
 
+	public static final String MENU_BOTON_ABRIR = SFA_DEBUGID_PREFIX + SEP + MENU + SEP + "abrir";
 	public static final String MENU_CUENTAS = SFA_DEBUGID_PREFIX + SEP + MENU + SEP + CUENTAS;
 	public static final String MENU_CUENTAS_BUSCAR = SFA_DEBUGID_PREFIX + SEP + MENU + SEP + CUENTAS + SEP + "buscar";
 	public static final String MENU_CUENTAS_AGREGAR = SFA_DEBUGID_PREFIX + SEP + MENU + SEP + CUENTAS + SEP + "agregar";
 	public static final String MENU_SS_BUSCAR = SFA_DEBUGID_PREFIX + SEP + MENU + SEP + SS + SEP + "buscar";
 	public static final String MENU_VERAZ_VERAZ = SFA_DEBUGID_PREFIX + SEP + MENU + SEP + VERAZ + SEP + VERAZ;
 	
+	public static final String GWT_MENU_BOTON_ABRIR = GWTPREFIX + MENU_BOTON_ABRIR;
 	public static final String GWT_MENU_CUENTAS = GWTPREFIX + MENU_CUENTAS;
 	public static final String GWT_MENU_CUENTAS_BUSCAR = GWTPREFIX + MENU_CUENTAS_BUSCAR;
 	public static final String GWT_MENU_CUENTAS_AGREGAR = GWTPREFIX + MENU_CUENTAS_AGREGAR;
@@ -53,7 +55,6 @@ public class DebugConstants {
 	public static final String GWT_MENU_VERAZ_VERAZ = GWTPREFIX + MENU_VERAZ_VERAZ;
 	
 	// Constantes de los componentes
-	
 	public static final String BUSQUEDA_CUENTAS_BOTON_BUSCAR = SFA_DEBUGID_PREFIX + SEP + BUSQUEDA_CUENTAS_MODULE_ID + SEP + BUTTON + SEP + "buscar";
 	public static final String GWT_BUSQUEDA_CUENTAS_BOTON_BUSCAR = GWTPREFIX + BUSQUEDA_CUENTAS_BOTON_BUSCAR;
 	
@@ -84,6 +85,10 @@ public class DebugConstants {
 	public static final String AGREGAR_CUENTAS_POPUP_TEXTBOX_NUM_DOC_ID = SFA_DEBUGID_PREFIX + SEP + AGREGAR_CUENTAS_MODULE_ID + SEP + POPUP  + SEP + TEXTBOX + SEP + "numDocId";	
 	public static final String GWT_AGREGAR_CUENTAS_POPUP_TEXTBOX_NUM_DOC_ID = GWTPREFIX + AGREGAR_CUENTAS_POPUP_TEXTBOX_NUM_DOC_ID;	
 
+	public static final String AGREGAR_CUENTAS_POPUP_BUTTON_CERRAR_ID = SFA_DEBUGID_PREFIX + SEP + AGREGAR_CUENTAS_MODULE_ID + SEP + POPUP  + SEP + BUTTON + SEP + "cerrarId";	
+	public static final String GWT_AGREGAR_CUENTAS_POPUP_BUTTON_CERRAR_ID = GWTPREFIX + AGREGAR_CUENTAS_POPUP_BUTTON_CERRAR_ID;	
 	
+	public static final String AGREGAR_CUENTAS_POPUP_BUTTON_ACEPTAR_ID = SFA_DEBUGID_PREFIX + SEP + AGREGAR_CUENTAS_MODULE_ID + SEP + POPUP  + SEP + BUTTON + SEP + "aceptarId";	
+	public static final String GWT_AGREGAR_CUENTAS_POPUP_BUTTON_ACEPTAR_ID = GWTPREFIX + AGREGAR_CUENTAS_POPUP_BUTTON_ACEPTAR_ID;	
 	
 }
