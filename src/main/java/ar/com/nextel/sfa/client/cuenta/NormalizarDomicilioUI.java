@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.NormalizacionDomicilioMotivoDto;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
@@ -97,6 +98,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		//domiciliosData = new DomiciliosUIData();
 		footerBar = new FormButtonsBar();
 		linkNoNormalizar = new SimpleLink("No Normalizar");
+		linkNoNormalizar.ensureDebugId(DebugConstants.DOMICILIO_POPUP_BUTTON_NO_NORMALIZAR_ID);
 		linkAceptar = new SimpleLink("Aceptar");
 		linkCerrar = new SimpleLink("Cerrar");
 		domicilioResultWrapper = new SimplePanel();
