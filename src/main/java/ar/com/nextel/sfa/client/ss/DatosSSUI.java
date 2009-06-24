@@ -5,6 +5,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.cuenta.DomicilioUI;
+import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
@@ -87,6 +88,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		TitledPanel domicilio = new TitledPanel("Domicilio");
 
 		crearDomicilio = new Button("Crear nuevo");
+		crearDomicilio.ensureDebugId("EditarSS-Datos-CrearDomicilio");
 		crearDomicilio.addClickListener(this);
 		crearDomicilio.addStyleName("crearDomicilioButton");
 		SimplePanel crearDomicilioWrapper = new SimplePanel();
@@ -124,6 +126,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		TitledPanel detalle = new TitledPanel("Detalle");
 
 		crearLinea = new Button("Crear nuevo");
+		crearLinea.ensureDebugId(DebugConstants.EDITAR_SOLICITUD_DATOS_BUTTON_CREAR_LINEA);
 		crearLinea.addClickListener(this);
 		crearLinea.addStyleName("crearLineaButton");
 		SimplePanel crearLineaWrapper = new SimplePanel();

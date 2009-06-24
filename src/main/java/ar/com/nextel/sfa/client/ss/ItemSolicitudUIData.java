@@ -5,6 +5,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
+import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
@@ -153,6 +154,17 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		verificarSimWrapper.setHTML(IconFactory.comprobarNegro(Sfa.constant().verificarSim()).toString());
 		verificarSimWrapper.addStyleName("pl10");
 		
+		// Debug Labels
+		item.ensureDebugId(DebugConstants.EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_ITEM);
+		cantidad.ensureDebugId(DebugConstants.EDITAR_SOLICITUD_ITEM_SOLICITUD_TEXTBOX_CANTIDAD);
+		tipoOrden.ensureDebugId(DebugConstants.EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_TIPO_ORDEN);
+		imei.ensureDebugId(DebugConstants.EDITAR_SOLICITUD_ITEM_SOLICITUD_TEXTBOX_IMEI);
+		sim.ensureDebugId(DebugConstants.EDITAR_SOLICITUD_ITEM_SOLICITUD_TEXTBOX_SIM);
+		pin.ensureDebugId(DebugConstants.EDITAR_SOLICITUD_ITEM_SOLICITUD_TEXTBOX_PIN);
+		tipoPlan.ensureDebugId(DebugConstants.EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_TIPO_PLAN);
+		plan.ensureDebugId(DebugConstants.EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_PLAN);
+		modeloEq.ensureDebugId(DebugConstants.EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_MODELO);
+
 		listaPrecio.addChangeListener(this);
 		item.addChangeListener(this);
 		tipoPlan.addChangeListener(this);
