@@ -8,6 +8,22 @@ public class CargarItemsSolicitudTest extends SfaSeleniumTest {
 		setUp(WKSRGM_ROOT_URL, FIREFOX_CHROME);
 	}
 
+	/**
+	 * 
+	 * Este método es usado para correr el test desde PushToTest
+	 */
+	public void runAllTestsStandalone() {
+		CargarItemsSolicitudTest cist = new CargarItemsSolicitudTest();
+		try {
+			cist.setUp();
+			cist.testCargarItemsSolicitud();
+			cist.tearDown();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	public void testCargarItemsSolicitud() throws Exception {
 		selenium.open("/ar.com.nextel.sfa.SFAWeb/SFAWeb.html");
 		loginIfNeeded();
@@ -130,7 +146,8 @@ public class CargarItemsSolicitudTest extends SfaSeleniumTest {
 
 		// Creo un Alquiler
 
-		selenium.select(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_ITEM, "label=Kit i880 Motorola");
+		selenium.select(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_ITEM,
+				"label=Kit i880 Motorola");
 		selenium.type(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_TEXTBOX_CANTIDAD, "2");
 		waitWhileCargando(3000);
 		Thread.sleep(500);
@@ -152,9 +169,11 @@ public class CargarItemsSolicitudTest extends SfaSeleniumTest {
 
 		// Creo una venta
 
-		selenium.select(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_TIPO_ORDEN, "label=Venta (AMBA)");
+		selenium.select(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_TIPO_ORDEN,
+				"label=Venta (AMBA)");
 		waitWhileCargando(3000);
-		selenium.select(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_ITEM, "label=Kit i570 Motorola");
+		selenium.select(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_ITEM,
+				"label=Kit i570 Motorola");
 		selenium.type(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_TEXTBOX_CANTIDAD, "1");
 		Thread.sleep(500);
 		selenium.click("link=ACEPTAR");
@@ -175,9 +194,11 @@ public class CargarItemsSolicitudTest extends SfaSeleniumTest {
 
 		// Creo venta de Accesorios
 
-		selenium.select(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_TIPO_ORDEN, "label=Venta de Accesorios");
+		selenium.select(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_TIPO_ORDEN,
+				"label=Venta de Accesorios");
 		waitWhileCargando(10000);
-		selenium.select(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_ITEM, "label=NTN2306 - Tapa i833");
+		selenium.select(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_ITEM,
+				"label=NTN2306 - Tapa i833");
 		selenium.type(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_TEXTBOX_CANTIDAD, "1");
 		Thread.sleep(500);
 		selenium.click("link=ACEPTAR");
@@ -198,17 +219,20 @@ public class CargarItemsSolicitudTest extends SfaSeleniumTest {
 
 		// Creo Activacion
 
-		selenium.select(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_TIPO_ORDEN, "label=Activación");
+		selenium.select(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_TIPO_ORDEN,
+				"label=Activación");
 		waitWhileCargando(3000);
 		selenium.type(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_TEXTBOX_IMEI, "123456789012345");
 		selenium.click("//table[2]/tbody/tr[1]/td[3]/div/div");
 		waitWhileCargando(3000);
-		selenium.select(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_MODELO, "label=Equipo BB7520 RIM");
+		selenium.select(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_MODELO,
+				"label=Equipo BB7520 RIM");
 		selenium.type(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_TEXTBOX_SIM, "123456789012345");
 		waitWhileCargando(3000);
 		selenium.click("//td[5]/div/div");
 		selenium.type(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_TEXTBOX_PIN, "12345678");
-		selenium.select(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_TIPO_PLAN, "label=Plan No Vigente");
+		selenium.select(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_TIPO_PLAN,
+				"label=Plan No Vigente");
 		waitWhileCargando(3000);
 		selenium.select(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_PLAN, "label=NEXTEL 400");
 		Thread.sleep(500);
@@ -218,7 +242,8 @@ public class CargarItemsSolicitudTest extends SfaSeleniumTest {
 
 		// Creo Venta Licencias BlackBerry
 
-		selenium.select(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_TIPO_ORDEN, "label=Venta Licencias BB");
+		selenium.select(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_TIPO_ORDEN,
+				"label=Venta Licencias BB");
 		waitWhileCargando(3000);
 		selenium.type(DebugConstants.GWT_EDITAR_SOLICITUD_ITEM_SOLICITUD_TEXTBOX_CANTIDAD, "2");
 		Thread.sleep(500);
