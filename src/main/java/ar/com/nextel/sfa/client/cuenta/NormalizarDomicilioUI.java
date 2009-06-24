@@ -187,6 +187,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		for (int col = 0; col < widths.length; col++) {
 			domicilioResult.getColumnFormatter().setWidth(col, widths[col]);
 		}
+		domicilioResult.ensureDebugId(DebugConstants.TABLE_DOMICILIO_NORMALIZADO);
 		domicilioResult.getColumnFormatter().addStyleName(0, "alignCenter");
 		domicilioResult.getColumnFormatter().addStyleName(1, "alignCenter");
 		domicilioResult.setCellPadding(0);

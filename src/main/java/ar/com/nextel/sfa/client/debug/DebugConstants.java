@@ -42,6 +42,7 @@ public class DebugConstants {
 	public static final String VERAZ = "Veraz";
 	public static final String DATOS = "Datos";
 	public static final String ITEM_SOLICITUD = "ItemSolicitud";
+	public static final String DOMICILIO = "Domicilios";
 	// Constantes de los MenuItems
 
 	public static final String MENU_BOTON_ABRIR = SFA_DEBUGID_PREFIX + SEP + MENU + SEP + "abrir";
@@ -80,7 +81,11 @@ public class DebugConstants {
 	public static final String GWT_TABLE_PAGE_BAR_NEXT = GWTPREFIX + TABLE_PAGE_BAR_NEXT;
 	public static final String GWT_TABLE_PAGE_BAR_FIRST = GWTPREFIX + TABLE_PAGE_BAR_FIRST;
 	public static final String GWT_TABLE_PAGE_BAR_LAST = GWTPREFIX + TABLE_PAGE_BAR_LAST;
-
+	
+	public static final String NORMALIZAR = "normalizar";
+	public static final String TABLE_DOMICILIO_NORMALIZADO = SFA_DEBUGID_PREFIX + SEP + BUSQUEDA_CUENTAS_MODULE_ID + SEP + DOMICILIO + NORMALIZAR + TABLE;
+	public static final String GWT_TABLE_DOMICILIO_NORMALIZADO = GWTPREFIX + TABLE_DOMICILIO_NORMALIZADO;
+	
 	//AGREGAR CUENTA
 	public static final String AGREGAR_CUENTAS_POPUP_COMBO_TIPO_DOC_ID = SFA_DEBUGID_PREFIX + SEP + AGREGAR_CUENTAS_MODULE_ID + SEP + POPUP  + SEP + COMBO + SEP + "tipoDocId";
 	public static final String GWT_AGREGAR_CUENTAS_POPUP_COMBO_TIPO_DOC_ID =  GWTPREFIX + AGREGAR_CUENTAS_POPUP_COMBO_TIPO_DOC_ID;
