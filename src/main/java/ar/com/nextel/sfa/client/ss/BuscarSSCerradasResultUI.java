@@ -92,23 +92,23 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 		cantEqFirmados = 0;
 		SolicitudRpcService.Util.getInstance().searchSSCerrada(solicitudServicioCerradaDto,
 				new DefaultWaitCallback<List<SolicitudServicioCerradaResultDto>>() {
-					public void success(List<SolicitudServicioCerradaResultDto> result) {
-						if (result != null) {
-							if (result.size() == 0) {
-//								cambiosSSCerradasResultUI.CleanCambiosTable();
-//								cambiosSSCerradasResultUI.setSolicitudServicioCerradaDto(new DetalleSolicitudServicioDto("", "", "", null));
-								MessageDialog.getInstance().showAceptar("No se encontraron datos con el criterio utilizado",
-										MessageDialog.getCloseCommand());
-								cambiosSSCerradasResultUI.hideCambiosTable();
-							}
-							loadExcel();
-							setSolicitudServicioDto(result);
-							buscarSSTotalesResultUI.setValues(cantEquipos.toString(), cantPataconex
-									.toString(), String.valueOf(cantEqFirmados));
-							buscarSSTotalesResultUI.setVisible(true);
-						}
+			public void success(List<SolicitudServicioCerradaResultDto> result) {
+				if (result != null) {
+					if (result.size() == 0) {
+						//cambiosSSCerradasResultUI.CleanCambiosTable();
+						//cambiosSSCerradasResultUI.setSolicitudServicioCerradaDto(new DetalleSolicitudServicioDto("", "", "", null));
+						MessageDialog.getInstance().showAceptar("No se encontraron datos con el criterio utilizado",
+								MessageDialog.getCloseCommand());
+						cambiosSSCerradasResultUI.hideCambiosTable();
 					}
-				});
+					loadExcel();
+					setSolicitudServicioDto(result);
+					buscarSSTotalesResultUI.setValues(cantEquipos.toString(), cantPataconex
+							.toString(), String.valueOf(cantEqFirmados));
+					buscarSSTotalesResultUI.setVisible(true);
+				}
+			}
+		});
 	}
 
 	public void setSolicitudServicioDto(
@@ -152,7 +152,11 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 				resultTable.setWidget(row, 0, IconFactory.word());
 				resultTable.setHTML(row, 1, solicitudServicioCerradaResultDto.getNumero());
 				resultTable.setHTML(row, 2, solicitudServicioCerradaResultDto.getNumeroCuenta());
-				resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getRazonSocialCuenta());
+				if (solicitudServicioCerradaResultDto.getRazonSocialCuenta() != null) {
+					resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getRazonSocialCuenta());
+				} else {
+					resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getCuenta().getPersona().getRazonSocial());
+				}
 				resultTable.setHTML(row, 4, solicitudServicioCerradaResultDto.getCantidadEquiposPorCuenta()
 						.toString());
 				resultTable.setHTML(row, 5, solicitudServicioCerradaResultDto.getPataconex().toString());
