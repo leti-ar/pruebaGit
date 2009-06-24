@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client.cuenta;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
@@ -57,6 +58,7 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 	}
 	
 	public void init() {
+		
 		buscadorDocumentoPanel = new SimplePanel();
 		buscadorDocumentoPanel.setWidth("250");
 		buscadorDocumentoPanel.setHeight("70");
@@ -94,7 +96,11 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 		botonesTable.getCellFormatter().setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_LEFT);
 		addFooter(botonesTable);
 		add(buscadorDocumentoPanel);
-		
+
+		numeroDocTextBox.ensureDebugId(DebugConstants.AGREGAR_CUENTAS_POPUP_TEXTBOX_NUM_DOC_ID);
+		tipoDocumento.ensureDebugId(DebugConstants.AGREGAR_CUENTAS_POPUP_COMBO_TIPO_DOC_ID);
+		cerrar.ensureDebugId(DebugConstants.AGREGAR_CUENTAS_POPUP_BUTTON_CERRAR_ID);
+		aceptar.ensureDebugId(DebugConstants.AGREGAR_CUENTAS_POPUP_BUTTON_ACEPTAR_ID);
 	}
 	
 	private boolean validarNumero() {
