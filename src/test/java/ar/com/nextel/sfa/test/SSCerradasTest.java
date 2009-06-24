@@ -16,7 +16,6 @@ public class SSCerradasTest extends SfaSeleniumTest {
 		loginIfNeeded();
 		waitWhileCargando(10000);
 		selenium.click(DebugConstants.GWT_MENU_SS_BUSCAR);
-		//selenium.click("gwt-debug-sfa-MenuItem-SS-buscar");
 		selenium.click("//td/button");
 		selenium.click("//td[1]/table/tbody/tr/td[1]/button");
 		selenium.click("holidaySelectable");
