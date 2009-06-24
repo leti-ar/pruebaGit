@@ -36,15 +36,7 @@ public class CambiosSSCerradasResultUI extends FlowPanel {
 		resultTableWrapper = new FlowPanel();
 		resultTableWrapper.addStyleName("resultTableWrapper");
 		add(resultTableWrapper);
-		setVisible(false);
-	}
-
-	public void setSolicitudServicioCerradaDto(DetalleSolicitudServicioDto detalleSolicitudServicioDto) {
-		this.detalleSolicitudServicioDto = detalleSolicitudServicioDto;		
-		if (cambiosTable != null) {
-			cambiosTable.unsinkEvents(Event.getEventsSunk(cambiosTable.getElement()));
-			cambiosTable.removeFromParent();
-		}
+		
 		cambiosTable = new FlexTable();
 		cambiosTable.setWidget(0, 0, labelDatosSS);
 		labelDatosSS.addStyleName("mt5");
@@ -57,21 +49,27 @@ public class CambiosSSCerradasResultUI extends FlowPanel {
 		cambiosTable.setWidget(1, 2, labelRazonSocial);		
 		labelRazonSocial.addStyleName("mlr40");
 		labelRazonSocial.addStyleName("mtb5");
+		resultTableWrapper.add(cambiosTable);
+		
+		resultTable = new FlexTable();
+		initTable(resultTable);
+		resultTableWrapper.add(resultTable);
+		
+		setVisible(false);
+	}
+
+	public void setSolicitudServicioCerradaDto(DetalleSolicitudServicioDto detalleSolicitudServicioDto) {
+		this.detalleSolicitudServicioDto = detalleSolicitudServicioDto;		
 		labelNroSS.setText("N° SS: "+ detalleSolicitudServicioDto.getNumero());
 		labelNroCLiente.setText("N° Cuenta: "+ detalleSolicitudServicioDto.getNumeroCuenta());
 		labelRazonSocial.setText("Razon Social: "+ detalleSolicitudServicioDto.getRazonSocialCuenta());
-		resultTableWrapper.add(cambiosTable);
 		loadTable();
 	}
 
 	private void loadTable() {
-		if (resultTable != null) {
-			resultTable.unsinkEvents(Event.getEventsSunk(resultTable.getElement()));
-			resultTable.removeFromParent();
+		while(resultTable.getRowCount() > 1){
+			resultTable.removeRow(1);
 		}
-		resultTable = new FlexTable();
-		initTable(resultTable);
-		resultTableWrapper.add(resultTable);
 		int row = 1;
 		for (CambiosSolicitudServicioDto cambiosDto : detalleSolicitudServicioDto.getCambiosEstadoSolicitud()) {
 			resultTable.setHTML(row, 0, cambiosDto.getFechaCambioEstado().toString());
