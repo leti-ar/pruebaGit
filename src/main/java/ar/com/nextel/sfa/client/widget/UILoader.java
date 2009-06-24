@@ -39,6 +39,8 @@ public class UILoader extends SimplePanel implements HistoryListener {
 	public static final int BUSCAR_OPP = 4;
 	public final static int OP_EN_CURSO = 5;
 	public final static int EDITAR_CUENTA = 7;
+	
+	private String lastToken = "";
 
 	private UILoader() {
 		pages = new ApplicationUI[8];
@@ -54,7 +56,7 @@ public class UILoader extends SimplePanel implements HistoryListener {
 	}
 
 	public void setPage(int page){
-		setPage(page, null);
+		setPage(page, "" + page);
 	}
 	/**
 	 * Oculta la página anterior (Si es que puede), muestra una nueva y oculta el menu.
@@ -63,12 +65,14 @@ public class UILoader extends SimplePanel implements HistoryListener {
 	 *            Código de la página que desea mostrar.
 	 * @param token 
 	 */
-	public void setPage(int page, String token) {
+	public void setPage(int page, String historyToken) {
 		if (getWidget() != null) {
-			if(!((ApplicationUI) getWidget()).unload(token)){
+			if(!((ApplicationUI) getWidget()).unload(historyToken)){
+				History.newItem(lastToken, false);
 				return;
 			}
 		}
+		lastToken = historyToken;
 		if (page == SOLO_MENU) {
 			SFAWeb.getHeaderMenu().setVisible(true);
 			setWidget(null);
@@ -127,10 +131,10 @@ public class UILoader extends SimplePanel implements HistoryListener {
 	public void onHistoryChanged(String historyToken) {
 		String token = HistoryUtils.getToken(historyToken);
 		if (token == null || "".equals(token)) {
-			setPage(SOLO_MENU, token);
+			setPage(SOLO_MENU, historyToken);
 		} else {
 			int nToken = Integer.parseInt(token);
-			setPage(nToken, token);
+			setPage(nToken, historyToken);
 		}
 	}
 }

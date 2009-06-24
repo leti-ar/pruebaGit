@@ -49,6 +49,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 	private SimpleLink guardarButton;
 	private SimpleLink cancelarButton;
 	private Button validarCompletitud;
+	private String tokenLoaded;
 
 	public EditarSSUI() {
 		super();
@@ -56,6 +57,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 	}
 
 	public boolean load() {
+		tokenLoaded = History.getToken();
 		String cuenta = HistoryUtils.getParam(ID_CUENTA);
 		mainPanel.setVisible(false);
 		if (cuenta == null) {
@@ -142,7 +144,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 	}
 
 	public boolean unload(String token) {
-		if (!editarSSUIData.isSaved()) {
+		if (!editarSSUIData.isSaved() && !tokenLoaded.equals(token)) {
 			MessageDialog.getInstance().showSiNoCancelar(Sfa.constant().guardar(),
 					Sfa.constant().MSG_PREGUNTA_GUARDAR(), new SaveSSCommand(true, token),
 					new SaveSSCommand(false, token), MessageDialog.getCloseCommand());
@@ -167,6 +169,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 			}
 			editarSSUIData.setSaved(true);
 			History.newItem(token);
+			MessageDialog.getInstance().hide();
 		}
 	}
 
