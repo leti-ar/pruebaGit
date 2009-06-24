@@ -9,9 +9,22 @@ public class DetalleSolicitudServicioDto implements IsSerializable {
     private String numero;
     private String numeroCuenta;
     private String razonSocialCuenta;
-    private List<CambiosSolicitudServicioDto> cambiosEstadoSolicitud;
-	
+    private List<CambiosSolicitudServicioDto> cambiosEstadoSolicitud;	
+     
     
+//    public DetalleSolicitudServicioDto() {
+//    
+//    }
+//        
+//    public DetalleSolicitudServicioDto(String numero, String numeroCuenta, String razonSocialCuenta, 
+//    		List<CambiosSolicitudServicioDto> cambiosEstadoSolicitud) {
+//		super();
+//		this.numero = numero;
+//		this.numeroCuenta = numeroCuenta;
+//		this.razonSocialCuenta = razonSocialCuenta;
+//		this.cambiosEstadoSolicitud = cambiosEstadoSolicitud;
+//	}
+	
     public String getNumero() {
 		return numero;
 	}
