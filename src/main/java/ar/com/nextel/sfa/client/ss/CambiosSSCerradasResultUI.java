@@ -66,18 +66,24 @@ public class CambiosSSCerradasResultUI extends FlowPanel {
 		loadTable();
 	}
 
-	private void loadTable() {
+	public void CleanCambiosTable() {
 		while(resultTable.getRowCount() > 1){
 			resultTable.removeRow(1);
 		}
+	}
+	
+	private void loadTable() {
 		int row = 1;
-		for (CambiosSolicitudServicioDto cambiosDto : detalleSolicitudServicioDto.getCambiosEstadoSolicitud()) {
-			resultTable.setHTML(row, 0, cambiosDto.getFechaCambioEstado().toString());
-			resultTable.setHTML(row, 1, cambiosDto.getEstadoAprobacionSolicitud());
-			resultTable.setHTML(row, 2, cambiosDto.getComentario());
-			row++;
+		if (detalleSolicitudServicioDto.getCambiosEstadoSolicitud() != null) {
+			for (CambiosSolicitudServicioDto cambiosDto : detalleSolicitudServicioDto.getCambiosEstadoSolicitud()) {
+				resultTable.setHTML(row, 0, cambiosDto.getFechaCambioEstado().toString());
+				resultTable.setHTML(row, 1, cambiosDto.getEstadoAprobacionSolicitud());
+				resultTable.setHTML(row, 2, cambiosDto.getComentario());
+				row++;
+			}
 		}
 		setVisible(true);
+		resultTableWrapper.setVisible(true);
 	}
 
 	private void initTable(FlexTable table) {
@@ -93,6 +99,10 @@ public class CambiosSSCerradasResultUI extends FlowPanel {
 		table.setHTML(0, 0, "Fecha");
 		table.setHTML(0, 1, "Estado");
 		table.setHTML(0, 2, "Comentario");
+	}
+	
+	public void hideCambiosTable() {
+		resultTableWrapper.setVisible(false);
 	}
 
 }
