@@ -91,51 +91,49 @@ public class AgregarCuentaTest extends SfaSeleniumTest {
 		waitWhileCargando(10000);
 		hlClick(DebugConstants.GWT_DOMICILIO_POPUP_BUTTON_NO_NORMALIZAR_ID);
 
-		//contactos datos
-		hlClick("//td[4]/div/div"); //tab contactos
-		hlClick("//div[3]/table/tbody/tr[1]/td/button");
-		hlType("//div[1]/div/table[1]/tbody/tr[3]/td[2]/input",           mapDatos.get("ContactoNombre"));
-		hlType("//div[1]/div/table[1]/tbody/tr[1]/td[5]/input",           mapDatos.get("ContactoNumDoc"));
-		hlType("//div[1]/div/table[1]/tbody/tr[3]/td[5]/input",           mapDatos.get("ContactoApellido"));
-		selenium.select("//div[1]/div/table[1]/tbody/tr[4]/td[2]/select", mapDatos.get("ContactoSexo"));
+		for(int i=1;i<11;i++) {
+			//contactos datos
+			hlClick("//td[4]/div/div"); //tab contactos
+			hlClick("//div[3]/table/tbody/tr[1]/td/button");
+			hlType("//div[1]/div/table[1]/tbody/tr[3]/td[2]/input",           mapDatos.get("ContactoNombre")+getIndice(i));
+			hlType("//div[1]/div/table[1]/tbody/tr[1]/td[5]/input",           mapDatos.get("ContactoNumDoc")+i);
+			hlType("//div[1]/div/table[1]/tbody/tr[3]/td[5]/input",           mapDatos.get("ContactoApellido")+getIndice(i));
+			selenium.select("//div[1]/div/table[1]/tbody/tr[4]/td[2]/select", mapDatos.get("ContactoSexo"));
 
-		
-		//contacto telefonos
-		selenium.click("//div[1]/table/tbody/tr[1]/td/table/tbody/tr/td[4]/div/div"); //tab contactos telefonos
-		selenium.type("//div[3]/div/table/tbody/tr[2]/td[2]/div/input[1]", mapDatos.get("ContactoTelParArea"));
-		selenium.type("//div[3]/div/table/tbody/tr[2]/td[2]/div/input[2]", mapDatos.get("ContactoTelParNum"));
-		selenium.type("//tr[2]/td[2]/div/input[3]"                       , mapDatos.get("ContactoTelParInt"));
-		selenium.type("//div[3]/div/table/tbody/tr[2]/td[4]/div/input[1]", mapDatos.get("ContactoTelAdiArea"));
-		selenium.type("//div[3]/div/table/tbody/tr[2]/td[4]/div/input[2]", mapDatos.get("ContactoTelAdiNum"));
-		selenium.type("//div[3]/div/table/tbody/tr[2]/td[4]/div/input[3]", mapDatos.get("ContactoTelAdiInt"));
-		selenium.type("//tr[3]/td[2]/div/input[1]"                       , mapDatos.get("ContactoTelCelArea"));
-		selenium.type("//tr[3]/td[2]/div/input[2]"                       , mapDatos.get("ContactoTelCelNum"));
-		selenium.type("//tr[3]/td[4]/div/input[1]"                       , mapDatos.get("ContactoFaxArea"));
-		selenium.type("//tr[3]/td[4]/div/input[2]"                       , mapDatos.get("ContactoFaxNum"));
-		selenium.type("//tr[3]/td[4]/div/input[3]"                       , mapDatos.get("ContactoFaxInt"));
-		selenium.type("//tr[5]/td[2]/input"                              , mapDatos.get("ContactoEmailPer"));
-		selenium.type("//tr[5]/td[4]/input"                              , mapDatos.get("ContactoEmailLab"));
-		hlClick("link=Aceptar");
+			//contacto telefonos
+			selenium.click("//div[1]/table/tbody/tr[1]/td/table/tbody/tr/td[4]/div/div"); //tab contactos telefonos
+			selenium.type("//div[3]/div/table/tbody/tr[2]/td[2]/div/input[1]", mapDatos.get("ContactoTelParArea")+i);
+			selenium.type("//div[3]/div/table/tbody/tr[2]/td[2]/div/input[2]", mapDatos.get("ContactoTelParNum")+i);
+			selenium.type("//tr[2]/td[2]/div/input[3]"                       , mapDatos.get("ContactoTelParInt")+i);
+			selenium.type("//div[3]/div/table/tbody/tr[2]/td[4]/div/input[1]", mapDatos.get("ContactoTelAdiArea")+i);
+			selenium.type("//div[3]/div/table/tbody/tr[2]/td[4]/div/input[2]", mapDatos.get("ContactoTelAdiNum")+i);
+			selenium.type("//div[3]/div/table/tbody/tr[2]/td[4]/div/input[3]", mapDatos.get("ContactoTelAdiInt")+i);
+			selenium.type("//tr[3]/td[2]/div/input[1]"                       , mapDatos.get("ContactoTelCelArea")+i);
+			selenium.type("//tr[3]/td[2]/div/input[2]"                       , mapDatos.get("ContactoTelCelNum")+i);
+			selenium.type("//tr[3]/td[4]/div/input[1]"                       , mapDatos.get("ContactoFaxArea")+i);
+			selenium.type("//tr[3]/td[4]/div/input[2]"                       , mapDatos.get("ContactoFaxNum")+i);
+			selenium.type("//tr[3]/td[4]/div/input[3]"                       , mapDatos.get("ContactoFaxInt")+i);
+			selenium.type("//tr[5]/td[2]/input"                              , mapDatos.get("ContactoEmailPer"));
+			selenium.type("//tr[5]/td[4]/input"                              , mapDatos.get("ContactoEmailLab"));
+			hlClick("link=Aceptar");
 
-		//contactos domicilioss
-		hlClick("//tr[2]/td/table/tbody/tr[2]/td[1]/div");
-		hlClick("//div[1]/table/tbody/tr[1]/td/table/tbody/tr/td[3]/div/div");
-		hlClick("//div[1]/table/tbody/tr[2]/td/div/div[2]/div/div/button");
-	    hlType("//tr[3]/td[3]/input"                                    , mapDatos.get("ContactoDomCalle"));
-		hlType("//td[2]/div/div/div[1]/table[1]/tbody/tr[3]/td[5]/input", mapDatos.get("ContactoDomAltura"));
-		hlType("//table[3]/tbody/tr[2]/td[3]/input"                     , mapDatos.get("ContactoDomLocalidad"));
-		hlType("//tr[2]/td[5]/input"                                    , mapDatos.get("ContactoDomCP"));
-		hlType("//td[3]/select"                                         , mapDatos.get("ContactoDomProv"));
-		hlClick("//div[4]/a[1]");
-		hlClick("link=Aceptar");
-		waitWhileCargando(10000);
-		hlClick(DebugConstants.GWT_DOMICILIO_POPUP_BUTTON_NO_NORMALIZAR_ID);
-		
+			//contactos domicilioss
+			hlClick("//tr[2]/td/table/tbody/tr[2]/td[1]/div");
+			hlClick("//div[1]/table/tbody/tr[1]/td/table/tbody/tr/td[3]/div/div");
+			hlClick("//div[1]/table/tbody/tr[2]/td/div/div[2]/div/div/button");
+			hlType("//tr[3]/td[3]/input"                                    , mapDatos.get("ContactoDomCalle")+getIndice(i));
+			hlType("//td[2]/div/div/div[1]/table[1]/tbody/tr[3]/td[5]/input", mapDatos.get("ContactoDomAltura")+i);
+			hlType("//table[3]/tbody/tr[2]/td[3]/input"                     , mapDatos.get("ContactoDomLocalidad")+getIndice(i));
+			hlType("//tr[2]/td[5]/input"                                    , mapDatos.get("ContactoDomCP")+i);
+			hlType("//td[3]/select"                                         , mapDatos.get("ContactoDomProv"));
+			hlClick("//div[4]/a[1]");
+			hlClick("link=Aceptar");
+			waitWhileCargando(10000);
+			hlClick(DebugConstants.GWT_DOMICILIO_POPUP_BUTTON_NO_NORMALIZAR_ID);
+		}
 		//guardar todo
 		//hlClick("link=guardar");
-
 		Thread.sleep(10000);
-
 
 	}
 
@@ -183,7 +181,23 @@ public class AgregarCuentaTest extends SfaSeleniumTest {
 		selenium.highlight(obj);
 		selenium.select(obj,value);
 	}
-	
+	private String getIndice(int i) {
+		Map <Integer,String>indice = null;
+		if (indice==null) {
+			indice = new HashMap<Integer,String>();
+			indice.put(1 ,"-I");
+			indice.put(2 ,"-II");
+			indice.put(3 ,"-III");
+			indice.put(4 ,"-IV");
+			indice.put(5 ,"-V");
+			indice.put(6 ,"-VI");
+			indice.put(7 ,"-VII");
+			indice.put(8 ,"-VIII");
+			indice.put(9 ,"-IX");
+			indice.put(10,"-X");
+		}
+		return indice.get(i);
+	}
 	private Map<String,String> getMapaDatos() {
 	     Map <String,String>datos = new HashMap<String,String>();
 	     datos.put(DebugConstants.GWT_AGREGAR_CUENTAS_POPUP_COMBO_TIPO_DOC_ID , "label=DNI");
@@ -193,52 +207,52 @@ public class AgregarCuentaTest extends SfaSeleniumTest {
 	     datos.put("Apellido", "Putin");
 
 	     datos.put("ProvAnt"                    , "label=MOVISTAR");
-	     datos.put("TelefonoFaxPrincipalCodarea", "1111");
-	     datos.put("TelefonoFaxPrincipalNumero" , "11111111");
-	     datos.put("TelefonoFaxPrincipalInterno", "1111");
-	     datos.put("TelefonoFaxAdicionalCodarea", "2222");
-	     datos.put("TelefonoFaxAdicionalNumero" , "22222222");
-	     datos.put("TelefonoFaxAdicionalInterno", "2222");
-	     datos.put("TelefonoFaxCelularCodarea"  , "3333");
-	     datos.put("TelefonoFaxCelularNumero"   , "33333333");
-	     datos.put("TelefonoFaxFaxCodarea"      , "4444");
-	     datos.put("TelefonoFaxFaxNumero"       , "44444444");
-	     datos.put("TelefonoFaxFaxInterno"      , "4444");
+	     datos.put("TelefonoFaxPrincipalCodarea", "111");
+	     datos.put("TelefonoFaxPrincipalNumero" , "1111111");
+	     datos.put("TelefonoFaxPrincipalInterno", "111");
+	     datos.put("TelefonoFaxAdicionalCodarea", "222");
+	     datos.put("TelefonoFaxAdicionalNumero" , "2222222");
+	     datos.put("TelefonoFaxAdicionalInterno", "222");
+	     datos.put("TelefonoFaxCelularCodarea"  , "333");
+	     datos.put("TelefonoFaxCelularNumero"   , "3333333");
+	     datos.put("TelefonoFaxFaxCodarea"      , "444");
+	     datos.put("TelefonoFaxFaxNumero"       , "4444444");
+	     datos.put("TelefonoFaxFaxInterno"      , "444");
 	     datos.put("E-MailPersonal"             , "pepe@hotass.com");
 	     datos.put("E-MailLaboral"              , "popo@hotline.com");
 	     datos.put("LabelFormaPago"             , "label=Débito directo-Cuenta Bancaria");
 	     datos.put("CBU"                        , "1111111111111111111111");
 	     datos.put("LabelTipoCtaBancaria"       , "label=Caja de ahorros en pesos");
 
-	     datos.put("DomicilioCalle"    , "calle");
-	     datos.put("DomicilioAltura"   , "432");
-	     datos.put("DomicilioLocalidad", "localidad");
-	     datos.put("DomicilioCP"       , "3333");
-	     datos.put("DomicilioObs"      , "comentarios");
+	     datos.put("DomicilioCalle"      , "calle");
+	     datos.put("DomicilioAltura"     , "432");
+	     datos.put("DomicilioLocalidad"  , "localidad");
+	     datos.put("DomicilioCP"         , "3333");
+	     datos.put("DomicilioObs"        , "comentarios");
 
-	     datos.put("ContactoNombre"    , "marta");
-	     datos.put("ContactoNumDoc"    , "43242342");
-	     datos.put("ContactoApellido"  , "cachucha");
-	     datos.put("ContactoSexo"      , "label=Masculino");
+	     datos.put("ContactoNombre"      , "marta");
+	     datos.put("ContactoNumDoc"      , "43242342");
+	     datos.put("ContactoApellido"    , "cachucha");
+	     datos.put("ContactoSexo"        , "label=Masculino");
 
-	     datos.put("ContactoTelParArea", "1111");
-	     datos.put("ContactoTelParNum" , "22223333");
-	     datos.put("ContactoTelParInt" , "3333");
-	     datos.put("ContactoTelAdiArea", "4422");
-	     datos.put("ContactoTelAdiNum" , "554444444");
-	     datos.put("ContactoTelAdiInt" , "665");
-	     datos.put("ContactoTelCelArea", "775");
-	     datos.put("ContactoTelCelNum" , "88533333");
-	     datos.put("ContactoFaxArea"   , "995");
-	     datos.put("ContactoFaxNum"    , "105555555");
-	     datos.put("ContactoFaxInt"    , "205");
-	     datos.put("ContactoEmailPer"  , "marta@hotline.com");
-	     datos.put("ContactoEmailLab"  , "marta@hotass.com");
+	     datos.put("ContactoTelParArea"  , "111");
+	     datos.put("ContactoTelParNum"   , "1212121");
+	     datos.put("ContactoTelParInt"   , "222");
+	     datos.put("ContactoTelAdiArea"  , "333");
+	     datos.put("ContactoTelAdiNum"   , "3131313");
+	     datos.put("ContactoTelAdiInt"   , "333");
+	     datos.put("ContactoTelCelArea"  , "444");
+	     datos.put("ContactoTelCelNum"   , "4141414");
+	     datos.put("ContactoFaxArea"     , "555");
+	     datos.put("ContactoFaxNum"      , "5151515");
+	     datos.put("ContactoFaxInt"      , "555");
+	     datos.put("ContactoEmailPer"    , "marta@hotline.com");
+	     datos.put("ContactoEmailLab"    , "marta@hotass.com");
 	     
-	     datos.put("ContactoDomCalle"    , "dfadfa");
+	     datos.put("ContactoDomCalle"    , "calle cont");
 	     datos.put("ContactoDomAltura"   , "43242");
-	     datos.put("ContactoDomLocalidad", "fdsfa");
-	     datos.put("ContactoDomCP"       , "43242");
+	     datos.put("ContactoDomLocalidad", "localidad cont");
+	     datos.put("ContactoDomCP"       , "1111");
 	     datos.put("ContactoDomProv"     , "label=CAPITAL FEDERAL");
 	     
 	     return datos;
