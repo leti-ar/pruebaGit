@@ -25,25 +25,12 @@ public class AgregarContactosTest extends SfaSeleniumTest {
 		selenium.click(DebugConstants.GWT_MENU_CUENTAS);
 		selenium.click(DebugConstants.GWT_MENU_CUENTAS_AGREGAR);
 		selenium.type("gwt-debug-sfa-agregarCuentas-PopUp-TextBox-numDocId", "28456987");
-		for (int second = 0;; second++) {
-			if (second >= 60) fail("timeout");
-			try { if (selenium.isElementPresent("gwt-debug-sfa-agregarCuentas-PopUp-Button-aceptarId")) break; } catch (Exception e) {}
-			Thread.sleep(1000);
-		}
-
+		waitForElement(60, "gwt-debug-sfa-agregarCuentas-PopUp-Button-aceptarId");
 		selenium.click("gwt-debug-sfa-agregarCuentas-PopUp-Button-aceptarId");
-		for (int second = 0;; second++) {
-			if (second >= 60) fail("timeout");
-			try { if (selenium.isElementPresent("//td[4]/div/div")) break; } catch (Exception e) {}
-			Thread.sleep(1000);
-		}
+		waitForElement(60, "//td[4]/div/div");
 
 		selenium.click("//td[4]/div/div");
-		for (int second = 0;; second++) {
-			if (second >= 60) fail("timeout");
-			try { if (selenium.isElementPresent("//div[3]/table/tbody/tr[1]/td/button")) break; } catch (Exception e) {}
-			Thread.sleep(1000);
-		}
+		waitForElement(60, "//div[3]/table/tbody/tr[1]/td/button");
 
 		selenium.click("//div[3]/table/tbody/tr[1]/td/button");
 		selenium.click("link=Cerrar");

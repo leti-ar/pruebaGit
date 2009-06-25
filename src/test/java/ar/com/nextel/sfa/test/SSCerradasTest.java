@@ -20,12 +20,7 @@ public class SSCerradasTest extends SfaSeleniumTest {
 		selenium.click("//td[1]/table/tbody/tr/td[1]/button");
 		selenium.click("holidaySelectable");
 		selenium.click("//div[2]/button[1]");
-		for (int second = 0;; second++) {
-			if (second >= 60) fail("timeout");
-			try { if (selenium.isElementPresent("//div[2]/table/tbody/tr[2]/td[3]")) break; } catch (Exception e) {}
-			Thread.sleep(1000);
-		}
-
+		waitForElement(60, "//div[2]/table/tbody/tr[2]/td[3]");
 		selenium.click("//div[2]/table/tbody/tr[2]/td[3]");
 		waitWhileCargando(3000);
 		selenium.click("//div[2]/table/tbody/tr[3]/td[3]");
