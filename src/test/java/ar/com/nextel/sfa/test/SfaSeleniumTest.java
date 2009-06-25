@@ -59,10 +59,10 @@ public abstract class SfaSeleniumTest extends SeleneseTestCase {
 
 	public static final String BASLIJEPREPROD_ROOT_URL = "http://baslijepreprod.nextel.com.ar:7779/";
 	public static final String LOCAL_SFA_ROOT_URL = "http://localhost:8888/";
-	public static final String NB34_SFA_ROOT_URL = "http://nb34:8888/";
+	public static final String NB34_SFA_ROOT_URL = "http://melina.nextel.com.ar";
 	public static final String TEST_SFA_ROOT_URL = "http://baslije4.nextel.com.ar:7877/sfa-web2/";
-	public static final String WKSRGM_ROOT_URL = "http://wksrgm.nextel.com.ar:8888/";
-	public static final String NB34_ROOT_URL = "http://nb34.nextel.com.ar:8888/";
+	public static final String WKSRGM_ROOT_URL = "http://melina.nextel.com.ar:8888/";
+	public static final String NB34_ROOT_URL = "http://melina.nextel.com.ar:8888/";
 	
 	public static final String SFA_APP_URL = "ar.com.nextel.sfa.SFAWeb/SFAWeb.html";
 
@@ -80,7 +80,7 @@ public abstract class SfaSeleniumTest extends SeleneseTestCase {
 	 * usar alguna variante del setUp() en las subclases
 	 */
 	public void setUpTestIE() throws Exception {
-		setUp("localhost",4444,TEST_SFA_ROOT_URL, IEXPLORE);
+		setUp("localhost",4444,TEST_SFA_ROOT_URL, FIREFOX);
 	}
 	
 	
@@ -129,6 +129,28 @@ public abstract class SfaSeleniumTest extends SeleneseTestCase {
 	 */
 	protected void waitWhileCargando() {
 		while ( selenium.isTextPresent("Cargando")) {}
+	}
+	
+	/**
+	 * Espera que ocurra un timeout en milisegundos para preguntar si un determinado elemento 
+	 * ya está presente en la pantalla
+	 * 
+	 * @param timeout
+	 * @param elemento
+	 * 
+	 */		
+	protected void waitForElement(long timeout, String element) {
+		for (int second = 0;; second++) {
+			if (second >= timeout) fail("timeout");
+			try { 
+				if (selenium.isElementPresent(element)) 
+					break; 
+			} catch (Exception e) {}
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+			}
+		}
 	}
 
 	/**
