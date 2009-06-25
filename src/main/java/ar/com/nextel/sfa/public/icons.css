@@ -36,7 +36,7 @@ rgm
 }
 .icon-cancel, .icon-copiar, .icon-excel, .icon-lapiz, .icon-locked, .icon-lupa, .icon-silvioSoldan, 
 .icon-tildeVerde, .icon-vistaPreliminar, .icon-word, .icon-nuevo, .icon-comprobar-negro, .icon-comprobar-verde,
-.icon-comprobar-rojo {
+.icon-comprobar-rojo, .icon-locked-other {
 	width: 16px;
 	height: 16px;
 	background-image: url("images/icons.gif");
@@ -47,7 +47,7 @@ rgm
 }
 
 .icon-locked-other{
-   background-image: url("images/locked-others.gif");
+   background-image: url("images/locked-others.gif") !important;
 }
 
 .icon-cancel { background-position: 0 0;}

@@ -42,6 +42,10 @@ A {
 	text-align: left !important;
 }
 
+.floatRight {
+	float: right;
+}
+
 .dataTable TD {
 	text-align: center;
 }
@@ -236,6 +240,12 @@ A {
 	height: 150px;
 	overflow: scroll;
 	border: medium;
+}
+
+.gwt-labelDisabled {
+	font-size: 25px;
+	font-weight: bold;
+	color: gray;
 }
 
 .layout td {
