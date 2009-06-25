@@ -45,6 +45,7 @@ public class CuentaEdicionTabPanel {
 	private CuentaDatosForm      cuentaDatosForm      = CuentaDatosForm.getInstance();
 	private CuentaDomiciliosForm cuentaDomiciliosForm = CuentaDomiciliosForm.getInstance();
 	private CuentaContactoForm   cuentaContactoForm   = CuentaContactoForm.getInstance();
+	private CuentaInfocomForm   cuentaInfocomForm   = CuentaInfocomForm.getInstance();
 	private TabPanel tabPanel;
 	private FormButtonsBar footerBar;
 	
@@ -134,6 +135,7 @@ public class CuentaEdicionTabPanel {
 		tabPanel.add(cuentaDatosForm, Sfa.constant().datos());
 		tabPanel.add(cuentaDomiciliosForm, Sfa.constant().domicilios());
 		tabPanel.add(cuentaContactoForm, Sfa.constant().contactos());
+		tabPanel.add(cuentaInfocomForm, Sfa.constant().infocom());
 		tabPanel.selectTab(0);
 	}
 

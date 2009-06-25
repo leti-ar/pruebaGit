@@ -601,6 +601,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String creditoFidelizacionTitle();
 
   /**
+   * Translated "Cuenta Corriente".
+   * 
+   * @return translated "Cuenta Corriente"
+   */
+  @DefaultStringValue("Cuenta Corriente")
+  @Key("cuentaCorriente")
+  String cuentaCorriente();
+
+  /**
    * Translated "Datos de la cuenta".
    * 
    * @return translated "Datos de la cuenta"
@@ -896,6 +905,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("<span class=\"req\">IMEI:</span>")
   @Key("imei")
   String imei();
+
+  /**
+   * Translated "Infocom".
+   * 
+   * @return translated "Infocom"
+   */
+  @DefaultStringValue("Infocom")
+  @Key("infocom")
+  String infocom();
 
   /**
    * Translated "Interno".
