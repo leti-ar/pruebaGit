@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.infocom;
 
+import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
 
 import com.google.gwt.user.client.Event;
@@ -9,7 +10,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 
 public class CCInfocomUI extends Composite {
 	private TitledPanel mainPanel;
-	private FlexTable cuentaCorriente;
+	private FlexTable cuentaCorrienteTable;
 	private FlexTable descrpTable;
 	
 	public CCInfocomUI(){
@@ -26,12 +27,13 @@ public class CCInfocomUI extends Composite {
 	}
 	
 	private void loadCCTable() {
-		if (cuentaCorriente != null) {
-			cuentaCorriente.unsinkEvents(Event.getEventsSunk(cuentaCorriente.getElement()));
-			cuentaCorriente.removeFromParent();
+		if (cuentaCorrienteTable != null) {
+			cuentaCorrienteTable.unsinkEvents(Event.getEventsSunk(cuentaCorrienteTable.getElement()));
+			cuentaCorrienteTable.removeFromParent();
 		}
-		cuentaCorriente = new FlexTable();
-		initCCTable(cuentaCorriente);
+		//cuentaCorrienteTable = new FlexTable();
+		//initCCTable(cuentaCorriente);
+		initTableCuentaCorriente(cuentaCorrienteTable);
 		setVisible(true);
 	}
 	
@@ -46,6 +48,43 @@ public class CCInfocomUI extends Composite {
 		
 	}
 
+	private void initTableCuentaCorriente(FlexTable table) {
+		table = new FlexTable();
+		SimplePanel contTable = new SimplePanel();
+		contTable.addStyleName("contTable");
+		String[] widths = { "130px", "80px", "100px", "100px","100px", "90px", "90px" };
+		for (int col = 0; col < widths.length; col++) {
+			table.getColumnFormatter().setWidth(col, widths[col]);
+		}
+		table.getColumnFormatter().addStyleName(0, "alignCenter");
+		table.getColumnFormatter().addStyleName(1, "alignCenter");
+		table.getColumnFormatter().addStyleName(2, "alignCenter");
+		table.setCellPadding(0);
+		table.setCellSpacing(0);
+		table.addStyleName("gwt-BuscarCuentaResultTable fidelizacionTable");
+		table.getRowFormatter().addStyleName(0, "header");
+		table.setHTML(0, 0, "Número Cuenta");
+		table.setHTML(0, 1, Sfa.constant().claseCliente());
+		table.setHTML(0, 2, Sfa.constant().vencimiento());
+		table.setHTML(0, 3, "Descripcion");
+		table.setHTML(0, 4, "Número Comprobante");
+		table.setHTML(0, 5, "Importe");
+		table.setHTML(0, 6, "Saldo");
+		for (int row = 1; row < 5; row++) {
+			for (int col = 0; col < widths.length; col++) {
+				table.setHTML(row, col, "Dato");
+			}
+		}
+
+		
+//		SimplePanel subTitulo = new SimplePanel();
+//		subTitulo.addStyleName("subTitulo");
+//		subTitulo.add(new Label("Detalle Bonif. Otorgadas - Facturaci�n de Eq. y Acc."));
+		
+		contTable.add(table);
+		mainPanel.add(contTable);
+	}
+	
 	private void initCCTable(FlexTable table) {
 		SimplePanel contTable = new SimplePanel();
 		contTable.addStyleName("contTable");
