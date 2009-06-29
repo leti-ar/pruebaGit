@@ -10,10 +10,6 @@
 		<param-value>classpath:ar/com/nextel/sfa/applicationContext.xml</param-value>
 	</context-param>
 
-	<listener>
-		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-	</listener>
-
 	<filter>
 		<filter-name>hibernateFilter</filter-name>
 		<filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
@@ -101,6 +97,11 @@
 		<filter-name>executionContextFilter</filter-name>
 		<url-pattern>*.csv</url-pattern>
 	</filter-mapping>
+	
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
 
 	<servlet>
 		<servlet-name>shell</servlet-name>
@@ -109,16 +110,15 @@
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
-	<servlet-mapping>
-		<servlet-name>shell</servlet-name>
-		<url-pattern>/*</url-pattern>
-	</servlet-mapping>
-	
 	<servlet>
 		<servlet-name>download</servlet-name>
 		<servlet-class>ar.com.nextel.web.download.DownloadServlet</servlet-class>
 	</servlet>
 	
+	<servlet-mapping>
+		<servlet-name>shell</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>download</servlet-name>
 		<url-pattern>/download/*</url-pattern>

@@ -10,10 +10,6 @@
 		<param-value>classpath:ar/com/nextel/sfa/applicationContext.xml</param-value>
 	</context-param>
 
-	<listener>
-		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-	</listener>
-
 	<filter>
 		<filter-name>AuthorizationFilter</filter-name>
 		<display-name>AuthorizationFilter</display-name>
@@ -44,7 +40,7 @@
 		<filter-class>ar.com.nextel.sfa.server.filter.ExecutionContextFilter</filter-class>
 	</filter>
 
-<!-- winit -->
+	<!-- winit -->
 	<filter-mapping>
 		<filter-name>AuthorizationFilter</filter-name>
 		<url-pattern>*.rpc</url-pattern>
@@ -66,7 +62,7 @@
 		<url-pattern>*.html</url-pattern>
 	</filter-mapping>
 
-    <!-- Hibernate -->
+	<!-- Hibernate -->
 	<filter-mapping>
 		<filter-name>hibernateFilter</filter-name>
 		<url-pattern>*.rpc</url-pattern>
@@ -75,11 +71,11 @@
 		<filter-name>hibernateFilter</filter-name>
 		<url-pattern>*.pdf</url-pattern>
 	</filter-mapping>
-		<filter-mapping>
+	<filter-mapping>
 		<filter-name>hibernateFilter</filter-name>
 		<url-pattern>*.rtf</url-pattern>
 	</filter-mapping>
-		<filter-mapping>
+	<filter-mapping>
 		<filter-name>hibernateFilter</filter-name>
 		<url-pattern>*.csv</url-pattern>
 	</filter-mapping>
@@ -93,47 +89,54 @@
 		<filter-name>executionContextFilter</filter-name>
 		<url-pattern>*.rtf</url-pattern>
 	</filter-mapping>
-		<filter-mapping>
+	<filter-mapping>
 		<filter-name>executionContextFilter</filter-name>
 		<url-pattern>*.pdf</url-pattern>
 	</filter-mapping>
-		<filter-mapping>
+	<filter-mapping>
 		<filter-name>executionContextFilter</filter-name>
 		<url-pattern>*.csv</url-pattern>
 	</filter-mapping>
 
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
 
 	<servlet>
 		<servlet-name>CuentaRpcService</servlet-name>
 		<servlet-class>
-		ar.com.nextel.sfa.server.CuentaRpcServiceImpl</servlet-class>
+			ar.com.nextel.sfa.server.CuentaRpcServiceImpl</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>SolicitudRpcService</servlet-name>
 		<servlet-class>
-		ar.com.nextel.sfa.server.SolicitudRpcServiceImpl</servlet-class>
+			ar.com.nextel.sfa.server.SolicitudRpcServiceImpl</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>InfocomRpcService</servlet-name>
 		<servlet-class>
-		ar.com.nextel.sfa.server.InfocomRpcServiceImpl</servlet-class>
+			ar.com.nextel.sfa.server.InfocomRpcServiceImpl</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>OperacionesRpcService</servlet-name>
 		<servlet-class>
-		ar.com.nextel.sfa.server.OperacionesRpcServiceImpl</servlet-class>
+			ar.com.nextel.sfa.server.OperacionesRpcServiceImpl</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>OportunidadNegocioRpcService</servlet-name>
 		<servlet-class>
-		ar.com.nextel.sfa.server.OportunidadNegocioRpcServiceImpl</servlet-class>
+			ar.com.nextel.sfa.server.OportunidadNegocioRpcServiceImpl</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>UserCenterRpcService</servlet-name>
 		<servlet-class>
-		ar.com.nextel.sfa.server.UserCenterRpcServiceImpl</servlet-class>
+			ar.com.nextel.sfa.server.UserCenterRpcServiceImpl</servlet-class>
 	</servlet>
-	
+	<servlet>
+		<servlet-name>download</servlet-name>
+		<servlet-class>ar.com.nextel.web.download.DownloadServlet</servlet-class>
+	</servlet>
+
 	<servlet-mapping>
 		<servlet-name>CuentaRpcService</servlet-name>
 		<url-pattern>/ar.com.nextel.sfa.SFAWeb/cuenta.rpc</url-pattern>
@@ -145,25 +148,19 @@
 	<servlet-mapping>
 		<servlet-name>InfocomRpcService</servlet-name>
 		<url-pattern>/ar.com.nextel.sfa.SFAWeb/infocom.rpc</url-pattern>
-	</servlet-mapping>	
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>OperacionesRpcService</servlet-name>
 		<url-pattern>/ar.com.nextel.sfa.SFAWeb/operaciones.rpc</url-pattern>
-	</servlet-mapping>	
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>OportunidadNegocioRpcService</servlet-name>
 		<url-pattern>/ar.com.nextel.sfa.SFAWeb/oportunidades.rpc</url-pattern>
-	</servlet-mapping>	
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>UserCenterRpcService</servlet-name>
 		<url-pattern>/ar.com.nextel.sfa.SFAWeb/usercenter.rpc</url-pattern>
 	</servlet-mapping>
-	
-	<servlet>
-		<servlet-name>download</servlet-name>
-		<servlet-class>ar.com.nextel.web.download.DownloadServlet</servlet-class>
-	</servlet>
-	
 	<servlet-mapping>
 		<servlet-name>download</servlet-name>
 		<url-pattern>/download/*</url-pattern>
