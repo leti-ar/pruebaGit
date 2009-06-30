@@ -9,6 +9,21 @@ public class SSCerradasTest extends SfaSeleniumTest {
 		setUp(NB34_ROOT_URL, FIREFOX);
 	}
 	
+	/**
+	 * 
+	 * Este método es usado para correr el test desde PushToTest
+	 */
+	public void runAllTestsStandalone() {
+		SSCerradasTest ssct = new SSCerradasTest();
+		try {
+			ssct.setUp();
+			ssct.testVerCambiosSS();
+			ssct.tearDown();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}	
 		
 	public void testVerCambiosSS() throws Exception {
 		selenium.setSpeed("500");
@@ -21,6 +36,7 @@ public class SSCerradasTest extends SfaSeleniumTest {
 		selenium.click("holidaySelectable");
 		selenium.click("//div[2]/button[1]");
 		waitForElement(60, "//div[2]/table/tbody/tr[2]/td[3]");
+		
 		selenium.click("//div[2]/table/tbody/tr[2]/td[3]");
 		waitWhileCargando(3000);
 		selenium.click("//div[2]/table/tbody/tr[3]/td[3]");

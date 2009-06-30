@@ -9,18 +9,29 @@ public class AgregarContactosTest extends SfaSeleniumTest {
 		setUp(NB34_ROOT_URL, FIREFOX);
 	}
 	
-		
+	/**
+	 * 
+	 * Este método es usado para correr el test desde PushToTest
+	 */
+	public void runAllTestsStandalone() {
+		AgregarContactosTest act = new AgregarContactosTest();
+		try {
+			act.setUp();
+			act.testAgregarContacto();
+			act.tearDown();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}	
+	
 	public void testAgregarContacto() throws Exception {
 		selenium.setSpeed("900");
 		selenium.open(SFA_APP_URL);
 		loginIfNeeded();
 		waitWhileCargando(10000);
 
-		for (int second = 0;; second++) {
-			if (second >= 60) fail("timeout");
-			try { if (selenium.isElementPresent(DebugConstants.GWT_MENU_CUENTAS)) break; } catch (Exception e) {}
-			Thread.sleep(1000);
-		}
+		waitForElement(60, DebugConstants.GWT_MENU_CUENTAS);
 
 		selenium.click(DebugConstants.GWT_MENU_CUENTAS);
 		selenium.click(DebugConstants.GWT_MENU_CUENTAS_AGREGAR);
