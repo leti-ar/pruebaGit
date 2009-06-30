@@ -123,6 +123,13 @@ public class CuentaDatosForm extends Composite {
 		datosCuentaTable.getFlexCellFormatter().setColSpan(row, 1, 4);
 		datosCuentaTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
 		row++;
+		if(camposTabDatos.getNomDivLabel().isVisible()) {
+			datosCuentaTable.setWidget(row, 0, camposTabDatos.getNomDivLabel());
+			datosCuentaTable.setWidget(row, 1, camposTabDatos.getNombreDivision());
+			datosCuentaTable.getFlexCellFormatter().setColSpan(row, 1, 4);
+			datosCuentaTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
+			row++;
+		}
 		datosCuentaTable.setWidget(row, 0, camposTabDatos.getNombreLabel());
 		datosCuentaTable.setWidget(row, 1, camposTabDatos.getNombre());
 		datosCuentaTable.setWidget(row, 3, camposTabDatos.getApellidoLabel());
@@ -586,8 +593,8 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getIibb().setVisible(docTipoCUIL);
 		camposTabDatos.getIibbLabel().setVisible(docTipoCUIL);
 		
-		camposTabDatos.getNombreDivision().setVisible(false /*TODO*/);
-		camposTabDatos.getNomDivLabel().setVisible(false /*TODO*/);
+		camposTabDatos.getNombreDivision().setVisible(false);
+		camposTabDatos.getNomDivLabel().setVisible(false);
 		
 		camposTabDatos.getUse().setVisible(!docTipoCUIL);
 		camposTabDatos.getUseLabel().setVisible(!docTipoCUIL);
@@ -599,6 +606,18 @@ public class CuentaDatosForm extends Composite {
 
 	}
 
+	public void setAtributosCamposAlAgregarDivision(CuentaDto cuentaDto) {
+		if (cuentaDto==null) 
+			cuentaDto = CuentaEdicionTabPanel.getInstance().getCuenta2editDto();
+		
+		setAtributosCamposAlAgregarCuenta(cuentaDto);
+		
+		camposTabDatos.getNombreDivision().setVisible(true);
+		camposTabDatos.getNomDivLabel().setVisible(true);
+
+	}
+	
+	
 	/**
 	 * 
 	 * @param cuentaDto

@@ -38,14 +38,16 @@ public class CuentaEdicionTabPanel {
 	private static CuentaEdicionTabPanel instance = new CuentaEdicionTabPanel();
 	private FlexTable marco = new FlexTable();
 	DualPanel razonSocialPanel = new DualPanel();
-	DualPanel clientePanel = new DualPanel();
-	private Label razonSocial = new Label();
-	private Label cliente = new Label();
-	private CuentaDto cuenta2editDto = new CuentaDto();
+	DualPanel clientePanel     = new DualPanel();
+	private Label razonSocial  = new Label();
+	private Label cliente      = new Label();
+	private CuentaDto            cuenta2editDto; //       = new CuentaDto();
+	private DivisionDto          division2editDto;
+	private SuscriptorDto        suscriptor2editDto;
 	private CuentaDatosForm      cuentaDatosForm      = CuentaDatosForm.getInstance();
 	private CuentaDomiciliosForm cuentaDomiciliosForm = CuentaDomiciliosForm.getInstance();
 	private CuentaContactoForm   cuentaContactoForm   = CuentaContactoForm.getInstance();
-	private CuentaInfocomForm   cuentaInfocomForm   = CuentaInfocomForm.getInstance();
+	private CuentaInfocomForm    cuentaInfocomForm    = CuentaInfocomForm.getInstance();
 	private TabPanel tabPanel;
 	private FormButtonsBar footerBar;
 	
@@ -117,7 +119,7 @@ public class CuentaEdicionTabPanel {
 	}
 	
     private void initValidarCompletitud() {
-		validarCompletitudButton = new Button("Validar Completitud");
+		validarCompletitudButton = new Button(Sfa.constant().validarCompletitud());
 		validarCompletitudButton.addStyleName("validarCompletitudButton");
 		validarCompletitudButton.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
@@ -245,7 +247,8 @@ public class CuentaEdicionTabPanel {
 		});
 		agregarDivision.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				popupCrearSS.hide();
+				agregarDivision.setTargetHistoryToken(UILoader.EDITAR_CUENTA  + "?idCuenta=" + cuenta2editDto.getId() + "&DIVISION="+"TRUE");
+				popupAgregarCuenta.hide();
 			}
 		});
 		agregarSuscriptor.addClickListener(new ClickListener() {
@@ -299,8 +302,8 @@ public class CuentaEdicionTabPanel {
 		
 		CuentaRpcService.Util.getInstance().saveGranCuenta(ctaDto,new DefaultWaitCallback() {
 			public void success(Object result) {
-				CuentaEdicionTabPanel.getInstance().setCuenta2editDto((CuentaDto)result);
-				cuentaDatosForm.ponerDatosBusquedaEnFormulario((CuentaDto) result);
+				CuentaEdicionTabPanel.getInstance().setCuenta2editDto((GranCuentaDto)result);
+				cuentaDatosForm.ponerDatosBusquedaEnFormulario((GranCuentaDto) result);
 				razonSocial.setText(((CuentaDto) result).getPersona().getRazonSocial());
 				MessageDialog.getInstance().showAceptar("", "      La cuenta se guardó con exito     ", MessageDialog.getCloseCommand());
 				cuentaDomiciliosForm.setHuboCambios(false);
@@ -363,22 +366,23 @@ public class CuentaEdicionTabPanel {
 	}
 	
 	public void setCuenta2editDto(CuentaDto ctaDto) {
-		/**Esto va porque si se accede a este metodo desde la Creacion de una cuenta, aun no se tiene una categoria.
-		 * MODIFICAR cuando se agregue la creacion de Division y Suscriptor.*/
-		if (ctaDto != null){
-			String categoriaCuenta = ctaDto.getCategoriaCuenta().getDescripcion();
-			if ("SUSCRIPTOR".equals(categoriaCuenta)){
-				SuscriptorDto suscriptor = new SuscriptorDto();
-				suscriptor.setGranCuenta(ctaDto);
-				GranCuentaDto granCuenta = new GranCuentaDto();
-				granCuenta.addSuscriptor(suscriptor);
-				this.cuenta2editDto = (CuentaDto)granCuenta;
-			}else if("GRAN CUENTA".equals(categoriaCuenta)){
-				this.cuenta2editDto = ctaDto;
-			}else if("DIVISION".equals(categoriaCuenta)){
-				((GranCuentaDto)this.cuenta2editDto).addDivision((DivisionDto)ctaDto);
-			}
-		}
+        this.cuenta2editDto = ctaDto;		
+//		/**Esto va porque si se accede a este metodo desde la Creacion de una cuenta, aun no se tiene una categoria.
+//		 * MODIFICAR cuando se agregue la creacion de Division y Suscriptor.*/
+//		if (ctaDto != null){
+//			String categoriaCuenta = ctaDto.getCategoriaCuenta().getDescripcion();
+//			if ("SUSCRIPTOR".equals(categoriaCuenta)){
+//				SuscriptorDto suscriptor = new SuscriptorDto();
+//				suscriptor.setGranCuenta(ctaDto);
+//				GranCuentaDto granCuenta = new GranCuentaDto();
+//				granCuenta.addSuscriptor(suscriptor);
+//				this.cuenta2editDto = (GranCuentaDto)granCuenta;
+//			}else if("GRAN CUENTA".equals(categoriaCuenta)){
+//				this.cuenta2editDto = ctaDto;
+//			}else if("DIVISION".equals(categoriaCuenta)){
+//				((GranCuentaDto)this.cuenta2editDto).addDivision((DivisionDto)ctaDto);
+//			}
+//		}
 	}
 	
 	public FlexTable getCuentaEdicionPanel() {
@@ -420,5 +424,16 @@ public class CuentaEdicionTabPanel {
 	public TabPanel getTabPanel() {
 		return tabPanel;
 	}
-	
+	public DivisionDto getDivision2editDto() {
+		return division2editDto;
+	}
+	public void setDivision2editDto(DivisionDto division2editDto) {
+		this.division2editDto = division2editDto;
+	}
+	public SuscriptorDto getSuscriptor2editDto() {
+		return suscriptor2editDto;
+	}
+	public void setSuscriptor2editDto(SuscriptorDto suscriptor2editDto) {
+		this.suscriptor2editDto = suscriptor2editDto;
+	}
 }

@@ -224,6 +224,7 @@ public class CuentaUIData extends UIData {
 
 		//obligatorios (style)
 		nombreLabel.addStyleName("req");
+		nomDivLabel.addStyleName("req");
 		apellidoLabel.addStyleName("req");
 		razSocLabel.addStyleName("req");		
 		contrLabel.addStyleName("req");

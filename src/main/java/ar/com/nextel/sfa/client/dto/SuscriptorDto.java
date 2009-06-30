@@ -1,12 +1,13 @@
 package ar.com.nextel.sfa.client.dto;
 
 public class SuscriptorDto extends CuentaDto {
-    private CuentaDto granCuenta;
+    private GranCuentaDto granCuenta;
     private DivisionDto division;
-	public CuentaDto getGranCuenta() {
+
+    public GranCuentaDto getGranCuenta() {
 		return granCuenta;
 	}
-	public void setGranCuenta(CuentaDto granCuenta) {
+	public void setGranCuenta(GranCuentaDto granCuenta) {
 		this.granCuenta = granCuenta;
 	}
 	public DivisionDto getDivision() {

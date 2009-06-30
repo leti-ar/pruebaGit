@@ -88,6 +88,7 @@ import ar.com.nextel.sfa.client.dto.TipoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoTarjetaDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
+import ar.com.nextel.sfa.client.enums.TipoCuentaEnum;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
@@ -318,66 +319,30 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 	}
 	
 	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive) {
-		GranCuenta granCuenta = new GranCuenta();
-		Suscriptor suscriptor = new Suscriptor();
-		Division division = new Division();
 		Cuenta cuenta = null;
-		CuentaDto ctaDTO = null;
-		GranCuentaDto granCtaDTO = null;
-		DivisionDto ctaDivisionDTO = null;
-		SuscriptorDto ctaSuscriptorDTO = null;
+		CuentaDto cuentaDto = null;
 		try {
 			if (cuentaId == 0){
 				throw new RpcExceptionMessages("No tiene permisos para ver esta cuenta.");
 			} else {
-				if (cuentaId != null){
-					cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(cuentaId);
-				}else if (!cod_vantive.equals("***") && (!cod_vantive.equals("null"))){
+				if (cod_vantive!=null && !cod_vantive.equals("***") && (!cod_vantive.equals("null"))){
 					cuenta = selectCuentaBusinessOperator.getCuentaYLockear(cod_vantive, this.getVendedor());
-					//granCuenta = (GranCuenta)selectCuentaBusinessOperator.getCuentaSinLockear(cod_vantive);
+				} else {
+					cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(cuentaId);
 				}
 				String categoriaCuenta = cuenta.getCategoriaCuenta().getDescripcion();
-				if ("SUSCRIPTOR".equals(categoriaCuenta)){
-					//suscriptor.addContactosCuenta(contactosCuentaBusinessOperator.obtenerContactosCuentas(suscriptor.getCuentaRaiz().getId()));
-					suscriptor = (Suscriptor)cuenta;
-					CondicionCuenta cd1= cuenta.getCondicionCuenta();
-					Long id = cd1.getId();
-					String code = cd1.getCodigoVantive();
-					String desc = cd1.getDescripcion();
-					CondicionCuentaDto cd2 = new CondicionCuentaDto(id,code,desc);
-					ctaSuscriptorDTO = (SuscriptorDto) mapper.map(suscriptor, SuscriptorDto.class);
-					ctaSuscriptorDTO.setCondicionCuenta(cd2);
-					ctaDTO = ctaSuscriptorDTO;
-				}else if("GRAN CUENTA".equals(categoriaCuenta)){
-					granCuenta = (GranCuenta)cuenta;
-					granCuenta.addContactosCuenta(contactosCuentaBusinessOperator.obtenerContactosCuentas(granCuenta.getCuentaRaiz().getId()));
-					CondicionCuenta cd1= granCuenta.getCondicionCuenta();
-					Long id = cd1.getId();
-					String code = cd1.getCodigoVantive();
-					String desc = cd1.getDescripcion();
-					CondicionCuentaDto cd2 = new CondicionCuentaDto(id,code,desc);
-					granCtaDTO = (GranCuentaDto) mapper.map(granCuenta, GranCuentaDto.class);
-					granCtaDTO.setCondicionCuenta(cd2);
-					ctaDTO = granCtaDTO;
-				}else if("DIVISION".equals(categoriaCuenta)){
-					//division = (Division)cuenta;
-					//CondicionCuenta cd1= cuenta.getCondicionCuenta();
-					//Long id = cd1.getId();
-					//String code = cd1.getCodigoVantive();
-					//String desc = cd1.getDescripcion();
-					//CondicionCuentaDto cd2 = new CondicionCuentaDto(id,code,desc);
-					//ctaDivisionDTO = (DivisionDto) mapper.map(division, DivisionDto.class);
-					//ctaDivisionDTO.setCondicionCuenta(cd2);
-					/**TODO: Borrar y descomentar! */
-					CuentaDto cuentaTemp = new CuentaDto();
-					cuentaTemp.setCategoriaCuenta(new CategoriaCuentaDto().DIVISION);
-					ctaDTO = cuentaTemp;
+				if (categoriaCuenta.equals(TipoCuentaEnum.CTA)) {
+					cuentaDto = (GranCuentaDto) mapper.map((GranCuenta)cuenta, GranCuentaDto.class);
+				} else if (categoriaCuenta.equals(TipoCuentaEnum.DIV)) {
+					cuentaDto = (DivisionDto) mapper.map((Division)cuenta, DivisionDto.class);
+				} else if (categoriaCuenta.equals(TipoCuentaEnum.SUS)) {
+					cuentaDto = (SuscriptorDto) mapper.map((Suscriptor)cuenta, SuscriptorDto.class);
 				}
 			}
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
-		return ctaDTO;
+		return cuentaDto;
 	}
 
 	/**
@@ -404,6 +369,16 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 			e.printStackTrace();
 		}
 		return cuentaDto;
+	}
+	
+	
+	public CuentaDto crearDivision(GranCuentaDto cuentaDto) throws RpcExceptionMessages {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public CuentaDto crearSuscriptor(CuentaDto cuentaDto) throws RpcExceptionMessages {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	/**
@@ -454,7 +429,13 @@ public class CuentaRpcServiceImpl extends RemoteService implements
     	return doc;
     }
 
-    
+    private CondicionCuentaDto getCondicionCuenta(Cuenta cuenta) {
+		CondicionCuenta cd1= cuenta.getCondicionCuenta();
+		Long id = cd1.getId();
+		String code = cd1.getCodigoVantive();
+		String desc = cd1.getDescripcion();
+		return new CondicionCuentaDto(id,code,desc);
+    }
     /**
      * @author eSalvador 
      **/

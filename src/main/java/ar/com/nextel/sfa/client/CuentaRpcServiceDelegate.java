@@ -2,12 +2,18 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
+import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
+import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
+import ar.com.nextel.sfa.client.dto.ProvinciaDto;
+import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
+import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
@@ -19,81 +25,68 @@ public class CuentaRpcServiceDelegate {
 
 	private CuentaRpcServiceAsync cuentaRpcService;
 
-	public CuentaRpcServiceDelegate() {
-	}
+	public CuentaRpcServiceDelegate() {	}
 	
 	public CuentaRpcServiceDelegate(CuentaRpcServiceAsync cuentaRpcService) {
 		this.cuentaRpcService = cuentaRpcService;
 	}
-
 	public void searchCuenta(CuentaSearchDto cuentaSearchDto, DefaultWaitCallback<List<CuentaSearchResultDto>> callback) {
 		WaitWindow.show();
 		cuentaRpcService.searchCuenta(cuentaSearchDto, callback);
 	}
-
 	public void getBuscarCuentaInitializer(DefaultWaitCallback<BuscarCuentaInitializer> callback) {
 		WaitWindow.show();
 		cuentaRpcService.getBuscarCuentaInitializer(callback);
 	}
-	
-
 	public void getAgregarCuentaInitializer(DefaultWaitCallback<AgregarCuentaInitializer> callback) {
 		WaitWindow.show();
 		cuentaRpcService.getAgregarCuentaInitializer(callback);
 	}
-	
-	public void saveGranCuenta(GranCuentaDto cuentaDto,DefaultWaitCallback callback) {
+	public void saveGranCuenta(GranCuentaDto cuentaDto,DefaultWaitCallback<GranCuentaDto> callback) {
 		WaitWindow.show();
 		cuentaRpcService.saveGranCuenta(cuentaDto, callback);
 	}
-
-	
+	public void crearDivision(GranCuentaDto cuentaDto,DefaultWaitCallback<CuentaDto> callback) {
+		WaitWindow.show();
+		cuentaRpcService.crearDivision(cuentaDto, callback);
+	}
+	public void crearSuscriptor(CuentaDto cuentaDto,DefaultWaitCallback<CuentaDto> callback) {
+		WaitWindow.show();
+		cuentaRpcService.crearSuscriptor(cuentaDto, callback);
+	}
 	public void getVerazInitializer(DefaultWaitCallback<VerazInitializer> callback) {
 		WaitWindow.show();
 		cuentaRpcService.getVerazInitializer(callback);
 	}
-	
-	
-//	public void searchVeraz(VerazSearchDto verazSearchDto, DefaultWaitCallback callback) {
-//		cuentaRpcService.searchVeraz(verazSearchDto, callback);
-//	}
-	
-	public void consultarVeraz(PersonaDto personaDto, DefaultWaitCallback callback) {
+	public void consultarVeraz(PersonaDto personaDto, DefaultWaitCallback<VerazResponseDto> callback) {
 		WaitWindow.show();
 		cuentaRpcService.consultarVeraz(personaDto, callback);
 	}
-
-	public void selectCuenta(Long cuentaId,String cod_vantive,DefaultWaitCallback callback) {
+	public void selectCuenta(Long cuentaId,String cod_vantive,DefaultWaitCallback<CuentaDto> callback) {
 		WaitWindow.show();
 		cuentaRpcService.selectCuenta(cuentaId, cod_vantive,callback);
 	}
-	
-	public void reservaCreacionCuenta(DocumentoDto docDto,DefaultWaitCallback callback) {
+	public void reservaCreacionCuenta(DocumentoDto docDto,DefaultWaitCallback<GranCuentaDto>  callback) {
 		WaitWindow.show();
 		cuentaRpcService.reservaCreacionCuenta(docDto,callback);
 	}
-	
-	public void validarTarjeta(String numeroTarjeta, Integer mesVto, Integer anoVto,DefaultWaitCallback callback) {
+	public void validarTarjeta(String numeroTarjeta, Integer mesVto, Integer anoVto,DefaultWaitCallback<TarjetaCreditoValidatorResultDto> callback) {
 		WaitWindow.show();
 		cuentaRpcService.validarTarjeta(numeroTarjeta, mesVto, anoVto, callback);
 	}
-
-	public void getDomicilioPorCPA(String cpa,DefaultWaitCallback callback) {
+	public void getDomicilioPorCPA(String cpa,DefaultWaitCallback<NormalizarCPAResultDto> callback) {
 		WaitWindow.show();
 		cuentaRpcService.getDomicilioPorCPA(cpa, callback);
 	}
-	
-	public void normalizarDomicilio(DomiciliosCuentaDto domicilioANormalizar,DefaultWaitCallback callback) {
+	public void normalizarDomicilio(DomiciliosCuentaDto domicilioANormalizar,DefaultWaitCallback<NormalizarDomicilioResultDto> callback) {
 		WaitWindow.show();
 		cuentaRpcService.normalizarDomicilio(domicilioANormalizar, callback);
 	}
-	
 	public void CrearContactoInitializer(DefaultWaitCallback<CrearContactoInitializer> callback) {
 		WaitWindow.show();
 		cuentaRpcService.getCrearContactoInitializer(callback);
 	}
-	
-	public void getProvinciasInitializer(DefaultWaitCallback callback) {
+	public void getProvinciasInitializer(DefaultWaitCallback<List<ProvinciaDto>> callback) {
 		WaitWindow.show();
 		cuentaRpcService.getProvinciasInitializer(callback);
 	}	
