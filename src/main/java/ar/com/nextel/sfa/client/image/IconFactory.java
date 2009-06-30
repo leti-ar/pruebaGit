@@ -30,6 +30,12 @@ public class IconFactory {
 	private static final String ICON_COMPROBAR_NEGRO_STYLE = "icon-comprobar-negro";
 	private static final String ICON_COMPROBAR_VERDE_STYLE = "icon-comprobar-verde";
 	private static final String ICON_COMPROBAR_ROJO_STYLE = "icon-comprobar-rojo";
+	private static final String ICON_SCORING = "icon-scoring";
+	private static final String ICON_OPORTUNIDAD = "icon-oportunidad";
+	private static final String ICON_PROSPECT = "icon-prospect";
+	private static final String ICON_LED_VERDE = "icon-led-verde";
+	private static final String ICON_LED_AMARILLO = "icon-led-amarillo";
+	private static final String ICON_LED_ROJO = "icon-led-rojo";
 
 	public static HTML lockedOther() {
 		return createDiv(ICON_LOCKED_OTHER_STYLE);
@@ -165,6 +171,54 @@ public class IconFactory {
 
 	public static HTML comprobarRojo(String title) {
 		return createDiv(ICON_COMPROBAR_ROJO_STYLE, title);
+	}
+
+	public static HTML scoring() {
+		return createDiv(ICON_SCORING);
+	}
+
+	public static HTML scoring(String title) {
+		return createDiv(ICON_SCORING, title);
+	}
+
+	public static HTML oportunidad() {
+		return createDiv(ICON_OPORTUNIDAD);
+	}
+
+	public static HTML oportunidad(String title) {
+		return createDiv(ICON_OPORTUNIDAD, title);
+	}
+
+	public static HTML prospect() {
+		return createDiv(ICON_PROSPECT);
+	}
+
+	public static HTML prospect(String title) {
+		return createDiv(ICON_PROSPECT, title);
+	}
+
+	public static HTML ledVerde() {
+		return createDiv(ICON_LED_VERDE);
+	}
+
+	public static HTML ledVerde(String title) {
+		return createDiv(ICON_LED_VERDE, title);
+	}
+
+	public static HTML ledAmarillo() {
+		return createDiv(ICON_LED_AMARILLO);
+	}
+
+	public static HTML ledAmarillo(String title) {
+		return createDiv(ICON_LED_AMARILLO, title);
+	}
+
+	public static HTML ledRojo() {
+		return createDiv(ICON_LED_ROJO);
+	}
+
+	public static HTML ledRojo(String title) {
+		return createDiv(ICON_LED_ROJO, title);
 	}
 
 	/**
