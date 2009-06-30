@@ -39,7 +39,7 @@ public class UILoader extends SimplePanel implements HistoryListener {
 	public static final int BUSCAR_OPP = 4;
 	public final static int OP_EN_CURSO = 5;
 	public final static int EDITAR_CUENTA = 7;
-	
+
 	private String lastToken = "";
 
 	private UILoader() {
@@ -55,19 +55,21 @@ public class UILoader extends SimplePanel implements HistoryListener {
 		return pageLoader;
 	}
 
-	public void setPage(int page){
+	public void setPage(int page) {
 		setPage(page, "" + page);
 	}
+
 	/**
 	 * Oculta la página anterior (Si es que puede), muestra una nueva y oculta el menu.
 	 * 
 	 * @param page
 	 *            Código de la página que desea mostrar.
-	 * @param token 
+	 * @param token
 	 */
 	public void setPage(int page, String historyToken) {
 		if (getWidget() != null) {
-			if(!((ApplicationUI) getWidget()).unload(historyToken)){
+			// Si no puede descargar la página anterior, vueve a poner el último token
+			if (!((ApplicationUI) getWidget()).unload(historyToken)) {
 				History.newItem(lastToken, false);
 				return;
 			}
