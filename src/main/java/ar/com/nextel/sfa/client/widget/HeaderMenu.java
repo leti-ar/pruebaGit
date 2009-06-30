@@ -85,8 +85,8 @@ public class HeaderMenu extends Composite {
 		verazVeraz.ensureDebugId(DebugConstants.MENU_VERAZ_VERAZ);
 		mainMenu.addItem(verazVeraz);
 		
-//		mainMenu.addSeparator();
-//		mainMenu.addItem("OPP", new OpenPageCommand(UILoader.BUSCAR_OPP));
+		mainMenu.addSeparator();
+		mainMenu.addItem("OPP", new OpenPageCommand(UILoader.BUSCAR_OPP));
 //		mainMenu.addSeparator();
 //		mainMenu.addItem("Op. en Curso", new OpenPageCommand(UILoader.OP_EN_CURSO));
 
