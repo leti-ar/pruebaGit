@@ -169,4 +169,36 @@
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
+
+	<resource-ref>
+		<description>SFA DS</description>
+		<res-ref-name>jdbc/sfaDS</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+	<resource-ref>
+		<description>Vantive DS</description>
+		<res-ref-name>jdbc/vantiveDS</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+	<resource-ref>
+		<description>Mibas DS</description>
+		<res-ref-name>jdbc/mibasDS</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+	<resource-ref>
+		<description>Avalon DS</description>
+		<res-ref-name>jdbc/avalonDS</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+	<resource-ref>
+		<description>ScnDS DS</description>
+		<res-ref-name>jdbc/scnDS</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+
 </web-app>
