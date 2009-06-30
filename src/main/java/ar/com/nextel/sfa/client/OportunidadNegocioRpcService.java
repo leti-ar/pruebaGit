@@ -2,7 +2,9 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
-import ar.com.nextel.sfa.client.dto.OportunidadSearchDto;
+import ar.com.nextel.business.oportunidades.search.result.OportunidadNegocioSearchResult;
+import ar.com.nextel.sfa.client.dto.OportunidadDto;
+import ar.com.nextel.sfa.client.dto.OportunidadNegocioSearchResultDto;
 import ar.com.nextel.sfa.client.initializer.BuscarOportunidadNegocioInitializer;
 
 import com.google.gwt.core.client.GWT;
@@ -26,8 +28,8 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 			}
 		}
 		
-		public List<OportunidadSearchDto> searchOportunidad(OportunidadSearchDto oportunidadSearchDto);
-
+		public List<OportunidadNegocioSearchResultDto> searchOportunidad(OportunidadDto oportunidadDto);
+		
 		public BuscarOportunidadNegocioInitializer getBuscarOportunidadInitializer();
 
 //		public void getAgregarOportunidadInitializer(AsyncCallback<AgregarCuentaInitializer> callback);

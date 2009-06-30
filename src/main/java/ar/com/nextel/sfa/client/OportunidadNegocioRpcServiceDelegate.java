@@ -2,7 +2,9 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
-import ar.com.nextel.sfa.client.dto.OportunidadSearchDto;
+import ar.com.nextel.business.oportunidades.search.result.OportunidadNegocioSearchResult;
+import ar.com.nextel.sfa.client.dto.OportunidadDto;
+import ar.com.nextel.sfa.client.dto.OportunidadNegocioSearchResultDto;
 import ar.com.nextel.sfa.client.initializer.BuscarOportunidadNegocioInitializer;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
@@ -18,11 +20,11 @@ public class OportunidadNegocioRpcServiceDelegate {
 		this.oportunidadNegocioRpcService = oportunidadNegocioRpcService;
 	}
 
-	public void searchOportunidad(OportunidadSearchDto oportunidadSearchDto, DefaultWaitCallback<List<OportunidadSearchDto>> callback) {
+	public void searchOportunidad(OportunidadDto oportunidadDto, DefaultWaitCallback<List<OportunidadNegocioSearchResultDto>> callback) {
 		WaitWindow.show();
-		oportunidadNegocioRpcService.searchOportunidad(oportunidadSearchDto, callback);
+		oportunidadNegocioRpcService.searchOportunidad(oportunidadDto, callback);
 	}
-
+	
 	public void getBuscarOportunidadInitializer(DefaultWaitCallback<BuscarOportunidadNegocioInitializer> callback) {
 		WaitWindow.show();
 		oportunidadNegocioRpcService.getBuscarOportunidadInitializer(callback);
