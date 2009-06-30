@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.client.initializer;
 
 import java.util.List;
+import java.util.Map;
 
 import ar.com.nextel.sfa.client.dto.LocalidadDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
@@ -10,16 +11,16 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class LineasSolicitudServicioInitializer implements IsSerializable {
 
-	private List<TipoSolicitudDto> tiposSolicitudes;
+	private Map<Long, List<TipoSolicitudDto>> tiposSolicitudPorGrupo;
 	private List<TipoPlanDto> tiposPlanes;
 	private List<LocalidadDto> localidades;
 
-	public void setTiposSolicitudes(List<TipoSolicitudDto> tiposSolicitudes) {
-		this.tiposSolicitudes = tiposSolicitudes;
+	public Map<Long, List<TipoSolicitudDto>> getTiposSolicitudPorGrupo() {
+		return tiposSolicitudPorGrupo;
 	}
 
-	public List<TipoSolicitudDto> getTiposSolicitudes() {
-		return tiposSolicitudes;
+	public void setTiposSolicitudPorGrupo(Map<Long, List<TipoSolicitudDto>> tiposSolicitudPorGrupo) {
+		this.tiposSolicitudPorGrupo = tiposSolicitudPorGrupo;
 	}
 
 	public List<TipoPlanDto> getTiposPlanes() {
