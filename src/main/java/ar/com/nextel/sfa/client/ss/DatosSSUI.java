@@ -8,6 +8,7 @@ import ar.com.nextel.sfa.client.cuenta.DomicilioUI;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
+import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
@@ -42,6 +43,8 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 
 	private FlowPanel mainpanel;
 	private EditarSSUIData editarSSUIData;
+	private Grid nnsLayout;
+	private Grid domicilioLayout;
 	private FlexTable detalleSS;
 	private Grid serviciosAdicionales;
 	private EditarSSUIController controller;
@@ -59,6 +62,8 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 	private int editingServicioAdRow = -1;
 	private RegexTextBox precioVenta;
 	private DomiciliosCuentaDto domicilioAEditar = null;
+	// Se utiliza para saber si se debe redibujar o no ciertas tablas (Layout generalmente)
+	private Long idGrupoSolicitudActual = GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS;
 
 	private static final String SELECTED_ROW = "selectedRow";
 
@@ -67,21 +72,33 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		initWidget(mainpanel);
 		this.controller = controller;
 		editarSSUIData = controller.getEditarSSUIData();
-		mainpanel.add(firstRow());
+		mainpanel.add(getNssLayout());
 		mainpanel.add(getDomicilioPanel());
 		mainpanel.add(getDetallePanel());
 	}
 
-	private Widget firstRow() {
-		Grid layout = new Grid(1, 6);
-		layout.addStyleName("layout");
-		layout.setHTML(0, 0, Sfa.constant().nssReq());
-		layout.setWidget(0, 1, editarSSUIData.getNss());
-		layout.setHTML(0, 2, Sfa.constant().nflota());
-		layout.setWidget(0, 3, editarSSUIData.getNflota());
-		layout.setHTML(0, 4, Sfa.constant().origenReq());
-		layout.setWidget(0, 5, editarSSUIData.getOrigen());
-		return layout;
+	private Widget getNssLayout() {
+		nnsLayout = new Grid(1, 6);
+		nnsLayout.addStyleName("layout");
+		refreshNssLayout();
+		return nnsLayout;
+	}
+
+	private void refreshNssLayout() {
+		nnsLayout.setHTML(0, 0, Sfa.constant().nssReq());
+		nnsLayout.setWidget(0, 1, editarSSUIData.getNss());
+		if (editarSSUIData.getGrupoSolicitud() == null
+				|| !GrupoSolicitudDto.ID_CDW.equals(editarSSUIData.getGrupoSolicitud().getId())) {
+			nnsLayout.setHTML(0, 2, Sfa.constant().nflota());
+			nnsLayout.setWidget(0, 3, editarSSUIData.getNflota());
+			nnsLayout.setHTML(0, 4, Sfa.constant().origenReq());
+			nnsLayout.setWidget(0, 5, editarSSUIData.getOrigen());
+		} else {
+			nnsLayout.setHTML(0, 2, Sfa.constant().origenReq());
+			nnsLayout.setWidget(0, 3, editarSSUIData.getOrigen());
+			nnsLayout.clearCell(0, 4);
+			nnsLayout.clearCell(0, 5);
+		}
 	}
 
 	private Widget getDomicilioPanel() {
@@ -105,21 +122,39 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		editarDomicioEntrega.addClickListener(this);
 		borrarDomicioEntrega.addClickListener(this);
 
-		Grid layoutDomicilio = new Grid(3, 4);
-		layoutDomicilio.addStyleName("layout");
-		layoutDomicilio.setHTML(0, 0, Sfa.constant().entregaReq());
-		layoutDomicilio.setWidget(0, 1, editarSSUIData.getEntrega());
-		layoutDomicilio.setWidget(0, 2, editarDomicioEntrega);
-		layoutDomicilio.setWidget(0, 3, borrarDomicioEntrega);
-		layoutDomicilio.setHTML(1, 0, Sfa.constant().facturacionReq());
-		layoutDomicilio.setWidget(1, 1, editarSSUIData.getFacturacion());
-		layoutDomicilio.setWidget(1, 2, editarDomicioFacturacion);
-		layoutDomicilio.setWidget(1, 3, borrarDomicioFacturacion);
-		layoutDomicilio.setHTML(2, 0, Sfa.constant().aclaracion());
-		layoutDomicilio.setWidget(2, 1, editarSSUIData.getAclaracion());
-		layoutDomicilio.getColumnFormatter().setWidth(1, "500px");
-		domicilio.add(layoutDomicilio);
+		domicilioLayout = new Grid(3, 4);
+		domicilioLayout.addStyleName("layout");
+		domicilioLayout.getColumnFormatter().setWidth(1, "500px");
+		refreshDomicilioLayout();
+		domicilio.add(domicilioLayout);
 		return domicilio;
+	}
+
+	private void refreshDomicilioLayout() {
+		if (editarSSUIData.getGrupoSolicitud() == null
+				|| !GrupoSolicitudDto.ID_CDW.equals(editarSSUIData.getGrupoSolicitud().getId())) {
+			domicilioLayout.setHTML(0, 0, Sfa.constant().entregaReq());
+			domicilioLayout.setWidget(0, 1, editarSSUIData.getEntrega());
+			domicilioLayout.setWidget(0, 2, editarDomicioEntrega);
+			domicilioLayout.setWidget(0, 3, borrarDomicioEntrega);
+			domicilioLayout.setHTML(1, 0, Sfa.constant().facturacionReq());
+			domicilioLayout.setWidget(1, 1, editarSSUIData.getFacturacion());
+			domicilioLayout.setWidget(1, 2, editarDomicioFacturacion);
+			domicilioLayout.setWidget(1, 3, borrarDomicioFacturacion);
+			domicilioLayout.setHTML(2, 0, Sfa.constant().aclaracion());
+			domicilioLayout.setWidget(2, 1, editarSSUIData.getAclaracion());
+		} else {
+			domicilioLayout.setHTML(0, 0, Sfa.constant().facturacionReq());
+			domicilioLayout.setWidget(0, 1, editarSSUIData.getFacturacion());
+			domicilioLayout.setWidget(0, 2, editarDomicioFacturacion);
+			domicilioLayout.setWidget(0, 3, borrarDomicioFacturacion);
+			domicilioLayout.setHTML(1, 0, Sfa.constant().emailReq());
+			domicilioLayout.setWidget(1, 1, editarSSUIData.getEmail());
+			domicilioLayout.clearCell(1, 2);
+			domicilioLayout.clearCell(1, 3);
+			domicilioLayout.clearCell(2, 0);
+			domicilioLayout.clearCell(2, 1);
+		}
 	}
 
 	private Widget getDetallePanel() {
@@ -336,7 +371,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 	}
 
 	/** Limpia y recarga la tabla de Detalle de Solicitud de Servicio completamente */
-	public void refreshDetalleSSTable() {
+	private void refreshDetalleSSTable() {
 		while (detalleSS.getRowCount() > 1) {
 			detalleSS.removeRow(1);
 		}
@@ -484,5 +519,15 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 			});
 		}
 		return precioVenta;
+	}
+
+	public void refresh() {
+		if (editarSSUIData.getGrupoSolicitud() != null
+				&& !editarSSUIData.getGrupoSolicitud().getId().equals(idGrupoSolicitudActual)) {
+			idGrupoSolicitudActual = editarSSUIData.getGrupoSolicitud().getId();
+			refreshNssLayout();
+			refreshDomicilioLayout();
+		}
+		refreshDetalleSSTable();
 	}
 }

@@ -1,10 +1,12 @@
 package ar.com.nextel.sfa.client.ss;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
@@ -36,7 +38,9 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 	private ItemYPlanSolicitudUI itemYPlanSolicitudUI;
 	private ItemSolicitudUIData itemSolicitudUIData;
 	private EditarSSUIController controller;
-	private Map<Long, TipoSolicitudDto> tiposSolicitudes = new HashMap<Long, TipoSolicitudDto>();
+	private Map<Long, TipoSolicitudDto> tiposSolicitudes = new HashMap();
+	private Map<Long, List<TipoSolicitudDto>> tiposSolicitudesPosGrupo = new HashMap();
+	private Long idGrupoSolicitudLoaded;
 	boolean tiposSolicitudLoaded = false;
 	private HTML nuevoItem;
 
@@ -97,13 +101,18 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 	private DefaultWaitCallback initTiposOrdenCallback() {
 		return new DefaultWaitCallback<LineasSolicitudServicioInitializer>() {
 			public void success(LineasSolicitudServicioInitializer initializer) {
-				for (TipoSolicitudDto tipoSS : initializer.getTiposSolicitudes()) {
+				List<TipoSolicitudDto> tiposSS = new ArrayList<TipoSolicitudDto>();
+				tiposSolicitudesPosGrupo = initializer.getTiposSolicitudPorGrupo();
+				for (Map.Entry<Long, List<TipoSolicitudDto>> tiposSSDeGrupo : tiposSolicitudesPosGrupo
+						.entrySet()) {
+					tiposSS.addAll(tiposSSDeGrupo.getValue());
+				}
+				for (TipoSolicitudDto tipoSS : tiposSS) {
 					tiposSolicitudes.put(tipoSS.getId(), tipoSS);
 				}
 				itemSolicitudUIData.getTipoPlan().addAllItems(initializer.getTiposPlanes());
 				itemSolicitudUIData.getLocalidad().addAllItems(initializer.getLocalidades());
-				tipoOrden.addAllItems(initializer.getTiposSolicitudes());
-				onChange(tipoOrden);
+				refreshTipoOrden();
 			}
 		};
 	}
@@ -174,13 +183,28 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 		itemSolicitudUIData.setLineaSolicitudServicio(linea);
 		if (linea.getTipoSolicitud() != null) {
 			tipoOrden.setSelectedItem(linea.getTipoSolicitud());
-
 		}
 		// Si ya esta cargado el ListBox actualizo el resto. Sino se actualizará al cargarse.
 		if (tipoOrden.getItemCount() > 0) {
-			onChange(tipoOrden);
+			refreshTipoOrden();
 		}
 		showAndCenter();
+	}
 
+	private void refreshTipoOrden() {
+		GrupoSolicitudDto grupoSolicitudSelected = controller.getEditarSSUIData().getGrupoSolicitud();
+		if (grupoSolicitudSelected != null) {
+			if (!grupoSolicitudSelected.getId().equals(idGrupoSolicitudLoaded)) {
+				tipoOrden.clear();
+				tipoOrden.addAllItems(tiposSolicitudesPosGrupo.get(grupoSolicitudSelected.getId()));
+				idGrupoSolicitudLoaded = grupoSolicitudSelected.getId();
+				onChange(tipoOrden);
+			}
+		} else {
+			tipoOrden.clear();
+			tipoOrden.addAllItems(tiposSolicitudesPosGrupo.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
+			idGrupoSolicitudLoaded = GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS;
+			onChange(tipoOrden);
+		}
 	}
 }

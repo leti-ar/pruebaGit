@@ -4,6 +4,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
@@ -38,6 +39,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSSUIController {
 
 	public static final String ID_CUENTA = "idCuenta";
+	public static final String ID_GRUPO_SS = "idGrupoSS";
 	private static final String validarCompletitudFailStyle = "validarCompletitudFailButton";
 
 	private TabPanel tabs;
@@ -59,6 +61,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 	public boolean load() {
 		tokenLoaded = History.getToken();
 		String cuenta = HistoryUtils.getParam(ID_CUENTA);
+		String grupoSS = HistoryUtils.getParam(ID_GRUPO_SS);
 		mainPanel.setVisible(false);
 		if (cuenta == null) {
 			ErrorDialog.getInstance().show("No ingreso la cuenta para la cual desea cargar la solicitud");
@@ -67,7 +70,11 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 			solicitudServicioRequestDto.setIdCuenta(Long.parseLong(cuenta));
 			solicitudServicioRequestDto.setIdCuentaPotencial(null);
 			// solicitudServicioRequestDto.setNumeroCuenta(numeroCuenta);
-			solicitudServicioRequestDto.setIdGrupoSolicitud(1l);
+			if (grupoSS != null) {
+				solicitudServicioRequestDto.setIdGrupoSolicitud(Long.parseLong(grupoSS));
+			} else {
+				solicitudServicioRequestDto.setIdGrupoSolicitud(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS);
+			}
 			SolicitudRpcService.Util.getInstance().createSolicitudServicio(solicitudServicioRequestDto,
 					new DefaultWaitCallback<SolicitudServicioDto>() {
 						public void success(SolicitudServicioDto solicitud) {
@@ -79,7 +86,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 									.getCuenta().getIdVantive());
 							editarSSUIData.setSolicitud(solicitud);
 							validate(false);
-							datos.refreshDetalleSSTable();
+							datos.refresh();
 							mainPanel.setVisible(true);
 						}
 
@@ -168,6 +175,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 				guardar();
 			}
 			editarSSUIData.setSaved(true);
+			// Continuo a la página a la que me dirigía.
 			History.newItem(token);
 			MessageDialog.getInstance().hide();
 		}
@@ -214,7 +222,8 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 
 	public void getLineasSolicitudServicioInitializer(
 			DefaultWaitCallback<LineasSolicitudServicioInitializer> defaultWaitCallback) {
-		SolicitudRpcService.Util.getInstance().getLineasSolicitudServicioInitializer(null,
+		SolicitudRpcService.Util.getInstance().getLineasSolicitudServicioInitializer(
+				editarSSUIData.getGrupoSolicitud(),
 				defaultWaitCallback);
 	}
 

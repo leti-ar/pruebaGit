@@ -3,12 +3,11 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jaxen.function.IdFunction;
-
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
+import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
@@ -42,6 +41,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 	private ListBox entrega;
 	private ListBox facturacion;
 	private TextArea aclaracion;
+	private RegexTextBox email;
 	private InlineHTML credFidelDisponibleText;
 	private InlineHTML credFidelVencimientoText;
 	private RegexTextBox credFidelizacion;
@@ -78,6 +78,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 		fields.add(aclaracion = new TextArea());
 		aclaracion.setWidth("480px");
 		aclaracion.setHeight("35px");
+		fields.add(email = new RegexTextBox(RegularExpressionConstants.lazyEmail));
+		email.setWidth("480px");
 		fields.add(credFidelizacion = new RegexTextBox(RegularExpressionConstants.importe));
 		fields.add(pataconex = new RegexTextBox(RegularExpressionConstants.importe));
 		fields.add(firmarss = new CheckBox());
@@ -143,6 +145,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 
 	public TextArea getAclaracion() {
 		return aclaracion;
+	}
+
+	public RegexTextBox getEmail() {
+		return email;
 	}
 
 	public InlineHTML getCredFidelDisponibleText() {
@@ -220,7 +226,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 		double credFidelizacionValue = solicitud.getMontoCreditoFidelizacion() != null ? solicitud
 				.getMontoCreditoFidelizacion() : 0;
 		credFidelizacion.setText(decFormatter.format(credFidelizacionValue));
-		if(credFidelizacionValue > 0){
+		if (credFidelizacionValue > 0) {
 			credFidelizacion.setEnabled(true);
 		} else {
 			credFidelizacion.setEnabled(false);
@@ -285,16 +291,22 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 		validator.addTarget(nss).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Nº de Solicitud")).maxLength(10,
 				Sfa.constant().ERR_NSS_LONG());
-		validator.addTarget(entrega).required(
-				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Entrega"));
 		validator.addTarget(facturacion).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Facturación"));
+		if (!solicitudServicio.getGrupoSolicitud().isCDW()) {
+			validator.addTarget(entrega).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Entrega"));
+		} else {
+			validator.addTarget(email).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Email"));
+		}
 		if (solicitudServicio.getMontoDisponible() != null)
 			validator.addTarget(credFidelizacion).smallerOrEqual(Sfa.constant().ERR_FIDELIZACION(),
 					solicitudServicio.getMontoDisponible());
 		validator.addTarget(pataconex).smallerOrEqual(Sfa.constant().ERR_PATACONEX(),
 				solicitudServicio.getMontoDisponible());
 		validator.fillResult();
+
 		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
 			// Pregunta si es de alquiler y busca si tiene uno seleccionado
 			if (linea.getTipoSolicitud().getTipoSolicitudBase().getFormaContratacion().equals(
@@ -457,7 +469,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 
 	public void addDomicilio(DomiciliosCuentaDto domicilio) {
 		PersonaDto persona = solicitudServicio.getCuenta().getPersona();
-		if(domicilio.getId() == null){
+		if (domicilio.getId() == null) {
 			domicilio.setId(lastFakeId--);
 			persona.getDomicilios().add(domicilio);
 		} else {
@@ -465,6 +477,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 			persona.getDomicilios().remove(index);
 			persona.getDomicilios().add(index, domicilio);
 		}
+	}
+
+	public GrupoSolicitudDto getGrupoSolicitud() {
+		return solicitudServicio != null ? solicitudServicio.getGrupoSolicitud() : null;
 	}
 
 }
