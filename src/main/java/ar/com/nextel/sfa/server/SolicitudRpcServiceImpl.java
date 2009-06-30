@@ -7,7 +7,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -30,7 +32,6 @@ import ar.com.nextel.business.solicitudes.search.dto.SolicitudServicioCerradaSea
 import ar.com.nextel.business.vendedores.RegistroVendedores;
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
 import ar.com.nextel.framework.repository.Repository;
-import ar.com.nextel.framework.security.Usuario;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.personas.beans.Localidad;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
@@ -39,6 +40,7 @@ import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.Sucursal;
 import ar.com.nextel.model.solicitudes.beans.TipoAnticipo;
 import ar.com.nextel.model.solicitudes.beans.TipoPlan;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
@@ -295,23 +297,42 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(
 			GrupoSolicitudDto grupoSolicitudDto) {
 		LineasSolicitudServicioInitializer initializer = new LineasSolicitudServicioInitializer();
-		GrupoSolicitud grupoSolicitud = repository.retrieve(GrupoSolicitud.class, Long.valueOf(1));
-		List<TipoSolicitud> tiposSolicitudDeGrupo = grupoSolicitud
-				.calculateTiposSolicitud(sessionContextLoader.getVendedor().getSucursal());
 
-		// Obtengo los tipos de solicitud
-		initializer.setTiposSolicitudes(mapper.convertList(tiposSolicitudDeGrupo, TipoSolicitudDto.class));
+		GrupoSolicitud grupoEquipos = (GrupoSolicitud) knownInstanceRetriever
+				.getObject(KnownInstanceIdentifier.GRUPO_EQUIPOS_ACCESORIOS);
+		GrupoSolicitud grupoCDW = (GrupoSolicitud) knownInstanceRetriever
+				.getObject(KnownInstanceIdentifier.GRUPO_CDW);
+		GrupoSolicitud grupoMDS = (GrupoSolicitud) knownInstanceRetriever
+				.getObject(KnownInstanceIdentifier.GRUPO_MDS);
+
+		Sucursal sucursal = sessionContextLoader.getVendedor().getSucursal();
+
+		// Obtengo los tipos de solicitud de cada Grupo para la sucursal en particular
+		Map<Long, List<TipoSolicitudDto>> tiposSolicitudPorGrupo = new HashMap();
+		tiposSolicitudPorGrupo.put(grupoEquipos.getId(), mapper.convertList(grupoEquipos
+				.calculateTiposSolicitud(sucursal), TipoSolicitudDto.class));
+		tiposSolicitudPorGrupo.put(grupoCDW.getId(), mapper.convertList(grupoCDW
+				.calculateTiposSolicitud(sucursal), TipoSolicitudDto.class));
+		tiposSolicitudPorGrupo.put(grupoMDS.getId(), mapper.convertList(grupoMDS
+				.calculateTiposSolicitud(sucursal), TipoSolicitudDto.class));
+		initializer.setTiposSolicitudPorGrupo(tiposSolicitudPorGrupo);
+
+		List<TipoSolicitudDto> tiposSolicitudDeGrupoSelected = tiposSolicitudPorGrupo.get(grupoSolicitudDto
+				.getId());
 		// Si no es vacio (no deberia serlo) carga la lista de precios del primer tipoSolicitud que se muestra
-		if (!initializer.getTiposSolicitudes().isEmpty()) {
-			TipoSolicitudDto firstTipoSolicitud = initializer.getTiposSolicitudes().get(0);
-			List<ListaPrecios> listasPrecios = new ArrayList<ListaPrecios>(tiposSolicitudDeGrupo.get(0)
+		if (!tiposSolicitudDeGrupoSelected.isEmpty()) {
+			TipoSolicitudDto firstTipoSolicitudDto = tiposSolicitudDeGrupoSelected.get(0);
+			TipoSolicitud firstTipoSolicitud = repository.retrieve(TipoSolicitud.class, firstTipoSolicitudDto
+					.getId());
+			List<ListaPrecios> listasPrecios = new ArrayList<ListaPrecios>(firstTipoSolicitud
 					.getListasPrecios());
-			firstTipoSolicitud.setListasPrecios(new ArrayList<ListaPreciosDto>());
+
+			firstTipoSolicitudDto.setListasPrecios(new ArrayList<ListaPreciosDto>());
 			for (ListaPrecios listaPrecios : listasPrecios) {
 				ListaPreciosDto lista = mapper.map(listaPrecios, ListaPreciosDto.class);
 				lista.setItemsListaPrecioVisibles(mapper.convertList(listaPrecios
-						.getItemsTasados(tiposSolicitudDeGrupo.get(0)), ItemSolicitudTasadoDto.class));
-				firstTipoSolicitud.getListasPrecios().add(lista);
+						.getItemsTasados(firstTipoSolicitud), ItemSolicitudTasadoDto.class));
+				firstTipoSolicitudDto.getListasPrecios().add(lista);
 			}
 		}
 		initializer.setTiposPlanes(mapper.convertList(repository.getAll(TipoPlan.class), TipoPlanDto.class));
