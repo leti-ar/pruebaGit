@@ -7,20 +7,17 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 /**
  * @author eSalvador 
  **/
-public class EstadoOportunidadDto  implements ListBoxItem, IsSerializable {
+public class EstadoOportunidadDto extends EnumDto implements ListBoxItem, IsSerializable {
 
-	private String code;
-	private String descripcion;
-	
-	public static EstadoOportunidadDto GRAN_CUENTA = new EstadoOportunidadDto("0", "Activa");
-	public static EstadoOportunidadDto DIVISION = new EstadoOportunidadDto("1", "Inactiva");
+//	public static EstadoOportunidadDto GRAN_CUENTA = new EstadoOportunidadDto("0", "Activa");
+//	public static EstadoOportunidadDto DIVISION = new EstadoOportunidadDto("1", "No Cerrada");
 	
 	public EstadoOportunidadDto() {
 	}
 
-	public EstadoOportunidadDto(String code, String descripcion) {
+	public EstadoOportunidadDto(long id, String descripcion) {
 		super();
-		this.code = code;
+		this.id = id;
 		this.descripcion = descripcion;
 	}
 	
@@ -29,22 +26,6 @@ public class EstadoOportunidadDto  implements ListBoxItem, IsSerializable {
 	}
 
 	public String getItemValue() {
-		return code;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public String getDescripcion() {
-		return descripcion;
-	}
-
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
+		return id + "";
 	}
 }
