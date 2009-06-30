@@ -2,9 +2,12 @@ package ar.com.nextel.sfa.client.oportunidad;
 
 import java.util.List;
 
+import ar.com.nextel.business.oportunidades.search.result.OportunidadNegocioSearchResult;
 import ar.com.nextel.sfa.client.OportunidadNegocioRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.dto.OportunidadSearchDto;
+import ar.com.nextel.sfa.client.dto.OportunidadDto;
+import ar.com.nextel.sfa.client.dto.OportunidadNegocioSearchResultDto;
+import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
@@ -21,8 +24,9 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 	private FlexTable resultTable;
 	private SimplePanel resultTableWrapper;
 	private TablePageBar tablePageBar;
-	private List<OportunidadSearchDto> oportunidades;
-	private OportunidadSearchDto lastOportunidadSearchDto;
+	private List<OportunidadNegocioSearchResultDto> oportunidades;
+	//private List oportunidades;
+	private OportunidadDto lastOportunidadSearchDto;
 	private int numeroPagina = 1;
 	private int offset;
 	private Long totalRegistrosBusqueda;
@@ -62,7 +66,8 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 	 * @author eSalvador
 	 * @param: OportunidadSearchDto
 	 * */
-	public void searchOportunidades(OportunidadSearchDto oportunidadSearchDto) {
+		
+	public void searchOportunidades(OportunidadDto oportunidadSearchDto) {	
 		tablePageBar.setOffset(0);
 		tablePageBar.setCantResultados(oportunidadSearchDto.getCantidadResultados());
 		this.lastOportunidadSearchDto = oportunidadSearchDto;
@@ -73,20 +78,25 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 	 * Metodo privado que contiene lo que se desea ejecutar cada vez que se busca sin ser la primera vez. (o
 	 * sea, cada vez que se hace click en los botones del paginador)
 	 * 
-	 * @author eSalvador
+	 * @author mrial
 	 * @param: oportunidadSearchDto
 	 * @param: firstTime
 	 **/
-	private void searchOportunidades(OportunidadSearchDto oportunidadSearchDto, boolean firstTime) {
-		OportunidadNegocioRpcService.Util.getInstance().searchOportunidad(oportunidadSearchDto, 
-				new DefaultWaitCallback<List<OportunidadSearchDto>>() {
-					public void success(List<OportunidadSearchDto> result) {
-						setOportunidades(result);
+	private void searchOportunidades(OportunidadDto oportunidadSearchDto, boolean firstTime) {
+		OportunidadNegocioRpcService.Util.getInstance().searchOportunidad(oportunidadSearchDto, new DefaultWaitCallback<List<OportunidadNegocioSearchResultDto>>() {
+		//OportunidadNegocioRpcService.Util.getInstance().searchOportunidad(oportunidadSearchDto, new DefaultWaitCallback<List>() {
+			public void success(List result) {
+				if (result != null) {
+					if (result.size() == 0) {
+						MessageDialog.getInstance().showAceptar("No se encontraron datos con el criterio utilizado", MessageDialog.getCloseCommand());
 					}
-				});
+					setOportunidades(result);
+				}
+			}
+		});
 	}
 
-	public void setOportunidades(List<OportunidadSearchDto> oportunidades) {
+	public void setOportunidades(List<OportunidadNegocioSearchResultDto> oportunidades) {
 		this.oportunidades = oportunidades;
 		loadTable();
 	}
@@ -101,17 +111,15 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 		initTable(resultTable);
 		resultTableWrapper.setWidget(resultTable);
 		int row = 1;
-		for (OportunidadSearchDto oportunidad : oportunidades) {
+		for (OportunidadNegocioSearchResultDto oportunidad : oportunidades) {
 			resultTable.setHTML(row, 1, oportunidad.getRazonSocial());
 			resultTable.setHTML(row, 2, oportunidad.getNombre());
 			resultTable.setHTML(row, 3, oportunidad.getApellido());
-			//resultTable.setHTML(row, 4, oportunidad.getNumeroTelefono() != null ? oportunidad.getNumeroTelefono() : "");
-			resultTable.setHTML(row, 4, oportunidad.getNumeroDocumento());
-			resultTable.setHTML(row, 5, oportunidad.getNumeroCuenta());
-			//resultTable.setHTML(row, 6, oportunidad.getDesde().toString());
-			//resultTable.setHTML(row, 7, oportunidad.getHasta().toString());
-			resultTable.setHTML(row, 8, oportunidad.getEstadoOPP());
-
+			resultTable.setHTML(row, 4, oportunidad.getTelefonoPrincipal());
+			resultTable.setHTML(row, 5, oportunidad.getNroDocumento());
+			resultTable.setHTML(row, 6, oportunidad.getNroCuenta());
+			resultTable.setHTML(row, 7, oportunidad.getFechaAsignacion().toString());
+			resultTable.setHTML(row, 8, oportunidad.getEstadoOportunidad().getDescripcion());			
 			row++;
 		}
 		setVisible(true);
@@ -130,15 +138,14 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 		table.addStyleName("gwt-BuscarCuentaResultTable");
 		table.getRowFormatter().addStyleName(0, "header");
 		table.setHTML(0, 0, Sfa.constant().whiteSpace());
-		table.setHTML(0, 1, "Razón Social");
-		table.setHTML(0, 2, "Nombre");
-		table.setHTML(0, 3, "Apellido");
-		//table.setHTML(0, 4, "Teléfono");
-		table.setHTML(0, 4, "Número Doc.");
-		table.setHTML(0, 5, "Número Cta.");
-		table.setHTML(0, 6, "FechaDesde");
-		table.setHTML(0, 7, "FechaHasta");
-		table.setHTML(0, 8, "Estado Opp.");
+		table.setHTML(0, 1, Sfa.constant().razonSocial());
+		table.setHTML(0, 2, Sfa.constant().nombre());
+		table.setHTML(0, 3, Sfa.constant().apellido());
+		table.setHTML(0, 4, Sfa.constant().telefono());
+		table.setHTML(0, 5, Sfa.constant().nroDocumento());
+		table.setHTML(0, 6, Sfa.constant().nroCuenta());
+		table.setHTML(0, 7, Sfa.constant().fecha());
+		table.setHTML(0, 8, Sfa.constant().estadoOportunidad());
 	}
 	
 	public int getOffset() {
