@@ -152,7 +152,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 				.getBean("getAllBusinessOperatorBean"));
 	}
 
-	public List<CuentaSearchResultDto> searchCuenta(CuentaSearchDto cuentaSearchDto) {
+	public List<CuentaSearchResultDto> searchCuenta(CuentaSearchDto cuentaSearchDto) throws RpcExceptionMessages {
 		List<CuentaSearchResultDto> dtoResult = new ArrayList<CuentaSearchResultDto>();
 		CuentaSearchData cuentaSearchData = (CuentaSearchData) mapper.map(
 				cuentaSearchDto, CuentaSearchData.class);
@@ -176,7 +176,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 			}
 
 		} catch (BusinessException e) {
-			e.printStackTrace();
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
 		}
 		return dtoResult;
 
