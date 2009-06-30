@@ -32,18 +32,18 @@ rgm
 }
 
 .gwt-IconButton {
-	cursor: hand;
+	cursor: pointer;
 }
 .icon-cancel, .icon-copiar, .icon-excel, .icon-lapiz, .icon-locked, .icon-lupa, .icon-silvioSoldan, 
 .icon-tildeVerde, .icon-vistaPreliminar, .icon-word, .icon-nuevo, .icon-comprobar-negro, .icon-comprobar-verde,
-.icon-comprobar-rojo, .icon-locked-other {
+.icon-comprobar-rojo, .icon-locked-other, .icon-scoring, .icon-oportunidad, .icon-prospect, .icon-led-verde,
+.icon-led-amarillo, .icon-led-rojo {
 	width: 16px;
 	height: 16px;
 	background-image: url("images/icons.gif");
 	border: none;
 	background-color: transparent;
 	background-repeat: no-repeat;
-/*	margin-right: 10px; */
 }
 
 .icon-locked-other{
@@ -64,5 +64,12 @@ rgm
 .icon-comprobar-negro { background-position: -176 0;}
 .icon-comprobar-rojo { background-position: -192 0;}
 .icon-comprobar-verde { background-position: -208 0;}
+.icon-locked-other { background-position: -224 0;}
+.icon-scoring { background-position: -240 0;}
+.icon-oportunidad { background-position: -256 0;}
+.icon-prospect { background-position: -272 0;}
+.icon-led-verde { background-position: -288 0;}
+.icon-led-amarillo { background-position: -304 0;}
+.icon-led-rojo { background-position: -320 0;}
 
 
