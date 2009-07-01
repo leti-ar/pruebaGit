@@ -5,7 +5,7 @@ import ar.com.nextel.sfa.client.debug.DebugConstants;
 public class CargarItemsSolicitudTest extends SfaSeleniumTest {
 
 	public void setUp() throws Exception {
-		setUp(WKSRGM_ROOT_URL, FIREFOX_CHROME);
+		setUpTestIE();
 	}
 
 	/**
@@ -25,7 +25,7 @@ public class CargarItemsSolicitudTest extends SfaSeleniumTest {
 	}
 
 	public void testCargarItemsSolicitud() throws Exception {
-		selenium.open("/ar.com.nextel.sfa.SFAWeb/SFAWeb.html");
+		selenium.open(SFA_APP_URL);
 		loginIfNeeded();
 
 		for (int second = 0;; second++) {

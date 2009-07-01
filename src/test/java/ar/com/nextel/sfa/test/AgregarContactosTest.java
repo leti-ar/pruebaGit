@@ -6,7 +6,7 @@ import ar.com.nextel.sfa.client.debug.DebugConstants;
 public class AgregarContactosTest extends SfaSeleniumTest {
 	
 	public void setUp() throws Exception {
-		setUp(NB34_ROOT_URL, FIREFOX);
+		setUpTestIE();
 	}
 	
 	/**

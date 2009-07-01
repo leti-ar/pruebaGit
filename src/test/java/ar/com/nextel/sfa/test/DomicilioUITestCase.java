@@ -5,7 +5,7 @@ import ar.com.nextel.sfa.client.debug.DebugConstants;
 
 public class DomicilioUITestCase extends SfaSeleniumTest {
 	public void setUp() throws Exception {
-		setUp(WKSRGM_ROOT_URL, FIREFOX_CHROME);
+		setUpTestIE();
 	}
 	public void testDomicilioUITestCase() throws Exception {
 		selenium.setSpeed("500");

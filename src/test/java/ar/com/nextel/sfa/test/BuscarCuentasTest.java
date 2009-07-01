@@ -14,7 +14,7 @@ public class BuscarCuentasTest extends SfaSeleniumTest {
 	 */
 	public void setUp() throws Exception {
 		// Ejecutamos en forma remota
-		setUp(NB34_ROOT_URL,IEXPLORE);
+		setUpTestIE();
 		
 		// Y que me imprima el tiempo de espera por los "cargando"
 		SfaSeleniumTest.DEBUG_PRINT_WAIT_TIMES = true;
@@ -31,7 +31,7 @@ public class BuscarCuentasTest extends SfaSeleniumTest {
 
 			selenium.click(DebugConstants.GWT_MENU_CUENTAS);
 			selenium.click(DebugConstants.GWT_MENU_CUENTAS_BUSCAR);
-			waitWhileCargando(1000);
+			waitWhileCargando(10000);
 	
 			selenium.highlight(DebugConstants.GWT_BUSQUEDA_CUENTAS_COMBO_PREDEFINIDAS);
 			selenium.select(DebugConstants.GWT_BUSQUEDA_CUENTAS_COMBO_PREDEFINIDAS, "label=Últimas consultadas");

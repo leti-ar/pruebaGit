@@ -17,7 +17,7 @@ public class AgregarCuentaTest extends SfaSeleniumTest {
 	 */
 	public void setUp() throws Exception {
 		// Ejecutamos en forma remota
-		setUp(NB34_ROOT_URL,FIREFOX);
+		setUpTestIE();
 		// Y que me imprima el tiempo de espera por los "cargando"
 		SfaSeleniumTest.DEBUG_PRINT_WAIT_TIMES = true;
 	}

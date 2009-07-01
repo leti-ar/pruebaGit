@@ -63,6 +63,10 @@ public abstract class SfaSeleniumTest extends SeleneseTestCase {
 	public static final String TEST_SFA_ROOT_URL = "http://baslije4.nextel.com.ar:7877/sfa-web2/";
 	public static final String WKSRGM_ROOT_URL = "http://wksrgm.nextel.com.ar:8888/";
 	public static final String NB34_ROOT_URL = "http://nb34.nextel.com.ar:8888/";
+	public static final String D2_ROOT_URL = "http://baslije24.nextel.com.ar:7877/sfa-web2/";
+	
+	// Usado por las subclases para entrar al server
+	public static final String TEST_ROOT_URL = D2_ROOT_URL;
 	
 	public static final String SFA_APP_URL = "ar.com.nextel.sfa.SFAWeb/SFAWeb.html";
 
@@ -78,9 +82,12 @@ public abstract class SfaSeleniumTest extends SeleneseTestCase {
 	/**
 	 * Configura para ejecutar los tests contra un server local contra el ambiente de test con IE. Si es necesario cambiarlo,
 	 * usar alguna variante del setUp() en las subclases
+	 * 
+	 * TODO: la implementación de los 4 parámetros no anduvo
 	 */
 	public void setUpTestIE() throws Exception {
-		setUp("localhost",4444,TEST_SFA_ROOT_URL, IEXPLORE);
+//		setUp("localhost",4444,TEST_ROOT_URL, IEXPLORE);
+		setUp(TEST_ROOT_URL, IEXPLORE);
 	}
 	
 	
