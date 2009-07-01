@@ -1,6 +1,5 @@
 package ar.com.nextel.sfa.server;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -13,30 +12,20 @@ import ar.com.nextel.business.describable.GetAllBusinessOperator;
 import ar.com.nextel.business.oportunidades.search.SearchOportunidadBusinessOperator;
 import ar.com.nextel.business.oportunidades.search.businessUnits.OportunidadSearchData;
 import ar.com.nextel.business.oportunidades.search.result.OportunidadNegocioSearchResult;
-import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
-import ar.com.nextel.business.solicitudes.search.dto.SolicitudServicioCerradaSearchCriteria;
 import ar.com.nextel.business.vendedores.RegistroVendedores;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.EstadoOportunidad;
-import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
-import ar.com.nextel.model.oportunidades.beans.OportunidadNegocio;
-import ar.com.nextel.model.oportunidades.beans.VentaPotencialVista;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
-import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
-import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.OportunidadNegocioRpcService;
 import ar.com.nextel.sfa.client.dto.EstadoOportunidadDto;
-import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.OportunidadDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioSearchResultDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
-import ar.com.nextel.sfa.client.dto.VentasPotencialesYOperacionesEnCursoDto;
 import ar.com.nextel.sfa.client.initializer.BuscarOportunidadNegocioInitializer;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
-import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.server.RemoteService;
 
 /**
