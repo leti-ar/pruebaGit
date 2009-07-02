@@ -189,7 +189,6 @@ public class CuentaUIData extends UIData {
 		fields.add(numeroTarjeta);
 		
 	}
-	
 
 	private void setCombos() {
 		CuentaRpcService.Util.getInstance().getAgregarCuentaInitializer(
@@ -237,7 +236,8 @@ public class CuentaUIData extends UIData {
         //nombres
 		nombre.setName(Sfa.constant().nombre());
 		apellido.setName(Sfa.constant().apellido());
-		razonSocial.setName(Sfa.constant().razonSocial());		
+		razonSocial.setName(Sfa.constant().razonSocial());
+		nombreDivision.setName(Sfa.constant().nombreDivision());
 		contribuyente.setName(Sfa.constant().contribuyente());
         fechaNacimiento.getTextBox().setName(Sfa.constant().fechaNacimiento());
 		proveedorAnterior.setName(Sfa.constant().provedorAnterior());
@@ -264,6 +264,7 @@ public class CuentaUIData extends UIData {
 		nombre.setMaxLength(19);
 		apellido.setMaxLength(19);
 		razonSocial.setMaxLength(40);
+		nombreDivision.setMaxLength(40);
 		categoria.setMaxLength(15);
 		iibb.setMaxLength(20);
 		vendedorNombre.setMaxLength(50);
@@ -285,6 +286,7 @@ public class CuentaUIData extends UIData {
 		
 		//formato
 		cbu.setWidth("90%");
+		nombreDivision.setWidth("90%");
 		observaciones.addStyleName("textAreaCuentaData");
 		usuario.setEnabled(false);
 		fechaCreacion.setEnabled(false);

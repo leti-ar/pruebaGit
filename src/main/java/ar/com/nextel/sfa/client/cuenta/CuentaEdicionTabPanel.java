@@ -247,13 +247,14 @@ public class CuentaEdicionTabPanel {
 		});
 		agregarDivision.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				agregarDivision.setTargetHistoryToken(UILoader.EDITAR_CUENTA  + "?idCuenta=" + cuenta2editDto.getId() + "&DIVISION="+"TRUE");
+				agregarDivision.setTargetHistoryToken(UILoader.EDITAR_CUENTA  + "?cuenta_id=" + cuenta2editDto.getId() + "&div="+"TRUE");
 				popupAgregarCuenta.hide();
 			}
 		});
 		agregarSuscriptor.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				popupCrearSS.hide();
+				agregarSuscriptor.setTargetHistoryToken(UILoader.EDITAR_CUENTA  + "?cuenta_id=" + cuenta2editDto.getId() + "&sus="+"TRUE");
+				popupAgregarCuenta.hide();
 			}
 		});
 		cancelar.addClickListener(new ClickListener() {
@@ -331,17 +332,21 @@ public class CuentaEdicionTabPanel {
 		History.newItem("");
 	}
 	
-	public void validarCompletitud() {
+	public void validarCompletitud(boolean showMsg) {
 		erroresValidacion.clear();
 		erroresValidacion.addAll(cuentaDatosForm.validarCompletitud());
 		erroresValidacion.addAll(CuentaDomiciliosForm.getInstance().validarCompletitud());
 		if (!erroresValidacion.isEmpty()) {
 			validarCompletitudButton.addStyleName(VALIDAR_COMPLETITUD_FAIL_STYLE);
-			ErrorDialog.getInstance().show(erroresValidacion);
+			if(showMsg)
+				ErrorDialog.getInstance().show(erroresValidacion);
 		} else {
 			validarCompletitudButton.removeStyleName(VALIDAR_COMPLETITUD_FAIL_STYLE);
 		}
-		//return erroresValidacion.isEmpty(); 
+	}
+	
+	public void validarCompletitud() {
+		validarCompletitud(true);
 	}
 	
 	private boolean validarCamposTabDatos() {

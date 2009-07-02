@@ -12,6 +12,7 @@ import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoTarjetaCreditoDto;
 import ar.com.nextel.sfa.client.dto.DatosEfectivoDto;
 import ar.com.nextel.sfa.client.dto.DatosPagoDto;
+import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.EmailDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
@@ -29,6 +30,7 @@ import ar.com.nextel.sfa.client.dto.TipoTarjetaDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.enums.SexoEnum;
+import ar.com.nextel.sfa.client.enums.TipoCuentaEnum;
 import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
 import ar.com.nextel.sfa.client.enums.TipoEmailEnum;
 import ar.com.nextel.sfa.client.enums.TipoFormaPagoEnum;
@@ -110,7 +112,8 @@ public class CuentaDatosForm extends Composite {
 		datosCuentaTable.setCellSpacing(7);
 		datosCuentaTable.setWidth(ANCHO_TABLA_PANEL);
 		datosCuentaTable.getFlexCellFormatter().setColSpan(1, 1, 4);
-
+		//datosCuentaTable.setBorderWidth(1);
+		
 		int row = 0;
 		datosCuentaTable.setWidget(row, 0, camposTabDatos.getTipoDocLabel());
 		datosCuentaTable.setWidget(row, 1, camposTabDatos.getTipoDocumento());
@@ -129,6 +132,8 @@ public class CuentaDatosForm extends Composite {
 			datosCuentaTable.getFlexCellFormatter().setColSpan(row, 1, 4);
 			datosCuentaTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
 			row++;
+		} else {
+			datosCuentaTable.removeRow(row);
 		}
 		datosCuentaTable.setWidget(row, 0, camposTabDatos.getNombreLabel());
 		datosCuentaTable.setWidget(row, 1, camposTabDatos.getNombre());
@@ -144,8 +149,8 @@ public class CuentaDatosForm extends Composite {
 		row++;
 		datosCuentaTable.setWidget(row, 0, camposTabDatos.getContrLabel());
 		datosCuentaTable.setWidget(row, 1, camposTabDatos.getContribuyente());
-		datosCuentaTable.setWidget(row, 3, camposTabDatos.getNomDivLabel());
-		datosCuentaTable.setWidget(row, 4, camposTabDatos.getNombreDivision());
+		datosCuentaTable.setWidget(row, 3, null);
+		datosCuentaTable.setWidget(row, 4, null);
 		datosCuentaTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
 		row++;
 		if(camposTabDatos.getCargoLabel().isVisible()) {
@@ -153,12 +158,16 @@ public class CuentaDatosForm extends Composite {
 			datosCuentaTable.setWidget(row, 1, camposTabDatos.getCargo());
 			datosCuentaTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
 			row++;
+		} else {
+			datosCuentaTable.removeRow(row);
 		}
 		if(camposTabDatos.getIibbLabel().isVisible()) {
 			datosCuentaTable.setWidget(row, 0, camposTabDatos.getIibbLabel());
 			datosCuentaTable.setWidget(row, 1, camposTabDatos.getIibb());
 			datosCuentaTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
 			row++;
+		} else {
+			datosCuentaTable.removeRow(row);
 		}
 		datosCuentaTable.setWidget(row, 0, camposTabDatos.getProvAntLabel());
 		datosCuentaTable.setWidget(row, 1, camposTabDatos.getProveedorAnterior());
@@ -393,40 +402,25 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.clean();
 	}
 
-	/**
-	 * @author eSalvador
-	 * @Nota: En estos metodos dejar que reciba como parametro una CuentaDto, NO una GranCuenta,
-	 *        porque mas adelante cuando tengamos que guardar Suscriptor y Division nos va a servir.
-	 **/
 	public void ponerDatosSuscriptorBusquedaEnFormulario(SuscriptorDto cuentaSuscriptorDto) {
-			CuentaDto cuentaSusc = cuentaSuscriptorDto.getGranCuenta();
-			cargarPanelDatos(cuentaSusc);
-			cargarPanelTelefonoFax(cuentaSusc);
-			cargarPanelEmails(cuentaSusc);
-			cargarPanelFormaPago(cuentaSusc);
-			cargarPanelVendedor(cuentaSusc);
-			cargarPanelUsuario(cuentaSusc);
+		CuentaDto cuentaSusc = cuentaSuscriptorDto.getGranCuenta();
+		cargarPanelDatos(cuentaSusc);
+		cargarPanelTelefonoFax(cuentaSusc);
+		cargarPanelEmails(cuentaSusc);
+		cargarPanelFormaPago(cuentaSusc);
+		cargarPanelVendedor(cuentaSusc);
+		cargarPanelUsuario(cuentaSusc);
 	}
 
-	/**
-	 * @author eSalvador
-	 * @Nota: En estos metodos dejar que reciba como parametro una CuentaDto, NO una GranCuenta,
-	 *        porque mas adelante cuando tengamos que guardar Suscriptor y Division nos va a servir.
-	 **/
 	public void ponerDatosBusquedaEnFormulario(CuentaDto cuentaDto) {
-			cargarPanelDatos(cuentaDto);
-			cargarPanelTelefonoFax(cuentaDto);
-			cargarPanelEmails(cuentaDto);
-			cargarPanelFormaPago(cuentaDto);
-			cargarPanelVendedor(cuentaDto);
-			cargarPanelUsuario(cuentaDto);
+		cargarPanelDatos(cuentaDto);
+		cargarPanelTelefonoFax(cuentaDto);
+		cargarPanelEmails(cuentaDto);
+		cargarPanelFormaPago(cuentaDto);
+		cargarPanelVendedor(cuentaDto);
+		cargarPanelUsuario(cuentaDto);
 	}
 	
-	/**
-	 * @author eSalvador
-	 * @Nota: En estos metodos dejar que reciba como parametro una CuentaDto, NO una GranCuenta,
-	 *        porque mas adelante cuando tengamos que guardar Suscriptor y Division nos va a servir.
-	 **/
 	public void cargarPanelDatos(CuentaDto cuentaDto) {
 		if (cuentaDto.getPersona().getDocumento()!=null) {
 			camposTabDatos.getTipoDocumento().setSelectedItem(cuentaDto.getPersona().getDocumento().tipoDocumento) ;
@@ -442,7 +436,9 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getContribuyente().setSelectedItem(cuentaDto.getTipoContribuyente());
 		camposTabDatos.getCargo().setSelectedItem(cuentaDto.getPersona().getCargo());
 		camposTabDatos.getIibb().setText(cuentaDto.getIibb());
-		camposTabDatos.getNombreDivision().setText("TODO");
+		if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.DIV.getTipo())) {
+			camposTabDatos.getNombreDivision().setText(((DivisionDto)cuentaDto).getNombre());
+		}
 		camposTabDatos.getProveedorAnterior().setSelectedItem(cuentaDto.getProveedorInicial());
 		camposTabDatos.getCategoria().setText(cuentaDto.getCategoriaCuenta().getDescripcion());
 		camposTabDatos.getClaseCliente().setSelectedItem(cuentaDto.getClaseCuenta());
@@ -450,11 +446,6 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getUse().setText(cuentaDto.getUse());
 	}
 	
-	/**
-	 * @author eSalvador
-	 * @Nota: En estos metodos dejar que reciba como parametro una CuentaDto, NO una GranCuenta,
-	 *        porque mas adelante cuando tengamos que guardar Suscriptor y Division nos va a servir.
-	 **/
 	public void cargarPanelTelefonoFax(CuentaDto cuentaDto) {
 		for ( TelefonoDto telefono : cuentaDto.getPersona().getTelefonos()) {
 			TipoTelefonoDto tipoTelefono = telefono.getTipoTelefono();
@@ -482,11 +473,6 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getObservaciones().setText(cuentaDto.getObservacionesTelMail());
 	}
 	
-	/**
-	 * @author eSalvador
-	 * @Nota: En estos metodos dejar que reciba como parametro una CuentaDto, NO una GranCuenta,
-	 *        porque mas adelante cuando tengamos que guardar Suscriptor y Division nos va a servir.
-	 **/
     public void cargarPanelEmails(CuentaDto cuentaDto) {
         for (EmailDto email : cuentaDto.getPersona().getEmails()) {
 		    TipoEmailDto tipoEmail = email.getTipoEmail();
@@ -499,11 +485,6 @@ public class CuentaDatosForm extends Composite {
 		}    	
     }
     
-	/**
-	 * @author eSalvador
-	 * @Nota: En estos metodos dejar que reciba como parametro una CuentaDto, NO una GranCuenta,
-	 *        porque mas adelante cuando tengamos que guardar Suscriptor y Division nos va a servir.
-	 **/
     public void cargarPanelFormaPago(CuentaDto cuentaDto) {
         String id_formaPago = "";
 		if (cuentaDto.getDatosPago().isEfectivo()) {
@@ -566,11 +547,7 @@ public class CuentaDatosForm extends Composite {
 			camposTabDatos.getFechaCreacion().setText(DateTimeFormat.getMediumDateFormat().format(cuentaDto.getFechaCreacion()));
     }
     
-    /**
-     * 
-     * @param cuentaDto
-     */
-	public void setAtributosCamposAlAgregarCuenta(CuentaDto cuentaDto) {
+	public void setAtributosCamposCuenta(CuentaDto cuentaDto) {
 		
 		camposTabDatos.enableFields();
 		iconoLupa.setVisible(true);
@@ -607,37 +584,38 @@ public class CuentaDatosForm extends Composite {
 	}
 
 	public void setAtributosCamposAlAgregarDivision(CuentaDto cuentaDto) {
-		if (cuentaDto==null) 
-			cuentaDto = CuentaEdicionTabPanel.getInstance().getCuenta2editDto();
-		
-		setAtributosCamposAlAgregarCuenta(cuentaDto);
-		
+		setAtributosCamposCuenta(cuentaDto!=null ? cuentaDto : CuentaEdicionTabPanel.getInstance().getCuenta2editDto());
 		camposTabDatos.getNombreDivision().setVisible(true);
 		camposTabDatos.getNomDivLabel().setVisible(true);
-
+		iconoLupa.setVisible(false);
+		camposTabDatos.getVerazRta().setVisible(false);
+		camposTabDatos.getVerazLabel().setVisible(false);
 	}
 	
 	public void setAtributosCamposAlAgregarSuscriptor(CuentaDto cuentaDto) {
-		if (cuentaDto==null) 
-			cuentaDto = CuentaEdicionTabPanel.getInstance().getCuenta2editDto();
-		setAtributosCamposAlAgregarCuenta(cuentaDto);
+		setAtributosCamposCuenta(cuentaDto!=null ? cuentaDto : CuentaEdicionTabPanel.getInstance().getCuenta2editDto());
 	}
 	
-	/**
-	 * 
-	 * @param cuentaDto
-	 */
 	public void setAtributosCamposAlMostrarResuladoBusqueda(CuentaDto cuentaDto) {
-		
-		setAtributosCamposAlAgregarCuenta(cuentaDto);
-		
+
 		List <Widget>campos = new ArrayList<Widget>();
+		
+		if(cuentaDto.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.DIV.getTipo())) {
+			setAtributosCamposAlAgregarDivision(cuentaDto);
+			campos.add(camposTabDatos.getNombreDivision());
+		} else 	if(cuentaDto.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.SUS.getTipo())) {
+			setAtributosCamposAlAgregarSuscriptor(cuentaDto);
+		} else {
+			setAtributosCamposCuenta(cuentaDto);
+		}
+
 		campos.add(camposTabDatos.getNombre());
 		campos.add(camposTabDatos.getApellido());
 		campos.add(camposTabDatos.getSexo());
 		campos.add(camposTabDatos.getFechaNacimiento());
 		campos.add(camposTabDatos.getProveedorAnterior());
 		campos.add(camposTabDatos.getContribuyente());
+		campos.add(camposTabDatos.getCargo());
 		campos.add(camposTabDatos.getRubro());
 		campos.add(camposTabDatos.getIibb());
 		campos.add(camposTabDatos.getClaseCliente());
@@ -665,10 +643,6 @@ public class CuentaDatosForm extends Composite {
 		
 		FormUtils.disableFields(campos);
 
-		iconoLupa.setVisible(false);
-		camposTabDatos.getVerazRta().setVisible(false);
-		camposTabDatos.getVerazLabel().setVisible(false);
-		
 		vendedorPanel.setVisible( ClientContext.getInstance().getUsuario().getId().
 				                   equals(
 	                    		  cuentaDto.getVendedor().getId())
@@ -1037,7 +1011,6 @@ public class CuentaDatosForm extends Composite {
         	((DatosDebitoCuentaBancariaDto)datosPago).setFormaPagoAsociada(CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getFormaPago());
         	((DatosDebitoCuentaBancariaDto)datosPago).setCbu(camposTabDatos.getCbu().getText());
         	((DatosDebitoCuentaBancariaDto)datosPago).setTipoCuentaBancaria(new TipoCuentaBancariaDto(Long.parseLong(camposTabDatos.getTipoCuentaBancaria().getSelectedItemId()),camposTabDatos.getTipoCuentaBancaria().getSelectedItemText(),camposTabDatos.getTipoCuentaBancaria().getSelectedItemText()));
-        	
         } else if (camposTabDatos.getFormaPago().getSelectedItemId().equals(TipoFormaPagoEnum.TARJETA_CREDITO.getTipo())) {
         	datosPago = new DatosDebitoTarjetaCreditoDto();
         	((DatosDebitoTarjetaCreditoDto)datosPago).setId(CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getDatosPago().getId());

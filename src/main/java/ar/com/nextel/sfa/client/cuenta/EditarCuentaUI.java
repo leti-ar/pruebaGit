@@ -30,14 +30,13 @@ public class EditarCuentaUI extends ApplicationUI {
 
 	public boolean load() {
 		resetEditor();
-		//cuentaTab.validarCompletitudButton.addStyleName(cuentaTab.VALIDAR_COMPLETITUD_FAIL_STYLE);
 		//viene de popup "Agregar Cuenta"
 		if (HistoryUtils.getParam("nroDoc")!=null) {
 			TipoDocumentoDto tipoDoc = new TipoDocumentoDto(Long.parseLong(HistoryUtils.getParam("tipoDoc")),null);
 			DocumentoDto docDto = new DocumentoDto(HistoryUtils.getParam("nroDoc"),tipoDoc);
 			CuentaRpcService.Util.getInstance().reservaCreacionCuenta(docDto,new DefaultWaitCallback<GranCuentaDto>() {
 				public void success(GranCuentaDto cuentaDto) {
-					cuentaTab.getCuentaDatosForm().setAtributosCamposAlAgregarCuenta(cuentaDto);
+					cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(cuentaDto);
 					completarVisualizacionDatos(cuentaDto);
 				}
 			});
@@ -66,9 +65,8 @@ public class EditarCuentaUI extends ApplicationUI {
 			CuentaRpcService.Util.getInstance().selectCuenta(cuentaID, cod_vantive,new DefaultWaitCallback<CuentaDto>() {
 				public void success(CuentaDto cuentaDto) {
 					if (puedenMostrarseDatos(cuentaDto)) {
-						cuentaTab.setCuenta2editDto(cuentaDto);
-						cargaPanelesCuenta();
 						cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusqueda(cuentaDto);
+						completarVisualizacionDatos(cuentaDto);
 					}
 				}
 			});
@@ -94,7 +92,7 @@ public class EditarCuentaUI extends ApplicationUI {
 		cuentaTab.setCuenta2editDto(cuentaDto);
 		cuentaTab.getCuentaDatosForm().armarTablaPanelDatos();
 		cargaPanelesCuenta();
-		cuentaTab.validarCompletitud();
+		cuentaTab.validarCompletitud(false);
 	}
 	
 	/**
