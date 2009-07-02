@@ -187,12 +187,12 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 		table.addStyleName("gwt-BuscarCuentaResultTable");
 		table.getRowFormatter().addStyleName(0, "header");
 		table.setHTML(0, 0, Sfa.constant().whiteSpace());
-		table.setHTML(0, 1, "N° SS");
-		table.setHTML(0, 2, "N° Cuenta");
-		table.setHTML(0, 3, "Razon Social");
-		table.setHTML(0, 4, "Equipos");
-		table.setHTML(0, 5, "Pataconex");
-		table.setHTML(0, 6, "Firmas");
+		table.setHTML(0, 1, Sfa.constant().numSS());
+		table.setHTML(0, 2, Sfa.constant().numCuenta());
+		table.setHTML(0, 3, Sfa.constant().razonSocial());
+		table.setHTML(0, 4, Sfa.constant().equipos());
+		table.setHTML(0, 5, Sfa.constant().pataconexTabla());
+		table.setHTML(0, 6, Sfa.constant().firmasTabla());
 	}
 
 	public void setBuscarSSTotalesResultUI(BuscarSSTotalesResultUI buscarSSTotalesResultUI) {
