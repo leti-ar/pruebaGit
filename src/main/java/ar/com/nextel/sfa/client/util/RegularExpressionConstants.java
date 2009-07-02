@@ -18,6 +18,9 @@ public class RegularExpressionConstants {
 
 	/** Numeros enteros infinito */
 	public static final String numeros = "[0-9]*";
+	
+	/** Numeros enteros infinito y caracter punto */
+	public static final String numerosYPunto = "[0-9|\\.]*";
 
 	/** Dirección de eMail */
 	public static final String email = "^(?:[a-zA-Z0-9_\'^&amp;/+-])+(?:\\.(?:[a-zA-Z0-9_\'^&amp;/+-])+)*@(?:(?:\\[?(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\\.){3}(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\]?)|(?:[a-zA-Z0-9-]+\\.)+(?:[a-zA-Z]){2,}\\.?)$";
