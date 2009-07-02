@@ -112,9 +112,10 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 		} else if (sender == crearEquipos || sender == crearCDW || sender == crearMDS) {
 			popupCrearSS.hide();
 		} else if (sender == agregarDivision) {
-			agregarDivision.setTargetHistoryToken(UILoader.EDITAR_CUENTA  + "?cuenta_id=" + idCuenta + "&DIVISION="+"TRUE");
+			agregarDivision.setTargetHistoryToken(UILoader.EDITAR_CUENTA  + "?cuenta_id=" + idCuenta + "&div=1");
 			popupAgregarCuenta.hide();
 		} else if (sender == agregarSuscriptor) {			
+			agregarSuscriptor.setTargetHistoryToken(UILoader.EDITAR_CUENTA  + "?cuenta_id=" + idCuenta + "&sus=1");
 			popupAgregarCuenta.hide();
 		}
 

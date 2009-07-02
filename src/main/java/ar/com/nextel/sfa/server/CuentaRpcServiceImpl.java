@@ -247,21 +247,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		cuentaDto = mapper.map(repository.retrieve(GranCuenta.class, idCuenta), GranCuentaDto.class);
 		return cuentaDto;
 	}
-	/**
-	 *@author eSalvador
-	 * TODO:Terminar en la segunda iteracion del proyecto.  
-	 **/
-//	public GranCuentaDto saveCuentaSuscriptor(SuscriptorDto cuentaDto) {
-//		Long idCuenta = cuentaBusinessService.saveCuenta(cuentaDto,mapper);
-//		cuentaDto = mapper.map(repository.retrieve(GranCuenta.class, idCuenta), GranCuentaDto.class);
-//		return cuentaDto;
-//	}
-//	
-//	public GranCuentaDto saveCuentaDivision(DivisionDto cuentaDivisionDto) {
-//		Long idCuenta = cuentaBusinessService.saveCuenta(cuentaDivisionDto,mapper);
-//		cuentaDto = mapper.map(repository.retrieve(GranCuenta.class, idCuenta), GranCuentaDto.class);
-//		return cuentaDto;
-//	}
 
 	public VerazInitializer getVerazInitializer() {
 		VerazInitializer verazInitializer = new VerazInitializer();
@@ -318,7 +303,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		return null;
 	}
 	
-	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive) {
+	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive) throws RpcExceptionMessages {
 		Cuenta cuenta = null;
 		CuentaDto cuentaDto = null;
 		try {
@@ -331,16 +316,17 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 					cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(cuentaId);
 				}
 				String categoriaCuenta = cuenta.getCategoriaCuenta().getDescripcion();
-				if (categoriaCuenta.equals(TipoCuentaEnum.CTA)) {
+				if (categoriaCuenta.equals(TipoCuentaEnum.CTA.getTipo())) {
 					cuentaDto = (GranCuentaDto) mapper.map((GranCuenta)cuenta, GranCuentaDto.class);
-				} else if (categoriaCuenta.equals(TipoCuentaEnum.DIV)) {
+				} else if (categoriaCuenta.equals(TipoCuentaEnum.DIV.getTipo())) {
 					cuentaDto = (DivisionDto) mapper.map((Division)cuenta, DivisionDto.class);
-				} else if (categoriaCuenta.equals(TipoCuentaEnum.SUS)) {
+				} else if (categoriaCuenta.equals(TipoCuentaEnum.SUS.getTipo())) {
 					cuentaDto = (SuscriptorDto) mapper.map((Suscriptor)cuenta, SuscriptorDto.class);
 				}
 			}
-		} catch (Exception e1) {
-			e1.printStackTrace();
+		} catch (Exception e) {
+			AppLogger.info("ERROR al seleccionar cuenta: " + e.getMessage());
+			throw ExceptionUtil.wrap(e);
 		}
 		return cuentaDto;
 	}
@@ -348,50 +334,62 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 	/**
 	 * 
 	 */
-	public GranCuentaDto reservaCreacionCuenta(DocumentoDto docDto) {
+	public GranCuentaDto reservaCreacionCuenta(DocumentoDto docDto) throws RpcExceptionMessages {
 		GranCuenta cuenta = null;
 		GranCuentaDto cuentaDto = null;
 		Vendedor vendedor = getVendedor();
+		Documento documento = getDocumento(docDto);
 		SolicitudCuenta solicitudCta = repository.createNewObject(SolicitudCuenta.class);
 		solicitudCta.setVendedor(vendedor);
-		solicitudCta.setDocumento(getDocumento(docDto));
+		solicitudCta.setDocumento(documento);
 		try {
+			//crea
 			cuenta = (GranCuenta)cuentaBusinessService.reservarCrearCta(solicitudCta);
+			//lockea
 			cuentaBusinessService.saveCuenta(selectCuentaBusinessOperator.getCuentaYLockear(cuenta.getCodigoVantive(), vendedor));
-			//agrego contactos
+			//agrega contactos
 			cuenta.addContactosCuenta(contactosCuentaBusinessOperator.obtenerContactosCuentas(cuenta.getId()));
+			//mapea
 			cuentaDto = (GranCuentaDto) mapper.map(cuenta, GranCuentaDto.class);
-		} catch (BusinessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (NullPointerException npe) {
+			cuenta = (GranCuenta) searchCuentaBusinessOperator.searchProspectAjenoEnCarga(documento);
+			String nombre = cuenta.getVendedor().getResponsable().getNombre()+" "+cuenta.getVendedor().getResponsable().getApellido();
+			String cargo  = cuenta.getVendedor().getResponsable().getCargo();
+			throw new RpcExceptionMessages("El prospect/cliente tiene una operación en curso con otro vendedor. No puede ver sus datos. El " +cargo+ " es " +nombre);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			AppLogger.info("ERROR al reservarCrearCta: " + e.getMessage());
+			throw ExceptionUtil.wrap(e);
 		}
 		return cuentaDto;
-	}
-	
-	
-	public CuentaDto crearDivision(GranCuentaDto cuentaDto) throws RpcExceptionMessages {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	public CuentaDto crearSuscriptor(CuentaDto cuentaDto) throws RpcExceptionMessages {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 	/**
 	 * 
 	 */
-	public TarjetaCreditoValidatorResultDto validarTarjeta(String numeroTarjeta, Integer mesVto, Integer anoVto) {
+	public DivisionDto crearDivision(Long id_CuentaPadre) {
+		Cuenta cuenta = repository.retrieve(Cuenta.class, id_CuentaPadre);
+		return (DivisionDto) mapper.map(cuentaBusinessService.crearDivision(cuenta, getVendedor()), DivisionDto.class); 
+	}
+
+	/**
+	 * 
+	 */
+	public SuscriptorDto crearSuscriptor(Long id_CuentaPadre) throws RpcExceptionMessages {
+		Cuenta cuenta = repository.retrieve(Cuenta.class, id_CuentaPadre);
+		return (SuscriptorDto) mapper.map(cuentaBusinessService.crearSuscriptor(cuenta, getVendedor()), SuscriptorDto.class); 
+	}
+	
+	/**
+	 * 
+	 */
+	public TarjetaCreditoValidatorResultDto validarTarjeta(String numeroTarjeta, Integer mesVto, Integer anoVto) throws RpcExceptionMessages {
 		TarjetaCreditoValidatorResultDto resultDto = null;
 		try {
 			TarjetaCreditoValidatorResult tarjetaCreditoValidatorResult =tarjetaCreditoValidatorService.validate(numeroTarjeta, mesVto, anoVto);
 			resultDto = (TarjetaCreditoValidatorResultDto) mapper.map(tarjetaCreditoValidatorResult, TarjetaCreditoValidatorResultDto.class);
 		} catch (TarjetaCreditoValidatorServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			AppLogger.info("ERROR al reservarCrearCta: " + e.getMessage());
+			throw ExceptionUtil.wrap(e);
 		}
         return resultDto;
 	}

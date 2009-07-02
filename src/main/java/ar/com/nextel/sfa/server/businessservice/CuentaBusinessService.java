@@ -17,10 +17,14 @@ import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoTarjetaCredito;
 import ar.com.nextel.model.cuentas.beans.DatosPago;
+import ar.com.nextel.model.cuentas.beans.Division;
 import ar.com.nextel.model.cuentas.beans.FormaPago;
 import ar.com.nextel.model.cuentas.beans.GranCuenta;
+import ar.com.nextel.model.cuentas.beans.Suscriptor;
 import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
+import ar.com.nextel.model.cuentas.beans.Vendedor;
+import ar.com.nextel.model.personas.beans.Documento;
 import ar.com.nextel.model.personas.beans.Persona;
 import ar.com.nextel.model.personas.beans.Telefono;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
@@ -125,6 +129,16 @@ public class CuentaBusinessService {
 		repository.save(cuenta.getDatosPago());
 		repository.save(cuenta);
 		return cuenta.getId();
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public Division crearDivision(Cuenta cuenta, Vendedor vendedor) {
+		return (Division) createCuentaBusinessOperator.createDivisionFrom(cuenta, vendedor);
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public Suscriptor crearSuscriptor(Cuenta cuenta, Vendedor vendedor) {
+		return (Suscriptor) createCuentaBusinessOperator.createSuscriptorFrom(cuenta, vendedor);
 	}
 	
 	/**

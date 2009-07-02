@@ -5,6 +5,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
+import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
@@ -12,6 +13,7 @@ import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
 import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
+import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
@@ -46,13 +48,13 @@ public class CuentaRpcServiceDelegate {
 		WaitWindow.show();
 		cuentaRpcService.saveGranCuenta(cuentaDto, callback);
 	}
-	public void crearDivision(GranCuentaDto cuentaDto,DefaultWaitCallback<CuentaDto> callback) {
+	public void crearDivision(Long id_cuentaPadre, DefaultWaitCallback<CuentaDto> callback) {
 		WaitWindow.show();
-		cuentaRpcService.crearDivision(cuentaDto, callback);
+		cuentaRpcService.crearDivision(id_cuentaPadre, callback);
 	}
-	public void crearSuscriptor(CuentaDto cuentaDto,DefaultWaitCallback<CuentaDto> callback) {
+	public void crearSuscriptor(Long id_cuentaPadre, DefaultWaitCallback<CuentaDto> callback) {
 		WaitWindow.show();
-		cuentaRpcService.crearSuscriptor(cuentaDto, callback);
+		cuentaRpcService.crearSuscriptor(id_cuentaPadre, callback);
 	}
 	public void getVerazInitializer(DefaultWaitCallback<VerazInitializer> callback) {
 		WaitWindow.show();

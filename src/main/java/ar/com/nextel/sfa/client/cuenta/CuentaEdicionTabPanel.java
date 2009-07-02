@@ -331,7 +331,7 @@ public class CuentaEdicionTabPanel {
 		History.newItem("");
 	}
 	
-	private void validarCompletitud() {
+	public void validarCompletitud() {
 		erroresValidacion.clear();
 		erroresValidacion.addAll(cuentaDatosForm.validarCompletitud());
 		erroresValidacion.addAll(CuentaDomiciliosForm.getInstance().validarCompletitud());

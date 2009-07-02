@@ -617,6 +617,11 @@ public class CuentaDatosForm extends Composite {
 
 	}
 	
+	public void setAtributosCamposAlAgregarSuscriptor(CuentaDto cuentaDto) {
+		if (cuentaDto==null) 
+			cuentaDto = CuentaEdicionTabPanel.getInstance().getCuenta2editDto();
+		setAtributosCamposAlAgregarCuenta(cuentaDto);
+	}
 	
 	/**
 	 * 

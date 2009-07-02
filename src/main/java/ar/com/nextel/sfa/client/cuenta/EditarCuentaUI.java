@@ -20,9 +20,6 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.History;
 
-/**
- * @author eSalvador
- **/
 public class EditarCuentaUI extends ApplicationUI {
 
 	private final CuentaEdicionTabPanel cuentaTab = CuentaEdicionTabPanel.getInstance();
@@ -33,24 +30,39 @@ public class EditarCuentaUI extends ApplicationUI {
 
 	public boolean load() {
 		resetEditor();
-		
-		//viene de popup "Agregar"
+		//cuentaTab.validarCompletitudButton.addStyleName(cuentaTab.VALIDAR_COMPLETITUD_FAIL_STYLE);
+		//viene de popup "Agregar Cuenta"
 		if (HistoryUtils.getParam("nroDoc")!=null) {
 			TipoDocumentoDto tipoDoc = new TipoDocumentoDto(Long.parseLong(HistoryUtils.getParam("tipoDoc")),null);
 			DocumentoDto docDto = new DocumentoDto(HistoryUtils.getParam("nroDoc"),tipoDoc);
 			CuentaRpcService.Util.getInstance().reservaCreacionCuenta(docDto,new DefaultWaitCallback<GranCuentaDto>() {
 				public void success(GranCuentaDto cuentaDto) {
-					cuentaTab.setCuenta2editDto(cuentaDto);
-					cuentaTab.validarCompletitudButton.addStyleName(cuentaTab.VALIDAR_COMPLETITUD_FAIL_STYLE);
 					cuentaTab.getCuentaDatosForm().setAtributosCamposAlAgregarCuenta(cuentaDto);
-					cuentaTab.getCuentaDatosForm().armarTablaPanelDatos();
-					cargaPanelesCuenta();
+					completarVisualizacionDatos(cuentaDto);
 				}
 			});
-		} else { //viene de resultado de busqueda 
+		//viene de popup "Agregar Division"			
+		} else if (HistoryUtils.getParam("div")!=null) {
+			Long id_cuentaPadre = Long.parseLong(HistoryUtils.getParam("cuenta_id"));				
+			CuentaRpcService.Util.getInstance().crearDivision(id_cuentaPadre,new DefaultWaitCallback<CuentaDto>() {
+				public void success(CuentaDto cuentaDto) {
+					cuentaTab.getCuentaDatosForm().setAtributosCamposAlAgregarDivision(cuentaDto);
+					completarVisualizacionDatos(cuentaDto);
+				}
+			});		
+		//viene de popup "Agregar Suscriptor"			
+		} else if (HistoryUtils.getParam("sus")!=null) {
+			Long id_cuentaPadre = Long.parseLong(HistoryUtils.getParam("cuenta_id"));				
+			CuentaRpcService.Util.getInstance().crearSuscriptor(id_cuentaPadre,new DefaultWaitCallback<CuentaDto>() {
+				public void success(CuentaDto cuentaDto) {
+					cuentaTab.getCuentaDatosForm().setAtributosCamposAlAgregarSuscriptor(cuentaDto);
+					completarVisualizacionDatos(cuentaDto);
+				}
+			});
+		//viene de resultado de busqueda			
+		} else {  
 			Long cuentaID = Long.parseLong(HistoryUtils.getParam("cuenta_id"));
 			String cod_vantive = HistoryUtils.getParam("cod_vantive") !=null?HistoryUtils.getParam("cod_vantive") : null;
-
 			CuentaRpcService.Util.getInstance().selectCuenta(cuentaID, cod_vantive,new DefaultWaitCallback<CuentaDto>() {
 				public void success(CuentaDto cuentaDto) {
 					if (puedenMostrarseDatos(cuentaDto)) {
@@ -77,6 +89,17 @@ public class EditarCuentaUI extends ApplicationUI {
 	/**
 	 * 
 	 * @param cuentaDto
+	 */
+	private void completarVisualizacionDatos(CuentaDto cuentaDto) {
+		cuentaTab.setCuenta2editDto(cuentaDto);
+		cuentaTab.getCuentaDatosForm().armarTablaPanelDatos();
+		cargaPanelesCuenta();
+		cuentaTab.validarCompletitud();
+	}
+	
+	/**
+	 * 
+	 * @param cuentaDto
 	 * @return
 	 */
 	private boolean puedenMostrarseDatos(CuentaDto cuentaDto) {
@@ -91,11 +114,16 @@ public class EditarCuentaUI extends ApplicationUI {
 		}
 		return result;
 	}
-		
+	
+	/**
+	 * 	
+	 */
 	public void firstLoad() {
 	}
 	
-	
+	/**
+	 * 
+	 */
 	private void cargaPanelesCuenta() {
 		//Busca la cuenta con alguno de los dos datos NO nulos.
 		CuentaDto cuenta = (CuentaDto)cuentaTab.getCuenta2editDto(); 
@@ -114,7 +142,11 @@ public class EditarCuentaUI extends ApplicationUI {
 		//agrega tabs al panel principal
 		mainPanel.add(cuentaTab.getCuentaEdicionPanel());
 	}
-	
+
+	/**
+	 * 
+	 * @param categoriaCuenta
+	 */
 	private void cargarInfoContactos(String categoriaCuenta) {
 		List <ContactoCuentaDto>contactos = null;
 		if (categoriaCuenta.equals(TipoCuentaEnum.CTA.getTipo())) {
@@ -129,7 +161,10 @@ public class EditarCuentaUI extends ApplicationUI {
 			cuentaTab.getCuentaContactoForm().cargarTabla();
 		}
 	}
-
+	
+	/**
+	 * 
+	 */
 	public boolean unload(String token) {
 		return true;
 	}
