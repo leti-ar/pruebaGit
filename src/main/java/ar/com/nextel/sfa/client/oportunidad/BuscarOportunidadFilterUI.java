@@ -1,5 +1,7 @@
 package ar.com.nextel.sfa.client.oportunidad;
 
+import java.util.List;
+
 import ar.com.nextel.sfa.client.constant.Sfa;
 
 import com.google.gwt.user.client.ui.ClickListener;
@@ -7,6 +9,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 public class BuscarOportunidadFilterUI extends Composite {
@@ -38,23 +41,24 @@ public class BuscarOportunidadFilterUI extends Composite {
 
 		layout.getFlexCellFormatter().setColSpan(0, 3, 5);
 
-		layout.setHTML(0, 0, Sfa.constant().numeroCliente());
+		List<Label> listaLabels = loadLabels(buscarOportunidadFilterEditor.getListaLabels());
+		layout.setWidget(0, 0, listaLabels.get(0));
 		layout.setWidget(0, 1, buscarOportunidadFilterEditor.getNumeroCuentaTextBox());
-		layout.setHTML(0, 2, Sfa.constant().razonSocial());
+		layout.setWidget(0, 2, listaLabels.get(1));
 		layout.setWidget(0, 3, buscarOportunidadFilterEditor.getRazonSocialTextBox());
-		layout.setHTML(1, 0, Sfa.constant().nombre());
+		layout.setWidget(1, 0, listaLabels.get(2));
 		layout.setWidget(1, 1, buscarOportunidadFilterEditor.getNombreTextBox());
-		layout.setHTML(1, 2, Sfa.constant().apellido());
+		layout.setWidget(1, 2, listaLabels.get(3));
 		layout.setWidget(1, 3, buscarOportunidadFilterEditor.getApellidoTextBox());
-		layout.setHTML(2, 0, Sfa.constant().tipoDocumento());
+		layout.setWidget(2, 0, listaLabels.get(4));
 		layout.setWidget(2, 1, buscarOportunidadFilterEditor.getTipoDocListBox());
-		layout.setHTML(2, 2, Sfa.constant().numeroDocumento());
+		layout.setWidget(2, 2, listaLabels.get(5));
 		layout.setWidget(2, 3, buscarOportunidadFilterEditor.getNumeroDocumentoTextBox());
-		layout.setHTML(2, 4, Sfa.constant().estadoOpp());
+		layout.setWidget(2, 4, listaLabels.get(6));
 		layout.setWidget(2, 5, buscarOportunidadFilterEditor.getEstadoOPPListBox());
-		layout.setHTML(3, 0, Sfa.constant().desde());
+		layout.setWidget(3, 0, listaLabels.get(7));
 		layout.setWidget(3, 1, buscarOportunidadFilterEditor.getDesdeDate());
-		layout.setHTML(3, 2, Sfa.constant().hasta());
+		layout.setWidget(3, 2, listaLabels.get(8));
 		layout.setWidget(3, 3, buscarOportunidadFilterEditor.getHastaDate());
 
 		mainPanel.add(layout);
@@ -72,6 +76,19 @@ public class BuscarOportunidadFilterUI extends Composite {
 						.getOportunidadSearch());
 			}
 		});
+	}
+	
+	private List<Label> loadLabels(List<Label> listaLabels){
+		listaLabels.add(new Label(Sfa.constant().numeroCliente())); //0
+		listaLabels.add(new Label(Sfa.constant().razonSocialDosPuntos()));//1
+		listaLabels.add(new Label(Sfa.constant().nombreDosPuntos()));//2
+		listaLabels.add(new Label(Sfa.constant().apellidoDosPuntos()));//3
+		listaLabels.add(new Label(Sfa.constant().tipoDocDosPuntos()));//4
+		listaLabels.add(new Label(Sfa.constant().numeroDosPuntos()));//5
+		listaLabels.add(new Label(Sfa.constant().estadoOpp()));//6
+		listaLabels.add(new Label(Sfa.constant().desde()));//7
+		listaLabels.add(new Label(Sfa.constant().hasta()));//8
+		return listaLabels;
 	}
 
 	public void setBuscarOportunidadResultPanel(BuscarOportunidadResultUI buscarOportunidadResultPanel) {

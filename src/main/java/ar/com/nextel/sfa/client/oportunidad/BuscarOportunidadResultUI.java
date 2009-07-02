@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.oportunidad;
 
+import java.util.Date;
 import java.util.List;
 
 import ar.com.nextel.business.oportunidades.search.result.OportunidadNegocioSearchResult;
@@ -7,14 +8,18 @@ import ar.com.nextel.sfa.client.OportunidadNegocioRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.OportunidadDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioSearchResultDto;
+import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.util.DateUtil;
 
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
@@ -22,14 +27,16 @@ import com.google.gwt.user.client.ui.SimplePanel;
  */
 public class BuscarOportunidadResultUI extends FlowPanel {
 	private FlexTable resultTable;
-	private SimplePanel resultTableWrapper;
+	private FlowPanel resultTableWrapper;
+	private SimplePanel numeroResultados;
 	private TablePageBar tablePageBar;
 	private List<OportunidadNegocioSearchResultDto> oportunidades;
-	//private List oportunidades;
 	private OportunidadDto lastOportunidadSearchDto;
 	private int numeroPagina = 1;
 	private int offset;
 	private Long totalRegistrosBusqueda;
+	private DateTimeFormat FormattedDate = DateTimeFormat.getMediumDateFormat();
+	private Label numResultadosLabel = new Label();
 
 	public Long getTotalRegistrosBusqueda() {
 		return totalRegistrosBusqueda;
@@ -42,7 +49,7 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 	public BuscarOportunidadResultUI() {
 		super();
 		addStyleName("gwt-BuscarCuentaResultPanel");
-		resultTableWrapper = new SimplePanel();
+		resultTableWrapper = new FlowPanel();
 		resultTableWrapper.addStyleName("resultTableWrapper");
 		tablePageBar = new TablePageBar();
 		tablePageBar.setLastVisible(false);
@@ -56,6 +63,14 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 		});
 		add(resultTableWrapper);
 		add(tablePageBar);
+		
+		numeroResultados = new SimplePanel();
+		resultTable = new FlexTable();
+		numeroResultados.setWidget(numResultadosLabel);
+		numResultadosLabel.addStyleName("numeroResultadosLabel");
+		resultTableWrapper.add(numeroResultados);
+		resultTableWrapper.add(resultTable);		
+		
 		setVisible(false);
 	}
 
@@ -63,7 +78,7 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 	 * Metodo publico que contiene lo que se desea ejecutar la primera vez que se busca. (o sea, cuando se
 	 * hace click al boton Buscar)
 	 *
-	 * @author eSalvador
+	 * @author mrial
 	 * @param: OportunidadSearchDto
 	 * */
 		
@@ -84,11 +99,10 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 	 **/
 	private void searchOportunidades(OportunidadDto oportunidadSearchDto, boolean firstTime) {
 		OportunidadNegocioRpcService.Util.getInstance().searchOportunidad(oportunidadSearchDto, new DefaultWaitCallback<List<OportunidadNegocioSearchResultDto>>() {
-		//OportunidadNegocioRpcService.Util.getInstance().searchOportunidad(oportunidadSearchDto, new DefaultWaitCallback<List>() {
 			public void success(List result) {
 				if (result != null) {
 					if (result.size() == 0) {
-						MessageDialog.getInstance().showAceptar("No se encontraron datos con el criterio utilizado", MessageDialog.getCloseCommand());
+						MessageDialog.getInstance().showAceptar("No se encontraron oportunidades con el criterio de búsqueda utilizado", MessageDialog.getCloseCommand());
 					}
 					setOportunidades(result);
 				}
@@ -103,36 +117,34 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 
 	@SuppressWarnings("deprecation")
 	private void loadTable() {
-		if (resultTable != null) {
-			resultTable.unsinkEvents(Event.getEventsSunk(resultTable.getElement()));
-			resultTable.removeFromParent();
+		while(resultTable.getRowCount() > 1){
+			resultTable.removeRow(1);
 		}
-		resultTable = new FlexTable();
-		initTable(resultTable);
-		resultTableWrapper.setWidget(resultTable);
+		initTable(resultTable);		
 		int row = 1;
 		for (OportunidadNegocioSearchResultDto oportunidad : oportunidades) {
+			resultTable.setWidget(row, 0, IconFactory.lapiz());
 			resultTable.setHTML(row, 1, oportunidad.getRazonSocial());
 			resultTable.setHTML(row, 2, oportunidad.getNombre());
 			resultTable.setHTML(row, 3, oportunidad.getApellido());
 			resultTable.setHTML(row, 4, oportunidad.getTelefonoPrincipal());
 			resultTable.setHTML(row, 5, oportunidad.getNroDocumento());
-			resultTable.setHTML(row, 6, oportunidad.getNroCuenta());
-			resultTable.setHTML(row, 7, oportunidad.getFechaAsignacion().toString());
+			resultTable.setHTML(row, 6, oportunidad.getNroCuenta());			
+			resultTable.setHTML(row, 7, FormattedDate.format(oportunidad.getFechaAsignacion()));
 			resultTable.setHTML(row, 8, oportunidad.getEstadoOportunidad().getDescripcion());			
 			row++;
 		}
+		numResultadosLabel.setText("Numero de Resultados: " + oportunidades.size());
+		
 		setVisible(true);
 	}
 
 	private void initTable(FlexTable table) {
-		String[] widths = { "24px", "24px", "24px", "150px", "250px", "195px", "170px", };
+		String[] widths = { "24px", "200px", "120px", "120px", "120px", "120px", "120px", "120px", "120px",};
 		for (int col = 0; col < widths.length; col++) {
 			table.getColumnFormatter().setWidth(col, widths[col]);
 		}
 		table.getColumnFormatter().addStyleName(0, "alignCenter");
-		table.getColumnFormatter().addStyleName(1, "alignCenter");
-		table.getColumnFormatter().addStyleName(2, "alignCenter");
 		table.setCellPadding(0);
 		table.setCellSpacing(0);
 		table.addStyleName("gwt-BuscarCuentaResultTable");
