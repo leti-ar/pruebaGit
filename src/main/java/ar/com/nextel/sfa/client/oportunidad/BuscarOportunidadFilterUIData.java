@@ -398,8 +398,8 @@ public class BuscarOportunidadFilterUIData extends UIData {
 		oportunidadSearchDto.setEstadoOportunidad((EstadoOportunidadDto)estadoOPPListBox.getSelectedItem());
 		oportunidadSearchDto.setFechaDesde(desdeDate.getSelectedDate());
 		oportunidadSearchDto.setFechaHasta(hastaDate.getSelectedDate());
-		//trae siempre 100 resultados como máximo porque la pantalla no tiene combo para elegir este valor
-		oportunidadSearchDto.setCantidadResultados(100);
+		//trae siempre 10 resultados, la pantalla no tiene combo para elegir este valor
+		oportunidadSearchDto.setCantidadResultados(10);
 		//El offset es a partir de que registro quiero traer
 		oportunidadSearchDto.setOffset(0);
 		return oportunidadSearchDto;

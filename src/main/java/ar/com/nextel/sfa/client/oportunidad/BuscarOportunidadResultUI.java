@@ -34,7 +34,6 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 	private SimplePanel numeroResultados;
 	private TablePageBar tablePageBar;
 	private List<OportunidadNegocioSearchResultDto> oportunidades;
-	private List<OportunidadNegocioSearchResultDto> oportunidadesActuales; 
 	private OportunidadDto lastOportunidadSearchDto;
 	private int numeroPagina = 1;
 	private int offset;
@@ -60,7 +59,7 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 		tablePageBar.setBeforeClickCommand(new Command() {
 			public void execute() {
 				lastOportunidadSearchDto.setOffset(tablePageBar.getOffset());
-				oportunidadesActuales = new ArrayList<OportunidadNegocioSearchResultDto>();
+				List oportunidadesActuales = new ArrayList<OportunidadNegocioSearchResultDto>();
 				if (tablePageBar.getPagina() <= (tablePageBar.getCantPaginas())){
 					if ((oportunidades.size() >= 10) && (tablePageBar.getCantResultados() != 25 && tablePageBar.getCantResultados()!=75)){
 						for (int i = (tablePageBar.getPagina()-1) *10; i < (tablePageBar.getPagina())*10; i++) {
@@ -71,7 +70,7 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 							oportunidadesActuales.add(oportunidades.get(i));
 						}
 					}
-				loadTable();
+				loadTable(oportunidadesActuales);
 				}else{
 					tablePageBar.setPagina(tablePageBar.getPagina()-1);
 					tablePageBar.setCantRegistrosParcI(tablePageBar.getCantRegistrosParcI()-10);
@@ -82,7 +81,7 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 				}
 				// tablePageBar.setCantPaginas(getTotalRegistrosBusqueda().intValue() /
 				// tablePageBar.getCantResultados());
-				searchOportunidades(lastOportunidadSearchDto, false);
+				//searchOportunidades(lastOportunidadSearchDto, false);
 			}
 		});
 		add(resultTableWrapper);
@@ -136,34 +135,35 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 
 	public void setOportunidades(List<OportunidadNegocioSearchResultDto> oportunidades) {
 		this.oportunidades = oportunidades;
-//		tablePageBar.setPagina(1);
-//		if (oportunidades.size() >= 10){
-//			for (int i = 0; i < 10; i++) {
-//				oportunidadesActuales.add(oportunidades.get(i));
-//			}
-//			tablePageBar.setCantRegistrosParcI(1);
-//			tablePageBar.setCantRegistrosParcF(oportunidadesActuales.size());
-//		}else{
-//			for (int i = 0; i < oportunidades.size(); i++) {
-//				oportunidadesActuales.add(oportunidades.get(i));
-//			}
-//			tablePageBar.setCantRegistrosParcI(1);
-//			tablePageBar.setCantRegistrosParcF(oportunidadesActuales.size());
-//		}
-//		tablePageBar.setCantRegistrosTot(oportunidades.size());
-//		tablePageBar.refrescaLabelRegistros();
-		loadTable();
+		tablePageBar.setPagina(1);
+		List<OportunidadNegocioSearchResultDto> oportunidadesActuales = new ArrayList<OportunidadNegocioSearchResultDto>(); 
+		if (oportunidades.size() >= 10){
+			for (int i = 0; i < 10; i++) {
+				oportunidadesActuales.add(oportunidades.get(i));
+			}
+			tablePageBar.setCantRegistrosParcI(1);
+			tablePageBar.setCantRegistrosParcF(oportunidadesActuales.size());
+		}else{
+			for (int i = 0; i < oportunidades.size(); i++) {
+				oportunidadesActuales.add(oportunidades.get(i));
+			}
+			tablePageBar.setCantRegistrosParcI(1);
+			tablePageBar.setCantRegistrosParcF(oportunidadesActuales.size());
+		}
+		tablePageBar.setCantRegistrosTot(oportunidades.size());
+		tablePageBar.refrescaLabelRegistros();
+		loadTable(oportunidadesActuales);
 	}
 
 	@SuppressWarnings("deprecation")
-	private void loadTable() {
+	private void loadTable(List<OportunidadNegocioSearchResultDto> oportunidadesActuales) {
 		while(resultTable.getRowCount() > 1){
 			resultTable.removeRow(1);
 		}
 		initTable(resultTable);		
 		int row = 1;
-		//for (OportunidadNegocioSearchResultDto oportunidad : oportunidadesActuales) {
-		  for (OportunidadNegocioSearchResultDto oportunidad : oportunidades) {
+		for (OportunidadNegocioSearchResultDto oportunidad : oportunidadesActuales) {
+		 // for (OportunidadNegocioSearchResultDto oportunidad : oportunidades) {
 			resultTable.setWidget(row, 0, IconFactory.lapiz());
 			resultTable.setHTML(row, 1, oportunidad.getRazonSocial());
 			resultTable.setHTML(row, 2, oportunidad.getNombre());
