@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.EstadoOportunidadDto;
+import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -13,26 +14,18 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  **/
 public class BuscarOportunidadNegocioInitializer implements IsSerializable{
 	
-	private List<TipoDocumentoDto> tiposDocumento = new ArrayList<TipoDocumentoDto>();
+	private List<GrupoDocumentoDto> grupoDocumento = new ArrayList<GrupoDocumentoDto>();
 	private List<EstadoOportunidadDto> estadoOPP = new ArrayList<EstadoOportunidadDto>();
 	
 	public BuscarOportunidadNegocioInitializer(){
 	}
-	
+
 	public BuscarOportunidadNegocioInitializer(
-			List<EstadoOportunidadDto> estadoOPP,
-			List<TipoDocumentoDto> tiposDocumento) {
+			List<GrupoDocumentoDto> grupoDocumento,
+			List<EstadoOportunidadDto> estadoOPP) {
 		super();
+		this.grupoDocumento = grupoDocumento;
 		this.estadoOPP = estadoOPP;
-		this.tiposDocumento = tiposDocumento;
-	}
-
-	public List<TipoDocumentoDto> getTiposDocumento() {
-		return tiposDocumento;
-	}
-
-	public void setTiposDocumento(List<TipoDocumentoDto> tiposDocumento) {
-		this.tiposDocumento = tiposDocumento;
 	}
 
 	public List<EstadoOportunidadDto> getEstadoOPP() {
@@ -41,5 +34,13 @@ public class BuscarOportunidadNegocioInitializer implements IsSerializable{
 
 	public void setEstadoOPP(List<EstadoOportunidadDto> estadoOPP) {
 		this.estadoOPP = estadoOPP;
+	}
+
+	public void setGrupoDocumento(List<GrupoDocumentoDto> grupoDocumento) {
+		this.grupoDocumento = grupoDocumento;
+	}
+
+	public List<GrupoDocumentoDto> getGrupoDocumento() {
+		return grupoDocumento;
 	}
 }
