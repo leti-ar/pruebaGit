@@ -16,10 +16,12 @@ import ar.com.nextel.business.vendedores.RegistroVendedores;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.EstadoOportunidad;
+import ar.com.nextel.model.personas.beans.GrupoDocumento;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.sfa.client.OportunidadNegocioRpcService;
 import ar.com.nextel.sfa.client.dto.EstadoOportunidadDto;
+import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.OportunidadDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioSearchResultDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
@@ -63,7 +65,7 @@ public class OportunidadNegocioRpcServiceImpl extends RemoteService implements O
 	
 	public BuscarOportunidadNegocioInitializer getBuscarOportunidadInitializer() {
 		BuscarOportunidadNegocioInitializer buscarOportunidadNegocioInitializer = new BuscarOportunidadNegocioInitializer();
-		buscarOportunidadNegocioInitializer.setTiposDocumento(mapper.convertList(genericDao.getList(TipoDocumento.class), TipoDocumentoDto.class));
+		buscarOportunidadNegocioInitializer.setGrupoDocumento( mapper.convertList(genericDao.getList(GrupoDocumento.class),	GrupoDocumentoDto.class));
 		List<EstadoOportunidadDto> listaEstados = mapper.convertList(genericDao.getList(EstadoOportunidad.class), EstadoOportunidadDto.class);
 		while (listaEstados.size() > 2) {
 			listaEstados.remove(2);
