@@ -31,7 +31,7 @@ public class ClientContext {
 	}
 
 	public boolean checkPermiso(String tag) {
-		return getMapaPermisos().get(tag);
+		return getMapaPermisos().get(tag)!=null?getMapaPermisos().get(tag) : false;
 	}
 
 	public UsuarioDto getUsuario() {
