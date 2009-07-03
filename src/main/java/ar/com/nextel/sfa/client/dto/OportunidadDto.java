@@ -20,7 +20,7 @@ public class OportunidadDto  implements IsSerializable{
 	private int cantidadResultados;
 	private int offset;
 	private String numeroDocumento;
-	private TipoDocumentoDto tipoDocumento;	
+	private GrupoDocumentoDto grupoDocumentoId;	
 	
 	public int getCantidadResultados() {
 		return cantidadResultados;
@@ -46,13 +46,12 @@ public class OportunidadDto  implements IsSerializable{
 	public void setNumeroDocumento(String numeroDocumento) {
 		this.numeroDocumento = numeroDocumento;
 	}
-	public TipoDocumentoDto getTipoDocumento() {
-		return tipoDocumento;
+	public GrupoDocumentoDto getGrupoDocumentoId() {
+		return grupoDocumentoId;
 	}
-	public void setTipoDocumento(TipoDocumentoDto tipoDocumento) {
-		this.tipoDocumento = tipoDocumento;
+	public void setGrupoDocumentoId(GrupoDocumentoDto grupoDocumentoId) {
+		this.grupoDocumentoId = grupoDocumentoId;
 	}
-
 	public String getNombre() {
 		return nombre;
 	}
