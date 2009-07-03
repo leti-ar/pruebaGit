@@ -1,8 +1,10 @@
 package ar.com.nextel.sfa.client.oportunidad;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
@@ -19,6 +21,7 @@ public class BuscarOportunidadFilterUI extends Composite {
 	private BuscarOportunidadFilterUIData buscarOportunidadFilterEditor;
 	private BuscarOportunidadResultUI buscarOportunidadResultPanel;
 	private FlexTable layout;
+	private List<String> errorList = new ArrayList();
 
 	public BuscarOportunidadFilterUI() {
 		buscarOportunidadFilterEditor = new BuscarOportunidadFilterUIData();
@@ -72,12 +75,23 @@ public class BuscarOportunidadFilterUI extends Composite {
 
 		buscarOportunidadFilterEditor.getBuscarButton().addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				buscarOportunidadResultPanel.searchOportunidades(buscarOportunidadFilterEditor
-						.getOportunidadSearch());
+				
+				errorList.clear();
+				/**Valida los datos introducidos por el usuario**/
+				errorList.addAll(buscarOportunidadFilterEditor.validarCriterioBusqueda());
+
+				/**Muestra los mensajes de error**/
+				if (!errorList.isEmpty()){
+					for (int i = 0; i < errorList.size(); i++) {
+						String error = errorList.get(i);
+						ErrorDialog.getInstance().show(error);
+					}
+				} else
+					buscarOportunidadResultPanel.searchOportunidades(buscarOportunidadFilterEditor.getOportunidadSearch());
 			}
 		});
 	}
-	
+				
 	private List<Label> loadLabels(List<Label> listaLabels){
 		listaLabels.add(new Label(Sfa.constant().numeroCliente())); //0
 		listaLabels.add(new Label(Sfa.constant().razonSocialDosPuntos()));//1

@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.oportunidad;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import ar.com.nextel.model.oportunidades.beans.EstadoOportunidad;
 import ar.com.nextel.sfa.client.OportunidadNegocioRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.EstadoOportunidadDto;
+import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.OportunidadDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.initializer.BuscarOportunidadNegocioInitializer;
@@ -54,6 +56,7 @@ public class BuscarOportunidadFilterUIData extends UIData {
 	private RegularExpressionConstants regularExpression;
 	private DateTimeFormat dateFormatter = DateTimeFormat.getFormat("dd/MM/yyyy");
 	private Widget lastWidget;
+	private List<String> errorList = new ArrayList();
 
 	public TextBox getNumeroCuentaTextBox() {
 		return numeroClienteTextBox;
@@ -366,20 +369,39 @@ public class BuscarOportunidadFilterUIData extends UIData {
 	private void setCombos(BuscarOportunidadNegocioInitializer datos) {
 		estadoOPPListBox.addAllItems(datos.getEstadoOPP());
 		estadoOPPListBox.setSelectedIndex(1);
-		tipoDocListBox.addAllItems(datos.getTiposDocumento());
+		tipoDocListBox.addAllItems(datos.getGrupoDocumento());
 	}
-
+	
+	public List<String> validarCriterioBusqueda() {	
+		errorList.clear();
+		Date date1 = desdeDate.getSelectedDate();
+		Date date2 = DateUtil.getDaysBeforeADate(60, new Date());
+		int dif = DateUtil.compareJustDate(date1, date2);		
+		if (dif==-1) {
+			errorList.add("El valor del campo “Fecha Desde” es inválido, solo puede buscar oportunidades asignadas en los últimos 60 días");
+		}
+		return errorList;
+	}
+	
 	public OportunidadDto getOportunidadSearch() {
 		OportunidadDto oportunidadSearchDto = new OportunidadDto();
 		oportunidadSearchDto.setNumeroCliente(numeroClienteTextBox.getText());
 		oportunidadSearchDto.setRazonSocial(razonSocialTextBox.getText());
 		oportunidadSearchDto.setNombre(nombreTextBox.getText());
 		oportunidadSearchDto.setApellido(apellidoTextBox.getText());
-		oportunidadSearchDto.setTipoDocumento((TipoDocumentoDto) tipoDocListBox.getSelectedItem());
+		if ((numeroDocumentoTextBox == null) || ("".equals(numeroDocumentoTextBox.getText()))){
+			oportunidadSearchDto.setGrupoDocumentoId(null);
+		}else{
+			oportunidadSearchDto.setGrupoDocumentoId((GrupoDocumentoDto) tipoDocListBox.getSelectedItem());
+		}
 		oportunidadSearchDto.setNumeroDocumento(numeroDocumentoTextBox.getText());
 		oportunidadSearchDto.setEstadoOportunidad((EstadoOportunidadDto)estadoOPPListBox.getSelectedItem());
 		oportunidadSearchDto.setFechaDesde(desdeDate.getSelectedDate());
 		oportunidadSearchDto.setFechaHasta(hastaDate.getSelectedDate());
+		//trae siempre 100 resultados como máximo porque la pantalla no tiene combo para elegir este valor
+		oportunidadSearchDto.setCantidadResultados(100);
+		//El offset es a partir de que registro quiero traer
+		oportunidadSearchDto.setOffset(0);
 		return oportunidadSearchDto;
 	}
 }
