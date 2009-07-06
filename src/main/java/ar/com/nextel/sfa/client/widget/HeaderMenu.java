@@ -87,8 +87,8 @@ public class HeaderMenu extends Composite {
 		
 		mainMenu.addSeparator();
 		mainMenu.addItem("OPP", new OpenPageCommand(UILoader.BUSCAR_OPP));
-//		mainMenu.addSeparator();
-//		mainMenu.addItem("Op. en Curso", new OpenPageCommand(UILoader.OP_EN_CURSO));
+		mainMenu.addSeparator();
+		mainMenu.addItem("Op. en Curso", new OpenPageCommand(UILoader.OP_EN_CURSO));
 
 
 	}
