@@ -19,22 +19,23 @@ import ar.com.nextel.model.cuentas.beans.DatosDebitoTarjetaCredito;
 import ar.com.nextel.model.cuentas.beans.DatosPago;
 import ar.com.nextel.model.cuentas.beans.Division;
 import ar.com.nextel.model.cuentas.beans.FormaPago;
-import ar.com.nextel.model.cuentas.beans.GranCuenta;
 import ar.com.nextel.model.cuentas.beans.Suscriptor;
 import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
-import ar.com.nextel.model.personas.beans.Documento;
 import ar.com.nextel.model.personas.beans.Persona;
 import ar.com.nextel.model.personas.beans.Telefono;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoTarjetaCreditoDto;
+import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.EmailDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
+import ar.com.nextel.sfa.client.enums.TipoCuentaEnum;
 import ar.com.nextel.sfa.client.enums.TipoEmailEnum;
 import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.server.util.MapperExtended;
@@ -82,9 +83,9 @@ public class CuentaBusinessService {
 	}
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public Long saveCuenta(GranCuentaDto cuentaDto,MapperExtended mapper)  {
-		GranCuenta cuenta = repository.retrieve(GranCuenta.class, cuentaDto.getId());
-
+	public Long saveCuenta(CuentaDto cuentaDto,MapperExtended mapper)  {
+		Cuenta cuenta = repository.retrieve(Cuenta.class, cuentaDto.getId());
+		
         //DATOS PAGO
 		DatosPago datosPagoOriginal = (DatosPago) repository.retrieve(AbstractDatosPago.class, cuenta.getDatosPago().getId());
 		cuenta.setDatosPago(null);
@@ -93,6 +94,10 @@ public class CuentaBusinessService {
 
 		mapper.map(cuentaDto, cuenta);
 
+		if (cuenta.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.DIV.getTipo())) {
+			((Division)cuenta).setNombre(((DivisionDto)cuentaDto).getNombre());
+		}		
+		
 		//FORMA PAGO
 		FormaPago formaPagoNueva = (FormaPago) repository.retrieve(FormaPago.class, cuentaDto.getFormaPago().getId());
 		cuenta.setFormaPago(formaPagoNueva);
@@ -112,15 +117,17 @@ public class CuentaBusinessService {
 		for (EmailDto email : cuentaDto.getPersona().getEmails()) {
 			addEmailsAPersona(email,cuenta.getPersona());
 		}
-		for(ContactoCuenta cont : cuenta.getContactos()) {
-			Persona persona = cont.getPersona();
-			for (ContactoCuentaDto contDto : cuentaDto.getContactos()) {
-				if (cont.getId()==contDto.getId())  {
-					for (TelefonoDto tel : contDto.getPersona().getTelefonos()) {
-						addTelefonosAPersona(tel,persona,mapper);
-					}
-					for (EmailDto email : contDto.getPersona().getEmails()) {
-						addEmailsAPersona(email,persona);
+		if (cuenta.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.CTA.getTipo())) {
+			for(ContactoCuenta cont : cuenta.getContactos()) {
+				Persona persona = cont.getPersona();
+				for (ContactoCuentaDto contDto : (((GranCuentaDto) cuentaDto).getContactos())) {
+					if (cont.getId()==contDto.getId())  {
+						for (TelefonoDto tel : contDto.getPersona().getTelefonos()) {
+							addTelefonosAPersona(tel,persona,mapper);
+						}
+						for (EmailDto email : contDto.getPersona().getEmails()) {
+							addEmailsAPersona(email,persona);
+						}
 					}
 				}
 			}

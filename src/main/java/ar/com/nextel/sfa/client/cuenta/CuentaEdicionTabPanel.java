@@ -6,10 +6,6 @@ import java.util.List;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
-import ar.com.nextel.sfa.client.dto.DivisionDto;
-import ar.com.nextel.sfa.client.dto.GranCuentaDto;
-import ar.com.nextel.sfa.client.dto.PersonaDto;
-import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
@@ -41,9 +37,7 @@ public class CuentaEdicionTabPanel {
 	DualPanel clientePanel     = new DualPanel();
 	private Label razonSocial  = new Label();
 	private Label cliente      = new Label();
-	private CuentaDto            cuenta2editDto; //       = new CuentaDto();
-	private DivisionDto          division2editDto;
-	private SuscriptorDto        suscriptor2editDto;
+	private CuentaDto            cuenta2editDto;
 	private CuentaDatosForm      cuentaDatosForm      = CuentaDatosForm.getInstance();
 	private CuentaDomiciliosForm cuentaDomiciliosForm = CuentaDomiciliosForm.getInstance();
 	private CuentaContactoForm   cuentaContactoForm   = CuentaContactoForm.getInstance();
@@ -218,7 +212,7 @@ public class CuentaEdicionTabPanel {
 						popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton
 								.getAbsoluteTop() - 50);
 					} else {
-						MessageDialog.getInstance().showAceptar("Error", "Debe seleccionar una Cuenta",
+						MessageDialog.getInstance().showAceptar("Error", Sfa.constant().ERR_NO_CUENTA_SELECTED(),
 								MessageDialog.getCloseCommand());
 					}
 				}
@@ -277,56 +271,23 @@ public class CuentaEdicionTabPanel {
 		cuentaDatosForm.reset();
 	}
 	
-	private void guardar() {
-		CuentaDto ctaDto = cuentaDatosForm.getCuentaDtoFromEditor();
-		if ("GRAN CUENTA".equals(ctaDto.getCategoriaCuenta().getDescripcion())){
-			guardaGranCuenta();
-		}else if ("SUSCRIPTOR".equals(ctaDto.getCategoriaCuenta())){
-			guardaSuscriptor();
-		}else if ("DIVISION".equals(ctaDto.getCategoriaCuenta())){
-			guardaDivision();
-		}
-	}
-
-	/**
-	 *@author eSalvador
-	 * TODO:Terminar en la segunda iteracion del proyecto.  
-	 **/
-	private void guardaSuscriptor(){
-		
-	}
-
-	private void guardaGranCuenta(){
-		GranCuentaDto ctaDto = (GranCuentaDto)cuentaDatosForm.getCuentaDtoFromEditor();
+	private void guardar(){
+		CuentaDto ctaDto = (CuentaDto)cuentaDatosForm.getCuentaDtoFromEditor();
         //agrego domicilios
 		ctaDto.getPersona().setDomicilios(CuentaDomiciliosForm.getInstance().cuentaDto.getPersona().getDomicilios());
 		
-		CuentaRpcService.Util.getInstance().saveGranCuenta(ctaDto,new DefaultWaitCallback() {
-			public void success(Object result) {
-				CuentaEdicionTabPanel.getInstance().setCuenta2editDto((GranCuentaDto)result);
-				cuentaDatosForm.ponerDatosBusquedaEnFormulario((GranCuentaDto) result);
-				razonSocial.setText(((CuentaDto) result).getPersona().getRazonSocial());
-				MessageDialog.getInstance().showAceptar("", "      La cuenta se guardó con exito     ", MessageDialog.getCloseCommand());
+		CuentaRpcService.Util.getInstance().saveCuenta(ctaDto,new DefaultWaitCallback<CuentaDto>() {
+			public void success(CuentaDto cuentaDto) {
+				CuentaEdicionTabPanel.getInstance().setCuenta2editDto(cuentaDto);
+				cuentaDatosForm.ponerDatosBusquedaEnFormulario(cuentaDto);
+				razonSocial.setText(cuentaDto.getPersona().getRazonSocial());
+				MessageDialog.getInstance().showAceptar("", "      "+Sfa.constant().MSG_CUENTA_GUARDADA_OK()+"     ", MessageDialog.getCloseCommand());
 				cuentaDomiciliosForm.setHuboCambios(false);
 				CuentaContactoForm.getInstance().setFormDirty(false);
 			}
-		});
+		});	
 	}
 	
-	/**
-	 *@author eSalvador
-	 * TODO:Terminar en la segunda iteracion del proyecto.  
-	 **/
-	private void guardaDivision(){
-		
-	}
-	
-	private void crearSS() {
-		ErrorDialog.getInstance().show("OK PARA CREAR SS (@TODO)");
-	}
-	private void agregar(PersonaDto personaDto) {
-		ErrorDialog.getInstance().show("OK PARA AGREGAR DIVISIO/SUSCRIPTOR (@TODO)");
-	}
 	private void cancelar() {
 		MessageDialog.getInstance().hide();
 		History.newItem("");
@@ -369,27 +330,9 @@ public class CuentaEdicionTabPanel {
 	public CuentaDto getCuenta2editDto() {
 		return cuenta2editDto;
 	}
-	
 	public void setCuenta2editDto(CuentaDto ctaDto) {
         this.cuenta2editDto = ctaDto;		
-//		/**Esto va porque si se accede a este metodo desde la Creacion de una cuenta, aun no se tiene una categoria.
-//		 * MODIFICAR cuando se agregue la creacion de Division y Suscriptor.*/
-//		if (ctaDto != null){
-//			String categoriaCuenta = ctaDto.getCategoriaCuenta().getDescripcion();
-//			if ("SUSCRIPTOR".equals(categoriaCuenta)){
-//				SuscriptorDto suscriptor = new SuscriptorDto();
-//				suscriptor.setGranCuenta(ctaDto);
-//				GranCuentaDto granCuenta = new GranCuentaDto();
-//				granCuenta.addSuscriptor(suscriptor);
-//				this.cuenta2editDto = (GranCuentaDto)granCuenta;
-//			}else if("GRAN CUENTA".equals(categoriaCuenta)){
-//				this.cuenta2editDto = ctaDto;
-//			}else if("DIVISION".equals(categoriaCuenta)){
-//				((GranCuentaDto)this.cuenta2editDto).addDivision((DivisionDto)ctaDto);
-//			}
-//		}
 	}
-	
 	public FlexTable getCuentaEdicionPanel() {
 		return marco;
 	}
@@ -429,16 +372,5 @@ public class CuentaEdicionTabPanel {
 	public TabPanel getTabPanel() {
 		return tabPanel;
 	}
-	public DivisionDto getDivision2editDto() {
-		return division2editDto;
-	}
-	public void setDivision2editDto(DivisionDto division2editDto) {
-		this.division2editDto = division2editDto;
-	}
-	public SuscriptorDto getSuscriptor2editDto() {
-		return suscriptor2editDto;
-	}
-	public void setSuscriptor2editDto(SuscriptorDto suscriptor2editDto) {
-		this.suscriptor2editDto = suscriptor2editDto;
-	}
+	
 }

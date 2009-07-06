@@ -71,7 +71,6 @@ public class CuentaUIData extends UIData {
 	private TextBox vendedorNombre   = new TextBox();
 	private TextBox vendedorTelefono = new TextBox();
 	
-	
 	private Label tipoDocLabel  = new Label(Sfa.constant().tipoDocumento());
 	private Label numDocLabel   = new Label(Sfa.constant().numero());
 	private Label razSocLabel   = new Label(Sfa.constant().razonSocial());
@@ -132,6 +131,13 @@ public class CuentaUIData extends UIData {
 			}
 			public void onLostFocus(Widget sender) {
 				exportarNombreApellidoARazonSocial();
+			}
+		});
+		nombreDivision.addFocusListener(new FocusListener() {
+			public void onFocus(Widget sender) {
+			}
+			public void onLostFocus(Widget sender) {
+				nombreDivision.setText(nombreDivision.getText().trim().toUpperCase());
 			}
 		});
 		tipoTarjeta.addChangeListener(new ChangeListener() {

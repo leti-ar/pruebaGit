@@ -668,6 +668,11 @@ public class CuentaDatosForm extends Composite {
 		   ||(FormUtils.fieldDirty(camposTabDatos.getObservaciones(), cuentaTab.getCuenta2editDto().getObservacionesTelMail()))
 		) return true;
 
+		if (cuentaTab.getCuenta2editDto().getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.DIV.getTipo())) {
+			if ( (FormUtils.fieldDirty(camposTabDatos.getNombreDivision(), ((DivisionDto)cuentaTab.getCuenta2editDto()).getNombre()))) 
+				return true;
+		}
+		
 		//PANEL FORMA DE PAGO
 		if (camposTabDatos.getFormaPago().getSelectedItemId().equals(TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo())) {
 			if (cuentaTab.getCuenta2editDto().getDatosPago() instanceof DatosDebitoCuentaBancariaDto) {
@@ -812,6 +817,10 @@ public class CuentaDatosForm extends Composite {
 		camposObligatorios.clear();
 		camposObligatorios = camposTabDatos.getCamposObligatorios();
 		camposObligatorios.addAll(camposTabDatos.getCamposObligatoriosFormaPago());
+		if (CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.DIV.getTipo())) {
+			camposObligatorios.add(camposTabDatos.getNombreDivision());	
+		}
+		
 		for(Widget campo : camposObligatorios) {
 			if (campo instanceof TextBox)
 				validator.addTarget((TextBox)campo).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", ((TextBox)campo).getName()));
@@ -834,6 +843,9 @@ public class CuentaDatosForm extends Composite {
 			validator.addTarget(camposTabDatos.getNombre()).alphabetic(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getNombre().getName()));
 		if (!camposTabDatos.getApellido().getText().equals("")) 
 			validator.addTarget(camposTabDatos.getApellido()).alphabetic(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getApellido().getName()));
+
+		if (!camposTabDatos.getNombreDivision().getText().equals("")) 
+			validator.addTarget(camposTabDatos.getNombreDivision()).alphabetic(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getNombreDivision().getName()));
 		
 		if (!camposTabDatos.getFechaNacimiento().getTextBox().getText().equals("")) 
 			validator.addTarget(camposTabDatos.getFechaNacimiento().getTextBox()).date(Sfa.constant().ERR_FECHA_NO_VALIDA().replaceAll("\\{1\\}", camposTabDatos.getFechaNacimiento().getTextBox().getName()));
@@ -888,9 +900,8 @@ public class CuentaDatosForm extends Composite {
 	 */
 	public void validarTarjeta() {
 		if (!camposTabDatos.getNumeroTarjeta().getText().equals("")) {
-			CuentaRpcService.Util.getInstance().validarTarjeta(camposTabDatos.getNumeroTarjeta().getText(), new Integer(camposTabDatos.getMesVto().getSelectedItemId()), new Integer(camposTabDatos.getAnioVto().getText()), new DefaultWaitCallback() {
-				public void success(Object result) {
-					TarjetaCreditoValidatorResultDto tarjetaCreditoValidatorResult = (TarjetaCreditoValidatorResultDto) result;
+			CuentaRpcService.Util.getInstance().validarTarjeta(camposTabDatos.getNumeroTarjeta().getText(), new Integer(camposTabDatos.getMesVto().getSelectedItemId()), new Integer(camposTabDatos.getAnioVto().getText()), new DefaultWaitCallback<TarjetaCreditoValidatorResultDto>() {
+				public void success(TarjetaCreditoValidatorResultDto tarjetaCreditoValidatorResult) {
 					if(tarjetaCreditoValidatorResult==null) {
 						ErrorDialog.getInstance().show(Sfa.constant().ERR_AL_VALIDAR_TARJETA());
 					}else if (tarjetaCreditoValidatorResult.getIsValid()) {
@@ -919,6 +930,11 @@ public class CuentaDatosForm extends Composite {
 	 * @return
 	 */
 	public CuentaDto getCuentaDtoFromEditor() {
+		
+		if (CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.DIV.getTipo())) {
+			((DivisionDto)CuentaEdicionTabPanel.getInstance().getCuenta2editDto()).setNombre(camposTabDatos.getNombreDivision().getText());
+		}
+		
 		PersonaDto personaDto = CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getPersona();
 		
 		//panel datos
@@ -1067,6 +1083,6 @@ public class CuentaDatosForm extends Composite {
         veraz.setText(result.getEstado());
         
         MessageDialog.getInstance().setDialogTitle("Resultado Veraz");
-        MessageDialog.getInstance().showAceptar(result.getMensaje(), MessageDialog.getInstance().getCloseCommand());
+        MessageDialog.getInstance().showAceptar(result.getMensaje(), MessageDialog.getCloseCommand());
 	}
 }

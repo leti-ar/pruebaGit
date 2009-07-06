@@ -248,6 +248,20 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		return cuentaDto;
 	}
 
+	public CuentaDto saveCuenta(CuentaDto cuentaDto) {
+		Long idCuenta = cuentaBusinessService.saveCuenta(cuentaDto,mapper);
+		if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.DIV.getTipo()))
+		   cuentaDto = (DivisionDto) mapper.map(repository.retrieve(Division.class, idCuenta), DivisionDto.class);
+		else if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.SUS.getTipo()))
+		   cuentaDto = (SuscriptorDto) mapper.map(repository.retrieve(Suscriptor.class, idCuenta), SuscriptorDto.class);
+		else 
+		   cuentaDto = mapper.map(repository.retrieve(Cuenta.class, idCuenta), CuentaDto.class);
+
+		return cuentaDto;
+		
+	}
+	
+	
 	public VerazInitializer getVerazInitializer() {
 		VerazInitializer verazInitializer = new VerazInitializer();
 		verazInitializer.setTiposDocumento(mapper.convertList(genericDao.getList(TipoDocumento.class),TipoDocumentoDto.class));

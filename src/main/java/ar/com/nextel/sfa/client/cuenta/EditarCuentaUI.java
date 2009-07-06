@@ -29,13 +29,14 @@ public class EditarCuentaUI extends ApplicationUI {
 	}
 
 	public boolean load() {
-		resetEditor();
+		//resetEditor();
 		//viene de popup "Agregar Cuenta"
 		if (HistoryUtils.getParam("nroDoc")!=null) {
 			TipoDocumentoDto tipoDoc = new TipoDocumentoDto(Long.parseLong(HistoryUtils.getParam("tipoDoc")),null);
 			DocumentoDto docDto = new DocumentoDto(HistoryUtils.getParam("nroDoc"),tipoDoc);
 			CuentaRpcService.Util.getInstance().reservaCreacionCuenta(docDto,new DefaultWaitCallback<GranCuentaDto>() {
 				public void success(GranCuentaDto cuentaDto) {
+					resetEditor();
 					cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(cuentaDto);
 					completarVisualizacionDatos(cuentaDto);
 				}
@@ -45,6 +46,7 @@ public class EditarCuentaUI extends ApplicationUI {
 			Long id_cuentaPadre = Long.parseLong(HistoryUtils.getParam("cuenta_id"));				
 			CuentaRpcService.Util.getInstance().crearDivision(id_cuentaPadre,new DefaultWaitCallback<CuentaDto>() {
 				public void success(CuentaDto cuentaDto) {
+					resetEditor();
 					cuentaTab.getCuentaDatosForm().setAtributosCamposAlAgregarDivision(cuentaDto);
 					completarVisualizacionDatos(cuentaDto);
 				}
@@ -54,6 +56,7 @@ public class EditarCuentaUI extends ApplicationUI {
 			Long id_cuentaPadre = Long.parseLong(HistoryUtils.getParam("cuenta_id"));				
 			CuentaRpcService.Util.getInstance().crearSuscriptor(id_cuentaPadre,new DefaultWaitCallback<CuentaDto>() {
 				public void success(CuentaDto cuentaDto) {
+					resetEditor();
 					cuentaTab.getCuentaDatosForm().setAtributosCamposAlAgregarSuscriptor(cuentaDto);
 					completarVisualizacionDatos(cuentaDto);
 				}
@@ -65,6 +68,7 @@ public class EditarCuentaUI extends ApplicationUI {
 			CuentaRpcService.Util.getInstance().selectCuenta(cuentaID, cod_vantive,new DefaultWaitCallback<CuentaDto>() {
 				public void success(CuentaDto cuentaDto) {
 					if (puedenMostrarseDatos(cuentaDto)) {
+						resetEditor();
 						cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusqueda(cuentaDto);
 						completarVisualizacionDatos(cuentaDto);
 					}
