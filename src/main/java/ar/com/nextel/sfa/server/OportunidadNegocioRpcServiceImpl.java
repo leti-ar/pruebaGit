@@ -17,14 +17,12 @@ import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.EstadoOportunidad;
 import ar.com.nextel.model.personas.beans.GrupoDocumento;
-import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.sfa.client.OportunidadNegocioRpcService;
 import ar.com.nextel.sfa.client.dto.EstadoOportunidadDto;
 import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.OportunidadDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioSearchResultDto;
-import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.initializer.BuscarOportunidadNegocioInitializer;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
@@ -88,30 +86,4 @@ public class OportunidadNegocioRpcServiceImpl extends RemoteService implements O
 		AppLogger.info("Busqueda de oportunidades finalizada.");
 		return result;
 		}
-
-//	public VentasPotencialesYOperacionesEnCursoDto ventasPotencialesYOperacionesEnCurso() throws RpcExceptionMessages {
-//		Vendedor vendedor = sessionContextLoader.getVendedor();
-//		return ventasPotencialesYOperacionesEnCurso(vendedor);
-//	}
-	
-//	private VentasPotencialesYOperacionesEnCursoDto ventasPotencialesYOperacionesEnCurso(Vendedor vendedor) {
-//		AppLogger.info("Obteniendo operaciones en curso para vendedor: " + vendedor.getUserName(), this);
-//		Set<VentaPotencialVista> ventasPotencialesEnCurso = vendedor.getVentasPotencialesVistaEnCurso();
-//		AppLogger.info("Son " + ventasPotencialesEnCurso.size() + " ventas potenciales");
-//
-//		Set<OperacionEnCurso> operacionesEnCurso = vendedor.getOperacionesEnCurso();
-//		AppLogger.info("Son " + operacionesEnCurso.size() + " operaciones en curso");
-//		//A partir de aca invente yo!
-//		VentasPotencialesYOperacionesEnCursoDto result = new VentasPotencialesYOperacionesEnCursoDto(ventasPotencialesEnCurso, operacionesEnCurso, vendedor.getCantidadCuentasPotencialesNoConsultadasActivasYVigentes());
-//		
-//
-////		VentasPotencialesYOperacionesEnCursoResult result = new VentasPotencialesYOperacionesEnCursoResult(ventasPotencialesEnCurso, operacionesEnCurso, vendedor
-////				.getCantidadCuentasPotencialesNoConsultadasActivasYVigentes());
-////		//mapeo VentasPotencialesYOperacionesEnCursoResult - VentasPotencialesYOperacionesEnCursoWCTO
-////		VentasPotencialesYOperacionesEnCursoWCTO resultWCTO = (VentasPotencialesYOperacionesEnCursoWCTO) 
-////		getSynchronizer().toWCTO(result);
-////		AppLogger.info("Obtencion de operaciones en curso finalizado.");
-//		return result;
-//	}
-
 }
