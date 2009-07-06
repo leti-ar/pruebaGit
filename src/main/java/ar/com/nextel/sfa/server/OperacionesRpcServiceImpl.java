@@ -1,7 +1,5 @@
 package ar.com.nextel.sfa.server;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -9,17 +7,20 @@ import javax.servlet.ServletException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import ar.com.nextel.business.dao.GenericDao;
+import ar.com.nextel.business.describable.GetAllBusinessOperator;
+import ar.com.nextel.business.oportunidades.search.SearchOportunidadBusinessOperator;
 import ar.com.nextel.business.vendedores.RegistroVendedores;
-import ar.com.nextel.framework.security.Usuario;
+import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.CuentaPotencial;
-import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.sfa.client.OperacionesRpcService;
-import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
-import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
+import ar.com.nextel.sfa.client.dto.VentaPotencialVistaDto;
+import ar.com.nextel.sfa.server.util.MapperExtended;
+import ar.com.nextel.util.AppLogger;
 import ar.com.snoop.gwt.commons.server.RemoteService;
 
 /**
@@ -31,49 +32,39 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 
 	private WebApplicationContext context;
 	private SessionContextLoader sessionContextLoader;
+	private RegistroVendedores registroVendedores;
+	private SearchOportunidadBusinessOperator searchOportunidadBusinessOperator;
+	private MapperExtended mapper;
+	private GetAllBusinessOperator getAllBusinessOperator;
+	private GenericDao genericDao;
+ 	private Repository repository;
 
 	@Override
 	public void init() throws ServletException {
-		// TODO: Investigar como se llega al modelo y como se implementa en el proyecto viejo,
 		super.init();
 		context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+		registroVendedores = (RegistroVendedores) context.getBean("registroVendedores");
+		searchOportunidadBusinessOperator = (SearchOportunidadBusinessOperator) context.getBean("searchOportunidadBusinessOperatorBean");
 		sessionContextLoader = (SessionContextLoader) context.getBean("sessionContextLoader");
+		mapper = (MapperExtended) context.getBean("dozerMapper");
+		genericDao  = (GenericDao) context.getBean("genericDao");
+		repository = (Repository) context.getBean("repository");
 	}
 
-	public List<OperacionEnCursoDto> searchOpEnCurso()
-			throws RpcExceptionMessages {
-		List<OperacionEnCursoDto> opResult = new ArrayList<OperacionEnCursoDto>();
-		OperacionEnCursoDto operacionDto = new OperacionEnCursoDto();
+	public List<OperacionEnCursoDto> searchOpEnCurso() {
 		Vendedor vendedor = sessionContextLoader.getVendedor();
-		
-		Iterator iterator = vendedor.getOperacionesEnCurso().iterator();
-		for (; iterator.hasNext();) {       
-			OperacionEnCurso operacion = (OperacionEnCurso) iterator.next();
-			operacionDto.setNumeroCliente(operacion.getNumeroCliente());
-			operacionDto.setRazonSocial(operacion.getRazonSocial());
-			operacionDto.setDescripcionGrupo(operacion.getDescripcionGrupo());
-			opResult.add(operacionDto);
-		}
-		return opResult;
+		AppLogger.info("Obteniendo operaciones en curso para vendedor: " + vendedor.getUserName(), this);
+		List<OperacionEnCursoDto> operacionesEnCursoDto = mapper.convertList(vendedor.getOperacionesEnCurso(), OperacionEnCursoDto.class);
+		return operacionesEnCursoDto;
 	}
 
-	public List<CuentaPotencialDto> searchReservas() throws RpcExceptionMessages {
-		List<CuentaPotencialDto> reservasResult = new ArrayList<CuentaPotencialDto>();
-		CuentaPotencialDto reservaDto = new CuentaPotencialDto();
+	public List<VentaPotencialVistaDto> searchReservas() {
 		Vendedor vendedor = sessionContextLoader.getVendedor();
-		
-		for (CuentaPotencial cuentaPotencial : vendedor.getCuentasPotenciales()) {
-			//PersonaDto persDto = mapeoPersona(cuentaPotencial);
-			reservaDto.setCodigoVantive(cuentaPotencial.getCodigoVantive());
-			reservaDto.setNumero(cuentaPotencial.getNumero());
-			//reservaDto.setRazonSocial(persDto.getRazonSocial());
-			reservaDto.setRazonSocial(cuentaPotencial.getPersona().getRazonSocial());
-			//reservaDto.setTelefono(persDto.getTelefonos());
-			reservasResult.add(reservaDto);
-		}
-		return reservasResult;
+		AppLogger.info("Obteniendo reservas para vendedor: " + vendedor.getUserName(), this);
+		List<VentaPotencialVistaDto> ventasPotencialesEnCursoDto = mapper.convertList(vendedor.getVentasPotencialesVistaEnCurso(), VentaPotencialVistaDto.class);
+		return ventasPotencialesEnCursoDto;
 	}
-
+	
 	private PersonaDto mapeoPersona(CuentaPotencial cuentaPotencial) {
 		PersonaDto personaDto = new PersonaDto();
 		personaDto.setRazonSocial(cuentaPotencial.getPersona().getRazonSocial());

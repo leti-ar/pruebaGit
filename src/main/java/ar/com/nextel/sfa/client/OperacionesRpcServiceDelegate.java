@@ -3,7 +3,8 @@ package ar.com.nextel.sfa.client;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
-import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
+import ar.com.nextel.sfa.client.dto.VentaPotencialVistaDto;
+import ar.com.nextel.sfa.client.dto.VentaPotencialVistaDto;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
@@ -22,13 +23,14 @@ public class OperacionesRpcServiceDelegate {
 		this.opRpcService = opRpcService;
 	}
 
-	public void searchOpEnCurso(DefaultWaitCallback<List<OperacionEnCursoDto>> callback) {
+	public void searchOpEnCurso(DefaultWaitCallback<List<OperacionEnCursoDto>> defaultWaitCallback) {
 		WaitWindow.show();
-		opRpcService.searchOpEnCurso(callback);
+		opRpcService.searchOpEnCurso(defaultWaitCallback);
 	}
 	
-	public void searchReservas(DefaultWaitCallback<List<CuentaPotencialDto>> callback) {
+	public void searchReservas(DefaultWaitCallback<List<VentaPotencialVistaDto>> callback) {
 		WaitWindow.show();
 		opRpcService.searchReservas(callback);
 	}
+	
 }
