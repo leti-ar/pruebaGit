@@ -34,6 +34,10 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 	private TablePageBar tablePageBarOpCurso;
 	private List<OperacionEnCursoDto> opEnCurso;
 	private List<VentaPotencialVistaDto> vtaPotencial;
+	private FlowPanel flowPanelReserva;
+	private FlowPanel flowPanelOppEnCurso;
+	private SimplePanel simplePanelReserva;
+	private SimplePanel simplePanelOppEnCurso;
 	//private Reserva lastReserva;
 	//private OperacionEnCurso lastOpEnCurso;
 	private int numeroPagina = 1;
@@ -197,7 +201,7 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 				resultTableReservas.setWidget(row, 2, IconFactory.prospect());
 			}
 			resultTableReservas.setWidget(row, 3, IconFactory.oportunidad());
-			//resultTableReservas.setHTML(row, 4, vtaPotencialDto.getCodigoVantive());
+			resultTableReservas.setHTML(row, 4, vtaPotencialDto.getNumeroCliente());
 			resultTableReservas.setHTML(row, 5, vtaPotencialDto.getRazonSocial());
 			resultTableReservas.setHTML(row, 6, vtaPotencialDto.getTelefono().toString());
 			//resultTableReservas.setHTML(row, 6, reservaDto.getTelefono().toString());
@@ -208,7 +212,7 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 	}
 	
 	private void initTableReservas(FlexTable table) {
-		String[] widths = { "24px", "24px", "24px", "150px", "250px", "195px", "170px", };
+		String[] widths = { "24px", "24px", "24px", "24px", "180px", "400px", "160px", "150px", };
 		for (int col = 0; col < widths.length; col++) {
 			table.getColumnFormatter().setWidth(col, widths[col]);
 		}
@@ -222,14 +226,15 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 		table.setHTML(0, 0, Sfa.constant().whiteSpace());
 		table.setHTML(0, 1, Sfa.constant().whiteSpace());
 		table.setHTML(0, 2, Sfa.constant().whiteSpace());
-		table.setHTML(0, 3, Sfa.constant().numeroCliente());
-		table.setHTML(0, 4, Sfa.constant().razonSocial());
-		table.setHTML(0, 5, Sfa.constant().telefono());
-		table.setHTML(0, 5, Sfa.constant().numero());
+		table.setHTML(0, 3, Sfa.constant().whiteSpace());
+		table.setHTML(0, 4, Sfa.constant().numeroClienteCompleto());
+		table.setHTML(0, 5, Sfa.constant().razonSocial());
+		table.setHTML(0, 6, Sfa.constant().telefono());
+		table.setHTML(0, 7, Sfa.constant().numero());
 	}
 
 	private void initTableOpenCurso(FlexTable table) {
-		String[] widths = { "24px", "24px", "24px", "150px", "250px", "195px", "170px", };
+		String[] widths = { "24px", "24px", "24px", "180px", "400px", "160px", };
 		for (int col = 0; col < widths.length; col++) {
 			table.getColumnFormatter().setWidth(col, widths[col]);
 		}
@@ -243,8 +248,8 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 		table.setHTML(0, 0, Sfa.constant().whiteSpace());
 		table.setHTML(0, 1, Sfa.constant().whiteSpace());
 		table.setHTML(0, 2, Sfa.constant().whiteSpace());
-		table.setHTML(0, 3, "Número Cliente");
-		table.setHTML(0, 4, "Razon Social");
-		table.setHTML(0, 5, "Grupo SS");
+		table.setHTML(0, 3, Sfa.constant().numeroClienteCompleto());
+		table.setHTML(0, 4, Sfa.constant().razonSocial());
+		table.setHTML(0, 5, Sfa.constant().grupoSS());
 	}
 }
