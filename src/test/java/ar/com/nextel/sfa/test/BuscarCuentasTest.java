@@ -27,11 +27,11 @@ public class BuscarCuentasTest extends SfaSeleniumTest {
 		for (int i = 0; i < 3; i++) {
 			loginIfNeeded();
 									
-			waitWhileCargando(10000);
+			waitUntilElementPresent(DebugConstants.GWT_MENU_CUENTAS);
 
 			selenium.click(DebugConstants.GWT_MENU_CUENTAS);
 			selenium.click(DebugConstants.GWT_MENU_CUENTAS_BUSCAR);
-			waitWhileCargando(10000);
+			waitWhileCargando();
 	
 			selenium.highlight(DebugConstants.GWT_BUSQUEDA_CUENTAS_COMBO_PREDEFINIDAS);
 			selenium.select(DebugConstants.GWT_BUSQUEDA_CUENTAS_COMBO_PREDEFINIDAS, "label=Últimas consultadas");
@@ -46,7 +46,7 @@ public class BuscarCuentasTest extends SfaSeleniumTest {
 			
 			selenium.highlight(DebugConstants.GWT_BUSQUEDA_CUENTAS_BOTON_BUSCAR);
 			selenium.click(DebugConstants.GWT_BUSQUEDA_CUENTAS_BOTON_BUSCAR);
-			waitWhileCargando(10000);
+			waitWhileCargando();
 	/*
 			System.out.println(selenium.getTable("gwt-debug-sfa-buscarCuentasResultTable.1.3"));
 			System.out.println(selenium.getTable("gwt-debug-sfa-buscarCuentasResultTable.0.3"));
@@ -55,19 +55,19 @@ public class BuscarCuentasTest extends SfaSeleniumTest {
 		*/	
 			selenium.highlight(DebugConstants.GWT_TABLE_PAGE_BAR_NEXT);
 			selenium.click(DebugConstants.GWT_TABLE_PAGE_BAR_NEXT);
-			waitWhileCargando(10000);
+			waitWhileCargando();
 
 			selenium.highlight(DebugConstants.GWT_TABLE_PAGE_BAR_NEXT);
 			selenium.click(DebugConstants.GWT_TABLE_PAGE_BAR_NEXT);
-			waitWhileCargando(10000);
+			waitWhileCargando();
 
 			selenium.highlight(DebugConstants.GWT_TABLE_PAGE_BAR_PREV);
 			selenium.click(DebugConstants.GWT_TABLE_PAGE_BAR_PREV);
-			waitWhileCargando(10000);
+			waitWhileCargando();
 
 			selenium.highlight(DebugConstants.GWT_TABLE_PAGE_BAR_PREV);
 			selenium.click(DebugConstants.GWT_TABLE_PAGE_BAR_PREV);
-			waitWhileCargando(10000);
+			waitWhileCargando();
 		
 		}
 	}
@@ -76,11 +76,11 @@ public class BuscarCuentasTest extends SfaSeleniumTest {
 		selenium.setSpeed("500");
 		selenium.open(SFA_APP_URL);
 		loginIfNeeded();
-		waitWhileCargando(10000);
+		waitUntilElementPresent(DebugConstants.GWT_MENU_CUENTAS);
 
 		selenium.click(DebugConstants.GWT_MENU_CUENTAS);
 		selenium.click(DebugConstants.GWT_MENU_CUENTAS_BUSCAR);
-		waitWhileCargando(10000);
+		waitWhileCargando();
 
 		selenium.click(DebugConstants.GWT_BUSQUEDA_CUENTAS_BOTON_BUSCAR);
 		// assertTrue(selenium.isTextPresent("ERROR")); Esto falla cno un null, por qué?

@@ -65,6 +65,9 @@ public abstract class SfaSeleniumTest extends SeleneseTestCase {
 	public static final String NB34_ROOT_URL = "http://nb34.nextel.com.ar:8888/";
 	public static final String D2_ROOT_URL = "http://baslije24.nextel.com.ar:7877/sfa-web2/";
 	
+	// Default wait timeout de 30 segundos
+	public static final long DEFAULT_WAIT_TIMEOUT = 30000;
+	
 	// Usado por las subclases para entrar al server
 	public static final String TEST_ROOT_URL = D2_ROOT_URL;
 	
@@ -110,6 +113,7 @@ public abstract class SfaSeleniumTest extends SeleneseTestCase {
 	 * Loguea al usuario en UserCenter si el selenium está en la aplicación de login
 	 * 
 	 * TODO Completar los hooks para otras páginas si es necesario? rgm
+	 * TODO Qué pasa si da un timeut? Ver la doc de selenium como "retorna el error"
 	 */
 	protected void loginIfNeeded() {
 		String[] windowTitles = selenium.getAllWindowTitles();
@@ -121,7 +125,7 @@ public abstract class SfaSeleniumTest extends SeleneseTestCase {
 				selenium.type("userName", SFA_USER);
 				selenium.type("password", SFA_PASSWORD);
 				selenium.click("//input[@type='image']");
-				selenium.waitForPageToLoad("15000");
+				selenium.waitForPageToLoad(""+DEFAULT_WAIT_TIMEOUT);
 			} else { 				
 				if (title.equals(SFA_PAGE_TITLE)) {
 					// Página de SFA, agregar acá comportamiento o poner un hook a las subclases
@@ -133,9 +137,11 @@ public abstract class SfaSeleniumTest extends SeleneseTestCase {
 
 	/**
 	 * Espera a continuar mientras en la página se muestre el cartel "cargando"
+	 * Falla el test si transcurre más de DEFAULT_WAIT_TIMEOUT
+	 * 
 	 */
 	protected void waitWhileCargando() {
-		while ( selenium.isTextPresent("Cargando")) {}
+		waitWhileCargando(DEFAULT_WAIT_TIMEOUT);
 	}
 	
 	/**
@@ -161,23 +167,54 @@ public abstract class SfaSeleniumTest extends SeleneseTestCase {
 	}
 
 	/**
-	 * Espera mientras en la página se muestre el cartel "cargando", o que ocurra un timeout en milisegundos,
+	 * Espera mientras en la página se muestre el cartel "Cargando", o que ocurra un timeout en milisegundos,
 	 * lo que ocurra primero.
+	 * Si ocurre el timeout falla el test
 	 * 
 	 * @param timeout
 	 * @return el tiempo transcurrido en espera ( redondeado a timeut/10 )
-	 * @throws TimeoutExceededException cuando se pasa del timeout y el cartel sigue prendido
+	 * 
 	 */
-	protected long waitWhileCargando(long timeout)
-			throws TimeoutExceededException {
+	protected long waitWhileCargando(long timeout) {
 
 		long init = System.currentTimeMillis();
 		long deadline =  init + timeout;
 		boolean timeleft = true;
 		boolean cartelPrendido = false;
 
-		// TODO Esta constante sale de gwtcommons?? .rgm
+		// TODO Esta constante "Cargando" sale de gwtcommons?? .rgm
 		while ((cartelPrendido = selenium.isTextPresent("Cargando"))
+				&& (timeleft = System.currentTimeMillis() < deadline)) {
+			try {
+				Thread.sleep(timeout / 1000);
+			} catch (InterruptedException e) {
+				// No me importa
+			}
+		}
+		if (!timeleft && cartelPrendido) {
+			fail("Timeout de " + ( timeout / 1000) + " segundos excedido, y sigue el cartel de \"Cargando\"" );
+		}
+		if ( DEBUG_PRINT_WAIT_TIMES) System.out.println("Waited for: " + (System.currentTimeMillis() - init) + " ms.");
+		return System.currentTimeMillis() - init;
+	}
+
+	/**
+	 * Espera a que aparezca el elemento en la página, o que ocurra un timeout en milisegundos,
+	 * lo que ocurra primero.
+	 * 
+	 * @param timeout
+	 * @param element El elemento a buscar
+	 * @return el tiempo transcurrido en espera ( redondeado a timeut/10 )
+	 * @throws TimeoutExceededException cuando se pasa del timeout y el cartel sigue prendido
+	 */
+	protected long waitUntilElementPresent(String element, long timeout) {
+
+		long init = System.currentTimeMillis();
+		long deadline =  init + timeout;
+		boolean timeleft = true;
+		boolean elementAusente = false;
+
+		while ((elementAusente = !selenium.isElementPresent(element))
 				&& (timeleft = System.currentTimeMillis() < deadline)) {
 			try {
 				Thread.sleep(timeout / 10);
@@ -186,11 +223,44 @@ public abstract class SfaSeleniumTest extends SeleneseTestCase {
 			}
 
 		}
-		if (!timeleft && cartelPrendido) {
-			throw new TimeoutExceededException();
+		if (!timeleft && elementAusente) {
+			fail("Timeout de " + ( timeout / 1000) + " segundos excedido, sin encontrar el elemento " + element );
 		}
 		if ( DEBUG_PRINT_WAIT_TIMES) System.out.println("Waited for: " + (System.currentTimeMillis() - init) + " ms.");
 		return System.currentTimeMillis() - init;
+	}
+
+
+	/**
+	 * Espera a que aparezca el elemento en la página, o que ocurra un timeout de DEFAULT_WAIT_TIMEOUT milisegundos,
+	 * lo que ocurra primero.
+	 * 
+	 * @param timeout
+	 * @param element El elemento a buscar
+	 * @return el tiempo transcurrido en espera ( redondeado a timeut/10 )
+	 * @throws TimeoutExceededException cuando se pasa del timeout y el cartel sigue prendido
+	 */
+	protected long waitUntilElementPresent(String element)
+			throws TimeoutExceededException {
+		return waitUntilElementPresent(element, DEFAULT_WAIT_TIMEOUT);
+	}
+	
+	/**
+	 * Espera a que aparezca el elemento, o que transcurran 60 segundos.
+	 * Si ocurre el timeout el test fall
+	 * 
+	 * Deprecado. usar waitUntilPresent
+	 * 
+	 * @param element
+	 * @throws InterruptedException
+	 */
+	@Deprecated
+	protected void waitForElement(String element) throws InterruptedException {
+		for (int second = 0;; second++) {
+			if (second >= 60) fail("timeout");
+			try { if (selenium.isElementPresent(element)) break; } catch (Exception e) {}
+			Thread.sleep(1000);
+		}
 	}
 
 }
