@@ -30,12 +30,14 @@ public class AgregarCuentaTest extends SfaSeleniumTest {
 
 		loginIfNeeded();
 
-		waitWhileCargando(10000);
+		waitWhileCargando();
 
+		waitForElement(DebugConstants.GWT_MENU_CUENTAS);
 		hlClick(DebugConstants.GWT_MENU_CUENTAS);
 		hlClick(DebugConstants.GWT_MENU_CUENTAS_AGREGAR);
-		waitWhileCargando(10000);
 
+
+		waitForElement(DebugConstants.GWT_AGREGAR_CUENTAS_POPUP_COMBO_TIPO_DOC_ID);
 		selenium.select(DebugConstants.GWT_AGREGAR_CUENTAS_POPUP_COMBO_TIPO_DOC_ID, mapDatos.get(DebugConstants.GWT_AGREGAR_CUENTAS_POPUP_COMBO_TIPO_DOC_ID));
 		selenium.type(DebugConstants.GWT_AGREGAR_CUENTAS_POPUP_TEXTBOX_NUM_DOC_ID, mapDatos.get(DebugConstants.GWT_AGREGAR_CUENTAS_POPUP_TEXTBOX_NUM_DOC_ID));
 
@@ -48,7 +50,7 @@ public class AgregarCuentaTest extends SfaSeleniumTest {
 		//            hlType(DebugConstants.GWT_AGREGAR_CUENTAS_POPUP_TEXTBOX_NUM_DOC_ID, "14333444");
 
 		hlClick(DebugConstants.GWT_AGREGAR_CUENTAS_POPUP_BUTTON_ACEPTAR_ID);
-		waitWhileCargando(10000);
+		waitWhileCargando();
 
 		//pestaña datos
 		hlType("Nombre", mapDatos.get("Nombre"));
@@ -88,7 +90,7 @@ public class AgregarCuentaTest extends SfaSeleniumTest {
 		hlType("//tr[2]/td[5]/input"                          , mapDatos.get("DomicilioCP"));
 		hlType("//tr[2]/td[2]/textarea"                       , mapDatos.get("DomicilioObs"));
 		hlClick("link=Aceptar");
-		waitWhileCargando(10000);
+		waitWhileCargando();
 		hlClick(DebugConstants.GWT_DOMICILIO_POPUP_BUTTON_NO_NORMALIZAR_ID);
 
 		for(int i=1;i<11;i++) {
@@ -128,7 +130,7 @@ public class AgregarCuentaTest extends SfaSeleniumTest {
 			hlType("//td[3]/select"                                         , mapDatos.get("ContactoDomProv"));
 			hlClick("//div[4]/a[1]");
 			hlClick("link=Aceptar");
-			waitWhileCargando(10000);
+			waitWhileCargando();
 			hlClick(DebugConstants.GWT_DOMICILIO_POPUP_BUTTON_NO_NORMALIZAR_ID);
 		}
 		//guardar todo
@@ -152,35 +154,7 @@ public class AgregarCuentaTest extends SfaSeleniumTest {
 			e.printStackTrace();
 		}
 	}
-
-	/**
-	 * 
-	 * Este metodo es usado para correr el test desde PushToTest
-	 */
-	public void runAllTestsStandalone() {
-		AgregarCuentaTest act = new AgregarCuentaTest();
-		try {
-			act.setUp();
-			act.testAgregarCuenta();
-			//act.testBusquedaSinCriterio();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	
-	private void hlClick (String obj) {
-		selenium.highlight(obj);
-		selenium.click(obj);
-	}
-	private void hlType (String obj,String value) {
-		selenium.highlight(obj);
-		selenium.type(obj,value);
-	}
-	private void hlSelect (String obj,String value) {
-		selenium.highlight(obj);
-		selenium.select(obj,value);
-	}
 	private String getIndice(int i) {
 		Map <Integer,String>indice = null;
 		if (indice==null) {

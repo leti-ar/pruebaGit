@@ -144,34 +144,13 @@ public abstract class SfaSeleniumTest extends SeleneseTestCase {
 		waitWhileCargando(DEFAULT_WAIT_TIMEOUT);
 	}
 	
-	/**
-	 * Espera que ocurra un timeout en milisegundos para preguntar si un determinado elemento 
-	 * ya está presente en la pantalla
-	 * 
-	 * @param timeout
-	 * @param elemento
-	 * 
-	 */		
-	protected void waitForElement(long timeout, String element) {
-		for (int second = 0;; second++) {
-			if (second >= timeout) fail("timeout");
-			try { 
-				if (selenium.isElementPresent(element)) 
-					break; 
-			} catch (Exception e) {}
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-			}
-		}
-	}
 
 	/**
 	 * Espera mientras en la página se muestre el cartel "Cargando", o que ocurra un timeout en milisegundos,
 	 * lo que ocurra primero.
 	 * Si ocurre el timeout falla el test
 	 * 
-	 * @param timeout
+	 * @param timeout en Milisegundos
 	 * @return el tiempo transcurrido en espera ( redondeado a timeut/10 )
 	 * 
 	 */
@@ -207,7 +186,7 @@ public abstract class SfaSeleniumTest extends SeleneseTestCase {
 	 * @return el tiempo transcurrido en espera ( redondeado a timeut/10 )
 	 * @throws TimeoutExceededException cuando se pasa del timeout y el cartel sigue prendido
 	 */
-	protected long waitUntilElementPresent(String element, long timeout) {
+	protected long waitForElement(String element, long timeout) {
 
 		long init = System.currentTimeMillis();
 		long deadline =  init + timeout;
@@ -240,27 +219,26 @@ public abstract class SfaSeleniumTest extends SeleneseTestCase {
 	 * @return el tiempo transcurrido en espera ( redondeado a timeut/10 )
 	 * @throws TimeoutExceededException cuando se pasa del timeout y el cartel sigue prendido
 	 */
-	protected long waitUntilElementPresent(String element)
+	protected long waitForElement(String element)
 			throws TimeoutExceededException {
-		return waitUntilElementPresent(element, DEFAULT_WAIT_TIMEOUT);
+		return waitForElement(element, DEFAULT_WAIT_TIMEOUT);
+	}
+
+	protected void hlClick(String obj) {
+		selenium.highlight(obj);
+		selenium.click(obj);
+	}
+
+	protected void hlType(String obj, String value) {
+		selenium.highlight(obj);
+		selenium.type(obj,value);
+	}
+
+	protected void hlSelect(String obj, String value) {
+		selenium.highlight(obj);
+		selenium.select(obj,value);
 	}
 	
-	/**
-	 * Espera a que aparezca el elemento, o que transcurran 60 segundos.
-	 * Si ocurre el timeout el test fall
-	 * 
-	 * Deprecado. usar waitUntilPresent
-	 * 
-	 * @param element
-	 * @throws InterruptedException
-	 */
-	@Deprecated
-	protected void waitForElement(String element) throws InterruptedException {
-		for (int second = 0;; second++) {
-			if (second >= 60) fail("timeout");
-			try { if (selenium.isElementPresent(element)) break; } catch (Exception e) {}
-			Thread.sleep(1000);
-		}
-	}
+
 
 }

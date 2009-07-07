@@ -8,40 +8,24 @@ public class AgregarContactosTest extends SfaSeleniumTest {
 	public void setUp() throws Exception {
 		setUpTestIE();
 	}
-	
-	/**
-	 * 
-	 * Este método es usado para correr el test desde PushToTest
-	 */
-	public void runAllTestsStandalone() {
-		AgregarContactosTest act = new AgregarContactosTest();
-		try {
-			act.setUp();
-			act.testAgregarContacto();
-			act.tearDown();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}	
-	
+
 	public void testAgregarContacto() throws Exception {
 		selenium.setSpeed("900");
 		selenium.open(SFA_APP_URL);
 		loginIfNeeded();
 		waitWhileCargando(10000);
 
-		waitForElement(60, DebugConstants.GWT_MENU_CUENTAS);
+		waitForElement(DebugConstants.GWT_MENU_CUENTAS);
 
 		selenium.click(DebugConstants.GWT_MENU_CUENTAS);
 		selenium.click(DebugConstants.GWT_MENU_CUENTAS_AGREGAR);
 		selenium.type("gwt-debug-sfa-agregarCuentas-PopUp-TextBox-numDocId", "28456987");
-		waitForElement(60, "gwt-debug-sfa-agregarCuentas-PopUp-Button-aceptarId");
+		waitForElement("gwt-debug-sfa-agregarCuentas-PopUp-Button-aceptarId");
 		selenium.click("gwt-debug-sfa-agregarCuentas-PopUp-Button-aceptarId");
-		waitForElement(60, "//td[4]/div/div");
+		waitForElement("//td[4]/div/div");
 
 		selenium.click("//td[4]/div/div");
-		waitForElement(60, "//div[3]/table/tbody/tr[1]/td/button");
+		waitForElement("//div[3]/table/tbody/tr[1]/td/button");
 
 		selenium.click("//div[3]/table/tbody/tr[1]/td/button");
 		selenium.click("link=Cerrar");

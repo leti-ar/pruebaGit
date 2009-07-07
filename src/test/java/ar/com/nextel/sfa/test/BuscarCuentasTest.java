@@ -27,7 +27,7 @@ public class BuscarCuentasTest extends SfaSeleniumTest {
 		for (int i = 0; i < 3; i++) {
 			loginIfNeeded();
 									
-			waitUntilElementPresent(DebugConstants.GWT_MENU_CUENTAS);
+			waitForElement(DebugConstants.GWT_MENU_CUENTAS);
 
 			selenium.click(DebugConstants.GWT_MENU_CUENTAS);
 			selenium.click(DebugConstants.GWT_MENU_CUENTAS_BUSCAR);
@@ -76,7 +76,7 @@ public class BuscarCuentasTest extends SfaSeleniumTest {
 		selenium.setSpeed("500");
 		selenium.open(SFA_APP_URL);
 		loginIfNeeded();
-		waitUntilElementPresent(DebugConstants.GWT_MENU_CUENTAS);
+		waitForElement(DebugConstants.GWT_MENU_CUENTAS);
 
 		selenium.click(DebugConstants.GWT_MENU_CUENTAS);
 		selenium.click(DebugConstants.GWT_MENU_CUENTAS_BUSCAR);
