@@ -65,14 +65,14 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 		return ventasPotencialesEnCursoDto;
 	}
 	
-	private PersonaDto mapeoPersona(CuentaPotencial cuentaPotencial) {
-		PersonaDto personaDto = new PersonaDto();
-		personaDto.setRazonSocial(cuentaPotencial.getPersona().getRazonSocial());
-		//Set<Telefono> tel = reserva.getPersona().getTelefonos();
-		//Set<TelefonoDto> telDto = new HashSet<TelefonoDto>();
-		//telDto.add((TelefonoDto)tel);
-		//personaDto.setTelefonos(telDto);
-		return personaDto;
-	}
+//	private PersonaDto mapeoPersona(CuentaPotencial cuentaPotencial) {
+//		PersonaDto personaDto = new PersonaDto();
+//		personaDto.setRazonSocial(cuentaPotencial.getPersona().getRazonSocial());
+//		//Set<Telefono> tel = reserva.getPersona().getTelefonos();
+//		//Set<TelefonoDto> telDto = new HashSet<TelefonoDto>();
+//		//telDto.add((TelefonoDto)tel);
+//		//personaDto.setTelefonos(telDto);
+//		return personaDto;
+//	}
 	
 }
