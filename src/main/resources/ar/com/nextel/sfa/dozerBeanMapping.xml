@@ -84,6 +84,23 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>cuenta</b>
 		</field>
 	</mapping>
+	
+<!--	<mapping map-id="">-->
+<!--		<class-a>-->
+<!--			ar.com.nextel.model.cuentas.beans.Cuenta-->
+<!--		</class-a>-->
+<!--		<class-b>ar.com.nextel.sfa.client.dto.CuentaDto-->
+<!--		</class-b>-->
+<!--		<field>-->
+<!--			<a>idVantive</a>-->
+<!--			<b>idSolicitudServicio</b>-->
+<!--		</field>-->
+<!--		<field>-->
+<!--			<a>cuenta</a>-->
+<!--			<b>cuenta</b>-->
+<!--		</field>-->
+<!--	</mapping>-->
+<!--	-->
 
 	<mapping>
 		<class-a>

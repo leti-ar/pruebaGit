@@ -29,12 +29,6 @@ public class OperacionEnCursoUI extends ApplicationUI {
 
 		mainPanel.add(oppResultPanel);
 		mainPanel.addStyleName("gwt-central-panel");
-		Button aceptar = new Button(Sfa.constant().aceptar(), new ClickListener() {
-			public void onClick(Widget sender) {
-				UILoader.getInstance().setPage(UILoader.OP_EN_CURSO);
-			}
-		});
-		mainPanel.add(aceptar);
 	}
 
 	public boolean load() {
