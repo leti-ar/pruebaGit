@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.ui.ClickListener;
@@ -22,6 +23,7 @@ public class BuscarOportunidadFilterUI extends Composite {
 	private BuscarOportunidadResultUI buscarOportunidadResultPanel;
 	private FlexTable layout;
 	private List<String> errorList = new ArrayList();
+	private FormButtonsBar footerBar;
 
 	public BuscarOportunidadFilterUI() {
 		buscarOportunidadFilterEditor = new BuscarOportunidadFilterUIData();
@@ -109,4 +111,5 @@ public class BuscarOportunidadFilterUI extends Composite {
 		this.buscarOportunidadResultPanel = buscarOportunidadResultPanel;
 
 	}
+
 }

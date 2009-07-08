@@ -20,6 +20,7 @@ import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.DateUtil;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
+import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -53,6 +54,9 @@ public class BuscarOportunidadFilterUIData extends UIData {
 	private Button buscarButton;
 	private Button limpiarButton;
 	
+	private SimpleLink crearSS;
+	private SimpleLink crearCuenta;
+	
 	private RegularExpressionConstants regularExpression;
 	private DateTimeFormat dateFormatter = DateTimeFormat.getFormat("dd/MM/yyyy");
 	private Widget lastWidget;
@@ -84,6 +88,22 @@ public class BuscarOportunidadFilterUIData extends UIData {
 
 	public ListBox getEstadoOPPListBox() {
 		return estadoOPPListBox;
+	}
+
+	public SimpleLink getCrearSS() {
+		return crearSS;
+	}
+
+	public void setCrearSS(SimpleLink crearSS) {
+		this.crearSS = crearSS;
+	}
+
+	public SimpleLink getCrearCuenta() {
+		return crearCuenta;
+	}
+
+	public void setCrearCuenta(SimpleLink crearCuenta) {
+		this.crearCuenta = crearCuenta;
 	}
 
 	public Widget getDesdeDate() {
@@ -129,6 +149,9 @@ public class BuscarOportunidadFilterUIData extends UIData {
 		fields.add(hastaDate = new SimpleDatePicker(false, true));
 		this.addFocusListeners(fields);
 
+		crearSS = new SimpleLink("Crear SS", "#", true);
+		crearCuenta = new SimpleLink("Crear Cuenta", "#", true);
+		
 		buscarButton = new Button(Sfa.constant().buscar());
 		limpiarButton = new Button(Sfa.constant().limpiar());
 		buscarButton.addStyleName("btn-bkg");

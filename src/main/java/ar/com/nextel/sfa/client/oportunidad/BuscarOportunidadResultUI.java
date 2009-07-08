@@ -1,25 +1,21 @@
 package ar.com.nextel.sfa.client.oportunidad;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import ar.com.nextel.business.oportunidades.search.result.OportunidadNegocioSearchResult;
 import ar.com.nextel.sfa.client.OportunidadNegocioRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.OportunidadDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioSearchResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
-import ar.com.snoop.gwt.commons.client.util.DateUtil;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -29,9 +25,11 @@ import com.google.gwt.user.client.ui.SimplePanel;
  * @author eSalvador
  */
 public class BuscarOportunidadResultUI extends FlowPanel {
+	private BuscarOportunidadFilterUI buscarOportunidadFilterUI;
+	private BuscarOportunidadUI buscarOportunidadUI;
+	private BuscarOportunidadFilterUIData buscarOportunidadFilterUIData;
 	private FlexTable resultTable;
-	private FlowPanel resultTableWrapper;
-	private SimplePanel numeroResultados;
+	private SimplePanel resultTableWrapper;
 	private TablePageBar tablePageBar;
 	private List<OportunidadNegocioSearchResultDto> oportunidades;
 	private OportunidadDto lastOportunidadSearchDto;
@@ -40,6 +38,7 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 	private Long totalRegistrosBusqueda;
 	private DateTimeFormat FormattedDate = DateTimeFormat.getMediumDateFormat();
 	private Label numResultadosLabel = new Label();
+	private FormButtonsBar footerBar;
 
 	public Long getTotalRegistrosBusqueda() {
 		return totalRegistrosBusqueda;
@@ -51,8 +50,9 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 
 	public BuscarOportunidadResultUI() {
 		super();
-		addStyleName("gwt-BuscarCuentaResultPanel");
-		resultTableWrapper = new FlowPanel();
+		buscarOportunidadFilterUIData = new BuscarOportunidadFilterUIData();
+		addStyleName("gwt-OportunidadesResultPanel");
+		resultTableWrapper = new SimplePanel();
 		resultTableWrapper.addStyleName("resultTableWrapper");
 		tablePageBar = new TablePageBar();
 		tablePageBar.setLastVisible(false);
@@ -84,16 +84,14 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 				//searchOportunidades(lastOportunidadSearchDto, false);
 			}
 		});
+		
+		resultTable = new FlexTable();
+		numResultadosLabel.addStyleName("numeroResultadosLabel");
+		resultTableWrapper.add(resultTable);		
+		add(numResultadosLabel);
 		add(resultTableWrapper);
 		add(tablePageBar);
-		
-		numeroResultados = new SimplePanel();
-		resultTable = new FlexTable();
-		numeroResultados.setWidget(numResultadosLabel);
-		numResultadosLabel.addStyleName("numeroResultadosLabel");
-		resultTableWrapper.add(numeroResultados);
-		resultTableWrapper.add(resultTable);		
-		
+		//add(getFooter());
 		setVisible(false);
 	}
 
@@ -176,12 +174,12 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 			row++;
 		}
 		numResultadosLabel.setText("Numero de Resultados: " + oportunidades.size());
-		
 		setVisible(true);
+		add(getFooter());
 	}
 
 	private void initTable(FlexTable table) {
-		String[] widths = { "24px", "200px", "120px", "120px", "120px", "120px", "120px", "120px", "120px",};
+		String[] widths = { "24px", "200px", "120px", "120px", "120px", "120px", "120px", "120px", "120px", };
 		for (int col = 0; col < widths.length; col++) {
 			table.getColumnFormatter().setWidth(col, widths[col]);
 		}
@@ -199,6 +197,13 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 		table.setHTML(0, 6, Sfa.constant().nroCuenta());
 		table.setHTML(0, 7, Sfa.constant().fecha());
 		table.setHTML(0, 8, Sfa.constant().estadoOportunidad());
+	}
+	
+	public FormButtonsBar getFooter() {
+		footerBar = new FormButtonsBar();
+		footerBar.addLink(buscarOportunidadFilterUIData.getCrearSS());
+		footerBar.addLink(buscarOportunidadFilterUIData.getCrearCuenta());
+		return footerBar;
 	}
 	
 	public int getOffset() {

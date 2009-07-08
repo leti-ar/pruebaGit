@@ -25,7 +25,7 @@ public class BuscarOportunidadUI extends ApplicationUI {
 		mainPanel.add(buscarOportunidadResultPanel);
 		mainPanel.addStyleName("gwt-central-panel");
 	}
-		
+	
 	public boolean load() {
 		return true;
 	}
