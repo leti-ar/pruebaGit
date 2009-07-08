@@ -2,7 +2,11 @@ package ar.com.nextel.sfa.test;
 
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 
-
+/**
+ * 
+ * @author meli ( no fedara )
+ *
+ */
 public class SSCerradasTest extends SfaSeleniumTest {
 	
 	public void setUp() throws Exception {
