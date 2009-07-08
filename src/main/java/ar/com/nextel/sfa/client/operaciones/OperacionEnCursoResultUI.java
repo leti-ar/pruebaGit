@@ -60,7 +60,7 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 
 	public OperacionEnCursoResultUI() {
 		super();
-		addStyleName("gwt-OperacionEnCursoResultUI");
+		addStyleName("gwt-OportunidadesResultPanel");
 		resultTableWrapperReserva = new SimplePanel();
 		resultTableWrapperReserva.addStyleName("resultTableWrapper");
 		
@@ -127,7 +127,7 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 	public void searchReservas() {
 		tablePageBarReserva.setOffset(0);
 		//tablePageBarReserva.setCantResultadosVisibles(cuentaSearchDto.getCantidadResultados());
-		tablePageBarReserva.setCantResultados(5);
+		tablePageBarReserva.setCantResultados(1000);
 		//this.lastReserva = reserva;
 		this.searchReservas(true);
 	}
@@ -156,7 +156,7 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 	public void searchOpEnCurso() {
 		tablePageBarOpCurso.setOffset(0);
 		//tablePageBarOpCurso.setCantResultadosVisibles(cuentaSearchDto.getCantidadResultados());
-		tablePageBarOpCurso.setCantResultados(5);
+		tablePageBarOpCurso.setCantResultados(1000);
 		//this.lastOpEnCurso = opEnCurso;
 		this.searchOpEnCurso(true);
 	}
@@ -186,17 +186,17 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 			for (int i = 0; i < 5; i++) {
 				opEnCursoActuales.add(opEnCurso.get(i));
 			}
-			tablePageBarReserva.setCantRegistrosParcI(1);
-			tablePageBarReserva.setCantRegistrosParcF(opEnCursoActuales.size());
+			tablePageBarOpCurso.setCantRegistrosParcI(1);
+			tablePageBarOpCurso.setCantRegistrosParcF(opEnCursoActuales.size());
 		}else{
 			for (int i = 0; i < vtaPotencial.size(); i++) {
 				opEnCursoActuales.add(opEnCurso.get(i));
 			}
-			tablePageBarReserva.setCantRegistrosParcI(1);
-			tablePageBarReserva.setCantRegistrosParcF(opEnCursoActuales.size());
+			tablePageBarOpCurso.setCantRegistrosParcI(1);
+			tablePageBarOpCurso.setCantRegistrosParcF(opEnCursoActuales.size());
 		}
-		tablePageBarReserva.setCantRegistrosTot(opEnCurso.size());
-		tablePageBarReserva.refrescaLabelRegistros();
+		tablePageBarOpCurso.setCantRegistrosTot(opEnCurso.size());
+		tablePageBarOpCurso.refrescaLabelRegistros();
 		loadTableOpCurso(opEnCursoActuales);
 	}
 
