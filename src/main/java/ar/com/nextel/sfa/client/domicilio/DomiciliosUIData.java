@@ -1,4 +1,4 @@
-package ar.com.nextel.sfa.client.cuenta;
+package ar.com.nextel.sfa.client.domicilio;
 
 import java.util.List;
 

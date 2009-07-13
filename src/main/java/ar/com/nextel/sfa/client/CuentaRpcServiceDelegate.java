@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
@@ -90,4 +91,8 @@ public class CuentaRpcServiceDelegate {
 		WaitWindow.show();
 		cuentaRpcService.getProvinciasInitializer(callback);
 	}	
+	public void getCuentaPotencial(Long cuenta_id,DefaultWaitCallback<CuentaPotencialDto> callback) {
+		WaitWindow.show();
+		cuentaRpcService.getCuentaPotencial(cuenta_id,callback);
+	}
 }

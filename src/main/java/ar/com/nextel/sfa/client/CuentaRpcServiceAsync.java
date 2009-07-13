@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
@@ -37,4 +38,5 @@ public interface CuentaRpcServiceAsync {
     public void normalizarDomicilio(DomiciliosCuentaDto domicilioANormalizar, AsyncCallback<NormalizarDomicilioResultDto> callback);
 	public void getCrearContactoInitializer(AsyncCallback<CrearContactoInitializer> callback); 
 	public void getProvinciasInitializer(AsyncCallback<List<ProvinciaDto>> callback);
+	public void getCuentaPotencial(Long cuenta_id, AsyncCallback<CuentaPotencialDto> callback);
 }

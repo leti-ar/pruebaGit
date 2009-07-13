@@ -65,6 +65,7 @@ public class CuentaDatosForm extends Composite {
 	private FlexTable fechaCreacion;
 	private FlexTable mainPanel           = new FlexTable();
 	private FlexTable datosCuentaTable    = new FlexTable();
+	private FlexTable datosOppTable       = new FlexTable();
 	private FlexTable emailTable          = new FlexTable();
 	private FlexTable telefonoTable       = new FlexTable();
 	private FlexTable formaDePagoTable    = new FlexTable();
@@ -72,12 +73,18 @@ public class CuentaDatosForm extends Composite {
 	private FlexTable efectivoTable       = new FlexTable();
 	private FlexTable cuentaBancariaTable = new FlexTable();
 	private FlexTable tarjetaTable        = new FlexTable();
-	private HTML iconoLupa = IconFactory.vistaPreliminar();
+
+	private TitledPanel datosCuentaPanel  = new TitledPanel(Sfa.constant().cuentaPanelTitle());
+	private TitledPanel datosOppPanel     = new TitledPanel("Datos OPP");
+	private TitledPanel formaDePagoPanel  = new TitledPanel(Sfa.constant().formaDePagoPanelTitle());;
 	private TitledPanel vendedorPanel     = new TitledPanel(Sfa.constant().vendedorPanelTitle());
+
+	private HTML iconoLupa = IconFactory.vistaPreliminar();
+	
 	private CuentaUIData camposTabDatos   = new CuentaUIData();
 	private DatosPagoDto datosPago;
 	private List <Widget>camposObligatorios = new ArrayList<Widget>();
-	private TitledPanel datosCuentaPanel = new TitledPanel(Sfa.constant().cuentaPanelTitle());
+	private boolean showPanelDatosCuenta = true;
 	private boolean showCamposUSE = false;
 	private static final String ANCHO_PRIMER_COLUMNA = "11%";
 	private static final String ANCHO_TABLA_PANEL    = "80%";
@@ -91,22 +98,29 @@ public class CuentaDatosForm extends Composite {
 	
 	private CuentaDatosForm() {
 		initWidget(mainPanel);
+		int fila = 0;
 		mainPanel.setWidth("100%");
-		mainPanel.setWidget(0,0,createDatosCuentaPanel());
-		mainPanel.setWidget(1,0,createTelefonoPanel());
-		mainPanel.setWidget(2,0,createEmailPanel());
-		mainPanel.setWidget(3,0,createFormaDePagoPanel());
-		mainPanel.setWidget(4,0,createVendedorPanel());
-		mainPanel.setWidget(5,0,createFechaUsuarioPanel());
+		mainPanel.setWidget(fila++,0,createDatosCuentaPanel());
+		mainPanel.setWidget(fila++,0,createDatosOppPanel());
+		mainPanel.setWidget(fila++,0,createTelefonoPanel());
+		mainPanel.setWidget(fila++,0,createEmailPanel());
+		mainPanel.setWidget(fila++,0,createFormaDePagoPanel());
+		mainPanel.setWidget(fila++,0,createVendedorPanel());
+		mainPanel.setWidget(fila  ,0,createFechaUsuarioPanel());
 	}
 	
 	private Widget createDatosCuentaPanel() {
-		camposTabDatos.getRazonSocial().setWidth("90%");
 		armarTablaPanelDatos();
 		datosCuentaPanel.add(datosCuentaTable);
 		return datosCuentaPanel;
 	}
 
+	private Widget createDatosOppPanel() {
+		armarTablaPanelOppDatos();
+		datosOppPanel.add(datosOppTable);
+		return datosOppPanel;
+	}
+	
 	public void	armarTablaPanelDatos() {
 		datosCuentaTable.clear();
 		datosCuentaTable.setCellSpacing(7);
@@ -220,6 +234,57 @@ public class CuentaDatosForm extends Composite {
 		}
 	}
 
+	public void	armarTablaPanelOppDatos() {
+		datosOppTable.clear();
+		datosOppTable.setCellSpacing(7);
+		datosOppTable.setWidth(ANCHO_TABLA_PANEL);
+		datosOppTable.getFlexCellFormatter().setColSpan(1, 1, 4);
+		
+		int row = 0;
+		datosOppTable.setWidget(row, 0, camposTabDatos.getTipoDocLabel());
+		datosOppTable.setWidget(row, 1, camposTabDatos.getTipoDocumento());
+		datosOppTable.setWidget(row, 3, camposTabDatos.getNumDocLabel());
+		datosOppTable.setWidget(row, 4, camposTabDatos.getNumeroDocumento());
+		datosOppTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
+		row++; 
+		datosOppTable.setWidget(row, 0, camposTabDatos.getRazSocLabel());
+		datosOppTable.setWidget(row, 1, camposTabDatos.getRazonSocial());
+		datosOppTable.getFlexCellFormatter().setColSpan(row, 1, 4);
+		datosOppTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
+		row++;
+		datosOppTable.setWidget(row, 0, camposTabDatos.getNombreLabel());
+		datosOppTable.setWidget(row, 1, camposTabDatos.getNombre());
+		datosOppTable.setWidget(row, 3, camposTabDatos.getApellidoLabel());
+		datosOppTable.setWidget(row, 4, camposTabDatos.getApellido());
+		datosOppTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
+		row++;
+		datosOppTable.setWidget(row, 0, camposTabDatos.getSexoLabel());
+		datosOppTable.setWidget(row, 1, camposTabDatos.getSexo());
+		datosOppTable.setWidget(row, 3, camposTabDatos.getFecNacLabel());
+		datosOppTable.setWidget(row, 4, camposTabDatos.getFechaNacimientoGrid());
+		datosOppTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
+		row++;
+		datosOppTable.setWidget(row, 0, camposTabDatos.getContrLabel());
+		datosOppTable.setWidget(row, 1, camposTabDatos.getContribuyente());
+		datosOppTable.setWidget(row, 3, null);
+		datosOppTable.setWidget(row, 4, null);
+		datosOppTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
+		row++;
+//		if(camposTabDatos.getCargoLabel().isVisible()) {
+//			datosOppTable.setWidget(row, 0, camposTabDatos.getCargoLabel());
+//			datosOppTable.setWidget(row, 1, camposTabDatos.getCargo());
+//			datosOppTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
+//			row++;
+//		} else {
+//			datosOppTable.removeRow(row);
+//		}
+		datosOppTable.setWidget(row, 0, camposTabDatos.getProvAntLabel());
+		datosOppTable.setWidget(row, 1, camposTabDatos.getProveedorAnterior());
+		datosOppTable.setWidget(row, 3, camposTabDatos.getRubroLabel());
+		datosOppTable.setWidget(row, 4, camposTabDatos.getRubro());
+		datosOppTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
+	}
+
 	public void inicializarVeraz(Label verazLabel) {
 		estilos.add("verazAceptar");
         estilos.add("verazRevisar");
@@ -285,10 +350,7 @@ public class CuentaDatosForm extends Composite {
 		formaDePagoTable.setWidget(0, 0, getCuentaBancariaPanel());
 		formaDePagoTable.setWidget(1, 0, getTarjetaCreditoPanel());
 		formaDePagoTable.setWidget(2, 0, getEfectivoPanel());
-		
-		TitledPanel formaDePagoPanel = new TitledPanel(Sfa.constant().formaDePagoPanelTitle());
 		formaDePagoPanel.add(formaDePagoTable);
-		
 		return formaDePagoPanel;
 	}
 	
@@ -413,7 +475,8 @@ public class CuentaDatosForm extends Composite {
 	}
 
 	public void ponerDatosBusquedaEnFormulario(CuentaDto cuentaDto) {
-		cargarPanelDatos(cuentaDto);
+		if (showPanelDatosCuenta)
+			cargarPanelDatos(cuentaDto);
 		cargarPanelTelefonoFax(cuentaDto);
 		cargarPanelEmails(cuentaDto);
 		cargarPanelFormaPago(cuentaDto);
@@ -553,10 +616,13 @@ public class CuentaDatosForm extends Composite {
 		iconoLupa.setVisible(true);
 		camposTabDatos.getVerazRta().setVisible(true);
 		camposTabDatos.getVerazLabel().setVisible(true);
+		showPanelDatosCuenta = true;
 		
-        boolean docTipoCUIL = cuentaDto.getPersona().getDocumento().getTipoDocumento().getId()==TipoDocumentoEnum.CUIL.getTipo() ||
-                              cuentaDto.getPersona().getDocumento().getTipoDocumento().getId()==TipoDocumentoEnum.CUIT.getTipo();
-		
+        boolean docTipoCUIL = false; 
+        if (cuentaDto.getPersona().getDocumento()!=null) {
+        	docTipoCUIL = cuentaDto.getPersona().getDocumento().getTipoDocumento().getId()==TipoDocumentoEnum.CUIL.getTipo() ||
+        	cuentaDto.getPersona().getDocumento().getTipoDocumento().getId()==TipoDocumentoEnum.CUIT.getTipo();
+        }
 		List <Widget>campos = new ArrayList<Widget>();
 		campos.add(camposTabDatos.getRazonSocial());
 		campos.add(camposTabDatos.getTipoDocumento());
@@ -642,7 +708,7 @@ public class CuentaDatosForm extends Composite {
 		campos.add(camposTabDatos.getTipoCanalVentas());
 		
 		FormUtils.disableFields(campos);
-
+		
 		vendedorPanel.setVisible( ClientContext.getInstance().getUsuario().getId().
 				                   equals(
 	                    		  cuentaDto.getVendedor().getId())
@@ -650,6 +716,62 @@ public class CuentaDatosForm extends Composite {
 		
 	}
 	
+	public void setAtributosCamposAlMostrarResuladoBusquedaFromOpp(CuentaDto cuentaDto) {
+		
+		List <Widget>disabledFields = new ArrayList<Widget>();
+		
+		if(cuentaDto.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.DIV.getTipo())) {
+			setAtributosCamposAlAgregarDivision(cuentaDto);
+			disabledFields.add(camposTabDatos.getNombreDivision());
+		} else 	if(cuentaDto.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.SUS.getTipo())) {
+			setAtributosCamposAlAgregarSuscriptor(cuentaDto);
+		} else {
+			setAtributosCamposCuenta(cuentaDto);
+		}
+
+		disabledFields.add(camposTabDatos.getNombre());
+		disabledFields.add(camposTabDatos.getApellido());
+		disabledFields.add(camposTabDatos.getSexo());
+		disabledFields.add(camposTabDatos.getFechaNacimiento());
+		disabledFields.add(camposTabDatos.getProveedorAnterior());
+		disabledFields.add(camposTabDatos.getContribuyente());
+		disabledFields.add(camposTabDatos.getCargo());
+		disabledFields.add(camposTabDatos.getRubro());
+		disabledFields.add(camposTabDatos.getIibb());
+		disabledFields.add(camposTabDatos.getClaseCliente());
+		disabledFields.add(camposTabDatos.getCategoria());
+		
+		disabledFields.add(camposTabDatos.getTelPrincipalTextBox().getArea());
+		disabledFields.add(camposTabDatos.getTelPrincipalTextBox().getNumero());
+		disabledFields.add(camposTabDatos.getTelPrincipalTextBox().getInterno());
+		disabledFields.add(camposTabDatos.getObservaciones());
+
+		if (!camposTabDatos.getEmailPersonal().getText().equals("")) 
+			disabledFields.add(camposTabDatos.getEmailPersonal());
+
+		disabledFields.add(camposTabDatos.getFormaPago());
+		disabledFields.add(camposTabDatos.getCbu());
+		disabledFields.add(camposTabDatos.getTipoCuentaBancaria());
+		disabledFields.add(camposTabDatos.getTipoTarjeta());
+		disabledFields.add(camposTabDatos.getNumeroTarjeta());
+		disabledFields.add(camposTabDatos.getAnioVto());
+		disabledFields.add(camposTabDatos.getMesVto());
+
+		disabledFields.add(camposTabDatos.getVendedorNombre());
+		disabledFields.add(camposTabDatos.getVendedorTelefono());
+		disabledFields.add(camposTabDatos.getTipoCanalVentas());
+		showPanelDatosCuenta = false;
+		FormUtils.disableFields(disabledFields);
+	}
+	
+    public void setUItipoEditorCuenta(boolean editorCuenta) {
+		datosOppPanel.setVisible(!editorCuenta);
+		datosCuentaPanel.setVisible(editorCuenta);
+		formaDePagoPanel.setVisible(editorCuenta);
+		//usuario.setVisible(editorCuenta);
+		fechaUsuarioTable.setVisible(editorCuenta);
+		vendedorPanel.setVisible(editorCuenta);
+    }
 	
 	public boolean formularioDatosDirty() {
 		boolean retorno = false;

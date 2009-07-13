@@ -43,7 +43,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	private TablePageBar tablePageBar;
 	private List<CuentaSearchResultDto> cuentas;
 	private CuentaSearchDto lastCuentaSearchDto;
-	private int numeroPagina = 1;
+	//private int numeroPagina = 1;
 	private Long totalRegistrosBusqueda;
 	private BuscarCuentaController controller;
 
@@ -64,7 +64,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		tablePageBar.setBeforeClickCommand(new Command() {
 			public void execute() {
 				lastCuentaSearchDto.setOffset(tablePageBar.getOffset());
-				List cuentasActuales = new ArrayList<CuentaSearchResultDto>();
+				List <CuentaSearchResultDto>cuentasActuales = new ArrayList<CuentaSearchResultDto>();
 				if (tablePageBar.getPagina() <= (tablePageBar.getCantPaginas())){
 					if ((cuentas.size() >= 10) && (tablePageBar.getCantResultados() != 25 && tablePageBar.getCantResultados()!=75)){
 						for (int i = (tablePageBar.getPagina()-1) *10; i < (tablePageBar.getPagina())*10; i++) {

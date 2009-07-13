@@ -20,7 +20,7 @@ import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
 
-public class CuentaContactoForm extends Composite {
+public class CuentaNotasForm extends Composite {
 
 	private FlexTable mainPanel;
 	private FlexTable datosTabla = new FlexTable();
@@ -28,17 +28,17 @@ public class CuentaContactoForm extends Composite {
 	private ContactosUI contactosUI;
 	private boolean formDirty = false;	
 	
-	private static CuentaContactoForm instance = null;
+	private static CuentaNotasForm instance = null;
 	private ContactoCuentaDto contactoAEditar;
 
-	public static CuentaContactoForm getInstance() {
+	public static CuentaNotasForm getInstance() {
 		if (instance == null) {
-			instance = new CuentaContactoForm();
+			instance = new CuentaNotasForm();
 		}
 		return instance;
 	}
 
-	private CuentaContactoForm() {
+	private CuentaNotasForm() {
 		contactosUI = new ContactosUI();
 		mainPanel = new FlexTable();
 		mainPanel.setWidth("100%");

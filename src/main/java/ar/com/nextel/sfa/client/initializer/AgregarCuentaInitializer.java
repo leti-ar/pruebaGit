@@ -6,6 +6,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.ClaseCuentaDto;
 import ar.com.nextel.sfa.client.dto.FormaPagoDto;
+import ar.com.nextel.sfa.client.dto.MotivoNoCierreDto;
 import ar.com.nextel.sfa.client.dto.ProveedorDto;
 import ar.com.nextel.sfa.client.dto.RubroDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
@@ -33,31 +34,10 @@ public class AgregarCuentaInitializer implements IsSerializable {
 	private List<TipoCuentaBancariaDto> tipoCuentaBancaria = new ArrayList<TipoCuentaBancariaDto>();
 	private List<TipoTarjetaDto> tipoTarjeta = new ArrayList<TipoTarjetaDto>();
 	private List<TipoCanalVentasDto> tipoCanalVentas = new ArrayList<TipoCanalVentasDto>();
+	private List<MotivoNoCierreDto> motivoNoCierre = new ArrayList<MotivoNoCierreDto>();
 	private int anio;
 	
 	public AgregarCuentaInitializer() {	};  
-	
-//	public AgregarCuentaInitializer(
-//			List<TipoDocumentoDto> tiposDocumento,
-//			List<TipoContribuyenteDto> tiposContribuyentes,
-//			List<SexoDto> sexo,
-//			List<FormaPagoDto> formaPago,
-//			List<RubroDto> rubro,
-//			List<ClaseCuentaDto> claseCliente,
-//			List<ProveedorDto> proveedorAnterior,
-//			List<TipoTelefonoDto> tipoTelefono,
-//			List<CargoDto> cargo) {
-//		super();
-//		this.tiposDocumento = tiposDocumento;
-//		this.tiposContribuyentes = tiposContribuyentes;
-//		this.sexo=sexo;
-//		this.formaPago = formaPago;
-//		this.rubro = rubro;
-//		this.claseCliente=claseCliente;
-//		this.proveedorAnterior=proveedorAnterior;
-//		this.tipoTelefono=tipoTelefono;
-//		this.cargo=cargo;
-//	}
 	
 	public List<TipoDocumentoDto> getTiposDocumento() {
 		return tiposDocumento;
@@ -147,6 +127,12 @@ public class AgregarCuentaInitializer implements IsSerializable {
 	}
 	public void setTipoCanalVentas(List<TipoCanalVentasDto> tipoCanalVentas) {
 		this.tipoCanalVentas = tipoCanalVentas;
+	}
+	public List<MotivoNoCierreDto> getMotivoNoCierre() {
+		return motivoNoCierre;
+	}
+	public void setMotivoNoCierre(List<MotivoNoCierreDto> motivoNoCierre) {
+		this.motivoNoCierre = motivoNoCierre;
 	}
 	public int getAnio() {
 		return anio;

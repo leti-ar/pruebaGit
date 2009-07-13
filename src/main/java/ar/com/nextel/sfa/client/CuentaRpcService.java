@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
@@ -54,4 +55,5 @@ public interface CuentaRpcService extends RemoteService {
 	public NormalizarDomicilioResultDto normalizarDomicilio(DomiciliosCuentaDto domicilioANormalizar)throws RpcExceptionMessages;
 	public CrearContactoInitializer getCrearContactoInitializer() throws RpcExceptionMessages;
 	public List<ProvinciaDto> getProvinciasInitializer() throws RpcExceptionMessages;
+	public CuentaPotencialDto getCuentaPotencial(Long cuenta_id) throws RpcExceptionMessages;
 }

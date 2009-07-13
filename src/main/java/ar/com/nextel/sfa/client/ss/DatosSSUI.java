@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.cuenta.DomicilioUI;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
+import ar.com.nextel.sfa.client.domicilio.DomicilioUI;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;

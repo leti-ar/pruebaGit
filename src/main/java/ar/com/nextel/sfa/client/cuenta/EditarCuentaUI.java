@@ -7,6 +7,7 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
@@ -29,7 +30,6 @@ public class EditarCuentaUI extends ApplicationUI {
 	}
 
 	public boolean load() {
-		//resetEditor();
 		//viene de popup "Agregar Cuenta"
 		if (HistoryUtils.getParam("nroDoc")!=null) {
 			TipoDocumentoDto tipoDoc = new TipoDocumentoDto(Long.parseLong(HistoryUtils.getParam("tipoDoc")),null);
@@ -61,10 +61,21 @@ public class EditarCuentaUI extends ApplicationUI {
 					completarVisualizacionDatos(cuentaDto);
 				}
 			});
+		//viene de busqueda OPP			
+		} else if (HistoryUtils.getParam("opp")!=null) {
+			Long cuenta_id = new Long(HistoryUtils.getParam("opp"));
+			CuentaRpcService.Util.getInstance().getCuentaPotencial(cuenta_id,new DefaultWaitCallback<CuentaPotencialDto>() {
+				public void success(CuentaPotencialDto cuentaPotDto) {
+					resetEditor();
+					CuentaDto cuentaDto = (CuentaDto)cuentaPotDto.getCuentaOrigen();
+				    cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusquedaFromOpp(cuentaDto);
+					completarVisualizacionDatos(cuentaDto);
+				}
+			});			
 		//viene de resultado de busqueda			
 		} else {  
 			Long cuentaID = Long.parseLong(HistoryUtils.getParam("cuenta_id"));
-			String cod_vantive = HistoryUtils.getParam("cod_vantive") !=null?HistoryUtils.getParam("cod_vantive") : null;
+			String cod_vantive = HistoryUtils.getParam("cod_vantive") !=null?HistoryUtils.getParam("cod_vantive"):null;
 			CuentaRpcService.Util.getInstance().selectCuenta(cuentaID, cod_vantive,new DefaultWaitCallback<CuentaDto>() {
 				public void success(CuentaDto cuentaDto) {
 					if (puedenMostrarseDatos(cuentaDto)) {
@@ -106,7 +117,7 @@ public class EditarCuentaUI extends ApplicationUI {
 	 */
 	private boolean puedenMostrarseDatos(CuentaDto cuentaDto) {
 		boolean result = true;
-		if (HistoryUtils.getParam("por_dni").equals("0")) { //se filtro busqueda por documento/dni
+		if (HistoryUtils.getParam("por_dni")!=null && HistoryUtils.getParam("por_dni").equals("0")) { //se filtro busqueda por documento/dni
 			//usuario logueado no es el mismo que el vendedor de la cuenta
 			if (!ClientContext.getInstance().getUsuario().getUserName().equals(cuentaDto.getVendedor().getUsuarioDto().getUserName())) {
 				result = false;
@@ -127,6 +138,8 @@ public class EditarCuentaUI extends ApplicationUI {
 	 * 
 	 */
 	private void cargaPanelesCuenta() {
+		boolean esEdicionCuenta = HistoryUtils.getParam("opp")==null; //si no viene de opp, se considera edicion de cuenta
+		
 		//Busca la cuenta con alguno de los dos datos NO nulos.
 		CuentaDto cuenta = (CuentaDto)cuentaTab.getCuenta2editDto(); 
 		if(cuenta.getCodigoVantive() != null){
@@ -141,6 +154,11 @@ public class EditarCuentaUI extends ApplicationUI {
 		}
 		//carga info pestaña Contactos
 		cargarInfoContactos(cuentaTab.getCuenta2editDto().getCategoriaCuenta().getDescripcion());
+
+		//prepara UI para edicion cuenta o visualizacion opp 
+		cuentaTab.setTabsTipoEditorCuenta(esEdicionCuenta);
+		cuentaTab.getCuentaDatosForm().setUItipoEditorCuenta(esEdicionCuenta);		
+
 		//agrega tabs al panel principal
 		mainPanel.add(cuentaTab.getCuentaEdicionPanel());
 	}
@@ -152,7 +170,7 @@ public class EditarCuentaUI extends ApplicationUI {
 	private void cargarInfoContactos(String categoriaCuenta) {
 		List <ContactoCuentaDto>contactos = null;
 		if (categoriaCuenta.equals(TipoCuentaEnum.CTA.getTipo())) {
-			contactos = ((GranCuentaDto)cuentaTab.getCuenta2editDto()).getContactos();
+			//contactos = ((GranCuentaDto)cuentaTab.getCuenta2editDto()).getContactos();
 		} else if (categoriaCuenta.equals(TipoCuentaEnum.SUS.getTipo())) {
 			contactos = ((SuscriptorDto)cuentaTab.getCuenta2editDto()).getGranCuenta().getContactos();
 		} else if (categoriaCuenta.equals(TipoCuentaEnum.DIV.getTipo())) {

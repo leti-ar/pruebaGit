@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.client.dto;
 
 import java.util.Date;
+import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -20,8 +21,8 @@ public class CuentaDto implements IsSerializable {
     private String iibb;
     private Boolean responsablePago;
 //    private Set<PlanDto> planesPropios;
-//    private Set<CuentaPotencialDto> cuentasPotenciales;
-//    private CuentaPotencialDto cuentaPotencialOrigen;
+    private List<CuentaPotencialDto> cuentasPotenciales;
+    private CuentaPotencialDto cuentaPotencialOrigen;
     private PersonaDto persona;
     private ProveedorDto proveedorInicial;
     private RubroDto rubro;
@@ -138,18 +139,18 @@ public class CuentaDto implements IsSerializable {
 //	public void setPlanesPropios(Set<PlanDto> planesPropios) {
 //		this.planesPropios = planesPropios;
 //	}
-//	public Set<CuentaPotencialDto> getCuentasPotenciales() {
-//		return cuentasPotenciales;
-//	}
-//	public void setCuentasPotenciales(Set<CuentaPotencialDto> cuentasPotenciales) {
-//		this.cuentasPotenciales = cuentasPotenciales;
-//	}
-//	public CuentaPotencialDto getCuentaPotencialOrigen() {
-//		return cuentaPotencialOrigen;
-//	}
-//	public void setCuentaPotencialOrigen(CuentaPotencialDto cuentaPotencialOrigen) {
-//		this.cuentaPotencialOrigen = cuentaPotencialOrigen;
-//	}
+	public List<CuentaPotencialDto> getCuentasPotenciales() {
+		return cuentasPotenciales;
+	}
+	public void setCuentasPotenciales(List<CuentaPotencialDto> cuentasPotenciales) {
+		this.cuentasPotenciales = cuentasPotenciales;
+	}
+	public CuentaPotencialDto getCuentaPotencialOrigen() {
+		return cuentaPotencialOrigen;
+	}
+	public void setCuentaPotencialOrigen(CuentaPotencialDto cuentaPotencialOrigen) {
+		this.cuentaPotencialOrigen = cuentaPotencialOrigen;
+	}
 	public PersonaDto getPersona() {
 		return persona;
 	}

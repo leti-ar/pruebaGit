@@ -11,6 +11,7 @@ import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
+import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
@@ -162,7 +163,8 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 		int row = 1;
 		for (OportunidadNegocioSearchResultDto oportunidad : oportunidadesActuales) {
 		 // for (OportunidadNegocioSearchResultDto oportunidad : oportunidades) {
-			resultTable.setWidget(row, 0, IconFactory.lapiz());
+			//resultTable.setWidget(row, 0, IconFactory.lapiz());
+			resultTable.setWidget(row, 0, IconFactory.lapizAnchor(UILoader.EDITAR_CUENTA +  "?opp=" + oportunidad.getIdOportunidadNegocio()));
 			resultTable.setHTML(row, 1, oportunidad.getRazonSocial());
 			resultTable.setHTML(row, 2, oportunidad.getNombre());
 			resultTable.setHTML(row, 3, oportunidad.getApellido());

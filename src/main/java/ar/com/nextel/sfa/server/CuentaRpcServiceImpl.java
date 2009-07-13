@@ -44,6 +44,8 @@ import ar.com.nextel.model.cuentas.beans.TipoContribuyente;
 import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
+import ar.com.nextel.model.oportunidades.beans.CuentaPotencial;
+import ar.com.nextel.model.oportunidades.beans.MotivoNoCierre;
 import ar.com.nextel.model.oportunidades.beans.Rubro;
 import ar.com.nextel.model.personas.beans.Documento;
 import ar.com.nextel.model.personas.beans.Domicilio;
@@ -63,6 +65,7 @@ import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
 import ar.com.nextel.sfa.client.dto.ClaseCuentaDto;
 import ar.com.nextel.sfa.client.dto.CondicionCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DivisionDto;
@@ -71,6 +74,7 @@ import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.FormaPagoDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
+import ar.com.nextel.sfa.client.dto.MotivoNoCierreDto;
 import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
 import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
@@ -238,6 +242,14 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		buscarDTOinit.setTipoCuentaBancaria(mapper.convertList(genericDao.getList(TipoCuentaBancaria.class),TipoCuentaBancariaDto.class));
 		buscarDTOinit.setTipoTarjeta(mapper.convertList(genericDao.getList(TipoTarjeta.class),TipoTarjetaDto.class));
 		buscarDTOinit.setTipoCanalVentas(mapper.convertList(genericDao.getList(TipoCanalVentas.class),TipoCanalVentasDto.class));
+
+		buscarDTOinit.setMotivoNoCierre(mapper.convertList(genericDao.getList(MotivoNoCierre.class),MotivoNoCierreDto.class));
+//        List <MotivoNoCierreDto>cierreDto = new ArrayList<MotivoNoCierreDto>();
+//		for (MotivoNoCierre cierre : genericDao.getList(MotivoNoCierre.class)) {
+//			cierreDto.add(new MotivoNoCierreDto(cierre.getId(),cierre.getDescripcion()));
+//		}
+//		buscarDTOinit.setMotivoNoCierre(cierreDto);
+		
 		buscarDTOinit.setAnio(Calendar.getInstance().get(Calendar.YEAR));
 		return buscarDTOinit;
 	}
@@ -406,6 +418,19 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 			throw ExceptionUtil.wrap(e);
 		}
         return resultDto;
+	}
+
+	/**
+	 * 
+	 */
+	public CuentaPotencialDto getCuentaPotencial(Long cuenta_id) throws RpcExceptionMessages {
+//        CuentaPotencial cuentaPot = (CuentaPotencial) repository.retrieve(CuentaPotencial.class, cuenta_id);
+//        GranCuenta gCuenta = (GranCuenta)cuentaPot.getCuentaOrigen();
+//        GranCuentaDto gCuentaDto = (GranCuentaDto) mapper.map(gCuenta, GranCuentaDto.class);
+//		CuentaPotencialDto ctaPotDto = (CuentaPotencialDto) mapper.map(cuentaPot, CuentaPotencialDto.class);
+//		ctaPotDto.setCuentaOrigen(gCuentaDto);
+//        return (CuentaPotencialDto) mapper.map(cuentaPot, CuentaPotencialDto.class);
+		return (CuentaPotencialDto) mapper.map((CuentaPotencial) repository.retrieve(CuentaPotencial.class, cuenta_id), CuentaPotencialDto.class);
 	}
 	
 	/**

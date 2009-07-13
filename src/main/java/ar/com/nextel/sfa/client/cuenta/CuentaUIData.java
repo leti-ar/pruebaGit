@@ -5,7 +5,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.dto.PersonaDto;
+import ar.com.nextel.sfa.client.dto.MotivoNoCierreDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
 import ar.com.nextel.sfa.client.enums.TipoTarjetaEnum;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
@@ -21,6 +21,7 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -98,11 +99,17 @@ public class CuentaUIData extends UIData {
 	private SimpleLink validarTarjeta = new SimpleLink(Sfa.constant().validarTarjeta(), "#", true);
 	private Label verazRta = new Label();
 	
-	PersonaDto persona = new PersonaDto(); // @TODO Para qué se usa? Sin modificador de visibilidad?
+	//PersonaDto persona = new PersonaDto(); // @TODO Para qué se usa? Sin modificador de visibilidad?
 	List <Widget>camposObligatorios =  new ArrayList<Widget>(); 
 	List <Widget>camposObligatoriosFormaPago = new ArrayList<Widget>();
 	List <TipoTelefonoDto>tipoTelefono = new ArrayList<TipoTelefonoDto>();
-    private int currentYear;	
+
+	//field para opp
+	private List<RadioButton> motivoNoCierre = new ArrayList<RadioButton>();
+	private Label oppNumero = new Label(Sfa.constant().numero());
+	
+	
+	private int currentYear;	
 	
 	public CuentaUIData() {
         init();
@@ -212,6 +219,7 @@ public class CuentaUIData extends UIData {
 					tipoTarjeta.addAllItems(result.getTipoTarjeta());
 					tipoCanalVentas.addAllItems(result.getTipoCanalVentas());
 		        	currentYear = result.getAnio();
+		        	llenarListaMotivoNoCierre(result.getMotivoNoCierre());
 				}
 			});
 		for(int i=1;i<13;i++) {
@@ -219,6 +227,14 @@ public class CuentaUIData extends UIData {
         }
 	}
 
+	private void llenarListaMotivoNoCierre(List<MotivoNoCierreDto> motivos) {
+		motivoNoCierre.add(0,new RadioButton("motivo",""));
+		for (MotivoNoCierreDto motivo: motivos) {
+			
+			 motivoNoCierre.add(Integer.parseInt(motivo.getId().toString()), new RadioButton("motivo",motivo.getDescripcion()));
+		}
+	}
+	
 	private void exportarNombreApellidoARazonSocial() {
 		nombre.setText(nombre.getText().trim().toUpperCase());
 		apellido.setText(apellido.getText().trim().toUpperCase());
@@ -291,6 +307,7 @@ public class CuentaUIData extends UIData {
 		cbu.setMaxLength(22);
 		
 		//formato
+		razonSocial.setWidth("90%");
 		cbu.setWidth("90%");
 		nombreDivision.setWidth("90%");
 		observaciones.addStyleName("textAreaCuentaData");
@@ -529,4 +546,8 @@ public class CuentaUIData extends UIData {
 	public int getCurrentYear() {
 		return currentYear;
 	}
+	public List<RadioButton> getMotivoNoCierre() {
+		return motivoNoCierre;
+	}
+	
 }

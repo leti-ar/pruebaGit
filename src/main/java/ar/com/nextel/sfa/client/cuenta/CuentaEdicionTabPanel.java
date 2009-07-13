@@ -33,8 +33,8 @@ public class CuentaEdicionTabPanel {
 
 	private static CuentaEdicionTabPanel instance = new CuentaEdicionTabPanel();
 	private FlexTable marco = new FlexTable();
-	DualPanel razonSocialPanel = new DualPanel();
-	DualPanel clientePanel     = new DualPanel();
+	public  DualPanel razonSocialPanel = new DualPanel();
+	public  DualPanel clientePanel     = new DualPanel();
 	private Label razonSocial  = new Label();
 	private Label cliente      = new Label();
 	private CuentaDto            cuenta2editDto;
@@ -42,6 +42,7 @@ public class CuentaEdicionTabPanel {
 	private CuentaDomiciliosForm cuentaDomiciliosForm = CuentaDomiciliosForm.getInstance();
 	private CuentaContactoForm   cuentaContactoForm   = CuentaContactoForm.getInstance();
 	private CuentaInfocomForm    cuentaInfocomForm    = CuentaInfocomForm.getInstance();
+	private CuentaNotasForm      cuentaNotasForm      = CuentaNotasForm.getInstance();
 	private TabPanel tabPanel;
 	private FormButtonsBar footerBar;
 	
@@ -50,9 +51,13 @@ public class CuentaEdicionTabPanel {
 	public static final String ID_CUENTA = "idCuenta";
 	private GwtValidator validator = new GwtValidator();
 	
-	private SimpleLink guardar;
-	private SimpleLink crearSSButton;
-	private SimpleLink agregarCuentaButton;
+	public SimpleLink guardar;
+	public SimpleLink crearSSButton;
+	public SimpleLink agregarCuentaButton;
+	public SimpleLink cancelar;
+	public SimpleLink cerrar;
+	public SimpleLink crearCuenta;
+	
 	private PopupPanel popupCrearSS;
 	private PopupPanel popupAgregarCuenta;
 	private Hyperlink  crearEquipos;
@@ -60,7 +65,7 @@ public class CuentaEdicionTabPanel {
 	private Hyperlink  crearMDS;
 	private Hyperlink  agregarDivision;
 	private Hyperlink  agregarSuscriptor;
-	private SimpleLink cancelar;
+	
 
 	List<String> erroresValidacion = new ArrayList<String>();
     private Command aceptarCommand;
@@ -132,6 +137,7 @@ public class CuentaEdicionTabPanel {
 		tabPanel.add(cuentaDomiciliosForm, Sfa.constant().domicilios());
 		tabPanel.add(cuentaContactoForm, Sfa.constant().contactos());
 		tabPanel.add(cuentaInfocomForm, Sfa.constant().infocom());
+		tabPanel.add(cuentaNotasForm, "Notas");
 		tabPanel.selectTab(0);
 	}
 
@@ -182,10 +188,15 @@ public class CuentaEdicionTabPanel {
 		cancelar = new SimpleLink(Sfa.constant().cancelar(), "#", true);
 		cancelar.setStyleName("link");
 		
+		crearCuenta = new SimpleLink(Sfa.constant().crearCuenta(), "#", true);
+		cerrar      = new SimpleLink(Sfa.constant().cerrar(), "#", true);
+		
 		footerBar.addLink(guardar);
+		footerBar.addLink(crearCuenta);
 		footerBar.addLink(crearSSButton);
 		footerBar.addLink(agregarCuentaButton);
-		footerBar.addLink(cancelar);		
+		footerBar.addLink(cancelar);
+		footerBar.addLink(cerrar);
 
 		guardar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
@@ -251,6 +262,12 @@ public class CuentaEdicionTabPanel {
 				popupAgregarCuenta.hide();
 			}
 		});
+		crearCuenta.addClickListener(new ClickListener() {
+			public void onClick(Widget arg0) {
+				crearCuenta.setTargetHistoryToken(UILoader.AGREGAR_CUENTA+"");
+				popupAgregarCuenta.hide();
+			}
+		});
 		cancelar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				if (editorDirty()) {
@@ -260,8 +277,35 @@ public class CuentaEdicionTabPanel {
 				}
 			}
 		});
+		cerrar.addClickListener(new ClickListener() {
+			public void onClick(Widget arg0) {
+				cancelar();
+			}
+		});
 	}
 
+	/**
+	 * Muestra tab infocom o notas se esté editando una cuento o mostrando opp
+	 * @param editorCuenta
+	 */
+	public void setTabsTipoEditorCuenta(boolean editorCuenta)  {
+		tabPanel.remove(3);
+		if (editorCuenta) {
+			tabPanel.add(cuentaInfocomForm, Sfa.constant().infocom());
+		} else {
+			tabPanel.add(cuentaNotasForm, "Notas");
+		}
+		validarCompletitudButton.setVisible(editorCuenta);
+		clientePanel.setVisible(!editorCuenta);
+		
+		guardar.setVisible(editorCuenta);
+		crearSSButton.setVisible(true);
+		agregarCuentaButton.setVisible(editorCuenta);
+		cancelar.setVisible(editorCuenta);
+		cerrar.setVisible(!editorCuenta);
+		crearCuenta.setVisible(!editorCuenta);
+	}
+	
 	/**
 	 * 
 	 */
@@ -365,6 +409,18 @@ public class CuentaEdicionTabPanel {
 	}
 	public void setCuentaContactoForm(CuentaContactoForm cuentaContactoForm) {
 		this.cuentaContactoForm = cuentaContactoForm;
+	}
+	public CuentaInfocomForm getCuentaInfocomForm() {
+		return cuentaInfocomForm;
+	}
+	public void setCuentaInfocomForm(CuentaInfocomForm cuentaInfocomForm) {
+		this.cuentaInfocomForm = cuentaInfocomForm;
+	}	
+	public CuentaNotasForm getCuentaNotasForm() {
+		return cuentaNotasForm;
+	}
+	public void setCuentaNotasForm(CuentaNotasForm cuentaNotasForm) {
+		this.cuentaNotasForm = cuentaNotasForm;
 	}
 	public GwtValidator getValidator() {
 		return validator;
