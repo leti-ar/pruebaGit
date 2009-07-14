@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.constant;
 
 /**
  * Interface to represent the constants contained in resource bundle:
- * 	'C:/SFA/LocalSFA_v2/sfa_web2/java/sfa-web2/src/main/java/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
+ * 	'/home/jlgperez/workspaceSFASVN/sfa-web2/src/main/java/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
  */
 public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
@@ -232,11 +232,20 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ERR_PATACONEX();
 
   /**
-   * Translated "Debe seleccionar una de las opciones".
+   * Translated "La Solicitud de Servicio debe tener al menos una línea.".
    * 
-   * @return translated "Debe seleccionar una de las opciones"
+   * @return translated "La Solicitud de Servicio debe tener al menos una línea."
    */
-  @DefaultStringValue("Debe seleccionar una de las opciones")
+  @DefaultStringValue("La Solicitud de Servicio debe tener al menos una línea.")
+  @Key("ERR_REQUIRED_LINEA")
+  String ERR_REQUIRED_LINEA();
+
+  /**
+   * Translated "Debe seleccionar una de las opciones.".
+   * 
+   * @return translated "Debe seleccionar una de las opciones."
+   */
+  @DefaultStringValue("Debe seleccionar una de las opciones.")
   @Key("ERR_REQUIRED_SELECTION")
   String ERR_REQUIRED_SELECTION();
 
@@ -295,6 +304,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String MSG_PREGUNTA_GUARDAR();
 
   /**
+   * Translated "Se ha guardado la solicitud con éxito.".
+   * 
+   * @return translated "Se ha guardado la solicitud con éxito."
+   */
+  @DefaultStringValue("Se ha guardado la solicitud con éxito.")
+  @Key("MSG_SOLICITUD_GUARDADA_OK")
+  String MSG_SOLICITUD_GUARDADA_OK();
+
+  /**
    * Translated "Tarjeta válida: La tarjeta ingresada es válida. (se)".
    * 
    * @return translated "Tarjeta válida: La tarjeta ingresada es válida. (se)"
@@ -322,11 +340,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String aclaracion();
 
   /**
-   * Translated "Activacion".
+   * Translated "Activación".
    * 
-   * @return translated "Activacion"
+   * @return translated "Activación"
    */
-  @DefaultStringValue("Activacion")
+  @DefaultStringValue("Activación")
   @Key("activacion")
   String activacion();
 
@@ -610,6 +628,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String crear();
 
   /**
+   * Translated "crear cuenta".
+   * 
+   * @return translated "crear cuenta"
+   */
+  @DefaultStringValue("crear cuenta")
+  @Key("crearCuenta")
+  String crearCuenta();
+
+  /**
    * Translated "^Crear SS".
    * 
    * @return translated "^Crear SS"
@@ -763,11 +790,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String emailPanelTitle();
 
   /**
-   * Translated "<span class=\"req\">Email:</span>".
+   * Translated "<span class=\"req\">E-Mail:</span>".
    * 
-   * @return translated "<span class=\"req\">Email:</span>"
+   * @return translated "<span class=\"req\">E-Mail:</span>"
    */
-  @DefaultStringValue("<span class=\"req\">Email:</span>")
+  @DefaultStringValue("<span class=\"req\">E-Mail:</span>")
   @Key("emailReq")
   String emailReq();
 
@@ -1141,20 +1168,29 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String nombreDosPuntos();
 
   /**
-   * Translated "Numero Cta.".
+   * Translated "Notas".
    * 
-   * @return translated "Numero Cta."
+   * @return translated "Notas"
    */
-  @DefaultStringValue("Numero Cta.")
+  @DefaultStringValue("Notas")
+  @Key("notas")
+  String notas();
+
+  /**
+   * Translated "Número Cta.".
+   * 
+   * @return translated "Número Cta."
+   */
+  @DefaultStringValue("Número Cta.")
   @Key("nroCuenta")
   String nroCuenta();
 
   /**
-   * Translated "Numero Doc.".
+   * Translated "Número Doc.".
    * 
-   * @return translated "Numero Doc."
+   * @return translated "Número Doc."
    */
-  @DefaultStringValue("Numero Doc.")
+  @DefaultStringValue("Número Doc.")
   @Key("nroDocumento")
   String nroDocumento();
 
