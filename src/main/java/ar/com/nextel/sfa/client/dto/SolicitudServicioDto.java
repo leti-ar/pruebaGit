@@ -55,8 +55,10 @@ public class SolicitudServicioDto implements IsSerializable {
 
 	private Date fechaCreacion;
 
-	public SolicitudServicioDto() {
+	private SolicitudServicioGeneracionDto solicitudServicioGeneracion;
 
+	public SolicitudServicioDto() {
+		solicitudServicioGeneracion = new SolicitudServicioGeneracionDto();
 	}
 
 	public Long getId() {
@@ -282,4 +284,13 @@ public class SolicitudServicioDto implements IsSerializable {
 	public void setCuenta(CuentaDto cuenta) {
 		this.cuenta = cuenta;
 	}
+
+	public SolicitudServicioGeneracionDto getSolicitudServicioGeneracion() {
+		return solicitudServicioGeneracion;
+	}
+
+	public void setSolicitudServicioGeneracion(SolicitudServicioGeneracionDto solicitudServicioGeneracion) {
+		this.solicitudServicioGeneracion = solicitudServicioGeneracion;
+	}
+
 }
