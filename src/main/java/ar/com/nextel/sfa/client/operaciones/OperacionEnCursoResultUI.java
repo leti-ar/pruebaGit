@@ -79,8 +79,13 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 		numOperaciones = new Label();
 		numOperaciones.addStyleName("oppEnCursoCantLabel");
 		
+		resultTableReservas = new FlexTable();
+		resultTableOpEnCurso = new FlexTable();
+		resultTableWrapperReserva.add(resultTableReservas);
+		resultTableWrapperOpCurso.add(resultTableOpEnCurso);
+		
 		flowPanelReservaT.add(resultTableWrapperReserva);
-		flowPanelOppEnCursoT.add(resultTableWrapperOpCurso);
+		flowPanelOppEnCursoT.add(resultTableWrapperOpCurso);		
 		
 		add(reservasLabel);
 		add(reservasNoConsultadas);
@@ -201,12 +206,10 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 	}
 	
 	
-	private void loadTableOpCurso(List<OperacionEnCursoDto> opEnCursoActuales) {
-		if (resultTableOpEnCurso != null) {
-			resultTableOpEnCurso.unsinkEvents(Event.getEventsSunk(resultTableOpEnCurso.getElement()));
-			resultTableOpEnCurso.removeFromParent();
+	private void loadTableOpCurso(List<OperacionEnCursoDto> opEnCursoActuales) {		
+		while(resultTableOpEnCurso.getRowCount() > 1){
+			resultTableOpEnCurso.removeRow(1);
 		}
-		resultTableOpEnCurso = new FlexTable();
 		initTableOpenCurso(resultTableOpEnCurso);
 		resultTableWrapperOpCurso.setWidget(resultTableOpEnCurso);
 		int row = 1;
@@ -229,11 +232,9 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 	}
 
 	private void loadTableReservas(List<VentaPotencialVistaDto> vtaPotencialActuales) {
-		if (resultTableReservas != null) {
-			resultTableReservas.unsinkEvents(Event.getEventsSunk(resultTableReservas.getElement()));
-			resultTableReservas.removeFromParent();
+		while(resultTableReservas.getRowCount() > 1){
+			resultTableReservas.removeRow(1);
 		}
-		resultTableReservas = new FlexTable();
 		initTableReservas(resultTableReservas);
 		resultTableWrapperReserva.setWidget(resultTableReservas);
 		int row = 1;
