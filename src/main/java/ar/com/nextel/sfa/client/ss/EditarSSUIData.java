@@ -13,6 +13,7 @@ import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.SolicitudServicioGeneracionDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
@@ -305,7 +306,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 					solicitudServicio.getMontoDisponible());
 		validator.addTarget(pataconex).smallerOrEqual(Sfa.constant().ERR_PATACONEX(),
 				solicitudServicio.getMontoDisponible());
-		validator.fillResult();
+
+		if (solicitudServicio.getLineas().isEmpty()) {
+			validator.addError(Sfa.constant().ERR_REQUIRED_LINEA());
+		}
 
 		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
 			// Pregunta si es de alquiler y busca si tiene uno seleccionado
@@ -324,6 +328,17 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 				}
 			}
 		}
+		// Para el cierre
+		SolicitudServicioGeneracionDto ssg = solicitudServicio.getSolicitudServicioGeneracion();
+		if (ssg != null) {
+			if (ssg.isEmailNuevoChecked()) {
+				validator.addTarget(ssg.getEmailNuevo()).required(
+						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Nuevo Email")).regEx(
+						Sfa.constant().ERR_FORMATO().replaceAll(v1, "Nuevo Email"),
+						RegularExpressionConstants.email);
+			}
+		}
+		validator.fillResult();
 		return validator.getErrors();
 	}
 
@@ -481,6 +496,14 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 
 	public GrupoSolicitudDto getGrupoSolicitud() {
 		return solicitudServicio != null ? solicitudServicio.getGrupoSolicitud() : null;
+	}
+
+	public SolicitudServicioGeneracionDto getSolicitudServicioGeneracion() {
+		return solicitudServicio.getSolicitudServicioGeneracion();
+	}
+
+	public void setSolicitudServicioGeneracion(SolicitudServicioGeneracionDto solicitudServicioGeneracion) {
+		solicitudServicio.setSolicitudServicioGeneracion(solicitudServicioGeneracion);
 	}
 
 }

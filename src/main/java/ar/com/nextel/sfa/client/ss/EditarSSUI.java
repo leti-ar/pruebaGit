@@ -4,6 +4,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
@@ -19,6 +20,7 @@ import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
+import ar.com.nextel.sfa.client.util.MessageUtils;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
@@ -31,6 +33,9 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
@@ -50,8 +55,15 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 	private RazonSocialClienteBar razonSocialClienteBar;
 	private SimpleLink guardarButton;
 	private SimpleLink cancelarButton;
+	private SimpleLink acionesSS;
 	private Button validarCompletitud;
 	private String tokenLoaded;
+	private PopupPanel generarCerrarMenu;
+	private SimpleLink cerrarSolicitud;
+	private SimpleLink generarSolicitud;
+	private DefaultWaitCallback<GeneracionCierreResultDto> generacionCierreCallback;
+	private GenerarSSUI generarSSUI;
+	private boolean cerrandoSolicitud;
 
 	public EditarSSUI() {
 		super();
@@ -133,16 +145,34 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 						loadInitializer(initializer);
 					};
 				});
+
+		generarCerrarMenu = new PopupPanel(true);
+		generarCerrarMenu.addStyleName("dropUpStyle");
+
+		FlowPanel linksCrearSS = new FlowPanel();
+		generarSolicitud = new SimpleLink("Generar");
+		cerrarSolicitud = new SimpleLink("Cerrar");
+		linksCrearSS.add(wrap(generarSolicitud));
+		linksCrearSS.add(wrap(cerrarSolicitud));
+		generarSolicitud.addClickListener(this);
+		cerrarSolicitud.addClickListener(this);
+		generarCerrarMenu.setWidget(linksCrearSS);
+
 		formButtonsBar = new FormButtonsBar();
 		mainPanel.add(formButtonsBar);
 		formButtonsBar.addStyleName("mt10");
-		guardarButton = new SimpleLink("Guardar");
-		cancelarButton = new SimpleLink("Cancelar");
-		formButtonsBar.addLink(guardarButton);
-		formButtonsBar.addLink(new SimpleLink("^SS"));
-		formButtonsBar.addLink(cancelarButton);
+		formButtonsBar.addLink(guardarButton = new SimpleLink("Guardar"));
+		formButtonsBar.addLink(acionesSS = new SimpleLink("^SS"));
+		formButtonsBar.addLink(cancelarButton = new SimpleLink("Cancelar"));
 		guardarButton.addClickListener(this);
+		acionesSS.addClickListener(this);
 		cancelarButton.addClickListener(this);
+	}
+
+	private Widget wrap(Widget w) {
+		SimplePanel wrapper = new SimplePanel();
+		wrapper.setWidget(w);
+		return wrapper;
 	}
 
 	private void loadInitializer(SolicitudInitializer initializer) {
@@ -189,6 +219,13 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 			History.fireCurrentHistoryState();
 		} else if (sender == validarCompletitud) {
 			validate(true);
+		} else if (sender == acionesSS) {
+			generarCerrarMenu.show();
+			generarCerrarMenu.setPopupPosition(acionesSS.getAbsoluteLeft() - 10,
+					acionesSS.getAbsoluteTop() - 50);
+		} else if (sender == generarSolicitud || sender == cerrarSolicitud) {
+			generarCerrarMenu.hide();
+			openGenerarCerrarSolicitdDialog(sender == cerrarSolicitud);
 		}
 	}
 
@@ -197,23 +234,92 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 				new DefaultWaitCallback<SolicitudServicioDto>() {
 					public void success(SolicitudServicioDto result) {
 						editarSSUIData.setSolicitud(result);
-						MessageDialog.getInstance().showAceptar("Guargado Exitoso",
-								"Se ha guardado la solicitud con exito", MessageDialog.getCloseCommand());
+						MessageDialog.getInstance().showAceptar("Guardado Exitoso",
+								Sfa.constant().MSG_SOLICITUD_GUARDADA_OK(), MessageDialog.getCloseCommand());
 						editarSSUIData.setSaved(true);
 					}
 				});
 	}
 
-	private void validate(boolean showErrorDialog) {
+	private void openGenerarCerrarSolicitdDialog(boolean cerrando) {
+		if (validate(true)) {
+			cerrandoSolicitud = cerrando;
+			getGenerarSSUI().setTitleCerrar(cerrando);
+			getGenerarSSUI().show(editarSSUIData.getCuenta().getPersona(),
+					editarSSUIData.getSolicitudServicioGeneracion());
+		}
+	}
+
+	private Command generarCerrarSolicitudCommand() {
+		return new Command() {
+			public void execute() {
+				editarSSUIData.setSolicitudServicioGeneracion(getGenerarSSUI().getGenerarSSUIData()
+						.getSolicitudServicioGeneracion());
+				CerrarSSDialog.getInstance().showLoading(cerrandoSolicitud);
+				List errors = editarSSUIData.validarCompletitud();
+				if (errors.isEmpty()) {
+					SolicitudRpcService.Util.getInstance().generarCerrarSolicitud(
+							editarSSUIData.getSolicitudServicio(), "", cerrandoSolicitud,
+							getGeneracionCierreCallback());
+				} else {
+					CerrarSSDialog.getInstance().hide();
+					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
+					ErrorDialog.getInstance().show(errors, false);
+				}
+			}
+		};
+	}
+
+	private DefaultWaitCallback<GeneracionCierreResultDto> getGeneracionCierreCallback() {
+		if (generacionCierreCallback == null) {
+			generacionCierreCallback = new DefaultWaitCallback<GeneracionCierreResultDto>() {
+				public void success(GeneracionCierreResultDto result) {
+					CerrarSSDialog.getInstance().hide();
+					if (!result.isError()) {
+						editarSSUIData.setSaved(true);
+						Command aceptar = null;
+						if (cerrandoSolicitud) {
+							aceptar = new Command() {
+								public void execute() {
+									History.newItem("");
+									History.fireCurrentHistoryState();
+								}
+							};
+						} else {
+							aceptar = CerrarSSDialog.getCloseCommand();
+						}
+						CerrarSSDialog.getInstance().setAceptarCommand(aceptar);
+						CerrarSSDialog.getInstance().showCierreExitoso();
+					} else {
+						ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
+						ErrorDialog.getInstance().show(MessageUtils.getMessagesHTML(result.getMessages()));
+					}
+				}
+			};
+		}
+		return generacionCierreCallback;
+	}
+
+	private boolean validate(boolean showErrorDialog) {
 		List<String> errors = editarSSUIData.validarCompletitud();
 		if (!errors.isEmpty()) {
 			validarCompletitud.addStyleName(validarCompletitudFailStyle);
 			if (showErrorDialog) {
-				ErrorDialog.getInstance().show(errors);
+				ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
+				ErrorDialog.getInstance().show(errors, false);
 			}
 		} else {
 			validarCompletitud.removeStyleName(validarCompletitudFailStyle);
 		}
+		return errors.isEmpty();
+	}
+
+	private GenerarSSUI getGenerarSSUI() {
+		if (generarSSUI == null) {
+			generarSSUI = new GenerarSSUI();
+			generarSSUI.setAceptarCommand(generarCerrarSolicitudCommand());
+		}
+		return generarSSUI;
 	}
 
 	public EditarSSUIData getEditarSSUIData() {
@@ -223,8 +329,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 	public void getLineasSolicitudServicioInitializer(
 			DefaultWaitCallback<LineasSolicitudServicioInitializer> defaultWaitCallback) {
 		SolicitudRpcService.Util.getInstance().getLineasSolicitudServicioInitializer(
-				editarSSUIData.getGrupoSolicitud(),
-				defaultWaitCallback);
+				editarSSUIData.getGrupoSolicitud(), defaultWaitCallback);
 	}
 
 	public void getListaPrecios(TipoSolicitudDto tipoSolicitudDto,

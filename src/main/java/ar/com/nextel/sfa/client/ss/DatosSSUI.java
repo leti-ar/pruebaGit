@@ -380,6 +380,8 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		}
 		if (!editarSSUIData.getLineasSolicitudServicio().isEmpty()) {
 			onCellClicked(detalleSS, 1, 2);
+		} else {
+			serviciosAdicionales.resizeRows(1);
 		}
 	}
 
@@ -522,12 +524,9 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 	}
 
 	public void refresh() {
-		if (editarSSUIData.getGrupoSolicitud() != null
-				&& !editarSSUIData.getGrupoSolicitud().getId().equals(idGrupoSolicitudActual)) {
-			idGrupoSolicitudActual = editarSSUIData.getGrupoSolicitud().getId();
-			refreshNssLayout();
-			refreshDomicilioLayout();
-		}
+		refreshNssLayout();
+		refreshDomicilioLayout();
 		refreshDetalleSSTable();
 	}
+
 }
