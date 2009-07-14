@@ -45,18 +45,17 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 	private Label oppEnCursoLabel;
 	private Label reservasNoConsultadas;
 	private Label numOperaciones;
-	//private Reserva lastReserva;
-	//private OperacionEnCurso lastOpEnCurso;
-	private int numeroPagina = 1;
-	private Long totalRegistrosBusqueda;
-	
-	public Long getTotalRegistrosBusqueda() {
-		return totalRegistrosBusqueda;
-	}
+	private int cantResultadosPorPagina = 5;
+	//private Long totalRegistrosBusqueda;
 
-	public void setTotalRegistrosBusqueda(Long totalRegistrosBusqueda) {
-		this.totalRegistrosBusqueda = totalRegistrosBusqueda;
-	}
+	
+//	public Long getTotalRegistrosBusqueda() {
+//		return totalRegistrosBusqueda;
+//	}
+//
+//	public void setTotalRegistrosBusqueda(Long totalRegistrosBusqueda) {
+//		this.totalRegistrosBusqueda = totalRegistrosBusqueda;
+//	}
 
 	public OperacionEnCursoResultUI() {
 		super();
@@ -68,20 +67,16 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 		resultTableWrapperOpCurso.addStyleName("resultTableWrapper");
 		
 		tablePageBarReserva = new TablePageBar();
-		tablePageBarReserva.setLastVisible(false);
 		tablePageBarReserva.setBeforeClickCommand(new Command(){
 			public void execute() {
-				//lastCuentaSearchDto.setOffset(tablePageBar.getOffset());
-				searchReservas(false);
+				searchReservas();
 			}
 		});
 		
 		tablePageBarOpCurso = new TablePageBar();
-		tablePageBarOpCurso.setLastVisible(false);
 		tablePageBarOpCurso.setBeforeClickCommand(new Command(){
 			public void execute() {
-				//lastCuentaSearchDto.setOffset(tablePageBar.getOffset());
-				searchOpEnCurso(false);
+				setOpCurso();
 			}
 		});
 		
@@ -112,8 +107,6 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 	}
 	
 	public void searchOperaciones() {
-		tablePageBarReserva.setOffset(0);
-		tablePageBarOpCurso.setOffset(0);
 		this.searchOpEnCurso();
 		this.searchReservas();
 	}
@@ -122,13 +115,11 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 	/**
 	 * Metodo publico que contiene lo que se desea ejecutar la primera vez que se busca.
 	 * (o sea, cuando se hace click al boton Buscar)
-	 * @param: ?? (averiguar cual va en lugar del cuentaSearchDto)
 	 * */
 	public void searchReservas() {
-		tablePageBarReserva.setOffset(0);
-		//tablePageBarReserva.setCantResultadosVisibles(cuentaSearchDto.getCantidadResultados());
-		tablePageBarReserva.setCantResultados(1000);
-		//this.lastReserva = reserva;
+		tablePageBarReserva.setCantResultadosPorPagina(cantResultadosPorPagina);
+		tablePageBarReserva.setCantRegistrosParcI(1);
+		tablePageBarReserva.setCantRegistrosParcF(tablePageBarReserva.getCantResultadosPorPagina());
 		this.searchReservas(true);
 	}
 
@@ -142,7 +133,14 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 	private void searchReservas(boolean firstTime){
 		OperacionesRpcService.Util.getInstance().searchReservas(new DefaultWaitCallback<List<VentaPotencialVistaDto>>() {
 					public void success(List<VentaPotencialVistaDto> result) {
-						setReserva(result);
+						if (result!=null) {
+							vtaPotencial = result;
+							tablePageBarReserva.setCantResultados(vtaPotencial.size());
+							int cantPaginasReserva =  (int) Math.round((vtaPotencial.size() / cantResultadosPorPagina));
+							tablePageBarReserva.setCantPaginas(cantPaginasReserva);
+							tablePageBarReserva.setPagina(1);
+							setReserva();
+						}
 					}
 				});
 	}
@@ -151,13 +149,11 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 	/**
 	 * Metodo publico que contiene lo que se desea ejecutar la primera vez que se busca.
 	 * (o sea, cuando se hace click al boton Buscar)
-	 * @param: ?? (averiguar cual va en lugar del cuentaSearchDto)
 	 * */
 	public void searchOpEnCurso() {
-		tablePageBarOpCurso.setOffset(0);
-		//tablePageBarOpCurso.setCantResultadosVisibles(cuentaSearchDto.getCantidadResultados());
-		tablePageBarOpCurso.setCantResultados(1000);
-		//this.lastOpEnCurso = opEnCurso;
+		tablePageBarOpCurso.setCantResultadosPorPagina(cantResultadosPorPagina);
+		tablePageBarOpCurso.setCantRegistrosParcI(1);
+		tablePageBarOpCurso.setCantRegistrosParcF(tablePageBarOpCurso.getCantResultadosPorPagina());
 		this.searchOpEnCurso(true);
 	}
 
@@ -172,57 +168,50 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 		OperacionesRpcService.Util.getInstance().searchOpEnCurso(new DefaultWaitCallback<List<OperacionEnCursoDto>>() {
 			public void success(List<OperacionEnCursoDto> result) {
 				if (result!=null) {
-					setOpCurso(result);
+					opEnCurso = result;
+					tablePageBarOpCurso.setCantResultados(opEnCurso.size());
+					int cantPaginasOpEnCurso =  (int) Math.round((opEnCurso.size() / cantResultadosPorPagina));
+					tablePageBarOpCurso.setCantPaginas(cantPaginasOpEnCurso);
+					tablePageBarOpCurso.setPagina(1);
+					setOpCurso();
 				}
 			}
 		});
 	}
 	
-	public void setOpCurso(List<OperacionEnCursoDto> opEnCurso) {
-		this.opEnCurso = opEnCurso;
-		tablePageBarOpCurso.setPagina(1);
+	public void setOpCurso() {
 		List<OperacionEnCursoDto> opEnCursoActuales = new ArrayList<OperacionEnCursoDto>(); 
-		if (opEnCurso.size() >= 10){
-			for (int i = 0; i < 5; i++) {
+		if (opEnCurso.size() >= 5){
+			//num = tablePageBarOpCurso.getOffset() + tablePageBarOpCurso.getCantResultadosPorPagina();
+			for (int i = (tablePageBarOpCurso.getCantRegistrosParcI()-1); i < tablePageBarOpCurso.getCantRegistrosParcF(); i++) {
 				opEnCursoActuales.add(opEnCurso.get(i));
 			}
-			tablePageBarOpCurso.setCantRegistrosParcI(1);
-			tablePageBarOpCurso.setCantRegistrosParcF(opEnCursoActuales.size());
 		}else{
-			for (int i = 0; i < vtaPotencial.size(); i++) {
+			for (int i = 0; i < opEnCurso.size(); i++) {
 				opEnCursoActuales.add(opEnCurso.get(i));
 			}
-			tablePageBarOpCurso.setCantRegistrosParcI(1);
-			tablePageBarOpCurso.setCantRegistrosParcF(opEnCursoActuales.size());
 		}
 		tablePageBarOpCurso.setCantRegistrosTot(opEnCurso.size());
 		tablePageBarOpCurso.refrescaLabelRegistros();
 		loadTableOpCurso(opEnCursoActuales);
 	}
 
-	public void setReserva(List<VentaPotencialVistaDto> vtaPotencial) {
-		this.vtaPotencial = vtaPotencial;
-		tablePageBarReserva.setPagina(1);
+	public void setReserva() {
 		List<VentaPotencialVistaDto> vtaPotencialActuales = new ArrayList<VentaPotencialVistaDto>(); 
-		if (vtaPotencial.size() >= 10){
-			for (int i = 0; i < 5; i++) {
+		if (vtaPotencial.size() >= cantResultadosPorPagina){
+			for (int i = 0; i < cantResultadosPorPagina; i++) {
 				vtaPotencialActuales.add(vtaPotencial.get(i));
 			}
-			tablePageBarReserva.setCantRegistrosParcI(1);
-			tablePageBarReserva.setCantRegistrosParcF(vtaPotencialActuales.size());
 		}else{
 			for (int i = 0; i < vtaPotencial.size(); i++) {
 				vtaPotencialActuales.add(vtaPotencial.get(i));
 			}
-			tablePageBarReserva.setCantRegistrosParcI(1);
-			tablePageBarReserva.setCantRegistrosParcF(vtaPotencialActuales.size());
 		}
 		tablePageBarReserva.setCantRegistrosTot(vtaPotencial.size());
 		tablePageBarReserva.refrescaLabelRegistros();
 		loadTableReservas(vtaPotencialActuales);
 	}
 	
-	//Ver por que la primer fila me trae un registro en blanco
 	
 	private void loadTableOpCurso(List<OperacionEnCursoDto> opEnCursoActuales) {
 		if (resultTableOpEnCurso != null) {
@@ -272,7 +261,6 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 			resultTableReservas.setHTML(row, 4, vtaPotencialDto.getNumeroCliente());
 			resultTableReservas.setHTML(row, 5, vtaPotencialDto.getRazonSocial());
 			resultTableReservas.setHTML(row, 6, vtaPotencialDto.getTelefono().toString());
-			//resultTableReservas.setHTML(row, 6, reservaDto.getTelefono().toString());
 			resultTableReservas.setHTML(row, 7, vtaPotencialDto.getNumero());
 			row++;
 		}
