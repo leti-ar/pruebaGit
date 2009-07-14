@@ -33,9 +33,10 @@ public class TablePageBar extends Composite {
 	private int cantRegistrosTot;
 	private int cantRegistrosParcI;
 	private int cantRegistrosParcF;
-	private int offset = 0;
+	private int offset = 1;
 	private int pagina = 1;
 	private int cantPaginas = 1;
+	private int cantResultadosPorPagina;
 	private Command beforeClickCommand;
 
 	public TablePageBar() {
@@ -85,13 +86,10 @@ public class TablePageBar extends Composite {
 		return pagina;
 	}
 
+	
 	public void setPagina(int pagina) {
 		this.pagina = pagina;
-		if((cantResultados == 25) || (cantResultados == 75)){
-			this.cantPaginas = (cantResultados + 5) / 10; 
-		}else{
-			this.cantPaginas = (cantResultados / 10);
-		}
+		this.cantPaginas =  (int) Math.round((cantResultados / cantResultadosPorPagina));
 		pagLabel.setText("Pág " + pagina);
 		cantLabel.setText(" de " + cantPaginas);
 	}
@@ -115,6 +113,14 @@ public class TablePageBar extends Composite {
 	public void setOffset(int offset) {
 		this.offset = offset;
 	}
+	
+	public int getCantResultadosPorPagina() {
+		return cantResultadosPorPagina;
+	}
+
+	public void setCantResultadosPorPagina(int cantResultadosPorPagina) {
+		this.cantResultadosPorPagina = cantResultadosPorPagina;
+	}
 
 	public void setBeforeClickCommand(Command command) {
 		this.beforeClickCommand = command;
@@ -123,74 +129,54 @@ public class TablePageBar extends Composite {
 	public void addListener() {
 		ClickListener listener = new ClickListener() {
 			public void onClick(Widget sender) {
-			/**TODO: Terminar BIEN en la segunda iteacion!!! No ANDA del todo BIEN la colocacion del numero total de registros en la busqueda.
-			 *        Hay que sacar el HardCode, y hacerlo bien generico para no ensuciar tanto el codigo.*/
 				if (sender == next) {
-					setOffset(getOffset() + 11);
-						if (((getPagina()+1) == getCantPaginas()) && ((cantResultados == 25) || (cantResultados == 75))){
-						setPagina(getPagina() + 1);
-						setCantRegistrosTot(cantRegistrosTot);
-						setCantRegistrosParcI(cantRegistrosParcF + 1);
-						setCantRegistrosParcF(cantRegistrosTot);
-					}else{
-						setPagina(getPagina() + 1);
-						setCantRegistrosTot(cantRegistrosTot);
-						setCantRegistrosParcF(cantRegistrosParcF+10);
-						setCantRegistrosParcI(cantRegistrosParcI+10);
-					}
-				refrescaLabelRegistros();
+					//setOffset(getOffset() + cantResultadosPorPagina);
+					//						if (((getPagina()+1) == getCantPaginas())){
+					//						setPagina(getPagina() + 1);
+					//						setCantRegistrosTot(cantRegistrosTot);
+					//						setCantRegistrosParcI(cantRegistrosParcF + 1);
+					//						setCantRegistrosParcF(cantRegistrosTot);
+
+					//						setOffset(getOffset() + cantResultadosPorPagina);
+					//						if (((getPagina()+1) == getCantPaginas()) && ((cantResultados == 25) || (cantResultados == 75))){
+					//						setPagina(getPagina() + 1);
+					//						setCantRegistrosTot(cantRegistrosTot);
+					//						setCantRegistrosParcI(cantRegistrosParcF + 1);
+					//						setCantRegistrosParcF(cantRegistrosTot);
+					//					}else{
+					setPagina(getPagina() + 1);
+					setCantRegistrosTot(cantRegistrosTot);
+					setCantRegistrosParcI(cantRegistrosParcI + cantResultadosPorPagina);
+					setCantRegistrosParcF(cantRegistrosParcF + cantResultadosPorPagina);
+					//					}
+					refrescaLabelRegistros();
 				} else if (sender == first) {
 					if (getPagina() == 1) {
 						return;
 					}
-					setOffset(0);
+					//setOffset(0);
 					setPagina(1);
 					setCantRegistrosParcI(1);
-					setCantRegistrosParcF(10);					
+					if (cantResultadosPorPagina > cantRegistrosTot) {
+						setCantRegistrosParcF(cantRegistrosTot);	
+					} else {
+						setCantRegistrosParcF(cantResultadosPorPagina);
+					}					
 					refrescaLabelRegistros();
 				} else if (sender == last) {
-					setOffset(cantResultados - 10);
-					if((cantResultados == 25) || (cantResultados == 75)){
-						setPagina((cantResultados + 5)/10);
-						setCantRegistrosTot(cantRegistrosTot);
-						if (cantResultados==25){
-							if (cantRegistrosTot != 25){
-								setCantRegistrosParcI(cantRegistrosTot - (25-cantRegistrosTot));
-							}else{
-								setCantRegistrosParcI(cantRegistrosTot - 4);
-							}
-							setCantRegistrosParcF(cantRegistrosTot);
-						}else if (cantResultados==75){
-							if (cantRegistrosTot != 75){
-								setCantRegistrosParcI(cantRegistrosTot - (75-cantRegistrosTot));
-							}else{
-								setCantRegistrosParcI(cantRegistrosTot - 4);
-							}
-							setCantRegistrosParcF(cantRegistrosTot);
-						}
-					}else{
-						setPagina(cantResultados / 10);
-						setCantRegistrosTot(cantRegistrosTot);
-						if (cantRegistrosParcF == cantRegistrosTot){
-							setCantRegistrosParcI(cantRegistrosParcI);	
-						}else{
-							setCantRegistrosParcI(cantRegistrosTot - 9);
-						}
-						setCantRegistrosParcF(cantRegistrosTot);
-					}
+					setPagina(getCantPaginas());
+					setCantRegistrosParcF(cantRegistrosTot);
+					int numResultados =  (cantRegistrosTot - (cantResultadosPorPagina * (cantPaginas-1))) - 1;
+					setCantRegistrosParcI(cantRegistrosTot - numResultados);
 					refrescaLabelRegistros();
 				} else if (sender == prev) {
 					if (getPagina() == 1) {
 						return;
 					}
-					setOffset(getOffset() - 11);
 					setPagina(getPagina() - 1);
-					if(((cantResultados == 25) || (cantResultados == 75)) && (cantRegistrosParcF == cantRegistrosTot)){
-						setCantRegistrosParcF(cantRegistrosParcI-1);
-					}else{
-						setCantRegistrosParcF(cantRegistrosParcF-10);						
-					}
-					setCantRegistrosParcI(cantRegistrosParcI-10);
+					setCantRegistrosTot(cantRegistrosTot);
+					setCantRegistrosParcI(cantRegistrosParcI - cantResultadosPorPagina);
+					setCantRegistrosParcF(cantRegistrosParcF - cantResultadosPorPagina);
 					refrescaLabelRegistros();
 				}
 				if (beforeClickCommand != null) {
