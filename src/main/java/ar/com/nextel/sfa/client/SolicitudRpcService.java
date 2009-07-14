@@ -3,11 +3,11 @@ package ar.com.nextel.sfa.client;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
-import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.ModelosResultDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
@@ -79,6 +79,10 @@ public interface SolicitudRpcService extends RemoteService {
 
 	public ModelosResultDto getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios)
 			throws RpcExceptionMessages;
-	
+
 	public String verificarSim(String sim) throws RpcExceptionMessages;
+
+	public GeneracionCierreResultDto generarCerrarSolicitud(SolicitudServicioDto solicitudServicioDto,
+			String pinMaestro, boolean cerrar) throws RpcExceptionMessages;
+
 }

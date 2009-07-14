@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.server.businessservice;
 
+import org.apache.commons.validator.GenericValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,9 @@ import ar.com.nextel.business.personas.reservaNumeroTelefono.ReservaNumeroTelefo
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
+import ar.com.nextel.business.solicitudes.generacionCierre.GeneracionCierreBusinessOperator;
+import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreRequest;
+import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
 import ar.com.nextel.business.solicitudes.provider.SolicitudServicioProviderResult;
 import ar.com.nextel.components.accessMode.AccessAuthorization;
 import ar.com.nextel.framework.repository.Repository;
@@ -30,6 +34,7 @@ public class SolicitudBusinessService {
 
 	private SolicitudServicioBusinessOperator solicitudesBusinessOperator;
 	private ReservaNumeroTelefonoBusinessOperator reservaNumeroTelefonoBusinessOperator;
+	private GeneracionCierreBusinessOperator generacionCierreBusinessOperator;
 	private FinancialSystem financialSystem;
 	private SessionContextLoader sessionContextLoader;
 	private Repository repository;
@@ -55,6 +60,12 @@ public class SolicitudBusinessService {
 	@Autowired
 	public void setSessionContextLoader(SessionContextLoader sessionContextLoader) {
 		this.sessionContextLoader = sessionContextLoader;
+	}
+
+	@Autowired
+	public void setGeneracionCierreBusinessOperator(
+			@Qualifier("generacionCierreBusinessOperatorBean") GeneracionCierreBusinessOperator generacionCierreBusinessOperator) {
+		this.generacionCierreBusinessOperator = generacionCierreBusinessOperator;
 	}
 
 	@Autowired
@@ -167,5 +178,36 @@ public class SolicitudBusinessService {
 		reservaNumeroTelefonoBusinessOperator.desreservarNumeroTelefono(numero, sessionContextLoader
 				.getVendedor());
 
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public GeneracionCierreResponse generarCerrarSolicitud(SolicitudServicio solicitudServicio,
+			String pinMaestro, boolean cerrar) {
+
+		setScoringChecked(solicitudServicio, pinMaestro);
+		if (cerrar) {
+			// La SS se está invocando desde Objeto B (Interfaz web)
+			solicitudServicio.setSourceModule("B");
+		}
+		GeneracionCierreRequest generacionCierreRequest = new GeneracionCierreRequest(pinMaestro,
+				solicitudServicio);
+		GeneracionCierreResponse response = null;
+		if (cerrar) {
+			response = generacionCierreBusinessOperator.cerrarSolicitudServicio(generacionCierreRequest);
+		} else {
+			response = generacionCierreBusinessOperator.generarSolicitudServicio(generacionCierreRequest);
+		}
+		repository.save(solicitudServicio);
+		return response;
+	}
+
+	private void setScoringChecked(SolicitudServicio solicitudServicio, String pinMaestro) {
+		Boolean pinNotEmpty = !GenericValidator.isBlankOrNull(pinMaestro);
+		// Se generará por scoring si tiene PIN ingresado (EECC) o si se tildá el checkbox de scoring
+		// (Dealers)
+		boolean scoringChecked = pinNotEmpty
+				|| solicitudServicio.getSolicitudServicioGeneracion().getScoringChecked().booleanValue();
+
+		solicitudServicio.getSolicitudServicioGeneracion().setScoringChecked(scoringChecked);
 	}
 }

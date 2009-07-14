@@ -25,11 +25,11 @@ import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaD
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
+import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
 import ar.com.nextel.business.solicitudes.negativeFiles.NegativeFilesBusinessOperator;
 import ar.com.nextel.business.solicitudes.negativeFiles.result.NegativeFilesBusinessResult;
 import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepository;
 import ar.com.nextel.business.solicitudes.search.dto.SolicitudServicioCerradaSearchCriteria;
-import ar.com.nextel.business.vendedores.RegistroVendedores;
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
@@ -50,11 +50,13 @@ import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
+import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.LocalidadDto;
+import ar.com.nextel.sfa.client.dto.MessageDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.ModelosResultDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
@@ -86,7 +88,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private WebApplicationContext context;
 	private SolicitudBusinessService solicitudBusinessService;
 	private Repository repository;
-	private RegistroVendedores registroVendedores;
 	private GenericDao genericDao;
 	private SolicitudServicioBusinessOperator solicitudesBusinessOperator;
 	private VantiveSystem vantiveSystem;
@@ -103,8 +104,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		solicitudesBusinessOperator = (SolicitudServicioBusinessOperator) context
 				.getBean("solicitudServicioBusinessOperatorBean");
 		solicitudBusinessService = (SolicitudBusinessService) context.getBean("solicitudBusinessService");
-
-		registroVendedores = (RegistroVendedores) context.getBean("registroVendedores");
 		genericDao = (GenericDao) context.getBean("genericDao");
 		repository = (Repository) context.getBean("repository");
 
@@ -116,6 +115,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		sessionContextLoader = (SessionContextLoader) context.getBean("sessionContextLoader");
 		negativeFilesBusinessOperator = (NegativeFilesBusinessOperator) context
 				.getBean("negativeFilesBusinessOperator");
+
 	}
 
 	public SolicitudServicioDto createSolicitudServicio(
@@ -348,8 +348,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		Set<ListaPrecios> listasPrecios = tipoSolicitud.getListasPrecios();
 		List<ListaPreciosDto> listasPreciosDto = new ArrayList<ListaPreciosDto>();
 
-		boolean activacion = tipoSolicitud.getTipoSolicitudBase().getId().equals(
-				knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION));
+		boolean activacion = isTipoSolicitudActivacion(tipoSolicitud);
 		// Se realiaza el mapeo de la coleccion a mano para poder filtrar los items por warehouse
 		for (ListaPrecios listaPrecios : listasPrecios) {
 			ListaPreciosDto lista = mapper.map(listaPrecios, ListaPreciosDto.class);
@@ -443,4 +442,26 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		}
 		return null;
 	}
+
+	public GeneracionCierreResultDto generarCerrarSolicitud(SolicitudServicioDto solicitudServicioDto,
+			String pinMaestro, boolean cerrar) throws RpcExceptionMessages {
+		String accion = cerrar ? "cierre" : "generación";
+		AppLogger.info("Iniciando " + accion + " de SS de id=" + solicitudServicioDto.getId() + " ...");
+		GeneracionCierreResultDto result = new GeneracionCierreResultDto();
+		SolicitudServicio solicitudServicio = null;
+		GeneracionCierreResponse response = null;
+		try {
+			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
+			response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar);
+
+			result.setError(response.getMessages().hasErrors());
+			result.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
+		} catch (Exception e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+		AppLogger.info(accion + " de SS de id=" + solicitudServicioDto.getId() + " finalizado.");
+		return result;
+	}
+
 }

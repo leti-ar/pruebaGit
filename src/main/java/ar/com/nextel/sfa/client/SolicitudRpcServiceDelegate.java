@@ -2,9 +2,8 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
@@ -122,5 +121,11 @@ public class SolicitudRpcServiceDelegate {
 	public void verificarSim(String sim, DefaultWaitCallback<String> callback) {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.verificarSim(sim, callback);
+	}
+
+	public void generarCerrarSolicitud(SolicitudServicioDto solicitudServicioDto, String pinMaestro, boolean cerrar,
+			DefaultWaitCallback<GeneracionCierreResultDto> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.generarCerrarSolicitud(solicitudServicioDto, pinMaestro, cerrar, callback);
 	}
 }
