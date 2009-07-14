@@ -155,6 +155,13 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 	</mapping>
 
 	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.SolicitudServicioGeneracion
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.SolicitudServicioGeneracionDto
+		</class-b>
+	</mapping>
+
+	<mapping>
 		<class-a>ar.com.nextel.framework.IdentifiableObject
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.IdentifiableDto
@@ -375,6 +382,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>domicilios</b>
 		</field>
 		<field>
+			<a>emails</a>
+			<b>emails</b>
+		</field>
+		<field>
 			<a>razonSocial</a>
 			<b>razonSocial</b>
 		</field>
@@ -424,7 +435,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>domicilios</b>
 		</field>
 	</mapping>
-	
+
 	<mapping>
 		<class-a>ar.com.nextel.model.personas.beans.Telefono</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.TelefonoDto</class-b>
@@ -508,7 +519,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>tipoContribuyente</b>
 		</field>
 	</mapping>
-	
+
 	<mapping>
 		<class-a>ar.com.nextel.model.cuentas.beans.GranCuenta</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.GranCuentaDto</class-b>
@@ -520,7 +531,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>plainContactos</a>
 			<b>contactos</b>
 		</field>
-	</mapping>	
+	</mapping>
 	<mapping>
 		<class-a>ar.com.nextel.model.cuentas.beans.Division</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.DivisionDto
@@ -531,7 +542,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<class-b>ar.com.nextel.sfa.client.dto.SuscriptorDto
 		</class-b>
 	</mapping>
-	
+
 	<mapping>
 		<class-a>ar.com.nextel.business.personas.normalizarDomicilio.result.MerlinDireccionDTO
 		</class-a>
