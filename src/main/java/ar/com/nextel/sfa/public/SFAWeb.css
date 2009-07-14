@@ -566,6 +566,15 @@ A {
 	overflow: auto;
 	border: 1px #CCC solid;
 }
+
 .reservaTelefonoWrapper TD{
 	text-align: center;
 }
+
+.gwt-CerrarSSDialog .cierreExitosoTable{
+	border: #ccc 1px solid;
+}
+
+SPAN.error{color: red;}
+SPAN.warn{color: #FFA500;}
+SPAN.info{color: #000;}
