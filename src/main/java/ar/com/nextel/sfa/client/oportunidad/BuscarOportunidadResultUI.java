@@ -13,7 +13,6 @@ import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
 import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
-import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Command;
@@ -26,20 +25,21 @@ import com.google.gwt.user.client.ui.SimplePanel;
  * @author eSalvador
  */
 public class BuscarOportunidadResultUI extends FlowPanel {
-	private BuscarOportunidadFilterUI buscarOportunidadFilterUI;
-	private BuscarOportunidadUI buscarOportunidadUI;
+	//private BuscarOportunidadFilterUI buscarOportunidadFilterUI;
+	//private BuscarOportunidadUI buscarOportunidadUI;
 	private BuscarOportunidadFilterUIData buscarOportunidadFilterUIData;
 	private FlexTable resultTable;
 	private SimplePanel resultTableWrapper;
 	private TablePageBar tablePageBar;
 	private List<OportunidadNegocioSearchResultDto> oportunidades;
-	private OportunidadDto lastOportunidadSearchDto;
-	private int numeroPagina = 1;
+	//private OportunidadDto lastOportunidadSearchDto;
+	//private int numeroPagina = 1;
 	private int offset;
 	private Long totalRegistrosBusqueda;
 	private DateTimeFormat FormattedDate = DateTimeFormat.getMediumDateFormat();
 	private Label numResultadosLabel = new Label();
 	private FormButtonsBar footerBar;
+	private int cantResultadosPorPagina = 10;
 
 	public Long getTotalRegistrosBusqueda() {
 		return totalRegistrosBusqueda;
@@ -56,33 +56,21 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 		resultTableWrapper = new SimplePanel();
 		resultTableWrapper.addStyleName("resultTableWrapper");
 		tablePageBar = new TablePageBar();
-		tablePageBar.setLastVisible(false);
 		tablePageBar.setBeforeClickCommand(new Command() {
 			public void execute() {
-				lastOportunidadSearchDto.setOffset(tablePageBar.getOffset());
 				List oportunidadesActuales = new ArrayList<OportunidadNegocioSearchResultDto>();
-				if (tablePageBar.getPagina() <= (tablePageBar.getCantPaginas())){
-					if ((oportunidades.size() >= 10) && (tablePageBar.getCantResultados() != 25 && tablePageBar.getCantResultados()!=75)){
-						for (int i = (tablePageBar.getPagina()-1) *10; i < (tablePageBar.getPagina())*10; i++) {
-							oportunidadesActuales.add(oportunidades.get(i));
-						}
-					}else {
-						for (int i = (tablePageBar.getPagina()-1) *10; i < oportunidades.size(); i++) {
-							oportunidadesActuales.add(oportunidades.get(i));
-						}
+				if (oportunidades.size() >= cantResultadosPorPagina){
+					for (int i = (tablePageBar.getCantRegistrosParcI()-1); i < tablePageBar.getCantRegistrosParcF(); i++) {
+						oportunidadesActuales.add(oportunidades.get(i));
 					}
-				loadTable(oportunidadesActuales);
 				}else{
-					tablePageBar.setPagina(tablePageBar.getPagina()-1);
-					tablePageBar.setCantRegistrosParcI(tablePageBar.getCantRegistrosParcI()-10);
-					tablePageBar.setCantRegistrosParcF(tablePageBar.getCantRegistrosParcF()-10);
-					tablePageBar.refrescaLabelRegistros();
-					ErrorDialog.getInstance().setTitle("Error");
-					ErrorDialog.getInstance().show("No hay más registros disponibles en esta búsqueda.");
+					for (int i = 0; i < oportunidades.size(); i++) {
+						oportunidadesActuales.add(oportunidades.get(i));
+					}
 				}
-				// tablePageBar.setCantPaginas(getTotalRegistrosBusqueda().intValue() /
-				// tablePageBar.getCantResultados());
-				//searchOportunidades(lastOportunidadSearchDto, false);
+				tablePageBar.setCantRegistrosTot(oportunidades.size());
+				tablePageBar.refrescaLabelRegistros();
+				loadTable(oportunidadesActuales);			
 			}
 		});
 		
@@ -92,7 +80,7 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 		add(numResultadosLabel);
 		add(resultTableWrapper);
 		add(tablePageBar);
-		//add(getFooter());
+		add(getFooter());
 		setVisible(false);
 	}
 
@@ -105,10 +93,10 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 	 * */
 		
 	public void searchOportunidades(OportunidadDto oportunidadSearchDto) {	
-		tablePageBar.setOffset(0);
-		tablePageBar.setCantResultados(oportunidadSearchDto.getCantidadResultados());
-		this.lastOportunidadSearchDto = oportunidadSearchDto;
-		this.searchOportunidades(oportunidadSearchDto, true);
+		tablePageBar.setCantResultadosPorPagina(cantResultadosPorPagina);
+		tablePageBar.setCantRegistrosParcI(1);
+		tablePageBar.setCantRegistrosParcF(tablePageBar.getCantResultadosPorPagina());
+		this.searchOportunidades(oportunidadSearchDto, true);		
 	}
 
 	/**
@@ -126,28 +114,28 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 					if (result.size() == 0) {
 						MessageDialog.getInstance().showAceptar("No se encontraron datos con los criterios utilizados", MessageDialog.getCloseCommand());
 					}
-					setOportunidades(result);
+					oportunidades = result;
+					tablePageBar.setCantResultados(oportunidades.size());
+					double calculoCantPaginasReserva = ((double) oportunidades.size() / (double) cantResultadosPorPagina);
+					int cantPaginasReserva = (int) Math.ceil(calculoCantPaginasReserva);
+					tablePageBar.setCantPaginas(cantPaginasReserva);
+					tablePageBar.setPagina(1);
+					setOportunidades();
 				}
 			}
 		});
 	}
 
-	public void setOportunidades(List<OportunidadNegocioSearchResultDto> oportunidades) {
-		this.oportunidades = oportunidades;
-		tablePageBar.setPagina(1);
-		List<OportunidadNegocioSearchResultDto> oportunidadesActuales = new ArrayList<OportunidadNegocioSearchResultDto>(); 
-		if (oportunidades.size() >= 10){
-			for (int i = 0; i < 10; i++) {
+	public void setOportunidades() {
+		List<OportunidadNegocioSearchResultDto> oportunidadesActuales = new ArrayList<OportunidadNegocioSearchResultDto>();
+		if (oportunidades.size() >= cantResultadosPorPagina){
+			for (int i = (tablePageBar.getCantRegistrosParcI()-1); i < tablePageBar.getCantRegistrosParcF(); i++) {
 				oportunidadesActuales.add(oportunidades.get(i));
 			}
-			tablePageBar.setCantRegistrosParcI(1);
-			tablePageBar.setCantRegistrosParcF(oportunidadesActuales.size());
 		}else{
 			for (int i = 0; i < oportunidades.size(); i++) {
 				oportunidadesActuales.add(oportunidades.get(i));
 			}
-			tablePageBar.setCantRegistrosParcI(1);
-			tablePageBar.setCantRegistrosParcF(oportunidadesActuales.size());
 		}
 		tablePageBar.setCantRegistrosTot(oportunidades.size());
 		tablePageBar.refrescaLabelRegistros();
@@ -162,7 +150,6 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 		initTable(resultTable);		
 		int row = 1;
 		for (OportunidadNegocioSearchResultDto oportunidad : oportunidadesActuales) {
-		 // for (OportunidadNegocioSearchResultDto oportunidad : oportunidades) {
 			//resultTable.setWidget(row, 0, IconFactory.lapiz());
 			resultTable.setWidget(row, 0, IconFactory.lapizAnchor(UILoader.EDITAR_CUENTA +  "?opp=" + oportunidad.getIdOportunidadNegocio()));
 			resultTable.setHTML(row, 1, oportunidad.getRazonSocial());
@@ -177,7 +164,7 @@ public class BuscarOportunidadResultUI extends FlowPanel {
 		}
 		numResultadosLabel.setText("Numero de Resultados: " + oportunidades.size());
 		setVisible(true);
-		add(getFooter());
+		//add(getFooter());
 	}
 
 	private void initTable(FlexTable table) {

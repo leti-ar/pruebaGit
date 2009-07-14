@@ -3,12 +3,8 @@ package ar.com.nextel.sfa.client.operaciones;
 import java.util.ArrayList;
 import java.util.List;
 
-import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
-import ar.com.nextel.model.oportunidades.beans.Reserva;
 import ar.com.nextel.sfa.client.OperacionesRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.dto.OportunidadNegocioSearchResultDto;
-import ar.com.nextel.sfa.client.dto.VentaPotencialVistaDto;
 import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
@@ -46,16 +42,7 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 	private Label reservasNoConsultadas;
 	private Label numOperaciones;
 	private int cantResultadosPorPagina = 5;
-	//private Long totalRegistrosBusqueda;
 
-	
-//	public Long getTotalRegistrosBusqueda() {
-//		return totalRegistrosBusqueda;
-//	}
-//
-//	public void setTotalRegistrosBusqueda(Long totalRegistrosBusqueda) {
-//		this.totalRegistrosBusqueda = totalRegistrosBusqueda;
-//	}
 
 	public OperacionEnCursoResultUI() {
 		super();
@@ -69,7 +56,7 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 		tablePageBarReserva = new TablePageBar();
 		tablePageBarReserva.setBeforeClickCommand(new Command(){
 			public void execute() {
-				searchReservas();
+				setReserva();
 			}
 		});
 		
@@ -82,13 +69,13 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 		
 		flowPanelReservaT = new FlowPanel();
 		reservasLabel = new Label("OPP/Reserva");
-		reservasLabel.addStyleName("oppEnCursoLabel");
+		reservasLabel.addStyleName("oppEnCursoTitulosLabel");
 		reservasNoConsultadas = new Label();		
 		reservasNoConsultadas.addStyleName("oppEnCursoCantLabel");
 		
 		flowPanelOppEnCursoT = new FlowPanel();
 		oppEnCursoLabel = new Label("Operaciones en curso");
-		oppEnCursoLabel.addStyleName("oppEnCursoLabel");
+		oppEnCursoLabel.addStyleName("oppEnCursoTitulosLabel");
 		numOperaciones = new Label();
 		numOperaciones.addStyleName("oppEnCursoCantLabel");
 		
@@ -136,7 +123,8 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 						if (result!=null) {
 							vtaPotencial = result;
 							tablePageBarReserva.setCantResultados(vtaPotencial.size());
-							int cantPaginasReserva =  (int) Math.round((vtaPotencial.size() / cantResultadosPorPagina));
+							double calculoCantPaginasReserva = ((double) vtaPotencial.size() / (double) cantResultadosPorPagina);
+							int cantPaginasReserva = (int) Math.ceil(calculoCantPaginasReserva);
 							tablePageBarReserva.setCantPaginas(cantPaginasReserva);
 							tablePageBarReserva.setPagina(1);
 							setReserva();
@@ -170,7 +158,8 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 				if (result!=null) {
 					opEnCurso = result;
 					tablePageBarOpCurso.setCantResultados(opEnCurso.size());
-					int cantPaginasOpEnCurso =  (int) Math.round((opEnCurso.size() / cantResultadosPorPagina));
+					double calculoCantPaginasOpEnCurso = ((double) opEnCurso.size() / (double) cantResultadosPorPagina);
+					int cantPaginasOpEnCurso =  (int) Math.ceil(calculoCantPaginasOpEnCurso);
 					tablePageBarOpCurso.setCantPaginas(cantPaginasOpEnCurso);
 					tablePageBarOpCurso.setPagina(1);
 					setOpCurso();
@@ -181,8 +170,7 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 	
 	public void setOpCurso() {
 		List<OperacionEnCursoDto> opEnCursoActuales = new ArrayList<OperacionEnCursoDto>(); 
-		if (opEnCurso.size() >= 5){
-			//num = tablePageBarOpCurso.getOffset() + tablePageBarOpCurso.getCantResultadosPorPagina();
+		if (opEnCurso.size() >= cantResultadosPorPagina){
 			for (int i = (tablePageBarOpCurso.getCantRegistrosParcI()-1); i < tablePageBarOpCurso.getCantRegistrosParcF(); i++) {
 				opEnCursoActuales.add(opEnCurso.get(i));
 			}
@@ -199,7 +187,7 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 	public void setReserva() {
 		List<VentaPotencialVistaDto> vtaPotencialActuales = new ArrayList<VentaPotencialVistaDto>(); 
 		if (vtaPotencial.size() >= cantResultadosPorPagina){
-			for (int i = 0; i < cantResultadosPorPagina; i++) {
+			for (int i = (tablePageBarReserva.getCantRegistrosParcI()-1); i < tablePageBarReserva.getCantRegistrosParcF(); i++) {
 				vtaPotencialActuales.add(vtaPotencial.get(i));
 			}
 		}else{
