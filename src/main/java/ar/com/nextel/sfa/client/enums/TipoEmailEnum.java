@@ -1,13 +1,16 @@
 package ar.com.nextel.sfa.client.enums;
 
 public enum TipoEmailEnum {
-	PERSONAL(1), 
-	LABORAL (2);
-	private long tipo;
-	TipoEmailEnum(long t) {
-		tipo=t;
+	PERSONAL(Long.valueOf(1)), 
+	LABORAL(Long.valueOf(2));
+	
+	private Long tipo;
+
+	TipoEmailEnum(Long t) {
+		tipo = t;
 	}
-	public long getTipo() {
+
+	public Long getTipo() {
 		return tipo;
 	}
 }
