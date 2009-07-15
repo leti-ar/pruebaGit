@@ -37,7 +37,7 @@ rgm
 .icon-cancel, .icon-copiar, .icon-excel, .icon-lapiz, .icon-locked, .icon-lupa, .icon-silvioSoldan, 
 .icon-tildeVerde, .icon-vistaPreliminar, .icon-word, .icon-nuevo, .icon-comprobar-negro, .icon-comprobar-verde,
 .icon-comprobar-rojo, .icon-locked-other, .icon-scoring, .icon-oportunidad, .icon-prospect, .icon-led-verde,
-.icon-led-amarillo, .icon-led-rojo {
+.icon-led-amarillo, .icon-led-rojo,  .icon-green-flag, .icon-yellow-flag, .icon-red-flag {
 	width: 16px;
 	height: 16px;
 	background-image: url("images/icons.gif");
@@ -71,5 +71,8 @@ rgm
 .icon-led-verde { background-position: -288 0;}
 .icon-led-amarillo { background-position: -304 0;}
 .icon-led-rojo { background-position: -320 0;}
+.icon-green-flag { background-position: -176 0;}
+.icon-yellow-flag { background-position: -192 0;}
+.icon-red-flag { background-position: -208 0;}
 
 

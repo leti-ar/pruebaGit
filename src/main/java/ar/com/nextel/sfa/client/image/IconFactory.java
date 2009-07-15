@@ -36,7 +36,10 @@ public class IconFactory {
 	private static final String ICON_LED_VERDE = "icon-led-verde";
 	private static final String ICON_LED_AMARILLO = "icon-led-amarillo";
 	private static final String ICON_LED_ROJO = "icon-led-rojo";
-
+	private static final String ICON_GREEN_FLAG_STYLE  = "icon-green-flag";
+	private static final String ICON_YELLOW_FLAG_STYLE = "icon-yellow-flag";
+	private static final String ICON_RED_FLAG_STYLE    = "icon-red-flag";
+	
 	public static HTML lockedOther() {
 		return createDiv(ICON_LOCKED_OTHER_STYLE);
 	}
@@ -221,6 +224,19 @@ public class IconFactory {
 		return createDiv(ICON_LED_ROJO, title);
 	}
 
+	public static HTML redFlag() {
+		return createDiv(ICON_RED_FLAG_STYLE, "alta");
+	}
+	
+	public static HTML yellowFlag() {
+		return createDiv(ICON_YELLOW_FLAG_STYLE, "media");
+	}
+	
+	public static HTML greenFlag() {
+		return createDiv(ICON_GREEN_FLAG_STYLE, "baja");
+	}
+	
+	
 	/**
 	 * Retorna un widget HTML ( DIV ) con el estilo que recibe como parámetro
 	 * 

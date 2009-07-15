@@ -93,6 +93,7 @@ public class CuentaUIData extends UIData {
 	private Label cbuLabel      = new Label(Sfa.constant().cbu());
 	private Label numTarLabel   = new Label(Sfa.constant().nroTarjeta());
 	private Label prinLabel     = new Label(Sfa.constant().principal());
+	private Label observLabel   = new Label(Sfa.constant().observaciones());
 	
 	private TextArea observaciones = new TextArea();
 	private SimpleDatePicker fechaNacimiento = new SimpleDatePicker(false, true);
@@ -102,12 +103,28 @@ public class CuentaUIData extends UIData {
 	//PersonaDto persona = new PersonaDto(); // @TODO Para qué se usa? Sin modificador de visibilidad?
 	List <Widget>camposObligatorios =  new ArrayList<Widget>(); 
 	List <Widget>camposObligatoriosFormaPago = new ArrayList<Widget>();
+	List <Widget>labelsObligatorios =  new ArrayList<Widget>();
+	
 	List <TipoTelefonoDto>tipoTelefono = new ArrayList<TipoTelefonoDto>();
 
 	//field para opp
 	private List<RadioButton> motivoNoCierre = new ArrayList<RadioButton>();
 	private Label oppNumero = new Label(Sfa.constant().numero());
 	
+	private Label oppVencimientoLabel         = new Label(Sfa.constant().vencimiento());
+	private Label oppEstadoLabel              = new Label(Sfa.constant().estado());
+	private Label oppCompetenciaProvLabel     = new Label(Sfa.constant().competencia());
+	private Label oppCompetenciaEquipoLabel   = new Label(Sfa.constant().competenciaEq());
+	private Label oppTerminalesEstimadasLabel = new Label(Sfa.constant().terminalesEstimadas());
+	private Label oppVisitasLabel             = new Label(Sfa.constant().visitas());
+	private Label oppVencimiento              = new Label();
+	private Label oppEstado                   = new Label();
+	private Label oppCompetenciaProv          = new Label();
+	private Label oppCompetenciaEquipo        = new Label();
+	private Label oppVisitas                  = new Label();
+	private TextBox oppTipoDocumento          = new TextBox();
+	private TextBox oppRubro                  = new TextBox();
+	private TextBox oppTerminalesEstimadas    = new TextBox();
 	
 	private int currentYear;	
 	
@@ -201,6 +218,20 @@ public class CuentaUIData extends UIData {
 		fields.add(cbu);
 		fields.add(numeroTarjeta);
 		
+		fields.add(oppVencimientoLabel);
+		fields.add(oppEstadoLabel);
+		fields.add(oppCompetenciaProvLabel);
+		fields.add(oppCompetenciaEquipoLabel);
+		fields.add(oppTerminalesEstimadasLabel);
+		fields.add(oppVisitasLabel);
+		fields.add(oppVencimiento);
+		fields.add(oppEstado);
+		fields.add(oppCompetenciaProv);
+		fields.add(oppCompetenciaEquipo);
+		fields.add(oppVisitas);
+		fields.add(oppTipoDocumento);
+		fields.add(oppRubro);
+		fields.add(oppTerminalesEstimadas);
 	}
 
 	private void setCombos() {
@@ -243,17 +274,12 @@ public class CuentaUIData extends UIData {
 	
 	private void setAtributosDeCampos() {
 
-		//obligatorios (style)
-		nombreLabel.addStyleName("req");
-		nomDivLabel.addStyleName("req");
-		apellidoLabel.addStyleName("req");
-		razSocLabel.addStyleName("req");		
-		contrLabel.addStyleName("req");
-		provAntLabel.addStyleName("req");
-		rubroLabel.addStyleName("req");
-		prinLabel.addStyleName("req");
-		cbuLabel.addStyleName("req");
-		numTarLabel.addStyleName("req");
+		//style
+		oppVencimiento.addStyleName("fontNormalGris");
+		oppEstado.addStyleName("fontNormalGris");
+		oppCompetenciaProv.addStyleName("fontNormalGris");
+		oppCompetenciaEquipo.addStyleName("fontNormalGris");
+		oppVisitas.addStyleName("fontNormalGris");
 		
         //nombres
 		nombre.setName(Sfa.constant().nombre());
@@ -534,6 +560,24 @@ public class CuentaUIData extends UIData {
 		camposObligatorios.add(telPrincipalTextBox.getNumero());
 		return camposObligatorios;
 	}
+	
+	public List<Widget> getLabelsObligatorios() {
+		if (labelsObligatorios.isEmpty()) {
+			labelsObligatorios.add(nombreLabel);
+			labelsObligatorios.add(nomDivLabel);
+			labelsObligatorios.add(apellidoLabel);
+			labelsObligatorios.add(razSocLabel);		
+			labelsObligatorios.add(contrLabel);
+			labelsObligatorios.add(provAntLabel);
+			labelsObligatorios.add(rubroLabel);
+			labelsObligatorios.add(prinLabel);
+			labelsObligatorios.add(cbuLabel);
+			labelsObligatorios.add(numTarLabel);
+		}
+		return labelsObligatorios;
+	}
+	
+	
 	public List<Widget> getCamposObligatoriosFormaPago() {
 		return camposObligatoriosFormaPago;
 	}
@@ -548,6 +592,54 @@ public class CuentaUIData extends UIData {
 	}
 	public List<RadioButton> getMotivoNoCierre() {
 		return motivoNoCierre;
+	}
+	public Label getObservLabel() {
+		return observLabel;
+	}
+	public Label getOppNumero() {
+		return oppNumero;
+	}
+	public Label getOppVencimientoLabel() {
+		return oppVencimientoLabel;
+	}
+	public Label getOppEstadoLabel() {
+		return oppEstadoLabel;
+	}
+	public Label getOppCompetenciaProvLabel() {
+		return oppCompetenciaProvLabel;
+	}
+	public Label getOppCompetenciaEquipoLabel() {
+		return oppCompetenciaEquipoLabel;
+	}
+	public Label getOppTerminalesEstimadasLabel() {
+		return oppTerminalesEstimadasLabel;
+	}
+	public Label getOppVisitasLabel() {
+		return oppVisitasLabel;
+	}
+	public TextBox getOppTipoDocumento() {
+		return oppTipoDocumento;
+	}
+	public Label getOppVencimiento() {
+		return oppVencimiento;
+	}
+	public Label getOppEstado() {
+		return oppEstado;
+	}
+	public TextBox getOppRubro() {
+		return oppRubro;
+	}
+	public Label getOppCompetenciaProv() {
+		return oppCompetenciaProv;
+	}
+	public Label getOppCompetenciaEquipo() {
+		return oppCompetenciaEquipo;
+	}
+	public TextBox getOppTerminalesEstimadas() {
+		return oppTerminalesEstimadas;
+	}
+	public Label getOppVisitas() {
+		return oppVisitas;
 	}
 	
 }

@@ -24,19 +24,21 @@ import com.google.gwt.user.client.History;
 public class EditarCuentaUI extends ApplicationUI {
 
 	private final CuentaEdicionTabPanel cuentaTab = CuentaEdicionTabPanel.getInstance();
+	private boolean esEdicionCuenta =  true;
 	
 	public EditarCuentaUI() {
 		super();
 	}
 
 	public boolean load() {
+		resetEditor();
+		esEdicionCuenta = true;
 		//viene de popup "Agregar Cuenta"
 		if (HistoryUtils.getParam("nroDoc")!=null) {
 			TipoDocumentoDto tipoDoc = new TipoDocumentoDto(Long.parseLong(HistoryUtils.getParam("tipoDoc")),null);
 			DocumentoDto docDto = new DocumentoDto(HistoryUtils.getParam("nroDoc"),tipoDoc);
 			CuentaRpcService.Util.getInstance().reservaCreacionCuenta(docDto,new DefaultWaitCallback<GranCuentaDto>() {
 				public void success(GranCuentaDto cuentaDto) {
-					resetEditor();
 					cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(cuentaDto);
 					completarVisualizacionDatos(cuentaDto);
 				}
@@ -46,7 +48,6 @@ public class EditarCuentaUI extends ApplicationUI {
 			Long id_cuentaPadre = Long.parseLong(HistoryUtils.getParam("cuenta_id"));				
 			CuentaRpcService.Util.getInstance().crearDivision(id_cuentaPadre,new DefaultWaitCallback<CuentaDto>() {
 				public void success(CuentaDto cuentaDto) {
-					resetEditor();
 					cuentaTab.getCuentaDatosForm().setAtributosCamposAlAgregarDivision(cuentaDto);
 					completarVisualizacionDatos(cuentaDto);
 				}
@@ -56,7 +57,6 @@ public class EditarCuentaUI extends ApplicationUI {
 			Long id_cuentaPadre = Long.parseLong(HistoryUtils.getParam("cuenta_id"));				
 			CuentaRpcService.Util.getInstance().crearSuscriptor(id_cuentaPadre,new DefaultWaitCallback<CuentaDto>() {
 				public void success(CuentaDto cuentaDto) {
-					resetEditor();
 					cuentaTab.getCuentaDatosForm().setAtributosCamposAlAgregarSuscriptor(cuentaDto);
 					completarVisualizacionDatos(cuentaDto);
 				}
@@ -66,8 +66,9 @@ public class EditarCuentaUI extends ApplicationUI {
 			Long cuenta_id = new Long(HistoryUtils.getParam("opp"));
 			CuentaRpcService.Util.getInstance().getCuentaPotencial(cuenta_id,new DefaultWaitCallback<CuentaPotencialDto>() {
 				public void success(CuentaPotencialDto cuentaPotDto) {
-					resetEditor();
+					esEdicionCuenta = false;
 					CuentaDto cuentaDto = (CuentaDto)cuentaPotDto.getCuentaOrigen();
+					cuentaTab.setPriorityFlag(new Long("1"));
 				    cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusquedaFromOpp(cuentaDto);
 					completarVisualizacionDatos(cuentaDto);
 				}
@@ -79,7 +80,6 @@ public class EditarCuentaUI extends ApplicationUI {
 			CuentaRpcService.Util.getInstance().selectCuenta(cuentaID, cod_vantive,new DefaultWaitCallback<CuentaDto>() {
 				public void success(CuentaDto cuentaDto) {
 					if (puedenMostrarseDatos(cuentaDto)) {
-						resetEditor();
 						cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusqueda(cuentaDto);
 						completarVisualizacionDatos(cuentaDto);
 					}
@@ -97,6 +97,7 @@ public class EditarCuentaUI extends ApplicationUI {
 		cuentaTab.getTabPanel().selectTab(0);
 		CuentaDomiciliosForm.getInstance().setHuboCambios(false);
 		CuentaContactoForm.getInstance().setFormDirty(false);
+		cuentaTab.setPriorityFlag(new Long("0"));
 	}
 	
 	/**
@@ -105,7 +106,10 @@ public class EditarCuentaUI extends ApplicationUI {
 	 */
 	private void completarVisualizacionDatos(CuentaDto cuentaDto) {
 		cuentaTab.setCuenta2editDto(cuentaDto);
-		cuentaTab.getCuentaDatosForm().armarTablaPanelDatos();
+		if (!esEdicionCuenta) 
+			cuentaTab.getCuentaDatosForm().armarTablaPanelOppDatos();
+		else 
+			cuentaTab.getCuentaDatosForm().armarTablaPanelDatos();
 		cargaPanelesCuenta();
 		cuentaTab.validarCompletitud(false);
 	}
@@ -138,7 +142,6 @@ public class EditarCuentaUI extends ApplicationUI {
 	 * 
 	 */
 	private void cargaPanelesCuenta() {
-		boolean esEdicionCuenta = HistoryUtils.getParam("opp")==null; //si no viene de opp, se considera edicion de cuenta
 		
 		//Busca la cuenta con alguno de los dos datos NO nulos.
 		CuentaDto cuenta = (CuentaDto)cuentaTab.getCuenta2editDto(); 

@@ -41,6 +41,7 @@ import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
+import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -75,7 +76,7 @@ public class CuentaDatosForm extends Composite {
 	private FlexTable tarjetaTable        = new FlexTable();
 
 	private TitledPanel datosCuentaPanel  = new TitledPanel(Sfa.constant().cuentaPanelTitle());
-	private TitledPanel datosOppPanel     = new TitledPanel("Datos OPP");
+	private TitledPanel datosOppPanel     = new TitledPanel(Sfa.constant().cuentaPanelTitle());
 	private TitledPanel formaDePagoPanel  = new TitledPanel(Sfa.constant().formaDePagoPanelTitle());;
 	private TitledPanel vendedorPanel     = new TitledPanel(Sfa.constant().vendedorPanelTitle());
 
@@ -87,6 +88,7 @@ public class CuentaDatosForm extends Composite {
 	private boolean showPanelDatosCuenta = true;
 	private boolean showCamposUSE = false;
 	private static final String ANCHO_PRIMER_COLUMNA = "11%";
+	private static final String ANCHO_TERCER_COLUMNA = "6%";
 	private static final String ANCHO_TABLA_PANEL    = "80%";
 	
 	private List<String> estilos = new ArrayList<String>();
@@ -241,48 +243,62 @@ public class CuentaDatosForm extends Composite {
 		datosOppTable.getFlexCellFormatter().setColSpan(1, 1, 4);
 		
 		int row = 0;
-		datosOppTable.setWidget(row, 0, camposTabDatos.getTipoDocLabel());
-		datosOppTable.setWidget(row, 1, camposTabDatos.getTipoDocumento());
-		datosOppTable.setWidget(row, 3, camposTabDatos.getNumDocLabel());
-		datosOppTable.setWidget(row, 4, camposTabDatos.getNumeroDocumento());
-		datosOppTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
-		row++; 
+		datosOppTable.setWidget(row, 0, null);
+		datosOppTable.setWidget(row, 1, null);
+		datosOppTable.setWidget(row, 2, null);
+		datosOppTable.setWidget(row, 3, null);
+		row++;
 		datosOppTable.setWidget(row, 0, camposTabDatos.getRazSocLabel());
 		datosOppTable.setWidget(row, 1, camposTabDatos.getRazonSocial());
-		datosOppTable.getFlexCellFormatter().setColSpan(row, 1, 4);
+		datosOppTable.getFlexCellFormatter().setColSpan(row, 1, 3);
 		datosOppTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
+		
 		row++;
 		datosOppTable.setWidget(row, 0, camposTabDatos.getNombreLabel());
 		datosOppTable.setWidget(row, 1, camposTabDatos.getNombre());
-		datosOppTable.setWidget(row, 3, camposTabDatos.getApellidoLabel());
-		datosOppTable.setWidget(row, 4, camposTabDatos.getApellido());
+		datosOppTable.setWidget(row, 2, camposTabDatos.getApellidoLabel());
+		datosOppTable.setWidget(row, 3, camposTabDatos.getApellido());
 		datosOppTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
+		datosOppTable.getFlexCellFormatter().setWidth(row, 2, ANCHO_TERCER_COLUMNA);
 		row++;
-		datosOppTable.setWidget(row, 0, camposTabDatos.getSexoLabel());
-		datosOppTable.setWidget(row, 1, camposTabDatos.getSexo());
-		datosOppTable.setWidget(row, 3, camposTabDatos.getFecNacLabel());
-		datosOppTable.setWidget(row, 4, camposTabDatos.getFechaNacimientoGrid());
+		datosOppTable.setWidget(row, 0, camposTabDatos.getTipoDocLabel());
+		datosOppTable.setWidget(row, 1, camposTabDatos.getOppTipoDocumento());
+		datosOppTable.setWidget(row, 2, camposTabDatos.getNumDocLabel());
+		datosOppTable.setWidget(row, 3, camposTabDatos.getNumeroDocumento());
 		datosOppTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
+		datosOppTable.getFlexCellFormatter().setWidth(row, 2, ANCHO_TERCER_COLUMNA);
 		row++;
-		datosOppTable.setWidget(row, 0, camposTabDatos.getContrLabel());
-		datosOppTable.setWidget(row, 1, camposTabDatos.getContribuyente());
+		FlexTable tabla = new FlexTable();
+		tabla.setWidth("50%");
+		tabla.setWidget(0, 0, camposTabDatos.getOppEstado());
+		tabla.setWidget(0, 1, IconFactory.lapizAnchor(UILoader.EDITAR_CUENTA +  ""));
+		datosOppTable.setWidget(row, 0, camposTabDatos.getOppVencimientoLabel());
+		datosOppTable.setWidget(row, 1, camposTabDatos.getOppVencimiento());
+		datosOppTable.setWidget(row, 2, camposTabDatos.getOppEstadoLabel());
+		datosOppTable.setWidget(row, 3, tabla);
+		datosOppTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
+		datosOppTable.getFlexCellFormatter().setWidth(row, 2, ANCHO_TERCER_COLUMNA);
+		row++;
+		datosOppTable.setWidget(row, 0, camposTabDatos.getRubroLabel());
+		datosOppTable.setWidget(row, 1, camposTabDatos.getOppRubro());
+		datosOppTable.setWidget(row, 2, camposTabDatos.getOppCompetenciaProvLabel());
+		datosOppTable.setWidget(row, 3, camposTabDatos.getOppCompetenciaProv());
+		datosOppTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
+		datosOppTable.getFlexCellFormatter().setWidth(row, 2, ANCHO_TERCER_COLUMNA);
+		row++;
+		datosOppTable.setWidget(row, 0, camposTabDatos.getOppCompetenciaEquipoLabel());
+		datosOppTable.setWidget(row, 1, camposTabDatos.getOppCompetenciaEquipo());
+		datosOppTable.setWidget(row, 2, camposTabDatos.getOppTerminalesEstimadasLabel());
+		datosOppTable.setWidget(row, 3, camposTabDatos.getOppTerminalesEstimadas());
+		datosOppTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
+		datosOppTable.getFlexCellFormatter().setWidth(row, 2, ANCHO_TERCER_COLUMNA);
+		row++;
+		datosOppTable.setWidget(row, 0, camposTabDatos.getOppVisitasLabel());
+		datosOppTable.setWidget(row, 1, camposTabDatos.getOppVisitas());
+		datosOppTable.setWidget(row, 2, null);
 		datosOppTable.setWidget(row, 3, null);
-		datosOppTable.setWidget(row, 4, null);
 		datosOppTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
-		row++;
-//		if(camposTabDatos.getCargoLabel().isVisible()) {
-//			datosOppTable.setWidget(row, 0, camposTabDatos.getCargoLabel());
-//			datosOppTable.setWidget(row, 1, camposTabDatos.getCargo());
-//			datosOppTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
-//			row++;
-//		} else {
-//			datosOppTable.removeRow(row);
-//		}
-		datosOppTable.setWidget(row, 0, camposTabDatos.getProvAntLabel());
-		datosOppTable.setWidget(row, 1, camposTabDatos.getProveedorAnterior());
-		datosOppTable.setWidget(row, 3, camposTabDatos.getRubroLabel());
-		datosOppTable.setWidget(row, 4, camposTabDatos.getRubro());
-		datosOppTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
+		
 	}
 
 	public void inicializarVeraz(Label verazLabel) {
@@ -294,13 +310,11 @@ public class CuentaDatosForm extends Composite {
 	}
 
 	public PersonaDto getVerazSearch(TextBox numDoc, ListBox tipoDoc, ListBox sexo) {
-		//if ((numDoc!=null) && (tipoDoc!=null) && (sexo!=null)) {
-			PersonaDto personaDto = new PersonaDto();
-			DocumentoDto documentoDto = new DocumentoDto(numDoc.getText(), (TipoDocumentoDto) tipoDoc.getSelectedItem());
-			personaDto.setDocumento(documentoDto);
-			personaDto.setIdTipoDocumento(documentoDto.getTipoDocumento().getId());
-			personaDto.setSexo((SexoDto) sexo.getSelectedItem());
-		//} 
+		PersonaDto personaDto = new PersonaDto();
+		DocumentoDto documentoDto = new DocumentoDto(numDoc.getText(), (TipoDocumentoDto) tipoDoc.getSelectedItem());
+		personaDto.setDocumento(documentoDto);
+		personaDto.setIdTipoDocumento(documentoDto.getTipoDocumento().getId());
+		personaDto.setSexo((SexoDto) sexo.getSelectedItem());
 		return personaDto;
 	}
 	
@@ -311,7 +325,7 @@ public class CuentaDatosForm extends Composite {
 		telefonoPanel.add(telefonoTable);
 		camposTabDatos.getObservaciones().addStyleName("obsTextAreaCuentaDatos");
 		
-		telefonoTable.setText(0, 0, Sfa.constant().principal());
+		telefonoTable.setWidget(0, 0, camposTabDatos.getPrincLabel());
 		telefonoTable.setWidget(0, 1, camposTabDatos.getTelPrincipalTextBox());
 		telefonoTable.setText(0, 2, Sfa.constant().adicional());
 		telefonoTable.setWidget(0, 3, camposTabDatos.getTelAdicionalTextBox());
@@ -319,10 +333,9 @@ public class CuentaDatosForm extends Composite {
 		telefonoTable.setWidget(1, 1, camposTabDatos.getTelCelularTextBox());
 		telefonoTable.setText(1, 2, Sfa.constant().fax());
 		telefonoTable.setWidget(1, 3, camposTabDatos.getTelFaxTextBox());
-		telefonoTable.setText(2, 0, Sfa.constant().observaciones());
+		telefonoTable.setWidget(2, 0, camposTabDatos.getObservLabel());
 		telefonoTable.setWidget(2, 1, camposTabDatos.getObservaciones());
 		telefonoTable.getFlexCellFormatter().setColSpan(2, 1, 3);
-		telefonoTable.getFlexCellFormatter().addStyleName(0, 0, "req");
 		telefonoTable.getFlexCellFormatter().setWidth(0, 0, ANCHO_PRIMER_COLUMNA);
 		telefonoTable.getFlexCellFormatter().setWidth(1, 0, ANCHO_PRIMER_COLUMNA);
 		telefonoTable.getFlexCellFormatter().setWidth(2, 0, ANCHO_PRIMER_COLUMNA);
@@ -644,7 +657,8 @@ public class CuentaDatosForm extends Composite {
 
 		camposTabDatos.getCargo().setVisible(cuentaDto.getPersona().getSexo().getItemValue().equals(Long.toString(SexoEnum.ORGANIZACION.getId())));
 		camposTabDatos.getCargoLabel().setVisible(cuentaDto.getPersona().getSexo().getItemValue().equals(Long.toString(SexoEnum.ORGANIZACION.getId())));
-		
+		camposTabDatos.getObservaciones().setVisible(true);
+		camposTabDatos.getObservLabel().setVisible(true);
 		vendedorPanel.setVisible(false);
 
 	}
@@ -720,48 +734,43 @@ public class CuentaDatosForm extends Composite {
 		
 		List <Widget>disabledFields = new ArrayList<Widget>();
 		
-		if(cuentaDto.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.DIV.getTipo())) {
-			setAtributosCamposAlAgregarDivision(cuentaDto);
-			disabledFields.add(camposTabDatos.getNombreDivision());
-		} else 	if(cuentaDto.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.SUS.getTipo())) {
+		if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.SUS.getTipo())) 
 			setAtributosCamposAlAgregarSuscriptor(cuentaDto);
-		} else {
+		else 
 			setAtributosCamposCuenta(cuentaDto);
-		}
 
 		disabledFields.add(camposTabDatos.getNombre());
 		disabledFields.add(camposTabDatos.getApellido());
-		disabledFields.add(camposTabDatos.getSexo());
-		disabledFields.add(camposTabDatos.getFechaNacimiento());
-		disabledFields.add(camposTabDatos.getProveedorAnterior());
-		disabledFields.add(camposTabDatos.getContribuyente());
-		disabledFields.add(camposTabDatos.getCargo());
 		disabledFields.add(camposTabDatos.getRubro());
-		disabledFields.add(camposTabDatos.getIibb());
-		disabledFields.add(camposTabDatos.getClaseCliente());
-		disabledFields.add(camposTabDatos.getCategoria());
-		
 		disabledFields.add(camposTabDatos.getTelPrincipalTextBox().getArea());
 		disabledFields.add(camposTabDatos.getTelPrincipalTextBox().getNumero());
 		disabledFields.add(camposTabDatos.getTelPrincipalTextBox().getInterno());
-		disabledFields.add(camposTabDatos.getObservaciones());
-
-		if (!camposTabDatos.getEmailPersonal().getText().equals("")) 
-			disabledFields.add(camposTabDatos.getEmailPersonal());
-
-		disabledFields.add(camposTabDatos.getFormaPago());
-		disabledFields.add(camposTabDatos.getCbu());
-		disabledFields.add(camposTabDatos.getTipoCuentaBancaria());
-		disabledFields.add(camposTabDatos.getTipoTarjeta());
-		disabledFields.add(camposTabDatos.getNumeroTarjeta());
-		disabledFields.add(camposTabDatos.getAnioVto());
-		disabledFields.add(camposTabDatos.getMesVto());
-
-		disabledFields.add(camposTabDatos.getVendedorNombre());
-		disabledFields.add(camposTabDatos.getVendedorTelefono());
-		disabledFields.add(camposTabDatos.getTipoCanalVentas());
-		showPanelDatosCuenta = false;
+		disabledFields.add(camposTabDatos.getTelAdicionalTextBox().getArea());
+		disabledFields.add(camposTabDatos.getTelAdicionalTextBox().getNumero());
+		disabledFields.add(camposTabDatos.getTelAdicionalTextBox().getInterno());
+		disabledFields.add(camposTabDatos.getTelCelularTextBox().getArea());
+		disabledFields.add(camposTabDatos.getTelCelularTextBox().getNumero());
+		disabledFields.add(camposTabDatos.getTelFaxTextBox().getArea());
+		disabledFields.add(camposTabDatos.getTelFaxTextBox().getNumero());
+		disabledFields.add(camposTabDatos.getTelFaxTextBox().getInterno());
+		disabledFields.add(camposTabDatos.getEmailPersonal());
+		disabledFields.add(camposTabDatos.getEmailLaboral());
+		
+		disabledFields.add(camposTabDatos.getOppTipoDocumento());
+		disabledFields.add(camposTabDatos.getOppRubro());
+		disabledFields.add(camposTabDatos.getOppEstado());
+		disabledFields.add(camposTabDatos.getOppVencimiento());
+		disabledFields.add(camposTabDatos.getOppCompetenciaProv());
+		disabledFields.add(camposTabDatos.getOppCompetenciaEquipo());
+		disabledFields.add(camposTabDatos.getOppTerminalesEstimadas());
+		disabledFields.add(camposTabDatos.getOppVisitas());
+		
 		FormUtils.disableFields(disabledFields);
+		camposTabDatos.getObservaciones().setVisible(false);
+		camposTabDatos.getObservLabel().setVisible(false);
+		
+		showPanelDatosCuenta = false;
+		
 	}
 	
     public void setUItipoEditorCuenta(boolean editorCuenta) {
@@ -771,6 +780,15 @@ public class CuentaDatosForm extends Composite {
 		//usuario.setVisible(editorCuenta);
 		fechaUsuarioTable.setVisible(editorCuenta);
 		vendedorPanel.setVisible(editorCuenta);
+		if (editorCuenta) {
+			for (Widget label : camposTabDatos.getLabelsObligatorios()) {
+				label.addStyleName("req");
+			}
+		} else {
+			for (Widget label : camposTabDatos.getLabelsObligatorios()) {
+				label.removeStyleName("req");
+			}
+		}
     }
 	
 	public boolean formularioDatosDirty() {
@@ -919,13 +937,13 @@ public class CuentaDatosForm extends Composite {
 	 * selecciona la opcion del combo sexo que corresponde al tipo de documento
 	 */
 	public void setDefaultComboSexo(long tipoDocId, String docNumero) {
-	    if (tipoDocId==TipoDocumentoEnum.LC.getTipo()) {
-	    	camposTabDatos.getSexo().selectByValue(Long.toString(SexoEnum.FEMENINO.getId()));
-	    } else if (tipoDocId==TipoDocumentoEnum.CUIT.getTipo()||tipoDocId==TipoDocumentoEnum.CUIT_EXT.getTipo()) {
-	    	camposTabDatos.getSexo().selectByValue(Long.toString(SexoEnum.getId(docNumero)));
-	    } else{
-	    	camposTabDatos.getSexo().selectByValue(Long.toString(SexoEnum.MASCULINO.getId()));
-	    }
+		if (tipoDocId==TipoDocumentoEnum.LC.getTipo()) 
+			camposTabDatos.getSexo().selectByValue(Long.toString(SexoEnum.FEMENINO.getId()));
+		else if (tipoDocId==TipoDocumentoEnum.CUIT.getTipo()||tipoDocId==TipoDocumentoEnum.CUIT_EXT.getTipo()) 
+			camposTabDatos.getSexo().selectByValue(Long.toString(SexoEnum.getId(docNumero)));
+		else
+			camposTabDatos.getSexo().selectByValue(Long.toString(SexoEnum.MASCULINO.getId()));
+
 	}
 	
 	/**

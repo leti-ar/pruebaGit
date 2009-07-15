@@ -6,6 +6,9 @@ import java.util.List;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.enums.PrioridadEnum;
+import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
@@ -35,8 +38,21 @@ public class CuentaEdicionTabPanel {
 	private FlexTable marco = new FlexTable();
 	public  DualPanel razonSocialPanel = new DualPanel();
 	public  DualPanel clientePanel     = new DualPanel();
+	public  DualPanel numeroCtaPotPanel= new DualPanel();
+	
+	public  Label razonSocialLabel = new Label(Sfa.constant().razonSocial()+":");
+	public  Label clienteLabel     = new Label(Sfa.constant().cliente()+":");
+	public  Label numeroCtaPotLabel= new Label(Sfa.constant().numero()+":");
+
 	private Label razonSocial  = new Label();
 	private Label cliente      = new Label();
+	private Label numeroCtaPot = new Label();
+	public  HTML redFlagIcon   = IconFactory.redFlag();
+	public  HTML yellowFlagIcon= IconFactory.yellowFlag();
+	public  HTML greenFlagIcon = IconFactory.greenFlag();
+	
+	private FlexTable marcoCliente = new FlexTable();
+	
 	private CuentaDto            cuenta2editDto;
 	private CuentaDatosForm      cuentaDatosForm      = CuentaDatosForm.getInstance();
 	private CuentaDomiciliosForm cuentaDomiciliosForm = CuentaDomiciliosForm.getInstance();
@@ -49,6 +65,7 @@ public class CuentaEdicionTabPanel {
 	public Button validarCompletitudButton;
 	public static final String VALIDAR_COMPLETITUD_FAIL_STYLE = "validarCompletitudFailButton";
 	public static final String ID_CUENTA = "idCuenta";
+	public static final int CANT_PESTANIAS_FIJAS = 3;
 	private GwtValidator validator = new GwtValidator();
 	
 	public SimpleLink guardar;
@@ -66,11 +83,9 @@ public class CuentaEdicionTabPanel {
 	private Hyperlink  agregarDivision;
 	private Hyperlink  agregarSuscriptor;
 	
-
 	List<String> erroresValidacion = new ArrayList<String>();
     private Command aceptarCommand;
     private Command cancelarCommand;
-	
 
 	public static CuentaEdicionTabPanel getInstance() {
 		return instance;
@@ -92,17 +107,12 @@ public class CuentaEdicionTabPanel {
 		marco = new FlexTable();
 		marco.setWidth("100%");
 		marco.setWidget(0, 0, new HTML("<br/>"));
-		marco.setWidget(1, 0, razonSocialPanel);
-		marco.setWidget(1, 1, clientePanel);
+		
+		marco.setWidget(1, 0, marcoCliente);
 		marco.setWidget(2, 0, validarCompletitudButton);
 		marco.setWidget(3, 0, tabPanel);
 		marco.setWidget(4, 0, footerBar);
-		marco.getFlexCellFormatter().setColSpan(2, 0, 2);
-		marco.getFlexCellFormatter().setColSpan(3, 0, 2);
-		marco.getFlexCellFormatter().setColSpan(4, 0, 2);
-		
-		marco.getFlexCellFormatter().setHorizontalAlignment(1, 0, HorizontalPanel.ALIGN_LEFT);
-		marco.getFlexCellFormatter().setHorizontalAlignment(1, 1, HorizontalPanel.ALIGN_RIGHT);
+
 		
 		cancelarCommand = new Command() {
 			public void execute() {
@@ -136,34 +146,50 @@ public class CuentaEdicionTabPanel {
 		tabPanel.add(cuentaDatosForm, Sfa.constant().datos());
 		tabPanel.add(cuentaDomiciliosForm, Sfa.constant().domicilios());
 		tabPanel.add(cuentaContactoForm, Sfa.constant().contactos());
-		tabPanel.add(cuentaInfocomForm, Sfa.constant().infocom());
-		tabPanel.add(cuentaNotasForm, "Notas");
 		tabPanel.selectTab(0);
 	}
 
 	/**
 	 * 
 	 */
-	private void initRazonSocialClientePanel() {
-		Label razonSocialLabel = new Label(Sfa.constant().razonSocial()+":");
-		Label clienteLabel     = new Label(Sfa.constant().cliente()+":");
+	public void initRazonSocialClientePanel() {
+		FlexTable marcoPriority = new FlexTable();
+		marcoPriority.setWidget(0, 0, redFlagIcon);
+		marcoPriority.setWidget(0, 1, yellowFlagIcon);
+		marcoPriority.setWidget(0, 2, greenFlagIcon);
+
 		razonSocialPanel.setLeft(razonSocialLabel);
 		razonSocialPanel.setRight(razonSocial);
 		razonSocialPanel.getRight().addStyleName("fontNormalGris");
-		razonSocialPanel.setWidth("50%");
-		
+
 		clientePanel.setLeft(clienteLabel);
 		clientePanel.setRight(cliente);		
 		clientePanel.getRight().addStyleName("fontNormalGris");
-		clientePanel.setWidth("50%");
+		
+		numeroCtaPotPanel.setLeft(numeroCtaPotLabel);
+		numeroCtaPotPanel.setRight(numeroCtaPot);		
+		numeroCtaPotPanel.getRight().addStyleName("fontNormalGris");
+
+		marcoCliente.setWidth("100%");
+		marcoCliente.setWidget(0, 0, razonSocialPanel);
+		marcoCliente.setWidget(0, 1, null);
+		marcoCliente.setWidget(0, 2, clientePanel);
+		marcoCliente.setWidget(0, 3, numeroCtaPotPanel);
+		marcoCliente.setWidget(0, 4, marcoPriority);
+		
+		marcoCliente.getCellFormatter().setWidth(0, 0, "30%");
+		marcoCliente.getCellFormatter().setWidth(0, 1, "30%");
+		marcoCliente.getCellFormatter().setWidth(0, 2, "20%");
+		marcoCliente.getCellFormatter().setWidth(0, 3, "20%");
+		marcoCliente.getCellFormatter().setWidth(0, 4, "5");
 	}
 	
 	/**
 	 * 
 	 */	
 	private void initFooter() {
-		footerBar    = new FormButtonsBar();
-		guardar  = new SimpleLink(Sfa.constant().guardar() , "#", true);
+		footerBar = new FormButtonsBar();
+		guardar   = new SimpleLink(Sfa.constant().guardar() , "#", true);
 		guardar.setStyleName("link");
 
 		crearSSButton = new SimpleLink(Sfa.constant().crearSS(), "#", true);
@@ -289,14 +315,20 @@ public class CuentaEdicionTabPanel {
 	 * @param editorCuenta
 	 */
 	public void setTabsTipoEditorCuenta(boolean editorCuenta)  {
-		tabPanel.remove(3);
-		if (editorCuenta) {
-			tabPanel.add(cuentaInfocomForm, Sfa.constant().infocom());
-		} else {
-			tabPanel.add(cuentaNotasForm, "Notas");
+        //saca pestañas que no son fijas
+		if(tabPanel.getTabBar().getTabCount()>CANT_PESTANIAS_FIJAS) {
+			for (int i=CANT_PESTANIAS_FIJAS; i<tabPanel.getTabBar().getTabCount();i++)  
+			    tabPanel.remove(i);			
 		}
+		//si no es prospect agrega tab infocom
+		if (!RegularExpressionConstants.isVancuc(cuenta2editDto.getCodigoVantive()))
+			tabPanel.add(cuentaInfocomForm, Sfa.constant().infocom());
+		//si viene de opp agrega notas
+		if (!editorCuenta ) 
+			tabPanel.add(cuentaNotasForm, Sfa.constant().notas());
+
 		validarCompletitudButton.setVisible(editorCuenta);
-		clientePanel.setVisible(!editorCuenta);
+		numeroCtaPotPanel.setVisible(!editorCuenta);
 		
 		guardar.setVisible(editorCuenta);
 		crearSSButton.setVisible(true);
@@ -304,6 +336,16 @@ public class CuentaEdicionTabPanel {
 		cancelar.setVisible(editorCuenta);
 		cerrar.setVisible(!editorCuenta);
 		crearCuenta.setVisible(!editorCuenta);
+	}
+	
+	/**
+	 * 
+	 * @param prioridad
+	 */
+	public void setPriorityFlag(Long prioridad) {
+		redFlagIcon.setVisible(PrioridadEnum.ALTA.getId()==prioridad.longValue());
+		yellowFlagIcon.setVisible(PrioridadEnum.MEDIA.getId()==prioridad.longValue());
+		greenFlagIcon.setVisible(PrioridadEnum.BAJA.getId()==prioridad.longValue());
 	}
 	
 	/**

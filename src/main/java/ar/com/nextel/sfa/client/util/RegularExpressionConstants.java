@@ -36,4 +36,8 @@ public class RegularExpressionConstants {
 	public static final String getCantCaracteres(int cant) {
 		return ".{0," + cant + "}";
 	}
+	/** true si el codigo vantive es vancuc */
+	public static final boolean isVancuc(String codigo_vantive) {
+		return codigo_vantive.contains("VANCUC");
+	}
 }
