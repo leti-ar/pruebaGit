@@ -232,7 +232,20 @@ A {
 	overflow: auto;
 }
 
+.resultTableWrapper {
+	height: 200px;
+	overflow: auto;
+	background-color: #FFF;
+	border:1px solid gray;
+	margin-left: 8px;
+	margin-right: 8px;
+}
+
 .gwt-BuscarCuentaResultPanel {
+	text-align: left;
+}
+
+.gwt-OportunidadesResultPanel {
 	text-align: left;
 }
 
@@ -578,3 +591,25 @@ A {
 SPAN.error{color: red;}
 SPAN.warn{color: #FFA500;}
 SPAN.info{color: #000;}
+
+.numeroResultadosLabel {
+font-weight: normal;
+}
+
+.oppEnCursoTitulosLabel {
+color:#A83C56;
+font-weight:bold;
+margin:4px 0;
+width:100%;
+}
+
+.oppEnCursoCantLabel {
+color:gray;
+font-weight:normal;
+}
+
+/*.table-external {
+border:1px solid gray;
+clear:left;
+margin:8px;
+}*/
