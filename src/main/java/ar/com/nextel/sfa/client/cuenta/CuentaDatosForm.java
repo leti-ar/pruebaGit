@@ -41,7 +41,6 @@ import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
-import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -81,6 +80,7 @@ public class CuentaDatosForm extends Composite {
 	private TitledPanel vendedorPanel     = new TitledPanel(Sfa.constant().vendedorPanelTitle());
 
 	private HTML iconoLupa = IconFactory.vistaPreliminar();
+	private HTML iconoEditarEstdo = IconFactory.lapiz();
 	
 	private CuentaUIData camposTabDatos   = new CuentaUIData();
 	private DatosPagoDto datosPago;
@@ -100,6 +100,13 @@ public class CuentaDatosForm extends Composite {
 	
 	private CuentaDatosForm() {
 		initWidget(mainPanel);
+		iconoEditarEstdo.addClickListener(new ClickListener() {
+			public void onClick(Widget arg0) {
+                 CambioEstadoOppForm cambioEstadoForm = CambioEstadoOppForm.getInstance();
+                 cambioEstadoForm.cargarPopup();
+			}
+		});
+
 		int fila = 0;
 		mainPanel.setWidth("100%");
 		mainPanel.setWidget(fila++,0,createDatosCuentaPanel());
@@ -271,7 +278,7 @@ public class CuentaDatosForm extends Composite {
 		FlexTable tabla = new FlexTable();
 		tabla.setWidth("50%");
 		tabla.setWidget(0, 0, camposTabDatos.getOppEstado());
-		tabla.setWidget(0, 1, IconFactory.lapizAnchor(UILoader.EDITAR_CUENTA +  ""));
+		tabla.setWidget(0, 1, iconoEditarEstdo);
 		datosOppTable.setWidget(row, 0, camposTabDatos.getOppVencimientoLabel());
 		datosOppTable.setWidget(row, 1, camposTabDatos.getOppVencimiento());
 		datosOppTable.setWidget(row, 2, camposTabDatos.getOppEstadoLabel());

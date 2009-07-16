@@ -5,6 +5,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.ClaseCuentaDto;
+import ar.com.nextel.sfa.client.dto.EstadoOportunidadDto;
 import ar.com.nextel.sfa.client.dto.FormaPagoDto;
 import ar.com.nextel.sfa.client.dto.MotivoNoCierreDto;
 import ar.com.nextel.sfa.client.dto.ProveedorDto;
@@ -35,6 +36,8 @@ public class AgregarCuentaInitializer implements IsSerializable {
 	private List<TipoTarjetaDto> tipoTarjeta = new ArrayList<TipoTarjetaDto>();
 	private List<TipoCanalVentasDto> tipoCanalVentas = new ArrayList<TipoCanalVentasDto>();
 	private List<MotivoNoCierreDto> motivoNoCierre = new ArrayList<MotivoNoCierreDto>();
+	private List<EstadoOportunidadDto> estadoOportunidad = new ArrayList<EstadoOportunidadDto>();
+	
 	private int anio;
 	
 	public AgregarCuentaInitializer() {	};  
@@ -139,6 +142,12 @@ public class AgregarCuentaInitializer implements IsSerializable {
 	}
 	public void setAnio(int anio) {
 		this.anio = anio;
+	}
+	public void setEstadoOportunidad(List<EstadoOportunidadDto> estadoOportunidad) {
+		this.estadoOportunidad = estadoOportunidad;
+	}
+	public List<EstadoOportunidadDto> getEstadoOportunidad() {
+		return estadoOportunidad;
 	}
 	
 }

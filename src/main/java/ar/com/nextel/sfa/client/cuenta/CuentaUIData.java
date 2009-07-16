@@ -9,6 +9,7 @@ import ar.com.nextel.sfa.client.dto.MotivoNoCierreDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
 import ar.com.nextel.sfa.client.enums.TipoTarjetaEnum;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
+import ar.com.nextel.sfa.client.widget.RadioButtonGroup;
 import ar.com.nextel.sfa.client.widget.TelefonoTextBox;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -21,7 +22,6 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -45,6 +45,7 @@ public class CuentaUIData extends UIData {
 	private ListBox tipoTarjeta       = new ListBox();
 	private ListBox tipoCanalVentas   = new ListBox();
 	private ListBox mesVto            = new ListBox();
+	private ListBox estadoOpp         = new ListBox();
 	
 	private TextBox numeroDocumento  = new TextBox();
 	private TextBox razonSocial      = new TextBox();
@@ -100,7 +101,6 @@ public class CuentaUIData extends UIData {
 	private SimpleLink validarTarjeta = new SimpleLink(Sfa.constant().validarTarjeta(), "#", true);
 	private Label verazRta = new Label();
 	
-	//PersonaDto persona = new PersonaDto(); // @TODO Para qué se usa? Sin modificador de visibilidad?
 	List <Widget>camposObligatorios =  new ArrayList<Widget>(); 
 	List <Widget>camposObligatoriosFormaPago = new ArrayList<Widget>();
 	List <Widget>labelsObligatorios =  new ArrayList<Widget>();
@@ -108,7 +108,7 @@ public class CuentaUIData extends UIData {
 	List <TipoTelefonoDto>tipoTelefono = new ArrayList<TipoTelefonoDto>();
 
 	//field para opp
-	private List<RadioButton> motivoNoCierre = new ArrayList<RadioButton>();
+	private RadioButtonGroup radioGroupMotivos = new RadioButtonGroup("motivo");
 	private Label oppNumero = new Label(Sfa.constant().numero());
 	
 	private Label oppVencimientoLabel         = new Label(Sfa.constant().vencimiento());
@@ -232,6 +232,7 @@ public class CuentaUIData extends UIData {
 		fields.add(oppTipoDocumento);
 		fields.add(oppRubro);
 		fields.add(oppTerminalesEstimadas);
+		fields.add(estadoOpp);
 	}
 
 	private void setCombos() {
@@ -251,6 +252,7 @@ public class CuentaUIData extends UIData {
 					tipoCanalVentas.addAllItems(result.getTipoCanalVentas());
 		        	currentYear = result.getAnio();
 		        	llenarListaMotivoNoCierre(result.getMotivoNoCierre());
+		        	estadoOpp.addAllItems(result.getEstadoOportunidad());
 				}
 			});
 		for(int i=1;i<13;i++) {
@@ -259,10 +261,8 @@ public class CuentaUIData extends UIData {
 	}
 
 	private void llenarListaMotivoNoCierre(List<MotivoNoCierreDto> motivos) {
-		motivoNoCierre.add(0,new RadioButton("motivo",""));
 		for (MotivoNoCierreDto motivo: motivos) {
-			
-			 motivoNoCierre.add(Integer.parseInt(motivo.getId().toString()), new RadioButton("motivo",motivo.getDescripcion()));
+			radioGroupMotivos.addRadio(motivo.getDescripcion(),motivo.getId().toString());
 		}
 	}
 	
@@ -590,8 +590,8 @@ public class CuentaUIData extends UIData {
 	public int getCurrentYear() {
 		return currentYear;
 	}
-	public List<RadioButton> getMotivoNoCierre() {
-		return motivoNoCierre;
+	public RadioButtonGroup getRadioGroupMotivos() {
+		return radioGroupMotivos;
 	}
 	public Label getObservLabel() {
 		return observLabel;
@@ -640,6 +640,9 @@ public class CuentaUIData extends UIData {
 	}
 	public Label getOppVisitas() {
 		return oppVisitas;
+	}
+	public ListBox getEstadoOpp() {
+		return estadoOpp;
 	}
 	
 }

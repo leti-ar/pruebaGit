@@ -45,6 +45,7 @@ import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.CuentaPotencial;
+import ar.com.nextel.model.oportunidades.beans.EstadoOportunidad;
 import ar.com.nextel.model.oportunidades.beans.MotivoNoCierre;
 import ar.com.nextel.model.oportunidades.beans.Rubro;
 import ar.com.nextel.model.personas.beans.Documento;
@@ -71,6 +72,7 @@ import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
+import ar.com.nextel.sfa.client.dto.EstadoOportunidadDto;
 import ar.com.nextel.sfa.client.dto.FormaPagoDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
@@ -242,14 +244,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements
 		buscarDTOinit.setTipoCuentaBancaria(mapper.convertList(genericDao.getList(TipoCuentaBancaria.class),TipoCuentaBancariaDto.class));
 		buscarDTOinit.setTipoTarjeta(mapper.convertList(genericDao.getList(TipoTarjeta.class),TipoTarjetaDto.class));
 		buscarDTOinit.setTipoCanalVentas(mapper.convertList(genericDao.getList(TipoCanalVentas.class),TipoCanalVentasDto.class));
-
 		buscarDTOinit.setMotivoNoCierre(mapper.convertList(genericDao.getList(MotivoNoCierre.class),MotivoNoCierreDto.class));
-//        List <MotivoNoCierreDto>cierreDto = new ArrayList<MotivoNoCierreDto>();
-//		for (MotivoNoCierre cierre : genericDao.getList(MotivoNoCierre.class)) {
-//			cierreDto.add(new MotivoNoCierreDto(cierre.getId(),cierre.getDescripcion()));
-//		}
-//		buscarDTOinit.setMotivoNoCierre(cierreDto);
-		
+		buscarDTOinit.setEstadoOportunidad(mapper.convertList(genericDao.getList(EstadoOportunidad.class),EstadoOportunidadDto.class));
 		buscarDTOinit.setAnio(Calendar.getInstance().get(Calendar.YEAR));
 		return buscarDTOinit;
 	}
