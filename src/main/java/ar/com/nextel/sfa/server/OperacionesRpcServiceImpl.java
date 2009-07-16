@@ -13,12 +13,11 @@ import ar.com.nextel.business.oportunidades.search.SearchOportunidadBusinessOper
 import ar.com.nextel.business.vendedores.RegistroVendedores;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
-import ar.com.nextel.model.oportunidades.beans.CuentaPotencial;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.sfa.client.OperacionesRpcService;
 import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
-import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaDto;
+import ar.com.nextel.sfa.client.dto.VentaPotencialVistaResultDto;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
 import ar.com.snoop.gwt.commons.server.RemoteService;
@@ -58,11 +57,14 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 		return operacionesEnCursoDto;
 	}
 
-	public List<VentaPotencialVistaDto> searchReservas() {
+	public VentaPotencialVistaResultDto searchReservas() {
 		Vendedor vendedor = sessionContextLoader.getVendedor();
 		AppLogger.info("Obteniendo reservas para vendedor: " + vendedor.getUserName(), this);
-		List<VentaPotencialVistaDto> ventasPotencialesEnCursoDto = mapper.convertList(vendedor.getVentasPotencialesVistaEnCurso(), VentaPotencialVistaDto.class);
-		return ventasPotencialesEnCursoDto;
+		List<VentaPotencialVistaDto> ventasPotencialesEnCursoDto = mapper.convertList(vendedor.getVentasPotencialesVistaEnCurso(), 
+				VentaPotencialVistaDto.class);		
+		VentaPotencialVistaResultDto ventaPotencialVistaResultDto = new VentaPotencialVistaResultDto(ventasPotencialesEnCursoDto, 
+				vendedor.getCantidadCuentasPotencialesNoConsultadasActivasYVigentes().toString());
+		return ventaPotencialVistaResultDto;
 	}
 	
 //	private PersonaDto mapeoPersona(CuentaPotencial cuentaPotencial) {

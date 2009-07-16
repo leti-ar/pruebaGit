@@ -3,8 +3,7 @@ package ar.com.nextel.sfa.client;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
-import ar.com.nextel.sfa.client.dto.VentaPotencialVistaDto;
-import ar.com.nextel.sfa.client.dto.VentaPotencialVistaDto;
+import ar.com.nextel.sfa.client.dto.VentaPotencialVistaResultDto;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -16,6 +15,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 		public void searchOpEnCurso(AsyncCallback<List<OperacionEnCursoDto>> callback);
 		
-		public void searchReservas(AsyncCallback<List<VentaPotencialVistaDto>> callback);
+		public void searchReservas(AsyncCallback<VentaPotencialVistaResultDto> callback);
 
 	}

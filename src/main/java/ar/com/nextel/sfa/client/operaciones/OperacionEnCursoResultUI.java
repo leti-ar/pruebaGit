@@ -7,12 +7,12 @@ import ar.com.nextel.sfa.client.OperacionesRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaDto;
+import ar.com.nextel.sfa.client.dto.VentaPotencialVistaResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -42,6 +42,7 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 	private Label reservasNoConsultadas;
 	private Label numOperaciones;
 	private int cantResultadosPorPagina = 5;
+	private String NumeroVtasPotNoConsultadas;
 
 
 	public OperacionEnCursoResultUI() {
@@ -123,10 +124,11 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 	 * @param: firstTime
 	**/
 	private void searchReservas(boolean firstTime){
-		OperacionesRpcService.Util.getInstance().searchReservas(new DefaultWaitCallback<List<VentaPotencialVistaDto>>() {
-					public void success(List<VentaPotencialVistaDto> result) {
+		OperacionesRpcService.Util.getInstance().searchReservas(new DefaultWaitCallback<VentaPotencialVistaResultDto>() {
+					public void success(VentaPotencialVistaResultDto result) {
 						if (result!=null) {
-							vtaPotencial = result;
+							vtaPotencial = result.getVentasPotencialesVistaDto();
+							NumeroVtasPotNoConsultadas = result.getNumeroVtasPotNoConsultadas();
 							tablePageBarReserva.setCantResultados(vtaPotencial.size());
 							double calculoCantPaginasReserva = ((double) vtaPotencial.size() / (double) cantResultadosPorPagina);
 							int cantPaginasReserva = (int) Math.ceil(calculoCantPaginasReserva);
@@ -253,7 +255,7 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 			resultTableReservas.setHTML(row, 7, vtaPotencialDto.getNumero());
 			row++;
 		}
-		reservasNoConsultadas.setText("Opps/Reservas no consultadas: " + vtaPotencial.size());
+		reservasNoConsultadas.setText("Opps/Reservas no consultadas: " + NumeroVtasPotNoConsultadas);
 		
 		setVisible(true);
 	}
