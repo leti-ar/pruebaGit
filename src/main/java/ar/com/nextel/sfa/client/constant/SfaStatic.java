@@ -565,6 +565,24 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String cliente();
 
   /**
+   * Translated "Competencia:".
+   * 
+   * @return translated "Competencia:"
+   */
+  @DefaultStringValue("Competencia:")
+  @Key("competencia")
+  String competencia();
+
+  /**
+   * Translated "Eq. Comp.:".
+   * 
+   * @return translated "Eq. Comp.:"
+   */
+  @DefaultStringValue("Eq. Comp.:")
+  @Key("competenciaEq")
+  String competenciaEq();
+
+  /**
    * Translated "Consultar Scoring".
    * 
    * @return translated "Consultar Scoring"
@@ -1636,6 +1654,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String telefonos();
 
   /**
+   * Translated "Term. est.:".
+   * 
+   * @return translated "Term. est.:"
+   */
+  @DefaultStringValue("Term. est.:")
+  @Key("terminalesEstimadas")
+  String terminalesEstimadas();
+
+  /**
    * Translated "<span class=\"req\">Término Pago:</span>".
    * 
    * @return translated "<span class=\"req\">Término Pago:</span>"
@@ -1886,6 +1913,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Verificar SIM")
   @Key("verificarSim")
   String verificarSim();
+
+  /**
+   * Translated "Visitas:".
+   * 
+   * @return translated "Visitas:"
+   */
+  @DefaultStringValue("Visitas:")
+  @Key("visitas")
+  String visitas();
 
   /**
    * Translated "Vto. año".

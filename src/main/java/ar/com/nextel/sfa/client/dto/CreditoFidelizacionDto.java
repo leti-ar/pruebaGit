@@ -6,18 +6,18 @@ import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class FidelizacionDto implements IsSerializable {
+public class CreditoFidelizacionDto implements IsSerializable {
 
-	private String monto;
+	private double monto;
 	private String estado;
 	private Date vencimiento;
 	private List<DetalleFidelizacionDto> detalles = new ArrayList<DetalleFidelizacionDto>();
 
-	public String getMonto() {
+	public double getMonto() {
 		return monto;
 	}
 
-	public void setMonto(String monto) {
+	public void setMonto(double monto) {
 		this.monto = monto;
 	}
 

@@ -2,42 +2,36 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
-import ar.com.nextel.sfa.client.dto.FidelizacionDto;
-import ar.com.nextel.sfa.client.dto.ResumenEquipoDto;
-import ar.com.nextel.sfa.client.dto.ScoringDto;
+import ar.com.nextel.sfa.client.dto.CreditoFidelizacionDto;
 import ar.com.nextel.sfa.client.dto.TransaccionCCDto;
+import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
-
 public class InfocomRpcServiceDelegate {
-	
+
 	private InfocomRpcServiceAsync infocomRpcService;
-	
-	public InfocomRpcServiceDelegate(){
+
+	public InfocomRpcServiceDelegate() {
 	}
-	
-	public InfocomRpcServiceDelegate(InfocomRpcServiceAsync infocomRpcSerive){
+
+	public InfocomRpcServiceDelegate(InfocomRpcServiceAsync infocomRpcSerive) {
 		this.infocomRpcService = infocomRpcSerive;
 	}
-	
-	public void getScoring(DefaultWaitCallback<ScoringDto> callback){
+
+	public void getInfocomInitializer(DefaultWaitCallback<InfocomInitializer> callback) {
 		WaitWindow.show();
-		infocomRpcService.getScoring(callback);
+		infocomRpcService.getInfocomInitializer(callback);
 	}
-	
-	public void getResumenEquipo(DefaultWaitCallback<ResumenEquipoDto> callback){
+
+	public void getDetalleCreditoFidelizacion(Long idCuenta,
+			DefaultWaitCallback<CreditoFidelizacionDto> callback) {
 		WaitWindow.show();
-		infocomRpcService.getResumenEquipo(callback);
+		infocomRpcService.getDetalleCreditoFidelizacion(idCuenta, callback);
 	}
-	
-	public void getFidelizacion(DefaultWaitCallback<FidelizacionDto> callback){
+
+	public void getCuentaCorriente(DefaultWaitCallback<List<TransaccionCCDto>> callback) {
 		WaitWindow.show();
-		infocomRpcService.getFidelizacion(callback);
-	}
-	
-	public void getTransaccionCC(DefaultWaitCallback<List<TransaccionCCDto>> callback){
-		WaitWindow.show();
-		infocomRpcService.getTransaccionCC(callback);
+		infocomRpcService.getCuentaCorriente(callback);
 	}
 }

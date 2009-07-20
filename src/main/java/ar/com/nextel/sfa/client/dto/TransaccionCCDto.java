@@ -13,9 +13,9 @@ public class TransaccionCCDto implements IsSerializable {
 	public static final String DESC_FACTURA = "Factura";
 	public static final String DESC_PAGO = "Pago";
 	public static final String DESC_NOTA_CRED = "Nota";
-	public static final String DESC_REVER = "Reversión";
+	public static final String DESC_REVER = "ReversiÃ³n";
 	public static final String DESC_AJUSTE = "Ajuste";
-	public static final String DESC_DEP_GARAN = "Dep. Garantía";
+	public static final String DESC_DEP_GARAN = "Dep. GarantÃ­a";
 	public static final String COD_FACTURA = "IN";
 	public static final String COD_PAGO = "P";
 	public static final String COD_NOTA_CRED = "CM";
