@@ -103,6 +103,7 @@ public class CuentaDatosForm extends Composite {
 		iconoEditarEstdo.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
                  CambioEstadoOppForm cambioEstadoForm = CambioEstadoOppForm.getInstance();
+                 cambioEstadoForm.setSize("600", "300");
                  cambioEstadoForm.cargarPopup();
 			}
 		});
@@ -276,7 +277,7 @@ public class CuentaDatosForm extends Composite {
 		datosOppTable.getFlexCellFormatter().setWidth(row, 2, ANCHO_TERCER_COLUMNA);
 		row++;
 		FlexTable tabla = new FlexTable();
-		tabla.setWidth("50%");
+		tabla.setWidth("90%");
 		tabla.setWidget(0, 0, camposTabDatos.getOppEstado());
 		tabla.setWidget(0, 1, iconoEditarEstdo);
 		datosOppTable.setWidget(row, 0, camposTabDatos.getOppVencimientoLabel());

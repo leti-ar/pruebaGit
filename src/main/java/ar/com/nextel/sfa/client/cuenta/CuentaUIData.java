@@ -117,11 +117,18 @@ public class CuentaUIData extends UIData {
 	private Label oppCompetenciaEquipoLabel   = new Label(Sfa.constant().competenciaEq());
 	private Label oppTerminalesEstimadasLabel = new Label(Sfa.constant().terminalesEstimadas());
 	private Label oppVisitasLabel             = new Label(Sfa.constant().visitas());
-	private Label oppVencimiento              = new Label();
-	private Label oppEstado                   = new Label();
-	private Label oppCompetenciaProv          = new Label();
-	private Label oppCompetenciaEquipo        = new Label();
-	private Label oppVisitas                  = new Label();
+	
+	private Label oppNroLabel                 = new Label(Sfa.constant().nroOPP());
+	private TextBox oppNroOpp                 = new TextBox();
+	private Label oppEstadoPopupLabel         = new Label(Sfa.constant().estado());
+	private Label oppObservacionesLabel       = new Label(Sfa.constant().observaciones());
+	private TextBox oppObservaciones          = new TextBox();
+	
+	private Label oppVencimiento              = new Label(" ");
+	private Label oppEstado                   = new Label(" ");
+	private Label oppCompetenciaProv          = new Label(" ");
+	private Label oppCompetenciaEquipo        = new Label(" ");
+	private Label oppVisitas                  = new Label(" ");
 	private TextBox oppTipoDocumento          = new TextBox();
 	private TextBox oppRubro                  = new TextBox();
 	private TextBox oppTerminalesEstimadas    = new TextBox();
@@ -218,21 +225,21 @@ public class CuentaUIData extends UIData {
 		fields.add(cbu);
 		fields.add(numeroTarjeta);
 		
-		fields.add(oppVencimientoLabel);
-		fields.add(oppEstadoLabel);
-		fields.add(oppCompetenciaProvLabel);
-		fields.add(oppCompetenciaEquipoLabel);
-		fields.add(oppTerminalesEstimadasLabel);
-		fields.add(oppVisitasLabel);
-		fields.add(oppVencimiento);
-		fields.add(oppEstado);
-		fields.add(oppCompetenciaProv);
-		fields.add(oppCompetenciaEquipo);
-		fields.add(oppVisitas);
-		fields.add(oppTipoDocumento);
-		fields.add(oppRubro);
-		fields.add(oppTerminalesEstimadas);
-		fields.add(estadoOpp);
+//		fields.add(oppVencimientoLabel);
+//		fields.add(oppEstadoLabel);
+//		fields.add(oppCompetenciaProvLabel);
+//		fields.add(oppCompetenciaEquipoLabel);
+//		fields.add(oppTerminalesEstimadasLabel);
+//		fields.add(oppVisitasLabel);
+//		fields.add(oppVencimiento);
+//		fields.add(oppEstado);
+//		fields.add(oppCompetenciaProv);
+//		fields.add(oppCompetenciaEquipo);
+//		fields.add(oppVisitas);
+//		fields.add(oppTipoDocumento);
+//		fields.add(oppRubro);
+//		fields.add(oppTerminalesEstimadas);
+//		fields.add(estadoOpp);
 	}
 
 	private void setCombos() {
@@ -345,6 +352,8 @@ public class CuentaUIData extends UIData {
 		sexo.setWidth("150");
 		formaPago.setWidth("250");
 		tipoTarjeta.setWidth("60");
+		oppEstado.setWidth("100%");
+		oppObservaciones.setWidth("100%");
 		
 	}
 	
@@ -644,5 +653,19 @@ public class CuentaUIData extends UIData {
 	public ListBox getEstadoOpp() {
 		return estadoOpp;
 	}
-	
+	public Label getOppNroLabel() {
+		return oppNroLabel;
+	}
+	public TextBox getOppNroOpp() {
+		return oppNroOpp;
+	}
+	public Label getOppEstadoPopupLabel() {
+		return oppEstadoPopupLabel;
+	}
+	public Label getOppObservacionesLabel() {
+		return oppObservacionesLabel;
+	}
+	public TextBox getOppObservaciones() {
+		return oppObservaciones;
+	}
 }
