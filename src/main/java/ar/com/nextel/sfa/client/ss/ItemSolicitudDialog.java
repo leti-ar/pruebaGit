@@ -39,7 +39,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 	private ItemSolicitudUIData itemSolicitudUIData;
 	private EditarSSUIController controller;
 	private Map<Long, TipoSolicitudDto> tiposSolicitudes = new HashMap();
-	private Map<Long, List<TipoSolicitudDto>> tiposSolicitudesPosGrupo = new HashMap();
+	private Map<Long, List<TipoSolicitudDto>> tiposSolicitudesPorGrupo = new HashMap();
 	private Long idGrupoSolicitudLoaded;
 	boolean tiposSolicitudLoaded = false;
 	private HTML nuevoItem;
@@ -102,8 +102,8 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 		return new DefaultWaitCallback<LineasSolicitudServicioInitializer>() {
 			public void success(LineasSolicitudServicioInitializer initializer) {
 				List<TipoSolicitudDto> tiposSS = new ArrayList<TipoSolicitudDto>();
-				tiposSolicitudesPosGrupo = initializer.getTiposSolicitudPorGrupo();
-				for (Map.Entry<Long, List<TipoSolicitudDto>> tiposSSDeGrupo : tiposSolicitudesPosGrupo
+				tiposSolicitudesPorGrupo = initializer.getTiposSolicitudPorGrupo();
+				for (Map.Entry<Long, List<TipoSolicitudDto>> tiposSSDeGrupo : tiposSolicitudesPorGrupo
 						.entrySet()) {
 					tiposSS.addAll(tiposSSDeGrupo.getValue());
 				}
@@ -131,6 +131,10 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 				tipoSolicitud.getTipoSolicitudBase().getId())) {
 			tipoSolicitudPanel.setWidget(getItemSolicitudActivacionUI());
 			itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.ACTIVACION);
+		} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseCDW().contains(
+				tipoSolicitud.getTipoSolicitudBase().getId())) {
+			tipoSolicitudPanel.setWidget(getItemSolicitudCDWUI());
+			itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.VENTA_CDW);
 		} else {
 			tipoSolicitudPanel.clear();
 		}
@@ -170,6 +174,10 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 		return getItemYPlanSolicitudUI().setActivacionVisible();
 	}
 
+	private ItemYPlanSolicitudUI getItemSolicitudCDWUI() {
+		return getItemYPlanSolicitudUI().setCDWVisible();
+	}
+
 	public ItemSolicitudUIData getItemSolicitudUIData() {
 		return itemSolicitudUIData;
 	}
@@ -196,15 +204,14 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 		if (grupoSolicitudSelected != null) {
 			if (!grupoSolicitudSelected.getId().equals(idGrupoSolicitudLoaded)) {
 				tipoOrden.clear();
-				tipoOrden.addAllItems(tiposSolicitudesPosGrupo.get(grupoSolicitudSelected.getId()));
+				tipoOrden.addAllItems(tiposSolicitudesPorGrupo.get(grupoSolicitudSelected.getId()));
 				idGrupoSolicitudLoaded = grupoSolicitudSelected.getId();
-				onChange(tipoOrden);
 			}
 		} else {
 			tipoOrden.clear();
-			tipoOrden.addAllItems(tiposSolicitudesPosGrupo.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
+			tipoOrden.addAllItems(tiposSolicitudesPorGrupo.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
 			idGrupoSolicitudLoaded = GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS;
-			onChange(tipoOrden);
 		}
+		onChange(tipoOrden);
 	}
 }

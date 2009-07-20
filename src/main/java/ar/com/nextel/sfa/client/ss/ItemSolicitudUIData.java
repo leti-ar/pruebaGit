@@ -71,6 +71,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private List idsTipoSolicitudBaseItemYPlan;
 	private List idsTipoSolicitudBaseItem;
 	private List idsTipoSolicitudBaseActivacion;
+	private List idsTipoSolicitudBaseCDW;
 
 	private LineaSolicitudServicioDto lineaSolicitudServicio;
 	private EditarSSUIController controller;
@@ -87,6 +88,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	public static final int SOLO_ITEM = 0;
 	public static final int ITEM_PLAN = 1;
 	public static final int ACTIVACION = 2;
+	public static final int VENTA_CDW = 3;
 	private static final String v1 = "\\{1\\}";
 	private static final String v2 = "\\{2\\}";
 	private int tipoEdicion;
@@ -153,7 +155,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		verificarImeiWrapper.setHTML(IconFactory.comprobarNegro(Sfa.constant().verificarImei()).toString());
 		verificarSimWrapper.setHTML(IconFactory.comprobarNegro(Sfa.constant().verificarSim()).toString());
 		verificarSimWrapper.addStyleName("pl10");
-		
+
 		// Debug Labels
 		item.ensureDebugId(DebugConstants.EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_ITEM);
 		cantidad.ensureDebugId(DebugConstants.EDITAR_SOLICITUD_ITEM_SOLICITUD_TEXTBOX_CANTIDAD);
@@ -183,6 +185,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		idsTipoSolicitudBaseItemYPlan = new ArrayList<Long>();
 		idsTipoSolicitudBaseItem = new ArrayList<Long>();
 		idsTipoSolicitudBaseActivacion = new ArrayList<Long>();
+		idsTipoSolicitudBaseCDW = new ArrayList<Long>();
 
 		idsTipoSolicitudBaseItemYPlan.add(Long.valueOf(1)); // 1-TIPO_SOLICITUD_BASE_VENTA_EQUIPOS
 		idsTipoSolicitudBaseItemYPlan.add(Long.valueOf(7)); // 7-TIPO_SOLICITUD_BASE_ALQUILER_EQUIPOS
@@ -197,6 +200,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 		idsTipoSolicitudBaseActivacion.add(Long.valueOf(9)); // 9-TIPO_SOLICITUD_BASE_ACTIVACION
 		idsTipoSolicitudBaseActivacion.add(Long.valueOf(13)); // 13-TIPO_SOLICITUD_BASE_ACTIVACION_G4
+
+		idsTipoSolicitudBaseCDW.add(Long.valueOf(3)); // 3-TIPO_SOLICITUD_BASE_VENTA_CDW
 	}
 
 	public void onClick(Widget sender) {
@@ -209,7 +214,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		} else if (sender == verificarSimWrapper) {
 			verificarSim();
 		} else if (sender == roaming) {
-			if(roaming.isChecked()){
+			if (roaming.isChecked()) {
 				ddi.setChecked(true);
 				ddi.setEnabled(false);
 			} else {
@@ -370,7 +375,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 							getActualizarPlanCallback());
 				}
 				ddn.setChecked(true);
-			} 
+			}
 			refreshTotalLabel();
 		} else if (sender == tipoPlan) {
 			// Cargo los planes correspondientes al tipo de plan seleccionado
@@ -410,8 +415,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 		}
 	}
-	
-	private void setDisableAndCheckedRoaming(boolean checked){
+
+	private void setDisableAndCheckedRoaming(boolean checked) {
 		ddn.setChecked(checked);
 		ddi.setChecked(checked);
 		roaming.setChecked(checked);
@@ -618,6 +623,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	public List getIdsTipoSolicitudBaseActivacion() {
 		return idsTipoSolicitudBaseActivacion;
 	}
+	
+	public List getIdsTipoSolicitudBaseCDW() {
+		return idsTipoSolicitudBaseCDW;
+	}
 
 	public void setLineaSolicitudServicio(LineaSolicitudServicioDto linea) {
 		this.lineaSolicitudServicio = linea;
@@ -694,12 +703,17 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			lineaSolicitudServicio.setCantidad(Integer.parseInt(cantidad.getText()));
 
 		}
-		if (tipoEdicion == ITEM_PLAN || tipoEdicion == ACTIVACION) {
+		if (tipoEdicion == ITEM_PLAN || tipoEdicion == ACTIVACION || tipoEdicion == VENTA_CDW) {
 			lineaSolicitudServicio.setAlias(alias.getText());
 			lineaSolicitudServicio.setLocalidad((LocalidadDto) localidad.getSelectedItem());
+			if(tipoEdicion != VENTA_CDW){
 			lineaSolicitudServicio.setModalidadCobro((ModalidadCobroDto) modalidadCobro.getSelectedItem());
 			lineaSolicitudServicio.setNumeroReserva(getNumeroTelefonicoCompleto());
 			lineaSolicitudServicio.setNumeroReservaArea(reservarHidden.getText());
+			lineaSolicitudServicio.setDdi(ddi.isChecked());
+			lineaSolicitudServicio.setDdn(ddn.isChecked());
+			lineaSolicitudServicio.setRoaming(roaming.isChecked());
+			}
 			PlanDto planSelected = (PlanDto) plan.getSelectedItem();
 			lineaSolicitudServicio.setPlan(planSelected);
 			if (planSelected != null) {
@@ -709,9 +723,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				lineaSolicitudServicio.setPrecioListaPlan(0d);
 				lineaSolicitudServicio.setPrecioVentaPlan(0d);
 			}
-			lineaSolicitudServicio.setDdi(ddi.isChecked());
-			lineaSolicitudServicio.setDdn(ddn.isChecked());
-			lineaSolicitudServicio.setRoaming(roaming.isChecked());
 			TerminoPagoValidoDto terminoSelected = (TerminoPagoValidoDto) terminoPago.getSelectedItem();
 			lineaSolicitudServicio.setTerminoPago(terminoSelected.getTerminoPago());
 			double precio = itemTasadoSelected.getPrecioLista();

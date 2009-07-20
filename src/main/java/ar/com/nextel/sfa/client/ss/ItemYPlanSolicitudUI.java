@@ -22,6 +22,9 @@ public class ItemYPlanSolicitudUI extends Composite {
 	private ItemSolicitudUIData itemSolicitudUIData;
 	private SoloItemSolicitudUI soloItemSolicitudUI;
 	private SimplePanel soloItemSolicitudWrapper;
+	private Grid roamingTable;
+	private Grid aliasTable;
+	private FlexTable cppAliasReservaTable;
 
 	public ItemYPlanSolicitudUI(SoloItemSolicitudUI soloItemSolicitudUI,
 			ItemSolicitudUIData itemSolicitudUIData) {
@@ -36,6 +39,7 @@ public class ItemYPlanSolicitudUI extends Composite {
 		soloItemSolicitudWrapper = new SimplePanel();
 		soloItemSolicitudWrapper.setWidget(soloItemSolicitudUI);
 		mainPanel.add(soloItemSolicitudWrapper);
+		
 		Grid table = new Grid(4, 2);
 		table.addStyleName("layout");
 		table.getCellFormatter().setWidth(0, 0, "100px");
@@ -48,27 +52,36 @@ public class ItemYPlanSolicitudUI extends Composite {
 		table.setHTML(3, 0, Sfa.constant().localidadReq());
 		table.setWidget(3, 1, itemSolicitudUIData.getLocalidad());
 		mainPanel.add(table);
-		FlexTable segundaTabla = new FlexTable();
-		segundaTabla.addStyleName("layout");
-		segundaTabla.getCellFormatter().setWidth(0, 0, "100px");
-		segundaTabla.getCellFormatter().setWidth(0, 1, "125px");
-		segundaTabla.getCellFormatter().setWidth(0, 2, "100px");
-		((FlexTable) segundaTabla).getFlexCellFormatter().setColSpan(1, 1, 3);
-		segundaTabla.setHTML(0, 0, Sfa.constant().cppMpp());
-		segundaTabla.setWidget(0, 1, itemSolicitudUIData.getModalidadCobro());
-		segundaTabla.setHTML(0, 2, Sfa.constant().alias());
-		segundaTabla.setWidget(0, 3, itemSolicitudUIData.getAlias());
-		segundaTabla.setHTML(1, 0, Sfa.constant().reservarN());
-		segundaTabla.setWidget(1, 1, getReservaPanel());
-		mainPanel.add(segundaTabla);
-		Grid terceraTabla = new Grid(1, 6);
-		terceraTabla.addStyleName("layout ml10");
-		terceraTabla.getCellFormatter().setWidth(0, 0, "100px");
-		terceraTabla.getCellFormatter().setWidth(0, 1, "100px");
-		terceraTabla.setWidget(0, 0, itemSolicitudUIData.getDdn());
-		terceraTabla.setWidget(0, 1, itemSolicitudUIData.getDdi());
-		terceraTabla.setWidget(0, 2, itemSolicitudUIData.getRoaming());
-		mainPanel.add(terceraTabla);
+		
+		aliasTable =  new Grid(1, 2);
+		aliasTable.addStyleName("layout");
+		aliasTable.getCellFormatter().setWidth(0, 0, "100px");
+		aliasTable.setHTML(0, 0, Sfa.constant().alias());
+		aliasTable.setVisible(false);
+		mainPanel.add(aliasTable);
+		
+		cppAliasReservaTable = new FlexTable();
+		cppAliasReservaTable.addStyleName("layout");
+		cppAliasReservaTable.getCellFormatter().setWidth(0, 0, "100px");
+		cppAliasReservaTable.getCellFormatter().setWidth(0, 1, "125px");
+		cppAliasReservaTable.getCellFormatter().setWidth(0, 2, "100px");
+		((FlexTable) cppAliasReservaTable).getFlexCellFormatter().setColSpan(1, 1, 3);
+		cppAliasReservaTable.setHTML(0, 0, Sfa.constant().cppMpp());
+		cppAliasReservaTable.setWidget(0, 1, itemSolicitudUIData.getModalidadCobro());
+		cppAliasReservaTable.setHTML(0, 2, Sfa.constant().alias());
+		cppAliasReservaTable.setWidget(0, 3, itemSolicitudUIData.getAlias());
+		cppAliasReservaTable.setHTML(1, 0, Sfa.constant().reservarN());
+		cppAliasReservaTable.setWidget(1, 1, getReservaPanel());
+		mainPanel.add(cppAliasReservaTable);
+		
+		roamingTable = new Grid(1, 6);
+		roamingTable.addStyleName("layout ml10");
+		roamingTable.getCellFormatter().setWidth(0, 0, "100px");
+		roamingTable.getCellFormatter().setWidth(0, 1, "100px");
+		roamingTable.setWidget(0, 0, itemSolicitudUIData.getDdn());
+		roamingTable.setWidget(0, 1, itemSolicitudUIData.getDdi());
+		roamingTable.setWidget(0, 2, itemSolicitudUIData.getRoaming());
+		mainPanel.add(roamingTable);
 	}
 
 	private Widget getReservaPanel() {
@@ -82,10 +95,22 @@ public class ItemYPlanSolicitudUI extends Composite {
 
 	public void load() {
 		soloItemSolicitudWrapper.setWidget(soloItemSolicitudUI);
+		cppAliasReservaTable.setWidget(0, 3, itemSolicitudUIData.getAlias());
+		cppAliasReservaTable.setVisible(true);
+		aliasTable.setVisible(false);
+		roamingTable.setVisible(true);
 	}
 
 	public ItemYPlanSolicitudUI setActivacionVisible() {
 		soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_ACTIVACION);
+		return this;
+	}
+
+	public ItemYPlanSolicitudUI setCDWVisible() {
+		aliasTable.setWidget(0, 1, itemSolicitudUIData.getAlias());
+		cppAliasReservaTable.setVisible(false);
+		aliasTable.setVisible(true);
+		roamingTable.setVisible(false);
 		return this;
 	}
 
