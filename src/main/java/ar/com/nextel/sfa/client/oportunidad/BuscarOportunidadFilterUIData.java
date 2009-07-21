@@ -139,7 +139,6 @@ public class BuscarOportunidadFilterUIData extends UIData {
 		numeroClienteTextBox.setMaxLength(25);
 		fields.add(razonSocialTextBox = new TextBox());
 		razonSocialTextBox.setWidth("70%");
-		//razonSocialTextBox.setSize("650px", "19px");
 		fields.add(nombreTextBox = new TextBox());
 		fields.add(apellidoTextBox = new TextBox());
 		fields.add(tipoDocListBox = new ListBox());
