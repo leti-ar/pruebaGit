@@ -216,7 +216,6 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 			guardar();
 		} else if (sender == cancelarButton) {
 			History.newItem("");
-			History.fireCurrentHistoryState();
 		} else if (sender == validarCompletitud) {
 			validate(true);
 		} else if (sender == acionesSS) {
