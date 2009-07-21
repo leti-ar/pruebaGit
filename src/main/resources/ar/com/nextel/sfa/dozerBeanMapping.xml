@@ -350,6 +350,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>servicioAdicional.esTethered</a>
 			<b>esTethered</b>
 		</field>
+		<field type="one-way">
+			<a>servicioAdicional.unicaVez</a>
+			<b>unicaVez</b>
+		</field>		
 	</mapping>
 
 	<mapping map-id="cuentaSolicitud" wildcard="false">
