@@ -566,18 +566,20 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		validator.addTarget(listaPrecio).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Lista de Precios"));
 		validator.addTarget(item).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Item"));
-		if (tipoEdicion == ITEM_PLAN || tipoEdicion == ACTIVACION) {
+		if (tipoEdicion == ITEM_PLAN || tipoEdicion == ACTIVACION || tipoEdicion == VENTA_CDW) {
 			validator.addTarget(tipoPlan).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Tipo Plan"));
 			validator.addTarget(plan).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Plan"));
 			validator.addTarget(localidad).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Localidad"));
-			validator.addTarget(modalidadCobro).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "CPP/MPP"));
 			validator.addTarget(alias).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Alias"));
-			if (!"".equals(reservar.getText().trim())) {
-				validator.addTarget(reservar).length(4, Sfa.constant().ERR_NUMERO_RESERVA());
+			if (tipoEdicion != VENTA_CDW) {
+				validator.addTarget(modalidadCobro).required(
+						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "CPP/MPP"));
+				if (!"".equals(reservar.getText().trim())) {
+					validator.addTarget(reservar).length(4, Sfa.constant().ERR_NUMERO_RESERVA());
+				}
 			}
 		}
 		if (tipoEdicion != ACTIVACION) {
@@ -623,7 +625,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	public List getIdsTipoSolicitudBaseActivacion() {
 		return idsTipoSolicitudBaseActivacion;
 	}
-	
+
 	public List getIdsTipoSolicitudBaseCDW() {
 		return idsTipoSolicitudBaseCDW;
 	}
@@ -706,13 +708,14 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		if (tipoEdicion == ITEM_PLAN || tipoEdicion == ACTIVACION || tipoEdicion == VENTA_CDW) {
 			lineaSolicitudServicio.setAlias(alias.getText());
 			lineaSolicitudServicio.setLocalidad((LocalidadDto) localidad.getSelectedItem());
-			if(tipoEdicion != VENTA_CDW){
-			lineaSolicitudServicio.setModalidadCobro((ModalidadCobroDto) modalidadCobro.getSelectedItem());
-			lineaSolicitudServicio.setNumeroReserva(getNumeroTelefonicoCompleto());
-			lineaSolicitudServicio.setNumeroReservaArea(reservarHidden.getText());
-			lineaSolicitudServicio.setDdi(ddi.isChecked());
-			lineaSolicitudServicio.setDdn(ddn.isChecked());
-			lineaSolicitudServicio.setRoaming(roaming.isChecked());
+			if (tipoEdicion != VENTA_CDW) {
+				lineaSolicitudServicio
+						.setModalidadCobro((ModalidadCobroDto) modalidadCobro.getSelectedItem());
+				lineaSolicitudServicio.setNumeroReserva(getNumeroTelefonicoCompleto());
+				lineaSolicitudServicio.setNumeroReservaArea(reservarHidden.getText());
+				lineaSolicitudServicio.setDdi(ddi.isChecked());
+				lineaSolicitudServicio.setDdn(ddn.isChecked());
+				lineaSolicitudServicio.setRoaming(roaming.isChecked());
 			}
 			PlanDto planSelected = (PlanDto) plan.getSelectedItem();
 			lineaSolicitudServicio.setPlan(planSelected);
