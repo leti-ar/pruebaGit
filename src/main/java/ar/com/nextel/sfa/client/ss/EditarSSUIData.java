@@ -15,6 +15,7 @@ import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioGeneracionDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
+import ar.com.nextel.sfa.client.dto.TipoSolicitudBaseDto;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.UIData;
@@ -325,6 +326,20 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 				}
 				if (!hasAlquiler) {
 					validator.addError(Sfa.constant().ERR_FALTA_ALQUILER().replaceAll(v1, linea.getAlias()));
+				}
+			}
+			if (linea.getTipoSolicitud().getTipoSolicitudBase().getId().equals(
+					TipoSolicitudBaseDto.ID_VENTA_CDW)) {
+				boolean hasCargoActivaciónCDW  = false;
+				for (ServicioAdicionalLineaSolicitudServicioDto servicioAdicional : linea
+						.getServiciosAdicionales()) {
+					if (servicioAdicional.isUnicaVez() && servicioAdicional.isChecked()) {
+						hasCargoActivaciónCDW = true;
+						break;
+					}
+				}
+				if (!hasCargoActivaciónCDW) {
+					validator.addError(Sfa.constant().ERR_FALTA_CARGO_ACTIVACION_CDW().replaceAll(v1, linea.getAlias()));
 				}
 			}
 		}
