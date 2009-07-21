@@ -115,6 +115,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ERR_FALTA_ALQUILER();
 
   /**
+   * Translated "El ítem {1} debe tener al menos un servicio adicional de tipo Cargo Activación CDW seleccionado. ".
+   * 
+   * @return translated "El ítem {1} debe tener al menos un servicio adicional de tipo Cargo Activación CDW seleccionado. "
+   */
+  @DefaultStringValue("El ítem {1} debe tener al menos un servicio adicional de tipo Cargo Activación CDW seleccionado. ")
+  @Key("ERR_FALTA_CARGO_ACTIVACION_CDW")
+  String ERR_FALTA_CARGO_ACTIVACION_CDW();
+
+  /**
    * Translated "La cuenta debe tener un domicilio principal de entrega.".
    * 
    * @return translated "La cuenta debe tener un domicilio principal de entrega."
@@ -1211,6 +1220,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Número Doc.")
   @Key("nroDocumento")
   String nroDocumento();
+
+  /**
+   * Translated "OPP Nr:".
+   * 
+   * @return translated "OPP Nr:"
+   */
+  @DefaultStringValue("OPP Nr:")
+  @Key("nroOPP")
+  String nroOPP();
 
   /**
    * Translated "Nro Tarjeta".
