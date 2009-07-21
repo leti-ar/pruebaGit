@@ -635,6 +635,8 @@ public class GwtValidationUtils {
 		dniStr = cuit.substring(2, n - 1);
 		digitoStr = cuit.substring(n - 1);
 
+		dniStr = dniStr.replaceAll("-", "");
+		
 		if (xyStr.length() != 2 || dniStr.length() > 8 || digitoStr.length() != 1)
 			return false;
 
