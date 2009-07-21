@@ -188,6 +188,7 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 		}
 		tablePageBarOpCurso.setCantRegistrosTot(opEnCurso.size());
 		tablePageBarOpCurso.refrescaLabelRegistros();
+		initTableOpenCurso(resultTableOpEnCurso);
 		loadTableOpCurso(opEnCursoActuales);
 	}
 
@@ -204,6 +205,7 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 		}
 		tablePageBarReserva.setCantRegistrosTot(vtaPotencial.size());
 		tablePageBarReserva.refrescaLabelRegistros();
+		initTableReservas(resultTableReservas);
 		loadTableReservas(vtaPotencialActuales);
 	}
 	
@@ -212,7 +214,7 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 		while(resultTableOpEnCurso.getRowCount() > 1){
 			resultTableOpEnCurso.removeRow(1);
 		}
-		initTableOpenCurso(resultTableOpEnCurso);
+		//initTableOpenCurso(resultTableOpEnCurso);
 		resultTableWrapperOpCurso.setWidget(resultTableOpEnCurso);
 		int row = 1;
 		for (OperacionEnCursoDto opCursoDto : opEnCursoActuales) {
@@ -237,7 +239,7 @@ public class OperacionEnCursoResultUI extends FlowPanel {
 		while(resultTableReservas.getRowCount() > 1){
 			resultTableReservas.removeRow(1);
 		}
-		initTableReservas(resultTableReservas);
+		//initTableReservas(resultTableReservas);
 		resultTableWrapperReserva.setWidget(resultTableReservas);
 		int row = 1;
 		for (VentaPotencialVistaDto vtaPotencialDto : vtaPotencialActuales) {
