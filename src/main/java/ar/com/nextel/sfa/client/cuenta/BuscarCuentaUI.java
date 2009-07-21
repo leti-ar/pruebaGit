@@ -70,7 +70,7 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 		FlowPanel linksCrearSS = new FlowPanel();
 		linksCrearSS.add(crearEquipos = new Hyperlink("Equipos/Accesorios", "" + UILoader.BUSCAR_CUENTA));
 		linksCrearSS.add(crearCDW = new Hyperlink("CDW", "" + UILoader.BUSCAR_CUENTA));
-		linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.BUSCAR_CUENTA));
+		// linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.BUSCAR_CUENTA));
 		popupCrearSS.setWidget(linksCrearSS);
 		crearEquipos.addClickListener(this);
 		crearCDW.addClickListener(this);

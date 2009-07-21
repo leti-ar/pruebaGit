@@ -6,8 +6,10 @@ import java.util.List;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.enums.PrioridadEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.ss.EditarSSUI;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
@@ -79,7 +81,7 @@ public class CuentaEdicionTabPanel {
 	private PopupPanel popupAgregarCuenta;
 	private Hyperlink  crearEquipos;
 	private Hyperlink  crearCDW;
-	private Hyperlink  crearMDS;
+	// private Hyperlink  crearMDS;
 	private Hyperlink  agregarDivision;
 	private Hyperlink  agregarSuscriptor;
 	
@@ -203,7 +205,7 @@ public class CuentaEdicionTabPanel {
 		FlowPanel linksCrearSS = new FlowPanel();
 		linksCrearSS.add(crearEquipos = new Hyperlink("Equipos/Accesorios", "" + UILoader.BUSCAR_CUENTA));
 		linksCrearSS.add(crearCDW = new Hyperlink("CDW", "" + UILoader.BUSCAR_CUENTA));
-		linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.BUSCAR_CUENTA));
+		// linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.BUSCAR_CUENTA));
 		popupCrearSS.setWidget(linksCrearSS);
 		
 		FlowPanel linksAgregarCuenta = new FlowPanel();
@@ -242,8 +244,10 @@ public class CuentaEdicionTabPanel {
 					Long idCuenta = cuenta2editDto.getId();
 					if (idCuenta != null) {
 						String targetHistoryToken = UILoader.AGREGAR_SOLICITUD + "?" + ID_CUENTA + "=" + idCuenta;
-						crearEquipos.setTargetHistoryToken(targetHistoryToken);
-						// crearCDW.setTargetHistoryToken(targetHistoryToken);
+						crearEquipos.setTargetHistoryToken(targetHistoryToken + "&" + EditarSSUI.ID_GRUPO_SS
+								+ "=" + GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS);
+						crearCDW.setTargetHistoryToken(targetHistoryToken + "&" + EditarSSUI.ID_GRUPO_SS
+								+ "=" + GrupoSolicitudDto.ID_CDW);
 						// crearMDS.setTargetHistoryToken(targetHistoryToken);
 						popupCrearSS.show();
 						popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton
@@ -271,11 +275,11 @@ public class CuentaEdicionTabPanel {
 				popupCrearSS.hide();
 			}
 		});
-		crearMDS.addClickListener(new ClickListener() {
-			public void onClick(Widget arg0) {
-				popupCrearSS.hide();
-			}
-		});
+		// crearMDS.addClickListener(new ClickListener() {
+		// 	public void onClick(Widget arg0) {
+		// 		popupCrearSS.hide();
+		// 	}
+		// });
 		agregarDivision.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				agregarDivision.setTargetHistoryToken(UILoader.EDITAR_CUENTA  + "?cuenta_id=" + cuenta2editDto.getId() + "&div="+"TRUE");
