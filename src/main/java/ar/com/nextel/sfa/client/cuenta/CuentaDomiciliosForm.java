@@ -138,14 +138,10 @@ public class CuentaDomiciliosForm extends Composite {
 			if (domicilios.get(i) != null) {
 				// Carga los iconos:
 				datosTabla.setWidget(i + 1, 0, IconFactory.lapiz());
-
-				// if (cuenta.isPuedeVerInfocom()) {
-				datosTabla.setWidget(i + 1, 1, IconFactory.copiar());
-				// }
-				if (true) {
+				if (EditarCuentaUI.esEdicionCuenta) {
+					datosTabla.setWidget(i + 1, 1, IconFactory.copiar());
 					datosTabla.setWidget(i + 1, 2, IconFactory.cancel());
 				}
-
 				if ((domicilios.get(i).getIdEntrega() != null)
 						&& (domicilios.get(i).getIdFacturacion() != null)) {
 
@@ -155,25 +151,26 @@ public class CuentaDomiciliosForm extends Composite {
 
 					datosTabla.getCellFormatter().addStyleName(i + 1, 3, "alignCenter");
 					datosTabla.getCellFormatter().addStyleName(i + 1, 4, "alignCenter");
+					if (EditarCuentaUI.esEdicionCuenta) {
+						// Entrega;
+						if (idEntrega == 2) {
+							datosTabla.setHTML(i + 1, 3, "Principal");
+							setTienePrincipalEntrega(true);
+						} else if (idEntrega == 0) {
+							datosTabla.setHTML(i + 1, 3, "Si");
+						} else if (idEntrega == 1) {
+							datosTabla.setHTML(i + 1, 3, "No");
+						}
 
-					// Entrega;
-					if (idEntrega == 2) {
-						datosTabla.setHTML(i + 1, 3, "Principal");
-						setTienePrincipalEntrega(true);
-					} else if (idEntrega == 0) {
-						datosTabla.setHTML(i + 1, 3, "Si");
-					} else if (idEntrega == 1) {
-						datosTabla.setHTML(i + 1, 3, "No");
-					}
-
-					// Facturacion:
-					if (idFacturacion == 2) {
-						datosTabla.setHTML(i + 1, 4, "Principal");
-						setTienePrincipalFacturacion(true);
-					} else if (idFacturacion == 0) {
-						datosTabla.setHTML(i + 1, 4, "Si");
-					} else if (idFacturacion == 1) {
-						datosTabla.setHTML(i + 1, 4, "No");
+						// Facturacion:
+						if (idFacturacion == 2) {
+							datosTabla.setHTML(i + 1, 4, "Principal");
+							setTienePrincipalFacturacion(true);
+						} else if (idFacturacion == 0) {
+							datosTabla.setHTML(i + 1, 4, "Si");
+						} else if (idFacturacion == 1) {
+							datosTabla.setHTML(i + 1, 4, "No");
+						}
 					}
 				}
 				datosTabla.setHTML(i + 1, 5, domicilios.get(i).getDomicilios());

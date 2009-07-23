@@ -3,7 +3,6 @@ package ar.com.nextel.sfa.client;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.CuentaDto;
-import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
@@ -11,6 +10,7 @@ import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
 import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
+import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
 import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
@@ -91,8 +91,8 @@ public class CuentaRpcServiceDelegate {
 		WaitWindow.show();
 		cuentaRpcService.getProvinciasInitializer(callback);
 	}	
-	public void getCuentaPotencial(Long cuenta_id,DefaultWaitCallback<CuentaPotencialDto> callback) {
+	public void getOportunidadNegocio(Long cuenta_id,DefaultWaitCallback<OportunidadNegocioDto> callback) {
 		WaitWindow.show();
-		cuentaRpcService.getCuentaPotencial(cuenta_id,callback);
+		cuentaRpcService.getOportunidadNegocio(cuenta_id,callback);
 	}
 }

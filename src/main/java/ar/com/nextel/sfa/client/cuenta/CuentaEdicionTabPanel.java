@@ -27,7 +27,6 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -68,6 +67,7 @@ public class CuentaEdicionTabPanel {
 	public static final String VALIDAR_COMPLETITUD_FAIL_STYLE = "validarCompletitudFailButton";
 	public static final String ID_CUENTA = "idCuenta";
 	public static final int CANT_PESTANIAS_FIJAS = 3;
+	public static final Long DEFAULT_OPP_PRIORITY = 2L;
 	private GwtValidator validator = new GwtValidator();
 	
 	public SimpleLink guardar;
@@ -347,6 +347,8 @@ public class CuentaEdicionTabPanel {
 	 * @param prioridad
 	 */
 	public void setPriorityFlag(Long prioridad) {
+		if (prioridad==null) 
+			prioridad=DEFAULT_OPP_PRIORITY;
 		redFlagIcon.setVisible(PrioridadEnum.ALTA.getId()==prioridad.longValue());
 		yellowFlagIcon.setVisible(PrioridadEnum.MEDIA.getId()==prioridad.longValue());
 		greenFlagIcon.setVisible(PrioridadEnum.BAJA.getId()==prioridad.longValue());
@@ -437,6 +439,9 @@ public class CuentaEdicionTabPanel {
 	}
 	public void setCliente(String cliente) {
 		this.cliente.setText(cliente);
+	}
+	public void setNumeroCtaPot(String numero) {
+		this.numeroCtaPot.setText(numero);
 	}
 	public CuentaDatosForm getCuentaDatosForm() {
 		return cuentaDatosForm;

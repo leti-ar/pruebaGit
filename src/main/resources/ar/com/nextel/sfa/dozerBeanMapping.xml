@@ -629,4 +629,29 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-b>
 	</mapping>
 
+	<mapping>
+		<class-a>ar.com.nextel.model.oportunidades.beans.OportunidadNegocio
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.OportunidadNegocioDto
+		</class-b>
+	</mapping>
+	<mapping>
+		<class-a>ar.com.nextel.model.oportunidades.beans.EstadoOportunidadJustificado
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.EstadoOportunidadJustificadoDto
+		</class-b>
+	</mapping>
+	<mapping>
+		<class-a>ar.com.nextel.model.oportunidades.beans.MotivoNoCierre
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.MotivoNoCierreDto
+		</class-b>
+	</mapping>
+	<mapping>
+		<class-a>ar.com.nextel.model.oportunidades.beans.Prioridad
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.PrioridadDto
+		</class-b>
+	</mapping>
+
 </mappings>

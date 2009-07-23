@@ -7,10 +7,10 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
-import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
+import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.enums.TipoCuentaEnum;
@@ -24,7 +24,7 @@ import com.google.gwt.user.client.History;
 public class EditarCuentaUI extends ApplicationUI {
 
 	private final CuentaEdicionTabPanel cuentaTab = CuentaEdicionTabPanel.getInstance();
-	private boolean esEdicionCuenta =  true;
+	public static boolean esEdicionCuenta =  true;
 	
 	public EditarCuentaUI() {
 		super();
@@ -64,13 +64,15 @@ public class EditarCuentaUI extends ApplicationUI {
 		//viene de busqueda OPP			
 		} else if (HistoryUtils.getParam("opp")!=null) {
 			Long cuenta_id = new Long(HistoryUtils.getParam("opp"));
-			CuentaRpcService.Util.getInstance().getCuentaPotencial(cuenta_id,new DefaultWaitCallback<CuentaPotencialDto>() {
-				public void success(CuentaPotencialDto cuentaPotDto) {
+			CuentaRpcService.Util.getInstance().getOportunidadNegocio(cuenta_id,new DefaultWaitCallback<OportunidadNegocioDto>() {
+				public void success(OportunidadNegocioDto oportunidadDto) {
 					esEdicionCuenta = false;
-					CuentaDto cuentaDto = (CuentaDto)cuentaPotDto.getCuentaOrigen();
-					cuentaTab.setPriorityFlag(new Long("1"));
-				    cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusquedaFromOpp(cuentaDto);
-					completarVisualizacionDatos(cuentaDto);
+					cuentaTab.setCuenta2editDto(oportunidadDto.getCuentaOrigen());
+					cuentaTab.setPriorityFlag(oportunidadDto.getPrioridad().getId());
+				    cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusquedaFromOpp(oportunidadDto.getCuentaOrigen());
+					cuentaTab.getCuentaDatosForm().ponerDatosOportunidadEnFormulario(oportunidadDto);
+					cuentaTab.setNumeroCtaPot(oportunidadDto.getNumero());
+					completarVisualizacionDatos(oportunidadDto.getCuentaOrigen());
 				}
 			});			
 		//viene de resultado de busqueda			
@@ -150,7 +152,9 @@ public class EditarCuentaUI extends ApplicationUI {
 		}
 		cuentaTab.setRazonSocial(cuenta.getPersona()!=null ? cuenta.getPersona().getRazonSocial():"");
 		//carga info pestaña Datos
-		cuentaTab.getCuentaDatosForm().ponerDatosBusquedaEnFormulario(cuenta);
+		if(esEdicionCuenta) 
+			cuentaTab.getCuentaDatosForm().ponerDatosBusquedaEnFormulario(cuenta);
+		
 		//carga info pestaña Domicilio
 		if (cuenta.getPersona() != null) {
 			cuentaTab.getCuentaDomicilioForm().cargaTablaDomicilios(cuenta);
@@ -173,7 +177,7 @@ public class EditarCuentaUI extends ApplicationUI {
 	private void cargarInfoContactos(String categoriaCuenta) {
 		List <ContactoCuentaDto>contactos = null;
 		if (categoriaCuenta.equals(TipoCuentaEnum.CTA.getTipo())) {
-			//contactos = ((GranCuentaDto)cuentaTab.getCuenta2editDto()).getContactos();
+			contactos = ((GranCuentaDto)cuentaTab.getCuenta2editDto()).getContactos();
 		} else if (categoriaCuenta.equals(TipoCuentaEnum.SUS.getTipo())) {
 			contactos = ((SuscriptorDto)cuentaTab.getCuenta2editDto()).getGranCuenta().getContactos();
 		} else if (categoriaCuenta.equals(TipoCuentaEnum.DIV.getTipo())) {

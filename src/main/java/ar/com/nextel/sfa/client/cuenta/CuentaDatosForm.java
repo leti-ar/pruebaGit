@@ -15,6 +15,7 @@ import ar.com.nextel.sfa.client.dto.DatosPagoDto;
 import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.EmailDto;
+import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProveedorDto;
 import ar.com.nextel.sfa.client.dto.RubroDto;
@@ -260,7 +261,7 @@ public class CuentaDatosForm extends Composite {
 		datosOppTable.setWidget(row, 1, camposTabDatos.getRazonSocial());
 		datosOppTable.getFlexCellFormatter().setColSpan(row, 1, 3);
 		datosOppTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
-		
+		//ccc
 		row++;
 		datosOppTable.setWidget(row, 0, camposTabDatos.getNombreLabel());
 		datosOppTable.setWidget(row, 1, camposTabDatos.getNombre());
@@ -504,6 +505,12 @@ public class CuentaDatosForm extends Composite {
 		cargarPanelVendedor(cuentaDto);
 		cargarPanelUsuario(cuentaDto);
 	}
+
+	public void ponerDatosOportunidadEnFormulario(OportunidadNegocioDto oportunidadDto) {
+		cargarPanelDatosOportunidad(oportunidadDto);
+		cargarPanelTelefonoFax(oportunidadDto.getCuentaOrigen());
+		cargarPanelEmails(oportunidadDto.getCuentaOrigen());
+	}
 	
 	public void cargarPanelDatos(CuentaDto cuentaDto) {
 		if (cuentaDto.getPersona().getDocumento()!=null) {
@@ -528,6 +535,23 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getClaseCliente().setSelectedItem(cuentaDto.getClaseCuenta());
 		camposTabDatos.getCicloFacturacion().setText(cuentaDto.getCicloFacturacion().getDescripcion());
 		camposTabDatos.getUse().setText(cuentaDto.getUse());
+	}
+	
+	public void cargarPanelDatosOportunidad(OportunidadNegocioDto oportunidadDto) {
+		camposTabDatos.getRazonSocial().setText(oportunidadDto.getPersona().getRazonSocial());
+		camposTabDatos.getNombre().setText(oportunidadDto.getPersona().getNombre());
+		camposTabDatos.getApellido().setText(oportunidadDto.getPersona().getApellido());
+		camposTabDatos.getOppTipoDocumento().setText(oportunidadDto.getPersona().getDocumento()!=null?oportunidadDto.getPersona().getDocumento().tipoDocumento.getDescripcion():"");
+		camposTabDatos.getNumeroDocumento().setText(oportunidadDto.getPersona().getDocumento()!=null?oportunidadDto.getPersona().getDocumento().getNumero():"");
+		camposTabDatos.getOppVencimiento().setText(oportunidadDto.getFechaVencimiento()!=null?DateTimeFormat.getMediumDateFormat().format(oportunidadDto.getFechaVencimiento()):"");
+		camposTabDatos.getOppEstado().setText(oportunidadDto.getEstadoJustificado()!=null?oportunidadDto.getEstadoJustificado().getEstado().getDescripcion():"");
+		camposTabDatos.getOppRubro().setText(oportunidadDto.getRubro()!=null?oportunidadDto.getRubro().getDescripcion():"");
+		camposTabDatos.getOppCompetenciaProv().setText(oportunidadDto.getProveedorCompetencia()!=null?oportunidadDto.getProveedorCompetencia().getDescripcion():"");
+		camposTabDatos.getOppCompetenciaEquipo().setText(oportunidadDto.getCantidadEquiposCompetencia()!=null?oportunidadDto.getCantidadEquiposCompetencia().toString():"");
+		camposTabDatos.getOppTerminalesEstimadas().setText(oportunidadDto.getTerminalesEstimadas()!=null?oportunidadDto.getTerminalesEstimadas().toString():"");
+		camposTabDatos.getOppVisitas().setText(oportunidadDto.getCantidadVisitas()!=null?oportunidadDto.getCantidadVisitas().toString():"");
+		//ccc
+		
 	}
 	
 	public void cargarPanelTelefonoFax(CuentaDto cuentaDto) {
