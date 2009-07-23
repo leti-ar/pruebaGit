@@ -6,6 +6,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 public class CuentaPotencialDto implements IsSerializable {
+	private Long id;
     private String codigoVantive;
     private String numero;
     private Date fechaVencimiento;
@@ -22,6 +23,14 @@ public class CuentaPotencialDto implements IsSerializable {
     private Boolean vencimientoLockOportunidad = Boolean.FALSE;
     private Boolean consultada = Boolean.FALSE;
     protected boolean esReserva;
+
+
+    public Long getId() {
+		return id;
+	}
+    public void setId(Long id) {
+		this.id = id;
+	}
 	public String getCodigoVantive() {
 		return codigoVantive;
 	}

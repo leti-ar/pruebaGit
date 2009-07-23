@@ -23,6 +23,10 @@ import ar.com.nextel.model.cuentas.beans.Suscriptor;
 import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
+import ar.com.nextel.model.oportunidades.beans.EstadoOportunidad;
+import ar.com.nextel.model.oportunidades.beans.EstadoOportunidadJustificado;
+import ar.com.nextel.model.oportunidades.beans.MotivoNoCierre;
+import ar.com.nextel.model.oportunidades.beans.OportunidadNegocio;
 import ar.com.nextel.model.personas.beans.Persona;
 import ar.com.nextel.model.personas.beans.Telefono;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
@@ -34,6 +38,7 @@ import ar.com.nextel.sfa.client.dto.DatosDebitoTarjetaCreditoDto;
 import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.EmailDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
+import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.enums.TipoCuentaEnum;
 import ar.com.nextel.sfa.client.enums.TipoEmailEnum;
@@ -146,6 +151,19 @@ public class CuentaBusinessService {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Suscriptor crearSuscriptor(Cuenta cuenta, Vendedor vendedor) {
 		return (Suscriptor) createCuentaBusinessOperator.createSuscriptorFrom(cuenta, vendedor);
+	}
+	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public OportunidadNegocio updateEstadoOportunidad(OportunidadNegocioDto oportunidadDto, MapperExtended mapper) {
+        OportunidadNegocio oportunidad = (OportunidadNegocio) repository.retrieve(OportunidadNegocio.class, oportunidadDto.getId());
+        EstadoOportunidad nuevoEstado = repository.retrieve(EstadoOportunidad.class, oportunidadDto.getEstadoJustificado().getEstado().getId());
+        MotivoNoCierre    nuevoMotivo = repository.retrieve(MotivoNoCierre.class, oportunidadDto.getEstadoJustificado().getMotivo().getId());
+        oportunidad.getEstadoJustificado().setEstado(nuevoEstado);
+        oportunidad.setEstado(nuevoEstado);
+        oportunidad.getEstadoJustificado().setMotivo(nuevoMotivo);
+        oportunidad.getEstadoJustificado().setObservacionesMotivo(oportunidadDto.getEstadoJustificado().getObservacionesMotivo());
+        repository.save(oportunidad);
+	    return oportunidad;     
 	}
 	
 	/**

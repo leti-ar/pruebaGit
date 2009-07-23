@@ -82,7 +82,7 @@ public class CuentaDatosForm extends Composite {
 
 	private HTML iconoLupa = IconFactory.vistaPreliminar();
 	private HTML iconoEditarEstdo = IconFactory.lapiz();
-	
+	private OportunidadNegocioDto oportunidadDto;
 	private CuentaUIData camposTabDatos   = new CuentaUIData();
 	private DatosPagoDto datosPago;
 	private List <Widget>camposObligatorios = new ArrayList<Widget>();
@@ -537,6 +537,7 @@ public class CuentaDatosForm extends Composite {
 	}
 	
 	public void cargarPanelDatosOportunidad(OportunidadNegocioDto oportunidadDto) {
+		this.oportunidadDto = oportunidadDto;
 		camposTabDatos.getRazonSocial().setText(oportunidadDto.getPersona().getRazonSocial());
 		camposTabDatos.getNombre().setText(oportunidadDto.getPersona().getNombre());
 		camposTabDatos.getApellido().setText(oportunidadDto.getPersona().getApellido());
@@ -1230,6 +1231,13 @@ public class CuentaDatosForm extends Composite {
 	public void setCamposTabDatos(CuentaUIData camposTabDatos) {
 		this.camposTabDatos = camposTabDatos;
 	}
+	
+	public OportunidadNegocioDto getOportunidadDto() {
+		return oportunidadDto;
+	}
+	public void setOportunidadDto(OportunidadNegocioDto oportunidadDto) {
+		this.oportunidadDto = oportunidadDto;
+	}	
 	
 	public void setearValoresRtaVeraz(VerazResponseDto result, TextBox apellido, TextBox nombre, TextBox razonSocial, ListBox sexo, Label veraz) {
         apellido.setText(result.getApellido());

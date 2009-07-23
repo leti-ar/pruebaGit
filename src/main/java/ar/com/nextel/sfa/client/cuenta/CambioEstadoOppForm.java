@@ -1,11 +1,17 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import ar.com.nextel.sfa.client.CuentaRpcService;
+import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.EstadoOportunidadDto;
+import ar.com.nextel.sfa.client.dto.EstadoOportunidadJustificadoDto;
+import ar.com.nextel.sfa.client.dto.MotivoNoCierreDto;
+import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.enums.EstadoOportunidadEnum;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.nextel.sfa.client.widget.RadioButtonWithValue;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -26,11 +32,8 @@ public class CambioEstadoOppForm extends NextelDialog {
 
 	ClickListener listener = new ClickListener(){
 		public void onClick(Widget sender){
-			if(sender == aceptar){
-				GWT.log(cuentaData.getRadioGroupMotivos().getLabelChecked() +
-						" : " +
-						cuentaData.getRadioGroupMotivos().getValueChecked(),null);
-				hide();
+			if(sender == aceptar) {
+				updateEstadoOportunidad();
 			}
 			else if(sender == cancelar){
 				hide();
@@ -121,7 +124,6 @@ public class CambioEstadoOppForm extends NextelDialog {
 		obsTable.getFlexCellFormatter().setWidth(0, 1, "85%");
 		radioOpsTable.setWidget(++indexRow,0, obsTable);
 		radioOpsTable.getFlexCellFormatter().setColSpan(indexRow, 0, 3);
-		
 	}
 	
 	private void initBlankTable() {
@@ -137,8 +139,21 @@ public class CambioEstadoOppForm extends NextelDialog {
 	public void showHideTablaMotivos() {
 		radioOpsTable.setVisible(cuentaData.getEstadoOpp().getSelectedItemId().equals(EstadoOportunidadEnum.NO_CERRADA.getId().toString()));
 		blankTable.setVisible(!cuentaData.getEstadoOpp().getSelectedItemId().equals(EstadoOportunidadEnum.NO_CERRADA.getId().toString()));
-
 	}
 	
+	public void updateEstadoOportunidad() {
+		OportunidadNegocioDto oportunidadDto = CuentaDatosForm.getInstance().getOportunidadDto();
+        oportunidadDto.getEstadoJustificado().setEstado(new EstadoOportunidadDto(new Long(cuentaData.getEstadoOpp().getSelectedItemId()),cuentaData.getEstadoOpp().getSelectedItemText()));
+        oportunidadDto.getEstadoJustificado().setMotivo(new MotivoNoCierreDto(new Long(cuentaData.getRadioGroupMotivos().getValueChecked()),cuentaData.getRadioGroupMotivos().getLabelChecked()));
+        oportunidadDto.getEstadoJustificado().setObservacionesMotivo(cuentaData.getOppObservaciones().getText());
+        
+		CuentaRpcService.Util.getInstance().updateEstadoOportunidad(oportunidadDto,new DefaultWaitCallback<OportunidadNegocioDto>() {
+			public void success(OportunidadNegocioDto oportunidadDto) {
+				CuentaDatosForm.getInstance().setOportunidadDto(oportunidadDto);
+				cuentaData.getOppEstado().setText(cuentaData.getEstadoOpp().getSelectedItemText());
+				hide();
+			}
+		});
+	}
 }
 

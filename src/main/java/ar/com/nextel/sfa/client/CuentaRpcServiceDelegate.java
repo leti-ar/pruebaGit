@@ -95,4 +95,8 @@ public class CuentaRpcServiceDelegate {
 		WaitWindow.show();
 		cuentaRpcService.getOportunidadNegocio(cuenta_id,callback);
 	}
+	public void updateEstadoOportunidad(OportunidadNegocioDto oportunidadDto,DefaultWaitCallback<OportunidadNegocioDto> callback) {
+		WaitWindow.show();
+		cuentaRpcService.updateEstadoOportunidad(oportunidadDto,callback);
+	}
 }

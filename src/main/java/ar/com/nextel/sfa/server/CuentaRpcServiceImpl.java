@@ -50,6 +50,7 @@ import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.EstadoOportunidad;
+import ar.com.nextel.model.oportunidades.beans.EstadoOportunidadJustificado;
 import ar.com.nextel.model.oportunidades.beans.MotivoNoCierre;
 import ar.com.nextel.model.oportunidades.beans.OportunidadNegocio;
 import ar.com.nextel.model.oportunidades.beans.Prioridad;
@@ -459,6 +460,10 @@ public class CuentaRpcServiceImpl extends RemoteService implements	CuentaRpcServ
         } 
         AppLogger.info("Obtención finalizada");
         return oportunidadDto;
+	}
+	
+	public OportunidadNegocioDto updateEstadoOportunidad(OportunidadNegocioDto oportunidadDto) throws RpcExceptionMessages {
+		return (OportunidadNegocioDto) mapper.map(cuentaBusinessService.updateEstadoOportunidad(oportunidadDto, mapper), OportunidadNegocioDto.class);		
 	}
 	
 	/**
