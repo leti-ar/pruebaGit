@@ -57,8 +57,7 @@ public class CambioEstadoOppForm extends NextelDialog {
 		radioOpsTable.setVisible(false);
 		cuentaData.getEstadoOpp().addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
-				radioOpsTable.setVisible(cuentaData.getEstadoOpp().getSelectedItemId().equals(EstadoOportunidadEnum.NO_CERRADA.getId().toString()));
-				blankTable.setVisible(!cuentaData.getEstadoOpp().getSelectedItemId().equals(EstadoOportunidadEnum.NO_CERRADA.getId().toString()));
+				showHideTablaMotivos();
 			}
 		});
 	
@@ -133,6 +132,12 @@ public class CambioEstadoOppForm extends NextelDialog {
 	public void cargarPopup() {
 		aceptar.setVisible(true);
 		showAndCenter();
+	}
+	
+	public void showHideTablaMotivos() {
+		radioOpsTable.setVisible(cuentaData.getEstadoOpp().getSelectedItemId().equals(EstadoOportunidadEnum.NO_CERRADA.getId().toString()));
+		blankTable.setVisible(!cuentaData.getEstadoOpp().getSelectedItemId().equals(EstadoOportunidadEnum.NO_CERRADA.getId().toString()));
+
 	}
 	
 }

@@ -261,7 +261,6 @@ public class CuentaDatosForm extends Composite {
 		datosOppTable.setWidget(row, 1, camposTabDatos.getRazonSocial());
 		datosOppTable.getFlexCellFormatter().setColSpan(row, 1, 3);
 		datosOppTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
-		//ccc
 		row++;
 		datosOppTable.setWidget(row, 0, camposTabDatos.getNombreLabel());
 		datosOppTable.setWidget(row, 1, camposTabDatos.getNombre());
@@ -278,7 +277,7 @@ public class CuentaDatosForm extends Composite {
 		datosOppTable.getFlexCellFormatter().setWidth(row, 2, ANCHO_TERCER_COLUMNA);
 		row++;
 		FlexTable tabla = new FlexTable();
-		tabla.setWidth("90%");
+		tabla.setWidth("50%");
 		tabla.setWidget(0, 0, camposTabDatos.getOppEstado());
 		tabla.setWidget(0, 1, iconoEditarEstdo);
 		datosOppTable.setWidget(row, 0, camposTabDatos.getOppVencimientoLabel());
@@ -550,8 +549,12 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getOppCompetenciaEquipo().setText(oportunidadDto.getCantidadEquiposCompetencia()!=null?oportunidadDto.getCantidadEquiposCompetencia().toString():"");
 		camposTabDatos.getOppTerminalesEstimadas().setText(oportunidadDto.getTerminalesEstimadas()!=null?oportunidadDto.getTerminalesEstimadas().toString():"");
 		camposTabDatos.getOppVisitas().setText(oportunidadDto.getCantidadVisitas()!=null?oportunidadDto.getCantidadVisitas().toString():"");
-		//ccc
-		
+		//popup motivo no cerrado
+		camposTabDatos.getOppNroOpp().setText(oportunidadDto.getNumero());
+		camposTabDatos.getEstadoOpp().setSelectedItem(oportunidadDto.getEstadoJustificado().getEstado());
+		camposTabDatos.getRadioGroupMotivos().setValueChecked(oportunidadDto.getEstadoJustificado().getMotivo()!=null?oportunidadDto.getEstadoJustificado().getMotivo().getId().toString():"1");
+		camposTabDatos.getOppObservaciones().setText(oportunidadDto.getEstadoJustificado().getObservacionesMotivo());
+		CambioEstadoOppForm.getInstance().showHideTablaMotivos();
 	}
 	
 	public void cargarPanelTelefonoFax(CuentaDto cuentaDto) {

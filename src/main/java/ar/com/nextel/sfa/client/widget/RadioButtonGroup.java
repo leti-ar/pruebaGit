@@ -44,7 +44,16 @@ public class RadioButtonGroup {
 	public String getLabelChecked() {
 		return recuperarValorChecked("l");
 	}   
-	
+
+	public void setValueChecked(String value) {
+		for (RadioButtonWithValue radioBtn : radios) {
+			if(radioBtn.getValue().equals(value)) { 
+				radioBtn.setChecked(true);
+				break;
+			}
+		}
+	}
+
 	private String recuperarValorChecked(String what) {
 		String value = null;
 		if (radios!=null && radios.size()>0) {
