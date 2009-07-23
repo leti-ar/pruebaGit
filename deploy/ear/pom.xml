@@ -25,11 +25,19 @@
 						<webModule>
 							<groupId>ar.com.nextel.sfa</groupId>
 							<artifactId>sfa-web</artifactId>
-							<contextRoot>/sfa-web</contextRoot>
+							<contextRoot>/sfa-web2</contextRoot>
 						</webModule>
 					</modules>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>server04</id>
+      <name>Snoop REPO Snapshots</name>
+      <url>
+      http://server04:8081/nexus/content/repositories/SnoopREPOSnap/</url>
+    </snapshotRepository>
+  </distributionManagement>	
 </project>
