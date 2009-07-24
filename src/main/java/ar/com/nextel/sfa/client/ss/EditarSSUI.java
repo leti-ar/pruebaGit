@@ -25,6 +25,7 @@ import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.RazonSocialClienteBar;
+import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -369,5 +370,10 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 
 	public void verificarSim(String sim, DefaultWaitCallback<String> callback) {
 		SolicitudRpcService.Util.getInstance().verificarSim(sim, callback);
+	}
+
+	public static String getEditarSSUrl(long idCuenta, long idGrupo) {
+		return UILoader.AGREGAR_SOLICITUD + "?" + EditarSSUI.ID_CUENTA + "=" + idCuenta + "&"
+				+ EditarSSUI.ID_GRUPO_SS + "=" + idGrupo;
 	}
 }
