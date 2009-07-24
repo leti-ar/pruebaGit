@@ -83,7 +83,6 @@ public class DomiciliosUIData extends UIData {
 		fields.add(facturacion);
 		fields.add(provincia);
 		this.addFocusListeners(fields);
-
 		entrega.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
 		facturacion.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
 	}
@@ -119,6 +118,7 @@ public class DomiciliosUIData extends UIData {
 		}
 	}
 
+	
 	public DomiciliosCuentaDto getDomicilio() {
 		/** TODO: Deberia hacer alguna validacion?? */
 		domicilio.setCalle(calle.getText());
@@ -174,6 +174,9 @@ public class DomiciliosUIData extends UIData {
 
 				public void onLostFocus(Widget w) {
 					validateFields(w);
+					if (w instanceof TextBox) {
+						((TextBox) w).setText(((TextBox) w).getText().trim().toUpperCase());
+					}
 				}
 			});
 		}
