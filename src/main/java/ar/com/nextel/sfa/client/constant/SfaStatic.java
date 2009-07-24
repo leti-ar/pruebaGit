@@ -115,11 +115,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ERR_FALTA_ALQUILER();
 
   /**
-   * Translated "El ítem {1} debe tener al menos un servicio adicional de tipo Cargo Activación CDW seleccionado. ".
+   * Translated "El ítem {1} debe tener al menos un servicio adicional de tipo Cargo Activación CDW seleccionado.".
    * 
-   * @return translated "El ítem {1} debe tener al menos un servicio adicional de tipo Cargo Activación CDW seleccionado. "
+   * @return translated "El ítem {1} debe tener al menos un servicio adicional de tipo Cargo Activación CDW seleccionado."
    */
-  @DefaultStringValue("El ítem {1} debe tener al menos un servicio adicional de tipo Cargo Activación CDW seleccionado. ")
+  @DefaultStringValue("El ítem {1} debe tener al menos un servicio adicional de tipo Cargo Activación CDW seleccionado.")
   @Key("ERR_FALTA_CARGO_ACTIVACION_CDW")
   String ERR_FALTA_CARGO_ACTIVACION_CDW();
 
@@ -185,6 +185,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("El campo {1} debe tener {2} dígitos.")
   @Key("ERR_LENGHT")
   String ERR_LENGHT();
+
+  /**
+   * Translated "El número de SS no corresponde con el grupo de SS seleccionado.".
+   * 
+   * @return translated "El número de SS no corresponde con el grupo de SS seleccionado."
+   */
+  @DefaultStringValue("El número de SS no corresponde con el grupo de SS seleccionado.")
+  @Key("ERR_NNS_RANGO")
+  String ERR_NNS_RANGO();
 
   /**
    * Translated "No tiene permiso para ver esa cuenta.".
@@ -257,6 +266,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Debe seleccionar una de las opciones.")
   @Key("ERR_REQUIRED_SELECTION")
   String ERR_REQUIRED_SELECTION();
+
+  /**
+   * Translated "\"Esta operación no tiene una SS creada aún.\"".
+   * 
+   * @return translated "\"Esta operación no tiene una SS creada aún.\""
+   */
+  @DefaultStringValue("\"Esta operación no tiene una SS creada aún.\"")
+  @Key("ERR_SIN_SS")
+  String ERR_SIN_SS();
 
   /**
    * Translated "Tarjeta no válida: La tarjeta ingresada no es válida. (se)".
