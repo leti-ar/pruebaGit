@@ -34,7 +34,7 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 	private PopupPanel popupAgregarCuenta;
 	private Hyperlink crearEquipos;
 	private Hyperlink crearCDW;
-	private Hyperlink crearMDS;
+	// private Hyperlink crearMDS;
 	private Hyperlink agregarDivision;
 	private Hyperlink agregarSuscriptor;
 
@@ -74,7 +74,7 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 		popupCrearSS.setWidget(linksCrearSS);
 		crearEquipos.addClickListener(this);
 		crearCDW.addClickListener(this);
-		crearMDS.addClickListener(this);
+		// crearMDS.addClickListener(this);
 
 		FlowPanel linksAgregarCuenta = new FlowPanel();
 		linksAgregarCuenta.add(agregarDivision = new Hyperlink(Sfa.constant().division(), ""
@@ -95,10 +95,10 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 		Long idCuenta = buscarCuentaResultPanel.getSelectedCuentaId();
 		if (sender == crearSSButton) {
 			if (idCuenta != null) {
-				crearEquipos.setTargetHistoryToken(getEditarSSUrl(idCuenta,
+				crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta,
 						GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
-				crearCDW.setTargetHistoryToken(getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_CDW));
-				crearMDS.setTargetHistoryToken(getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_MDS));
+				crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_CDW));
+				// crearMDS.setTargetHistoryToken(getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_MDS));
 				popupCrearSS.show();
 				popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton
 						.getAbsoluteTop() - 50);
@@ -108,22 +108,20 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 			}
 		} else if (sender == agregarCuentaButton) {
 			popupAgregarCuenta.show();
-			popupAgregarCuenta.setPopupPosition(agregarCuentaButton.getAbsoluteLeft(), agregarCuentaButton.getAbsoluteTop() - 35);
-		} else if (sender == crearEquipos || sender == crearCDW || sender == crearMDS) {
+			popupAgregarCuenta.setPopupPosition(agregarCuentaButton.getAbsoluteLeft(), agregarCuentaButton
+					.getAbsoluteTop() - 35);
+		} else if (sender == crearEquipos || sender == crearCDW) { // || sender == crearMDS
 			popupCrearSS.hide();
 		} else if (sender == agregarDivision) {
-			agregarDivision.setTargetHistoryToken(UILoader.EDITAR_CUENTA  + "?cuenta_id=" + idCuenta + "&div=1");
+			agregarDivision.setTargetHistoryToken(UILoader.EDITAR_CUENTA + "?cuenta_id=" + idCuenta
+					+ "&div=1");
 			popupAgregarCuenta.hide();
-		} else if (sender == agregarSuscriptor) {			
-			agregarSuscriptor.setTargetHistoryToken(UILoader.EDITAR_CUENTA  + "?cuenta_id=" + idCuenta + "&sus=1");
+		} else if (sender == agregarSuscriptor) {
+			agregarSuscriptor.setTargetHistoryToken(UILoader.EDITAR_CUENTA + "?cuenta_id=" + idCuenta
+					+ "&sus=1");
 			popupAgregarCuenta.hide();
 		}
 
-	}
-
-	private String getEditarSSUrl(long idCuenta, long idGrupo) {
-		return UILoader.AGREGAR_SOLICITUD + "?" + EditarSSUI.ID_CUENTA + "=" + idCuenta + "&"
-				+ EditarSSUI.ID_GRUPO_SS + "=" + idGrupo;
 	}
 
 	public boolean unload(String token) {
