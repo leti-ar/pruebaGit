@@ -31,10 +31,8 @@
 .btn-bkg {
 	width: 80px;
 	height: 22px;
-	background-image: url("images/btn-bkg.gif");
+	background: transparent url("images/btn-bkg.gif") no-repeat scroll 0 0;
 	border: none;
-	background-color: transparent;
-	background-repeat: no-repeat;
 	margin-right: 10px;
 	color: #A93F59;
 	font-weight: 600;
@@ -46,7 +44,7 @@
 	top: 0px;
 	left: 50%;
 	margin-left: -25px;
-	background-image: url("images/menu.gif");
+	background: transparent url("images/menu.gif") no-repeat scroll 0 0;
 	border: none;
 	height: 18px;
 	width: 50px;
