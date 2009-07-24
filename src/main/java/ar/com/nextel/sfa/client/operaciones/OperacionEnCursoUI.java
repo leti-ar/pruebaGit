@@ -1,12 +1,8 @@
 package ar.com.nextel.sfa.client.operaciones;
 
-import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.OperacionesRpcService;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
-import ar.com.nextel.sfa.client.widget.UILoader;
-
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Widget;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
 /**
  * Esta página contiene el formulario de busquedas de Operaciones (OppFilterForm) y la tabla de resultados
@@ -15,7 +11,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author eSalvador
  * 
  */
-public class OperacionEnCursoUI extends ApplicationUI {
+public class OperacionEnCursoUI extends ApplicationUI implements OperacionEnCursoUIController {
 
 	// private OppFilterForm oppFilterForm;
 	private OperacionEnCursoResultUI oppResultPanel;
@@ -25,7 +21,7 @@ public class OperacionEnCursoUI extends ApplicationUI {
 	}
 
 	public void firstLoad() {
-		oppResultPanel = new OperacionEnCursoResultUI();
+		oppResultPanel = new OperacionEnCursoResultUI(this);
 
 		mainPanel.add(oppResultPanel);
 		mainPanel.addStyleName("gwt-central-panel");
@@ -38,5 +34,9 @@ public class OperacionEnCursoUI extends ApplicationUI {
 
 	public boolean unload(String token) {
 		return true;
+	}
+
+	public void cancelarOperacionEnCurso(String idOperacionEnCurso, DefaultWaitCallback callback) {
+		OperacionesRpcService.Util.getInstance().cancelarOperacionEnCurso(idOperacionEnCurso, callback);
 	}
 }
