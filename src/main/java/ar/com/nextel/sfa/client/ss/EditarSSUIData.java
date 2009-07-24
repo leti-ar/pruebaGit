@@ -18,6 +18,7 @@ import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudBaseDto;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
+import ar.com.nextel.sfa.client.validator.target.TextBoxBaseValidationTarget;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
@@ -290,9 +291,14 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 		recarcularValores();
 		GwtValidator validator = new GwtValidator();
 		String v1 = "\\{1\\}";
-		validator.addTarget(nss).required(
+		TextBoxBaseValidationTarget nnsValidator = validator.addTarget(nss).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Nº de Solicitud")).maxLength(10,
 				Sfa.constant().ERR_NSS_LONG());
+		GrupoSolicitudDto grupoSS = solicitudServicio.getGrupoSolicitud();
+		if (grupoSS.getRangoMinimoSinPin() != null && grupoSS.getRangoMaximoSinPin() != null) {
+			nnsValidator.greaterOrEqual(Sfa.constant().ERR_NNS_RANGO(), grupoSS.getRangoMinimoSinPin())
+					.smallerOrEqual(Sfa.constant().ERR_NNS_RANGO(), grupoSS.getRangoMaximoSinPin());
+		}
 		validator.addTarget(facturacion).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Facturación"));
 		if (!solicitudServicio.getGrupoSolicitud().isCDW()) {
@@ -330,7 +336,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 			}
 			if (linea.getTipoSolicitud().getTipoSolicitudBase().getId().equals(
 					TipoSolicitudBaseDto.ID_VENTA_CDW)) {
-				boolean hasCargoActivaciónCDW  = false;
+				boolean hasCargoActivaciónCDW = false;
 				for (ServicioAdicionalLineaSolicitudServicioDto servicioAdicional : linea
 						.getServiciosAdicionales()) {
 					if (servicioAdicional.isUnicaVez() && servicioAdicional.isChecked()) {
@@ -339,7 +345,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 					}
 				}
 				if (!hasCargoActivaciónCDW) {
-					validator.addError(Sfa.constant().ERR_FALTA_CARGO_ACTIVACION_CDW().replaceAll(v1, linea.getAlias()));
+					validator.addError(Sfa.constant().ERR_FALTA_CARGO_ACTIVACION_CDW().replaceAll(v1,
+							linea.getAlias()));
 				}
 			}
 		}
