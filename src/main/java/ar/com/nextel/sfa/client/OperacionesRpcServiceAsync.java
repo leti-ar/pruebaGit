@@ -11,10 +11,13 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * @author esalvador
  */
 
-	public interface OperacionesRpcServiceAsync {
+public interface OperacionesRpcServiceAsync {
 
-		public void searchOpEnCurso(AsyncCallback<List<OperacionEnCursoDto>> callback);
-		
-		public void searchReservas(AsyncCallback<VentaPotencialVistaResultDto> callback);
+	public void searchOpEnCurso(AsyncCallback<List<OperacionEnCursoDto>> callback);
 
-	}
+	public void searchReservas(AsyncCallback<VentaPotencialVistaResultDto> callback);
+
+	public void cancelarOperacionEnCurso(String idOperacionEnCurso,
+			AsyncCallback<VentaPotencialVistaResultDto> callback);
+
+}

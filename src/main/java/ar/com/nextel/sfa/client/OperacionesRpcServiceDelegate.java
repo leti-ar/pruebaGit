@@ -17,7 +17,7 @@ public class OperacionesRpcServiceDelegate {
 
 	public OperacionesRpcServiceDelegate() {
 	}
-	
+
 	public OperacionesRpcServiceDelegate(OperacionesRpcServiceAsync opRpcService) {
 		this.opRpcService = opRpcService;
 	}
@@ -26,10 +26,15 @@ public class OperacionesRpcServiceDelegate {
 		WaitWindow.show();
 		opRpcService.searchOpEnCurso(defaultWaitCallback);
 	}
-	
+
 	public void searchReservas(DefaultWaitCallback<VentaPotencialVistaResultDto> callback) {
 		WaitWindow.show();
 		opRpcService.searchReservas(callback);
 	}
-	
+
+	public void cancelarOperacionEnCurso(String idOperacionEnCurso,
+			DefaultWaitCallback<VentaPotencialVistaResultDto> callback) {
+		WaitWindow.show();
+		opRpcService.cancelarOperacionEnCurso(idOperacionEnCurso, callback);
+	}
 }

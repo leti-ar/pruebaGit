@@ -10,26 +10,26 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-	@RemoteServiceRelativePath("operaciones.rpc")
-	public interface OperacionesRpcService extends RemoteService {
+@RemoteServiceRelativePath("operaciones.rpc")
+public interface OperacionesRpcService extends RemoteService {
 
-		public static class Util {
+	public static class Util {
 
-			private static OperacionesRpcServiceAsync opRpcService = null;
-			private static OperacionesRpcServiceDelegate opRpcServiceDelegate = null;
+		private static OperacionesRpcServiceAsync opRpcService = null;
+		private static OperacionesRpcServiceDelegate opRpcServiceDelegate = null;
 
-			public static OperacionesRpcServiceDelegate getInstance() {
-				if (opRpcServiceDelegate == null) {
-					opRpcService = GWT.create(OperacionesRpcService.class);
-					opRpcServiceDelegate = new OperacionesRpcServiceDelegate(opRpcService);
-				}
-				return opRpcServiceDelegate;
+		public static OperacionesRpcServiceDelegate getInstance() {
+			if (opRpcServiceDelegate == null) {
+				opRpcService = GWT.create(OperacionesRpcService.class);
+				opRpcServiceDelegate = new OperacionesRpcServiceDelegate(opRpcService);
 			}
+			return opRpcServiceDelegate;
 		}
-
-		public List<OperacionEnCursoDto> searchOpEnCurso() throws RpcExceptionMessages;
-		
-		public VentaPotencialVistaResultDto searchReservas() throws RpcExceptionMessages;
-
 	}
 
+	public List<OperacionEnCursoDto> searchOpEnCurso() throws RpcExceptionMessages;
+
+	public VentaPotencialVistaResultDto searchReservas() throws RpcExceptionMessages;
+
+	public void cancelarOperacionEnCurso(String idOperacionEnCurso) throws RpcExceptionMessages;
+}

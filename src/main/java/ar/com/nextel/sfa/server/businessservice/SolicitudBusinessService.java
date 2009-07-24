@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.financial.dto.EncabezadoCreditoDTO;
 import ar.com.nextel.business.legacy.financial.exception.FinancialSystemException;
+import ar.com.nextel.business.oportunidades.OperacionEnCursoBusinessOperator;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.ReservaNumeroTelefonoBusinessOperator;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
@@ -22,7 +23,9 @@ import ar.com.nextel.components.accessMode.AccessAuthorization;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.EstadoCreditoFidelizacion;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
+import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
 import ar.com.nextel.model.personas.beans.Domicilio;
+import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
@@ -35,6 +38,7 @@ public class SolicitudBusinessService {
 	private SolicitudServicioBusinessOperator solicitudesBusinessOperator;
 	private ReservaNumeroTelefonoBusinessOperator reservaNumeroTelefonoBusinessOperator;
 	private GeneracionCierreBusinessOperator generacionCierreBusinessOperator;
+	private OperacionEnCursoBusinessOperator operacionEnCursoBusinessOperator;
 	private FinancialSystem financialSystem;
 	private SessionContextLoader sessionContextLoader;
 	private Repository repository;
@@ -66,6 +70,12 @@ public class SolicitudBusinessService {
 	public void setGeneracionCierreBusinessOperator(
 			@Qualifier("generacionCierreBusinessOperatorBean") GeneracionCierreBusinessOperator generacionCierreBusinessOperator) {
 		this.generacionCierreBusinessOperator = generacionCierreBusinessOperator;
+	}
+
+	@Autowired
+	public void setOperacionEnCursoBusinessOperator(
+			OperacionEnCursoBusinessOperator operacionEnCursoBusinessOperator) {
+		this.operacionEnCursoBusinessOperator = operacionEnCursoBusinessOperator;
 	}
 
 	@Autowired
@@ -209,5 +219,18 @@ public class SolicitudBusinessService {
 				|| solicitudServicio.getSolicitudServicioGeneracion().getScoringChecked().booleanValue();
 
 		solicitudServicio.getSolicitudServicioGeneracion().setScoringChecked(scoringChecked);
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void cancelarOperacionEnCurso(OperacionEnCurso operacionEnCurso) throws BusinessException,
+			NumberFormatException {
+		if (operacionEnCurso.getSolicitud() != null) {
+			for (LineaSolicitudServicio linea : operacionEnCurso.getSolicitud().getLineas()) {
+				if (linea.getNumeroReserva() != null && !"".equals(linea.getNumeroReserva().trim())) {
+					desreservarNumeroTelefono(Long.parseLong(linea.getNumeroReserva()));
+				}
+			}
+		}
+		operacionEnCursoBusinessOperator.cancelarOperacionEnCurso(operacionEnCurso);
 	}
 }
