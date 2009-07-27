@@ -1,5 +1,8 @@
 package ar.com.nextel.sfa.test;
 
+
+import org.apache.commons.lang.StringUtils;
+
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.SeleneseTestCase;
 
@@ -91,13 +94,19 @@ public abstract class SfaSeleniumTest extends SeleneseTestCase {
 	 * Configura para ejecutar los tests contra un server local contra el ambiente de test con IE. Si es necesario cambiarlo,
 	 * usar alguna variante del setUp() en las subclases
 	 * 
+	 * Si se especifica la propiedad sfa.test_url al largar el test, se usa su valor
+	 * como root url de los tests
+	 * 
 	 * TODO: la implementación de los 4 parámetros no anduvo
 	 */
 	public void setUpTestIE() throws Exception {
 //		setUp("localhost",4444,TEST_ROOT_URL, IEXPLORE);
 		//setUp(TEST_ROOT_URL, IEXPLORE);
-		setUp(TEST_ROOT_URL, IEXPLORE);
-		
+		String testRootUrl = System.getProperty("sfa.test_url");
+		if ( StringUtils.isEmpty(testRootUrl) ) {
+			testRootUrl = TEST_ROOT_URL;
+		}
+		setUp(testRootUrl, IEXPLORE);
 	}
 	
 	
