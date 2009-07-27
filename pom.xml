@@ -342,7 +342,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <!-- Skip the normal tests, we'll run them in the integration-test phase -->
-          <skip>false</skip>
+          <skip>true</skip>
         </configuration>
         <executions>
           <execution>
