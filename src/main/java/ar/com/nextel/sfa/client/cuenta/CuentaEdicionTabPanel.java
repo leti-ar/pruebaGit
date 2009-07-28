@@ -294,8 +294,8 @@ public class CuentaEdicionTabPanel {
 		});
 		crearCuenta.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				crearCuenta.setTargetHistoryToken(UILoader.AGREGAR_CUENTA+"");
-				popupAgregarCuenta.hide();
+				AgregarCuentaUI.getInstance().load();
+				BuscadorDocumentoPopup.fromMenu = false;
 			}
 		});
 		cancelar.addClickListener(new ClickListener() {

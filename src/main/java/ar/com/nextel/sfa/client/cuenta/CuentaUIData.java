@@ -6,6 +6,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.MotivoNoCierreDto;
+import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
 import ar.com.nextel.sfa.client.enums.TipoTarjetaEnum;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
@@ -374,7 +375,6 @@ public class CuentaUIData extends UIData {
 			numeroTarjeta.setMaxLength(14);
 		}
 	}
-	
 	
 	/** Getters de todos los Widgets **/
 	public Label getCargoLabel() {

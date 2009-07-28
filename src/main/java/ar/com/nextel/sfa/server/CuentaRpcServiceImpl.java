@@ -49,11 +49,10 @@ import ar.com.nextel.model.cuentas.beans.TipoContribuyente;
 import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
+import ar.com.nextel.model.oportunidades.beans.CuentaPotencial;
 import ar.com.nextel.model.oportunidades.beans.EstadoOportunidad;
-import ar.com.nextel.model.oportunidades.beans.EstadoOportunidadJustificado;
 import ar.com.nextel.model.oportunidades.beans.MotivoNoCierre;
 import ar.com.nextel.model.oportunidades.beans.OportunidadNegocio;
-import ar.com.nextel.model.oportunidades.beans.Prioridad;
 import ar.com.nextel.model.oportunidades.beans.Rubro;
 import ar.com.nextel.model.personas.beans.Documento;
 import ar.com.nextel.model.personas.beans.Domicilio;
@@ -71,6 +70,7 @@ import ar.com.nextel.sfa.client.dto.BusquedaPredefinidaDto;
 import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
 import ar.com.nextel.sfa.client.dto.ClaseCuentaDto;
+import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
@@ -143,6 +143,9 @@ public class CuentaRpcServiceImpl extends RemoteService implements	CuentaRpcServ
  	private SessionContextLoader sessionContextLoader;
  	
     private final String CUENTA_FILTRADA = "Acceso denegado. No puede operar con esta cuenta.";
+    private final String ASOCIAR_CUENTA_A_OPP_ERROR = "La cuenta ya existe. No puede asociarse a la Oportunidad.";
+    private       String ERROR_OPER_OTRO_VENDEDOR = "El prospect/cliente tiene una operación en curso con otro vendedor. No puede ver sus datos. El {1} es {2}";
+    
     private AccessAuthorizationController accessAuthorizationController;
     
 	@Override
@@ -158,7 +161,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements	CuentaRpcServ
 		cuentaPotencialBusinessOperator= (CuentaPotencialBusinessOperator) context.getBean("cuentaPotencialBusinessOperator");
 		tarjetaCreditoValidatorService = (TarjetaCreditoValidatorServiceAxisImpl) context.getBean("tarjetaCreditoValidatorService");
 		accessAuthorizationController = (AccessAuthorizationController) context.getBean("accessAuthorizationController");
-		
 		
 		transformer = (Transformer) context.getBean("cuentaToSearchResultTransformer");
 		mapper      = (MapperExtended) context.getBean("dozerMapper");
@@ -368,34 +370,77 @@ public class CuentaRpcServiceImpl extends RemoteService implements	CuentaRpcServ
 	/**
 	 * 
 	 */
-	public GranCuentaDto reservaCreacionCuenta(DocumentoDto docDto) throws RpcExceptionMessages {
-		GranCuenta cuenta = null;
+	public GranCuentaDto reservaCreacionCuenta(CrearCuentaDto crearCuentaDto) throws RpcExceptionMessages {
+		GranCuenta cuenta       = null;
 		GranCuentaDto cuentaDto = null;
-		Vendedor vendedor = getVendedor();
-		Documento documento = getDocumento(docDto);
+		Vendedor vendedor   = getVendedor();
+		Documento documento = getDocumento(crearCuentaDto.getDocumento());
+
 		SolicitudCuenta solicitudCta = repository.createNewObject(SolicitudCuenta.class);
 		solicitudCta.setVendedor(vendedor);
 		solicitudCta.setDocumento(documento);
+		
+		if (crearCuentaDto.getIdOportunidadNegocio()!=null) {
+			solicitudCta.setVentaPotencialOrigen((CuentaPotencial)repository.retrieve(CuentaPotencial.class, crearCuentaDto.getIdOportunidadNegocio()));
+		}
+		
 		try {
 			//crea
 			cuenta = (GranCuenta)cuentaBusinessService.reservarCrearCta(solicitudCta);
-			//lockea
-			cuentaBusinessService.saveCuenta(selectCuentaBusinessOperator.getCuentaYLockear(cuenta.getCodigoVantive(), vendedor));
-			//agrega contactos
-			cuenta.addContactosCuenta(contactosCuentaBusinessOperator.obtenerContactosCuentas(cuenta.getId()));
-			//mapea
-			cuentaDto = (GranCuentaDto) mapper.map(cuenta, GranCuentaDto.class);
+			if (asociarCuentaSiCorresponde(solicitudCta, cuenta)) {
+				//lockea
+				cuentaBusinessService.saveCuenta(selectCuentaBusinessOperator.getCuentaYLockear(cuenta.getCodigoVantive(), vendedor));
+				//agrega contactos
+				cuenta.addContactosCuenta(contactosCuentaBusinessOperator.obtenerContactosCuentas(cuenta.getId()));
+				//mapea
+				cuentaDto = (GranCuentaDto) mapper.map(cuenta, GranCuentaDto.class);
+			}
 		} catch (NullPointerException npe) {
 			cuenta = (GranCuenta) searchCuentaBusinessOperator.searchProspectAjenoEnCarga(documento);
 			String nombre = cuenta.getVendedor().getResponsable().getNombre()+" "+cuenta.getVendedor().getResponsable().getApellido();
 			String cargo  = cuenta.getVendedor().getResponsable().getCargo();
-			throw new RpcExceptionMessages("El prospect/cliente tiene una operación en curso con otro vendedor. No puede ver sus datos. El " +cargo+ " es " +nombre);
+		    String errMsg = ERROR_OPER_OTRO_VENDEDOR.replaceAll("\\{1\\}", cargo);
+            errMsg = errMsg.replaceAll("\\{2\\}", nombre);
+			//throw new RpcExceptionMessages("El prospect/cliente tiene una operación en curso con otro vendedor. No puede ver sus datos. El " +cargo+ " es " +nombre);
+		    throw new RpcExceptionMessages(errMsg);		
+		
+		} catch(RpcExceptionMessages rem) {
+			throw ExceptionUtil.wrap(rem);
 		} catch (Exception e) {
 			AppLogger.info("ERROR al reservarCrearCta: " + e.getMessage());
 			throw ExceptionUtil.wrap(e);
 		}
 		return cuentaDto;
 	}
+	
+	/**
+	 * 
+	 * @param solicitudCuenta
+	 * @param cuenta
+	 * @return
+	 * @throws RpcExceptionMessages
+	 */
+    private boolean asociarCuentaSiCorresponde(SolicitudCuenta solicitudCuenta, Cuenta cuenta) throws RpcExceptionMessages {
+    	boolean isValid;
+    	if (solicitudCuenta.hasVentaPotencialOrigen()) {
+    		// Intentará asociar
+    		if (cuenta.isProspectEnCarga() && cuenta.getCuentaPotencialOrigen() == null) {
+    			// Se puede asociar correctamente
+    			solicitudCuenta.getVentaPotencialOrigen().asociarCuenta(cuenta);
+    			isValid = true;
+    		} else if (!cuenta.isProspectEnCarga()) {
+    			// Operación inválida. La cuenta ya existe o ya está asociada
+    			isValid = false;
+    			throw new RpcExceptionMessages(ASOCIAR_CUENTA_A_OPP_ERROR);
+    		} else {
+    			isValid = true;
+    		}
+    	} else {
+    		// No intenta asociar Opp. No hay problemas.
+    		isValid = true;
+    	}
+    	return isValid;
+    }
 	
 	/**
 	 * 

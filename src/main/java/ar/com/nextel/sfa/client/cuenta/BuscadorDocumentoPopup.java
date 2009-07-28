@@ -6,7 +6,6 @@ import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
-import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -15,7 +14,6 @@ import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -35,7 +33,8 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 	private Label tipoDocLabel;
 	private Label numeroDocLabel;
 	private Hyperlink aceptar = new Hyperlink(Sfa.constant().aceptar(),null);
-	private SimpleLink cerrar  = new SimpleLink(Sfa.constant().cerrar(), "#", true);
+	private SimpleLink cerrar = new SimpleLink(Sfa.constant().cerrar(), "#", true);
+	public static boolean fromMenu;
 
 	public BuscadorDocumentoPopup(String title) {
 		super(title);
@@ -124,5 +123,4 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 		}	
 		return validator.getErrors().isEmpty();
 	}
-
 }

@@ -2,10 +2,10 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
-import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
@@ -67,9 +67,9 @@ public class CuentaRpcServiceDelegate {
 		WaitWindow.show();
 		cuentaRpcService.selectCuenta(cuentaId, cod_vantive,callback);
 	}
-	public void reservaCreacionCuenta(DocumentoDto docDto,DefaultWaitCallback<GranCuentaDto>  callback) {
+	public void reservaCreacionCuenta(CrearCuentaDto crearCuentaDto,DefaultWaitCallback<GranCuentaDto>  callback) {
 		WaitWindow.show();
-		cuentaRpcService.reservaCreacionCuenta(docDto,callback);
+		cuentaRpcService.reservaCreacionCuenta(crearCuentaDto,callback);
 	}
 	public void validarTarjeta(String numeroTarjeta, Integer mesVto, Integer anoVto,DefaultWaitCallback<TarjetaCreditoValidatorResultDto> callback) {
 		WaitWindow.show();

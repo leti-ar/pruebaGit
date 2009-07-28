@@ -26,6 +26,7 @@ public class AgregarCuentaUI extends ApplicationUI {
 	}
 
 	public boolean load() {
+		((BuscadorDocumentoPopup)buscadorDocumentoPopup).fromMenu = true;
 		buscadorDocumentoPopup.showAndCenter();
 		return true;
 	}
