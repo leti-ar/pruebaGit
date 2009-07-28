@@ -2,39 +2,35 @@ package ar.com.nextel.sfa.client.initializer;
 
 import java.util.List;
 
-public class InfocomInitializer {
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-	private int terminalesActivas;
-	private int terminalesSuspendidas;
-	private int terminalesDesactivadas;
+public class InfocomInitializer implements IsSerializable {
+
+	private String terminalesActivas;
+	private String terminalesSuspendidas;
+	private String terminalesDesactivadas;
 	private String ciclo;
 	private String flota;
-	private String limCredito;
+	private String limiteCredito;
 	private List responsablePago;
+	private String numeroCuenta;
+	private String idResponsablePago;
+	private String razonSocial;
+	
 
-	public int getTerminalesActivas() {
-		return terminalesActivas;
-	}
+//	public InfocomInitializer() {
+//		
+//	}
+		
+//	public InfocomInitializer(String ciclo, String flota,
+//			String limCredito, List responsablePago) {
+//		super();
+//		this.ciclo = ciclo;
+//		this.flota = flota;
+//		this.limiteCredito = limCredito;
+//		this.responsablePago = responsablePago;
+//	}
 
-	public void setTerminalesActivas(int terminalesActivas) {
-		this.terminalesActivas = terminalesActivas;
-	}
-
-	public int getTerminalesSuspendidas() {
-		return terminalesSuspendidas;
-	}
-
-	public void setTerminalesSuspendidas(int terminalesSuspendidas) {
-		this.terminalesSuspendidas = terminalesSuspendidas;
-	}
-
-	public int getTerminalesDesactivadas() {
-		return terminalesDesactivadas;
-	}
-
-	public void setTerminalesDesactivadas(int terminalesDesactivadas) {
-		this.terminalesDesactivadas = terminalesDesactivadas;
-	}
 
 	public String getCiclo() {
 		return ciclo;
@@ -52,12 +48,12 @@ public class InfocomInitializer {
 		this.flota = flota;
 	}
 
-	public String getLimCredito() {
-		return limCredito;
+	public String getLimiteCredito() {
+		return limiteCredito;
 	}
 
-	public void setLimCredito(String limCredito) {
-		this.limCredito = limCredito;
+	public void setLimiteCredito(String limiteCredito) {
+		this.limiteCredito = limiteCredito;
 	}
 
 	public List getResponsablePago() {
@@ -68,4 +64,53 @@ public class InfocomInitializer {
 		this.responsablePago = responsablePago;
 	}
 
+	public String getNumeroCuenta() {
+		return numeroCuenta;
+	}
+
+	public void setNumeroCuenta(String numeroCuenta) {
+		this.numeroCuenta = numeroCuenta;
+	}
+
+	public String getIdResponsablePago() {
+		return idResponsablePago;
+	}
+
+	public void setIdResponsablePago(String idResponsablePago) {
+		this.idResponsablePago = idResponsablePago;
+	}
+
+	public String getTerminalesActivas() {
+		return terminalesActivas;
+	}
+
+	public void setTerminalesActivas(String terminalesActivas) {
+		this.terminalesActivas = terminalesActivas;
+	}
+
+	public String getTerminalesSuspendidas() {
+		return terminalesSuspendidas;
+	}
+
+	public void setTerminalesSuspendidas(String terminalesSuspendidas) {
+		this.terminalesSuspendidas = terminalesSuspendidas;
+	}
+
+	public String getTerminalesDesactivadas() {
+		return terminalesDesactivadas;
+	}
+
+	public void setTerminalesDesactivadas(String terminalesDesactivadas) {
+		this.terminalesDesactivadas = terminalesDesactivadas;
+	}
+
+	public String getRazonSocial() {
+		return razonSocial;
+	}
+
+	public void setRazonSocial(String razonSocial) {
+		this.razonSocial = razonSocial;
+	}
+	
+		
 }

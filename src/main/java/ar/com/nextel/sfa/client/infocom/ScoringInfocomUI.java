@@ -29,8 +29,8 @@ public class ScoringInfocomUI extends Composite {
 		mainPanel.addStyleName("headerCont");
 		equipoPopUp = new ResumenEquipoPopUp("Resumen Equipo");
 		estadoPopUp = new EstadoEquipoPopUp("Informacion Equipo");
-		infocomFidelizacionUI = new FidelizacionInfocomUI();
-		ccInfocomUI = new CCInfocomUI();
+		//infocomFidelizacionUI = new FidelizacionInfocomUI();
+		//ccInfocomUI = new CCInfocomUI();
 		initWidget(mainPanel);
 		initScoringInfocomUI();
 	}
