@@ -2,9 +2,12 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import ar.com.nextel.sfa.client.dto.CreditoFidelizacionDto;
 import ar.com.nextel.sfa.client.dto.TransaccionCCDto;
 import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
+import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
@@ -19,12 +22,12 @@ public class InfocomRpcServiceDelegate {
 		this.infocomRpcService = infocomRpcSerive;
 	}
 
-	public void getInfocomInitializer(DefaultWaitCallback<InfocomInitializer> callback) {
+	public void getInfocomInitializer(String numeroCuenta, DefaultWaitCallback<InfocomInitializer> callback) {
 		WaitWindow.show();
-		infocomRpcService.getInfocomInitializer(callback);
+		infocomRpcService.getInfocomInitializer(numeroCuenta, callback);
 	}
 
-	public void getDetalleCreditoFidelizacion(Long idCuenta,
+	public void getDetalleCreditoFidelizacion(String idCuenta,
 			DefaultWaitCallback<CreditoFidelizacionDto> callback) {
 		WaitWindow.show();
 		infocomRpcService.getDetalleCreditoFidelizacion(idCuenta, callback);
@@ -34,4 +37,9 @@ public class InfocomRpcServiceDelegate {
 		WaitWindow.show();
 		infocomRpcService.getCuentaCorriente(callback);
 	}
+	
+//	public void getInfocomData(String numeroCuenta, String responsablePago, DefaultWaitCallback<InfocomInitializer> callback) {
+//		WaitWindow.show();
+//		infocomRpcService.getInfocomData(numeroCuenta, responsablePago, callback);
+//	}
 }

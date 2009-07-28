@@ -22,16 +22,18 @@ public interface InfocomRpcService extends RemoteService {
 		public static InfocomRpcServiceDelegate getInstance() {
 			if (infocomRpcServiceDelegate == null) {
 				infocomRpcService = GWT.create(InfocomRpcService.class);
-				infocomRpcServiceDelegate = GWT.create(InfocomRpcServiceDelegate.class);
+				infocomRpcServiceDelegate = new InfocomRpcServiceDelegate(infocomRpcService);
 			}
 			return infocomRpcServiceDelegate;
 		}
 	}
 
-	public InfocomInitializer getInfocomInitializer() throws RpcExceptionMessages;
+	public InfocomInitializer getInfocomInitializer(String numeroCuenta) throws RpcExceptionMessages;
 
-	public CreditoFidelizacionDto getDetalleCreditoFidelizacion(Long idCuenta) throws RpcExceptionMessages;
+	public CreditoFidelizacionDto getDetalleCreditoFidelizacion(String idCuenta) throws RpcExceptionMessages;
 
 	public List<TransaccionCCDto> getCuentaCorriente() throws RpcExceptionMessages;
+
+	//public InfocomInitializer getInfocomData(String numeroCuenta, String responsablePago) throws RpcExceptionMessages;
 
 }
