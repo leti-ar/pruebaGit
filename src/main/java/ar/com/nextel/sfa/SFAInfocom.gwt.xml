@@ -17,4 +17,5 @@
 <!--	<servlet class="ar.com.nextel.sfa.server.CuentaRpcServiceImpl" path="/cuenta.rpc"/>-->
 <!--	<servlet class="ar.com.nextel.sfa.server.OperacionesRpcServiceImpl" path="/operaciones.rpc"/>-->
 <!--	<servlet class="ar.com.nextel.sfa.server.OportunidadNegocioRpcServiceImpl" path="/oportunidades.rpc"/>-->
+    	<servlet class="ar.com.nextel.sfa.server.InfocomRpcServiceImpl" path="/infocom.rpc"/>
 </module>
