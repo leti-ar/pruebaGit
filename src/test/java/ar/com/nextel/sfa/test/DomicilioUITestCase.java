@@ -2,7 +2,11 @@ package ar.com.nextel.sfa.test;
 
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 
-
+/**
+ * 
+ * @author jlgperez?
+ *
+ */
 public class DomicilioUITestCase extends SfaSeleniumTest {
 	public void setUp() throws Exception {
 		setUpTestIE();

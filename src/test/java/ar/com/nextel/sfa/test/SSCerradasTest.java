@@ -14,7 +14,8 @@ public class SSCerradasTest extends SfaSeleniumTest {
 	}
 
 	public void testVerCambiosSS() throws Exception {
-		selenium.setSpeed("500");
+		// Deshabilitado para que en el entorno automatizado ande "a lo que de"
+		//selenium.setSpeed("500");
 		selenium.open(SFA_APP_URL);
 		loginIfNeeded();
 		waitWhileCargando();

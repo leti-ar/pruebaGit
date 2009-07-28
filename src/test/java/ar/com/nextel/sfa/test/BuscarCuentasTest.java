@@ -21,7 +21,8 @@ public class BuscarCuentasTest extends SfaSeleniumTest {
 	}
 	
 	public void testBusquedaYRecorrido() throws Exception {
-		selenium.setSpeed("500");
+		// Deshabilitado para que en el entorno automatizado ande "a lo que de"
+		// selenium.setSpeed("500");
 		selenium.open(SFA_APP_URL);
 		
 		for (int i = 0; i < 3; i++) {

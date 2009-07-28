@@ -14,7 +14,8 @@ public class AgregarContactosTest extends SfaSeleniumTest {
 	}
 
 	public void testAgregarContacto() throws Exception {
-		selenium.setSpeed("500");
+		// Deshabilitado para que en el entorno automatizado ande "a lo que de"
+		//selenium.setSpeed("500");
 		selenium.open(SFA_APP_URL);
 		loginIfNeeded();
 
