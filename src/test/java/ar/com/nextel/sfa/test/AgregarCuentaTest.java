@@ -193,8 +193,8 @@ public class AgregarCuentaTest extends SfaSeleniumTest {
 	     datos.put("TelefonoFaxFaxCodarea"      , "444");
 	     datos.put("TelefonoFaxFaxNumero"       , "4444444");
 	     datos.put("TelefonoFaxFaxInterno"      , "444");
-	     datos.put("E-MailPersonal"             , "pepe@hotass.com");
-	     datos.put("E-MailLaboral"              , "popo@hotline.com");
+	     datos.put("E-MailPersonal"             , "pepe@hotmail.com");
+	     datos.put("E-MailLaboral"              , "popo@hotmail.com");
 	     datos.put("LabelFormaPago"             , "label=Débito directo-Cuenta Bancaria");
 	     datos.put("CBU"                        , "1111111111111111111111");
 	     datos.put("LabelTipoCtaBancaria"       , "label=Caja de ahorros en pesos");
@@ -207,7 +207,7 @@ public class AgregarCuentaTest extends SfaSeleniumTest {
 
 	     datos.put("ContactoNombre"      , "marta");
 	     datos.put("ContactoNumDoc"      , "43242342");
-	     datos.put("ContactoApellido"    , "cachucha");
+	     datos.put("ContactoApellido"    , "Fernandez");
 	     datos.put("ContactoSexo"        , "label=Masculino");
 
 	     datos.put("ContactoTelParArea"  , "111");
@@ -221,8 +221,8 @@ public class AgregarCuentaTest extends SfaSeleniumTest {
 	     datos.put("ContactoFaxArea"     , "555");
 	     datos.put("ContactoFaxNum"      , "5151515");
 	     datos.put("ContactoFaxInt"      , "555");
-	     datos.put("ContactoEmailPer"    , "marta@hotline.com");
-	     datos.put("ContactoEmailLab"    , "marta@hotass.com");
+	     datos.put("ContactoEmailPer"    , "marta@hotmail.com");
+	     datos.put("ContactoEmailLab"    , "marta@hotmail.com");
 	     
 	     datos.put("ContactoDomCalle"    , "calle cont");
 	     datos.put("ContactoDomAltura"   , "43242");
