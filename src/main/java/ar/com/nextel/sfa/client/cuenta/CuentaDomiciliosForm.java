@@ -40,7 +40,7 @@ public class CuentaDomiciliosForm extends Composite {
 	private boolean tienePrincipalFacturacion = false;
 	private boolean tienePrincipalEntrega = false;
 	private boolean huboCambios = false;
-
+	private Button crearDomicilio;
 	public static CuentaDomiciliosForm getInstance() {
 		return instance;
 	}
@@ -54,7 +54,7 @@ public class CuentaDomiciliosForm extends Composite {
 		mainPanel.setWidth("100%");
 		mainPanel.addStyleName("gwt-BuscarCuentaResultTable");
 		//
-		Button crearDomicilio = new Button("Crear nuevo");
+		crearDomicilio = new Button("Crear nuevo");
 		crearDomicilio.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,
@@ -357,4 +357,8 @@ public class CuentaDomiciliosForm extends Composite {
 	public void setDomicilioAEditar(DomiciliosCuentaDto domicilioAEditar) {
 		this.domicilioAEditar = domicilioAEditar;
 	}
+	public Button getCrearDomicilio() {
+		return crearDomicilio;
+	}
+	
 }

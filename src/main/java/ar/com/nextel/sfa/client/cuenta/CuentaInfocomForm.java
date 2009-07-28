@@ -10,7 +10,7 @@ import com.google.gwt.user.client.ui.FlexTable;
  **/
 public class CuentaInfocomForm  extends Composite {
 
-	//private FlexTable mainPanel = new FlexTable();
+	private FlexTable mainPanel = new FlexTable();
 	private InfocomUI infocomUI;
 	private static CuentaInfocomForm instance = new CuentaInfocomForm();
 	
@@ -27,8 +27,8 @@ public class CuentaInfocomForm  extends Composite {
 		infocomUI = new InfocomUI();
 		infocomUI.firstLoad();
 //		infocomUI = new InfocomUI();
-//		initWidget(mainPanel);
-//		mainPanel.setWidth("100%");
+		initWidget(mainPanel);
+		mainPanel.setWidth("100%");
 //		mainPanel.setWidget(0, 0, infocomUI.firstLoad());
 //		mainPanel.add(creditoFidelizacionPanel);
 //		mainPanel.add(cuentaCorrientePanel);

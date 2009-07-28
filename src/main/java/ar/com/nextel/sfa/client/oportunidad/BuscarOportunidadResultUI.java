@@ -5,6 +5,9 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.OportunidadNegocioRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.cuenta.AgregarCuentaUI;
+import ar.com.nextel.sfa.client.cuenta.BuscadorDocumentoPopup;
+import ar.com.nextel.sfa.client.cuenta.EditarCuentaUI;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.OportunidadDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioSearchResultDto;
@@ -19,7 +22,6 @@ import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -198,11 +200,11 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 	}
 
 	public void onClick(Widget sender) {
-		OportunidadNegocioSearchResultDto oportunidadSelected = oportunidades.get(resultTable
-				.getRowSelected() - 1);
-		Long idCuenta;
-		if (oportunidadSelected != null && oportunidadSelected.getCuentaOrigen().getId() != null) {
-			idCuenta = oportunidadSelected.getCuentaOrigen().getId();
+		if (resultTable.getRowSelected()> 0) {
+			OportunidadNegocioSearchResultDto oportunidadSelected = oportunidades.get(resultTable.getRowSelected() - 1);
+			//Long idCuenta;
+			//if (oportunidadSelected != null && oportunidadSelected.getCuentaOrigen().getId() != null) {
+			Long idCuenta = oportunidadSelected.getCuentaOrigen().getId();
 			if (sender == buscarOportunidadFilterUIData.getCrearSS()) {
 				crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta,
 						GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
@@ -213,12 +215,14 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 						buscarOportunidadFilterUIData.getCrearSS().getAbsoluteLeft() - 10,
 						buscarOportunidadFilterUIData.getCrearSS().getAbsoluteTop() - 50);
 			} else if (sender == buscarOportunidadFilterUIData.getCrearCuenta()) {
-				History.newItem(UILoader.EDITAR_CUENTA + "?cuenta_id=" + idCuenta + "&sus=1");
+				EditarCuentaUI.idOpp = oportunidadSelected.getIdOportunidadNegocio();
+				AgregarCuentaUI.getInstance().load();
+				BuscadorDocumentoPopup.fromMenu = false;
 			} else if (sender == crearEquipos || sender == crearCDW) { // || sender == crearMDS
 				popupCrearSS.hide();
 			}
 		} else {
-			MessageDialog.getInstance().showAceptar("Error", "Debe seleccionar una Cuenta",
+			MessageDialog.getInstance().showAceptar("Error", Sfa.constant().ERR_NO_CUENTA_SELECTED(),
 					MessageDialog.getCloseCommand());
 		}
 	}

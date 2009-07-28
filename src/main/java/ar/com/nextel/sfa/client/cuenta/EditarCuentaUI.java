@@ -27,7 +27,7 @@ import com.google.gwt.user.client.History;
 public class EditarCuentaUI extends ApplicationUI {
 
 	private final CuentaEdicionTabPanel cuentaTab = CuentaEdicionTabPanel.getInstance();
-	private static Long idOpp;
+	public static Long idOpp;
 	public static boolean esEdicionCuenta =  true;
 	
 	
@@ -167,10 +167,12 @@ public class EditarCuentaUI extends ApplicationUI {
 			cuentaTab.getCuentaDatosForm().ponerDatosBusquedaEnFormulario(cuenta);
 		
 		//carga info pestaña Domicilio
+		cuentaTab.getCuentaDomicilioForm().getCrearDomicilio().setVisible(esEdicionCuenta);
 		if (cuenta.getPersona() != null) {
 			cuentaTab.getCuentaDomicilioForm().cargaTablaDomicilios(cuenta);
 		}
 		//carga info pestaña Contactos
+		cuentaTab.getCuentaContactoForm().getCrearButton().setVisible(esEdicionCuenta);
 		cargarInfoContactos(cuentaTab.getCuenta2editDto().getCategoriaCuenta().getDescripcion());
 
 		//prepara UI para edicion cuenta o visualizacion opp 

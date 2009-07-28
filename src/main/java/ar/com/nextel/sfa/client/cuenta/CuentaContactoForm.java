@@ -27,7 +27,7 @@ public class CuentaContactoForm extends Composite {
 	private List<ContactoCuentaDto> listaContactos = new ArrayList();
 	private ContactosUI contactosUI;
 	private boolean formDirty = false;	
-	
+	private Button crearButton;
 	private static CuentaContactoForm instance = null;
 	private ContactoCuentaDto contactoAEditar;
 
@@ -45,9 +45,9 @@ public class CuentaContactoForm extends Composite {
 		initWidget(mainPanel);
 		mainPanel.addStyleName("gwt-BuscarCuentaResultTable");
 		mainPanel.setCellPadding(20);
-		Button crear = new Button("Crear nuevo");
-		crear.addStyleName("crearDomicilioButton");
-		mainPanel.setWidget(0, 0, crear);
+		crearButton = new Button("Crear nuevo");
+		crearButton.addStyleName("crearDomicilioButton");
+		mainPanel.setWidget(0, 0, crearButton);
 		datosTabla.addTableListener(new Listener());
 		initTable(datosTabla);
 		mainPanel.getColumnFormatter().addStyleName(0, "alignRight");
@@ -66,7 +66,7 @@ public class CuentaContactoForm extends Composite {
 			}
 		});
 
-		crear.addClickListener(new ClickListener() {
+		crearButton.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				contactoAEditar = new ContactoCuentaDto();
 				contactosUI.cargarPopupEditarContacto(contactoAEditar);
@@ -204,6 +204,8 @@ public class CuentaContactoForm extends Composite {
 	public boolean formContactosDirty() {
 		return formDirty;
 	}
-	
+	public Button getCrearButton() {
+		return crearButton;
+	}
 	
 }

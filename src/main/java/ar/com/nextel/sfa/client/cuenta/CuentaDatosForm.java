@@ -512,11 +512,13 @@ public class CuentaDatosForm extends Composite {
 	}
 	
 	public void cargarPanelDatos(CuentaDto cuentaDto) {
-		if (cuentaDto.getPersona().getDocumento()!=null) {
+		try {
 			camposTabDatos.getTipoDocumento().setSelectedItem(cuentaDto.getPersona().getDocumento().tipoDocumento) ;
 			camposTabDatos.getNumeroDocumento().setText(cuentaDto.getPersona().getDocumento().getNumero());
+			setDefaultComboSexo(cuentaDto.getPersona().getIdTipoDocumento(),cuentaDto.getPersona().getDocumento().getNumero());
+		} catch (Exception e) {
+			//la cuenta puede llegar sin datos de documento... en ese caso que no haga nada.
 		}
-		setDefaultComboSexo(cuentaDto.getPersona().getIdTipoDocumento(),cuentaDto.getPersona().getDocumento().getNumero());
 		camposTabDatos.getRazonSocial().setText(cuentaDto.getPersona().getRazonSocial());
 		camposTabDatos.getNombre().setText(cuentaDto.getPersona().getNombre());
 		camposTabDatos.getApellido().setText(cuentaDto.getPersona().getApellido());
@@ -530,9 +532,9 @@ public class CuentaDatosForm extends Composite {
 			camposTabDatos.getNombreDivision().setText(((DivisionDto)cuentaDto).getNombre());
 		}
 		camposTabDatos.getProveedorAnterior().setSelectedItem(cuentaDto.getProveedorInicial());
-		camposTabDatos.getCategoria().setText(cuentaDto.getCategoriaCuenta().getDescripcion());
+		camposTabDatos.getCategoria().setText(cuentaDto.getCategoriaCuenta()!=null?cuentaDto.getCategoriaCuenta().getDescripcion():"");
 		camposTabDatos.getClaseCliente().setSelectedItem(cuentaDto.getClaseCuenta());
-		camposTabDatos.getCicloFacturacion().setText(cuentaDto.getCicloFacturacion().getDescripcion());
+		camposTabDatos.getCicloFacturacion().setText(cuentaDto.getCicloFacturacion()!=null?cuentaDto.getCicloFacturacion().getDescripcion():"");
 		camposTabDatos.getUse().setText(cuentaDto.getUse());
 	}
 	
