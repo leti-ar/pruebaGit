@@ -47,6 +47,7 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 	private PopupPanel popupAgregarCuenta;
 	private Hyperlink crearEquipos;
 	private Hyperlink crearCDW;
+
 	// private Hyperlink crearMDS;
 
 	public Long getTotalRegistrosBusqueda() {
@@ -64,6 +65,8 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 		resultTableWrapper = new SimplePanel();
 		resultTableWrapper.addStyleName("resultTableWrapper");
 		tablePageBar = new TablePageBar();
+		tablePageBar.addStyleName("mlr8");
+		tablePageBar.setCantResultadosPorPagina(cantResultadosPorPagina);
 		tablePageBar.setBeforeClickCommand(new Command() {
 			public void execute() {
 				List oportunidadesActuales = new ArrayList<OportunidadNegocioSearchResultDto>();
@@ -78,7 +81,6 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 					}
 				}
 				tablePageBar.setCantRegistrosTot(oportunidades.size());
-				tablePageBar.refrescaLabelRegistros();
 				loadTable(oportunidadesActuales);
 			}
 		});
@@ -102,9 +104,6 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 	 * */
 
 	public void searchOportunidades(OportunidadDto oportunidadSearchDto) {
-		tablePageBar.setCantResultadosPorPagina(cantResultadosPorPagina);
-		tablePageBar.setCantRegistrosParcI(1);
-		tablePageBar.setCantRegistrosParcF(tablePageBar.getCantResultadosPorPagina());
 		this.searchOportunidades(oportunidadSearchDto, true);
 	}
 
@@ -127,10 +126,7 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 										MessageDialog.getCloseCommand());
 							}
 							oportunidades = result;
-							tablePageBar.setCantResultados(oportunidades.size());
-							double calculoCantPaginasReserva = ((double) oportunidades.size() / (double) cantResultadosPorPagina);
-							int cantPaginasReserva = (int) Math.ceil(calculoCantPaginasReserva);
-							tablePageBar.setCantPaginas(cantPaginasReserva);
+							tablePageBar.setCantRegistrosTot(oportunidades.size());
 							tablePageBar.setPagina(1);
 							setOportunidades();
 						}
@@ -150,7 +146,6 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 			}
 		}
 		tablePageBar.setCantRegistrosTot(oportunidades.size());
-		tablePageBar.refrescaLabelRegistros();
 		loadTable(oportunidadesActuales);
 	}
 
@@ -200,10 +195,11 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 	}
 
 	public void onClick(Widget sender) {
-		if (resultTable.getRowSelected()> 0) {
-			OportunidadNegocioSearchResultDto oportunidadSelected = oportunidades.get(resultTable.getRowSelected() - 1);
-			//Long idCuenta;
-			//if (oportunidadSelected != null && oportunidadSelected.getCuentaOrigen().getId() != null) {
+		if (resultTable.getRowSelected() > 0) {
+			OportunidadNegocioSearchResultDto oportunidadSelected = oportunidades.get(resultTable
+					.getRowSelected() - 1);
+			// Long idCuenta;
+			// if (oportunidadSelected != null && oportunidadSelected.getCuentaOrigen().getId() != null) {
 			Long idCuenta = oportunidadSelected.getCuentaOrigen().getId();
 			if (sender == buscarOportunidadFilterUIData.getCrearSS()) {
 				crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta,

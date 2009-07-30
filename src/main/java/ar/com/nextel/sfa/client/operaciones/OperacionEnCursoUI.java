@@ -28,7 +28,7 @@ public class OperacionEnCursoUI extends ApplicationUI implements OperacionEnCurs
 	}
 
 	public boolean load() {
-		oppResultPanel.searchOperaciones();
+		oppResultPanel.searchOperacionesYReservas();
 		return true;
 	}
 

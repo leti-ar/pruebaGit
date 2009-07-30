@@ -8,7 +8,6 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
-import ar.com.nextel.sfa.client.dto.OportunidadNegocioSearchResultDto;
 import ar.com.nextel.sfa.client.enums.BuscoCuentaPorDniEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.NextelTable;
@@ -44,13 +43,13 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	private TablePageBar tablePageBar;
 	private List<CuentaSearchResultDto> cuentas;
 	private CuentaSearchDto lastCuentaSearchDto;
-	//private int numeroPagina = 1;
+	// private int numeroPagina = 1;
 	private Long totalRegistrosBusqueda;
 	private BuscarCuentaController controller;
-	private int cantResultadosPorPagina = 10;
+	private static final int cantResultadosPorPagina = 10;
 
 	public BuscarCuentaResultUI(BuscarCuentaController controller) {
-		
+
 		super();
 		this.controller = controller;
 		addStyleName("gwt-BuscarCuentaResultPanel");
@@ -63,43 +62,24 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		resultTableWrapper = new SimplePanel();
 		resultTableWrapper.addStyleName("resultTableWrapper");
 		tablePageBar = new TablePageBar();
+		tablePageBar.addStyleName("mlr8");
+		tablePageBar.setCantResultadosPorPagina(cantResultadosPorPagina);
 		tablePageBar.setBeforeClickCommand(new Command() {
 			public void execute() {
-				lastCuentaSearchDto.setOffset(tablePageBar.getOffset());
-				List <CuentaSearchResultDto>cuentasActuales = new ArrayList<CuentaSearchResultDto>();
-				if (cuentas.size() >= cantResultadosPorPagina){
-					for (int i = (tablePageBar.getCantRegistrosParcI()-1); i < tablePageBar.getCantRegistrosParcF(); i++) {
+				lastCuentaSearchDto.setOffset(tablePageBar.getCantRegistrosParcI());
+				List<CuentaSearchResultDto> cuentasActuales = new ArrayList<CuentaSearchResultDto>();
+				if (cuentas.size() >= cantResultadosPorPagina) {
+					for (int i = (tablePageBar.getCantRegistrosParcI() - 1); i < tablePageBar
+							.getCantRegistrosParcF(); i++) {
 						cuentasActuales.add(cuentas.get(i));
 					}
-				}else{
+				} else {
 					for (int i = 0; i < cuentas.size(); i++) {
 						cuentasActuales.add(cuentas.get(i));
 					}
 				}
 				tablePageBar.setCantRegistrosTot(cuentas.size());
-				tablePageBar.refrescaLabelRegistros();
-				loadTable(cuentasActuales);			
-				
-				
-//				if (tablePageBar.getPagina() <= (tablePageBar.getCantPaginas())){
-//					if ((cuentas.size() >= 10) && (tablePageBar.getCantResultados() != 25 && tablePageBar.getCantResultados()!=75)){
-//						for (int i = (tablePageBar.getPagina()-1) *10; i < (tablePageBar.getPagina())*10; i++) {
-//							cuentasActuales.add(cuentas.get(i));
-//						}
-//					}else {
-//						for (int i = (tablePageBar.getPagina()-1) *10; i < cuentas.size(); i++) {
-//							cuentasActuales.add(cuentas.get(i));
-//						}
-//					}
-//				loadTable(cuentasActuales);
-//				}else{
-//					tablePageBar.setPagina(tablePageBar.getPagina()-1);
-//					tablePageBar.setCantRegistrosParcI(tablePageBar.getCantRegistrosParcI()-10);
-//					tablePageBar.setCantRegistrosParcF(tablePageBar.getCantRegistrosParcF()-10);
-//					tablePageBar.refrescaLabelRegistros();
-//					ErrorDialog.getInstance().setTitle("Error");
-//					ErrorDialog.getInstance().show("No hay más registros disponibles en esta búsqueda.");
-//				}
+				loadTable(cuentasActuales);
 			}
 		});
 		add(resultTotalCuentas);
@@ -124,15 +104,8 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	 * @param: cuentaSearchDto
 	 * */
 	public void searchCuentas(CuentaSearchDto cuentaSearchDto) {
-//		tablePageBar.setOffset(0);
-//		tablePageBar.setCantResultados(cuentaSearchDto.getCantidadResultados());
 		this.lastCuentaSearchDto = cuentaSearchDto;
-//		this.searchCuentas(cuentaSearchDto, true);
-		
-		tablePageBar.setCantResultadosPorPagina(cantResultadosPorPagina);
-		tablePageBar.setCantRegistrosParcI(1);
-		tablePageBar.setCantRegistrosParcF(tablePageBar.getCantResultadosPorPagina());
-		this.searchCuentas(cuentaSearchDto, true);	
+		this.searchCuentas(cuentaSearchDto, true);
 	}
 
 	/**
@@ -150,105 +123,82 @@ public class BuscarCuentaResultUI extends FlowPanel {
 							ErrorDialog.getInstance().show(
 									"No se encontraron datos con el criterio utilizado.");
 						}
-						
+
 						cuentas = result;
-						tablePageBar.setCantResultados(cuentas.size());
-						double calculoCantPaginasReserva = ((double) cuentas.size() / (double) cantResultadosPorPagina);
-						int cantPaginasReserva = (int) Math.ceil(calculoCantPaginasReserva);
-						tablePageBar.setCantPaginas(cantPaginasReserva);
+						tablePageBar.setCantRegistrosTot(cuentas.size());
 						tablePageBar.setPagina(1);
 						setCuentas();
 						controller.setResultadoVisible(true);
-						
-//						setCuentas(result);
-//						controller.setResultadoVisible(true);
 					}
 				});
 	}
-	
+
 	public void setCuentas() {
-		//this.cuentas = cuentas;
+		// this.cuentas = cuentas;
 		resultTotalCuentas.setText(Sfa.constant().totalCuentasBuscadas() + String.valueOf(cuentas.size()));
 		resultTotalCuentas.setVisible(true);
-		//tablePageBar.setPagina(1);
-		List<CuentaSearchResultDto> cuentasActuales = new ArrayList<CuentaSearchResultDto>(); 
-		if (cuentas.size() >= cantResultadosPorPagina){
-			for (int i = (tablePageBar.getCantRegistrosParcI()-1); i < tablePageBar.getCantRegistrosParcF(); i++) {
+		// tablePageBar.setPagina(1);
+		List<CuentaSearchResultDto> cuentasActuales = new ArrayList<CuentaSearchResultDto>();
+		if (cuentas.size() >= cantResultadosPorPagina) {
+			for (int i = (tablePageBar.getCantRegistrosParcI() - 1); i < tablePageBar.getCantRegistrosParcF(); i++) {
 				cuentasActuales.add(cuentas.get(i));
 			}
-		}else{
+		} else {
 			for (int i = 0; i < cuentas.size(); i++) {
 				cuentasActuales.add(cuentas.get(i));
 			}
 		}
 		tablePageBar.setCantRegistrosTot(cuentas.size());
-		tablePageBar.refrescaLabelRegistros();
-		loadTable(cuentasActuales);	
-		
-		
-//		if (cuentas.size() != 0){
-//			if (cuentas.size() >= 10){
-//				for (int i = 0; i < 10; i++) {
-//					cuentasActuales.add(cuentas.get(i));
-//				}
-//				tablePageBar.setCantRegistrosParcI(1);
-//				tablePageBar.setCantRegistrosParcF(cuentasActuales.size());
-//			}else{
-//				for (int i = 0; i < cuentas.size(); i++) {
-//					cuentasActuales.add(cuentas.get(i));
-//				}
-//				tablePageBar.setCantRegistrosParcI(1);
-//				tablePageBar.setCantRegistrosParcF(cuentasActuales.size());
-//			}
-//			tablePageBar.setCantRegistrosTot(cuentas.size());
-//			tablePageBar.refrescaLabelRegistros();
-//		} 
-//		loadTable(cuentasActuales);
+		loadTable(cuentasActuales);
 	}
 
-	private String getCondicionBusquedaPorDni(){
+	private String getCondicionBusquedaPorDni() {
 		String cond = "0";
-		if ((lastCuentaSearchDto.getNumeroDocumento() == "")||(lastCuentaSearchDto.getNumeroDocumento() == null)) {
+		if ((lastCuentaSearchDto.getNumeroDocumento() == "")
+				|| (lastCuentaSearchDto.getNumeroDocumento() == null)) {
 			cond = BuscoCuentaPorDniEnum.NO.getCondicion();
-		}else{
+		} else {
 			cond = BuscoCuentaPorDniEnum.SI.getCondicion();
 		}
 		return cond;
 	}
-	
+
 	/**
 	 * Crea una fila en la tabla por cada cuenta del CuentaSearchResultDto
 	 */
 	private void loadTable(List<CuentaSearchResultDto> cuentasActuales) {
 		clearResultTable();
 		int totalABuscar;
-		if(cuentasActuales.size() < 10){
+		if (cuentasActuales.size() < 10) {
 			totalABuscar = cuentasActuales.size();
-		}else{
-			totalABuscar = 10;			
+		} else {
+			totalABuscar = 10;
 		}
-			
+
 		for (int i = 0; i < totalABuscar; i++) {
-			if (cuentasActuales.size() != 0){
-			resultTable.setWidget(i+1, 0, IconFactory.lapizAnchor(UILoader.EDITAR_CUENTA + "?cuenta_id="
-					+ cuentasActuales.get(i).getId() + "&cod_vantive=" + cuentas.get(i).getCodigoVantive() + "&por_dni=" + getCondicionBusquedaPorDni(), LAPIZ_TITLE));
+			if (cuentasActuales.size() != 0) {
+				resultTable.setWidget(i + 1, 0, IconFactory.lapizAnchor(UILoader.EDITAR_CUENTA
+						+ "?cuenta_id=" + cuentasActuales.get(i).getId() + "&cod_vantive="
+						+ cuentas.get(i).getCodigoVantive() + "&por_dni=" + getCondicionBusquedaPorDni(),
+						LAPIZ_TITLE));
 
-			if (cuentasActuales.get(i).isPuedeVerInfocom()) {
-				resultTable.setWidget(i+1, 1, IconFactory.lupa(LUPA_TITLE));
-			}
+				if (cuentasActuales.get(i).isPuedeVerInfocom()) {
+					resultTable.setWidget(i + 1, 1, IconFactory.lupa(LUPA_TITLE));
+				}
 
-			// LockingState == 1: Es cuando esta lockeado por el mismo usuario logueado (Verificar).
-			if (cuentasActuales.get(i).getLockingState() == 1) {
-				resultTable.setWidget(i+1, 2, IconFactory.locked(BLOQUEADO_TITLE));
-			} else if (cuentas.get(i).getLockingState() == 2) {
-				// LockingState == 2: Es cuando esta lockeado por otro usuario.
-				resultTable.setWidget(i+1, 2, IconFactory.lockedOther(OTRO_BLOQUEO_TITLE));
-			}
+				// LockingState == 1: Es cuando esta lockeado por el mismo usuario logueado (Verificar).
+				if (cuentasActuales.get(i).getLockingState() == 1) {
+					resultTable.setWidget(i + 1, 2, IconFactory.locked(BLOQUEADO_TITLE));
+				} else if (cuentas.get(i).getLockingState() == 2) {
+					// LockingState == 2: Es cuando esta lockeado por otro usuario.
+					resultTable.setWidget(i + 1, 2, IconFactory.lockedOther(OTRO_BLOQUEO_TITLE));
+				}
 
-			resultTable.setHTML(i+1, 3, cuentasActuales.get(i).getNumero());
-			resultTable.setHTML(i+1, 4, cuentasActuales.get(i).getRazonSocial());
-			resultTable.setHTML(i+1, 5, cuentasActuales.get(i).getApellidoContacto());
-			resultTable.setHTML(i+1, 6, cuentasActuales.get(i).getNumeroTelefono() != null ? cuentas.get(i).getNumeroTelefono() : "");
+				resultTable.setHTML(i + 1, 3, cuentasActuales.get(i).getNumero());
+				resultTable.setHTML(i + 1, 4, cuentasActuales.get(i).getRazonSocial());
+				resultTable.setHTML(i + 1, 5, cuentasActuales.get(i).getApellidoContacto());
+				resultTable.setHTML(i + 1, 6, cuentasActuales.get(i).getNumeroTelefono() != null ? cuentas
+						.get(i).getNumeroTelefono() : "");
 			}
 		}
 		setVisible(true);

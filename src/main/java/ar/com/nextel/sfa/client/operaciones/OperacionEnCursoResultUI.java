@@ -47,7 +47,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 	private Label oppEnCursoLabel;
 	private Label reservasNoConsultadas;
 	private Label numOperaciones;
-	private int cantResultadosPorPagina = 5;
+	private static final int cantResultadosPorPagina = 5;
 	private String NumeroVtasPotNoConsultadas;
 	private OperacionEnCursoUIController controller;
 
@@ -62,6 +62,8 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		resultTableWrapperOpCurso.addStyleName("resultTableWrapper");
 
 		tablePageBarReserva = new TablePageBar();
+		tablePageBarReserva.addStyleName("mlr8");
+		tablePageBarReserva.setCantResultadosPorPagina(cantResultadosPorPagina);
 		tablePageBarReserva.setBeforeClickCommand(new Command() {
 			public void execute() {
 				setReserva();
@@ -69,6 +71,8 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		});
 
 		tablePageBarOpCurso = new TablePageBar();
+		tablePageBarOpCurso.addStyleName("mlr8");
+		tablePageBarOpCurso.setCantResultadosPorPagina(cantResultadosPorPagina);
 		tablePageBarOpCurso.setBeforeClickCommand(new Command() {
 			public void execute() {
 				setOpCurso();
@@ -107,19 +111,8 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		setVisible(true);
 	}
 
-	public void searchOperaciones() {
-		this.searchOpEnCurso();
-		this.searchReservas();
-	}
-
-	/**
-	 * Metodo publico que contiene lo que se desea ejecutar la primera vez que se busca. (o sea, cuando se
-	 * hace click al boton Buscar)
-	 * */
-	public void searchReservas() {
-		tablePageBarReserva.setCantResultadosPorPagina(cantResultadosPorPagina);
-		tablePageBarReserva.setCantRegistrosParcI(1);
-		tablePageBarReserva.setCantRegistrosParcF(tablePageBarReserva.getCantResultadosPorPagina());
+	public void searchOperacionesYReservas() {
+		this.searchOpEnCurso(true);
 		this.searchReservas(true);
 	}
 
@@ -136,27 +129,11 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 					public void success(VentaPotencialVistaResultDto result) {
 						if (result != null) {
 							vtaPotencial = result.getVentasPotencialesVistaDto();
-							NumeroVtasPotNoConsultadas = result.getNumeroVtasPotNoConsultadas();
-							tablePageBarReserva.setCantResultados(vtaPotencial.size());
-							double calculoCantPaginasReserva = ((double) vtaPotencial.size() / (double) cantResultadosPorPagina);
-							int cantPaginasReserva = (int) Math.ceil(calculoCantPaginasReserva);
-							tablePageBarReserva.setCantPaginas(cantPaginasReserva);
 							tablePageBarReserva.setPagina(1);
 							setReserva();
 						}
 					}
 				});
-	}
-
-	/**
-	 * Metodo publico que contiene lo que se desea ejecutar la primera vez que se busca. (o sea, cuando se
-	 * hace click al boton Buscar)
-	 * */
-	public void searchOpEnCurso() {
-		tablePageBarOpCurso.setCantResultadosPorPagina(cantResultadosPorPagina);
-		tablePageBarOpCurso.setCantRegistrosParcI(1);
-		tablePageBarOpCurso.setCantRegistrosParcF(tablePageBarOpCurso.getCantResultadosPorPagina());
-		this.searchOpEnCurso(true);
 	}
 
 	/**
@@ -172,10 +149,6 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 					public void success(List<OperacionEnCursoDto> result) {
 						if (result != null) {
 							opEnCurso = result;
-							tablePageBarOpCurso.setCantResultados(opEnCurso.size());
-							double calculoCantPaginasOpEnCurso = ((double) opEnCurso.size() / (double) cantResultadosPorPagina);
-							int cantPaginasOpEnCurso = (int) Math.ceil(calculoCantPaginasOpEnCurso);
-							tablePageBarOpCurso.setCantPaginas(cantPaginasOpEnCurso);
 							tablePageBarOpCurso.setPagina(1);
 							setOpCurso();
 						}
@@ -184,24 +157,18 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 	}
 
 	public void setOpCurso() {
-		List<OperacionEnCursoDto> opEnCursoActuales = new ArrayList<OperacionEnCursoDto>();
-		if (opEnCurso.size() >= cantResultadosPorPagina) {
-			for (int i = (tablePageBarOpCurso.getCantRegistrosParcI() - 1); i < tablePageBarOpCurso
-					.getCantRegistrosParcF(); i++) {
-				opEnCursoActuales.add(opEnCurso.get(i));
-			}
-		} else {
-			for (int i = 0; i < opEnCurso.size(); i++) {
-				opEnCursoActuales.add(opEnCurso.get(i));
-			}
-		}
 		tablePageBarOpCurso.setCantRegistrosTot(opEnCurso.size());
-		tablePageBarOpCurso.refrescaLabelRegistros();
+		List<OperacionEnCursoDto> opEnCursoActuales = new ArrayList<OperacionEnCursoDto>();
+		for (int i = (tablePageBarOpCurso.getCantRegistrosParcI() - 1); i < tablePageBarOpCurso
+				.getCantRegistrosParcF(); i++) {
+			opEnCursoActuales.add(opEnCurso.get(i));
+		}
 		initTableOpenCurso(resultTableOpEnCurso);
 		loadTableOpCurso(opEnCursoActuales);
 	}
 
 	public void setReserva() {
+		tablePageBarReserva.setCantRegistrosTot(vtaPotencial.size());
 		List<VentaPotencialVistaDto> vtaPotencialActuales = new ArrayList<VentaPotencialVistaDto>();
 		if (vtaPotencial.size() >= cantResultadosPorPagina) {
 			for (int i = (tablePageBarReserva.getCantRegistrosParcI() - 1); i < tablePageBarReserva
@@ -214,7 +181,6 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 			}
 		}
 		tablePageBarReserva.setCantRegistrosTot(vtaPotencial.size());
-		tablePageBarReserva.refrescaLabelRegistros();
 		initTableReservas(resultTableReservas);
 		loadTableReservas(vtaPotencialActuales);
 	}
@@ -359,7 +325,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 				break;
 			}
 		}
-		loadTableOpCurso(opEnCurso);
+		setOpCurso();
 	}
 
 }
