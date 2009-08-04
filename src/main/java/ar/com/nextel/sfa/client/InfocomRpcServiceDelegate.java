@@ -5,6 +5,9 @@ import java.util.List;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import ar.com.nextel.sfa.client.dto.CreditoFidelizacionDto;
+import ar.com.nextel.sfa.client.dto.DatosEquipoPorEstadoDto;
+import ar.com.nextel.sfa.client.dto.ResumenEquipoDto;
+import ar.com.nextel.sfa.client.dto.ScoringDto;
 import ar.com.nextel.sfa.client.dto.TransaccionCCDto;
 import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
@@ -33,9 +36,24 @@ public class InfocomRpcServiceDelegate {
 		infocomRpcService.getDetalleCreditoFidelizacion(idCuenta, callback);
 	}
 
-	public void getCuentaCorriente(DefaultWaitCallback<List<TransaccionCCDto>> callback) {
+	public void getCuentaCorriente(String numeroCuenta, String responsablePago, DefaultWaitCallback<List<TransaccionCCDto>> callback) {
 		WaitWindow.show();
-		infocomRpcService.getCuentaCorriente(callback);
+		infocomRpcService.getCuentaCorriente(numeroCuenta, responsablePago, callback);
+	}
+	
+	public void getInformacionEquipos(String numeroCuenta, String estado, DefaultWaitCallback<List<DatosEquipoPorEstadoDto>> callback) {
+		WaitWindow.show();
+		infocomRpcService.getInformacionEquipos(numeroCuenta, estado, callback);
+	}
+	
+	public void getResumenEquipos(String numeroCuenta, String responsablePago, DefaultWaitCallback<ResumenEquipoDto> callback) {
+		WaitWindow.show();
+		infocomRpcService.getResumenEquipos(numeroCuenta, responsablePago, callback);
+	}
+	
+	public void consultarScoring(String numeroCuenta, DefaultWaitCallback<ScoringDto> callback) {
+		WaitWindow.show();
+		infocomRpcService.consultarScoring(numeroCuenta, callback);
 	}
 	
 //	public void getInfocomData(String numeroCuenta, String responsablePago, DefaultWaitCallback<InfocomInitializer> callback) {

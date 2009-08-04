@@ -3,6 +3,9 @@ package ar.com.nextel.sfa.client;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.CreditoFidelizacionDto;
+import ar.com.nextel.sfa.client.dto.DatosEquipoPorEstadoDto;
+import ar.com.nextel.sfa.client.dto.ResumenEquipoDto;
+import ar.com.nextel.sfa.client.dto.ScoringDto;
 import ar.com.nextel.sfa.client.dto.TransaccionCCDto;
 import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
@@ -32,7 +35,13 @@ public interface InfocomRpcService extends RemoteService {
 
 	public CreditoFidelizacionDto getDetalleCreditoFidelizacion(String idCuenta) throws RpcExceptionMessages;
 
-	public List<TransaccionCCDto> getCuentaCorriente() throws RpcExceptionMessages;
+	public List<TransaccionCCDto> getCuentaCorriente(String numeroCuenta, String responsablePago) throws RpcExceptionMessages;
+	
+	public List<DatosEquipoPorEstadoDto> getInformacionEquipos(String numeroCuenta, String estado) throws RpcExceptionMessages;
+	
+	public ResumenEquipoDto getResumenEquipos(String numeroCuenta, String responsablePago) throws RpcExceptionMessages;
+	
+	public ScoringDto consultarScoring(String numeroCuenta) throws RpcExceptionMessages;
 
 	//public InfocomInitializer getInfocomData(String numeroCuenta, String responsablePago) throws RpcExceptionMessages;
 
