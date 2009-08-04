@@ -4,130 +4,126 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class EquipoDto implements IsSerializable {
 
-	private int id;
-	private int tel;
-	private String abono;
-	private String alquiler;
-	private String garantia;
-	private String servicio;
-	private String reint;
-	private int excRadio;
-	private int excTel;
-	private int red;
-	private int DDN;
-	private int roam;
-	private int pager;
-	private int imp;
-
-	public int getId() {
-		return id;
+    private String cliente;
+    private String numeroID;    
+    private String telefono;    
+    private Double abono;    
+    private Double alquiler;    
+    private Double garantia;    
+    private Double servicios;    
+    private String facturaNumero;    
+    private String fechaEmision;    
+    private Double proporcionalYReintegros;    
+    private Double excedenteRadio;    
+    private Double excedenteTelefonia;    
+    private Double redFija;    
+    private Double ddn;    
+    private Double ddiYRoaming;    
+    private Double pagers;    
+    private Double totalConImpuestos;
+    
+    
+	public String getCliente() {
+		return cliente;
 	}
-
-	public void setId(int id) {
-		this.id = id;
+	public void setCliente(String cliente) {
+		this.cliente = cliente;
 	}
-
-	public int getTel() {
-		return tel;
+	public String getNumeroID() {
+		return numeroID;
 	}
-
-	public void setTel(int tel) {
-		this.tel = tel;
+	public void setNumeroID(String numeroID) {
+		this.numeroID = numeroID;
 	}
-
-	public String getAbono() {
+	public String getTelefono() {
+		return telefono;
+	}
+	public void setTelefono(String telefono) {
+		this.telefono = telefono;
+	}
+	public String getFacturaNumero() {
+		return facturaNumero;
+	}
+	public void setFacturaNumero(String facturaNumero) {
+		this.facturaNumero = facturaNumero;
+	}
+	public String getFechaEmision() {
+		return fechaEmision;
+	}
+	public void setFechaEmision(String fechaEmision) {
+		this.fechaEmision = fechaEmision;
+	}
+	public Double getAbono() {
 		return abono;
 	}
-
-	public void setAbono(String abono) {
+	public void setAbono(Double abono) {
 		this.abono = abono;
 	}
-
-	public String getAlquiler() {
+	public Double getAlquiler() {
 		return alquiler;
 	}
-
-	public void setAlquiler(String alquiler) {
+	public void setAlquiler(Double alquiler) {
 		this.alquiler = alquiler;
 	}
-
-	public String getGarantia() {
+	public Double getGarantia() {
 		return garantia;
 	}
-
-	public void setGarantia(String garantia) {
+	public void setGarantia(Double garantia) {
 		this.garantia = garantia;
 	}
-
-	public String getServicio() {
-		return servicio;
+	public Double getServicios() {
+		return servicios;
 	}
-
-	public void setServicio(String servicio) {
-		this.servicio = servicio;
+	public void setServicios(Double servicios) {
+		this.servicios = servicios;
 	}
-
-	public String getReint() {
-		return reint;
+	public Double getProporcionalYReintegros() {
+		return proporcionalYReintegros;
 	}
-
-	public void setReint(String reint) {
-		this.reint = reint;
+	public void setProporcionalYReintegros(Double proporcionalYReintegros) {
+		this.proporcionalYReintegros = proporcionalYReintegros;
 	}
-
-	public int getExcRadio() {
-		return excRadio;
+	public Double getExcedenteRadio() {
+		return excedenteRadio;
 	}
-
-	public void setExcRadio(int excRadio) {
-		this.excRadio = excRadio;
+	public void setExcedenteRadio(Double excedenteRadio) {
+		this.excedenteRadio = excedenteRadio;
 	}
-
-	public int getExcTel() {
-		return excTel;
+	public Double getExcedenteTelefonia() {
+		return excedenteTelefonia;
 	}
-
-	public void setExcTel(int excTel) {
-		this.excTel = excTel;
+	public void setExcedenteTelefonia(Double excedenteTelefonia) {
+		this.excedenteTelefonia = excedenteTelefonia;
 	}
-
-	public int getRed() {
-		return red;
+	public Double getRedFija() {
+		return redFija;
 	}
-
-	public void setRed(int red) {
-		this.red = red;
+	public void setRedFija(Double redFija) {
+		this.redFija = redFija;
 	}
-
-	public int getDDN() {
-		return DDN;
+	public Double getDdn() {
+		return ddn;
 	}
-
-	public void setDDN(int ddn) {
-		DDN = ddn;
+	public void setDdn(Double ddn) {
+		this.ddn = ddn;
 	}
-
-	public int getRoam() {
-		return roam;
+	public Double getDdiYRoaming() {
+		return ddiYRoaming;
 	}
-
-	public void setRoam(int roam) {
-		this.roam = roam;
+	public void setDdiYRoaming(Double ddiYRoaming) {
+		this.ddiYRoaming = ddiYRoaming;
 	}
-
-	public int getPager() {
-		return pager;
+	public Double getPagers() {
+		return pagers;
 	}
-
-	public void setPager(int pager) {
-		this.pager = pager;
+	public void setPagers(Double pagers) {
+		this.pagers = pagers;
 	}
-
-	public int getImp() {
-		return imp;
+	public Double getTotalConImpuestos() {
+		return totalConImpuestos;
 	}
-
-	public void setImp(int imp) {
-		this.imp = imp;
+	public void setTotalConImpuestos(Double totalConImpuestos) {
+		this.totalConImpuestos = totalConImpuestos;
 	}
+	    
 }
