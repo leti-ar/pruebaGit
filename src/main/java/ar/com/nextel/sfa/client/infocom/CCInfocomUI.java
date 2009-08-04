@@ -17,65 +17,26 @@ public class CCInfocomUI extends Composite {
 	private InfocomUIData infocomUIData;
 	private TitledPanel cuentaCorrienteTitledPanel;
 	private SimplePanel cuentaCorrienteTableWrapper;
-	private FlexTable cuentaCorrienteTable;
 	private SimplePanel descripcionTableWrapper;
-	private FlexTable descripcionTable;
 	
 	
 	public CCInfocomUI(InfocomUIData infocomUIData){
 		this.infocomUIData = infocomUIData;
 		cuentaCorrienteTitledPanel = new TitledPanel("Cuenta Corriente");
-		cuentaCorrienteTitledPanel.addStyleName("contenedor");
-
-		initCCTable();
-		initDescripcionTable();
+		cuentaCorrienteTitledPanel.addStyleName("contenedor");	
 
 		cuentaCorrienteTableWrapper = new SimplePanel();
-		cuentaCorrienteTableWrapper.addStyleName("contTable");
-		cuentaCorrienteTableWrapper.add(cuentaCorrienteTable);
+		//cuentaCorrienteTableWrapper.addStyleName("contTable");
+		cuentaCorrienteTableWrapper.addStyleName("resultTableWrapper");
+		cuentaCorrienteTableWrapper.add(infocomUIData.initCCTable());
 
 		descripcionTableWrapper = new SimplePanel();
-		descripcionTableWrapper.addStyleName("contTable");
-		descripcionTableWrapper.add(descripcionTable);
+		//descripcionTableWrapper.addStyleName("contTable");
+		descripcionTableWrapper.addStyleName("resultTableWrapper");
+		descripcionTableWrapper.add(infocomUIData.initDescripcionTable());
 
 		cuentaCorrienteTitledPanel.add(cuentaCorrienteTableWrapper);
 		cuentaCorrienteTitledPanel.add(descripcionTableWrapper);
-	}
-
-
-	public void initCCTable() {
-		cuentaCorrienteTable = new FlexTable();
-		String[] widths = { "130px", "80px", "100px", "100px","100px", "90px", "90px" };
-		String[] titles = { Sfa.constant().numeroCuenta(), Sfa.constant().clase(), Sfa.constant().venc(), Sfa.constant().descripcion(), 
-				Sfa.constant().numeroComprobante(), Sfa.constant().importe(), Sfa.constant().saldo() };
-		for (int col = 0; col < widths.length; col++) {
-			cuentaCorrienteTable.setHTML(0, col, titles[col]);
-			cuentaCorrienteTable.getColumnFormatter().setWidth(col, widths[col]);
-			cuentaCorrienteTable.getColumnFormatter().addStyleName(col, "alignCenter");
-		}
-		cuentaCorrienteTable.setCellPadding(0);
-		cuentaCorrienteTable.setCellSpacing(0);
-		cuentaCorrienteTable.addStyleName("dataTable");
-		cuentaCorrienteTable.getRowFormatter().addStyleName(0, "header");
-	}
-
-	public void initDescripcionTable() {
-		descripcionTable = new FlexTable();
-		String[] widths = { "639px", "149px", "149px" };
-		String[] titles = { "Descripcion", "A vencer", "Vencida" };
-		for (int col = 0; col < widths.length; col++) {
-			descripcionTable.setHTML(0, col, titles[col]);
-			descripcionTable.getColumnFormatter().setWidth(col, widths[col]);
-			descripcionTable.getColumnFormatter().addStyleName(col, "alignCenter");
-		}
-		descripcionTable.setHTML(1, 0, "EQUIPOS");
-		descripcionTable.setHTML(2, 0, "SERVICIOS");
-		descripcionTable.setHTML(3, 0, "Total");
-		descripcionTable.setCellPadding(0);
-		descripcionTable.setCellSpacing(0);
-		//descripcionTable.addStyleName("infocomDescripcionTable");
-		descripcionTable.addStyleName("dataTable");
-		descripcionTable.getRowFormatter().addStyleName(0, "header");
 	}
 
 	public Widget getCCTitledPanel() {
