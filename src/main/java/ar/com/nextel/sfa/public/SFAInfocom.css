@@ -29,7 +29,7 @@
 	background-color: white;
 	float:left;
 	margin-bottom:8px;
-	width:100%;	
+	width:100%;
 }
 
 .respPanel{
@@ -51,6 +51,7 @@
 .contTable{
 	border:1px solid gray;
 	margin: 8px;
+	/*overflow:auto;*/
 }
 
 .contPanel{
@@ -101,6 +102,11 @@
 
 .estadoDialog{
 	width:740px;
+}
+
+.scoringDialog{
+	width: 380px;
+	height: 227px;
 }
 
 .estadoTable{
