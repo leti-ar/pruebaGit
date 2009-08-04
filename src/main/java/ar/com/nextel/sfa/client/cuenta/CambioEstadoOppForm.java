@@ -1,9 +1,8 @@
 package ar.com.nextel.sfa.client.cuenta;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
-import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.EstadoOportunidadDto;
-import ar.com.nextel.sfa.client.dto.EstadoOportunidadJustificadoDto;
 import ar.com.nextel.sfa.client.dto.MotivoNoCierreDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.enums.EstadoOportunidadEnum;
@@ -48,7 +47,7 @@ public class CambioEstadoOppForm extends NextelDialog {
     }
 	
 	private  CambioEstadoOppForm() {
-		super("Cambiar Estado");
+		super(Sfa.constant().LBL_CAMBIAR_ESTADO());
 		init();
 	}
 

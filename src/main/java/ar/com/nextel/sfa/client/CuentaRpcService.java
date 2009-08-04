@@ -57,4 +57,6 @@ public interface CuentaRpcService extends RemoteService {
 	public List<ProvinciaDto> getProvinciasInitializer() throws RpcExceptionMessages;
 	public OportunidadNegocioDto getOportunidadNegocio(Long cuenta_id) throws RpcExceptionMessages;
 	public OportunidadNegocioDto updateEstadoOportunidad(OportunidadNegocioDto oportunidadDto) throws RpcExceptionMessages;
+	public List <CuentaDto> getCuentasAsociadasAVentaPotencial(Long idVentaPotencial) throws RpcExceptionMessages;
+	
 }

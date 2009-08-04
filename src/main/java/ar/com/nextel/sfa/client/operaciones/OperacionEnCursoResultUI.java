@@ -3,8 +3,13 @@ package ar.com.nextel.sfa.client.operaciones;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.OperacionesRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.cuenta.AgregarCuentaUI;
+import ar.com.nextel.sfa.client.cuenta.BuscadorDocumentoPopup;
+import ar.com.nextel.sfa.client.cuenta.EditarCuentaUI;
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaResultDto;
@@ -12,17 +17,21 @@ import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.ss.EditarSSUI;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
+import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Muestra la tabla con los resultados de la busqueda de operaciones. También maneja la logica de busqueda
@@ -50,7 +59,9 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 	private static final int cantResultadosPorPagina = 5;
 	private String NumeroVtasPotNoConsultadas;
 	private OperacionEnCursoUIController controller;
-
+	
+    private OperacionEnCursoSeleccionCuentaPopup seleccionCuentaPopup = OperacionEnCursoSeleccionCuentaPopup.getInstance(); 
+	
 	public OperacionEnCursoResultUI(OperacionEnCursoUIController controller) {
 		super();
 		this.controller = controller;
@@ -109,6 +120,8 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		add(flowPanelOppEnCursoT);
 		add(tablePageBarOpCurso);
 		setVisible(true);
+		
+
 	}
 
 	public void searchOperacionesYReservas() {
@@ -195,7 +208,10 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		for (OperacionEnCursoDto opCursoDto : opEnCursoActuales) {
 			resultTableOpEnCurso.setWidget(row, 0, IconFactory.lapiz());
 			// if (opEnCurso.isPuedeVerInfocom()) {
-			resultTableOpEnCurso.setWidget(row, 1, IconFactory.silvioSoldan());
+			//resultTableOpEnCurso.setWidget(row, 1, IconFactory.silvioSoldan());
+			resultTableOpEnCurso.setWidget(row, 1, IconFactory.silvioSoldanAnchor(
+					UILoader.EDITAR_CUENTA + "?cuenta_id=" + opCursoDto.getIdCuenta() + "&operEnCurso=true" ,
+					Sfa.constant().ALT_ABRIR_CUENTA_ASOC()));
 			// }
 			if (true) {
 				resultTableOpEnCurso.setWidget(row, 2, IconFactory.cancel());
@@ -217,14 +233,40 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		// initTableReservas(resultTableReservas);
 		resultTableWrapperReserva.setWidget(resultTableReservas);
 		int row = 1;
-		for (VentaPotencialVistaDto vtaPotencialDto : vtaPotencialActuales) {
+		for (final VentaPotencialVistaDto vtaPotencialDto : vtaPotencialActuales) {
 			resultTableReservas.setWidget(row, 0, IconFactory.lapiz());
 			// if (reserva.isPuedeVerInfocom()) {
-			resultTableReservas.setWidget(row, 1, IconFactory.silvioSoldan());
+			HTML iconAddSoldan = IconFactory.silvioSoldan(Sfa.constant().ALT_ABRIR_CUENTA_ASOC());
+			iconAddSoldan.addClickListener(new ClickListener() {
+				public void onClick(Widget arg0) {
+					CuentaRpcService.Util.getInstance().getCuentasAsociadasAVentaPotencial(vtaPotencialDto.getIdCuentaPotencial(), 
+							new DefaultWaitCallback<List<CuentaDto>>() {
+						public void success(List<CuentaDto> result) {
+							if (result.size()>1) {
+								seleccionCuentaPopup.setCuentas(result);
+								seleccionCuentaPopup.loadTable();
+								seleccionCuentaPopup.showAndCenter();
+							} else {
+								History.newItem(UILoader.EDITAR_CUENTA + "?cuenta_id=" + result.get(0).getId());
+							}
+						}
+					});
+				}
+			});
+
+			resultTableReservas.setWidget(row, 1, iconAddSoldan);
 			// }vb
-			if (true) {
-				resultTableReservas.setWidget(row, 2, IconFactory.prospect());
-			}
+			HTML iconAddProspect = IconFactory.prospect(Sfa.constant().ALT_ADD_PROSPECT());
+			iconAddProspect.addClickListener(new ClickListener() {
+				public void onClick(Widget arg0) {
+					EditarCuentaUI.idOpp = vtaPotencialDto.getIdCuentaPotencial();
+					AgregarCuentaUI.getInstance().load();
+					BuscadorDocumentoPopup.fromMenu = false;
+					//seleccionCuentaPopup.showAndCenter();
+				}
+			});
+			resultTableReservas.setWidget(row, 2,iconAddProspect );
+			
 			resultTableReservas.setWidget(row, 3, IconFactory.oportunidad());
 			resultTableReservas.setHTML(row, 4, vtaPotencialDto.getNumeroCliente());
 			resultTableReservas.setHTML(row, 5, vtaPotencialDto.getRazonSocial());

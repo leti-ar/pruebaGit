@@ -18,6 +18,7 @@ import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.enums.TipoContribuyenteEnum;
 import ar.com.nextel.sfa.client.enums.TipoCuentaEnum;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
+import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -89,7 +90,11 @@ public class EditarCuentaUI extends ApplicationUI {
 			CuentaRpcService.Util.getInstance().selectCuenta(cuentaID, cod_vantive,new DefaultWaitCallback<CuentaDto>() {
 				public void success(CuentaDto cuentaDto) {
 					if (puedenMostrarseDatos(cuentaDto)) {
-						cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusqueda(cuentaDto);
+						if(RegularExpressionConstants.isVancuc(cuentaDto.getCodigoVantive())) {
+						   cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(cuentaDto);
+						} else {
+						   cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusqueda(cuentaDto);
+						}
 						completarVisualizacionDatos(cuentaDto);
 					}
 				}

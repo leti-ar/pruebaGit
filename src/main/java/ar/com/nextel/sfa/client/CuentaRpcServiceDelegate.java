@@ -2,6 +2,8 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
@@ -98,5 +100,9 @@ public class CuentaRpcServiceDelegate {
 	public void updateEstadoOportunidad(OportunidadNegocioDto oportunidadDto,DefaultWaitCallback<OportunidadNegocioDto> callback) {
 		WaitWindow.show();
 		cuentaRpcService.updateEstadoOportunidad(oportunidadDto,callback);
+	}
+	public void getCuentasAsociadasAVentaPotencial(Long idVentaPotencial, DefaultWaitCallback<List<CuentaDto>> callback) {
+		WaitWindow.show();
+		cuentaRpcService.getCuentasAsociadasAVentaPotencial(idVentaPotencial, callback);
 	}
 }

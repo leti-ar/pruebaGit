@@ -19,6 +19,7 @@ import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
 import ar.com.nextel.sfa.client.initializer.VerazInitializer;
+import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -40,4 +41,5 @@ public interface CuentaRpcServiceAsync {
 	public void getProvinciasInitializer(AsyncCallback<List<ProvinciaDto>> callback);
 	public void getOportunidadNegocio(Long cuenta_id, AsyncCallback<OportunidadNegocioDto> callback);
 	public void updateEstadoOportunidad(OportunidadNegocioDto oportunidadDto, AsyncCallback<OportunidadNegocioDto> callback);
+	public void getCuentasAsociadasAVentaPotencial(Long idVentaPotencial, AsyncCallback<List<CuentaDto>> callback);
 }

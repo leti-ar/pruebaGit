@@ -1,5 +1,9 @@
 package ar.com.nextel.sfa.server;
 
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -507,9 +511,22 @@ public class CuentaRpcServiceImpl extends RemoteService implements	CuentaRpcServ
         return oportunidadDto;
 	}
 	
+	/**
+	 * 
+	 */
 	public OportunidadNegocioDto updateEstadoOportunidad(OportunidadNegocioDto oportunidadDto) throws RpcExceptionMessages {
 		return (OportunidadNegocioDto) mapper.map(cuentaBusinessService.updateEstadoOportunidad(oportunidadDto, mapper), OportunidadNegocioDto.class);		
 	}
+	
+	/**
+	 * 
+	 * @param idVentaPotencial
+	 * @return
+	 */
+    public List <CuentaDto> getCuentasAsociadasAVentaPotencial(Long idVentaPotencial) throws RpcExceptionMessages {
+        CuentaPotencial cuentaPotencial = (CuentaPotencial) repository.retrieve(CuentaPotencial.class, idVentaPotencial);
+        return (List<CuentaDto>)  mapper.convertList(cuentaPotencial.getCuentasAsociadas(),CuentaDto.class);
+    }
 	
 	/**
 	 * 
