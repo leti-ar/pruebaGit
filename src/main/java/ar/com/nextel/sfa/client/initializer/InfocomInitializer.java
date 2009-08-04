@@ -2,6 +2,8 @@ package ar.com.nextel.sfa.client.initializer;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.dto.EquiposServiciosDto;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class InfocomInitializer implements IsSerializable {
@@ -16,6 +18,7 @@ public class InfocomInitializer implements IsSerializable {
 	private String numeroCuenta;
 	private String idResponsablePago;
 	private String razonSocial;
+	private EquiposServiciosDto equiposServicios;
 	
 
 //	public InfocomInitializer() {
@@ -111,6 +114,13 @@ public class InfocomInitializer implements IsSerializable {
 	public void setRazonSocial(String razonSocial) {
 		this.razonSocial = razonSocial;
 	}
-	
+
+	public EquiposServiciosDto getEquiposServicios() {
+		return equiposServicios;
+	}
+
+	public void setEquiposServicios(EquiposServiciosDto equiposServicios) {
+		this.equiposServicios = equiposServicios;
+	}
 		
 }
