@@ -1,7 +1,10 @@
 package ar.com.nextel.sfa.client.infocom;
 
+import java.util.List;
+
 import ar.com.nextel.sfa.client.InfocomRpcService;
 import ar.com.nextel.sfa.client.dto.CreditoFidelizacionDto;
+import ar.com.nextel.sfa.client.dto.TransaccionCCDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
@@ -14,6 +17,7 @@ public class InfocomUI extends ApplicationUI {
 
 	private InfocomUIData infocomUIData;
 	private FidelizacionInfocomUI fidelizacionInfocomUI;
+	private EstadoEquipoPopUp estadoEquipoPopUp;
 	private CCInfocomUI ccInfocomUI;
 	private FlexTable layout;
 	private FlexTable estadoFlexTable;
@@ -35,16 +39,19 @@ public class InfocomUI extends ApplicationUI {
 		estadoFlexTable = new FlexTable();
 		responsableFlexTable = new FlexTable();
 		
-		estadoFlexTable.setWidget(0, 0, infocomUIData.getEstado());
+		estadoFlexTable.setWidget(0, 0, infocomUIData.getEstadoEncabezadoLabel());
 		estadoFlexTable.setWidget(0, 1, infocomUIData.getEstadoTerminales());
-		estadoFlexTable.setWidget(0, 2, infocomUIData.getCicloLabel());
-		estadoFlexTable.setWidget(0, 3, infocomUIData.getCiclo());
-		estadoFlexTable.setWidget(0, 4, infocomUIData.getFlotaLabel());
-		estadoFlexTable.setWidget(0, 5, infocomUIData.getFlota());
+//		estadoFlexTable.setWidget(0, 2, infocomUIData.getCicloLabel());
+//		estadoFlexTable.setWidget(0, 3, infocomUIData.getCiclo());
+		estadoFlexTable.setWidget(0, 2, infocomUIData.getCicloPanel());
+//		estadoFlexTable.setWidget(0, 4, infocomUIData.getFlotaLabel());
+//		estadoFlexTable.setWidget(0, 5, infocomUIData.getFlota());
+		estadoFlexTable.setWidget(0, 3, infocomUIData.getFlotaPanel());
 		estadoFlexTable.setWidget(0, 6, IconFactory.scoring());
 		estadoFlexTable.setWidget(0, 7, infocomUIData.getScoring());
 		estadoFlexTable.setWidget(0, 8, infocomUIData.getLimCreditoLabel());
 		estadoFlexTable.setWidget(0, 9, infocomUIData.getLimCredito());
+		//estadoFlexTable.setWidth("100%");
 		
 		responsableFlexTable.setWidget(0, 0, infocomUIData.getNumResponsable());
 		responsableFlexTable.setWidget(0, 1, infocomUIData.getResponsablePago());
@@ -63,10 +70,10 @@ public class InfocomUI extends ApplicationUI {
 		CCInfocomUI ccInfocomUI = new CCInfocomUI(infocomUIData);
 		mainPanel.add(ccInfocomUI.getCCTitledPanel());
 		//Borrar el hardcode
-		String idCuenta="6.356172";
+		String idCuenta="5.12345";
 		this.getInfocomData(idCuenta);
 		this.getDetalleCreditoFidelizacion(idCuenta, true);
-		//this.getCuentaCorriente()
+		this.getCuentaCorriente(idCuenta, idCuenta);
 	}
 	
 	public boolean load() {
@@ -85,14 +92,23 @@ public class InfocomUI extends ApplicationUI {
 				}
 			}
 		});
-	}
-	
+	}	
 	
 	private void getInfocomData(String numeroCuenta) {
 		InfocomRpcService.Util.getInstance().getInfocomInitializer(numeroCuenta, new DefaultWaitCallback<InfocomInitializer>() {
 			public void success(InfocomInitializer result) {
 				if (result != null) {
 					infocomUIData.setInfocom(result);
+				}
+			}
+		});
+	}
+	
+	private void getCuentaCorriente(String numeroCuenta, String responsablePago) {
+		InfocomRpcService.Util.getInstance().getCuentaCorriente(numeroCuenta, responsablePago, new DefaultWaitCallback<List<TransaccionCCDto>>() {
+			public void success(List<TransaccionCCDto> result) {
+				if (result != null) {
+					infocomUIData.setCuentaCorriente(result);
 				}
 			}
 		});

@@ -3,20 +3,29 @@ package ar.com.nextel.sfa.client.infocom;
 import java.util.Iterator;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.InfocomRpcService;
+import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CreditoFidelizacionDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DetalleFidelizacionDto;
+import ar.com.nextel.sfa.client.dto.EquiposServiciosDto;
+import ar.com.nextel.sfa.client.dto.ResumenEquipoDto;
+import ar.com.nextel.sfa.client.dto.ScoringDto;
 import ar.com.nextel.sfa.client.dto.TransaccionCCDto;
 import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
 import ar.com.nextel.sfa.client.widget.UIData;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
-import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 
 public class InfocomUIData extends UIData {
 
@@ -33,54 +42,198 @@ public class InfocomUIData extends UIData {
 	
 	private Label numResponsable;
 	
-
+	private HorizontalPanel cicloPanel;
+	private HorizontalPanel flotaPanel;
+	private HorizontalPanel limiteCreditoPanel;
+	
 	private InlineHTML monto;
 	private Label estadoLabel;
 	private InlineHTML vencimiento;
 	private InlineHTML estado;
-
-	private Grid cuentaCorriente;
-	private Grid creditoFidelizacion;
+	private Label estadoEncabezadoLabel;
+	
+	private FlexTable creditoFidelizacionTable;
+	private FlexTable cuentaCorrienteTable;
+	private FlexTable descripcionTable;
 	
 	private SimpleLink scoring; 
 	private SimpleLink resumenPorEquipo;
-
+	
+	private HorizontalPanel montoPanel;
+	private HorizontalPanel estadoPanel;
+	private HorizontalPanel vencimientoPanel;
+	
 	private final NumberFormat numberFormat = NumberFormat.getCurrencyFormat();
 	private final DateTimeFormat dateFormat = DateTimeFormat.getMediumDateFormat();
 
 	public InfocomUIData() {
+		montoPanel = new HorizontalPanel();
+		estadoPanel = new HorizontalPanel();
+		vencimientoPanel = new HorizontalPanel();
+		cicloPanel = new HorizontalPanel();
+		cicloPanel.setWidth("200px");
+		flotaPanel = new HorizontalPanel();
+		flotaPanel.setWidth("200px");
 		estadoTerminales = new EstadoTerminales();
 		cicloLabel = new Label("Ciclo: ");
 		ciclo = new InlineHTML();
+		cicloPanel.add(cicloLabel);
+		cicloPanel.add(ciclo);
 		flotaLabel = new Label("Flota: ");
 		flota = new InlineHTML();
+		flotaPanel.add(flotaLabel);
+		flotaPanel.add(flota);
 		limCreditoLabel = new Label("Lím. Crédito: ");
 		limCredito = new InlineHTML();
-		responsablePago = new ListBox();
+		responsablePago = new ListBox("Todos");
+		responsablePago.setWidth("150%");
 		montoLabel = new Label("Monto: ");
 		monto = new InlineHTML();
-		estadoLabel = new Label("Estado");
+		montoPanel.add(montoLabel);
+		montoPanel.add(monto);
+		estadoLabel = new Label("Estado: ");
+		estado = new InlineHTML();
+		estadoPanel.add(estadoLabel);
+		estadoPanel.add(estado);
+		
 		vencimientoLabel = new Label("Vencimiento: ");
 		vencimiento = new InlineHTML();
+		vencimientoPanel.add(vencimientoLabel);
+		vencimientoPanel.add(vencimiento);
 		numResponsable = new Label("N° Responsable Pago:");
 		scoring = new SimpleLink("Scoring");
 		scoring.addStyleName("infocomSimpleLink");
+		scoring.addClickListener(new ClickListener() {
+			public void onClick(Widget arg0) {
+				getScoring("6.356172");
+			}
+		});
+	
+		estadoEncabezadoLabel = new Label("Estado");
+
 		resumenPorEquipo = new SimpleLink("Resumen por equipo");
 		resumenPorEquipo.addStyleName("infocomSimpleLink");
-		estado = new InlineHTML();
+		resumenPorEquipo.addClickListener(new ClickListener() {
+			public void onClick (Widget arg0) {
+				getResumenPorEquipo("6.356172", "6.356172");
+			}
+		});
+	}	
+	
+	public HorizontalPanel getEstadoPanel() {
+		return estadoPanel;
 	}
 
+	public void setEstadoPanel(HorizontalPanel estadoPanel) {
+		this.estadoPanel = estadoPanel;
+	}
 
+	public HorizontalPanel getVencimientoPanel() {
+		return vencimientoPanel;
+	}
+
+	public void setVencimientoPanel(HorizontalPanel vencimientoPanel) {
+		this.vencimientoPanel = vencimientoPanel;
+	}
+
+	/**Obtiene la información del scoring*/
+	private void getScoring(String numeroCuenta) {
+		InfocomRpcService.Util.getInstance().consultarScoring(numeroCuenta, new DefaultWaitCallback<ScoringDto>() {
+			public void success(ScoringDto result) {
+				if (result != null) {
+					ScoringPopUpUI scoringPopUpUI = new ScoringPopUpUI("Cuentas - Scoring", result);
+					scoringPopUpUI.showAndCenter();
+					
+				}
+			}
+		});
+	}
+	
+	/**Obtiene la información de Resumen Por Equipo*/
+	private void getResumenPorEquipo(String numeroCuenta, String numeroResponsablePago) {
+		InfocomRpcService.Util.getInstance().getResumenEquipos(numeroCuenta, numeroResponsablePago, new DefaultWaitCallback<ResumenEquipoDto>() {
+			public void success(ResumenEquipoDto result) {
+				if (result != null) {
+					ResumenEquipoPopUp resumenEquipoPopUp = new ResumenEquipoPopUp("Cuentas - Resumen Por Equipos");
+					resumenEquipoPopUp.setResumenPorEquipo(result);
+					resumenEquipoPopUp.showAndCenter();
+				}
+			}
+		});
+	}	
+	
+	/**Inicializa la tabla de Fidelización*/
+	public FlexTable initTableCreditoFidelizacion() {
+		creditoFidelizacionTable = new FlexTable();
+		String[] widths = { "149px", "489px", "149px", "149px", };
+		String[] titles = { "Fecha", "Descripcion", "Monto", "Factura aplicada" };
+		for (int col = 0; col < widths.length; col++) {
+			creditoFidelizacionTable.setHTML(0, col, titles[col]);
+			creditoFidelizacionTable.getColumnFormatter().setWidth(col, widths[col]);
+		}
+		creditoFidelizacionTable.getColumnFormatter().addStyleName(0, "alignCenter");
+		creditoFidelizacionTable.getColumnFormatter().addStyleName(1, "alignCenter");
+		creditoFidelizacionTable.getColumnFormatter().addStyleName(2, "alignCenter");
+		creditoFidelizacionTable.setCellPadding(0);
+		creditoFidelizacionTable.setCellSpacing(0);
+		creditoFidelizacionTable.addStyleName("gwt-BuscarCuentaResultTable");
+		creditoFidelizacionTable.getRowFormatter().addStyleName(0, "header");
+		return creditoFidelizacionTable;
+	}
+	
+	/**Inicializa la tabla de Cuenta Corriente*/
+	public FlexTable initCCTable() {
+		cuentaCorrienteTable = new FlexTable();
+		String[] widths = { "150px", "80px", "100px", "130px","140px", "110px", "110px" };
+		String[] titles = { Sfa.constant().numeroCuenta(), Sfa.constant().clase(), Sfa.constant().venc(), Sfa.constant().descripcion(), 
+				Sfa.constant().numeroComprobante(), Sfa.constant().importe(), Sfa.constant().saldo() };
+		for (int col = 0; col < widths.length; col++) {
+			cuentaCorrienteTable.setHTML(0, col, titles[col]);
+			cuentaCorrienteTable.getColumnFormatter().setWidth(col, widths[col]);
+			cuentaCorrienteTable.getColumnFormatter().addStyleName(col, "alignCenter");
+		}
+		cuentaCorrienteTable.setCellPadding(0);
+		cuentaCorrienteTable.setCellSpacing(0);
+		cuentaCorrienteTable.addStyleName("gwt-BuscarCuentaResultTable");
+		//cuentaCorrienteTable.addStyleName("dataTable");
+		cuentaCorrienteTable.getRowFormatter().addStyleName(0, "header");
+		return cuentaCorrienteTable;
+	}
+
+	/**Inicializa la tabla de Descripción*/
+	public FlexTable initDescripcionTable() {
+		descripcionTable = new FlexTable();
+		this.descripcionTable = descripcionTable;
+		String[] widths = { "639px", "149px", "149px" };
+		String[] titles = { "Descripcion", "A vencer", "Vencida" };
+		for (int col = 0; col < widths.length; col++) {
+			descripcionTable.setHTML(0, col, titles[col]);
+			descripcionTable.getColumnFormatter().setWidth(col, widths[col]);
+			descripcionTable.getColumnFormatter().addStyleName(col, "alignCenter");
+		}
+		descripcionTable.setHTML(1, 0, "EQUIPOS");
+		descripcionTable.setHTML(2, 0, "SERVICIOS");
+		descripcionTable.setHTML(3, 0, "Total");
+		descripcionTable.setCellPadding(0);
+		descripcionTable.setCellSpacing(0);
+		//descripcionTable.addStyleName("infocomDescripcionTable");
+		descripcionTable.addStyleName("dataTable");
+		descripcionTable.getRowFormatter().addStyleName(0, "header");
+		return descripcionTable;
+	}
+	
 	/** Carga los datos de Header de infocom */
 	public void setInfocom(InfocomInitializer infocom) {
 		estadoTerminales.setEstado(Integer.parseInt(infocom.getTerminalesActivas()), Integer.parseInt(infocom.getTerminalesSuspendidas()), Integer.parseInt(infocom.getTerminalesDesactivadas()));
 		ciclo.setText(infocom.getCiclo());
 		flota.setText(infocom.getFlota());
 		limCredito.setText(infocom.getLimiteCredito());
+		setDescripcion(infocom.getEquiposServicios());
 		for (Iterator iterator = (infocom.getResponsablePago()).iterator(); iterator.hasNext();) {
 			CuentaDto cuentaDto = (CuentaDto) iterator.next();
 			responsablePago.addItem(cuentaDto.getCodigoVantive());
 		}
+		responsablePago.setSelectedIndex(1);
 	}
 
 	/** Carga el panel de Credito de Fidelizacion de infocom */
@@ -99,30 +252,48 @@ public class InfocomUIData extends UIData {
 	public void setCuentaCorriente(List<TransaccionCCDto> transacciones) {
 		refreshCuentaCorrienteTable(transacciones);
 	}
+	
+	/** Carga la tabla de Descripcion de infocom */
+	public void setDescripcion(EquiposServiciosDto equipos) {
+		refreshDescripcionTable(equipos);
+	}
 
 	private void refreshCreditoFidelizacionTable(List<DetalleFidelizacionDto> detallesFidelizacion) {
-//		creditoFidelizacion.resizeRows(1);
-//		creditoFidelizacion.resizeRows(detallesFidelizacion.size() + 1);
 		int row = 1;
 		DateTimeFormat dateFormatter = DateTimeFormat.getMediumDateFormat();
 		for (Iterator iterator = detallesFidelizacion.iterator(); iterator.hasNext();) {
 			DetalleFidelizacionDto detalle = (DetalleFidelizacionDto) iterator.next();
-//			creditoFidelizacion.setHTML(row, 0, dateFormatter.format(detalle.getFecha()));
-//			creditoFidelizacion.setHTML(row, 1, detalle.getDescripcion());
-//			creditoFidelizacion.setHTML(row, 2, detalle.getMonto());
-//			creditoFidelizacion.setHTML(row, 3, detalle.getFactura());
+			creditoFidelizacionTable.setHTML(row, 0, dateFormatter.format(detalle.getFecha()));
+			creditoFidelizacionTable.setHTML(row, 1, detalle.getDescripcion());
+			creditoFidelizacionTable.setHTML(row, 2, detalle.getMonto());
+			creditoFidelizacionTable.setHTML(row, 3, detalle.getFactura());
 		}
 	}
 
 	private void refreshCuentaCorrienteTable(List<TransaccionCCDto> transacciones) {
-		cuentaCorriente.resizeRows(1);
-		cuentaCorriente.resizeRows(transacciones.size() + 1);
-		for (int row = 1; row <= transacciones.size(); row++) {
-			String[] transaccionRow = transacciones.get(row - 1).getRow();
-			for (int col = 0; col < 6; col++) {
-				cuentaCorriente.setHTML(row, col, transaccionRow[col]);
-			}
+		int row = 1;
+		DateTimeFormat dateFormatter = DateTimeFormat.getMediumDateFormat();
+		for (Iterator iterator = transacciones.iterator(); iterator.hasNext();) {
+			TransaccionCCDto transaccion = (TransaccionCCDto) iterator.next();
+			//cuentaCorriente.setHTML(row, 1, transaccion.getNumero());
+			cuentaCorrienteTable.setHTML(row, 1, transaccion.getClase());
+			//ver si no hay que formatear la fecha
+			cuentaCorrienteTable.setHTML(row, 2, transaccion.getFechaVenc());
+			cuentaCorrienteTable.setHTML(row, 3, transaccion.getDescripcion());
+			cuentaCorrienteTable.setHTML(row, 4, transaccion.getNumero());
+			cuentaCorrienteTable.setHTML(row, 5, transaccion.getImporte());
+			cuentaCorrienteTable.setHTML(row, 6, transaccion.getSaldo());
+			row++;
 		}
+	}
+	
+	private void refreshDescripcionTable(EquiposServiciosDto equipos) {
+		descripcionTable.setHTML(1, 1, numberFormat.format(equipos.getDeudaEquiposAVencer()));
+		descripcionTable.setHTML(1, 2, numberFormat.format(equipos.getDeudaEquiposVencida()));
+		descripcionTable.setHTML(2, 1, numberFormat.format(equipos.getDeudaServiciosAVencer()));
+		descripcionTable.setHTML(2, 2, numberFormat.format(equipos.getDeudaServiciosVencida()));
+		descripcionTable.setHTML(3, 1, numberFormat.format(equipos.getDeudaEquiposAVencer() + equipos.getDeudaServiciosAVencer()));
+		descripcionTable.setHTML(3, 2, numberFormat.format(equipos.getDeudaEquiposVencida() + equipos.getDeudaServiciosVencida()));
 	}
 
 
@@ -225,14 +396,13 @@ public class InfocomUIData extends UIData {
 		this.monto = monto;
 	}
 
-
 	public Label getEstadoLabel() {
 		return estadoLabel;
 	}
 
 
-	public void setEstadoLabel(Label estado) {
-		this.estadoLabel = estado;
+	public void setEstadoLabel(Label estadoLabel) {
+		this.estadoLabel = estadoLabel;
 	}
 
 
@@ -244,27 +414,6 @@ public class InfocomUIData extends UIData {
 	public void setVencimiento(InlineHTML vencimiento) {
 		this.vencimiento = vencimiento;
 	}
-
-
-	public Grid getCuentaCorriente() {
-		return cuentaCorriente;
-	}
-
-
-	public void setCuentaCorriente(Grid cuentaCorriente) {
-		this.cuentaCorriente = cuentaCorriente;
-	}
-
-
-	public Grid getCreditoFidelizacion() {
-		return creditoFidelizacion;
-	}
-
-
-	public void setCreditoFidelizacion(Grid creditoFidelizacion) {
-		this.creditoFidelizacion = creditoFidelizacion;
-	}
-
 
 	public SimpleLink getScoring() {
 		return scoring;
@@ -313,6 +462,47 @@ public class InfocomUIData extends UIData {
 
 	public void setEstado(InlineHTML estado) {
 		this.estado = estado;
-	}	
+	}
+
+
+	public Label getEstadoEncabezadoLabel() {
+		return estadoEncabezadoLabel;
+	}
+
+
+	public void setEstadoEncabezadoLabel(Label estadoEncabezadoLabel) {
+		this.estadoEncabezadoLabel = estadoEncabezadoLabel;
+	}
+
+
+
+	public void setMontoPanel(HorizontalPanel montoPanel) {
+		this.montoPanel = montoPanel;
+	}
+
+
+	public HorizontalPanel getMontoPanel() {
+		return montoPanel;
+	}
+
+
+	public HorizontalPanel getCicloPanel() {
+		return cicloPanel;
+	}
+
+
+	public void setCicloPanel(HorizontalPanel cicloPanel) {
+		this.cicloPanel = cicloPanel;
+	}
+
+
+	public HorizontalPanel getFlotaPanel() {
+		return flotaPanel;
+	}
+
+
+	public void setFlotaPanel(HorizontalPanel flotaPanel) {
+		this.flotaPanel = flotaPanel;
+	}		
 	
 }

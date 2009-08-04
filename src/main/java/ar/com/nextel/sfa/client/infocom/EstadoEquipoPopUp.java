@@ -1,5 +1,11 @@
 package ar.com.nextel.sfa.client.infocom;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import ar.com.nextel.sfa.client.dto.DatosEquipoPorEstadoDto;
+import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
+import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
@@ -10,10 +16,12 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class EstadoEquipoPopUp extends NextelDialog {
 	private FlexTable table;
+	private List estadosList = new ArrayList<DatosEquipoPorEstadoDto>();
 
-	public EstadoEquipoPopUp(String title) {
+	public EstadoEquipoPopUp(String title, List<DatosEquipoPorEstadoDto> estadosList) {
 		super(title);
 		this.addStyleName("estadoDialog");
+		this.estadosList = estadosList;
 		table = new FlexTable();
 		initTable(table);
 		SimpleLink cerrar = new SimpleLink("Cerrar");
@@ -25,18 +33,17 @@ public class EstadoEquipoPopUp extends NextelDialog {
 			}
 		});
 	}
-
+	
 	private void initTable(FlexTable table) {
 		SimplePanel contTable = new SimplePanel();
-		contTable.addStyleName("contPanel");
-		String[] widths = { "164px", "164px", "149px", "149px", "149px",
-				"149px", "149px", "149px", "149px" };
+		contTable.addStyleName("resultTableWrapper");
+		//contTable.addStyleName("contPanel");
+		String[] widths = { "164px", "164px", "149px", "149px", "149px", "149px", "149px", "149px", "149px" };
 		for (int col = 0; col < widths.length; col++) {
 			table.getColumnFormatter().setWidth(col, widths[col]);
 		}
 		table.setCellPadding(0);
 		table.setCellSpacing(0);
-		table.addStyleName("gwt-BuscarCuentaResultTable estadoTable");
 		table.getRowFormatter().addStyleName(0, "header");
 		table.setHTML(0, 0, "Numero cuenta");
 		table.setHTML(0, 1, "Plan");
@@ -47,13 +54,52 @@ public class EstadoEquipoPopUp extends NextelDialog {
 		table.setHTML(0, 6, "Numero contrato");
 		table.setHTML(0, 7, "Motivo");
 		table.setHTML(0, 8, "Numero solicitud");
-		for (int col = 0; col < widths.length; col++) {
-			for (int row = 1; row < 3; row++) {
-				table.setHTML(row, col, "Dato");
-			}
-		}
 		contTable.add(table);
 		this.add(contTable);
 	}
-
+	
+	
+//	private void initTable(FlexTable table) {
+//		table = new FlexTable();
+//		SimplePanel contTable = new SimplePanel();
+//		contTable.addStyleName("contPanel");
+//		String[] widths = { "164px", "164px", "149px", "149px", "149px", "149px", "149px", "149px", "149px", };
+//		String[] titles = { "Numero cuenta", "Plan", "Modelo", "Tipo telefonia", "Forma contratacion", "Fecha", "Numero contrato", "Motivo", "Numero solicitud"};
+//		for (int col = 0; col < widths.length; col++) {
+//			table.setHTML(0, col, titles[col]);
+//			table.getColumnFormatter().setWidth(col, widths[col]);
+//		}
+//		//table.getColumnFormatter().addStyleName(0, "alignCenter");
+//		//table.getColumnFormatter().addStyleName(1, "alignCenter");
+//		//table.getColumnFormatter().addStyleName(2, "alignCenter");
+//		table.setCellPadding(0);
+//		table.setCellSpacing(0);
+//		table.addStyleName("gwt-BuscarCuentaResultTable estadoTable");
+//		table.getRowFormatter().addStyleName(0, "header");
+//		contTable.add(table);
+//		this.add(contTable);
+//	}
+	
+	public void setEstado(List<DatosEquipoPorEstadoDto> listDatosEquiposPorEstado) {
+		refreshEstadoTable(listDatosEquiposPorEstado); 
+	}
+	
+	private void refreshEstadoTable (List<DatosEquipoPorEstadoDto> listDatosEquiposPorEstado) {
+		while (table.getRowCount() > 1) {
+			table.removeRow(1);
+		}
+		int row = 1;
+		for (DatosEquipoPorEstadoDto datoEquipoPorEstadoDto : listDatosEquiposPorEstado) {
+			table.setHTML(row, 0, datoEquipoPorEstadoDto.getNumeroCuenta());
+			table.setHTML(row, 1, datoEquipoPorEstadoDto.getPlan());
+			table.setHTML(row, 2, datoEquipoPorEstadoDto.getModelo());
+			table.setHTML(row, 3, datoEquipoPorEstadoDto.getTipoTelefonia());
+			table.setHTML(row, 4, datoEquipoPorEstadoDto.getFormaContratacion());
+			table.setHTML(row, 5, datoEquipoPorEstadoDto.getFecha());
+			table.setHTML(row, 6, datoEquipoPorEstadoDto.getNumeroContrato().toString());
+			table.setHTML(row, 7, datoEquipoPorEstadoDto.getMotivo());
+			table.setHTML(row, 8, datoEquipoPorEstadoDto.getNumeroSolicitudServicio());
+			row++;
+		}
+	}
 }
