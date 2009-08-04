@@ -1,14 +1,23 @@
 package ar.com.nextel.sfa.client.infocom;
 
-import ar.com.nextel.sfa.client.image.IconFactory;
+import java.util.List;
 
+import ar.com.nextel.sfa.client.InfocomRpcService;
+import ar.com.nextel.sfa.client.dto.DatosEquipoPorEstadoDto;
+import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.widget.NextelDialog;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Widget;
 
 public class EstadoTerminales extends Composite {
 
 	private Grid panel;
+
 
 	public EstadoTerminales() {
 		this(" ", " ", " ");
@@ -20,9 +29,27 @@ public class EstadoTerminales extends Composite {
 
 	public EstadoTerminales(String activas, String suspendidas, String desactivadas) {
 		panel = new Grid(1, 6);
-		HTML verde = IconFactory.ledVerde();
+		HTML verde = IconFactory.ledVerde();		
+		verde.addClickListener(new ClickListener() {
+			public void onClick (Widget arg0) {
+				getInformacionEquipos("6.356172", "a");
+			}
+		});
+		
 		HTML amarillo = IconFactory.ledAmarillo();
+		amarillo.addClickListener(new ClickListener() {
+			public void onClick (Widget arg0) {
+				getInformacionEquipos("6.356172", "s");
+			}
+		});
+		
 		HTML rojo = IconFactory.ledRojo();
+		rojo.addClickListener(new ClickListener() {
+			public void onClick (Widget arg0) {
+				getInformacionEquipos("6.356172", "d");
+			}
+		});
+		
 		verde.addStyleName("ml5");
 		amarillo.addStyleName("ml5");
 		rojo.addStyleName("ml5");
@@ -37,6 +64,18 @@ public class EstadoTerminales extends Composite {
 		panel.addStyleName("m0p0");
 		initWidget(panel);
 	}
+	
+	private void getInformacionEquipos(String numeroCuenta, String estado) {
+		InfocomRpcService.Util.getInstance().getInformacionEquipos(numeroCuenta, estado, new DefaultWaitCallback<List<DatosEquipoPorEstadoDto>>() {
+			public void success(List<DatosEquipoPorEstadoDto>  result) {
+				if (result != null) {
+					EstadoEquipoPopUp estadoEquipoPopUp = new EstadoEquipoPopUp("Cuentas - Información de Equipos", result);
+					estadoEquipoPopUp.setEstado(result);
+					estadoEquipoPopUp.showAndCenter();
+				}
+			}
+		});
+	}	
 
 	public void setEstado(int activas, int suspendidas, int desactivadas) {
 		panel.setText(0, 1, "" + activas);
