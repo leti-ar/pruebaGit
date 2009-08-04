@@ -4,28 +4,37 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class EquiposServiciosDto implements IsSerializable {
 	
-    public String descripcion = "descripcion";    
-    public String aVencer = "aVencer";    
-    public String vencida = "vencida";
-	
+    private Float deudaEquiposAVencer;    
+    private Float deudaEquiposVencida;    
+    private Float deudaServiciosAVencer;    
+    private Float deudaServiciosVencida;
     
-    public String getDescripcion() {
-		return descripcion;
+    
+	public Float getDeudaEquiposAVencer() {
+		return deudaEquiposAVencer;
 	}
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
+	public void setDeudaEquiposAVencer(Float deudaEquiposAVencer) {
+		this.deudaEquiposAVencer = deudaEquiposAVencer;
 	}
-	public String getAVencer() {
-		return aVencer;
+	public Float getDeudaEquiposVencida() {
+		return deudaEquiposVencida;
 	}
-	public void setAVencer(String vencer) {
-		aVencer = vencer;
+	public void setDeudaEquiposVencida(Float deudaEquiposVencida) {
+		this.deudaEquiposVencida = deudaEquiposVencida;
 	}
-	public String getVencida() {
-		return vencida;
+	public Float getDeudaServiciosAVencer() {
+		return deudaServiciosAVencer;
 	}
-	public void setVencida(String vencida) {
-		this.vencida = vencida;
-	}   
+	public void setDeudaServiciosAVencer(Float deudaServiciosAVencer) {
+		this.deudaServiciosAVencer = deudaServiciosAVencer;
+	}
+	public Float getDeudaServiciosVencida() {
+		return deudaServiciosVencida;
+	}
+	public void setDeudaServiciosVencida(Float deudaServiciosVencida) {
+		this.deudaServiciosVencida = deudaServiciosVencida;
+	}
+    
+    
     
 }
