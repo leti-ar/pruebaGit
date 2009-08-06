@@ -1,8 +1,12 @@
 package ar.com.nextel.sfa.client.ss;
 
+import ar.com.nextel.sfa.client.InfocomRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.ScoringDto;
+import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
 import com.google.gwt.i18n.client.NumberFormat;
@@ -10,10 +14,10 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -24,6 +28,8 @@ public class VariosSSUI extends Composite {
 	private EditarSSUIData editarSSUIData;
 	private Grid resumenSS;
 	private NumberFormat currencyFormat = NumberFormat.getCurrencyFormat();
+	private InlineHTML scoring;
+	private HorizontalPanel scoringWrapper;
 
 	public VariosSSUI(EditarSSUIController controller) {
 		mainpanel = new FlowPanel();
@@ -132,20 +138,34 @@ public class VariosSSUI extends Composite {
 	}
 
 	private Widget getScoring() {
-		TitledPanel scoringPanel = new TitledPanel(Sfa.constant().consultarScoringTitle());
-		final SimpleLink consultarVeraz = new SimpleLink("Consultar Veraz");
-		consultarVeraz.addStyleName("ml5");
-		final PopupPanel popupCrearSS = new PopupPanel(true);
-		popupCrearSS.addStyleName("dropUpStyle");
-		popupCrearSS.setWidget(new HTML("No implementado"));
-		consultarVeraz.addClickListener(new ClickListener() {
-			public void onClick(Widget arg0) {
-				popupCrearSS.setPopupPosition(consultarVeraz.getAbsoluteLeft(), consultarVeraz
-						.getAbsoluteTop());
-				popupCrearSS.show();
+		TitledPanel scoringPanel = new TitledPanel(IconFactory.scoring() + Sfa.constant().consultarScoringTitle());
+		final SimpleLink consultarScoring = new SimpleLink("Consultar Scoring");
+		consultarScoring.addStyleName("ml5");
+		scoring = new InlineHTML();
+		scoring.addStyleName("ml5");
+		scoringWrapper = new HorizontalPanel();
+		scoringWrapper.setWidth("100%");
+		//final PopupPanel popupCrearSS = new PopupPanel(true);
+		//popupCrearSS.addStyleName("dropUpStyle");
+		//popupCrearSS.setWidget(new HTML("No implementado"));
+		consultarScoring.addClickListener(new ClickListener() {
+			public void onClick(Widget arg0) {				
+				//Sacar el hardcode
+				//popupCrearSS.setPopupPosition(consultarScoring.getAbsoluteLeft(), consultarScoring.getAbsoluteTop());
+				InfocomRpcService.Util.getInstance().consultarScoring("6.251678", new DefaultWaitCallback<ScoringDto>() {
+					public void success(ScoringDto result) {
+						if (result != null) {					
+							scoring.setText(result.getMensajeAdicional());
+							//popupCrearSS.setWidget(scoringLabel);
+							//popupCrearSS.show();
+						}
+					}
+				});			
 			}
 		});
-		scoringPanel.add(consultarVeraz);
+		scoringWrapper.add(scoring);
+		scoringPanel.add(scoringWrapper);
+		scoringPanel.add(consultarScoring);
 		return scoringPanel;
 	}
 
