@@ -20,6 +20,7 @@ import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -45,6 +46,7 @@ public class InfocomUIData extends UIData {
 	private HorizontalPanel cicloPanel;
 	private HorizontalPanel flotaPanel;
 	private HorizontalPanel limiteCreditoPanel;
+	private HorizontalPanel responsablePanel;
 	
 	private InlineHTML monto;
 	private Label estadoLabel;
@@ -63,6 +65,8 @@ public class InfocomUIData extends UIData {
 	private HorizontalPanel estadoPanel;
 	private HorizontalPanel vencimientoPanel;
 	
+	private InfocomUI infocomUI;
+	
 	private final NumberFormat numberFormat = NumberFormat.getCurrencyFormat();
 	private final DateTimeFormat dateFormat = DateTimeFormat.getMediumDateFormat();
 
@@ -70,6 +74,7 @@ public class InfocomUIData extends UIData {
 		montoPanel = new HorizontalPanel();
 		estadoPanel = new HorizontalPanel();
 		vencimientoPanel = new HorizontalPanel();
+		responsablePanel = new HorizontalPanel();
 		cicloPanel = new HorizontalPanel();
 		cicloPanel.setWidth("200px");
 		flotaPanel = new HorizontalPanel();
@@ -86,7 +91,18 @@ public class InfocomUIData extends UIData {
 		limCreditoLabel = new Label("Lím. Crédito: ");
 		limCredito = new InlineHTML();
 		responsablePago = new ListBox("Todos");
-		responsablePago.setWidth("150%");
+		responsablePago.setWidth("120px");
+		
+//		String valorCombo = responsablePago.getSelectedItemText();
+//		int valorCombodos = responsablePago.getSelectedIndex();
+//		
+//		responsablePago.addChangeListener(new ChangeListener() {
+//			public void onChange (Widget arg0) {
+//				//infocomUI.reload(responsablePago.getSelectedItemText());
+//				int valorComboLuego = responsablePago.getSelectedIndex();
+//			}
+//		});		
+		
 		montoLabel = new Label("Monto: ");
 		monto = new InlineHTML();
 		montoPanel.add(montoLabel);
@@ -101,6 +117,8 @@ public class InfocomUIData extends UIData {
 		vencimientoPanel.add(vencimientoLabel);
 		vencimientoPanel.add(vencimiento);
 		numResponsable = new Label("N° Responsable Pago:");
+		responsablePanel.add(numResponsable);
+		responsablePanel.add(responsablePago);
 		scoring = new SimpleLink("Scoring");
 		scoring.addStyleName("infocomSimpleLink");
 		scoring.addClickListener(new ClickListener() {
@@ -184,7 +202,7 @@ public class InfocomUIData extends UIData {
 	/**Inicializa la tabla de Cuenta Corriente*/
 	public FlexTable initCCTable() {
 		cuentaCorrienteTable = new FlexTable();
-		String[] widths = { "150px", "80px", "100px", "130px","140px", "110px", "110px" };
+		String[] widths = { "150px", "80px", "110px", "150px","160px", "140px", "140px" };
 		String[] titles = { Sfa.constant().numeroCuenta(), Sfa.constant().clase(), Sfa.constant().venc(), Sfa.constant().descripcion(), 
 				Sfa.constant().numeroComprobante(), Sfa.constant().importe(), Sfa.constant().saldo() };
 		for (int col = 0; col < widths.length; col++) {
@@ -204,14 +222,15 @@ public class InfocomUIData extends UIData {
 	public FlexTable initDescripcionTable() {
 		descripcionTable = new FlexTable();
 		this.descripcionTable = descripcionTable;
-		String[] widths = { "639px", "149px", "149px" };
+		String[] widths = { "640px", "149px", "149px" };
 		String[] titles = { "Descripcion", "A vencer", "Vencida" };
 		for (int col = 0; col < widths.length; col++) {
 			descripcionTable.setHTML(0, col, titles[col]);
 			descripcionTable.getColumnFormatter().setWidth(col, widths[col]);
 			descripcionTable.getColumnFormatter().addStyleName(col, "alignCenter");
 		}
-		descripcionTable.setHTML(1, 0, "EQUIPOS");
+		
+		descripcionTable.setHTML(1, 0, "EQUIPOS");		
 		descripcionTable.setHTML(2, 0, "SERVICIOS");
 		descripcionTable.setHTML(3, 0, "Total");
 		descripcionTable.setCellPadding(0);
@@ -500,9 +519,16 @@ public class InfocomUIData extends UIData {
 		return flotaPanel;
 	}
 
-
 	public void setFlotaPanel(HorizontalPanel flotaPanel) {
 		this.flotaPanel = flotaPanel;
-	}		
+	}
+
+	public HorizontalPanel getResponsablePanel() {
+		return responsablePanel;
+	}
+
+	public void setResponsablePanel(HorizontalPanel responsablePanel) {
+		this.responsablePanel = responsablePanel;
+	}	
 	
 }
