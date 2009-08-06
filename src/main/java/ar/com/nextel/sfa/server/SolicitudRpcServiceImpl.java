@@ -459,13 +459,13 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar);
 			//agregar metodo changelog		
 			
-			//if (cerrar == true && sessionContextLoader.getVendedor().getTipoVendedor().getCodigoVantive().equals(KnownInstanceIdentifier.TIPO_VENDEDOR_EECC.getKey())){
-			try {
-				generarChangeLog(solicitudServicioDto.getId(), solicitudServicio.getVendedor().getId());
-			} catch (Exception e) {
-				e.printStackTrace();
+			if (cerrar == true && sessionContextLoader.getVendedor().getTipoVendedor().getCodigoVantive().equals(KnownInstanceIdentifier.TIPO_VENDEDOR_EECC.getKey())){
+				try {
+					generarChangeLog(solicitudServicioDto.getId(), solicitudServicio.getVendedor().getId());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-			//}
 		result.setError(response.getMessages().hasErrors());
 			result.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
 		} catch (Exception e) {
