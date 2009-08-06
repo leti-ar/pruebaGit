@@ -20,6 +20,7 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -33,6 +34,7 @@ public class DomicilioUI extends NextelDialog {
 	private Grid gridDown;
 	private Grid gridObs;
 	private Grid gridUser;
+	private HorizontalPanel validadoPorPanel;
 	private Command comandoAceptar;
 	private FormButtonsBar footerBar;
 	private SimpleLink linkCerrar;
@@ -118,6 +120,12 @@ public class DomicilioUI extends NextelDialog {
 		gridObs = new Grid(2, 3);
 		gridUser = new Grid(1, 5);
 		setWidth("635px");
+		validadoPorPanel = new HorizontalPanel();
+		validadoPorPanel.add(domiciliosData.getValidado());
+		validadoPorPanel.add(labelValidado1);	
+		validadoPorPanel.add(labelValidado2);
+		validadoPorPanel.addStyleName("ml15");
+		validadoPorPanel.setWidth("30%");
 
 		// Campos Obligatorios:
 		calleLabel.addStyleName("req");
@@ -174,9 +182,11 @@ public class DomicilioUI extends NextelDialog {
 		gridDown.setWidget(3, 2, domiciliosData.getEntrega());
 		gridDown.setWidget(3, 3, labelFacturacion);
 		gridDown.setWidget(3, 4, domiciliosData.getFacturacion());
-		gridDown.setWidget(4, 1, labelValidado1);
-		gridDown.setWidget(4, 2, labelValidado2);
-		gridDown.setWidget(4, 3, domiciliosData.getValidado());
+//		gridDown.setWidget(4, 1, domiciliosData.getValidado());
+//		gridDown.setWidget(4, 2, labelValidado1);
+//		gridDown.setWidget(4, 3, labelValidado2);
+//		gridDown.setWidget(4, 1, validadoPorPanel);
+		
 		gridObs.addStyleName("layout");
 		gridObs.setText(0, 1, Sfa.constant().obs_domicilio());
 		gridObs.setWidget(1, 1, domiciliosData.getObservaciones());
@@ -189,6 +199,7 @@ public class DomicilioUI extends NextelDialog {
 		add(gridUp);
 		add(gridMed);
 		add(gridDown);
+		add(validadoPorPanel);
 		add(gridObs);
 		add(gridUser);
 

@@ -20,6 +20,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -58,6 +59,9 @@ public class DomiciliosUIData extends UIData {
 	CheckBox enCarga = new CheckBox();
 	Label nombreUsuarioUltimaModificacion = new Label();
 	Label fechaUltimaModificacion = new Label();
+	
+	Label labelValidado1 = new Label(Sfa.constant().validado1());
+	Label labelValidado2 = new Label(Sfa.constant().validado2());
 
 	public DomiciliosUIData() {
 		configFields();
@@ -338,4 +342,5 @@ public class DomiciliosUIData extends UIData {
 	public ListBox getProvincia() {
 		return provincia;
 	}
+
 }
