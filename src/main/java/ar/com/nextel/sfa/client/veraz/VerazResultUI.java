@@ -59,27 +59,28 @@ public class VerazResultUI extends FlowPanel {
 	
 	private void loadTable() {
 		if (verazResultTable != null) {
-			verazResultTable.unsinkEvents(Event.getEventsSunk(verazResultTable
-					.getElement()));
+			verazResultTable.unsinkEvents(Event.getEventsSunk(verazResultTable.getElement()));
 			verazResultTable.removeFromParent();
 		}
 		verazResultTable = new FlexTable();
 		verazFilterUI = new VerazFilterUI();
 		verazResultTable.getFlexCellFormatter().setColSpan(1, 1, 4);
 		initTable(verazResultTable);
-		estado = new Label(verazResponseDto.getEstado());
-		verazResultTable.setHTML(0, 1, verazResponseDto.getMensaje());
+		estado = new Label(verazResponseDto.getEstado());		
 
 		/** Pregunta por el estado para 
-		 * poner el icono que corresponda **/
+		 * poner el icono y mensaje que corresponda **/
 		
 		if ("ACEPTAR".equals(verazResponseDto.getEstado())) {
 			estado.setStyleName("resultadoVerazAceptar");
+			verazResultTable.setHTML(0, 1, "La respuesta de Veraz ha sido: ACEPTAR. Puede continuar con la operación.");
 		}else if ("REVISAR".equals(verazResponseDto.getEstado())) {
 			estado.setStyleName("resultadoVerazRevisar");
+			verazResultTable.setHTML(0, 1, "La respuesta de Veraz ha sido A REVISAR. Documento inexistente");
 		}
 		else {
 			estado.setStyleName("resultadoVerazRechazar");
+			verazResultTable.setHTML(0, 1, "La respuesta de Veraz ha sido: RECHAZAR.");
 		}
 		
 		verazResultTable.setWidget(0, 0, estado);
