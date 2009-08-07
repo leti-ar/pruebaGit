@@ -6,15 +6,12 @@ import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
-import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DivisionDto;
-import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
-import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.enums.TipoContribuyenteEnum;
 import ar.com.nextel.sfa.client.enums.TipoCuentaEnum;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
@@ -28,79 +25,47 @@ import com.google.gwt.user.client.History;
 public class EditarCuentaUI extends ApplicationUI {
 
 	private final CuentaEdicionTabPanel cuentaTab = CuentaEdicionTabPanel.getInstance();
-	public static Long idOpp;
-	public static boolean esEdicionCuenta =  true;
 	
+	public static boolean esEdicionCuenta =  true;
 	
 	public EditarCuentaUI() {
 		super();
 	}
 
 	public boolean load() {
-		resetEditor();
 		esEdicionCuenta = true;
+		resetEditor();
 		//viene de popup "Agregar Cuenta"
 		if (HistoryUtils.getParam("nroDoc")!=null) {
-			TipoDocumentoDto tipoDoc = new TipoDocumentoDto(Long.parseLong(HistoryUtils.getParam("tipoDoc")),null);
-			DocumentoDto docDto = new DocumentoDto(HistoryUtils.getParam("nroDoc"),tipoDoc);
-			CrearCuentaDto crearCuentaDto = new CrearCuentaDto(docDto,BuscadorDocumentoPopup.fromMenu?null:this.idOpp);
-			CuentaRpcService.Util.getInstance().reservaCreacionCuenta(crearCuentaDto,new DefaultWaitCallback<GranCuentaDto>() {
-				public void success(GranCuentaDto cuentaDto) {
-					cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(cuentaDto);
-					completarVisualizacionDatos(cuentaDto);
-				}
-			});
+			cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.granCuentaDto);
+			completarVisualizacionDatos(CuentaClientService.granCuentaDto);
 		//viene de popup "Agregar Division"			
 		} else if (HistoryUtils.getParam("div")!=null) {
-			Long id_cuentaPadre = Long.parseLong(HistoryUtils.getParam("cuenta_id"));				
-			CuentaRpcService.Util.getInstance().crearDivision(id_cuentaPadre,new DefaultWaitCallback<CuentaDto>() {
-				public void success(CuentaDto cuentaDto) {
-					cuentaTab.getCuentaDatosForm().setAtributosCamposAlAgregarDivision(cuentaDto);
-					completarVisualizacionDatos(cuentaDto);
-				}
-			});		
+			cuentaTab.getCuentaDatosForm().setAtributosCamposAlAgregarDivision(CuentaClientService.cuentaDto);
+			completarVisualizacionDatos(CuentaClientService.cuentaDto);
 		//viene de popup "Agregar Suscriptor"			
 		} else if (HistoryUtils.getParam("sus")!=null) {
-			Long id_cuentaPadre = Long.parseLong(HistoryUtils.getParam("cuenta_id"));				
-			CuentaRpcService.Util.getInstance().crearSuscriptor(id_cuentaPadre,new DefaultWaitCallback<CuentaDto>() {
-				public void success(CuentaDto cuentaDto) {
-					cuentaTab.getCuentaDatosForm().setAtributosCamposAlAgregarSuscriptor(cuentaDto);
-					completarVisualizacionDatos(cuentaDto);
-				}
-			});
+			cuentaTab.getCuentaDatosForm().setAtributosCamposAlAgregarSuscriptor(CuentaClientService.cuentaDto);
+			completarVisualizacionDatos(CuentaClientService.cuentaDto);
 		//viene de busqueda OPP			
 		} else if (HistoryUtils.getParam("opp")!=null) {
-			idOpp = new Long(HistoryUtils.getParam("opp"));
-			
-			CuentaRpcService.Util.getInstance().getOportunidadNegocio(idOpp,new DefaultWaitCallback<OportunidadNegocioDto>() {
-				public void success(OportunidadNegocioDto oportunidadDto) {
-					esEdicionCuenta = false;
-					cuentaTab.setCuenta2editDto(oportunidadDto.getCuentaOrigen());
-					cuentaTab.setPriorityFlag(oportunidadDto.getPrioridad().getId());
-				    cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusquedaFromOpp(oportunidadDto.getCuentaOrigen());
-					cuentaTab.getCuentaDatosForm().ponerDatosOportunidadEnFormulario(oportunidadDto);
-					cuentaTab.setNumeroCtaPot(oportunidadDto.getNumero());
-					completarVisualizacionDatos(oportunidadDto.getCuentaOrigen());
-				}
-			});			
+			esEdicionCuenta = false;
+			cuentaTab.setCuenta2editDto(CuentaClientService.oportunidadDto.getCuentaOrigen());
+			cuentaTab.setPriorityFlag(CuentaClientService.oportunidadDto.getPrioridad().getId());
+		    cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusquedaFromOpp(CuentaClientService.oportunidadDto.getCuentaOrigen());
+			cuentaTab.getCuentaDatosForm().ponerDatosOportunidadEnFormulario(CuentaClientService.oportunidadDto);
+			cuentaTab.setNumeroCtaPot(CuentaClientService.oportunidadDto.getNumero());
+			completarVisualizacionDatos(CuentaClientService.oportunidadDto.getCuentaOrigen());
 		//viene de resultado de busqueda			
-		} else {  
-			Long cuentaID = Long.parseLong(HistoryUtils.getParam("cuenta_id"));
-			String cod_vantive = HistoryUtils.getParam("cod_vantive") !=null?HistoryUtils.getParam("cod_vantive"):null;
-			CuentaRpcService.Util.getInstance().selectCuenta(cuentaID, cod_vantive,new DefaultWaitCallback<CuentaDto>() {
-				public void success(CuentaDto cuentaDto) {
-					if (puedenMostrarseDatos(cuentaDto)) {
-						if(RegularExpressionConstants.isVancuc(cuentaDto.getCodigoVantive())) {
-						   cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(cuentaDto);
-						} else {
-						   cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusqueda(cuentaDto);
-						}
-						completarVisualizacionDatos(cuentaDto);
-					}
-				}
-			});
+		} else if (HistoryUtils.getParam("cuenta_id")!=null) {			
+			if(RegularExpressionConstants.isVancuc(CuentaClientService.cuentaDto.getCodigoVantive())) {
+			   cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.cuentaDto);
+			} else {
+			   cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusqueda(CuentaClientService.cuentaDto);
+			}
+			completarVisualizacionDatos(CuentaClientService.cuentaDto);
 		}
-		return true;
+		return false;
 	}
 
 	/**
@@ -133,7 +98,7 @@ public class EditarCuentaUI extends ApplicationUI {
 	 * @param cuentaDto
 	 * @return
 	 */
-	private boolean puedenMostrarseDatos(CuentaDto cuentaDto) {
+	private boolean puedenMostrarseDatos3(CuentaDto cuentaDto) {
 		boolean result = true;
 		if (HistoryUtils.getParam("por_dni")!=null && HistoryUtils.getParam("por_dni").equals("0")) { //se filtro busqueda por documento/dni
 			//usuario logueado no es el mismo que el vendedor de la cuenta
@@ -213,4 +178,5 @@ public class EditarCuentaUI extends ApplicationUI {
 	public boolean unload(String token) {
 		return true;
 	}
+	
 }

@@ -7,7 +7,7 @@ import ar.com.nextel.sfa.client.OportunidadNegocioRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.cuenta.AgregarCuentaUI;
 import ar.com.nextel.sfa.client.cuenta.BuscadorDocumentoPopup;
-import ar.com.nextel.sfa.client.cuenta.EditarCuentaUI;
+import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.OportunidadDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioSearchResultDto;
@@ -19,12 +19,14 @@ import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
 import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.widget.table.RowListener;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -37,6 +39,7 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 	private SimplePanel resultTableWrapper;
 	private TablePageBar tablePageBar;
 	private List<OportunidadNegocioSearchResultDto> oportunidades;
+	private List<OportunidadNegocioSearchResultDto> oportunidadesActuales;
 	private int offset;
 	private Long totalRegistrosBusqueda;
 	private DateTimeFormat FormattedDate = DateTimeFormat.getMediumDateFormat();
@@ -47,6 +50,7 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 	private PopupPanel popupAgregarCuenta;
 	private Hyperlink crearEquipos;
 	private Hyperlink crearCDW;
+	private int rowIndexSelected;
 
 	// private Hyperlink crearMDS;
 
@@ -69,7 +73,7 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 		tablePageBar.setCantResultadosPorPagina(cantResultadosPorPagina);
 		tablePageBar.setBeforeClickCommand(new Command() {
 			public void execute() {
-				List oportunidadesActuales = new ArrayList<OportunidadNegocioSearchResultDto>();
+				oportunidadesActuales = new ArrayList<OportunidadNegocioSearchResultDto>();
 				if (oportunidades.size() >= cantResultadosPorPagina) {
 					for (int i = (tablePageBar.getCantRegistrosParcI() - 1); i < tablePageBar
 							.getCantRegistrosParcF(); i++) {
@@ -86,6 +90,16 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 		});
 
 		resultTable = new NextelTable();
+		resultTable.addRowListener(new RowListener() {
+			public void onRowClick(Widget sender, int row) {
+			}
+			public void onRowEnter(Widget sender, int row) {
+				rowIndexSelected = row -1;
+			}
+			public void onRowLeave(Widget sender, int row) {
+			}
+		});
+		
 		numResultadosLabel.addStyleName("numeroResultadosLabel");
 		resultTableWrapper.add(resultTable);
 		add(numResultadosLabel);
@@ -154,26 +168,35 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 			resultTable.removeRow(1);
 		}
 		initTable(resultTable);
-		int row = 1;
+		int rowIndex = 1;
 		for (OportunidadNegocioSearchResultDto oportunidad : oportunidadesActuales) {
-			// resultTable.setWidget(row, 0, IconFactory.lapiz());
-			resultTable.setWidget(row, 0, IconFactory.lapizAnchor(UILoader.EDITAR_CUENTA + "?opp="
-					+ oportunidad.getIdOportunidadNegocio()));
-			resultTable.setHTML(row, 1, oportunidad.getRazonSocial());
-			resultTable.setHTML(row, 2, oportunidad.getNombre());
-			resultTable.setHTML(row, 3, oportunidad.getApellido());
-			resultTable.setHTML(row, 4, oportunidad.getTelefonoPrincipal());
-			resultTable.setHTML(row, 5, oportunidad.getNroDocumento());
-			resultTable.setHTML(row, 6, oportunidad.getNroCuenta());
-			resultTable.setHTML(row, 7, FormattedDate.format(oportunidad.getFechaAsignacion()));
-			resultTable.setHTML(row, 8, oportunidad.getEstadoOportunidad().getDescripcion());
-			row++;
+            HTML iconLapiz = IconFactory.lapiz();
+            iconLapiz.addClickListener(new ClickListener() {
+            	public void onClick(Widget arg0) {
+            		cargarDatosOportunidad();            		
+            	}
+            });
+            resultTable.setWidget(rowIndex, 0, iconLapiz);
+			resultTable.setHTML(rowIndex, 1, oportunidad.getRazonSocial());
+			resultTable.setHTML(rowIndex, 2, oportunidad.getNombre());
+			resultTable.setHTML(rowIndex, 3, oportunidad.getApellido());
+			resultTable.setHTML(rowIndex, 4, oportunidad.getTelefonoPrincipal());
+			resultTable.setHTML(rowIndex, 5, oportunidad.getNroDocumento());
+			resultTable.setHTML(rowIndex, 6, oportunidad.getNroCuenta());
+			resultTable.setHTML(rowIndex, 7, FormattedDate.format(oportunidad.getFechaAsignacion()));
+			resultTable.setHTML(rowIndex, 8, oportunidad.getEstadoOportunidad().getDescripcion());
+			rowIndex++;
 		}
 		numResultadosLabel.setText("Numero de Resultados: " + oportunidades.size());
 		setVisible(true);
 		// add(getFooter());
 	}
 
+	private void cargarDatosOportunidad() {
+		OportunidadNegocioSearchResultDto oportunidad = oportunidadesActuales.get(rowIndexSelected);
+		CuentaClientService.getOportunidadNegocio(oportunidad.getIdOportunidadNegocio());
+	}
+	
 	private void initTable(FlexTable table) {
 		String[] widths = { "24px", "200px", "120px", "120px", "120px", "120px", "120px", "120px", "120px", };
 		for (int col = 0; col < widths.length; col++) {
@@ -211,8 +234,8 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 						buscarOportunidadFilterUIData.getCrearSS().getAbsoluteLeft() - 10,
 						buscarOportunidadFilterUIData.getCrearSS().getAbsoluteTop() - 50);
 			} else if (sender == buscarOportunidadFilterUIData.getCrearCuenta()) {
-				EditarCuentaUI.idOpp = oportunidadSelected.getIdOportunidadNegocio();
 				AgregarCuentaUI.getInstance().load();
+				BuscadorDocumentoPopup.idOpp = oportunidadSelected.getIdOportunidadNegocio();
 				BuscadorDocumentoPopup.fromMenu = false;
 			} else if (sender == crearEquipos || sender == crearCDW) { // || sender == crearMDS
 				popupCrearSS.hide();

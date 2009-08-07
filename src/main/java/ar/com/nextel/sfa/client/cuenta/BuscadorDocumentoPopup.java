@@ -7,13 +7,11 @@ import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
-import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
-import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -34,8 +32,9 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 	private Label numeroDocLabel;
 	private Hyperlink aceptar = new Hyperlink(Sfa.constant().aceptar(),null);
 	private SimpleLink cerrar = new SimpleLink(Sfa.constant().cerrar(), "#", true);
-	public static boolean fromMenu;
-
+	public static Long idOpp;
+	public static boolean fromMenu = true;
+	
 	public BuscadorDocumentoPopup(String title) {
 		super(title);
         init();	
@@ -43,7 +42,7 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 		aceptar.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
 				if (validarNumero()) {
-					aceptar.setTargetHistoryToken(UILoader.EDITAR_CUENTA  + "?tipoDoc=" + tipoDocumento.getSelectedItemId()+"&nroDoc="+numeroDocTextBox.getText());
+					CuentaClientService.reservaCreacionCuenta(new Long(tipoDocumento.getSelectedItemId()), numeroDocTextBox.getText(), fromMenu?null:idOpp);
 					hide();
 					numeroDocTextBox.setText("");
 				}
@@ -53,7 +52,7 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 		cerrar.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
 				hide();
-				History.newItem("");
+				//History.newItem("");
 			}
 		});
 	

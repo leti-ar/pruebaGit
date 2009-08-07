@@ -116,6 +116,8 @@ public class FormUtils {
 			return false;
 		if (dato == null)
 			dato = "";
+		if (field==null && !dato.equals(""))
+			return true;
 		String fieldText = "";
 		if (field instanceof DatePicker) {
 			fieldText = ((DatePicker) field).getTextBox().getText();

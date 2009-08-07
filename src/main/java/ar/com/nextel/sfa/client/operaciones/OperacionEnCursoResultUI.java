@@ -8,7 +8,7 @@ import ar.com.nextel.sfa.client.OperacionesRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.cuenta.AgregarCuentaUI;
 import ar.com.nextel.sfa.client.cuenta.BuscadorDocumentoPopup;
-import ar.com.nextel.sfa.client.cuenta.EditarCuentaUI;
+import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaDto;
@@ -17,7 +17,6 @@ import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.ss.EditarSSUI;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
-import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
@@ -59,6 +58,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 	private static final int cantResultadosPorPagina = 5;
 	private String NumeroVtasPotNoConsultadas;
 	private OperacionEnCursoUIController controller;
+	private List<OperacionEnCursoDto> opEnCursoActuales;
 	
     private OperacionEnCursoSeleccionCuentaPopup seleccionCuentaPopup = OperacionEnCursoSeleccionCuentaPopup.getInstance(); 
 	
@@ -171,7 +171,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 
 	public void setOpCurso() {
 		tablePageBarOpCurso.setCantRegistrosTot(opEnCurso.size());
-		List<OperacionEnCursoDto> opEnCursoActuales = new ArrayList<OperacionEnCursoDto>();
+		opEnCursoActuales = new ArrayList<OperacionEnCursoDto>();
 		for (int i = (tablePageBarOpCurso.getCantRegistrosParcI() - 1); i < tablePageBarOpCurso
 				.getCantRegistrosParcF(); i++) {
 			opEnCursoActuales.add(opEnCurso.get(i));
@@ -204,28 +204,30 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		}
 		// initTableOpenCurso(resultTableOpEnCurso);
 		resultTableWrapperOpCurso.setWidget(resultTableOpEnCurso);
-		int row = 1;
+		int rowIndex = 1;
 		for (OperacionEnCursoDto opCursoDto : opEnCursoActuales) {
-			resultTableOpEnCurso.setWidget(row, 0, IconFactory.lapiz());
+			resultTableOpEnCurso.setWidget(rowIndex, 0, IconFactory.lapiz());
 			// if (opEnCurso.isPuedeVerInfocom()) {
-			//resultTableOpEnCurso.setWidget(row, 1, IconFactory.silvioSoldan());
-			resultTableOpEnCurso.setWidget(row, 1, IconFactory.silvioSoldanAnchor(
-					UILoader.EDITAR_CUENTA + "?cuenta_id=" + opCursoDto.getIdCuenta() + "&operEnCurso=true" ,
-					Sfa.constant().ALT_ABRIR_CUENTA_ASOC()));
+			resultTableOpEnCurso.setWidget(rowIndex, 1, IconFactory.silvioSoldan());
 			// }
 			if (true) {
-				resultTableOpEnCurso.setWidget(row, 2, IconFactory.cancel());
+				resultTableOpEnCurso.setWidget(rowIndex, 2, IconFactory.cancel());
 			}
-			resultTableOpEnCurso.setHTML(row, 3, opCursoDto.getNumeroCliente());
-			resultTableOpEnCurso.setHTML(row, 4, opCursoDto.getRazonSocial());
-			resultTableOpEnCurso.setHTML(row, 5, opCursoDto.getDescripcionGrupo());
-			row++;
+			resultTableOpEnCurso.setHTML(rowIndex, 3, opCursoDto.getNumeroCliente());
+			resultTableOpEnCurso.setHTML(rowIndex, 4, opCursoDto.getRazonSocial());
+			resultTableOpEnCurso.setHTML(rowIndex, 5, opCursoDto.getDescripcionGrupo());
+			rowIndex++;
 		}
 		numOperaciones.setText("N° Operaciones: " + opEnCurso.size());
 
 		setVisible(true);
 	}
 
+	private void cargarDatosCuenta(int rowSelected) {
+		OperacionEnCursoDto opEnCursoActual = opEnCursoActuales.get(rowSelected - 1);
+		CuentaClientService.cargarDatosCuenta(opEnCursoActual.getIdCuenta(), null);
+	}
+	
 	private void loadTableReservas(List<VentaPotencialVistaDto> vtaPotencialActuales) {
 		while (resultTableReservas.getRowCount() > 1) {
 			resultTableReservas.removeRow(1);
@@ -247,7 +249,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 								seleccionCuentaPopup.loadTable();
 								seleccionCuentaPopup.showAndCenter();
 							} else {
-								History.newItem(UILoader.EDITAR_CUENTA + "?cuenta_id=" + result.get(0).getId());
+								CuentaClientService.cargarDatosCuenta(result.get(0).getId(), null);
 							}
 						}
 					});
@@ -259,9 +261,9 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 			HTML iconAddProspect = IconFactory.prospect(Sfa.constant().ALT_ADD_PROSPECT());
 			iconAddProspect.addClickListener(new ClickListener() {
 				public void onClick(Widget arg0) {
-					EditarCuentaUI.idOpp = vtaPotencialDto.getIdCuentaPotencial();
 					AgregarCuentaUI.getInstance().load();
 					BuscadorDocumentoPopup.fromMenu = false;
+					BuscadorDocumentoPopup.idOpp = vtaPotencialDto.getIdCuentaPotencial();					
 					//seleccionCuentaPopup.showAndCenter();
 				}
 			});
@@ -333,6 +335,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 					ErrorDialog.getInstance().show(Sfa.constant().ERR_SIN_SS(), false);
 				}
 			} else if (cell == 1) {
+				cargarDatosCuenta(row);
 			} else if (cell == 2) {
 				cancelarOperacionEnCurso(op);
 			}

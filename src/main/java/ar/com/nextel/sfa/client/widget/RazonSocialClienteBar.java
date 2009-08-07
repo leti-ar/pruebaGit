@@ -4,23 +4,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.image.IconFactory;
-import ar.com.nextel.sfa.client.util.HistoryUtils;
 
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class RazonSocialClienteBar extends Composite {
 
 	private FlowPanel left;
 	private InlineHTML razonSocial;
 	private InlineHTML cliente;
-	private Hyperlink cuentaLink;
-	private String url = "" + UILoader.EDITAR_CUENTA;
+	private HTML cuentaLink;
+	private Map<String, String> params;
+	//private String url = "" + UILoader.EDITAR_CUENTA;
 
 	public RazonSocialClienteBar() {
 		left = new FlowPanel();
@@ -31,7 +34,13 @@ public class RazonSocialClienteBar extends Composite {
 		right.addStyleName("right");
 		left.add(new InlineLabel(Sfa.constant().razonSocial() + ": "));
 		left.add(razonSocial = new InlineHTML());
-		cuentaLink = IconFactory.silvioSoldanAnchor(url);
+		//cuentaLink = IconFactory.silvioSoldanAnchor(url);
+		cuentaLink = IconFactory.silvioSoldan();
+		cuentaLink.addClickListener(new ClickListener() {
+			public void onClick(Widget arg0) {
+				CuentaClientService.cargarDatosCuenta(Long.parseLong(params.get("cuenta_id")), null);
+			}
+		});
 		right.setWidget(0, 0, cuentaLink);
 		right.setWidget(0, 1, new InlineLabel(Sfa.constant().cliente() + ": "));
 		right.setWidget(0, 2, cliente = new InlineHTML());
@@ -47,13 +56,13 @@ public class RazonSocialClienteBar extends Composite {
 	}
 
 	public void setIdCuenta(Long idCuenta, Long idVantive) {
-		Map<String, String> params = new HashMap<String, String>();
+		params = new HashMap<String, String>();
 		if (idCuenta != null) {
 			params.put("cuenta_id", idCuenta.toString());
 		}
 		if (idVantive != null) {
 			params.put("idVantive", idVantive.toString());
 		}
-		cuentaLink.setTargetHistoryToken(UILoader.EDITAR_CUENTA + HistoryUtils.getParamsFromMap(params));
+		//cuentaLink.setTargetHistoryToken(UILoader.EDITAR_CUENTA + HistoryUtils.getParamsFromMap(params));
 	}
 }

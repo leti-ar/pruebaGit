@@ -3,15 +3,14 @@ package ar.com.nextel.sfa.client.operaciones;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
-import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
-import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -39,7 +38,7 @@ public class OperacionEnCursoSeleccionCuentaPopup  extends NextelDialog {
 					MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(), Sfa.constant().ERR_NO_CUENTA_SELECTED(),
 							MessageDialog.getCloseCommand());
 				} else {
-					History.newItem(UILoader.EDITAR_CUENTA + "?cuenta_id=" + idCuenta);
+					CuentaClientService.cargarDatosCuenta(idCuenta, null);
 					hide();
 				}	
 			}

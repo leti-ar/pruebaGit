@@ -12,15 +12,18 @@ import ar.com.nextel.sfa.client.enums.BuscoCuentaPorDniEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
-import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
+import ar.com.snoop.gwt.commons.client.widget.table.RowListener;
 
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Muestra la tabla con los resultados de la busqueda de cuentas. También maneja la logica de busqueda para
@@ -29,7 +32,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
  * @author jlgperez
  * 
  */
-public class BuscarCuentaResultUI extends FlowPanel {
+public class BuscarCuentaResultUI extends FlowPanel  {
 
 	static final String LUPA_TITLE = "Ver Infocom";
 	static final String BLOQUEADO_TITLE = "Bloqueado para el usuario actual";
@@ -47,7 +50,8 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	private Long totalRegistrosBusqueda;
 	private BuscarCuentaController controller;
 	private static final int cantResultadosPorPagina = 10;
-
+    private int indiceRowTabla;
+    
 	public BuscarCuentaResultUI(BuscarCuentaController controller) {
 
 		super();
@@ -87,6 +91,8 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		add(tablePageBar);
 		add(mostrandoCantRegistros);
 		setVisible(false);
+		
+		
 	}
 
 	public Long getTotalRegistrosBusqueda() {
@@ -163,10 +169,11 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		return cond;
 	}
 
+	
 	/**
 	 * Crea una fila en la tabla por cada cuenta del CuentaSearchResultDto
 	 */
-	private void loadTable(List<CuentaSearchResultDto> cuentasActuales) {
+	private void loadTable(final List<CuentaSearchResultDto> cuentasActuales) {
 		clearResultTable();
 		int totalABuscar;
 		if (cuentasActuales.size() < 10) {
@@ -174,14 +181,18 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		} else {
 			totalABuscar = 10;
 		}
-
+		indiceRowTabla = 0;
 		for (int i = 0; i < totalABuscar; i++) {
+			indiceRowTabla = i;
 			if (cuentasActuales.size() != 0) {
-				resultTable.setWidget(i + 1, 0, IconFactory.lapizAnchor(UILoader.EDITAR_CUENTA
-						+ "?cuenta_id=" + cuentasActuales.get(i).getId() + "&cod_vantive="
-						+ cuentas.get(i).getCodigoVantive() + "&por_dni=" + getCondicionBusquedaPorDni(),
-						LAPIZ_TITLE));
-
+                HTML iconLapiz = IconFactory.lapiz(LAPIZ_TITLE);
+                iconLapiz.addClickListener(new ClickListener() {
+                	public void onClick(Widget arg0) {
+                		cargarDatosCuenta();
+                	}
+                });
+                resultTable.setWidget(i + 1, 0, iconLapiz);
+                
 				if (cuentasActuales.get(i).isPuedeVerInfocom()) {
 					resultTable.setWidget(i + 1, 1, IconFactory.lupa(LUPA_TITLE));
 				}
@@ -193,7 +204,6 @@ public class BuscarCuentaResultUI extends FlowPanel {
 					// LockingState == 2: Es cuando esta lockeado por otro usuario.
 					resultTable.setWidget(i + 1, 2, IconFactory.lockedOther(OTRO_BLOQUEO_TITLE));
 				}
-
 				resultTable.setHTML(i + 1, 3, cuentasActuales.get(i).getNumero());
 				resultTable.setHTML(i + 1, 4, cuentasActuales.get(i).getRazonSocial());
 				resultTable.setHTML(i + 1, 5, cuentasActuales.get(i).getApellidoContacto());
@@ -204,6 +214,15 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		setVisible(true);
 	}
 
+	/**
+	 * 
+	 * @param rowIndice
+	 */
+	private void cargarDatosCuenta() {
+		CuentaSearchResultDto  cuentaSearch = cuentas.get(indiceRowTabla);
+		CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(), cuentaSearch.getCodigoVantive(), getCondicionBusquedaPorDni());
+	}
+	
 	/**
 	 * Limpia la tabla de resultados
 	 * 
@@ -216,6 +235,15 @@ public class BuscarCuentaResultUI extends FlowPanel {
 			}
 		} else {
 			resultTable = new NextelTable();
+			resultTable.addRowListener(new RowListener() {
+				public void onRowClick(Widget sender, int row) {
+				}
+				public void onRowEnter(Widget sender, int row) {
+					indiceRowTabla = row -1;
+				}
+				public void onRowLeave(Widget sender, int row) {
+				}
+			});
 			initTable(resultTable);
 			resultTable.ensureDebugId(DebugConstants.BUSQUEDA_CUENTAS_TABLE_RESULT);
 			resultTableWrapper.setWidget(resultTable);

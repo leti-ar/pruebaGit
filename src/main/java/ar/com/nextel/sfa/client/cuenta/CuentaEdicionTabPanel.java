@@ -282,20 +282,22 @@ public class CuentaEdicionTabPanel {
 		// });
 		agregarDivision.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				agregarDivision.setTargetHistoryToken(UILoader.EDITAR_CUENTA  + "?cuenta_id=" + cuenta2editDto.getId() + "&div="+"TRUE");
+				//agregarDivision.setTargetHistoryToken(UILoader.EDITAR_CUENTA  + "?cuenta_id=" + cuenta2editDto.getId() + "&div="+"TRUE");
 				popupAgregarCuenta.hide();
+				CuentaClientService.crearDivision(cuenta2editDto.getId());
 			}
 		});
 		agregarSuscriptor.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				agregarSuscriptor.setTargetHistoryToken(UILoader.EDITAR_CUENTA  + "?cuenta_id=" + cuenta2editDto.getId() + "&sus="+"TRUE");
+				//agregarSuscriptor.setTargetHistoryToken(UILoader.EDITAR_CUENTA  + "?cuenta_id=" + cuenta2editDto.getId() + "&sus="+"TRUE");
 				popupAgregarCuenta.hide();
+				CuentaClientService.crearSuscriptor(cuenta2editDto.getId());
 			}
 		});
 		crearCuenta.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				AgregarCuentaUI.getInstance().load();
-				BuscadorDocumentoPopup.fromMenu = false;
+				//BuscadorDocumentoPopup.fromMenu = false;
 			}
 		});
 		cancelar.addClickListener(new ClickListener() {
