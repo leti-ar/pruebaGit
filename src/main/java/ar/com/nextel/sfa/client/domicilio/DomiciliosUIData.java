@@ -200,7 +200,7 @@ public class DomiciliosUIData extends UIData {
 		if (w == cpa) {
 			if ((!cpa.getText().equals("")) && (cpa.getText().length() > 4)) {
 				// Aca llama al ServiceRpcCuenta
-				CuentaRpcService.Util.getInstance().getDomicilioPorCPA(cpa.getText(),
+				CuentaRpcService.Util.getInstance().getDomicilioPorCPA(cpa.getText().toUpperCase(),
 						new DefaultWaitCallback<NormalizarCPAResultDto>() {
 							public void success(NormalizarCPAResultDto domicilioNormalizado) {
 								codigoPostal.setText(domicilioNormalizado.getCodigoPostal());
