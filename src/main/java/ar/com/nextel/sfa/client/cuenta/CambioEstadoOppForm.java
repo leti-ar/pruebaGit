@@ -11,6 +11,7 @@ import ar.com.nextel.sfa.client.widget.RadioButtonWithValue;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -57,8 +58,8 @@ public class CambioEstadoOppForm extends NextelDialog {
 		radioOpsTable.setCellSpacing(5);
 		radioOpsTable.setWidth("100%");
 		radioOpsTable.setVisible(false);
-		cuentaData.getEstadoOpp().addClickListener(new ClickListener() {
-			public void onClick(Widget sender) {
+		cuentaData.getEstadoOpp().addChangeListener(new ChangeListener() {
+			public void onChange(Widget sender) {
 				showHideTablaMotivos();
 			}
 		});
@@ -136,8 +137,9 @@ public class CambioEstadoOppForm extends NextelDialog {
 	}
 	
 	public void showHideTablaMotivos() {
-		radioOpsTable.setVisible(cuentaData.getEstadoOpp().getSelectedItemId().equals(EstadoOportunidadEnum.NO_CERRADA.getId().toString()));
-		blankTable.setVisible(!cuentaData.getEstadoOpp().getSelectedItemId().equals(EstadoOportunidadEnum.NO_CERRADA.getId().toString()));
+		boolean show = cuentaData.getEstadoOpp().getSelectedItemId()!=null && cuentaData.getEstadoOpp().getSelectedItemId().equals(EstadoOportunidadEnum.NO_CERRADA.getId().toString());
+		radioOpsTable.setVisible(show);
+		blankTable.setVisible(!show);
 	}
 	
 	public void updateEstadoOportunidad() {

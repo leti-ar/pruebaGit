@@ -193,7 +193,7 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 	}
 
 	private void cargarDatosOportunidad() {
-		OportunidadNegocioSearchResultDto oportunidad = oportunidadesActuales.get(rowIndexSelected);
+		OportunidadNegocioSearchResultDto oportunidad = oportunidadesActuales!=null ? oportunidadesActuales.get(rowIndexSelected) : oportunidades.get(rowIndexSelected);
 		CuentaClientService.getOportunidadNegocio(oportunidad.getIdOportunidadNegocio());
 	}
 	

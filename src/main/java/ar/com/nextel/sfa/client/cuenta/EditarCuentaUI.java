@@ -2,14 +2,12 @@ package ar.com.nextel.sfa.client.cuenta;
 
 import java.util.List;
 
-import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
-import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.enums.TipoContribuyenteEnum;
@@ -17,7 +15,6 @@ import ar.com.nextel.sfa.client.enums.TipoCuentaEnum;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
-import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.History;

@@ -130,7 +130,7 @@ public class CuentaClientService {
 		});
 		DeferredCommand.addCommand(new IncrementalCommand() {
 			public boolean execute() {
-				if (cuentaDto == null && !error) 
+				if (oportunidadDto == null && !error) 
 					return true;
 				if (!error)
 					History.newItem(UILoader.EDITAR_CUENTA + "?opp=true");

@@ -1,9 +1,5 @@
 package ar.com.nextel.sfa.server;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;

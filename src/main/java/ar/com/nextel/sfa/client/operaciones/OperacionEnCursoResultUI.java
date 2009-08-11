@@ -224,7 +224,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 	}
 
 	private void cargarDatosCuenta(int rowSelected) {
-		OperacionEnCursoDto opEnCursoActual = opEnCursoActuales.get(rowSelected - 1);
+		OperacionEnCursoDto opEnCursoActual = opEnCursoActuales!=null?opEnCursoActuales.get(rowSelected - 1):opEnCurso.get(rowSelected - 1);
 		CuentaClientService.cargarDatosCuenta(opEnCursoActual.getIdCuenta(), null);
 	}
 	
