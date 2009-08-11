@@ -265,7 +265,8 @@ public class CuentaUIData extends UIData {
 		        	currentYear = result.getAnio();
 		        	llenarListaMotivoNoCierre(result.getMotivoNoCierre());
 		        	estadoOpp.addAllItems(result.getEstadoOportunidad());
-		        	//estadoOpp.removeItem(EstadoOportunidadEnum.CERRADA.getId().intValue());
+		        	estadoOpp.removeItem(EstadoOportunidadEnum.CERRADA.getId().intValue()-1);
+		        	
 				}
 			});
 		for(int i=1;i<13;i++) {
