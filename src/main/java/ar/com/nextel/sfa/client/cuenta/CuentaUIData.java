@@ -8,9 +8,11 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.MotivoNoCierreDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
+import ar.com.nextel.sfa.client.enums.EstadoOportunidadEnum;
 import ar.com.nextel.sfa.client.enums.TipoTarjetaEnum;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.widget.RadioButtonGroup;
+import ar.com.nextel.sfa.client.widget.RadioButtonWithValue;
 import ar.com.nextel.sfa.client.widget.TelefonoTextBox;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -20,6 +22,7 @@ import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
 
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
@@ -123,7 +126,7 @@ public class CuentaUIData extends UIData {
 	private TextBox oppNroOpp                 = new TextBox();
 	private Label oppEstadoPopupLabel         = new Label(Sfa.constant().estado());
 	private Label oppObservacionesLabel       = new Label(Sfa.constant().observaciones());
-	private TextBox oppObservaciones          = new TextBox();
+	private TextArea oppObservaciones         = new TextArea();
 	
 	private Label oppVencimiento              = new Label(" ");
 	private Label oppEstado                   = new Label(" ");
@@ -133,6 +136,7 @@ public class CuentaUIData extends UIData {
 	private TextBox oppTipoDocumento          = new TextBox();
 	private TextBox oppRubro                  = new TextBox();
 	private TextBox oppTerminalesEstimadas    = new TextBox();
+	private FlexTable radioOpsTable           = new FlexTable();
 	
 	private int currentYear;	
 	
@@ -261,6 +265,7 @@ public class CuentaUIData extends UIData {
 		        	currentYear = result.getAnio();
 		        	llenarListaMotivoNoCierre(result.getMotivoNoCierre());
 		        	estadoOpp.addAllItems(result.getEstadoOportunidad());
+		        	//estadoOpp.removeItem(EstadoOportunidadEnum.CERRADA.getId().intValue());
 				}
 			});
 		for(int i=1;i<13;i++) {
@@ -272,7 +277,38 @@ public class CuentaUIData extends UIData {
 		for (MotivoNoCierreDto motivo: motivos) {
 			radioGroupMotivos.addRadio(motivo.getDescripcion(),motivo.getId().toString());
 		}
+		armarRadioOption();
 	}
+	
+	private void armarRadioOption() {
+		int indexRow = 0;
+		int indexCol = 0;
+
+		FlexTable titleTable = new FlexTable();
+		titleTable.setWidth("100%");
+		titleTable.setWidget(0,0, new Label("Motivo:"));
+		titleTable.getFlexCellFormatter().setWidth(0, 0, "15%");
+
+		radioOpsTable.setWidget(indexRow++,0, titleTable);
+		
+		for (RadioButtonWithValue radioBtn : getRadioGroupMotivos().getRadios()) {
+			radioOpsTable.setWidget(indexRow,indexCol++, radioBtn);
+			if (indexCol==3) {
+				indexCol=0;
+				indexRow++;
+			}
+		}
+		
+		FlexTable obsTable = new FlexTable();
+		obsTable.setWidth("100%");
+		obsTable.setWidget(0,0, getOppObservacionesLabel());
+		obsTable.setWidget(0,1, getOppObservaciones());
+		obsTable.getFlexCellFormatter().setWidth(0, 0, "15%");
+		obsTable.getFlexCellFormatter().setWidth(0, 1, "85%");
+		radioOpsTable.setWidget(++indexRow,0, obsTable);
+		radioOpsTable.getFlexCellFormatter().setColSpan(indexRow, 0, 3);
+	}
+
 	
 	private void exportarNombreApellidoARazonSocial() {
 		nombre.setText(nombre.getText().trim().toUpperCase());
@@ -288,6 +324,9 @@ public class CuentaUIData extends UIData {
 		oppCompetenciaProv.addStyleName("fontNormalGris");
 		oppCompetenciaEquipo.addStyleName("fontNormalGris");
 		oppVisitas.addStyleName("fontNormalGris");
+		observaciones.addStyleName("obsTextAreaCuentaData");
+		oppObservaciones.addStyleName("obsTextAreaCuentaData");
+
 		
         //nombres
 		nombre.setName(Sfa.constant().nombre());
@@ -344,9 +383,9 @@ public class CuentaUIData extends UIData {
 		razonSocial.setWidth("90%");
 		cbu.setWidth("90%");
 		nombreDivision.setWidth("90%");
-		observaciones.addStyleName("textAreaCuentaData");
 		usuario.setEnabled(false);
 		fechaCreacion.setEnabled(false);
+		oppNroOpp.setEnabled(false);
 		mesVto.setWidth("60");
 		anioVto.setWidth("70");
 		proveedorAnterior.setWidth("150");
@@ -665,7 +704,11 @@ public class CuentaUIData extends UIData {
 	public Label getOppObservacionesLabel() {
 		return oppObservacionesLabel;
 	}
-	public TextBox getOppObservaciones() {
+	public TextArea getOppObservaciones() {
 		return oppObservaciones;
 	}
+	public FlexTable getRadioOpsTable() {
+		return radioOpsTable;
+	}
+	
 }
