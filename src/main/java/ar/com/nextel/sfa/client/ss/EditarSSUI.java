@@ -234,6 +234,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 				new DefaultWaitCallback<SolicitudServicioDto>() {
 					public void success(SolicitudServicioDto result) {
 						editarSSUIData.setSolicitud(result);
+						datos.refresh();
 						MessageDialog.getInstance().showAceptar("Guardado Exitoso",
 								Sfa.constant().MSG_SOLICITUD_GUARDADA_OK(), MessageDialog.getCloseCommand());
 						editarSSUIData.setSaved(true);
@@ -256,7 +257,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 				editarSSUIData.setSolicitudServicioGeneracion(getGenerarSSUI().getGenerarSSUIData()
 						.getSolicitudServicioGeneracion());
 				CerrarSSDialog.getInstance().showLoading(cerrandoSolicitud);
-				List errors = editarSSUIData.validarCompletitud();
+				List errors = editarSSUIData.validarCompletitud(true);
 				if (errors.isEmpty()) {
 					SolicitudRpcService.Util.getInstance().generarCerrarSolicitud(
 							editarSSUIData.getSolicitudServicio(), "", cerrandoSolicitud,
@@ -294,6 +295,10 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 						ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
 						ErrorDialog.getInstance().show(MessageUtils.getMessagesHTML(result.getMessages()));
 					}
+				}
+				public void failure(Throwable caught) {
+					CerrarSSDialog.getInstance().hide();
+					super.failure(caught);
 				}
 			};
 		}
