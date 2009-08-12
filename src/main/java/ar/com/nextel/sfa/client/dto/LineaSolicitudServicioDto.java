@@ -313,8 +313,6 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 		}
 	}
 
-	// XXX: "Mirar el valor de los servicios adicionales"
-
 	/** Obtiene precioServiciosAdicionalesLista. Llamar primero a refreshPrecioServiciosAdicionales */
 	public double getPrecioServiciosAdicionalesLista() {
 		return precioServiciosAdicionalesLista;
