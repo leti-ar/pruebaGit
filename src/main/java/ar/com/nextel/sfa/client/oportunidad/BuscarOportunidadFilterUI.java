@@ -35,7 +35,7 @@ public class BuscarOportunidadFilterUI extends Composite {
 		mainPanel.addStyleName("gwt-BuscarCuentaFilterForm");
 		initWidget(mainPanel);
 
-		HTML titulo = new HTML("Búsqueda de Cuentas");
+		HTML titulo = new HTML("Buscar Oportunidad");
 		titulo.addStyleName("titulo");
 		mainPanel.add(titulo);
 
