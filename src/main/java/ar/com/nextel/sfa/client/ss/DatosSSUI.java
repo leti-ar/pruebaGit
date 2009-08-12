@@ -62,8 +62,6 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 	private int editingServicioAdRow = -1;
 	private RegexTextBox precioVenta;
 	private DomiciliosCuentaDto domicilioAEditar = null;
-	// Se utiliza para saber si se debe redibujar o no ciertas tablas (Layout generalmente)
-	private Long idGrupoSolicitudActual = GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS;
 
 	private static final String SELECTED_ROW = "selectedRow";
 
@@ -285,6 +283,10 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 						public void execute() {
 							editarSSUIData.removeLineaSolicitudServicio(row - 1);
 							detalleSS.removeRow(row);
+							if (selectedDetalleRow == row) {
+								selectedDetalleRow = detalleSS.getRowCount() <= 1 ? 0 : 1;
+								loadServiciosAdicionales();
+							}
 							MessageDialog.getInstance().hide();
 						};
 					}, MessageDialog.getCloseCommand());
@@ -412,17 +414,19 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 	 * Detalle. Si no están en el cliente los trae del server
 	 */
 	private void loadServiciosAdicionales() {
-		LineaSolicitudServicioDto linea = editarSSUIData.getLineasSolicitudServicio().get(
-				selectedDetalleRow - 1);
-		if (linea.getPlan() == null) {
+		if (selectedDetalleRow < 1
+				|| editarSSUIData.getLineasSolicitudServicio().get(selectedDetalleRow - 1).getPlan() == null) {
 			serviciosAdicionales.resizeRows(1);
 			return;
 		}
 		List servicios = editarSSUIData.getServiciosAdicionales().get(selectedDetalleRow - 1);
 		if (!servicios.isEmpty()) {
+			editarSSUIData.mergeServiciosAdicionalesConLineaSolicitudServicio(selectedDetalleRow - 1,
+					servicios);
 			refreshServiciosAdicionalesTable(selectedDetalleRow - 1);
 		} else {
-			controller.getServiciosAdicionales(linea,
+			controller.getServiciosAdicionales(editarSSUIData.getLineasSolicitudServicio().get(
+					selectedDetalleRow - 1),
 					new DefaultWaitCallback<List<ServicioAdicionalLineaSolicitudServicioDto>>() {
 						public void success(List<ServicioAdicionalLineaSolicitudServicioDto> list) {
 							editarSSUIData.loadServiciosAdicionales(selectedDetalleRow - 1, list);
