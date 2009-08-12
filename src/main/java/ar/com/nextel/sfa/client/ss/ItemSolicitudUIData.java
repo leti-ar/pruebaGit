@@ -102,7 +102,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		fields.add(listaPrecio = new ListBox());
 		fields.add(cantidad = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(4)));
 		fields.add(tipoPlan = new ListBox());
-		fields.add(plan = new ListBox());
+		fields.add(plan = new ListBox(" "));
 		fields.add(precioListaItem = new SimpleLabel());
 		fields.add(precioListaPlan = new SimpleLabel());
 		fields.add(localidad = new ListBox());
@@ -112,7 +112,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		fields.add(reservar = new TextBox());
 		fields.add(imei = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(15)));
 		fields.add(modeloEq = new ListBox());
-		fields.add(item = new ListBox());
+		fields.add(item = new ListBox(" "));
 		fields.add(terminoPago = new ListBox());
 		fields.add(sim = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(15)));
 		fields.add(serie = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(10)));
@@ -169,6 +169,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 		listaPrecio.addChangeListener(this);
 		item.addChangeListener(this);
+		plan.addChangeListener(this);
 		tipoPlan.addChangeListener(this);
 		confirmarReserva.addClickListener(this);
 		desreservar.addClickListener(this);
@@ -358,6 +359,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			ListaPreciosDto listaSelected = (ListaPreciosDto) listaPrecio.getSelectedItem();
 			item.addAllItems(listaSelected.getItemsListaPrecioVisibles());
 			terminoPago.addAllItems(listaSelected.getTerminosPagoValido());
+			if (listaSelected.getItemsListaPrecioVisibles().size() == 1) {
+				item.setSelectedIndex(1);
+			}
 			onChange(item);
 		} else if (sender == item) {
 			// Seteo el precio del item, ajustado por el Termino de Pago y cargo el ListBox de Planes
@@ -392,9 +396,19 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 					modalidadCobro.clear();
 				}
 				modalidadCobro.addAllItems(planDto.getModalidadesCobro());
+				for (ModalidadCobroDto modalidad : planDto.getModalidadesCobro()) {
+					if (modalidad.getId().longValue() == 1) {
+						modalidadCobro.setSelectedItem(modalidad);
+						break;
+					}
+				}
 			}
 		} else if (sender == cantidad) {
 			refreshTotalLabel();
+			if (!"".equals(cantidad.getText().trim())) {
+				int cant = Integer.parseInt(cantidad.getText());
+				enableAliasYReserva(cant == 1);
+			}
 		} else if (sender == modeloEq) {
 			// Cargo los items correspondientes al modelo seleccionado
 			ModeloDto modelo = (ModeloDto) modeloEq.getSelectedItem();
@@ -416,6 +430,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		}
 	}
 
+	private void enableAliasYReserva(boolean enabled) {
+		alias.setEnabled(enabled);
+		reservar.setEnabled(enabled);
+	}
+
 	private void setDisableAndCheckedRoaming(boolean checked) {
 		ddn.setChecked(checked);
 		ddi.setChecked(checked);
@@ -432,6 +451,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 					plan.clear();
 				}
 				plan.addAllItems(result);
+				if (result.size() == 1) {
+					plan.setSelectedIndex(1);
+				}
 				onChange(plan);
 			}
 		};
@@ -661,6 +683,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		roaming.setChecked(linea.getRoaming());
 		if (linea.getPlan() != null) {
 			tipoPlan.setSelectedItem(linea.getPlan().getTipoPlan());
+		} else {
+			tipoPlan.setSelectedItem(new TipoPlanDto(Long.valueOf(8), "Plan Directo"));
 		}
 
 		// Los siguientes combos se seleccionan al cagar las opciones en los combos (ver preselecionados en
@@ -682,10 +706,15 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	/** Limpia las selecciones de los combos */
 	private void clearListBoxForSelect() {
 		listaPrecio.clear();
+		listaPrecio.clearPreseleccionados();
 		item.clear();
+		item.clearPreseleccionados();
 		plan.clear();
+		plan.clearPreseleccionados();
 		modalidadCobro.clear();
+		modalidadCobro.clearPreseleccionados();
 		modeloEq.clear();
+		modeloEq.clearPreseleccionados();
 	}
 
 	public LineaSolicitudServicioDto getLineaSolicitudServicio() {
