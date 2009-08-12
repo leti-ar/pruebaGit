@@ -12,7 +12,7 @@ public class SFAInfocom implements EntryPoint {
 	private InfocomUI infocomUI;
 
 	public void onModuleLoad() {
-		infocomUI = new InfocomUI();
+		infocomUI = InfocomUI.getInstance();
 		infocomUI.firstLoad();
 		infocomUI.load();
 		RootPanel.get().add(infocomUI);
