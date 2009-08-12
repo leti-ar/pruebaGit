@@ -761,10 +761,11 @@ public class CuentaDatosForm extends Composite {
 		
 		FormUtils.disableFields(campos);
 		
-		vendedorPanel.setVisible( ClientContext.getInstance().getUsuario().getId().
-				                   equals(
-	                    		  cuentaDto.getVendedor().getId())
-	                    		);
+		//issue 20130: ocultar vendedor siempre hasta que esté el perfil  adm vta
+//		vendedorPanel.setVisible( ClientContext.getInstance().getUsuario().getId().
+//				                   equals(
+//	                    		  cuentaDto.getVendedor().getId())
+//	                    		);
 		
 	}
 	
