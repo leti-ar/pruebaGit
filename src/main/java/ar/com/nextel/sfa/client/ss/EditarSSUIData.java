@@ -60,6 +60,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 	private NumberFormat decFormatter = NumberFormat.getDecimalFormat();
 	private NumberFormat currFormatter = NumberFormat.getCurrencyFormat();
 	private DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateFormat();
+	/** Contiene las listas de servicios adicionales de cada LineaSolicitudServicio */
 	private List<List<ServicioAdicionalLineaSolicitudServicioDto>> serviciosAdicionales;
 	private boolean saved = true;
 	private long lastFakeId = -1;
@@ -288,6 +289,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 	}
 
 	public List<String> validarCompletitud() {
+		return validarCompletitud(false);
+	}
+
+	/**
+	 * @param cerrarSS
+	 *            true si debe validar para cierre de solicitud
+	 * @return Lista de errores
+	 */
+	public List<String> validarCompletitud(boolean cerrarSS) {
 		recarcularValores();
 		GwtValidator validator = new GwtValidator();
 		String v1 = "\\{1\\}";
@@ -352,7 +362,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 		}
 		// Para el cierre
 		SolicitudServicioGeneracionDto ssg = solicitudServicio.getSolicitudServicioGeneracion();
-		if (ssg != null) {
+		if (cerrarSS == true && ssg != null) {
 			if (ssg.isEmailNuevoChecked()) {
 				validator.addTarget(ssg.getEmailNuevo()).required(
 						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Nuevo Email")).regEx(
@@ -364,6 +374,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 		return validator.getErrors();
 	}
 
+	/** Recalcula y actualiza el valor de las etiquetas */
 	public void recarcularValores() {
 		double precioLista = 0;
 		double precioVenta = 0;
@@ -430,10 +441,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 	 */
 	public void loadServiciosAdicionales(int indexLinea, List<ServicioAdicionalLineaSolicitudServicioDto> list) {
 		serviciosAdicionales.get(indexLinea).addAll(list);
-		List serviciosAdGuardados = getLineasSolicitudServicio().get(indexLinea).getServiciosAdicionales();
+		mergeServiciosAdicionalesConLineaSolicitudServicio(indexLinea, list);
+	}
+
+	public void mergeServiciosAdicionalesConLineaSolicitudServicio(int indexLinea,
+			List<ServicioAdicionalLineaSolicitudServicioDto> list) {
+		List serviciosAGuardar = getLineasSolicitudServicio().get(indexLinea).getServiciosAdicionales();
 		for (ServicioAdicionalLineaSolicitudServicioDto servicioAd : list) {
-			if (servicioAd.isChecked() && !serviciosAdGuardados.contains(servicioAd)) {
-				serviciosAdGuardados.add(servicioAd);
+			if (servicioAd.isChecked() && !serviciosAGuardar.contains(servicioAd)) {
+				serviciosAGuardar.add(servicioAd);
 			}
 		}
 	}
