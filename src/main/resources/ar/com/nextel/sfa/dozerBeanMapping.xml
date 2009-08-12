@@ -180,6 +180,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>plainServiciosAdicionales</a>
 			<b>serviciosAdicionales</b>
 		</field>
+		<field-exclude>
+			<a>serviciosAdicionales</a>
+			<b>serviciosAdicionales</b>
+		</field-exclude>
 		<field custom-converter-id="enumToDto">
 			<a>tipoSolicitud</a>
 			<b>tipoSolicitud</b>
@@ -271,7 +275,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-b>
 	</mapping>
 
-	<mapping map-id="planesParaListBox" wildcard="false">
+	<mapping wildcard="false">
 		<class-a>ar.com.nextel.model.solicitudes.beans.Plan</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.PlanDto</class-b>
 		<field>
