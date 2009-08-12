@@ -69,7 +69,10 @@ public class InfocomUIData extends UIData {
 	
 	private final NumberFormat numberFormat = NumberFormat.getCurrencyFormat();
 	private final DateTimeFormat dateFormat = DateTimeFormat.getMediumDateFormat();
-
+	
+	private String idCuenta;
+	
+	
 	public InfocomUIData() {
 		montoPanel = new HorizontalPanel();
 		estadoPanel = new HorizontalPanel();
@@ -93,15 +96,14 @@ public class InfocomUIData extends UIData {
 		responsablePago = new ListBox("Todos");
 		responsablePago.setWidth("120px");
 		
-//		String valorCombo = responsablePago.getSelectedItemText();
-//		int valorCombodos = responsablePago.getSelectedIndex();
-//		
-//		responsablePago.addChangeListener(new ChangeListener() {
-//			public void onChange (Widget arg0) {
-//				//infocomUI.reload(responsablePago.getSelectedItemText());
-//				int valorComboLuego = responsablePago.getSelectedIndex();
-//			}
-//		});		
+		responsablePago.addChangeListener(new ChangeListener() {
+			public void onChange (Widget arg0) {
+				if (responsablePago.getSelectedIndex()==0) {
+					InfocomUI.getInstance().reload(idCuenta, "Todos");
+				} else
+					InfocomUI.getInstance().reload(idCuenta, responsablePago.getSelectedItemText());
+			}
+		});		
 		
 		montoLabel = new Label("Monto: ");
 		monto = new InlineHTML();
@@ -123,7 +125,7 @@ public class InfocomUIData extends UIData {
 		scoring.addStyleName("infocomSimpleLink");
 		scoring.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				getScoring("6.356172");
+				getScoring(idCuenta);
 			}
 		});
 	
@@ -133,7 +135,7 @@ public class InfocomUIData extends UIData {
 		resumenPorEquipo.addStyleName("infocomSimpleLink");
 		resumenPorEquipo.addClickListener(new ClickListener() {
 			public void onClick (Widget arg0) {
-				getResumenPorEquipo("6.356172", "6.356172");
+				getResumenPorEquipo(idCuenta, responsablePago.getSelectedItemText());
 			}
 		});
 	}	
@@ -529,6 +531,22 @@ public class InfocomUIData extends UIData {
 
 	public void setResponsablePanel(HorizontalPanel responsablePanel) {
 		this.responsablePanel = responsablePanel;
+	}
+
+	public String getIdCuenta() {
+		return idCuenta;
+	}
+
+	public void setIdCuenta(String idCuenta) {
+		this.idCuenta = idCuenta;
+	}
+
+	public FlexTable getCreditoFidelizacionTable() {
+		return creditoFidelizacionTable;
+	}
+
+	public void setCreditoFidelizacionTable(FlexTable creditoFidelizacionTable) {
+		this.creditoFidelizacionTable = creditoFidelizacionTable;
 	}	
 	
 }
