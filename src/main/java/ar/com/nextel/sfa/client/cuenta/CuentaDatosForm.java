@@ -818,7 +818,11 @@ public class CuentaDatosForm extends Composite {
 		formaDePagoPanel.setVisible(editorCuenta);
 		//usuario.setVisible(editorCuenta);
 		fechaUsuarioTable.setVisible(editorCuenta);
-		vendedorPanel.setVisible(editorCuenta);
+		
+		//issue 20130, ocultar siempre hasta que este el perfil adm vta.
+		//vendedorPanel.setVisible(editorCuenta);
+		  vendedorPanel.setVisible(false);
+		  
 		if (editorCuenta) {
 			for (Widget label : camposTabDatos.getLabelsObligatorios()) {
 				label.addStyleName("req");
