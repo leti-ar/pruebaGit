@@ -10,6 +10,15 @@ public class TipoPlanDto implements IsSerializable, ListBoxItem {
 	private String descripcion;
 	private String codigoBSCS;
 
+	public TipoPlanDto() {
+	}
+
+	public TipoPlanDto(Long id, String descripcion) {
+		super();
+		this.id = id;
+		this.descripcion = descripcion;
+	}
+
 	public String getItemText() {
 		return descripcion;
 	}
