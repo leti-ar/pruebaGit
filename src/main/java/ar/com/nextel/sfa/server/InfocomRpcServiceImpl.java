@@ -87,32 +87,14 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 		repository = (Repository) context.getBean("repository");
 	}
 	
-//	public InfocomInitializer getInfocomData(String numeroCuenta, String responsablePago) throws RpcExceptionMessages {
-//		AppLogger.info("Iniciando retrieve infocom data...");
-//		InfocomInitializer infocomInitializer = new InfocomInitializer();
-//		Cuenta cuenta;
-//		try {
-//			cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(numeroCuenta);
-//			numeroCuenta = cuenta.getCuentaRaiz().getCodigoVantive();
-//		} catch (Exception e) {
-//			AppLogger.error("Error obteniendo datos de Infocom: ");
-//			throw ExceptionUtil.wrap(e);
-//		}
-//		getLimiteCredito(cuenta, responsablePago, infocomInitializer);
-//		//getCuentaCorriente(numeroCuenta, responsablePago, infocomInitializer);
-//		//getEquiposServiciosTable(numeroCuenta, responsablePago, infocomInitializer);
-//		//getCreditoFidelizacion(numeroCuenta, responsablePago, infocomInitializer);
-//		AppLogger.info("Retrieve infocom data finalizado.");
-//		return infocomInitializer;
-//	}
-	
+
 	/** Obtiene los datos del Header de infocom */ 
-	public InfocomInitializer getInfocomInitializer(String numeroCuenta) throws RpcExceptionMessages {
+	public InfocomInitializer getInfocomInitializer(String numeroCuenta, String responsablePago) throws RpcExceptionMessages {
 		AppLogger.info("Iniciando retrieve infocom-header...");
 		InfocomInitializer infocomInitializer = new InfocomInitializer();
 		infocomInitializer.setNumeroCuenta(numeroCuenta);
         try {
-            getEncabezadoInfocom(numeroCuenta, infocomInitializer);
+            getEncabezadoInfocom(numeroCuenta, responsablePago, infocomInitializer);
         } catch (Exception e) {
             throw ExceptionUtil.wrap(e);
         }
@@ -134,35 +116,7 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
         }
     }
     
-//    private void getEquiposServiciosTable(String numeroCuenta, String responsablePago, InfocomInitializer infocomInitializer)
-//    throws RpcExceptionMessages {
-//    	DeudaDTO resultDTO = null;
-//    	try {
-//    		if ("Todos".equals(responsablePago)) {
-//    			GranCuenta cuentaRaiz = getCuentaRaiz(numeroCuenta);
-//    			resultDTO = avalonSystem.retrieveDeudaArbol(cuentaRaiz.getCodigoVantive());
-//    		} else {
-//    			resultDTO = avalonSystem.retrieveDeudaRespPago(responsablePago);
-//    		}
-//    	} catch (AvalonSystemException e) {
-//    		throw ExceptionUtil.wrap(e);
-//    	}
-//    	//pasar el DeudaDTO a InfocomInitializer
-//        EquiposServiciosDto equipos = new EquiposServiciosDto();
-//        equipos.setAVencer(resultDTO.getDeudaEquiposAVencer().toString());
-//        equipos.setVencida(resultDTO.getDeudaEquiposVencida().toString());
-//        EquiposServiciosWCTO servicios = new EquiposServiciosWCTO();
-//        servicios.setDescripcion(DESCRIPCION_SERVICIOS);
-//        servicios.setAVencer(resultDTO.getDeudaServiciosAVencer().toString());
-//        servicios.setVencida(resultDTO.getDeudaServiciosVencida().toString());
-//        equiposServiciosCollection.add(equipos);
-//        equiposServiciosCollection.add(servicios);
-//        resultWCTO.setEquiposServiciosCollection(equiposServiciosCollection);
-//    	
-//    	this.addTotalRow(resultWCTO);
-//    }
-
-    
+   
 	/** Obtiene una lista de cuentas de los responsables de pago dado un número de cuenta */
 	private void getResponsablesPago(String numeroCuenta, InfocomInitializer infocomInitializer) throws RpcExceptionMessages {
 		Set<Cuenta> cuentasRP = new HashSet<Cuenta>();
@@ -189,7 +143,7 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
         infocomInitializer.setTerminalesDesactivadas(resultDTO.getCantidadDesactivados());
     }
     
-    private void getEncabezadoInfocom(String numeroCuenta, InfocomInitializer infocomInitializer) throws RpcExceptionMessages {
+    private void getEncabezadoInfocom(String numeroCuenta, String responsablePago, InfocomInitializer infocomInitializer) throws RpcExceptionMessages {
 		Cuenta cuenta = null;
 		try {
 			cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(numeroCuenta);
@@ -202,8 +156,8 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 		}
 		infocomInitializer.setFlota(cuenta.getFlota());
 		infocomInitializer.setRazonSocial(cuenta.getPersona().getRazonSocial());
-		getLimiteCredito(cuenta, "6.356172", infocomInitializer);
-		getEquiposServiciosTable(numeroCuenta, "6.356172", infocomInitializer);
+		getLimiteCredito(cuenta, responsablePago, infocomInitializer);
+		getEquiposServiciosTable(numeroCuenta, responsablePago, infocomInitializer);
 	}
 
 	/**Obtiene los datos necesarios para completar la tabla de Descripción de Equipos y Servicios*/

@@ -25,9 +25,9 @@ public class InfocomRpcServiceDelegate {
 		this.infocomRpcService = infocomRpcSerive;
 	}
 
-	public void getInfocomInitializer(String numeroCuenta, DefaultWaitCallback<InfocomInitializer> callback) {
+	public void getInfocomInitializer(String numeroCuenta, String responsablePago, DefaultWaitCallback<InfocomInitializer> callback) {
 		WaitWindow.show();
-		infocomRpcService.getInfocomInitializer(numeroCuenta, callback);
+		infocomRpcService.getInfocomInitializer(numeroCuenta, responsablePago, callback);
 	}
 
 	public void getDetalleCreditoFidelizacion(String idCuenta,

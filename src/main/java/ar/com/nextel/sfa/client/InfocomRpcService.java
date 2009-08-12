@@ -31,7 +31,7 @@ public interface InfocomRpcService extends RemoteService {
 		}
 	}
 
-	public InfocomInitializer getInfocomInitializer(String numeroCuenta) throws RpcExceptionMessages;
+	public InfocomInitializer getInfocomInitializer(String numeroCuenta, String responsablePago) throws RpcExceptionMessages;
 
 	public CreditoFidelizacionDto getDetalleCreditoFidelizacion(String idCuenta) throws RpcExceptionMessages;
 

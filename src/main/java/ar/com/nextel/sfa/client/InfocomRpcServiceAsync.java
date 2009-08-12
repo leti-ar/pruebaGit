@@ -14,7 +14,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface InfocomRpcServiceAsync {
 
-	public void getInfocomInitializer(String numeroCuenta, AsyncCallback<InfocomInitializer> callback);
+	public void getInfocomInitializer(String numeroCuenta, String responsablePago, AsyncCallback<InfocomInitializer> callback);
 
 	public void getDetalleCreditoFidelizacion(String idCuenta, AsyncCallback<CreditoFidelizacionDto> callback);
 
