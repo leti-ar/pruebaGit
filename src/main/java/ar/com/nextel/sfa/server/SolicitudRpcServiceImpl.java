@@ -147,7 +147,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		SolicitudServicioCerradaSearchCriteria solicitudServicioCerradaSearchCriteria = mapper.map(
 				solicitudServicioCerradaDto, SolicitudServicioCerradaSearchCriteria.class);
 		Vendedor vendedor = sessionContextLoader.getVendedor();
-		
+
 		solicitudServicioCerradaSearchCriteria.setVendedor(vendedor);
 		List<SolicitudServicio> list = null;
 		try {
@@ -379,7 +379,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		List planes = null;
 		planes = solicitudServicioRepository.getPlanes(tipoPlan.getId(), itemSolicitudTasado.getItem()
 				.getId(), idCuenta, sessionContextLoader.getVendedor());
-		return mapper.convertList(planes, PlanDto.class, "planesParaListBox");
+		return mapper.convertList(planes, PlanDto.class);
 	}
 
 	public List<ServicioAdicionalLineaSolicitudServicioDto> getServiciosAdicionales(
@@ -457,6 +457,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		try {
 			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
 			response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar);
+			// metodo changelog
 			result.setError(response.getMessages().hasErrors());
 		if (cerrar == true && response.getMessages().hasErrors() == false && sessionContextLoader.getVendedor().getTipoVendedor().getCodigoVantive().equals(KnownInstanceIdentifier.TIPO_VENDEDOR_EECC.getKey())){
 			generarChangeLog(solicitudServicioDto.getId(), solicitudServicio.getVendedor().getId());
@@ -469,30 +470,30 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		AppLogger.info(accion + " de SS de id=" + solicitudServicioDto.getId() + " finalizado.");
 		return result;
 	}
-	
-	
-	private void generarChangeLog(Long idServicioDto, Long idVendedor){
+
+	private void generarChangeLog(Long idServicioDto, Long idVendedor) {
 		Connection conn = genericDao.getSessionFactory().getCurrentSession().connection();
 		String command = "{call SFA_GENERAR_CHANGELOG_PKG.SFA_GENERAR_CHANGELOG(?,?)}";
 		CallableStatement cstmt = null;
 		try {
-			cstmt = conn.prepareCall (command);
-			cstmt.setLong(1, idServicioDto);          	
-			cstmt.setLong(2, idVendedor);  		
+			cstmt = conn.prepareCall(command);
+			cstmt.setLong(1, idServicioDto);
+			cstmt.setLong(2, idVendedor);
 			cstmt.execute();
-
-		} catch (SQLException e) {          
+		} catch (SQLException e) {
 
 			e.printStackTrace();
 
 		} finally {
 			try {
-				if (cstmt!=null) cstmt.close();
-				if (conn!=null) conn.close();
+				if (cstmt != null)
+					cstmt.close();
+				if (conn != null)
+					conn.close();
 			} catch (SQLException e) {
 			} finally {
-				cstmt=null;
-				conn=null;
+				cstmt = null;
+				conn = null;
 			}
 		}
 
