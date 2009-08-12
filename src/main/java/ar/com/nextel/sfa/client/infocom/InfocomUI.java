@@ -7,6 +7,7 @@ import ar.com.nextel.sfa.client.dto.CreditoFidelizacionDto;
 import ar.com.nextel.sfa.client.dto.TransaccionCCDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
+import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
@@ -17,23 +18,69 @@ public class InfocomUI extends ApplicationUI {
 
 	private InfocomUIData infocomUIData;
 	private FidelizacionInfocomUI fidelizacionInfocomUI;
-	private EstadoEquipoPopUp estadoEquipoPopUp;
 	private CCInfocomUI ccInfocomUI;
 	private FlexTable layout;
 	private FlexTable estadoFlexTable;
 	private FlexTable responsableFlexTable;
-	private ScoringInfocomUI scoringInfocomUI;
-	private Long idCuenta; 
+	private String idCuenta;
+	private String responsablePago;
+	private static InfocomUI instance = new InfocomUI();
+	
+	
+	public static InfocomUI getInstance() {
+		if (instance == null) {
+			instance = new InfocomUI();
+		}
+		return instance;
+	}
 	
 
-	public InfocomUI() {
+	private InfocomUI() {
 		super();
+		infocomUIData = new InfocomUIData();
+		infocomUIData.setIdCuenta(idCuenta);
+		Long cuentaID = Long.parseLong(HistoryUtils.getParam("cuenta_id"));
+		this.idCuenta = cuentaID.toString();
+		infocomUIData.setIdCuenta(idCuenta);
+		//String cod_vantive = HistoryUtils.getParam("cod_vantive") !=null?HistoryUtils.getParam("cod_vantive"):null;
+	}
+	
+	public void firstLoad() {
+		mainPanel.add(getPanelSuperior());
+		fidelizacionInfocomUI = new FidelizacionInfocomUI(infocomUIData);
+		mainPanel.add(fidelizacionInfocomUI.getFidelizacionTitledPanel());
+		ccInfocomUI = new CCInfocomUI(infocomUIData);
+		mainPanel.add(ccInfocomUI.getCCTitledPanel());	
+	}
+			
+	public void reload(String idCuenta, String responsablePago) {
+		this.idCuenta = idCuenta;
+		this.responsablePago = responsablePago;
+		if ("Todos".equals(responsablePago)) {
+			invocarServiciosTodos(idCuenta, responsablePago);
+		} else {
+			invocarServicios(idCuenta, responsablePago);
+		}
+	}
+	
+	public boolean load() {
+		invocarServicios(idCuenta, idCuenta);
+		return true;
+	}
+	
+	public void invocarServicios (String idCuenta, String responsablePago) {
+		this.getInfocomData(idCuenta, responsablePago);
+		this.getDetalleCreditoFidelizacion(idCuenta, true);	
+		this.getCuentaCorriente(idCuenta, responsablePago);
+	}
+	
+	public void invocarServiciosTodos (String idCuenta, String responsablePago) {
+		fidelizacionInfocomUI.getFidelizacionTitledPanel().setVisible(false);
+		infocomUIData.getLimCredito().setText("");
 	}
 	
 	public Widget getPanelSuperior() {
-		infocomUIData = new InfocomUIData();
 		layout = new FlexTable();
-//		layout.addStyleName("layout");
 		layout.setWidth("98%");
 		layout.getFlexCellFormatter().setColSpan(0, 3, 5);
 		estadoFlexTable = new FlexTable();
@@ -41,11 +88,7 @@ public class InfocomUI extends ApplicationUI {
 		
 		estadoFlexTable.setWidget(0, 0, infocomUIData.getEstadoEncabezadoLabel());
 		estadoFlexTable.setWidget(0, 1, infocomUIData.getEstadoTerminales());
-//		estadoFlexTable.setWidget(0, 2, infocomUIData.getCicloLabel());
-//		estadoFlexTable.setWidget(0, 3, infocomUIData.getCiclo());
 		estadoFlexTable.setWidget(0, 2, infocomUIData.getCicloPanel());
-//		estadoFlexTable.setWidget(0, 4, infocomUIData.getFlotaLabel());
-//		estadoFlexTable.setWidget(0, 5, infocomUIData.getFlota());
 		estadoFlexTable.setWidget(0, 3, infocomUIData.getFlotaPanel());
 		estadoFlexTable.setWidget(0, 6, IconFactory.scoring());
 		estadoFlexTable.setWidget(0, 7, infocomUIData.getScoring());
@@ -53,31 +96,14 @@ public class InfocomUI extends ApplicationUI {
 		estadoFlexTable.setWidget(0, 9, infocomUIData.getLimCredito());
 		//estadoFlexTable.setWidth("100%");
 		
-		responsableFlexTable.setWidget(0, 0, infocomUIData.getNumResponsable());
-		responsableFlexTable.setWidget(0, 1, infocomUIData.getResponsablePago());
-		responsableFlexTable.setWidget(0, 2, infocomUIData.getResumenPorEquipo());
+		responsableFlexTable.setWidget(0, 0, infocomUIData.getResponsablePanel());
+		responsableFlexTable.setWidget(0, 1, infocomUIData.getResumenPorEquipo());
+		responsableFlexTable.setWidth("80%");
 		
 		layout.setWidget(0, 0, estadoFlexTable);
 		layout.setWidget(1, 0, responsableFlexTable);
 		
 		return layout;
-	}
-
-	public void firstLoad() {
-		mainPanel.add(getPanelSuperior());
-		fidelizacionInfocomUI = new FidelizacionInfocomUI(infocomUIData);
-		mainPanel.add(fidelizacionInfocomUI.getFidelizacionTitledPanel());
-		CCInfocomUI ccInfocomUI = new CCInfocomUI(infocomUIData);
-		mainPanel.add(ccInfocomUI.getCCTitledPanel());
-		//Borrar el hardcode
-		String idCuenta="5.12345";
-		this.getInfocomData(idCuenta);
-		this.getDetalleCreditoFidelizacion(idCuenta, true);
-		this.getCuentaCorriente(idCuenta, idCuenta);
-	}
-	
-	public boolean load() {
-		return true;
 	}
 	
 	public boolean unload(String token) {
@@ -94,8 +120,8 @@ public class InfocomUI extends ApplicationUI {
 		});
 	}	
 	
-	private void getInfocomData(String numeroCuenta) {
-		InfocomRpcService.Util.getInstance().getInfocomInitializer(numeroCuenta, new DefaultWaitCallback<InfocomInitializer>() {
+	private void getInfocomData(String idCuenta, String responsablePago) {
+		InfocomRpcService.Util.getInstance().getInfocomInitializer(idCuenta, responsablePago, new DefaultWaitCallback<InfocomInitializer>() {
 			public void success(InfocomInitializer result) {
 				if (result != null) {
 					infocomUIData.setInfocom(result);
@@ -104,8 +130,8 @@ public class InfocomUI extends ApplicationUI {
 		});
 	}
 	
-	private void getCuentaCorriente(String numeroCuenta, String responsablePago) {
-		InfocomRpcService.Util.getInstance().getCuentaCorriente(numeroCuenta, responsablePago, new DefaultWaitCallback<List<TransaccionCCDto>>() {
+	private void getCuentaCorriente(String idCuenta, String responsablePago) {
+		InfocomRpcService.Util.getInstance().getCuentaCorriente(idCuenta, responsablePago, new DefaultWaitCallback<List<TransaccionCCDto>>() {
 			public void success(List<TransaccionCCDto> result) {
 				if (result != null) {
 					infocomUIData.setCuentaCorriente(result);
@@ -113,5 +139,13 @@ public class InfocomUI extends ApplicationUI {
 			}
 		});
 	}
+
+	public String getIdCuenta() {
+		return idCuenta;
+	}
+
+	public void setIdCuenta(String idCuenta) {
+		this.idCuenta = idCuenta;
+	}	
 
 }
