@@ -10,6 +10,7 @@ import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.enums.PrioridadEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.ss.EditarSSUI;
+import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
@@ -30,6 +31,8 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SourcesTabEvents;
+import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -148,7 +151,19 @@ public class CuentaEdicionTabPanel {
 		tabPanel.add(cuentaDatosForm, Sfa.constant().datos());
 		tabPanel.add(cuentaDomiciliosForm, Sfa.constant().domicilios());
 		tabPanel.add(cuentaContactoForm, Sfa.constant().contactos());
+		tabPanel.add(cuentaInfocomForm, Sfa.constant().infocom());
 		tabPanel.selectTab(0);
+		tabPanel.addTabListener(new TabListener(){
+			public boolean onBeforeTabSelected(SourcesTabEvents arg0, int arg1) {
+				return true;
+			}
+			public void onTabSelected(SourcesTabEvents arg0, int arg1) {
+				if(arg1 == 3){
+					cuentaInfocomForm.setIdCuenta(cliente.getText());
+					cuentaInfocomForm.load();					
+				}
+			}
+		});
 	}
 
 	/**
