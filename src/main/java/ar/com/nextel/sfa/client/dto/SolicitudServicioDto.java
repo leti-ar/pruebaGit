@@ -46,14 +46,12 @@ public class SolicitudServicioDto implements IsSerializable {
 	private Boolean pinValidationSuccess;
 	private Boolean scoringValidationSuccess;
 	private Long idVantive;
-
 	private Boolean vencimientoProcesado;
-
 	private Boolean generada;
-
 	private Boolean enCarga;
-
 	private Date fechaCreacion;
+	private double precioListaTotal = 0;
+	private double precioVentaTotal = 0;
 
 	private SolicitudServicioGeneracionDto solicitudServicioGeneracion;
 
@@ -291,6 +289,27 @@ public class SolicitudServicioDto implements IsSerializable {
 
 	public void setSolicitudServicioGeneracion(SolicitudServicioGeneracionDto solicitudServicioGeneracion) {
 		this.solicitudServicioGeneracion = solicitudServicioGeneracion;
+	}
+
+	/** Calcula precioListaTotal y precioVentaTotal */
+	public void refreshPreciosTotales() {
+		precioListaTotal = 0;
+		precioVentaTotal = 0;
+		for (LineaSolicitudServicioDto linea : getLineas()) {
+			linea.refreshPrecioServiciosAdicionales();
+			precioListaTotal = precioListaTotal + linea.getPrecioListaTotal();
+			precioVentaTotal = precioVentaTotal + linea.getPrecioVentaTotal();
+		}
+	}
+
+	/** Retorna precioListaTotal. Se debe llamar antes a refreshPreciosTotales() */
+	public double getPrecioListaTotal() {
+		return precioListaTotal;
+	}
+
+	/** Retorna precioVentaTotal. Se debe llamar antes a refreshPreciosTotales() */
+	public double getPrecioVentaTotal() {
+		return precioVentaTotal;
 	}
 
 }

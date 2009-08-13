@@ -337,6 +337,16 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 		return 0;
 	}
 
+	public double getPrecioListaTotal() {
+		return getPrecioLista() + getPrecioListaPlan() + getPrecioServiciosAdicionalesLista()
+				+ getPrecioGarantiaLista();
+	}
+
+	public double getPrecioVentaTotal() {
+		return getPrecioVenta() + getPrecioVentaPlan() + getPrecioServiciosAdicionalesVenta()
+				+ getPrecioGarantiaVenta();
+	}
+
 	public LineaSolicitudServicioDto clone() {
 		LineaSolicitudServicioDto linea = new LineaSolicitudServicioDto();
 
