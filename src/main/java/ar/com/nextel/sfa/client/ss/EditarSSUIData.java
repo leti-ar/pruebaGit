@@ -65,6 +65,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 	private boolean saved = true;
 	private long lastFakeId = -1;
 
+	private static final String V1 = "\\{1\\}";
 	private static final String FORMA_CONTRATACION_ALQUILER = "Alquiler";
 
 	private SolicitudServicioDto solicitudServicio;
@@ -92,7 +93,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 		observaciones.setWidth("480px");
 		observaciones.setHeight("35px");
 
-		// Change listener
+		// Change listener para detectar cambios
 		for (Widget field : fields) {
 			if (field instanceof SourcesChangeEvents) {
 				((SourcesChangeEvents) field).addChangeListener(this);
@@ -121,6 +122,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 
 	public void onChange(Widget sender) {
 		saved = false;
+		if (sender == pataconex && !"".equals(pataconex.getText())) {
+			solicitudServicio.setPataconex(Double.parseDouble(pataconex.getText()));
+			recarcularValores();
+		} else if (sender == credFidelizacion) {
+			solicitudServicio.setMontoCreditoFidelizacion(Double.parseDouble(credFidelizacion.getText()));
+			recarcularValores();
+		}
 	}
 
 	public void onClick(Widget sender) {
@@ -300,9 +308,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 	public List<String> validarCompletitud(boolean cerrarSS) {
 		recarcularValores();
 		GwtValidator validator = new GwtValidator();
-		String v1 = "\\{1\\}";
 		TextBoxBaseValidationTarget nnsValidator = validator.addTarget(nss).required(
-				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Nº de Solicitud")).maxLength(10,
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nº de Solicitud")).maxLength(10,
 				Sfa.constant().ERR_NSS_LONG());
 		GrupoSolicitudDto grupoSS = solicitudServicio.getGrupoSolicitud();
 		if (grupoSS.getRangoMinimoSinPin() != null && grupoSS.getRangoMaximoSinPin() != null) {
@@ -310,63 +317,37 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 					.smallerOrEqual(Sfa.constant().ERR_NNS_RANGO(), grupoSS.getRangoMaximoSinPin());
 		}
 		validator.addTarget(facturacion).required(
-				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Facturación"));
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Facturación"));
 		if (!solicitudServicio.getGrupoSolicitud().isCDW()) {
 			validator.addTarget(entrega).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Entrega"));
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Entrega"));
 		} else {
 			validator.addTarget(email).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Email"));
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Email"));
 		}
 		if (solicitudServicio.getMontoDisponible() != null)
 			validator.addTarget(credFidelizacion).smallerOrEqual(Sfa.constant().ERR_FIDELIZACION(),
 					solicitudServicio.getMontoDisponible());
+		solicitudServicio.refreshPreciosTotales();
 		validator.addTarget(pataconex).smallerOrEqual(Sfa.constant().ERR_PATACONEX(),
-				solicitudServicio.getMontoDisponible());
+				solicitudServicio.getPrecioVentaTotal());
 
 		if (solicitudServicio.getLineas().isEmpty()) {
 			validator.addError(Sfa.constant().ERR_REQUIRED_LINEA());
 		}
 
 		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
-			// Pregunta si es de alquiler y busca si tiene uno seleccionado
-			if (linea.getTipoSolicitud().getTipoSolicitudBase().getFormaContratacion().equals(
-					FORMA_CONTRATACION_ALQUILER)) {
-				boolean hasAlquiler = false;
-				for (ServicioAdicionalLineaSolicitudServicioDto servicioAdicional : linea
-						.getServiciosAdicionales()) {
-					if (servicioAdicional.isEsAlquiler() && servicioAdicional.isChecked()) {
-						hasAlquiler = true;
-						break;
-					}
-				}
-				if (!hasAlquiler) {
-					validator.addError(Sfa.constant().ERR_FALTA_ALQUILER().replaceAll(v1, linea.getAlias()));
-				}
-			}
-			if (linea.getTipoSolicitud().getTipoSolicitudBase().getId().equals(
-					TipoSolicitudBaseDto.ID_VENTA_CDW)) {
-				boolean hasCargoActivaciónCDW = false;
-				for (ServicioAdicionalLineaSolicitudServicioDto servicioAdicional : linea
-						.getServiciosAdicionales()) {
-					if (servicioAdicional.isUnicaVez() && servicioAdicional.isChecked()) {
-						hasCargoActivaciónCDW = true;
-						break;
-					}
-				}
-				if (!hasCargoActivaciónCDW) {
-					validator.addError(Sfa.constant().ERR_FALTA_CARGO_ACTIVACION_CDW().replaceAll(v1,
-							linea.getAlias()));
-				}
-			}
+			validarAlquileresDeLineaSS(validator, linea);
+			validarCargoActivacion(validator, linea);
 		}
+
 		// Para el cierre
 		SolicitudServicioGeneracionDto ssg = solicitudServicio.getSolicitudServicioGeneracion();
 		if (cerrarSS == true && ssg != null) {
 			if (ssg.isEmailNuevoChecked()) {
 				validator.addTarget(ssg.getEmailNuevo()).required(
-						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Nuevo Email")).regEx(
-						Sfa.constant().ERR_FORMATO().replaceAll(v1, "Nuevo Email"),
+						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nuevo Email")).regEx(
+						Sfa.constant().ERR_FORMATO().replaceAll(V1, "Nuevo Email"),
 						RegularExpressionConstants.email);
 			}
 		}
@@ -374,17 +355,45 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 		return validator.getErrors();
 	}
 
+	private void validarAlquileresDeLineaSS(GwtValidator validator, LineaSolicitudServicioDto linea) {
+		// Pregunta si es de alquiler y busca si tiene uno seleccionado
+		if (linea.getTipoSolicitud().getTipoSolicitudBase().getFormaContratacion().equals(
+				FORMA_CONTRATACION_ALQUILER)) {
+			int alquileres = 0;
+			for (ServicioAdicionalLineaSolicitudServicioDto servicioAdicional : linea
+					.getServiciosAdicionales()) {
+				if (servicioAdicional.isEsAlquiler() && servicioAdicional.isChecked()) {
+					alquileres++;
+				}
+			}
+			if (alquileres != 1) {
+				validator.addError(Sfa.constant().ERR_FALTA_ALQUILER().replaceAll(V1, linea.getAlias()));
+			}
+		}
+	}
+
+	private void validarCargoActivacion(GwtValidator validator, LineaSolicitudServicioDto linea) {
+		if (linea.getTipoSolicitud().getTipoSolicitudBase().getId().equals(TipoSolicitudBaseDto.ID_VENTA_CDW)) {
+			boolean hasCargoActivaciónCDW = false;
+			for (ServicioAdicionalLineaSolicitudServicioDto servicioAdicional : linea
+					.getServiciosAdicionales()) {
+				if (servicioAdicional.isUnicaVez() && servicioAdicional.isChecked()) {
+					hasCargoActivaciónCDW = true;
+					break;
+				}
+			}
+			if (!hasCargoActivaciónCDW) {
+				validator.addError(Sfa.constant().ERR_FALTA_CARGO_ACTIVACION_CDW().replaceAll(V1,
+						linea.getAlias()));
+			}
+		}
+	}
+
 	/** Recalcula y actualiza el valor de las etiquetas */
 	public void recarcularValores() {
-		double precioLista = 0;
-		double precioVenta = 0;
-		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
-			linea.refreshPrecioServiciosAdicionales();
-			precioLista = precioLista + linea.getPrecioLista() + linea.getPrecioListaPlan()
-					+ linea.getPrecioServiciosAdicionalesLista() + linea.getPrecioGarantiaLista();
-			precioVenta = precioVenta + linea.getPrecioVenta() + linea.getPrecioVentaPlan()
-					+ linea.getPrecioServiciosAdicionalesVenta() + linea.getPrecioGarantiaVenta();
-		}
+		solicitudServicio.refreshPreciosTotales();
+		double precioLista = solicitudServicio.getPrecioListaTotal();
+		double precioVenta = solicitudServicio.getPrecioVentaTotal();
 
 		precioListaText.setHTML(currFormatter.format(precioLista));
 		desvioText.setHTML(currFormatter.format(precioLista - precioVenta));
