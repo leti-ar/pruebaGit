@@ -227,6 +227,7 @@ public class CuentaDatosForm extends Composite {
 							if (result != null) {
 								setearValoresRtaVeraz(result, camposTabDatos.getApellido(), camposTabDatos.getNombre(), 
 										camposTabDatos.getRazonSocial(), camposTabDatos.getSexo(), camposTabDatos.getVerazRta());
+								camposTabDatos.exportarNombreApellidoARazonSocial();
 							}
 						}
 					});

@@ -311,7 +311,7 @@ public class CuentaUIData extends UIData {
 	}
 
 	
-	private void exportarNombreApellidoARazonSocial() {
+	public void exportarNombreApellidoARazonSocial() {
 		nombre.setText(nombre.getText().trim().toUpperCase());
 		apellido.setText(apellido.getText().trim().toUpperCase());
 		razonSocial.setText(nombre.getText() + " " + apellido.getText());
