@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client.ss;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
+import ar.com.snoop.gwt.commons.client.util.WindowUtils;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
 import com.google.gwt.user.client.Command;
@@ -28,6 +29,7 @@ public class CerrarSSDialog extends NextelDialog {
 	private FlowPanel cierreExitoso;
 	private Command aceptarCommand;
 	private InlineHTML successText;
+	private SimpleLink solicitudLink;
 
 	private static Command closeCommand;
 	private static CerrarSSDialog instance;
@@ -70,9 +72,10 @@ public class CerrarSSDialog extends NextelDialog {
 		layout.addStyleName("m30 cierreExitosoTable");
 		layout.getRowFormatter().setVerticalAlign(0, HasAlignment.ALIGN_MIDDLE);
 		cierreExitoso.add(layout);
+		solicitudLink = new SimpleLink("Solicitud link", History.getToken(), true);
 		Grid solicitudRtf = new Grid(1, 2);
 		solicitudRtf.setWidget(0, 0, IconFactory.word());
-		solicitudRtf.setWidget(0, 1, new SimpleLink("Solicitud link", History.getToken(), true));
+		solicitudRtf.setWidget(0, 1, solicitudLink);
 		cierreExitoso.add(solicitudRtf);
 		cierreExitoso.setWidth("350px");
 		add(cierreExitoso);
@@ -97,10 +100,14 @@ public class CerrarSSDialog extends NextelDialog {
 		showAndCenter();
 	}
 
-	public void showCierreExitoso() {
+	public void showCierreExitoso(String filename) {
 		loadingPanel.setVisible(false);
 		cierreExitoso.setVisible(true);
 		formButtons.setVisible(true);
+		
+		String rtfUrl = WindowUtils.getContextRoot()
+		+ "/download/download?module=solicitudes&service=rtf&name=" +filename + ".rtf";
+		solicitudLink.setTargetHistoryToken(rtfUrl);
 		showAndCenter();
 	}
 

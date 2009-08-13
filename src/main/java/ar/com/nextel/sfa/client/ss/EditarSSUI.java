@@ -290,12 +290,13 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 							aceptar = CerrarSSDialog.getCloseCommand();
 						}
 						CerrarSSDialog.getInstance().setAceptarCommand(aceptar);
-						CerrarSSDialog.getInstance().showCierreExitoso();
+						CerrarSSDialog.getInstance().showCierreExitoso(result.getRtfFileName());
 					} else {
 						ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
 						ErrorDialog.getInstance().show(MessageUtils.getMessagesHTML(result.getMessages()));
 					}
 				}
+
 				public void failure(Throwable caught) {
 					CerrarSSDialog.getInstance().hide();
 					super.failure(caught);
