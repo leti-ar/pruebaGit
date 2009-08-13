@@ -225,7 +225,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 	}
 
-	private void reservar() {
+	public void reservar() {
 		GwtValidator validator = new GwtValidator();
 		validator.addTarget(plan).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Plan"));
 		validator.addTarget(modalidadCobro).required(
@@ -405,10 +405,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 		} else if (sender == cantidad) {
 			refreshTotalLabel();
-			if (!"".equals(cantidad.getText().trim())) {
-				int cant = Integer.parseInt(cantidad.getText());
-				enableAliasYReserva(cant == 1);
-			}
+			enableAliasYReserva(isCantiadIgualNadaOUno());
 		} else if (sender == modeloEq) {
 			// Cargo los items correspondientes al modelo seleccionado
 			ModeloDto modelo = (ModeloDto) modeloEq.getSelectedItem();
@@ -594,8 +591,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			validator.addTarget(plan).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Plan"));
 			validator.addTarget(localidad).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Localidad"));
-			validator.addTarget(alias).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Alias"));
+			if (!"".equals(cantidad.getText().trim()) && Integer.parseInt(cantidad.getText()) == 1) {
+				validator.addTarget(alias).required(
+						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Alias"));
+			}
 			if (tipoEdicion != VENTA_CDW) {
 				validator.addTarget(modalidadCobro).required(
 						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "CPP/MPP"));
@@ -664,6 +663,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			alias.setText(linea.getAlias());
 		}
 		cantidad.setText(linea.getCantidad() != null ? "" + linea.getCantidad() : "");
+		enableAliasYReserva(isCantiadIgualNadaOUno());
 		ddn.setChecked(linea.getDdn());
 		ddi.setChecked(linea.getDdi());
 		if (linea.getLocalidad() != null) {
@@ -790,5 +790,13 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 	public Widget getTotalLabel() {
 		return totalLabel;
+	}
+
+	public boolean hasNumeroSinReservar() {
+		return !"".equals(reservar.getText().trim()) && confirmarReserva.isVisible();
+	}
+
+	private boolean isCantiadIgualNadaOUno() {
+		return "".equals(cantidad.getText().trim()) || Integer.parseInt(cantidad.getText()) == 1;
 	}
 }
