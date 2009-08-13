@@ -42,10 +42,6 @@ A {
 	text-align: left !important;
 }
 
-.floatRight {
-	float: right;
-}
-
 .dataTable TD {
 	text-align: center;
 }
@@ -527,6 +523,10 @@ A {
 
 .floatRight,.exportarExcelSS {
 	float: right;
+}
+
+.floatLeft {
+	float: left;	
 }
 
 .fontNormalGris {
