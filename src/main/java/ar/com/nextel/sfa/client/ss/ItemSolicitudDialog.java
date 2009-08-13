@@ -12,6 +12,7 @@ import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
+import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
@@ -80,22 +81,43 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 		controller.getLineasSolicitudServicioInitializer(initTiposOrdenCallback());
 	}
 
-	public void onClick(Widget sender) {
+	public void onClick(final Widget sender) {
 		if (sender == aceptar || sender == nuevoItem) {
-			List errors = itemSolicitudUIData.validate();
-			if (errors.isEmpty()) {
-				aceptarCommand.execute();
-				if (sender == aceptar) {
-					hide();
-				} else if (sender == nuevoItem) {
-					show(new LineaSolicitudServicioDto());
-				}
+			if (itemSolicitudUIData.hasNumeroSinReservar()) {
+				MessageDialog.getInstance().showSiNo("", getReservarYGuardarCommand(), new Command() {
+					public void execute() {
+						MessageDialog.getInstance().hide();
+						executeItemCreation(sender);
+					}
+				});
 			} else {
-				ErrorDialog.getInstance().show(errors);
+				executeItemCreation(sender);
 			}
 		} else if (sender == cerrar) {
 			hide();
 		}
+	}
+
+	private void executeItemCreation(Widget sender) {
+		List errors = itemSolicitudUIData.validate();
+		if (errors.isEmpty()) {
+			aceptarCommand.execute();
+			if (sender == aceptar) {
+				hide();
+			} else if (sender == nuevoItem) {
+				show(new LineaSolicitudServicioDto());
+			}
+		} else {
+			ErrorDialog.getInstance().show(errors);
+		}
+	}
+
+	private Command getReservarYGuardarCommand() {
+		return new Command() {
+			public void execute() {
+				itemSolicitudUIData.reservar();
+			}
+		};
 	}
 
 	private DefaultWaitCallback initTiposOrdenCallback() {
