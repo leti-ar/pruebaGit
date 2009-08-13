@@ -5,7 +5,6 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
@@ -14,8 +13,6 @@ import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.WindowUtils;
 
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -58,18 +55,18 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 	public BuscarSSCerradasResultUI() {
 		super();
 		addStyleName("gwt-BuscarCuentaResultPanel");
-		resultTotalTableWrapper = new FlowPanel();	
+		resultTotalTableWrapper = new FlowPanel();
 		exportarExcel = new SimplePanel();
 		exportarExcel.setHeight("23px");
 		icon = IconFactory.excel();
 		icon.addStyleName("exportarExcelSS m3");
-		exportarExcel.add(icon);		
+		exportarExcel.add(icon);
 		resultTableWrapper = new FlowPanel();
-		resultTableWrapper.addStyleName("resultTableWrapper");		
+		resultTableWrapper.addStyleName("resultTableWrapper");
 		resultTable = new FlexTable();
 		resultTable.addTableListener(new Listener());
 		initTable(resultTable);
-		resultTableWrapper.add(resultTable);		
+		resultTableWrapper.add(resultTable);
 		resultTotalTableWrapper.add(exportarExcel);
 		resultTotalTableWrapper.add(resultTableWrapper);
 		setVisible(false);
@@ -92,23 +89,25 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 		cantEqFirmados = 0;
 		SolicitudRpcService.Util.getInstance().searchSSCerrada(solicitudServicioCerradaDto,
 				new DefaultWaitCallback<List<SolicitudServicioCerradaResultDto>>() {
-			public void success(List<SolicitudServicioCerradaResultDto> result) {
-				if (result != null) {
-					if (result.size() == 0) {
-						//cambiosSSCerradasResultUI.CleanCambiosTable();
-						//cambiosSSCerradasResultUI.setSolicitudServicioCerradaDto(new DetalleSolicitudServicioDto("", "", "", null));
-						MessageDialog.getInstance().showAceptar("No se encontraron datos con el criterio utilizado",
-								MessageDialog.getCloseCommand());
-						cambiosSSCerradasResultUI.hideCambiosTable();
+					public void success(List<SolicitudServicioCerradaResultDto> result) {
+						if (result != null) {
+							if (result.size() == 0) {
+								// cambiosSSCerradasResultUI.CleanCambiosTable();
+								// cambiosSSCerradasResultUI.setSolicitudServicioCerradaDto(new
+								// DetalleSolicitudServicioDto("", "", "", null));
+								MessageDialog.getInstance().showAceptar(
+										"No se encontraron datos con el criterio utilizado",
+										MessageDialog.getCloseCommand());
+								cambiosSSCerradasResultUI.hideCambiosTable();
+							}
+							loadExcel();
+							setSolicitudServicioDto(result);
+							buscarSSTotalesResultUI.setValues(cantEquipos.toString(), cantPataconex
+									.toString(), String.valueOf(cantEqFirmados));
+							buscarSSTotalesResultUI.setVisible(true);
+						}
 					}
-					loadExcel();
-					setSolicitudServicioDto(result);
-					buscarSSTotalesResultUI.setValues(cantEquipos.toString(), cantPataconex
-							.toString(), String.valueOf(cantEqFirmados));
-					buscarSSTotalesResultUI.setVisible(true);
-				}
-			}
-		});
+				});
 	}
 
 	public void setSolicitudServicioDto(
@@ -125,8 +124,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 						new DefaultWaitCallback<String>() {
 							public void success(String result) {
 								if (result != null) {
-									String contextRoot = getContextRoot();
-									WindowUtils.redirect("/" + contextRoot
+									WindowUtils.redirect("/" + WindowUtils.getContextRoot()
 											+ "/download/download?module=solicitudes&service=xls&name="
 											+ result + ".xls");
 								}
@@ -137,14 +135,14 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 		return exportarExcel;
 	}
 
-	private Widget loadTable() {		
-		while(resultTable.getRowCount() > 1){
+	private Widget loadTable() {
+		while (resultTable.getRowCount() > 1) {
 			resultTable.removeRow(1);
 		}
-		
+
 		int row = 1;
 
-		if (solicitudesServicioCerradaResultDto != null) {			
+		if (solicitudesServicioCerradaResultDto != null) {
 			exportarExcel.setVisible(true);
 			for (Iterator iter = solicitudesServicioCerradaResultDto.iterator(); iter.hasNext();) {
 				SolicitudServicioCerradaResultDto solicitudServicioCerradaResultDto = (SolicitudServicioCerradaResultDto) iter
@@ -155,7 +153,8 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 				if (solicitudServicioCerradaResultDto.getRazonSocialCuenta() != null) {
 					resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getRazonSocialCuenta());
 				} else {
-					resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getCuenta().getPersona().getRazonSocial());
+					resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getCuenta().getPersona()
+							.getRazonSocial());
 				}
 				resultTable.setHTML(row, 4, solicitudServicioCerradaResultDto.getCantidadEquiposPorCuenta()
 						.toString());
@@ -214,7 +213,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 						});
 			} else if ((arg1 >= 1) && (arg2 == 0)) {
 
-				String contextRoot = getContextRoot();
+				String contextRoot = WindowUtils.getContextRoot();
 				if (solicitud.isCliente()) {
 					// Si es cliente usamos el codigo Vantive, sino el Id (ya que no podemos
 					// guardar archivos con los caracteres de VANCUC
@@ -244,12 +243,6 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 
 	public void setCambiosSSCerradasResultUI(CambiosSSCerradasResultUI cambiosSSCerradasResultUI) {
 		this.cambiosSSCerradasResultUI = cambiosSSCerradasResultUI;
-	}
-
-	private String getContextRoot() {
-		String url = Window.Location.getHref();
-		String[] urlSplited = url.split("/");
-		return urlSplited[3];
 	}
 
 }
