@@ -9,6 +9,7 @@ public class GeneracionCierreResultDto implements IsSerializable {
 
 	private List<MessageDto> messages;
 	private boolean error;
+	private String rtfFileName;
 
 	public GeneracionCierreResultDto() {
 		messages = new ArrayList<MessageDto>();
@@ -29,6 +30,14 @@ public class GeneracionCierreResultDto implements IsSerializable {
 
 	public void setError(boolean error) {
 		this.error = error;
+	}
+
+	public String getRtfFileName() {
+		return rtfFileName;
+	}
+
+	public void setRtfFileName(String rtfFileName) {
+		this.rtfFileName = rtfFileName;
 	}
 
 }
