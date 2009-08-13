@@ -459,10 +459,15 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar);
 			// metodo changelog
 			result.setError(response.getMessages().hasErrors());
-		if (cerrar == true && response.getMessages().hasErrors() == false && sessionContextLoader.getVendedor().getTipoVendedor().getCodigoVantive().equals(KnownInstanceIdentifier.TIPO_VENDEDOR_EECC.getKey())){
-			generarChangeLog(solicitudServicioDto.getId(), solicitudServicio.getVendedor().getId());
-		}
-		result.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));			
+			if (cerrar == true
+					&& response.getMessages().hasErrors() == false
+					&& sessionContextLoader.getVendedor().getTipoVendedor().getCodigoVantive().equals(
+							KnownInstanceIdentifier.TIPO_VENDEDOR_EECC.getKey())) {
+				generarChangeLog(solicitudServicioDto.getId(), solicitudServicio.getVendedor().getId());
+			}
+			result.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
+			result.setRtfFileName(solicitudServicio.getCuenta().getCodigoVantive() + "-5-"
+					+ solicitudServicio.getNumero());
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
