@@ -327,7 +327,6 @@ public class CuentaUIData extends UIData {
 		oppVisitas.addStyleName("fontNormalGris");
 		observaciones.addStyleName("obsTextAreaCuentaData");
 		oppObservaciones.addStyleName("obsTextAreaCuentaData");
-
 		
         //nombres
 		nombre.setName(Sfa.constant().nombre());

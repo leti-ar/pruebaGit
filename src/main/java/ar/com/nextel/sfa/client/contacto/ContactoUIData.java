@@ -176,6 +176,8 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 					}			
 				}
 			}
+			cargo.setSelectedItem(contactoCuentaDto.getPersona().getCargo());
+			
 			//completo los emails
 			List<EmailDto> listaEmails = new ArrayList<EmailDto>();
 			listaEmails = contactoCuentaDto.getPersona().getEmails();
@@ -199,6 +201,8 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 		newContactosId--;
 		contactoDto.setId(newContactosId);
 		contactoDto.setPersona(this.getPersonaDto());
+		CargoDto cargo = new CargoDto(new Long (this.getCargo().getSelectedItemId()),this.getCargo().getSelectedItemText());
+		contactoDto.getPersona().setCargo(cargo);
 		return contactoDto;
 	}
 	
