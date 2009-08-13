@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -138,29 +139,25 @@ public class VariosSSUI extends Composite {
 	}
 
 	private Widget getScoring() {
-		TitledPanel scoringPanel = new TitledPanel(IconFactory.scoring() + Sfa.constant().consultarScoringTitle());
+		HTML titleImage = IconFactory.scoring();
+		titleImage.addStyleName("floatLeft");
+		TitledPanel scoringPanel = new TitledPanel(titleImage + Sfa.constant().consultarScoringTitle());
 		final SimpleLink consultarScoring = new SimpleLink("Consultar Scoring");
 		consultarScoring.addStyleName("ml5");
 		scoring = new InlineHTML();
 		scoring.addStyleName("ml5");
 		scoringWrapper = new HorizontalPanel();
 		scoringWrapper.setWidth("100%");
-		//final PopupPanel popupCrearSS = new PopupPanel(true);
-		//popupCrearSS.addStyleName("dropUpStyle");
-		//popupCrearSS.setWidget(new HTML("No implementado"));
 		consultarScoring.addClickListener(new ClickListener() {
-			public void onClick(Widget arg0) {				
-				//Sacar el hardcode
-				//popupCrearSS.setPopupPosition(consultarScoring.getAbsoluteLeft(), consultarScoring.getAbsoluteTop());
-				InfocomRpcService.Util.getInstance().consultarScoring("6.251678", new DefaultWaitCallback<ScoringDto>() {
-					public void success(ScoringDto result) {
-						if (result != null) {					
-							scoring.setText(result.getMensajeAdicional());
-							//popupCrearSS.setWidget(scoringLabel);
-							//popupCrearSS.show();
-						}
-					}
-				});			
+			public void onClick(Widget arg0) {
+				InfocomRpcService.Util.getInstance().consultarScoring("6.251678",
+						new DefaultWaitCallback<ScoringDto>() {
+							public void success(ScoringDto result) {
+								if (result != null) {
+									scoring.setText(result.getMensajeAdicional());
+								}
+							}
+						});
 			}
 		});
 		scoringWrapper.add(scoring);
