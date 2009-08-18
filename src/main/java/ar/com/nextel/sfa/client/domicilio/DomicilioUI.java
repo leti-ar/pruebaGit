@@ -123,9 +123,9 @@ public class DomicilioUI extends NextelDialog {
 		validadoPorPanel = new HorizontalPanel();
 		validadoPorPanel.add(domiciliosData.getValidado());
 		validadoPorPanel.add(labelValidado1);	
-		validadoPorPanel.add(labelValidado2);
+		//validadoPorPanel.add(labelValidado2);
 		validadoPorPanel.addStyleName("ml15");
-		validadoPorPanel.setWidth("30%");
+		//validadoPorPanel.setWidth("30%");
 
 		// Campos Obligatorios:
 		calleLabel.addStyleName("req");
