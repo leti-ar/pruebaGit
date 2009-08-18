@@ -8,7 +8,7 @@ import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
-import ar.com.nextel.sfa.client.dto.ModelosResultDto;
+import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
@@ -77,10 +77,10 @@ public interface SolicitudRpcService extends RemoteService {
 
 	public void desreservarNumeroTelefono(long numero) throws RpcExceptionMessages;
 
-	public ModelosResultDto getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios)
+	public List<ModeloDto> getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios)
 			throws RpcExceptionMessages;
 
-	public String verificarSim(String sim) throws RpcExceptionMessages;
+	public String verificarNegativeFiles(String numero) throws RpcExceptionMessages;
 
 	public GeneracionCierreResultDto generarCerrarSolicitud(SolicitudServicioDto solicitudServicioDto,
 			String pinMaestro, boolean cerrar) throws RpcExceptionMessages;

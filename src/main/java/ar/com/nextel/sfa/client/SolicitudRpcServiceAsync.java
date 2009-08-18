@@ -8,7 +8,7 @@ import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
-import ar.com.nextel.sfa.client.dto.ModelosResultDto;
+import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
@@ -63,9 +63,9 @@ public interface SolicitudRpcServiceAsync {
 	public void desreservarNumeroTelefono(long numero, AsyncCallback callback);
 
 	public void getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios,
-			AsyncCallback<ModelosResultDto> callback);
+			AsyncCallback<List<ModeloDto>> callback);
 
-	public void verificarSim(String sim, AsyncCallback<String> callback);
+	public void verificarNegativeFiles(String numero, AsyncCallback<String> callback);
 
 	public void generarCerrarSolicitud(SolicitudServicioDto solicitudServicioDto, String pinMaestro,
 			boolean cerrar, AsyncCallback<GeneracionCierreResultDto> callback);
