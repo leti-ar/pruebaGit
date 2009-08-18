@@ -170,11 +170,11 @@ public class InfocomUIData extends UIData {
 	}
 	
 	/**Obtiene la información de Resumen Por Equipo*/
-	private void getResumenPorEquipo(String numeroCuenta, String numeroResponsablePago) {
-		InfocomRpcService.Util.getInstance().getResumenEquipos(numeroCuenta, numeroResponsablePago, new DefaultWaitCallback<ResumenEquipoDto>() {
+	private void getResumenPorEquipo(String numeroCuenta, final String numeroResponsablePago) {
+		InfocomRpcService.Util.getInstance().getResumenEquipos(numeroCuenta, numeroResponsablePago, new DefaultWaitCallback<ResumenEquipoDto>() {			
 			public void success(ResumenEquipoDto result) {
 				if (result != null) {
-					ResumenEquipoPopUp resumenEquipoPopUp = new ResumenEquipoPopUp("Cuentas - Resumen Por Equipos");
+					ResumenEquipoPopUp resumenEquipoPopUp = new ResumenEquipoPopUp("Cuentas - Resumen Por Equipos", numeroResponsablePago);
 					resumenEquipoPopUp.setResumenPorEquipo(result);
 					resumenEquipoPopUp.showAndCenter();
 				}
@@ -250,10 +250,12 @@ public class InfocomUIData extends UIData {
 		flota.setText(infocom.getFlota());
 		limCredito.setText(infocom.getLimiteCredito());
 		setDescripcion(infocom.getEquiposServicios());
+		
 		for (Iterator iterator = (infocom.getResponsablePago()).iterator(); iterator.hasNext();) {
 			CuentaDto cuentaDto = (CuentaDto) iterator.next();
 			responsablePago.addItem(cuentaDto.getCodigoVantive());
 		}
+		
 		responsablePago.setSelectedIndex(1);
 	}
 
