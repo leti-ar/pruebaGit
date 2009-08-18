@@ -61,7 +61,6 @@ import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.LocalidadDto;
 import ar.com.nextel.sfa.client.dto.MessageDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
-import ar.com.nextel.sfa.client.dto.ModelosResultDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
@@ -410,34 +409,22 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		}
 	}
 
-	public ModelosResultDto getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios)
+	public List<ModeloDto> getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios)
 			throws RpcExceptionMessages {
-		ModelosResultDto modelosResultDto = new ModelosResultDto();
-		modelosResultDto.setModelos(mapper.convertList(solicitudServicioRepository.getModelos(imei),
-				ModeloDto.class));
-		for (ModeloDto modelo : modelosResultDto.getModelos()) {
+		List<ModeloDto> modelos = mapper.convertList(solicitudServicioRepository.getModelos(imei),
+				ModeloDto.class);
+		for (ModeloDto modelo : modelos) {
 			modelo.setItems(mapper.convertList(solicitudServicioRepository.getItems(idTipoSolicitud,
 					idListaPrecios, modelo.getId()), ItemSolicitudTasadoDto.class));
 		}
-		NegativeFilesBusinessResult negativeFilesResult = null;
-		try {
-			negativeFilesResult = negativeFilesBusinessOperator.verificarNegativeFiles(imei);
-			if (negativeFilesResult != null) {
-				modelosResultDto.setResult(negativeFilesResult.getAvalonResultDto().isResult());
-				modelosResultDto.setMessage(negativeFilesResult.getAvalonResultDto().getMessage());
-			}
-		} catch (BusinessException e) {
-			throw ExceptionUtil.wrap(e);
-		}
-
-		return modelosResultDto;
+		return modelos;
 	}
 
 	/** Retorna null si la SIM es correcta. De lo contrario retorna el mensaje de error */
-	public String verificarSim(String sim) throws RpcExceptionMessages {
+	public String verificarNegativeFiles(String numero) throws RpcExceptionMessages {
 		NegativeFilesBusinessResult negativeFilesResult = null;
 		try {
-			negativeFilesResult = negativeFilesBusinessOperator.verificarNegativeFiles(sim);
+			negativeFilesResult = negativeFilesBusinessOperator.verificarNegativeFiles(numero);
 		} catch (BusinessException e) {
 			throw ExceptionUtil.wrap(e);
 		}
