@@ -10,7 +10,7 @@ import com.google.gwt.user.client.ui.Composite;
  **/
 public class CuentaInfocomForm extends Composite {
 
-	private InfocomUI infocomUI;
+	private InfocomUI infocomUI = InfocomUI.getInstance();
 	private static CuentaInfocomForm instance = new CuentaInfocomForm();
 	private String idCuenta;
 
@@ -26,17 +26,13 @@ public class CuentaInfocomForm extends Composite {
 	}
 
 	private void init() {
-		//infocomUI = new InfocomUI();
-		infocomUI = InfocomUI.getInstance();
-		Long cuentaID = Long.parseLong(HistoryUtils.getParam("cuenta_id"));
-		infocomUI.setIdCuenta(cuentaID.toString());
-		infocomUI.getInstance().firstLoad();
+		infocomUI.firstLoad();
 		initWidget(infocomUI);
 	}
 
 	public void load() {
-		InfocomUI.getInstance().setIdCuenta(idCuenta);
-		InfocomUI.getInstance().load();
+		//infocomUI = InfocomUI.getInstance();
+		infocomUI.load();
 	}
 
 	public String getIdCuenta() {
