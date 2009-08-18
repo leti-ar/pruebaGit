@@ -30,6 +30,7 @@ public class CerrarSSDialog extends NextelDialog {
 	private Command aceptarCommand;
 	private InlineHTML successText;
 	private SimpleLink solicitudLink;
+	private HTML loadingMessage;
 
 	private static Command closeCommand;
 	private static CerrarSSDialog instance;
@@ -56,7 +57,8 @@ public class CerrarSSDialog extends NextelDialog {
 		mainPanel.setWidth("350px");
 		loadingPanel = new FlowPanel();
 		loadingPanel.addStyleName("alignCenter m30");
-		loadingPanel.add(new HTML("Cerrando solicitud"));
+		loadingMessage = new HTML("Cerrando solicitud");
+		loadingPanel.add(loadingMessage);
 		loadingPanel.add(new Image("images/loader.gif"));
 		add(loadingPanel);
 		loadingPanel.setVisible(false);
@@ -94,6 +96,7 @@ public class CerrarSSDialog extends NextelDialog {
 	public void showLoading(boolean cerrando) {
 		successText.setText("La solicitud se " + (cerrando ? "cerró" : "generó") + " correctamente");
 		setDialogTitle(cerrando ? "Cerrar SS" : "Generar SS");
+		loadingMessage.setHTML(cerrando ? "Cerrando solicitud" : "Generando solicitud");
 		loadingPanel.setVisible(true);
 		cierreExitoso.setVisible(false);
 		formButtons.setVisible(false);
@@ -104,9 +107,9 @@ public class CerrarSSDialog extends NextelDialog {
 		loadingPanel.setVisible(false);
 		cierreExitoso.setVisible(true);
 		formButtons.setVisible(true);
-		
+
 		String rtfUrl = WindowUtils.getContextRoot()
-		+ "/download/download?module=solicitudes&service=rtf&name=" +filename + ".rtf";
+				+ "/download/download?module=solicitudes&service=rtf&name=" + filename + ".rtf";
 		solicitudLink.setTargetHistoryToken(rtfUrl);
 		showAndCenter();
 	}
