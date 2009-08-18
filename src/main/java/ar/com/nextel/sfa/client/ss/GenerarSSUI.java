@@ -37,7 +37,6 @@ public class GenerarSSUI extends NextelDialog implements ClickListener {
 		setFooterVisible(false);
 		setFormButtonsVisible(true);
 		generarSSData = new GenerarSSUIData();
-		generarSSData.getNuevo().addClickListener(this);
 		FlexTable primeraTabla = new FlexTable();
 		primeraTabla.setWidth("100%");
 		// primeraTabla.getFlexCellFormatter().setColSpan(1, 1, 2);
