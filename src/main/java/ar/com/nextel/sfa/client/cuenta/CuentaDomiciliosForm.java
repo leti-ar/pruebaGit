@@ -41,6 +41,7 @@ public class CuentaDomiciliosForm extends Composite {
 	private boolean tienePrincipalEntrega = false;
 	private boolean huboCambios = false;
 	private Button crearDomicilio;
+
 	public static CuentaDomiciliosForm getInstance() {
 		return instance;
 	}
@@ -62,9 +63,9 @@ public class CuentaDomiciliosForm extends Composite {
 				DomicilioUI.getInstance().setComandoAceptar(new Command() {
 					public void execute() {
 						PersonaDto persona = null;
-                        if (isSuscriptor(cuentaDto)) {
+						if (isSuscriptor(cuentaDto)) {
 							persona = ((SuscriptorDto) cuentaDto).getGranCuenta().getPersona();
-						} else  {
+						} else {
 							persona = cuentaDto.getPersona();
 						}
 						DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
@@ -128,7 +129,7 @@ public class CuentaDomiciliosForm extends Composite {
 		setTienePrincipalFacturacion(false);
 
 		List<DomiciliosCuentaDto> domicilios = new ArrayList<DomiciliosCuentaDto>();
-        if (isSuscriptor(cuentaDto)) {
+		if (isSuscriptor(cuentaDto)) {
 			domicilios = ((SuscriptorDto) cuentaDto).getGranCuenta().getPersona().getDomicilios();
 		} else {
 			domicilios = cuentaDto.getPersona().getDomicilios();
@@ -193,7 +194,8 @@ public class CuentaDomiciliosForm extends Composite {
 				if (row != 0) {
 					DomiciliosCuentaDto domicilio = null;
 					if (isSuscriptor(cuentaDto)) {
-						domicilio = ((SuscriptorDto) cuentaDto).getGranCuenta().getPersona().getDomicilios().get(row - 1);
+						domicilio = ((SuscriptorDto) cuentaDto).getGranCuenta().getPersona().getDomicilios()
+								.get(row - 1);
 					} else {
 						domicilio = cuentaDto.getPersona().getDomicilios().get(row - 1);
 					}
@@ -240,7 +242,8 @@ public class CuentaDomiciliosForm extends Composite {
 						if (EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilioCopiado.getIdEntrega())) {
 							domicilioCopiado.setIdEntrega(EstadoTipoDomicilioDto.SI.getId());
 						}
-						if (EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilioCopiado.getIdFacturacion())) {
+						if (EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(
+								domicilioCopiado.getIdFacturacion())) {
 							domicilioCopiado.setIdFacturacion(EstadoTipoDomicilioDto.SI.getId());
 						}
 						DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,
@@ -287,29 +290,34 @@ public class CuentaDomiciliosForm extends Composite {
 			}
 		});
 	}
-	
+
 	boolean isGranCuenta(CuentaDto cuentaDto) {
 		return cuentaDto.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.CTA.getTipo());
 	}
+
 	boolean isDivision(CuentaDto cuentaDto) {
 		return cuentaDto.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.DIV.getTipo());
 	}
+
 	boolean isSuscriptor(CuentaDto cuentaDto) {
 		return cuentaDto.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.SUS.getTipo());
 	}
 
 	public List<String> validarCompletitud() {
-		GwtValidator validator = CuentaEdicionTabPanel.getInstance().getValidator();
+		return validarCompletitud(cuentaDto.getPersona().getDomicilios());
+	}
+
+	public static List<String> validarCompletitud(List<DomiciliosCuentaDto> domicilios) {
+		GwtValidator validator = new GwtValidator();
 		validator.clear();
 		boolean hayDomicilioEntrega = false;
 		boolean hayDomicilioFacturacion = false;
 
-		List<DomiciliosCuentaDto> listaDomicilios = cuentaDto.getPersona().getDomicilios();
-		if (listaDomicilios == null || listaDomicilios.size() < 0) {
+		if (domicilios == null || domicilios.size() < 0) {
 			validator.addError(Sfa.constant().ERR_DOMICILIO_ENTREGA());
 			validator.addError(Sfa.constant().ERR_DOMICILIO_FACTURACION());
 		} else {
-			for (DomiciliosCuentaDto domi : listaDomicilios) {
+			for (DomiciliosCuentaDto domi : domicilios) {
 				if ((domi.getIdEntrega() != null) && (domi.getIdFacturacion() != null)) {
 					if (!domi.getIdEntrega().equals(EstadoTipoDomicilioDto.NO.getId())) {
 						hayDomicilioEntrega = new Boolean(true);
@@ -357,8 +365,9 @@ public class CuentaDomiciliosForm extends Composite {
 	public void setDomicilioAEditar(DomiciliosCuentaDto domicilioAEditar) {
 		this.domicilioAEditar = domicilioAEditar;
 	}
+
 	public Button getCrearDomicilio() {
 		return crearDomicilio;
 	}
-	
+
 }
