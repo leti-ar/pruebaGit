@@ -26,12 +26,14 @@ public class ResumenEquipoPopUp extends NextelDialog {
 	private InlineHTML flota;
 	private InlineHTML factura;
 	private InlineHTML emision;
+	private String responsablePago;
 	
 	private final NumberFormat numberFormat = NumberFormat.getCurrencyFormat();
 
-	public ResumenEquipoPopUp(String title) {
+	public ResumenEquipoPopUp(String title, String responsablePago) {
 		super(title);
 		this.addStyleName("equipoDialog");
+		this.responsablePago = responsablePago;
 		initResumenEquipoPopUp();
 	}
 
@@ -54,6 +56,7 @@ public class ResumenEquipoPopUp extends NextelDialog {
 		encabezadoTable.setWidget(2, 3, emision);
 		this.add(encabezadoTable);
 		resumenTable = new FlexTable();
+		resumenTable.addStyleName("miTablaInvisible");
 		initTable(resumenTable);
 
 		SimpleLink cerrar = new SimpleLink("Cerrar");
@@ -73,7 +76,7 @@ public class ResumenEquipoPopUp extends NextelDialog {
 		contPanel.addStyleName("resultTableWrapper");
 		String[] widths = { "74px", "99px", "99px", "99px", "99px", "99px",
 				"99px", "99px", "99px", "99px", "99px", "99px", "99px", "99px" };
-		for (int col = 0; col < widths.length; col++) {
+		for (int col = 1; col < widths.length; col++) {
 			table.getColumnFormatter().setWidth(col, widths[col]);
 		}
 		table.getColumnFormatter().addStyleName(0, "alignCenter");
@@ -82,20 +85,24 @@ public class ResumenEquipoPopUp extends NextelDialog {
 		table.setCellPadding(0);
 		table.setCellSpacing(0);
 		table.getRowFormatter().addStyleName(0, "header");
-		table.setHTML(0, 0, "Nro.Id");
-		table.setHTML(0, 1, "Nro.Tel");
-		table.setHTML(0, 2, "Abono");
-		table.setHTML(0, 3, "Alq");
-		table.setHTML(0, 4, "Gtía");
-		table.setHTML(0, 5, "Serv");
-		table.setHTML(0, 6, "Prop y Reint");
-		table.setHTML(0, 7, "Exc. Radio");
-		table.setHTML(0, 8, "Exc. Tel");
-		table.setHTML(0, 9, "Red Fija");
-		table.setHTML(0, 10, "DDN");
-		table.setHTML(0, 11, "DDI y Roam");
-		table.setHTML(0, 12, "Pagers");
-		table.setHTML(0, 13, "Tot c/imp");
+		table.setHTML(0, 0, "Cliente");
+		table.setHTML(0, 1, "Nro.Id");
+		table.setHTML(0, 2, "Nro.Tel");
+		table.setHTML(0, 3, "Abono");
+		table.setHTML(0, 4, "Alq");
+		table.setHTML(0, 5, "Gtía");
+		table.setHTML(0, 6, "Serv");
+		table.setHTML(0, 7, "Prop y Reint");
+		table.setHTML(0, 8, "Exc. Radio");
+		table.setHTML(0, 9, "Exc. Tel");
+		table.setHTML(0, 10, "Red Fija");
+		table.setHTML(0, 11, "DDN");
+		table.setHTML(0, 12, "DDI y Roam");
+		table.setHTML(0, 13, "Pagers");
+		table.setHTML(0, 14, "Tot c/imp");
+		if (responsablePago!=null) {
+			//table.getColumnFormatter().addStyleName(0, "cg1");
+		}
 		contPanel.add(table);
 		this.add(contPanel);
 	}
@@ -106,11 +113,16 @@ public class ResumenEquipoPopUp extends NextelDialog {
 	}
 	
 	private void setEncabezado(ResumenEquipoDto resumenEquipoDto) {
-		razonSocial.setText(resumenEquipoDto.getRazonSocial()); 
-		numeroCliente.setText(resumenEquipoDto.getNumeroCliente()); 
-		flota.setText(resumenEquipoDto.getFlota()); 
-		factura.setText(resumenEquipoDto.getFacturaNumero());
-		emision.setText(resumenEquipoDto.getEmision()); 
+		if (responsablePago!=null) {
+			razonSocial.setText(resumenEquipoDto.getRazonSocial());
+			numeroCliente.setText(resumenEquipoDto.getNumeroCliente());
+			flota.setText(resumenEquipoDto.getFlota());
+			factura.setText(resumenEquipoDto.getFacturaNumero());
+			emision.setText(resumenEquipoDto.getEmision());
+		} else {
+			razonSocial.setText(resumenEquipoDto.getRazonSocial());
+			flota.setText(resumenEquipoDto.getFlota());
+		}
 	}
 	
 	private void refreshResumenTable(List<EquipoDto> listaEquipos) {
@@ -119,21 +131,22 @@ public class ResumenEquipoPopUp extends NextelDialog {
 		}
 		int row = 1;
 		for (EquipoDto equipo : listaEquipos) {
-			resumenTable.setHTML(row, 0, equipo.getNumeroID());
-			resumenTable.setHTML(row, 1, equipo.getTelefono());
-			resumenTable.setHTML(row, 2, numberFormat.format(equipo.getAbono()));
-			resumenTable.setHTML(row, 3, numberFormat.format(equipo.getAlquiler()));
-			resumenTable.setHTML(row, 4, numberFormat.format(equipo.getGarantia()));
-			resumenTable.setHTML(row, 5, numberFormat.format(equipo.getServicios()));
-			resumenTable.setHTML(row, 6, numberFormat.format(equipo.getProporcionalYReintegros()));
-			resumenTable.setHTML(row, 7, numberFormat.format(equipo.getExcedenteRadio()));
-			resumenTable.setHTML(row, 8, numberFormat.format(equipo.getExcedenteTelefonia()));
-			resumenTable.setHTML(row, 9, numberFormat.format(equipo.getRedFija()));
-			resumenTable.setHTML(row, 10, numberFormat.format(equipo.getDdn()));
-			resumenTable.setHTML(row, 11, numberFormat.format(equipo.getDdiYRoaming()));
-			resumenTable.setHTML(row, 12, numberFormat.format(equipo.getPagers()));
-			resumenTable.setHTML(row, 13, numberFormat.format(equipo.getTotalConImpuestos()));
-			row++;
+			resumenTable.setHTML(row, 0, equipo.getCliente());
+			resumenTable.setHTML(row, 1, equipo.getNumeroID());
+			resumenTable.setHTML(row, 2, equipo.getTelefono());
+			resumenTable.setHTML(row, 3, numberFormat.format(equipo.getAbono()));
+			resumenTable.setHTML(row, 4, numberFormat.format(equipo.getAlquiler()));
+			resumenTable.setHTML(row, 5, numberFormat.format(equipo.getGarantia()));
+			resumenTable.setHTML(row, 6, numberFormat.format(equipo.getServicios()));
+			resumenTable.setHTML(row, 7, numberFormat.format(equipo.getProporcionalYReintegros()));
+			resumenTable.setHTML(row, 8, numberFormat.format(equipo.getExcedenteRadio()));
+			resumenTable.setHTML(row, 9, numberFormat.format(equipo.getExcedenteTelefonia()));
+			resumenTable.setHTML(row, 10, numberFormat.format(equipo.getRedFija()));
+			resumenTable.setHTML(row, 11, numberFormat.format(equipo.getDdn()));
+			resumenTable.setHTML(row, 12, numberFormat.format(equipo.getDdiYRoaming()));
+			resumenTable.setHTML(row, 13, numberFormat.format(equipo.getPagers()));
+			resumenTable.setHTML(row, 14, numberFormat.format(equipo.getTotalConImpuestos()));
+			row++;			
 		}
 		
 	}
