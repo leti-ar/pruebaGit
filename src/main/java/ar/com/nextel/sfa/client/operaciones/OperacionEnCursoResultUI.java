@@ -56,7 +56,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 	private Label reservasNoConsultadas;
 	private Label numOperaciones;
 	private static final int cantResultadosPorPagina = 5;
-	private String NumeroVtasPotNoConsultadas;
+	private String numeroVtasPotNoConsultadas;
 	private OperacionEnCursoUIController controller;
 	private List<OperacionEnCursoDto> opEnCursoActuales;
 	
@@ -143,6 +143,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 						if (result != null) {
 							vtaPotencial = result.getVentasPotencialesVistaDto();
 							tablePageBarReserva.setPagina(1);
+							numeroVtasPotNoConsultadas = result.getNumeroVtasPotNoConsultadas();
 							setReserva();
 						}
 					}
@@ -276,7 +277,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 			resultTableReservas.setHTML(row, 7, vtaPotencialDto.getNumero());
 			row++;
 		}
-		reservasNoConsultadas.setText("Opps/Reservas no consultadas: " + NumeroVtasPotNoConsultadas);
+		reservasNoConsultadas.setText("Opps/Reservas no consultadas: " + numeroVtasPotNoConsultadas);
 
 		setVisible(true);
 	}
