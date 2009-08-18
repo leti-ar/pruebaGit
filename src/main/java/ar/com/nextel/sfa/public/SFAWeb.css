@@ -628,6 +628,13 @@ color:white;
 font-weight:normal;
 }
 
+input[disabled], input[readonly], select[disabled], select[readonly], checkbox[disabled], checkbox[readonly], textarea[disabled], textarea[readonly]
+{
+ background-color: #DEDEDE;
+ color: #000000;
+ cursor: default;
+} 
+
 /*.table-external {
 border:1px solid gray;
 clear:left;
