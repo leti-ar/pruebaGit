@@ -621,7 +621,12 @@ color:#A83C56;
 	border-bottom: 1px solid #EBEBEB;
 	height: 24px;
 	text-align: left;
-}	
+}
+
+.oppDebugFont {
+color:white;
+font-weight:normal;
+}
 
 /*.table-external {
 border:1px solid gray;
