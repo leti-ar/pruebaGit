@@ -34,7 +34,6 @@ import ar.com.nextel.exception.LegacyDAOException;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.CicloFacturacion;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
-import ar.com.nextel.model.cuentas.beans.Division;
 import ar.com.nextel.model.cuentas.beans.GranCuenta;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.InfocomRpcService;
@@ -42,13 +41,11 @@ import ar.com.nextel.sfa.client.dto.CreditoFidelizacionDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DatosEquipoPorEstadoDto;
 import ar.com.nextel.sfa.client.dto.DetalleFidelizacionDto;
-import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.EquipoDto;
 import ar.com.nextel.sfa.client.dto.EquiposServiciosDto;
 import ar.com.nextel.sfa.client.dto.ResumenEquipoDto;
 import ar.com.nextel.sfa.client.dto.ScoringDto;
 import ar.com.nextel.sfa.client.dto.TransaccionCCDto;
-import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
@@ -73,6 +70,8 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 	
     private SelectCuentaBusinessOperator selectCuentaBusinessOperator;
     private CuentaScoringBusinessOperator cuentaScoringBusinessOperator;
+    
+    private String codigoVantiveRP;
         
 
 	public void init() throws ServletException {
@@ -92,20 +91,29 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 	public InfocomInitializer getInfocomInitializer(String numeroCuenta, String responsablePago) throws RpcExceptionMessages {
 		AppLogger.info("Iniciando retrieve infocom-header...");
 		InfocomInitializer infocomInitializer = new InfocomInitializer();
-		infocomInitializer.setNumeroCuenta(numeroCuenta);
+		Cuenta cuenta = repository.retrieve(Cuenta.class, Long.parseLong(numeroCuenta));
+		String codigoVantive = cuenta.getCodigoVantive();
+		if (responsablePago.equals(numeroCuenta)) {
+			codigoVantiveRP = codigoVantive;			
+		} else if (responsablePago==null) {
+			codigoVantiveRP = null;
+		} else {
+			codigoVantiveRP = responsablePago;
+		}
+		infocomInitializer.setNumeroCuenta(codigoVantive);
         try {
-            getEncabezadoInfocom(numeroCuenta, responsablePago, infocomInitializer);
+            getEncabezadoInfocom(codigoVantive, codigoVantiveRP, infocomInitializer);
         } catch (Exception e) {
             throw ExceptionUtil.wrap(e);
         }
-        getCantidadEquipos(getCuentaRaiz(numeroCuenta).getCodigoVantive(), infocomInitializer);
-        getResponsablesPago(numeroCuenta, infocomInitializer);
+        getCantidadEquipos(getCuentaRaiz(codigoVantive).getCodigoVantive(), infocomInitializer);
+        getResponsablesPago(codigoVantive, infocomInitializer);
         AppLogger.info("Retrieve infocom-header finalizado.");
         return infocomInitializer;
 	}
 	
     private void getLimiteCredito(Cuenta cuenta, String responsablePago, InfocomInitializer infocomInitializer) {
-        if ("Todos".equals(responsablePago)) {
+        if (responsablePago==null) {
         	infocomInitializer.setLimiteCredito("");
         } else {
         	try {
@@ -165,7 +173,7 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
     throws RpcExceptionMessages {
     	DeudaDTO resultDTO = null;
     	try {
-    		if ("Todos".equals(responsablePago)) {
+    		if (responsablePago==null) {
     			GranCuenta cuentaRaiz = getCuentaRaiz(numeroCuenta);
     			resultDTO = this.avalonSystem.retrieveDeudaArbol(cuentaRaiz.getCodigoVantive());
     		} else {
@@ -185,12 +193,14 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
    
 	/** Obtiene los datos necesarios para cargar la tabla de Fidelización */
     public CreditoFidelizacionDto getDetalleCreditoFidelizacion(String custCode) throws RpcExceptionMessages {
-		CreditoFidelizacionDto creditoFidelizacion = new CreditoFidelizacionDto();
+		Cuenta cuenta = repository.retrieve(Cuenta.class, custCode);
+		String codigoVantive = cuenta.getCodigoVantive();
+    	CreditoFidelizacionDto creditoFidelizacion = new CreditoFidelizacionDto();
 		List<DetalleCreditoDTO> detalleCreditoFidelizacion = null;
 		EncabezadoCreditoDTO encabezadoCreditoFidelizacion = null;
 		try {
-			encabezadoCreditoFidelizacion = financialSystem.retrieveEncabezadoCreditoFidelizacion(custCode);
-			detalleCreditoFidelizacion = financialSystem.retrieveDetalleCreditoFidelizacion(custCode);
+			encabezadoCreditoFidelizacion = financialSystem.retrieveEncabezadoCreditoFidelizacion(codigoVantive);
+			detalleCreditoFidelizacion = financialSystem.retrieveDetalleCreditoFidelizacion(codigoVantive);
 		} catch (FinancialSystemException e) {
 			throw ExceptionUtil.wrap(e);
 		}
@@ -204,10 +214,19 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 	/** Obtiene los datos necesarios para cargar la tabla de Cuenta Corriente */
     public List<TransaccionCCDto> getCuentaCorriente(String numeroCuenta, String responsablePago) throws RpcExceptionMessages {
 		List<TransaccionCCDto> listTransaccion = new ArrayList<TransaccionCCDto>();
+		Cuenta cuenta = repository.retrieve(Cuenta.class, Long.parseLong(numeroCuenta));
+		String codigoVantive = cuenta.getCodigoVantive();
+		if (responsablePago.equals(numeroCuenta)) {
+			codigoVantiveRP = codigoVantive;			
+		} else if (responsablePago==null) {
+			codigoVantiveRP = null;
+		} else {
+			codigoVantiveRP = responsablePago;
+		}
 		try {
-			if ("Todos".equals(responsablePago)) {
+			if (responsablePago==null) {
 				List<CuentaCorrienteArbolDTO> resultDTO = null;
-				GranCuenta cuentaRaiz = getCuentaRaiz(numeroCuenta);
+				GranCuenta cuentaRaiz = getCuentaRaiz(codigoVantive);
 				//resultDTO es una lista
 				resultDTO = avalonSystem.retrieveCuentaCorrienteArbol(cuentaRaiz.getCodigoVantive());				
 				for (Iterator iterator = resultDTO.iterator(); iterator.hasNext();) {
@@ -224,7 +243,7 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 				
 			} else {
 				List<CuentaCorrienteResponsablePagoDTO> resultDTO = null;
-				resultDTO = avalonSystem.retrieveCuentaCorrienteRespPago(responsablePago);				
+				resultDTO = avalonSystem.retrieveCuentaCorrienteRespPago(codigoVantiveRP);				
 				for (Iterator iterator = resultDTO.iterator(); iterator.hasNext();) {
 					CuentaCorrienteResponsablePagoDTO result = (CuentaCorrienteResponsablePagoDTO) iterator.next();
 					TransaccionCCDto transaccion = new TransaccionCCDto();
@@ -270,11 +289,14 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
     /**Obtiene la información del Resumen por Equipo*/
     public ResumenEquipoDto getResumenEquipos(String numeroCuenta, String responsablePago) throws RpcExceptionMessages {
     	AppLogger.info("Iniciando retrieve resumen equipos-Infocom...");
+		Cuenta cuenta = repository.retrieve(Cuenta.class, Long.parseLong(numeroCuenta));
+		String codigoVantive = cuenta.getCodigoVantive();
     	ResumenEquipoDto resumenEquipoDto = new ResumenEquipoDto();
     	try {
-    		if ("Todos".equals(responsablePago)) {
-    			getResumenEncabezadoCuenta(getCuentaRaiz(numeroCuenta).getCodigoVantive(), resumenEquipoDto);
-    			GranCuenta cuentaRaiz = getCuentaRaiz(numeroCuenta);
+    		if (responsablePago==null) {
+    			//cuando hace getCuentaRaiz(numeroCuenta) tira una excepcion
+    			getResumenEncabezadoCuenta(getCuentaRaiz(codigoVantive).getCodigoVantive(), resumenEquipoDto);
+    			GranCuenta cuentaRaiz = getCuentaRaiz(codigoVantive);
     			List<ResumenPorEquipoArbolDTO> retrieveResumenPorEquipoArbol = avalonSystem
     			.retrieveResumenPorEquipoArbol(cuentaRaiz.getCodigoVantive());
     			transformResumenEquipoArbolDTOToWCTO(retrieveResumenPorEquipoArbol, resumenEquipoDto);
@@ -285,6 +307,7 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
     			transformResumenEquipoRespPagoDTOToWCTO(retrieveResumenPorEquipoResponsablePago, resumenEquipoDto);
     		}
     	} catch (Exception e) {
+    		AppLogger.error(e);
     		throw ExceptionUtil.wrap(e);
     	}
     	AppLogger.info("Retrieve resumen equipos-Infocom finalizado.");
@@ -359,30 +382,19 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
     
     /**Obtiene los datos del scoring para mostrar en el pop up de Scoring de Infocom*/
     public ScoringDto consultarScoring(String numeroCuenta) throws RpcExceptionMessages {
-        AppLogger.info("Iniciando consulta de scoring para " + numeroCuenta);
+		Cuenta cuenta = repository.retrieve(Cuenta.class, Long.parseLong(numeroCuenta));
+		String codigoVantive = cuenta.getCodigoVantive();
+    	AppLogger.info("Iniciando consulta de scoring para " + codigoVantive);
         CuentaScoringBusinessResult result;
         try {
-            Cuenta cuentaSinLockear = selectCuentaBusinessOperator.getCuentaSinLockear(numeroCuenta);
+            Cuenta cuentaSinLockear = selectCuentaBusinessOperator.getCuentaSinLockear(codigoVantive);
             result = cuentaScoringBusinessOperator.obtenerCuentaScoring(cuentaSinLockear.getCuentaRaiz().getCodigoVantive());
         } catch (BusinessException e) {
             throw ExceptionUtil.wrap(e);
             //AppLogger.info("Error al consultar el scoring: " + e.getMessage());
         }       
         ScoringDto scoringDto = mapper.map(result.getScoringCuentaLegacyDTO(), ScoringDto.class);
-        AppLogger.info("Consulta de scoring para " + numeroCuenta + " finalizado.");
+        AppLogger.info("Consulta de scoring para " + codigoVantive + " finalizado.");
         return scoringDto;
     }
-
-	public List<TransaccionCCDto> getCuentaCorriente()
-			throws RpcExceptionMessages {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public InfocomInitializer getInfocomInitializer()
-			throws RpcExceptionMessages {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
