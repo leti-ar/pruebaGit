@@ -86,6 +86,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 			if (itemSolicitudUIData.hasNumeroSinReservar()) {
 				MessageDialog.getInstance().showSiNo("", getReservarYGuardarCommand(), new Command() {
 					public void execute() {
+						itemSolicitudUIData.getReservar().setText("");
 						MessageDialog.getInstance().hide();
 						executeItemCreation(sender);
 					}
