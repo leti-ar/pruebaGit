@@ -5,7 +5,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
-import ar.com.nextel.sfa.client.dto.ModelosResultDto;
+import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
@@ -38,7 +38,7 @@ public interface EditarSSUIController {
 	public void desreservarNumeroTelefonico(long numero, DefaultWaitCallback callback);
 
 	public void getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios,
-			DefaultWaitCallback<ModelosResultDto> callback);
+			DefaultWaitCallback<List<ModeloDto>> callback);
 
-	public void verificarSim(String sim, DefaultWaitCallback<String> callback);
+	public void verificarNegativeFiles(String numero, DefaultWaitCallback<String> callback);
 }

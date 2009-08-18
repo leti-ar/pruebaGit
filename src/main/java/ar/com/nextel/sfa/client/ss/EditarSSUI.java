@@ -9,7 +9,7 @@ import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
-import ar.com.nextel.sfa.client.dto.ModelosResultDto;
+import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
@@ -98,7 +98,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 							razonSocialClienteBar.setIdCuenta(solicitud.getCuenta().getId(), solicitud
 									.getCuenta().getIdVantive());
 							editarSSUIData.setSolicitud(solicitud);
-							validate(false);
+							validarCompletitud(false);
 							datos.refresh();
 							mainPanel.setVisible(true);
 						}
@@ -202,8 +202,14 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 		}
 
 		public void execute() {
+			List errors = null;
 			if (save) {
-				guardar();
+				errors = editarSSUIData.validarParaGuardar();
+				if (errors.isEmpty()) {
+					guardar();
+				} else {
+					ErrorDialog.getInstance().show(errors);
+				}
 			}
 			editarSSUIData.setSaved(true);
 			// Continuo a la página a la que me dirigía.
@@ -214,11 +220,16 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 
 	public void onClick(Widget sender) {
 		if (sender == guardarButton) {
-			guardar();
+			List errors = editarSSUIData.validarParaGuardar();
+			if (errors.isEmpty()) {
+				guardar();
+			} else {
+				ErrorDialog.getInstance().show(errors);
+			}
 		} else if (sender == cancelarButton) {
 			History.newItem("");
 		} else if (sender == validarCompletitud) {
-			validate(true);
+			validarCompletitud(true);
 		} else if (sender == acionesSS) {
 			generarCerrarMenu.show();
 			generarCerrarMenu.setPopupPosition(acionesSS.getAbsoluteLeft() - 10,
@@ -243,11 +254,14 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 	}
 
 	private void openGenerarCerrarSolicitdDialog(boolean cerrando) {
-		if (validate(true)) {
+		List errors = editarSSUIData.validarParaCerrarGenerar(cerrando);
+		if (errors.isEmpty()) {
 			cerrandoSolicitud = cerrando;
 			getGenerarSSUI().setTitleCerrar(cerrando);
 			getGenerarSSUI().show(editarSSUIData.getCuenta().getPersona(),
 					editarSSUIData.getSolicitudServicioGeneracion());
+		} else {
+			ErrorDialog.getInstance().show(errors);
 		}
 	}
 
@@ -257,7 +271,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 				editarSSUIData.setSolicitudServicioGeneracion(getGenerarSSUI().getGenerarSSUIData()
 						.getSolicitudServicioGeneracion());
 				CerrarSSDialog.getInstance().showLoading(cerrandoSolicitud);
-				List errors = editarSSUIData.validarCompletitud(true);
+				List errors = editarSSUIData.validarParaCerrarGenerar(true);
 				if (errors.isEmpty()) {
 					SolicitudRpcService.Util.getInstance().generarCerrarSolicitud(
 							editarSSUIData.getSolicitudServicio(), "", cerrandoSolicitud,
@@ -306,7 +320,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 		return generacionCierreCallback;
 	}
 
-	private boolean validate(boolean showErrorDialog) {
+	private boolean validarCompletitud(boolean showErrorDialog) {
 		List<String> errors = editarSSUIData.validarCompletitud();
 		if (!errors.isEmpty()) {
 			validarCompletitud.addStyleName(validarCompletitudFailStyle);
@@ -370,12 +384,12 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 	}
 
 	public void getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios,
-			DefaultWaitCallback<ModelosResultDto> callback) {
+			DefaultWaitCallback<List<ModeloDto>> callback) {
 		SolicitudRpcService.Util.getInstance().getModelos(imei, idTipoSolicitud, idListaPrecios, callback);
 	}
 
-	public void verificarSim(String sim, DefaultWaitCallback<String> callback) {
-		SolicitudRpcService.Util.getInstance().verificarSim(sim, callback);
+	public void verificarNegativeFiles(String numero, DefaultWaitCallback<String> callback) {
+		SolicitudRpcService.Util.getInstance().verificarNegativeFiles(numero, callback);
 	}
 
 	public static String getEditarSSUrl(long idCuenta, long idGrupo) {

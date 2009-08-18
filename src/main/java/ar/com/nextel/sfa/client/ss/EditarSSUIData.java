@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.cuenta.CuentaDomiciliosForm;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
@@ -220,6 +221,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 		}
 		solicitudServicio = solicitud;
 		nss.setText(solicitud.getNumero());
+		nflota.setEnabled("".equals(solicitud.getNumeroFlota()));
 		nflota.setText(solicitud.getNumeroFlota());
 		entrega.clear();
 		facturacion.clear();
@@ -297,7 +299,18 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 	}
 
 	public List<String> validarCompletitud() {
-		return validarCompletitud(false);
+		return CuentaDomiciliosForm.validarCompletitud(solicitudServicio.getCuenta().getPersona()
+				.getDomicilios());
+	}
+
+	public List<String> validarParaGuardar() {
+		GwtValidator validator = new GwtValidator();
+		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
+			validarAlquileresDeLineaSS(validator, linea);
+			validarCargoActivacion(validator, linea);
+		}
+		validator.fillResult();
+		return validator.getErrors();
 	}
 
 	/**
@@ -305,7 +318,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 	 *            true si debe validar para cierre de solicitud
 	 * @return Lista de errores
 	 */
-	public List<String> validarCompletitud(boolean cerrarSS) {
+	public List<String> validarParaCerrarGenerar(boolean cerrarSS) {
 		recarcularValores();
 		GwtValidator validator = new GwtValidator();
 		TextBoxBaseValidationTarget nnsValidator = validator.addTarget(nss).required(
