@@ -145,6 +145,7 @@ public class CuentaUIData extends UIData {
 	}
 
 	public void init() {
+		//fechaNacimiento.setWeekendSelectable(true);
 		sexo.addChangeListener(new ChangeListener() {
 			public void onChange(Widget sender) {
 				CuentaDatosForm.getInstance().cambiarVisibilidadCamposSegunSexo(); 

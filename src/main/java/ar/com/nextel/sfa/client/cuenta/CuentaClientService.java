@@ -160,8 +160,10 @@ public class CuentaClientService {
 			public boolean execute() {
 				if (cuentaDto == null && !error) 
 					return true;
-				if (!error && puedenMostrarseDatos(cuentaDto,filtradoPorDni)) 
+				if (!error && puedenMostrarseDatos(cuentaDto,filtradoPorDni)) { 
+					BuscarCuentaResultUI.debug.setText("Logged: '"+ ClientContext.getInstance().getUsuario().getUserName() + "' vend cta: '" + cuentaDto.getVendedor(). getUsuarioDto().getUserName()+"'");
 					History.newItem(UILoader.EDITAR_CUENTA + "?cuenta_id=" + cuentaDto.getId());
+				}
 				return false;
 			}
 		});
@@ -185,7 +187,7 @@ public class CuentaClientService {
 		boolean result = true;
 		if (filtradoPorDni!=null && filtradoPorDni.equals("0")) { //se filtro busqueda por documento/dni
 			//usuario logueado no es el mismo que el vendedor de la cuenta
-			if (!ClientContext.getInstance().getUsuario().getUserName().equals(cuentaDto.getVendedor().getUsuarioDto().getUserName())) {
+			if (!ClientContext.getInstance().getUsuario().getUserName().equals(cuentaDto.getVendedor(). getUsuarioDto().getUserName())) {
 				result = false;
 				ErrorDialog.getInstance().show(Sfa.constant().ERR_NO_ACCESO_CUENTA());
 				//History.back();

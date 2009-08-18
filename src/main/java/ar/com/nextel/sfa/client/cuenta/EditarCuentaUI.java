@@ -2,8 +2,6 @@ package ar.com.nextel.sfa.client.cuenta;
 
 import java.util.List;
 
-import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DivisionDto;
@@ -15,9 +13,6 @@ import ar.com.nextel.sfa.client.enums.TipoCuentaEnum;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
-import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
-
-import com.google.gwt.user.client.History;
 
 public class EditarCuentaUI extends ApplicationUI {
 
@@ -88,24 +83,6 @@ public class EditarCuentaUI extends ApplicationUI {
 			cuentaTab.getCuentaDatosForm().armarTablaPanelDatos();
 		cargaPanelesCuenta();
 		cuentaTab.validarCompletitud(false);
-	}
-	
-	/**
-	 * 
-	 * @param cuentaDto
-	 * @return
-	 */
-	private boolean puedenMostrarseDatos3(CuentaDto cuentaDto) {
-		boolean result = true;
-		if (HistoryUtils.getParam("por_dni")!=null && HistoryUtils.getParam("por_dni").equals("0")) { //se filtro busqueda por documento/dni
-			//usuario logueado no es el mismo que el vendedor de la cuenta
-			if (!ClientContext.getInstance().getUsuario().getUserName().equals(cuentaDto.getVendedor().getUsuarioDto().getUserName())) {
-				result = false;
-				ErrorDialog.getInstance().show(Sfa.constant().ERR_NO_ACCESO_CUENTA());
-				History.back();
-			}
-		}
-		return result;
 	}
 	
 	/**

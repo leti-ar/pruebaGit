@@ -10,7 +10,6 @@ import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.enums.PrioridadEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.ss.EditarSSUI;
-import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
@@ -51,6 +50,7 @@ public class CuentaEdicionTabPanel {
 	private Label razonSocial  = new Label();
 	private Label cliente      = new Label();
 	private Label numeroCtaPot = new Label();
+	
 	public  HTML redFlagIcon   = IconFactory.redFlag();
 	public  HTML yellowFlagIcon= IconFactory.yellowFlag();
 	public  HTML greenFlagIcon = IconFactory.greenFlag();
@@ -496,5 +496,4 @@ public class CuentaEdicionTabPanel {
 	public TabPanel getTabPanel() {
 		return tabPanel;
 	}
-	
 }

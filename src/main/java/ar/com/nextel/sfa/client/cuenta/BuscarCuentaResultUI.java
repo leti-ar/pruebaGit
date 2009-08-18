@@ -5,6 +5,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
@@ -51,6 +52,7 @@ public class BuscarCuentaResultUI extends FlowPanel  {
 	private BuscarCuentaController controller;
 	private static final int cantResultadosPorPagina = 10;
     private int indiceRowTabla;
+    public static Label debug = new Label();
     
 	public BuscarCuentaResultUI(BuscarCuentaController controller) {
 
@@ -90,9 +92,10 @@ public class BuscarCuentaResultUI extends FlowPanel  {
 		add(resultTableWrapper);
 		add(tablePageBar);
 		add(mostrandoCantRegistros);
+		add(debug);
 		setVisible(false);
-		
-		
+		debug.addStyleName("oppDebugFont");
+		debug.setText("");
 	}
 
 	public Long getTotalRegistrosBusqueda() {
