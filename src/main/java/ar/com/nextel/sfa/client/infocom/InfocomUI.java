@@ -3,6 +3,9 @@ package ar.com.nextel.sfa.client.infocom;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.InfocomRpcService;
+import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
+import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
+import ar.com.nextel.sfa.client.cuenta.CuentaInfocomForm;
 import ar.com.nextel.sfa.client.dto.CreditoFidelizacionDto;
 import ar.com.nextel.sfa.client.dto.TransaccionCCDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
@@ -38,11 +41,9 @@ public class InfocomUI extends ApplicationUI {
 	private InfocomUI() {
 		super();
 		infocomUIData = new InfocomUIData();
-		infocomUIData.setIdCuenta(idCuenta);
-		Long cuentaID = Long.parseLong(HistoryUtils.getParam("cuenta_id"));
-		this.idCuenta = cuentaID.toString();
-		infocomUIData.setIdCuenta(idCuenta);
-		//String cod_vantive = HistoryUtils.getParam("cod_vantive") !=null?HistoryUtils.getParam("cod_vantive"):null;
+		String cuentaID = HistoryUtils.getParam("cuenta_id");
+		infocomUIData.setIdCuenta(cuentaID);
+		idCuenta = cuentaID;
 	}
 	
 	public void firstLoad() {
@@ -64,13 +65,15 @@ public class InfocomUI extends ApplicationUI {
 	}
 	
 	public boolean load() {
+		this.getInfocomData(idCuenta, idCuenta);
 		invocarServicios(idCuenta, idCuenta);
 		return true;
 	}
 	
 	public void invocarServicios (String idCuenta, String responsablePago) {
-		this.getInfocomData(idCuenta, responsablePago);
+		//this.getInfocomData(idCuenta, responsablePago);
 		this.getDetalleCreditoFidelizacion(idCuenta, true);	
+		fidelizacionInfocomUI.getFidelizacionTitledPanel().setVisible(true);
 		this.getCuentaCorriente(idCuenta, responsablePago);
 	}
 	
