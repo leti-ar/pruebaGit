@@ -6,6 +6,9 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 public class SexoDto extends EnumDto implements ListBoxItem, IsSerializable {
 
+    private String codigoVantive;
+    
+    
 	public SexoDto() {
 	}
 	
@@ -23,5 +26,12 @@ public class SexoDto extends EnumDto implements ListBoxItem, IsSerializable {
 		return id + "";
 	}
 
+	public String getCodigoVantive() {
+		return codigoVantive;
+	}
+
+	public void setCodigoVantive(String codigoVantive) {
+		this.codigoVantive = codigoVantive;
+	}
 
 }
