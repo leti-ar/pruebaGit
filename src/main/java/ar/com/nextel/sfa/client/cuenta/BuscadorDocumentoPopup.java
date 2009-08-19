@@ -113,6 +113,9 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 					tipoDocumento.getSelectedItemId().equals(Long.toString(TipoDocumentoEnum.CUIT.getTipo()))) {
 				validator.addTarget(numeroDocTextBox).cuil(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
 			} else {
+				if (numeroDocTextBox.getText().length() > 8 ||numeroDocTextBox.getText().length()<7) {
+					validator.addError(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
+				}
 				validator.addTarget(numeroDocTextBox).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
 			}
 		}
