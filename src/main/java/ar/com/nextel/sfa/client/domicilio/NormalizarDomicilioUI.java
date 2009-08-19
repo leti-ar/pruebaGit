@@ -135,7 +135,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		linkNoNormalizar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				if (comandoNoNormalizar != null){
-					if (!DomicilioUI.getInstance().getTieneDomiciliosPrincipales()){
+					if ((!DomicilioUI.getInstance().getTieneDomiciliosPrincipales()) || (DomicilioUI.getInstance().isParentContacto())){
 						comandoNoNormalizar.execute();	
 					}else{
 						MessageDialog.getInstance().setDialogTitle("Error");
@@ -147,7 +147,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		linkAceptar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				if (comandoAceptar != null){
-					if (!DomicilioUI.getInstance().getTieneDomiciliosPrincipales()){
+					if ((!DomicilioUI.getInstance().getTieneDomiciliosPrincipales()) || (DomicilioUI.getInstance().isParentContacto())){
 						comandoAceptar.execute();	
 					}else{
 						MessageDialog.getInstance().setDialogTitle("Error");
