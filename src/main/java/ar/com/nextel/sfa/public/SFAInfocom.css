@@ -117,3 +117,13 @@
 .transparency{
 	background-color: red;
 }
+
+/* Para Firefox */
+.miTablaInvisible tr>td:first-child{
+	display:none;
+}
+
+/* Para IE */
+.miTablaInvisible .cg1{ 
+	display: none;
+}
