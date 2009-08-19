@@ -83,39 +83,48 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 
 	public void onClick(final Widget sender) {
 		if (sender == aceptar || sender == nuevoItem) {
-			if (itemSolicitudUIData.hasNumeroSinReservar()) {
-				MessageDialog.getInstance().showSiNo("", getReservarYGuardarCommand(), new Command() {
-					public void execute() {
-						itemSolicitudUIData.getReservar().setText("");
-						MessageDialog.getInstance().hide();
-						executeItemCreation(sender);
-					}
-				});
-			} else {
-				executeItemCreation(sender);
-			}
+			executeItemCreation(sender);
 		} else if (sender == cerrar) {
 			hide();
 		}
 	}
 
-	private void executeItemCreation(Widget sender) {
+	private void executeItemCreation(final Widget sender) {
 		List errors = itemSolicitudUIData.validate();
 		if (errors.isEmpty()) {
-			aceptarCommand.execute();
-			if (sender == aceptar) {
-				hide();
-			} else if (sender == nuevoItem) {
-				show(new LineaSolicitudServicioDto());
+			// Si ingreso un numero para reservar y no lo reservo le pregunto si desea hacerlo.
+			if (itemSolicitudUIData.hasNumeroSinReservar()) {
+				MessageDialog.getInstance().setDialogTitle("Reserva");
+				MessageDialog.getInstance().showSiNo("Desea reservar el número elegido?",
+						getReservarCommand(), new Command() {
+							public void execute() {
+								itemSolicitudUIData.getReservar().setText("");
+								MessageDialog.getInstance().hide();
+								guardarItem(sender == aceptar);
+							}
+						});
+			} else {
+				guardarItem(sender == aceptar);
 			}
 		} else {
-			ErrorDialog.getInstance().show(errors);
+			ErrorDialog.getInstance().setDialogTitle("Error");
+			ErrorDialog.getInstance().show(errors, false);
 		}
 	}
 
-	private Command getReservarYGuardarCommand() {
+	private void guardarItem(boolean soloGuardar) {
+		aceptarCommand.execute();
+		if (soloGuardar) {
+			hide();
+		} else {
+			show(new LineaSolicitudServicioDto());
+		}
+	}
+
+	private Command getReservarCommand() {
 		return new Command() {
 			public void execute() {
+				MessageDialog.getInstance().hide();
 				itemSolicitudUIData.reservar();
 			}
 		};
