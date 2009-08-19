@@ -88,6 +88,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	public static final int ITEM_PLAN = 1;
 	public static final int ACTIVACION = 2;
 	public static final int VENTA_CDW = 3;
+	private static final long CUENTA_CORRIENTE_VENC_CICLO_ID = 33;
 	private static final String v1 = "\\{1\\}";
 	private static final String v2 = "\\{2\\}";
 	private int tipoEdicion;
@@ -224,7 +225,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		}
 	}
 
-	public void reservar() {
+	public boolean reservar() {
 		GwtValidator validator = new GwtValidator();
 		validator.addTarget(plan).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Plan"));
 		validator.addTarget(modalidadCobro).required(
@@ -243,6 +244,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		} else {
 			ErrorDialog.getInstance().show(validator.getErrors(), false);
 		}
+		return validator.getErrors().isEmpty();
 	}
 
 	private void reservarServiceCall(Long numeroTelefonico) {
@@ -371,7 +373,20 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 			ListaPreciosDto listaSelected = (ListaPreciosDto) listaPrecio.getSelectedItem();
 			item.addAllItems(listaSelected.getItemsListaPrecioVisibles());
+			// Selecciono Cuenta Corriente Vencimiento Ciclo por default
+			int indexCuentaCorrienteVencimientoCiclo = -1;
+			int index = 0;
+			for (TerminoPagoValidoDto terminoPagoValido : listaSelected.getTerminosPagoValido()) {
+				if (terminoPagoValido.getTerminoPago().getId().longValue() == CUENTA_CORRIENTE_VENC_CICLO_ID) {
+					indexCuentaCorrienteVencimientoCiclo = index;
+					break;
+				}
+				index++;
+			}
 			terminoPago.addAllItems(listaSelected.getTerminosPagoValido());
+			if (indexCuentaCorrienteVencimientoCiclo >= 0) {
+				terminoPago.setSelectedIndex(indexCuentaCorrienteVencimientoCiclo);
+			}
 			if (listaSelected.getItemsListaPrecioVisibles().size() == 1) {
 				item.setSelectedIndex(1);
 			}
