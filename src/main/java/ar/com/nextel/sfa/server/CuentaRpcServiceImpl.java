@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.server;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -294,10 +295,14 @@ public class CuentaRpcServiceImpl extends RemoteService implements	CuentaRpcServ
 	public CrearContactoInitializer getCrearContactoInitializer() {
 		CrearContactoInitializer crearContactoInitializer = new CrearContactoInitializer();
 		crearContactoInitializer.setTiposDocumento(mapper.convertList(genericDao.getList(TipoDocumento.class),TipoDocumentoDto.class));
-		List<SexoDto> listaSexos = mapper.convertList(genericDao.getList(Sexo.class),SexoDto.class);
-		//borra los sexos Indefinido y Organizacion que no tienen que visualizarse
-		listaSexos.remove(0);
-		listaSexos.remove(2);
+		List<SexoDto> listaSexosCompleta = mapper.convertList(genericDao.getList(Sexo.class),SexoDto.class);
+		List<SexoDto> listaSexos = new ArrayList<SexoDto>();
+		for (Iterator iterator = listaSexosCompleta.iterator(); iterator.hasNext();) {
+			SexoDto sexo = (SexoDto) iterator.next();
+			if( ("F".equals(sexo.getCodigoVantive())) || ("M".equals(sexo.getCodigoVantive())) ) {
+				listaSexos.add(sexo);
+			}
+		}
 		crearContactoInitializer.setSexos(listaSexos);
 		crearContactoInitializer.setCargos(mapper.convertList(genericDao.getList(Cargo.class),CargoDto.class));
 		return crearContactoInitializer;
