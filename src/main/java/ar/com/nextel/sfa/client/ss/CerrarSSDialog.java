@@ -110,7 +110,7 @@ public class CerrarSSDialog extends NextelDialog {
 
 		String rtfUrl = WindowUtils.getContextRoot()
 				+ "/download/download?module=solicitudes&service=rtf&name=" + filename + ".rtf";
-		solicitudLink.setTargetHistoryToken(rtfUrl);
+		solicitudLink.setUrl(rtfUrl);
 		showAndCenter();
 	}
 
