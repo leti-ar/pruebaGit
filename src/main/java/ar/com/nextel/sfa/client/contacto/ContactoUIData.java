@@ -201,8 +201,10 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 		newContactosId--;
 		contactoDto.setId(newContactosId);
 		contactoDto.setPersona(this.getPersonaDto());
+		if(this.getCargo().getSelectedItemId()!=null) {
 		CargoDto cargo = new CargoDto(new Long (this.getCargo().getSelectedItemId()),this.getCargo().getSelectedItemText());
 		contactoDto.getPersona().setCargo(cargo);
+		}
 		return contactoDto;
 	}
 	
