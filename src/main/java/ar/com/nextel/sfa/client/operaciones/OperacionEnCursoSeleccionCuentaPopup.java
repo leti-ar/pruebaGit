@@ -102,8 +102,8 @@ public class OperacionEnCursoSeleccionCuentaPopup  extends NextelDialog {
 			resultTable.setHTML(row, 0, cuenta.getCodigoVantive());
 			resultTable.setHTML(row, 1, cuenta.getPersona().getRazonSocial());
 			resultTable.setHTML(row, 2, cuenta.getPersona().getApellido());
-			resultTable.setHTML(row, 3, "("+((TelefonoDto)(cuenta.getPersona().getTelefonos()).get(0)).getArea()+") " +    
-					                        ((TelefonoDto)(cuenta.getPersona().getTelefonos()).get(0)).getNumeroLocal());
+			resultTable.setHTML(row, 3,(((TelefonoDto)(cuenta.getPersona().getTelefonos()).get(0)).getArea()!=null?"("+((TelefonoDto)(cuenta.getPersona().getTelefonos()).get(0)).getArea()+") ":"") +    
+				                        ((TelefonoDto)(cuenta.getPersona().getTelefonos()).get(0)).getNumeroLocal());
 			resultTable.setHTML(row, 4, /*credito fide ???*/ null);
 			row++;
 		}
