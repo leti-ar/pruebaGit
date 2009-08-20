@@ -41,9 +41,9 @@ public class InfocomUI extends ApplicationUI {
 	private InfocomUI() {
 		super();
 		infocomUIData = new InfocomUIData();
-		String cuentaID = HistoryUtils.getParam("cuenta_id");
-		infocomUIData.setIdCuenta(cuentaID);
-		idCuenta = cuentaID;
+//		String cuentaID = HistoryUtils.getParam("cuenta_id");
+//		infocomUIData.setIdCuenta(cuentaID);
+//		idCuenta = cuentaID;
 	}
 	
 	public void firstLoad() {
@@ -65,6 +65,10 @@ public class InfocomUI extends ApplicationUI {
 	}
 	
 	public boolean load() {
+		String cuentaID = HistoryUtils.getParam("cuenta_id");
+		infocomUIData.setIdCuenta(cuentaID);
+		idCuenta = cuentaID;
+		infocomUIData.getResponsablePago().clear();
 		this.getInfocomData(idCuenta, idCuenta);
 		invocarServicios(idCuenta, idCuenta);
 		return true;
