@@ -71,6 +71,7 @@ public class InfocomUIData extends UIData {
 	private final DateTimeFormat dateFormat = DateTimeFormat.getMediumDateFormat();
 	
 	private String idCuenta;
+	private InfocomInitializer infocom;
 	
 	
 	public InfocomUIData() {
@@ -100,8 +101,10 @@ public class InfocomUIData extends UIData {
 			public void onChange (Widget arg0) {
 				if (responsablePago.getSelectedIndex()==0) {
 					InfocomUI.getInstance().reload(idCuenta, "Todos");
-				} else
+				} else {
+					limCredito.setText(numberFormat.format(infocom.getLimiteCredito()));
 					InfocomUI.getInstance().reload(idCuenta, responsablePago.getSelectedItemText());
+				}
 			}
 		});		
 		
@@ -244,10 +247,11 @@ public class InfocomUIData extends UIData {
 	
 	/** Carga los datos de Header de infocom */
 	public void setInfocom(InfocomInitializer infocom) {
+		this.infocom = infocom;  
 		estadoTerminales.setEstado(Integer.parseInt(infocom.getTerminalesActivas()), Integer.parseInt(infocom.getTerminalesSuspendidas()), Integer.parseInt(infocom.getTerminalesDesactivadas()));
 		ciclo.setText(infocom.getCiclo());
 		flota.setText(infocom.getFlota());
-		limCredito.setText(infocom.getLimiteCredito());
+		limCredito.setText(numberFormat.format(infocom.getLimiteCredito()));
 		setDescripcion(infocom.getEquiposServicios());
 		
 		for (Iterator iterator = (infocom.getResponsablePago()).iterator(); iterator.hasNext();) {
