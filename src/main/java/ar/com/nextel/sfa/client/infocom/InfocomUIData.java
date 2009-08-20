@@ -125,7 +125,7 @@ public class InfocomUIData extends UIData {
 		scoring.addStyleName("infocomSimpleLink");
 		scoring.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				getScoring(idCuenta);
+				getScoring(Long.valueOf(idCuenta));
 			}
 		});
 	
@@ -157,13 +157,12 @@ public class InfocomUIData extends UIData {
 	}
 
 	/**Obtiene la información del scoring*/
-	private void getScoring(String numeroCuenta) {
+	private void getScoring(Long numeroCuenta) {
 		InfocomRpcService.Util.getInstance().consultarScoring(numeroCuenta, new DefaultWaitCallback<ScoringDto>() {
 			public void success(ScoringDto result) {
 				if (result != null) {
 					ScoringPopUpUI scoringPopUpUI = new ScoringPopUpUI("Cuentas - Scoring", result);
-					scoringPopUpUI.showAndCenter();
-					
+					scoringPopUpUI.showAndCenter();					
 				}
 			}
 		});
