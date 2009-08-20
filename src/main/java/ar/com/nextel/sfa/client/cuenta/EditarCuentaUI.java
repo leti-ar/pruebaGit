@@ -52,6 +52,8 @@ public class EditarCuentaUI extends ApplicationUI {
 		} else if (HistoryUtils.getParam("cuenta_id")!=null) {			
 			if(RegularExpressionConstants.isVancuc(CuentaClientService.cuentaDto.getCodigoVantive())) {
 			   cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.cuentaDto);
+			} else if(HistoryUtils.getParam("ro")!=null) { 
+				cuentaTab.getCuentaDatosForm().setAtributosCamposSoloLectura();
 			} else {
 			   cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusqueda(CuentaClientService.cuentaDto);
 			}

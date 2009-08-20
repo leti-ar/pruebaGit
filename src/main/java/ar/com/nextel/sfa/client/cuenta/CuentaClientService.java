@@ -144,7 +144,7 @@ public class CuentaClientService {
 	 * @param cuentaID
 	 * @param cod_vantive
 	 */
-	public static void cargarDatosCuenta(Long cuentaID, String cod_vantive, final String filtradoPorDni) {
+	public static void cargarDatosCuenta(Long cuentaID, String cod_vantive, final String filtradoPorDni, final boolean readOnly) {
 		cuentaDto = null;
 		error = false;
 		CuentaRpcService.Util.getInstance().selectCuenta(cuentaID, cod_vantive,new DefaultWaitCallback<CuentaDto>() {
@@ -162,7 +162,7 @@ public class CuentaClientService {
 					return true;
 				if (!error && puedenMostrarseDatos(cuentaDto,filtradoPorDni)) { 
 					BuscarCuentaResultUI.debug.setText("Logged: '"+ ClientContext.getInstance().getUsuario().getUserName() + "' vend cta: '" + cuentaDto.getVendedor(). getUsuarioDto().getUserName()+"'");
-					History.newItem(UILoader.EDITAR_CUENTA + "?cuenta_id=" + cuentaDto.getId());
+					History.newItem(UILoader.EDITAR_CUENTA + "?cuenta_id=" + cuentaDto.getId() + (readOnly?"&ro=true":""));
 				}
 				return false;
 			}
@@ -175,9 +175,18 @@ public class CuentaClientService {
 	 * @param cod_vantive
 	 */
 	public static void cargarDatosCuenta(Long cuentaID, String cod_vantive) {
-		cargarDatosCuenta(cuentaID, cod_vantive, null);
+		cargarDatosCuenta(cuentaID, cod_vantive, null,false);
 	}
 
+	/**
+	 * 
+	 * @param cuentaID
+	 * @param cod_vantive
+	 */
+	public static void cargarDatosCuenta(Long cuentaID, String cod_vantive,boolean readOnly) {
+		cargarDatosCuenta(cuentaID, cod_vantive, null,true);
+	}
+	
 	/**
 	 * 
 	 * @param cuentaDto

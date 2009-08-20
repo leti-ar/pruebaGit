@@ -231,20 +231,14 @@ public class CuentaUIData extends UIData {
 		fields.add(cbu);
 		fields.add(numeroTarjeta);
 		
-//		fields.add(oppVencimientoLabel);
-//		fields.add(oppEstadoLabel);
-//		fields.add(oppCompetenciaProvLabel);
-//		fields.add(oppCompetenciaEquipoLabel);
-//		fields.add(oppTerminalesEstimadasLabel);
-//		fields.add(oppVisitasLabel);
 //		fields.add(oppVencimiento);
 //		fields.add(oppEstado);
 //		fields.add(oppCompetenciaProv);
 //		fields.add(oppCompetenciaEquipo);
 //		fields.add(oppVisitas);
-//		fields.add(oppTipoDocumento);
-//		fields.add(oppRubro);
-//		fields.add(oppTerminalesEstimadas);
+		fields.add(oppTipoDocumento);
+		fields.add(oppRubro);
+		fields.add(oppTerminalesEstimadas);
 //		fields.add(estadoOpp);
 	}
 

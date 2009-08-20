@@ -3,6 +3,8 @@ package ar.com.nextel.sfa.client.cuenta;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.catalina.deploy.MessageDestination;
+
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -11,6 +13,7 @@ import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.enums.BuscoCuentaPorDniEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -18,6 +21,7 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import ar.com.snoop.gwt.commons.client.widget.table.RowListener;
 
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -52,6 +56,7 @@ public class BuscarCuentaResultUI extends FlowPanel  {
 	private BuscarCuentaController controller;
 	private static final int cantResultadosPorPagina = 10;
     private int indiceRowTabla;
+    private static Command aceptarCommand;
     public static Label debug = new Label();
     
 	public BuscarCuentaResultUI(BuscarCuentaController controller) {
@@ -219,11 +224,15 @@ public class BuscarCuentaResultUI extends FlowPanel  {
 
 	/**
 	 * 
-	 * @param rowIndice
 	 */
 	private void cargarDatosCuenta() {
 		CuentaSearchResultDto  cuentaSearch = cuentas.get(indiceRowTabla);
-		CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(), cuentaSearch.getCodigoVantive(), getCondicionBusquedaPorDni());
+		if (cuentaSearch.getLockingState() == 2) {
+			String msg = Sfa.constant().ERR_CUENTA_LOCKEADA_POR_OTRO().replaceAll("\\{1\\}", cuentaSearch.getNumero()).replaceAll("\\{2\\}", cuentaSearch.getSupervisor());
+			MessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_DIALOG_TITLE(), msg, getAceptarConsultarCtaLockeada(cuentaSearch,getCondicionBusquedaPorDni()), MessageDialog.getCloseCommand());
+		} else {
+			CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(), cuentaSearch.getCodigoVantive(), getCondicionBusquedaPorDni(),false);
+		}
 	}
 	
 	/**
@@ -281,5 +290,17 @@ public class BuscarCuentaResultUI extends FlowPanel  {
 			idCuenta = cuentas.get(resultTable.getRowSelected() - 1).getId();
 		}
 		return idCuenta;
+	}
+	
+	public static Command getAceptarConsultarCtaLockeada(final CuentaSearchResultDto cuenta, final String busquedaPorDni) {
+		if (aceptarCommand == null) {
+			aceptarCommand = new Command() {
+				public void execute() {
+					MessageDialog.getInstance().hide();
+					CuentaClientService.cargarDatosCuenta(cuenta.getId(), cuenta.getCodigoVantive(), busquedaPorDni,true);
+				}
+			};
+		}
+		return aceptarCommand;
 	}
 }

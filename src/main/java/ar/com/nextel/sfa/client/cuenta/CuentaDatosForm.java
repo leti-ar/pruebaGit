@@ -5,7 +5,6 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
@@ -779,31 +778,7 @@ public class CuentaDatosForm extends Composite {
 		else 
 			setAtributosCamposCuenta(cuentaDto);
 
-		disabledFields.add(camposTabDatos.getNombre());
-		disabledFields.add(camposTabDatos.getApellido());
-		disabledFields.add(camposTabDatos.getRubro());
-		disabledFields.add(camposTabDatos.getTelPrincipalTextBox().getArea());
-		disabledFields.add(camposTabDatos.getTelPrincipalTextBox().getNumero());
-		disabledFields.add(camposTabDatos.getTelPrincipalTextBox().getInterno());
-		disabledFields.add(camposTabDatos.getTelAdicionalTextBox().getArea());
-		disabledFields.add(camposTabDatos.getTelAdicionalTextBox().getNumero());
-		disabledFields.add(camposTabDatos.getTelAdicionalTextBox().getInterno());
-		disabledFields.add(camposTabDatos.getTelCelularTextBox().getArea());
-		disabledFields.add(camposTabDatos.getTelCelularTextBox().getNumero());
-		disabledFields.add(camposTabDatos.getTelFaxTextBox().getArea());
-		disabledFields.add(camposTabDatos.getTelFaxTextBox().getNumero());
-		disabledFields.add(camposTabDatos.getTelFaxTextBox().getInterno());
-		disabledFields.add(camposTabDatos.getEmailPersonal());
-		disabledFields.add(camposTabDatos.getEmailLaboral());
-		
-		disabledFields.add(camposTabDatos.getOppTipoDocumento());
-		disabledFields.add(camposTabDatos.getOppRubro());
-		disabledFields.add(camposTabDatos.getOppEstado());
-		disabledFields.add(camposTabDatos.getOppVencimiento());
-		disabledFields.add(camposTabDatos.getOppCompetenciaProv());
-		disabledFields.add(camposTabDatos.getOppCompetenciaEquipo());
-		disabledFields.add(camposTabDatos.getOppTerminalesEstimadas());
-		disabledFields.add(camposTabDatos.getOppVisitas());
+		camposTabDatos.disableFields();
 		
 		FormUtils.disableFields(disabledFields);
 		camposTabDatos.getObservaciones().setVisible(false);
@@ -811,6 +786,10 @@ public class CuentaDatosForm extends Composite {
 		
 		showPanelDatosCuenta = false;
 		
+	}
+	
+	public void setAtributosCamposSoloLectura() {
+		camposTabDatos.disableFields();
 	}
 	
     public void setUItipoEditorCuenta(boolean editorCuenta) {
