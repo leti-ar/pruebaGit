@@ -41,7 +41,7 @@ public interface InfocomRpcService extends RemoteService {
 	
 	public ResumenEquipoDto getResumenEquipos(String numeroCuenta, String responsablePago) throws RpcExceptionMessages;
 	
-	public ScoringDto consultarScoring(String numeroCuenta) throws RpcExceptionMessages;
+	public ScoringDto consultarScoring(Long numeroCuenta) throws RpcExceptionMessages;
 
 	//public InfocomInitializer getInfocomData(String numeroCuenta, String responsablePago) throws RpcExceptionMessages;
 

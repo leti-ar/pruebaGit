@@ -51,7 +51,7 @@ public class InfocomRpcServiceDelegate {
 		infocomRpcService.getResumenEquipos(numeroCuenta, responsablePago, callback);
 	}
 	
-	public void consultarScoring(String numeroCuenta, DefaultWaitCallback<ScoringDto> callback) {
+	public void consultarScoring(Long numeroCuenta, DefaultWaitCallback<ScoringDto> callback) {
 		WaitWindow.show();
 		infocomRpcService.consultarScoring(numeroCuenta, callback);
 	}

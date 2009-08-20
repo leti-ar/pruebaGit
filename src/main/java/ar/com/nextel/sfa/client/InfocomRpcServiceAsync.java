@@ -24,7 +24,7 @@ public interface InfocomRpcServiceAsync {
 	
 	public void getResumenEquipos(String numeroCuenta, String responsablePago, AsyncCallback<ResumenEquipoDto> callback);
 	
-	public void consultarScoring(String numeroCuenta, AsyncCallback<ScoringDto> callback);
+	public void consultarScoring(Long numeroCuenta, AsyncCallback<ScoringDto> callback);
 	
 	//public void getInfocomData(String numeroCuenta, String responsablePago, AsyncCallback<InfocomInitializer> callback);
 

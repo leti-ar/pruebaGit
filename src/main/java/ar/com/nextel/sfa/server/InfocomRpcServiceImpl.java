@@ -381,8 +381,8 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
     }
     
     /**Obtiene los datos del scoring para mostrar en el pop up de Scoring de Infocom*/
-    public ScoringDto consultarScoring(String numeroCuenta) throws RpcExceptionMessages {
-		Cuenta cuenta = repository.retrieve(Cuenta.class, Long.valueOf(numeroCuenta));
+    public ScoringDto consultarScoring(Long numeroCuenta) throws RpcExceptionMessages {
+		Cuenta cuenta = repository.retrieve(Cuenta.class, numeroCuenta);
 		String codigoVantive = cuenta.getCodigoVantive();
     	AppLogger.info("Iniciando consulta de scoring para " + codigoVantive);
         CuentaScoringBusinessResult result;
