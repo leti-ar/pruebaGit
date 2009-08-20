@@ -10,6 +10,7 @@ public class ModeloDto extends EnumDto implements ListBoxItem, IsSerializable {
 
 	private List<ItemSolicitudTasadoDto> items;
 	private boolean esBlackberry;
+	private Boolean hasSim;
 
 	public String getItemText() {
 		return descripcion;
@@ -33,6 +34,14 @@ public class ModeloDto extends EnumDto implements ListBoxItem, IsSerializable {
 
 	public void setEsBlackberry(boolean esBlackberry) {
 		this.esBlackberry = esBlackberry;
+	}
+
+	public Boolean getHasSim() {
+		return hasSim;
+	}
+
+	public void setHasSim(Boolean hasSim) {
+		this.hasSim = hasSim;
 	}
 
 }
