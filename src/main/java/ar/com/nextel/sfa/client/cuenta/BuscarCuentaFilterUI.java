@@ -52,7 +52,7 @@ public class BuscarCuentaFilterUI extends Composite {
 		layout.setWidth("98%");
 
 		layout.getFlexCellFormatter().setColSpan(0, 1, 3);
-		
+
 		List<Label> listaLabels = cargaLabels(buscadorCuentasFilterEditor.getListaLabels());
 		layout.setWidget(0, 0, listaLabels.get(0));
 		layout.setWidget(0, 1, buscadorCuentasFilterEditor.getRazonSocialTextBox());
@@ -88,38 +88,42 @@ public class BuscarCuentaFilterUI extends Composite {
 
 		buscadorCuentasFilterEditor.getBuscarButton().addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				
+
 				/** BuscarButton Validation: */
 				List<String> listaErrores = buscadorCuentasFilterEditor.validatePreSearch();
-				if (!listaErrores.isEmpty()){
+				if (!listaErrores.isEmpty()) {
 					StringBuilder error = new StringBuilder();
 					for (int i = 0; i < listaErrores.size(); i++) {
 						error.append(listaErrores.get(i) + "<br />");
 					}
 					ErrorDialog.getInstance().show(error.toString());
-				}else{		
+				} else {
 					controller.searchCuentas(buscadorCuentasFilterEditor.getCuentaSearch());
 				}
 			}
 		});
 	}
 
-	private List<Label> cargaLabels(List<Label> listaLabels){
-		listaLabels.add(new Label(Sfa.constant().razonSocial())); //0
-		listaLabels.add(new Label(Sfa.constant().numeroCliente()));//1
-		listaLabels.add(new Label(Sfa.constant().numeroNextel()));//2
-		listaLabels.add(new Label(Sfa.constant().flotaId()));//3
-		listaLabels.add(new Label(Sfa.constant().ss()));//4
-		listaLabels.add(new Label(Sfa.constant().responsable()));//5
-		listaLabels.add(new Label(Sfa.constant().tipoDocumento()));//6
-		listaLabels.add(new Label(Sfa.constant().numeroDocumento()));//7
-		listaLabels.add(new Label(Sfa.constant().predefinidas()));//8
-		listaLabels.add(new Label(Sfa.constant().categoria()));//9
-		listaLabels.add(new Label(Sfa.constant().resultados()));//10
+	private List<Label> cargaLabels(List<Label> listaLabels) {
+		listaLabels.add(new Label(Sfa.constant().razonSocial())); // 0
+		listaLabels.add(new Label(Sfa.constant().numeroCliente()));// 1
+		listaLabels.add(new Label(Sfa.constant().numeroNextel()));// 2
+		listaLabels.add(new Label(Sfa.constant().flotaId()));// 3
+		listaLabels.add(new Label(Sfa.constant().ss()));// 4
+		listaLabels.add(new Label(Sfa.constant().responsable()));// 5
+		listaLabels.add(new Label(Sfa.constant().tipoDocumento()));// 6
+		listaLabels.add(new Label(Sfa.constant().numeroDocumento()));// 7
+		listaLabels.add(new Label(Sfa.constant().predefinidas()));// 8
+		listaLabels.add(new Label(Sfa.constant().categoria()));// 9
+		listaLabels.add(new Label(Sfa.constant().resultados()));// 10
 		return listaLabels;
 	}
-	
+
 	public void setBuscarCuentaResultPanel(BuscarCuentaResultUI buscarCuentaResultPanel) {
 		this.buscarCuentaResultPanel = buscarCuentaResultPanel;
+	}
+
+	public void cleanAndEnableFields() {
+		buscadorCuentasFilterEditor.cleanAndEnableFields();
 	}
 }
