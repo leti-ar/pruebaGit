@@ -145,6 +145,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements	CuentaRpcServ
     private final String CUENTA_FILTRADA = "Acceso denegado. No puede operar con esta cuenta.";
     private final String ASOCIAR_CUENTA_A_OPP_ERROR = "La cuenta ya existe. No puede asociarse a la Oportunidad.";
     private       String ERROR_OPER_OTRO_VENDEDOR = "El prospect/cliente tiene una operación en curso con otro vendedor. No puede ver sus datos. El {1} es {2}";
+    private final String ERROR_OPORTUNIDAD_VENCIDA = "La oportunidad/Reserva está vencida";
     
     private AccessAuthorizationController accessAuthorizationController;
     
@@ -493,7 +494,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements	CuentaRpcServ
         AppLogger.info("Obteniendo venta potencial con id: " + cuenta_id.longValue());
         OportunidadNegocio oportunidad = (OportunidadNegocio) repository.retrieve(OportunidadNegocio.class, cuenta_id);
         if(Calendar.getInstance().getTime().after(oportunidad.getFechaVencimiento())) {
-        	throw  new RpcExceptionMessages("La oportunidad/Reserva está vencida");	
+        	throw  new RpcExceptionMessages(ERROR_OPORTUNIDAD_VENCIDA);	
         }
         cuentaBusinessService.marcarOppComoConsultada(oportunidad);
         OportunidadNegocioDto oportunidadDto = mapper.map(oportunidad, OportunidadNegocioDto.class);
