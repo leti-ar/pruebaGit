@@ -11,6 +11,7 @@ import ar.com.nextel.sfa.client.cuenta.BuscadorDocumentoPopup;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
+import ar.com.nextel.sfa.client.dto.OportunidadNegocioSearchResultDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
@@ -237,7 +238,15 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		resultTableWrapperReserva.setWidget(resultTableReservas);
 		int row = 1;
 		for (final VentaPotencialVistaDto vtaPotencialDto : vtaPotencialActuales) {
-			resultTableReservas.setWidget(row, 0, IconFactory.lapiz());
+
+			HTML iconAbrirOpp = IconFactory.lapiz(Sfa.constant().ALT_ABRIR_OPORTUNIDAD());
+			iconAbrirOpp.addClickListener(new ClickListener(){
+				public void onClick(Widget arg0) {
+					CuentaClientService.getOportunidadNegocio(vtaPotencialDto.getIdCuentaPotencial());		
+				}
+			});
+			resultTableReservas.setWidget(row, 0, iconAbrirOpp);
+			
 			// if (reserva.isPuedeVerInfocom()) {
 			HTML iconAddSoldan = IconFactory.silvioSoldan(Sfa.constant().ALT_ABRIR_CUENTA_ASOC());
 			iconAddSoldan.addClickListener(new ClickListener() {
@@ -265,7 +274,6 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 					AgregarCuentaUI.getInstance().load();
 					BuscadorDocumentoPopup.fromMenu = false;
 					BuscadorDocumentoPopup.idOpp = vtaPotencialDto.getIdCuentaPotencial();					
-					//seleccionCuentaPopup.showAndCenter();
 				}
 			});
 			resultTableReservas.setWidget(row, 2,iconAddProspect );
@@ -341,6 +349,24 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 				cancelarOperacionEnCurso(op);
 			}
 		}
+		if (table == resultTableReservas && row > 0) {
+			int listPosition = tablePageBarReserva.getCantRegistrosParcI() + row - 2;
+			VentaPotencialVistaDto vta = vtaPotencial.get(listPosition);
+			if (cell == 0) {
+				if (vta != null) {
+					//OportunidadNegocioSearchResultDto oportunidad = oportunidadesActuales!=null ? oportunidadesActuales.get(rowIndexSelected) : oportunidades.get(rowIndexSelected);
+					CuentaClientService.getOportunidadNegocio(vta.getIdCuentaPotencial());
+
+				} else {
+					ErrorDialog.getInstance().setDialogTitle("Error");
+					ErrorDialog.getInstance().show(Sfa.constant().ERR_SIN_SS(), false);
+				}
+			} else if (cell == 1) {
+				//;
+			} else if (cell == 2) {
+				//;
+			}
+		}
 	}
 
 	private void cancelarOperacionEnCurso(OperacionEnCursoDto op) {
@@ -373,5 +399,12 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		}
 		setOpCurso();
 	}
+	
+//	private boolean validarEdicionOpp(VentaPotencialVistaDto vtaPotencialDto) {
+//		boolean retorno = false;
+//		if(vtaPotencialDto.getFechaAsignacion())
+//		
+//		return retorno;
+//	}
 
 }

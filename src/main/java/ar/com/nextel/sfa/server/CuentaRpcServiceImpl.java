@@ -127,7 +127,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements	CuentaRpcServ
 	private SearchCuentaBusinessOperator searchCuentaBusinessOperator;
 	private SelectCuentaBusinessOperator selectCuentaBusinessOperator;
 	private ContactosCuentaBusinessOperator contactosCuentaBusinessOperator;
-	private CuentaPotencialBusinessOperator cuentaPotencialBusinessOperator; 
 	
 	private TarjetaCreditoValidatorServiceAxisImpl tarjetaCreditoValidatorService;
 
@@ -159,7 +158,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements	CuentaRpcServ
 		selectCuentaBusinessOperator = (SelectCuentaBusinessOperator) context.getBean("selectCuentaBusinessOperator");
 		contactosCuentaBusinessOperator = (ContactosCuentaBusinessOperator) context.getBean("contactosCuentaBusinessOperator");
 		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");
-		cuentaPotencialBusinessOperator= (CuentaPotencialBusinessOperator) context.getBean("cuentaPotencialBusinessOperator");
 		tarjetaCreditoValidatorService = (TarjetaCreditoValidatorServiceAxisImpl) context.getBean("tarjetaCreditoValidatorService");
 		accessAuthorizationController = (AccessAuthorizationController) context.getBean("accessAuthorizationController");
 		
@@ -494,8 +492,10 @@ public class CuentaRpcServiceImpl extends RemoteService implements	CuentaRpcServ
 	public OportunidadNegocioDto getOportunidadNegocio(Long cuenta_id) throws RpcExceptionMessages {
         AppLogger.info("Obteniendo venta potencial con id: " + cuenta_id.longValue());
         OportunidadNegocio oportunidad = (OportunidadNegocio) repository.retrieve(OportunidadNegocio.class, cuenta_id);
-        cuentaPotencialBusinessOperator.markAsConsultada(oportunidad);        
-
+        if(Calendar.getInstance().getTime().after(oportunidad.getFechaVencimiento())) {
+        	throw  new RpcExceptionMessages("La oportunidad/Reserva está vencida");	
+        }
+        cuentaBusinessService.marcarOppComoConsultada(oportunidad);
         OportunidadNegocioDto oportunidadDto = mapper.map(oportunidad, OportunidadNegocioDto.class);
         if(oportunidad.getPrioridad()!=null)
         	oportunidadDto.setPrioridadDto(new PrioridadDto(oportunidad.getPrioridad().getId(),oportunidad.getPrioridad().getDescripcion()));

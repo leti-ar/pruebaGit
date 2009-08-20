@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ar.com.nextel.business.cuentas.create.CreateCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
+import ar.com.nextel.business.oportunidades.CuentaPotencialBusinessOperator;
 import ar.com.nextel.business.oportunidades.ReservaCreacionCuentaBusinessOperator;
 import ar.com.nextel.business.oportunidades.ReservaCreacionCuentaBusinessOperatorResult;
 import ar.com.nextel.framework.repository.Repository;
@@ -54,6 +55,9 @@ public class CuentaBusinessService {
 	@Qualifier("reservaCreacionCuentaBusinessOperator")
 	private ReservaCreacionCuentaBusinessOperator reservaCreacionCuentaBusinessOperator;
 	        
+	@Qualifier("cuentaPotencialBusinessOperator")
+	private CuentaPotencialBusinessOperator cuentaPotencialBusinessOperator;
+	
 	private SessionContextLoader sessionContextLoader;
 	private Repository repository;
 
@@ -63,10 +67,18 @@ public class CuentaBusinessService {
 		this.reservaCreacionCuentaBusinessOperator = reservaCreacionCuentaBusinessOperatorBean;
 	}
 	@Autowired
+	public void setCuentaPotencialBusinessOperator( 
+			CuentaPotencialBusinessOperator cuentaPotencialBusinessOperator) {
+		this.cuentaPotencialBusinessOperator = cuentaPotencialBusinessOperator;
+	}
+	
+	@Autowired
 	public void setCreateCuentaBusinessOperator( 
 			CreateCuentaBusinessOperator createCuentaBusinessOperatorBean) {
 		this.createCuentaBusinessOperator = createCuentaBusinessOperatorBean;
 	}
+	
+	
 	@Autowired	
 	public void setSessionContextLoader(SessionContextLoader sessionContextLoader) {
 		this.sessionContextLoader = sessionContextLoader;
@@ -151,6 +163,11 @@ public class CuentaBusinessService {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Suscriptor crearSuscriptor(Cuenta cuenta, Vendedor vendedor) {
 		return (Suscriptor) createCuentaBusinessOperator.createSuscriptorFrom(cuenta, vendedor);
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void marcarOppComoConsultada(OportunidadNegocio oportunidad) {
+		cuentaPotencialBusinessOperator.markAsConsultada(oportunidad);
 	}
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
