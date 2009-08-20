@@ -44,33 +44,36 @@ public interface SolicitudRpcService extends RemoteService {
 		}
 	}
 
-	public BuscarSSCerradasInitializer getBuscarSSCerradasInitializer();
+	public BuscarSSCerradasInitializer getBuscarSSCerradasInitializer() throws RpcExceptionMessages;
 
 	public List<SolicitudServicioCerradaResultDto> searchSSCerrada(
-			SolicitudServicioCerradaDto solicitudServicioCerradaDto);
+			SolicitudServicioCerradaDto solicitudServicioCerradaDto) throws RpcExceptionMessages;
 
 	public SolicitudServicioDto createSolicitudServicio(
 			SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages;
 
-	public SolicitudInitializer getSolicitudInitializer();
+	public SolicitudInitializer getSolicitudInitializer() throws RpcExceptionMessages;
 
-	public SolicitudServicioDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto);
+	public SolicitudServicioDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
+			throws RpcExceptionMessages;
 
 	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(
-			GrupoSolicitudDto grupoSolicitudDto);
+			GrupoSolicitudDto grupoSolicitudDto) throws RpcExceptionMessages;
 
 	public DetalleSolicitudServicioDto getDetalleSolicitudServicio(Long idSolicitudServicio)
 			throws RpcExceptionMessages;
 
-	public List<ListaPreciosDto> getListasDePrecios(TipoSolicitudDto tipoSolicitudDto);
+	public List<ListaPreciosDto> getListasDePrecios(TipoSolicitudDto tipoSolicitudDto)
+			throws RpcExceptionMessages;
 
-	public String buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto);
+	public String buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto)
+			throws RpcExceptionMessages;
 
 	public List<PlanDto> getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado,
 			TipoPlanDto tipoPlan, Long idCuenta);
 
 	public List<ServicioAdicionalLineaSolicitudServicioDto> getServiciosAdicionales(
-			LineaSolicitudServicioDto linea, Long idCuenta);
+			LineaSolicitudServicioDto linea, Long idCuenta) throws RpcExceptionMessages;
 
 	public ResultadoReservaNumeroTelefonoDto reservarNumeroTelefonico(long numero, long idTipoTelefonia,
 			long idModalidadCobro, long idLocalidad) throws RpcExceptionMessages;
