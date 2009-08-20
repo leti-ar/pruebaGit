@@ -5,6 +5,7 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ScoringDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
@@ -31,6 +32,7 @@ public class VariosSSUI extends Composite {
 	private NumberFormat currencyFormat = NumberFormat.getCurrencyFormat();
 	private InlineHTML scoring;
 	private HorizontalPanel scoringWrapper;
+	private String cuentaID;
 
 	public VariosSSUI(EditarSSUIController controller) {
 		mainpanel = new FlowPanel();
@@ -138,7 +140,7 @@ public class VariosSSUI extends Composite {
 		return wrapper;
 	}
 
-	private Widget getScoring() {
+	private Widget getScoring() {		
 		HTML titleImage = IconFactory.scoring();
 		titleImage.addStyleName("floatLeft");
 		TitledPanel scoringPanel = new TitledPanel(titleImage + Sfa.constant().consultarScoringTitle());
@@ -149,15 +151,14 @@ public class VariosSSUI extends Composite {
 		scoringWrapper = new HorizontalPanel();
 		scoringWrapper.setWidth("100%");
 		consultarScoring.addClickListener(new ClickListener() {
-			public void onClick(Widget arg0) {
-				InfocomRpcService.Util.getInstance().consultarScoring("6.251678",
-						new DefaultWaitCallback<ScoringDto>() {
-							public void success(ScoringDto result) {
-								if (result != null) {
-									scoring.setText(result.getMensajeAdicional());
-								}
-							}
-						});
+			public void onClick(Widget arg0) {				
+				InfocomRpcService.Util.getInstance().consultarScoring(controller.getEditarSSUIData().getCuentaId(), new DefaultWaitCallback<ScoringDto>() {
+					public void success(ScoringDto result) {
+						if (result != null) {					
+							scoring.setText(result.getMensajeAdicional());
+						}
+					}
+				});			
 			}
 		});
 		scoringWrapper.add(scoring);
