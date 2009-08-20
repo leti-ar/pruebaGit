@@ -80,6 +80,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private Command reservarCommnad = null;
 	private HTML verificarImeiWrapper;
 	private HTML verificarSimWrapper;
+	private InlineHTML pinLabel = new InlineHTML(Sfa.constant().pin());
+	private InlineHTML serieLabel = new InlineHTML(Sfa.constant().serie());
 
 	private Long idPlanAnterior;
 	private Long idItemAnterior;
@@ -408,6 +410,16 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				}
 				// if(is.getItem().) // alcanza con isEquipo, isAccesorio?
 				ddn.setChecked(true);
+				if (tipoEdicion == ACTIVACION) {
+					if (is.getItem().getSinModelo()) {
+						sim.setEnabled(false);
+						sim.setText("");
+					} else {
+						sim.setEnabled(true);
+					}
+				}
+			} else {
+				sim.setEnabled(true);
 			}
 			refreshTotalLabel();
 		} else if (sender == tipoPlan) {
@@ -444,12 +456,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				onChange(item);
 				// Habilito PIN si es Blackberry o N Serie si es otro
 				if (modelo.isEsBlackberry()) {
-					serie.setEnabled(false);
-					pin.setEnabled(true);
+					setSerieVisibleAndPinInvisible(false);
 					setDisableAndCheckedRoaming(true);
 				} else {
-					serie.setEnabled(true);
-					pin.setEnabled(false);
+					setSerieVisibleAndPinInvisible(true);
 					setDisableAndCheckedRoaming(false);
 				}
 			}
@@ -461,6 +471,13 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private void enableAliasYReserva(boolean enabled) {
 		alias.setEnabled(enabled);
 		reservar.setEnabled(enabled);
+	}
+
+	private void setSerieVisibleAndPinInvisible(boolean visible) {
+		serie.setVisible(visible);
+		serieLabel.setVisible(visible);
+		pin.setVisible(!visible);
+		pinLabel.setVisible(!visible);
 	}
 
 	private void setDisableAndCheckedRoaming(boolean checked) {
@@ -829,5 +846,13 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 	private boolean isCantiadIgualNadaOUno() {
 		return "".equals(cantidad.getText().trim()) || Integer.parseInt(cantidad.getText()) == 1;
+	}
+
+	public InlineHTML getPinLabel() {
+		return pinLabel;
+	}
+
+	public InlineHTML getSerieLabel() {
+		return serieLabel;
 	}
 }

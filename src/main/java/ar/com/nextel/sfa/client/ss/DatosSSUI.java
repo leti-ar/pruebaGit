@@ -250,6 +250,7 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		} else if (sender == editarDomicioFacturacion) {
 			domicilioAEditar = (DomiciliosCuentaDto) editarSSUIData.getFacturacion().getSelectedItem();
 		}
+		domicilioAEditar = domicilioAEditar != null ? domicilioAEditar : new DomiciliosCuentaDto();
 		DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
 	}
 
@@ -391,20 +392,20 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 	private void drawDetalleSSRow(LineaSolicitudServicioDto linea, int newRow) {
 		detalleSS.setWidget(newRow, 0, IconFactory.lapiz());
 		detalleSS.setWidget(newRow, 1, IconFactory.cancel());
-		detalleSS.setText(newRow, 2, linea.getItem().getDescripcion());
-		detalleSS.setText(newRow, 3, currencyFormat.format(linea.getPrecioVenta()));
-		detalleSS.setText(newRow, 4, linea.getAlias() != null ? linea.getAlias() : "");
-		detalleSS.setText(newRow, 5, linea.getPlan() != null ? linea.getPlan().getDescripcion() : "");
-		detalleSS.setText(newRow, 6, linea.getPlan() != null ? currencyFormat.format(linea
+		detalleSS.setHTML(newRow, 2, linea.getItem().getDescripcion());
+		detalleSS.setHTML(newRow, 3, currencyFormat.format(linea.getPrecioVenta()));
+		detalleSS.setHTML(newRow, 4, linea.getAlias() != null ? linea.getAlias() : "");
+		detalleSS.setHTML(newRow, 5, linea.getPlan() != null ? linea.getPlan().getDescripcion() : "");
+		detalleSS.setHTML(newRow, 6, linea.getPlan() != null ? currencyFormat.format(linea
 				.getPrecioVentaPlan()) : "");
-		detalleSS.setText(newRow, 7, linea.getLocalidad() != null ? linea.getLocalidad().getDescripcion()
+		detalleSS.setHTML(newRow, 7, linea.getLocalidad() != null ? linea.getLocalidad().getDescripcion()
 				: "");
-		detalleSS.setText(newRow, 8, linea.getNumeroReserva());
-		detalleSS.setText(newRow, 9, linea.getTipoSolicitud().getDescripcion());
-		detalleSS.setText(newRow, 10, "" + linea.getCantidad());
-		detalleSS.setText(newRow, 11, linea.getDdn() ? "Si" : "No");
-		detalleSS.setText(newRow, 12, linea.getDdi() ? "Si" : "No");
-		detalleSS.setText(newRow, 13, linea.getRoaming() ? "Si" : "No");
+		detalleSS.setHTML(newRow, 8, linea.getNumeroReserva());
+		detalleSS.setHTML(newRow, 9, linea.getTipoSolicitud().getDescripcion());
+		detalleSS.setHTML(newRow, 10, "" + linea.getCantidad());
+		detalleSS.setHTML(newRow, 11, linea.getDdn() ? IconFactory.tildeVerde().toString() : "");
+		detalleSS.setHTML(newRow, 12, linea.getDdi() ? IconFactory.tildeVerde().toString() : "");
+		detalleSS.setHTML(newRow, 13, linea.getRoaming() ? IconFactory.tildeVerde().toString() : "");
 		detalleSS.getCellFormatter().addStyleName(newRow, 3, "alignRight");
 		detalleSS.getCellFormatter().addStyleName(newRow, 6, "alignRight");
 	}

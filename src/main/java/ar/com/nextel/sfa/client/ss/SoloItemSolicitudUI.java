@@ -1,7 +1,6 @@
 package ar.com.nextel.sfa.client.ss;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.image.IconFactory;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -23,7 +22,7 @@ public class SoloItemSolicitudUI extends Composite {
 	private Grid precioCantidad;
 	private Grid total;
 	private ItemSolicitudUIData itemSolicitudData;
-	
+
 	public static final int LAYOUT_SIMPLE = 0;
 	public static final int LAYOUT_ACTIVACION = 1;
 	public static final int LAYOUT_CON_TOTAL = 2;
@@ -42,7 +41,7 @@ public class SoloItemSolicitudUI extends Composite {
 		primerTabla.setWidget(0, 0, new InlineLabel(Sfa.constant().listaPrecio()));
 		primerTabla.setWidget(0, 1, itemSolicitudData.getListaPrecio());
 		mainPanel.add(primerTabla);
-		
+
 		activacionModeloImei = new FlexTable();
 		activacionModeloImei.addStyleName("layout");
 		activacionModeloImei.getCellFormatter().setWidth(0, 0, "100px");
@@ -85,22 +84,24 @@ public class SoloItemSolicitudUI extends Composite {
 		activacionSimSeriePin = new FlexTable();
 		activacionSimSeriePin.addStyleName("layout");
 		activacionSimSeriePin.getCellFormatter().setWidth(0, 0, "100px");
+		activacionSimSeriePin.getCellFormatter().setWidth(0, 1, "160px");
+		activacionSimSeriePin.getCellFormatter().setWidth(0, 2, "50px");
 		activacionSimSeriePin.setVisible(false);
 		activacionSimSeriePin.setHTML(0, 0, Sfa.constant().precioLista());
 		activacionSimSeriePin.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
 		activacionSimSeriePin.setHTML(0, 2, Sfa.constant().sim());
 		activacionSimSeriePin.setWidget(0, 3, itemSolicitudData.getSim());
 		activacionSimSeriePin.setWidget(0, 4, itemSolicitudData.getVerificarSimWrapper());
-		activacionSimSeriePin.setHTML(1, 0, Sfa.constant().serie());
+		activacionSimSeriePin.setWidget(1, 0, itemSolicitudData.getSerieLabel());
 		activacionSimSeriePin.setWidget(1, 1, itemSolicitudData.getSerie());
-		activacionSimSeriePin.setHTML(1, 2, Sfa.constant().pin());
+		activacionSimSeriePin.setWidget(1, 2, itemSolicitudData.getPinLabel());
 		activacionSimSeriePin.setWidget(1, 3, itemSolicitudData.getPin());
 		activacionSimSeriePin.getFlexCellFormatter().setColSpan(1, 3, 4);
 		mainPanel.add(activacionSimSeriePin);
 	}
 
 	public SoloItemSolicitudUI setLayout(int layout) {
-		
+
 		total.setVisible(false);
 
 		switch (layout) {
@@ -113,7 +114,7 @@ public class SoloItemSolicitudUI extends Composite {
 
 		case LAYOUT_CON_TOTAL:
 			total.setVisible(true);
-			
+
 		case LAYOUT_SIMPLE:
 			precioCantidad.setVisible(true);
 			activacionModeloImei.setVisible(false);
