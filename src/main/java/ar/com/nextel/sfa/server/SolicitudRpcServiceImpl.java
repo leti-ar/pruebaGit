@@ -265,10 +265,16 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return initializer;
 	}
 
-	public SolicitudServicioDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto) {
-		SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(
-				solicitudServicioDto, mapper);
-		solicitudServicioDto = mapper.map(solicitudSaved, SolicitudServicioDto.class);
+	public SolicitudServicioDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
+			throws RpcExceptionMessages {
+		try {
+			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(
+					solicitudServicioDto, mapper);
+			solicitudServicioDto = mapper.map(solicitudSaved, SolicitudServicioDto.class);
+		} catch (Exception e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
 		return solicitudServicioDto;
 	}
 
@@ -396,6 +402,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			result = solicitudBusinessService.reservarNumeroTelefonico(numero, idTipoTelefonia,
 					idModalidadCobro, idLocalidad);
 		} catch (BusinessException e) {
+			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
 		return mapper.map(result, ResultadoReservaNumeroTelefonoDto.class);
@@ -405,6 +412,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		try {
 			solicitudBusinessService.desreservarNumeroTelefono(numero);
 		} catch (BusinessException e) {
+			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
 	}
@@ -426,6 +434,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		try {
 			negativeFilesResult = negativeFilesBusinessOperator.verificarNegativeFiles(numero);
 		} catch (BusinessException e) {
+			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
 		if (negativeFilesResult != null) {
