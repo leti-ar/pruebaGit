@@ -13,7 +13,7 @@ public class InfocomInitializer implements IsSerializable {
 	private String terminalesDesactivadas;
 	private String ciclo;
 	private String flota;
-	private String limiteCredito;
+	private double limiteCredito;
 	private List responsablePago;
 	private String numeroCuenta;
 	private String idResponsablePago;
@@ -51,11 +51,11 @@ public class InfocomInitializer implements IsSerializable {
 		this.flota = flota;
 	}
 
-	public String getLimiteCredito() {
+	public double getLimiteCredito() {
 		return limiteCredito;
 	}
 
-	public void setLimiteCredito(String limiteCredito) {
+	public void setLimiteCredito(double limiteCredito) {
 		this.limiteCredito = limiteCredito;
 	}
 
