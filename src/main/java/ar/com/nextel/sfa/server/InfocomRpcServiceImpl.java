@@ -91,7 +91,7 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 	public InfocomInitializer getInfocomInitializer(String numeroCuenta, String responsablePago) throws RpcExceptionMessages {
 		AppLogger.info("Iniciando retrieve infocom-header...");
 		InfocomInitializer infocomInitializer = new InfocomInitializer();
-		Cuenta cuenta = repository.retrieve(Cuenta.class, Long.parseLong(numeroCuenta));
+		Cuenta cuenta = repository.retrieve(Cuenta.class, Long.valueOf(numeroCuenta));
 		String codigoVantive = cuenta.getCodigoVantive();
 		if (responsablePago.equals(numeroCuenta)) {
 			codigoVantiveRP = codigoVantive;			
@@ -193,7 +193,7 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
    
 	/** Obtiene los datos necesarios para cargar la tabla de Fidelización */
     public CreditoFidelizacionDto getDetalleCreditoFidelizacion(String custCode) throws RpcExceptionMessages {
-		Cuenta cuenta = repository.retrieve(Cuenta.class, custCode);
+		Cuenta cuenta = repository.retrieve(Cuenta.class, Long.valueOf(custCode));
 		String codigoVantive = cuenta.getCodigoVantive();
     	CreditoFidelizacionDto creditoFidelizacion = new CreditoFidelizacionDto();
 		List<DetalleCreditoDTO> detalleCreditoFidelizacion = null;
@@ -214,7 +214,7 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 	/** Obtiene los datos necesarios para cargar la tabla de Cuenta Corriente */
     public List<TransaccionCCDto> getCuentaCorriente(String numeroCuenta, String responsablePago) throws RpcExceptionMessages {
 		List<TransaccionCCDto> listTransaccion = new ArrayList<TransaccionCCDto>();
-		Cuenta cuenta = repository.retrieve(Cuenta.class, Long.parseLong(numeroCuenta));
+		Cuenta cuenta = repository.retrieve(Cuenta.class, Long.valueOf(numeroCuenta));
 		String codigoVantive = cuenta.getCodigoVantive();
 		if (responsablePago.equals(numeroCuenta)) {
 			codigoVantiveRP = codigoVantive;			
@@ -289,7 +289,7 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
     /**Obtiene la información del Resumen por Equipo*/
     public ResumenEquipoDto getResumenEquipos(String numeroCuenta, String responsablePago) throws RpcExceptionMessages {
     	AppLogger.info("Iniciando retrieve resumen equipos-Infocom...");
-		Cuenta cuenta = repository.retrieve(Cuenta.class, Long.parseLong(numeroCuenta));
+		Cuenta cuenta = repository.retrieve(Cuenta.class, Long.valueOf(numeroCuenta));
 		String codigoVantive = cuenta.getCodigoVantive();
     	ResumenEquipoDto resumenEquipoDto = new ResumenEquipoDto();
     	try {
@@ -382,7 +382,7 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
     
     /**Obtiene los datos del scoring para mostrar en el pop up de Scoring de Infocom*/
     public ScoringDto consultarScoring(String numeroCuenta) throws RpcExceptionMessages {
-		Cuenta cuenta = repository.retrieve(Cuenta.class, Long.parseLong(numeroCuenta));
+		Cuenta cuenta = repository.retrieve(Cuenta.class, Long.valueOf(numeroCuenta));
 		String codigoVantive = cuenta.getCodigoVantive();
     	AppLogger.info("Iniciando consulta de scoring para " + codigoVantive);
         CuentaScoringBusinessResult result;
