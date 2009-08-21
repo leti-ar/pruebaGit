@@ -27,6 +27,7 @@ public class ResumenEquipoPopUp extends NextelDialog {
 	private InlineHTML factura;
 	private InlineHTML emision;
 	private String responsablePago;
+
 	
 	private final NumberFormat numberFormat = NumberFormat.getCurrencyFormat();
 
@@ -58,7 +59,7 @@ public class ResumenEquipoPopUp extends NextelDialog {
 		resumenTable = new FlexTable();
 		resumenTable.addStyleName("miTablaInvisible");
 		initTable(resumenTable);
-
+		
 		SimpleLink cerrar = new SimpleLink("Cerrar");
 		cerrar.addStyleName("cerrarLink");
 		cerrar.addClickListener(new ClickListener() {
@@ -70,7 +71,7 @@ public class ResumenEquipoPopUp extends NextelDialog {
 		this.addFooter(cerrar);
 
 	}
-
+	
 	private void initTable(FlexTable table) {
 		SimplePanel contPanel = new SimplePanel();
 		contPanel.addStyleName("resultTableWrapper");
@@ -79,9 +80,21 @@ public class ResumenEquipoPopUp extends NextelDialog {
 		for (int col = 1; col < widths.length; col++) {
 			table.getColumnFormatter().setWidth(col, widths[col]);
 		}
-		table.getColumnFormatter().addStyleName(0, "alignCenter");
+		
 		table.getColumnFormatter().addStyleName(1, "alignCenter");
 		table.getColumnFormatter().addStyleName(2, "alignCenter");
+		table.getColumnFormatter().addStyleName(3, "alignCenter");
+		table.getColumnFormatter().addStyleName(4, "alignCenter");
+		table.getColumnFormatter().addStyleName(5, "alignCenter");
+		table.getColumnFormatter().addStyleName(6, "alignCenter");
+		table.getColumnFormatter().addStyleName(7, "alignCenter");
+		table.getColumnFormatter().addStyleName(8, "alignCenter");
+		table.getColumnFormatter().addStyleName(9, "alignCenter");
+		table.getColumnFormatter().addStyleName(10, "alignCenter");
+		table.getColumnFormatter().addStyleName(11, "alignCenter");
+		table.getColumnFormatter().addStyleName(12, "alignCenter");
+		table.getColumnFormatter().addStyleName(13, "alignCenter");
+		
 		table.setCellPadding(0);
 		table.setCellSpacing(0);
 		table.getRowFormatter().addStyleName(0, "header");
@@ -101,7 +114,11 @@ public class ResumenEquipoPopUp extends NextelDialog {
 		table.setHTML(0, 13, "Pagers");
 		table.setHTML(0, 14, "Tot c/imp");
 		if (responsablePago!=null) {
-			//table.getColumnFormatter().addStyleName(0, "cg1");
+			table.getColumnFormatter().addStyleName(0, "cg1");
+			table.setHTML(0, 0, "");
+			table.getColumnFormatter().addStyleName(0, "alignCenter");
+		} else {
+			table.getColumnFormatter().setWidth(0, "74px");
 		}
 		contPanel.add(table);
 		this.add(contPanel);
