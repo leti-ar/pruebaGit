@@ -123,7 +123,6 @@ public class CuentaDomiciliosForm extends Composite {
 	 * @author eSalvador
 	 **/
 	public void cargaTablaDomicilios(final CuentaDto cuentaDto) {
-		// datosTabla = new FlexTable();
 		this.cuentaDto = cuentaDto;
 		setTienePrincipalEntrega(false);
 		setTienePrincipalFacturacion(false);
@@ -180,11 +179,8 @@ public class CuentaDomiciliosForm extends Composite {
 	}
 
 	public void limpiaTablaDomicilios() {
-		// Limpia la tabla de domicilios incialmente, si esta con datos:
-		if (datosTabla.getRowCount() > 1) {
-			for (int j = 1; j < (datosTabla.getRowCount()); j++) {
-				datosTabla.removeRow(j);
-			}
+		while (datosTabla.getRowCount() > 1) {
+			datosTabla.removeRow(1);
 		}
 	}
 
@@ -365,7 +361,7 @@ public class CuentaDomiciliosForm extends Composite {
 	public void setDomicilioAEditar(DomiciliosCuentaDto domicilioAEditar) {
 		this.domicilioAEditar = domicilioAEditar;
 	}
-
+	
 	public Button getCrearDomicilio() {
 		return crearDomicilio;
 	}
