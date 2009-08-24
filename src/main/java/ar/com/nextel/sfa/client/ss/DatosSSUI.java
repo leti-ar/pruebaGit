@@ -403,9 +403,12 @@ public class DatosSSUI extends Composite implements ClickListener, TableListener
 		detalleSS.setHTML(newRow, 8, linea.getNumeroReserva());
 		detalleSS.setHTML(newRow, 9, linea.getTipoSolicitud().getDescripcion());
 		detalleSS.setHTML(newRow, 10, "" + linea.getCantidad());
-		detalleSS.setHTML(newRow, 11, linea.getDdn() ? IconFactory.tildeVerde().toString() : "");
-		detalleSS.setHTML(newRow, 12, linea.getDdi() ? IconFactory.tildeVerde().toString() : "");
-		detalleSS.setHTML(newRow, 13, linea.getRoaming() ? IconFactory.tildeVerde().toString() : "");
+		detalleSS.setHTML(newRow, 11, linea.getDdn() ? IconFactory.tildeVerde().toString() : Sfa.constant()
+				.whiteSpace());
+		detalleSS.setHTML(newRow, 12, linea.getDdi() ? IconFactory.tildeVerde().toString() : Sfa.constant()
+				.whiteSpace());
+		detalleSS.setHTML(newRow, 13, linea.getRoaming() ? IconFactory.tildeVerde().toString() : Sfa
+				.constant().whiteSpace());
 		detalleSS.getCellFormatter().addStyleName(newRow, 3, "alignRight");
 		detalleSS.getCellFormatter().addStyleName(newRow, 6, "alignRight");
 	}
