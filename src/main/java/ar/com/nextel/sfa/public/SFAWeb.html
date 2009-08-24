@@ -27,18 +27,32 @@
     <!-- Evita que la tecla backspace actue como boton atras. -->
     <!--                                                      -->
     <script type="text/javascript">
+      var ie = (window.navigator.appName == "Microsoft Internet Explorer") ? true : false;
       document.onkeydown = checkBackspace;
+      
       function checkBackspace() {
-        //Mantiene backspace en textbox
-        if(window.event.srcElement.type && window.event.srcElement.type.match("text")) {
+        if(!ie) {
+          return ffCheckBackspace(document.onkeydown);
+        }
+        //Mantiene backspace para textbox
+        if(window.event.srcElement.type &&  window.event.srcElement.type.match("text")) {
           return true;
         }
-        // else
         if(window.event && window.event.keyCode == 8) {
+          //si está fuera de un textbox cancela backspace
           window.event.cancelBubble = true;
-          window.event.returnValue  = false;
+          window.event.returnValue = false;
           return false;
         }
+      }
+      //version Firefox
+      function ffCheckBackspace(event) {
+        if(event.keyCode==8)  {
+          event.preventDefault();
+          event.returnValue = false;
+          return false;
+        }
+        return true;
       }
     </script>
   </head>
