@@ -45,7 +45,7 @@ public class InfocomUIData extends UIData {
 	
 	private HorizontalPanel cicloPanel;
 	private HorizontalPanel flotaPanel;
-	private HorizontalPanel limiteCreditoPanel;
+	private HorizontalPanel limCreditoPanel;
 	private HorizontalPanel responsablePanel;
 	
 	private InlineHTML monto;
@@ -82,7 +82,7 @@ public class InfocomUIData extends UIData {
 		cicloPanel = new HorizontalPanel();
 		cicloPanel.setWidth("200px");
 		flotaPanel = new HorizontalPanel();
-		flotaPanel.setWidth("200px");
+		flotaPanel.setWidth("70px");
 		estadoTerminales = new EstadoTerminales();
 		cicloLabel = new Label("Ciclo: ");
 		ciclo = new InlineHTML();
@@ -92,8 +92,12 @@ public class InfocomUIData extends UIData {
 		flota = new InlineHTML();
 		flotaPanel.add(flotaLabel);
 		flotaPanel.add(flota);
+		limCreditoPanel = new HorizontalPanel();
+		limCreditoPanel.setWidth("150px");
 		limCreditoLabel = new Label("Lím. Crédito: ");
 		limCredito = new InlineHTML();
+		limCreditoPanel.add(limCreditoLabel);
+		limCreditoPanel.add(limCredito);
 		responsablePago = new ListBox("Todos");
 		responsablePago.setWidth("120px");
 		
@@ -552,6 +556,14 @@ public class InfocomUIData extends UIData {
 
 	public void setCreditoFidelizacionTable(FlexTable creditoFidelizacionTable) {
 		this.creditoFidelizacionTable = creditoFidelizacionTable;
+	}
+
+	public HorizontalPanel getLimCreditoPanel() {
+		return limCreditoPanel;
+	}
+
+	public void setLimCreditoPanel(HorizontalPanel limCreditoPanel) {
+		this.limCreditoPanel = limCreditoPanel;
 	}	
 	
 }

@@ -99,9 +99,8 @@ public class InfocomUI extends ApplicationUI {
 		estadoFlexTable.setWidget(0, 3, infocomUIData.getFlotaPanel());
 		estadoFlexTable.setWidget(0, 6, IconFactory.scoring());
 		estadoFlexTable.setWidget(0, 7, infocomUIData.getScoring());
-		estadoFlexTable.setWidget(0, 8, infocomUIData.getLimCreditoLabel());
-		estadoFlexTable.setWidget(0, 9, infocomUIData.getLimCredito());
-		//estadoFlexTable.setWidth("100%");
+		estadoFlexTable.setWidget(0, 8, infocomUIData.getLimCreditoPanel());
+		estadoFlexTable.setWidth("60%");
 		
 		responsableFlexTable.setWidget(0, 0, infocomUIData.getResponsablePanel());
 		responsableFlexTable.setWidget(0, 1, infocomUIData.getResumenPorEquipo());
