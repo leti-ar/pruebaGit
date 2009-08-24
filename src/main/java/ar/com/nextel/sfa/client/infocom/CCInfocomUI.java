@@ -31,6 +31,7 @@ public class CCInfocomUI extends Composite {
 		cuentaCorrienteTableWrapper.add(infocomUIData.initCCTable());
 
 		descripcionTableWrapper = new SimplePanel();
+		descripcionTableWrapper.setHeight("100px");
 		//descripcionTableWrapper.addStyleName("contTable");
 		descripcionTableWrapper.addStyleName("resultTableWrapper");
 		descripcionTableWrapper.add(infocomUIData.initDescripcionTable());
