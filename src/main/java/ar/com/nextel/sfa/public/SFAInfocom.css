@@ -82,6 +82,10 @@
 	text-align: right;
 }
 
+.alingLeft{
+	text-align: left;
+}
+
 .ccTable{
 	border:1px solid white;
 	width: 100%;
@@ -127,3 +131,4 @@
 .miTablaInvisible .cg1{ 
 	display: none;
 }
+
