@@ -385,6 +385,9 @@ public class CuentaEdicionTabPanel {
         //agrego domicilios
 		ctaDto.getPersona().setDomicilios(CuentaDomiciliosForm.getInstance().cuentaDto.getPersona().getDomicilios());
 		
+		//solo para actualizar imagen sin mensaje de error sin no hay domicilio.
+		validarCompletitud(false);
+		
 		CuentaRpcService.Util.getInstance().saveCuenta(ctaDto,new DefaultWaitCallback<CuentaDto>() {
 			public void success(CuentaDto cuentaDto) {
 				CuentaEdicionTabPanel.getInstance().setCuenta2editDto(cuentaDto);
