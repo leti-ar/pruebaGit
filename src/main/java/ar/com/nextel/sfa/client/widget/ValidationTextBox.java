@@ -6,8 +6,12 @@ public class ValidationTextBox extends RegexTextBox implements ExcluyenteWidget{
 
 	private boolean excluyente;
 
-	public ValidationTextBox(String string) {
-		super(string);
+	public ValidationTextBox(String pattern) {
+		super(pattern);
+	}
+	
+	public ValidationTextBox(String pattern, boolean focusListener) {
+		super(pattern, focusListener);
 	}
 
 	public boolean isExcluyente() {

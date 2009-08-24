@@ -37,7 +37,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 
 	private Label tituloLabel = new Label("Búsqueda de Cuentas");
 	private ValidationListBox categoriaCombo;
-	private ValidationTextBox numeroCuentaTextBox = new ValidationTextBox("[0-9\\.]*");
+	private ValidationTextBox numeroCuentaTextBox = new ValidationTextBox("[0-9\\.]*", true);
 	private ValidationTextBox razonSocialTextBox = new ValidationTextBox("[a-zA-Z0-9\\s\\%]*");
 	private ValidationTextBox numeroNextelTextBox = new ValidationTextBox("[0-9]*");
 	private ValidationTextBox flotaIdTextBox = new ValidationTextBox("[0-9\\*]*");

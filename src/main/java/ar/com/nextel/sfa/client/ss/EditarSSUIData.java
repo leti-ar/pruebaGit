@@ -74,7 +74,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 	public EditarSSUIData() {
 		serviciosAdicionales = new ArrayList();
 
-		fields.add(nss = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(10)));
+		fields.add(nss = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(10), true));
 		fields.add(nflota = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(5)));
 		fields.add(origen = new ListBox());
 		fields.add(entrega = new ListBox());
