@@ -24,6 +24,5 @@ public abstract class EventWrapper extends SimplePanel implements EventListener 
 			break;
 		}
 	}
-	
 	abstract public void doEnter();
 }
