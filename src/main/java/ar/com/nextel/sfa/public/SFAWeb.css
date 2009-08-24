@@ -223,6 +223,7 @@ A {
 	height: 24px;
 }
 
+
 .gwt-BuscarCuentaResultPanel .resultTableWrapper {
 	height: 200px;
 	overflow: auto;
@@ -634,6 +635,12 @@ input[disabled], input[readonly], select[disabled], select[readonly], checkbox[d
  color: #000000;
  cursor: default;
 } 
+
+.dataTableInfocom td {
+	border-right: 1px solid #EBEBEB;
+	border-bottom: 1px solid #EBEBEB;
+	height: 24px;
+}
 
 /*.table-external {
 border:1px solid gray;
