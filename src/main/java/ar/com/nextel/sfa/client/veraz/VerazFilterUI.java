@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.widget.EventWrapper;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
@@ -55,28 +56,22 @@ public class VerazFilterUI extends Composite {
 		verazTable.setWidget(0, 3, verazEditor.getNumeroDocTextBox());
 		verazTable.setText(0, 4, Sfa.constant().sexo());
 		verazTable.setWidget(0, 5, verazEditor.getSexoListBox());	
-				
-		mainPanel.add(verazTable);
+		EventWrapper ew = new EventWrapper() {
+			public void doEnter() {
+				validarVeraz();				
+			}
+		};
+		ew.add(verazTable);
+		
+		mainPanel.add(ew);
 		
 		verazEditor.getValidarVerazLink().addClickListener(new ClickListener() {
 			public void onClick (Widget arg0) {
-
-				errorList.clear();
-				/**Valida la completitud y formato de los campos**/
-				errorList.addAll(verazEditor.validarFormatoYCompletitud());
-
-				/**Muestra los mensajes de error**/
-				if (!errorList.isEmpty()){
-					for (int i = 0; i < errorList.size(); i++) {
-						String error = errorList.get(i);
-						ErrorDialog.getInstance().show(error);
-					}
-				} else
-					verazResultUI.searchVeraz(verazEditor.getVerazSearch(verazEditor.getNumeroDocTextBox(), verazEditor.getTipoDocListBox(), verazEditor.getSexoListBox()));
+				validarVeraz();			
 			}
 		});
 	}
-	
+
 	public void setVerazResultUI(VerazResultUI verazResultUI) {
 		this.verazResultUI = verazResultUI;
 	}
@@ -88,6 +83,19 @@ public class VerazFilterUI extends Composite {
 		footerBar.addLink(verazEditor.getAgregarProspectLink());
 		return footerBar;
 	}
-
-	
+    
+	private void validarVeraz() {
+		errorList.clear();
+		/**Valida la completitud y formato de los campos**/
+		errorList.addAll(verazEditor.validarFormatoYCompletitud());
+		/**Muestra los mensajes de error**/
+		if (!errorList.isEmpty()) {
+			for (int i = 0; i < errorList.size(); i++) {
+				String error = errorList.get(i);
+				ErrorDialog.getInstance().show(error);
+			}
+		} else {
+			verazResultUI.searchVeraz(verazEditor.getVerazSearch(verazEditor.getNumeroDocTextBox(), verazEditor.getTipoDocListBox(), verazEditor.getSexoListBox()));
+		}
+	}
 }
