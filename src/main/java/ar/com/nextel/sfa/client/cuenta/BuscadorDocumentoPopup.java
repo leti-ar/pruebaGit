@@ -6,6 +6,7 @@ import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
+import ar.com.nextel.sfa.client.widget.EventWrapper;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
@@ -41,11 +42,7 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 	
 		aceptar.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
-				if (validarNumero()) {
-					CuentaClientService.reservaCreacionCuenta(new Long(tipoDocumento.getSelectedItemId()), numeroDocTextBox.getText(), fromMenu?null:idOpp);
-					hide();
-					numeroDocTextBox.setText("");
-				}
+				reservaCreacionCuenta();
 			}
 		});		
 	
@@ -59,7 +56,6 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 	}
 	
 	public void init() {
-		
 		buscadorDocumentoPanel = new SimplePanel();
 		buscadorDocumentoPanel.setWidth("250");
 		buscadorDocumentoPanel.setHeight("70");
@@ -89,7 +85,13 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 		buscadorDocumentoTable.setWidget(0, 1, tipoDocumento);
 		buscadorDocumentoTable.setWidget(1, 0, numeroDocLabel);
 		buscadorDocumentoTable.setWidget(1, 1, numeroDocTextBox);
-		buscadorDocumentoPanel.add(buscadorDocumentoTable);
+		EventWrapper ew = new EventWrapper() {
+			public void doEnter() {
+				reservaCreacionCuenta();
+			}
+		};
+		ew.add(buscadorDocumentoTable);
+		buscadorDocumentoPanel.add(ew);
 		
 		botonesTable.setWidget(0,0,aceptar);
 		botonesTable.setWidget(0,1,cerrar);
@@ -124,5 +126,13 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 			ErrorDialog.getInstance().show(validator.getErrors());
 		}	
 		return validator.getErrors().isEmpty();
+	}
+	
+	private void reservaCreacionCuenta() {
+		if (validarNumero()) {
+			CuentaClientService.reservaCreacionCuenta(new Long(tipoDocumento.getSelectedItemId()), numeroDocTextBox.getText(), fromMenu?null:idOpp);
+			hide();
+			numeroDocTextBox.setText("");
+		}
 	}
 }
