@@ -235,7 +235,7 @@ public class InfocomUIData extends UIData {
 		for (int col = 0; col < widths.length; col++) {
 			descripcionTable.setHTML(0, col, titles[col]);
 			descripcionTable.getColumnFormatter().setWidth(col, widths[col]);
-			descripcionTable.getColumnFormatter().addStyleName(col, "alignCenter");
+			descripcionTable.getColumnFormatter().addStyleName(col, "alingLeft");
 		}
 		
 		descripcionTable.setHTML(1, 0, "EQUIPOS");		
@@ -244,7 +244,7 @@ public class InfocomUIData extends UIData {
 		descripcionTable.setCellPadding(0);
 		descripcionTable.setCellSpacing(0);
 		//descripcionTable.addStyleName("infocomDescripcionTable");
-		descripcionTable.addStyleName("dataTable");
+		descripcionTable.addStyleName("dataTableInfocom");
 		descripcionTable.getRowFormatter().addStyleName(0, "header");
 		return descripcionTable;
 	}
