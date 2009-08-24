@@ -23,16 +23,24 @@
     <!--                                           -->
     <script type="text/javascript" language="javascript" src="ar.com.nextel.sfa.SFAWeb.nocache.js"></script>
 
-    <!--                                           -->
+    <!--                                                      -->
     <!-- Evita que la tecla backspace actue como boton atras. -->
-    <!--                                           -->
-    <script>
-      function checkShortcut() {
-        if(event.keyCode==8 ¦¦ event.keyCode==13)  {
+    <!--                                                      -->
+    <script type="text/javascript">
+      document.onkeydown = checkBackspace;
+      function checkBackspace() {
+        //Mantiene backspace en textbox
+        if(window.event.srcElement.type && window.event.srcElement.type.match("text")) {
+          return true;
+        }
+        // else
+        if(window.event && window.event.keyCode == 8) {
+          window.event.cancelBubble = true;
+          window.event.returnValue  = false;
           return false;
         }
       }
-    </script> 
+    </script>
   </head>
 
   <!--                                           -->
@@ -40,10 +48,8 @@
   <!-- you can leave the body empty if you want  -->
   <!-- to create a completely dynamic UI.        -->
   <!--                                           -->
-  <body onkeydown="return checkShortcut()">
-
+  <body>
     <!-- OPTIONAL: include this if you want history support -->
     <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
-
   </body>
 </html>
