@@ -21,7 +21,9 @@ import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCie
 import ar.com.nextel.business.solicitudes.provider.SolicitudServicioProviderResult;
 import ar.com.nextel.components.accessMode.AccessAuthorization;
 import ar.com.nextel.framework.repository.Repository;
+import ar.com.nextel.model.cuentas.beans.DatosDebitoTarjetaCredito;
 import ar.com.nextel.model.cuentas.beans.EstadoCreditoFidelizacion;
+import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
 import ar.com.nextel.model.personas.beans.Domicilio;
@@ -143,6 +145,15 @@ public class SolicitudBusinessService {
 		solicitudServicio.setDomicilioEnvio(null);
 		solicitudServicio.setDomicilioFacturacion(null);
 		mapper.map(solicitudServicioDto, solicitudServicio);
+
+		// Estas lineas son por un problema no identificado, que hace que al querer guardar el tipo de tarjeta
+		// detecte que el objeto no está attachado a la session
+		if (solicitudServicio.getCuenta().getDatosPago() instanceof DatosDebitoTarjetaCredito) {
+			DatosDebitoTarjetaCredito datosPago = (DatosDebitoTarjetaCredito) solicitudServicio.getCuenta()
+					.getDatosPago();
+			datosPago.setTipoTarjeta(repository.retrieve(TipoTarjeta.class, datosPago.getTipoTarjeta()
+					.getId()));
+		}
 
 		if (solicitudServicioDto.getIdDomicilioEnvio() != null) {
 			for (Domicilio domicilioE : solicitudServicio.getCuenta().getPersona().getDomicilios()) {
