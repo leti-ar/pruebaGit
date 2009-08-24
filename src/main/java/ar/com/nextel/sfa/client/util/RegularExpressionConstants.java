@@ -32,6 +32,11 @@ public class RegularExpressionConstants {
 	public static final String getNumerosLimitado(int cant) {
 		return "[0-9]{0," + cant + "}";
 	}
+	
+	/** Permite ingresar una numeros y caracteres hasta una cierta cantidad */
+	public static final String getNumerosYLetrasLimitado(int cant) {
+		return "[0-9a-zA-Z]{0," + cant + "}";
+	}
 
 	public static final String getCantCaracteres(int cant) {
 		return ".{0," + cant + "}";
