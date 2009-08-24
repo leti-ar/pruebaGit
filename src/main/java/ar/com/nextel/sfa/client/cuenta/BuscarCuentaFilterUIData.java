@@ -314,9 +314,9 @@ public class BuscarCuentaFilterUIData extends UIData {
  
 	}
 	
-	public List validatePreSearch() {
+	public List<String> validatePreSearch() {
 		boolean vacio = true;
-		List<String> list = new ArrayList();
+		List<String> list = new ArrayList<String>();
 		
 		//Valida que todos los campos TextBoxs no sean vacios:
 		for (Widget fieldsfieldTextBox : fields) {
@@ -345,7 +345,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 		if(vacio){
 			list.add("Por favor ingrese por lo menos un criterio de busqueda.");
 		}else{
-			if(flotaIdTextBox.isEnabled())  {
+			if(flotaIdTextBox.isEnabled() && !flotaIdTextBox.getText().equals(""))  {
 				if(!validaFlotaId(flotaIdTextBox)){
 					list.add("Formato incorrecto de Flota*Id.");
 				}

@@ -6,6 +6,7 @@ package ar.com.nextel.sfa.client.cuenta;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.widget.EventWrapper;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.ui.ClickListener;
@@ -76,9 +77,13 @@ public class BuscarCuentaFilterUI extends Composite {
 		layout.setWidget(3, 3, buscadorCuentasFilterEditor.getCategoriaCombo());
 		layout.setWidget(3, 4, listaLabels.get(10));
 		layout.setWidget(3, 5, buscadorCuentasFilterEditor.getResultadosCombo());
-
-		mainPanel.add(layout);
-
+        EventWrapper eventWrapper = new EventWrapper() {
+    		public void doEnter() {
+    			doSearch();
+    		}
+    	};
+        eventWrapper.add(layout);
+		mainPanel.add(eventWrapper);
 		FlowPanel commandPanel = new FlowPanel();
 		commandPanel.add(buscadorCuentasFilterEditor.getBuscarButton());
 		commandPanel.add(buscadorCuentasFilterEditor.getLimpiarButton());
@@ -88,20 +93,23 @@ public class BuscarCuentaFilterUI extends Composite {
 
 		buscadorCuentasFilterEditor.getBuscarButton().addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-
-				/** BuscarButton Validation: */
-				List<String> listaErrores = buscadorCuentasFilterEditor.validatePreSearch();
-				if (!listaErrores.isEmpty()) {
-					StringBuilder error = new StringBuilder();
-					for (int i = 0; i < listaErrores.size(); i++) {
-						error.append(listaErrores.get(i) + "<br />");
-					}
-					ErrorDialog.getInstance().show(error.toString());
-				} else {
-					controller.searchCuentas(buscadorCuentasFilterEditor.getCuentaSearch());
-				}
+				doSearch();
 			}
 		});
+	}
+
+	private void doSearch() {
+		/** BuscarButton Validation: */
+		List<String> listaErrores = buscadorCuentasFilterEditor.validatePreSearch();
+		if (!listaErrores.isEmpty()){
+			StringBuilder error = new StringBuilder();
+			for (int i = 0; i < listaErrores.size(); i++) {
+				error.append(listaErrores.get(i) + "<br />");
+			}
+			ErrorDialog.getInstance().show(error.toString());
+		}else{		
+			controller.searchCuentas(buscadorCuentasFilterEditor.getCuentaSearch());
+		}
 	}
 
 	private List<Label> cargaLabels(List<Label> listaLabels) {
