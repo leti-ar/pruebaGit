@@ -117,7 +117,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		fields.add(item = new ListBox(" "));
 		fields.add(terminoPago = new ListBox());
 		fields.add(sim = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(15)));
-		fields.add(serie = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(10)));
+		fields.add(serie = new RegexTextBox(RegularExpressionConstants.getNumerosYLetrasLimitado(10)));
 		fields.add(pin = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(8)));
 		fields.add(ddn = new CheckBox());
 		fields.add(ddi = new CheckBox());
@@ -136,10 +136,13 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		imei.setWidth("370px");
 		imei.setMaxLength(15);
 		sim.setMaxLength(15);
+		serie.setMaxLength(10);
+		pin.setMaxLength(8);
 		modeloEq.setWidth("400px");
 		plan.setWidth("400px");
 		localidad.setWidth("400px");
 		alias.setWidth("70px");
+		alias.setMaxLength(10);
 		reservarHidden.setWidth("70px");
 		reservarHidden.setEnabled(false);
 		reservarHidden.addStyleName("m0p0");
