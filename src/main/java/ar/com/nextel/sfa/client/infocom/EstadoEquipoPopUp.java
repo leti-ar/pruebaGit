@@ -44,6 +44,7 @@ public class EstadoEquipoPopUp extends NextelDialog {
 		}
 		table.setCellPadding(0);
 		table.setCellSpacing(0);
+		table.addStyleName("gwt-BuscarCuentaResultTable");
 		table.getRowFormatter().addStyleName(0, "header");
 		table.setHTML(0, 0, "Numero cuenta");
 		table.setHTML(0, 1, "Plan");
