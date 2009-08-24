@@ -55,13 +55,11 @@ rgm
 .icon-excel { background-position: -32 0;}
 .icon-lapiz { background-position: -48 0;}
 .icon-locked { background-position: -64 0;}
-.icon-lupa { 
-	background-position: -80 0;
-	cursor: pointer;
-	}
+.icon-lupa { background-position: -80 0;}
 .icon-silvioSoldan { background-position: -96 0;}
 .icon-tildeVerde { background-position: -112 0; }
-.icon-vistaPreliminar { background-position: -128 0;}
+.icon-vistaPreliminar { background-position: -128 0;
+	cursor: pointer;}
 .icon-word { background-position: -144 0;}
 .icon-nuevo { background-position: -160 0;}
 .icon-comprobar-negro { background-position: -176 0;}
