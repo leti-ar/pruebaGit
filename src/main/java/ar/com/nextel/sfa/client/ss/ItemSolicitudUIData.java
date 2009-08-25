@@ -142,7 +142,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		plan.setWidth("400px");
 		localidad.setWidth("400px");
 		alias.setWidth("70px");
-		alias.setMaxLength(10);
+		alias.setMaxLength(15);
 		reservarHidden.setWidth("70px");
 		reservarHidden.setEnabled(false);
 		reservarHidden.addStyleName("m0p0");
