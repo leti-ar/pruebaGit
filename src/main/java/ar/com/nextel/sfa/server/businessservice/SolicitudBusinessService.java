@@ -1,5 +1,9 @@
 package ar.com.nextel.sfa.server.businessservice;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.validator.GenericValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,6 +23,7 @@ import ar.com.nextel.business.solicitudes.generacionCierre.GeneracionCierreBusin
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreRequest;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
 import ar.com.nextel.business.solicitudes.provider.SolicitudServicioProviderResult;
+import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepository;
 import ar.com.nextel.components.accessMode.AccessAuthorization;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoTarjetaCredito;
@@ -28,6 +33,7 @@ import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
 import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
@@ -44,6 +50,7 @@ public class SolicitudBusinessService {
 	private FinancialSystem financialSystem;
 	private SessionContextLoader sessionContextLoader;
 	private Repository repository;
+	private SolicitudServicioRepository solicitudServicioRepository;
 	private final String CUENTA_FILTRADA = "Acceso denegado. No puede operar con esta cuenta.";
 
 	@Autowired
@@ -85,6 +92,12 @@ public class SolicitudBusinessService {
 		this.repository = repository;
 	}
 
+	@Autowired
+	public void setSolicitudServicioRepository(
+			@Qualifier("solicitudServicioRepositoryBean") SolicitudServicioRepository solicitudServicioRepository) {
+		this.solicitudServicioRepository = solicitudServicioRepository;
+	}
+
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public SolicitudServicio createSolicitudServicio(SolicitudServicioRequest solicitudServicioRequest)
 			throws BusinessException, FinancialSystemException {
@@ -109,6 +122,7 @@ public class SolicitudBusinessService {
 		// if(no tiene permiso de edicion){
 		// solicitudServicio.getCuenta().terminarOperacion();
 		// }
+		checkServiciosAdicionales(solicitud);
 
 		solicitud.consultarCuentaPotencial();
 		if (providerResult.wasCreationNeeded()) {
@@ -117,8 +131,31 @@ public class SolicitudBusinessService {
 			}
 			repository.save(solicitud);
 		}
-
 		return solicitud;
+	}
+
+	/** Controla que los servicios adicionales que poseen las lineas de la solicitud aun sean validos */
+	private void checkServiciosAdicionales(SolicitudServicio solicitud) {
+		// Controlo la consistencia de los servicios adicionales existentes
+		for (LineaSolicitudServicio linea : solicitud.getLineas()) {
+			Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales = solicitudServicioRepository
+					.getServiciosAdicionales(linea.getTipoSolicitud().getId(), linea.getPlan().getId(), linea
+							.getItem().getId(), solicitud.getCuenta().getId());
+			Set<ServicioAdicionalLineaSolicitudServicio> servicioasForDeletion = new HashSet();
+			for (ServicioAdicionalLineaSolicitudServicio saLinea : linea.getServiciosAdicionales()) {
+				boolean conteinsSA = false;
+				for (ServicioAdicionalLineaSolicitudServicio sa : serviciosAdicionales) {
+					if (sa.getServicioAdicional().getId().equals(saLinea.getServicioAdicional().getId())) {
+						conteinsSA = true;
+						break;
+					}
+				}
+				if (!conteinsSA) {
+					servicioasForDeletion.add(saLinea);
+				}
+			}
+			linea.removeAll(servicioasForDeletion);
+		}
 	}
 
 	private void addCreditoFidelizacion(SolicitudServicio solicitudServicio) throws FinancialSystemException {
