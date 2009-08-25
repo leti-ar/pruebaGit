@@ -23,14 +23,16 @@ import com.google.gwt.user.client.ui.Widget;
  * @author jlgperez
  * 
  */
-public class CerrarSSDialog extends NextelDialog {
+public class CerrarSSDialog extends NextelDialog implements ClickListener {
 
 	private FlowPanel loadingPanel;
 	private FlowPanel cierreExitoso;
 	private Command aceptarCommand;
 	private InlineHTML successText;
 	private SimpleLink solicitudLink;
+	private SimpleLink aceptar;
 	private HTML loadingMessage;
+	private String reporteUrl;
 
 	private static Command closeCommand;
 	private static CerrarSSDialog instance;
@@ -75,6 +77,7 @@ public class CerrarSSDialog extends NextelDialog {
 		layout.getRowFormatter().setVerticalAlign(0, HasAlignment.ALIGN_MIDDLE);
 		cierreExitoso.add(layout);
 		solicitudLink = new SimpleLink("Solicitud link", History.getToken(), true);
+		solicitudLink.addClickListener(this);
 		Grid solicitudRtf = new Grid(1, 2);
 		solicitudRtf.setWidget(0, 0, IconFactory.word());
 		solicitudRtf.setWidget(0, 1, solicitudLink);
@@ -84,13 +87,18 @@ public class CerrarSSDialog extends NextelDialog {
 		cierreExitoso.setVisible(false);
 
 		SimpleLink aceptar = new SimpleLink(Sfa.constant().aceptar());
-		aceptar.addClickListener(new ClickListener() {
-			public void onClick(Widget widget) {
-				hide();
-				aceptarCommand.execute();
-			}
-		});
+		aceptar.addClickListener(this);
 		addFormButtons(aceptar);
+	}
+
+	public void onClick(Widget sender) {
+		if (sender == aceptar) {
+			hide();
+			aceptarCommand.execute();
+		} else if (sender == solicitudLink) {
+			WindowUtils.redirect(reporteUrl);
+		}
+
 	}
 
 	public void showLoading(boolean cerrando) {
@@ -107,10 +115,8 @@ public class CerrarSSDialog extends NextelDialog {
 		loadingPanel.setVisible(false);
 		cierreExitoso.setVisible(true);
 		formButtons.setVisible(true);
-
-		String rtfUrl = WindowUtils.getContextRoot()
+		reporteUrl = "/" + WindowUtils.getContextRoot()
 				+ "/download/download?module=solicitudes&service=rtf&name=" + filename + ".rtf";
-		solicitudLink.setUrl(rtfUrl);
 		showAndCenter();
 	}
 
