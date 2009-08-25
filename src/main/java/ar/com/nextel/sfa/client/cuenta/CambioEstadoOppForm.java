@@ -34,7 +34,7 @@ public class CambioEstadoOppForm extends NextelDialog {
 				if(cuentaData.getRadioGroupMotivos().getValueChecked()!=null)
 				   updateEstadoOportunidad();
 				else
-					MessageDialog.getInstance().showAceptar("Error", "Marcá algo! pelotudo",
+					MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(), Sfa.constant().ERR_NO_OPCION_SELECCIONADA(), 
 							MessageDialog.getCloseCommand());
 			}
 			else if(sender == cancelar){
@@ -65,7 +65,6 @@ public class CambioEstadoOppForm extends NextelDialog {
 				showHideTablaMotivos();
 			}
 		});
-	
 		
 		setWidth("600px");
 		FlexTable marco = new FlexTable();
