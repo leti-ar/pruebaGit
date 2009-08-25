@@ -30,7 +30,7 @@ public class CuentaClientService {
 	 * @param nroDoc
 	 * @param idOpp
 	 */
-	public static void reservaCreacionCuenta(Long idTipoDoc, final String nroDoc, Long idOpp) {
+	public static void reservaCreacionCuenta(final Long idTipoDoc, final String nroDoc, final Long idOpp) {
 		granCuentaDto = null;
 		error = false;
 		TipoDocumentoDto tipoDoc = new TipoDocumentoDto(idTipoDoc,null);
@@ -51,7 +51,7 @@ public class CuentaClientService {
 				if (granCuentaDto == null && !error) 
 					return true;
 				if (!error)
-					History.newItem(UILoader.EDITAR_CUENTA + "?nroDoc=" + nroDoc);
+					History.newItem(UILoader.EDITAR_CUENTA + "?nroDoc=" + nroDoc +"&idDoc=" + idTipoDoc + "&idOpp="+idOpp);
 				return false;
 			}
 		});
@@ -61,7 +61,7 @@ public class CuentaClientService {
 	 * 	
 	 * @param id_cuentaPadre
 	 */
-	public static void crearDivision(Long id_cuentaPadre) {
+	public static void crearDivision(final Long id_cuentaPadre) {
 		cuentaDto = null;
 		error     = false;
 		CuentaRpcService.Util.getInstance().crearDivision(id_cuentaPadre,new DefaultWaitCallback<CuentaDto>() {
@@ -79,7 +79,7 @@ public class CuentaClientService {
 				if (cuentaDto==null && !error) 
 					return true;
 				if (!error)
-					History.newItem(UILoader.EDITAR_CUENTA + "?div=true");
+					History.newItem(UILoader.EDITAR_CUENTA + "?div=true" + "&idCtaPadre="+id_cuentaPadre);
 				return false;
 			}
 		});
@@ -89,7 +89,7 @@ public class CuentaClientService {
 	 * 
 	 * @param id_cuentaPadre
 	 */
-	public static void crearSuscriptor(Long id_cuentaPadre) {
+	public static void crearSuscriptor(final Long id_cuentaPadre) {
 		cuentaDto = null;
 		error = false;
 		CuentaRpcService.Util.getInstance().crearSuscriptor(id_cuentaPadre,new DefaultWaitCallback<CuentaDto>() {
@@ -106,7 +106,7 @@ public class CuentaClientService {
 				if (cuentaDto == null && !error) 
 					return true;
 				if (!error)
-					History.newItem(UILoader.EDITAR_CUENTA + "?sus=true");
+					History.newItem(UILoader.EDITAR_CUENTA + "?sus=true" + "&idCtaPadre="+id_cuentaPadre);
 				return false;
 			}
 		});
@@ -116,7 +116,7 @@ public class CuentaClientService {
 	 * 
 	 * @param idOpp
 	 */
-	public static void getOportunidadNegocio(Long idOpp) {
+	public static void getOportunidadNegocio(final Long idOpp) {
 		oportunidadDto = null;
 		error = false;
 		CuentaRpcService.Util.getInstance().getOportunidadNegocio(idOpp,new DefaultWaitCallback<OportunidadNegocioDto>() {
@@ -133,7 +133,7 @@ public class CuentaClientService {
 				if (oportunidadDto == null && !error) 
 					return true;
 				if (!error)
-					History.newItem(UILoader.EDITAR_CUENTA + "?opp=true");
+					History.newItem(UILoader.EDITAR_CUENTA + "?opp=true"+"&idOpp="+idOpp);
 				return false;
 			}
 		});
@@ -144,7 +144,7 @@ public class CuentaClientService {
 	 * @param cuentaID
 	 * @param cod_vantive
 	 */
-	public static void cargarDatosCuenta(Long cuentaID, String cod_vantive, final String filtradoPorDni, final boolean readOnly) {
+	public static void cargarDatosCuenta(final Long cuentaID, final String cod_vantive, final String filtradoPorDni, final boolean readOnly) {
 		cuentaDto = null;
 		error = false;
 		CuentaRpcService.Util.getInstance().selectCuenta(cuentaID, cod_vantive,new DefaultWaitCallback<CuentaDto>() {
@@ -161,8 +161,7 @@ public class CuentaClientService {
 				if (cuentaDto == null && !error) 
 					return true;
 				if (!error && puedenMostrarseDatos(cuentaDto,filtradoPorDni)) { 
-					BuscarCuentaResultUI.debug.setText("Logged: '"+ ClientContext.getInstance().getUsuario().getUserName() + "' vend cta: '" + cuentaDto.getVendedor(). getUsuarioDto().getUserName()+"'");
-					History.newItem(UILoader.EDITAR_CUENTA + "?cuenta_id=" + cuentaDto.getId() + (readOnly?"&ro=true":""));
+					History.newItem(UILoader.EDITAR_CUENTA + "?cuenta_id=" + cuentaID + "&cod_vantive="+cod_vantive+"&filByDni="+filtradoPorDni + (readOnly?"&ro=true":""));
 				}
 				return false;
 			}

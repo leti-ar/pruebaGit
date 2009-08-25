@@ -57,7 +57,6 @@ public class BuscarCuentaResultUI extends FlowPanel  {
 	private static final int cantResultadosPorPagina = 10;
     private int indiceRowTabla;
     private static Command aceptarCommand;
-    public static Label debug = new Label();
     
 	public BuscarCuentaResultUI(BuscarCuentaController controller) {
 
@@ -97,10 +96,7 @@ public class BuscarCuentaResultUI extends FlowPanel  {
 		add(resultTableWrapper);
 		add(tablePageBar);
 		add(mostrandoCantRegistros);
-		add(debug);
 		setVisible(false);
-		debug.addStyleName("oppDebugFont");
-		debug.setText("");
 	}
 
 	public Long getTotalRegistrosBusqueda() {
