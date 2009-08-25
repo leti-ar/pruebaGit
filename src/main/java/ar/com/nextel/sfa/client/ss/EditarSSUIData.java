@@ -439,10 +439,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 		return linea.getNumeradorLinea().intValue();
 	}
 
-	/** Elimina la linea y renumera las restantes */
+	/** Elimina la linea, renumera las restantes y borra los servicios adicionales asociados */
 	public int removeLineaSolicitudServicio(int index) {
 		saved = false;
 		solicitudServicio.getLineas().remove(index);
+		serviciosAdicionales.remove(index);
 		for (; index < solicitudServicio.getLineas().size(); index++) {
 			solicitudServicio.getLineas().get(index).setNumeradorLinea(Long.valueOf(index));
 		}
@@ -453,6 +454,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 		return solicitudServicio.getLineas();
 	}
 
+	/** @return Lista de listas de los servicios adicionales por cada linea de SS */
 	public List<List<ServicioAdicionalLineaSolicitudServicioDto>> getServiciosAdicionales() {
 		return serviciosAdicionales;
 	}
@@ -462,10 +464,12 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 	 * la linea los servicios adicionales obligatorios
 	 */
 	public void loadServiciosAdicionales(int indexLinea, List<ServicioAdicionalLineaSolicitudServicioDto> list) {
+		serviciosAdicionales.get(indexLinea).clear();
 		serviciosAdicionales.get(indexLinea).addAll(list);
 		mergeServiciosAdicionalesConLineaSolicitudServicio(indexLinea, list);
 	}
 
+	/** Agrega a la linea los servicios adicionales que vienen por defecto */
 	public void mergeServiciosAdicionalesConLineaSolicitudServicio(int indexLinea,
 			List<ServicioAdicionalLineaSolicitudServicioDto> list) {
 		List serviciosAGuardar = getLineasSolicitudServicio().get(indexLinea).getServiciosAdicionales();
