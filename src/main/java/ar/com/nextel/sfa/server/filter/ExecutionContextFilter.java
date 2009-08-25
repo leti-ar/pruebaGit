@@ -58,12 +58,8 @@ public class ExecutionContextFilter implements Filter {
 		if (usarUserCenter) {
 			try {
 				sfaUserCenter =  sfaUserCenterFactory.createUserCenter((HttpServletRequest) request);
-				if (sessionContext.getSessionContext().get(SessionContext.USUARIO) == null) {
-					sessionContext.getSessionContext().put(SessionContext.USUARIO, sfaUserCenter.getUsuario());
-				}
-				if (sessionContext.getSessionContext().getVendedor() == null) {
-					sessionContext.getSessionContext().setVendedor(registroVendedores.getVendedor(sfaUserCenter.getUsuario()));
-				}
+				sessionContext.getSessionContext().put(SessionContext.USUARIO, sfaUserCenter.getUsuario());
+				sessionContext.getSessionContext().setVendedor(registroVendedores.getVendedor(sfaUserCenter.getUsuario()));
 			} catch (UCException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
