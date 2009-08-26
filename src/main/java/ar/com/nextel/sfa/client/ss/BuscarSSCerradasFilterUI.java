@@ -84,4 +84,9 @@ public class BuscarSSCerradasFilterUI extends Composite {
 		this.buscarSSCerradasResultPanel = buscarCuentaResultPanel;
 	}
 
+	public BuscarSSCerradasFilterUIData getBuscadorSSCerradasFilterEditor() {
+		return this.buscadorSSCerradasFilterEditor;
+	}
+	
+	
 }

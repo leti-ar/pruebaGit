@@ -1,6 +1,9 @@
 package ar.com.nextel.sfa.client.ss;
 
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
+import ar.com.snoop.gwt.commons.client.util.DateUtil;
+
+import com.google.gwt.i18n.client.DateTimeFormat;
 
 /**
  * Esta página contiene el formulario de busquedas de SS cerradas, la tabla de
@@ -15,7 +18,7 @@ public class BuscarSSCerradaUI extends ApplicationUI {
 	private BuscarSSCerradasResultUI buscarSSCerradasResultPanel;
 	private BuscarSSTotalesResultUI buscarSSTotalesResultUI;
 	private CambiosSSCerradasResultUI cambiosSSCerradasResultUI;
-
+	private DateTimeFormat dateFormatter = DateTimeFormat.getFormat("dd/MM/yyyy");
 	public BuscarSSCerradaUI() {
 		super();
 	}
@@ -39,6 +42,14 @@ public class BuscarSSCerradaUI extends ApplicationUI {
 	}
 	
 	public boolean load() {
+		buscadorSSCerradasFilterForm.getBuscadorSSCerradasFilterEditor().cleanAndEnableFields();
+		buscadorSSCerradasFilterForm.getBuscadorSSCerradasFilterEditor().getDesdeDatePicker().setSelectedDate(DateUtil.getStartDayOfMonth(DateUtil.today()));
+		buscadorSSCerradasFilterForm.getBuscadorSSCerradasFilterEditor().getDesdeDatePicker().getTextBox().setText(dateFormatter.format(DateUtil.getStartDayOfMonth(DateUtil.today())));
+		buscadorSSCerradasFilterForm.getBuscadorSSCerradasFilterEditor().getHastaDatePicker().setSelectedDate(DateUtil.today());
+		buscadorSSCerradasFilterForm.getBuscadorSSCerradasFilterEditor().getHastaDatePicker().getTextBox().setText(dateFormatter.format(DateUtil.today()));
+		buscarSSCerradasResultPanel.setVisible(false);
+		buscarSSTotalesResultUI.setVisible(false);
+		cambiosSSCerradasResultUI.setVisible(false);
 		return true;
 	}
 

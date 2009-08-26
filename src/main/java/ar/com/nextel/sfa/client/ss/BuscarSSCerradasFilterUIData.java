@@ -6,6 +6,7 @@ import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
+import ar.com.nextel.sfa.client.util.FormUtils;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItemImpl;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -195,5 +196,15 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 		}
 		return null;
 	}
-
+	
+	public void cleanAndEnableFields() {
+		FormUtils.cleanAndEnableFields(fields);	
+	}
+	public SimpleDatePicker getDesdeDatePicker() {
+		return this.desde;
+	}
+	public SimpleDatePicker getHastaDatePicker() {
+		return this.hasta;
+	}
+	
 }
