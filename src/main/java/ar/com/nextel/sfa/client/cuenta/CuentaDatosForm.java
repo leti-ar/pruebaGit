@@ -590,10 +590,10 @@ public class CuentaDatosForm extends Composite {
     public void cargarPanelEmails(CuentaDto cuentaDto) {
         for (EmailDto email : cuentaDto.getPersona().getEmails()) {
 		    TipoEmailDto tipoEmail = email.getTipoEmail();
-		    if (tipoEmail.getId()==TipoEmailEnum.PERSONAL.getTipo()) {
+		    if (TipoEmailEnum.PERSONAL.getTipo().equals(tipoEmail.getId())) {
 		    	camposTabDatos.getEmailPersonal().setText(email.getEmail());
 		    }
-		    if (tipoEmail.getId()==TipoEmailEnum.LABORAL.getTipo()) {
+		    if (TipoEmailEnum.LABORAL.getTipo().equals(tipoEmail.getId())) {
 		    	camposTabDatos.getEmailLaboral().setText(email.getEmail());
 		    }
 		}    	
@@ -933,12 +933,12 @@ public class CuentaDatosForm extends Composite {
 
 		for (EmailDto email : cuentaTab.getCuenta2editDto().getPersona().getEmails()) {
 			TipoEmailDto tipo = email.getTipoEmail();
-			if (tipo.getId()==TipoEmailEnum.PERSONAL.getTipo()) {
+			if (TipoEmailEnum.PERSONAL.getTipo().equals(tipo.getId())) {
 				if ( (FormUtils.fieldDirty(camposTabDatos.getEmailPersonal(),email.getEmail()))) 
 					retorno = true;
 				noTienePersonal = false;
 			}
-			if (tipo.getId()==TipoEmailEnum.LABORAL.getTipo()) {
+			if (TipoEmailEnum.LABORAL.getTipo().equals(tipo.getId())) {
 				if ( (FormUtils.fieldDirty(camposTabDatos.getEmailLaboral(),email.getEmail()))) 
 					retorno = true;
 				noTieneLaboral  = false;

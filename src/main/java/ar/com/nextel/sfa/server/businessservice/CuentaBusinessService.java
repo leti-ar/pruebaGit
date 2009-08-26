@@ -25,9 +25,9 @@ import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.EstadoOportunidad;
-import ar.com.nextel.model.oportunidades.beans.EstadoOportunidadJustificado;
 import ar.com.nextel.model.oportunidades.beans.MotivoNoCierre;
 import ar.com.nextel.model.oportunidades.beans.OportunidadNegocio;
+import ar.com.nextel.model.personas.beans.Email;
 import ar.com.nextel.model.personas.beans.Persona;
 import ar.com.nextel.model.personas.beans.Telefono;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
@@ -127,7 +127,7 @@ public class CuentaBusinessService {
 			((DatosDebitoTarjetaCredito)cuenta.getDatosPago()).setTipoTarjeta(tipoTarjeta);
 		}
 
-		//FIXME: revisar mapeo de Persona en dozer para no tener que hacer esto ***********************
+		//FIXME: revisar mapeo de Persona/Telefono/Mail en dozer para no tener que hacer esto ***********************
 		for (TelefonoDto tel : cuentaDto.getPersona().getTelefonos()) {                                
 			addTelefonosAPersona(tel,cuenta.getPersona(),mapper);                                      
 		}                                                                                              
@@ -232,14 +232,14 @@ public class CuentaBusinessService {
 	 * @param cuenta
 	 */
 	private void addEmailsAPersona(EmailDto mail, Persona persona) {
-		if (mail.getTipoEmail().getId()==TipoEmailEnum.PERSONAL.getTipo()) {
+		if (mail.getTipoEmail().getId().equals(TipoEmailEnum.PERSONAL.getTipo())) {
 			if (persona.getEmailPersonal()!=null) {
 				persona.getEmailPersonal().setEmail(mail.getEmail());
 			} else {
-				persona.setEmailPersonalAddress(mail.getEmail());	
+				persona.setEmailPersonalAddress(mail.getEmail());
 			}
 		}
-		else if (mail.getTipoEmail().getId()==TipoEmailEnum.LABORAL.getTipo()) {
+		else if (mail.getTipoEmail().getId().equals(TipoEmailEnum.LABORAL.getTipo())) {
 			if (persona.getEmailLaboral()!=null) {
 				persona.getEmailLaboral().setEmail(mail.getEmail());
 			} else {

@@ -183,7 +183,8 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 			listaEmails = contactoCuentaDto.getPersona().getEmails();
 			if (listaEmails != null) {
 				for(EmailDto email : listaEmails) {
-					if (email.getTipoEmail().getId()==TipoEmailEnum.PERSONAL.getTipo()) {
+					//if (email.getTipoEmail().getId()==TipoEmailEnum.PERSONAL.getTipo()) {
+					if (TipoEmailEnum.PERSONAL.getTipo().equals(email.getTipoEmail().getId())) {
 						emailPersonal.setText(email.getEmail());
 					} else 
 						emailLaboral.setText(email.getEmail());
