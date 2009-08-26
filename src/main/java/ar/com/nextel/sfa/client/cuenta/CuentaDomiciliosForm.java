@@ -5,6 +5,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.domicilio.DomicilioUI;
+import ar.com.nextel.sfa.client.domicilio.DomiciliosUIData;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
@@ -41,6 +42,7 @@ public class CuentaDomiciliosForm extends Composite {
 	private boolean tienePrincipalEntrega = false;
 	private boolean huboCambios = false;
 	private Button crearDomicilio;
+	private List<DomiciliosCuentaDto> domicilios = new ArrayList<DomiciliosCuentaDto>();
 
 	public static CuentaDomiciliosForm getInstance() {
 		return instance;
@@ -127,12 +129,13 @@ public class CuentaDomiciliosForm extends Composite {
 		setTienePrincipalEntrega(false);
 		setTienePrincipalFacturacion(false);
 
-		List<DomiciliosCuentaDto> domicilios = new ArrayList<DomiciliosCuentaDto>();
+		//List<DomiciliosCuentaDto> domicilios = new ArrayList<DomiciliosCuentaDto>();
 		if (isSuscriptor(cuentaDto)) {
 			domicilios = ((SuscriptorDto) cuentaDto).getGranCuenta().getPersona().getDomicilios();
 		} else {
 			domicilios = cuentaDto.getPersona().getDomicilios();
 		}
+		
 		limpiaTablaDomicilios();
 		for (int i = 0; i < domicilios.size(); i++) {
 			if (domicilios.get(i) != null) {
@@ -366,4 +369,8 @@ public class CuentaDomiciliosForm extends Composite {
 		return crearDomicilio;
 	}
 
+	public List<DomiciliosCuentaDto> getDomicilios() {
+		return domicilios;
+	}
+	
 }

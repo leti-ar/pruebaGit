@@ -10,6 +10,7 @@ import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
+import ar.com.nextel.sfa.client.infocom.InfocomUI;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
@@ -66,6 +67,7 @@ public class DomicilioUI extends NextelDialog {
 	public static DomicilioUI getInstance() {
 		return instance;
 	}
+	
 
 	public DomicilioUI() {
 		super("Editar Domicilio");
@@ -507,7 +509,7 @@ public class DomicilioUI extends NextelDialog {
 	public void setDomicilioPpalFacturacion(boolean isDomicilioPpalFacturacion) {
 		this.isDomicilioPpalFacturacion = isDomicilioPpalFacturacion;
 	}
-
+	
 	public void ocultaFieldsParaContactos() {
 		labelEntrega.setVisible(false);
 		labelUsuario.setVisible(false);

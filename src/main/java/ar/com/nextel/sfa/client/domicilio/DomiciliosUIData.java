@@ -1,9 +1,14 @@
 package ar.com.nextel.sfa.client.domicilio;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+
+import org.apache.tools.ant.taskdefs.LoadProperties;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.cuenta.CuentaDomiciliosForm;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
@@ -20,7 +25,6 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.FocusWidget;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -32,6 +36,10 @@ import com.google.gwt.user.client.ui.Widget;
 public class DomiciliosUIData extends UIData {
 
 	private DomiciliosCuentaDto domicilio;
+	private List listaDomicilios = new ArrayList<DomiciliosCuentaDto>();
+	//private boolean tienePpalEntrega = false;
+	//private boolean tienePpalFacturacion = false;
+	
 	TextBox calle = new TextBox();
 	ValidationTextBox numero = new ValidationTextBox("[0-9a-zA-Z]*");
 	TextBox piso = new TextBox();
@@ -63,6 +71,7 @@ public class DomiciliosUIData extends UIData {
 	Label labelValidado1 = new Label(Sfa.constant().validado1());
 	Label labelValidado2 = new Label(Sfa.constant().validado2());
 
+	
 	public DomiciliosUIData() {
 		configFields();
 		fields.add(calle);
@@ -87,8 +96,61 @@ public class DomiciliosUIData extends UIData {
 		fields.add(facturacion);
 		fields.add(provincia);
 		this.addFocusListeners(fields);
-		entrega.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
-		facturacion.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
+		//entrega.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
+		//facturacion.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
+
+
+		listaDomicilios = CuentaDomiciliosForm.getInstance().getDomicilios();
+
+		if(listaDomicilios!=null) {
+			if(!verificarPpalEntrega(listaDomicilios)) {
+				loadListBoxPpal(entrega);
+			} else {
+				loadListBoxSi(entrega);
+			}
+
+			if(!verificarPpalFacturacion(listaDomicilios)) {
+				loadListBoxPpal(facturacion);
+			} else {
+				loadListBoxSi(facturacion);
+			}
+
+		} else {
+			loadListBoxPpal(entrega);
+			loadListBoxPpal(facturacion);
+		}
+	}
+	
+	public void loadListBoxPpal(ListBox listBox) {
+		listBox.addItem(EstadoTipoDomicilioDto.getListBoxItems().get(0));
+		listBox.addItem(EstadoTipoDomicilioDto.getListBoxItems().get(1));
+		listBox.addItem(EstadoTipoDomicilioDto.getListBoxItems().get(2));
+	}
+	
+	public void loadListBoxSi(ListBox listBox) {
+		listBox.addItem(EstadoTipoDomicilioDto.getListBoxItems().get(1));
+		listBox.addItem(EstadoTipoDomicilioDto.getListBoxItems().get(2));
+		listBox.addItem(EstadoTipoDomicilioDto.getListBoxItems().get(0));
+	}
+	
+	public boolean verificarPpalEntrega(List<DomiciliosCuentaDto> listaDomicilios) {
+		for (Iterator iter = listaDomicilios.iterator(); iter.hasNext();) {
+			DomiciliosCuentaDto domicilioCuenta = (DomiciliosCuentaDto) iter.next();
+			if(domicilioCuenta.getIdEntrega()==2){
+				return true;
+			}
+		}				
+		return false;
+	}
+	
+	public boolean verificarPpalFacturacion(List<DomiciliosCuentaDto> listaDomicilios) {
+		for (Iterator iter = listaDomicilios.iterator(); iter.hasNext();) {
+			DomiciliosCuentaDto domicilioCuenta = (DomiciliosCuentaDto) iter.next();
+			if(domicilioCuenta.getIdFacturacion()==2){
+				return true;
+			}
+		}				
+		return false;
 	}
 
 	public void setDomicilio(DomiciliosCuentaDto domicilio) {
@@ -118,7 +180,6 @@ public class DomiciliosUIData extends UIData {
 			// VER EstadoTipoDomicilioDto
 			entrega.selectByValue("" + domicilio.getIdEntrega());
 			facturacion.selectByValue("" + domicilio.getIdFacturacion());
-
 		}
 	}
 
