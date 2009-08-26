@@ -7,7 +7,7 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItemImpl;
 
 public enum EstadoTipoDomicilioDto {
-	SI(0L, "Si"), NO(1L, "No"), PRINCIPAL(2L, "Principal");
+	PRINCIPAL(2L, "Principal"), SI(0L, "Si"), NO(1L, "No"), ;
 
 	private Long id;
 	private String descripcion;
