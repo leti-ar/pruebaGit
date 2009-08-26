@@ -11,14 +11,15 @@ import ar.com.nextel.sfa.client.cuenta.BuscadorDocumentoPopup;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
-import ar.com.nextel.sfa.client.dto.OportunidadNegocioSearchResultDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.ss.EditarSSUI;
+import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.Command;
@@ -60,6 +61,8 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 	private String numeroVtasPotNoConsultadas;
 	private OperacionEnCursoUIController controller;
 	private List<OperacionEnCursoDto> opEnCursoActuales;
+	private FormButtonsBar footerBar;
+	private SimpleLink crearSSLink;
 	
     private OperacionEnCursoSeleccionCuentaPopup seleccionCuentaPopup = OperacionEnCursoSeleccionCuentaPopup.getInstance(); 
 	
@@ -67,6 +70,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		super();
 		this.controller = controller;
 		addStyleName("gwt-OportunidadesResultPanel");
+		crearSSLink = new SimpleLink(Sfa.constant().crearSS(), "#", true);
 		resultTableWrapperReserva = new SimplePanel();
 		resultTableWrapperReserva.addStyleName("resultTableWrapper");
 
@@ -111,7 +115,10 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 
 		flowPanelReservaT.add(resultTableWrapperReserva);
 		flowPanelOppEnCursoT.add(resultTableWrapperOpCurso);
-
+		
+		footerBar = new FormButtonsBar();
+		footerBar.addLink(getCrearSSLink());
+		
 		add(reservasLabel);
 		add(reservasNoConsultadas);
 		add(flowPanelReservaT);
@@ -120,6 +127,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		add(numOperaciones);
 		add(flowPanelOppEnCursoT);
 		add(tablePageBarOpCurso);
+		add(footerBar);
 		setVisible(true);
 		
 
@@ -129,6 +137,12 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		this.searchOpEnCurso(true);
 		this.searchReservas(true);
 	}
+	
+//	public FormButtonsBar setFooter() {
+//		footerBar = new FormButtonsBar();
+//		footerBar.addLink(getCrearSSLink());
+//		return footerBar;
+//	}
 
 	/**
 	 * Metodo privado que contiene lo que se desea ejecutar cada vez que se busca sin ser la primera vez. (o
@@ -399,6 +413,15 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		}
 		setOpCurso();
 	}
+
+	public void setCrearSSLink(SimpleLink crearSSLink) {
+		this.crearSSLink = crearSSLink;
+	}
+
+	public SimpleLink getCrearSSLink() {
+		return crearSSLink;
+	}
+	
 	
 //	private boolean validarEdicionOpp(VentaPotencialVistaDto vtaPotencialDto) {
 //		boolean retorno = false;
