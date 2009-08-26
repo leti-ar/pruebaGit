@@ -52,7 +52,6 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 				//History.newItem("");
 			}
 		});
-	
 	}
 	
 	public void init() {

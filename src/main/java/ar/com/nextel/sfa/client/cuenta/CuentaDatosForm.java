@@ -1108,7 +1108,7 @@ public class CuentaDatosForm extends Composite {
 		if (!camposTabDatos.getFechaNacimiento().getTextBox().getText().equals(""))
 			personaDto.setFechaNacimiento(camposTabDatos.getFechaNacimiento().getSelectedDate());
 		CuentaEdicionTabPanel.getInstance().getCuenta2editDto().setTipoContribuyente(new TipoContribuyenteDto(Long.parseLong(camposTabDatos.getContribuyente().getSelectedItemId()),camposTabDatos.getContribuyente().getSelectedItemText()));
-		if(camposTabDatos.getSexo().getSelectedItemId().equals(SexoEnum.ORGANIZACION)) {
+		if(camposTabDatos.getSexo().getSelectedItemId().equals(SexoEnum.ORGANIZACION.getId())) {
 			CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getPersona().setCargo(new CargoDto(Long.parseLong(camposTabDatos.getCargo().getSelectedItemId()),camposTabDatos.getCargo().getSelectedItemText()));
 		}
 		CuentaEdicionTabPanel.getInstance().getCuenta2editDto().setProveedorInicial(new ProveedorDto(Long.parseLong(camposTabDatos.getProveedorAnterior().getSelectedItemId()),camposTabDatos.getProveedorAnterior().getSelectedItemText()));
