@@ -673,7 +673,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 			validator.addTarget(imei).required(
 					Sfa.constant().ERR_LENGHT().replaceAll(v1, "IMEI").replaceAll(v2, "15"));
-			validator.addTarget(sim).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM"));
+			if (sim.isEnabled()) {
+				validator.addTarget(sim).required(
+						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM"));
+			}
 		}
 		return validator.fillResult().getErrors();
 	}
