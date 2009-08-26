@@ -10,6 +10,7 @@ import ar.com.nextel.sfa.client.cuenta.AgregarCuentaUI;
 import ar.com.nextel.sfa.client.cuenta.BuscadorDocumentoPopup;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaResultDto;
@@ -18,6 +19,7 @@ import ar.com.nextel.sfa.client.ss.EditarSSUI;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
+import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -28,7 +30,9 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
@@ -41,7 +45,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author eSalvador
  * 
  */
-public class OperacionEnCursoResultUI extends FlowPanel implements TableListener {
+public class OperacionEnCursoResultUI extends FlowPanel implements TableListener, ClickListener {
 
 	private FlexTable resultTableReservas;
 	private FlexTable resultTableOpEnCurso;
@@ -63,14 +67,33 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 	private List<OperacionEnCursoDto> opEnCursoActuales;
 	private FormButtonsBar footerBar;
 	private SimpleLink crearSSLink;
+	private PopupPanel popupCrearSS;
+	private Hyperlink crearEquipos;
+	private Hyperlink crearCDW;
+	private Hyperlink crearMDS;
 	
-    private OperacionEnCursoSeleccionCuentaPopup seleccionCuentaPopup = OperacionEnCursoSeleccionCuentaPopup.getInstance(); 
+	private OperacionEnCursoSeleccionCuentaPopup seleccionCuentaPopup = OperacionEnCursoSeleccionCuentaPopup.getInstance(); 
 	
 	public OperacionEnCursoResultUI(OperacionEnCursoUIController controller) {
 		super();
 		this.controller = controller;
 		addStyleName("gwt-OportunidadesResultPanel");
 		crearSSLink = new SimpleLink(Sfa.constant().crearSS(), "#", true);
+		crearSSLink.addClickListener(this);
+		
+		popupCrearSS = new PopupPanel(true);
+		popupCrearSS.addStyleName("dropUpStyle");
+		
+		FlowPanel linksCrearSS = new FlowPanel();
+		linksCrearSS.add(crearEquipos = new Hyperlink("Equipos/Accesorios", "" + UILoader.OP_EN_CURSO));
+		linksCrearSS.add(crearCDW = new Hyperlink("CDW", "" + UILoader.OP_EN_CURSO));
+		linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.OP_EN_CURSO));
+		
+		popupCrearSS.setWidget(linksCrearSS);
+		crearEquipos.addClickListener(this);
+		crearCDW.addClickListener(this);
+		crearMDS.addClickListener(this);
+		
 		resultTableWrapperReserva = new SimplePanel();
 		resultTableWrapperReserva.addStyleName("resultTableWrapper");
 
@@ -117,7 +140,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		flowPanelOppEnCursoT.add(resultTableWrapperOpCurso);
 		
 		footerBar = new FormButtonsBar();
-		footerBar.addLink(getCrearSSLink());
+		footerBar.addLink(crearSSLink);
 		
 		add(reservasLabel);
 		add(reservasNoConsultadas);
@@ -138,12 +161,6 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		this.searchReservas(true);
 	}
 	
-//	public FormButtonsBar setFooter() {
-//		footerBar = new FormButtonsBar();
-//		footerBar.addLink(getCrearSSLink());
-//		return footerBar;
-//	}
-
 	/**
 	 * Metodo privado que contiene lo que se desea ejecutar cada vez que se busca sin ser la primera vez. (o
 	 * sea, cada vez que se hace click en los botones del paginador)
@@ -414,12 +431,13 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		setOpCurso();
 	}
 
-	public void setCrearSSLink(SimpleLink crearSSLink) {
-		this.crearSSLink = crearSSLink;
-	}
-
-	public SimpleLink getCrearSSLink() {
-		return crearSSLink;
+	/**TODO*/
+	public void onClick(Widget sender) {
+		if (sender == crearSSLink) {
+				popupCrearSS.show();
+				popupCrearSS.setPopupPosition(crearSSLink.getAbsoluteLeft() - 10, crearSSLink
+						.getAbsoluteTop() - 50);
+		}
 	}
 	
 	
