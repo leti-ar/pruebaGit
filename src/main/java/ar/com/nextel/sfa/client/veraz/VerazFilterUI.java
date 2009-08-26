@@ -98,4 +98,8 @@ public class VerazFilterUI extends Composite {
 			verazResultUI.searchVeraz(verazEditor.getVerazSearch(verazEditor.getNumeroDocTextBox(), verazEditor.getTipoDocListBox(), verazEditor.getSexoListBox()));
 		}
 	}
+	
+	public VerazUIData getVerazEditor() {
+        return this.verazEditor;		
+	}
 }

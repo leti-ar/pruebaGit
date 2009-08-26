@@ -1,5 +1,7 @@
 package ar.com.nextel.sfa.client.veraz;
 
+import ar.com.nextel.sfa.client.enums.SexoEnum;
+import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 
 /**
@@ -28,6 +30,10 @@ public class VerazUI extends ApplicationUI {
 	}
 
 	public boolean load() {
+		verazResultUI.setVisible(false);
+		verazForm.getVerazEditor().getNumeroDocTextBox().setText("");
+		verazForm.getVerazEditor().getTipoDocListBox().selectByValue(TipoDocumentoEnum.DNI.toString());
+		verazForm.getVerazEditor().getSexoListBox().selectByText(SexoEnum.ORGANIZACION.getDescripcion());
 		return true;
 	}
 
