@@ -89,6 +89,8 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 
 	public boolean load() {
 		buscadorCuentaFilterForm.cleanAndEnableFields();
+		buscarCuentaResultPanel.setVisible(false);
+		formButtonsBar.setVisible(false);
 		return true;
 	}
 
@@ -114,13 +116,9 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 		} else if (sender == crearEquipos || sender == crearCDW) { // || sender == crearMDS
 			popupCrearSS.hide();
 		} else if (sender == agregarDivision) {
-			// agregarDivision.setTargetHistoryToken(UILoader.EDITAR_CUENTA + "?cuenta_id=" + idCuenta +
-			// "&div=1");
 			popupAgregarCuenta.hide();
 			CuentaClientService.crearDivision(idCuenta);
 		} else if (sender == agregarSuscriptor) {
-			// agregarSuscriptor.setTargetHistoryToken(UILoader.EDITAR_CUENTA + "?cuenta_id=" + idCuenta +
-			// "&sus=1");
 			popupAgregarCuenta.hide();
 			CuentaClientService.crearSuscriptor(idCuenta);
 		}
