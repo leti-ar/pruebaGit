@@ -135,7 +135,7 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 					public void success(List result) {
 						if (result != null) {
 							if (result.size() == 0) {
-								MessageDialog.getInstance().showAceptar(
+								MessageDialog.getInstance().showAceptar("Búsqueda de Oportunidades",
 										"No se encontraron datos con los criterios utilizados",
 										MessageDialog.getCloseCommand());
 							}

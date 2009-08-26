@@ -95,7 +95,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 								// cambiosSSCerradasResultUI.CleanCambiosTable();
 								// cambiosSSCerradasResultUI.setSolicitudServicioCerradaDto(new
 								// DetalleSolicitudServicioDto("", "", "", null));
-								MessageDialog.getInstance().showAceptar(
+								MessageDialog.getInstance().showAceptar("Búsqueda de SS",
 										"No se encontraron datos con el criterio utilizado",
 										MessageDialog.getCloseCommand());
 								cambiosSSCerradasResultUI.hideCambiosTable();
