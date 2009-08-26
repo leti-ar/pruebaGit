@@ -3,11 +3,8 @@ package ar.com.nextel.sfa.client.cuenta;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.catalina.deploy.MessageDestination;
-
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
@@ -21,7 +18,6 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import ar.com.snoop.gwt.commons.client.widget.table.RowListener;
 
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -126,21 +122,19 @@ public class BuscarCuentaResultUI extends FlowPanel  {
 	 * @param: firstTime
 	 **/
 	private void searchCuentas(CuentaSearchDto cuentaSearchDto, boolean firstTime) {
-		CuentaRpcService.Util.getInstance().searchCuenta(cuentaSearchDto,
-				new DefaultWaitCallback<List<CuentaSearchResultDto>>() {
-					public void success(List<CuentaSearchResultDto> result) {
-						if (result.isEmpty()) {
-							ErrorDialog.getInstance().show(
-									"No se encontraron datos con el criterio utilizado.");
-						}
-
-						cuentas = result;
-						tablePageBar.setCantRegistrosTot(cuentas.size());
-						tablePageBar.setPagina(1);
-						setCuentas();
-						controller.setResultadoVisible(true);
-					}
-				});
+		CuentaRpcService.Util.getInstance().searchCuenta(cuentaSearchDto, new DefaultWaitCallback<List<CuentaSearchResultDto>>() {
+			public void success(List<CuentaSearchResultDto> result) {
+				if (result.isEmpty()) {
+					ErrorDialog.getInstance().show(
+							"No se encontraron datos con el criterio utilizado.");
+				}
+				cuentas = result;
+				tablePageBar.setCantRegistrosTot(cuentas.size());
+				tablePageBar.setPagina(1);
+				setCuentas();
+				controller.setResultadoVisible(true);
+			}
+		});
 	}
 
 	public void setCuentas() {
