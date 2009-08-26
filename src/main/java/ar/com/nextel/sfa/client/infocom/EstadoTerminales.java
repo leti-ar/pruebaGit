@@ -32,21 +32,21 @@ public class EstadoTerminales extends Composite {
 		HTML verde = IconFactory.ledVerde();		
 		verde.addClickListener(new ClickListener() {
 			public void onClick (Widget arg0) {
-				getInformacionEquipos("6.356172", "a");
+				getInformacionEquipos(InfocomUI.getInstance().getIdCuenta(), "a");				
 			}
 		});
 		
 		HTML amarillo = IconFactory.ledAmarillo();
 		amarillo.addClickListener(new ClickListener() {
 			public void onClick (Widget arg0) {
-				getInformacionEquipos("6.356172", "s");
+				getInformacionEquipos(InfocomUI.getInstance().getIdCuenta(), "s");
 			}
 		});
 		
 		HTML rojo = IconFactory.ledRojo();
 		rojo.addClickListener(new ClickListener() {
 			public void onClick (Widget arg0) {
-				getInformacionEquipos("6.356172", "d");
+				getInformacionEquipos(InfocomUI.getInstance().getIdCuenta(), "d");
 			}
 		});
 		
