@@ -266,8 +266,10 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
     public List<DatosEquipoPorEstadoDto> getInformacionEquipos(String numeroCuenta, String estado) throws RpcExceptionMessages {
     	AppLogger.info("Iniciando retrieve de información de equipos-Infocom...");
     	List<DatosEquipoPorEstadoDTO> resultDTO = null;
+		Cuenta cuenta = repository.retrieve(Cuenta.class, Long.valueOf(numeroCuenta));
+		String codigoVantive = cuenta.getCodigoVantive();
     	try {
-    		resultDTO = this.avalonSystem.retrieveDatosEquipoPorEstado(getCuentaRaiz(numeroCuenta).getCodigoVantive(), estado);
+    		resultDTO = this.avalonSystem.retrieveDatosEquipoPorEstado(getCuentaRaiz(codigoVantive).getCodigoVantive(), estado);
     	} catch (AvalonSystemException e) {
     		throw ExceptionUtil.wrap(e);
     	}
