@@ -114,6 +114,9 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 			if (tipoDocumento.getSelectedItemId().equals(Long.toString(TipoDocumentoEnum.CUIL.getTipo())) ||
 					tipoDocumento.getSelectedItemId().equals(Long.toString(TipoDocumentoEnum.CUIT.getTipo()))) {
 				validator.addTarget(numeroDocTextBox).cuil(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
+				if (!numeroDocTextBox.getText().contains("-")) {
+					validator.addError(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
+				}
 			} else {
 				if (numeroDocTextBox.getText().length() > 8 ||numeroDocTextBox.getText().length()<7) {
 					validator.addError(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
@@ -133,6 +136,7 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 			CuentaClientService.reservaCreacionCuenta(new Long(tipoDocumento.getSelectedItemId()), numeroDocTextBox.getText(), fromMenu?null:idOpp);
 			hide();
 			numeroDocTextBox.setText("");
+			tipoDocumento.selectByValue(TipoDocumentoEnum.DNI.toString());	
 		}
 	}
 }
