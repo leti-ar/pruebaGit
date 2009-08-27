@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.ss;
 
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -17,6 +18,8 @@ public class BuscarSSTotalesResultUI extends FlowPanel {
 	private Label labelPataconex = new Label();
 	private Label labelFirmados = new Label();
 	private FlexTable resultadosTable = new FlexTable();
+	
+	private final NumberFormat numberFormat = NumberFormat.getCurrencyFormat();
 
 	public BuscarSSTotalesResultUI() {
 		resultadosTable.setWidget(0, 0, labelTotales);
@@ -37,10 +40,10 @@ public class BuscarSSTotalesResultUI extends FlowPanel {
 		add(resultadosTable);
 	}
 
-	public void setValues(String equipos, String pataconex,
+	public void setValues(String equipos, double pataconex,
 			String equiposFirmados) {
 		labelEquipos.setText("Equipos: " + equipos);
-		labelPataconex.setText("Pataconex: " + pataconex);
+		labelPataconex.setText("Pataconex: " + numberFormat.format(pataconex));
 		labelFirmados.setText("Eq. Firmados: " + equiposFirmados);
 	}
 

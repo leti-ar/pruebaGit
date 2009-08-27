@@ -102,8 +102,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel {
 							}
 							loadExcel();
 							setSolicitudServicioDto(result);
-							buscarSSTotalesResultUI.setValues(cantEquipos.toString(), cantPataconex
-									.toString(), String.valueOf(cantEqFirmados));
+							buscarSSTotalesResultUI.setValues(cantEquipos.toString(), cantPataconex, String.valueOf(cantEqFirmados));
 							buscarSSTotalesResultUI.setVisible(true);
 						}
 					}
