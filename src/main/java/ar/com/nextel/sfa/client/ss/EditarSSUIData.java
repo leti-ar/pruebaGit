@@ -309,6 +309,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 			validarAlquileresDeLineaSS(validator, linea);
 			validarCargoActivacion(validator, linea);
 		}
+		validator.addTarget(pataconex).smallerOrEqual(Sfa.constant().ERR_PATACONEX(),
+				solicitudServicio.getPrecioVentaTotal());
+		if (solicitudServicio.getMontoDisponible() != null)
+			validator.addTarget(credFidelizacion).smallerOrEqual(Sfa.constant().ERR_FIDELIZACION(),
+					solicitudServicio.getMontoDisponible());
 		validator.fillResult();
 		return validator.getErrors();
 	}
