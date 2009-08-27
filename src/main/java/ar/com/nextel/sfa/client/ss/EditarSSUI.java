@@ -109,6 +109,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 						}
 					});
 			editarSSUIData.clean();
+			varios.cleanScoring();
 		}
 		return true;
 	}
