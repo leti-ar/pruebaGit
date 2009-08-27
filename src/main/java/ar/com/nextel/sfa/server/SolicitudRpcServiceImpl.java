@@ -219,17 +219,11 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			};
 
 			Collections.sort(resultDTO, estadoComparator);
-			return this.transformEstadoSolicitudServicioCerradaDTOToCambioEstadoSolicitudWCTO(resultDTO);
+			return mapper.convertList(resultDTO, CambiosSolicitudServicioDto.class);
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
-	}
-
-	private List<CambiosSolicitudServicioDto> transformEstadoSolicitudServicioCerradaDTOToCambioEstadoSolicitudWCTO(
-			List<EstadoSolicitudServicioCerradaDTO> resultDTO) {
-		List result = mapper.convertList(resultDTO, CambiosSolicitudServicioDto.class);
-		return result;
 	}
 
 	public BuscarSSCerradasInitializer getBuscarSSCerradasInitializer() {
