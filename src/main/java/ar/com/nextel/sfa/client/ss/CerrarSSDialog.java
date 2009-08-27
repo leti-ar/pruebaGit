@@ -86,7 +86,7 @@ public class CerrarSSDialog extends NextelDialog implements ClickListener {
 		add(cierreExitoso);
 		cierreExitoso.setVisible(false);
 
-		SimpleLink aceptar = new SimpleLink(Sfa.constant().aceptar());
+		aceptar = new SimpleLink(Sfa.constant().aceptar());
 		aceptar.addClickListener(this);
 		addFormButtons(aceptar);
 	}
