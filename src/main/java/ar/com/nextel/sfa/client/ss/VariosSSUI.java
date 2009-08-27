@@ -149,6 +149,7 @@ public class VariosSSUI extends Composite {
 		scoring = new InlineHTML();
 		scoring.addStyleName("ml5");
 		scoringWrapper = new HorizontalPanel();
+		scoringWrapper.setVisible(false);
 		scoringWrapper.setWidth("100%");
 		consultarScoring.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {				
@@ -156,6 +157,7 @@ public class VariosSSUI extends Composite {
 					public void success(ScoringDto result) {
 						if (result != null) {					
 							scoring.setText(result.getMensajeAdicional());
+							scoringWrapper.setVisible(true);
 						}
 					}
 				});			
@@ -167,6 +169,10 @@ public class VariosSSUI extends Composite {
 		return scoringPanel;
 	}
 
+	public void cleanScoring() {
+		scoringWrapper.setVisible(false);
+	}
+	
 	/** Realiza la actualizacion visual necesaria para mostrar los datos correctos */
 	public void refresh() {
 		int row = 1;
