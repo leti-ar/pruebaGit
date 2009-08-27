@@ -344,10 +344,12 @@ public class CuentaEdicionTabPanel {
 		//si no es prospect agrega tab infocom
 		if (!RegularExpressionConstants.isVancuc(cuenta2editDto.getCodigoVantive()))
 			tabPanel.add(cuentaInfocomForm, Sfa.constant().infocom());
-		//si viene de opp agrega notas
-		if (!editorCuenta ) 
-			tabPanel.add(cuentaNotasForm, Sfa.constant().notas());
 
+		//si viene de opp agrega notas (Dejar comentado)
+//		if (!editorCuenta ) { 
+//			tabPanel.add(cuentaNotasForm, Sfa.constant().notas());
+//		}
+		
 		validarCompletitudButton.setVisible(editorCuenta);
 		numeroCtaPotPanel.setVisible(!editorCuenta);
 		
