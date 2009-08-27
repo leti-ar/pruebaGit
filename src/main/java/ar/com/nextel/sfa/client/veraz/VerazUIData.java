@@ -79,7 +79,7 @@ public class VerazUIData extends UIData {
 				("4".equals(tipoDocListBox.getSelectedItem().getItemValue())) || 
 				("7".equals(tipoDocListBox.getSelectedItem().getItemValue()))) {
 			if (!validarTipoDoc(numeroDocTextBox)) {
-				errorList.add("El formato del número de CUIT/CUIL es incorrecto. Debe ser xx-xxxxxxxx-x");
+				errorList.add(Sfa.constant().ERR_FORMATO_CUIL());
 			}
 
 		} else if (numeroDocTextBox.getText().length() > 10) {
