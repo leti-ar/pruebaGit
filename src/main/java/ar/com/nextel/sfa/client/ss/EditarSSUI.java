@@ -77,7 +77,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 		String grupoSS = HistoryUtils.getParam(ID_GRUPO_SS);
 		mainPanel.setVisible(false);
 		if (cuenta == null) {
-			ErrorDialog.getInstance().show("No ingreso la cuenta para la cual desea cargar la solicitud");
+			ErrorDialog.getInstance().show("No ingreso la cuenta para la cual desea cargar la solicitud",false);
 		} else {
 			SolicitudServicioRequestDto solicitudServicioRequestDto = new SolicitudServicioRequestDto();
 			solicitudServicioRequestDto.setIdCuenta(Long.parseLong(cuenta));
@@ -209,7 +209,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 				if (errors.isEmpty()) {
 					guardar();
 				} else {
-					ErrorDialog.getInstance().show(errors);
+					ErrorDialog.getInstance().show(errors,false);
 				}
 			}
 			editarSSUIData.setSaved(true);
@@ -225,7 +225,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 			if (errors.isEmpty()) {
 				guardar();
 			} else {
-				ErrorDialog.getInstance().show(errors);
+				ErrorDialog.getInstance().show(errors,false);
 			}
 		} else if (sender == cancelarButton) {
 			History.newItem("");
@@ -262,7 +262,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 			getGenerarSSUI().show(editarSSUIData.getCuenta().getPersona(),
 					editarSSUIData.getSolicitudServicioGeneracion());
 		} else {
-			ErrorDialog.getInstance().show(errors);
+			ErrorDialog.getInstance().show(errors,false);
 		}
 	}
 
@@ -308,7 +308,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 						CerrarSSDialog.getInstance().showCierreExitoso(result.getRtfFileName());
 					} else {
 						ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
-						ErrorDialog.getInstance().show(MessageUtils.getMessagesHTML(result.getMessages()));
+						ErrorDialog.getInstance().show(MessageUtils.getMessagesHTML(result.getMessages()),false);
 					}
 				}
 
