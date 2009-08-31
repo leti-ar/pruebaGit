@@ -63,6 +63,7 @@ public class VerazResultUI extends FlowPanel {
 			verazResultTable.removeFromParent();
 		}
 		verazResultTable = new FlexTable();
+		verazResultTable.setWidth("100%");
 		verazFilterUI = new VerazFilterUI();
 		verazResultTable.getFlexCellFormatter().setColSpan(1, 1, 4);
 		initTable(verazResultTable);
@@ -76,7 +77,7 @@ public class VerazResultUI extends FlowPanel {
 			verazResultTable.setHTML(0, 1, "La respuesta de Veraz ha sido: ACEPTAR. Puede continuar con la operación.");
 		}else if ("REVISAR".equals(verazResponseDto.getEstado())) {
 			estado.setStyleName("resultadoVerazRevisar");
-			verazResultTable.setHTML(0, 1, "La respuesta de Veraz ha sido A REVISAR. Documento inexistente");
+			verazResultTable.setHTML(0, 1, "La respuesta de Veraz ha sido: REVISAR. Documento inexistente");
 		}
 		else {
 			estado.setStyleName("resultadoVerazRechazar");
