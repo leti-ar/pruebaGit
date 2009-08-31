@@ -66,7 +66,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 			linkAceptar.setVisible(false);
 			grillaPpal.setText(3, 0, "No se pudo normalizar el domicilio");
 			//OJO con el get(0):
-			grillaPpal.setText(4, 0, motivos.get(0).getMotivo());
+			grillaPpal.setText(4, 0, motivos.size()>0?motivos.get(0).getMotivo():"motivo no especificado");
 		}else{
 			domicilioResultWrapper.setVisible(true);
 			linkAceptar.setVisible(true);
