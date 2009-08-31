@@ -129,7 +129,7 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 		}
 		validator.fillResult();
 		if (!validator.getErrors().isEmpty()) {
-			ErrorDialog.getInstance().show(validator.getErrors());
+			ErrorDialog.getInstance().show(validator.getErrors(),false);
 		}	
 		return validator.getErrors().isEmpty();
 	}

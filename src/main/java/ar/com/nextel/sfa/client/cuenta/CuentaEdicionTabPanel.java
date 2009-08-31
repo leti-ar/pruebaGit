@@ -414,7 +414,7 @@ public class CuentaEdicionTabPanel {
 		if (!erroresValidacion.isEmpty()) {
 			validarCompletitudButton.addStyleName(VALIDAR_COMPLETITUD_FAIL_STYLE);
 			if(showMsg)
-				ErrorDialog.getInstance().show(erroresValidacion);
+				ErrorDialog.getInstance().show(erroresValidacion,false);
 		} else {
 			validarCompletitudButton.removeStyleName(VALIDAR_COMPLETITUD_FAIL_STYLE);
 		}
@@ -429,7 +429,7 @@ public class CuentaEdicionTabPanel {
 		erroresValidacion.addAll(cuentaDatosForm.validarCompletitud());
 		erroresValidacion.addAll(cuentaDatosForm.validarCamposTabDatos());
 		if (!erroresValidacion.isEmpty()) {
-			ErrorDialog.getInstance().show(erroresValidacion);
+			ErrorDialog.getInstance().show(erroresValidacion,false);
 		}
 		return erroresValidacion.isEmpty(); 
 	}
