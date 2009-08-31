@@ -18,6 +18,6 @@ public interface OperacionesRpcServiceAsync {
 	public void searchReservas(AsyncCallback<VentaPotencialVistaResultDto> callback);
 
 	public void cancelarOperacionEnCurso(String idOperacionEnCurso,
-			AsyncCallback<VentaPotencialVistaResultDto> callback);
+			AsyncCallback callback);
 
 }
