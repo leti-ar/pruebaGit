@@ -39,6 +39,7 @@ import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.server.util.MapperExtended;
+import ar.com.nextel.util.AppLogger;
 
 @Service
 public class SolicitudBusinessService {
@@ -138,9 +139,21 @@ public class SolicitudBusinessService {
 	private void checkServiciosAdicionales(SolicitudServicio solicitud) {
 		// Controlo la consistencia de los servicios adicionales existentes
 		for (LineaSolicitudServicio linea : solicitud.getLineas()) {
-			Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales = solicitudServicioRepository
-					.getServiciosAdicionales(linea.getTipoSolicitud().getId(), linea.getPlan().getId(), linea
-							.getItem().getId(), solicitud.getCuenta().getId());
+			Long idTipoSolicitud = linea.getTipoSolicitud().getId();
+			Long idPlan = linea.getPlan().getId();
+			Long idItem = linea.getItem().getId();
+			Long idCuenta = solicitud.getCuenta().getId();
+			Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales = null;
+			if (idTipoSolicitud != null && idPlan != null && idItem != null && idCuenta != null) {
+				serviciosAdicionales = solicitudServicioRepository.getServiciosAdicionales(idTipoSolicitud,
+						idPlan, idItem, idCuenta);
+			} else {
+				AppLogger.info("No se pudo validar los Servicios Adicionales de la Linea de "
+						+ "Solicitud de Servicio " + linea.getId() + " (" + linea.getAlias() + ")\nDetalle:"
+						+ "\nidTipoSolicitud = " + idTipoSolicitud + "\nidPlan = " + idPlan + "\nidItem = "
+						+ idItem + "\nidCuenta = " + idCuenta);
+				continue;
+			}
 			Set<ServicioAdicionalLineaSolicitudServicio> servicioasForDeletion = new HashSet();
 			for (ServicioAdicionalLineaSolicitudServicio saLinea : linea.getServiciosAdicionales()) {
 				boolean conteinsSA = false;
