@@ -24,20 +24,21 @@ import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.SourcesChangeEvents;
-import com.google.gwt.user.client.ui.SourcesClickEvents;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 
-public class EditarSSUIData extends UIData implements ChangeListener, ClickListener {
+public class EditarSSUIData extends UIData implements ChangeListener, ClickHandler {
 
 	private RegexTextBox nss;
 	private RegexTextBox nflota;
@@ -98,9 +99,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 		for (Widget field : fields) {
 			if (field instanceof SourcesChangeEvents) {
 				((SourcesChangeEvents) field).addChangeListener(this);
-			} else if (field instanceof SourcesClickEvents) {
-				((SourcesClickEvents) field).addClickListener(this);
-
+			} else if (field instanceof HasClickHandlers) {
+				((HasClickHandlers) field).addClickHandler(this);
 			}
 		}
 
@@ -132,7 +132,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 		}
 	}
 
-	public void onClick(Widget sender) {
+	public void onClick(ClickEvent clickEvent) {
 		saved = false;
 	}
 
@@ -247,7 +247,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 		}
 		double pataconexValue = solicitud.getPataconex() != null ? solicitud.getPataconex() : 0;
 		pataconex.setText(decFormatter.format(pataconexValue));
-		firmarss.setChecked(solicitud.getFirmar());
+		firmarss.setValue(solicitud.getFirmar());
 		observaciones.setText(solicitud.getObservaciones());
 
 		if (anticipo.getItemCount() != 0) {
@@ -293,7 +293,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickListe
 		}
 		solicitudServicio.setTipoAnticipo((TipoAnticipoDto) anticipo.getSelectedItem());
 		solicitudServicio.setAclaracionEntrega(aclaracion.getText());
-		solicitudServicio.setFirmar(firmarss.isChecked());
+		solicitudServicio.setFirmar(firmarss.getValue());
 		solicitudServicio.setObservaciones(observaciones.getText());
 		return solicitudServicio;
 	}

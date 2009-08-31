@@ -30,6 +30,10 @@ import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
@@ -37,12 +41,10 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSSUIController {
+public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickListener, EditarSSUIController {
 
 	public static final String ID_CUENTA = "idCuenta";
 	public static final String ID_GRUPO_SS = "idGrupoSS";
@@ -77,7 +79,8 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 		String grupoSS = HistoryUtils.getParam(ID_GRUPO_SS);
 		mainPanel.setVisible(false);
 		if (cuenta == null) {
-			ErrorDialog.getInstance().show("No ingreso la cuenta para la cual desea cargar la solicitud",false);
+			ErrorDialog.getInstance().show("No ingreso la cuenta para la cual desea cargar la solicitud",
+					false);
 		} else {
 			SolicitudServicioRequestDto solicitudServicioRequestDto = new SolicitudServicioRequestDto();
 			solicitudServicioRequestDto.setIdCuenta(Long.parseLong(cuenta));
@@ -120,7 +123,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 
 		validarCompletitud = new Button("Validar Completitud");
 		validarCompletitud.addStyleName("validarCompletitudButton");
-		validarCompletitud.addClickListener(this);
+		validarCompletitud.addClickHandler(this);
 		mainPanel.add(validarCompletitud);
 		tabs = new TabPanel();
 		tabs.setWidth("98%");
@@ -130,17 +133,15 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 		tabs.add(datos = new DatosSSUI(this), "Datos");
 		tabs.add(varios = new VariosSSUI(this), "Varios");
 		tabs.selectTab(0);
-		tabs.addTabListener(new TabListener() {
-			public void onTabSelected(SourcesTabEvents tab, int index) {
-				if (index == 1) {
+
+		tabs.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+			public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
+				if (event.getItem().intValue() == 1) {
 					varios.refresh();
 				}
 			}
-
-			public boolean onBeforeTabSelected(SourcesTabEvents arg0, int arg1) {
-				return true;
-			}
 		});
+
 		SolicitudRpcService.Util.getInstance().getSolicitudInitializer(
 				new DefaultWaitCallback<SolicitudInitializer>() {
 					public void success(SolicitudInitializer initializer) {
@@ -209,7 +210,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 				if (errors.isEmpty()) {
 					guardar();
 				} else {
-					ErrorDialog.getInstance().show(errors,false);
+					ErrorDialog.getInstance().show(errors, false);
 				}
 			}
 			editarSSUIData.setSaved(true);
@@ -219,13 +220,18 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 		}
 	}
 
+	public void onClick(ClickEvent event) {
+		Widget sender = (Widget) event.getSource();
+		onClick(sender);
+	}
+
 	public void onClick(Widget sender) {
 		if (sender == guardarButton) {
 			List errors = editarSSUIData.validarParaGuardar();
 			if (errors.isEmpty()) {
 				guardar();
 			} else {
-				ErrorDialog.getInstance().show(errors,false);
+				ErrorDialog.getInstance().show(errors, false);
 			}
 		} else if (sender == cancelarButton) {
 			History.newItem("");
@@ -262,7 +268,7 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 			getGenerarSSUI().show(editarSSUIData.getCuenta().getPersona(),
 					editarSSUIData.getSolicitudServicioGeneracion());
 		} else {
-			ErrorDialog.getInstance().show(errors,false);
+			ErrorDialog.getInstance().show(errors, false);
 		}
 	}
 
@@ -308,7 +314,8 @@ public class EditarSSUI extends ApplicationUI implements ClickListener, EditarSS
 						CerrarSSDialog.getInstance().showCierreExitoso(result.getRtfFileName());
 					} else {
 						ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
-						ErrorDialog.getInstance().show(MessageUtils.getMessagesHTML(result.getMessages()),false);
+						ErrorDialog.getInstance().show(MessageUtils.getMessagesHTML(result.getMessages()),
+								false);
 					}
 				}
 
