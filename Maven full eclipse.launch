@@ -4,6 +4,6 @@
 <mapEntry key="JAVA_HOME" value="/opt/java/jdk1.5.0_17/"/>
 </mapAttribute>
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="/opt/java/apache-maven-2.1.0/bin/mvn"/>
-<stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="-Dmaven.test.skip.exec=true clean install -P gwtVersion17"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="-Dmaven.test.skip.exec=true eclipse:eclipse -P gwtVersion17"/>
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_WORKING_DIRECTORY" value="${workspace_loc:/sfa-web2}/deploy"/>
 </launchConfiguration>
