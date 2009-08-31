@@ -1,66 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
-  <!--
-                GWT-Maven archetype generated POM 
-        -->
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>ar.com.nextel.sfa</groupId>
-  <artifactId>sfa-web</artifactId>
-  <packaging>war</packaging>
-  <version>2.0-SNAPSHOT</version>
-  <name>SFA Revolution</name>
-  <description>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>ar.com.nextel.sfa</groupId>
+	<artifactId>sfa-web</artifactId>
+	<packaging>war</packaging>
+	<version>2.0-SNAPSHOT</version>
+	<name>SFA Revolution</name>
+	<description>
 	SFA Revolution 2009
   </description>
-  <url>http://sfasrv1.snoop.com.ar:8080/job/site%20sfa-web2/site/</url>
-  <!--  include pluginRepository and repository for GWT-Maven -->
-  <!-- No cargo ning�n repositorio, para que los traiga del proxy que tenga configurado en el settings.xml -->
-  <!--
-        <pluginRepositories>
-        <pluginRepository>
-            <id>gwt-maven-plugins</id>
-            <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo/</url>
-        </pluginRepository>
-    </pluginRepositories>    
-    <repositories>        
-        <repository>
-            <id>gwt-maven</id>
-            <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo/</url>
-        </repository>
-        <repository>
-            <id>openqa-releases</id>
-            <name>Openqa Release Repository</name>
-            <url>http://nexus.openqa.org/content/repositories/releases</url>
-            <layout>default</layout>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository>
-        <repository>
-            <id>openqa-snapshots</id>
-            <name>Openqa Snapshot Repository</name>
-            <url>http://nexus.openqa.org/content/repositories/snapshots</url>
-            <layout>default</layout>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-                <checksumPolicy>ignore</checksumPolicy>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-    </repositories>
-    -->
+	<url>http://sfasrv1.snoop.com.ar:8080/job/site%20sfa-web2/site/</url>
   <!--  convenience to define GWT version in one place -->
   <properties>
-    <gwtVersion>1.5.3</gwtVersion>
+    <gwtVersion>1.7.0</gwtVersion>
     <spring.version>2.5.6</spring.version>
   </properties>
   <dependencies>
@@ -75,7 +28,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-servlet</artifactId>
       <version>${gwtVersion}</version>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
@@ -101,7 +54,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-incubator</artifactId>
-      <version>1.5-Dec_28</version>
+      <version>july-14-2009</version>
     </dependency>
     <dependency>
       <groupId>ar.com.snoop.gwt</groupId>
@@ -109,12 +62,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <version>1.1-SNAPSHOT</version>
     </dependency>
     <!--  Spring deps  -->
-    <!--            <dependency>-->
-    <!--                    <groupId>org.springframework</groupId>-->
-    <!--                    <artifactId>spring-context</artifactId>-->
-    <!--                    <version>${spring.version}</version>-->
-    <!--                    <scope>provided</scope>-->
-    <!--            </dependency>-->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring</artifactId>
@@ -125,42 +72,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <artifactId>spring-web</artifactId>
       <version>${spring.version}</version>
     </dependency>
-    <!--            <dependency>-->
-    <!--                    <groupId>org.springframework</groupId>-->
-    <!--                    <artifactId>spring-orm</artifactId>-->
-    <!--                    <version>${spring.version}</version>-->
-    <!--                    <scope>provided</scope>-->
-    <!--            </dependency>-->
-    <!--            <dependency>-->
-    <!--                    <groupId>org.springframework</groupId>-->
-    <!--                    <artifactId>spring-jdbc</artifactId>-->
-    <!--                    <version>${spring.version}</version>-->
-    <!--                    <scope>provided</scope>-->
-    <!--            </dependency>-->
-    <!--            <dependency>-->
-    <!--                    <groupId>org.springframework</groupId>-->
-    <!--                    <artifactId>spring-dao</artifactId>-->
-    <!--                    <version>2.0.8</version>-->
-    <!--                    <scope>provided</scope>-->
-    <!--            </dependency>-->
-    <!--            <dependency>-->
-    <!--                    <groupId>org.springframework</groupId>-->
-    <!--                    <artifactId>spring-mock</artifactId>-->
-    <!--                    <version>2.0.8</version>-->
-    <!--                    <scope>provided</scope>-->
-    <!--            </dependency>-->
-    <!--            <dependency>-->
-    <!--                    <groupId>org.springframework.security</groupId>-->
-    <!--                    <artifactId>spring-security-core</artifactId>-->
-    <!--                    <version>${spring.security.version}</version>-->
-    <!--                    <scope>provided</scope>-->
-    <!--            </dependency>-->
-    <!--            <dependency>-->
-    <!--                    <groupId>org.springframework.security</groupId>-->
-    <!--                    <artifactId>spring-security-core-tiger</artifactId>-->
-    <!--                    <version>${spring.security.version}</version>-->
-    <!--                    <scope>provided</scope>-->
-    <!--            </dependency>   -->
     <dependency>
       <groupId>net.sf.dozer</groupId>
       <artifactId>dozer</artifactId>
@@ -225,43 +136,32 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <build>
     <plugins>
       <!--  configure the GWT-Maven plugin -->
-      <plugin>
-        <groupId>com.totsp.gwt</groupId>
-        <artifactId>maven-googlewebtoolkit2-plugin</artifactId>
-        <version>2.0-beta26</version>
-        <configuration>
-          <extraJvmArgs>-Xmx1024M -Xms256M</extraJvmArgs>
-          <compileTargets>
-            <!--                                            <value>ar.com.snoop.gwt.commons.GwtCommons</value>-->
-            <value>ar.com.nextel.sfa.SFAWeb</value>
-          </compileTargets>
-          <runTarget>
-          ar.com.nextel.sfa.SFAWeb/SFAWeb.html</runTarget>
-          <logLevel>INFO</logLevel>
-          <style>OBF</style>
-          <noServer>false</noServer>
-          <i18nConstantsNames>
-            <value>
-            ar.com.nextel.sfa.client.constant.SfaStatic</value>
-          </i18nConstantsNames>
-          <gwtVersion>${gwtVersion}</gwtVersion>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <!-- <goal>mergewebxml</goal>-->
-              <goal>i18n</goal>
-              <goal>compile</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+
+	<plugin>
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>gwt-maven-plugin</artifactId>
+		<version>1.1</version>
+		<configuration>
+			<output>${basedir}/war</output>
+			<runTarget>ar.com.nextel.sfa.SFAWeb/SFAWeb.html</runTarget>
+			<webXml>${basedir}/war/WEB-INF/web.xml</webXml>
+			<hostedWebapp>${basedir}/war</hostedWebapp>
+			<modules>
+				<module>ar.com.nextel.sfa.SFAWeb</module>
+			</modules>
+			<i18nMessagesBundle>ar.com.nextel.sfa.client.constant.SfaStatic</i18nMessagesBundle>
+		</configuration>
+		<executions>
+			<execution>
+				<goals>
+					<goal>i18n</goal>
+					<goal>compile</goal>
+					<!-- <goal>generateAsync</goal> -->
+				</goals>
+			</execution>
+		</executions>
+	</plugin>
       <!--  Use the dependency plugin to unpack gwt-dev-PLATFORM-libs.zip -->
-      <!--
-                                (this is a replacement for the old "automatic" mode - useful if you
-                                don't have GWT installed already, or you just want a maven way to
-                                handle gwt deps)
-                        -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -289,19 +189,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
           </execution>
         </executions>
       </plugin>
-      <!--
-                If you want to use the target/web.xml file mergewebxml produces,
-                tell the war plugin to use it. 
-                Also, exclude what you want from the final artifact here. 
-            -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <configuration>
-          <!-- <webXml>target/web.xml</webXml>-->
-          <warSourceExcludes>.gwt-tmp/**</warSourceExcludes>
-        </configuration>
-      </plugin>
       <!--  tell the compiler we can use 1.5 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -316,9 +203,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
         <configuration>
-          <!--                                    <additionalProjectFacets>-->
-          <!--                                            <in.cypal.studio.gwt.core.gwtFacet>1.5</in.cypal.studio.gwt.core.gwtFacet>-->
-          <!--                                    </additionalProjectFacets>-->
           <wtpversion>2.0</wtpversion>
         </configuration>
       </plugin>

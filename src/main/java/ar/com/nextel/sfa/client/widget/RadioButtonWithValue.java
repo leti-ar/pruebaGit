@@ -3,15 +3,18 @@ package ar.com.nextel.sfa.client.widget;
 import com.google.gwt.user.client.ui.RadioButton;
 
 public class RadioButtonWithValue extends RadioButton {
-	String value;
+	private String textValue;
+
 	public RadioButtonWithValue(String grupo, String label, String value) {
-		super(grupo,label);
-		this.value=value;
+		super(grupo, label);
+		this.textValue = value;
 	}
-	public void setValue(String value) {
-		this.value = value;
+
+	public String getTextValue() {
+		return textValue;
 	}
-	public String getValue() {
-		return value;
+
+	public void setTextValue(String textValue) {
+		this.textValue = textValue;
 	}
 }
