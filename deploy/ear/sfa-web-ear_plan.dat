@@ -1,0 +1,63 @@
+moduleType=ear
+applicationID=SFA-WEB2
+bindWebApp=default-web-site
+webSiteBindings=
+parent=default
+moduleID=.
+doctype=orion-application
+<?xml version="1.0" encoding="UTF-8"?>
+<orion-application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://xmlns.oracle.com/oracleas/schema/orion-application-10_0.xsd">
+	<imported-shared-libraries>
+		<remove-inherited name="adf.oracle.domain">
+		</remove-inherited>
+		<remove-inherited name="apache.commons.logging">
+		</remove-inherited>
+		<remove-inherited name="oracle.cache">
+		</remove-inherited>
+		<remove-inherited name="oracle.dms">
+		</remove-inherited>
+		<remove-inherited name="oracle.gdk">
+		</remove-inherited>
+		<remove-inherited name="oracle.http.client">
+		</remove-inherited>
+		<remove-inherited name="oracle.ifs.client">
+		</remove-inherited>
+		<remove-inherited name="oracle.jdbc">
+		</remove-inherited>
+		<remove-inherited name="oracle.jwsdl">
+		</remove-inherited>
+		<remove-inherited name="oracle.persistence">
+		</remove-inherited>
+		<remove-inherited name="oracle.sqlj">
+		</remove-inherited>
+		<remove-inherited name="oracle.toplink">
+		</remove-inherited>
+		<remove-inherited name="oracle.ws.client">
+		</remove-inherited>
+		<remove-inherited name="oracle.xml">
+		</remove-inherited>
+		<remove-inherited name="oracle.xml.security">
+		</remove-inherited>
+		<remove-inherited name="org.jgroups">
+		</remove-inherited>
+		<remove-inherited name="soap">
+		</remove-inherited>
+	</imported-shared-libraries>
+</orion-application>
+moduleID=sfa-web-2.0-SNAPSHOT.war
+doctype=orion-web-app
+<?xml version="1.0" encoding="UTF-8"?>
+<orion-web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://xmlns.oracle.com/oracleas/schema/orion-web-10_0.xsd" context-root="/sfa-web2">
+	<resource-ref-mapping name="jdbc/sfaDS" location="jdbc/sfaDS">
+	</resource-ref-mapping>
+	<resource-ref-mapping name="jdbc/vantiveDS" location="jdbc/vantiveDS">
+	</resource-ref-mapping>
+	<resource-ref-mapping name="jdbc/mibasDS" location="jdbc/mibasDS">
+	</resource-ref-mapping>
+	<resource-ref-mapping name="jdbc/avalonDS" location="jdbc/avalonDS">
+	</resource-ref-mapping>
+	<resource-ref-mapping name="jdbc/scnDS" location="jdbc/scnDS">
+	</resource-ref-mapping>
+	<web-app-class-loader>
+	</web-app-class-loader>
+</orion-web-app>
