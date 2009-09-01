@@ -26,15 +26,19 @@ import ar.com.nextel.business.solicitudes.provider.SolicitudServicioProviderResu
 import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepository;
 import ar.com.nextel.components.accessMode.AccessAuthorization;
 import ar.com.nextel.framework.repository.Repository;
+import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoTarjetaCredito;
 import ar.com.nextel.model.cuentas.beans.EstadoCreditoFidelizacion;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
 import ar.com.nextel.model.personas.beans.Domicilio;
+import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
@@ -139,19 +143,22 @@ public class SolicitudBusinessService {
 	private void checkServiciosAdicionales(SolicitudServicio solicitud) {
 		// Controlo la consistencia de los servicios adicionales existentes
 		for (LineaSolicitudServicio linea : solicitud.getLineas()) {
-			Long idTipoSolicitud = linea.getTipoSolicitud().getId();
-			Long idPlan = linea.getPlan().getId();
-			Long idItem = linea.getItem().getId();
-			Long idCuenta = solicitud.getCuenta().getId();
+			TipoSolicitud tipoSolicitud = linea.getTipoSolicitud();
+			Plan plan = linea.getPlan();
+			Item item = linea.getItem();
+			Cuenta cuenta = solicitud.getCuenta();
 			Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales = null;
-			if (idTipoSolicitud != null && idPlan != null && idItem != null && idCuenta != null) {
-				serviciosAdicionales = solicitudServicioRepository.getServiciosAdicionales(idTipoSolicitud,
-						idPlan, idItem, idCuenta);
+			if (tipoSolicitud != null && plan != null && item != null && cuenta != null) {
+				serviciosAdicionales = solicitudServicioRepository.getServiciosAdicionales(tipoSolicitud
+						.getId(), plan.getId(), item.getId(), cuenta.getId());
 			} else {
-				AppLogger.info("No se pudo validar los Servicios Adicionales de la Linea de "
-						+ "Solicitud de Servicio " + linea.getId() + " (" + linea.getAlias() + ")\nDetalle:"
-						+ "\nidTipoSolicitud = " + idTipoSolicitud + "\nidPlan = " + idPlan + "\nidItem = "
-						+ idItem + "\nidCuenta = " + idCuenta);
+				AppLogger.warn("No se pudo validar los Servicios Adicionales de la Linea de "
+						+ "Solicitud de Servicio " + linea.getId() + " (" + linea.getAlias()
+						+ "). Revisar la integridad de los datos en la base.\nDetalle:"
+						+ "\nidTipoSolicitud = " + (tipoSolicitud != null ? tipoSolicitud.getId() : "")
+						+ "\nidPlan = " + (plan != null ? plan.getId() : "") + "\nidItem = "
+						+ (item != null ? item.getId() : "") + "\nidCuenta = "
+						+ (cuenta != null ? cuenta.getId() : ""));
 				continue;
 			}
 			Set<ServicioAdicionalLineaSolicitudServicio> servicioasForDeletion = new HashSet();
