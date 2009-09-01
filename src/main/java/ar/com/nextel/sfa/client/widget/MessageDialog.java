@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class MessageDialog extends CustomDialogBox implements ClickListener {
 
-	private static MessageDialog instance;
+	protected static MessageDialog instance;
 	private HTML message;
 	private SimpleLink aceptar;
 	private SimpleLink si;
@@ -34,7 +34,7 @@ public class MessageDialog extends CustomDialogBox implements ClickListener {
 		return instance;
 	}
 
-	private MessageDialog(String title, boolean autoHide, boolean modal) {
+	protected MessageDialog(String title, boolean autoHide, boolean modal) {
 		super(title, autoHide, modal);
 		message = new HTML();
 		add(message);
