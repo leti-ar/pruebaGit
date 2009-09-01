@@ -39,7 +39,7 @@ public class CerrarSSDialog extends NextelDialog implements ClickListener {
 
 	public static CerrarSSDialog getInstance() {
 		if (instance == null) {
-			instance = new CerrarSSDialog("Cerrar SS");
+			instance = new CerrarSSDialog("Cerrar SS", false, true);
 		}
 		return instance;
 	}

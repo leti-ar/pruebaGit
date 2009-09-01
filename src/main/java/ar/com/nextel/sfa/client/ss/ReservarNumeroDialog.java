@@ -24,7 +24,7 @@ public class ReservarNumeroDialog extends NextelDialog implements ClickListener 
 	private Command commandAceptar;
 
 	public ReservarNumeroDialog() {
-		super("Números sugeridos");
+		super("Números sugeridos", false, true);
 		HTML mensaje = new HTML(Sfa.constant().ERR_NUMERO_NO_DISPONIBLE());
 		mensaje.setWidth("300px");
 		mensaje.addStyleName("m10");
