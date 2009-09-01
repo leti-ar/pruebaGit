@@ -12,13 +12,13 @@ import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
-import ar.com.nextel.sfa.client.dto.OportunidadNegocioSearchResultDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.ss.EditarSSUI;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
+import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
 import ar.com.nextel.sfa.client.widget.UILoader;
@@ -27,6 +27,8 @@ import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import ar.com.snoop.gwt.commons.client.widget.table.RowListener;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -40,6 +42,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 /**
  * Muestra la tabla con los resultados de la busqueda de operaciones. También maneja la logica de busqueda
@@ -48,7 +51,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author eSalvador
  * 
  */
-public class OperacionEnCursoResultUI extends FlowPanel implements TableListener, ClickListener {
+public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler, ClickListener {
 
 	private NextelTable resultTableReservas;
 	private NextelTable resultTableOpEnCurso;
@@ -73,32 +76,32 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 	private PopupPanel popupCrearSS;
 	private Hyperlink crearEquipos;
 	private Hyperlink crearCDW;
-	//private Hyperlink crearMDS;
-	private int rowIndexSelected;
+	// private Hyperlink crearMDS;
 	private Long idCuenta;
-	
-	private OperacionEnCursoSeleccionCuentaPopup seleccionCuentaPopup = OperacionEnCursoSeleccionCuentaPopup.getInstance(); 
-	
+
+	private OperacionEnCursoSeleccionCuentaPopup seleccionCuentaPopup = OperacionEnCursoSeleccionCuentaPopup
+			.getInstance();
+
 	public OperacionEnCursoResultUI(OperacionEnCursoUIController controller) {
 		super();
 		this.controller = controller;
 		addStyleName("gwt-OportunidadesResultPanel");
 		crearSSLink = new SimpleLink(Sfa.constant().crearSS(), "#", true);
 		crearSSLink.addClickListener(this);
-		
+
 		popupCrearSS = new PopupPanel(true);
 		popupCrearSS.addStyleName("dropUpStyle");
-		
+
 		FlowPanel linksCrearSS = new FlowPanel();
 		linksCrearSS.add(crearEquipos = new Hyperlink("Equipos/Accesorios", "" + UILoader.OP_EN_CURSO));
 		linksCrearSS.add(crearCDW = new Hyperlink("CDW", "" + UILoader.OP_EN_CURSO));
-		//linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.OP_EN_CURSO));
-		
+		// linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.OP_EN_CURSO));
+
 		popupCrearSS.setWidget(linksCrearSS);
 		crearEquipos.addClickListener(this);
 		crearCDW.addClickListener(this);
-		//crearMDS.addClickListener(this);
-		
+		// crearMDS.addClickListener(this);
+
 		resultTableWrapperReserva = new SimplePanel();
 		resultTableWrapperReserva.addStyleName("resultTableWrapper");
 
@@ -136,35 +139,18 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		numOperaciones.addStyleName("oppEnCursoCantLabel");
 
 		resultTableReservas = new NextelTable();
-		resultTableReservas.addRowListener(new RowListener() {
-			public void onRowClick(Widget sender, int row) {
-			}
-			public void onRowEnter(Widget sender, int row) {
-				rowIndexSelected = row -1;
-			}
-			public void onRowLeave(Widget sender, int row) {
-			}
-		});
 		resultTableOpEnCurso = new NextelTable();
-		resultTableOpEnCurso.addRowListener(new RowListener() {
-			public void onRowClick(Widget sender, int row) {
-			}
-			public void onRowEnter(Widget sender, int row) {
-				rowIndexSelected = row -1;
-			}
-			public void onRowLeave(Widget sender, int row) {
-			}
-		});
 		resultTableWrapperReserva.add(resultTableReservas);
 		resultTableWrapperOpCurso.add(resultTableOpEnCurso);
-		resultTableOpEnCurso.addTableListener(this);
+		resultTableOpEnCurso.addClickHandler(this);
+		resultTableReservas.addClickHandler(this);
 
 		flowPanelReservaT.add(resultTableWrapperReserva);
 		flowPanelOppEnCursoT.add(resultTableWrapperOpCurso);
-		
+
 		footerBar = new FormButtonsBar();
 		footerBar.addLink(crearSSLink);
-		
+
 		add(reservasLabel);
 		add(reservasNoConsultadas);
 		add(flowPanelReservaT);
@@ -181,7 +167,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		this.searchOpEnCurso(true);
 		this.searchReservas(true);
 	}
-	
+
 	/**
 	 * Metodo privado que contiene lo que se desea ejecutar cada vez que se busca sin ser la primera vez. (o
 	 * sea, cada vez que se hace click en los botones del paginador)
@@ -278,10 +264,11 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 	}
 
 	private void cargarDatosCuenta(int rowSelected) {
-		OperacionEnCursoDto opEnCursoActual = opEnCursoActuales!=null?opEnCursoActuales.get(rowSelected - 1):opEnCurso.get(rowSelected - 1);
+		OperacionEnCursoDto opEnCursoActual = opEnCursoActuales != null ? opEnCursoActuales
+				.get(rowSelected - 1) : opEnCurso.get(rowSelected - 1);
 		CuentaClientService.cargarDatosCuenta(opEnCursoActual.getIdCuenta(), null);
 	}
-	
+
 	private void loadTableReservas(List<VentaPotencialVistaDto> vtaPotencialActuales) {
 		while (resultTableReservas.getRowCount() > 1) {
 			resultTableReservas.removeRow(1);
@@ -292,44 +279,43 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		for (final VentaPotencialVistaDto vtaPotencialDto : vtaPotencialActuales) {
 
 			HTML iconAbrirOpp = IconFactory.lapiz(Sfa.constant().ALT_ABRIR_OPORTUNIDAD());
-			iconAbrirOpp.addClickListener(new ClickListener(){
-				public void onClick(Widget arg0) {
-					CuentaClientService.getOportunidadNegocio(vtaPotencialDto.getIdCuentaPotencial());		
+			iconAbrirOpp.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					CuentaClientService.getOportunidadNegocio(vtaPotencialDto.getIdCuentaPotencial());
 				}
 			});
 			resultTableReservas.setWidget(row, 0, iconAbrirOpp);
-			
+
 			// if (reserva.isPuedeVerInfocom()) {
 			HTML iconAddSoldan = IconFactory.silvioSoldan(Sfa.constant().ALT_ABRIR_CUENTA_ASOC());
-			iconAddSoldan.addClickListener(new ClickListener() {
-				public void onClick(Widget arg0) {
-					CuentaRpcService.Util.getInstance().getCuentasAsociadasAVentaPotencial(vtaPotencialDto.getIdCuentaPotencial(), 
+			iconAddSoldan.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					CuentaRpcService.Util.getInstance().getCuentasAsociadasAVentaPotencial(
+							vtaPotencialDto.getIdCuentaPotencial(),
 							new DefaultWaitCallback<List<CuentaDto>>() {
-						public void success(List<CuentaDto> result) {
-							if (result.size()>1) {
-								seleccionCuentaPopup.setCuentas(result);
-								seleccionCuentaPopup.loadTable();
-								seleccionCuentaPopup.showAndCenter();
-							} else {
-								CuentaClientService.cargarDatosCuenta(result.get(0).getId(), null);
-							}
-						}
-					});
+								public void success(List<CuentaDto> result) {
+									if (result.size() > 1) {
+										seleccionCuentaPopup.setCuentas(result);
+										seleccionCuentaPopup.loadTable();
+										seleccionCuentaPopup.showAndCenter();
+									} else {
+										CuentaClientService.cargarDatosCuenta(result.get(0).getId(), null);
+									}
+								}
+							});
 				}
 			});
-
+			// }
 			resultTableReservas.setWidget(row, 1, iconAddSoldan);
-			// }vb
 			HTML iconAddProspect = IconFactory.prospect(Sfa.constant().ALT_ADD_PROSPECT());
-			iconAddProspect.addClickListener(new ClickListener() {
-				public void onClick(Widget arg0) {
+			iconAddProspect.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
 					AgregarCuentaUI.getInstance().load();
 					BuscadorDocumentoPopup.fromMenu = false;
-					BuscadorDocumentoPopup.idOpp = vtaPotencialDto.getIdCuentaPotencial();					
+					BuscadorDocumentoPopup.idOpp = vtaPotencialDto.getIdCuentaPotencial();
 				}
 			});
-			resultTableReservas.setWidget(row, 2,iconAddProspect );
-			
+			resultTableReservas.setWidget(row, 2, iconAddProspect);
 			resultTableReservas.setWidget(row, 3, IconFactory.oportunidad());
 			resultTableReservas.setHTML(row, 4, vtaPotencialDto.getNumeroCliente());
 			resultTableReservas.setHTML(row, 5, vtaPotencialDto.getRazonSocial());
@@ -384,65 +370,18 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		table.setHTML(0, 5, Sfa.constant().grupoSS());
 	}
 
-	public void onCellClicked(SourcesTableEvents table, int row, int cell) {
-		if (table == resultTableOpEnCurso && row > 0) {
-			
-			if ((resultTableReservas.getRowSelected() > 0)) {
-				resultTableReservas.setRowSelected(0);
-			}
-			
-			int listPosition = tablePageBarOpCurso.getCantRegistrosParcI() + row - 2;
-			OperacionEnCursoDto op = opEnCurso.get(listPosition);
-			if (cell == 0) {
-				if (op.getIdGrupoSolicitud() != null) {
-					History.newItem(EditarSSUI.getEditarSSUrl(op.getIdCuenta(), op.getIdGrupoSolicitud()));
-				} else {
-					ErrorDialog.getInstance().setDialogTitle("Error");
-					ErrorDialog.getInstance().show(Sfa.constant().ERR_SIN_SS(), false);
-				}
-			} else if (cell == 1) {
-				cargarDatosCuenta(row);
-			} else if (cell == 2) {
-				cancelarOperacionEnCurso(op);
-			}
-		}
-		if (table == resultTableReservas && row > 0) {
-			
-			if ((resultTableOpEnCurso.getRowSelected() > 0)) {
-				resultTableOpEnCurso.setRowSelected(0);
-			}
-			
-			int listPosition = tablePageBarReserva.getCantRegistrosParcI() + row - 2;
-			VentaPotencialVistaDto vta = vtaPotencial.get(listPosition);
-			if (cell == 0) {
-				if (vta != null) {
-					//OportunidadNegocioSearchResultDto oportunidad = oportunidadesActuales!=null ? oportunidadesActuales.get(rowIndexSelected) : oportunidades.get(rowIndexSelected);
-					CuentaClientService.getOportunidadNegocio(vta.getIdCuentaPotencial());
-
-				} else {
-					ErrorDialog.getInstance().setDialogTitle("Error");
-					ErrorDialog.getInstance().show(Sfa.constant().ERR_SIN_SS(), false);
-				}
-			} else if (cell == 1) {
-				//;
-			} else if (cell == 2) {
-				//;
-			}
-		}
-	}
 
 	private void cancelarOperacionEnCurso(OperacionEnCursoDto op) {
-		MessageDialog.getInstance().setDialogTitle("Eliminar Operación en Curso");
-		MessageDialog.getInstance().setSize("300px", "100px");
-		MessageDialog.getInstance().showSiNo("Se cancelará la operación en curso. ¿Desea continuar?",
-				getComandoCancelarOperacionEnCurso(op.getId()), MessageDialog.getCloseCommand());
-
+		ModalMessageDialog.getInstance().setDialogTitle("Eliminar Operación en Curso");
+		ModalMessageDialog.getInstance().setSize("300px", "100px");
+		ModalMessageDialog.getInstance().showSiNo("Se cancelará la operación en curso. ¿Desea continuar?",
+				getComandoCancelarOperacionEnCurso(op.getId()), ModalMessageDialog.getCloseCommand());
 	}
 
 	private Command getComandoCancelarOperacionEnCurso(final String idOperacionEnCurso) {
 		return new Command() {
 			public void execute() {
-				MessageDialog.getInstance().hide();
+				ModalMessageDialog.getInstance().hide();
 				controller.cancelarOperacionEnCurso(idOperacionEnCurso, new DefaultWaitCallback() {
 					public void success(Object result) {
 						removeOperacionEnCursoAndRefresh(idOperacionEnCurso);
@@ -462,17 +401,75 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		setOpCurso();
 	}
 
+	public void onClick(ClickEvent event) {
+		Widget sender = (Widget) event.getSource();
+		Cell cell;
+		if (sender == resultTableOpEnCurso) {
+			cell = resultTableOpEnCurso.getCellForEvent(event);
+			if(cell.getRowIndex() <= 0){
+				return;
+			}
+			if ((resultTableReservas.getRowSelected() > 0)) {
+				resultTableReservas.setRowSelected(-1);
+			}
 
+			int listPosition = tablePageBarOpCurso.getCantRegistrosParcI() + cell.getRowIndex() - 2;
+			OperacionEnCursoDto op = opEnCurso.get(listPosition);
+			if (cell.getCellIndex() == 0) {
+				if (op.getIdGrupoSolicitud() != null) {
+					History.newItem(EditarSSUI.getEditarSSUrl(op.getIdCuenta(), op.getIdGrupoSolicitud()));
+				} else {
+					ErrorDialog.getInstance().setDialogTitle("Error");
+					ErrorDialog.getInstance().show(Sfa.constant().ERR_SIN_SS(), false);
+				}
+			} else if (cell.getCellIndex() == 1) {
+				cargarDatosCuenta(cell.getRowIndex());
+			} else if (cell.getCellIndex() == 2) {
+				cancelarOperacionEnCurso(op);
+			}
+			
+		}
+		if (sender == resultTableReservas) {
+			cell = resultTableReservas.getCellForEvent(event);
+			if(cell.getRowIndex() <= 0){
+				return;
+			}
+			if ((resultTableOpEnCurso.getRowSelected() > 0)) {
+				resultTableOpEnCurso.setRowSelected(-1);
+			}
+
+			int listPosition = tablePageBarReserva.getCantRegistrosParcI() + cell.getRowIndex() - 2;
+			VentaPotencialVistaDto vta = vtaPotencial.get(listPosition);
+			if (cell.getCellIndex() == 0) {
+				if (vta != null) {
+					// OportunidadNegocioSearchResultDto oportunidad = oportunidadesActuales!=null ?
+					// oportunidadesActuales.get(rowIndexSelected) : oportunidades.get(rowIndexSelected);
+					CuentaClientService.getOportunidadNegocio(vta.getIdCuentaPotencial());
+
+				} else {
+					ErrorDialog.getInstance().setDialogTitle("Error");
+					ErrorDialog.getInstance().show(Sfa.constant().ERR_SIN_SS(), false);
+				}
+			} else if (cell.getCellIndex() == 1) {
+				// ;
+			} else if (cell.getCellIndex() == 2) {
+				// ;
+			}
+		}
+	}
+
+	
 	public void onClick(Widget sender) {
-		
-		if ((resultTableReservas.getRowSelected() > 0)||(resultTableOpEnCurso.getRowSelected() > 0)) {
+
+		if ((resultTableReservas.getRowSelected() > 0) || (resultTableOpEnCurso.getRowSelected() > 0)) {
 			if (resultTableReservas.getRowSelected() > 0) {
 				VentaPotencialVistaDto vtaPot = vtaPotencial.get(resultTableReservas.getRowSelected() - 1);
 				idCuenta = vtaPot.getIdCuentaPotencial();
-			} else if(resultTableOpEnCurso.getRowSelected() > 0) {
-				OperacionEnCursoDto operacionEnCurso = opEnCurso.get(resultTableOpEnCurso.getRowSelected() - 1);
+			} else if (resultTableOpEnCurso.getRowSelected() > 0) {
+				OperacionEnCursoDto operacionEnCurso = opEnCurso
+						.get(resultTableOpEnCurso.getRowSelected() - 1);
 				idCuenta = operacionEnCurso.getIdCuenta();
-			}			
+			}
 
 			if (sender == crearSSLink) {
 				crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta,
@@ -480,9 +477,8 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 				crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_CDW));
 				// crearMDS.setTargetHistoryToken(getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_MDS));
 				popupCrearSS.show();
-				popupCrearSS.setPopupPosition(
-						crearSSLink.getAbsoluteLeft() - 10,
-						crearSSLink.getAbsoluteTop() - 50);
+				popupCrearSS.setPopupPosition(crearSSLink.getAbsoluteLeft() - 10, crearSSLink
+						.getAbsoluteTop() - 50);
 			} else if (sender == crearEquipos || sender == crearCDW) { // || sender == crearMDS
 				popupCrearSS.hide();
 			}
@@ -492,6 +488,3 @@ public class OperacionEnCursoResultUI extends FlowPanel implements TableListener
 		}
 	}
 }
-	
-
-
