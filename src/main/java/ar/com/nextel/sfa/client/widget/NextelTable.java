@@ -103,10 +103,10 @@ public class NextelTable extends RowFlexTable implements RowListener {
 	// TODO: guarda al insertar y sacar filas
 	/** Setea la fila seleccionada (con estilos) */
 	public void setRowSelected(int row) {
+		if (rowSelected >= dataStarRow) {
+			getRowFormatter().removeStyleName(rowSelected, "selectedRow");
+		}
 		if (row >= dataStarRow && row < getRowCount()) {
-			if (rowSelected >= dataStarRow) {
-				getRowFormatter().removeStyleName(rowSelected, "selectedRow");
-			}
 			getRowFormatter().addStyleName(row, "selectedRow");
 			rowSelected = row;
 		} else {
