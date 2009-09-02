@@ -116,7 +116,7 @@ public class CerrarSSDialog extends NextelDialog implements ClickListener {
 		cierreExitoso.setVisible(true);
 		formButtons.setVisible(true);
 		reporteUrl = "/" + WindowUtils.getContextRoot()
-				+ "/download/download?module=solicitudes&service=rtf&name=" + filename + ".rtf";
+				+ "/download/" + filename + ".rtf?module=solicitudes&service=rtf&name=" + filename + ".rtf";
 		showAndCenter();
 	}
 
