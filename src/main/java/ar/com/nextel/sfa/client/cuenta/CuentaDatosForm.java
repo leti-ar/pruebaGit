@@ -46,6 +46,8 @@ import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import ar.com.snoop.gwt.commons.client.window.MessageWindow;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
@@ -56,7 +58,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class CuentaDatosForm extends Composite {
+public class CuentaDatosForm extends Composite implements ClickListener {
 
 	private static CuentaDatosForm instance = new CuentaDatosForm();
 	
@@ -117,6 +119,36 @@ public class CuentaDatosForm extends Composite {
 		mainPanel.setWidget(fila++,0,createFormaDePagoPanel());
 		mainPanel.setWidget(fila++,0,createVendedorPanel());
 		mainPanel.setWidget(fila  ,0,createFechaUsuarioPanel());
+		
+		iconoLupa.addClickListener(new ClickListener() {
+		public void onClick(Widget event) {
+			if (event == iconoLupa) {
+				iconoLupa.addClickHandler(new ClickHandler() {
+					public void onClick(ClickEvent arg0) {
+						if ("".equals(camposTabDatos.getNumeroDocumento().getText())) {
+							MessageDialog.getInstance();
+							MessageDialog.getInstance().showAceptar("Debe ingresar un número de documento", MessageDialog.getCloseCommand());
+						} else {
+							PersonaDto personaDto = getVerazSearch(camposTabDatos.getNumeroDocumento(), 
+									camposTabDatos.getTipoDocumento(), camposTabDatos.getSexo());
+							inicializarVeraz(camposTabDatos.getVerazRta());
+							CuentaRpcService.Util.getInstance().consultarVeraz(personaDto, 
+									new DefaultWaitCallback<VerazResponseDto>() {
+
+								public void success(VerazResponseDto result) {
+									if (result != null) {
+										setearValoresRtaVeraz(result, camposTabDatos.getApellido(), camposTabDatos.getNombre(), 
+												camposTabDatos.getRazonSocial(), camposTabDatos.getSexo(), camposTabDatos.getVerazRta());
+										camposTabDatos.exportarNombreApellidoARazonSocial();
+									}
+								}
+							});
+						}
+					}
+				});	
+			}			
+		}		
+	});
 	}
 	
 	private Widget createDatosCuentaPanel() {
@@ -210,29 +242,6 @@ public class CuentaDatosForm extends Composite {
 		datosCuentaTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
 		
 		datosCuentaTable.setWidget(row, 2, iconoLupa);		
-		iconoLupa.addClickListener(new ClickListener() {
-			public void onClick (Widget sender) {
-				if ("".equals(camposTabDatos.getNumeroDocumento().getText())) {
-					MessageDialog.getInstance();
-					MessageDialog.getInstance().showAceptar("Debe ingresar un número de documento", MessageDialog.getCloseCommand());
-				} else {
-					PersonaDto personaDto = getVerazSearch(camposTabDatos.getNumeroDocumento(), 
-							camposTabDatos.getTipoDocumento(), camposTabDatos.getSexo());
-					inicializarVeraz(camposTabDatos.getVerazRta());
-					CuentaRpcService.Util.getInstance().consultarVeraz(personaDto, 
-							new DefaultWaitCallback<VerazResponseDto>() {
-
-						public void success(VerazResponseDto result) {
-							if (result != null) {
-								setearValoresRtaVeraz(result, camposTabDatos.getApellido(), camposTabDatos.getNombre(), 
-										camposTabDatos.getRazonSocial(), camposTabDatos.getSexo(), camposTabDatos.getVerazRta());
-								camposTabDatos.exportarNombreApellidoARazonSocial();
-							}
-						}
-					});
-				}
-			}
-		});	
 
 		datosCuentaTable.setWidget(row, 3, camposTabDatos.getVerazLabel());
         inicializarVeraz(camposTabDatos.getVerazRta());
@@ -245,6 +254,7 @@ public class CuentaDatosForm extends Composite {
 		}
 	}
 
+	
 	public void	armarTablaPanelOppDatos() {
 		datosOppTable.clear();
 		datosOppTable.setCellSpacing(7);
@@ -1255,4 +1265,10 @@ public class CuentaDatosForm extends Composite {
         MessageDialog.getInstance().setDialogTitle("Resultado Veraz");
         MessageDialog.getInstance().showAceptar(result.getMensaje(), MessageDialog.getCloseCommand());
 	}
+
+	public void onClick(Widget arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
