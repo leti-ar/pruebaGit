@@ -25,7 +25,6 @@ import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorServ
 import ar.com.nextel.business.dao.GenericDao;
 import ar.com.nextel.business.describable.GetAllBusinessOperator;
 import ar.com.nextel.business.externalConnection.exception.MerlinException;
-import ar.com.nextel.business.oportunidades.CuentaPotencialBusinessOperator;
 import ar.com.nextel.business.personas.normalizarDomicilio.NormalizadorDomicilio;
 import ar.com.nextel.business.personas.normalizarDomicilio.businessUnits.NormalizarDomicilioRequest;
 import ar.com.nextel.business.vendedores.RegistroVendedores;
@@ -266,12 +265,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements	CuentaRpcServ
 		return buscarDTOinit;
 	}
 
-	public GranCuentaDto saveGranCuenta(GranCuentaDto cuentaDto) {
-		Long idCuenta = cuentaBusinessService.saveCuenta(cuentaDto,mapper);
-		cuentaDto = mapper.map(repository.retrieve(GranCuenta.class, idCuenta), GranCuentaDto.class);
-		return cuentaDto;
-	}
-
 	public CuentaDto saveCuenta(CuentaDto cuentaDto) {
 		Long idCuenta = cuentaBusinessService.saveCuenta(cuentaDto,mapper);
 		if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(KnownInstanceIdentifier.DIVISION.getKey()))
@@ -279,10 +272,9 @@ public class CuentaRpcServiceImpl extends RemoteService implements	CuentaRpcServ
 		else if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(KnownInstanceIdentifier.SUSCRIPTOR.getKey()))
 		   cuentaDto = (SuscriptorDto) mapper.map(repository.retrieve(Suscriptor.class, idCuenta), SuscriptorDto.class);
 		else 
-		   cuentaDto = mapper.map(repository.retrieve(Cuenta.class, idCuenta), CuentaDto.class);
+		   cuentaDto = mapper.map(repository.retrieve(Cuenta.class, idCuenta), GranCuentaDto.class);
 		return cuentaDto;
 	}
-	
 	
 	public VerazInitializer getVerazInitializer() {
 		VerazInitializer verazInitializer = new VerazInitializer();
