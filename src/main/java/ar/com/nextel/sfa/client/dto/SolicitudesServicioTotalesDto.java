@@ -2,8 +2,6 @@ package ar.com.nextel.sfa.client.dto;
 
 import java.util.List;
 
-import ar.com.nextel.model.cuentas.beans.Vendedor;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class SolicitudesServicioTotalesDto implements IsSerializable {
@@ -44,5 +42,5 @@ public class SolicitudesServicioTotalesDto implements IsSerializable {
 	public void setTotalEquiposFirmados(Long totalEquiposFirmados) {
 		this.totalEquiposFirmados = totalEquiposFirmados;
 	}
-	
+
 }

@@ -2,8 +2,6 @@ package ar.com.nextel.sfa.client.dto;
 
 import java.util.List;
 
-import ar.com.nextel.model.cuentas.beans.Cuenta;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class SolicitudServicioCerradaResultDto implements IsSerializable {
@@ -21,7 +19,7 @@ public class SolicitudServicioCerradaResultDto implements IsSerializable {
 	private List<CambiosSolicitudServicioDto> cambios;
 	private CuentaDto cuenta;
 
-	//asumo que: que tenga el codigo de Vantive es sinonimo de que sea cliente
+	// asumo que: que tenga el codigo de Vantive es sinonimo de que sea cliente
 	public boolean isCliente() {
 		return !cuenta.getCondicionCuenta().getCodigoVantive().trim().equals("");
 	}
