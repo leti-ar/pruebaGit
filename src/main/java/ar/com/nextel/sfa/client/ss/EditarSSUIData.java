@@ -221,7 +221,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 		solicitudServicio = solicitud;
 		nss.setText(solicitud.getNumero());
-		nflota.setEnabled("".equals(solicitud.getNumeroFlota()));
+		nflota.setEnabled(solicitud.getCuenta().getIdVantive() == null);
 		nflota.setText(solicitud.getNumeroFlota());
 		entrega.clear();
 		facturacion.clear();
