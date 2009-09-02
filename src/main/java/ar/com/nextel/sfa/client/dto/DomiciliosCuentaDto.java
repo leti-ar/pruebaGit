@@ -29,7 +29,7 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 	private String unidad_funcional;
 	private Boolean no_normalizar;
 	private Boolean validado = false;
-	private String en_carga;
+//	private String en_carga;
 	private String nombre_usuario_ultima_modificacion;
 	private String fecha_ultima_modificacion;
 	private String activo;
@@ -210,13 +210,13 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 		this.validado = validado;
 	}
 
-	public String getEn_carga() {
-		return en_carga;
-	}
-
-	public void setEn_carga(String en_carga) {
-		this.en_carga = en_carga;
-	}
+//	public String getEn_carga() {
+//		return en_carga;
+//	}
+//
+//	public void setEn_carga(String en_carga) {
+//		this.en_carga = en_carga;
+//	}
 
 	public String getNombre_usuario_ultima_modificacion() {
 		return nombre_usuario_ultima_modificacion;

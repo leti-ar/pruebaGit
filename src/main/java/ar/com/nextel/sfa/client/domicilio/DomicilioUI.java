@@ -10,7 +10,6 @@ import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
-import ar.com.nextel.sfa.client.infocom.InfocomUI;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
@@ -67,7 +66,6 @@ public class DomicilioUI extends NextelDialog {
 	public static DomicilioUI getInstance() {
 		return instance;
 	}
-	
 
 	public DomicilioUI() {
 		super("Editar Domicilio");
@@ -92,7 +90,8 @@ public class DomicilioUI extends NextelDialog {
 
 	public void cargarPopupDomicilio(DomiciliosCuentaDto domicilio, String title) {
 		isDomicilioPpalEntrega = EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdEntrega());
-		isDomicilioPpalFacturacion = EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdFacturacion());
+		isDomicilioPpalFacturacion = EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(
+				domicilio.getIdFacturacion());
 		noEditable = domicilio.getVantiveId() != null;
 		domicilioAEditar = domicilio;
 		domiciliosData.clean();
@@ -124,10 +123,8 @@ public class DomicilioUI extends NextelDialog {
 		setWidth("635px");
 		validadoPorPanel = new HorizontalPanel();
 		validadoPorPanel.add(domiciliosData.getValidado());
-		validadoPorPanel.add(labelValidado1);	
-		//validadoPorPanel.add(labelValidado2);
+		validadoPorPanel.add(labelValidado1);
 		validadoPorPanel.addStyleName("ml15");
-		//validadoPorPanel.setWidth("30%");
 
 		// Campos Obligatorios:
 		calleLabel.addStyleName("req");
@@ -184,11 +181,6 @@ public class DomicilioUI extends NextelDialog {
 		gridDown.setWidget(3, 2, domiciliosData.getEntrega());
 		gridDown.setWidget(3, 3, labelFacturacion);
 		gridDown.setWidget(3, 4, domiciliosData.getFacturacion());
-//		gridDown.setWidget(4, 1, domiciliosData.getValidado());
-//		gridDown.setWidget(4, 2, labelValidado1);
-//		gridDown.setWidget(4, 3, labelValidado2);
-//		gridDown.setWidget(4, 1, validadoPorPanel);
-		
 		gridObs.addStyleName("layout");
 		gridObs.setText(0, 1, Sfa.constant().obs_domicilio());
 		gridObs.setWidget(1, 1, domiciliosData.getObservaciones());
@@ -251,14 +243,14 @@ public class DomicilioUI extends NextelDialog {
 	}
 
 	public void showAndCenter() {
-		if (parentContacto){
+		if (parentContacto) {
 			ocultaFieldsParaContactos();
-		}else{
+		} else {
 			habilitaFieldsParaContactos();
 		}
 		super.showAndCenter();
 	}
-	
+
 	public boolean isEditable() {
 		return noEditable;
 	}
@@ -336,11 +328,10 @@ public class DomicilioUI extends NextelDialog {
 		DomiciliosUIData datosDomicilioNuevo = DomicilioUI.getInstance().getDomiciliosData();
 		// Mapeos a Mano para no perder Datos: REVISAR:
 		domicilioNormalizado.setObservaciones(datosDomicilioNuevo.getObservaciones().getText());
-		domicilioNormalizado.setValidado(datosDomicilioNuevo.getValidado().isChecked());
+		domicilioNormalizado.setValidado(datosDomicilioNuevo.getValidado().getValue());
 		domicilioNormalizado.setId(domicilioAEditar.getId());
 		domicilioNormalizado.setIdEntrega(domicilioAEditar.getIdEntrega());
 		domicilioNormalizado.setIdFacturacion(domicilioAEditar.getIdFacturacion());
-		domicilioNormalizado.setEn_carga(domicilioAEditar.getEn_carga());
 		domicilioNormalizado.setNombre_usuario_ultima_modificacion(domicilioAEditar
 				.getNombre_usuario_ultima_modificacion());
 		domicilioNormalizado.setFecha_ultima_modificacion(domicilioAEditar.getFecha_ultima_modificacion());
@@ -474,18 +465,20 @@ public class DomicilioUI extends NextelDialog {
 		return openUICommand;
 	}
 
-	public void setYaTieneDomiciliosPrincipales(boolean ppalEntrega, boolean ppalfacturacion){
+	public void setYaTieneDomiciliosPrincipales(boolean ppalEntrega, boolean ppalfacturacion) {
 		this.tienePrincipalEntrega = ppalEntrega;
 		this.tienePrincipalFacturacion = ppalfacturacion;
 	}
-	
-	public boolean getTieneDomiciliosPrincipales(){
+
+	public boolean getTieneDomiciliosPrincipales() {
 		boolean tienePpales = false;
-		
-		if (!isDomicilioPpalFacturacion && domiciliosData.getFacturacion().getSelectedItemId().equals("2") && (tienePrincipalFacturacion)){
-			tienePpales = true;	
+
+		if (!isDomicilioPpalFacturacion && domiciliosData.getFacturacion().getSelectedItemId().equals("2")
+				&& (tienePrincipalFacturacion)) {
+			tienePpales = true;
 		}
-		if (!isDomicilioPpalEntrega &&  domiciliosData.getEntrega().getSelectedItemId().equals("2") && (tienePrincipalEntrega)){
+		if (!isDomicilioPpalEntrega && domiciliosData.getEntrega().getSelectedItemId().equals("2")
+				&& (tienePrincipalEntrega)) {
 			tienePpales = true;
 		}
 		return tienePpales;
@@ -499,7 +492,7 @@ public class DomicilioUI extends NextelDialog {
 		this.parentContacto = parentContacto;
 	}
 
-	public void refrescaTablaConNuevoDomicilio(DomiciliosCuentaDto domicilioNuevo){
+	public void refrescaTablaConNuevoDomicilio(DomiciliosCuentaDto domicilioNuevo) {
 	}
 
 	public void setDomicilioPpalEntrega(boolean isDomicilioPpalEntrega) {
@@ -509,7 +502,7 @@ public class DomicilioUI extends NextelDialog {
 	public void setDomicilioPpalFacturacion(boolean isDomicilioPpalFacturacion) {
 		this.isDomicilioPpalFacturacion = isDomicilioPpalFacturacion;
 	}
-	
+
 	public void ocultaFieldsParaContactos() {
 		labelEntrega.setVisible(false);
 		labelUsuario.setVisible(false);
@@ -532,5 +525,5 @@ public class DomicilioUI extends NextelDialog {
 		getDomiciliosData().getEntrega().setVisible(true);
 		getDomiciliosData().getFacturacion().setVisible(true);
 		getDomiciliosData().getValidado().setVisible(true);
-	}	
+	}
 }
