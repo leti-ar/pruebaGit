@@ -76,11 +76,11 @@ public class UILoader extends SimplePanel implements HistoryListener {
 		}
 		lastToken = historyToken;
 		if (page == SOLO_MENU) {
-			SFAWeb.getHeaderMenu().setVisible(true);
+			// SFAWeb.getHeaderMenu().setVisible(true);
 			setWidget(null);
 			return;
 		}
-		SFAWeb.getHeaderMenu().setVisible(false);
+		// SFAWeb.getHeaderMenu().setVisible(false);
 		if (pages[page] == null) {
 			createPageWidget(page);
 		}
