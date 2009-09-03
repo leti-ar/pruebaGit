@@ -25,8 +25,9 @@ public class ScoringPopUpUI extends NextelDialog {
 	private ScoringDto scoring;
 	private FlexTable encabezadoTable;
 	
-	public ScoringPopUpUI(String title, ScoringDto scoring) {
+	public ScoringPopUpUI(String title, String width, ScoringDto scoring) {
 		super(title);
+		this.setWidth(width);
 		this.addStyleName("scoringDialog");
 		this.scoring = scoring;
 		initScoringPopUp();
@@ -36,8 +37,6 @@ public class ScoringPopUpUI extends NextelDialog {
 		encabezadoTable = new FlexTable();
 		encabezadoTable.setWidget(0, 0, new Label("Scoring:"));
 		encabezadoTable.setWidget(1, 0, new Label(scoring.getMensajeAdicional()));
-		encabezadoTable.setWidth("380px");
-		encabezadoTable.setHeight("175px");
 		this.add(encabezadoTable);
 		SimpleLink cerrar = new SimpleLink("Cerrar");
 		cerrar.addStyleName("cerrarLink");

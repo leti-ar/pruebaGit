@@ -168,7 +168,7 @@ public class InfocomUIData extends UIData {
 		InfocomRpcService.Util.getInstance().consultarScoring(numeroCuenta, new DefaultWaitCallback<ScoringDto>() {
 			public void success(ScoringDto result) {
 				if (result != null) {
-					ScoringPopUpUI scoringPopUpUI = new ScoringPopUpUI("Cuentas - Scoring", result);
+					ScoringPopUpUI scoringPopUpUI = new ScoringPopUpUI("Cuentas - Scoring", "350", result);
 					scoringPopUpUI.showAndCenter();					
 				}
 			}
