@@ -33,6 +33,9 @@ public class VerazResultUI extends FlowPanel {
 	private Label nombre = new Label();
 	private VerazFilterUI verazFilterUI;
 	private Label estado;
+    private String explicacionTrunc;
+	
+	private static int SCORE_DNI_INEXISTENTE = 3;
 
 	
 	public VerazResultUI() {
@@ -70,20 +73,26 @@ public class VerazResultUI extends FlowPanel {
 		estado = new Label(verazResponseDto.getEstado());		
 
 		/** Pregunta por el estado para 
-		 * poner el icono y mensaje que corresponda **/
+		 * poner el icono y mensaje que corresponda **/		
 		
-		if ("ACEPTAR".equals(verazResponseDto.getEstado())) {
-			estado.setStyleName("resultadoVerazAceptar");
-			verazResultTable.setHTML(0, 1, "La respuesta de Veraz ha sido: ACEPTAR. Puede continuar con la operación.");
-		}else if ("REVISAR".equals(verazResponseDto.getEstado())) {
-			estado.setStyleName("resultadoVerazRevisar");
-			verazResultTable.setHTML(0, 1, "La respuesta de Veraz ha sido: REVISAR. Documento inexistente");
-		}
-		else {
-			estado.setStyleName("resultadoVerazRechazar");
-			verazResultTable.setHTML(0, 1, "La respuesta de Veraz ha sido: RECHAZAR.");
-		}
-		
+		if(verazResponseDto.getEstado() == null) {
+			//analyzeExplicacion();
+		} else {
+			if("RECHAZAR".equals(verazResponseDto.getEstado()))
+				rechazar();
+			else
+				if("REVISAR".equals(verazResponseDto.getEstado())) {
+					revisar();
+				} else
+					if("ACEPTAR".equals(verazResponseDto.getEstado()))
+						aceptar();
+					else
+						if("REVISAR POR CONYUGE".equals(verazResponseDto.getEstado()))
+							verazResultTable.setHTML(0, 1, "La respuesta de Veraz ha sido REVISAR POR CÓNYUGE. Puede continuar con la operaci\363n.");
+						else
+							verazResultTable.setHTML(0, 1, "La Respuesta de Veraz ha sido REVISAR. Puede continuar con la operaci�n.");
+		}			
+
 		verazResultTable.setWidget(0, 0, estado);
 
 		verazResultTable.setHTML(1, 1, verazResponseDto.getRazonSocial());
@@ -95,6 +104,42 @@ public class VerazResultUI extends FlowPanel {
 		verazFilterUI.getFooter();
 
 		setVisible(true);
+	}
+	
+	private void rechazar() {
+		estado.setStyleName("resultadoVerazRechazar");
+		verazResultTable.setHTML(0, 1, "La respuesta de Veraz ha sido: RECHAZAR.");
+//		verazResultTable.setHTML(0, 1, "La respuesta de Veraz ha sido: RECHAZAR. " + explicacionTrunc);
+	}
+	
+	private void aceptar() {
+		estado.setStyleName("resultadoVerazAceptar");
+		verazResultTable.setHTML(0, 1, "La respuesta de Veraz ha sido: ACEPTAR. Puede continuar con la operaci\363n.");
+	}
+	
+	private void revisar() {
+		estado.setStyleName("resultadoVerazRevisar");
+		if(verazResponseDto.getScoreDni() != SCORE_DNI_INEXISTENTE) 
+			verazResultTable.setHTML(0, 1, "La respuesta de Veraz ha sido: REVISAR.");
+//			verazResultTable.setHTML(0, 1, "La respuesta de Veraz ha sido: REVISAR. " + explicacionTrunc);
+		else 
+			verazResultTable.setHTML(0, 1, "La respuesta de Veraz ha sido A REVISAR. Documento inexistente");
+	}	
+	
+	private void analyzeExplicacion() {
+		cleanExplicacion("Puntaje <= a 300");
+		cleanExplicacion("Puntaje entre 301 y 599");
+		cleanExplicacion("Puntaje > 599");
+		cleanExplicacion(" | ");
+		if(explicacionTrunc != null && explicacionTrunc.endsWith("Antecedentes en Prestadora de Telecomunicaciones"))
+			explicacionTrunc = "Antecedentes en prestadora de telecomunicaciones.";
+		if(explicacionTrunc != null && explicacionTrunc.trim().length() > 0)
+			explicacionTrunc = (new StringBuilder(" ")).append(explicacionTrunc).toString();
+	}
+	
+	private void cleanExplicacion(String prefix) {
+		if(explicacionTrunc != null && explicacionTrunc.startsWith(prefix))
+			explicacionTrunc = explicacionTrunc.substring(prefix.length(), explicacionTrunc.length());
 	}
 	
 	private void initTable(FlexTable table) {

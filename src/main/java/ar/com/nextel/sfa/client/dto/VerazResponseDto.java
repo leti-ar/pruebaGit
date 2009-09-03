@@ -3,22 +3,19 @@ package ar.com.nextel.sfa.client.dto;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class VerazResponseDto implements IsSerializable{
-
-	
-	private long serialVersionUID = 3662654247828003431L;    
+ 
 	private String estado;
 	private String nombre;
 	private String apellido;
 	private String razonSocial;
 	private String mensaje;
+//    private String rangoTel;
+//    private String lote;
+    private int scoreDni;
+    private int score;
+    private String explicacion;
 	
 	
-	public long getSerialVersionUID() {
-		return serialVersionUID;
-	}
-	public void setSerialVersionUID(long serialVersionUID) {
-		this.serialVersionUID = serialVersionUID;
-	}
 	public String getEstado() {
 		return estado;
 	}
@@ -49,5 +46,22 @@ public class VerazResponseDto implements IsSerializable{
 	public void setMensaje(String mensaje) {
 		this.mensaje = mensaje;
 	}
-
+	public int getScoreDni() {
+		return scoreDni;
+	}
+	public void setScoreDni(int scoreDni) {
+		this.scoreDni = scoreDni;
+	}
+	public int getScore() {
+		return score;
+	}
+	public void setScore(int score) {
+		this.score = score;
+	}
+	public String getExplicacion() {
+		return explicacion;
+	}
+	public void setExplicacion(String explicacion) {
+		this.explicacion = explicacion;
+	}
 }
