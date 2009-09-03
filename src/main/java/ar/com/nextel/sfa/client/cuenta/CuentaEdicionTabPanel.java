@@ -20,6 +20,8 @@ import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
@@ -82,11 +84,11 @@ public class CuentaEdicionTabPanel {
 	
 	private PopupPanel popupCrearSS;
 	private PopupPanel popupAgregarCuenta;
-	private Hyperlink  crearEquipos;
-	private Hyperlink  crearCDW;
+	private SimpleLink  crearEquipos;
+	private SimpleLink  crearCDW;
 	// private Hyperlink  crearMDS;
-	private Hyperlink  agregarDivision;
-	private Hyperlink  agregarSuscriptor;
+	private SimpleLink  agregarDivision;
+	private SimpleLink  agregarSuscriptor;
 	
 	List<String> erroresValidacion = new ArrayList<String>();
     private Command aceptarCommand;
@@ -117,7 +119,6 @@ public class CuentaEdicionTabPanel {
 		marco.setWidget(2, 0, validarCompletitudButton);
 		marco.setWidget(3, 0, tabPanel);
 		marco.setWidget(4, 0, footerBar);
-
 		
 		cancelarCommand = new Command() {
 			public void execute() {
@@ -129,7 +130,6 @@ public class CuentaEdicionTabPanel {
                 cancelar();
 			}
 		};
-		
 	}
 	
     private void initValidarCompletitud() {
@@ -218,14 +218,15 @@ public class CuentaEdicionTabPanel {
 		popupAgregarCuenta.addStyleName("dropUpStyle");
 
 		FlowPanel linksCrearSS = new FlowPanel();
-		linksCrearSS.add(crearEquipos = new Hyperlink("Equipos/Accesorios", "" + UILoader.BUSCAR_CUENTA));
-		linksCrearSS.add(crearCDW = new Hyperlink("CDW", "" + UILoader.BUSCAR_CUENTA));
+		linksCrearSS.add(crearEquipos = new SimpleLink("<div>"+"Equipos/Accesorios"+"</div>"));
+		linksCrearSS.add(crearCDW = new SimpleLink("<div>"+"CDW"+"</div>"));
 		// linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.BUSCAR_CUENTA));
 		popupCrearSS.setWidget(linksCrearSS);
 		
 		FlowPanel linksAgregarCuenta = new FlowPanel();
-		linksAgregarCuenta.add(agregarDivision = new Hyperlink(Sfa.constant().division(), "" + UILoader.BUSCAR_CUENTA));
-		linksAgregarCuenta.add(agregarSuscriptor = new Hyperlink(Sfa.constant().suscriptor(), "" + UILoader.BUSCAR_CUENTA));
+		//linksAgregarCuenta.add(agregarDivision = new Hyperlink(Sfa.constant().division(), "" + UILoader.EDITAR_CUENTA));
+		linksAgregarCuenta.add(agregarDivision = new SimpleLink("<div>"+Sfa.constant().division()+"</div>"));
+		linksAgregarCuenta.add(agregarSuscriptor = new SimpleLink("<div>"+Sfa.constant().suscriptor()+"</div>"));
 		popupAgregarCuenta.setWidget(linksAgregarCuenta);
 		
 		cancelar = new SimpleLink(Sfa.constant().cancelar(), "#", true);
