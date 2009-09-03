@@ -49,7 +49,6 @@ import ar.com.snoop.gwt.commons.client.window.MessageWindow;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -58,7 +57,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class CuentaDatosForm extends Composite implements ClickListener {
+public class CuentaDatosForm extends Composite {
 
 	private static CuentaDatosForm instance = new CuentaDatosForm();
 	
@@ -93,6 +92,8 @@ public class CuentaDatosForm extends Composite implements ClickListener {
 	private static final String ANCHO_TERCER_COLUMNA = "6%";
 	private static final String ANCHO_TABLA_PANEL    = "80%";
 	
+	private static int SCORE_DNI_INEXISTENTE = 3;
+	
 	private List<String> estilos = new ArrayList<String>();
 	private int estiloUsado = 0;
 	
@@ -102,8 +103,8 @@ public class CuentaDatosForm extends Composite implements ClickListener {
 	
 	private CuentaDatosForm() {
 		initWidget(mainPanel);
-		iconoEditarEstdo.addClickListener(new ClickListener() {
-			public void onClick(Widget arg0) {
+		iconoEditarEstdo.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent arg0) {
                  CambioEstadoOppForm cambioEstadoForm = CambioEstadoOppForm.getInstance();
                  cambioEstadoForm.setSize("600", "300");
                  cambioEstadoForm.cargarPopup();
@@ -120,35 +121,29 @@ public class CuentaDatosForm extends Composite implements ClickListener {
 		mainPanel.setWidget(fila++,0,createVendedorPanel());
 		mainPanel.setWidget(fila  ,0,createFechaUsuarioPanel());
 		
-		iconoLupa.addClickListener(new ClickListener() {
-		public void onClick(Widget event) {
-			if (event == iconoLupa) {
-				iconoLupa.addClickHandler(new ClickHandler() {
-					public void onClick(ClickEvent arg0) {
-						if ("".equals(camposTabDatos.getNumeroDocumento().getText())) {
-							MessageDialog.getInstance();
-							MessageDialog.getInstance().showAceptar("Debe ingresar un número de documento", MessageDialog.getCloseCommand());
-						} else {
-							PersonaDto personaDto = getVerazSearch(camposTabDatos.getNumeroDocumento(), 
-									camposTabDatos.getTipoDocumento(), camposTabDatos.getSexo());
-							inicializarVeraz(camposTabDatos.getVerazRta());
-							CuentaRpcService.Util.getInstance().consultarVeraz(personaDto, 
-									new DefaultWaitCallback<VerazResponseDto>() {
+		iconoLupa.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				if ("".equals(camposTabDatos.getNumeroDocumento().getText())) {
+					MessageDialog.getInstance();
+					MessageDialog.getInstance().showAceptar("Debe ingresar un número de documento", MessageDialog.getCloseCommand());
+				} else {
+					PersonaDto personaDto = getVerazSearch(camposTabDatos.getNumeroDocumento(), 
+							camposTabDatos.getTipoDocumento(), camposTabDatos.getSexo());
+					inicializarVeraz(camposTabDatos.getVerazRta());
+					CuentaRpcService.Util.getInstance().consultarVeraz(personaDto, 
+							new DefaultWaitCallback<VerazResponseDto>() {
 
-								public void success(VerazResponseDto result) {
-									if (result != null) {
-										setearValoresRtaVeraz(result, camposTabDatos.getApellido(), camposTabDatos.getNombre(), 
-												camposTabDatos.getRazonSocial(), camposTabDatos.getSexo(), camposTabDatos.getVerazRta());
-										camposTabDatos.exportarNombreApellidoARazonSocial();
-									}
-								}
-							});
+						public void success(VerazResponseDto result) {
+							if (result != null) {
+								setearValoresRtaVeraz(result, camposTabDatos.getApellido(), camposTabDatos.getNombre(), 
+										camposTabDatos.getRazonSocial(), camposTabDatos.getSexo(), camposTabDatos.getVerazRta());
+								camposTabDatos.exportarNombreApellidoARazonSocial();
+							}
 						}
-					}
-				});	
-			}			
-		}		
-	});
+					});
+				}
+			}
+		});			
 	}
 	
 	private Widget createDatosCuentaPanel() {
@@ -1250,26 +1245,67 @@ public class CuentaDatosForm extends Composite implements ClickListener {
         
         sexo.setEnabled(true);
         
-        if ("ACEPTAR".equals(result.getEstado())) {
-        	veraz.addStyleName(estilos.get(0));
-        	estiloUsado = 0;
-        } else if ("REVISAR".equals(result.getEstado())) {
-        	veraz.addStyleName(estilos.get(1));
-        	estiloUsado = 1;
-        }else {
-        	veraz.addStyleName(estilos.get(2));
-        	estiloUsado = 2;
+        
+        if(result.getEstado() == null) {
+        	//analyzeExplicacion();
+        } else {
+        	if("RECHAZAR".equals(result.getEstado()))
+        		rechazar(result, veraz);
+        	else
+        		if("REVISAR".equals(result.getEstado())) {
+        			revisar(result, veraz);
+        			result.getExplicacion();
+        		} else
+        			if("ACEPTAR".equals(result.getEstado()))
+        				aceptar(result, veraz);
+        			else
+        				if("REVISAR POR CONYUGE".equals(result.getEstado())) {
+        					MessageDialog.getInstance().setDialogTitle("Resultado Veraz");
+        					MessageDialog.getInstance().showAceptar("La respuesta de Veraz ha sido REVISAR POR CÓNYUGE. Puede continuar con la operaci\363n.", MessageDialog.getCloseCommand());							
+        				} else {
+        					MessageDialog.getInstance().setDialogTitle("Resultado Veraz");
+        					MessageDialog.getInstance().showAceptar("La Respuesta de Veraz ha sido REVISAR. Puede continuar con la operaci�n.", MessageDialog.getCloseCommand());
+        				}
         }
       
         veraz.setText(result.getEstado());
-        
-        MessageDialog.getInstance().setDialogTitle("Resultado Veraz");
-        MessageDialog.getInstance().showAceptar(result.getMensaje(), MessageDialog.getCloseCommand());
 	}
 
 	public void onClick(Widget arg0) {
 		// TODO Auto-generated method stub
 		
 	}
+
+	public void onClick(ClickEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
+	private void rechazar(VerazResponseDto result, Label veraz) {
+    	veraz.addStyleName(estilos.get(2));
+    	estiloUsado = 2;
+    	MessageDialog.getInstance().setDialogTitle("Resultado Veraz");
+    	MessageDialog.getInstance().showAceptar("La respuesta de Veraz ha sido: RECHAZAR.", MessageDialog.getCloseCommand());
+	}
+	
+	private void aceptar(VerazResponseDto result, Label veraz) {
+    	veraz.addStyleName(estilos.get(0));
+    	estiloUsado = 0;
+    	MessageDialog.getInstance().setDialogTitle("Resultado Veraz");
+    	MessageDialog.getInstance().showAceptar("La respuesta de Veraz ha sido: ACEPTAR. Puede continuar con la operaci\363n.", MessageDialog.getCloseCommand());
+	}
+	
+	private void revisar(VerazResponseDto result, Label veraz) {
+		veraz.addStyleName(estilos.get(1));
+		estiloUsado = 1;
+		if(result.getScoreDni() != SCORE_DNI_INEXISTENTE) {
+			MessageDialog.getInstance().setDialogTitle("Resultado Veraz");
+			MessageDialog.getInstance().showAceptar("La respuesta de Veraz ha sido: REVISAR.", MessageDialog.getCloseCommand());
+		} else { 
+			MessageDialog.getInstance().setDialogTitle("Resultado Veraz");
+			MessageDialog.getInstance().showAceptar("La respuesta de Veraz ha sido A REVISAR. Documento inexistente", MessageDialog.getCloseCommand());
+		}
+	}	
 
 }
