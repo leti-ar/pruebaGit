@@ -842,7 +842,8 @@ public class CuentaDatosForm extends Composite implements ClickListener {
 		) return true;
 
 		if (cuentaTab.getCuenta2editDto().getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.DIV.getTipo())) {
-			if ( (FormUtils.fieldDirty(camposTabDatos.getNombreDivision(), ((DivisionDto)cuentaTab.getCuenta2editDto()).getNombre()))) 
+			if ( (camposTabDatos.getNombreDivision().getText()==null||camposTabDatos.getNombreDivision().getText().equals("")) ||
+				 (FormUtils.fieldDirty(camposTabDatos.getNombreDivision(), ((DivisionDto)cuentaTab.getCuenta2editDto()).getNombre()))) 
 				return true;
 		}
 		
