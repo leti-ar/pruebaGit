@@ -14,6 +14,9 @@ import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.IncrementalCommand;
+
 public class EditarCuentaUI extends ApplicationUI {
 
 	private final CuentaEdicionTabPanel cuentaTab = CuentaEdicionTabPanel.getInstance();
@@ -27,63 +30,91 @@ public class EditarCuentaUI extends ApplicationUI {
 	public boolean load() {
 		esEdicionCuenta = true;
 		resetEditor();
+		
 		//viene de popup "Agregar Cuenta"
 		if (HistoryUtils.getParam("nroDoc")!=null) {
-			if(CuentaClientService.granCuentaDto==null) {
-//				Long   idTipoDoc = HistoryUtils.getParam("idDoc")!=null?Long.parseLong(HistoryUtils.getParam("idDoc")):null;
-//				String nroDoc    = HistoryUtils.getParam("nroDoc");
-//				Long   idOpp     = HistoryUtils.getParam("idOpp")!=null?Long.parseLong(HistoryUtils.getParam("idOpp")):null;
-//				CuentaClientService.reservaCreacionCuenta(idTipoDoc, nroDoc, idOpp);
-			} else {
-				cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.granCuentaDto);
-				completarVisualizacionDatos(CuentaClientService.granCuentaDto);
-			}
+			if(CuentaClientService.granCuentaDto!=null) {
+				doAgregarCuenta();
+			} else {	
+				Long   idTipoDoc = HistoryUtils.getParam("idDoc")!=null?Long.parseLong(HistoryUtils.getParam("idDoc")):null;
+				String nroDoc    = HistoryUtils.getParam("nroDoc");
+				Long   idOpp     = HistoryUtils.getParam("idOpp")!=null && !HistoryUtils.getParam("idOpp").equals("null")?Long.parseLong(HistoryUtils.getParam("idOpp")):null;
+				CuentaClientService.reservaCreacionCuenta(idTipoDoc, nroDoc, idOpp,false);
+				DeferredCommand.addCommand(new IncrementalCommand() {
+					public boolean execute() {
+						if (CuentaClientService.granCuentaDto == null) 
+							return true;
+						doAgregarCuenta();
+						return false;
+					}
+				});
+			} 
+			
 		//viene de popup "Agregar Division"			
 		} else if (HistoryUtils.getParam("div")!=null) {
-			if(CuentaClientService.cuentaDto==null) {
-//				CuentaClientService.crearDivision(HistoryUtils.getParam("idCtaPadre")!=null?Long.parseLong(HistoryUtils.getParam("idCtaPadre")):null);
+			if(CuentaClientService.cuentaDto!=null) {
+				doAgregarDivision();
 			} else {
-				cuentaTab.getCuentaDatosForm().setAtributosCamposAlAgregarDivision(CuentaClientService.cuentaDto);
-				completarVisualizacionDatos(CuentaClientService.cuentaDto);
+				CuentaClientService.crearDivision(HistoryUtils.getParam("idCtaPadre")!=null?Long.parseLong(HistoryUtils.getParam("idCtaPadre")):null,false);
+				DeferredCommand.addCommand(new IncrementalCommand() {
+					public boolean execute() {
+						if (CuentaClientService.cuentaDto == null) 
+							return true;
+						doAgregarDivision();
+						return false;
+					}
+				});
 			}
+
 		//viene de popup "Agregar Suscriptor"			
 		} else if (HistoryUtils.getParam("sus")!=null) {
-			if(CuentaClientService.cuentaDto==null) {
-//				CuentaClientService.crearSuscriptor(HistoryUtils.getParam("idCtaPadre")!=null?Long.parseLong(HistoryUtils.getParam("idCtaPadre")):null);
+			if(CuentaClientService.cuentaDto!=null) {
+				doAgregarSuscriptor();
 			} else {
-				cuentaTab.getCuentaDatosForm().setAtributosCamposAlAgregarSuscriptor(CuentaClientService.cuentaDto);
-				completarVisualizacionDatos(CuentaClientService.cuentaDto);
+				CuentaClientService.crearSuscriptor(HistoryUtils.getParam("idCtaPadre")!=null?Long.parseLong(HistoryUtils.getParam("idCtaPadre")):null,false);
+				DeferredCommand.addCommand(new IncrementalCommand() {
+					public boolean execute() {
+						if (CuentaClientService.cuentaDto == null) 
+							return true;
+						doAgregarSuscriptor();
+						return false;
+					}
+				});
 			}
+			
 		//viene de busqueda OPP			
 		} else if (HistoryUtils.getParam("opp")!=null) {
-			if(CuentaClientService.oportunidadDto==null) {
-//				CuentaClientService.getOportunidadNegocio(HistoryUtils.getParam("idOpp")!=null?Long.parseLong(HistoryUtils.getParam("idOpp")):null);
+			if(CuentaClientService.oportunidadDto!=null) {
+				doBusquedaOPP();
 			} else {
-				esEdicionCuenta = false;
-				cuentaTab.setCuenta2editDto(CuentaClientService.oportunidadDto.getCuentaOrigen());
-				cuentaTab.setPriorityFlag(CuentaClientService.oportunidadDto.getPrioridad().getId());
-				cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusquedaFromOpp(CuentaClientService.oportunidadDto.getCuentaOrigen());
-				cuentaTab.getCuentaDatosForm().ponerDatosOportunidadEnFormulario(CuentaClientService.oportunidadDto);
-				cuentaTab.setNumeroCtaPot(CuentaClientService.oportunidadDto.getNumero());
-				completarVisualizacionDatos(CuentaClientService.oportunidadDto.getCuentaOrigen());
+				CuentaClientService.getOportunidadNegocio(HistoryUtils.getParam("idOpp")!=null?Long.parseLong(HistoryUtils.getParam("idOpp")):null,false);
+				DeferredCommand.addCommand(new IncrementalCommand() {
+					public boolean execute() {
+						if (CuentaClientService.oportunidadDto == null) 
+							return true;
+						doBusquedaOPP();
+						return false;
+					}
+				});
 			}
-		//viene de resultado de busqueda			
+			
+		//viene de pantallas de busqueda			
 		} else if (HistoryUtils.getParam("cuenta_id")!=null) {
-			if (CuentaClientService.cuentaDto==null) {
-//				Long cuentaID         = Long.parseLong(HistoryUtils.getParam("cuenta_id")!=null?HistoryUtils.getParam("cuenta_id"):null); 
-//				String cod_vantive    = HistoryUtils.getParam("cod_vantive"); 
-//				String filtradoPorDni = HistoryUtils.getParam("filByDni"); 
-//				boolean readOnly      = HistoryUtils.getParam("ro")!=null;
-//				CuentaClientService.cargarDatosCuenta(cuentaID, cod_vantive, filtradoPorDni, readOnly);
+			if (CuentaClientService.cuentaDto!=null) {
+				doBusquedaCuenta();
 			} else {
-				if(RegularExpressionConstants.isVancuc(CuentaClientService.cuentaDto.getCodigoVantive())) {
-					cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.cuentaDto);
-				} else if(HistoryUtils.getParam("ro")!=null) { 
-					cuentaTab.getCuentaDatosForm().setAtributosCamposSoloLectura();
-				} else {
-					cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusqueda(CuentaClientService.cuentaDto);
-				}
-				completarVisualizacionDatos(CuentaClientService.cuentaDto);
+				Long cuentaID         = Long.parseLong(HistoryUtils.getParam("cuenta_id")!=null?HistoryUtils.getParam("cuenta_id"):null); 
+				String cod_vantive    = HistoryUtils.getParam("cod_vantive"); 
+				String filtradoPorDni = HistoryUtils.getParam("filByDni"); 
+				CuentaClientService.cargarDatosCuenta(cuentaID, cod_vantive, filtradoPorDni,false);
+				DeferredCommand.addCommand(new IncrementalCommand() {
+					public boolean execute() {
+						if (CuentaClientService.cuentaDto == null) 
+							return true;
+						doBusquedaCuenta();
+						return false;
+					}
+				});
 			}
 		}
 		return false;
@@ -182,4 +213,36 @@ public class EditarCuentaUI extends ApplicationUI {
 		return true;
 	}
 	
+	private void doAgregarCuenta() {
+		cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.granCuentaDto);
+		completarVisualizacionDatos(CuentaClientService.granCuentaDto);
+	}
+	private void doAgregarDivision() {
+		cuentaTab.getCuentaDatosForm().setAtributosCamposAlAgregarDivision(CuentaClientService.cuentaDto);
+		completarVisualizacionDatos(CuentaClientService.cuentaDto);
+	}
+	private void doAgregarSuscriptor() {
+		cuentaTab.getCuentaDatosForm().setAtributosCamposAlAgregarSuscriptor(CuentaClientService.cuentaDto);
+		completarVisualizacionDatos(CuentaClientService.cuentaDto);
+	}
+	private void doBusquedaOPP() {
+		esEdicionCuenta = false;
+		cuentaTab.setCuenta2editDto(CuentaClientService.oportunidadDto.getCuentaOrigen());
+		cuentaTab.setPriorityFlag(CuentaClientService.oportunidadDto.getPrioridad().getId());
+		cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusquedaFromOpp(CuentaClientService.oportunidadDto.getCuentaOrigen());
+		cuentaTab.getCuentaDatosForm().ponerDatosOportunidadEnFormulario(CuentaClientService.oportunidadDto);
+		cuentaTab.setNumeroCtaPot(CuentaClientService.oportunidadDto.getNumero());
+		completarVisualizacionDatos(CuentaClientService.oportunidadDto.getCuentaOrigen());
+	}
+	private void doBusquedaCuenta() {
+		if(RegularExpressionConstants.isVancuc(CuentaClientService.cuentaDto.getCodigoVantive())) {
+			cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.cuentaDto);
+		} else if(HistoryUtils.getParam("ro")!=null) { 
+			cuentaTab.getCuentaDatosForm().setAtributosCamposSoloLectura();
+		} else {
+			cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusqueda(CuentaClientService.cuentaDto);
+		}
+		completarVisualizacionDatos(CuentaClientService.cuentaDto);
+	}
+
 }

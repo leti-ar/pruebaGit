@@ -30,13 +30,23 @@ public class CuentaClientService {
 	 * @param nroDoc
 	 * @param idOpp
 	 */
-	public static void reservaCreacionCuenta(final Long idTipoDoc, final String nroDoc, final Long idOpp) {
+	public static void reservaCreacionCuenta(Long idTipoDoc, String nroDoc, Long idOpp) {
+		reservaCreacionCuenta(idTipoDoc, nroDoc, idOpp, true);
+	}
+	/**
+	 * 
+	 * @param idTipoDoc
+	 * @param nroDoc
+	 * @param idOpp
+	 * @param redir
+	 */
+	public static void reservaCreacionCuenta(final Long idTipoDoc, final String nroDoc, final Long idOpp, boolean redir) {
 		granCuentaDto = null;
-		error = false;
-		TipoDocumentoDto tipoDoc = new TipoDocumentoDto(idTipoDoc,null);
-		DocumentoDto docDto = new DocumentoDto(nroDoc,tipoDoc);
-
+		error         = false;
+		TipoDocumentoDto tipoDoc      = new TipoDocumentoDto(idTipoDoc,null);
+		DocumentoDto docDto           = new DocumentoDto(nroDoc,tipoDoc);
 		CrearCuentaDto crearCuentaDto = new CrearCuentaDto(docDto,idOpp);
+
 		CuentaRpcService.Util.getInstance().reservaCreacionCuenta(crearCuentaDto,new DefaultWaitCallback<GranCuentaDto>() {
 			public void success(GranCuentaDto ctaDto) {
 				granCuentaDto = ctaDto;
@@ -46,22 +56,32 @@ public class CuentaClientService {
 				super.failure(caught);
 			}
 		});
-		DeferredCommand.addCommand(new IncrementalCommand() {
-			public boolean execute() {
-				if (granCuentaDto == null && !error) 
-					return true;
-				if (!error)
-					History.newItem(UILoader.EDITAR_CUENTA + "?nroDoc=" + nroDoc +"&idDoc=" + idTipoDoc + "&idOpp="+idOpp);
-				return false;
-			}
-		});
+		if (redir) {
+			DeferredCommand.addCommand(new IncrementalCommand() {
+				public boolean execute() {
+					if (granCuentaDto == null && !error) 
+						return true;
+					if (!error)
+						History.newItem(UILoader.EDITAR_CUENTA + "?nroDoc=" + nroDoc +"&idDoc=" + idTipoDoc + "&idOpp="+idOpp);
+					return false;
+				}
+			});
+		}
 	}	
-	
+
 	/**
 	 * 	
 	 * @param id_cuentaPadre
 	 */
 	public static void crearDivision(final Long id_cuentaPadre) {
+		crearDivision(id_cuentaPadre,true);
+	}
+	/**
+	 * 
+	 * @param id_cuentaPadre
+	 * @param redir
+	 */
+	public static void crearDivision(final Long id_cuentaPadre, boolean redir) {
 		cuentaDto = null;
 		error     = false;
 		CuentaRpcService.Util.getInstance().crearDivision(id_cuentaPadre,new DefaultWaitCallback<CuentaDto>() {
@@ -74,15 +94,17 @@ public class CuentaClientService {
 			}
 			
 		});		
-		DeferredCommand.addCommand(new IncrementalCommand() {
-			public boolean execute() {
-				if (cuentaDto==null && !error) 
-					return true;
-				if (!error)
-					History.newItem(UILoader.EDITAR_CUENTA + "?div=true" + "&idCtaPadre="+id_cuentaPadre);
-				return false;
-			}
-		});
+		if (redir) {
+			DeferredCommand.addCommand(new IncrementalCommand() {
+				public boolean execute() {
+					if (cuentaDto==null && !error) 
+						return true;
+					if (!error)
+						History.newItem(UILoader.EDITAR_CUENTA + "?div=true" + "&idCtaPadre="+id_cuentaPadre);
+					return false;
+				}
+			});
+		}
 	}
 	
 	/**
@@ -90,6 +112,14 @@ public class CuentaClientService {
 	 * @param id_cuentaPadre
 	 */
 	public static void crearSuscriptor(final Long id_cuentaPadre) {
+		crearSuscriptor(id_cuentaPadre,true);
+	}
+	/**
+	 * 
+	 * @param id_cuentaPadre
+	 * @param redir
+	 */
+	public static void crearSuscriptor(final Long id_cuentaPadre, boolean redir) {
 		cuentaDto = null;
 		error = false;
 		CuentaRpcService.Util.getInstance().crearSuscriptor(id_cuentaPadre,new DefaultWaitCallback<CuentaDto>() {
@@ -101,15 +131,17 @@ public class CuentaClientService {
 				super.failure(caught);
 			}
 		});
-		DeferredCommand.addCommand(new IncrementalCommand() {
-			public boolean execute() {
-				if (cuentaDto == null && !error) 
-					return true;
-				if (!error)
-					History.newItem(UILoader.EDITAR_CUENTA + "?sus=true" + "&idCtaPadre="+id_cuentaPadre);
-				return false;
-			}
-		});
+		if (redir) {
+			DeferredCommand.addCommand(new IncrementalCommand() {
+				public boolean execute() {
+					if (cuentaDto == null && !error) 
+						return true;
+					if (!error)
+						History.newItem(UILoader.EDITAR_CUENTA + "?sus=true" + "&idCtaPadre="+id_cuentaPadre);
+					return false;
+				}
+			});
+		}
 	}
 	
 	/**
@@ -117,6 +149,14 @@ public class CuentaClientService {
 	 * @param idOpp
 	 */
 	public static void getOportunidadNegocio(final Long idOpp) {
+		getOportunidadNegocio(idOpp,true); 
+	}
+	/**
+	 * 
+	 * @param idOpp
+	 * @param redir
+	 */
+	public static void getOportunidadNegocio(final Long idOpp,boolean redir) {
 		oportunidadDto = null;
 		error = false;
 		CuentaRpcService.Util.getInstance().getOportunidadNegocio(idOpp,new DefaultWaitCallback<OportunidadNegocioDto>() {
@@ -128,15 +168,17 @@ public class CuentaClientService {
 				super.failure(caught);
 			}
 		});
-		DeferredCommand.addCommand(new IncrementalCommand() {
-			public boolean execute() {
-				if (oportunidadDto == null && !error) 
-					return true;
-				if (!error)
-					History.newItem(UILoader.EDITAR_CUENTA + "?opp=true"+"&idOpp="+idOpp);
-				return false;
-			}
-		});
+		if (redir) {
+			DeferredCommand.addCommand(new IncrementalCommand() {
+				public boolean execute() {
+					if (oportunidadDto == null && !error) 
+						return true;
+					if (!error)
+						History.newItem(UILoader.EDITAR_CUENTA + "?opp=true"+"&idOpp="+idOpp);
+					return false;
+				}
+			});
+		}
 	}
 
 	/**
@@ -144,7 +186,27 @@ public class CuentaClientService {
 	 * @param cuentaID
 	 * @param cod_vantive
 	 */
-	public static void cargarDatosCuenta(final Long cuentaID, final String cod_vantive, final String filtradoPorDni, final boolean readOnly) {
+	public static void cargarDatosCuenta(Long cuentaID, String cod_vantive) {
+		cargarDatosCuenta(cuentaID, cod_vantive, null,true);
+	}
+
+	/**
+	 * 
+	 * @param cuentaID
+	 * @param cod_vantive
+	 */
+	public static void cargarDatosCuenta(final Long cuentaID, final String cod_vantive, final String filtradoPorDni) {
+		cargarDatosCuenta(cuentaID, cod_vantive, filtradoPorDni,true);
+	}
+	/**
+	 * 
+	 * @param cuentaID
+	 * @param cod_vantive
+	 * @param filtradoPorDni
+	 * @param readOnly
+	 * @param redir
+	 */
+	public static void cargarDatosCuenta(final Long cuentaID, final String cod_vantive, final String filtradoPorDni, boolean redir) {
 		cuentaDto = null;
 		error = false;
 		CuentaRpcService.Util.getInstance().selectCuenta(cuentaID, cod_vantive,new DefaultWaitCallback<CuentaDto>() {
@@ -156,36 +218,20 @@ public class CuentaClientService {
 				super.failure(caught);
 			}
 		});
-		DeferredCommand.addCommand(new IncrementalCommand() {
-			public boolean execute() {
-				if (cuentaDto == null && !error) 
-					return true;
-				if (!error && puedenMostrarseDatos(cuentaDto,filtradoPorDni)) { 
-					History.newItem(UILoader.EDITAR_CUENTA + "?cuenta_id=" + cuentaID + "&cod_vantive="+cod_vantive+"&filByDni="+filtradoPorDni + (readOnly?"&ro=true":""));
+		if (redir) {
+			DeferredCommand.addCommand(new IncrementalCommand() {
+				public boolean execute() {
+					if (cuentaDto == null && !error) 
+						return true;
+					if (!error && puedenMostrarseDatos(cuentaDto,filtradoPorDni)) { 
+						History.newItem(UILoader.EDITAR_CUENTA + "?cuenta_id=" + cuentaID + "&cod_vantive="+cod_vantive+"&filByDni="+filtradoPorDni);
+					}
+					return false;
 				}
-				return false;
-			}
-		});
+			});
+		}
 	}
 
-	/**
-	 * 
-	 * @param cuentaID
-	 * @param cod_vantive
-	 */
-	public static void cargarDatosCuenta(Long cuentaID, String cod_vantive) {
-		cargarDatosCuenta(cuentaID, cod_vantive, null,false);
-	}
-
-	/**
-	 * 
-	 * @param cuentaID
-	 * @param cod_vantive
-	 */
-	public static void cargarDatosCuenta(Long cuentaID, String cod_vantive,boolean readOnly) {
-		cargarDatosCuenta(cuentaID, cod_vantive, null,true);
-	}
-	
 	/**
 	 * 
 	 * @param cuentaDto
@@ -203,4 +249,5 @@ public class CuentaClientService {
 		}
 		return result;
 	}
+	
 }

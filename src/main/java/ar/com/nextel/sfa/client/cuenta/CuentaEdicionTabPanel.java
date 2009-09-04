@@ -29,6 +29,7 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -178,7 +179,7 @@ public class CuentaEdicionTabPanel {
 		razonSocialPanel.setLeft(razonSocialLabel);
 		razonSocialPanel.setRight(razonSocial);
 		razonSocialPanel.getRight().addStyleName("fontNormalGris");
-
+		
 		clientePanel.setLeft(clienteLabel);
 		clientePanel.setRight(cliente);		
 		clientePanel.getRight().addStyleName("fontNormalGris");
@@ -194,8 +195,9 @@ public class CuentaEdicionTabPanel {
 		marcoCliente.setWidget(0, 3, numeroCtaPotPanel);
 		marcoCliente.setWidget(0, 4, marcoPriority);
 		
-		marcoCliente.getCellFormatter().setWidth(0, 0, "30%");
-		marcoCliente.getCellFormatter().setWidth(0, 1, "30%");
+		marcoCliente.getCellFormatter().setWidth(0, 0, "40%");
+		marcoCliente.getCellFormatter().setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_LEFT);
+		marcoCliente.getCellFormatter().setWidth(0, 1, "20%");
 		marcoCliente.getCellFormatter().setWidth(0, 2, "20%");
 		marcoCliente.getCellFormatter().setWidth(0, 3, "20%");
 		marcoCliente.getCellFormatter().setWidth(0, 4, "5");
