@@ -26,6 +26,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class NormalizarDomicilioUI extends NextelDialog {
 
 	private Grid grillaPpal;
+	private Grid grillaMotivo;
 	private SimplePanel domicilioResultWrapper;
 	private NextelTable domicilioResult;
 	private Command comandoAceptar;
@@ -38,11 +39,13 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	private List<DomiciliosCuentaDto> domiciliosEnGrilla;
 	boolean tienePrincipalEntrega;
 	boolean tienePrincipalFacturacion;
+	private Label motivoLabel = new Label("Motivo: ");
 	//
 	private boolean normalizado = true;	
     private List<NormalizacionDomicilioMotivoDto> motivos = new ArrayList();
 	//
 	private int rowSelected;
+	private Label msgNoNormalizado = new Label("No se pudo normalizar el domicilio");
     
 	private static NormalizarDomicilioUI instance = new NormalizarDomicilioUI();
 
@@ -64,9 +67,13 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		if(!normalizado){
 			domicilioResultWrapper.setVisible(false);
 			linkAceptar.setVisible(false);
-			grillaPpal.setText(3, 0, "No se pudo normalizar el domicilio");
+			msgNoNormalizado.addStyleName("msgNoNormalizado");
+			grillaPpal.setWidget(3, 0, msgNoNormalizado);
 			//OJO con el get(0):
-			grillaPpal.setText(4, 0, motivos.size()>0?motivos.get(0).getMotivo():"motivo no especificado");
+			//grillaPpal.setText(4, 0, motivos.size()>0?motivos.get(0).getMotivo():"motivo no especificado");
+			
+			grillaMotivo.setText(0, 1, motivos.size()>0?motivos.get(0).getMotivo():" motivo no especificado");
+			//grillaPpal.setText(4, 1, motivos.size()>0?motivos.get(0).getMotivo():"motivo no especificado");
 		}else{
 			domicilioResultWrapper.setVisible(true);
 			linkAceptar.setVisible(true);
@@ -106,6 +113,9 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		addStyleName("gwt-NormalizarDomicilioUI");
 		domicilioResultWrapper.addStyleName("resultTableScroll");
 		grillaPpal = new Grid(6, 1);
+		grillaMotivo = new Grid(1, 2);
+		motivoLabel.addStyleName("msgNoNormalizado");
+		grillaMotivo.setWidget(0, 0, motivoLabel);
 		domicilioResultWrapper.setVisible(true);
 		setWidth("480px");
 
@@ -117,7 +127,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		grillaPpal.setWidget(1, 0, new Label());
 		grillaPpal.setWidget(2, 0, domicilioResultWrapper);
 		grillaPpal.setText(3, 0, "");
-		grillaPpal.setText(4, 0, "Motivo:");
+		grillaPpal.setWidget(4, 0, grillaMotivo);
 		grillaPpal.setWidget(5, 0, new Label());
 		
 		add(grillaPpal);
