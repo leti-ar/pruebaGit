@@ -642,6 +642,10 @@ font-weight:normal;
 	height: 24px;
 }
 
+.msgNoNormalizado {
+	color: #A83C56;
+}
+
 /*.table-external {
 border:1px solid gray;
 clear:left;
