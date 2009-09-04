@@ -87,7 +87,7 @@ public class CuentaEdicionTabPanel {
 	private PopupPanel popupAgregarCuenta;
 	private SimpleLink  crearEquipos;
 	private SimpleLink  crearCDW;
-	// private Hyperlink  crearMDS;
+	// private SimpleLink  crearMDS;
 	private SimpleLink  agregarDivision;
 	private SimpleLink  agregarSuscriptor;
 	
@@ -222,11 +222,10 @@ public class CuentaEdicionTabPanel {
 		FlowPanel linksCrearSS = new FlowPanel();
 		linksCrearSS.add(crearEquipos = new SimpleLink("<div>"+"Equipos/Accesorios"+"</div>"));
 		linksCrearSS.add(crearCDW = new SimpleLink("<div>"+"CDW"+"</div>"));
-		// linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.BUSCAR_CUENTA));
+		// linksCrearSS.add(crearMDS = new SimpleLink("<div>"+"MDS"+"</div>"));
 		popupCrearSS.setWidget(linksCrearSS);
 		
 		FlowPanel linksAgregarCuenta = new FlowPanel();
-		//linksAgregarCuenta.add(agregarDivision = new Hyperlink(Sfa.constant().division(), "" + UILoader.EDITAR_CUENTA));
 		linksAgregarCuenta.add(agregarDivision = new SimpleLink("<div>"+Sfa.constant().division()+"</div>"));
 		linksAgregarCuenta.add(agregarSuscriptor = new SimpleLink("<div>"+Sfa.constant().suscriptor()+"</div>"));
 		popupAgregarCuenta.setWidget(linksAgregarCuenta);
@@ -255,25 +254,11 @@ public class CuentaEdicionTabPanel {
 		});
 		crearSSButton.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				
 				if (editorDirty()) {
 					MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), Sfa.constant().ERR_CREAR_SS_EDITOR_CUENTA_DIRTY(), cancelarCommand);
 				} else {
-					Long idCuenta = cuenta2editDto.getId();
-					if (idCuenta != null) {
-						String targetHistoryToken = UILoader.AGREGAR_SOLICITUD + "?" + ID_CUENTA + "=" + idCuenta;
-						crearEquipos.setTargetHistoryToken(targetHistoryToken + "&" + EditarSSUI.ID_GRUPO_SS
-								+ "=" + GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS);
-						crearCDW.setTargetHistoryToken(targetHistoryToken + "&" + EditarSSUI.ID_GRUPO_SS
-								+ "=" + GrupoSolicitudDto.ID_CDW);
-						// crearMDS.setTargetHistoryToken(targetHistoryToken);
-						popupCrearSS.show();
-						popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton
-								.getAbsoluteTop() - 50);
-					} else {
-						MessageDialog.getInstance().showAceptar("Error", Sfa.constant().ERR_NO_CUENTA_SELECTED(),
-								MessageDialog.getCloseCommand());
-					}
+					popupCrearSS.show();
+					popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton.getAbsoluteTop() - 50);
 				}
 			}
 		});
@@ -285,29 +270,33 @@ public class CuentaEdicionTabPanel {
 		});
 		crearEquipos.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
+				String targetHistoryToken = UILoader.AGREGAR_SOLICITUD + "?" + ID_CUENTA + "=" + cuenta2editDto.getId();
+				History.newItem(targetHistoryToken + "&" + EditarSSUI.ID_GRUPO_SS + "=" + GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS);
 				popupCrearSS.hide();
 			}
 		});
 		crearCDW.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
+				String targetHistoryToken = UILoader.AGREGAR_SOLICITUD + "?" + ID_CUENTA + "=" + cuenta2editDto.getId();
+				History.newItem(targetHistoryToken + "&" + EditarSSUI.ID_GRUPO_SS + "=" + GrupoSolicitudDto.ID_CDW);
 				popupCrearSS.hide();
 			}
 		});
-		// crearMDS.addClickListener(new ClickListener() {
-		// 	public void onClick(Widget arg0) {
-		// 		popupCrearSS.hide();
-		// 	}
-		// });
+//		crearMDS.addClickListener(new ClickListener() {
+//			public void onClick(Widget arg0) {
+//				String targetHistoryToken = UILoader.AGREGAR_SOLICITUD + "?" + ID_CUENTA + "=" + cuenta2editDto.getId();
+//				History.newItem(targetHistoryToken);
+//				popupCrearSS.hide();
+//			}
+//		});
 		agregarDivision.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				//agregarDivision.setTargetHistoryToken(UILoader.EDITAR_CUENTA  + "?cuenta_id=" + cuenta2editDto.getId() + "&div="+"TRUE");
 				popupAgregarCuenta.hide();
 				CuentaClientService.crearDivision(cuenta2editDto.getId());
 			}
 		});
 		agregarSuscriptor.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				//agregarSuscriptor.setTargetHistoryToken(UILoader.EDITAR_CUENTA  + "?cuenta_id=" + cuenta2editDto.getId() + "&sus="+"TRUE");
 				popupAgregarCuenta.hide();
 				CuentaClientService.crearSuscriptor(cuenta2editDto.getId());
 			}
@@ -315,7 +304,6 @@ public class CuentaEdicionTabPanel {
 		crearCuenta.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				AgregarCuentaUI.getInstance().load();
-				//BuscadorDocumentoPopup.fromMenu = false;
 			}
 		});
 		cancelar.addClickListener(new ClickListener() {
