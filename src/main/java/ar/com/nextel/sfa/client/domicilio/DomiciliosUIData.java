@@ -99,6 +99,8 @@ public class DomiciliosUIData extends UIData {
 		//entrega.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
 		//facturacion.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
 
+		cpa.setTabIndex(0);
+		numero.setTabIndex(1);
 
 		listaDomicilios = CuentaDomiciliosForm.getInstance().getDomicilios();
 
