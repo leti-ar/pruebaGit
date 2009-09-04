@@ -95,6 +95,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					new DefaultWaitCallback<SolicitudServicioDto>() {
 						public void success(SolicitudServicioDto solicitud) {
 							editarSSUIData.setSaved(true);
+							varios.setScoringVisible(!solicitud.getGrupoSolicitud().isCDW());
 							razonSocialClienteBar.setCliente(solicitud.getCuenta().getCodigoVantive());
 							razonSocialClienteBar.setRazonSocial(solicitud.getCuenta().getPersona()
 									.getRazonSocial());

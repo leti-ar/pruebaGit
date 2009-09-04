@@ -31,6 +31,7 @@ public class VariosSSUI extends Composite {
 	private NumberFormat currencyFormat = NumberFormat.getCurrencyFormat();
 	private InlineHTML scoring;
 	private HorizontalPanel scoringWrapper;
+	private TitledPanel scoringPanel;
 
 	public VariosSSUI(EditarSSUIController controller) {
 		mainpanel = new FlowPanel();
@@ -138,10 +139,10 @@ public class VariosSSUI extends Composite {
 		return wrapper;
 	}
 
-	private Widget getScoring() {		
+	private Widget getScoring() {
 		HTML titleImage = IconFactory.scoring();
 		titleImage.addStyleName("floatLeft");
-		TitledPanel scoringPanel = new TitledPanel(titleImage + Sfa.constant().consultarScoringTitle());
+		scoringPanel = new TitledPanel(titleImage + Sfa.constant().consultarScoringTitle());
 		final SimpleLink consultarScoring = new SimpleLink("Consultar Scoring");
 		consultarScoring.addStyleName("ml5");
 		scoring = new InlineHTML();
@@ -150,15 +151,16 @@ public class VariosSSUI extends Composite {
 		scoringWrapper.setVisible(false);
 		scoringWrapper.setWidth("100%");
 		consultarScoring.addClickListener(new ClickListener() {
-			public void onClick(Widget arg0) {				
-				InfocomRpcService.Util.getInstance().consultarScoring(controller.getEditarSSUIData().getCuentaId(), new DefaultWaitCallback<ScoringDto>() {
-					public void success(ScoringDto result) {
-						if (result != null) {					
-							scoring.setText(result.getMensajeAdicional());
-							scoringWrapper.setVisible(true);
-						}
-					}
-				});			
+			public void onClick(Widget arg0) {
+				InfocomRpcService.Util.getInstance().consultarScoring(
+						controller.getEditarSSUIData().getCuentaId(), new DefaultWaitCallback<ScoringDto>() {
+							public void success(ScoringDto result) {
+								if (result != null) {
+									scoring.setText(result.getMensajeAdicional());
+									scoringWrapper.setVisible(true);
+								}
+							}
+						});
 			}
 		});
 		scoringWrapper.add(scoring);
@@ -167,10 +169,14 @@ public class VariosSSUI extends Composite {
 		return scoringPanel;
 	}
 
+	public void setScoringVisible(boolean visible) {
+		scoringPanel.setVisible(visible);
+	}
+
 	public void cleanScoring() {
 		scoringWrapper.setVisible(false);
 	}
-	
+
 	/** Realiza la actualizacion visual necesaria para mostrar los datos correctos */
 	public void refresh() {
 		int row = 1;
