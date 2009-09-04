@@ -309,6 +309,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			validarAlquileresDeLineaSS(validator, linea);
 			validarCargoActivacion(validator, linea);
 		}
+		solicitudServicio.refreshPreciosTotales();
 		validator.addTarget(pataconex).smallerOrEqual(Sfa.constant().ERR_PATACONEX(),
 				solicitudServicio.getPrecioVentaTotal());
 		if (solicitudServicio.getMontoDisponible() != null)
