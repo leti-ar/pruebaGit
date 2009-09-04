@@ -109,6 +109,7 @@ public class SoloItemSolicitudUI extends Composite {
 			activacionModeloImei.setVisible(true);
 			activacionSimSeriePin.setVisible(true);
 			activacionSimSeriePin.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
+			itemSolicitudData.resetIMEICheck();
 			precioCantidad.setVisible(false);
 			break;
 

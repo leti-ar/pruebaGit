@@ -158,8 +158,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		ddn.setText(Sfa.constant().ddn());
 		ddi.setText(Sfa.constant().ddi());
 		roaming.setText(Sfa.constant().roaming());
-		verificarImeiWrapper.setHTML(IconFactory.comprobarNegro(Sfa.constant().verificarImei()).toString());
-		verificarSimWrapper.setHTML(IconFactory.comprobarNegro(Sfa.constant().verificarSim()).toString());
+		resetIMEICheck();
 		verificarSimWrapper.addStyleName("pl10");
 
 		// Debug Labels
@@ -317,20 +316,22 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 	/** Comprueba la validez del IMEI y carga los combos de Modelo e Item */
 	private void refreshModelos() {
-		if (imei.getText().length() != 15) {
-			ErrorDialog.getInstance().show(
-					Sfa.constant().ERR_LENGHT().replaceAll(v1, "IMEI").replaceAll(v2, "15"), false);
-		} else {
-			Long idListaPrecio = ((ListaPreciosDto) listaPrecio.getSelectedItem()).getId();
-			Long idTipoSolicitud = ((TipoSolicitudDto) tipoOrden.getSelectedItem()).getId();
-			controller.getModelos(imei.getText(), idTipoSolicitud, idListaPrecio,
-					new DefaultWaitCallback<List<ModeloDto>>() {
-						public void success(List<ModeloDto> modelos) {
-							modeloEq.clear();
-							modeloEq.addAllItems(modelos);
-							onChange(modeloEq);
-						}
-					});
+		if (imei.getText().length() > 0) {
+			if (imei.getText().length() != 15) {
+				ErrorDialog.getInstance().show(
+						Sfa.constant().ERR_LENGHT().replaceAll(v1, "IMEI").replaceAll(v2, "15"), false);
+			} else {
+				Long idListaPrecio = ((ListaPreciosDto) listaPrecio.getSelectedItem()).getId();
+				Long idTipoSolicitud = ((TipoSolicitudDto) tipoOrden.getSelectedItem()).getId();
+				controller.getModelos(imei.getText(), idTipoSolicitud, idListaPrecio,
+						new DefaultWaitCallback<List<ModeloDto>>() {
+							public void success(List<ModeloDto> modelos) {
+								modeloEq.clear();
+								modeloEq.addAllItems(modelos);
+								onChange(modeloEq);
+							}
+						});
+			}
 		}
 	}
 
@@ -358,11 +359,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				public void success(String result) {
 					if (result != null) {
 						ErrorDialog.getInstance().show(result, false);
-						verificarSimWrapper.setHTML(IconFactory.comprobarRojo(Sfa.constant().verificarSim())
-								.toString());
+						verificarImeiWrapper.setHTML(IconFactory
+								.comprobarRojo(Sfa.constant().verificarImei()).toString());
 					} else {
-						verificarSimWrapper.setHTML(IconFactory.comprobarVerde(Sfa.constant().verificarSim())
-								.toString());
+						verificarImeiWrapper.setHTML(IconFactory.comprobarVerde(
+								Sfa.constant().verificarImei()).toString());
 					}
 				}
 			});
@@ -397,7 +398,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			if (listaSelected.getItemsListaPrecioVisibles().size() == 1) {
 				item.setSelectedIndex(1);
 			}
-			onChange(item);
+			if (tipoEdicion == ACTIVACION) {
+				refreshModelos();
+			} else {
+				onChange(item);
+			}
 		} else if (sender == item) {
 			// Seteo el precio del item, ajustado por el Termino de Pago y cargo el ListBox de Planes
 			ItemSolicitudTasadoDto is = (ItemSolicitudTasadoDto) item.getSelectedItem();
@@ -448,6 +453,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 						break;
 					}
 				}
+			} else {
+				precioListaPlan.setInnerHTML(currencyFormat.format(0d));
 			}
 		} else if (sender == cantidad) {
 			refreshTotalLabel();
@@ -458,6 +465,12 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			if (modelo != null) {
 				item.clear();
 				item.addAllItems(modelo.getItems());
+				if (lineaSolicitudServicio.getItem() != null) {
+					ItemSolicitudTasadoDto itemTasado = new ItemSolicitudTasadoDto();
+					itemTasado.setItem(lineaSolicitudServicio.getItem());
+					idItemAnterior = lineaSolicitudServicio.getItem().getId();
+					item.setSelectedItem(itemTasado);
+				}
 				onChange(item);
 				// Habilito PIN si es Blackberry o N Serie si es otro
 				if (modelo.isEsBlackberry()) {
@@ -713,6 +726,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		pin.setEnabled(true);
 		clearListBoxForSelect();
 		clean();
+		precioListaItem.setInnerHTML(currencyFormat.format(0d));
+		precioListaPlan.setInnerHTML(currencyFormat.format(0d));
 		if (linea.getAlias() == null || "".equals(linea.getAlias().trim())) {
 			alias.setText(nombreMovil);
 		} else {
@@ -756,7 +771,13 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		plan.setSelectedItem(linea.getPlan());
 		idPlanAnterior = linea.getPlan() != null ? linea.getPlan().getId() : null;
 		modalidadCobro.setSelectedItem(linea.getModalidadCobro());
-		modeloEq.setSelectedItem(linea.getModelo());
+		if (tipoEdicion == ACTIVACION) {
+			imei.setText(linea.getNumeroIMEI());
+			modeloEq.setSelectedItem(linea.getModelo());
+			serie.setText(linea.getNumeroSerie());
+			sim.setText(linea.getNumeroSimcard());
+			// pin.setText(linea.get)
+		}
 	}
 
 	/** Limpia las selecciones de los combos */
@@ -862,5 +883,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 	public InlineHTML getSerieLabel() {
 		return serieLabel;
+	}
+
+	public void resetIMEICheck() {
+		verificarImeiWrapper.setHTML(IconFactory.comprobarNegro(Sfa.constant().verificarImei()).toString());
+		verificarSimWrapper.setHTML(IconFactory.comprobarNegro(Sfa.constant().verificarSim()).toString());
 	}
 }
