@@ -251,7 +251,7 @@ public class CuentaEdicionTabPanel {
 		});
 		crearSSButton.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				if (isFormCleanAndSave()) {
+				if (isFormCompletoYguardado()) {
 					popupCrearSS.show();
 					popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton.getAbsoluteTop() - 50);
 				}
@@ -260,7 +260,7 @@ public class CuentaEdicionTabPanel {
 
 		agregarCuentaButton.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				if (isFormCleanAndSave()) {
+				if (isFormCompletoYguardado()) {
 					popupAgregarCuenta.show();
 					popupAgregarCuenta.setPopupPosition(agregarCuentaButton.getAbsoluteLeft(), agregarCuentaButton.getAbsoluteTop() - 35);
 				}
@@ -415,7 +415,7 @@ public class CuentaEdicionTabPanel {
 		validarCompletitud(true);
 	}
 	
-	public boolean isFormCleanAndSave() {
+	public boolean isFormCompletoYguardado() {
 		if (!cuentaDatosForm.validarCompletitud().isEmpty()) {
 			ErrorDialog.getInstance().show(cuentaDatosForm.validarCompletitud(),false);
 			return false;
