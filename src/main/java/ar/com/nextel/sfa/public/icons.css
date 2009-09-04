@@ -52,18 +52,18 @@ rgm
 
 .icon-cancel { background-position: 0 0; cursor: pointer;}
 .icon-copiar { background-position: -16 0;}
-.icon-excel { background-position: -32 0;}
+.icon-excel { background-position: -32 0; cursor: pointer;}
 .icon-lapiz { background-position: -48 0; cursor: pointer;}
 .icon-locked { background-position: -64 0;}
-.icon-lupa { background-position: -80 0;}
-.icon-silvioSoldan { background-position: -96 0; cursor: pointer; cursor: pointer;}
+.icon-lupa { background-position: -80 0; cursor: pointer;}
+.icon-silvioSoldan { background-position: -96 0; cursor: pointer;}
 .icon-tildeVerde { background-position: -112 0; }
 .icon-vistaPreliminar { background-position: -128 0; cursor: pointer;}
-.icon-word { background-position: -144 0;}
-.icon-nuevo { background-position: -160 0;}
-.icon-comprobar-negro { background-position: -176 0;}
-.icon-comprobar-rojo { background-position: -192 0;}
-.icon-comprobar-verde { background-position: -208 0;}
+.icon-word { background-position: -144 0; cursor: pointer;}
+.icon-nuevo { background-position: -160 0; cursor: pointer;}
+.icon-comprobar-negro { background-position: -176 0; cursor: pointer;}
+.icon-comprobar-rojo { background-position: -192 0; cursor: pointer;}
+.icon-comprobar-verde { background-position: -208 0; cursor: pointer;}
 .icon-locked-other { background-position: -224 0;}
 .icon-scoring { background-position: -240 0;}
 .icon-oportunidad { background-position: -256 0;}
