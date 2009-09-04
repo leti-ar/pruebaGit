@@ -61,8 +61,7 @@ public class ExecutionContextFilter implements Filter {
 				sessionContext.getSessionContext().put(SessionContext.USUARIO, sfaUserCenter.getUsuario());
 				sessionContext.getSessionContext().setVendedor(registroVendedores.getVendedor(sfaUserCenter.getUsuario()));
 			} catch (UCException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error(e);
 			} 
 		} else {
 			Usuario usuario = new Usuario();

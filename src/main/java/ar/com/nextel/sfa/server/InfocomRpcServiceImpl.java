@@ -57,7 +57,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 /**
  * 
  * @author mrial
- *
+ * 
  */
 public class InfocomRpcServiceImpl extends RemoteServiceServlet implements InfocomRpcService {
 
@@ -67,12 +67,11 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 	private MapperExtended mapper;
 	private VantiveLegacyDAO vantiveLegacyDAO;
 	private Repository repository;
-	
-    private SelectCuentaBusinessOperator selectCuentaBusinessOperator;
-    private CuentaScoringBusinessOperator cuentaScoringBusinessOperator;
-    
-    private String codigoVantiveRP;
-        
+
+	private SelectCuentaBusinessOperator selectCuentaBusinessOperator;
+	private CuentaScoringBusinessOperator cuentaScoringBusinessOperator;
+
+	private String codigoVantiveRP;
 
 	public void init() throws ServletException {
 		super.init();
@@ -80,78 +79,83 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 		mapper = (MapperExtended) context.getBean("dozerMapper");
 		financialSystem = (FinancialSystem) context.getBean("financialSystemBean");
 		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
-		selectCuentaBusinessOperator = (SelectCuentaBusinessOperator) context.getBean("selectCuentaBusinessOperator");
+		selectCuentaBusinessOperator = (SelectCuentaBusinessOperator) context
+				.getBean("selectCuentaBusinessOperator");
 		vantiveLegacyDAO = (VantiveLegacyDAO) context.getBean("vantiveLegacyDAOBean");
-		cuentaScoringBusinessOperator = (CuentaScoringBusinessOperator) context.getBean("cuentaScoringBusinessOperator");
+		cuentaScoringBusinessOperator = (CuentaScoringBusinessOperator) context
+				.getBean("cuentaScoringBusinessOperator");
 		repository = (Repository) context.getBean("repository");
 	}
-	
 
-	/** Obtiene los datos del Header de infocom */ 
-	public InfocomInitializer getInfocomInitializer(String numeroCuenta, String responsablePago) throws RpcExceptionMessages {
+	/** Obtiene los datos del Header de infocom */
+	public InfocomInitializer getInfocomInitializer(String numeroCuenta, String responsablePago)
+			throws RpcExceptionMessages {
 		AppLogger.info("Iniciando retrieve infocom-header...");
 		InfocomInitializer infocomInitializer = new InfocomInitializer();
 		Cuenta cuenta = repository.retrieve(Cuenta.class, Long.valueOf(numeroCuenta));
 		String codigoVantive = cuenta.getCodigoVantive();
 		if (responsablePago.equals(numeroCuenta)) {
-			codigoVantiveRP = codigoVantive;			
-		} else if (responsablePago==null) {
+			codigoVantiveRP = codigoVantive;
+		} else if (responsablePago == null) {
 			codigoVantiveRP = null;
 		} else {
 			codigoVantiveRP = responsablePago;
 		}
 		infocomInitializer.setNumeroCuenta(codigoVantive);
-        try {
-            getEncabezadoInfocom(codigoVantive, codigoVantiveRP, infocomInitializer);
-        } catch (Exception e) {
-            throw ExceptionUtil.wrap(e);
-        }
-        getCantidadEquipos(getCuentaRaiz(codigoVantive).getCodigoVantive(), infocomInitializer);
-        getResponsablesPago(codigoVantive, infocomInitializer);
-        AppLogger.info("Retrieve infocom-header finalizado.");
-        return infocomInitializer;
+		try {
+			getEncabezadoInfocom(codigoVantive, codigoVantiveRP, infocomInitializer);
+		} catch (Exception e) {
+			throw ExceptionUtil.wrap(e);
+		}
+		getCantidadEquipos(getCuentaRaiz(codigoVantive).getCodigoVantive(), infocomInitializer);
+		getResponsablesPago(codigoVantive, infocomInitializer);
+		AppLogger.info("Retrieve infocom-header finalizado.");
+		return infocomInitializer;
 	}
-	
-    private void getLimiteCredito(Cuenta cuenta, String responsablePago, InfocomInitializer infocomInitializer) {
-        if (responsablePago==null) {
-        	infocomInitializer.setLimiteCredito(Double.parseDouble(""));
-        } else {
-        	try {
-        		infocomInitializer.setLimiteCredito(vantiveLegacyDAO.obtenerLimiteCredito(cuenta.getCuentaRaiz().getCodigoVantive()));
-        	} catch (LegacyDAOException e) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
-        		infocomInitializer.setLimiteCredito(Double.parseDouble(""));
-        	}
-        }
-    }
-    
-   
+
+	private void getLimiteCredito(Cuenta cuenta, String responsablePago, InfocomInitializer infocomInitializer) {
+		if (responsablePago == null) {
+			infocomInitializer.setLimiteCredito(Double.parseDouble(""));
+		} else {
+			try {
+				infocomInitializer.setLimiteCredito(vantiveLegacyDAO.obtenerLimiteCredito(cuenta
+						.getCuentaRaiz().getCodigoVantive()));
+			} catch (LegacyDAOException e) {
+				infocomInitializer.setLimiteCredito(Double.parseDouble(""));
+			}
+		}
+	}
+
 	/** Obtiene una lista de cuentas de los responsables de pago dado un número de cuenta */
-	private void getResponsablesPago(String numeroCuenta, InfocomInitializer infocomInitializer) throws RpcExceptionMessages {
+	private void getResponsablesPago(String numeroCuenta, InfocomInitializer infocomInitializer)
+			throws RpcExceptionMessages {
 		Set<Cuenta> cuentasRP = new HashSet<Cuenta>();
 		try {
 			Cuenta cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(numeroCuenta);
 			cuentasRP = cuenta.cuentasResponsablesPago();
 		} catch (Exception e) {
-			e.printStackTrace();
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
 		}
-		List<CuentaDto> cuentasDto = new ArrayList<CuentaDto>();
-		infocomInitializer.setResponsablePago(mapper.convertList(cuentasRP, CuentaDto.class));		
+		infocomInitializer.setResponsablePago(mapper.convertList(cuentasRP, CuentaDto.class));
 	}
-	
+
 	/** Carga en el initializer la cantidad de equipos en estado A,S,D dado un número de cuenta */
-    private void getCantidadEquipos(String numeroCuenta, InfocomInitializer infocomInitializer) throws RpcExceptionMessages {
-    	CantidadEquiposDTO resultDTO = null;
-    	try {
-    		resultDTO = avalonSystem.retreiveEquiposPorEstado(numeroCuenta);
-        } catch (Exception e) {
-            throw ExceptionUtil.wrap(e);
-        }
-        infocomInitializer.setTerminalesActivas(resultDTO.getCantidadActivos());
-        infocomInitializer.setTerminalesSuspendidas(resultDTO.getCantidadSuspendidos());
-        infocomInitializer.setTerminalesDesactivadas(resultDTO.getCantidadDesactivados());
-    }
-    
-    private void getEncabezadoInfocom(String numeroCuenta, String responsablePago, InfocomInitializer infocomInitializer) throws RpcExceptionMessages {
+	private void getCantidadEquipos(String numeroCuenta, InfocomInitializer infocomInitializer)
+			throws RpcExceptionMessages {
+		CantidadEquiposDTO resultDTO = null;
+		try {
+			resultDTO = avalonSystem.retreiveEquiposPorEstado(numeroCuenta);
+		} catch (Exception e) {
+			throw ExceptionUtil.wrap(e);
+		}
+		infocomInitializer.setTerminalesActivas(resultDTO.getCantidadActivos());
+		infocomInitializer.setTerminalesSuspendidas(resultDTO.getCantidadSuspendidos());
+		infocomInitializer.setTerminalesDesactivadas(resultDTO.getCantidadDesactivados());
+	}
+
+	private void getEncabezadoInfocom(String numeroCuenta, String responsablePago,
+			InfocomInitializer infocomInitializer) throws RpcExceptionMessages {
 		Cuenta cuenta = null;
 		try {
 			cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(numeroCuenta);
@@ -168,38 +172,38 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 		getEquiposServiciosTable(numeroCuenta, responsablePago, infocomInitializer);
 	}
 
-	/**Obtiene los datos necesarios para completar la tabla de Descripción de Equipos y Servicios*/
-    private void getEquiposServiciosTable(String numeroCuenta, String responsablePago, InfocomInitializer infocomInitializer)
-    throws RpcExceptionMessages {
-    	DeudaDTO resultDTO = null;
-    	try {
-    		if (responsablePago==null) {
-    			GranCuenta cuentaRaiz = getCuentaRaiz(numeroCuenta);
-    			resultDTO = this.avalonSystem.retrieveDeudaArbol(cuentaRaiz.getCodigoVantive());
-    		} else {
-    			resultDTO = this.avalonSystem.retrieveDeudaRespPago(responsablePago);
-    		}
-    	} catch (AvalonSystemException e) {
-    		throw ExceptionUtil.wrap(e);
-    	}
-    	EquiposServiciosDto equipo = new EquiposServiciosDto();
-    	equipo.setDeudaEquiposAVencer(resultDTO.getDeudaEquiposAVencer());
-    	equipo.setDeudaEquiposVencida(resultDTO.getDeudaEquiposVencida());
-    	equipo.setDeudaServiciosAVencer(resultDTO.getDeudaServiciosAVencer());
-    	equipo.setDeudaServiciosVencida(resultDTO.getDeudaServiciosVencida());
-    	infocomInitializer.setEquiposServicios(equipo);
-    } 
-    
-   
+	/** Obtiene los datos necesarios para completar la tabla de Descripción de Equipos y Servicios */
+	private void getEquiposServiciosTable(String numeroCuenta, String responsablePago,
+			InfocomInitializer infocomInitializer) throws RpcExceptionMessages {
+		DeudaDTO resultDTO = null;
+		try {
+			if (responsablePago == null) {
+				GranCuenta cuentaRaiz = getCuentaRaiz(numeroCuenta);
+				resultDTO = this.avalonSystem.retrieveDeudaArbol(cuentaRaiz.getCodigoVantive());
+			} else {
+				resultDTO = this.avalonSystem.retrieveDeudaRespPago(responsablePago);
+			}
+		} catch (AvalonSystemException e) {
+			throw ExceptionUtil.wrap(e);
+		}
+		EquiposServiciosDto equipo = new EquiposServiciosDto();
+		equipo.setDeudaEquiposAVencer(resultDTO.getDeudaEquiposAVencer());
+		equipo.setDeudaEquiposVencida(resultDTO.getDeudaEquiposVencida());
+		equipo.setDeudaServiciosAVencer(resultDTO.getDeudaServiciosAVencer());
+		equipo.setDeudaServiciosVencida(resultDTO.getDeudaServiciosVencida());
+		infocomInitializer.setEquiposServicios(equipo);
+	}
+
 	/** Obtiene los datos necesarios para cargar la tabla de Fidelización */
-    public CreditoFidelizacionDto getDetalleCreditoFidelizacion(String custCode) throws RpcExceptionMessages {
+	public CreditoFidelizacionDto getDetalleCreditoFidelizacion(String custCode) throws RpcExceptionMessages {
 		Cuenta cuenta = repository.retrieve(Cuenta.class, Long.valueOf(custCode));
 		String codigoVantive = cuenta.getCodigoVantive();
-    	CreditoFidelizacionDto creditoFidelizacion = new CreditoFidelizacionDto();
+		CreditoFidelizacionDto creditoFidelizacion = new CreditoFidelizacionDto();
 		List<DetalleCreditoDTO> detalleCreditoFidelizacion = null;
 		EncabezadoCreditoDTO encabezadoCreditoFidelizacion = null;
 		try {
-			encabezadoCreditoFidelizacion = financialSystem.retrieveEncabezadoCreditoFidelizacion(codigoVantive);
+			encabezadoCreditoFidelizacion = financialSystem
+					.retrieveEncabezadoCreditoFidelizacion(codigoVantive);
 			detalleCreditoFidelizacion = financialSystem.retrieveDetalleCreditoFidelizacion(codigoVantive);
 		} catch (FinancialSystemException e) {
 			throw ExceptionUtil.wrap(e);
@@ -207,28 +211,30 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 		creditoFidelizacion.setMonto(encabezadoCreditoFidelizacion.getMonto());
 		creditoFidelizacion.setEstado(encabezadoCreditoFidelizacion.getEstado());
 		creditoFidelizacion.setVencimiento(encabezadoCreditoFidelizacion.getFechaVencimiento());
-		creditoFidelizacion.setDetalles(mapper.convertList(detalleCreditoFidelizacion, DetalleFidelizacionDto.class));
+		creditoFidelizacion.setDetalles(mapper.convertList(detalleCreditoFidelizacion,
+				DetalleFidelizacionDto.class));
 		return creditoFidelizacion;
 	}
 
 	/** Obtiene los datos necesarios para cargar la tabla de Cuenta Corriente */
-    public List<TransaccionCCDto> getCuentaCorriente(String numeroCuenta, String responsablePago) throws RpcExceptionMessages {
+	public List<TransaccionCCDto> getCuentaCorriente(String numeroCuenta, String responsablePago)
+			throws RpcExceptionMessages {
 		List<TransaccionCCDto> listTransaccion = new ArrayList<TransaccionCCDto>();
 		Cuenta cuenta = repository.retrieve(Cuenta.class, Long.valueOf(numeroCuenta));
 		String codigoVantive = cuenta.getCodigoVantive();
 		if (responsablePago.equals(numeroCuenta)) {
-			codigoVantiveRP = codigoVantive;			
-		} else if (responsablePago==null) {
+			codigoVantiveRP = codigoVantive;
+		} else if (responsablePago == null) {
 			codigoVantiveRP = null;
 		} else {
 			codigoVantiveRP = responsablePago;
 		}
 		try {
-			if (responsablePago==null) {
+			if (responsablePago == null) {
 				List<CuentaCorrienteArbolDTO> resultDTO = null;
 				GranCuenta cuentaRaiz = getCuentaRaiz(codigoVantive);
-				//resultDTO es una lista
-				resultDTO = avalonSystem.retrieveCuentaCorrienteArbol(cuentaRaiz.getCodigoVantive());				
+				// resultDTO es una lista
+				resultDTO = avalonSystem.retrieveCuentaCorrienteArbol(cuentaRaiz.getCodigoVantive());
 				for (Iterator iterator = resultDTO.iterator(); iterator.hasNext();) {
 					CuentaCorrienteArbolDTO result = (CuentaCorrienteArbolDTO) iterator.next();
 					TransaccionCCDto transaccion = new TransaccionCCDto();
@@ -236,23 +242,28 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 					transaccion.setFechaVenc(result.getVencimiento());
 					transaccion.setDescripcion(result.getDescripcion());
 					transaccion.setNumero(result.getNumeroComprobante());
-					transaccion.setImporte(NumberFormat.getCurrencyInstance(new Locale("es","AR")).format(result.getImporte()));
-					transaccion.setSaldo(NumberFormat.getCurrencyInstance(new Locale("es","AR")).format(result.getSaldo()));
+					transaccion.setImporte(NumberFormat.getCurrencyInstance(new Locale("es", "AR")).format(
+							result.getImporte()));
+					transaccion.setSaldo(NumberFormat.getCurrencyInstance(new Locale("es", "AR")).format(
+							result.getSaldo()));
 					listTransaccion.add(transaccion);
 				}
-				
+
 			} else {
 				List<CuentaCorrienteResponsablePagoDTO> resultDTO = null;
-				resultDTO = avalonSystem.retrieveCuentaCorrienteRespPago(codigoVantiveRP);				
+				resultDTO = avalonSystem.retrieveCuentaCorrienteRespPago(codigoVantiveRP);
 				for (Iterator iterator = resultDTO.iterator(); iterator.hasNext();) {
-					CuentaCorrienteResponsablePagoDTO result = (CuentaCorrienteResponsablePagoDTO) iterator.next();
+					CuentaCorrienteResponsablePagoDTO result = (CuentaCorrienteResponsablePagoDTO) iterator
+							.next();
 					TransaccionCCDto transaccion = new TransaccionCCDto();
 					transaccion.setClase(result.getClase());
 					transaccion.setFechaVenc(result.getVencimiento());
 					transaccion.setDescripcion(result.getDescripcion());
-					transaccion.setNumero(result.getNumeroComprobante());								
-					transaccion.setImporte(NumberFormat.getCurrencyInstance(new Locale("es","AR")).format(result.getImporte()));
-					transaccion.setSaldo(NumberFormat.getCurrencyInstance(new Locale("es","AR")).format(result.getSaldo()));
+					transaccion.setNumero(result.getNumeroComprobante());
+					transaccion.setImporte(NumberFormat.getCurrencyInstance(new Locale("es", "AR")).format(
+							result.getImporte()));
+					transaccion.setSaldo(NumberFormat.getCurrencyInstance(new Locale("es", "AR")).format(
+							result.getSaldo()));
 					listTransaccion.add(transaccion);
 				}
 			}
@@ -261,142 +272,148 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 		}
 		return listTransaccion;
 	}
-    
-    /** Obtiene la información de los equipos según el estado*/
-    public List<DatosEquipoPorEstadoDto> getInformacionEquipos(String numeroCuenta, String estado) throws RpcExceptionMessages {
-    	AppLogger.info("Iniciando retrieve de información de equipos-Infocom...");
-    	List<DatosEquipoPorEstadoDTO> resultDTO = null;
+
+	/** Obtiene la información de los equipos según el estado */
+	public List<DatosEquipoPorEstadoDto> getInformacionEquipos(String numeroCuenta, String estado)
+			throws RpcExceptionMessages {
+		AppLogger.info("Iniciando retrieve de información de equipos-Infocom...");
+		List<DatosEquipoPorEstadoDTO> resultDTO = null;
 		Cuenta cuenta = repository.retrieve(Cuenta.class, Long.valueOf(numeroCuenta));
 		String codigoVantive = cuenta.getCodigoVantive();
-    	try {
-    		resultDTO = this.avalonSystem.retrieveDatosEquipoPorEstado(getCuentaRaiz(codigoVantive).getCodigoVantive(), estado);
-    	} catch (AvalonSystemException e) {
-    		throw ExceptionUtil.wrap(e);
-    	}
-    	AppLogger.info("Retrieve de información de equipos-Infocom finalizado.");
-    	List listaEquiposPorEstado = new ArrayList<DatosEquipoPorEstadoDto>();
-    	listaEquiposPorEstado = mapper.convertList(resultDTO, DatosEquipoPorEstadoDto.class);
-    	return listaEquiposPorEstado;
-    }
-	
-    private GranCuenta getCuentaRaiz(String numeroCuenta) throws RpcExceptionMessages {
-        try {
-            Cuenta cuenta = this.selectCuentaBusinessOperator.getCuentaSinLockear(numeroCuenta);
-            return cuenta.getCuentaRaiz();
-        } catch (Exception e) {
-            throw ExceptionUtil.wrap(e);
-        }
-    }
-    
-    /**Obtiene la información del Resumen por Equipo*/
-    public ResumenEquipoDto getResumenEquipos(String numeroCuenta, String responsablePago) throws RpcExceptionMessages {
-    	AppLogger.info("Iniciando retrieve resumen equipos-Infocom...");
+		try {
+			resultDTO = this.avalonSystem.retrieveDatosEquipoPorEstado(getCuentaRaiz(codigoVantive)
+					.getCodigoVantive(), estado);
+		} catch (AvalonSystemException e) {
+			throw ExceptionUtil.wrap(e);
+		}
+		AppLogger.info("Retrieve de información de equipos-Infocom finalizado.");
+		List listaEquiposPorEstado = new ArrayList<DatosEquipoPorEstadoDto>();
+		listaEquiposPorEstado = mapper.convertList(resultDTO, DatosEquipoPorEstadoDto.class);
+		return listaEquiposPorEstado;
+	}
+
+	private GranCuenta getCuentaRaiz(String numeroCuenta) throws RpcExceptionMessages {
+		try {
+			Cuenta cuenta = this.selectCuentaBusinessOperator.getCuentaSinLockear(numeroCuenta);
+			return cuenta.getCuentaRaiz();
+		} catch (Exception e) {
+			throw ExceptionUtil.wrap(e);
+		}
+	}
+
+	/** Obtiene la información del Resumen por Equipo */
+	public ResumenEquipoDto getResumenEquipos(String numeroCuenta, String responsablePago)
+			throws RpcExceptionMessages {
+		AppLogger.info("Iniciando retrieve resumen equipos-Infocom...");
 		Cuenta cuenta = repository.retrieve(Cuenta.class, Long.valueOf(numeroCuenta));
 		String codigoVantive = cuenta.getCodigoVantive();
-    	ResumenEquipoDto resumenEquipoDto = new ResumenEquipoDto();
-    	try {
-    		if (responsablePago==null) {
-    			//cuando hace getCuentaRaiz(numeroCuenta) tira una excepcion
-    			getResumenEncabezadoCuenta(getCuentaRaiz(codigoVantive).getCodigoVantive(), resumenEquipoDto);
-    			GranCuenta cuentaRaiz = getCuentaRaiz(codigoVantive);
-    			List<ResumenPorEquipoArbolDTO> retrieveResumenPorEquipoArbol = avalonSystem
-    			.retrieveResumenPorEquipoArbol(cuentaRaiz.getCodigoVantive());
-    			transformResumenEquipoArbolDTOToWCTO(retrieveResumenPorEquipoArbol, resumenEquipoDto);
-    		} else {
-    			getResumenEncabezadoCuenta(responsablePago, resumenEquipoDto);
-    			List<ResumenPorEquipoResponsablePagoDTO> retrieveResumenPorEquipoResponsablePago = avalonSystem
-    			.retrieveResumenPorEquipoResponsablePago(responsablePago);
-    			transformResumenEquipoRespPagoDTOToWCTO(retrieveResumenPorEquipoResponsablePago, resumenEquipoDto);
-    		}
-    	} catch (Exception e) {
-    		AppLogger.error(e);
-    		throw ExceptionUtil.wrap(e);
-    	}
-    	AppLogger.info("Retrieve resumen equipos-Infocom finalizado.");
-    	return resumenEquipoDto;
-    }
-    
-    private void getResumenEncabezadoCuenta(String numeroCuenta, ResumenEquipoDto resumenEquipoDto) throws RpcExceptionMessages {
-    	try {
-    		Cuenta cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(numeroCuenta);
-    		resumenEquipoDto.setRazonSocial(cuenta.getPersona().getRazonSocial());
-    		resumenEquipoDto.setNumeroCliente(cuenta.getCodigoVantive());
-    		resumenEquipoDto.setFlota(cuenta.getFlota());
-    	} catch (Exception e) {
-    		throw ExceptionUtil.wrap(e);
-    	}
-    }
-    
-    private void transformResumenEquipoArbolDTOToWCTO(List<ResumenPorEquipoArbolDTO> retrieveResumenPorEquipoArbol,
-    		ResumenEquipoDto resumenEquipoDto) {
-    	List<EquipoDto> listaEquipos = new ArrayList<EquipoDto>();
-    	for (ResumenPorEquipoArbolDTO resumenPorEquipoArbolDTO : retrieveResumenPorEquipoArbol) {
-    		EquipoDto equipoDto = new EquipoDto();
-    		equipoDto.setAbono(resumenPorEquipoArbolDTO.getAbono());
-    		equipoDto.setAlquiler(resumenPorEquipoArbolDTO.getAlquiler());
-    		equipoDto.setCliente(resumenPorEquipoArbolDTO.getNumeroCuenta());
-    		equipoDto.setDdiYRoaming(resumenPorEquipoArbolDTO.getDdiRoam());
-    		equipoDto.setDdn(resumenPorEquipoArbolDTO.getDdn());
-    		equipoDto.setExcedenteRadio(resumenPorEquipoArbolDTO.getExcRadio());
-    		equipoDto.setExcedenteTelefonia(resumenPorEquipoArbolDTO.getExcTel());
-    		equipoDto.setFacturaNumero(resumenPorEquipoArbolDTO.getFactura());
-    		equipoDto.setFechaEmision(resumenPorEquipoArbolDTO.getFechaEmision());
-    		equipoDto.setGarantia(resumenPorEquipoArbolDTO.getGarantia());
-    		equipoDto.setNumeroID(resumenPorEquipoArbolDTO.getNId());
-    		equipoDto.setPagers(resumenPorEquipoArbolDTO.getPagers());
-    		equipoDto.setProporcionalYReintegros(resumenPorEquipoArbolDTO.getPropYReint());
-    		equipoDto.setRedFija(resumenPorEquipoArbolDTO.getRedFija());
-    		equipoDto.setServicios(resumenPorEquipoArbolDTO.getServ());
-    		equipoDto.setTelefono(resumenPorEquipoArbolDTO.getTelefono());
-    		equipoDto.setTotalConImpuestos(resumenPorEquipoArbolDTO.getTotCImp());
+		ResumenEquipoDto resumenEquipoDto = new ResumenEquipoDto();
+		try {
+			if (responsablePago == null) {
+				// cuando hace getCuentaRaiz(numeroCuenta) tira una excepcion
+				getResumenEncabezadoCuenta(getCuentaRaiz(codigoVantive).getCodigoVantive(), resumenEquipoDto);
+				GranCuenta cuentaRaiz = getCuentaRaiz(codigoVantive);
+				List<ResumenPorEquipoArbolDTO> retrieveResumenPorEquipoArbol = avalonSystem
+						.retrieveResumenPorEquipoArbol(cuentaRaiz.getCodigoVantive());
+				transformResumenEquipoArbolDTOToWCTO(retrieveResumenPorEquipoArbol, resumenEquipoDto);
+			} else {
+				getResumenEncabezadoCuenta(responsablePago, resumenEquipoDto);
+				List<ResumenPorEquipoResponsablePagoDTO> retrieveResumenPorEquipoResponsablePago = avalonSystem
+						.retrieveResumenPorEquipoResponsablePago(responsablePago);
+				transformResumenEquipoRespPagoDTOToWCTO(retrieveResumenPorEquipoResponsablePago,
+						resumenEquipoDto);
+			}
+		} catch (Exception e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+		AppLogger.info("Retrieve resumen equipos-Infocom finalizado.");
+		return resumenEquipoDto;
+	}
 
-    		listaEquipos.add(equipoDto);
-    	}
-    	resumenEquipoDto.setEquipos(listaEquipos);
-    }
-    
+	private void getResumenEncabezadoCuenta(String numeroCuenta, ResumenEquipoDto resumenEquipoDto)
+			throws RpcExceptionMessages {
+		try {
+			Cuenta cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(numeroCuenta);
+			resumenEquipoDto.setRazonSocial(cuenta.getPersona().getRazonSocial());
+			resumenEquipoDto.setNumeroCliente(cuenta.getCodigoVantive());
+			resumenEquipoDto.setFlota(cuenta.getFlota());
+		} catch (Exception e) {
+			throw ExceptionUtil.wrap(e);
+		}
+	}
 
-    private void transformResumenEquipoRespPagoDTOToWCTO(List<ResumenPorEquipoResponsablePagoDTO> retrieveResumenPorEquipoResponsablePago,
-    		ResumenEquipoDto resumenEquipoDto) {
-    	List<EquipoDto> listaEquipos = new ArrayList<EquipoDto>();
-    	for (ResumenPorEquipoResponsablePagoDTO resumenRespPagolDTO : retrieveResumenPorEquipoResponsablePago) {
-    		EquipoDto equipoDto = new EquipoDto();
-    		equipoDto.setAbono(resumenRespPagolDTO.getAbono());
-    		equipoDto.setAlquiler(resumenRespPagolDTO.getAlquiler());
-    		equipoDto.setDdiYRoaming(resumenRespPagolDTO.getDdiRoam());
-    		equipoDto.setDdn(resumenRespPagolDTO.getDdn());
-    		equipoDto.setExcedenteRadio(resumenRespPagolDTO.getExcRadio());
-    		equipoDto.setExcedenteTelefonia(resumenRespPagolDTO.getExcTel());
-    		equipoDto.setGarantia(resumenRespPagolDTO.getGarantia());
-    		equipoDto.setNumeroID(resumenRespPagolDTO.getNId());
-    		equipoDto.setPagers(resumenRespPagolDTO.getPagers());
-    		equipoDto.setProporcionalYReintegros(resumenRespPagolDTO.getPropYReint());
-    		equipoDto.setRedFija(resumenRespPagolDTO.getRedFija());
-    		equipoDto.setServicios(resumenRespPagolDTO.getServ());
-    		equipoDto.setTelefono(resumenRespPagolDTO.getTelefono());
-    		equipoDto.setTotalConImpuestos(resumenRespPagolDTO.getTotCImp());
-    		resumenEquipoDto.setEmision(resumenRespPagolDTO.getFechaEmisionUltimaFactura());
-    		resumenEquipoDto.setFacturaNumero(resumenRespPagolDTO.getNumeroFactura());
-    		listaEquipos.add(equipoDto);
-    	}
-    	resumenEquipoDto.setEquipos(listaEquipos);
-    }
-    
-    /**Obtiene los datos del scoring para mostrar en el pop up de Scoring de Infocom*/
-    public ScoringDto consultarScoring(Long numeroCuenta) throws RpcExceptionMessages {
+	private void transformResumenEquipoArbolDTOToWCTO(
+			List<ResumenPorEquipoArbolDTO> retrieveResumenPorEquipoArbol, ResumenEquipoDto resumenEquipoDto) {
+		List<EquipoDto> listaEquipos = new ArrayList<EquipoDto>();
+		for (ResumenPorEquipoArbolDTO resumenPorEquipoArbolDTO : retrieveResumenPorEquipoArbol) {
+			EquipoDto equipoDto = new EquipoDto();
+			equipoDto.setAbono(resumenPorEquipoArbolDTO.getAbono());
+			equipoDto.setAlquiler(resumenPorEquipoArbolDTO.getAlquiler());
+			equipoDto.setCliente(resumenPorEquipoArbolDTO.getNumeroCuenta());
+			equipoDto.setDdiYRoaming(resumenPorEquipoArbolDTO.getDdiRoam());
+			equipoDto.setDdn(resumenPorEquipoArbolDTO.getDdn());
+			equipoDto.setExcedenteRadio(resumenPorEquipoArbolDTO.getExcRadio());
+			equipoDto.setExcedenteTelefonia(resumenPorEquipoArbolDTO.getExcTel());
+			equipoDto.setFacturaNumero(resumenPorEquipoArbolDTO.getFactura());
+			equipoDto.setFechaEmision(resumenPorEquipoArbolDTO.getFechaEmision());
+			equipoDto.setGarantia(resumenPorEquipoArbolDTO.getGarantia());
+			equipoDto.setNumeroID(resumenPorEquipoArbolDTO.getNId());
+			equipoDto.setPagers(resumenPorEquipoArbolDTO.getPagers());
+			equipoDto.setProporcionalYReintegros(resumenPorEquipoArbolDTO.getPropYReint());
+			equipoDto.setRedFija(resumenPorEquipoArbolDTO.getRedFija());
+			equipoDto.setServicios(resumenPorEquipoArbolDTO.getServ());
+			equipoDto.setTelefono(resumenPorEquipoArbolDTO.getTelefono());
+			equipoDto.setTotalConImpuestos(resumenPorEquipoArbolDTO.getTotCImp());
+
+			listaEquipos.add(equipoDto);
+		}
+		resumenEquipoDto.setEquipos(listaEquipos);
+	}
+
+	private void transformResumenEquipoRespPagoDTOToWCTO(
+			List<ResumenPorEquipoResponsablePagoDTO> retrieveResumenPorEquipoResponsablePago,
+			ResumenEquipoDto resumenEquipoDto) {
+		List<EquipoDto> listaEquipos = new ArrayList<EquipoDto>();
+		for (ResumenPorEquipoResponsablePagoDTO resumenRespPagolDTO : retrieveResumenPorEquipoResponsablePago) {
+			EquipoDto equipoDto = new EquipoDto();
+			equipoDto.setAbono(resumenRespPagolDTO.getAbono());
+			equipoDto.setAlquiler(resumenRespPagolDTO.getAlquiler());
+			equipoDto.setDdiYRoaming(resumenRespPagolDTO.getDdiRoam());
+			equipoDto.setDdn(resumenRespPagolDTO.getDdn());
+			equipoDto.setExcedenteRadio(resumenRespPagolDTO.getExcRadio());
+			equipoDto.setExcedenteTelefonia(resumenRespPagolDTO.getExcTel());
+			equipoDto.setGarantia(resumenRespPagolDTO.getGarantia());
+			equipoDto.setNumeroID(resumenRespPagolDTO.getNId());
+			equipoDto.setPagers(resumenRespPagolDTO.getPagers());
+			equipoDto.setProporcionalYReintegros(resumenRespPagolDTO.getPropYReint());
+			equipoDto.setRedFija(resumenRespPagolDTO.getRedFija());
+			equipoDto.setServicios(resumenRespPagolDTO.getServ());
+			equipoDto.setTelefono(resumenRespPagolDTO.getTelefono());
+			equipoDto.setTotalConImpuestos(resumenRespPagolDTO.getTotCImp());
+			resumenEquipoDto.setEmision(resumenRespPagolDTO.getFechaEmisionUltimaFactura());
+			resumenEquipoDto.setFacturaNumero(resumenRespPagolDTO.getNumeroFactura());
+			listaEquipos.add(equipoDto);
+		}
+		resumenEquipoDto.setEquipos(listaEquipos);
+	}
+
+	/** Obtiene los datos del scoring para mostrar en el pop up de Scoring de Infocom */
+	public ScoringDto consultarScoring(Long numeroCuenta) throws RpcExceptionMessages {
 		Cuenta cuenta = repository.retrieve(Cuenta.class, numeroCuenta);
 		String codigoVantive = cuenta.getCodigoVantive();
-    	AppLogger.info("Iniciando consulta de scoring para " + codigoVantive);
-        CuentaScoringBusinessResult result;
-        try {
-            Cuenta cuentaSinLockear = selectCuentaBusinessOperator.getCuentaSinLockear(codigoVantive);
-            result = cuentaScoringBusinessOperator.obtenerCuentaScoring(cuentaSinLockear.getCuentaRaiz().getCodigoVantive());
-        } catch (BusinessException e) {
-            throw ExceptionUtil.wrap(e);
-            //AppLogger.info("Error al consultar el scoring: " + e.getMessage());
-        }       
-        ScoringDto scoringDto = mapper.map(result.getScoringCuentaLegacyDTO(), ScoringDto.class);
-        AppLogger.info("Consulta de scoring para " + codigoVantive + " finalizado.");
-        return scoringDto;
-    }
+		AppLogger.info("Iniciando consulta de scoring para " + codigoVantive);
+		CuentaScoringBusinessResult result;
+		try {
+			Cuenta cuentaSinLockear = selectCuentaBusinessOperator.getCuentaSinLockear(codigoVantive);
+			result = cuentaScoringBusinessOperator.obtenerCuentaScoring(cuentaSinLockear.getCuentaRaiz()
+					.getCodigoVantive());
+		} catch (BusinessException e) {
+			throw ExceptionUtil.wrap(e);
+			// AppLogger.info("Error al consultar el scoring: " + e.getMessage());
+		}
+		ScoringDto scoringDto = mapper.map(result.getScoringCuentaLegacyDTO(), ScoringDto.class);
+		AppLogger.info("Consulta de scoring para " + codigoVantive + " finalizado.");
+		return scoringDto;
+	}
 }
