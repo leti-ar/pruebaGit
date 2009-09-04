@@ -4,16 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
-import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Widget;
 
 public class BuscarOportunidadFilterUI extends Composite {
 
@@ -23,7 +22,6 @@ public class BuscarOportunidadFilterUI extends Composite {
 	private BuscarOportunidadResultUI buscarOportunidadResultPanel;
 	private FlexTable layout;
 	private List<String> errorList = new ArrayList();
-	private FormButtonsBar footerBar;
 
 	public BuscarOportunidadFilterUI() {
 		buscarOportunidadFilterEditor = new BuscarOportunidadFilterUIData();
@@ -75,35 +73,35 @@ public class BuscarOportunidadFilterUI extends Composite {
 
 		mainPanel.add(commandPanel);
 
-		buscarOportunidadFilterEditor.getBuscarButton().addClickListener(new ClickListener() {
-			public void onClick(Widget arg0) {
-				
+		buscarOportunidadFilterEditor.getBuscarButton().addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
 				errorList.clear();
-				/**Valida los datos introducidos por el usuario**/
+				/** Valida los datos introducidos por el usuario **/
 				errorList.addAll(buscarOportunidadFilterEditor.validarCriterioBusqueda());
 
-				/**Muestra los mensajes de error**/
-				if (!errorList.isEmpty()){
+				/** Muestra los mensajes de error **/
+				if (!errorList.isEmpty()) {
 					for (int i = 0; i < errorList.size(); i++) {
 						String error = errorList.get(i);
 						ErrorDialog.getInstance().show(error);
 					}
 				} else
-					buscarOportunidadResultPanel.searchOportunidades(buscarOportunidadFilterEditor.getOportunidadSearch());
+					buscarOportunidadResultPanel.searchOportunidades(buscarOportunidadFilterEditor
+							.getOportunidadSearch());
 			}
 		});
 	}
-				
-	private List<Label> loadLabels(List<Label> listaLabels){
-		listaLabels.add(new Label(Sfa.constant().numeroCliente())); //0
-		listaLabels.add(new Label(Sfa.constant().razonSocialDosPuntos()));//1
-		listaLabels.add(new Label(Sfa.constant().nombreDosPuntos()));//2
-		listaLabels.add(new Label(Sfa.constant().apellidoDosPuntos()));//3
-		listaLabels.add(new Label(Sfa.constant().tipoDocDosPuntos()));//4
-		listaLabels.add(new Label(Sfa.constant().numeroDosPuntos()));//5
-		listaLabels.add(new Label(Sfa.constant().estadoOpp()));//6
-		listaLabels.add(new Label(Sfa.constant().desde()));//7
-		listaLabels.add(new Label(Sfa.constant().hasta()));//8
+
+	private List<Label> loadLabels(List<Label> listaLabels) {
+		listaLabels.add(new Label(Sfa.constant().numeroCliente())); // 0
+		listaLabels.add(new Label(Sfa.constant().razonSocialDosPuntos()));// 1
+		listaLabels.add(new Label(Sfa.constant().nombreDosPuntos()));// 2
+		listaLabels.add(new Label(Sfa.constant().apellidoDosPuntos()));// 3
+		listaLabels.add(new Label(Sfa.constant().tipoDocDosPuntos()));// 4
+		listaLabels.add(new Label(Sfa.constant().numeroDosPuntos()));// 5
+		listaLabels.add(new Label(Sfa.constant().estadoOpp()));// 6
+		listaLabels.add(new Label(Sfa.constant().desde()));// 7
+		listaLabels.add(new Label(Sfa.constant().hasta()));// 8
 		return listaLabels;
 	}
 

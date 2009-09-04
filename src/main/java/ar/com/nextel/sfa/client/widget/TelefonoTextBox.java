@@ -10,10 +10,9 @@ import com.google.gwt.user.client.ui.TextBox;
 public class TelefonoTextBox extends Composite {
 
 	private FlowPanel mainpanel;
-	private ValidationTextBox area; 
-	private ValidationTextBox numero; 
-	private ValidationTextBox interno; 
-	private RegularExpressionConstants regularExpression;
+	private ValidationTextBox area;
+	private ValidationTextBox numero;
+	private ValidationTextBox interno;
 
 	public TelefonoTextBox() {
 		this(true);
@@ -22,8 +21,8 @@ public class TelefonoTextBox extends Composite {
 	public TelefonoTextBox(boolean showInterno) {
 		mainpanel = new FlowPanel();
 		initWidget(mainpanel);
-		area = new ValidationTextBox(regularExpression.getNumerosLimitado(5));
-		numero = new ValidationTextBox(regularExpression.getNumerosLimitado(8));
+		area = new ValidationTextBox(RegularExpressionConstants.getNumerosLimitado(5));
+		numero = new ValidationTextBox(RegularExpressionConstants.getNumerosLimitado(8));
 
 		area.setWidth("40px");
 		area.setMaxLength(5);
@@ -35,14 +34,14 @@ public class TelefonoTextBox extends Composite {
 		mainpanel.add(numero);
 
 		if (showInterno) {
-			interno = new ValidationTextBox(regularExpression.getNumerosLimitado(4));
+			interno = new ValidationTextBox(RegularExpressionConstants.getNumerosLimitado(4));
 			interno.setWidth("35px");
 			interno.setMaxLength(4);
 			mainpanel.add(new InlineHTML("-"));
 			mainpanel.add(interno);
 		}
 	}
-	
+
 	public FlowPanel getMainpanel() {
 		return mainpanel;
 	}
@@ -54,11 +53,11 @@ public class TelefonoTextBox extends Composite {
 	public TextBox getArea() {
 		return area;
 	}
-	
+
 	public TextBox getNumero() {
 		return numero;
 	}
-	
+
 	public TextBox getInterno() {
 		return interno;
 	}
@@ -78,7 +77,7 @@ public class TelefonoTextBox extends Composite {
 	public void clean() {
 		area.setText("");
 		numero.setText("");
-		if (interno != null) { 
+		if (interno != null) {
 			interno.setText("");
 		}
 	}

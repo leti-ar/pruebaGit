@@ -3,9 +3,10 @@ package ar.com.nextel.sfa.client.widget;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -68,7 +69,7 @@ public class TablePageBar extends Composite {
 		next.ensureDebugId(DebugConstants.TABLE_PAGE_BAR_NEXT);
 		last.ensureDebugId(DebugConstants.TABLE_PAGE_BAR_LAST);
 
-		this.addListener();
+		this.addClickHandler();
 	}
 
 	public void setLastVisible(boolean visible) {
@@ -79,7 +80,7 @@ public class TablePageBar extends Composite {
 	private void refresh() {
 		double calculoCantPaginasOpEnCurso = ((double) cantRegistrosTot / (double) cantResultadosPorPagina);
 		cantPaginas = (int) Math.ceil(calculoCantPaginasOpEnCurso);
-		if(cantPaginas == 0){
+		if (cantPaginas == 0) {
 			cantPaginas = 1;
 		}
 		if (pagina > cantPaginas) {
@@ -127,9 +128,10 @@ public class TablePageBar extends Composite {
 		this.beforeClickCommand = command;
 	}
 
-	public void addListener() {
-		ClickListener listener = new ClickListener() {
-			public void onClick(Widget sender) {
+	public void addClickHandler() {
+		ClickHandler handler = new ClickHandler() {
+			public void onClick(ClickEvent clickEvent) {
+				Widget sender = (Widget) clickEvent.getSource();
 				if (sender == next || sender == last) {
 					if (pagina == cantPaginas) {
 						return;
@@ -151,10 +153,10 @@ public class TablePageBar extends Composite {
 			}
 		};
 
-		first.addClickListener(listener);
-		next.addClickListener(listener);
-		last.addClickListener(listener);
-		prev.addClickListener(listener);
+		first.addClickHandler(handler);
+		next.addClickHandler(handler);
+		last.addClickHandler(handler);
+		prev.addClickHandler(handler);
 	}
 
 	public void newSearch(String buttonName) {

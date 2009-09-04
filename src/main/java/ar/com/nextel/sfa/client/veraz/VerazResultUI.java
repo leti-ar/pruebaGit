@@ -1,7 +1,5 @@
 package ar.com.nextel.sfa.client.veraz;
 
-import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
-
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
@@ -12,10 +10,7 @@ import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.TextBox;
 
 /**
  * 

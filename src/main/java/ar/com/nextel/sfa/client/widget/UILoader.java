@@ -1,6 +1,5 @@
 package ar.com.nextel.sfa.client.widget;
 
-import ar.com.nextel.sfa.client.SFAWeb;
 import ar.com.nextel.sfa.client.cuenta.AgregarCuentaUI;
 import ar.com.nextel.sfa.client.cuenta.BuscarCuentaUI;
 import ar.com.nextel.sfa.client.cuenta.EditarCuentaUI;
@@ -12,8 +11,9 @@ import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.veraz.VerazUI;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.HistoryListener;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
@@ -25,7 +25,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
  * @author jlgperez
  * 
  */
-public class UILoader extends SimplePanel implements HistoryListener {
+public class UILoader extends SimplePanel implements ValueChangeHandler<String> {
 
 	private static UILoader pageLoader;
 	private static ApplicationUI[] pages;
@@ -44,7 +44,7 @@ public class UILoader extends SimplePanel implements HistoryListener {
 
 	private UILoader() {
 		pages = new ApplicationUI[8];
-		History.addHistoryListener(this);
+		History.addValueChangeHandler(this);
 		History.fireCurrentHistoryState();
 	}
 
@@ -130,7 +130,8 @@ public class UILoader extends SimplePanel implements HistoryListener {
 		}
 	}
 
-	public void onHistoryChanged(String historyToken) {
+	public void onValueChange(ValueChangeEvent<String> valueChangeEvent) {
+		String historyToken = valueChangeEvent.getValue();
 		String token = HistoryUtils.getToken(historyToken);
 		if (token == null || "".equals(token)) {
 			setPage(SOLO_MENU, historyToken);

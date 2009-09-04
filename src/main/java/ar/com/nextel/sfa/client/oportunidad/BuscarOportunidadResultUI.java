@@ -21,6 +21,8 @@ import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.table.RowListener;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -33,7 +35,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class BuscarOportunidadResultUI extends FlowPanel implements ClickListener {
+public class BuscarOportunidadResultUI extends FlowPanel implements ClickHandler, ClickListener {
 	private BuscarOportunidadFilterUIData buscarOportunidadFilterUIData;
 	private NextelTable resultTable;
 	private SimplePanel resultTableWrapper;
@@ -93,13 +95,15 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 		resultTable.addRowListener(new RowListener() {
 			public void onRowClick(Widget sender, int row) {
 			}
+
 			public void onRowEnter(Widget sender, int row) {
-				rowIndexSelected = row -1;
+				rowIndexSelected = row - 1;
 			}
+
 			public void onRowLeave(Widget sender, int row) {
 			}
 		});
-		
+
 		numResultadosLabel.addStyleName("numeroResultadosLabel");
 		resultTableWrapper.add(resultTable);
 		add(numResultadosLabel);
@@ -170,13 +174,13 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 		initTable(resultTable);
 		int rowIndex = 1;
 		for (OportunidadNegocioSearchResultDto oportunidad : oportunidadesActuales) {
-            HTML iconLapiz = IconFactory.lapiz();
-            iconLapiz.addClickListener(new ClickListener() {
-            	public void onClick(Widget arg0) {
-            		cargarDatosOportunidad();            		
-            	}
-            });
-            resultTable.setWidget(rowIndex, 0, iconLapiz);
+			HTML iconLapiz = IconFactory.lapiz();
+			iconLapiz.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					cargarDatosOportunidad();
+				}
+			});
+			resultTable.setWidget(rowIndex, 0, iconLapiz);
 			resultTable.setHTML(rowIndex, 1, oportunidad.getRazonSocial());
 			resultTable.setHTML(rowIndex, 2, oportunidad.getNombre());
 			resultTable.setHTML(rowIndex, 3, oportunidad.getApellido());
@@ -193,10 +197,11 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 	}
 
 	private void cargarDatosOportunidad() {
-		OportunidadNegocioSearchResultDto oportunidad = oportunidadesActuales!=null ? oportunidadesActuales.get(rowIndexSelected) : oportunidades.get(rowIndexSelected);
+		OportunidadNegocioSearchResultDto oportunidad = oportunidadesActuales != null ? oportunidadesActuales
+				.get(rowIndexSelected) : oportunidades.get(rowIndexSelected);
 		CuentaClientService.getOportunidadNegocio(oportunidad.getIdOportunidadNegocio());
 	}
-	
+
 	private void initTable(FlexTable table) {
 		String[] widths = { "24px", "200px", "120px", "120px", "120px", "120px", "120px", "120px", "120px", };
 		for (int col = 0; col < widths.length; col++) {
@@ -215,6 +220,11 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 		table.setHTML(0, 6, Sfa.constant().nroCuenta());
 		table.setHTML(0, 7, Sfa.constant().fecha());
 		table.setHTML(0, 8, Sfa.constant().estadoOportunidad());
+	}
+
+	public void onClick(ClickEvent event) {
+		Widget sender = (Widget) event.getSource();
+		onClick(sender);
 	}
 
 	public void onClick(Widget sender) {
@@ -257,8 +267,8 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickListene
 		linksCrearSS.add(crearCDW = new Hyperlink("CDW", "" + UILoader.BUSCAR_CUENTA));
 		// linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.BUSCAR_CUENTA));
 		popupCrearSS.setWidget(linksCrearSS);
-		crearEquipos.addClickListener(this);
-		crearCDW.addClickListener(this);
+		crearEquipos.addClickHandler(this);
+		crearCDW.addClickHandler(this);
 		// crearMDS.addClickListener(this);
 
 		footerBar = new FormButtonsBar();

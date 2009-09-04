@@ -19,8 +19,9 @@ import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -28,7 +29,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ItemSolicitudDialog extends NextelDialog implements ChangeListener, ClickListener {
+public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, ClickListener {
 
 	private ListBox tipoOrden;
 	private SimpleLink aceptar;
@@ -56,7 +57,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 		tipoOrden = itemSolicitudUIData.getTipoOrden();
 
 		tipoSolicitudPanel.setWidget(getItemYPlanSolicitudUI());
-		tipoOrden.addChangeListener(this);
+		tipoOrden.addChangeHandler(this);
 
 		FlowPanel topBar = new FlowPanel();
 		topBar.addStyleName("topBar");
@@ -149,7 +150,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 		};
 	}
 
-	public void onChange(Widget sender) {
+	public void onChange(ChangeEvent event) {
 		TipoSolicitudDto tipoSolicitud = (TipoSolicitudDto) tipoOrden.getSelectedItem();
 		if (itemSolicitudUIData.getIdsTipoSolicitudBaseItemYPlan().contains(
 				tipoSolicitud.getTipoSolicitudBase().getId())) {
@@ -244,6 +245,6 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeListener,
 			tipoOrden.addAllItems(tiposSolicitudesPorGrupo.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
 			idGrupoSolicitudLoaded = GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS;
 		}
-		onChange(tipoOrden);
+		onChange(null);
 	}
 }

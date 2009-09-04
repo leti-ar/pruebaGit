@@ -4,18 +4,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import ar.com.nextel.model.oportunidades.beans.EstadoOportunidad;
 import ar.com.nextel.sfa.client.OportunidadNegocioRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.EstadoOportunidadDto;
 import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.OportunidadDto;
-import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.initializer.BuscarOportunidadNegocioInitializer;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.UIData;
-import ar.com.nextel.sfa.client.widget.ValidationListBox;
-import ar.com.nextel.sfa.client.widget.ValidationTextBox;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.DateUtil;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
@@ -23,10 +19,12 @@ import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
 
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
@@ -36,7 +34,7 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * 
  * @author mrial
- *
+ * 
  */
 
 public class BuscarOportunidadFilterUIData extends UIData {
@@ -53,11 +51,10 @@ public class BuscarOportunidadFilterUIData extends UIData {
 
 	private Button buscarButton;
 	private Button limpiarButton;
-	
+
 	private SimpleLink crearSS;
 	private SimpleLink crearCuenta;
-	
-	private RegularExpressionConstants regularExpression;
+
 	private DateTimeFormat dateFormatter = DateTimeFormat.getFormat("dd/MM/yyyy");
 	private Widget lastWidget;
 	private List<String> errorList = new ArrayList();
@@ -151,22 +148,21 @@ public class BuscarOportunidadFilterUIData extends UIData {
 
 		crearSS = new SimpleLink("Crear SS", "#", true);
 		crearCuenta = new SimpleLink("Crear Cuenta", "#", true);
-		
+
 		buscarButton = new Button(Sfa.constant().buscar());
 		limpiarButton = new Button(Sfa.constant().limpiar());
 		buscarButton.addStyleName("btn-bkg");
 		limpiarButton.addStyleName("btn-bkg");
 
-		limpiarButton.addClickListener(new ClickListener() {
-			public void onClick(Widget sender) {
+		limpiarButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
 				cleanAndEnableFields();
 				desdeDate.setSelectedDate(DateUtil.getDaysBeforeADate(60, new Date()));
 				hastaDate.setSelectedDate(new Date());
 				estadoOPPListBox.setSelectedIndex(1);
 			}
 		});
-		
-			
+
 		/** @author eSalvador: Carga inicial de combos */
 		OportunidadNegocioRpcService.Util.getInstance().getBuscarOportunidadInitializer(
 				new DefaultWaitCallback<BuscarOportunidadNegocioInitializer>() {
@@ -175,7 +171,7 @@ public class BuscarOportunidadFilterUIData extends UIData {
 					}
 				});
 	}
-	
+
 	/** Metodo para controlar el comportamiento al hacer foco en los componentes */
 	public void addFocusListeners(List<Widget> fields) {
 		FocusWidget field;
@@ -183,17 +179,14 @@ public class BuscarOportunidadFilterUIData extends UIData {
 		fields.remove(7);
 		for (int i = 0; i < fields.size(); i++) {
 			field = (FocusWidget) fields.get(i);
-			field.addFocusListener(new FocusListener() {
-				public void onFocus(Widget arg0) {
-				}
-
-				public void onLostFocus(Widget w) {
-					validateEnabledWidget(w);
+			field.addBlurHandler(new BlurHandler() {
+				public void onBlur(BlurEvent event) {
+					validateEnabledWidget((Widget) event.getSource());
 				}
 			});
 		}
 	}
-	
+
 	private void validateEnabledWidget(Widget w) {
 		if (w instanceof RegexTextBox) {
 			RegexTextBox box = (RegexTextBox) w;
@@ -211,7 +204,7 @@ public class BuscarOportunidadFilterUIData extends UIData {
 		if (!"".equals(box.getText())) {
 			lastWidget = box;
 			if (box == numeroClienteTextBox) {
-				//inhablitar todos menos TipoDoc
+				// inhablitar todos menos TipoDoc
 				setLabelVisibility(0, true);
 				numeroClienteTextBox.setEnabled(true);
 				setLabelVisibility(1, false);
@@ -231,7 +224,7 @@ public class BuscarOportunidadFilterUIData extends UIData {
 				setLabelVisibility(8, false);
 				hastaDate.setEnabled(false);
 			} else if (box == numeroDocumentoTextBox) {
-				//inhabilitar todos menos TipoDoc
+				// inhabilitar todos menos TipoDoc
 				setLabelVisibility(0, false);
 				numeroClienteTextBox.setEnabled(false);
 				setLabelVisibility(1, false);
@@ -251,17 +244,16 @@ public class BuscarOportunidadFilterUIData extends UIData {
 				setLabelVisibility(8, false);
 				hastaDate.setEnabled(false);
 			}
-		} else 
-			if (box == lastWidget) {
-				enableAll();
-			}
+		} else if (box == lastWidget) {
+			enableAll();
+		}
 	}
 
 	private void validateWidget(TextBox box) {
 		if (!"".equals(box.getText())) {
 			lastWidget = box;
 			if (box == razonSocialTextBox) {
-				//deshabilitar NroCliente y Numero 
+				// deshabilitar NroCliente y Numero
 				setLabelVisibility(0, false);
 				numeroClienteTextBox.setEnabled(false);
 				setLabelVisibility(1, true);
@@ -281,7 +273,7 @@ public class BuscarOportunidadFilterUIData extends UIData {
 				setLabelVisibility(8, true);
 				hastaDate.setEnabled(true);
 			} else if (box == nombreTextBox) {
-				//deshabilitar Numero
+				// deshabilitar Numero
 				setLabelVisibility(0, false);
 				numeroClienteTextBox.setEnabled(false);
 				setLabelVisibility(1, true);
@@ -301,7 +293,7 @@ public class BuscarOportunidadFilterUIData extends UIData {
 				setLabelVisibility(8, true);
 				hastaDate.setEnabled(true);
 			} else if (box == apellidoTextBox) {
-				//deshabilitar NroCliente y Numero
+				// deshabilitar NroCliente y Numero
 				setLabelVisibility(0, false);
 				numeroClienteTextBox.setEnabled(false);
 				setLabelVisibility(1, true);
@@ -321,16 +313,15 @@ public class BuscarOportunidadFilterUIData extends UIData {
 				setLabelVisibility(8, true);
 				hastaDate.setEnabled(true);
 			}
-		} else 
-			if (box == lastWidget) {
-				enableAll();
-			}		
+		} else if (box == lastWidget) {
+			enableAll();
+		}
 	}
 
 	private void validateWidget(ListBox box) {
-		//La opcion "Todos" deshabilita NroCliente y Numero
-		if (box == estadoOPPListBox) { 
-			if (box.getSelectedIndex()==0) {
+		// La opcion "Todos" deshabilita NroCliente y Numero
+		if (box == estadoOPPListBox) {
+			if (box.getSelectedIndex() == 0) {
 				setLabelVisibility(0, false);
 				numeroClienteTextBox.setEnabled(false);
 				setLabelVisibility(1, true);
@@ -348,15 +339,15 @@ public class BuscarOportunidadFilterUIData extends UIData {
 				setLabelVisibility(7, true);
 				desdeDate.setEnabled(true);
 				setLabelVisibility(8, true);
-				hastaDate.setEnabled(true);			
+				hastaDate.setEnabled(true);
 			} else {
-				//con las opciones "Activa" y "No Cerrada" 
+				// con las opciones "Activa" y "No Cerrada"
 				enableAll();
 			}
-				
+
 		}
 	}
-	
+
 	private void enableAll() {
 		setLabelVisibility(0, true);
 		numeroClienteTextBox.setEnabled(true);
@@ -377,16 +368,16 @@ public class BuscarOportunidadFilterUIData extends UIData {
 		setLabelVisibility(8, true);
 		hastaDate.setEnabled(true);
 	}
-	
-	private void setLabelVisibility(int index,boolean enabled){
+
+	private void setLabelVisibility(int index, boolean enabled) {
 		List<Label> labels = getListaLabels();
-		if(enabled){
-			labels.get(index).removeStyleName("gwt-labelDisabled");	
-		}else{
-			labels.get(index).addStyleName("gwt-labelDisabled");	
+		if (enabled) {
+			labels.get(index).removeStyleName("gwt-labelDisabled");
+		} else {
+			labels.get(index).addStyleName("gwt-labelDisabled");
 		}
 	}
-	
+
 	/**
 	 * @author eSalvador
 	 **/
@@ -395,36 +386,37 @@ public class BuscarOportunidadFilterUIData extends UIData {
 		estadoOPPListBox.setSelectedIndex(1);
 		tipoDocListBox.addAllItems(datos.getGrupoDocumento());
 	}
-	
-	public List<String> validarCriterioBusqueda() {	
+
+	public List<String> validarCriterioBusqueda() {
 		errorList.clear();
 		Date date1 = desdeDate.getSelectedDate();
 		Date date2 = DateUtil.getDaysBeforeADate(60, new Date());
-		int dif = DateUtil.compareJustDate(date1, date2);		
-		if (dif==-1) {
-			errorList.add("El valor del campo “Fecha Desde” es inválido, solo puede buscar oportunidades asignadas en los últimos 60 días");
+		int dif = DateUtil.compareJustDate(date1, date2);
+		if (dif == -1) {
+			errorList
+					.add("El valor del campo “Fecha Desde” es inválido, solo puede buscar oportunidades asignadas en los últimos 60 días");
 		}
 		return errorList;
 	}
-	
+
 	public OportunidadDto getOportunidadSearch() {
 		OportunidadDto oportunidadSearchDto = new OportunidadDto();
 		oportunidadSearchDto.setNumeroCliente(numeroClienteTextBox.getText());
 		oportunidadSearchDto.setRazonSocial(razonSocialTextBox.getText());
 		oportunidadSearchDto.setNombre(nombreTextBox.getText());
 		oportunidadSearchDto.setApellido(apellidoTextBox.getText());
-		if ((numeroDocumentoTextBox == null) || ("".equals(numeroDocumentoTextBox.getText()))){
+		if ((numeroDocumentoTextBox == null) || ("".equals(numeroDocumentoTextBox.getText()))) {
 			oportunidadSearchDto.setGrupoDocumentoId(null);
-		}else{
+		} else {
 			oportunidadSearchDto.setGrupoDocumentoId((GrupoDocumentoDto) tipoDocListBox.getSelectedItem());
 		}
 		oportunidadSearchDto.setNumeroDocumento(numeroDocumentoTextBox.getText());
-		oportunidadSearchDto.setEstadoOportunidad((EstadoOportunidadDto)estadoOPPListBox.getSelectedItem());
+		oportunidadSearchDto.setEstadoOportunidad((EstadoOportunidadDto) estadoOPPListBox.getSelectedItem());
 		oportunidadSearchDto.setFechaDesde(desdeDate.getSelectedDate());
 		oportunidadSearchDto.setFechaHasta(hastaDate.getSelectedDate());
-		//trae siempre 10 resultados, la pantalla no tiene combo para elegir este valor
+		// trae siempre 10 resultados, la pantalla no tiene combo para elegir este valor
 		oportunidadSearchDto.setCantidadResultados(10);
-		//El offset es a partir de que registro quiero traer
+		// El offset es a partir de que registro quiero traer
 		oportunidadSearchDto.setOffset(0);
 		return oportunidadSearchDto;
 	}

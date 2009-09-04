@@ -5,7 +5,6 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ScoringDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
-import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
@@ -32,7 +31,6 @@ public class VariosSSUI extends Composite {
 	private NumberFormat currencyFormat = NumberFormat.getCurrencyFormat();
 	private InlineHTML scoring;
 	private HorizontalPanel scoringWrapper;
-	private String cuentaID;
 
 	public VariosSSUI(EditarSSUIController controller) {
 		mainpanel = new FlowPanel();

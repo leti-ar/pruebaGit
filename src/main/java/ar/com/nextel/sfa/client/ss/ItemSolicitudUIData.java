@@ -28,18 +28,19 @@ import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLabel;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ItemSolicitudUIData extends UIData implements ChangeListener, ClickListener {
+public class ItemSolicitudUIData extends UIData implements ChangeListener, ClickHandler {
 
 	private ListBox listaPrecio;
 	private TextBox cantidad;
@@ -176,13 +177,13 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		item.addChangeListener(this);
 		plan.addChangeListener(this);
 		tipoPlan.addChangeListener(this);
-		confirmarReserva.addClickListener(this);
-		desreservar.addClickListener(this);
+		confirmarReserva.addClickHandler(this);
+		desreservar.addClickHandler(this);
 		cantidad.addChangeListener(this);
 		modeloEq.addChangeListener(this);
-		verificarImeiWrapper.addClickListener(this);
-		verificarSimWrapper.addClickListener(this);
-		roaming.addClickListener(this);
+		verificarImeiWrapper.addClickHandler(this);
+		verificarSimWrapper.addClickHandler(this);
+		roaming.addClickHandler(this);
 		imei.addChangeListener(this);
 
 		initIdsTipoSolicitudBase();
@@ -211,7 +212,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		idsTipoSolicitudBaseCDW.add(Long.valueOf(3)); // 3-TIPO_SOLICITUD_BASE_VENTA_CDW
 	}
 
-	public void onClick(Widget sender) {
+	public void onClick(ClickEvent event) {
+		Widget sender = (Widget) event.getSource();
 		if (sender == confirmarReserva) {
 			reservar();
 		} else if (sender == desreservar) {
@@ -221,8 +223,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		} else if (sender == verificarSimWrapper) {
 			verificarSim();
 		} else if (sender == roaming) {
-			if (roaming.isChecked()) {
-				ddi.setChecked(true);
+			if (roaming.getValue()) {
+				ddi.setValue(true);
 				ddi.setEnabled(false);
 			} else {
 				ddi.setEnabled(true);
@@ -412,7 +414,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 							getActualizarPlanCallback());
 				}
 				// if(is.getItem().) // alcanza con isEquipo, isAccesorio?
-				ddn.setChecked(true);
+				ddn.setValue(true);
 				if (tipoEdicion == ACTIVACION) {
 					if (is.getItem().getSinModelo()) {
 						sim.setEnabled(false);
@@ -484,9 +486,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	}
 
 	private void setDisableAndCheckedRoaming(boolean checked) {
-		ddn.setChecked(checked);
-		ddi.setChecked(checked);
-		roaming.setChecked(checked);
+		ddn.setValue(checked);
+		ddi.setValue(checked);
+		roaming.setValue(checked);
 		ddn.setEnabled(!checked);
 		ddi.setEnabled(!checked);
 		roaming.setEnabled(!checked);
@@ -718,8 +720,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		}
 		cantidad.setText(linea.getCantidad() != null ? "" + linea.getCantidad() : "");
 		enableAliasYReserva(isCantiadIgualNadaOUno());
-		ddn.setChecked(linea.getDdn());
-		ddi.setChecked(linea.getDdi());
+		ddn.setValue(linea.getDdn());
+		ddi.setValue(linea.getDdi());
 		if (linea.getLocalidad() != null) {
 			localidad.setSelectedItem(linea.getLocalidad());
 		} else {
@@ -734,7 +736,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		// reservarHidden.setText(linea.getNumeroReservaArea());
 		serie.setText(linea.getNumeroSerie());
 		sim.setText(linea.getNumeroSimcard());
-		roaming.setChecked(linea.getRoaming());
+		roaming.setValue(linea.getRoaming());
 		if (linea.getPlan() != null) {
 			tipoPlan.setSelectedItem(linea.getPlan().getTipoPlan());
 		} else {
@@ -796,9 +798,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 						.setModalidadCobro((ModalidadCobroDto) modalidadCobro.getSelectedItem());
 				lineaSolicitudServicio.setNumeroReserva(getNumeroTelefonicoCompleto());
 				lineaSolicitudServicio.setNumeroReservaArea(reservarHidden.getText());
-				lineaSolicitudServicio.setDdi(ddi.isChecked());
-				lineaSolicitudServicio.setDdn(ddn.isChecked());
-				lineaSolicitudServicio.setRoaming(roaming.isChecked());
+				lineaSolicitudServicio.setDdi(ddi.getValue());
+				lineaSolicitudServicio.setDdn(ddn.getValue());
+				lineaSolicitudServicio.setRoaming(roaming.getValue());
 			}
 			PlanDto planSelected = (PlanDto) plan.getSelectedItem();
 			lineaSolicitudServicio.setPlan(planSelected);

@@ -5,12 +5,12 @@ package ar.com.nextel.sfa.client.ss;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
 
-import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Layout del filtro de de busqueda de SS cerradas.
@@ -72,12 +72,12 @@ public class BuscarSSCerradasFilterUI extends Composite {
 
 		mainPanel.add(commandPanel);
 
-		buscadorSSCerradasFilterEditor.getBuscarButton().addClickListener(new ClickListener() {
-			public void onClick(Widget arg0) {
-				buscarSSCerradasResultPanel.searchSSCerradas(buscadorSSCerradasFilterEditor.getSSCerradaSearch());
+		buscadorSSCerradasFilterEditor.getBuscarButton().addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				buscarSSCerradasResultPanel.searchSSCerradas(buscadorSSCerradasFilterEditor
+						.getSSCerradaSearch());
 			}
 		});
-
 	}
 
 	public void setBuscarCuentaResultPanel(BuscarSSCerradasResultUI buscarCuentaResultPanel) {
@@ -87,6 +87,5 @@ public class BuscarSSCerradasFilterUI extends Composite {
 	public BuscarSSCerradasFilterUIData getBuscadorSSCerradasFilterEditor() {
 		return this.buscadorSSCerradasFilterEditor;
 	}
-	
-	
+
 }

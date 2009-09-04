@@ -29,7 +29,7 @@ public class FormUtils {
 			} else if (field instanceof ListBox) {
 				((ListBox) field).setSelectedIndex(0);
 			} else if (field instanceof CheckBox) {
-				((CheckBox) field).setChecked(false);
+				((CheckBox) field).setValue(false);
 			} else if (field instanceof TelefonoTextBox) {
 				((TelefonoTextBox) field).clean();
 			} else if (field instanceof DatePicker) {
@@ -55,7 +55,7 @@ public class FormUtils {
 				((ListBox) field).setSelectedIndex(0);
 				((ListBox) field).setEnabled(true);
 			} else if (field instanceof CheckBox) {
-				((CheckBox) field).setChecked(false);
+				((CheckBox) field).setValue(false);
 				((CheckBox) field).setEnabled(true);
 			} else if (field instanceof TelefonoTextBox) {
 				((TelefonoTextBox) field).clean();
@@ -116,7 +116,7 @@ public class FormUtils {
 			return false;
 		if (dato == null)
 			dato = "";
-		if (field==null && !dato.equals(""))
+		if (field == null && !dato.equals(""))
 			return true;
 		String fieldText = "";
 		if (field instanceof DatePicker) {
