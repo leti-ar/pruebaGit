@@ -27,10 +27,8 @@ import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.EstadoOportunidad;
 import ar.com.nextel.model.oportunidades.beans.MotivoNoCierre;
 import ar.com.nextel.model.oportunidades.beans.OportunidadNegocio;
-import ar.com.nextel.model.personas.beans.Email;
 import ar.com.nextel.model.personas.beans.Persona;
 import ar.com.nextel.model.personas.beans.Telefono;
-import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
@@ -58,7 +56,6 @@ public class CuentaBusinessService {
 	@Qualifier("cuentaPotencialBusinessOperator")
 	private CuentaPotencialBusinessOperator cuentaPotencialBusinessOperator;
 	
-	private SessionContextLoader sessionContextLoader;
 	private Repository repository;
 
 	@Autowired 
@@ -77,12 +74,7 @@ public class CuentaBusinessService {
 			CreateCuentaBusinessOperator createCuentaBusinessOperatorBean) {
 		this.createCuentaBusinessOperator = createCuentaBusinessOperatorBean;
 	}
-	
-	
-	@Autowired	
-	public void setSessionContextLoader(SessionContextLoader sessionContextLoader) {
-		this.sessionContextLoader = sessionContextLoader;
-	}
+
 	@Autowired
 	public void setRepository(@Qualifier("repository")Repository repository) {
 		this.repository = repository;
