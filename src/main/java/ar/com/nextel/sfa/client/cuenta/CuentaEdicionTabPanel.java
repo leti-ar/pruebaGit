@@ -251,18 +251,19 @@ public class CuentaEdicionTabPanel {
 		});
 		crearSSButton.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				if (editorDirty()) {
-					MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), Sfa.constant().ERR_CREAR_SS_EDITOR_CUENTA_DIRTY(), cancelarCommand);
-				} else {
+				if (isFormCleanAndSave()) {
 					popupCrearSS.show();
 					popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton.getAbsoluteTop() - 50);
 				}
 			}
 		});
+
 		agregarCuentaButton.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				popupAgregarCuenta.show();
-				popupAgregarCuenta.setPopupPosition(agregarCuentaButton.getAbsoluteLeft(), agregarCuentaButton.getAbsoluteTop() - 35);
+				if (isFormCleanAndSave()) {
+					popupAgregarCuenta.show();
+					popupAgregarCuenta.setPopupPosition(agregarCuentaButton.getAbsoluteLeft(), agregarCuentaButton.getAbsoluteTop() - 35);
+				}
 			}
 		});
 		crearEquipos.addClickListener(new ClickListener() {
@@ -281,9 +282,11 @@ public class CuentaEdicionTabPanel {
 		});
 //		crearMDS.addClickListener(new ClickListener() {
 //			public void onClick(Widget arg0) {
-//				String targetHistoryToken = UILoader.AGREGAR_SOLICITUD + "?" + ID_CUENTA + "=" + cuenta2editDto.getId();
-//				History.newItem(targetHistoryToken);
-//				popupCrearSS.hide();
+//				if (isFormCleanAndSave()) {
+//					String targetHistoryToken = UILoader.AGREGAR_SOLICITUD + "?" + ID_CUENTA + "=" + cuenta2editDto.getId();
+//					History.newItem(targetHistoryToken);
+//					popupCrearSS.hide();
+//				}
 //			}
 //		});
 		agregarDivision.addClickListener(new ClickListener() {
@@ -410,6 +413,18 @@ public class CuentaEdicionTabPanel {
 	
 	public void validarCompletitud() {
 		validarCompletitud(true);
+	}
+	
+	public boolean isFormCleanAndSave() {
+		if (!cuentaDatosForm.validarCompletitud().isEmpty()) {
+			ErrorDialog.getInstance().show(cuentaDatosForm.validarCompletitud(),false);
+			return false;
+		}
+		if (editorDirty()){ 
+			MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), Sfa.constant().ERR_CREAR_SS_EDITOR_CUENTA_DIRTY(), cancelarCommand);
+			return false; 
+		}
+		return true; 		
 	}
 	
 	private boolean validarCamposTabDatos() {
