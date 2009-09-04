@@ -22,6 +22,7 @@ import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -39,7 +40,6 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
-import com.google.gwt.widgetideas.client.event.KeyboardHandler;
 
 public class DatosSSUI extends Composite implements ClickHandler {
 
@@ -530,7 +530,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			precioVenta.setWidth("110px");
 			precioVenta.addKeyPressHandler(new KeyPressHandler() {
 				public void onKeyPress(KeyPressEvent keyPressEvent) {
-					if (KeyboardHandler.KEY_ENTER == keyPressEvent.getCharCode()) {
+					if (KeyCodes.KEY_ENTER == keyPressEvent.getCharCode()) {
 						updatePrecioVentaDeServiciosAdicionales(precioVenta);
 					}
 				}
