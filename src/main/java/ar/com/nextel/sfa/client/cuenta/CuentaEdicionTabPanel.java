@@ -62,7 +62,7 @@ public class CuentaEdicionTabPanel {
 	private CuentaDomiciliosForm cuentaDomiciliosForm = CuentaDomiciliosForm.getInstance();
 	private CuentaContactoForm   cuentaContactoForm   = CuentaContactoForm.getInstance();
 	private CuentaInfocomForm    cuentaInfocomForm    = CuentaInfocomForm.getInstance();
-	private CuentaNotasForm      cuentaNotasForm      = CuentaNotasForm.getInstance();
+	//private CuentaNotasForm      cuentaNotasForm      = CuentaNotasForm.getInstance();
 	private TabPanel tabPanel;
 	private FormButtonsBar footerBar;
 	
@@ -492,12 +492,12 @@ public class CuentaEdicionTabPanel {
 	public void setCuentaInfocomForm(CuentaInfocomForm cuentaInfocomForm) {
 		this.cuentaInfocomForm = cuentaInfocomForm;
 	}	
-	public CuentaNotasForm getCuentaNotasForm() {
-		return cuentaNotasForm;
-	}
-	public void setCuentaNotasForm(CuentaNotasForm cuentaNotasForm) {
-		this.cuentaNotasForm = cuentaNotasForm;
-	}
+//	public CuentaNotasForm getCuentaNotasForm() {
+//		return cuentaNotasForm;
+//	}
+//	public void setCuentaNotasForm(CuentaNotasForm cuentaNotasForm) {
+//		this.cuentaNotasForm = cuentaNotasForm;
+//	}
 	public GwtValidator getValidator() {
 		return validator;
 	}
