@@ -23,6 +23,8 @@ import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -85,7 +87,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 
 
 	public ContactosUI() {
-		super("Crear Contacto");
+		super("Crear Contacto", false, true);
 		init();
 	}
 
@@ -158,8 +160,8 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		datosCuentaPanel.add(datosCuentaTable);
 		datosCuentaPanel.add(verazTable);
 		
-		iconoLupa.addClickListener(new ClickListener() {
-			public void onClick (Widget sender) {
+		iconoLupa.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
 				if ("".equals(contactosData.getNumeroDocumento().getText())) {
 					MessageDialog.getInstance();
 					MessageDialog.getInstance().showAceptar("Debe ingresar un número de documento", MessageDialog.getCloseCommand());
@@ -214,7 +216,6 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 
 		veraz.setText(result.getEstado());
 		MessageDialog.getInstance().setDialogTitle("Resultado Veraz");
-		MessageDialog.getInstance();
 		MessageDialog.getInstance().showAceptar(result.getMensaje(), MessageDialog.getCloseCommand());
 	}
 	
