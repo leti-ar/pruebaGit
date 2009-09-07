@@ -1054,6 +1054,9 @@ public class CuentaDatosForm extends Composite {
 		if(!camposTabDatos.getNumeroTarjeta().getText().equals("") && camposTabDatos.getNumeroTarjeta().isEnabled())
 			validator.addTarget(camposTabDatos.getNumeroTarjeta()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getNumeroTarjeta().getName()));
 
+		if(!camposTabDatos.getCbu().getText().equals("") && camposTabDatos.getCbu().isEnabled())
+			validator.addTarget(camposTabDatos.getCbu()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getCbu().getName()));
+		
 		if(!camposTabDatos.getAnioVto().getText().equals("") && camposTabDatos.getAnioVto().isEnabled()) {
 			try {
 				int valor = Integer.parseInt(camposTabDatos.getAnioVto().getText());
