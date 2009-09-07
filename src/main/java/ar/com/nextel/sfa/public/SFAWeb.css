@@ -646,6 +646,11 @@ font-weight:normal;
 	color: #A83C56;
 }
 
+.fontNormal {
+	font-weight:normal;
+	margin-left: 5;
+}
+
 /*.table-external {
 border:1px solid gray;
 clear:left;
