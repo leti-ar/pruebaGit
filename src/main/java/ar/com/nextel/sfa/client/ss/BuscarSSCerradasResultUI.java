@@ -213,20 +213,28 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 					});
 		} else if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() == 0)) {
 
-			String contextRoot = WindowUtils.getContextRoot();
+			final String contextRoot = WindowUtils.getContextRoot();
 			String filename = null;
 			if (solicitud.isCliente()) {
 				// Si es cliente usamos el codigo Vantive, sino el Id (ya que no podemos
 				// guardar archivos con los caracteres de VANCUC
 				filename = solicitud.getIdVantive().toString() + "-5-" + numeroSS + ".rtf";
-				WindowUtils.redirect("/" + contextRoot + "/download/" + filename
-						+ "?module=solicitudes&service=rtf&name=" + filename);
 			} else {
 				filename = solicitud.getId().toString() + "-5-" + numeroSS + ".rtf";
-				WindowUtils.redirect("/" + contextRoot + "/download/" + filename
-						+ "?module=solicitudes&service=rtf&name=" + solicitud.getId().toString() + "-5-"
-						+ numeroSS + ".rtf");
 			}
+			final String filenameFinal = filename;
+			SolicitudRpcService.Util.getInstance().existReport(filename, new DefaultWaitCallback<Boolean>() {
+				public void success(Boolean result) {
+					if (result) {
+						WindowUtils.redirect("/" + contextRoot + "/download/" + filenameFinal
+								+ "?module=solicitudes&service=rtf&name=" + filenameFinal);
+					} else {
+						MessageDialog.getInstance().showAceptar("Error", Sfa.constant().ERR_FILE_NOT_FOUND(),
+								MessageDialog.getCloseCommand());
+					}
+				}
+			});
+
 		}
 
 	}

@@ -1,11 +1,14 @@
 package ar.com.nextel.sfa.server;
 
+import java.io.File;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,6 +23,7 @@ import javax.servlet.ServletException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.dao.GenericDao;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
@@ -33,6 +37,8 @@ import ar.com.nextel.business.solicitudes.negativeFiles.NegativeFilesBusinessOpe
 import ar.com.nextel.business.solicitudes.negativeFiles.result.NegativeFilesBusinessResult;
 import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepository;
 import ar.com.nextel.business.solicitudes.search.dto.SolicitudServicioCerradaSearchCriteria;
+import ar.com.nextel.components.knownInstances.GlobalParameter;
+import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
@@ -98,6 +104,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private SessionContextLoader sessionContextLoader;
 	private SolicitudServicioRepository solicitudServicioRepository;
 	private NegativeFilesBusinessOperator negativeFilesBusinessOperator;
+	private DefaultRetriever globalParameterRetriever;
 
 	public void init() throws ServletException {
 		super.init();
@@ -117,7 +124,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		sessionContextLoader = (SessionContextLoader) context.getBean("sessionContextLoader");
 		negativeFilesBusinessOperator = (NegativeFilesBusinessOperator) context
 				.getBean("negativeFilesBusinessOperator");
-
+		globalParameterRetriever = (DefaultRetriever) context.getBean("globalParameterRetriever");
 	}
 
 	public SolicitudServicioDto createSolicitudServicio(
@@ -492,6 +499,21 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			}
 		}
 
+	}
+
+	public Boolean existReport(String report) {
+		String fullFilename = buildSolicitudReportPath() + File.separatorChar + report;
+		AppLogger.info("Searching file " + fullFilename);
+		return new File(fullFilename).exists();
+	}
+
+	private String buildSolicitudReportPath() {
+		GlobalParameter pathGlobalParameter = (GlobalParameter) globalParameterRetriever
+				.getObject(GlobalParameterIdentifier.SAMBA_PATH_RTF);
+		Calendar calendar = Calendar.getInstance();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMM");
+		return pathGlobalParameter.getValue() + String.valueOf(File.separatorChar)
+				+ dateFormat.format(calendar.getTime());
 	}
 
 }

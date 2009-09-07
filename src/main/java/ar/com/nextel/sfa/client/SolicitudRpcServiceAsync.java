@@ -21,6 +21,7 @@ import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
+import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -70,4 +71,5 @@ public interface SolicitudRpcServiceAsync {
 	public void generarCerrarSolicitud(SolicitudServicioDto solicitudServicioDto, String pinMaestro,
 			boolean cerrar, AsyncCallback<GeneracionCierreResultDto> callback);
 
+	public void existReport(String report, AsyncCallback<Boolean> callback);
 }

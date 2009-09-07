@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client;
 
+import java.io.File;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
@@ -88,4 +89,5 @@ public interface SolicitudRpcService extends RemoteService {
 	public GeneracionCierreResultDto generarCerrarSolicitud(SolicitudServicioDto solicitudServicioDto,
 			String pinMaestro, boolean cerrar) throws RpcExceptionMessages;
 
+	public Boolean existReport(String report) throws RpcExceptionMessages;
 }

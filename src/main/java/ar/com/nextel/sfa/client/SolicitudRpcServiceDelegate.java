@@ -128,4 +128,9 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.generarCerrarSolicitud(solicitudServicioDto, pinMaestro, cerrar, callback);
 	}
+
+	public void existReport(String report, DefaultWaitCallback<Boolean> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.existReport(report, callback);
+	}
 }
