@@ -38,6 +38,7 @@ import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.FormUtils;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
+import ar.com.nextel.sfa.client.validator.target.TextBoxBaseValidationTarget;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
@@ -1017,9 +1018,10 @@ public class CuentaDatosForm extends Composite {
 		if (!camposTabDatos.getNombreDivision().getText().equals("") && camposTabDatos.getNombreDivision().isEnabled()) 
 			validator.addTarget(camposTabDatos.getNombreDivision()).alphabetic(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getNombreDivision().getName()));
 		
-		if (!camposTabDatos.getFechaNacimiento().getTextBox().getText().equals("") && camposTabDatos.getFechaNacimiento().getTextBox().isEnabled()) 
-			validator.addTarget(camposTabDatos.getFechaNacimiento().getTextBox()).date(Sfa.constant().ERR_FECHA_NO_VALIDA().replaceAll("\\{1\\}", camposTabDatos.getFechaNacimiento().getTextBox().getName()));
-
+		if (!camposTabDatos.getFechaNacimiento().getTextBox().getText().equals("") && camposTabDatos.getFechaNacimiento().getTextBox().isEnabled()) { 
+			if (!validator.addTarget(camposTabDatos.getFechaNacimiento().getTextBox()).date(Sfa.constant().ERR_FECHA_NO_VALIDA().replaceAll("\\{1\\}", camposTabDatos.getFechaNacimiento().getTextBox().getName())).hasErrorMsg())
+				validator.addTarget(camposTabDatos.getFechaNacimiento().getTextBox()).dateSmallerToday(Sfa.constant().ERR_FECHA_NAC_MENOR_HOY());
+		}
 		if (!camposTabDatos.getEmailPersonal().getText().equals("") && camposTabDatos.getEmailPersonal().isEnabled())
 		    validator.addTarget(camposTabDatos.getEmailPersonal()).mail(Sfa.constant().ERR_EMAIL_NO_VALIDO().replaceAll("\\{1\\}", camposTabDatos.getEmailPersonal().getName()));
 		if (!camposTabDatos.getEmailLaboral().getText().equals("") && camposTabDatos.getEmailLaboral().isEnabled())
