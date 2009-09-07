@@ -992,9 +992,11 @@ public class CuentaDatosForm extends Composite {
 		
 		for(Widget campo : camposObligatorios) {
 			if (campo instanceof TextBox)
-				validator.addTarget((TextBox)campo).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", ((TextBox)campo).getName()));
+				if (((TextBox) campo).isEnabled()) 
+					validator.addTarget((TextBox)campo).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", ((TextBox)campo).getName()));
 			if (campo instanceof ListBox)
-				validator.addTarget(((ListBox)campo).getSelectedItemText()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}",((ListBox)campo).getName()));			
+				if (((ListBox) campo).isEnabled()) 
+					validator.addTarget(((ListBox)campo).getSelectedItemText()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}",((ListBox)campo).getName()));
 		}
 		validator.fillResult();
 		return validator.getErrors();
@@ -1008,49 +1010,49 @@ public class CuentaDatosForm extends Composite {
 		GwtValidator validator = CuentaEdicionTabPanel.getInstance().getValidator();
 		validator.clear();
 
-		if (!camposTabDatos.getNombre().getText().equals("")) 
+		if (!camposTabDatos.getNombre().getText().equals("") && camposTabDatos.getNombre().isEnabled()) 
 			validator.addTarget(camposTabDatos.getNombre()).alphabetic(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getNombre().getName()));
-		if (!camposTabDatos.getApellido().getText().equals("")) 
+		if (!camposTabDatos.getApellido().getText().equals("") && camposTabDatos.getApellido().isEnabled()) 
 			validator.addTarget(camposTabDatos.getApellido()).alphabetic(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getApellido().getName()));
 
-		if (!camposTabDatos.getNombreDivision().getText().equals("")) 
+		if (!camposTabDatos.getNombreDivision().getText().equals("") && camposTabDatos.getNombreDivision().isEnabled()) 
 			validator.addTarget(camposTabDatos.getNombreDivision()).alphabetic(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getNombreDivision().getName()));
 		
-		if (!camposTabDatos.getFechaNacimiento().getTextBox().getText().equals("")) 
+		if (!camposTabDatos.getFechaNacimiento().getTextBox().getText().equals("") && camposTabDatos.getFechaNacimiento().getTextBox().isEnabled()) 
 			validator.addTarget(camposTabDatos.getFechaNacimiento().getTextBox()).date(Sfa.constant().ERR_FECHA_NO_VALIDA().replaceAll("\\{1\\}", camposTabDatos.getFechaNacimiento().getTextBox().getName()));
 
-		if (!camposTabDatos.getEmailPersonal().getText().equals(""))
+		if (!camposTabDatos.getEmailPersonal().getText().equals("") && camposTabDatos.getEmailPersonal().isEnabled())
 		    validator.addTarget(camposTabDatos.getEmailPersonal()).mail(Sfa.constant().ERR_EMAIL_NO_VALIDO().replaceAll("\\{1\\}", camposTabDatos.getEmailPersonal().getName()));
-		if (!camposTabDatos.getEmailLaboral().getText().equals(""))
+		if (!camposTabDatos.getEmailLaboral().getText().equals("") && camposTabDatos.getEmailLaboral().isEnabled())
 			validator.addTarget(camposTabDatos.getEmailLaboral()).mail(Sfa.constant().ERR_EMAIL_NO_VALIDO().replaceAll("\\{1\\}", camposTabDatos.getEmailLaboral().getName()));
 
-		if(!camposTabDatos.getTelPrincipalTextBox().getArea().getText().equals("")) 
+		if(!camposTabDatos.getTelPrincipalTextBox().getArea().getText().equals("") && camposTabDatos.getTelPrincipalTextBox().getArea().isEnabled()) 
 			validator.addTarget(camposTabDatos.getTelPrincipalTextBox().getArea()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelPrincipalTextBox().getArea().getName()));
-		if(!camposTabDatos.getTelPrincipalTextBox().getNumero().getText().equals("")) 
+		if(!camposTabDatos.getTelPrincipalTextBox().getNumero().getText().equals("") && camposTabDatos.getTelPrincipalTextBox().getNumero().isEnabled()) 
 			validator.addTarget(camposTabDatos.getTelPrincipalTextBox().getNumero()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelPrincipalTextBox().getNumero().getName()));
-		if(!camposTabDatos.getTelPrincipalTextBox().getInterno().getText().equals(""))
+		if(!camposTabDatos.getTelPrincipalTextBox().getInterno().getText().equals("") && camposTabDatos.getTelPrincipalTextBox().getInterno().isEnabled())
 			validator.addTarget(camposTabDatos.getTelPrincipalTextBox().getInterno()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelPrincipalTextBox().getInterno().getName()));
-		if(!camposTabDatos.getTelAdicionalTextBox().getArea().getText().equals(""))
+		if(!camposTabDatos.getTelAdicionalTextBox().getArea().getText().equals("") && camposTabDatos.getTelAdicionalTextBox().getArea().isEnabled())
 			validator.addTarget(camposTabDatos.getTelAdicionalTextBox().getArea()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelAdicionalTextBox().getArea().getName()));
-		if(!camposTabDatos.getTelAdicionalTextBox().getNumero().getText().equals(""))
+		if(!camposTabDatos.getTelAdicionalTextBox().getNumero().getText().equals("") && camposTabDatos.getTelAdicionalTextBox().getNumero().isEnabled())
 			validator.addTarget(camposTabDatos.getTelAdicionalTextBox().getNumero()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelAdicionalTextBox().getNumero().getName()));
-		if(!camposTabDatos.getTelAdicionalTextBox().getInterno().getText().equals(""))
+		if(!camposTabDatos.getTelAdicionalTextBox().getInterno().getText().equals("") && camposTabDatos.getTelAdicionalTextBox().getInterno().isEnabled())
 			validator.addTarget(camposTabDatos.getTelAdicionalTextBox().getInterno()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelAdicionalTextBox().getInterno().getName()));
-		if(!camposTabDatos.getTelFaxTextBox().getArea().getText().equals(""))
+		if(!camposTabDatos.getTelFaxTextBox().getArea().getText().equals("") && camposTabDatos.getTelFaxTextBox().getArea().isEnabled())
 			validator.addTarget(camposTabDatos.getTelFaxTextBox().getArea()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelFaxTextBox().getArea().getName()));
-		if(!camposTabDatos.getTelFaxTextBox().getNumero().getText().equals(""))
+		if(!camposTabDatos.getTelFaxTextBox().getNumero().getText().equals("") && camposTabDatos.getTelFaxTextBox().getNumero().isEnabled())
 			validator.addTarget(camposTabDatos.getTelFaxTextBox().getNumero()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelFaxTextBox().getNumero().getName()));
-		if(!camposTabDatos.getTelFaxTextBox().getInterno().getText().equals(""))
+		if(!camposTabDatos.getTelFaxTextBox().getInterno().getText().equals("") && camposTabDatos.getTelFaxTextBox().getInterno().isEnabled())
 			validator.addTarget(camposTabDatos.getTelFaxTextBox().getInterno()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelFaxTextBox().getInterno().getName()));
-		if(!camposTabDatos.getTelCelularTextBox().getArea().getText().equals(""))
+		if(!camposTabDatos.getTelCelularTextBox().getArea().getText().equals("") && camposTabDatos.getTelCelularTextBox().getArea().isEnabled())
 			validator.addTarget(camposTabDatos.getTelCelularTextBox().getArea()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelCelularTextBox().getArea().getName()));
-		if(!camposTabDatos.getTelCelularTextBox().getNumero().getText().equals(""))
+		if(!camposTabDatos.getTelCelularTextBox().getNumero().getText().equals("") && camposTabDatos.getTelCelularTextBox().getNumero().isEnabled())
 			validator.addTarget(camposTabDatos.getTelCelularTextBox().getNumero()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelCelularTextBox().getNumero().getName()));
 		
-		if(!camposTabDatos.getNumeroTarjeta().getText().equals(""))
+		if(!camposTabDatos.getNumeroTarjeta().getText().equals("") && camposTabDatos.getNumeroTarjeta().isEnabled())
 			validator.addTarget(camposTabDatos.getNumeroTarjeta()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getNumeroTarjeta().getName()));
 
-		if(!camposTabDatos.getAnioVto().getText().equals("")) {
+		if(!camposTabDatos.getAnioVto().getText().equals("") && camposTabDatos.getAnioVto().isEnabled()) {
 			try {
 				int valor = Integer.parseInt(camposTabDatos.getAnioVto().getText());
 				if (valor<camposTabDatos.getCurrentYear()||valor>(camposTabDatos.getCurrentYear()+5)) {
