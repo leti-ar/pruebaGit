@@ -386,7 +386,7 @@ public class CuentaEdicionTabPanel {
 				CuentaEdicionTabPanel.getInstance().setCuenta2editDto(cuentaDto);
 				cuentaDatosForm.ponerDatosBusquedaEnFormulario(cuentaDto);
 				razonSocial.setText(cuentaDto.getPersona().getRazonSocial());
-				MessageDialog.getInstance().showAceptar("", "      "+Sfa.constant().MSG_CUENTA_GUARDADA_OK()+"     ", MessageDialog.getCloseCommand());
+//				MessageDialog.getInstance().showAceptar("", Sfa.constant().MSG_CUENTA_GUARDADA_OK(), MessageDialog.getCloseCommand());
 				cuentaDomiciliosForm.setHuboCambios(false);
 				CuentaContactoForm.getInstance().setFormDirty(false);
 			}

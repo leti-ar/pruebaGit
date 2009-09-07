@@ -255,8 +255,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					public void success(SolicitudServicioDto result) {
 						editarSSUIData.setSolicitud(result);
 						datos.refresh();
-						MessageDialog.getInstance().showAceptar("Guardado Exitoso",
-								Sfa.constant().MSG_SOLICITUD_GUARDADA_OK(), MessageDialog.getCloseCommand());
+//						MessageDialog.getInstance().showAceptar("Guardado Exitoso",
+//								Sfa.constant().MSG_SOLICITUD_GUARDADA_OK(), MessageDialog.getCloseCommand());
 						editarSSUIData.setSaved(true);
 					}
 				});
