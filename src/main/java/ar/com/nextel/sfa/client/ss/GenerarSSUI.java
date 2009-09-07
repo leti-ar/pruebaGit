@@ -20,6 +20,7 @@ public class GenerarSSUI extends NextelDialog implements ClickListener {
 	private Command aceptarCommand;
 	private static final String generarTitle = "SS - Generar SS";
 	private static final String cerrarTitle = "SS - Cerrar SS";
+	private FlexTable layout;
 
 	public GenerarSSUI() {
 		super("SS - Generar SS");
@@ -37,26 +38,26 @@ public class GenerarSSUI extends NextelDialog implements ClickListener {
 		setFooterVisible(false);
 		setFormButtonsVisible(true);
 		generarSSData = new GenerarSSUIData();
-		FlexTable primeraTabla = new FlexTable();
-		primeraTabla.setWidth("100%");
+		layout = new FlexTable();
+		layout.setWidth("100%");
 		// primeraTabla.getFlexCellFormatter().setColSpan(1, 1, 2);
 		Label emailLabel = new Label(Sfa.constant().emailPanelTitle());
 		emailLabel.addStyleName("req");
 		add(emailLabel);
-		primeraTabla.addStyleName("layout");
-		primeraTabla.setWidget(0, 0, generarSSData.getLaboral());
-		primeraTabla.setHTML(0, 1, Sfa.constant().laboral());
-		primeraTabla.setWidget(0, 3, generarSSData.getEmailLaboral());
-		primeraTabla.setWidget(1, 0, generarSSData.getPersonal());
-		primeraTabla.setHTML(1, 1, Sfa.constant().personal());
-		primeraTabla.setWidget(1, 3, generarSSData.getEmailPersonal());
-		primeraTabla.setWidget(2, 0, generarSSData.getNuevo());
-		primeraTabla.setHTML(2, 1, Sfa.constant().nuevo());
-		primeraTabla.setHTML(2, 2, Sfa.constant().emailReq());
-		primeraTabla.setWidget(2, 3, generarSSData.getEmail());
-		primeraTabla.setHTML(3, 1, Sfa.constant().scoringTitle());
-		primeraTabla.setWidget(3, 0, generarSSData.getScoring());
-		add(primeraTabla);
+		layout.addStyleName("layout");
+		layout.setWidget(0, 0, generarSSData.getLaboral());
+		layout.setHTML(0, 1, Sfa.constant().laboral());
+		layout.setWidget(0, 3, generarSSData.getEmailLaboral());
+		layout.setWidget(1, 0, generarSSData.getPersonal());
+		layout.setHTML(1, 1, Sfa.constant().personal());
+		layout.setWidget(1, 3, generarSSData.getEmailPersonal());
+		layout.setWidget(2, 0, generarSSData.getNuevo());
+		layout.setHTML(2, 1, Sfa.constant().nuevo());
+		layout.setHTML(2, 2, Sfa.constant().emailReq());
+		layout.setWidget(2, 3, generarSSData.getEmail());
+		layout.setHTML(3, 1, Sfa.constant().scoringTitle());
+		layout.setWidget(3, 0, generarSSData.getScoring());
+		add(layout);
 	}
 
 	public void onClick(Widget sender) {
@@ -74,8 +75,16 @@ public class GenerarSSUI extends NextelDialog implements ClickListener {
 		this.aceptarCommand = aceptarCommand;
 	}
 
-	public void show(PersonaDto persona, SolicitudServicioGeneracionDto solicitudServicioGeneracion) {
+	public void show(PersonaDto persona, SolicitudServicioGeneracionDto solicitudServicioGeneracion,
+			boolean cdw) {
 		generarSSData.setEmails(persona.getEmails(), solicitudServicioGeneracion);
+		if (cdw) {
+			layout.setHTML(3, 1, "");
+			layout.setHTML(3, 0, "");
+		} else {
+			layout.setHTML(3, 1, Sfa.constant().scoringTitle());
+			layout.setWidget(3, 0, generarSSData.getScoring());
+		}
 		showAndCenter();
 	}
 

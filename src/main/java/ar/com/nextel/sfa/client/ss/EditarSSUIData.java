@@ -575,5 +575,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	public void setSolicitudServicioGeneracion(SolicitudServicioGeneracionDto solicitudServicioGeneracion) {
 		solicitudServicio.setSolicitudServicioGeneracion(solicitudServicioGeneracion);
 	}
+	
+	public boolean isCDW(){
+		return solicitudServicio.getGrupoSolicitud().getId().equals(GrupoSolicitudDto.ID_CDW);
+	}
 
 }
