@@ -24,6 +24,7 @@ import ar.com.nextel.sfa.client.util.MessageUtils;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
+import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.RazonSocialClienteBar;
 import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -186,9 +187,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 	public boolean unload(String token) {
 		if (!editarSSUIData.isSaved() && !tokenLoaded.equals(token)) {
-			MessageDialog.getInstance().showSiNoCancelar(Sfa.constant().guardar(),
+			ModalMessageDialog.getInstance().showSiNoCancelar(Sfa.constant().guardar(),
 					Sfa.constant().MSG_PREGUNTA_GUARDAR(), new SaveSSCommand(true, token),
-					new SaveSSCommand(false, token), MessageDialog.getCloseCommand());
+					new SaveSSCommand(false, token), ModalMessageDialog.getCloseCommand());
 			return false;
 		}
 		return true;
@@ -217,7 +218,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			editarSSUIData.setSaved(true);
 			// Continuo a la página a la que me dirigía.
 			History.newItem(token);
-			MessageDialog.getInstance().hide();
+			ModalMessageDialog.getInstance().hide();
 		}
 	}
 
@@ -267,7 +268,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			cerrandoSolicitud = cerrando;
 			getGenerarSSUI().setTitleCerrar(cerrando);
 			getGenerarSSUI().show(editarSSUIData.getCuenta().getPersona(),
-					editarSSUIData.getSolicitudServicioGeneracion());
+					editarSSUIData.getSolicitudServicioGeneracion(), editarSSUIData.isCDW());
 		} else {
 			ErrorDialog.getInstance().show(errors, false);
 		}

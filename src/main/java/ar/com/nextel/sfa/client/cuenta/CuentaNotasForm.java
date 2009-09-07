@@ -9,7 +9,7 @@ import ar.com.nextel.sfa.client.contacto.ContactosUI;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
-import ar.com.nextel.sfa.client.widget.MessageDialog;
+import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
@@ -26,8 +26,8 @@ public class CuentaNotasForm extends Composite {
 	private FlexTable datosTabla = new FlexTable();
 	private List<ContactoCuentaDto> listaContactos = new ArrayList();
 	private ContactosUI contactosUI;
-	private boolean formDirty = false;	
-	
+	private boolean formDirty = false;
+
 	private static CuentaNotasForm instance = null;
 	private ContactoCuentaDto contactoAEditar;
 
@@ -104,7 +104,7 @@ public class CuentaNotasForm extends Composite {
 		if (listaContactos != null) {
 			for (Iterator iter = listaContactos.iterator(); iter.hasNext();) {
 				ContactoCuentaDto contacto = (ContactoCuentaDto) iter.next();
-				if (contacto.getPersona()!=null) {
+				if (contacto.getPersona() != null) {
 					datosTabla.setWidget(row, 0, IconFactory.lapiz());
 					datosTabla.setWidget(row, 1, IconFactory.cancel());
 					datosTabla.setHTML(row, 2, contacto.getPersona().getNombre());
@@ -121,16 +121,16 @@ public class CuentaNotasForm extends Composite {
 		public void onCellClicked(SourcesTableEvents arg0, int fila, int columna) {
 			// boton editar
 			if ((fila >= 1) && (columna == 0)) {
-				contactoAEditar = listaContactos.get(fila -1);
+				contactoAEditar = listaContactos.get(fila - 1);
 				contactosUI.cargarPopupEditarContacto(contactoAEditar);
 			}
 			// boton eliminar
 			if ((fila >= 1) && (columna == 1)) {
-				MessageDialog.getInstance().setDialogTitle("Eliminar Contacto");
-				MessageDialog.getInstance().setSize("300px", "100px");
-				MessageDialog.getInstance().showAceptarCancelar(
+				ModalMessageDialog.getInstance().setDialogTitle("Eliminar Contacto");
+				ModalMessageDialog.getInstance().setSize("300px", "100px");
+				ModalMessageDialog.getInstance().showAceptarCancelar(
 						"¿Esta seguro que desea eliminar el contacto seleccionado?",
-						getComandoAceptar(fila - 1), MessageDialog.getInstance().getCloseCommand());
+						getComandoAceptar(fila - 1), ModalMessageDialog.getCloseCommand());
 			}
 		}
 	}
@@ -139,7 +139,7 @@ public class CuentaNotasForm extends Composite {
 		Command comandoAceptar = new Command() {
 			public void execute() {
 				eliminarContacto(numeroContacto);
-				MessageDialog.getInstance().hide();
+				ModalMessageDialog.getInstance().hide();
 				cargarTabla();
 			}
 		};
@@ -195,15 +195,17 @@ public class CuentaNotasForm extends Composite {
 	public void setListaContactos(List<ContactoCuentaDto> listaContactos) {
 		this.listaContactos = listaContactos;
 	}
+
 	public boolean isFormDirty() {
 		return formDirty;
 	}
+
 	public void setFormDirty(boolean formDirty) {
 		this.formDirty = formDirty;
 	}
+
 	public boolean formContactosDirty() {
 		return formDirty;
 	}
-	
-	
+
 }

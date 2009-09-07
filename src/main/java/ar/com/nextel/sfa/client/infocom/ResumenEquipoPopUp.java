@@ -32,7 +32,7 @@ public class ResumenEquipoPopUp extends NextelDialog {
 	private final NumberFormat numberFormat = NumberFormat.getCurrencyFormat();
 
 	public ResumenEquipoPopUp(String title, String width, String responsablePago) {
-		super(title);
+		super(title, false, true);
 		this.setWidth(width);
 		this.addStyleName("equipoDialog");
 		this.responsablePago = responsablePago;

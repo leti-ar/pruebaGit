@@ -55,7 +55,7 @@ public class OperacionEnCursoSeleccionCuentaPopup  extends NextelDialog {
     }
 	
 	private  OperacionEnCursoSeleccionCuentaPopup() {
-		super(Sfa.constant().LBL_SELECCION_CUENTA());
+		super(Sfa.constant().LBL_SELECCION_CUENTA(), false, true);
 		init();
 	}
 

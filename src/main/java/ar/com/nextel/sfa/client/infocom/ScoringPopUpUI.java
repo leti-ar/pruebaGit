@@ -26,7 +26,7 @@ public class ScoringPopUpUI extends NextelDialog {
 	private FlexTable encabezadoTable;
 	
 	public ScoringPopUpUI(String title, String width, ScoringDto scoring) {
-		super(title);
+		super(title, false, true);
 		this.setWidth(width);
 		this.addStyleName("scoringDialog");
 		this.scoring = scoring;

@@ -67,8 +67,8 @@ public class DomicilioUI extends NextelDialog {
 		return instance;
 	}
 
-	public DomicilioUI() {
-		super("Editar Domicilio");
+	private DomicilioUI() {
+		super("Editar Domicilio", false, true);
 		init();
 	}
 
@@ -442,7 +442,6 @@ public class DomicilioUI extends NextelDialog {
 	 **/
 	public void openPopupDeleteDialog(PersonaDto persona, DomiciliosCuentaDto domicilio, Command afterDelete) {
 		MessageDialog.getInstance().setDialogTitle("Eliminar Domicilio");
-		MessageDialog.getInstance().setSize("300px", "100px");
 		if (domicilio.getVantiveId() == null) {
 			domicilioAEditar = domicilio;
 			this.persona = persona;

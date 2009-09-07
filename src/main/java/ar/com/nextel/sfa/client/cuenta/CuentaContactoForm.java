@@ -9,7 +9,7 @@ import ar.com.nextel.sfa.client.contacto.ContactosUI;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
-import ar.com.nextel.sfa.client.widget.MessageDialog;
+import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
@@ -126,11 +126,9 @@ public class CuentaContactoForm extends Composite {
 			}
 			// boton eliminar
 			if ((fila >= 1) && (columna == 1)) {
-				MessageDialog.getInstance().setDialogTitle("Eliminar Contacto");
-				MessageDialog.getInstance().setSize("300px", "100px");
-				MessageDialog.getInstance().showAceptarCancelar(
+				ModalMessageDialog.getInstance().showAceptarCancelar("Eliminar Contacto",
 						"¿Esta seguro que desea eliminar el contacto seleccionado?",
-						getComandoAceptar(fila - 1), MessageDialog.getInstance().getCloseCommand());
+						getComandoAceptar(fila - 1), ModalMessageDialog.getInstance().getCloseCommand());
 			}
 		}
 	}
@@ -139,7 +137,7 @@ public class CuentaContactoForm extends Composite {
 		Command comandoAceptar = new Command() {
 			public void execute() {
 				eliminarContacto(numeroContacto);
-				MessageDialog.getInstance().hide();
+				ModalMessageDialog.getInstance().hide();
 				cargarTabla();
 			}
 		};

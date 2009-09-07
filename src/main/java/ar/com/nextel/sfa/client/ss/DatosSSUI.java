@@ -14,6 +14,7 @@ import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
+import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
@@ -286,17 +287,18 @@ public class DatosSSUI extends Composite implements ClickHandler {
 					openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
 				} else if (col == 1) {
 					// Elimina la LineaSolicitudServicio
-					MessageDialog.getInstance().showAceptarCancelar("Desea eliminar el Item?", new Command() {
-						public void execute() {
-							editarSSUIData.removeLineaSolicitudServicio(row - 1);
-							detalleSS.removeRow(row);
-							if (selectedDetalleRow == row) {
-								selectedDetalleRow = detalleSS.getRowCount() <= 1 ? 0 : 1;
-								loadServiciosAdicionales();
-							}
-							MessageDialog.getInstance().hide();
-						};
-					}, MessageDialog.getCloseCommand());
+					ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
+							new Command() {
+								public void execute() {
+									editarSSUIData.removeLineaSolicitudServicio(row - 1);
+									detalleSS.removeRow(row);
+									if (selectedDetalleRow == row) {
+										selectedDetalleRow = detalleSS.getRowCount() <= 1 ? 0 : 1;
+										loadServiciosAdicionales();
+									}
+									ModalMessageDialog.getInstance().hide();
+								};
+							}, ModalMessageDialog.getCloseCommand());
 				}
 			}
 		} else if (serviciosAdicionales == sender) {

@@ -10,15 +10,16 @@ import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.enums.BuscoCuentaPorDniEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
-import ar.com.nextel.sfa.client.widget.MessageDialog;
+import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import ar.com.snoop.gwt.commons.client.widget.table.RowListener;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -33,7 +34,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author jlgperez
  * 
  */
-public class BuscarCuentaResultUI extends FlowPanel  {
+public class BuscarCuentaResultUI extends FlowPanel {
 
 	static final String LUPA_TITLE = "Ver Infocom";
 	static final String BLOQUEADO_TITLE = "Bloqueado para el usuario actual";
@@ -51,9 +52,9 @@ public class BuscarCuentaResultUI extends FlowPanel  {
 	private Long totalRegistrosBusqueda;
 	private BuscarCuentaController controller;
 	private static final int cantResultadosPorPagina = 10;
-    private int indiceRowTabla;
-    private static Command aceptarCommand;
-    
+	private int indiceRowTabla;
+	private static Command aceptarCommand;
+
 	public BuscarCuentaResultUI(BuscarCuentaController controller) {
 
 		super();
@@ -122,19 +123,20 @@ public class BuscarCuentaResultUI extends FlowPanel  {
 	 * @param: firstTime
 	 **/
 	private void searchCuentas(CuentaSearchDto cuentaSearchDto, boolean firstTime) {
-		CuentaRpcService.Util.getInstance().searchCuenta(cuentaSearchDto, new DefaultWaitCallback<List<CuentaSearchResultDto>>() {
-			public void success(List<CuentaSearchResultDto> result) {
-				if (result.isEmpty()) {
-					ErrorDialog.getInstance().show(
-							"No se encontraron datos con el criterio utilizado.");
-				}
-				cuentas = result;
-				tablePageBar.setCantRegistrosTot(cuentas.size());
-				tablePageBar.setPagina(1);
-				setCuentas();
-				controller.setResultadoVisible(true);
-			}
-		});
+		CuentaRpcService.Util.getInstance().searchCuenta(cuentaSearchDto,
+				new DefaultWaitCallback<List<CuentaSearchResultDto>>() {
+					public void success(List<CuentaSearchResultDto> result) {
+						if (result.isEmpty()) {
+							ErrorDialog.getInstance().show(
+									"No se encontraron datos con el criterio utilizado.");
+						}
+						cuentas = result;
+						tablePageBar.setCantRegistrosTot(cuentas.size());
+						tablePageBar.setPagina(1);
+						setCuentas();
+						controller.setResultadoVisible(true);
+					}
+				});
 	}
 
 	public void setCuentas() {
@@ -167,7 +169,6 @@ public class BuscarCuentaResultUI extends FlowPanel  {
 		return cond;
 	}
 
-	
 	/**
 	 * Crea una fila en la tabla por cada cuenta del CuentaSearchResultDto
 	 */
@@ -183,14 +184,14 @@ public class BuscarCuentaResultUI extends FlowPanel  {
 		for (int i = 0; i < totalABuscar; i++) {
 			indiceRowTabla = i;
 			if (cuentasActuales.size() != 0) {
-                HTML iconLapiz = IconFactory.lapiz(LAPIZ_TITLE);
-                iconLapiz.addClickListener(new ClickListener() {
-                	public void onClick(Widget arg0) {
-                		cargarDatosCuenta();
-                	}
-                });
-                resultTable.setWidget(i + 1, 0, iconLapiz);
-                
+				HTML iconLapiz = IconFactory.lapiz(LAPIZ_TITLE);
+				iconLapiz.addClickHandler(new ClickHandler() {
+					public void onClick(ClickEvent event) {
+						cargarDatosCuenta();
+					}
+				});
+				resultTable.setWidget(i + 1, 0, iconLapiz);
+
 				if (cuentasActuales.get(i).isPuedeVerInfocom()) {
 					resultTable.setWidget(i + 1, 1, IconFactory.lupa(LUPA_TITLE));
 				}
@@ -216,15 +217,19 @@ public class BuscarCuentaResultUI extends FlowPanel  {
 	 * 
 	 */
 	private void cargarDatosCuenta() {
-		CuentaSearchResultDto  cuentaSearch = cuentas.get(indiceRowTabla);
+		CuentaSearchResultDto cuentaSearch = cuentas.get(indiceRowTabla);
 		if (cuentaSearch.getLockingState() == 2) {
-			String msg = Sfa.constant().ERR_CUENTA_LOCKEADA_POR_OTRO().replaceAll("\\{1\\}", cuentaSearch.getNumero()).replaceAll("\\{2\\}", cuentaSearch.getSupervisor());
-			MessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_DIALOG_TITLE(), msg, getAceptarConsultarCtaLockeada(cuentaSearch,getCondicionBusquedaPorDni()), MessageDialog.getCloseCommand());
+			String msg = Sfa.constant().ERR_CUENTA_LOCKEADA_POR_OTRO().replaceAll("\\{1\\}",
+					cuentaSearch.getNumero()).replaceAll("\\{2\\}", cuentaSearch.getSupervisor());
+			ModalMessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_DIALOG_TITLE(), msg,
+					getAceptarConsultarCtaLockeada(cuentaSearch, getCondicionBusquedaPorDni()),
+					ModalMessageDialog.getCloseCommand());
 		} else {
-			CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(), cuentaSearch.getCodigoVantive(), getCondicionBusquedaPorDni());
+			CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(), cuentaSearch.getCodigoVantive(),
+					getCondicionBusquedaPorDni());
 		}
 	}
-	
+
 	/**
 	 * Limpia la tabla de resultados
 	 * 
@@ -240,9 +245,11 @@ public class BuscarCuentaResultUI extends FlowPanel  {
 			resultTable.addRowListener(new RowListener() {
 				public void onRowClick(Widget sender, int row) {
 				}
+
 				public void onRowEnter(Widget sender, int row) {
-					indiceRowTabla = row -1;
+					indiceRowTabla = row - 1;
 				}
+
 				public void onRowLeave(Widget sender, int row) {
 				}
 			});
@@ -281,13 +288,15 @@ public class BuscarCuentaResultUI extends FlowPanel  {
 		}
 		return idCuenta;
 	}
-	
-	public static Command getAceptarConsultarCtaLockeada(final CuentaSearchResultDto cuenta, final String busquedaPorDni) {
+
+	public static Command getAceptarConsultarCtaLockeada(final CuentaSearchResultDto cuenta,
+			final String busquedaPorDni) {
 		if (aceptarCommand == null) {
 			aceptarCommand = new Command() {
 				public void execute() {
-					MessageDialog.getInstance().hide();
-					CuentaClientService.cargarDatosCuenta(cuenta.getId(), cuenta.getCodigoVantive(), busquedaPorDni,true);
+					ModalMessageDialog.getInstance().hide();
+					CuentaClientService.cargarDatosCuenta(cuenta.getId(), cuenta.getCodigoVantive(),
+							busquedaPorDni, true);
 				}
 			};
 		}

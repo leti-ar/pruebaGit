@@ -38,7 +38,7 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 	public static boolean fromMenu = true;
 	
 	public BuscadorDocumentoPopup(String title) {
-		super(title);
+		super(title, false, true);
         init();	
 	
 		aceptar.addClickListener(new ClickListener() {

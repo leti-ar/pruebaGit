@@ -13,6 +13,7 @@ import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
+import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
@@ -47,7 +48,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	private HTML nuevoItem;
 
 	public ItemSolicitudDialog(String title, EditarSSUIController controller) {
-		super(title);
+		super(title, false, true);
 		addStyleName("gwt-ItemSolicitudDialog");
 		this.controller = controller;
 		tipoSolicitudPanel = new SimplePanel();
@@ -95,12 +96,12 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		if (errors.isEmpty()) {
 			// Si ingreso un numero para reservar y no lo reservo le pregunto si desea hacerlo.
 			if (itemSolicitudUIData.hasNumeroSinReservar()) {
-				MessageDialog.getInstance().setDialogTitle("Reserva");
-				MessageDialog.getInstance().showSiNo("Desea reservar el número elegido?",
+				ModalMessageDialog.getInstance().setDialogTitle("Reserva");
+				ModalMessageDialog.getInstance().showSiNo("Desea reservar el número elegido?",
 						getReservarCommand(), new Command() {
 							public void execute() {
 								itemSolicitudUIData.getReservar().setText("");
-								MessageDialog.getInstance().hide();
+								ModalMessageDialog.getInstance().hide();
 								guardarItem(sender == aceptar);
 							}
 						});
@@ -125,7 +126,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	private Command getReservarCommand() {
 		return new Command() {
 			public void execute() {
-				MessageDialog.getInstance().hide();
+				ModalMessageDialog.getInstance().hide();
 				itemSolicitudUIData.reservar();
 			}
 		};

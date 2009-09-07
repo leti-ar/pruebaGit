@@ -124,8 +124,7 @@ public class CuentaDatosForm extends Composite {
 		iconoLupa.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				if ("".equals(camposTabDatos.getNumeroDocumento().getText())) {
-					MessageDialog.getInstance();
-					MessageDialog.getInstance().showAceptar("Debe ingresar un número de documento", MessageDialog.getCloseCommand());
+					MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(), "Debe ingresar un número de documento", MessageDialog.getCloseCommand());
 				} else {
 					PersonaDto personaDto = getVerazSearch(camposTabDatos.getNumeroDocumento(), 
 							camposTabDatos.getTipoDocumento(), camposTabDatos.getSexo());

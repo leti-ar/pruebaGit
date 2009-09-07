@@ -50,7 +50,7 @@ public class CambioEstadoOppForm extends NextelDialog {
     }
 	
 	private  CambioEstadoOppForm() {
-		super(Sfa.constant().LBL_CAMBIAR_ESTADO());
+		super(Sfa.constant().LBL_CAMBIAR_ESTADO(), false, true);
 		init();
 	}
 
