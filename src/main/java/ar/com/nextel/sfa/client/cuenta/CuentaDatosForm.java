@@ -689,6 +689,10 @@ public class CuentaDatosForm extends Composite {
 	    
 		FormUtils.disableFields(campos);
 		
+		iconoLupa.setVisible(true);
+		camposTabDatos.getVerazLabel().setVisible(true);
+		camposTabDatos.getVerazRta().setVisible(true);
+		
 		camposTabDatos.getIibb().setVisible(docTipoCUIL);
 		camposTabDatos.getIibbLabel().setVisible(docTipoCUIL);
 		
@@ -710,9 +714,6 @@ public class CuentaDatosForm extends Composite {
 		setAtributosCamposCuenta(cuentaDto!=null ? cuentaDto : CuentaEdicionTabPanel.getInstance().getCuenta2editDto());
 		camposTabDatos.getNombreDivision().setVisible(true);
 		camposTabDatos.getNomDivLabel().setVisible(true);
-		iconoLupa.setVisible(false);
-		camposTabDatos.getVerazRta().setVisible(false);
-		camposTabDatos.getVerazLabel().setVisible(false);
 	}
 	
 	public void setAtributosCamposAlAgregarSuscriptor(CuentaDto cuentaDto) {
@@ -720,9 +721,7 @@ public class CuentaDatosForm extends Composite {
 	}
 	
 	public void setAtributosCamposAlMostrarResuladoBusqueda(CuentaDto cuentaDto) {
-
 		List <Widget>campos = new ArrayList<Widget>();
-		
 		if(cuentaDto.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.DIV.getTipo())) {
 			setAtributosCamposAlAgregarDivision(cuentaDto);
 			campos.add(camposTabDatos.getNombreDivision());
@@ -731,7 +730,6 @@ public class CuentaDatosForm extends Composite {
 		} else {
 			setAtributosCamposCuenta(cuentaDto);
 		}
-
 		campos.add(camposTabDatos.getNombre());
 		campos.add(camposTabDatos.getApellido());
 		campos.add(camposTabDatos.getSexo());
@@ -743,6 +741,10 @@ public class CuentaDatosForm extends Composite {
 		campos.add(camposTabDatos.getIibb());
 		campos.add(camposTabDatos.getClaseCliente());
 		campos.add(camposTabDatos.getCategoria());
+		
+		iconoLupa.setVisible(false);
+		camposTabDatos.getVerazLabel().setVisible(false);
+		camposTabDatos.getVerazRta().setVisible(false);
 		
 		campos.add(camposTabDatos.getTelPrincipalTextBox().getArea());
 		campos.add(camposTabDatos.getTelPrincipalTextBox().getNumero());
@@ -790,7 +792,6 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getObservLabel().setVisible(false);
 		
 		showPanelDatosCuenta = false;
-		
 	}
 	
 	public void setAtributosCamposSoloLectura() {
