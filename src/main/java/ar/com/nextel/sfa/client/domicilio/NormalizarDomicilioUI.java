@@ -21,7 +21,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * @author eSalvador
+ * @author eSalvador 
  **/
 public class NormalizarDomicilioUI extends NextelDialog {
 
@@ -40,77 +40,86 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	boolean tienePrincipalEntrega;
 	boolean tienePrincipalFacturacion;
 	private Label motivoLabel = new Label("Motivo: ");
+	private Label motivoText = new Label();
 	//
-	private boolean normalizado = true;
-	private List<NormalizacionDomicilioMotivoDto> motivos = new ArrayList();
+	private boolean normalizado = true;	
+    private List<NormalizacionDomicilioMotivoDto> motivos = new ArrayList();
 	//
 	private int rowSelected;
 	private Label msgNoNormalizado = new Label("No se pudo normalizar el domicilio");
-
+    
 	private static NormalizarDomicilioUI instance = new NormalizarDomicilioUI();
 
 	public static NormalizarDomicilioUI getInstance() {
 		return instance;
 	}
-
+	
 	public NormalizarDomicilioUI() {
-		super("Normalización", false, true);
+		super("Normalización");
 		init();
 	}
-
+	
 	@Override
 	public void clear() {
 		super.clear();
 	}
-
-	private void setearFormatoNormalizador() {
-		if (!normalizado) {
+	
+	private void setearFormatoNormalizador(){
+		if(!normalizado){
 			domicilioResultWrapper.setVisible(false);
 			linkAceptar.setVisible(false);
 			msgNoNormalizado.addStyleName("msgNoNormalizado");
 			grillaPpal.setWidget(3, 0, msgNoNormalizado);
-			// OJO con el get(0):
-			// grillaPpal.setText(4, 0, motivos.size()>0?motivos.get(0).getMotivo():"motivo no especificado");
-
-			grillaMotivo.setText(0, 1, motivos.size() > 0 ? motivos.get(0).getMotivo()
-					: " motivo no especificado");
-			// grillaPpal.setText(4, 1, motivos.size()>0?motivos.get(0).getMotivo():"motivo no especificado");
-		} else {
+			//OJO con el get(0):
+						
+			motivoText.setStyleName("fontNormal");
+			if(motivos.size()>0) {
+				if(motivos.get(0).getMotivo()==null) {
+					motivoText.setText("no especificado");					
+				}else {
+					motivoText.setText(motivos.get(0).getMotivo());
+				}				
+			}else {
+				motivoText.setText("no especificado");
+			}
+			grillaMotivo.setWidget(0, 1, motivoText);			
+			
+		}else{
 			domicilioResultWrapper.setVisible(true);
 			linkAceptar.setVisible(true);
 			grillaPpal.setText(3, 0, "");
 			grillaPpal.setText(4, 0, "");
 		}
 	}
-
+	
 	/**
-	 * @author eSalvador Metodo que setea la accion a tomar por el botón Aceptar del popup
-	 *         NormalizarDomicilioUI.
+	 * @author eSalvador
+	 * Metodo que setea la accion a tomar por el botón Aceptar del popup NormalizarDomicilioUI.
 	 **/
 	public void setComandoAceptar(Command comandoAceptar) {
 		this.comandoAceptar = comandoAceptar;
 	}
-
+	
 	/**
-	 * @author eSalvador Metodo que setea la accion a tomar por el botón NoNormalizar del popup
-	 *         NormalizarDomicilioUI.
+	 * @author eSalvador
+	 * Metodo que setea la accion a tomar por el botón NoNormalizar del popup NormalizarDomicilioUI.
 	 **/
 	public void setComandoNoNormalizar(Command comandoNoNormalizar) {
 		this.comandoNoNormalizar = comandoNoNormalizar;
 	}
-
+	
 	/**
 	 *@author eSalvador
 	 **/
 	public void init() {
-		// domiciliosData = new DomiciliosUIData();
+		//domiciliosData = new DomiciliosUIData();
 		footerBar = new FormButtonsBar();
 		linkNoNormalizar = new SimpleLink("No Normalizar");
 		linkNoNormalizar.ensureDebugId(DebugConstants.DOMICILIO_POPUP_BUTTON_NO_NORMALIZAR_ID);
 		linkAceptar = new SimpleLink("Aceptar");
 		linkCerrar = new SimpleLink("Cerrar");
 		domicilioResultWrapper = new SimplePanel();
-		// domicilioResult = new NextelTable();
+//		domicilioResult = new NextelTable();
 		addStyleName("gwt-NormalizarDomicilioUI");
 		domicilioResultWrapper.addStyleName("resultTableScroll");
 		grillaPpal = new Grid(6, 1);
@@ -130,7 +139,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		grillaPpal.setText(3, 0, "");
 		grillaPpal.setWidget(4, 0, grillaMotivo);
 		grillaPpal.setWidget(5, 0, new Label());
-
+		
 		add(grillaPpal);
 
 		linkNoNormalizar.setStyleName("link");
@@ -145,30 +154,24 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		footer.setVisible(false);
 		linkNoNormalizar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				if (comandoNoNormalizar != null) {
-					if ((!DomicilioUI.getInstance().getTieneDomiciliosPrincipales())
-							|| (DomicilioUI.getInstance().isParentContacto())) {
-						comandoNoNormalizar.execute();
-					} else {
+				if (comandoNoNormalizar != null){
+					if ((!DomicilioUI.getInstance().getTieneDomiciliosPrincipales()) || (DomicilioUI.getInstance().isParentContacto())){
+						comandoNoNormalizar.execute();	
+					}else{
 						MessageDialog.getInstance().setDialogTitle("Error");
-						MessageDialog.getInstance().showAceptar(
-								Sfa.constant().ERR_DOMICILIO_PPAL_DUPLICADO(),
-								MessageDialog.getCloseCommand());
+						MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DOMICILIO_PPAL_DUPLICADO(), MessageDialog.getCloseCommand());	
 					}
 				}
 			}
 		});
 		linkAceptar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				if (comandoAceptar != null) {
-					if ((!DomicilioUI.getInstance().getTieneDomiciliosPrincipales())
-							|| (DomicilioUI.getInstance().isParentContacto())) {
-						comandoAceptar.execute();
-					} else {
+				if (comandoAceptar != null){
+					if ((!DomicilioUI.getInstance().getTieneDomiciliosPrincipales()) || (DomicilioUI.getInstance().isParentContacto())){
+						comandoAceptar.execute();	
+					}else{
 						MessageDialog.getInstance().setDialogTitle("Error");
-						MessageDialog.getInstance().showAceptar(
-								Sfa.constant().ERR_DOMICILIO_PPAL_DUPLICADO(),
-								MessageDialog.getCloseCommand());
+						MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DOMICILIO_PPAL_DUPLICADO(), MessageDialog.getCloseCommand());
 					}
 				}
 			}
@@ -180,7 +183,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		});
 		this.showAndCenter();
 	}
-
+	
 	public void agregaDomiciliosAGrilla(List<DomiciliosCuentaDto> domicilios) {
 		this.domiciliosEnGrilla = domicilios;
 		setearFormatoNormalizador();
@@ -193,14 +196,14 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		grillaPpal.getCellFormatter().addStyleName(1, 0, "alignCenter");
 		grillaPpal.setText(1, 0, domicilio.getDomicilios());
 		for (int i = 0; i < domiciliosEnGrilla.size(); i++) {
-			domicilioResult.setHTML(i + 1, 0, this.domiciliosEnGrilla.get(i).getDomicilios());
+			domicilioResult.setHTML(i+1, 0, this.domiciliosEnGrilla.get(i).getDomicilios());
 		}
 		setVisible(true);
 	}
-
-	private void initTable() {
+	
+	private void initTable(){
 		domicilioResult = new NextelTable();
-		String[] widths = { "650px", };
+		String[] widths = { "650px",};
 		for (int col = 0; col < widths.length; col++) {
 			domicilioResult.getColumnFormatter().setWidth(col, widths[col]);
 		}
@@ -214,12 +217,12 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		domicilioResult.setHTML(0, 0, "Seleccione alguna de estas opciones");
 		domicilioResultWrapper.setWidget(domicilioResult);
 	}
-
-	public void setTienePrincipales(boolean ppalEntrega, boolean ppalfacturacion) {
+	
+	public void setTienePrincipales(boolean ppalEntrega, boolean ppalfacturacion){
 		this.tienePrincipalEntrega = ppalEntrega;
 		this.tienePrincipalFacturacion = ppalfacturacion;
 	}
-
+	
 	@Override
 	public void showAndCenter() {
 		super.showAndCenter();
@@ -248,7 +251,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	public void setDomiciliosEnGrilla(List<DomiciliosCuentaDto> domiciliosEnGrilla) {
 		this.domiciliosEnGrilla = domiciliosEnGrilla;
 	}
-
+	
 	public void setDomicilio(DomiciliosCuentaDto domicilio) {
 		this.domicilio = domicilio;
 	}
@@ -258,12 +261,12 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	}
 
 	public DomiciliosCuentaDto getDomicilioCopiado() {
-		DomiciliosCuentaDto domicilioCopiado = new DomiciliosCuentaDto();
+		DomiciliosCuentaDto domicilioCopiado = new DomiciliosCuentaDto(); 
 		domicilioCopiado.setCalle(domicilio.getCalle());
-
+		
 		return domicilioCopiado;
 	}
-
+	
 	public int getRowSelected() {
 		return domicilioResult.getRowSelected();
 	}
@@ -271,8 +274,8 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	public void setRowSelected(int rowSelected) {
 		this.rowSelected = rowSelected;
 	}
-
-	public DomiciliosCuentaDto getDomicilioEnGrillaSelected() {
-		return domiciliosEnGrilla.get(getRowSelected() - 1);
+	
+	public DomiciliosCuentaDto getDomicilioEnGrillaSelected(){
+		return domiciliosEnGrilla.get(getRowSelected()-1);
 	}
 }
