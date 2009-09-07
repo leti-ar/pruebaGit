@@ -839,6 +839,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				precio = terminoSelected.getAjuste() * precio;
 			}
 			lineaSolicitudServicio.setPrecioListaAjustado(precio);
+			// Limpio los servicios adicionales para que los actualice
 			if (!(lineaSolicitudServicio.getPlan().getId().equals(idPlanAnterior) && lineaSolicitudServicio
 					.getItem().getId().equals(idItemAnterior))) {
 				lineaSolicitudServicio.getServiciosAdicionales().clear();
@@ -847,7 +848,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			lineaSolicitudServicio.setPrecioListaAjustado(itemTasadoSelected.getPrecioLista());
 		}
 		lineaSolicitudServicio.setTipoSolicitud((TipoSolicitudDto) tipoOrden.getSelectedItem());
-		// Limpio los servicios adicionales para que los actualice
 		return lineaSolicitudServicio;
 	}
 

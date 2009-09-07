@@ -439,8 +439,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		} else {
 			solicitudServicio.getLineas().remove(index.intValue());
 			solicitudServicio.getLineas().add(index.intValue(), linea);
-			linea.getServiciosAdicionales().clear();
-			serviciosAdicionales.get(index.intValue()).clear();
+			// Los servicios adicionales de la linea los limpia en
+			// ItemSolicitudUIData.getLineaSolicitudServicio()
+			if (linea.getServiciosAdicionales().isEmpty()) {
+				serviciosAdicionales.get(index.intValue()).clear();
+			}
 		}
 		return linea.getNumeradorLinea().intValue();
 	}
@@ -575,8 +578,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	public void setSolicitudServicioGeneracion(SolicitudServicioGeneracionDto solicitudServicioGeneracion) {
 		solicitudServicio.setSolicitudServicioGeneracion(solicitudServicioGeneracion);
 	}
-	
-	public boolean isCDW(){
+
+	public boolean isCDW() {
 		return solicitudServicio.getGrupoSolicitud().getId().equals(GrupoSolicitudDto.ID_CDW);
 	}
 
