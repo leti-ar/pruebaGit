@@ -40,8 +40,9 @@ public class DomiciliosUIData extends UIData {
 	//private boolean tienePpalEntrega = false;
 	//private boolean tienePpalFacturacion = false;
 	
-	TextBox calle = new TextBox();
+	ValidationTextBox cpa = new ValidationTextBox("[0-9a-zA-Z]*");
 	ValidationTextBox numero = new ValidationTextBox("[0-9a-zA-Z]*");
+	TextBox calle = new TextBox();
 	TextBox piso = new TextBox();
 	ValidationTextBox codigoPostal = new ValidationTextBox("[0-9]*");
 	ValidationTextBox departamento = new ValidationTextBox("[0-9a-zA-Z]*");
@@ -49,7 +50,6 @@ public class DomiciliosUIData extends UIData {
 	ValidationTextBox manzana = new ValidationTextBox("[0-9a-zA-Z]*");
 	TextBox puerta = new TextBox();
 	TextBox ycalle = new TextBox();
-	ValidationTextBox cpa = new ValidationTextBox("[0-9a-zA-Z]*");
 	ValidationTextBox torre = new ValidationTextBox("[0-9a-zA-Z]*");
 	ValidationTextBox unidadFuncional = new ValidationTextBox("[0-9a-zA-Z]*");
 	TextArea observaciones = new TextArea();
@@ -74,16 +74,16 @@ public class DomiciliosUIData extends UIData {
 	
 	public DomiciliosUIData() {
 		configFields();
-		fields.add(calle);
+		fields.add(cpa);
 		fields.add(numero);
+		fields.add(calle);		
 		fields.add(piso);
 		fields.add(codigoPostal);
 		fields.add(departamento);
 		fields.add(entreCalle);
 		fields.add(manzana);
 		fields.add(puerta);
-		fields.add(ycalle);
-		fields.add(cpa);
+		fields.add(ycalle);		
 		fields.add(torre);
 		fields.add(unidadFuncional);
 		fields.add(observaciones);
@@ -99,8 +99,8 @@ public class DomiciliosUIData extends UIData {
 		//entrega.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
 		//facturacion.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
 
-		cpa.setTabIndex(0);
-		numero.setTabIndex(1);
+		cpa.setTabIndex(1);
+		numero.setTabIndex(2);
 
 		listaDomicilios = CuentaDomiciliosForm.getInstance().getDomicilios();
 
