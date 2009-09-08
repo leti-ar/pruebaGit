@@ -282,9 +282,10 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	}
 	
 	public CuentaSearchResultDto getSelectedCuenta() {
+		int offset = (tablePageBar.getPagina()-1) * tablePageBar.getCantResultadosPorPagina();
 		CuentaSearchResultDto cuenta = null;
 		if (resultTable != null && resultTable.getRowSelected() > 0) {
-			cuenta = cuentas.get(resultTable.getRowSelected() - 1);
+			cuenta = cuentas.get(offset + (resultTable.getRowSelected() - 1));
 		}
 		return cuenta;
 	}
@@ -303,7 +304,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		return aceptarCommand;
 	}
 	
-	public List<CuentaSearchResultDto> getCuentas() {
+	public List<CuentaSearchResultDto> getCuentassssssssss() {
 		return cuentas;
 	}
 }
