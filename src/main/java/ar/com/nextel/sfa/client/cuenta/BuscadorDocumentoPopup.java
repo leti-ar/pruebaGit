@@ -11,16 +11,17 @@ import ar.com.nextel.sfa.client.widget.EventWrapper;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
+import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class BuscadorDocumentoPopup extends NextelDialog {
@@ -28,8 +29,8 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 	private SimplePanel buscadorDocumentoPanel; 
 	private FlexTable buscadorDocumentoTable;
 	private FlexTable botonesTable;
-	private ListBox tipoDocumento;
-	private TextBox numeroDocTextBox;
+	private ListBox tipoDocumento = new ListBox();
+	private RegexTextBox numeroDocTextBox = new RegexTextBox();
 	private Label tipoDocLabel;
 	private Label numeroDocLabel;
 	private Hyperlink aceptar = new Hyperlink(Sfa.constant().aceptar(),null);
@@ -53,6 +54,20 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 				//History.newItem("");
 			}
 		});
+		tipoDocumento.addChangeListener(new ChangeListener() {
+			public void onChange(Widget sender) {
+				numeroDocTextBox.setText("");
+				if (tipoDocumento.getSelectedItemId().equals(TipoDocumentoEnum.CUIL.getTipo()+"") ||
+					tipoDocumento.getSelectedItemId().equals(TipoDocumentoEnum.CUIT.getTipo()+"") ||
+					tipoDocumento.getSelectedItemId().equals(TipoDocumentoEnum.CUIT_EXT.getTipo()+"") ){
+				   numeroDocTextBox.setPattern(RegularExpressionConstants.cuilCuit);
+				} else if (tipoDocumento.getSelectedItemId().equals(TipoDocumentoEnum.DNI.getTipo()+"")) {
+				   numeroDocTextBox.setPattern(RegularExpressionConstants.dni);
+				} else {
+					numeroDocTextBox.setPattern(RegularExpressionConstants.documentoOtros);
+				}
+			}
+		});
 	}
 	
 	public void init() {
@@ -66,8 +81,8 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 		
 		buscadorDocumentoTable.setWidth("100%");
 		tipoDocumento    = new ListBox();
-		numeroDocTextBox = new TextBox();
-		numeroDocTextBox.setMaxLength(13);
+		//numeroDocTextBox = new TextBox();
+		//numeroDocTextBox.setMaxLength(13);
 		tipoDocLabel   = new Label(Sfa.constant().tipoDocumento().trim());
 		numeroDocLabel = new Label(Sfa.constant().numero().trim());
 		
