@@ -123,20 +123,18 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	 * @param: firstTime
 	 **/
 	private void searchCuentas(CuentaSearchDto cuentaSearchDto, boolean firstTime) {
-		CuentaRpcService.Util.getInstance().searchCuenta(cuentaSearchDto,
-				new DefaultWaitCallback<List<CuentaSearchResultDto>>() {
-					public void success(List<CuentaSearchResultDto> result) {
-						if (result.isEmpty()) {
-							ErrorDialog.getInstance().show(
-									"No se encontraron datos con el criterio utilizado.");
-						}
-						cuentas = result;
-						tablePageBar.setCantRegistrosTot(cuentas.size());
-						tablePageBar.setPagina(1);
-						setCuentas();
-						controller.setResultadoVisible(true);
-					}
-				});
+		CuentaRpcService.Util.getInstance().searchCuenta(cuentaSearchDto, new DefaultWaitCallback<List<CuentaSearchResultDto>>() {
+			public void success(List<CuentaSearchResultDto> result) {
+				if (result.isEmpty()) {
+					ErrorDialog.getInstance().show("No se encontraron datos con el criterio utilizado.");
+				}
+				cuentas = result;
+				tablePageBar.setCantRegistrosTot(cuentas.size());
+				tablePageBar.setPagina(1);
+				setCuentas();
+				controller.setResultadoVisible(true);
+			}
+		});
 	}
 
 	public void setCuentas() {
@@ -245,11 +243,9 @@ public class BuscarCuentaResultUI extends FlowPanel {
 			resultTable.addRowListener(new RowListener() {
 				public void onRowClick(Widget sender, int row) {
 				}
-
 				public void onRowEnter(Widget sender, int row) {
 					indiceRowTabla = row - 1;
 				}
-
 				public void onRowLeave(Widget sender, int row) {
 				}
 			});
@@ -282,13 +278,17 @@ public class BuscarCuentaResultUI extends FlowPanel {
 
 	/** Retorna el id de la Cuenta selecionada o null si no hay nada seleccionado */
 	public Long getSelectedCuentaId() {
-		Long idCuenta = null;
-		if (resultTable != null && resultTable.getRowSelected() > 0) {
-			idCuenta = cuentas.get(resultTable.getRowSelected() - 1).getId();
-		}
-		return idCuenta;
+		return getSelectedCuenta()!=null ? getSelectedCuenta().getId():null;
 	}
-
+	
+	public CuentaSearchResultDto getSelectedCuenta() {
+		CuentaSearchResultDto cuenta = null;
+		if (resultTable != null && resultTable.getRowSelected() > 0) {
+			cuenta = cuentas.get(resultTable.getRowSelected() - 1);
+		}
+		return cuenta;
+	}
+	
 	public static Command getAceptarConsultarCtaLockeada(final CuentaSearchResultDto cuenta,
 			final String busquedaPorDni) {
 		if (aceptarCommand == null) {
@@ -301,5 +301,9 @@ public class BuscarCuentaResultUI extends FlowPanel {
 			};
 		}
 		return aceptarCommand;
+	}
+	
+	public List<CuentaSearchResultDto> getCuentas() {
+		return cuentas;
 	}
 }

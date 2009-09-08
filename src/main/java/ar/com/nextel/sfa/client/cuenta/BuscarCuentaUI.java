@@ -1,7 +1,10 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import java.util.List;
+
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
+import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.ss.EditarSSUI;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
@@ -95,34 +98,39 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 	}
 
 	public void onClick(Widget sender) {
-		Long idCuenta = buscarCuentaResultPanel.getSelectedCuentaId();
-		if (sender == crearSSButton) {
-			if (idCuenta != null) {
-				crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta,
-						GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
-				crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_CDW));
-				// crearMDS.setTargetHistoryToken(getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_MDS));
-				popupCrearSS.show();
-				popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton
-						.getAbsoluteTop() - 50);
-			} else {
-				MessageDialog.getInstance().showAceptar("Error", "Debe seleccionar una Cuenta",
-						MessageDialog.getCloseCommand());
+		//Long idCuenta = buscarCuentaResultPanel.getSelectedCuentaId();
+		CuentaSearchResultDto cuentaSearch = buscarCuentaResultPanel.getSelectedCuenta();
+		Long idCuenta = cuentaSearch!=null?cuentaSearch.getId():null;
+		if (idCuenta != null) {
+			if (sender == crearSSButton) {
+				if (cuentaSearch.getNumero().equals("***")) {
+					MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(), Sfa.constant().ERR_NO_ACCESO_CREAR_SS(),	MessageDialog.getCloseCommand());
+				} else {
+					crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta,	GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
+					crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_CDW));
+					// crearMDS.setTargetHistoryToken(getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_MDS));
+					popupCrearSS.show();
+					popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton.getAbsoluteTop() - 50);
+				}
+			} else if (sender == agregarCuentaButton) {
+				if (cuentaSearch.getNumero().equals("***")) {
+					MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(), Sfa.constant().ERR_NO_ACCESO_CUENTA(), MessageDialog.getCloseCommand());
+				} else {
+					popupAgregarCuenta.show();
+					popupAgregarCuenta.setPopupPosition(agregarCuentaButton.getAbsoluteLeft(), agregarCuentaButton.getAbsoluteTop() - 35);
+				}
+			} else if (sender == crearEquipos || sender == crearCDW) { // || sender == crearMDS
+				popupCrearSS.hide();
+			} else if (sender == agregarDivision) {
+				popupAgregarCuenta.hide();
+				CuentaClientService.crearDivision(idCuenta);
+			} else if (sender == agregarSuscriptor) {
+				popupAgregarCuenta.hide();
+				CuentaClientService.crearSuscriptor(idCuenta);
 			}
-		} else if (sender == agregarCuentaButton) {
-			popupAgregarCuenta.show();
-			popupAgregarCuenta.setPopupPosition(agregarCuentaButton.getAbsoluteLeft(), agregarCuentaButton
-					.getAbsoluteTop() - 35);
-		} else if (sender == crearEquipos || sender == crearCDW) { // || sender == crearMDS
-			popupCrearSS.hide();
-		} else if (sender == agregarDivision) {
-			popupAgregarCuenta.hide();
-			CuentaClientService.crearDivision(idCuenta);
-		} else if (sender == agregarSuscriptor) {
-			popupAgregarCuenta.hide();
-			CuentaClientService.crearSuscriptor(idCuenta);
+		} else {
+			MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(), Sfa.constant().ERR_NO_CUENTA_SELECTED(),	MessageDialog.getCloseCommand());
 		}
-
 	}
 
 	public boolean unload(String token) {
