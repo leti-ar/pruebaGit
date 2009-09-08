@@ -1,7 +1,5 @@
 package ar.com.nextel.sfa.client.cuenta;
 
-import java.util.List;
-
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
@@ -103,7 +101,7 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 		Long idCuenta = cuentaSearch!=null?cuentaSearch.getId():null;
 		if (idCuenta != null) {
 			if (sender == crearSSButton) {
-				if (cuentaSearch.getNumero().equals("***")) {
+				if (cuentaSearch.getRazonSocial().equals("***")) {
 					MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(), Sfa.constant().ERR_NO_ACCESO_CREAR_SS(),	MessageDialog.getCloseCommand());
 				} else {
 					crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta,	GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
@@ -113,7 +111,7 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 					popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton.getAbsoluteTop() - 50);
 				}
 			} else if (sender == agregarCuentaButton) {
-				if (cuentaSearch.getNumero().equals("***")) {
+				if (cuentaSearch.getRazonSocial().equals("***")) {
 					MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(), Sfa.constant().ERR_NO_ACCESO_CUENTA(), MessageDialog.getCloseCommand());
 				} else {
 					popupAgregarCuenta.show();
