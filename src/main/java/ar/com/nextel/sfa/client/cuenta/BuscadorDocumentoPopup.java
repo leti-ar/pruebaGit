@@ -30,7 +30,7 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 	private FlexTable buscadorDocumentoTable;
 	private FlexTable botonesTable;
 	private ListBox tipoDocumento = new ListBox();
-	private RegexTextBox numeroDocTextBox = new RegexTextBox();
+	private RegexTextBox numeroDocTextBox = new RegexTextBox(RegularExpressionConstants.dni);
 	private Label tipoDocLabel;
 	private Label numeroDocLabel;
 	private Hyperlink aceptar = new Hyperlink(Sfa.constant().aceptar(),null);
