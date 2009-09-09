@@ -628,9 +628,13 @@ color:white;
 font-weight:normal;
 }
 
-.gwt-TextBox-readonly, .gwt-TextArea-readonly, input[disabled], input[readonly], select[disabled], 
-	select[readonly], checkbox[disabled], checkbox[readonly], textarea[disabled], textarea[readonly]
-{
+.gwt-TextBox-readonly, .gwt-TextArea-readonly {
+ background-color: #DEDEDE;
+ color: #000000;
+ cursor: default;
+} 	
+input[disabled], input[readonly], select[disabled], select[readonly], checkbox[disabled], 
+	checkbox[readonly], textarea[disabled], textarea[readonly] {
  background-color: #DEDEDE;
  color: #000000;
  cursor: default;
