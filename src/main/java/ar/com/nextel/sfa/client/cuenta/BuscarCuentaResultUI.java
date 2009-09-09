@@ -215,16 +215,15 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	 * 
 	 */
 	private void cargarDatosCuenta() {
-		CuentaSearchResultDto cuentaSearch = cuentas.get(indiceRowTabla);
-		if (cuentaSearch.getLockingState() == 2) {
-			String msg = Sfa.constant().ERR_CUENTA_LOCKEADA_POR_OTRO().replaceAll("\\{1\\}",
-					cuentaSearch.getNumero()).replaceAll("\\{2\\}", cuentaSearch.getSupervisor());
-			ModalMessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_DIALOG_TITLE(), msg,
-					getAceptarConsultarCtaLockeada(cuentaSearch, getCondicionBusquedaPorDni()),
-					ModalMessageDialog.getCloseCommand());
+		int offset = (tablePageBar.getPagina()-1) * tablePageBar.getCantResultadosPorPagina();
+		CuentaSearchResultDto cuentaSearch = cuentas.get(offset + indiceRowTabla);
+		if (cuentaSearch.getRazonSocial()!=null && cuentaSearch.getRazonSocial().equals("***")) {
+			ModalMessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), Sfa.constant().ERR_NO_ACCESO_CUENTA(), ModalMessageDialog.getCloseCommand());
+		} else if (cuentaSearch.getLockingState() == 2) {
+			String msg = Sfa.constant().ERR_CUENTA_LOCKEADA_POR_OTRO().replaceAll("\\{1\\}", cuentaSearch.getNumero()).replaceAll("\\{2\\}", cuentaSearch.getSupervisor());
+			ModalMessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_DIALOG_TITLE(), msg, getAceptarConsultarCtaLockeada(cuentaSearch, getCondicionBusquedaPorDni()),ModalMessageDialog.getCloseCommand());
 		} else {
-			CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(), cuentaSearch.getCodigoVantive(),
-					getCondicionBusquedaPorDni());
+			CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(), cuentaSearch.getCodigoVantive(),getCondicionBusquedaPorDni());
 		}
 	}
 
