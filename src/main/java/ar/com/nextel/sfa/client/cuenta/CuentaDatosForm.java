@@ -1242,9 +1242,11 @@ public class CuentaDatosForm extends Composite {
 	public void setearValoresRtaVeraz(VerazResponseDto result, TextBox apellido, TextBox nombre, TextBox razonSocial, ListBox sexo, Label veraz) {
         apellido.setText(result.getApellido());
         apellido.setEnabled(true);
+        apellido.setReadOnly(false);
         
         nombre.setText(result.getNombre());
         nombre.setEnabled(true);
+        nombre.setReadOnly(false);
         
         if (razonSocial!=null) {
         razonSocial.setText(result.getRazonSocial());

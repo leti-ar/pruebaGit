@@ -222,6 +222,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		solicitudServicio = solicitud;
 		nss.setText(solicitud.getNumero());
 		nflota.setEnabled(solicitud.getCuenta().getIdVantive() == null);
+		nflota.setReadOnly(!nflota.isEnabled());
 		nflota.setText(solicitud.getNumeroFlota());
 		entrega.clear();
 		facturacion.clear();
@@ -242,8 +243,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		credFidelizacion.setText(decFormatter.format(credFidelizacionValue));
 		if (credFidelizacionValue > 0) {
 			credFidelizacion.setEnabled(true);
+			credFidelizacion.setReadOnly(false);
 		} else {
 			credFidelizacion.setEnabled(false);
+			credFidelizacion.setReadOnly(true);
 		}
 		double pataconexValue = solicitud.getPataconex() != null ? solicitud.getPataconex() : 0;
 		pataconex.setText(decFormatter.format(pataconexValue));

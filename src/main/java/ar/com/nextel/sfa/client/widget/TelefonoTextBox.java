@@ -76,9 +76,12 @@ public class TelefonoTextBox extends Composite {
 
 	public void clean() {
 		area.setText("");
+		area.setReadOnly(false);
 		numero.setText("");
+		numero.setReadOnly(false);
 		if (interno != null) {
 			interno.setText("");
+			interno.setReadOnly(false);
 		}
 	}
 }

@@ -39,6 +39,7 @@ public class GenerarSSUIData extends UIData implements ClickListener {
 		personal.addClickListener(this);
 		nuevo.addClickListener(this);
 		email.setEnabled(false);
+		email.setReadOnly(true);
 		email.setWidth("300px");
 	}
 
@@ -52,8 +53,10 @@ public class GenerarSSUIData extends UIData implements ClickListener {
 		}
 		if (nuevo.isChecked()) {
 			email.setEnabled(true);
+			email.setReadOnly(false);
 		} else {
 			email.setEnabled(false);
+			email.setReadOnly(true);
 			email.setText("");
 		}
 	}
@@ -63,6 +66,7 @@ public class GenerarSSUIData extends UIData implements ClickListener {
 		setSolicitudServicioGeneracion(solicitudServicioGeneracion);
 		personal.setEnabled(false);
 		laboral.setEnabled(false);
+		
 		for (EmailDto email : emails) {
 			Long idTipo = email.getTipoEmail().getId();
 			if (TipoEmailEnum.PERSONAL.getTipo().equals(idTipo)) {

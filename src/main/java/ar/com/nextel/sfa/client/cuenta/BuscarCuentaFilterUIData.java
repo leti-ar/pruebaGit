@@ -25,6 +25,7 @@ import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -151,7 +152,8 @@ public class BuscarCuentaFilterUIData extends UIData {
 			if (!validationTextBoxs(w)){
 				return false;
 			}
-			((FocusWidget) w).setEnabled(true);
+			box.setEnabled(true);
+			box.setReadOnly(false);
 		//FIN - Si es TextBox
 
 		//Si es ListBox:
@@ -191,25 +193,29 @@ public class BuscarCuentaFilterUIData extends UIData {
 	  }else{  
 		  if (w == flotaIdTextBox){
 			setEnableFields(false);
-			((FocusWidget) w).setEnabled(true);
+			((ValidationTextBox) w).setEnabled(true);
+			((ValidationTextBox) w).setReadOnly(false);
 			setLabelVisibility(3,true);
 		}
 		
 		if (w == numeroSolicitudServicioTextBox){
 			setEnableFields(false);
 			((FocusWidget) w).setEnabled(true);
+			((ValidationTextBox) w).setReadOnly(false);
 			setLabelVisibility(4,true);
 		}
 		
 		if (w == numeroCuentaTextBox){
 			setEnableFields(false);
 			((FocusWidget) w).setEnabled(true);
+			((ValidationTextBox) w).setReadOnly(false);
 			setLabelVisibility(1,true);
 		}
 		
 		if (w == numeroNextelTextBox){
 			setEnableFields(false);
 			((FocusWidget) w).setEnabled(true);
+			((ValidationTextBox) w).setReadOnly(false);
 			setLabelVisibility(2,true);
 		}
 		
@@ -224,6 +230,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 			if (!"".equals(box.getText())) {
 				setEnableFields(false);
 				((FocusWidget) w).setEnabled(true);
+				((ValidationTextBox) w).setReadOnly(false);
 				setLabelVisibility(6,true);
 				setLabelVisibility(7,true);
 				grupoDocumentoCombo.setEnabled(true);
@@ -236,7 +243,9 @@ public class BuscarCuentaFilterUIData extends UIData {
 			if (!"".equals(box.getText())) {
 				setEnableFields(false);
 				this.responsableTextBox.setEnabled(true);
+				this.responsableTextBox.setReadOnly(false);
 				this.razonSocialTextBox.setEnabled(true);
+				this.razonSocialTextBox.setReadOnly(false);
 				this.categoriaCombo.setEnabled(true);
 				setLabelVisibility(0,true);
 				setLabelVisibility(5,true);
@@ -247,7 +256,9 @@ public class BuscarCuentaFilterUIData extends UIData {
 			}else if (("".equals(box.getText()) && (!predefinidasCombo.isEnabled()))) {
 				setEnableFields(false);
 				this.responsableTextBox.setEnabled(true);
+				this.responsableTextBox.setReadOnly(false);
 				this.razonSocialTextBox.setEnabled(true);
+				this.razonSocialTextBox.setReadOnly(false);
 				this.categoriaCombo.setEnabled(true);
 				setLabelVisibility(0,true);
 				setLabelVisibility(5,true);
@@ -272,7 +283,9 @@ public class BuscarCuentaFilterUIData extends UIData {
 		if (w == categoriaCombo){
 			setEnableFields(false);
 			this.responsableTextBox.setEnabled(true);
+			this.responsableTextBox.setReadOnly(false);
 			this.razonSocialTextBox.setEnabled(true);
+			this.razonSocialTextBox.setReadOnly(false);
 			((FocusWidget) w).setEnabled(true);
 			setLabelVisibility(0,true);
 			setLabelVisibility(9,true);
@@ -283,6 +296,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 		if (w == grupoDocumentoCombo){
 			setEnableFields(false);
 			this.numeroDocumentoTextBox.setEnabled(true);
+			this.numeroDocumentoTextBox.setReadOnly(false);
 			((FocusWidget) w).setEnabled(true);
 			setLabelVisibility(6,true);
 			setLabelVisibility(7,true);
@@ -370,6 +384,9 @@ public class BuscarCuentaFilterUIData extends UIData {
 		for (Widget widget : fields) {
 			if (widget instanceof ExcluyenteWidget) {
 				((FocusWidget) widget).setEnabled(enabled);
+				if (widget instanceof TextBoxBase) {
+					((TextBoxBase) widget).setReadOnly(!enabled);
+				}
 				for (int i = 0; i < getListaLabels().size(); i++) {
 					if (enabled){
 						getListaLabels().get(i).removeStyleName("gwt-labelDisabled");	

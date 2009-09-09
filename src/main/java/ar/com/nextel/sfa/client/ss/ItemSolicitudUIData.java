@@ -146,6 +146,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		alias.setMaxLength(15);
 		reservarHidden.setWidth("70px");
 		reservarHidden.setEnabled(false);
+		reservarHidden.setReadOnly(true);
 		reservarHidden.addStyleName("m0p0");
 		reservar.setWidth("50px");
 		reservar.addStyleName("m0p0");
@@ -306,12 +307,14 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		tipoOrden.setEnabled(enable);
 		listaPrecio.setEnabled(enable);
 		cantidad.setEnabled(enable);
+		cantidad.setReadOnly(!enable);
 		item.setEnabled(enable);
 		tipoPlan.setEnabled(enable);
 		plan.setEnabled(enable);
 		localidad.setEnabled(enable);
 		modalidadCobro.setEnabled(enable);
 		reservar.setEnabled(enable);
+		reservar.setReadOnly(!enable);
 	}
 
 	/** Comprueba la validez del IMEI y carga los combos de Modelo e Item */
@@ -423,13 +426,16 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				if (tipoEdicion == ACTIVACION) {
 					if (is.getItem().getSinModelo()) {
 						sim.setEnabled(false);
+						sim.setReadOnly(true);
 						sim.setText("");
 					} else {
 						sim.setEnabled(true);
+						sim.setReadOnly(false);
 					}
 				}
 			} else {
 				sim.setEnabled(true);
+				sim.setReadOnly(false);
 			}
 			refreshTotalLabel();
 		} else if (sender == tipoPlan) {
@@ -488,7 +494,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 	private void enableAliasYReserva(boolean enabled) {
 		alias.setEnabled(enabled);
+		alias.setReadOnly(!enabled);
 		reservar.setEnabled(enabled);
+		reservar.setReadOnly(!enabled);
 	}
 
 	private void setSerieVisibleAndPinInvisible(boolean visible) {
@@ -723,7 +731,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	public void setLineaSolicitudServicio(LineaSolicitudServicioDto linea) {
 		this.lineaSolicitudServicio = linea;
 		serie.setEnabled(true);
+		serie.setReadOnly(false);
 		pin.setEnabled(true);
+		pin.setReadOnly(false);
 		clearListBoxForSelect();
 		clean();
 		precioListaItem.setInnerHTML(currencyFormat.format(0d));

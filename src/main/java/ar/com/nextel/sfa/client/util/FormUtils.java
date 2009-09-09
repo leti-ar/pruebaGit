@@ -51,6 +51,7 @@ public class FormUtils {
 			if (field instanceof TextBoxBase) {
 				((TextBoxBase) field).setText("");
 				((TextBoxBase) field).setEnabled(true);
+				((TextBoxBase) field).setReadOnly(false);
 			} else if (field instanceof ListBox) {
 				((ListBox) field).setSelectedIndex(0);
 				((ListBox) field).setEnabled(true);
@@ -74,6 +75,7 @@ public class FormUtils {
 		for (Widget field : fields) {
 			if (field instanceof TextBoxBase) {
 				((TextBoxBase) field).setEnabled(true);
+				((TextBoxBase) field).setReadOnly(false);
 			} else if (field instanceof ListBox) {
 				((ListBox) field).setEnabled(true);
 			} else if (field instanceof CheckBox) {
@@ -93,6 +95,7 @@ public class FormUtils {
 		for (Widget field : fields) {
 			if (field instanceof TextBoxBase) {
 				((TextBoxBase) field).setEnabled(false);
+				((TextBoxBase) field).setReadOnly(true);
 			} else if (field instanceof ListBox) {
 				((ListBox) field).setEnabled(false);
 			} else if (field instanceof CheckBox) {

@@ -379,8 +379,11 @@ public class CuentaUIData extends UIData {
 		cbu.setWidth("90%");
 		nombreDivision.setWidth("90%");
 		usuario.setEnabled(false);
+		usuario.setReadOnly(true);
 		fechaCreacion.setEnabled(false);
+		fechaCreacion.setReadOnly(true);
 		oppNroOpp.setEnabled(false);
+		oppNroOpp.setReadOnly(true);
 		mesVto.setWidth("60");
 		anioVto.setWidth("70");
 		proveedorAnterior.setWidth("150");
