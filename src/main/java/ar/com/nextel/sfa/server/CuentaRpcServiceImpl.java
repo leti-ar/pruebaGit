@@ -9,6 +9,7 @@ import java.util.List;
 import javax.servlet.ServletException;
 
 import org.apache.commons.collections.Transformer;
+import org.dozer.MappingException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -252,13 +253,20 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	}
 
 	public CuentaDto saveCuenta(CuentaDto cuentaDto) {
-		Long idCuenta = cuentaBusinessService.saveCuenta(cuentaDto, mapper);
-		if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(KnownInstanceIdentifier.DIVISION.getKey()))
-			cuentaDto = (DivisionDto) mapper.map(repository.retrieve(Division.class, idCuenta),	DivisionDto.class);
-		else if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(KnownInstanceIdentifier.SUSCRIPTOR.getKey()))
-			cuentaDto = (SuscriptorDto) mapper.map(repository.retrieve(Suscriptor.class, idCuenta),	SuscriptorDto.class);
-		else
-			cuentaDto = mapper.map(repository.retrieve(Cuenta.class, idCuenta), GranCuentaDto.class);
+		try {
+			Long idCuenta = cuentaBusinessService.saveCuenta(cuentaDto, mapper);
+			if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(KnownInstanceIdentifier.DIVISION.getKey()))
+				cuentaDto = (DivisionDto) mapper.map(repository.retrieve(Division.class, idCuenta),	DivisionDto.class);
+			else if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(KnownInstanceIdentifier.SUSCRIPTOR.getKey()))
+				cuentaDto = (SuscriptorDto) mapper.map(repository.retrieve(Suscriptor.class, idCuenta),	SuscriptorDto.class);
+			else
+				cuentaDto = mapper.map(repository.retrieve(Cuenta.class, idCuenta), GranCuentaDto.class);
+		} catch (MappingException e) {
+			AppLogger.error("*** Error de mapeo al actualizar la cuenta: " + cuentaDto.getCodigoVantive() + " *** ");
+			AppLogger.error(e);
+		} catch (Exception e) {
+			AppLogger.error(e);
+		}
 		return cuentaDto;
 	}
 
@@ -436,13 +444,14 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	 * 
 	 */
 	public DivisionDto crearDivision(Long id_CuentaPadre) throws RpcExceptionMessages {
-		// Cuenta cuenta = repository.retrieve(Cuenta.class, id_CuentaPadre);
-		// return (DivisionDto) mapper.map(cuentaBusinessService.crearDivision(cuenta, getVendedor()),
-		// DivisionDto.class);
 		AppLogger.info("Creando Division...");
-		Cuenta cuenta = obtenerCtaPadre(id_CuentaPadre, KnownInstanceIdentifier.DIVISION.getKey());
-		DivisionDto divisionDto = (DivisionDto) mapper.map(cuentaBusinessService.crearDivision(cuenta,
-				getVendedor()), DivisionDto.class);
+		DivisionDto divisionDto;
+		try {
+			Cuenta cuenta = obtenerCtaPadre(id_CuentaPadre, KnownInstanceIdentifier.DIVISION.getKey());
+			divisionDto = (DivisionDto) mapper.map(cuentaBusinessService.crearDivision(cuenta,getVendedor()), DivisionDto.class);
+		} catch (Exception e) {
+			throw new RpcExceptionMessages(e.getMessage());
+		}
 		AppLogger.info("Creacion de Division finalizada.");
 		return divisionDto;
 	}
@@ -451,13 +460,14 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	 * 
 	 */
 	public SuscriptorDto crearSuscriptor(Long id_CuentaPadre) throws RpcExceptionMessages {
-		// Cuenta cuenta = repository.retrieve(Cuenta.class, id_CuentaPadre);
-		// return (SuscriptorDto) mapper.map(cuentaBusinessService.crearSuscriptor(cuenta, getVendedor()),
-		// SuscriptorDto.class);
 		AppLogger.info("Creando Suscriptor...");
-		Cuenta cuenta = obtenerCtaPadre(id_CuentaPadre, KnownInstanceIdentifier.SUSCRIPTOR.getKey());
-		SuscriptorDto suscriptorDto = (SuscriptorDto) mapper.map(cuentaBusinessService.crearSuscriptor(
-				cuenta, getVendedor()), SuscriptorDto.class);
+		SuscriptorDto suscriptorDto;
+		try {
+			Cuenta cuenta = obtenerCtaPadre(id_CuentaPadre, KnownInstanceIdentifier.SUSCRIPTOR.getKey());
+			suscriptorDto = (SuscriptorDto) mapper.map(cuentaBusinessService.crearSuscriptor(cuenta, getVendedor()), SuscriptorDto.class);
+		} catch (Exception e) {
+			throw new RpcExceptionMessages(e.getMessage());
+		}
 		AppLogger.info("Creacion de Suscriptor finalizada.");
 		return suscriptorDto;
 	}

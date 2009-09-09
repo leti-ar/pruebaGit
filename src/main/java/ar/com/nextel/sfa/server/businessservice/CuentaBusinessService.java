@@ -92,7 +92,7 @@ public class CuentaBusinessService {
 	}
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public Long saveCuenta(CuentaDto cuentaDto,MapperExtended mapper)  {
+	public Long saveCuenta(CuentaDto cuentaDto,MapperExtended mapper) throws Exception {
 		Cuenta cuenta = repository.retrieve(Cuenta.class, cuentaDto.getId());
 		
         //DATOS PAGO
