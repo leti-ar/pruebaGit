@@ -196,7 +196,10 @@ public class EditarCuentaUI extends ApplicationUI {
 		if (categoriaCuenta.equals(TipoCuentaEnum.CTA.getTipo())) {
 			contactos = ((GranCuentaDto)cuentaTab.getCuenta2editDto()).getContactos();
 		} else if (categoriaCuenta.equals(TipoCuentaEnum.SUS.getTipo())) {
-			contactos = ((SuscriptorDto)cuentaTab.getCuenta2editDto()).getGranCuenta().getContactos();
+			if (((SuscriptorDto)cuentaTab.getCuenta2editDto()).getDivision()!=null)
+				contactos = ((SuscriptorDto)cuentaTab.getCuenta2editDto()).getDivision().getGranCuenta().getContactos();
+			else
+				contactos = ((SuscriptorDto)cuentaTab.getCuenta2editDto()).getGranCuenta().getContactos();
 		} else if (categoriaCuenta.equals(TipoCuentaEnum.DIV.getTipo())) {
 			contactos = ((DivisionDto)cuentaTab.getCuenta2editDto()).getGranCuenta().getContactos();
 		}

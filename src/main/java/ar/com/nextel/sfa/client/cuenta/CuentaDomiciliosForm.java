@@ -131,7 +131,10 @@ public class CuentaDomiciliosForm extends Composite {
 
 		//List<DomiciliosCuentaDto> domicilios = new ArrayList<DomiciliosCuentaDto>();
 		if (isSuscriptor(cuentaDto)) {
-			domicilios = ((SuscriptorDto) cuentaDto).getGranCuenta().getPersona().getDomicilios();
+			if (((SuscriptorDto) cuentaDto).getDivision()!=null)
+				domicilios = ((SuscriptorDto) cuentaDto).getDivision().getGranCuenta().getPersona().getDomicilios();
+			else
+				domicilios = ((SuscriptorDto) cuentaDto).getGranCuenta().getPersona().getDomicilios();
 		} else {
 			domicilios = cuentaDto.getPersona().getDomicilios();
 		}
