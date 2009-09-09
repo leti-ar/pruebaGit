@@ -252,7 +252,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return buscarDTOinit;
 	}
 
-	public CuentaDto saveCuenta(CuentaDto cuentaDto) {
+	public CuentaDto saveCuenta(CuentaDto cuentaDto) throws RpcExceptionMessages {
 		try {
 			Long idCuenta = cuentaBusinessService.saveCuenta(cuentaDto, mapper);
 			if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(KnownInstanceIdentifier.DIVISION.getKey()))
@@ -266,6 +266,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 			AppLogger.error(e);
 		} catch (Exception e) {
 			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
 		}
 		return cuentaDto;
 	}

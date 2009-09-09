@@ -2,24 +2,26 @@ package ar.com.nextel.sfa.client.dto;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class TelefonoDto implements IsSerializable {
+public class TelefonoDto implements IsSerializable , IdentifiableDto, Cloneable {
 
+	private Long id; 
 	private TipoTelefonoDto tipoTelefono;
 	private String numeroLocal;
 	private String area;
 	private String interno;
 	private Boolean principal = Boolean.FALSE;
-	private PersonaDto persona;
-
+	//private PersonaDto persona;
+    private Long idPersona;
 	public TelefonoDto() {}
 	
 	public TelefonoDto(String area, String interno, String numeroLocal,
-			PersonaDto persona, Boolean principal, TipoTelefonoDto tipoTelefono) {
+			Long idPersona, Boolean principal, TipoTelefonoDto tipoTelefono) {
 		super();
 		this.area = area;
 		this.interno = interno;
 		this.numeroLocal = numeroLocal;
-		this.persona = persona;
+		//this.persona = persona;
+		this.idPersona = idPersona;
 		this.principal = principal;
 		this.tipoTelefono = tipoTelefono;
 	}
@@ -54,10 +56,23 @@ public class TelefonoDto implements IsSerializable {
 	public void setPrincipal(Boolean principal) {
 		this.principal = principal;
 	}
-	public PersonaDto getPersona() {
-		return persona;
+//	public PersonaDto getPersona() {
+//		return persona;
+//	}
+//	public void setPersona(PersonaDto persona) {
+//		this.persona = persona;
+//	}
+	public Long getId() {
+		return id;
 	}
-	public void setPersona(PersonaDto persona) {
-		this.persona = persona;
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public void setIdPersona(Long idPersona) {
+		this.idPersona = idPersona;
+	}
+	public Long getIdPersona() {
+		return idPersona;
 	}
 }

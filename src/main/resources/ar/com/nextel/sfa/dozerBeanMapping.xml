@@ -438,6 +438,14 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>plainDomicilios</a>
 			<b>domicilios</b>
 		</field>
+		<!--  field custom-converter-id="collectionTelefonosPersonaConverter">
+			<a>plainTelefonos</a>
+			<b>telefonos</b>
+		</field>
+		<field>
+			<a>emails</a>
+			<b>emails</b>
+		</field>-->				
 		<field custom-converter-id="enumToDto">
 			<a>cargo</a>
 			<b>cargo</b>
@@ -450,6 +458,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<field custom-converter-id="enumToDto">
 			<a>tipoTelefono</a>
 			<b>tipoTelefono</b>
+		</field>
+		<field  custom-converter-id="identifiableObjectToId">
+			<a>persona</a>
+			<b>idPersona</b>
 		</field>
 	</mapping>
 	<mapping>

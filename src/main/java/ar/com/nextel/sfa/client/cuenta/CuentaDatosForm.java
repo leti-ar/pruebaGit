@@ -1129,52 +1129,48 @@ public class CuentaDatosForm extends Composite {
 
 		//Panel Telefono/Fax
 		List <TelefonoDto>phonos = new ArrayList<TelefonoDto>();
-       if (!camposTabDatos.getTelPrincipalTextBox().getNumero().getText().equals("")) {
-        	TipoTelefonoDto tipoTel = new TipoTelefonoDto(TipoTelefonoEnum.PRINCIPAL.getTipo(),TipoTelefonoEnum.PRINCIPAL.toString());
-        	TelefonoDto tel =new TelefonoDto(
+        if (!camposTabDatos.getTelPrincipalTextBox().getNumero().getText().equals("")) {
+        	phonos.add(new TelefonoDto(
         			camposTabDatos.getTelPrincipalTextBox().getArea().getText(),
         			camposTabDatos.getTelPrincipalTextBox().getInterno().getText(),
         			camposTabDatos.getTelPrincipalTextBox().getNumero().getText(),
-        			personaDto,
+        			personaDto.getId(),
         			Boolean.TRUE,
-        			tipoTel
-        		);
-        	tel.setPersona(personaDto);
-        	phonos.add(tel);
+        			new TipoTelefonoDto(TipoTelefonoEnum.PRINCIPAL.getTipo(),TipoTelefonoEnum.PRINCIPAL.toString())
+        	    )
+        	);
+        	
          }
         if (!camposTabDatos.getTelAdicionalTextBox().getNumero().getText().equals("")) {
-        	TipoTelefonoDto tipoTel = new TipoTelefonoDto(TipoTelefonoEnum.ADICIONAL.getTipo(),TipoTelefonoEnum.ADICIONAL.toString());
         	phonos.add(new TelefonoDto(
         			camposTabDatos.getTelAdicionalTextBox().getArea().getText(),
         			camposTabDatos.getTelAdicionalTextBox().getInterno().getText(),
         			camposTabDatos.getTelAdicionalTextBox().getNumero().getText(),
-        			personaDto,
+        			personaDto.getId(),
         			Boolean.FALSE,
-        			tipoTel
+        			new TipoTelefonoDto(TipoTelefonoEnum.ADICIONAL.getTipo(),TipoTelefonoEnum.ADICIONAL.toString())
         		)
         	);
          }
         if (!camposTabDatos.getTelCelularTextBox().getNumero().getText().equals("")) {
-        	TipoTelefonoDto tipoTel = new TipoTelefonoDto(TipoTelefonoEnum.CELULAR.getTipo(),TipoTelefonoEnum.CELULAR.toString());
         	phonos.add(new TelefonoDto(
         			camposTabDatos.getTelCelularTextBox().getArea().getText(),
                     "",
         			camposTabDatos.getTelCelularTextBox().getNumero().getText(),
-        			personaDto,
+        			personaDto.getId(),
         			Boolean.FALSE,
-        			tipoTel
+        			new TipoTelefonoDto(TipoTelefonoEnum.CELULAR.getTipo(),TipoTelefonoEnum.CELULAR.toString())
         		)
         	);
          }
         if (!camposTabDatos.getTelFaxTextBox().getNumero().getText().equals("")) {
-        	TipoTelefonoDto tipoTel = new TipoTelefonoDto(TipoTelefonoEnum.FAX.getTipo(),TipoTelefonoEnum.FAX.toString());
         	phonos.add(new TelefonoDto(
         			camposTabDatos.getTelFaxTextBox().getArea().getText(),
         			camposTabDatos.getTelFaxTextBox().getInterno().getText(),
         			camposTabDatos.getTelFaxTextBox().getNumero().getText(),
-        			personaDto,
+        			personaDto.getId(),
         			Boolean.FALSE,
-        			tipoTel
+        			new TipoTelefonoDto(TipoTelefonoEnum.FAX.getTipo(),TipoTelefonoEnum.FAX.toString())
         		)
         	);
          }
@@ -1270,10 +1266,10 @@ public class CuentaDatosForm extends Composite {
         			else
         				if("REVISAR POR CONYUGE".equals(result.getEstado())) {
         					MessageDialog.getInstance().setDialogTitle("Resultado Veraz");
-        					MessageDialog.getInstance().showAceptar("La respuesta de Veraz ha sido REVISAR POR CÓNYUGE. Puede continuar con la operaci\363n.", MessageDialog.getCloseCommand());							
+        					MessageDialog.getInstance().showAceptar("La respuesta de Veraz ha sido REVISAR POR CÓNYUGE. Puede continuar con la operación.", MessageDialog.getCloseCommand());							
         				} else {
         					MessageDialog.getInstance().setDialogTitle("Resultado Veraz");
-        					MessageDialog.getInstance().showAceptar("La Respuesta de Veraz ha sido REVISAR. Puede continuar con la operaci�n.", MessageDialog.getCloseCommand());
+        					MessageDialog.getInstance().showAceptar("La Respuesta de Veraz ha sido REVISAR. Puede continuar con la operación.", MessageDialog.getCloseCommand());
         				}
         }
       

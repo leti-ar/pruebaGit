@@ -1,5 +1,8 @@
 package ar.com.nextel.sfa.server.businessservice;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,7 @@ import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.EstadoOportunidad;
 import ar.com.nextel.model.oportunidades.beans.MotivoNoCierre;
 import ar.com.nextel.model.oportunidades.beans.OportunidadNegocio;
+import ar.com.nextel.model.personas.beans.Email;
 import ar.com.nextel.model.personas.beans.Persona;
 import ar.com.nextel.model.personas.beans.Telefono;
 import ar.com.nextel.services.exceptions.BusinessException;
@@ -120,9 +124,11 @@ public class CuentaBusinessService {
 		}
 
 		//FIXME: revisar mapeo de Persona/Telefono/Mail en dozer para no tener que hacer esto ***********************
-		for (TelefonoDto tel : cuentaDto.getPersona().getTelefonos()) {                                
+		removerTelefonosDePersona(cuenta.getPersona());
+		for (TelefonoDto tel : cuentaDto.getPersona().getTelefonos()) {
 			addTelefonosAPersona(tel,cuenta.getPersona(),mapper);                                      
-		}                                                                                              
+		}                     
+		removerEmailsDePersona(cuenta.getPersona());
 		for (EmailDto email : cuentaDto.getPersona().getEmails()) {
 			addEmailsAPersona(email,cuenta.getPersona());
 		}
@@ -131,6 +137,7 @@ public class CuentaBusinessService {
 				Persona persona = cont.getPersona();
 				for (ContactoCuentaDto contDto : (((GranCuentaDto) cuentaDto).getContactos())) {
 					if (cont.getId()==contDto.getId())  {
+						removerTelefonosDePersona(persona);
 						for (TelefonoDto tel : contDto.getPersona().getTelefonos()) {
 							addTelefonosAPersona(tel,persona,mapper);
 						}
@@ -175,6 +182,22 @@ public class CuentaBusinessService {
 	    return oportunidad;     
 	}
 	
+	private void removerTelefonosDePersona(Persona persona) {
+		List<Telefono> telefonos = new ArrayList<Telefono>(persona.getTelefonos());
+		for (Telefono tel : telefonos) {
+			persona.removeTelefono(tel);
+			repository.delete(tel);
+		}
+	}
+	
+	private void removerEmailsDePersona(Persona persona) {
+		List<Email> emails = new ArrayList<Email>(persona.getEmails());
+		for (Email email : emails) {
+			persona.removeEmail(email);
+			repository.delete(email);
+		}
+	}
+	
 	/**
 	 *   
 	 * @param tel
@@ -182,39 +205,16 @@ public class CuentaBusinessService {
 	 */
 	private void addTelefonosAPersona(TelefonoDto tel, Persona persona, MapperExtended mapper) {
 		if (tel.getTipoTelefono().getId()==TipoTelefonoEnum.PRINCIPAL.getTipo()) {
-			if (persona.getTelefonoPrincipal()!=null) {
-				persona.getTelefonoPrincipal().setArea(tel.getArea());
-				persona.getTelefonoPrincipal().setNumeroLocal(tel.getNumeroLocal());
-				persona.getTelefonoPrincipal().setInterno(tel.getInterno());
-			} else {
-				persona.setTelefonoPrincipal(mapper.map(tel, Telefono.class));	
-			}
+			persona.setTelefonoPrincipal(mapper.map(tel, Telefono.class));	
 		}
 		else if (tel.getTipoTelefono().getId()==TipoTelefonoEnum.ADICIONAL.getTipo()) {
-			if (persona.getTelefonoAdicional()!=null) {
-				persona.getTelefonoAdicional().setArea(tel.getArea());
-				persona.getTelefonoAdicional().setNumeroLocal(tel.getNumeroLocal());
-				persona.getTelefonoAdicional().setInterno(tel.getInterno());
-			} else {
-				persona.setTelefonoAdicional(mapper.map(tel, Telefono.class));	
-			}
+			persona.setTelefonoAdicional(mapper.map(tel, Telefono.class));	
 		}
 		else if (tel.getTipoTelefono().getId()==TipoTelefonoEnum.CELULAR.getTipo()) {
-			if (persona.getTelefonoCelular()!=null) {
-				persona.getTelefonoCelular().setArea(tel.getArea());
-				persona.getTelefonoCelular().setNumeroLocal(tel.getNumeroLocal());
-			} else {
-				persona.setTelefonoCelular(mapper.map(tel, Telefono.class));	
-			}
+			persona.setTelefonoCelular(mapper.map(tel, Telefono.class));	
 		}
 		else if (tel.getTipoTelefono().getId()==TipoTelefonoEnum.FAX.getTipo()) {
-			if (persona.getTelefonoFax()!=null) {
-				persona.getTelefonoFax().setArea(tel.getArea());
-				persona.getTelefonoFax().setNumeroLocal(tel.getNumeroLocal());
-				persona.getTelefonoFax().setInterno(tel.getInterno());
-			} else {
-				persona.setTelefonoFax(mapper.map(tel, Telefono.class));	
-			}
+			persona.setTelefonoFax(mapper.map(tel, Telefono.class));	
 		}
 	}
 	
