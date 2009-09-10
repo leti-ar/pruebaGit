@@ -8,7 +8,8 @@ public enum TipoDocumentoEnum {
 	LE      (5),
 	LC      (6),
 	CUIT_EXT(7),
-	PAS     (8);
+	PAS     (8),
+	CUITCUIL(2);
 	private long tipo;
 	TipoDocumentoEnum(long t) {
 		tipo=t;

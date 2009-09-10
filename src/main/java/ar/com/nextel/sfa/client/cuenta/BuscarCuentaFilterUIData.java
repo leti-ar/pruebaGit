@@ -10,7 +10,9 @@ import ar.com.nextel.sfa.client.dto.BusquedaPredefinidaDto;
 import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
+import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
+import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.ExcluyenteWidget;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.nextel.sfa.client.widget.ValidationListBox;
@@ -18,7 +20,10 @@ import ar.com.nextel.sfa.client.widget.ValidationTextBox;
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItemImpl;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
+import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FocusListener;
@@ -45,7 +50,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 	private ValidationTextBox numeroSolicitudServicioTextBox = new ValidationTextBox("[0-9]*");
 	private ValidationTextBox responsableTextBox = new ValidationTextBox("[a-zA-Z\\%]*");
 	private ValidationListBox grupoDocumentoCombo;
-	private ValidationTextBox numeroDocumentoTextBox = new ValidationTextBox("[0-9\\-]*");
+	private ValidationTextBox numeroDocumentoTextBox = new ValidationTextBox(RegularExpressionConstants.dni);
 	private ValidationListBox predefinidasCombo;
 	private ListBox resultadosCombo;
 
@@ -75,6 +80,17 @@ public class BuscarCuentaFilterUIData extends UIData {
 						setCombos(result);
 					}
 				});
+		
+		grupoDocumentoCombo.addChangeHandler(new ChangeHandler() {
+			public void onChange(ChangeEvent arg0) {
+				numeroDocumentoTextBox.setText("");
+				if (grupoDocumentoCombo.getSelectedItemId().equals(TipoDocumentoEnum.CUITCUIL.getTipo()+"") ){
+					numeroDocumentoTextBox.setPattern(RegularExpressionConstants.cuilCuit);
+				} else if (grupoDocumentoCombo.getSelectedItemId().equals(TipoDocumentoEnum.DNI.getTipo()+"")) {
+					numeroDocumentoTextBox.setPattern(RegularExpressionConstants.dni);
+				}	
+			}
+		});
 	}
 
 	/**
