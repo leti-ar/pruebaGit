@@ -151,6 +151,15 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 		footerBar = new FormButtonsBar();
 		footerBar.addLink(crearSSLink);
 
+		HTML refresh = IconFactory.refresh("Recargar");
+		refresh.addStyleName("floatRight mr10 mt3");
+		refresh.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				searchOperacionesYReservas();
+			}
+		});
+		
+		add(refresh);
 		add(reservasLabel);
 		add(reservasNoConsultadas);
 		add(flowPanelReservaT);
