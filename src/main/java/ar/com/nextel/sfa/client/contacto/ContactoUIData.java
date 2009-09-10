@@ -18,17 +18,22 @@ import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoEmailDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
+import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
 import ar.com.nextel.sfa.client.enums.TipoEmailEnum;
 import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
+import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.TelefonoTextBox;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.nextel.sfa.client.widget.ValidationTextBox;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
+import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Label;
@@ -40,7 +45,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class ContactoUIData extends UIData implements ChangeListener, ClickListener {
 
 	private ListBox tipoDocumento = new ListBox();
-	private TextBox numeroDocumento = new TextBox();
+	private RegexTextBox numeroDocumento = new RegexTextBox(RegularExpressionConstants.dni);
 	private ValidationTextBox nombre = new ValidationTextBox("[a-zA-Z\\%]*");
 	private ValidationTextBox apellido = new ValidationTextBox("[a-zA-Z\\%]*");
 	private ListBox sexo = new ListBox();
@@ -114,7 +119,7 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 		sexo.setWidth("100px");
 		cargo.setWidth("250px");
 		
-		numeroDocumento.setMaxLength(10);
+		//numeroDocumento.setMaxLength(10);
 		nombre.setMaxLength(19);
 		apellido.setMaxLength(19);
 		
@@ -127,6 +132,22 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 						setCombos(result);
 					}
 				});
+		
+		tipoDocumento.addChangeHandler(new ChangeHandler() {
+			public void onChange(ChangeEvent arg0) {
+				numeroDocumento.setText("");
+				if (tipoDocumento.getSelectedItemId().equals(TipoDocumentoEnum.CUIL.getTipo()+"") ||
+					tipoDocumento.getSelectedItemId().equals(TipoDocumentoEnum.CUIT.getTipo()+"") ||
+					tipoDocumento.getSelectedItemId().equals(TipoDocumentoEnum.CUIT_EXT.getTipo()+"") ){
+					numeroDocumento.setPattern(RegularExpressionConstants.cuilCuit);
+				} else if (tipoDocumento.getSelectedItemId().equals(TipoDocumentoEnum.DNI.getTipo()+"")) {
+					numeroDocumento.setPattern(RegularExpressionConstants.dni);
+				} else {
+					numeroDocumento.setPattern(RegularExpressionConstants.documentoOtros);
+				}
+			}
+		});
+		
 	}
 
 	public void onChange(Widget sender) {
