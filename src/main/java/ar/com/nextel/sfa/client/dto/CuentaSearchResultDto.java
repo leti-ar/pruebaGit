@@ -1,5 +1,7 @@
 package ar.com.nextel.sfa.client.dto;
 
+import ar.com.nextel.sfa.client.context.ClientContext;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class CuentaSearchResultDto implements IsSerializable{
@@ -151,8 +153,8 @@ public class CuentaSearchResultDto implements IsSerializable{
 		this.sincronizada = sincronizada;
 	}
 
-	public boolean isPuedeVerInfocom() {
-		return puedeVerInfocom;
+	public boolean isPuedeVerInfocom() {		
+		return ClientContext.getInstance().getUsuario().getUserName().equals(this.ejecutivo);
 	}
 
 	public void setPuedeVerInfocom(boolean puedeVerInfocom) {

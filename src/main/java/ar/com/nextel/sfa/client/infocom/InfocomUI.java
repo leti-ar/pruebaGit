@@ -27,7 +27,9 @@ public class InfocomUI extends ApplicationUI {
 	private FlexTable responsableFlexTable;
 	private String idCuenta;
 	private String responsablePago;
-	private static InfocomUI instance = new InfocomUI();
+	private String razonSocial;
+	private String idCliente;
+	private static InfocomUI instance;
 	
 	
 	public static InfocomUI getInstance() {
@@ -41,9 +43,6 @@ public class InfocomUI extends ApplicationUI {
 	private InfocomUI() {
 		super();
 		infocomUIData = new InfocomUIData();
-//		String cuentaID = HistoryUtils.getParam("cuenta_id");
-//		infocomUIData.setIdCuenta(cuentaID);
-//		idCuenta = cuentaID;
 	}
 	
 	public void firstLoad() {
@@ -66,6 +65,12 @@ public class InfocomUI extends ApplicationUI {
 	
 	public boolean load() {
 		String cuentaID = HistoryUtils.getParam("cuenta_id");
+		return loadInfocom(cuentaID);
+	}
+	
+	private boolean loadInfocom(String cuentaID) {
+		razonSocial = null;
+		idCliente = null;
 		infocomUIData.setIdCuenta(cuentaID);
 		idCuenta = cuentaID;
 		infocomUIData.getResponsablePago().clear();
@@ -74,8 +79,12 @@ public class InfocomUI extends ApplicationUI {
 		return true;
 	}
 	
+//	public boolean loadVerInfocom(long cuentaId) {
+//		String cuentaID = String.valueOf(cuentaId);
+//		return loadInfocom(cuentaID);
+//	}
+	
 	public void invocarServicios (String idCuenta, String responsablePago) {
-		//this.getInfocomData(idCuenta, responsablePago);
 		this.getDetalleCreditoFidelizacion(idCuenta, true);	
 		fidelizacionInfocomUI.getFidelizacionTitledPanel().setVisible(true);
 		this.getCuentaCorriente(idCuenta, responsablePago);
@@ -131,6 +140,8 @@ public class InfocomUI extends ApplicationUI {
 			public void success(InfocomInitializer result) {
 				if (result != null) {
 					infocomUIData.setInfocom(result);
+					razonSocial = result.getRazonSocial();
+					idCliente = result.getNumeroCuenta();
 				}
 			}
 		});
@@ -152,6 +163,27 @@ public class InfocomUI extends ApplicationUI {
 
 	public void setIdCuenta(String idCuenta) {
 		this.idCuenta = idCuenta;
+	}
+
+
+	public String getRazonSocial() {
+		return razonSocial;
+	}
+
+
+	public void setRazonSocial(String razonSocial) {
+		this.razonSocial = razonSocial;
+	}
+
+
+	public String getIdCliente() {
+		return idCliente;
+	}
+
+
+	public void setIdCliente(String idCliente) {
+		this.idCliente = idCliente;
 	}	
 
+	
 }
