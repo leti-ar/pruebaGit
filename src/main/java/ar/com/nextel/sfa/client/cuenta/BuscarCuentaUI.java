@@ -46,7 +46,6 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 	public void firstLoad() {
 		buscadorCuentaFilterForm = new BuscarCuentaFilterUI(this);
 		buscarCuentaResultPanel = new BuscarCuentaResultUI(this);
-		buscadorCuentaFilterForm.setBuscarCuentaResultPanel(buscarCuentaResultPanel);
 
 		mainPanel.add(buscadorCuentaFilterForm);
 		mainPanel.add(buscarCuentaResultPanel);
