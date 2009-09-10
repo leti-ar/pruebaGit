@@ -5,6 +5,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.enums.PrioridadEnum;
@@ -157,7 +158,7 @@ public class CuentaEdicionTabPanel {
 			}
 			public void onTabSelected(SourcesTabEvents arg0, int arg1) {
 				if(arg1 == 3){
-					cuentaInfocomForm.setIdCuenta(cliente.getText());
+					//cuentaInfocomForm.setIdCuenta(cliente.getText());
 					cuentaInfocomForm.load();					
 				}
 			}
@@ -333,7 +334,7 @@ public class CuentaEdicionTabPanel {
 			    tabPanel.remove(i);			
 		}
 		//si no es prospect agrega tab infocom
-		if (!RegularExpressionConstants.isVancuc(cuenta2editDto.getCodigoVantive()))
+		if (!RegularExpressionConstants.isVancuc(cuenta2editDto.getCodigoVantive()) && (ClientContext.getInstance().getUsuario().getUserName().equals(cuenta2editDto.getVendedor().getUsuarioDto().getUserName()))) 
 			tabPanel.add(cuentaInfocomForm, Sfa.constant().infocom());
 
 		//si viene de opp agrega notas (Dejar comentado)
@@ -413,6 +414,11 @@ public class CuentaEdicionTabPanel {
 	
 	public void validarCompletitud() {
 		validarCompletitud(true);
+	}
+	
+	public void dejarSoloInfocom() {
+		tabPanel.remove(0);
+		
 	}
 	
 	public boolean isFormCompletoYguardado() {

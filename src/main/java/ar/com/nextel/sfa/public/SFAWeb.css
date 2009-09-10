@@ -655,6 +655,10 @@ input[disabled], input[readonly], select[disabled], select[readonly], checkbox[d
 	margin-left: 5;
 }
 
+.fondoGris {
+background-color: #DADADA;
+}
+
 /*.table-external {
 border:1px solid gray;
 clear:left;
