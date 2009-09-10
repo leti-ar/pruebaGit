@@ -21,21 +21,23 @@ public class ReservarNumeroDialog extends NextelDialog implements ClickListener 
 	private SimpleLink cerrar = new SimpleLink("cerrrar");
 	private NextelTable numerosDiponiblesTable;
 	private List<AvailableNumberDto> numerosDiponibles;
+	private SimplePanel numerosDiponiblesWrapper;
 	private Command commandAceptar;
+	private HTML mensaje;
 
 	public ReservarNumeroDialog() {
 		super("Números sugeridos", false, true);
-		HTML mensaje = new HTML(Sfa.constant().ERR_NUMERO_NO_DISPONIBLE());
+		mensaje = new HTML(Sfa.constant().ERR_NUMERO_NO_DISPONIBLE());
 		mensaje.setWidth("300px");
 		mensaje.addStyleName("m10");
 		add(mensaje);
 
 		numerosDiponiblesTable = new NextelTable(0);
-		SimplePanel wrapper = new SimplePanel();
-		wrapper.addStyleName("reservaTelefonoWrapper");
-		wrapper.add(numerosDiponiblesTable);
+		numerosDiponiblesWrapper = new SimplePanel();
+		numerosDiponiblesWrapper.addStyleName("reservaTelefonoWrapper");
+		numerosDiponiblesWrapper.add(numerosDiponiblesTable);
 		numerosDiponiblesTable.setWidth("100px");
-		add(wrapper);
+		add(numerosDiponiblesWrapper);
 
 		setFormButtonsVisible(true);
 		aceptar.addClickListener(this);
@@ -57,14 +59,24 @@ public class ReservarNumeroDialog extends NextelDialog implements ClickListener 
 		}
 	}
 
-	public void show(List<AvailableNumberDto> numeros, Command aceptar) {
+	public void show(List<AvailableNumberDto> numeros, Command commandAceptar) {
 		numerosDiponibles = numeros;
-		commandAceptar = aceptar;
+		this.commandAceptar = commandAceptar;
 		while (numerosDiponiblesTable.getRowCount() > numeros.size()) {
 			numerosDiponiblesTable.removeRow(0);
 		}
-		for (int i = 0; i < numerosDiponibles.size(); i++) {
+		int i = 0;
+		for (; i < numerosDiponibles.size(); i++) {
 			numerosDiponiblesTable.setHTML(i, 0, "" + numerosDiponibles.get(i).getAvailableNumber());
+		}
+		if (i == 0) {
+			mensaje.setHTML(Sfa.constant().ERR_NINGUN_NUMERO_DISPONIBLE());
+			aceptar.setVisible(false);
+			numerosDiponiblesWrapper.setVisible(false);
+		} else {
+			mensaje.setHTML(Sfa.constant().ERR_NUMERO_NO_DISPONIBLE());
+			aceptar.setVisible(true);
+			numerosDiponiblesWrapper.setVisible(true);
 		}
 		showAndCenter();
 	}
