@@ -145,6 +145,7 @@ public class VariosSSUI extends Composite {
 		scoringPanel = new TitledPanel(titleImage + Sfa.constant().consultarScoringTitle());
 		final SimpleLink consultarScoring = new SimpleLink("Consultar Scoring");
 		consultarScoring.addStyleName("ml5");
+		consultarScoring.addStyleName("infocomSimpleLink");
 		scoring = new InlineHTML();
 		scoring.addStyleName("ml5");
 		scoringWrapper = new HorizontalPanel();
