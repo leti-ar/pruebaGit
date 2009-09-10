@@ -232,7 +232,7 @@ A {
 	height: 200px;
 	overflow: auto;
 	background-color: #FFF;
-	border:1px solid gray;
+	border: 1px solid gray;
 	margin-left: 8px;
 	margin-right: 8px;
 }
@@ -526,7 +526,7 @@ A {
 }
 
 .floatLeft {
-	float: left;	
+	float: left;
 }
 
 .fontNormalGris {
@@ -561,7 +561,7 @@ A {
 
 .gwt-ItemSolicitudDialog .topBar {
 	border-bottom: 1px #CCC solid;
-	padding: 5px; 
+	padding: 5px;
 	margin-bottom: 5px;
 	background-image: url(images/sch_bkg.gif);
 	background-repeat: repeat-x;
@@ -571,49 +571,57 @@ A {
 
 .reservaTelefonoWrapper {
 	height: 100px;
-	width:120;
-	margin-top:20px;
-	margin-left:100px;
-	margin-right:100px;
-	margin-bottom:20px;
+	width: 120;
+	margin-top: 20px;
+	margin-left: 100px;
+	margin-right: 100px;
+	margin-bottom: 20px;
 	overflow: auto;
 	border: 1px #CCC solid;
 }
 
-.reservaTelefonoWrapper TD{
+.reservaTelefonoWrapper TD {
 	text-align: center;
 }
 
-.gwt-CerrarSSDialog .cierreExitosoTable{
+.gwt-CerrarSSDialog .cierreExitosoTable {
 	border: #ccc 1px solid;
 }
 
-SPAN.error{color: red;}
-SPAN.warn{color: #FFA500;}
-SPAN.info{color: #000;}
+SPAN.error {
+	color: red;
+}
+
+SPAN.warn {
+	color: #FFA500;
+}
+
+SPAN.info {
+	color: #000;
+}
 
 .numeroResultadosLabel {
-font-weight: normal;
+	font-weight: normal;
 }
 
 .oppEnCursoTitulosLabel {
-color:#A83C56;
-font-weight:bold;
-margin:4px 0;
-width:100%;
+	color: #A83C56;
+	font-weight: bold;
+	margin: 4px 0;
+	width: 100%;
 }
 
 .oppEnCursoCantLabel {
-color:gray;
-font-weight:normal;
+	color: gray;
+	font-weight: normal;
 }
 
 .infocomSimpleLink {
-text-decoration:underline;
+	text-decoration: underline;
 }
 
 .infocomTituloLabel {
-color:#A83C56;
+	color: #A83C56;
 }
 
 .infocomDescripcionTable {
@@ -624,21 +632,22 @@ color:#A83C56;
 }
 
 .oppDebugFont {
-color:white;
-font-weight:normal;
+	color: white;
+	font-weight: normal;
 }
 
-.gwt-TextBox-readonly, .gwt-TextArea-readonly {
- background-color: #DEDEDE;
- color: #000000;
- cursor: default;
-} 	
-input[disabled], input[readonly], select[disabled], select[readonly], checkbox[disabled], 
-	checkbox[readonly], textarea[disabled], textarea[readonly] {
- background-color: #DEDEDE;
- color: #000000;
- cursor: default;
-} 
+.gwt-TextBox-readonly,.gwt-TextArea-readonly {
+	background-color: #DEDEDE;
+	color: #000000;
+	cursor: default;
+}
+
+input[disabled],input[readonly],select[disabled],select[readonly],checkbox[disabled],checkbox[readonly],textarea[disabled],textarea[readonly]
+	{
+	background-color: #DEDEDE;
+	color: #000000;
+	cursor: default;
+}
 
 .dataTableInfocom td {
 	border-right: 1px solid #EBEBEB;
@@ -651,14 +660,35 @@ input[disabled], input[readonly], select[disabled], select[readonly], checkbox[d
 }
 
 .fontNormal {
-	font-weight:normal;
+	font-weight: normal;
 	margin-left: 5;
 }
 
-.fondoGris {
-background-color: #DADADA;
+.botonLiberarTel,.botonReservarTel {
+	margin-left: 10px;
+	width: 22;
+	height: 21;
+	border: none;
+	background-color: transparent;
+	background-repeat: no-repeat;
+	background-position: 0 0; 
+	cursor: pointer;
 }
 
+.botonLiberarTel {
+	background-image: url("images/btn-icon-liberar.gif");
+}
+
+.botonReservarTel {
+	color: #A93F59;
+	font-weight: 600;
+	font-size: 11px;
+	background-image: url("images/btn-ok.gif");
+}
+
+.fondoGris {
+	background-color: #DADADA;
+}
 /*.table-external {
 border:1px solid gray;
 clear:left;
