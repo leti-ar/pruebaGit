@@ -96,7 +96,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					new DefaultWaitCallback<SolicitudServicioDto>() {
 						public void success(SolicitudServicioDto solicitud) {
 							editarSSUIData.setSaved(true);
-							varios.setScoringVisible(!solicitud.getGrupoSolicitud().isCDW());
+							// varios.setScoringVisible(!solicitud.getGrupoSolicitud().isCDW());
 							razonSocialClienteBar.setCliente(solicitud.getCuenta().getCodigoVantive());
 							razonSocialClienteBar.setRazonSocial(solicitud.getCuenta().getPersona()
 									.getRazonSocial());
@@ -255,8 +255,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					public void success(SolicitudServicioDto result) {
 						editarSSUIData.setSolicitud(result);
 						datos.refresh();
-//						MessageDialog.getInstance().showAceptar("Guardado Exitoso",
-//								Sfa.constant().MSG_SOLICITUD_GUARDADA_OK(), MessageDialog.getCloseCommand());
+						// MessageDialog.getInstance().showAceptar("Guardado Exitoso",
+						// Sfa.constant().MSG_SOLICITUD_GUARDADA_OK(), MessageDialog.getCloseCommand());
 						editarSSUIData.setSaved(true);
 					}
 				});
