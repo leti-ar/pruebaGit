@@ -6,17 +6,18 @@ import java.util.List;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.MotivoNoCierreDto;
-import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
 import ar.com.nextel.sfa.client.enums.EstadoOportunidadEnum;
 import ar.com.nextel.sfa.client.enums.TipoTarjetaEnum;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
+import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.RadioButtonGroup;
 import ar.com.nextel.sfa.client.widget.RadioButtonWithValue;
 import ar.com.nextel.sfa.client.widget.TelefonoTextBox;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
+import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
 
@@ -37,35 +38,35 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class CuentaUIData extends UIData {
 
-	private ListBox tipoDocumento     = new ListBox();
-	private ListBox sexo              = new ListBox();
-	private ListBox contribuyente     = new ListBox();
-	private ListBox rubro             = new ListBox();
-	private ListBox formaPago         = new ListBox();
-	private ListBox claseCliente      = new ListBox();
-	private ListBox proveedorAnterior = new ListBox();
-	private ListBox cargo             = new ListBox();
-	private ListBox tipoCuentaBancaria= new ListBox();
-	private ListBox tipoTarjeta       = new ListBox();
-	private ListBox tipoCanalVentas   = new ListBox();
-	private ListBox mesVto            = new ListBox();
-	private ListBox estadoOpp         = new ListBox();
+	private ListBox tipoDocumento      = new ListBox();
+	private ListBox sexo               = new ListBox();
+	private ListBox contribuyente      = new ListBox();
+	private ListBox rubro              = new ListBox();
+	private ListBox formaPago          = new ListBox();
+	private ListBox claseCliente       = new ListBox();
+	private ListBox proveedorAnterior  = new ListBox();
+	private ListBox cargo              = new ListBox();
+	private ListBox tipoCuentaBancaria = new ListBox();
+	private ListBox tipoTarjeta        = new ListBox();
+	private ListBox tipoCanalVentas    = new ListBox();
+	private ListBox mesVto             = new ListBox();
+	private ListBox estadoOpp          = new ListBox();
 	
-	private TextBox numeroDocumento  = new TextBox();
-	private TextBox razonSocial      = new TextBox();
-	private TextBox nombre           = new TextBox();
-	private TextBox apellido         = new TextBox();
-	private TextBox categoria        = new TextBox();
-	private TextBox nombreDivision   = new TextBox();
-	private TextBox iibb             = new TextBox();
-	private TextBox use              = new TextBox();
-	private TextBox cicloFacturacion = new TextBox();
-	private TextBox emailPersonal    = new TextBox();
-	private TextBox emailLaboral     = new TextBox();
-	private TextBox cbu              = new TextBox();
-	private TextBox numeroTarjeta    = new TextBox();
-	private TextBox anioVto          = new TextBox();
-
+	private TextBox numeroDocumento    = new TextBox();
+	private TextBox razonSocial        = new TextBox();
+	private TextBox nombre             = new TextBox();
+	private TextBox apellido           = new TextBox();
+	private TextBox categoria          = new TextBox();
+	private TextBox nombreDivision     = new TextBox();
+	private TextBox iibb               = new TextBox();
+	private TextBox use                = new TextBox();
+	private TextBox cicloFacturacion   = new TextBox();
+	private TextBox emailPersonal      = new TextBox();
+	private TextBox emailLaboral       = new TextBox();
+	private RegexTextBox cbu           = new RegexTextBox(RegularExpressionConstants.numeros);
+	private RegexTextBox anioVto       = new RegexTextBox(RegularExpressionConstants.numeros);
+	private RegexTextBox numeroTarjeta = new RegexTextBox(RegularExpressionConstants.numeros);
+	
 	private TelefonoTextBox telPrincipalTextBox = new TelefonoTextBox();
 	private TelefonoTextBox telAdicionalTextBox = new TelefonoTextBox();
 	private TelefonoTextBox telCelularTextBox   = new TelefonoTextBox(false);
@@ -154,6 +155,7 @@ public class CuentaUIData extends UIData {
 		formaPago.addChangeListener(new ChangeListener() {
 			public void onChange(Widget sender) {
 				CuentaDatosForm.getInstance().setVisiblePanelFormaPagoYActualizarCamposObligatorios(((ListBox) sender).getSelectedItemId());
+				setAtributosNumeroTarjeta();
 			}
 		});
 		nombre.addFocusListener(new FocusListener() {
@@ -231,15 +233,9 @@ public class CuentaUIData extends UIData {
 		fields.add(cbu);
 		fields.add(numeroTarjeta);
 		
-//		fields.add(oppVencimiento);
-//		fields.add(oppEstado);
-//		fields.add(oppCompetenciaProv);
-//		fields.add(oppCompetenciaEquipo);
-//		fields.add(oppVisitas);
 		fields.add(oppTipoDocumento);
 		fields.add(oppRubro);
 		fields.add(oppTerminalesEstimadas);
-//		fields.add(estadoOpp);
 	}
 
 	private void setCombos() {
@@ -395,9 +391,6 @@ public class CuentaUIData extends UIData {
 		
 	}
 	
-	/*
-	 * TODO Pasar esto a una constante, no va en una UIData. rgm
-	 */
 	private void setAtributosNumeroTarjeta() {
 		if(tipoTarjeta.getSelectedItemId().equals(TipoTarjetaEnum.VIS.getId())
 		 ||tipoTarjeta.getSelectedItemId().equals(TipoTarjetaEnum.MAS.getId())
@@ -570,13 +563,13 @@ public class CuentaUIData extends UIData {
 	public ListBox getMesVto() {
 		return mesVto;
 	}
-	public TextBox getAnioVto() {
+	public RegexTextBox getAnioVto() {
 		return anioVto;
 	}
-	public TextBox getCbu() {
+	public RegexTextBox getCbu() {
 		return cbu;
 	}
-	public TextBox getNumeroTarjeta() {
+	public RegexTextBox getNumeroTarjeta() {
 		return numeroTarjeta;
 	}
 	public List<TipoTelefonoDto> getTipoTelefono() {

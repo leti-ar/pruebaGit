@@ -34,6 +34,7 @@ import ar.com.nextel.sfa.client.enums.TipoCuentaEnum;
 import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
 import ar.com.nextel.sfa.client.enums.TipoEmailEnum;
 import ar.com.nextel.sfa.client.enums.TipoFormaPagoEnum;
+import ar.com.nextel.sfa.client.enums.TipoTarjetaEnum;
 import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.FormUtils;
@@ -844,6 +845,10 @@ public class CuentaDatosForm extends Composite {
 		}
 		
 		//PANEL FORMA DE PAGO
+		if (!camposTabDatos.getFormaPago().getSelectedItemId().equals(cuentaTab.getCuenta2editDto().getFormaPago().getId()+"")) {
+			return true;
+		}
+		
 		if (camposTabDatos.getFormaPago().getSelectedItemId().equals(TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo())) {
 			if (cuentaTab.getCuenta2editDto().getDatosPago() instanceof DatosDebitoCuentaBancariaDto) {
 				if	(FormUtils.fieldDirty(camposTabDatos.getCbu(), ((DatosDebitoCuentaBancariaDto) cuentaTab.getCuenta2editDto().getDatosPago()).getCbu())
@@ -1050,21 +1055,38 @@ public class CuentaDatosForm extends Composite {
 			validator.addTarget(camposTabDatos.getTelCelularTextBox().getArea()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelCelularTextBox().getArea().getName()));
 		if(!camposTabDatos.getTelCelularTextBox().getNumero().getText().equals("") && camposTabDatos.getTelCelularTextBox().getNumero().isEnabled())
 			validator.addTarget(camposTabDatos.getTelCelularTextBox().getNumero()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getTelCelularTextBox().getNumero().getName()));
-		
-		if(!camposTabDatos.getNumeroTarjeta().getText().equals("") && camposTabDatos.getNumeroTarjeta().isEnabled())
-			validator.addTarget(camposTabDatos.getNumeroTarjeta()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getNumeroTarjeta().getName()));
 
-		if(!camposTabDatos.getCbu().getText().equals("") && camposTabDatos.getCbu().isEnabled())
-			validator.addTarget(camposTabDatos.getCbu()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", camposTabDatos.getCbu().getName()));
+		if (camposTabDatos.getFormaPago().getSelectedItemId().equals(TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo())) {
+			if(!camposTabDatos.getCbu().getText().equals("") && camposTabDatos.getCbu().isEnabled()) {
+				if (camposTabDatos.getCbu().getText().length()<22) {
+					validator.addError(Sfa.constant().ERR_NUMERO_CBU());   	
+				}
+			}
+		}
 		
-		if(!camposTabDatos.getAnioVto().getText().equals("") && camposTabDatos.getAnioVto().isEnabled()) {
-			try {
-				int valor = Integer.parseInt(camposTabDatos.getAnioVto().getText());
-				if (valor<camposTabDatos.getCurrentYear()||valor>(camposTabDatos.getCurrentYear()+5)) {
+		if (camposTabDatos.getFormaPago().getSelectedItemId().equals(TipoFormaPagoEnum.TARJETA_CREDITO.getTipo())) {
+			if(!camposTabDatos.getNumeroTarjeta().getText().equals("") && camposTabDatos.getNumeroTarjeta().isEnabled()) {
+				int cantidadDigitosNroTarjeta = 16;  //VIS - MASTER - CABAL
+				if(camposTabDatos.getTipoTarjeta().getSelectedItemId().equals(TipoTarjetaEnum.AMX.getId())) {
+					cantidadDigitosNroTarjeta = 15;
+				} else if(camposTabDatos.getTipoTarjeta().getSelectedItemId().equals(TipoTarjetaEnum.DIN.getId())) {
+					cantidadDigitosNroTarjeta = 14;
+				}
+				if(camposTabDatos.getNumeroTarjeta().getText().length() < cantidadDigitosNroTarjeta) {
+					validator.addError(Sfa.constant().ERR_NUMERO_DE_TARJETA().replaceAll("\\{1\\}", cantidadDigitosNroTarjeta+""));	
+				}
+			} 
+
+			if(!camposTabDatos.getAnioVto().getText().equals("") && camposTabDatos.getAnioVto().isEnabled()) {
+				try {
+					int valor = Integer.parseInt(camposTabDatos.getAnioVto().getText());
+					if (camposTabDatos.getAnioVto().getText().length() < 4 ||
+							valor<camposTabDatos.getCurrentYear()||valor>(camposTabDatos.getCurrentYear()+5)) {
+						validator.addError(Sfa.constant().ERR_ANIO_NO_VALIDO());
+					}	
+				} catch (Exception e) {
 					validator.addError(Sfa.constant().ERR_ANIO_NO_VALIDO());
-				}	
-			} catch (Exception e) {
-				validator.addError(Sfa.constant().ERR_ANIO_NO_VALIDO());
+				}
 			}
 		}
 		validator.fillResult();
