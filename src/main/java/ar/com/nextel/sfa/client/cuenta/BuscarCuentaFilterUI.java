@@ -9,13 +9,13 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.widget.EventWrapper;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
-import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Layout del filtro de de busqueda de cuentas.
@@ -28,7 +28,6 @@ public class BuscarCuentaFilterUI extends Composite {
 	private FlowPanel mainPanel;
 
 	private BuscarCuentaFilterUIData buscadorCuentasFilterEditor;
-	private BuscarCuentaResultUI buscarCuentaResultPanel;
 	private FlexTable layout;
 	private final BuscarCuentaController controller;
 
@@ -77,12 +76,12 @@ public class BuscarCuentaFilterUI extends Composite {
 		layout.setWidget(3, 3, buscadorCuentasFilterEditor.getCategoriaCombo());
 		layout.setWidget(3, 4, listaLabels.get(10));
 		layout.setWidget(3, 5, buscadorCuentasFilterEditor.getResultadosCombo());
-        EventWrapper eventWrapper = new EventWrapper() {
-    		public void doEnter() {
-    			doSearch();
-    		}
-    	};
-        eventWrapper.add(layout);
+		EventWrapper eventWrapper = new EventWrapper() {
+			public void doEnter() {
+				doSearch();
+			}
+		};
+		eventWrapper.add(layout);
 		mainPanel.add(eventWrapper);
 		FlowPanel commandPanel = new FlowPanel();
 		commandPanel.add(buscadorCuentasFilterEditor.getBuscarButton());
@@ -91,8 +90,8 @@ public class BuscarCuentaFilterUI extends Composite {
 
 		mainPanel.add(commandPanel);
 
-		buscadorCuentasFilterEditor.getBuscarButton().addClickListener(new ClickListener() {
-			public void onClick(Widget arg0) {
+		buscadorCuentasFilterEditor.getBuscarButton().addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
 				doSearch();
 			}
 		});
@@ -101,13 +100,13 @@ public class BuscarCuentaFilterUI extends Composite {
 	private void doSearch() {
 		/** BuscarButton Validation: */
 		List<String> listaErrores = buscadorCuentasFilterEditor.validatePreSearch();
-		if (!listaErrores.isEmpty()){
+		if (!listaErrores.isEmpty()) {
 			StringBuilder error = new StringBuilder();
 			for (int i = 0; i < listaErrores.size(); i++) {
 				error.append(listaErrores.get(i) + "<br />");
 			}
-			ErrorDialog.getInstance().show(error.toString());
-		}else{		
+			ErrorDialog.getInstance().show(error.toString(), false);
+		} else {
 			controller.searchCuentas(buscadorCuentasFilterEditor.getCuentaSearch());
 		}
 	}
@@ -125,10 +124,6 @@ public class BuscarCuentaFilterUI extends Composite {
 		listaLabels.add(new Label(Sfa.constant().categoria()));// 9
 		listaLabels.add(new Label(Sfa.constant().resultados()));// 10
 		return listaLabels;
-	}
-
-	public void setBuscarCuentaResultPanel(BuscarCuentaResultUI buscarCuentaResultPanel) {
-		this.buscarCuentaResultPanel = buscarCuentaResultPanel;
 	}
 
 	public void cleanAndEnableFields() {
