@@ -4,11 +4,12 @@ import ar.com.nextel.sfa.client.infocom.InfocomUI;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
 
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
  * @author eSalvador
  **/
-public class CuentaInfocomForm extends Composite {
+public class CuentaInfocomForm extends SimplePanel {
 
 	private static InfocomUI infocomUI = InfocomUI.getInstance();
 	private static CuentaInfocomForm instance = new CuentaInfocomForm();
@@ -21,26 +22,27 @@ public class CuentaInfocomForm extends Composite {
 		return instance;
 	}
 
-	private CuentaInfocomForm() {
-		init();
-	}
+//	private CuentaInfocomForm() {
+//		init();
+//	}
 
-	private void init() {
-		infocomUI.firstLoad();
-		initWidget(infocomUI);
-	}
+//	private void init() {
+//		infocomUI.firstLoad();
+//		setWidget(infocomUI);
+//	}
 
 	public void load() {
-		//infocomUI = InfocomUI.getInstance();
-		infocomUI.load();
+		infocomUI.loadApplication();
+		//infocomUI.load();
+		setWidget(infocomUI);
 	}
 
-	public String getIdCuenta() {
-		return idCuenta;
-	}
-
-	public void setIdCuenta(String idCuenta) {
-		this.idCuenta = idCuenta;
-	}
+//	public String getIdCuenta() {
+//		return idCuenta;
+//	}
+//
+//	public void setIdCuenta(String idCuenta) {
+//		this.idCuenta = idCuenta;
+//	}
 
 }
