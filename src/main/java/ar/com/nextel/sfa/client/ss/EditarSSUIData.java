@@ -230,8 +230,6 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		entrega.selectByValue("" + solicitud.getIdDomicilioEnvio());
 		facturacion.selectByValue("" + solicitud.getIdDomicilioFacturacion());
 		aclaracion.setText(solicitud.getAclaracionEntrega());
-		credFidelDisponibleText.setHTML(solicitud.getMontoDisponible() != null ? currFormatter
-				.format(solicitud.getMontoDisponible()) : "0");
 		if (solicitud.getFechaVencimientoCreditoFidelizacion() != null) {
 			credFidelVencimientoText.setHTML(dateTimeFormat.format(solicitud
 					.getFechaVencimientoCreditoFidelizacion()));
@@ -240,13 +238,16 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 		double credFidelizacionValue = solicitud.getMontoCreditoFidelizacion() != null ? solicitud
 				.getMontoCreditoFidelizacion() : 0;
+
 		credFidelizacion.setText(decFormatter.format(credFidelizacionValue));
 		if (credFidelizacionValue > 0) {
 			credFidelizacion.setEnabled(true);
 			credFidelizacion.setReadOnly(false);
+			credFidelDisponibleText.setHTML(currFormatter.format(solicitud.getMontoDisponible()));
 		} else {
 			credFidelizacion.setEnabled(false);
 			credFidelizacion.setReadOnly(true);
+			credFidelDisponibleText.setHTML(currFormatter.format(0d));
 		}
 		double pataconexValue = solicitud.getPataconex() != null ? solicitud.getPataconex() : 0;
 		pataconex.setText(decFormatter.format(pataconexValue));
@@ -290,9 +291,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		solicitudServicio.setAclaracionEntrega(aclaracion.getText());
 		if (!"".equals(credFidelizacion.getText().trim())) {
 			solicitudServicio.setMontoCreditoFidelizacion(Double.parseDouble(credFidelizacion.getText()));
+		} else {
+			solicitudServicio.setMontoCreditoFidelizacion(0d);
 		}
 		if (!"".equals(pataconex.getText().trim())) {
 			solicitudServicio.setPataconex(Double.parseDouble(pataconex.getText()));
+		} else {
+			solicitudServicio.setPataconex(0d);
 		}
 		solicitudServicio.setTipoAnticipo((TipoAnticipoDto) anticipo.getSelectedItem());
 		solicitudServicio.setAclaracionEntrega(aclaracion.getText());
