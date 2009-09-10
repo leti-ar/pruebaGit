@@ -136,7 +136,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		try {
 			solicitud = solicitudBusinessService.createSolicitudServicio(request);
 		} catch (BusinessException e) {
-			throw ExceptionUtil.wrap((String) e.getParameters().get(0), e);
+			throw new RpcExceptionMessages((String) e.getParameters().get(0));
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);

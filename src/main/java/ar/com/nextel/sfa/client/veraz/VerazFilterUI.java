@@ -92,7 +92,7 @@ public class VerazFilterUI extends Composite {
 		if (!errorList.isEmpty()) {
 			for (int i = 0; i < errorList.size(); i++) {
 				String error = errorList.get(i);
-				ErrorDialog.getInstance().show(error);
+				ErrorDialog.getInstance().show(error, false);
 			}
 		} else {
 			verazResultUI.searchVeraz(verazEditor.getVerazSearch(verazEditor.getNumeroDocTextBox(), verazEditor.getTipoDocListBox(), verazEditor.getSexoListBox()));
