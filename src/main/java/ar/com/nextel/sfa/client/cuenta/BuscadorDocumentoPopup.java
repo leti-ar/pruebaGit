@@ -15,6 +15,7 @@ import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -52,6 +53,7 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 			public void onClick(Widget sender) {
 				hide();
 				//History.newItem("");
+				cleanForm();
 			}
 		});
 		tipoDocumento.addChangeListener(new ChangeListener() {
@@ -153,8 +155,13 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 		if (validarNumero()) {
 			CuentaClientService.reservaCreacionCuenta(new Long(tipoDocumento.getSelectedItemId()), numeroDocTextBox.getText(), fromMenu?null:idOpp);
 			hide();
-			numeroDocTextBox.setText("");
-			tipoDocumento.selectByValue(TipoDocumentoEnum.DNI.toString());	
+			cleanForm();	
 		}
+	}
+	
+	private void cleanForm() {
+		numeroDocTextBox.setText("");
+		numeroDocTextBox.setPattern(RegularExpressionConstants.dni);
+		tipoDocumento.selectByValue(TipoDocumentoEnum.DNI.toString());	
 	}
 }
