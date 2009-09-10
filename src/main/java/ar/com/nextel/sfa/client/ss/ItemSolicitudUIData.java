@@ -125,7 +125,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		fields.add(roaming = new CheckBox());
 		totalLabel = new InlineHTML(currencyFormat.format(0d));
 		confirmarReserva = new Button("Ok");
-		desreservar = new Button("Des");
+		desreservar = new Button();
+		confirmarReserva.setTitle("Reservar");
+		desreservar.setTitle("Liberar reserva");
 		verificarImeiWrapper = new HTML();
 		verificarSimWrapper = new HTML();
 
@@ -151,10 +153,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		reservar.setWidth("50px");
 		reservar.addStyleName("m0p0");
 		reservar.setMaxLength(4);
-		confirmarReserva.addStyleName("btn-bkg");
-		confirmarReserva.addStyleName("ml10");
-		desreservar.addStyleName("btn-bkg");
-		desreservar.addStyleName("ml10");
+		confirmarReserva.addStyleName("botonReservarTel");
+		desreservar.addStyleName("botonLiberarTel");
 		desreservar.setVisible(false);
 		ddn.setText(Sfa.constant().ddn());
 		ddi.setText(Sfa.constant().ddi());
