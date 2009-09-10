@@ -137,7 +137,7 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickListener, Cl
 		CuentaRpcService.Util.getInstance().searchCuenta(cuentaSearchDto, new DefaultWaitCallback<List<CuentaSearchResultDto>>() {
 			public void success(List<CuentaSearchResultDto> result) {
 				if (result.isEmpty()) {
-					ErrorDialog.getInstance().show("No se encontraron datos con el criterio utilizado.");
+					ErrorDialog.getInstance().show("No se encontraron datos con el criterio utilizado.", false);
 				}
 				cuentas = result;
 				tablePageBar.setCantRegistrosTot(cuentas.size());

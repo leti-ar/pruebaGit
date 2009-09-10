@@ -243,7 +243,7 @@ public class CuentaClientService {
 			//usuario logueado no es el mismo que el vendedor de la cuenta
 			if (!ClientContext.getInstance().getUsuario().getUserName().equals(cuentaDto.getVendedor(). getUsuarioDto().getUserName())) {
 				result = false;
-				ErrorDialog.getInstance().show(Sfa.constant().ERR_NO_ACCESO_CUENTA());
+				ErrorDialog.getInstance().show(Sfa.constant().ERR_NO_ACCESO_CUENTA(), false);
 				//History.back();
 			}
 		}
