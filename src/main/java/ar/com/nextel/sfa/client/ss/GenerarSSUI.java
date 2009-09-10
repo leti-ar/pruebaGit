@@ -23,7 +23,7 @@ public class GenerarSSUI extends NextelDialog implements ClickListener {
 	private FlexTable layout;
 
 	public GenerarSSUI() {
-		super("SS - Generar SS");
+		super("SS - Generar SS", false, true);
 		init();
 	}
 
