@@ -108,7 +108,7 @@ public class CuentaDatosForm extends Composite {
 		iconoEditarEstdo.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent arg0) {
                  CambioEstadoOppForm cambioEstadoForm = CambioEstadoOppForm.getInstance();
-                 cambioEstadoForm.setSize("600", "300");
+                 cambioEstadoForm.setSize("780", "350");
                  cambioEstadoForm.cargarPopup();
 			}
 		});
