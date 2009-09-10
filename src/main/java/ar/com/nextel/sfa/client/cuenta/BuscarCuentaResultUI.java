@@ -10,9 +10,13 @@ import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.enums.BuscoCuentaPorDniEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.infocom.InfocomUI;
+import ar.com.nextel.sfa.client.infocom.VerInfocomUI;
+import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
+import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import ar.com.snoop.gwt.commons.client.widget.table.RowListener;
@@ -20,6 +24,8 @@ import ar.com.snoop.gwt.commons.client.widget.table.RowListener;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -34,13 +40,13 @@ import com.google.gwt.user.client.ui.Widget;
  * @author jlgperez
  * 
  */
-public class BuscarCuentaResultUI extends FlowPanel {
+public class BuscarCuentaResultUI extends FlowPanel implements ClickListener, ClickHandler {
 
 	static final String LUPA_TITLE = "Ver Infocom";
 	static final String BLOQUEADO_TITLE = "Bloqueado para el usuario actual";
 	static final String LAPIZ_TITLE = "Editar";
 	static final String OTRO_BLOQUEO_TITLE = "Bloqueado por otro usuario";
-
+		
 	private NextelTable resultTable;
 	private SimplePanel resultTableWrapper;
 	private Label resultTotalCuentas;
@@ -53,7 +59,12 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	private BuscarCuentaController controller;
 	private static final int cantResultadosPorPagina = 10;
 	private int indiceRowTabla;
-	private static Command aceptarCommand;
+	private static Command aceptarCommand;	
+	private List<CuentaSearchResultDto> cuentasActuales;
+	private InfocomUI infocomUI;
+	private String cuentaID;
+	private static BuscarCuentaResultUI instance;
+	
 
 	public BuscarCuentaResultUI(BuscarCuentaController controller) {
 
@@ -171,6 +182,7 @@ public class BuscarCuentaResultUI extends FlowPanel {
 	 * Crea una fila en la tabla por cada cuenta del CuentaSearchResultDto
 	 */
 	private void loadTable(final List<CuentaSearchResultDto> cuentasActuales) {
+		this.cuentasActuales = cuentasActuales;
 		clearResultTable();
 		int totalABuscar;
 		if (cuentasActuales.size() < 10) {
@@ -190,9 +202,9 @@ public class BuscarCuentaResultUI extends FlowPanel {
 				});
 				resultTable.setWidget(i + 1, 0, iconLapiz);
 
-				if (cuentasActuales.get(i).isPuedeVerInfocom()) {
-					resultTable.setWidget(i + 1, 1, IconFactory.lupa(LUPA_TITLE));
-				}
+				HTML iconLupa = IconFactory.lupa(LUPA_TITLE);
+				iconLupa.addClickHandler(this);
+				resultTable.setWidget(i + 1, 1, iconLupa);
 
 				// LockingState == 1: Es cuando esta lockeado por el mismo usuario logueado (Verificar).
 				if (cuentasActuales.get(i).getLockingState() == 1) {
@@ -302,8 +314,19 @@ public class BuscarCuentaResultUI extends FlowPanel {
 		}
 		return aceptarCommand;
 	}
-	
-	public List<CuentaSearchResultDto> getCuentassssssssss() {
-		return cuentas;
+
+	public void onClick(Widget sender) {
 	}
+
+	public void onClick(ClickEvent arg0) {
+		CuentaSearchResultDto cuentaSearch = cuentas.get(indiceRowTabla);
+		if(cuentaSearch.isPuedeVerInfocom()) {
+			History.newItem(UILoader.VER_INFOCOM + "?cuenta_id=" + cuentaSearch.getId());
+		} else {
+			ModalMessageDialog.getInstance().setDialogTitle("Ver Infocom");
+			ModalMessageDialog.getInstance().setSize("300px", "100px");
+			ModalMessageDialog.getInstance().showAceptar("No tiene permisos para ver infocom", ModalMessageDialog.getCloseCommand());
+		}
+	}
+
 }
