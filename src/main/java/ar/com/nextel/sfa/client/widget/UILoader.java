@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client.widget;
 import ar.com.nextel.sfa.client.cuenta.AgregarCuentaUI;
 import ar.com.nextel.sfa.client.cuenta.BuscarCuentaUI;
 import ar.com.nextel.sfa.client.cuenta.EditarCuentaUI;
+import ar.com.nextel.sfa.client.infocom.VerInfocomUI;
 import ar.com.nextel.sfa.client.operaciones.OperacionEnCursoUI;
 import ar.com.nextel.sfa.client.oportunidad.BuscarOportunidadUI;
 import ar.com.nextel.sfa.client.ss.BuscarSSCerradaUI;
@@ -39,11 +40,12 @@ public class UILoader extends SimplePanel implements ValueChangeHandler<String> 
 	public static final int BUSCAR_OPP = 4;
 	public final static int OP_EN_CURSO = 5;
 	public final static int EDITAR_CUENTA = 7;
+	public final static int VER_INFOCOM = 8;
 
 	private String lastToken = "";
 
 	private UILoader() {
-		pages = new ApplicationUI[8];
+		pages = new ApplicationUI[9];
 		History.addValueChangeHandler(this);
 		History.fireCurrentHistoryState();
 	}
@@ -123,6 +125,9 @@ public class UILoader extends SimplePanel implements ValueChangeHandler<String> 
 			break;
 		case EDITAR_CUENTA:
 			pages[EDITAR_CUENTA] = new EditarCuentaUI();
+			break;
+		case VER_INFOCOM:
+			pages[VER_INFOCOM] = new VerInfocomUI();
 			break;
 		default:
 			GWT.log("Page not found. Check PageLoader.createPageWidget()", null);
