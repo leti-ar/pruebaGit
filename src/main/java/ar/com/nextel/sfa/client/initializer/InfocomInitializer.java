@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client.initializer;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.EquiposServiciosDto;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -14,7 +15,7 @@ public class InfocomInitializer implements IsSerializable {
 	private String ciclo;
 	private String flota;
 	private double limiteCredito;
-	private List responsablePago;
+	private List<CuentaDto> responsablePago;
 	private String numeroCuenta;
 	private String idResponsablePago;
 	private String razonSocial;
@@ -57,14 +58,6 @@ public class InfocomInitializer implements IsSerializable {
 
 	public void setLimiteCredito(double limiteCredito) {
 		this.limiteCredito = limiteCredito;
-	}
-
-	public List getResponsablePago() {
-		return responsablePago;
-	}
-
-	public void setResponsablePago(List responsablePago) {
-		this.responsablePago = responsablePago;
 	}
 
 	public String getNumeroCuenta() {
@@ -122,5 +115,13 @@ public class InfocomInitializer implements IsSerializable {
 	public void setEquiposServicios(EquiposServiciosDto equiposServicios) {
 		this.equiposServicios = equiposServicios;
 	}
-		
+
+	public List<CuentaDto> getResponsablePago() {
+		return responsablePago;
+	}
+
+	public void setResponsablePago(List<CuentaDto> responsablePago) {
+		this.responsablePago = responsablePago;
+	}
+
 }
