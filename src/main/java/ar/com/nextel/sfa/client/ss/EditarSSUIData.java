@@ -123,11 +123,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	public void onChange(Widget sender) {
 		saved = false;
-		if (sender == pataconex && !"".equals(pataconex.getText())) {
-			solicitudServicio.setPataconex(Double.parseDouble(pataconex.getText()));
+		boolean isEmpty = false;
+		if (sender == pataconex) {
+			isEmpty = "".equals(pataconex.getText());
+			solicitudServicio.setPataconex(!isEmpty ? Double.parseDouble(pataconex.getText()) : 0d);
 			recarcularValores();
 		} else if (sender == credFidelizacion) {
-			solicitudServicio.setMontoCreditoFidelizacion(Double.parseDouble(credFidelizacion.getText()));
+			isEmpty = "".equals(credFidelizacion.getText());
+			solicitudServicio.setMontoCreditoFidelizacion(!isEmpty ? Double.parseDouble(credFidelizacion
+					.getText()) : 0d);
 			recarcularValores();
 		}
 	}
