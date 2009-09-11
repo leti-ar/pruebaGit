@@ -1,6 +1,9 @@
 package ar.com.nextel.sfa.client.oportunidad;
 
+import java.util.Date;
+
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
+import ar.com.snoop.gwt.commons.client.util.DateUtil;
 
 /**
  * 
@@ -26,7 +29,10 @@ public class BuscarOportunidadUI extends ApplicationUI {
 		mainPanel.addStyleName("gwt-central-panel");
 	}
 	
-	public boolean load() {
+	public boolean load() {		
+		buscarOportunidadFilterForm.cleanAndEnableFields();
+		buscarOportunidadResultPanel.setVisible(false);
+		//formButtonsBar.setVisible(false);
 		return true;
 	}
 

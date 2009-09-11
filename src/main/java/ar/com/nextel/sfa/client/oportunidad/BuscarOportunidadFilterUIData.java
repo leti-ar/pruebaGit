@@ -58,6 +58,9 @@ public class BuscarOportunidadFilterUIData extends UIData {
 	private DateTimeFormat dateFormatter = DateTimeFormat.getFormat("dd/MM/yyyy");
 	private Widget lastWidget;
 	private List<String> errorList = new ArrayList();
+	
+	private Grid datePickerFullDesde = new Grid(1, 2);
+	private Grid datePickerFullHasta = new Grid(1, 2);
 
 	public TextBox getNumeroCuentaTextBox() {
 		return numeroClienteTextBox;
@@ -104,23 +107,21 @@ public class BuscarOportunidadFilterUIData extends UIData {
 	}
 
 	public Widget getDesdeDate() {
-		Grid datePickerFull = new Grid(1, 2);
 		desdeDate.setWeekendSelectable(true);
 		desdeDate.setSelectedDate(DateUtil.getDaysBeforeADate(60l, new Date()));
 		desdeDate.getTextBox().setText(dateFormatter.format(DateUtil.getDaysBeforeADate(60l, new Date())));
-		datePickerFull.setWidget(0, 0, desdeDate.getTextBox());
-		datePickerFull.setWidget(0, 1, desdeDate);
-		return datePickerFull;
+		datePickerFullDesde.setWidget(0, 0, desdeDate.getTextBox());
+		datePickerFullDesde.setWidget(0, 1, desdeDate);
+		return datePickerFullDesde;
 	}
 
 	public Widget getHastaDate() {
-		Grid datePickerFull = new Grid(1, 2);
 		hastaDate.setWeekendSelectable(true);
 		hastaDate.setSelectedDate(DateUtil.today());
 		hastaDate.getTextBox().setText(dateFormatter.format(DateUtil.today()));
-		datePickerFull.setWidget(0, 0, hastaDate.getTextBox());
-		datePickerFull.setWidget(0, 1, hastaDate);
-		return datePickerFull;
+		datePickerFullHasta.setWidget(0, 0, hastaDate.getTextBox());
+		datePickerFullHasta.setWidget(0, 1, hastaDate);
+		return datePickerFullHasta;
 	}
 
 	public Button getBuscarButton() {
