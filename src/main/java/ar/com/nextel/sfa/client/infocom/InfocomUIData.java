@@ -76,6 +76,7 @@ public class InfocomUIData extends UIData {
 	
 	public InfocomUIData() {
 		montoPanel = new HorizontalPanel();
+		montoPanel.setHeight("28px");
 		estadoPanel = new HorizontalPanel();
 		vencimientoPanel = new HorizontalPanel();
 		responsablePanel = new HorizontalPanel();
