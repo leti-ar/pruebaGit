@@ -18,8 +18,9 @@ public class EstadoEquipoPopUp extends NextelDialog {
 	private FlexTable table;
 	private List estadosList = new ArrayList<DatosEquipoPorEstadoDto>();
 
-	public EstadoEquipoPopUp(String title, List<DatosEquipoPorEstadoDto> estadosList) {
+	public EstadoEquipoPopUp(String title, String width, List<DatosEquipoPorEstadoDto> estadosList) {
 		super(title, false, true);
+		this.setWidth(width);
 		this.addStyleName("estadoDialog");
 		this.estadosList = estadosList;
 		table = new FlexTable();
