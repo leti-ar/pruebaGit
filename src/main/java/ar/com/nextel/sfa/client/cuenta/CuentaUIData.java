@@ -181,6 +181,7 @@ public class CuentaUIData extends UIData {
 		});
 		tipoTarjeta.addChangeListener(new ChangeListener() {
 			public void onChange(Widget sender) {
+				numeroTarjeta.setText("");
 				setAtributosNumeroTarjeta(); 
 			}
 		});
