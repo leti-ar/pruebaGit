@@ -69,7 +69,7 @@ public class EstadoTerminales extends Composite {
 		InfocomRpcService.Util.getInstance().getInformacionEquipos(numeroCuenta, estado, new DefaultWaitCallback<List<DatosEquipoPorEstadoDto>>() {
 			public void success(List<DatosEquipoPorEstadoDto>  result) {
 				if (result != null) {
-					EstadoEquipoPopUp estadoEquipoPopUp = new EstadoEquipoPopUp("Cuentas - Información de Equipos", result);
+					EstadoEquipoPopUp estadoEquipoPopUp = new EstadoEquipoPopUp("Cuentas - Información de Equipos", "750", result);
 					estadoEquipoPopUp.setEstado(result);
 					estadoEquipoPopUp.showAndCenter();
 				}
