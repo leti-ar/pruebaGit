@@ -52,7 +52,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 	private ValidationTextBox numeroSolicitudServicioTextBox = new ValidationTextBox("[0-9]*");
 	private ValidationTextBox responsableTextBox = new ValidationTextBox("[a-zA-Z\\%]*");
 	private ValidationListBox grupoDocumentoCombo;
-	private ValidationTextBox numeroDocumentoTextBox = new ValidationTextBox(RegularExpressionConstants.dni);
+	private ValidationTextBox numeroDocumentoTextBox = new ValidationTextBox(RegularExpressionConstants.getNumerosLimitado(10));
 	private ValidationListBox predefinidasCombo;
 	private ListBox resultadosCombo;
 
@@ -88,9 +88,8 @@ public class BuscarCuentaFilterUIData extends UIData {
 				numeroDocumentoTextBox.setText("");
 				if (grupoDocumentoCombo.getSelectedItemId().equals(TipoDocumentoEnum.CUITCUIL.getTipo() + "")) {
 					numeroDocumentoTextBox.setPattern(RegularExpressionConstants.cuilCuit);
-				} else if (grupoDocumentoCombo.getSelectedItemId().equals(
-						TipoDocumentoEnum.DNI.getTipo() + "")) {
-					numeroDocumentoTextBox.setPattern(RegularExpressionConstants.dni);
+				} else if (grupoDocumentoCombo.getSelectedItemId().equals(TipoDocumentoEnum.DNI.getTipo() + "")) {
+					numeroDocumentoTextBox.setPattern(RegularExpressionConstants.getNumerosLimitado(10));
 				}
 			}
 		});
