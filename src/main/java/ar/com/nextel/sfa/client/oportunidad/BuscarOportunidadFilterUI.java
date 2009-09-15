@@ -111,6 +111,7 @@ public class BuscarOportunidadFilterUI extends Composite {
 		buscarOportunidadFilterEditor.cleanAndEnableFields();
 		buscarOportunidadFilterEditor.getDesdeDate();
 		buscarOportunidadFilterEditor.getHastaDate();
+		if(buscarOportunidadFilterEditor.getEstadoOPPListBox().getItemCount()>1)
 		buscarOportunidadFilterEditor.getEstadoOPPListBox().setSelectedIndex(1);
 	}
 	
