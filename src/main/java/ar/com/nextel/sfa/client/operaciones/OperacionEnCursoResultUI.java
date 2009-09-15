@@ -360,7 +360,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 	}
 
 	private void initTableOpenCurso(FlexTable table) {
-		String[] widths = { "24px", "24px", "24px", "180px", "400px", "160px", };
+		String[] widths = { "24px", "24px", "24px", "214px", "470px", "230px", };
 		for (int col = 0; col < widths.length; col++) {
 			table.getColumnFormatter().setWidth(col, widths[col]);
 		}
