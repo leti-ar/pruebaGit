@@ -100,11 +100,18 @@ public class DomiciliosUIData extends UIData {
 		//facturacion.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
 
 		cpa.setTabIndex(1);
-		numero.setTabIndex(2);
-
+		numero.setTabIndex(2);		
+	}
+	
+	// Si la cuenta todavia no tiene un domicilio principal cargado, se sugiere "Principal", sino "Si"
+	public void inicializarListBox() {
 		listaDomicilios = CuentaDomiciliosForm.getInstance().getDomicilios();
 
 		if(listaDomicilios!=null) {
+			if((entrega.getItemCount()!=0) && (facturacion.getItemCount()!=0)) {
+				entrega.clear();
+				facturacion.clear();
+			}
 			if(!verificarPpalEntrega(listaDomicilios)) {
 				loadListBoxPpal(entrega);
 			} else {
@@ -180,8 +187,11 @@ public class DomiciliosUIData extends UIData {
 			nombreUsuarioUltimaModificacion.setText(domicilio.getNombre_usuario_ultima_modificacion());
 			fechaUltimaModificacion.setText(domicilio.getFecha_ultima_modificacion());
 			// VER EstadoTipoDomicilioDto
-			entrega.selectByValue("" + domicilio.getIdEntrega());
-			facturacion.selectByValue("" + domicilio.getIdFacturacion());
+//			entrega.selectByValue("" + domicilio.getIdEntrega());
+//			facturacion.selectByValue("" + domicilio.getIdFacturacion());
+			
+			inicializarListBox();		
+			
 		}
 	}
 
