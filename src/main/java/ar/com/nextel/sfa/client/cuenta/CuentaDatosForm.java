@@ -38,6 +38,7 @@ import ar.com.nextel.sfa.client.enums.TipoTarjetaEnum;
 import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.FormUtils;
+import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.validator.target.TextBoxBaseValidationTarget;
 import ar.com.nextel.sfa.client.widget.DualPanel;
@@ -690,9 +691,10 @@ public class CuentaDatosForm extends Composite {
 	    
 		FormUtils.disableFields(campos);
 		
-		iconoLupa.setVisible(true);
-		camposTabDatos.getVerazLabel().setVisible(true);
-		camposTabDatos.getVerazRta().setVisible(true);
+		boolean isVancuc = RegularExpressionConstants.isVancuc(cuentaDto.getCodigoVantive());
+		iconoLupa.setVisible(isVancuc);
+		camposTabDatos.getVerazLabel().setVisible(isVancuc);
+		camposTabDatos.getVerazRta().setVisible(isVancuc);
 		
 		camposTabDatos.getIibb().setVisible(docTipoCUIL);
 		camposTabDatos.getIibbLabel().setVisible(docTipoCUIL);
