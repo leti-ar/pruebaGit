@@ -2,10 +2,15 @@ package ar.com.nextel.sfa.client.ss;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.util.WindowUtils;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -32,7 +37,7 @@ public class CerrarSSDialog extends NextelDialog implements ClickListener {
 	private SimpleLink solicitudLink;
 	private SimpleLink aceptar;
 	private HTML loadingMessage;
-	private String reporteUrl;
+	private String fileName;
 
 	private static Command closeCommand;
 	private static CerrarSSDialog instance;
@@ -96,9 +101,18 @@ public class CerrarSSDialog extends NextelDialog implements ClickListener {
 			hide();
 			aceptarCommand.execute();
 		} else if (sender == solicitudLink) {
-			WindowUtils.redirect(reporteUrl);
-		}
+			RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getUrlReporte(fileName));
+			requestBuilder.setCallback(new RequestCallback() {
+				public void onResponseReceived(Request request, Response response) {
+					WindowUtils.redirect(getUrlReporte(fileName));
+				}
 
+				public void onError(Request request, Throwable exception) {
+					MessageDialog.getInstance().showAceptar("Error", Sfa.constant().ERR_FILE_NOT_FOUND(),
+							MessageDialog.getCloseCommand());
+				}
+			});
+		}
 	}
 
 	public void showLoading(boolean cerrando) {
@@ -111,13 +125,17 @@ public class CerrarSSDialog extends NextelDialog implements ClickListener {
 		showAndCenter();
 	}
 
-	public void showCierreExitoso(String filename) {
+	public void showCierreExitoso(String fileName) {
 		loadingPanel.setVisible(false);
 		cierreExitoso.setVisible(true);
 		formButtons.setVisible(true);
-		reporteUrl = "/" + WindowUtils.getContextRoot()
-				+ "/download/" + filename + ".rtf?module=solicitudes&service=rtf&name=" + filename + ".rtf";
+		this.fileName = fileName;
 		showAndCenter();
+	}
+
+	public String getUrlReporte(String fileName) {
+		return "/" + WindowUtils.getContextRoot() + "/download/" + fileName
+				+ ".rtf?module=solicitudes&service=rtf&name=" + fileName + ".rtf";
 	}
 
 	/** Este comando cierra la ventana sin realizar ninguna accion */
