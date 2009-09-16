@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.client.cuenta;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -43,11 +44,14 @@ public class CuentaDomiciliosForm extends Composite {
 	private boolean huboCambios = false;
 	private Button crearDomicilio;
 	private List<DomiciliosCuentaDto> domicilios = new ArrayList<DomiciliosCuentaDto>();
+	
+	//private List listaDomicilios = new ArrayList<DomiciliosCuentaDto>();
 
 	public static CuentaDomiciliosForm getInstance() {
 		return instance;
 	}
 
+			
 	private CuentaDomiciliosForm() {
 		mainPanel = new FlowPanel();
 		footerBar = new FormButtonsBar();
@@ -62,6 +66,11 @@ public class CuentaDomiciliosForm extends Composite {
 			public void onClick(Widget arg0) {
 				DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,
 						tienePrincipalFacturacion);
+				
+				
+				DomiciliosUIData domiciliosUIData = DomiciliosUIData.getInstance();
+				domiciliosUIData.inicializarListBox();
+				
 				DomicilioUI.getInstance().setComandoAceptar(new Command() {
 					public void execute() {
 						PersonaDto persona = null;
