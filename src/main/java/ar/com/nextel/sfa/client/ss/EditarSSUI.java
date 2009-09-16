@@ -122,6 +122,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public void firstLoad() {
 		razonSocialClienteBar = new RazonSocialClienteBar();
 		mainPanel.add(razonSocialClienteBar);
+		razonSocialClienteBar.setEnabledSilvioSoldan();
 
 		validarCompletitud = new Button("Validar Completitud");
 		validarCompletitud.addStyleName("validarCompletitudButton");
