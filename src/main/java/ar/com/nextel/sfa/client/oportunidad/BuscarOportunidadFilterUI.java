@@ -1,11 +1,10 @@
 package ar.com.nextel.sfa.client.oportunidad;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.snoop.gwt.commons.client.util.DateUtil;
+import ar.com.snoop.gwt.commons.client.dto.ListBoxItemImpl;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -111,8 +110,7 @@ public class BuscarOportunidadFilterUI extends Composite {
 		buscarOportunidadFilterEditor.cleanAndEnableFields();
 		buscarOportunidadFilterEditor.getDesdeDate();
 		buscarOportunidadFilterEditor.getHastaDate();
-		if(buscarOportunidadFilterEditor.getEstadoOPPListBox().getItemCount()>1)
-		buscarOportunidadFilterEditor.getEstadoOPPListBox().setSelectedIndex(1);
+		buscarOportunidadFilterEditor.getEstadoOPPListBox().setSelectedItem(new ListBoxItemImpl("Activa", "1"));
 	}
 	
 	public void setBuscarOportunidadResultPanel(BuscarOportunidadResultUI buscarOportunidadResultPanel) {
