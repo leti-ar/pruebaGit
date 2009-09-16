@@ -463,8 +463,14 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				generarChangeLog(solicitudServicioDto.getId(), solicitudServicio.getVendedor().getId());
 			}
 			result.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
-			result.setRtfFileName(solicitudServicio.getCuenta().getCodigoVantive() + "-5-"
-					+ solicitudServicio.getNumero());
+			String filename = solicitudServicio.getIdVantive() + "-5-" + solicitudServicio.getNumero()
+					+ ".rtf";
+			if (solicitudServicio.getCuenta().isProspect()
+					|| solicitudServicio.getCuenta().isProspectEnCarga()) {
+				filename = solicitudServicio.getId().toString() + "-5-" + solicitudServicio.getNumero()
+						+ ".rtf";
+			}
+			result.setRtfFileName(filename);
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
