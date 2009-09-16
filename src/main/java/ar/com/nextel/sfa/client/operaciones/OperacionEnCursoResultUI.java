@@ -17,6 +17,7 @@ import ar.com.nextel.sfa.client.dto.VentaPotencialVistaResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.ss.EditarSSUI;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
+import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
@@ -25,7 +26,6 @@ import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
-import ar.com.snoop.gwt.commons.client.widget.table.RowListener;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -39,8 +39,6 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.SourcesTableEvents;
-import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
@@ -158,7 +156,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 				searchOperacionesYReservas();
 			}
 		});
-		
+
 		add(refresh);
 		add(reservasLabel);
 		add(reservasNoConsultadas);
@@ -379,7 +377,6 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 		table.setHTML(0, 5, Sfa.constant().grupoSS());
 	}
 
-
 	private void cancelarOperacionEnCurso(OperacionEnCursoDto op) {
 		ModalMessageDialog.getInstance().setDialogTitle("Eliminar Operación en Curso");
 		ModalMessageDialog.getInstance().setSize("300px", "100px");
@@ -390,10 +387,18 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 	private Command getComandoCancelarOperacionEnCurso(final String idOperacionEnCurso) {
 		return new Command() {
 			public void execute() {
+				LoadingModalDialog.getInstance().showAndCenter("Operación en curso",
+						"Cancelando operación en curso");
 				ModalMessageDialog.getInstance().hide();
 				controller.cancelarOperacionEnCurso(idOperacionEnCurso, new DefaultWaitCallback() {
 					public void success(Object result) {
 						removeOperacionEnCursoAndRefresh(idOperacionEnCurso);
+						LoadingModalDialog.getInstance().hide();
+					}
+
+					public void failure(Throwable caught) {
+						LoadingModalDialog.getInstance().hide();
+						super.failure(caught);
 					}
 				});
 			}
@@ -415,7 +420,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 		Cell cell;
 		if (sender == resultTableOpEnCurso) {
 			cell = resultTableOpEnCurso.getCellForEvent(event);
-			if(cell.getRowIndex() <= 0){
+			if (cell.getRowIndex() <= 0) {
 				return;
 			}
 			if ((resultTableReservas.getRowSelected() > 0)) {
@@ -436,11 +441,11 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 			} else if (cell.getCellIndex() == 2) {
 				cancelarOperacionEnCurso(op);
 			}
-			
+
 		}
 		if (sender == resultTableReservas) {
 			cell = resultTableReservas.getCellForEvent(event);
-			if(cell.getRowIndex() <= 0){
+			if (cell.getRowIndex() <= 0) {
 				return;
 			}
 			if ((resultTableOpEnCurso.getRowSelected() > 0)) {
@@ -467,7 +472,6 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 		}
 	}
 
-	
 	public void onClick(Widget sender) {
 
 		if ((resultTableReservas.getRowSelected() > 0) || (resultTableOpEnCurso.getRowSelected() > 0)) {
