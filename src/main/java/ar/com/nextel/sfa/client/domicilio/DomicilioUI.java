@@ -111,7 +111,8 @@ public class DomicilioUI extends NextelDialog {
 	 *@author eSalvador
 	 **/
 	public void init() {
-		domiciliosData = new DomiciliosUIData();
+		domiciliosData = DomiciliosUIData.getInstance();
+		//domiciliosData = new DomiciliosUIData();
 		footerBar = new FormButtonsBar();
 		linkCerrar = new SimpleLink("Cerrar");
 		linkAceptar = new SimpleLink("Aceptar");

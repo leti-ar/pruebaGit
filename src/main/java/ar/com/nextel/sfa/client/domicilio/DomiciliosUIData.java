@@ -14,6 +14,7 @@ import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
+import ar.com.nextel.sfa.client.infocom.InfocomUI;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.UIData;
@@ -35,6 +36,7 @@ import com.google.gwt.user.client.ui.Widget;
  **/
 public class DomiciliosUIData extends UIData {
 
+	private static DomiciliosUIData instance;
 	private DomiciliosCuentaDto domicilio;
 	private List listaDomicilios = new ArrayList<DomiciliosCuentaDto>();
 	//private boolean tienePpalEntrega = false;
@@ -71,6 +73,13 @@ public class DomiciliosUIData extends UIData {
 	Label labelValidado1 = new Label(Sfa.constant().validado1());
 	Label labelValidado2 = new Label(Sfa.constant().validado2());
 
+	
+	public static DomiciliosUIData getInstance() {
+		if (instance == null) {
+			instance = new DomiciliosUIData();
+		}
+		return instance;
+	}
 	
 	public DomiciliosUIData() {
 		configFields();
@@ -187,10 +196,10 @@ public class DomiciliosUIData extends UIData {
 			nombreUsuarioUltimaModificacion.setText(domicilio.getNombre_usuario_ultima_modificacion());
 			fechaUltimaModificacion.setText(domicilio.getFecha_ultima_modificacion());
 			// VER EstadoTipoDomicilioDto
-//			entrega.selectByValue("" + domicilio.getIdEntrega());
-//			facturacion.selectByValue("" + domicilio.getIdFacturacion());
+			entrega.selectByValue("" + domicilio.getIdEntrega());
+			facturacion.selectByValue("" + domicilio.getIdFacturacion());
 			
-			inicializarListBox();		
+//			inicializarListBox();		
 			
 		}
 	}
