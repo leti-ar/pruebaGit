@@ -2,13 +2,9 @@ package ar.com.nextel.sfa.client.infocom;
 
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.nextel.sfa.client.widget.RazonSocialClienteBar;
-import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
-import com.google.gwt.user.client.ui.RootPanel;
 
 public class VerInfocomUI extends ApplicationUI {
 
@@ -35,6 +31,7 @@ public class VerInfocomUI extends ApplicationUI {
 		infocomUI = InfocomUI.getInstance();
 		//Agrega la barra de razon social y cliente
 		mainPanel.add(razonSocialClienteBar);
+		razonSocialClienteBar.setDisabledSilvioSoldan();
 		infocomUI.addStyleName("fondoGris");
 	}
 
