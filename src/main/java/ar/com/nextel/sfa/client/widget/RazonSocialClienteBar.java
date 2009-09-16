@@ -48,6 +48,14 @@ public class RazonSocialClienteBar extends Composite {
 		right.getCellFormatter().setWidth(0, 2, "180px");
 	}
 
+	public void setDisabledSilvioSoldan() {
+		cuentaLink.setVisible(false);
+	}
+	
+	public void setEnabledSilvioSoldan() {
+		cuentaLink.setVisible(true);
+	}
+	
 	public void setRazonSocial(String razonSocial) {
 		this.razonSocial.setText(razonSocial);
 	}
