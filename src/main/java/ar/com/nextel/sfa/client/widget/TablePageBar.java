@@ -38,6 +38,11 @@ public class TablePageBar extends Composite {
 	private int cantResultadosPorPagina;
 	private Command beforeClickCommand;
 
+	private static String BTN_FIRST_DISABLED_STYLE = "btn-first-disabled";
+	private static String BTN_PREV_DISABLED_STYLE = "btn-prev-disabled";
+	private static String BTN_NEXT_DISABLED_STYLE = "btn-next-disabled";
+	private static String BTN_LAST_DISABLED_STYLE = "btn-last-disabled";
+
 	public TablePageBar() {
 		mainPanel = new FlowPanel();
 		initWidget(mainPanel);
@@ -95,6 +100,7 @@ public class TablePageBar extends Composite {
 		}
 		registrosMostrados.setText(Sfa.constant().registrosMostrados() + " " + cantRegistrosParcI + " - "
 				+ cantRegistrosParcF + " de " + cantRegistrosTot);
+		updateButtonsStatus();
 	}
 
 	public int getPagina() {
@@ -143,10 +149,7 @@ public class TablePageBar extends Composite {
 					}
 					setPagina(sender == prev ? --pagina : 1);
 				}
-				last.setEnabled(pagina != cantPaginas);
-				next.setEnabled(pagina != cantPaginas);
-				first.setEnabled(pagina != 1);
-				prev.setEnabled(pagina != 1);
+				updateButtonsStatus();
 				if (beforeClickCommand != null) {
 					beforeClickCommand.execute();
 				}
@@ -159,7 +162,22 @@ public class TablePageBar extends Composite {
 		prev.addClickHandler(handler);
 	}
 
-	public void newSearch(String buttonName) {
+	public void updateButtonsStatus(){
+		setButtonEnabled(pagina != cantPaginas, last, BTN_LAST_DISABLED_STYLE);
+		setButtonEnabled(pagina != cantPaginas, next, BTN_NEXT_DISABLED_STYLE);
+		setButtonEnabled(pagina != 1, first, BTN_FIRST_DISABLED_STYLE);
+		setButtonEnabled(pagina != 1, prev, BTN_PREV_DISABLED_STYLE);
+	}
+	
+	public void setButtonEnabled(boolean enable, Widget button, String style) {
+		if (enable) {
+			button.removeStyleName(style);
+		} else {
+			if (!button.getStyleName().contains(style)) {
+				button.addStyleName(style);
+			}
+		}
+
 	}
 
 	public Button getFirst() {
