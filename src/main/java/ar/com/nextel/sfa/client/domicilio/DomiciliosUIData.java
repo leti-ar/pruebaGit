@@ -105,8 +105,8 @@ public class DomiciliosUIData extends UIData {
 		fields.add(facturacion);
 		fields.add(provincia);
 		this.addFocusListeners(fields);
-		//entrega.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
-		//facturacion.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
+		entrega.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
+		facturacion.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
 
 		cpa.setTabIndex(1);
 		numero.setTabIndex(2);		
@@ -196,8 +196,13 @@ public class DomiciliosUIData extends UIData {
 			nombreUsuarioUltimaModificacion.setText(domicilio.getNombre_usuario_ultima_modificacion());
 			fechaUltimaModificacion.setText(domicilio.getFecha_ultima_modificacion());
 			// VER EstadoTipoDomicilioDto
+//			if(entrega.getItemCount()==0) {
+//				
+//			}
+			
 			entrega.selectByValue("" + domicilio.getIdEntrega());
 			facturacion.selectByValue("" + domicilio.getIdFacturacion());
+			
 			
 //			inicializarListBox();		
 			
