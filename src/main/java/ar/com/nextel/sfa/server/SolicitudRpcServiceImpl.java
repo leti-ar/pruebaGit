@@ -463,20 +463,25 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				generarChangeLog(solicitudServicioDto.getId(), solicitudServicio.getVendedor().getId());
 			}
 			result.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
-			String filename = solicitudServicio.getIdVantive() + "-5-" + solicitudServicio.getNumero()
-					+ ".rtf";
-			if (solicitudServicio.getCuenta().isProspect()
-					|| solicitudServicio.getCuenta().isProspectEnCarga()) {
-				filename = solicitudServicio.getId().toString() + "-5-" + solicitudServicio.getNumero()
-						+ ".rtf";
-			}
-			result.setRtfFileName(filename);
+			result.setRtfFileName(getReporteFileName(solicitudServicio));
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
 		AppLogger.info(accion + " de SS de id=" + solicitudServicioDto.getId() + " finalizado.");
 		return result;
+	}
+
+	private String getReporteFileName(SolicitudServicio solicitudServicio) {
+		String filename;
+		if (solicitudServicio.getCuenta().isCliente()) {
+			filename = solicitudServicio.getCuenta().getCodigoVantive() + "-5-"
+					+ solicitudServicio.getNumero() + ".rtf";
+		} else {
+			filename = solicitudServicio.getCuenta().getId().toString() + "-5-"
+					+ solicitudServicio.getNumero() + ".rtf";
+		}
+		return filename;
 	}
 
 	private void generarChangeLog(Long idServicioDto, Long idVendedor) {
