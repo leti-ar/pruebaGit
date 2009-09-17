@@ -10,6 +10,7 @@ import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
@@ -81,7 +82,7 @@ public class CerrarSSDialog extends NextelDialog implements ClickListener {
 		layout.addStyleName("m30 cierreExitosoTable");
 		layout.getRowFormatter().setVerticalAlign(0, HasAlignment.ALIGN_MIDDLE);
 		cierreExitoso.add(layout);
-		solicitudLink = new SimpleLink("Solicitud link", History.getToken(), true);
+		solicitudLink = new SimpleLink("Solicitud link", "#" + History.getToken(), true);
 		solicitudLink.addClickListener(this);
 		Grid solicitudRtf = new Grid(1, 2);
 		solicitudRtf.setWidget(0, 0, IconFactory.word());
@@ -104,15 +105,28 @@ public class CerrarSSDialog extends NextelDialog implements ClickListener {
 			RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getUrlReporte(fileName));
 			requestBuilder.setCallback(new RequestCallback() {
 				public void onResponseReceived(Request request, Response response) {
-					WindowUtils.redirect(getUrlReporte(fileName));
+					if (response.getStatusCode() == 200) {
+						WindowUtils.redirect(getUrlReporte(fileName));
+					} else {
+						showFileNotFoundError();
+					}
 				}
 
 				public void onError(Request request, Throwable exception) {
-					MessageDialog.getInstance().showAceptar("Error", Sfa.constant().ERR_FILE_NOT_FOUND(),
-							MessageDialog.getCloseCommand());
+					showFileNotFoundError();
 				}
 			});
+			try {
+				requestBuilder.send();
+			} catch (RequestException e) {
+				showFileNotFoundError();
+			}
 		}
+	}
+
+	private void showFileNotFoundError() {
+		MessageDialog.getInstance().showAceptar("Error", Sfa.constant().ERR_FILE_NOT_FOUND(),
+				MessageDialog.getCloseCommand());
 	}
 
 	public void showLoading(boolean cerrando) {
@@ -135,7 +149,7 @@ public class CerrarSSDialog extends NextelDialog implements ClickListener {
 
 	public String getUrlReporte(String fileName) {
 		return "/" + WindowUtils.getContextRoot() + "/download/" + fileName
-				+ ".rtf?module=solicitudes&service=rtf&name=" + fileName + ".rtf";
+				+ "?module=solicitudes&service=rtf&name=" + fileName;
 	}
 
 	/** Este comando cierra la ventana sin realizar ninguna accion */
