@@ -12,21 +12,14 @@
 	margin-right: 10px;
 }
 
-.btn-first {
-	background-position: 0 0;
-}
-
-.btn-prev {
-	background-position: 0 -16;
-}
-
-.btn-next {
-	background-position: 0 -32;
-}
-
-.btn-last {
-	background-position: 0 -48;
-}
+.btn-first { background-position: 0 0;}
+.btn-prev {	background-position: -16 0 ;}
+.btn-next {	background-position: -32 0 ;}
+.btn-last {	background-position: -48 0 ;}
+.btn-first-disabled { background-position: -64 0 !important;}
+.btn-prev-disabled { background-position: -80 0 !important;}
+.btn-next-disabled { background-position: -96 0 !important;}
+.btn-last-disabled { background-position: -112 0 !important;}
 
 .btn-bkg {
 	width: 80px;
