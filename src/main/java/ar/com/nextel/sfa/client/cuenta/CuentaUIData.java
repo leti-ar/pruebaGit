@@ -64,7 +64,7 @@ public class CuentaUIData extends UIData {
 	private TextBox emailPersonal      = new TextBox();
 	private TextBox emailLaboral       = new TextBox();
 	private RegexTextBox cbu           = new RegexTextBox(RegularExpressionConstants.numeros);
-	private RegexTextBox anioVto       = new RegexTextBox(RegularExpressionConstants.numeros);
+	private RegexTextBox anioVto       = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(4));
 	private RegexTextBox numeroTarjeta = new RegexTextBox(RegularExpressionConstants.numeros);
 	
 	private TelefonoTextBox telPrincipalTextBox = new TelefonoTextBox();
