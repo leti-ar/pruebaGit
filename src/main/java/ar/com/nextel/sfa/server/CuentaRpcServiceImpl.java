@@ -28,10 +28,6 @@ import ar.com.nextel.business.describable.GetAllBusinessOperator;
 import ar.com.nextel.business.externalConnection.exception.MerlinException;
 import ar.com.nextel.business.personas.normalizarDomicilio.NormalizadorDomicilio;
 import ar.com.nextel.business.personas.normalizarDomicilio.businessUnits.NormalizarDomicilioRequest;
-import ar.com.nextel.components.accessMode.AccessAuthorization;
-import ar.com.nextel.components.accessMode.accessObject.BaseAccessObject;
-import ar.com.nextel.components.accessMode.accessRequest.AccessRequest;
-import ar.com.nextel.components.accessMode.controller.AccessAuthorizationController;
 import ar.com.nextel.components.filter.Filter;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Cargo;
@@ -90,8 +86,6 @@ import ar.com.nextel.sfa.client.dto.ProveedorDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
 import ar.com.nextel.sfa.client.dto.RubroDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
-import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
-import ar.com.nextel.sfa.client.dto.SolicitudesServicioTotalesDto;
 import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
 import ar.com.nextel.sfa.client.dto.TipoCanalVentasDto;
@@ -119,31 +113,24 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 
 	private static final long serialVersionUID = 1L;
 	private WebApplicationContext context;
-	// private ApplicationContextLoader context;
 	private SearchCuentaBusinessOperator searchCuentaBusinessOperator;
 	private SelectCuentaBusinessOperator selectCuentaBusinessOperator;
 	private ContactosCuentaBusinessOperator contactosCuentaBusinessOperator;
-
 	private TarjetaCreditoValidatorServiceAxisImpl tarjetaCreditoValidatorService;
-
 	private CuentaBusinessService cuentaBusinessService;
 
 	private Transformer transformer;
 	private MapperExtended mapper;
 	private GetAllBusinessOperator getAllBusinessOperator;
 	private GenericDao genericDao;
-	// private VerazService veraz;
 	private NextelServices veraz;
 	private Repository repository;
 	private NormalizadorDomicilio normalizadorDomicilio;
 	private SessionContextLoader sessionContextLoader;
 
-	private final String CUENTA_FILTRADA = "Acceso denegado. No puede operar con esta cuenta.";
 	private final String ASOCIAR_CUENTA_A_OPP_ERROR = "La cuenta ya existe. No puede asociarse a la Oportunidad.";
 	private String ERROR_OPER_OTRO_VENDEDOR = "El prospect/cliente tiene una operación en curso con otro vendedor. No puede ver sus datos. El {1} es {2}";
 	private final String ERROR_OPORTUNIDAD_VENCIDA = "La oportunidad/Reserva está vencida";
-
-	private AccessAuthorizationController accessAuthorizationController;
 
 	@Override
 	public void init() throws ServletException {
@@ -155,7 +142,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		contactosCuentaBusinessOperator = (ContactosCuentaBusinessOperator) context.getBean("contactosCuentaBusinessOperator");
 		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");
 		tarjetaCreditoValidatorService = (TarjetaCreditoValidatorServiceAxisImpl) context.getBean("tarjetaCreditoValidatorService");
-		accessAuthorizationController = (AccessAuthorizationController) context.getBean("accessAuthorizationController");
 
 		transformer = (Transformer) context.getBean("cuentaToSearchResultTransformer");
 		mapper = (MapperExtended) context.getBean("dozerMapper");
@@ -172,9 +158,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	public List<CuentaSearchResultDto> searchCuenta(CuentaSearchDto cuentaSearchDto)
 			throws RpcExceptionMessages {
 		List<CuentaSearchResultDto> dtoResult = new ArrayList<CuentaSearchResultDto>();
-		CuentaSearchData cuentaSearchData = (CuentaSearchData) mapper.map(cuentaSearchDto,
-				CuentaSearchData.class);
-
+		CuentaSearchData cuentaSearchData = (CuentaSearchData) mapper.map(cuentaSearchDto,	CuentaSearchData.class);
 		cuentaSearchData.setCantidadResultados(cuentaSearchDto.getCantidadResultados());
 
 		List<Filter> filtros = (List<Filter>) context.getBean("vendedorCuentaSearchFilterDefinitions");
@@ -230,7 +214,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 
 	public List<TipoContribuyenteDto> getTiposContribuyente(Long tipoDocumento) {
 		return this.getAllBusinessOperator.getAll(TipoContribuyenteDto.class);
-
 	}
 
 	public AgregarCuentaInitializer getAgregarCuentaInitializer() {
@@ -252,29 +235,9 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return buscarDTOinit;
 	}
 
-	public CuentaDto saveCuenta(CuentaDto cuentaDto) throws RpcExceptionMessages {
-		try {
-			Long idCuenta = cuentaBusinessService.saveCuenta(cuentaDto, mapper);
-			if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(KnownInstanceIdentifier.DIVISION.getKey()))
-				cuentaDto = (DivisionDto) mapper.map(repository.retrieve(Division.class, idCuenta),	DivisionDto.class);
-			else if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(KnownInstanceIdentifier.SUSCRIPTOR.getKey()))
-				cuentaDto = (SuscriptorDto) mapper.map(repository.retrieve(Suscriptor.class, idCuenta),	SuscriptorDto.class);
-			else
-				cuentaDto = mapper.map(repository.retrieve(Cuenta.class, idCuenta), GranCuentaDto.class);
-		} catch (MappingException e) {
-			AppLogger.error("*** Error de mapeo al actualizar la cuenta: " + cuentaDto.getCodigoVantive() + " *** ");
-			AppLogger.error(e);
-		} catch (Exception e) {
-			AppLogger.error(e);
-			throw ExceptionUtil.wrap(e);
-		}
-		return cuentaDto;
-	}
-
 	public VerazInitializer getVerazInitializer() {
 		VerazInitializer verazInitializer = new VerazInitializer();
-		verazInitializer.setTiposDocumento(mapper.convertList(genericDao.getList(TipoDocumento.class),
-				TipoDocumentoDto.class));
+		verazInitializer.setTiposDocumento(mapper.convertList(genericDao.getList(TipoDocumento.class),	TipoDocumentoDto.class));
 		verazInitializer.setSexos(mapper.convertList(genericDao.getList(Sexo.class), SexoDto.class));
 		return verazInitializer;
 	}
@@ -285,8 +248,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 				genericDao.getList(TipoDocumento.class), TipoDocumentoDto.class));
 		List<SexoDto> listaSexosCompleta = mapper.convertList(genericDao.getList(Sexo.class), SexoDto.class);
 		List<SexoDto> listaSexos = new ArrayList<SexoDto>();
-		for (Iterator iterator = listaSexosCompleta.iterator(); iterator.hasNext();) {
-			SexoDto sexo = (SexoDto) iterator.next();
+		for (Iterator <SexoDto>iterator = listaSexosCompleta.iterator(); iterator.hasNext();) {
+			SexoDto sexo = iterator.next();
 			if (("F".equals(sexo.getCodigoVantive())) || ("M".equals(sexo.getCodigoVantive()))) {
 				listaSexos.add(sexo);
 			}
@@ -296,14 +259,15 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return crearContactoInitializer;
 	}
 
+	/****/
+	
 	public VerazResponseDto consultarVeraz(PersonaDto personaDto) throws RpcExceptionMessages {
 		AppLogger.info("Iniciando consulta a Veraz...");
 		VerazResponseDTO responseDTO = null;
 		Sexo sexo = (Sexo) this.repository.retrieve(Sexo.class, personaDto.getSexo().getId());
 		TipoDocumento tipoDocumento = (TipoDocumento) this.repository.retrieve(TipoDocumento.class,
 				personaDto.getDocumento().getTipoDocumento().getId());
-		long numeroDocumento = Long.parseLong(StringUtil.removeOcurrences(personaDto.getDocumento()
-				.getNumero(), '-'));
+		long numeroDocumento = Long.parseLong(StringUtil.removeOcurrences(personaDto.getDocumento().getNumero(), '-'));
 		AppLogger.debug("Parametros consulta a Veraz: " + tipoDocumento.getCodigoVeraz() + " / "
 				+ numeroDocumento + " / " + sexo.getCodigoVeraz() + "...");
 
@@ -326,39 +290,31 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		AppLogger.info("Consulta a Veraz finalizada.");
 		return responseDto;
 	}
-
-	public SolicitudesServicioTotalesDto searchSSCerrada(
-			SolicitudServicioCerradaDto solicitudServicioCerradaDto) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive) throws RpcExceptionMessages {
-        AppLogger.info("Iniciando SelectCuenta...");
-        CuentaDto cuentaDto = null;
-        try {
-			BaseAccessObject accessCuenta = getAccessCuenta(cuentaId);
-			Cuenta cuenta = (Cuenta) accessCuenta.getTargetObject();
-			// Lockea la cuenta
-			if (accessCuenta.getAccessAuthorization().hasSamePermissionsAs(AccessAuthorization.editOnly()) ||
-			                accessCuenta.getAccessAuthorization().hasSamePermissionsAs(AccessAuthorization.fullAccess())) {
-			    cuenta.editar(getVendedor());
-			    cuentaBusinessService.saveCuenta(cuenta);
-			}
-			String categoriaCuenta = cuenta.getCategoriaCuenta().getDescripcion();
-			if (categoriaCuenta.equals(KnownInstanceIdentifier.GRAN_CUENTA.getKey())) {
-				cuentaDto = (GranCuentaDto) mapper.map((GranCuenta) cuenta, GranCuentaDto.class);
-			} else if (categoriaCuenta.equals(KnownInstanceIdentifier.DIVISION.getKey())) {
-				cuentaDto = (DivisionDto) mapper.map((Division) cuenta, DivisionDto.class);
-			} else if (categoriaCuenta.equals(KnownInstanceIdentifier.SUSCRIPTOR.getKey())) {
-				cuentaDto = (SuscriptorDto) mapper.map((Suscriptor) cuenta, SuscriptorDto.class);
-			}
+	
+	public CuentaDto saveCuenta(CuentaDto cuentaDto) throws RpcExceptionMessages {
+		try {
+			Long idCuenta = cuentaBusinessService.saveCuenta(cuentaDto, mapper);
+			if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(KnownInstanceIdentifier.DIVISION.getKey()))
+				cuentaDto = (DivisionDto) mapper.map(repository.retrieve(Division.class, idCuenta),	DivisionDto.class);
+			else if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(KnownInstanceIdentifier.SUSCRIPTOR.getKey()))
+				cuentaDto = (SuscriptorDto) mapper.map(repository.retrieve(Suscriptor.class, idCuenta),	SuscriptorDto.class);
+			else
+				cuentaDto = mapper.map(repository.retrieve(Cuenta.class, idCuenta), GranCuentaDto.class);
+		} catch (MappingException e) {
+			AppLogger.error("*** Error de mapeo al actualizar la cuenta: " + cuentaDto.getCodigoVantive() + " *** ");
+			AppLogger.error(e);
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
-       	AppLogger.info("SelectCuenta finalizado.");
 		return cuentaDto;
+	}
+
+	/**
+	 * 
+	 */
+	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive) throws RpcExceptionMessages {
+		return cuentaBusinessService.selectCuenta(cuentaId, cod_vantive, getVendedor(), mapper);
 	}
 
 	/**
@@ -535,10 +491,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	 * @param idVentaPotencial
 	 * @return
 	 */
-	public List<CuentaDto> getCuentasAsociadasAVentaPotencial(Long idVentaPotencial)
-			throws RpcExceptionMessages {
-		CuentaPotencial cuentaPotencial = (CuentaPotencial) repository.retrieve(CuentaPotencial.class,
-				idVentaPotencial);
+	public List<CuentaDto> getCuentasAsociadasAVentaPotencial(Long idVentaPotencial) throws RpcExceptionMessages {
+		CuentaPotencial cuentaPotencial = (CuentaPotencial) repository.retrieve(CuentaPotencial.class, idVentaPotencial);
 		return (List<CuentaDto>) mapper.convertList(cuentaPotencial.getCuentasAsociadas(), CuentaDto.class);
 	}
 
@@ -566,18 +520,14 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	/**
 	 * @author eSalvador
 	 **/
-	public NormalizarDomicilioResultDto normalizarDomicilio(DomiciliosCuentaDto domicilioANormalizar)
-			throws RpcExceptionMessages {
+	public NormalizarDomicilioResultDto normalizarDomicilio(DomiciliosCuentaDto domicilioANormalizar) throws RpcExceptionMessages {
 		NormalizarDomicilioResultDto domicilioResultNormalizacion = null;
 		try {
 			NormalizarDomicilioRequest normalizarDomicilioRequest = new NormalizarDomicilioRequest();
 			Domicilio domicilio = repository.createNewObject(Domicilio.class);
 			mapper.map(domicilioANormalizar, domicilio);
-
 			normalizarDomicilioRequest.populateFromDomicilio(domicilio);
-			domicilioResultNormalizacion = mapper.map(normalizadorDomicilio
-					.normalizarDomicilio(normalizarDomicilioRequest), NormalizarDomicilioResultDto.class);
-
+			domicilioResultNormalizacion = mapper.map(normalizadorDomicilio.normalizarDomicilio(normalizarDomicilioRequest), NormalizarDomicilioResultDto.class);
 		} catch (MerlinException e) {
 			throw ExceptionUtil.wrap(e);
 		}
@@ -597,65 +547,12 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return resultConCPANormalizado;
 	}
 
-	/**
-	 * @author eSalvador
-	 **/
 	public List<ProvinciaDto> getProvinciasInitializer() {
-		List<ProvinciaDto> listaProvincias = mapper.convertList(repository.getAll(Provincia.class),
-				ProvinciaDto.class);
-		return listaProvincias;
+		return mapper.convertList(repository.getAll(Provincia.class),ProvinciaDto.class);
 	}
 
-	// public CuentaDto agregarDivisionOSuscriptor(Long ctaPadreId, String categoriaCuenta) throws
-	// RpcExceptionMessages {
 	public Cuenta obtenerCtaPadre(Long ctaPadreId, String categoriaCuenta) throws RpcExceptionMessages {
-		BaseAccessObject accessCuentaPadre;
-		Cuenta cuenta = null;
-		try {
-			accessCuentaPadre = getAccessCuenta(ctaPadreId);
-			AccessAuthorization accessAuthorizationPadre = accessCuentaPadre.getAccessAuthorization();
-			cuenta = (Cuenta) accessCuentaPadre.getTargetObject();
-
-			// Lockea la cuenta
-			if (accessCuentaPadre.getAccessAuthorization().hasSamePermissionsAs(
-					AccessAuthorization.editOnly())
-					|| accessCuentaPadre.getAccessAuthorization().hasSamePermissionsAs(
-							AccessAuthorization.fullAccess())) {
-				cuenta.editar(getVendedor());
-			} else {
-				accessCuentaPadre.getAccessAuthorization().setReasonPrefix(CUENTA_FILTRADA);
-				throw new RpcExceptionMessages(CUENTA_FILTRADA);
-			}
-		} catch (Exception e) {
-			throw new RpcExceptionMessages(e.getMessage());
-		}
-		// TODO: ver si es necesario traducir esta parte
-		// InstanceIdentifier categoriaCuentaServer =
-		// knownInstanceMapper.toKnownInstanceIdentifier(categoriaCuenta);
-		// Transformer crearCuentaHijoTransformer = this.crearCuentaTransformer(categoriaCuentaServer);
-		// Transformer returnCuentaNoAccessMethod = this.returnCuentaNoAccessMethod();
-		//
-		// CuentaWCTO cuentaWCTO = (CuentaWCTO) accessAuthorizationPadre.executeIfPermission(
-		// AccessPermission.EDIT, crearCuentaHijoTransformer, returnCuentaNoAccessMethod, accessCuentaPadre);
-		// AppLogger.info("Creacion de Division/Suscriptor finalizada.");
-		return cuenta;
-	}
-
-	public BaseAccessObject getAccessCuenta(Long ctaId) throws Exception {
-		Cuenta cuenta = null;
-		BaseAccessObject accessCuenta = null;
-		cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(ctaId);
-		accessCuenta = obtenerAcceso(getVendedor(), cuenta);
-		return accessCuenta;
-	}
-	
-	public BaseAccessObject obtenerAcceso(Vendedor vendedor, Cuenta cuenta) {
-		AppLogger.info("Calculando acceso de vendedor: " + vendedor.getUserName() + " a cuenta "+ cuenta.getCodigoVantive(), this);
-		AccessRequest accessRequest = new AccessRequest(vendedor, cuenta);
-		AccessAuthorization accessAuthorization = accessAuthorizationController.accessAuthorizationFor(accessRequest);
-		AppLogger.info("accessAuthorization: " + accessAuthorization.toString(), this);
-		BaseAccessObject accessCuenta = new BaseAccessObject(accessAuthorization, cuenta);
-		return accessCuenta;
+		return cuentaBusinessService.obtenerCtaPadre(ctaPadreId, categoriaCuenta, getVendedor());
 	}
 
 }

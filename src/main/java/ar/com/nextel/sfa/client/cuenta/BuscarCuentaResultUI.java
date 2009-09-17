@@ -235,7 +235,8 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickListener, Cl
 			String msg = Sfa.constant().ERR_CUENTA_LOCKEADA_POR_OTRO().replaceAll("\\{1\\}", cuentaSearch.getNumero()).replaceAll("\\{2\\}", cuentaSearch.getSupervisor());
 			ModalMessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_DIALOG_TITLE(), msg, getAceptarConsultarCtaLockeada(cuentaSearch, getCondicionBusquedaPorDni()),ModalMessageDialog.getCloseCommand());
 		} else {
-			CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(), cuentaSearch.getCodigoVantive(),getCondicionBusquedaPorDni());
+			//CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(), cuentaSearch.getCodigoVantive(),getCondicionBusquedaPorDni());
+			CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(), cuentaSearch.getNumero(),getCondicionBusquedaPorDni());
 		}
 	}
 
