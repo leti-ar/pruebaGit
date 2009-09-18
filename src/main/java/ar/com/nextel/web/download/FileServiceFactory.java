@@ -37,7 +37,7 @@ public class FileServiceFactory {
     
     public void configureFileName(HttpServletResponse response, Request request) {
         String fileName = getServiceConfig(request).getFileName(request);
-        response.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
     }
 
     public File getFile(Request request) {
