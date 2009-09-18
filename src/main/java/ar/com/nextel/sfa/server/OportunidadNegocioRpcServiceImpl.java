@@ -23,6 +23,7 @@ import ar.com.nextel.sfa.client.dto.OportunidadNegocioSearchResultDto;
 import ar.com.nextel.sfa.client.initializer.BuscarOportunidadNegocioInitializer;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
+import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.server.RemoteService;
 
 /**
@@ -47,7 +48,7 @@ public class OportunidadNegocioRpcServiceImpl extends RemoteService implements O
 		genericDao = (GenericDao) context.getBean("genericDao");
 	}
 
-	public BuscarOportunidadNegocioInitializer getBuscarOportunidadInitializer() {
+	public BuscarOportunidadNegocioInitializer getBuscarOportunidadInitializer() throws RpcExceptionMessages {
 		BuscarOportunidadNegocioInitializer buscarOportunidadNegocioInitializer = new BuscarOportunidadNegocioInitializer();
 		buscarOportunidadNegocioInitializer.setGrupoDocumento(mapper.convertList(genericDao
 				.getList(GrupoDocumento.class), GrupoDocumentoDto.class));
@@ -60,7 +61,8 @@ public class OportunidadNegocioRpcServiceImpl extends RemoteService implements O
 		return buscarOportunidadNegocioInitializer;
 	}
 
-	public List<OportunidadNegocioSearchResultDto> searchOportunidad(OportunidadDto oportunidadDto) {
+	public List<OportunidadNegocioSearchResultDto> searchOportunidad(OportunidadDto oportunidadDto)
+			throws RpcExceptionMessages {
 		AppLogger.info("Iniciando busqueda de oportunidades...");
 		Vendedor vendedor = sessionContextLoader.getVendedor();
 		OportunidadSearchData oportunidadSearchData = mapper.map(oportunidadDto, OportunidadSearchData.class);
