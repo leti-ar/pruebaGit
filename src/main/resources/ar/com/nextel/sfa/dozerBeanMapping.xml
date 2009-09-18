@@ -679,5 +679,15 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<class-b>ar.com.nextel.sfa.client.dto.PrioridadDto
 		</class-b>
 	</mapping>
+	<mapping>
+		<class-a>ar.com.nextel.sfa.client.dto.OportunidadDto
+		</class-a>
+		<class-b>ar.com.nextel.business.oportunidades.search.businessUnits.OportunidadSearchData
+		</class-b>
+		<field>
+			<a>grupoDocumentoId.id</a>
+			<b>grupoDocumentoId</b>
+		</field>
+	</mapping>
 
 </mappings>
