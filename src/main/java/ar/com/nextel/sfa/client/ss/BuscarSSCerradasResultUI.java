@@ -153,8 +153,9 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 				if (solicitudServicioCerradaResultDto.getRazonSocialCuenta() != null) {
 					resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getRazonSocialCuenta());
 				} else {
-					resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getCuenta().getPersona()
-							.getRazonSocial());
+//					resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getCuenta().getPersona()
+//							.getRazonSocial());
+					resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getRazonSocialCuenta());
 				}
 				resultTable.setHTML(row, 4, solicitudServicioCerradaResultDto.getCantidadEquiposPorCuenta()
 						.toString());
@@ -218,9 +219,9 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 			if (solicitud.isCliente()) {
 				// Si es cliente usamos el codigo Vantive, sino el Id (ya que no podemos
 				// guardar archivos con los caracteres de VANCUC
-				filename = solicitud.getIdVantive().toString() + "-5-" + numeroSS + ".rtf";
+				filename = solicitud.getNumeroCuenta() + "-5-" + numeroSS + ".rtf";
 			} else {
-				filename = solicitud.getId().toString() + "-5-" + numeroSS + ".rtf";
+				filename = solicitud.getIdCuenta().toString() + "-5-"	+ numeroSS + ".rtf";
 			}
 			final String filenameFinal = filename;
 			SolicitudRpcService.Util.getInstance().existReport(filename, new DefaultWaitCallback<Boolean>() {
@@ -238,6 +239,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 		}
 
 	}
+
 
 	private SolicitudServicioCerradaResultDto buscarSS(String numeroSS) {
 		for (Iterator iterator = solicitudesServicioCerradaResultDto.iterator(); iterator.hasNext();) {

@@ -79,9 +79,13 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>idVantive</a>
 			<b>idSolicitudServicio</b>
 		</field>
-		<field><!-- no deberia usar un mapping especifico? -->
-			<a>cuenta</a>
-			<b>cuenta</b>
+		<field>
+			<a>cuenta.cliente</a>
+			<b>cliente</b>
+		</field>
+		<field>
+			<a>cuenta.id</a>
+			<b>idCuenta</b>
 		</field>
 	</mapping>
 	
@@ -689,5 +693,4 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>grupoDocumentoId</b>
 		</field>
 	</mapping>
-
 </mappings>

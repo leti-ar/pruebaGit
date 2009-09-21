@@ -2,6 +2,8 @@ package ar.com.nextel.sfa.client.dto;
 
 import java.util.List;
 
+import ar.com.nextel.model.cuentas.beans.Cuenta;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class SolicitudServicioCerradaResultDto implements IsSerializable {
@@ -14,15 +16,18 @@ public class SolicitudServicioCerradaResultDto implements IsSerializable {
 	private Double pataconex;
 	private Boolean firmar;
 	private Long idVantive;
+	private Long idCuenta;
 	private Long id;
 	private Long cantidadEquiposPorCuenta;
 	private List<CambiosSolicitudServicioDto> cambios;
-	private CuentaDto cuenta;
+//	private CuentaDto cuenta;
+	private boolean cliente;
+	
 
-	// asumo que: que tenga el codigo de Vantive es sinonimo de que sea cliente
-	public boolean isCliente() {
-		return !cuenta.getCondicionCuenta().getCodigoVantive().trim().equals("");
-	}
+//	// asumo que: que tenga el codigo de Vantive es sinonimo de que sea cliente
+//	public boolean isCliente() {
+//		return !cuenta.getCondicionCuenta().getCodigoVantive().trim().equals("");
+//	}
 
 	public Long getIdSolicitudServicio() {
 		return idSolicitudServicio;
@@ -112,12 +117,29 @@ public class SolicitudServicioCerradaResultDto implements IsSerializable {
 		this.cantidadEquiposPorCuenta = cantidadEquiposPorCuenta;
 	}
 
-	public void setCuenta(CuentaDto cuenta) {
-		this.cuenta = cuenta;
+	public boolean isCliente() {
+		return cliente;
 	}
 
-	public CuentaDto getCuenta() {
-		return cuenta;
+	public void setCliente(boolean cliente) {
+		this.cliente = cliente;
 	}
+
+	public Long getIdCuenta() {
+		return idCuenta;
+	}
+
+	public void setIdCuenta(Long idCuenta) {
+		this.idCuenta = idCuenta;
+	}
+
+
+//	public void setCuenta(CuentaDto cuenta) {
+//		this.cuenta = cuenta;
+//	}
+//
+//	public CuentaDto getCuenta() {
+//		return cuenta;
+//	}
 
 }
