@@ -62,7 +62,11 @@ public class CambiosSSCerradasResultUI extends FlowPanel {
 		this.detalleSolicitudServicioDto = detalleSolicitudServicioDto;		
 		labelNroSS.setText("N° SS: "+ detalleSolicitudServicioDto.getNumero());
 		labelNroCLiente.setText("N° Cuenta: "+ detalleSolicitudServicioDto.getNumeroCuenta());
-		labelRazonSocial.setText("Razon Social: "+ detalleSolicitudServicioDto.getRazonSocialCuenta());
+		if(detalleSolicitudServicioDto.getRazonSocialCuenta()!=null) {
+			labelRazonSocial.setText("Razón Social: "+ detalleSolicitudServicioDto.getRazonSocialCuenta());
+		} else {
+			labelRazonSocial.setText("Razón Social: ");
+		}
 		loadTable();
 	}
 
