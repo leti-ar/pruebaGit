@@ -9,13 +9,13 @@ import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
 
-public class GenerarSSUIData extends UIData implements ClickListener {
+public class GenerarSSUIData extends UIData implements ClickHandler {
 
 	private CheckBox laboral;
 	private CheckBox personal;
@@ -23,7 +23,7 @@ public class GenerarSSUIData extends UIData implements ClickListener {
 	private CheckBox scoring;
 	private HTML emailLaboral;
 	private HTML emailPersonal;
-	private TextBox email;
+	private TextBox emailNuevo;
 	private SolicitudServicioGeneracionDto solicitudServicioGeneracion;
 
 	public GenerarSSUIData() {
@@ -31,33 +31,33 @@ public class GenerarSSUIData extends UIData implements ClickListener {
 		fields.add(personal = new CheckBox());
 		fields.add(nuevo = new CheckBox());
 		fields.add(scoring = new CheckBox());
-		fields.add(email = new RegexTextBox(RegularExpressionConstants.lazyEmail));
+		fields.add(emailNuevo = new RegexTextBox(RegularExpressionConstants.lazyEmail));
 		fields.add(emailLaboral = new HTML());
 		fields.add(emailPersonal = new HTML());
 
-		laboral.addClickListener(this);
-		personal.addClickListener(this);
-		nuevo.addClickListener(this);
-		email.setEnabled(false);
-		email.setReadOnly(true);
-		email.setWidth("300px");
+		laboral.addClickHandler(this);
+		personal.addClickHandler(this);
+		nuevo.addClickHandler(this);
+		emailNuevo.setEnabled(false);
+		emailNuevo.setReadOnly(true);
+		emailNuevo.setWidth("300px");
 	}
 
-	public void onClick(Widget sender) {
-		CheckBox senderCheckBox = (CheckBox) sender;
-		if (senderCheckBox.isChecked()) {
-			laboral.setChecked(false);
-			personal.setChecked(false);
-			nuevo.setChecked(false);
-			senderCheckBox.setChecked(true);
+	public void onClick(ClickEvent event) {
+		CheckBox senderCheckBox = (CheckBox) event.getSource();
+		if (senderCheckBox.getValue()) {
+			laboral.setValue(false);
+			personal.setValue(false);
+			nuevo.setValue(false);
+			senderCheckBox.setValue(true);
 		}
-		if (nuevo.isChecked()) {
-			email.setEnabled(true);
-			email.setReadOnly(false);
+		if (nuevo.getValue()) {
+			emailNuevo.setEnabled(true);
+			emailNuevo.setReadOnly(false);
 		} else {
-			email.setEnabled(false);
-			email.setReadOnly(true);
-			email.setText("");
+			emailNuevo.setEnabled(false);
+			emailNuevo.setReadOnly(true);
+			emailNuevo.setText("");
 		}
 	}
 
@@ -66,7 +66,7 @@ public class GenerarSSUIData extends UIData implements ClickListener {
 		setSolicitudServicioGeneracion(solicitudServicioGeneracion);
 		personal.setEnabled(false);
 		laboral.setEnabled(false);
-		
+
 		for (EmailDto email : emails) {
 			Long idTipo = email.getTipoEmail().getId();
 			if (TipoEmailEnum.PERSONAL.getTipo().equals(idTipo)) {
@@ -79,10 +79,12 @@ public class GenerarSSUIData extends UIData implements ClickListener {
 			}
 		}
 		if (laboral.isEnabled()) {
-			laboral.setChecked(true);
+			laboral.setValue(true);
 		} else if (personal.isEnabled()) {
-			personal.setChecked(true);
+			personal.setValue(true);
 		}
+		emailNuevo.setEnabled(nuevo.getValue());
+		emailNuevo.setReadOnly(!nuevo.getValue());
 	}
 
 	public CheckBox getLaboral() {
@@ -102,7 +104,7 @@ public class GenerarSSUIData extends UIData implements ClickListener {
 	}
 
 	public TextBox getEmail() {
-		return email;
+		return emailNuevo;
 	}
 
 	public HTML getEmailLaboral() {
@@ -114,31 +116,29 @@ public class GenerarSSUIData extends UIData implements ClickListener {
 	}
 
 	public SolicitudServicioGeneracionDto getSolicitudServicioGeneracion() {
-		solicitudServicioGeneracion.setEmailLaboralChecked(laboral.isChecked());
-		solicitudServicioGeneracion.setEmailNuevoChecked(nuevo.isChecked());
-		solicitudServicioGeneracion.setEmailPersonalChecked(personal.isChecked());
-		solicitudServicioGeneracion.setScoringChecked(scoring.isChecked());
-		
+		solicitudServicioGeneracion.setEmailLaboralChecked(laboral.getValue());
+		solicitudServicioGeneracion.setEmailNuevoChecked(nuevo.getValue());
+		solicitudServicioGeneracion.setEmailPersonalChecked(personal.getValue());
+		solicitudServicioGeneracion.setScoringChecked(scoring.getValue());
+
 		solicitudServicioGeneracion.setEmailNuevo(null);
 		solicitudServicioGeneracion.setEmailLicencia(null);
-		if (laboral.isChecked())
+		if (laboral.getValue())
 			solicitudServicioGeneracion.setEmailLicencia(emailLaboral.getText());
-		if (personal.isChecked())
+		if (personal.getValue())
 			solicitudServicioGeneracion.setEmailLicencia(emailPersonal.getText());
-		if (nuevo.isChecked())
-			solicitudServicioGeneracion.setEmailNuevo(email.getText());
+		if (nuevo.getValue())
+			solicitudServicioGeneracion.setEmailNuevo(emailNuevo.getText());
 		return solicitudServicioGeneracion;
 	}
 
 	public void setSolicitudServicioGeneracion(SolicitudServicioGeneracionDto solicitudServicioGeneracion) {
 		this.solicitudServicioGeneracion = solicitudServicioGeneracion;
-		email.setText(solicitudServicioGeneracion.getEmailNuevo());
-		laboral.setChecked(solicitudServicioGeneracion.isEmailLaboralChecked());
-		personal.setChecked(solicitudServicioGeneracion.isEmailPersonalChecked());
-		nuevo.setChecked(solicitudServicioGeneracion.isEmailNuevoChecked());
-		scoring.setChecked(solicitudServicioGeneracion.isScoringChecked());
-		email.setText(solicitudServicioGeneracion.getEmailNuevo());
-
+		laboral.setValue(solicitudServicioGeneracion.isEmailLaboralChecked());
+		personal.setValue(solicitudServicioGeneracion.isEmailPersonalChecked());
+		nuevo.setValue(solicitudServicioGeneracion.isEmailNuevoChecked());
+		scoring.setValue(solicitudServicioGeneracion.isScoringChecked());
+		emailNuevo.setText(solicitudServicioGeneracion.getEmailNuevo());
 	}
 
 }
