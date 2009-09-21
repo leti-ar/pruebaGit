@@ -35,7 +35,7 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 	private String activo;
 	private Long vantiveId;
 	private EstadoDomicilioDto estado = new EstadoDomicilioDto(new Long(EstadoDomicilioEnum.ACTIVO.getId()),
-			EstadoDomicilioEnum.ACTIVO.toString());
+			EstadoDomicilioEnum.ACTIVO.getDesc());
 	private Long idEntrega;
 	private Long idFacturacion;
 

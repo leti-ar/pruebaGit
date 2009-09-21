@@ -32,7 +32,7 @@ public class DatosDebitoCuentaBancariaDto extends AbstractDatosPagoDto implement
     	if (formaPagoAsociada==null) {
     		formaPagoAsociada = new FormaPagoDto();
     		formaPagoAsociada.setId(Long.parseLong(TipoFormaPagoEnum.CUENTA_BANCARIA.getTipo()));
-    		formaPagoAsociada.setDescripcion(TipoFormaPagoEnum.CUENTA_BANCARIA.toString());
+    		formaPagoAsociada.setDescripcion(TipoFormaPagoEnum.CUENTA_BANCARIA.getDesc());
     	}
 		return formaPagoAsociada;
 	}

@@ -1,13 +1,18 @@
 package ar.com.nextel.sfa.client.enums;
 
 public enum EstadoDomicilioEnum {
-	ACTIVO   (1L), 
-	INACTIVO (2L);
+	ACTIVO   (1L,"Activo"), 
+	INACTIVO (2L,"Inactivo");
 	private Long id;
-	EstadoDomicilioEnum(Long id) {
+	private String desc;
+	EstadoDomicilioEnum(Long id,String d) {
 		this.id=id;
+		this.desc=d;
 	}
 	public Long getId() {
 		return id;
+	}
+	public String getDesc() {
+		return desc;
 	}
 }

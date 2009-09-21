@@ -18,7 +18,7 @@ public class DatosEfectivoDto extends AbstractDatosPagoDto implements IsSerializ
     	if (formaPagoAsociada==null) {
     		formaPagoAsociada = new FormaPagoDto();
     		formaPagoAsociada.setId(Long.parseLong(TipoFormaPagoEnum.EFECTIVO.getTipo()));
-    		formaPagoAsociada.setDescripcion(TipoFormaPagoEnum.EFECTIVO.toString());
+    		formaPagoAsociada.setDescripcion(TipoFormaPagoEnum.EFECTIVO.getDesc());
     	}
 		return formaPagoAsociada;
 	}

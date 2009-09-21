@@ -1160,7 +1160,7 @@ public class CuentaDatosForm extends Composite {
         			camposTabDatos.getTelPrincipalTextBox().getNumero().getText(),
         			personaDto.getId(),
         			Boolean.TRUE,
-        			new TipoTelefonoDto(TipoTelefonoEnum.PRINCIPAL.getTipo(),TipoTelefonoEnum.PRINCIPAL.toString())
+        			new TipoTelefonoDto(TipoTelefonoEnum.PRINCIPAL.getTipo(),TipoTelefonoEnum.PRINCIPAL.getDesc())
         	    )
         	);
         	
@@ -1172,7 +1172,7 @@ public class CuentaDatosForm extends Composite {
         			camposTabDatos.getTelAdicionalTextBox().getNumero().getText(),
         			personaDto.getId(),
         			Boolean.FALSE,
-        			new TipoTelefonoDto(TipoTelefonoEnum.ADICIONAL.getTipo(),TipoTelefonoEnum.ADICIONAL.toString())
+        			new TipoTelefonoDto(TipoTelefonoEnum.ADICIONAL.getTipo(),TipoTelefonoEnum.ADICIONAL.getDesc())
         		)
         	);
          }
@@ -1204,11 +1204,11 @@ public class CuentaDatosForm extends Composite {
         //Panel Emails
 		List <EmailDto>mails = new ArrayList<EmailDto>();
         if (!camposTabDatos.getEmailPersonal().getText().equals("")) {
-       	   TipoEmailDto tipoEmail = new TipoEmailDto(TipoEmailEnum.PERSONAL.getTipo(),TipoEmailEnum.PERSONAL.toString());
+       	   TipoEmailDto tipoEmail = new TipoEmailDto(TipoEmailEnum.PERSONAL.getTipo(),TipoEmailEnum.PERSONAL.getDesc());
         	mails.add(new EmailDto(camposTabDatos.getEmailPersonal().getText(),false,tipoEmail ));	
         }
         if (!camposTabDatos.getEmailLaboral().getText().equals("")) {
-        	   TipoEmailDto tipoEmail = new TipoEmailDto(TipoEmailEnum.LABORAL.getTipo(),TipoEmailEnum.LABORAL.toString());
+        	   TipoEmailDto tipoEmail = new TipoEmailDto(TipoEmailEnum.LABORAL.getTipo(),TipoEmailEnum.LABORAL.getDesc());
          	mails.add(new EmailDto(camposTabDatos.getEmailLaboral().getText(),false,tipoEmail ));	
         }
         personaDto.setEmails(mails);        

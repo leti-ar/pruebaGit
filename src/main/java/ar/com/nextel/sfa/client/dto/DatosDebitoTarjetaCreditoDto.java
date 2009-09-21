@@ -41,7 +41,7 @@ public class DatosDebitoTarjetaCreditoDto  extends AbstractDatosPagoDto implemen
     	if (formaPagoAsociada==null) {
     		formaPagoAsociada = new FormaPagoDto();
     		formaPagoAsociada.setId(Long.parseLong(TipoFormaPagoEnum.TARJETA_CREDITO.getTipo()));
-    		formaPagoAsociada.setDescripcion(TipoFormaPagoEnum.TARJETA_CREDITO.toString());
+    		formaPagoAsociada.setDescripcion(TipoFormaPagoEnum.TARJETA_CREDITO.getDesc());
     	}
 		return formaPagoAsociada;
 	}
