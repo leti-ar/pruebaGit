@@ -6,6 +6,7 @@ import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.util.WindowUtils;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
+import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
@@ -105,6 +106,7 @@ public class CerrarSSDialog extends NextelDialog implements ClickListener {
 			RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getUrlReporte(fileName));
 			requestBuilder.setCallback(new RequestCallback() {
 				public void onResponseReceived(Request request, Response response) {
+					WaitWindow.hide();
 					if (response.getStatusCode() == 200) {
 						WindowUtils.redirect(getUrlReporte(fileName));
 					} else {
@@ -113,11 +115,13 @@ public class CerrarSSDialog extends NextelDialog implements ClickListener {
 				}
 
 				public void onError(Request request, Throwable exception) {
+					WaitWindow.hide();
 					showFileNotFoundError();
 				}
 			});
 			try {
 				requestBuilder.send();
+				WaitWindow.show();
 			} catch (RequestException e) {
 				showFileNotFoundError();
 			}
