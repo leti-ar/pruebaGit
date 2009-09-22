@@ -223,16 +223,23 @@ A {
 	height: 24px;
 }
 
-.gwt-BuscarCuentaResultPanel .resultTableWrapper {
+/*.gwt-BuscarCuentaResultPanel .resultTableWrapper {
 	height: 200px;
-	overflow: auto;
-}
+	overflow: auto;	
+}*/
 
 .resultTableWrapper {
 	height: 200px;
 	overflow: auto;
 	background-color: #FFF;
 	border: 1px solid gray;
+	margin-left: 8px;
+	margin-right: 8px;
+}
+
+.resultTableSS {
+	overflow: auto;
+	background-color: #FFF;
 	margin-left: 8px;
 	margin-right: 8px;
 }

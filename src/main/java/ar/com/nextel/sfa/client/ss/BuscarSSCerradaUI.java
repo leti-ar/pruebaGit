@@ -35,6 +35,7 @@ public class BuscarSSCerradaUI extends ApplicationUI {
 		buscarSSCerradasResultPanel.setCambiosSSCerradasResultUI(cambiosSSCerradasResultUI);
 		
 		mainPanel.add(buscadorSSCerradasFilterForm);
+		mainPanel.add(buscarSSCerradasResultPanel.getExportarExcel());
 		mainPanel.add(buscarSSCerradasResultPanel);
 		mainPanel.add(buscarSSTotalesResultUI);
 		mainPanel.add(cambiosSSCerradasResultUI);
