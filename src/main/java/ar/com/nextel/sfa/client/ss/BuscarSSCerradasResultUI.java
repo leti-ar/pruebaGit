@@ -10,8 +10,10 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
+import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.WindowUtils;
+import ar.com.snoop.gwt.commons.client.widget.table.RowListener;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -33,7 +35,7 @@ import com.google.gwt.user.client.ui.HTMLTable.Cell;
  */
 public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler {
 
-	private FlexTable resultTable;
+	private NextelTable resultTable;
 	private FlowPanel resultTotalTableWrapper;
 	private FlowPanel resultTableWrapper;
 	private FlowPanel exportarExcel;
@@ -48,6 +50,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 	private SolicitudServicioCerradaDto solicitudServicioCerradaDto;
 	private InlineHTML numResultados = new InlineHTML("Número de Resultados: ");
 	private InlineHTML cantResultados = new InlineHTML();
+	private int indiceRowTabla;
 
 //	public Long getTotalRegistrosBusqueda() {
 //		return totalRegistrosBusqueda;
@@ -70,8 +73,17 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 //		add(exportarExcel);
 		resultTableWrapper = new FlowPanel();
 		resultTableWrapper.addStyleName("resultTableWrapper");
-		resultTable = new FlexTable();
+		resultTable = new NextelTable();
 		resultTable.addClickHandler(this);
+		resultTable.addRowListener(new RowListener() {
+			public void onRowClick(Widget sender, int row) {
+			}
+			public void onRowEnter(Widget sender, int row) {
+				indiceRowTabla = row - 1;
+			}
+			public void onRowLeave(Widget sender, int row) {
+			}
+		});
 		initTable(resultTable);
 		resultTableWrapper.add(resultTable);
 		
@@ -153,35 +165,35 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 			resultTable.removeRow(1);
 		}
 
-		int row = 1;
+		indiceRowTabla = 1;
 
 		if (solicitudesServicioCerradaResultDto != null) {
 			//exportarExcel.setVisible(true);
 			for (Iterator iter = solicitudesServicioCerradaResultDto.iterator(); iter.hasNext();) {
 				SolicitudServicioCerradaResultDto solicitudServicioCerradaResultDto = (SolicitudServicioCerradaResultDto) iter
 						.next();
-				resultTable.setWidget(row, 0, IconFactory.word());
-				resultTable.setHTML(row, 1, solicitudServicioCerradaResultDto.getNumero());
-				resultTable.setHTML(row, 2, solicitudServicioCerradaResultDto.getNumeroCuenta());
+				resultTable.setWidget(indiceRowTabla, 0, IconFactory.word());
+				resultTable.setHTML(indiceRowTabla, 1, solicitudServicioCerradaResultDto.getNumero());
+				resultTable.setHTML(indiceRowTabla, 2, solicitudServicioCerradaResultDto.getNumeroCuenta());
 				if (solicitudServicioCerradaResultDto.getRazonSocialCuenta() != null) {
-					resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getRazonSocialCuenta());
+					resultTable.setHTML(indiceRowTabla, 3, solicitudServicioCerradaResultDto.getRazonSocialCuenta());
 				} else {
 //					resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getCuenta().getPersona()
 //							.getRazonSocial());
-					resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getRazonSocialCuenta());
+					resultTable.setHTML(indiceRowTabla, 3, solicitudServicioCerradaResultDto.getRazonSocialCuenta());
 				}
-				resultTable.setHTML(row, 4, solicitudServicioCerradaResultDto.getCantidadEquiposPorCuenta()
+				resultTable.setHTML(indiceRowTabla, 4, solicitudServicioCerradaResultDto.getCantidadEquiposPorCuenta()
 						.toString());
-				resultTable.setHTML(row, 5, solicitudServicioCerradaResultDto.getPataconex().toString());
+				resultTable.setHTML(indiceRowTabla, 5, solicitudServicioCerradaResultDto.getPataconex().toString());
 				if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == true) {
-					resultTable.setWidget(row, 6, IconFactory.tildeVerde());
+					resultTable.setWidget(indiceRowTabla, 6, IconFactory.tildeVerde());
 				}
 				if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == Boolean.TRUE) {
 					cantEqFirmados++;
 				}
 				cantEquipos = cantEquipos + solicitudServicioCerradaResultDto.getCantidadEquipos();
 				cantPataconex = cantPataconex + solicitudServicioCerradaResultDto.getPataconex();
-				row++;
+				indiceRowTabla++;
 			}
 			setVisible(true);
 		}
