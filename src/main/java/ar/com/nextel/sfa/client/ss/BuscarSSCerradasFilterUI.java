@@ -4,6 +4,7 @@
 package ar.com.nextel.sfa.client.ss;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.widget.EventWrapper;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -62,8 +63,18 @@ public class BuscarSSCerradasFilterUI extends Composite {
 		layout.setWidget(3, 1, buscadorSSCerradasFilterEditor.getPataconesCombo());
 		layout.setHTML(3, 4, Sfa.constant().resultados());
 		layout.setWidget(3, 5, buscadorSSCerradasFilterEditor.getResultadosCombo());
-
-		mainPanel.add(layout);
+		EventWrapper eventWrapper = new EventWrapper() {
+			public void doEnter() {
+				buscarSSCerradasResultPanel.searchSSCerradas(buscadorSSCerradasFilterEditor
+						.getSSCerradaSearch());
+			}
+		};
+		eventWrapper.add(layout);
+		mainPanel.add(eventWrapper);
+		
+		
+//		mainPanel.add(layout);
+		
 
 		FlowPanel commandPanel = new FlowPanel();
 		commandPanel.add(buscadorSSCerradasFilterEditor.getBuscarButton());
