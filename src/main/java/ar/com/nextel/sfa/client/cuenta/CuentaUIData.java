@@ -21,10 +21,15 @@ import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
 
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
@@ -38,6 +43,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class CuentaUIData extends UIData {
 
+	private static final int MAX_LENGHT_OBSERVACIONES = 250;
 	private ListBox tipoDocumento      = new ListBox();
 	private ListBox sexo               = new ListBox();
 	private ListBox contribuyente      = new ListBox();
@@ -100,6 +106,7 @@ public class CuentaUIData extends UIData {
 	private Label numTarLabel   = new Label(Sfa.constant().nroTarjeta());
 	private Label prinLabel     = new Label(Sfa.constant().principal());
 	private Label observLabel   = new Label(Sfa.constant().observaciones());
+	private Label cantCaracObs  = new Label();
 	
 	private TextArea observaciones = new TextArea();
 	private SimpleDatePicker fechaNacimiento = new SimpleDatePicker(false, true);
@@ -158,24 +165,18 @@ public class CuentaUIData extends UIData {
 				setAtributosNumeroTarjeta();
 			}
 		});
-		nombre.addFocusListener(new FocusListener() {
-			public void onFocus(Widget sender) {
-			}
-			public void onLostFocus(Widget sender) {
+		nombre.addBlurHandler(new BlurHandler() {
+			public void onBlur(BlurEvent arg0) {
 				exportarNombreApellidoARazonSocial();
 			}
 		});
-		apellido.addFocusListener(new FocusListener() {
-			public void onFocus(Widget sender) {
-			}
-			public void onLostFocus(Widget sender) {
+		apellido.addBlurHandler(new BlurHandler() {
+			public void onBlur(BlurEvent arg0) {
 				exportarNombreApellidoARazonSocial();
 			}
 		});
-		nombreDivision.addFocusListener(new FocusListener() {
-			public void onFocus(Widget sender) {
-			}
-			public void onLostFocus(Widget sender) {
+		nombreDivision.addBlurHandler(new BlurHandler() {
+			public void onBlur(BlurEvent arg0) {
 				nombreDivision.setText(nombreDivision.getText().trim().toUpperCase());
 			}
 		});
@@ -190,6 +191,26 @@ public class CuentaUIData extends UIData {
 				CuentaDatosForm.getInstance().validarTarjeta();
 			}
 		});
+		observaciones.addKeyUpHandler(new KeyUpHandler() {
+			public void onKeyUp(KeyUpEvent arg0) {
+                if (observaciones.getText().length()>MAX_LENGHT_OBSERVACIONES) {
+               	  observaciones.setText(observaciones.getText().substring(0,MAX_LENGHT_OBSERVACIONES));
+                }
+				cantCaracObs.setText(observaciones.getText().length()+ " de " + MAX_LENGHT_OBSERVACIONES);
+			}
+		});
+		observaciones.addFocusHandler(new FocusHandler() {
+			public void onFocus(FocusEvent event) {
+				cantCaracObs.setVisible(true);
+				cantCaracObs.setText(observaciones.getText().length()+ " de " + MAX_LENGHT_OBSERVACIONES);
+			}
+		});
+		observaciones.addBlurHandler(new BlurHandler() {
+			public void onBlur(BlurEvent event) {
+				cantCaracObs.setVisible(false);
+			}
+		});
+		
 		setAtributosDeCampos();
 		setCombos();
 		fields.add(tipoDocumento);
@@ -318,6 +339,7 @@ public class CuentaUIData extends UIData {
 		oppCompetenciaEquipo.addStyleName("fontNormalGris");
 		oppVisitas.addStyleName("fontNormalGris");
 		observaciones.addStyleName("obsTextAreaCuentaData");
+		cantCaracObs.addStyleName("fontNormalGris");
 		oppObservaciones.addStyleName("obsTextAreaCuentaData");
 		
         //nombres
@@ -389,7 +411,7 @@ public class CuentaUIData extends UIData {
 		tipoTarjeta.setWidth("60");
 		oppEstado.setWidth("100%");
 		oppObservaciones.setWidth("100%");
-		
+		cantCaracObs.setVisible(false);
 	}
 	
 	private void setAtributosNumeroTarjeta() {
@@ -702,5 +724,7 @@ public class CuentaUIData extends UIData {
 	public FlexTable getRadioOpsTable() {
 		return radioOpsTable;
 	}
-	
+	public Label getCantCaracObs() {
+		return cantCaracObs;
+	}
 }

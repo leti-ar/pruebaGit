@@ -348,7 +348,10 @@ public class CuentaDatosForm extends Composite {
 		telefonoTable.setWidget(1, 1, camposTabDatos.getTelCelularTextBox());
 		telefonoTable.setText(1, 2, Sfa.constant().fax());
 		telefonoTable.setWidget(1, 3, camposTabDatos.getTelFaxTextBox());
-		telefonoTable.setWidget(2, 0, camposTabDatos.getObservLabel());
+		FlexTable obLabelTable = new FlexTable();
+		obLabelTable.setWidget(0, 0,  camposTabDatos.getObservLabel());
+		obLabelTable.setWidget(0, 1,  camposTabDatos.getCantCaracObs());
+		telefonoTable.setWidget(2, 0, obLabelTable);
 		telefonoTable.setWidget(2, 1, camposTabDatos.getObservaciones());
 		telefonoTable.getFlexCellFormatter().setColSpan(2, 1, 3);
 		telefonoTable.getFlexCellFormatter().setWidth(0, 0, ANCHO_PRIMER_COLUMNA);
