@@ -45,6 +45,7 @@ public class CambiosSSCerradasResultUI extends FlowPanel {
 		cambiosTable = new FlexTable();
 		cambiosTable.setWidget(0, 0, labelDatosSS);
 		labelDatosSS.addStyleName("mt5");
+		labelDatosSS.addStyleName("oppEnCursoTitulosLabel");
 		cambiosTable.setWidget(1, 0, labelNroSS);
 		labelNroSS.addStyleName("mr50");
 		labelNroSS.addStyleName("mtb5");
