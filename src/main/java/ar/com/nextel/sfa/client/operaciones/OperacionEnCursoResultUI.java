@@ -246,9 +246,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 	}
 
 	private void loadTableOpCurso(List<OperacionEnCursoDto> opEnCursoActuales) {
-		while (resultTableOpEnCurso.getRowCount() > 1) {
-			resultTableOpEnCurso.removeRow(1);
-		}
+		resultTableOpEnCurso.clearContent();
 		// initTableOpenCurso(resultTableOpEnCurso);
 		resultTableWrapperOpCurso.setWidget(resultTableOpEnCurso);
 		int rowIndex = 1;
@@ -277,9 +275,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 	}
 
 	private void loadTableReservas(List<VentaPotencialVistaDto> vtaPotencialActuales) {
-		while (resultTableReservas.getRowCount() > 1) {
-			resultTableReservas.removeRow(1);
-		}
+		resultTableReservas.clearContent();
 		// initTableReservas(resultTableReservas);
 		resultTableWrapperReserva.setWidget(resultTableReservas);
 		int row = 1;

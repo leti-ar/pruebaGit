@@ -74,6 +74,9 @@ public class NextelTable extends RowFlexTable implements RowListener {
 		if (beforeRow != getRowCount() - 1) {
 			refreshRowStyles(index);
 		}
+		if (beforeRow >= dataStarRow && beforeRow <= rowSelected) {
+			setRowSelected(rowSelected + 1);
+		}
 		return index;
 	}
 
@@ -81,6 +84,11 @@ public class NextelTable extends RowFlexTable implements RowListener {
 		super.removeRow(row);
 		if (row < getRowCount()) {
 			refreshRowStyles(row);
+		}
+		if (row >= dataStarRow && row == rowSelected) {
+			setRowSelected(-1);
+		} else if (row >= dataStarRow && row < rowSelected) {
+			setRowSelected(rowSelected - 1);
 		}
 	}
 
@@ -100,7 +108,6 @@ public class NextelTable extends RowFlexTable implements RowListener {
 		return rowSelected;
 	}
 
-	// TODO: guarda al insertar y sacar filas
 	/** Setea la fila seleccionada (con estilos) */
 	public void setRowSelected(int row) {
 		if (rowSelected >= dataStarRow) {
@@ -111,6 +118,13 @@ public class NextelTable extends RowFlexTable implements RowListener {
 			rowSelected = row;
 		} else {
 			rowSelected = -1;
+		}
+	}
+
+	/** Remueve todas las filas desde la dataStarRow hasta el final */
+	public void clearContent() {
+		while (getRowCount() > dataStarRow) {
+			removeRow(dataStarRow);
 		}
 	}
 }

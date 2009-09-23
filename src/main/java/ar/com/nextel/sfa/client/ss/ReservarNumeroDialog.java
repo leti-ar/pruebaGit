@@ -62,9 +62,7 @@ public class ReservarNumeroDialog extends NextelDialog implements ClickListener 
 	public void show(List<AvailableNumberDto> numeros, Command commandAceptar) {
 		numerosDiponibles = numeros;
 		this.commandAceptar = commandAceptar;
-		while (numerosDiponiblesTable.getRowCount() > numeros.size()) {
-			numerosDiponiblesTable.removeRow(0);
-		}
+		numerosDiponiblesTable.clearContent();
 		int i = 0;
 		for (; i < numerosDiponibles.size(); i++) {
 			numerosDiponiblesTable.setHTML(i, 0, "" + numerosDiponibles.get(i).getAvailableNumber());

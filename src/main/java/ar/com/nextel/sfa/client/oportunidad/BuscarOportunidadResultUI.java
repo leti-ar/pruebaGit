@@ -168,9 +168,7 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickHandler
 	}
 
 	private void loadTable(List<OportunidadNegocioSearchResultDto> oportunidadesActuales) {
-		while (resultTable.getRowCount() > 1) {
-			resultTable.removeRow(1);
-		}
+		resultTable.clearContent();
 		initTable(resultTable);
 		int rowIndex = 1;
 		for (OportunidadNegocioSearchResultDto oportunidad : oportunidadesActuales) {

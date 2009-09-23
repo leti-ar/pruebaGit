@@ -18,43 +18,43 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class OperacionEnCursoSeleccionCuentaPopup  extends NextelDialog {
+public class OperacionEnCursoSeleccionCuentaPopup extends NextelDialog {
 	private NextelTable resultTable;
 	private SimplePanel resultTableWrapper;
 	private SimpleLink aceptar;
 	private SimpleLink cancelar;
-	private List <CuentaDto> cuentas;
-    
+	private List<CuentaDto> cuentas;
+
 	private static OperacionEnCursoSeleccionCuentaPopup seleccionCuentaPopUp = null;
 
-	ClickListener listener = new ClickListener(){
-		public void onClick(Widget sender){
-			if(sender == aceptar) {
+	ClickListener listener = new ClickListener() {
+		public void onClick(Widget sender) {
+			if (sender == aceptar) {
 				Long idCuenta = null;
 				if (resultTable != null && resultTable.getRowSelected() > 0) {
 					idCuenta = cuentas.get(resultTable.getRowSelected() - 1).getId();
 				}
-				if (idCuenta==null) {
-					MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(), Sfa.constant().ERR_NO_CUENTA_SELECTED(),
-							MessageDialog.getCloseCommand());
+				if (idCuenta == null) {
+					MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(),
+							Sfa.constant().ERR_NO_CUENTA_SELECTED(), MessageDialog.getCloseCommand());
 				} else {
 					CuentaClientService.cargarDatosCuenta(idCuenta, null);
 					hide();
-				}	
-			}
-			else if(sender == cancelar){
+				}
+			} else if (sender == cancelar) {
 				hide();
 			}
-		}};
+		}
+	};
 
-    public static OperacionEnCursoSeleccionCuentaPopup getInstance() {
-    	if (seleccionCuentaPopUp==null) {
-    		seleccionCuentaPopUp = new OperacionEnCursoSeleccionCuentaPopup();
-    	}
-    	return seleccionCuentaPopUp;
-    }
-	
-	private  OperacionEnCursoSeleccionCuentaPopup() {
+	public static OperacionEnCursoSeleccionCuentaPopup getInstance() {
+		if (seleccionCuentaPopUp == null) {
+			seleccionCuentaPopUp = new OperacionEnCursoSeleccionCuentaPopup();
+		}
+		return seleccionCuentaPopUp;
+	}
+
+	private OperacionEnCursoSeleccionCuentaPopup() {
 		super(Sfa.constant().LBL_SELECCION_CUENTA(), false, true);
 		init();
 	}
@@ -76,13 +76,13 @@ public class OperacionEnCursoSeleccionCuentaPopup  extends NextelDialog {
 
 		cancelar = new SimpleLink(Sfa.constant().cancelar());
 		cancelar.addClickListener(listener);
-        
+
 		addFormButtons(aceptar);
 		addFormButtons(cancelar);
 		setFormButtonsVisible(true);
 		setFooterVisible(false);
 	}
-	
+
 	/**
 	 *     
 	 */
@@ -90,21 +90,20 @@ public class OperacionEnCursoSeleccionCuentaPopup  extends NextelDialog {
 		aceptar.setVisible(true);
 		showAndCenter();
 	}
-	
-	
+
 	public void loadTable() {
-		while (resultTable.getRowCount() > 1) {
-			resultTable.removeRow(1);
-		}
+		resultTable.clearContent();
 		initTable(resultTable);
 		int row = 1;
 		for (CuentaDto cuenta : cuentas) {
 			resultTable.setHTML(row, 0, cuenta.getCodigoVantive());
 			resultTable.setHTML(row, 1, cuenta.getPersona().getRazonSocial());
 			resultTable.setHTML(row, 2, cuenta.getPersona().getApellido());
-			resultTable.setHTML(row, 3,(((TelefonoDto)(cuenta.getPersona().getTelefonos()).get(0)).getArea()!=null?"("+((TelefonoDto)(cuenta.getPersona().getTelefonos()).get(0)).getArea()+") ":"") +    
-				                        ((TelefonoDto)(cuenta.getPersona().getTelefonos()).get(0)).getNumeroLocal());
-			resultTable.setHTML(row, 4, /*credito fide ???*/ null);
+			resultTable.setHTML(row, 3, (((TelefonoDto) (cuenta.getPersona().getTelefonos()).get(0))
+					.getArea() != null ? "("
+					+ ((TelefonoDto) (cuenta.getPersona().getTelefonos()).get(0)).getArea() + ") " : "")
+					+ ((TelefonoDto) (cuenta.getPersona().getTelefonos()).get(0)).getNumeroLocal());
+			resultTable.setHTML(row, 4, /* credito fide ??? */null);
 			row++;
 		}
 		setVisible(true);
@@ -125,12 +124,12 @@ public class OperacionEnCursoSeleccionCuentaPopup  extends NextelDialog {
 		table.setHTML(0, 3, Sfa.constant().telefono());
 		table.setHTML(0, 4, Sfa.constant().creditoFidel());
 	}
-	
-	public void setCuentas (List<CuentaDto> cuentas) {
+
+	public void setCuentas(List<CuentaDto> cuentas) {
 		this.cuentas = cuentas;
 	}
+
 	public List<CuentaDto> getCuentas() {
 		return this.cuentas;
 	}
 }
-

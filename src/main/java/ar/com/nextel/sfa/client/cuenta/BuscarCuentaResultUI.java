@@ -46,7 +46,7 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickListener, Cl
 	static final String BLOQUEADO_TITLE = "Bloqueado para el usuario actual";
 	static final String LAPIZ_TITLE = "Editar";
 	static final String OTRO_BLOQUEO_TITLE = "Bloqueado por otro usuario";
-		
+
 	private NextelTable resultTable;
 	private SimplePanel resultTableWrapper;
 	private Label resultTotalCuentas;
@@ -59,12 +59,11 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickListener, Cl
 	private BuscarCuentaController controller;
 	private static final int cantResultadosPorPagina = 10;
 	private int indiceRowTabla;
-	private static Command aceptarCommand;	
+	private static Command aceptarCommand;
 	private List<CuentaSearchResultDto> cuentasActuales;
 	private InfocomUI infocomUI;
 	private String cuentaID;
 	private static BuscarCuentaResultUI instance;
-	
 
 	public BuscarCuentaResultUI(BuscarCuentaController controller) {
 
@@ -134,18 +133,20 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickListener, Cl
 	 * @param: firstTime
 	 **/
 	private void searchCuentas(CuentaSearchDto cuentaSearchDto, boolean firstTime) {
-		CuentaRpcService.Util.getInstance().searchCuenta(cuentaSearchDto, new DefaultWaitCallback<List<CuentaSearchResultDto>>() {
-			public void success(List<CuentaSearchResultDto> result) {
-				if (result.isEmpty()) {
-					ErrorDialog.getInstance().show("No se encontraron datos con el criterio utilizado.", false);
-				}
-				cuentas = result;
-				tablePageBar.setCantRegistrosTot(cuentas.size());
-				tablePageBar.setPagina(1);
-				setCuentas();
-				controller.setResultadoVisible(true);
-			}
-		});
+		CuentaRpcService.Util.getInstance().searchCuenta(cuentaSearchDto,
+				new DefaultWaitCallback<List<CuentaSearchResultDto>>() {
+					public void success(List<CuentaSearchResultDto> result) {
+						if (result.isEmpty()) {
+							ErrorDialog.getInstance().show(
+									"No se encontraron datos con el criterio utilizado.", false);
+						}
+						cuentas = result;
+						tablePageBar.setCantRegistrosTot(cuentas.size());
+						tablePageBar.setPagina(1);
+						setCuentas();
+						controller.setResultadoVisible(true);
+					}
+				});
 	}
 
 	public void setCuentas() {
@@ -227,16 +228,22 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickListener, Cl
 	 * 
 	 */
 	private void cargarDatosCuenta() {
-		int offset = (tablePageBar.getPagina()-1) * tablePageBar.getCantResultadosPorPagina();
+		int offset = (tablePageBar.getPagina() - 1) * tablePageBar.getCantResultadosPorPagina();
 		CuentaSearchResultDto cuentaSearch = cuentas.get(offset + indiceRowTabla);
-		if (cuentaSearch.getRazonSocial()!=null && cuentaSearch.getRazonSocial().equals("***")) {
-			ModalMessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), Sfa.constant().ERR_NO_ACCESO_CUENTA(), ModalMessageDialog.getCloseCommand());
+		if (cuentaSearch.getRazonSocial() != null && cuentaSearch.getRazonSocial().equals("***")) {
+			ModalMessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(),
+					Sfa.constant().ERR_NO_ACCESO_CUENTA(), ModalMessageDialog.getCloseCommand());
 		} else if (cuentaSearch.getLockingState() == 2) {
-			String msg = Sfa.constant().ERR_CUENTA_LOCKEADA_POR_OTRO().replaceAll("\\{1\\}", cuentaSearch.getNumero()).replaceAll("\\{2\\}", cuentaSearch.getSupervisor());
-			ModalMessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_DIALOG_TITLE(), msg, getAceptarConsultarCtaLockeada(cuentaSearch, getCondicionBusquedaPorDni()),ModalMessageDialog.getCloseCommand());
+			String msg = Sfa.constant().ERR_CUENTA_LOCKEADA_POR_OTRO().replaceAll("\\{1\\}",
+					cuentaSearch.getNumero()).replaceAll("\\{2\\}", cuentaSearch.getSupervisor());
+			ModalMessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_DIALOG_TITLE(), msg,
+					getAceptarConsultarCtaLockeada(cuentaSearch, getCondicionBusquedaPorDni()),
+					ModalMessageDialog.getCloseCommand());
 		} else {
-			//CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(), cuentaSearch.getCodigoVantive(),getCondicionBusquedaPorDni());
-			CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(), cuentaSearch.getNumero(),getCondicionBusquedaPorDni());
+			// CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(),
+			// cuentaSearch.getCodigoVantive(),getCondicionBusquedaPorDni());
+			CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(), cuentaSearch.getNumero(),
+					getCondicionBusquedaPorDni());
 		}
 	}
 
@@ -247,17 +254,17 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickListener, Cl
 	 */
 	private void clearResultTable() {
 		if (resultTable != null) {
-			while (resultTable.getRowCount() > 1) {
-				resultTable.removeRow(1);
-			}
+			resultTable.clearContent();
 		} else {
 			resultTable = new NextelTable();
 			resultTable.addRowListener(new RowListener() {
 				public void onRowClick(Widget sender, int row) {
 				}
+
 				public void onRowEnter(Widget sender, int row) {
 					indiceRowTabla = row - 1;
 				}
+
 				public void onRowLeave(Widget sender, int row) {
 				}
 			});
@@ -290,18 +297,18 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickListener, Cl
 
 	/** Retorna el id de la Cuenta selecionada o null si no hay nada seleccionado */
 	public Long getSelectedCuentaId() {
-		return getSelectedCuenta()!=null ? getSelectedCuenta().getId():null;
+		return getSelectedCuenta() != null ? getSelectedCuenta().getId() : null;
 	}
-	
+
 	public CuentaSearchResultDto getSelectedCuenta() {
-		int offset = (tablePageBar.getPagina()-1) * tablePageBar.getCantResultadosPorPagina();
+		int offset = (tablePageBar.getPagina() - 1) * tablePageBar.getCantResultadosPorPagina();
 		CuentaSearchResultDto cuenta = null;
 		if (resultTable != null && resultTable.getRowSelected() > 0) {
 			cuenta = cuentas.get(offset + (resultTable.getRowSelected() - 1));
 		}
 		return cuenta;
 	}
-	
+
 	public static Command getAceptarConsultarCtaLockeada(final CuentaSearchResultDto cuenta,
 			final String busquedaPorDni) {
 		if (aceptarCommand == null) {
@@ -321,12 +328,13 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickListener, Cl
 
 	public void onClick(ClickEvent arg0) {
 		CuentaSearchResultDto cuentaSearch = cuentas.get(indiceRowTabla);
-		if(cuentaSearch.isPuedeVerInfocom()) {
+		if (cuentaSearch.isPuedeVerInfocom()) {
 			History.newItem(UILoader.VER_INFOCOM + "?cuenta_id=" + cuentaSearch.getId());
 		} else {
 			ModalMessageDialog.getInstance().setDialogTitle("Ver Infocom");
 			ModalMessageDialog.getInstance().setSize("300px", "100px");
-			ModalMessageDialog.getInstance().showAceptar("No tiene permisos para ver infocom", ModalMessageDialog.getCloseCommand());
+			ModalMessageDialog.getInstance().showAceptar("No tiene permisos para ver infocom",
+					ModalMessageDialog.getCloseCommand());
 		}
 	}
 

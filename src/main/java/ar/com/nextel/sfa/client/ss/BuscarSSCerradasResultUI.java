@@ -137,9 +137,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 	}
 
 	private Widget loadTable() {
-		while (resultTable.getRowCount() > 1) {
-			resultTable.removeRow(1);
-		}
+		resultTable.clearContent();
 
 		indiceRowTabla = 1;
 
