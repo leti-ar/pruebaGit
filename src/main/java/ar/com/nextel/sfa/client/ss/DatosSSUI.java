@@ -224,46 +224,50 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		} else if (sender == borrarDomicioFacturacion || sender == borrarDomicioEntrega) {
 			if ((sender == borrarDomicioFacturacion)) {
 				borrarFacturacion();
-			
+
 			} else if (sender == borrarDomicioEntrega) {
 				borrarEntrega();
 			}
 
 		} else if (sender == detalleSS || sender == serviciosAdicionales) {
 			Cell cell = ((HTMLTable) sender).getCellForEvent(clickEvent);
-			onTableClick(sender, cell.getRowIndex(), cell.getCellIndex());
+			if (cell != null) {
+				onTableClick(sender, cell.getRowIndex(), cell.getCellIndex());
+			}
 		}
 	}
-	
+
 	public void borrarFacturacion() {
-		if (editarSSUIData.getFacturacion().getSelectedItemText()==null) {
+		if (editarSSUIData.getFacturacion().getSelectedItemText() == null) {
 		} else {
 			domicilioAEditar = (DomiciliosCuentaDto) editarSSUIData.getFacturacion().getSelectedItem();
 			DomicilioUI.getInstance().openPopupDeleteDialog(editarSSUIData.getCuenta().getPersona(),
 					domicilioAEditar, new Command() {
-				public void execute() {
-					editarSSUIData.refreshDomiciliosListBox();
-				}
-			});
+						public void execute() {
+							editarSSUIData.refreshDomiciliosListBox();
+						}
+					});
 		}
 	}
 
 	public void borrarEntrega() {
-		if (editarSSUIData.getEntrega().getSelectedItemText()==null) {
+		if (editarSSUIData.getEntrega().getSelectedItemText() == null) {
 		} else {
 			domicilioAEditar = (DomiciliosCuentaDto) editarSSUIData.getEntrega().getSelectedItem();
 			DomicilioUI.getInstance().openPopupDeleteDialog(editarSSUIData.getCuenta().getPersona(),
 					domicilioAEditar, new Command() {
-				public void execute() {
-					editarSSUIData.refreshDomiciliosListBox();
-				}
-			});
+						public void execute() {
+							editarSSUIData.refreshDomiciliosListBox();
+						}
+					});
 		}
 	}
-	
+
 	public void onClickEdicionDomicilios(Widget sender) {
-		//Verifico si esta completo el domicilio, si no esta no haca ninguna accion
-		if(((sender==editarDomicioEntrega) && (editarSSUIData.getEntrega().getSelectedItemText()==null)) || ((sender==editarDomicioFacturacion) && (editarSSUIData.getFacturacion().getSelectedItemText()==null)))  {
+		// Verifico si esta completo el domicilio, si no esta no haca ninguna accion
+		if (((sender == editarDomicioEntrega) && (editarSSUIData.getEntrega().getSelectedItemText() == null))
+				|| ((sender == editarDomicioFacturacion) && (editarSSUIData.getFacturacion()
+						.getSelectedItemText() == null))) {
 		} else {
 
 			DomicilioUI.getInstance().setComandoAceptar(getCommandGuardarDomicilio());
@@ -271,9 +275,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			boolean principalFacturacion = false;
 			for (DomiciliosCuentaDto domicilio : editarSSUIData.getCuenta().getPersona().getDomicilios()) {
 				principalEntrega = principalEntrega
-				|| EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdEntrega());
+						|| EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdEntrega());
 				principalFacturacion = principalFacturacion
-				|| EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdFacturacion());
+						|| EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdFacturacion());
 			}
 			DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(principalEntrega, principalFacturacion);
 			if (sender == crearDomicilio) {
@@ -284,7 +288,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				domicilioAEditar = (DomiciliosCuentaDto) editarSSUIData.getFacturacion().getSelectedItem();
 			}
 			domicilioAEditar = domicilioAEditar != null ? domicilioAEditar : new DomiciliosCuentaDto();
-			DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);	
+			DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
 		}
 
 	}

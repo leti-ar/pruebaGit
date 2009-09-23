@@ -420,7 +420,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 		Cell cell;
 		if (sender == resultTableOpEnCurso) {
 			cell = resultTableOpEnCurso.getCellForEvent(event);
-			if (cell.getRowIndex() <= 0) {
+			if (cell == null || cell.getRowIndex() <= 0) {
 				return;
 			}
 			if ((resultTableReservas.getRowSelected() > 0)) {
@@ -445,7 +445,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 		}
 		if (sender == resultTableReservas) {
 			cell = resultTableReservas.getCellForEvent(event);
-			if (cell.getRowIndex() <= 0) {
+			if (cell == null || cell.getRowIndex() <= 0) {
 				return;
 			}
 			if ((resultTableOpEnCurso.getRowSelected() > 0)) {

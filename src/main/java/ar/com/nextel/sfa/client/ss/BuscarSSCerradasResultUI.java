@@ -43,7 +43,6 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 	private SolicitudServicioCerradaDto solicitudServicioCerradaDto;
 	private int indiceRowTabla;
 
-
 	public BuscarSSCerradasResultUI() {
 		super();
 		addStyleName("gwt-BuscarCuentaResultPanel");
@@ -55,16 +54,18 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 		resultTable.addRowListener(new RowListener() {
 			public void onRowClick(Widget sender, int row) {
 			}
+
 			public void onRowEnter(Widget sender, int row) {
 				indiceRowTabla = row - 1;
 			}
+
 			public void onRowLeave(Widget sender, int row) {
 			}
 		});
 		initTable(resultTable);
 		resultTableWrapper.add(resultTable);
-		
-		//resultTotalTableWrapper.add(exportarExcel);
+
+		// resultTotalTableWrapper.add(exportarExcel);
 		resultTotalTableWrapper.add(resultTableWrapper);
 		setVisible(false);
 	}
@@ -113,7 +114,8 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 			List<SolicitudServicioCerradaResultDto> solicitudServicioCerradaResultDto) {
 		this.solicitudesServicioCerradaResultDto = solicitudServicioCerradaResultDto;
 		add(loadTable());
-		exportarExcelSSResultUI.setNumResultados("Número de Resultados: " + String.valueOf(solicitudServicioCerradaResultDto.size()));
+		exportarExcelSSResultUI.setNumResultados("Número de Resultados: "
+				+ String.valueOf(solicitudServicioCerradaResultDto.size()));
 		setVisible(true);
 	}
 
@@ -142,7 +144,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 		indiceRowTabla = 1;
 
 		if (solicitudesServicioCerradaResultDto != null) {
-			//exportarExcel.setVisible(true);
+			// exportarExcel.setVisible(true);
 			for (Iterator iter = solicitudesServicioCerradaResultDto.iterator(); iter.hasNext();) {
 				SolicitudServicioCerradaResultDto solicitudServicioCerradaResultDto = (SolicitudServicioCerradaResultDto) iter
 						.next();
@@ -150,15 +152,18 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 				resultTable.setHTML(indiceRowTabla, 1, solicitudServicioCerradaResultDto.getNumero());
 				resultTable.setHTML(indiceRowTabla, 2, solicitudServicioCerradaResultDto.getNumeroCuenta());
 				if (solicitudServicioCerradaResultDto.getRazonSocialCuenta() != null) {
-					resultTable.setHTML(indiceRowTabla, 3, solicitudServicioCerradaResultDto.getRazonSocialCuenta());
+					resultTable.setHTML(indiceRowTabla, 3, solicitudServicioCerradaResultDto
+							.getRazonSocialCuenta());
 				} else {
-//					resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getCuenta().getPersona()
-//							.getRazonSocial());
-					resultTable.setHTML(indiceRowTabla, 3, solicitudServicioCerradaResultDto.getRazonSocialCuenta());
+					// resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getCuenta().getPersona()
+					// .getRazonSocial());
+					resultTable.setHTML(indiceRowTabla, 3, solicitudServicioCerradaResultDto
+							.getRazonSocialCuenta());
 				}
-				resultTable.setHTML(indiceRowTabla, 4, solicitudServicioCerradaResultDto.getCantidadEquiposPorCuenta()
+				resultTable.setHTML(indiceRowTabla, 4, solicitudServicioCerradaResultDto
+						.getCantidadEquiposPorCuenta().toString());
+				resultTable.setHTML(indiceRowTabla, 5, solicitudServicioCerradaResultDto.getPataconex()
 						.toString());
-				resultTable.setHTML(indiceRowTabla, 5, solicitudServicioCerradaResultDto.getPataconex().toString());
 				if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == true) {
 					resultTable.setWidget(indiceRowTabla, 6, IconFactory.tildeVerde());
 				} else {
@@ -199,14 +204,16 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 	public void setBuscarSSTotalesResultUI(BuscarSSTotalesResultUI buscarSSTotalesResultUI) {
 		this.buscarSSTotalesResultUI = buscarSSTotalesResultUI;
 	}
-	
+
 	public void setExportarExcelSSResultUI(ExportarExcelSSResultUI exportarExcelSSResultUI) {
 		this.exportarExcelSSResultUI = exportarExcelSSResultUI;
 	}
-	
+
 	public void onClick(ClickEvent event) {
 		Cell cell = resultTable.getCellForEvent(event);
 
+		if (cell == null)
+			return;
 		String numeroSS = resultTable.getHTML(cell.getRowIndex(), 1).toString();
 		SolicitudServicioCerradaResultDto solicitud = buscarSS(numeroSS);
 		if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() >= 1)) {
@@ -226,7 +233,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 				// guardar archivos con los caracteres de VANCUC
 				filename = solicitud.getNumeroCuenta() + "-5-" + numeroSS + ".rtf";
 			} else {
-				filename = solicitud.getIdCuenta().toString() + "-5-"	+ numeroSS + ".rtf";
+				filename = solicitud.getIdCuenta().toString() + "-5-" + numeroSS + ".rtf";
 			}
 			final String filenameFinal = filename;
 			SolicitudRpcService.Util.getInstance().existReport(filename, new DefaultWaitCallback<Boolean>() {
@@ -245,7 +252,6 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 
 	}
 
-
 	private SolicitudServicioCerradaResultDto buscarSS(String numeroSS) {
 		for (Iterator iterator = solicitudesServicioCerradaResultDto.iterator(); iterator.hasNext();) {
 			SolicitudServicioCerradaResultDto solicitudServicioDto = (SolicitudServicioCerradaResultDto) iterator
@@ -260,18 +266,18 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 	public void setCambiosSSCerradasResultUI(CambiosSSCerradasResultUI cambiosSSCerradasResultUI) {
 		this.cambiosSSCerradasResultUI = cambiosSSCerradasResultUI;
 	}
-	
-//	public Widget getExportarExcel() {
-//		exportarExcel = new FlowPanel();
-//		exportarExcel.setHeight("30px");
-//		icon = IconFactory.excel();
-//		icon.addStyleName("exportarExcelSS mr10");
-//		numResultados.setWidth("170px");
-//		numResultados.addStyleName("floatLeft");
-//		numResultados.addStyleName("mt5");
-//		exportarExcel.add(numResultados);
-//		exportarExcel.add(icon);
-//		return exportarExcel;
-//	}
+
+	// public Widget getExportarExcel() {
+	// exportarExcel = new FlowPanel();
+	// exportarExcel.setHeight("30px");
+	// icon = IconFactory.excel();
+	// icon.addStyleName("exportarExcelSS mr10");
+	// numResultados.setWidth("170px");
+	// numResultados.addStyleName("floatLeft");
+	// numResultados.addStyleName("mt5");
+	// exportarExcel.add(numResultados);
+	// exportarExcel.add(icon);
+	// return exportarExcel;
+	// }
 
 }
