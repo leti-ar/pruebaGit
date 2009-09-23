@@ -238,6 +238,7 @@ A {
 }
 
 .resultTableSS {
+	height: 150px;
 	overflow: auto;
 	background-color: #FFF;
 	margin-left: 8px;
