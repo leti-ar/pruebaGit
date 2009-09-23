@@ -161,6 +161,8 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 				resultTable.setHTML(indiceRowTabla, 5, solicitudServicioCerradaResultDto.getPataconex().toString());
 				if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == true) {
 					resultTable.setWidget(indiceRowTabla, 6, IconFactory.tildeVerde());
+				} else {
+					resultTable.setText(indiceRowTabla, 6, "");
 				}
 				if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == Boolean.TRUE) {
 					cantEqFirmados++;
