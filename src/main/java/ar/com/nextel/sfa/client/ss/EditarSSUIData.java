@@ -87,8 +87,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		aclaracion.setHeight("35px");
 		fields.add(email = new RegexTextBox(RegularExpressionConstants.lazyEmail));
 		email.setWidth("480px");
-		fields.add(credFidelizacion = new RegexTextBox(RegularExpressionConstants.importe));
-		fields.add(pataconex = new RegexTextBox(RegularExpressionConstants.importe));
+		fields.add(credFidelizacion = new RegexTextBox(RegularExpressionConstants.numerosYPunto));
+		fields.add(pataconex = new RegexTextBox(RegularExpressionConstants.numerosYPunto));
 		fields.add(firmarss = new CheckBox());
 		fields.add(anticipo = new ListBox());
 		fields.add(observaciones = new TextArea());
@@ -234,25 +234,27 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		entrega.selectByValue("" + solicitud.getIdDomicilioEnvio());
 		facturacion.selectByValue("" + solicitud.getIdDomicilioFacturacion());
 		aclaracion.setText(solicitud.getAclaracionEntrega());
+		credFidelVencimientoText.setHTML("");
 		if (solicitud.getFechaVencimientoCreditoFidelizacion() != null) {
 			credFidelVencimientoText.setHTML(dateTimeFormat.format(solicitud
 					.getFechaVencimientoCreditoFidelizacion()));
-		} else {
-			credFidelVencimientoText.setHTML("");
 		}
-		double credFidelizacionValue = solicitud.getMontoCreditoFidelizacion() != null ? solicitud
-				.getMontoCreditoFidelizacion() : 0;
-
-		credFidelizacion.setText(decFormatter.format(credFidelizacionValue));
-		if (credFidelizacionValue > 0) {
+		// Si posee monto diponible de credito de fidelizacion habilito el textbox y cargo el monto actual. En
+		// caso contrario deshabilito el textbox y seteo todo en cero.
+		double montoDisponibleValue = solicitud.getMontoDisponible() != null ? solicitud.getMontoDisponible()
+				: 0;
+		double credFidelizacionValue = 0;
+		if (montoDisponibleValue > 0) {
 			credFidelizacion.setEnabled(true);
 			credFidelizacion.setReadOnly(false);
-			credFidelDisponibleText.setHTML(currFormatter.format(solicitud.getMontoDisponible()));
+			credFidelizacionValue = solicitud.getMontoCreditoFidelizacion() != null ? solicitud
+					.getMontoCreditoFidelizacion() : 0;
 		} else {
 			credFidelizacion.setEnabled(false);
 			credFidelizacion.setReadOnly(true);
-			credFidelDisponibleText.setHTML(currFormatter.format(0d));
 		}
+		credFidelDisponibleText.setHTML(currFormatter.format(montoDisponibleValue));
+		credFidelizacion.setText(decFormatter.format(credFidelizacionValue));
 		double pataconexValue = solicitud.getPataconex() != null ? solicitud.getPataconex() : 0;
 		pataconex.setText(decFormatter.format(pataconexValue));
 		firmarss.setValue(solicitud.getFirmar());
