@@ -25,7 +25,6 @@ public class BuscarSSTotalesResultUI extends FlowPanel {
 		resultadosTable.setWidget(0, 0, labelTotales);
 		labelTotales.addStyleName("mt5");
 		resultadosTable.setWidget(1, 0, labelEquipos);
-		//labelEquipos.addStyleName("mt10");
 		labelEquipos.addStyleName("mr50");
 		labelEquipos.addStyleName("mt5");
 		labelEquipos.addStyleName("mb3");

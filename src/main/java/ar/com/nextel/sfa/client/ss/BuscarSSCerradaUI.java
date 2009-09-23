@@ -15,6 +15,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 public class BuscarSSCerradaUI extends ApplicationUI {
 
 	private BuscarSSCerradasFilterUI buscadorSSCerradasFilterForm;
+	private ExportarExcelSSResultUI exportarExcelSSResultUI;
 	private BuscarSSCerradasResultUI buscarSSCerradasResultPanel;
 	private BuscarSSTotalesResultUI buscarSSTotalesResultUI;
 	private CambiosSSCerradasResultUI cambiosSSCerradasResultUI;
@@ -25,17 +26,20 @@ public class BuscarSSCerradaUI extends ApplicationUI {
 
 	public void firstLoad() {
 		buscadorSSCerradasFilterForm = new BuscarSSCerradasFilterUI();
+		exportarExcelSSResultUI = new ExportarExcelSSResultUI();
 		buscarSSCerradasResultPanel = new BuscarSSCerradasResultUI();
 		buscarSSTotalesResultUI = new BuscarSSTotalesResultUI();
 		cambiosSSCerradasResultUI = new CambiosSSCerradasResultUI();
+		exportarExcelSSResultUI.setVisible(false);
 		buscarSSTotalesResultUI.setVisible(false);
 		buscadorSSCerradasFilterForm.setBuscarCuentaResultPanel(buscarSSCerradasResultPanel);
+		buscarSSCerradasResultPanel.setExportarExcelSSResultUI(exportarExcelSSResultUI);
 		buscarSSCerradasResultPanel.setBuscarSSTotalesResultUI(buscarSSTotalesResultUI);
 		cambiosSSCerradasResultUI.setVisible(false);
 		buscarSSCerradasResultPanel.setCambiosSSCerradasResultUI(cambiosSSCerradasResultUI);
 		
 		mainPanel.add(buscadorSSCerradasFilterForm);
-		mainPanel.add(buscarSSCerradasResultPanel.getExportarExcel());
+		mainPanel.add(exportarExcelSSResultUI);
 		mainPanel.add(buscarSSCerradasResultPanel);
 		mainPanel.add(buscarSSTotalesResultUI);
 		mainPanel.add(cambiosSSCerradasResultUI);
@@ -48,6 +52,7 @@ public class BuscarSSCerradaUI extends ApplicationUI {
 		buscadorSSCerradasFilterForm.getBuscadorSSCerradasFilterEditor().getDesdeDatePicker().getTextBox().setText(dateFormatter.format(DateUtil.getStartDayOfMonth(DateUtil.today())));
 		buscadorSSCerradasFilterForm.getBuscadorSSCerradasFilterEditor().getHastaDatePicker().setSelectedDate(DateUtil.today());
 		buscadorSSCerradasFilterForm.getBuscadorSSCerradasFilterEditor().getHastaDatePicker().getTextBox().setText(dateFormatter.format(DateUtil.today()));
+		exportarExcelSSResultUI.setVisible(false);
 		buscarSSCerradasResultPanel.setVisible(false);
 		buscarSSTotalesResultUI.setVisible(false);
 		cambiosSSCerradasResultUI.setVisible(false);
