@@ -22,6 +22,7 @@ import ar.com.nextel.components.accessMode.AccessAuthorization;
 import ar.com.nextel.components.accessMode.accessObject.BaseAccessObject;
 import ar.com.nextel.components.accessMode.accessRequest.AccessRequest;
 import ar.com.nextel.components.accessMode.controller.AccessAuthorizationController;
+import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.AbstractDatosPago;
 import ar.com.nextel.model.cuentas.beans.ContactoCuenta;
@@ -78,6 +79,9 @@ public class CuentaBusinessService {
 	@Qualifier("accessAuthorizationController")
 	private AccessAuthorizationController accessAuthorizationController;
 	
+	@Qualifier("knownInstancesRetriever")
+	private KnownInstanceRetriever knownInstanceRetriever;
+	
 	private Repository repository;
 
 	@Autowired 
@@ -106,10 +110,15 @@ public class CuentaBusinessService {
 		this.accessAuthorizationController = accessAuthorizationControllerBean;
 	}
 	@Autowired
+	public void setKnownInstanceRetriever(KnownInstanceRetriever knownInstanceRetrieverBean) {
+		this.knownInstanceRetriever = knownInstanceRetrieverBean;
+	}
+	@Autowired
 	public void setRepository(@Qualifier("repository")Repository repository) {
 		this.repository = repository;
 	}
-
+	
+	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Cuenta reservarCrearCta(SolicitudCuenta solicitudCta) throws BusinessException {
 		ReservaCreacionCuentaBusinessOperatorResult reservarCrearCta = reservaCreacionCuentaBusinessOperator.reservarCrearCuenta(solicitudCta);
@@ -333,16 +342,16 @@ public class CuentaBusinessService {
 	 * @param cuenta
 	 */
 	private void addTelefonosAPersona(TelefonoDto tel, Persona persona, MapperExtended mapper) {
-		if (tel.getTipoTelefono().getId()==Long.parseLong(KnownInstanceIdentifier.TIPO_TEL_PRINCIPAL_ID.getKey())) {
+		if (tel.getTipoTelefono().getId()==knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_TEL_PARTICULAR).longValue()) {
 			persona.setTelefonoPrincipal(mapper.map(tel, Telefono.class));	
 		}
-		else if (tel.getTipoTelefono().getId()==Long.parseLong(KnownInstanceIdentifier.TIPO_TEL_ADICIONAL_ID.getKey())) {
+		else if (tel.getTipoTelefono().getId()==knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_TEL_ADICIONAL).longValue()) {
 			persona.setTelefonoAdicional(mapper.map(tel, Telefono.class));	
 		}
-		else if (tel.getTipoTelefono().getId()==Long.parseLong(KnownInstanceIdentifier.TIPO_TEL_CELULAR_ID.getKey())) {
+		else if (tel.getTipoTelefono().getId()==knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_TEL_CELULAR).longValue()) {
 			persona.setTelefonoCelular(mapper.map(tel, Telefono.class));	
 		}
-		else if (tel.getTipoTelefono().getId()==Long.parseLong(KnownInstanceIdentifier.TIPO_TEL_FAX_ID.getKey())) {
+		else if (tel.getTipoTelefono().getId()==knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_TEL_FAX).longValue()) {
 			persona.setTelefonoFax(mapper.map(tel, Telefono.class));	
 		}
 	}
@@ -353,14 +362,14 @@ public class CuentaBusinessService {
 	 * @param cuenta
 	 */
 	private void addEmailsAPersona(EmailDto mail, Persona persona) {
-		if (mail.getTipoEmail().getId().longValue()==Long.parseLong(KnownInstanceIdentifier.TIPO_EMAIL_PERSONAL_ID.getKey())) {
+		if (mail.getTipoEmail().getId().longValue()==knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_EMAIL_PERSONAL).longValue()) {
 			if (persona.getEmailPersonal()!=null) {
 				persona.getEmailPersonal().setEmail(mail.getEmail());
 			} else {
 				persona.setEmailPersonalAddress(mail.getEmail());
 			}
 		}
-		else if (mail.getTipoEmail().getId().longValue()==Long.parseLong(KnownInstanceIdentifier.TIPO_EMAIL_PERSONAL_ID.getKey())) {
+		else if (mail.getTipoEmail().getId().longValue()==knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_EMAIL_LABORAL).longValue()) {
 			if (persona.getEmailLaboral()!=null) {
 				persona.getEmailLaboral().setEmail(mail.getEmail());
 			} else {
