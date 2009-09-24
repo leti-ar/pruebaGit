@@ -8,6 +8,7 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.contacto.ContactosUI;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
+import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 
@@ -24,7 +25,7 @@ public class CuentaContactoForm extends Composite {
 
 	private FlexTable mainPanel;
 	private FlexTable datosTabla = new FlexTable();
-	private List<ContactoCuentaDto> listaContactos = new ArrayList();
+	private List<ContactoCuentaDto> listaContactos = new ArrayList<ContactoCuentaDto>();
 	private ContactosUI contactosUI;
 	private boolean formDirty = false;	
 	private Button crearButton;
@@ -145,41 +146,26 @@ public class CuentaContactoForm extends Composite {
 	}
 
 	public String obtenerTelefonoPrincipal(ContactoCuentaDto contactoDto) {
-		List<TelefonoDto> listaTelefonos = new ArrayList();
-		listaTelefonos = contactoDto.getPersona().getTelefonos();
-
-		if (listaTelefonos != null) {
-			for (Iterator iter = listaTelefonos.iterator(); iter.hasNext();) {
-				TelefonoDto telefonoDto = (TelefonoDto) iter.next();
-				if (telefonoDto.getPrincipal()) {
-					return comprobarArea(telefonoDto.getArea())
-							+ comprobarNumero(telefonoDto.getNumeroLocal())
-							+ comprobarInterno(telefonoDto.getInterno());
-				}
+		for (TelefonoDto telefonoDto:contactoDto.getPersona().getTelefonos()) {
+			if (telefonoDto.getTipoTelefono().getDescripcion().equals(TipoTelefonoEnum.PRINCIPAL.getDesc())) {
+				return comprobarArea(telefonoDto.getArea())	+ 
+				       comprobarNumero(telefonoDto.getNumeroLocal()) + 
+				       comprobarInterno(telefonoDto.getInterno());
 			}
 		}
 		return null;
 	}
 
 	private String comprobarArea(String area) {
-		if (!"".equals(area)) {
-			return "(" + area + ")" + " ";
-		} else
-			return "";
+		return (area!=null && !"".equals(area)) ? "(" + area + ")" + " ":  "";
 	}
 
 	private String comprobarNumero(String numero) {
-		if (!"".equals(numero)) {
-			return numero + " ";
-		} else
-			return "";
+		return (numero!=null && !"".equals(numero)) ?  numero + " " :  "";
 	}
 
 	private String comprobarInterno(String interno) {
-		if (!"".equals(interno)) {
-			return "(" + interno + ")" + " ";
-		} else
-			return "";
+		return (interno!=null && !"".equals(interno)) ? "(" + interno + ")" + " " : "";
 	}
 
 	public void eliminarContacto(int numeroContacto) {

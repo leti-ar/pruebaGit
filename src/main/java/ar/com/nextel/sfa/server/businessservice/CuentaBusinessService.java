@@ -1,7 +1,9 @@
 package ar.com.nextel.sfa.server.businessservice;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -51,9 +53,6 @@ import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
-import ar.com.nextel.sfa.client.enums.TipoCuentaEnum;
-import ar.com.nextel.sfa.client.enums.TipoEmailEnum;
-import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
@@ -133,8 +132,8 @@ public class CuentaBusinessService {
 		cuenta.setFormaPago(null);
 
 		mapper.map(cuentaDto, cuenta);
-
-		if (cuenta.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.DIV.getTipo())) {
+		
+		if (cuenta.getCategoriaCuenta().getDescripcion().equals(KnownInstanceIdentifier.DIVISION.getKey())) {
 			((Division)cuenta).setNombre(((DivisionDto)cuentaDto).getNombre());
 		}		
 		
@@ -150,6 +149,26 @@ public class CuentaBusinessService {
 			((DatosDebitoTarjetaCredito)cuenta.getDatosPago()).setTipoTarjeta(tipoTarjeta);
 		}
 
+		//FIXME: los contactos no se actualizan cuendo se está guardando suscriptores o divisiones...
+		Set<ContactoCuenta>  listaContactos = new HashSet<ContactoCuenta>();
+		for (ContactoCuentaDto contDto: getListaContactosDto(cuentaDto)) {
+			ContactoCuenta contacto = (ContactoCuenta) mapper.map(contDto, ContactoCuenta.class);
+			if(cuenta.esGranCuenta()) {
+				contacto.setCuenta((GranCuenta)cuenta);	
+			} else if(cuenta.esSuscriptor()) {
+				if(((Suscriptor)cuenta).getDivision()!=null) {
+					contacto.setCuenta((GranCuenta)((Suscriptor)cuenta).getDivision().getGranCuenta());
+				} else {
+					contacto.setCuenta((GranCuenta)((Suscriptor)cuenta).getGranCuenta());
+				}
+			} else if(cuenta.esDivision()) {
+				contacto.setCuenta((GranCuenta)((Division)cuenta).getGranCuenta());
+			}
+			listaContactos.add( (ContactoCuenta) mapper.map(contDto, ContactoCuenta.class));
+		}
+		cuenta.getPlainContactos().addAll(listaContactos);
+		//*************************************************************************************************
+
 		//FIXME: revisar mapeo de Persona/Telefono/Mail en dozer para no tener que hacer esto ***********************
 		removerTelefonosDePersona(cuenta.getPersona());
 		for (TelefonoDto tel : cuentaDto.getPersona().getTelefonos()) {
@@ -159,27 +178,24 @@ public class CuentaBusinessService {
 		for (EmailDto email : cuentaDto.getPersona().getEmails()) {
 			addEmailsAPersona(email,cuenta.getPersona());
 		}
-		if (cuenta.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.CTA.getTipo())) {
-			for(ContactoCuenta cont : cuenta.getContactos()) {
-				Persona persona = cont.getPersona();
-				for (ContactoCuentaDto contDto : (((GranCuentaDto) cuentaDto).getContactos())) {
-					if (cont.getId()==contDto.getId())  {
-						removerTelefonosDePersona(persona);
-						for (TelefonoDto tel : contDto.getPersona().getTelefonos()) {
-							addTelefonosAPersona(tel,persona,mapper);
-						}
-						for (EmailDto email : contDto.getPersona().getEmails()) {
-							addEmailsAPersona(email,persona);
-						}
-					}
-				}
+		if (cuenta.esGranCuenta()) {
+			updateTelefonoEmailContactos(cuenta.getContactos(), cuentaDto, mapper);
+		} else if (cuenta.esDivision()) {
+			updateTelefonoEmailContactos(((Division)cuenta).getGranCuenta().getContactos(), cuentaDto, mapper);
+		} else if (cuenta.esSuscriptor()) {
+			if (((Suscriptor)cuenta).getDivision()!=null) {
+				updateTelefonoEmailContactos(((Suscriptor)cuenta).getDivision().getGranCuenta().getContactos(), cuentaDto, mapper);
+			} else {
+				updateTelefonoEmailContactos(((Suscriptor)cuenta).getGranCuenta().getContactos(), cuentaDto, mapper);
 			}
 		}
 		//**********************************************************************************************
+		
 		repository.save(cuenta.getDatosPago());
 		repository.save(cuenta);
 		return cuenta.getId();
 	}
+	
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Division crearDivision(Cuenta cuenta, Vendedor vendedor) {
@@ -249,6 +265,52 @@ public class CuentaBusinessService {
 		return cuentaDto;
 	}
 	
+	/**
+	 * 
+	 * @param cuenta
+	 * @return
+	 */
+	private List<ContactoCuentaDto> getListaContactosDto(CuentaDto cuentaDto) {
+		List <ContactoCuentaDto>listaContactosDto = new ArrayList<ContactoCuentaDto>();
+		if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(KnownInstanceIdentifier.GRAN_CUENTA.getKey())) {
+			listaContactosDto = (List <ContactoCuentaDto>)((GranCuentaDto)cuentaDto).getContactos();
+		} else if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(KnownInstanceIdentifier.SUSCRIPTOR.getKey())) {
+			if(((SuscriptorDto)cuentaDto).getDivision()!=null) {
+				listaContactosDto = (List <ContactoCuentaDto>) ((SuscriptorDto)cuentaDto).getDivision().getGranCuenta().getContactos();	
+			} else {
+				listaContactosDto = (List <ContactoCuentaDto>) ((SuscriptorDto)cuentaDto).getGranCuenta().getContactos();
+			}
+			
+		} else if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(KnownInstanceIdentifier.DIVISION.getKey())) {
+			listaContactosDto = (List <ContactoCuentaDto>) ((DivisionDto)cuentaDto).getGranCuenta().getContactos();
+		}
+        return listaContactosDto;
+	}
+
+	/**
+	 * 
+	 * @param listaContactos
+	 * @param cuentaDto
+	 * @param mapper
+	 */
+	private void updateTelefonoEmailContactos(Set<ContactoCuenta> listaContactos,CuentaDto cuentaDto,MapperExtended mapper) {
+		List<ContactoCuentaDto> listaContactosDto = getListaContactosDto(cuentaDto);
+		for(ContactoCuenta cont : listaContactos) {
+			Persona persona = cont.getPersona();
+			for (ContactoCuentaDto contDto : listaContactosDto) {
+				if (cont.getId()==contDto.getId())  {
+					removerTelefonosDePersona(persona);
+					for (TelefonoDto tel : contDto.getPersona().getTelefonos()) {
+						addTelefonosAPersona(tel,persona,mapper);
+					}
+					for (EmailDto email : contDto.getPersona().getEmails()) {
+						addEmailsAPersona(email,persona);
+					}
+				}
+			}
+		}
+	}
+	
 	private void removerTelefonosDePersona(Persona persona) {
 		List<Telefono> telefonos = new ArrayList<Telefono>(persona.getTelefonos());
 		for (Telefono tel : telefonos) {
@@ -271,16 +333,16 @@ public class CuentaBusinessService {
 	 * @param cuenta
 	 */
 	private void addTelefonosAPersona(TelefonoDto tel, Persona persona, MapperExtended mapper) {
-		if (tel.getTipoTelefono().getId()==TipoTelefonoEnum.PRINCIPAL.getTipo()) {
+		if (tel.getTipoTelefono().getId()==Long.parseLong(KnownInstanceIdentifier.TIPO_TEL_PRINCIPAL_ID.getKey())) {
 			persona.setTelefonoPrincipal(mapper.map(tel, Telefono.class));	
 		}
-		else if (tel.getTipoTelefono().getId()==TipoTelefonoEnum.ADICIONAL.getTipo()) {
+		else if (tel.getTipoTelefono().getId()==Long.parseLong(KnownInstanceIdentifier.TIPO_TEL_ADICIONAL_ID.getKey())) {
 			persona.setTelefonoAdicional(mapper.map(tel, Telefono.class));	
 		}
-		else if (tel.getTipoTelefono().getId()==TipoTelefonoEnum.CELULAR.getTipo()) {
+		else if (tel.getTipoTelefono().getId()==Long.parseLong(KnownInstanceIdentifier.TIPO_TEL_CELULAR_ID.getKey())) {
 			persona.setTelefonoCelular(mapper.map(tel, Telefono.class));	
 		}
-		else if (tel.getTipoTelefono().getId()==TipoTelefonoEnum.FAX.getTipo()) {
+		else if (tel.getTipoTelefono().getId()==Long.parseLong(KnownInstanceIdentifier.TIPO_TEL_FAX_ID.getKey())) {
 			persona.setTelefonoFax(mapper.map(tel, Telefono.class));	
 		}
 	}
@@ -291,14 +353,14 @@ public class CuentaBusinessService {
 	 * @param cuenta
 	 */
 	private void addEmailsAPersona(EmailDto mail, Persona persona) {
-		if (mail.getTipoEmail().getId().equals(TipoEmailEnum.PERSONAL.getTipo())) {
+		if (mail.getTipoEmail().getId().longValue()==Long.parseLong(KnownInstanceIdentifier.TIPO_EMAIL_PERSONAL_ID.getKey())) {
 			if (persona.getEmailPersonal()!=null) {
 				persona.getEmailPersonal().setEmail(mail.getEmail());
 			} else {
 				persona.setEmailPersonalAddress(mail.getEmail());
 			}
 		}
-		else if (mail.getTipoEmail().getId().equals(TipoEmailEnum.LABORAL.getTipo())) {
+		else if (mail.getTipoEmail().getId().longValue()==Long.parseLong(KnownInstanceIdentifier.TIPO_EMAIL_PERSONAL_ID.getKey())) {
 			if (persona.getEmailLaboral()!=null) {
 				persona.getEmailLaboral().setEmail(mail.getEmail());
 			} else {

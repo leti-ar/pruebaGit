@@ -6,8 +6,12 @@ import java.util.List;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
+import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.DivisionDto;
+import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
+import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.enums.PrioridadEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.ss.EditarSSUI;
@@ -378,8 +382,9 @@ public class CuentaEdicionTabPanel {
 		CuentaDto ctaDto = (CuentaDto)cuentaDatosForm.getCuentaDtoFromEditor();
         //agrego domicilios
 		ctaDto.getPersona().setDomicilios(CuentaDomiciliosForm.getInstance().cuentaDto.getPersona().getDomicilios());
-		
-		//solo para actualizar imagen sin mensaje de error sin no hay domicilio.
+		//asegura que los contatos esten cargados en la granCuenta (para divisiones y suscriptores)
+		agregarContactos(ctaDto);
+		//solo para actualizar imagen (sin mensaje de error).
 		validarCompletitud(false);
 		
 		CuentaRpcService.Util.getInstance().saveCuenta(ctaDto,new DefaultWaitCallback<CuentaDto>() {
@@ -447,6 +452,20 @@ public class CuentaEdicionTabPanel {
 		return cuentaDatosForm.formularioDatosDirty() 
 		    || cuentaDomiciliosForm.formularioDatosDirty() 
 		    || cuentaContactoForm.formContactosDirty();
+	}
+	
+	private void agregarContactos(CuentaDto ctaDto) {
+		if(ctaDto instanceof GranCuentaDto) {
+			((GranCuentaDto)ctaDto).setContactos(CuentaContactoForm.getInstance().getListaContactos());
+		} else if(ctaDto instanceof SuscriptorDto) {
+			if(((SuscriptorDto)ctaDto).getDivision()!=null) {
+				((SuscriptorDto)ctaDto).getDivision().getGranCuenta().setContactos(CuentaContactoForm.getInstance().getListaContactos());
+			} else {
+				((SuscriptorDto)ctaDto).getGranCuenta().setContactos(CuentaContactoForm.getInstance().getListaContactos());
+			}
+		} else if(ctaDto instanceof DivisionDto) {
+			((DivisionDto)ctaDto).getGranCuenta().setContactos(CuentaContactoForm.getInstance().getListaContactos());
+		}
 	}
 	
 	///////////////

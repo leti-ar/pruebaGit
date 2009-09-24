@@ -294,7 +294,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 			for (Iterator<DomiciliosCuentaDto> iter = contactosData.getDomicilios().iterator(); iter.hasNext();) {
 				DomiciliosCuentaDto domicilioCuentaDto = (DomiciliosCuentaDto) iter.next();
 				domicilioTable.setWidget(row, 0, IconFactory.lapiz());
-				domicilioTable.setHTML(row, 1, armarDomicilio(domicilioCuentaDto));			
+				domicilioTable.setHTML(row, 1, domicilioCuentaDto.getDomicilios());			
 				row++;
 			}
 		}
@@ -337,22 +337,6 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		domicilioTable.removeRow(row);
 		setearDomicilio();
 	}
-	
-	private String armarDomicilio(DomiciliosCuentaDto domicilioCuentaDto) {
-		String domicilio = comprobarCalle(domicilioCuentaDto.getCalle()) 
-			+ comprobarNumero(domicilioCuentaDto.getNumero()) 
-			+ comprobarPiso(domicilioCuentaDto.getPiso()) 
-			+ comprobarDto(domicilioCuentaDto.getDepartamento()) 
-			+ comprobarUnidad(domicilioCuentaDto.getUnidad_funcional()) 
-			+ comprobarTorre(domicilioCuentaDto.getTorre()) 
-			+ comprobarLocalidad(domicilioCuentaDto.getLocalidad()) 
-			+ comprobarPartido(domicilioCuentaDto.getPartido()) 
-			+ comprobarProvincia(domicilioCuentaDto.getProvincia().getDescripcion()) 
-			+ comprobarCodigoPostal(domicilioCuentaDto.getCpa(),domicilioCuentaDto.getCodigo_postal());
-		
-		return domicilio;
-	}
-	
 	
 	private Widget createTelefonoPanel() {
 		telefonoTable = new FlexTable();
@@ -399,80 +383,5 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	public ContactoCuentaDto getContacto(){
 		return contactosData.getContactoDto();
 	}
-
-	private String comprobarCalle(String calle) {
-		if (!"".equals(calle)) {
-			return calle.toUpperCase() + " ";
-		} else 
-			return "";
-	}
-
-	private String comprobarNumero(String numero) {
-		if (numero!=null) {
-			return numero + " ";
-		} else 
-			return "";
-	}
 	
-	private String comprobarPiso(String piso) {
-		if (!"".equals(piso)) {
-			return "Piso " + piso + " ";
-		} else 
-			return "";
-	}
-	
-	private String comprobarDto(String dto) {
-		if (!"".equals(dto)) {
-			return "Dto. " + dto + " ";
-		} else 
-			return "";
-	}
-	
-	private String comprobarUnidad(String unidad) {
-		if (unidad==null) {
-			return "";
-		}
-		if (!"".equals(unidad)) {
-			return "UF " + unidad + " ";
-		} else 
-			return "";
-	}
-	
-	private String comprobarTorre(String torre) {
-		if (!"".equals(torre)) {
-			return "Torre " + torre + " ";
-		} else 
-			return "";
-	}
-	
-	private String comprobarLocalidad(String localidad) {
-		if (!"".equals(localidad)) {
-			return localidad + " ";
-		} else 
-			return "";
-	}
-	
-	private String comprobarPartido(String partido) {
-		if (!"".equals(partido)) {
-			return "- " + partido + " -" + " ";
-		} else 
-			return "";
-	}
-	
-	private String comprobarProvincia(String provincia) {
-		if (!"".equals(provincia)) {
-			return provincia + " ";
-		} else 
-			return "";
-	}
-
-	private String comprobarCodigoPostal(String cpa, String cp) {
-		if (!"".equals(cpa)) {
-			return "(" + cpa + ")";
-		} else 
-			if (!"".equals(cp)) { 
-				return "(" + cp + ")";
-			}
-		return "";
-	}
 }
