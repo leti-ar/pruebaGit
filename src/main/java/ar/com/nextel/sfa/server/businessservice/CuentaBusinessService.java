@@ -342,7 +342,7 @@ public class CuentaBusinessService {
 	 * @param cuenta
 	 */
 	private void addTelefonosAPersona(TelefonoDto tel, Persona persona, MapperExtended mapper) {
-		if (tel.getTipoTelefono().getId()==knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_TEL_PARTICULAR).longValue()) {
+		if (tel.getTipoTelefono().getId()==knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_TEL_PRINCIPAL).longValue()) {
 			persona.setTelefonoPrincipal(mapper.map(tel, Telefono.class));	
 		}
 		else if (tel.getTipoTelefono().getId()==knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_TEL_ADICIONAL).longValue()) {
