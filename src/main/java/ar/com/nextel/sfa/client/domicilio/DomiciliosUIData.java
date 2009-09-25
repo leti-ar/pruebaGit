@@ -115,7 +115,12 @@ public class DomiciliosUIData extends UIData {
 	// Si la cuenta todavia no tiene un domicilio principal cargado, se sugiere "Principal", sino "Si"
 	public void inicializarListBox() {
 		listaDomicilios = CuentaDomiciliosForm.getInstance().getDomicilios();
-
+		cargarListBox(listaDomicilios);
+	}
+		
+		
+		public void cargarListBox(List<DomiciliosCuentaDto> listaDomicilios) {
+			
 		if(listaDomicilios!=null) {
 			if((entrega.getItemCount()!=0) && (facturacion.getItemCount()!=0)) {
 				entrega.clear();

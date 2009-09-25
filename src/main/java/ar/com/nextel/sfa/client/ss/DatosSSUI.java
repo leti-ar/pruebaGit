@@ -6,6 +6,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.domicilio.DomicilioUI;
+import ar.com.nextel.sfa.client.domicilio.DomiciliosUIData;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
@@ -65,6 +66,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private int editingServicioAdRow = -1;
 	private RegexTextBox precioVenta;
 	private DomiciliosCuentaDto domicilioAEditar = null;
+	private List listaDomicilios = new ArrayList<DomiciliosCuentaDto>();
 
 	private static final String SELECTED_ROW = "selectedRow";
 
@@ -273,13 +275,15 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			DomicilioUI.getInstance().setComandoAceptar(getCommandGuardarDomicilio());
 			boolean principalEntrega = false;
 			boolean principalFacturacion = false;
-			for (DomiciliosCuentaDto domicilio : editarSSUIData.getCuenta().getPersona().getDomicilios()) {
-				principalEntrega = principalEntrega
-						|| EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdEntrega());
-				principalFacturacion = principalFacturacion
-						|| EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdFacturacion());
-			}
-			DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(principalEntrega, principalFacturacion);
+//			for (DomiciliosCuentaDto domicilio : editarSSUIData.getCuenta().getPersona().getDomicilios()) {
+//				principalEntrega = principalEntrega || EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdEntrega());
+//				principalFacturacion = principalFacturacion || EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdFacturacion());
+//			}
+//			DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(principalEntrega, principalFacturacion);
+			
+			listaDomicilios = editarSSUIData.getCuenta().getPersona().getDomicilios();
+			DomiciliosUIData.getInstance().cargarListBox(listaDomicilios);			
+			
 			if (sender == crearDomicilio) {
 				domicilioAEditar = new DomiciliosCuentaDto();
 			} else if (sender == editarDomicioEntrega) {
@@ -287,6 +291,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			} else if (sender == editarDomicioFacturacion) {
 				domicilioAEditar = (DomiciliosCuentaDto) editarSSUIData.getFacturacion().getSelectedItem();
 			}
+//			DomiciliosUIData.getInstance().setTienePpalEntrega(principalEntrega);
+//			DomiciliosUIData.getInstance().setTienePpalFacturacion(principalFacturacion);
+			//Desde aca tengo que tener una lista con los domicilios de la persona, como en CuentaDomiciliosForm
 			domicilioAEditar = domicilioAEditar != null ? domicilioAEditar : new DomiciliosCuentaDto();
 			DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
 		}
