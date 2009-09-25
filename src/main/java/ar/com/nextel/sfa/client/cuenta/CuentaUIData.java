@@ -60,8 +60,8 @@ public class CuentaUIData extends UIData {
 	
 	private TextBox numeroDocumento    = new TextBox();
 	private TextBox razonSocial        = new TextBox();
-	private TextBox nombre             = new TextBox();
-	private TextBox apellido           = new TextBox();
+	private RegexTextBox nombre        = new RegexTextBox(RegularExpressionConstants.letras);
+	private RegexTextBox apellido      = new RegexTextBox(RegularExpressionConstants.letras);
 	private TextBox categoria          = new TextBox();
 	private TextBox nombreDivision     = new TextBox();
 	private TextBox iibb               = new TextBox();
@@ -499,10 +499,10 @@ public class CuentaUIData extends UIData {
 	public TextBox getRazonSocial() {
 		return razonSocial;
 	}
-	public TextBox getNombre() {
+	public RegexTextBox getNombre() {
 		return nombre;
 	}
-	public TextBox getApellido() {
+	public RegexTextBox getApellido() {
 		return apellido;
 	}
 	public ListBox getSexo() {
