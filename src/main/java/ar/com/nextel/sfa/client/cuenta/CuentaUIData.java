@@ -20,6 +20,7 @@ import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -194,7 +195,8 @@ public class CuentaUIData extends UIData {
 		observaciones.addKeyUpHandler(new KeyUpHandler() {
 			public void onKeyUp(KeyUpEvent arg0) {
                 if (observaciones.getText().length()>MAX_LENGHT_OBSERVACIONES) {
-                    Window.alert(Sfa.constant().ERR_MAX_LARGO_CAMPO());
+					ErrorDialog.getInstance().setDialogTitle("Error");
+					ErrorDialog.getInstance().show(Sfa.constant().ERR_MAX_LARGO_CAMPO(), false);
                 	observaciones.setText(observaciones.getText().substring(0,MAX_LENGHT_OBSERVACIONES));
                 }
 			}
