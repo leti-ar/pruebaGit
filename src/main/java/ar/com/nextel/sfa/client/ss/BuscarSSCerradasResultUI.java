@@ -9,6 +9,7 @@ import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -234,8 +235,11 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 				filename = solicitud.getIdCuenta().toString() + "-5-" + numeroSS + ".rtf";
 			}
 			final String filenameFinal = filename;
+			LoadingModalDialog.getInstance()
+					.showAndCenter("Solicitud", "Esperando Solicitud de Servicio ...");
 			SolicitudRpcService.Util.getInstance().existReport(filename, new DefaultWaitCallback<Boolean>() {
 				public void success(Boolean result) {
+					LoadingModalDialog.getInstance().hide();
 					if (result) {
 						WindowUtils.redirect("/" + contextRoot + "/download/" + filenameFinal
 								+ "?module=solicitudes&service=rtf&name=" + filenameFinal);
@@ -243,6 +247,11 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 						MessageDialog.getInstance().showAceptar("Error", Sfa.constant().ERR_FILE_NOT_FOUND(),
 								MessageDialog.getCloseCommand());
 					}
+				}
+
+				public void failure(Throwable caught) {
+					LoadingModalDialog.getInstance().hide();
+					super.failure(caught);
 				}
 			});
 

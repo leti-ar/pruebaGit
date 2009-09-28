@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client.ss;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.util.WindowUtils;
@@ -107,6 +108,7 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 			requestBuilder.setCallback(new RequestCallback() {
 				public void onResponseReceived(Request request, Response response) {
 					WaitWindow.hide();
+					LoadingModalDialog.getInstance().hide();
 					if (response.getStatusCode() == 200) {
 						WindowUtils.redirect(getUrlReporte(fileName));
 					} else {
@@ -116,14 +118,19 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 
 				public void onError(Request request, Throwable exception) {
 					WaitWindow.hide();
+					LoadingModalDialog.getInstance().hide();
 					showFileNotFoundError();
 				}
 			});
 			try {
+				requestBuilder.setTimeoutMillis(10 * 1000);
 				requestBuilder.send();
 				WaitWindow.show();
+				LoadingModalDialog.getInstance().showAndCenter("Solicitud",
+						"Esperando Solicitud de Servicio ...");
 			} catch (RequestException e) {
 				showFileNotFoundError();
+				LoadingModalDialog.getInstance().hide();
 			}
 		}
 	}

@@ -20,6 +20,7 @@ import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
+import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -258,10 +259,12 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		PlanDto planDto = (PlanDto) plan.getSelectedItem();
 		ModalidadCobroDto modalidadCobroDto = (ModalidadCobroDto) modalidadCobro.getSelectedItem();
 		LocalidadDto localidadDto = (LocalidadDto) localidad.getSelectedItem();
+		LoadingModalDialog.getInstance().showAndCenter("Reserva", "Reservando número telefónico ...");
 		controller.reservarNumeroTelefonico(numeroTelefonico, planDto.getTipoTelefonia().getId(),
 				modalidadCobroDto.getId(), localidadDto.getId(),
 				new DefaultWaitCallback<ResultadoReservaNumeroTelefonoDto>() {
 					public void success(ResultadoReservaNumeroTelefonoDto result) {
+						LoadingModalDialog.getInstance().hide();
 						if (result.getReservedNumber() == 0) {
 							if (reservarNumeroDialog == null) {
 								reservarNumeroDialog = new ReservarNumeroDialog();
@@ -275,6 +278,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 							MessageDialog.getInstance().showAceptar("Reserva Exitosa",
 									Sfa.constant().MSG_NUMERO_RESERVADO(), MessageDialog.getCloseCommand());
 						}
+					}
+					public void failure(Throwable caught) {
+						LoadingModalDialog.getInstance().hide();
+						super.failure(caught);
 					}
 				});
 
@@ -292,13 +299,20 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	}
 
 	private void desreservar() {
+		LoadingModalDialog.getInstance().showAndCenter("Reserva", "Desreservando número telefónico ...");
 		controller.desreservarNumeroTelefonico(Long.parseLong(getNumeroTelefonicoCompleto()),
 				new DefaultWaitCallback() {
 					public void success(Object result) {
+						LoadingModalDialog.getInstance().hide();
 						setEnableReservaRelatedInputs(true);
 						desreservar.setVisible(false);
 						confirmarReserva.setVisible(true);
 						reservarHidden.setText("");
+					}
+
+					public void failure(Throwable caught) {
+						LoadingModalDialog.getInstance().hide();
+						super.failure(caught);
 					}
 				});
 	}
