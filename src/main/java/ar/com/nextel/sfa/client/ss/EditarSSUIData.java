@@ -23,10 +23,13 @@ import ar.com.nextel.sfa.client.validator.target.TextBoxBaseValidationTarget;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.DeferredCommand;
@@ -69,6 +72,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	private static final String V1 = "\\{1\\}";
 	private static final String FORMA_CONTRATACION_ALQUILER = "Alquiler";
+	private static final int MAX_LENGHT_OBSERVACIONES = 150;
+	private static final int MAX_LENGHT_ACLARACION = 200;
 
 	private SolicitudServicioDto solicitudServicio;
 
@@ -95,6 +100,18 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		observaciones.setWidth("480px");
 		observaciones.setHeight("35px");
 
+		observaciones.addKeyUpHandler(new KeyUpHandler() {
+			public void onKeyUp(KeyUpEvent arg0) {
+				showMaxLengthTextAreaError(observaciones, MAX_LENGHT_OBSERVACIONES);
+			}
+		});
+
+		aclaracion.addKeyUpHandler(new KeyUpHandler() {
+			public void onKeyUp(KeyUpEvent arg0) {
+				showMaxLengthTextAreaError(aclaracion, MAX_LENGHT_ACLARACION);
+			}
+		});
+
 		// Change listener para detectar cambios
 		for (Widget field : fields) {
 			if (field instanceof SourcesChangeEvents) {
@@ -119,6 +136,14 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		credFidelText.addStyleName("normalText");
 		pataconexText.addStyleName("normalText");
 		precioVentaText.addStyleName("normalText");
+	}
+
+	private void showMaxLengthTextAreaError(TextArea textArea, int maxLength) {
+		if (textArea.getText().length() > maxLength) {
+			ErrorDialog.getInstance().setDialogTitle("Error");
+			ErrorDialog.getInstance().show(Sfa.constant().ERR_MAX_LARGO_CAMPO(), false);
+			textArea.setText(textArea.getText().substring(0, maxLength));
+		}
 	}
 
 	public void onChange(Widget sender) {
