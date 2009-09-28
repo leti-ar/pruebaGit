@@ -1155,21 +1155,20 @@ public class CuentaDatosForm extends Composite {
 		List <TelefonoDto>phonos = new ArrayList<TelefonoDto>();
         if (!camposTabDatos.getTelPrincipalTextBox().getNumero().getText().equals("")) {
         	phonos.add(new TelefonoDto(
-        			camposTabDatos.getTelPrincipalTextBox().getArea().getText(),
-        			camposTabDatos.getTelPrincipalTextBox().getInterno().getText(),
-        			camposTabDatos.getTelPrincipalTextBox().getNumero().getText(),
+        			camposTabDatos.getTelPrincipalTextBox().getArea().getText().trim(),
+        			camposTabDatos.getTelPrincipalTextBox().getInterno().getText().trim(),
+        			camposTabDatos.getTelPrincipalTextBox().getNumero().getText().trim(),
         			personaDto.getId(),
         			Boolean.TRUE,
         			new TipoTelefonoDto(TipoTelefonoEnum.PRINCIPAL.getTipo(),TipoTelefonoEnum.PRINCIPAL.getDesc())
         	    )
         	);
-        	
          }
         if (!camposTabDatos.getTelAdicionalTextBox().getNumero().getText().equals("")) {
         	phonos.add(new TelefonoDto(
-        			camposTabDatos.getTelAdicionalTextBox().getArea().getText(),
-        			camposTabDatos.getTelAdicionalTextBox().getInterno().getText(),
-        			camposTabDatos.getTelAdicionalTextBox().getNumero().getText(),
+        			camposTabDatos.getTelAdicionalTextBox().getArea().getText().trim(),
+        			camposTabDatos.getTelAdicionalTextBox().getInterno().getText().trim(),
+        			camposTabDatos.getTelAdicionalTextBox().getNumero().getText().trim(),
         			personaDto.getId(),
         			Boolean.FALSE,
         			new TipoTelefonoDto(TipoTelefonoEnum.ADICIONAL.getTipo(),TipoTelefonoEnum.ADICIONAL.getDesc())
@@ -1178,9 +1177,9 @@ public class CuentaDatosForm extends Composite {
          }
         if (!camposTabDatos.getTelCelularTextBox().getNumero().getText().equals("")) {
         	phonos.add(new TelefonoDto(
-        			camposTabDatos.getTelCelularTextBox().getArea().getText(),
+        			camposTabDatos.getTelCelularTextBox().getArea().getText().trim(),
                     "",
-        			camposTabDatos.getTelCelularTextBox().getNumero().getText(),
+        			camposTabDatos.getTelCelularTextBox().getNumero().getText().trim(),
         			personaDto.getId(),
         			Boolean.FALSE,
         			new TipoTelefonoDto(TipoTelefonoEnum.CELULAR.getTipo(),TipoTelefonoEnum.CELULAR.toString())
@@ -1189,9 +1188,9 @@ public class CuentaDatosForm extends Composite {
          }
         if (!camposTabDatos.getTelFaxTextBox().getNumero().getText().equals("")) {
         	phonos.add(new TelefonoDto(
-        			camposTabDatos.getTelFaxTextBox().getArea().getText(),
-        			camposTabDatos.getTelFaxTextBox().getInterno().getText(),
-        			camposTabDatos.getTelFaxTextBox().getNumero().getText(),
+        			camposTabDatos.getTelFaxTextBox().getArea().getText().trim(),
+        			camposTabDatos.getTelFaxTextBox().getInterno().getText().trim(),
+        			camposTabDatos.getTelFaxTextBox().getNumero().getText().trim(),
         			personaDto.getId(),
         			Boolean.FALSE,
         			new TipoTelefonoDto(TipoTelefonoEnum.FAX.getTipo(),TipoTelefonoEnum.FAX.toString())
@@ -1205,11 +1204,11 @@ public class CuentaDatosForm extends Composite {
 		List <EmailDto>mails = new ArrayList<EmailDto>();
         if (!camposTabDatos.getEmailPersonal().getText().equals("")) {
        	   TipoEmailDto tipoEmail = new TipoEmailDto(TipoEmailEnum.PERSONAL.getTipo(),TipoEmailEnum.PERSONAL.getDesc());
-        	mails.add(new EmailDto(camposTabDatos.getEmailPersonal().getText(),false,tipoEmail ));	
+        	mails.add(new EmailDto(camposTabDatos.getEmailPersonal().getText().trim(),false,tipoEmail ));	
         }
         if (!camposTabDatos.getEmailLaboral().getText().equals("")) {
         	   TipoEmailDto tipoEmail = new TipoEmailDto(TipoEmailEnum.LABORAL.getTipo(),TipoEmailEnum.LABORAL.getDesc());
-         	mails.add(new EmailDto(camposTabDatos.getEmailLaboral().getText(),false,tipoEmail ));	
+         	mails.add(new EmailDto(camposTabDatos.getEmailLaboral().getText().trim(),false,tipoEmail ));	
         }
         personaDto.setEmails(mails);        
         
