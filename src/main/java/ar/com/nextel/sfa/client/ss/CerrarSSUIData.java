@@ -15,7 +15,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.TextBox;
 
-public class GenerarSSUIData extends UIData implements ClickHandler {
+public class CerrarSSUIData extends UIData implements ClickHandler {
 
 	private CheckBox laboral;
 	private CheckBox personal;
@@ -26,7 +26,7 @@ public class GenerarSSUIData extends UIData implements ClickHandler {
 	private TextBox emailNuevo;
 	private SolicitudServicioGeneracionDto solicitudServicioGeneracion;
 
-	public GenerarSSUIData() {
+	public CerrarSSUIData() {
 		fields.add(laboral = new CheckBox());
 		fields.add(personal = new CheckBox());
 		fields.add(nuevo = new CheckBox());

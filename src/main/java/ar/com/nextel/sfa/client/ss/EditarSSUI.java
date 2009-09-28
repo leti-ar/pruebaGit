@@ -66,7 +66,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private SimpleLink cerrarSolicitud;
 	private SimpleLink generarSolicitud;
 	private DefaultWaitCallback<GeneracionCierreResultDto> generacionCierreCallback;
-	private GenerarSSUI generarSSUI;
+	private CerrarSSUI generarSSUI;
 	private boolean cerrandoSolicitud;
 
 	public EditarSSUI() {
@@ -280,14 +280,14 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			public void execute() {
 				editarSSUIData.setSolicitudServicioGeneracion(getGenerarSSUI().getGenerarSSUIData()
 						.getSolicitudServicioGeneracion());
-				CerrarSSDialog.getInstance().showLoading(cerrandoSolicitud);
+				CerradoSSExitosoDialog.getInstance().showLoading(cerrandoSolicitud);
 				List errors = editarSSUIData.validarParaCerrarGenerar(true);
 				if (errors.isEmpty()) {
 					SolicitudRpcService.Util.getInstance().generarCerrarSolicitud(
 							editarSSUIData.getSolicitudServicio(), "", cerrandoSolicitud,
 							getGeneracionCierreCallback());
 				} else {
-					CerrarSSDialog.getInstance().hide();
+					CerradoSSExitosoDialog.getInstance().hide();
 					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
 					ErrorDialog.getInstance().show(errors, false);
 				}
@@ -299,7 +299,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		if (generacionCierreCallback == null) {
 			generacionCierreCallback = new DefaultWaitCallback<GeneracionCierreResultDto>() {
 				public void success(GeneracionCierreResultDto result) {
-					CerrarSSDialog.getInstance().hide();
+					CerradoSSExitosoDialog.getInstance().hide();
 					if (!result.isError()) {
 						editarSSUIData.setSaved(true);
 						Command aceptar = null;
@@ -311,10 +311,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 								}
 							};
 						} else {
-							aceptar = CerrarSSDialog.getCloseCommand();
+							aceptar = CerradoSSExitosoDialog.getCloseCommand();
 						}
-						CerrarSSDialog.getInstance().setAceptarCommand(aceptar);
-						CerrarSSDialog.getInstance().showCierreExitoso(result.getRtfFileName());
+						CerradoSSExitosoDialog.getInstance().setAceptarCommand(aceptar);
+						CerradoSSExitosoDialog.getInstance().showCierreExitoso(result.getRtfFileName());
 					} else {
 						ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
 						ErrorDialog.getInstance().show(MessageUtils.getMessagesHTML(result.getMessages()),
@@ -323,7 +323,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				}
 
 				public void failure(Throwable caught) {
-					CerrarSSDialog.getInstance().hide();
+					CerradoSSExitosoDialog.getInstance().hide();
 					super.failure(caught);
 				}
 			};
@@ -345,9 +345,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		return errors.isEmpty();
 	}
 
-	private GenerarSSUI getGenerarSSUI() {
+	private CerrarSSUI getGenerarSSUI() {
 		if (generarSSUI == null) {
-			generarSSUI = new GenerarSSUI();
+			generarSSUI = new CerrarSSUI();
 			generarSSUI.setAceptarCommand(generarCerrarSolicitudCommand());
 		}
 		return generarSSUI;

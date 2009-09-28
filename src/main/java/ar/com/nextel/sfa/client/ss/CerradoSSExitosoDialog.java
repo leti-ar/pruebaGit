@@ -30,7 +30,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author jlgperez
  * 
  */
-public class CerrarSSDialog extends NextelDialog implements ClickListener {
+public class CerradoSSExitosoDialog extends NextelDialog implements ClickListener {
 
 	private FlowPanel loadingPanel;
 	private FlowPanel cierreExitoso;
@@ -42,21 +42,21 @@ public class CerrarSSDialog extends NextelDialog implements ClickListener {
 	private String fileName;
 
 	private static Command closeCommand;
-	private static CerrarSSDialog instance;
+	private static CerradoSSExitosoDialog instance;
 
-	public static CerrarSSDialog getInstance() {
+	public static CerradoSSExitosoDialog getInstance() {
 		if (instance == null) {
-			instance = new CerrarSSDialog("Cerrar SS", false, true);
+			instance = new CerradoSSExitosoDialog("Cerrar SS", false, true);
 		}
 		return instance;
 	}
 
-	private CerrarSSDialog(String title) {
+	private CerradoSSExitosoDialog(String title) {
 		super(title);
 		init();
 	}
 
-	private CerrarSSDialog(String title, boolean autoHide, boolean modal) {
+	private CerradoSSExitosoDialog(String title, boolean autoHide, boolean modal) {
 		super(title, autoHide, modal);
 		init();
 	}

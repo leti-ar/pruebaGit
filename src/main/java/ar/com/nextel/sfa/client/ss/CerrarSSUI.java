@@ -12,9 +12,9 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
-public class GenerarSSUI extends NextelDialog implements ClickListener {
+public class CerrarSSUI extends NextelDialog implements ClickListener {
 
-	private GenerarSSUIData generarSSData;
+	private CerrarSSUIData generarSSData;
 	private SimpleLink aceptar;
 	private SimpleLink cancelar;
 	private Command aceptarCommand;
@@ -22,7 +22,7 @@ public class GenerarSSUI extends NextelDialog implements ClickListener {
 	private static final String cerrarTitle = "SS - Cerrar SS";
 	private FlexTable layout;
 
-	public GenerarSSUI() {
+	public CerrarSSUI() {
 		super("SS - Generar SS", false, true);
 		init();
 	}
@@ -37,7 +37,7 @@ public class GenerarSSUI extends NextelDialog implements ClickListener {
 		addFormButtons(cancelar);
 		setFooterVisible(false);
 		setFormButtonsVisible(true);
-		generarSSData = new GenerarSSUIData();
+		generarSSData = new CerrarSSUIData();
 		layout = new FlexTable();
 		layout.setWidth("100%");
 		// primeraTabla.getFlexCellFormatter().setColSpan(1, 1, 2);
@@ -88,7 +88,7 @@ public class GenerarSSUI extends NextelDialog implements ClickListener {
 		showAndCenter();
 	}
 
-	public GenerarSSUIData getGenerarSSUIData() {
+	public CerrarSSUIData getGenerarSSUIData() {
 		return generarSSData;
 	}
 
