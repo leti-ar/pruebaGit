@@ -255,6 +255,7 @@ public class DomiciliosUIData extends UIData {
 		partido.setMaxLength(40);
 		cpa.setMaxLength(10);
 		codigoPostal.setMaxLength(5);
+		piso.setMaxLength(3);
 	}
 
 	/**
