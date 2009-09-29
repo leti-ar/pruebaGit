@@ -49,8 +49,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 	public static final String ID_CUENTA = "idCuenta";
 	public static final String ID_GRUPO_SS = "idGrupoSS";
+	public static final String ID_CUENTA_POTENCIAL = "idCuentaPotencial";
 	private static final String validarCompletitudFailStyle = "validarCompletitudFailButton";
-
+	
 	private TabPanel tabs;
 	private DatosSSUI datos;
 	private VariosSSUI varios;
@@ -78,6 +79,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		tokenLoaded = History.getToken();
 		String cuenta = HistoryUtils.getParam(ID_CUENTA);
 		String grupoSS = HistoryUtils.getParam(ID_GRUPO_SS);
+		String cuentaPotencial = HistoryUtils.getParam(ID_CUENTA_POTENCIAL);
 		mainPanel.setVisible(false);
 		if (cuenta == null) {
 			ErrorDialog.getInstance().show("No ingreso la cuenta para la cual desea cargar la solicitud",
@@ -85,7 +87,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		} else {
 			SolicitudServicioRequestDto solicitudServicioRequestDto = new SolicitudServicioRequestDto();
 			solicitudServicioRequestDto.setIdCuenta(Long.parseLong(cuenta));
-			solicitudServicioRequestDto.setIdCuentaPotencial(null);
+			if(cuentaPotencial!=null) {
+				solicitudServicioRequestDto.setIdCuentaPotencial(Long.parseLong(cuentaPotencial));
+			}
 			// solicitudServicioRequestDto.setNumeroCuenta(numeroCuenta);
 			if (grupoSS != null) {
 				solicitudServicioRequestDto.setIdGrupoSolicitud(Long.parseLong(grupoSS));
