@@ -427,7 +427,8 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 			OperacionEnCursoDto op = opEnCurso.get(listPosition);
 			if (cell.getCellIndex() == 0) {
 				if (op.getIdGrupoSolicitud() != null) {
-					History.newItem(EditarSSUI.getEditarSSUrl(op.getIdCuenta(), op.getIdGrupoSolicitud()));
+					History.newItem(EditarSSUI.getEditarSSUrl(op.getIdCuenta(), op.getIdGrupoSolicitud(),
+							null));
 				} else {
 					ErrorDialog.getInstance().setDialogTitle("Error");
 					ErrorDialog.getInstance().show(Sfa.constant().ERR_SIN_SS(), false);
@@ -482,8 +483,9 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 
 			if (sender == crearSSLink) {
 				crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta,
-						GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
-				crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_CDW));
+						GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS, null));
+				crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_CDW,
+						null));
 				// crearMDS.setTargetHistoryToken(getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_MDS));
 				popupCrearSS.show();
 				popupCrearSS.setPopupPosition(crearSSLink.getAbsoluteLeft() - 10, crearSSLink

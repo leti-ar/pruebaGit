@@ -23,7 +23,6 @@ import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.util.MessageUtils;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
-import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.RazonSocialClienteBar;
 import ar.com.nextel.sfa.client.widget.UILoader;
@@ -51,7 +50,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public static final String ID_GRUPO_SS = "idGrupoSS";
 	public static final String ID_CUENTA_POTENCIAL = "idCuentaPotencial";
 	private static final String validarCompletitudFailStyle = "validarCompletitudFailButton";
-	
+
 	private TabPanel tabs;
 	private DatosSSUI datos;
 	private VariosSSUI varios;
@@ -81,15 +80,15 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		String grupoSS = HistoryUtils.getParam(ID_GRUPO_SS);
 		String cuentaPotencial = HistoryUtils.getParam(ID_CUENTA_POTENCIAL);
 		mainPanel.setVisible(false);
-		if (cuenta == null) {
+		if (cuenta == null && cuentaPotencial == null) {
+			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
 			ErrorDialog.getInstance().show("No ingreso la cuenta para la cual desea cargar la solicitud",
 					false);
 		} else {
 			SolicitudServicioRequestDto solicitudServicioRequestDto = new SolicitudServicioRequestDto();
-			solicitudServicioRequestDto.setIdCuenta(Long.parseLong(cuenta));
-			if(cuentaPotencial!=null) {
-				solicitudServicioRequestDto.setIdCuentaPotencial(Long.parseLong(cuentaPotencial));
-			}
+			solicitudServicioRequestDto.setIdCuenta(cuenta != null ? Long.parseLong(cuenta) : null);
+			solicitudServicioRequestDto.setIdCuentaPotencial(cuentaPotencial != null ? Long
+					.parseLong(cuentaPotencial) : null);
 			// solicitudServicioRequestDto.setNumeroCuenta(numeroCuenta);
 			if (grupoSS != null) {
 				solicitudServicioRequestDto.setIdGrupoSolicitud(Long.parseLong(grupoSS));
@@ -407,8 +406,15 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		SolicitudRpcService.Util.getInstance().verificarNegativeFiles(numero, callback);
 	}
 
-	public static String getEditarSSUrl(long idCuenta, long idGrupo) {
-		return UILoader.AGREGAR_SOLICITUD + "?" + EditarSSUI.ID_CUENTA + "=" + idCuenta + "&"
-				+ EditarSSUI.ID_GRUPO_SS + "=" + idGrupo;
+	public static String getEditarSSUrl(Long idCuenta, Long idGrupo, Long idCuentaPotencial) {
+		StringBuilder builder = new StringBuilder(UILoader.AGREGAR_SOLICITUD + "?");
+		if (idCuenta != null) {
+			builder.append(EditarSSUI.ID_CUENTA + "=" + idCuenta + "&");
+		}
+		if (idCuentaPotencial != null) {
+			builder.append(EditarSSUI.ID_CUENTA_POTENCIAL + "=" + idCuentaPotencial + "&");
+		}
+		builder.append(EditarSSUI.ID_GRUPO_SS + "=" + idGrupo);
+		return builder.toString();
 	}
 }

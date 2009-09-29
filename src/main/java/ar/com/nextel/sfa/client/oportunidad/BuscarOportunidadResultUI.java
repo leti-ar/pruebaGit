@@ -234,8 +234,9 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickHandler
 			Long idCuenta = oportunidadSelected.getCuentaOrigen().getId();
 			if (sender == buscarOportunidadFilterUIData.getCrearSS()) {
 				crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta,
-						GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
-				crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_CDW));
+						GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS, null));
+				crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_CDW,
+						null));
 				// crearMDS.setTargetHistoryToken(getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_MDS));
 				popupCrearSS.show();
 				popupCrearSS.setPopupPosition(
