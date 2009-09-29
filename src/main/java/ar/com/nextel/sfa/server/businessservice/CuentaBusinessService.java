@@ -321,18 +321,22 @@ public class CuentaBusinessService {
 	}
 	
 	private void removerTelefonosDePersona(Persona persona) {
-		List<Telefono> telefonos = new ArrayList<Telefono>(persona.getTelefonos());
-		for (Telefono tel : telefonos) {
-			persona.removeTelefono(tel);
-			repository.delete(tel);
+		if(persona.getTelefonos()!=null) {
+			List<Telefono> telefonos = new ArrayList<Telefono>(persona.getTelefonos());
+			for (Telefono tel : telefonos) {
+				persona.removeTelefono(tel);
+				repository.delete(tel);
+			}
 		}
 	}
 	
 	private void removerEmailsDePersona(Persona persona) {
-		List<Email> emails = new ArrayList<Email>(persona.getEmails());
-		for (Email email : emails) {
-			persona.removeEmail(email);
-			repository.delete(email);
+		if(persona.getEmails()!=null) {
+			List<Email> emails = new ArrayList<Email>(persona.getEmails());
+			for (Email email : emails) {
+				persona.removeEmail(email);
+				repository.delete(email);
+			}
 		}
 	}
 	
