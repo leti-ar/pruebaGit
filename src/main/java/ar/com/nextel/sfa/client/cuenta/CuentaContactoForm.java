@@ -140,6 +140,7 @@ public class CuentaContactoForm extends Composite {
 				eliminarContacto(numeroContacto);
 				ModalMessageDialog.getInstance().hide();
 				cargarTabla();
+				formDirty=true;
 			}
 		};
 		return comandoAceptar;
