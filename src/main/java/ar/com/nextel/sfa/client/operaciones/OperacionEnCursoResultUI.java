@@ -77,7 +77,6 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 	// private Hyperlink crearMDS;
 	private Long idCuenta;
 	private Long idCuentaPotencial;
-	
 
 	private OperacionEnCursoSeleccionCuentaPopup seleccionCuentaPopup = OperacionEnCursoSeleccionCuentaPopup
 			.getInstance();
@@ -429,7 +428,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 			OperacionEnCursoDto op = opEnCurso.get(listPosition);
 			if (cell.getCellIndex() == 0) {
 				if (op.getIdGrupoSolicitud() != null) {
-					History.newItem(EditarSSUI.getEditarSSUrl(op.getIdCuenta(), op.getIdGrupoSolicitud(), null));
+					History.newItem(EditarSSUI.getEditarSSUrl(op.getIdCuenta(), op.getIdGrupoSolicitud()));
 				} else {
 					ErrorDialog.getInstance().setDialogTitle("Error");
 					ErrorDialog.getInstance().show(Sfa.constant().ERR_SIN_SS(), false);
@@ -471,24 +470,30 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 	}
 
 	public void onClick(Widget sender) {
-		idCuenta = null;
-		idCuentaPotencial = null;
-		
+		VentaPotencialVistaDto vtaPot = null;
+		OperacionEnCursoDto operacionEnCurso = null;
+
 		if ((resultTableReservas.getRowSelected() > 0) || (resultTableOpEnCurso.getRowSelected() > 0)) {
 			if (resultTableReservas.getRowSelected() > 0) {
-				VentaPotencialVistaDto vtaPot = vtaPotencial.get(resultTableReservas.getRowSelected() - 1);
-				idCuentaPotencial = vtaPot.getIdCuentaPotencial();
+				vtaPot = vtaPotencial.get(resultTableReservas.getRowSelected() - 1);
 			} else if (resultTableOpEnCurso.getRowSelected() > 0) {
-				OperacionEnCursoDto operacionEnCurso = opEnCurso
-						.get(resultTableOpEnCurso.getRowSelected() - 1);
-				idCuenta = operacionEnCurso.getIdCuenta();
+				operacionEnCurso = opEnCurso.get(resultTableOpEnCurso.getRowSelected() - 1);
 			}
 
 			if (sender == crearSSLink) {
-				crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta,
-						GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS, idCuentaPotencial));
-				crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_CDW, idCuentaPotencial));
-				// crearMDS.setTargetHistoryToken(getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_MDS));
+				if (vtaPot != null) {
+					crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(vtaPot
+							.getIdCuentaPotencial(), GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS, vtaPot
+							.getNumeroCliente()));
+					crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(vtaPot.getIdCuentaPotencial(),
+							GrupoSolicitudDto.ID_CDW, vtaPot.getNumeroCliente()));
+					// crearMDS.setTargetHistoryToken(getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_MDS));
+				} else {
+					crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(operacionEnCurso
+							.getIdCuenta(), GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
+					crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(operacionEnCurso.getIdCuenta(),
+							GrupoSolicitudDto.ID_CDW));
+				}
 				popupCrearSS.show();
 				popupCrearSS.setPopupPosition(crearSSLink.getAbsoluteLeft() - 10, crearSSLink
 						.getAbsoluteTop() - 50);

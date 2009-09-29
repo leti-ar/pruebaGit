@@ -49,6 +49,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public static final String ID_CUENTA = "idCuenta";
 	public static final String ID_GRUPO_SS = "idGrupoSS";
 	public static final String ID_CUENTA_POTENCIAL = "idCuentaPotencial";
+	public static final String CODIGO_VANTIVE = "codigoVantive";
 	private static final String validarCompletitudFailStyle = "validarCompletitudFailButton";
 
 	private TabPanel tabs;
@@ -79,6 +80,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		String cuenta = HistoryUtils.getParam(ID_CUENTA);
 		String grupoSS = HistoryUtils.getParam(ID_GRUPO_SS);
 		String cuentaPotencial = HistoryUtils.getParam(ID_CUENTA_POTENCIAL);
+		String codigoVantive = HistoryUtils.getParam(CODIGO_VANTIVE);
 		mainPanel.setVisible(false);
 		if (cuenta == null && cuentaPotencial == null) {
 			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
@@ -89,7 +91,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			solicitudServicioRequestDto.setIdCuenta(cuenta != null ? Long.parseLong(cuenta) : null);
 			solicitudServicioRequestDto.setIdCuentaPotencial(cuentaPotencial != null ? Long
 					.parseLong(cuentaPotencial) : null);
-			// solicitudServicioRequestDto.setNumeroCuenta(numeroCuenta);
+			solicitudServicioRequestDto.setNumeroCuenta(codigoVantive);
 			if (grupoSS != null) {
 				solicitudServicioRequestDto.setIdGrupoSolicitud(Long.parseLong(grupoSS));
 			} else {
@@ -406,14 +408,17 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		SolicitudRpcService.Util.getInstance().verificarNegativeFiles(numero, callback);
 	}
 
-	public static String getEditarSSUrl(Long idCuenta, Long idGrupo, Long idCuentaPotencial) {
+	public static String getEditarSSUrl(Long idCuenta, Long idGrupo) {
 		StringBuilder builder = new StringBuilder(UILoader.AGREGAR_SOLICITUD + "?");
-		if (idCuenta != null) {
-			builder.append(EditarSSUI.ID_CUENTA + "=" + idCuenta + "&");
-		}
-		if (idCuentaPotencial != null) {
-			builder.append(EditarSSUI.ID_CUENTA_POTENCIAL + "=" + idCuentaPotencial + "&");
-		}
+		builder.append(EditarSSUI.ID_CUENTA + "=" + idCuenta + "&");
+		builder.append(EditarSSUI.ID_GRUPO_SS + "=" + idGrupo);
+		return builder.toString();
+	}
+	
+	public static String getEditarSSUrl(Long idCuentaPotencial, Long idGrupo, String codigoVanvite) {
+		StringBuilder builder = new StringBuilder(UILoader.AGREGAR_SOLICITUD + "?");
+		builder.append(EditarSSUI.ID_CUENTA_POTENCIAL + "=" + idCuentaPotencial + "&");
+		builder.append(EditarSSUI.CODIGO_VANTIVE + "=" + codigoVanvite + "&");
 		builder.append(EditarSSUI.ID_GRUPO_SS + "=" + idGrupo);
 		return builder.toString();
 	}

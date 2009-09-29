@@ -103,8 +103,8 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 				if (cuentaSearch.getRazonSocial().equals("***")) {
 					MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(), Sfa.constant().ERR_NO_ACCESO_CREAR_SS(),	MessageDialog.getCloseCommand());
 				} else {
-					crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta,	GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS, null));
-					crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_CDW, null));
+					crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta,	GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
+					crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_CDW));
 					// crearMDS.setTargetHistoryToken(getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_MDS));
 					popupCrearSS.show();
 					popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton.getAbsoluteTop() - 50);
