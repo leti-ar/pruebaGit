@@ -292,7 +292,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							getGeneracionCierreCallback());
 				} else {
 					CerradoSSExitosoDialog.getInstance().hide();
-					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
+					ErrorDialog.getInstance().setDialogTitle("Aviso");
 					ErrorDialog.getInstance().show(errors, false);
 				}
 			}
