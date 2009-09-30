@@ -41,10 +41,8 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	boolean tienePrincipalFacturacion;
 	private Label motivoLabel = new Label("Motivo: ");
 	private Label motivoText = new Label();
-	//
 	private boolean normalizado = true;	
     private List<NormalizacionDomicilioMotivoDto> motivos = new ArrayList();
-	//
 	private int rowSelected;
 	private Label msgNoNormalizado = new Label("No se pudo normalizar el domicilio");
     
@@ -70,6 +68,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 			linkAceptar.setVisible(false);
 			msgNoNormalizado.addStyleName("msgNoNormalizado");
 			grillaPpal.setWidget(3, 0, msgNoNormalizado);
+			grillaMotivo.setVisible(true);
 			//OJO con el get(0):
 						
 			motivoText.setStyleName("fontNormal");
@@ -82,13 +81,12 @@ public class NormalizarDomicilioUI extends NextelDialog {
 			}else {
 				motivoText.setText("no especificado");
 			}
-			grillaMotivo.setWidget(0, 1, motivoText);			
 			
 		}else{
 			domicilioResultWrapper.setVisible(true);
 			linkAceptar.setVisible(true);
 			grillaPpal.setText(3, 0, "");
-			grillaPpal.setText(4, 0, "");
+			grillaMotivo.setVisible(false);
 		}
 	}
 	
@@ -125,7 +123,8 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		grillaPpal = new Grid(6, 1);
 		grillaMotivo = new Grid(1, 2);
 		motivoLabel.addStyleName("msgNoNormalizado");
-		grillaMotivo.setWidget(0, 0, motivoLabel);
+		grillaMotivo.setWidget(0, 0, motivoLabel);		
+		grillaMotivo.setWidget(0, 1, motivoText);		
 		domicilioResultWrapper.setVisible(true);
 		setWidth("480px");
 
@@ -138,7 +137,6 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		grillaPpal.setWidget(2, 0, domicilioResultWrapper);
 		grillaPpal.setText(3, 0, "");
 		grillaPpal.setWidget(4, 0, grillaMotivo);
-		grillaPpal.setWidget(5, 0, new Label());
 		
 		add(grillaPpal);
 
