@@ -9,9 +9,11 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.EstadoOportunidadDto;
 import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.OportunidadDto;
+import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
 import ar.com.nextel.sfa.client.initializer.BuscarOportunidadNegocioInitializer;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.UIData;
+import ar.com.nextel.sfa.client.widget.ValidationTextBox;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.DateUtil;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
@@ -21,6 +23,8 @@ import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
 
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -140,7 +144,7 @@ public class BuscarOportunidadFilterUIData extends UIData {
 		fields.add(nombreTextBox = new TextBox());
 		fields.add(apellidoTextBox = new TextBox());
 		fields.add(tipoDocListBox = new ListBox());
-		fields.add(numeroDocumentoTextBox = new RegexTextBox(RegularExpressionConstants.numeros));
+		fields.add(numeroDocumentoTextBox = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(10)));
 		numeroDocumentoTextBox.setMaxLength(13);
 		fields.add(estadoOPPListBox = new ListBox("Todos"));
 		fields.add(desdeDate = new SimpleDatePicker(false, true));
@@ -161,6 +165,17 @@ public class BuscarOportunidadFilterUIData extends UIData {
 				desdeDate.setSelectedDate(DateUtil.getDaysBeforeADate(60, new Date()));
 				hastaDate.setSelectedDate(new Date());
 				estadoOPPListBox.setSelectedIndex(1);
+			}
+		});
+		
+		tipoDocListBox.addChangeHandler(new ChangeHandler() {
+			public void onChange(ChangeEvent arg0) {
+				numeroDocumentoTextBox.setText("");
+				if (tipoDocListBox.getSelectedItemId().equals(TipoDocumentoEnum.CUITCUIL.getTipo() + "")) {
+					numeroDocumentoTextBox.setPattern(RegularExpressionConstants.cuilCuit);
+				} else if (tipoDocListBox.getSelectedItemId().equals(TipoDocumentoEnum.DNI.getTipo() + "")) {
+					numeroDocumentoTextBox.setPattern(RegularExpressionConstants.getNumerosLimitado(10));
+				}
 			}
 		});
 
