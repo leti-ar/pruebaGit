@@ -48,23 +48,41 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 
 	private boolean locked;
 
-	public String getDomicilios() {
-	/** Muestra la concatenación de Calle, Número, Piso, Dpto., UF, Torre, Localidad, Partido, Provincia, Código Postal y CPA para cada domicilio habilitado.*/
-	String domicilios = this.calle +  
-	                    " " + this.numero +  
-	                    (this.piso!=null ? " " + this.piso: "") + 
-	                    (this.departamento!=null ? " " + this.departamento:"") + 
-	                    (this.getUnidad_funcional()!=null ? " " + this.getUnidad_funcional():"") + 
-	                    (this.torre!=null ? " " + this.torre: "") + 
-	                    ". " +
-	                    this.localidad + 
-	                    (this.partido!=null && !this.partido.equals("") ? "-" + this.partido : "") +  
-	                    ", " + 
-	                    this.provincia.getDescripcion() +  
-	                    (this.cpa!=null ? " ("+this.cpa+")" : this.codigo_postal!=null ? " ("+this.codigo_postal+")" : "");
+//	public String getDomicilios() {
+//	/** Muestra la concatenación de Calle, Número, Piso, Dpto., UF, Torre, Localidad, Partido, Provincia, Código Postal y CPA para cada domicilio habilitado.*/
+//	String domicilios = this.calle +  
+//	                    " " + this.numero +  
+//	                    (this.piso!=null ? " " + this.piso: "") + 
+//	                    (this.departamento!=null ? " " + this.departamento:"") + 
+//	                    (this.getUnidad_funcional()!=null ? " " + this.getUnidad_funcional():"") + 
+//	                    (this.torre!=null ? " " + this.torre: "") + 
+//	                    ". " +
+//	                    this.localidad + 
+//	                    (this.partido!=null && !this.partido.equals("") ? "-" + this.partido : "") +  
+//	                    ", " + 
+//	                    this.provincia.getDescripcion() +  
+//	                    (this.cpa!=null ? " ("+this.cpa+")" : this.codigo_postal!=null ? " ("+this.codigo_postal+")" : "");
+//	
+//	return domicilios;
+//	}
 	
-	return domicilios;
-	}
+	public String getDomicilios() {
+		/** Muestra la concatenación de Calle, Número, Piso, Dpto., UF, Torre, Localidad, Partido, Provincia, Código Postal y CPA para cada domicilio habilitado.*/
+		String domicilios = this.calle +  
+		                    " " + this.numero +  
+		                    (!"".equals(this.piso) ? " " + this.piso: "") + 
+		                    (!"".equals(this.departamento) ? " " + this.departamento:"") + 
+		                    (!"".equals(this.getUnidad_funcional()) ? " " + this.getUnidad_funcional():"") + 
+		                    (!"".equals(this.torre) ? " " + this.torre: "") + 
+		                    ". " +
+		                    this.localidad + 
+		                    (this.partido!=null && !this.partido.equals("") ? "-" + this.partido : "") +  
+		                    ", " + 
+		                    this.provincia.getDescripcion() +  
+		                    (this.cpa!=null ? " ("+this.cpa+")" : this.codigo_postal!=null ? " ("+this.codigo_postal+")" : "");
+		
+		return domicilios;
+		}
 
 	public String getCalle() {
 		return calle;
