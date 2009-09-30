@@ -279,6 +279,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 									Sfa.constant().MSG_NUMERO_RESERVADO(), MessageDialog.getCloseCommand());
 						}
 					}
+
 					public void failure(Throwable caught) {
 						LoadingModalDialog.getInstance().hide();
 						super.failure(caught);
@@ -848,11 +849,16 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				lineaSolicitudServicio.setRoaming(roaming.getValue());
 			}
 			PlanDto planSelected = (PlanDto) plan.getSelectedItem();
-			lineaSolicitudServicio.setPlan(planSelected);
+
 			if (planSelected != null) {
-				lineaSolicitudServicio.setPrecioListaPlan(planSelected.getPrecio());
-				lineaSolicitudServicio.setPrecioVentaPlan(planSelected.getPrecio());
+				if (lineaSolicitudServicio.getPlan() == null
+						|| !planSelected.getId().equals(lineaSolicitudServicio.getPlan().getId())) {
+					lineaSolicitudServicio.setPlan(planSelected);
+					lineaSolicitudServicio.setPrecioListaPlan(planSelected.getPrecio());
+					lineaSolicitudServicio.setPrecioVentaPlan(planSelected.getPrecio());
+				}
 			} else {
+				lineaSolicitudServicio.setPlan(planSelected);
 				lineaSolicitudServicio.setPrecioListaPlan(0d);
 				lineaSolicitudServicio.setPrecioVentaPlan(0d);
 			}
