@@ -517,7 +517,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		mergeServiciosAdicionalesConLineaSolicitudServicio(indexLinea, list);
 	}
 
-	/** Agrega a la linea los servicios adicionales que vienen por defecto */
+	/** Agrega a la LineaSolicitudServicio los servicios adicionales que vienen por defecto */
 	public void mergeServiciosAdicionalesConLineaSolicitudServicio(int indexLinea,
 			List<ServicioAdicionalLineaSolicitudServicioDto> list) {
 		List serviciosAGuardar = getLineasSolicitudServicio().get(indexLinea).getServiciosAdicionales();
@@ -528,7 +528,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 	}
 
-	public void getModificarValorServicioAdicional(int indexLinea, int indexSA, double valor) {
+	public void modificarValorServicioAdicional(int indexLinea, int indexSA, double valor) {
 		saved = false;
 		ServicioAdicionalLineaSolicitudServicioDto servicio = serviciosAdicionales.get(indexLinea).get(
 				indexSA);
@@ -541,6 +541,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			servicio.setPrecioVenta(valor);
 			getLineasSolicitudServicio().get(indexLinea).getServiciosAdicionales().add(servicio);
 		}
+	}
+
+	public void modificarValorPlan(int indexLinea, double valor) {
+		getLineasSolicitudServicio().get(indexLinea).setPrecioVentaPlan(valor);
 	}
 
 	public String getNombreMovil() {

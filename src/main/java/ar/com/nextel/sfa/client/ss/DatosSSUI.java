@@ -8,16 +8,13 @@ import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.domicilio.DomicilioUI;
 import ar.com.nextel.sfa.client.domicilio.DomiciliosUIData;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
-import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
-import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
-import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 
 import com.google.gwt.event.dom.client.BlurEvent;
@@ -30,7 +27,6 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -50,22 +46,19 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private Grid nnsLayout;
 	private Grid domicilioLayout;
 	private FlexTable detalleSS;
-	private Grid serviciosAdicionales;
+	private ServiciosAdicionalesTable serviciosAdicionales;
 	private EditarSSUIController controller;
 	private Button crearDomicilio;
 	private Button crearLinea;
 	private ItemSolicitudDialog itemSolicitudDialog;
 	private NumberFormat currencyFormat = NumberFormat.getCurrencyFormat();
 	private int selectedDetalleRow = 0;
-	private boolean blockServicioAdicionalLoad = false;
 	private HTML editarDomicioFacturacion;
 	private HTML borrarDomicioFacturacion;
 	private HTML editarDomicioEntrega;
 	private HTML borrarDomicioEntrega;
-	private BlurHandler focusHandler;
-	private int editingServicioAdRow = -1;
-	private RegexTextBox precioVenta;
 	private DomiciliosCuentaDto domicilioAEditar = null;
+	private TextBox precioVentaPlan;
 	private List listaDomicilios = new ArrayList<DomiciliosCuentaDto>();
 
 	private static final String SELECTED_ROW = "selectedRow";
@@ -193,25 +186,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		serviciosAdicionalesLabel.addStyleName("mt5 mb5");
 		detalle.add(serviciosAdicionalesLabel);
 
-		serviciosAdicionales = new Grid(1, 4);
-		serviciosAdicionales.addClickHandler(this);
-		String[] titlesServAd = { Sfa.constant().whiteSpace(), "Servicio adicional", "Precio de lista",
-				"Precio de venta" };
-		for (int i = 0; i < titlesServAd.length; i++) {
-			serviciosAdicionales.setHTML(0, i, titlesServAd[i]);
-		}
-		serviciosAdicionales.setCellPadding(0);
-		serviciosAdicionales.setCellSpacing(0);
-		serviciosAdicionales.addStyleName("dataTable");
-		serviciosAdicionales.setWidth("98%");
-		serviciosAdicionales.getRowFormatter().addStyleName(0, "header");
-		serviciosAdicionales.getCellFormatter().setWidth(0, 0, "15px");
-		serviciosAdicionales.getCellFormatter().setWidth(0, 2, "120px");
-		serviciosAdicionales.getCellFormatter().setWidth(0, 3, "120px");
-		SimplePanel wrapper2 = new SimplePanel();
-		wrapper2.addStyleName("resumenSSTableWrapper mlr5");
-		wrapper2.setWidget(serviciosAdicionales);
-		detalle.add(wrapper2);
+		serviciosAdicionales = new ServiciosAdicionalesTable(controller);
+		serviciosAdicionales.getTable().addClickHandler(this);
+		detalle.add(serviciosAdicionales);
 
 		return detalle;
 	}
@@ -225,13 +202,13 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			onClickEdicionDomicilios(sender);
 		} else if (sender == borrarDomicioFacturacion || sender == borrarDomicioEntrega) {
 			if ((sender == borrarDomicioFacturacion)) {
-				borrarFacturacion();
+				borrarDomicilioFacturacion();
 
 			} else if (sender == borrarDomicioEntrega) {
-				borrarEntrega();
+				borrarDomicilioEntrega();
 			}
 
-		} else if (sender == detalleSS || sender == serviciosAdicionales) {
+		} else if (sender == detalleSS || sender == serviciosAdicionales.getTable()) {
 			Cell cell = ((HTMLTable) sender).getCellForEvent(clickEvent);
 			if (cell != null) {
 				onTableClick(sender, cell.getRowIndex(), cell.getCellIndex());
@@ -239,7 +216,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		}
 	}
 
-	public void borrarFacturacion() {
+	public void borrarDomicilioFacturacion() {
 		if (editarSSUIData.getFacturacion().getSelectedItemText() == null) {
 		} else {
 			domicilioAEditar = (DomiciliosCuentaDto) editarSSUIData.getFacturacion().getSelectedItem();
@@ -252,7 +229,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		}
 	}
 
-	public void borrarEntrega() {
+	public void borrarDomicilioEntrega() {
 		if (editarSSUIData.getEntrega().getSelectedItemText() == null) {
 		} else {
 			domicilioAEditar = (DomiciliosCuentaDto) editarSSUIData.getEntrega().getSelectedItem();
@@ -275,15 +252,18 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			DomicilioUI.getInstance().setComandoAceptar(getCommandGuardarDomicilio());
 			boolean principalEntrega = false;
 			boolean principalFacturacion = false;
-//			for (DomiciliosCuentaDto domicilio : editarSSUIData.getCuenta().getPersona().getDomicilios()) {
-//				principalEntrega = principalEntrega || EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdEntrega());
-//				principalFacturacion = principalFacturacion || EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdFacturacion());
-//			}
-//			DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(principalEntrega, principalFacturacion);
-			
+			// for (DomiciliosCuentaDto domicilio : editarSSUIData.getCuenta().getPersona().getDomicilios()) {
+			// principalEntrega = principalEntrega ||
+			// EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdEntrega());
+			// principalFacturacion = principalFacturacion ||
+			// EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdFacturacion());
+			// }
+			// DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(principalEntrega,
+			// principalFacturacion);
+
 			listaDomicilios = editarSSUIData.getCuenta().getPersona().getDomicilios();
-			DomiciliosUIData.getInstance().cargarListBox(listaDomicilios);			
-			
+			DomiciliosUIData.getInstance().cargarListBox(listaDomicilios);
+
 			if (sender == crearDomicilio) {
 				domicilioAEditar = new DomiciliosCuentaDto();
 			} else if (sender == editarDomicioEntrega) {
@@ -291,9 +271,10 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			} else if (sender == editarDomicioFacturacion) {
 				domicilioAEditar = (DomiciliosCuentaDto) editarSSUIData.getFacturacion().getSelectedItem();
 			}
-//			DomiciliosUIData.getInstance().setTienePpalEntrega(principalEntrega);
-//			DomiciliosUIData.getInstance().setTienePpalFacturacion(principalFacturacion);
-			//Desde aca tengo que tener una lista con los domicilios de la persona, como en CuentaDomiciliosForm
+			// DomiciliosUIData.getInstance().setTienePpalEntrega(principalEntrega);
+			// DomiciliosUIData.getInstance().setTienePpalFacturacion(principalFacturacion);
+			// Desde aca tengo que tener una lista con los domicilios de la persona, como en
+			// CuentaDomiciliosForm
 			domicilioAEditar = domicilioAEditar != null ? domicilioAEditar : new DomiciliosCuentaDto();
 			DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
 		}
@@ -313,13 +294,14 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	public void onTableClick(Widget sender, final int row, int col) {
 		if (detalleSS == sender) {
 			if (row > 0) {
-				if (col > 1) {
+				if (col == 6) {
+					if (!serviciosAdicionales.isEditing()) {
+						editarPrecioDeVentaPlan();
+					}
+				} else if (col > 1) {
 					// Carga servicios adicionales en la tabla
-					if (!blockServicioAdicionalLoad) {
-						detalleSS.getRowFormatter().removeStyleName(selectedDetalleRow, SELECTED_ROW);
-						detalleSS.getRowFormatter().addStyleName(row, SELECTED_ROW);
-						selectedDetalleRow = row;
-						loadServiciosAdicionales();
+					if (!serviciosAdicionales.isEditing()) {
+						selectDetalleLineaSSRow(row);
 					}
 				} else if (col == 0) {
 					// Abre panel de edicion de la LineaSolicitudServicio
@@ -329,45 +311,38 @@ public class DatosSSUI extends Composite implements ClickHandler {
 					ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
 							new Command() {
 								public void execute() {
-									editarSSUIData.removeLineaSolicitudServicio(row - 1);
-									detalleSS.removeRow(row);
-									if (selectedDetalleRow == row) {
-										selectedDetalleRow = detalleSS.getRowCount() <= 1 ? 0 : 1;
-										loadServiciosAdicionales();
-									}
-									ModalMessageDialog.getInstance().hide();
+									removeDetalleLineaSSRow(row);
 								};
 							}, ModalMessageDialog.getCloseCommand());
 				}
 			}
-		} else if (serviciosAdicionales == sender) {
+		} else if (serviciosAdicionales.getTable() == sender) {
 			if (col == 0 && row > 0) {
-				// agrega o quita servicio adicional
-				CheckBox check = (CheckBox) serviciosAdicionales.getWidget(row, col);
-				ServicioAdicionalLineaSolicitudServicioDto servicioSelected;
-				servicioSelected = editarSSUIData.getServiciosAdicionales().get(selectedDetalleRow - 1).get(
-						row - 1);
-				List<ServicioAdicionalLineaSolicitudServicioDto> saGuardados = editarSSUIData
-						.getLineasSolicitudServicio().get(selectedDetalleRow - 1).getServiciosAdicionales();
-				if (saGuardados.contains(servicioSelected)) {
-					saGuardados.get(saGuardados.indexOf(servicioSelected)).setChecked(check.getValue());
-				} else {
-					servicioSelected.setChecked(check.getValue());
-					saGuardados.add(servicioSelected);
-				}
+				serviciosAdicionales.agregarQuitarServicioAdicional(row);
 			} else if (col == 3 && row > 0) {
-				// Muestra textbox de edicion de precio de venta
-				blockServicioAdicionalLoad = true;
-				ServicioAdicionalLineaSolicitudServicioDto servicioSelected;
-				servicioSelected = editarSSUIData.getServiciosAdicionales().get(selectedDetalleRow - 1).get(
-						row - 1);
-				getPrecioVentaTextBox().setText(
-						NumberFormat.getDecimalFormat().format(servicioSelected.getPrecioVenta()));
-				editingServicioAdRow = row;
-				serviciosAdicionales.setWidget(row, 3, getPrecioVentaTextBox());
-				getPrecioVentaTextBox().setFocus(true);
+				serviciosAdicionales.editarPrecioDeVentaServicioAdicional(row);
 			}
 		}
+	}
+
+	private void selectDetalleLineaSSRow(int row) {
+		if (row > 0) {
+			detalleSS.getRowFormatter().removeStyleName(selectedDetalleRow, SELECTED_ROW);
+			detalleSS.getRowFormatter().addStyleName(row, SELECTED_ROW);
+		}
+		selectedDetalleRow = row;
+		serviciosAdicionales.setServiciosAdicionalesFor(row);
+	}
+
+	private void removeDetalleLineaSSRow(int row) {
+		editarSSUIData.removeLineaSolicitudServicio(row - 1);
+		detalleSS.removeRow(row);
+		if (selectedDetalleRow == row) {
+			selectDetalleLineaSSRow(detalleSS.getRowCount() <= 1 ? 0 : 1);
+		} else if (selectedDetalleRow > row) {
+			selectDetalleLineaSSRow(--selectedDetalleRow);
+		}
+		ModalMessageDialog.getInstance().hide();
 	}
 
 	/** Crea y abre el Dialog para editar la LineaSolicitudServicioDto */
@@ -431,7 +406,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		if (!editarSSUIData.getLineasSolicitudServicio().isEmpty()) {
 			onTableClick(detalleSS, 1, 2);
 		} else {
-			serviciosAdicionales.resizeRows(1);
+			serviciosAdicionales.clear();
 		}
 	}
 
@@ -460,124 +435,54 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		detalleSS.getCellFormatter().addStyleName(newRow, 6, "alignRight");
 	}
 
-	/**
-	 * Carga la tabla de Servicios Adicionales con los correspondientes a la linea seleccionada en la tabla
-	 * Detalle. Si no están en el cliente los trae del server
-	 */
-	private void loadServiciosAdicionales() {
-		if (selectedDetalleRow < 1
-				|| editarSSUIData.getLineasSolicitudServicio().get(selectedDetalleRow - 1).getPlan() == null) {
-			serviciosAdicionales.resizeRows(1);
-			return;
-		}
-		List servicios = editarSSUIData.getServiciosAdicionales().get(selectedDetalleRow - 1);
-		if (!servicios.isEmpty()) {
-			editarSSUIData.mergeServiciosAdicionalesConLineaSolicitudServicio(selectedDetalleRow - 1,
-					servicios);
-			refreshServiciosAdicionalesTable(selectedDetalleRow - 1);
-		} else {
-			controller.getServiciosAdicionales(editarSSUIData.getLineasSolicitudServicio().get(
-					selectedDetalleRow - 1),
-					new DefaultWaitCallback<List<ServicioAdicionalLineaSolicitudServicioDto>>() {
-						public void success(List<ServicioAdicionalLineaSolicitudServicioDto> list) {
-							editarSSUIData.loadServiciosAdicionales(selectedDetalleRow - 1, list);
-							blockServicioAdicionalLoad = false;
-							refreshServiciosAdicionalesTable(selectedDetalleRow - 1);
-						}
-
-						public void failure(Throwable caught) {
-							blockServicioAdicionalLoad = false;
-							super.failure(caught);
-						}
-					});
-		}
+	public void editarPrecioDeVentaPlan() {
+		LineaSolicitudServicioDto lineaSS = editarSSUIData.getLineasSolicitudServicio().get(
+				selectedDetalleRow - 1);
+		getPlanPrecioVentaTextBox().setText(
+				NumberFormat.getDecimalFormat().format(lineaSS.getPrecioVentaPlan()));
+		detalleSS.setWidget(selectedDetalleRow, 6, getPlanPrecioVentaTextBox());
+		getPlanPrecioVentaTextBox().setFocus(true);
 	}
 
-	/**
-	 * Actualiza gráficamente la Tabla de Servicios Adicionales. Recibe la posición de la
-	 * LineaSolicitudServicioDto dentro de la lista "lineas" de SolicitudServicioDto.
-	 */
-	private void refreshServiciosAdicionalesTable(int lineaIndex) {
-		List<ServicioAdicionalLineaSolicitudServicioDto> allServiciosAdicionales = editarSSUIData
-				.getServiciosAdicionales().get(lineaIndex);
-		LineaSolicitudServicioDto linea = editarSSUIData.getLineasSolicitudServicio().get(lineaIndex);
-		serviciosAdicionales.resizeRows(allServiciosAdicionales.size() + 1);
-		int row = 1;
-		for (ServicioAdicionalLineaSolicitudServicioDto servicioAdicional : allServiciosAdicionales) {
-			int saIndex = linea.getServiciosAdicionales().indexOf(servicioAdicional);
-			if (saIndex >= 0) {
-				servicioAdicional = linea.getServiciosAdicionales().get(saIndex);
-			}
-			CheckBox check = new CheckBox();
-			if (servicioAdicional.isObligatorio()) {
-				check.setEnabled(false);
-				check.setValue(true);
-			} else if (servicioAdicional.isChecked()) {
-				check.setValue(true);
-			}
-			serviciosAdicionales.setWidget(row, 0, check);
-			serviciosAdicionales.setHTML(row, 1, servicioAdicional.getDescripcionServicioAdicional());
-			serviciosAdicionales.setHTML(row, 2, currencyFormat.format(servicioAdicional.getPrecioLista()));
-			serviciosAdicionales.setHTML(row, 3, currencyFormat.format(servicioAdicional.getPrecioVenta()));
-			serviciosAdicionales.getCellFormatter().addStyleName(row, 1, "alignLeft");
-			serviciosAdicionales.getCellFormatter().addStyleName(row, 2, "alignRight");
-			serviciosAdicionales.getCellFormatter().addStyleName(row, 3, "alignRight");
-			row++;
-		}
-	}
-
-	/** Listener para el TextBox que modifica el valor del Precio de Venta de los Servicios Adicionales */
-	private BlurHandler getTextBoxFocusHandler() {
-		if (focusHandler == null) {
-			focusHandler = new BlurHandler() {
+	public TextBox getPlanPrecioVentaTextBox() {
+		if (precioVentaPlan == null) {
+			precioVentaPlan = new RegexTextBox(RegularExpressionConstants.importe);
+			precioVentaPlan.addBlurHandler(new BlurHandler() {
 				public void onBlur(BlurEvent blurEvent) {
-					updatePrecioVentaDeServiciosAdicionales((TextBox) blurEvent.getSource());
+					updatePrecioVentaDePlan(precioVentaPlan.getText());
 				}
-			};
-		}
-		return focusHandler;
-	}
-
-	private void updatePrecioVentaDeServiciosAdicionales(TextBox textBox) {
-		blockServicioAdicionalLoad = false;
-		ServicioAdicionalLineaSolicitudServicioDto servicioSelected;
-		servicioSelected = editarSSUIData.getServiciosAdicionales().get(selectedDetalleRow - 1).get(
-				editingServicioAdRow - 1);
-		double valor = servicioSelected.getPrecioVenta();
-		MessageDialog.getInstance().setDialogTitle("Error");
-		try {
-			valor = NumberFormat.getDecimalFormat().parse(textBox.getText());
-		} catch (NumberFormatException e) {
-			MessageDialog.getInstance().showAceptar("Ingrese un monto válido",
-					MessageDialog.getCloseCommand());
-		}
-		if (valor > servicioSelected.getPrecioVenta()) {
-			MessageDialog.getInstance().showAceptar(
-					"El desvío debe ser menor o igual al precio de lista del servicio adicional",
-					MessageDialog.getCloseCommand());
-			valor = servicioSelected.getPrecioVenta();
-		}
-		serviciosAdicionales.setHTML(editingServicioAdRow, 3, NumberFormat.getCurrencyFormat().format(valor));
-		editarSSUIData.getModificarValorServicioAdicional(selectedDetalleRow - 1, editingServicioAdRow - 1,
-				valor);
-		editingServicioAdRow = -1;
-	}
-
-	/** TextBox que modifica el valor del Precio de Venta de los Servicios Adicionales */
-	private TextBox getPrecioVentaTextBox() {
-		if (precioVenta == null) {
-			precioVenta = new RegexTextBox(RegularExpressionConstants.importe);
-			precioVenta.addBlurHandler(getTextBoxFocusHandler());
-			precioVenta.setWidth("110px");
-			precioVenta.addKeyPressHandler(new KeyPressHandler() {
+			});
+			precioVentaPlan.setWidth("110px");
+			precioVentaPlan.addKeyPressHandler(new KeyPressHandler() {
 				public void onKeyPress(KeyPressEvent keyPressEvent) {
 					if (KeyCodes.KEY_ENTER == keyPressEvent.getCharCode()) {
-						updatePrecioVentaDeServiciosAdicionales(precioVenta);
+						updatePrecioVentaDePlan(precioVentaPlan.getText());
 					}
 				}
 			});
 		}
-		return precioVenta;
+		return precioVentaPlan;
+	}
+
+	private void updatePrecioVentaDePlan(String precioVenta) {
+		LineaSolicitudServicioDto lineaSS = editarSSUIData.getLineasSolicitudServicio().get(
+				selectedDetalleRow - 1);
+		double valor = lineaSS.getPrecioVentaPlan();
+		MessageDialog.getInstance().setDialogTitle("Error");
+		try {
+			valor = NumberFormat.getDecimalFormat().parse(precioVenta);
+		} catch (NumberFormatException e) {
+			MessageDialog.getInstance().showAceptar("Ingrese un monto válido",
+					MessageDialog.getCloseCommand());
+		}
+		if (valor > lineaSS.getPrecioVentaPlan()) {
+			MessageDialog.getInstance().showAceptar(
+					"El desvío debe ser menor o igual al precio de lista del Plan",
+					MessageDialog.getCloseCommand());
+			valor = lineaSS.getPrecioVentaPlan();
+		}
+		detalleSS.setHTML(selectedDetalleRow, 6, NumberFormat.getCurrencyFormat().format(valor));
+		editarSSUIData.modificarValorPlan(selectedDetalleRow - 1, valor);
 	}
 
 	public void refresh() {
