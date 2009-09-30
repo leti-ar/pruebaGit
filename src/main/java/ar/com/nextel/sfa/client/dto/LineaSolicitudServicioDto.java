@@ -30,6 +30,7 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 	private double precioServiciosAdicionalesLista = 0;
 	private double precioServiciosAdicionalesVenta = 0;
 	private ServicioAdicionalLineaSolicitudServicioDto garantia = null;
+	private ServicioAdicionalLineaSolicitudServicioDto alquiler = null;
 
 	private ModalidadCobroDto modalidadCobro;
 
@@ -298,16 +299,20 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 	public void refreshPrecioServiciosAdicionales() {
 		precioServiciosAdicionalesLista = 0;
 		precioServiciosAdicionalesVenta = 0;
+		garantia = null;
+		alquiler = null;
 
 		for (ServicioAdicionalLineaSolicitudServicioDto servicioAd : serviciosAdicionales) {
 			if (servicioAd.isChecked()) {
-				if (!servicioAd.isEsGarantia()) {
+				if (!servicioAd.isEsGarantia() && !servicioAd.isEsAlquiler()) {
 					precioServiciosAdicionalesLista = precioServiciosAdicionalesLista
 							+ servicioAd.getPrecioLista();
 					precioServiciosAdicionalesVenta = precioServiciosAdicionalesVenta
 							+ servicioAd.getPrecioVenta();
-				} else {
+				} else if (servicioAd.isEsGarantia()) {
 					garantia = servicioAd;
+				} else if (servicioAd.isEsAlquiler()) {
+					alquiler = servicioAd;
 				}
 			}
 		}
@@ -337,14 +342,28 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 		return 0;
 	}
 
+	/** Obtiene precioAlquilerLista. Llamar primero a refreshPrecioServiciosAdicionales */
+	public double getPrecioAlquilerLista() {
+		if (alquiler != null)
+			return alquiler.getPrecioLista();
+		return 0;
+	}
+
+	/** Obtiene precioAlquilerVenta. Llamar primero a refreshPrecioServiciosAdicionales */
+	public double getPrecioAlquilerVenta() {
+		if (alquiler != null)
+			return alquiler.getPrecioVenta();
+		return 0;
+	}
+
 	public double getPrecioListaTotal() {
 		return getPrecioLista() + getPrecioListaPlan() + getPrecioServiciosAdicionalesLista()
-				+ getPrecioGarantiaLista();
+				+ getPrecioGarantiaLista() + getPrecioAlquilerLista();
 	}
 
 	public double getPrecioVentaTotal() {
 		return getPrecioVenta() + getPrecioVentaPlan() + getPrecioServiciosAdicionalesVenta()
-				+ getPrecioGarantiaVenta();
+				+ getPrecioGarantiaVenta() + getPrecioAlquilerVenta();
 	}
 
 	public LineaSolicitudServicioDto clone() {
