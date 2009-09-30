@@ -45,7 +45,7 @@ public class VerInfocomUI extends ApplicationUI {
 		infocomUI = InfocomUI.getInstance();
 		//Agrega la barra de razon social y cliente
 		mainPanel.add(razonSocialClienteBar);
-		razonSocialClienteBar.setDisabledSilvioSoldan();
+		//razonSocialClienteBar.setDisabledSilvioSoldan();
 		infocomUI.addStyleName("fondoGris");
 		cancelarLink = new SimpleLink(Sfa.constant().cancelar(), "#", true);
 		cancelarLink.addClickListener(new ClickListener() {

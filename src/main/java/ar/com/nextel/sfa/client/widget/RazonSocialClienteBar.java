@@ -6,6 +6,7 @@ import java.util.Map;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.util.HistoryUtils;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -24,8 +25,6 @@ public class RazonSocialClienteBar extends Composite {
 	private HTML cuentaLink;
 	private Map<String, String> params;
 
-	// private String url = "" + UILoader.EDITAR_CUENTA;
-
 	public RazonSocialClienteBar() {
 		left = new FlowPanel();
 		initWidget(left);
@@ -35,11 +34,11 @@ public class RazonSocialClienteBar extends Composite {
 		right.addStyleName("right");
 		left.add(new InlineLabel(Sfa.constant().razonSocial() + ": "));
 		left.add(razonSocial = new InlineHTML());
-		// cuentaLink = IconFactory.silvioSoldanAnchor(url);
 		cuentaLink = IconFactory.silvioSoldan();
 		cuentaLink.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent arg0) {
-				CuentaClientService.cargarDatosCuenta(Long.parseLong(params.get("cuenta_id")), null);
+				//CuentaClientService.cargarDatosCuenta(Long.parseLong(params.get("cuenta_id")), null);
+				CuentaClientService.cargarDatosCuenta(Long.parseLong(HistoryUtils.getParam("cuenta_id")), null);
 			}
 		});
 		right.setWidget(0, 0, cuentaLink);
