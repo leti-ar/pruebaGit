@@ -181,21 +181,37 @@ public class VariosSSUI extends Composite {
 	/** Realiza la actualizacion visual necesaria para mostrar los datos correctos */
 	public void refresh() {
 		int row = 1;
+		double[] totales = { 0, 0, 0, 0, 0, 0, 0, 0 };
 		resumenSS.resizeRows(row);
 		for (LineaSolicitudServicioDto linea : editarSSUIData.getLineasSolicitudServicio()) {
 			linea.refreshPrecioServiciosAdicionales();
 			resumenSS.resizeRows(row + 1);
 			resumenSS.setHTML(row, 0, linea.getItem().getDescripcion());
 			resumenSS.setHTML(row, 1, "" + linea.getCantidad());
-			resumenSS.setHTML(row, 2, linea.getModalidadCobro() != null ? linea.getModalidadCobro()
-					.getDescripcion() : "");
-			resumenSS.setHTML(row, 3, currencyFormat.format(linea.getPrecioLista()));
+			totales[1] = totales[1] + linea.getCantidad();
+			resumenSS.setHTML(row, 2, linea.getTipoSolicitud().getTipoSolicitudBase() != null ? linea
+					.getTipoSolicitud().getTipoSolicitudBase().getFormaContratacion() : "");
+			resumenSS.setHTML(row, 3, currencyFormat.format(linea.getPrecioVenta()
+					+ linea.getPrecioAlquilerVenta()));
+			totales[3] = totales[3] + linea.getPrecioVenta() + linea.getPrecioAlquilerVenta();
 			resumenSS.setHTML(row, 4, linea.getPlan() != null ? linea.getPlan().getDescripcion() : "");
-			resumenSS.setHTML(row, 5, currencyFormat.format(linea.getPrecioListaPlan()));
-			resumenSS.setHTML(row, 6, currencyFormat.format(linea.getPrecioGarantiaLista()));
-			resumenSS.setHTML(row, 7, currencyFormat.format(linea.getPrecioServiciosAdicionalesLista()));
+			resumenSS.setHTML(row, 5, currencyFormat.format(linea.getPrecioVentaPlan()));
+			totales[5] = totales[5] + linea.getPrecioVentaPlan();
+			resumenSS.setHTML(row, 6, currencyFormat.format(linea.getPrecioGarantiaVenta()));
+			totales[6] = totales[6] + linea.getPrecioGarantiaVenta();
+			resumenSS.setHTML(row, 7, currencyFormat.format(linea.getPrecioServiciosAdicionalesVenta()));
+			totales[7] = totales[7] + linea.getPrecioServiciosAdicionalesVenta();
 			row++;
 		}
+		resumenSS.resizeRows(row + 1);
+		resumenSS.setHTML(row, 0, "TOTAL");
+		resumenSS.setHTML(row, 1, "" + Math.round(totales[1]));
+		resumenSS.setHTML(row, 3, currencyFormat.format(totales[3]));
+		resumenSS.setHTML(row, 5, currencyFormat.format(totales[5]));
+		resumenSS.setHTML(row, 6, currencyFormat.format(totales[6]));
+		resumenSS.setHTML(row, 7, currencyFormat.format(totales[7]));
+
 		editarSSUIData.recarcularValores();
 	}
+
 }
