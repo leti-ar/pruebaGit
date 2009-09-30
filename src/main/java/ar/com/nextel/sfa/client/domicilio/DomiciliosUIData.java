@@ -109,6 +109,7 @@ public class DomiciliosUIData extends UIData {
 		facturacion.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
 
 		cpa.setTabIndex(1);
+		calle.setTabIndex(1);
 		numero.setTabIndex(2);		
 	}
 	
