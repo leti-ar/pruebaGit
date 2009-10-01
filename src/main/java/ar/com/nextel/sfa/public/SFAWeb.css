@@ -9,6 +9,10 @@
 
 @IMPORT url("icons.css");
 
+.waiting {
+	cursor: wait;
+}
+
 body,td,.normalText {
 	font-family: Verdana, Arial, sans-serif;
 	font-size: 11px;
