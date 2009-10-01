@@ -47,7 +47,8 @@ public enum PermisosEnum {
 	ROOTS_MENU_PANEL_OPERACIONES_EN_CURSO_BUTTON("rootsMenuPanel.operacionesEnCursoButton",Accion.X,false),
 	ROOTS_MENU_PANEL_BUSQUEDA_OPORTUNIDADES_BUTTON("rootsMenuPanel.busquedaOportunidadesButton",Accion.X,false),
 	EECC_GET_SOLICITUD_SERVICIO_POR_ID("EECC - getSolicitudServicioPorId",Accion.X,false),
-	NXS_BUSCAR_CLIENTE("NXS_BUSCAR_CLIENTE",Accion.X,true);
+	NXS_BUSCAR_CLIENTE("NXS_BUSCAR_CLIENTE",Accion.X,true),
+	SCORING_CHECKED("scoringChecked",Accion.X,true);
 
 	private String value;
     private String accion;
