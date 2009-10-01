@@ -218,6 +218,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				if (errors.isEmpty()) {
 					guardar();
 				} else {
+					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
 					ErrorDialog.getInstance().show(errors, false);
 				}
 			}
@@ -239,6 +240,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			if (errors.isEmpty()) {
 				guardar();
 			} else {
+				ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
 				ErrorDialog.getInstance().show(errors, false);
 			}
 		} else if (sender == cancelarButton) {
@@ -276,6 +278,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			getGenerarSSUI().show(editarSSUIData.getCuenta().getPersona(),
 					editarSSUIData.getSolicitudServicioGeneracion(), editarSSUIData.isCDW());
 		} else {
+			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
 			ErrorDialog.getInstance().show(errors, false);
 		}
 	}
@@ -293,7 +296,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							getGeneracionCierreCallback());
 				} else {
 					CerradoSSExitosoDialog.getInstance().hide();
-					ErrorDialog.getInstance().setDialogTitle("Aviso");
+					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
 					ErrorDialog.getInstance().show(errors, false);
 				}
 			}
@@ -321,7 +324,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 						CerradoSSExitosoDialog.getInstance().setAceptarCommand(aceptar);
 						CerradoSSExitosoDialog.getInstance().showCierreExitoso(result.getRtfFileName());
 					} else {
-						ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
+						ErrorDialog.getInstance().setDialogTitle("Aviso");
 						ErrorDialog.getInstance().show(MessageUtils.getMessagesHTML(result.getMessages()),
 								false);
 					}
