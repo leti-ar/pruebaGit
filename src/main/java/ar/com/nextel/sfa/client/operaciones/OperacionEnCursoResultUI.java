@@ -320,7 +320,11 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 				}
 			});
 			resultTableReservas.setWidget(row, 2, iconAddProspect);
-			resultTableReservas.setWidget(row, 3, IconFactory.oportunidad());
+			if(vtaPotencialDto.isEsReserva()) {
+				resultTableReservas.setWidget(row, 3, IconFactory.locked());
+			} else { 
+				resultTableReservas.setWidget(row, 3, IconFactory.oportunidad());
+			}			
 			resultTableReservas.setHTML(row, 4, vtaPotencialDto.getNumeroCliente());
 			resultTableReservas.setHTML(row, 5, vtaPotencialDto.getRazonSocial());
 			resultTableReservas.setHTML(row, 6, vtaPotencialDto.getTelefono().toString());
