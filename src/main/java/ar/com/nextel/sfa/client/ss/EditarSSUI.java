@@ -82,6 +82,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		String cuentaPotencial = HistoryUtils.getParam(ID_CUENTA_POTENCIAL);
 		String codigoVantive = HistoryUtils.getParam(CODIGO_VANTIVE);
 		mainPanel.setVisible(false);
+		tabs.selectTab(0);
 		if (cuenta == null && cuentaPotencial == null) {
 			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
 			ErrorDialog.getInstance().show("No ingreso la cuenta para la cual desea cargar la solicitud",
