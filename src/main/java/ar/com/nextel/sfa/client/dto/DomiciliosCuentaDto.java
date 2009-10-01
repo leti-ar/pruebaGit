@@ -56,7 +56,7 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 	                    (this.departamento!=null ? " " + this.departamento:"") + 
 	                    (this.getUnidad_funcional()!=null ? " " + this.getUnidad_funcional():"") + 
 	                    (this.torre!=null ? " " + this.torre: "") + 
-	                    ". " +
+	                    //". " +
 	                    this.localidad + 
 	                    (this.partido!=null && !this.partido.equals("") ? "-" + this.partido : "") +  
 	                    ", " + 
@@ -65,24 +65,6 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 	
 	return domicilios;
 	}
-	
-//	public String getDomicilios() {
-//		/** Muestra la concatenación de Calle, Número, Piso, Dpto., UF, Torre, Localidad, Partido, Provincia, Código Postal y CPA para cada domicilio habilitado.*/
-//		String domicilios = this.calle +  
-//		                    " " + this.numero +  
-//		                    (this.piso!=null || !"".equals(this.piso) ? " " + this.piso: "") + 
-//		                    (this.departamento!=null || !"".equals(this.departamento) ? " " + this.departamento:"") + 
-//		                    (this.getUnidad_funcional()!=null || !"".equals(this.getUnidad_funcional()) ? " " + this.getUnidad_funcional():"") + 
-//		                    (this.torre!=null || !"".equals(this.torre) ? " " + this.torre: "") + 
-//		                    ". " +
-//		                    this.localidad + 
-//		                    (this.partido!=null && !this.partido.equals("") ? "-" + this.partido : "") +  
-//		                    ", " + 
-//		                    this.provincia.getDescripcion() +  
-//		                    (this.cpa!=null ? " ("+this.cpa+")" : this.codigo_postal!=null ? " ("+this.codigo_postal+")" : "");
-//		
-//		return domicilios;
-//		}
 	
 
 	public String getCalle() {
