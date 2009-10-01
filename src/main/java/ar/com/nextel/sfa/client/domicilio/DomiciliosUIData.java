@@ -109,8 +109,8 @@ public class DomiciliosUIData extends UIData {
 		facturacion.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
 
 		cpa.setTabIndex(1);
-		calle.setTabIndex(1);
-		numero.setTabIndex(2);		
+		calle.setTabIndex(2);
+		numero.setTabIndex(3);		
 	}
 	
 	// Si la cuenta todavia no tiene un domicilio principal cargado, se sugiere "Principal", sino "Si"
@@ -299,6 +299,7 @@ public class DomiciliosUIData extends UIData {
 							public void success(NormalizarCPAResultDto domicilioNormalizado) {
 								codigoPostal.setText(domicilioNormalizado.getCodigoPostal());
 								calle.setText(domicilioNormalizado.getCalle());
+								numero.setFocus(true);
 								localidad.setText(domicilioNormalizado.getLocalidad());
 								partido.setText(domicilioNormalizado.getPartido());
 								if (domicilioNormalizado.getIdProvincia() != null) {
