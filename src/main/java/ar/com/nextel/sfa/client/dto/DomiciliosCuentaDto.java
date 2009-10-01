@@ -56,7 +56,7 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 	                    (this.departamento!=null ? " " + this.departamento:"") + 
 	                    (this.getUnidad_funcional()!=null ? " " + this.getUnidad_funcional():"") + 
 	                    (this.torre!=null ? " " + this.torre: "") + 
-	                    //". " +
+	                    ". " +
 	                    this.localidad + 
 	                    (this.partido!=null && !this.partido.equals("") ? "-" + this.partido : "") +  
 	                    ", " + 
