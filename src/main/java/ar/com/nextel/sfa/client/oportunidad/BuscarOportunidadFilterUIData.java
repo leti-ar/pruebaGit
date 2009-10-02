@@ -14,6 +14,7 @@ import ar.com.nextel.sfa.client.initializer.BuscarOportunidadNegocioInitializer;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.nextel.sfa.client.widget.ValidationTextBox;
+import ar.com.snoop.gwt.commons.client.dto.ListBoxItemImpl;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.DateUtil;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
@@ -33,6 +34,7 @@ import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -147,9 +149,10 @@ public class BuscarOportunidadFilterUIData extends UIData {
 		fields.add(numeroDocumentoTextBox = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(10)));
 		numeroDocumentoTextBox.setMaxLength(13);
 		fields.add(estadoOPPListBox = new ListBox("Todos"));
+		this.addFocusListeners(fields);
 		fields.add(desdeDate = new SimpleDatePicker(false, true));
 		fields.add(hastaDate = new SimpleDatePicker(false, true));
-		this.addFocusListeners(fields);
+
 
 		crearSS = new SimpleLink("Crear SS", "#", true);
 		crearCuenta = new SimpleLink("Crear Cuenta", "#", true);
@@ -191,233 +194,102 @@ public class BuscarOportunidadFilterUIData extends UIData {
 	/** Metodo para controlar el comportamiento al hacer foco en los componentes */
 	public void addFocusListeners(List<Widget> fields) {
 		FocusWidget field;
-		fields.remove(7);
-		fields.remove(7);
 		for (int i = 0; i < fields.size(); i++) {
 			field = (FocusWidget) fields.get(i);
 			field.addBlurHandler(new BlurHandler() {
 				public void onBlur(BlurEvent event) {
-					validateEnabledWidget((Widget) event.getSource());
+					Widget w = (Widget) event.getSource();
+					if (w == numeroClienteTextBox) {
+						validateNumeroCliente((RegexTextBox) w);
+					} else if (w == numeroDocumentoTextBox) {
+						validateNumeroDocumento((RegexTextBox) w);
+					} else if (w == razonSocialTextBox || w == nombreTextBox || w == apellidoTextBox) {
+						validateRazonSocialNombreApellido((TextBox) w);
+					} else if (w == estadoOPPListBox) {
+						validateEstadoOpp((ListBox) w);
+					}
 				}
 			});
 		}
 	}
 
-	private void validateEnabledWidget(Widget w) {
-		if (w instanceof RegexTextBox) {
-			RegexTextBox box = (RegexTextBox) w;
-			validateWidget(box);
-		} else if (w instanceof TextBox) {
-			TextBox box = (TextBox) w;
-			validateWidget(box);
-		} else if (w instanceof ListBox) {
-			ListBox box = (ListBox) w;
-			validateWidget(box);
-		}
-	}
-
-	private void validateWidget(RegexTextBox box) {
-		if (!"".equals(box.getText())) {
-			lastWidget = box;
-			if (box == numeroClienteTextBox) {
-				// inhablitar todos menos TipoDoc
+	private void validateNumeroCliente(RegexTextBox w) {
+		if ((estadoOPPListBox.getSelectedIndex() == 0) || (estadoOPPListBox.getSelectedIndex() == 2)) {
+		} else {
+			if(!"".equals(w.getText())) {
+				lastWidget = w;
+				disableFields();
+				disableLabels();
 				setLabelVisibility(0, true);
 				numeroClienteTextBox.setEnabled(true);
 				numeroClienteTextBox.setReadOnly(false);
-				setLabelVisibility(1, false);
-				razonSocialTextBox.setEnabled(false);
-				razonSocialTextBox.setReadOnly(true);
-				setLabelVisibility(2, false);
-				nombreTextBox.setEnabled(false);
-				nombreTextBox.setReadOnly(true);
-				setLabelVisibility(3, false);
-				apellidoTextBox.setEnabled(false);
-				apellidoTextBox.setReadOnly(true);
 				setLabelVisibility(4, true);
 				tipoDocListBox.setEnabled(true);
-				setLabelVisibility(5, false);
-				numeroDocumentoTextBox.setEnabled(false);
-				numeroDocumentoTextBox.setReadOnly(true);
-				setLabelVisibility(6, false);
-				estadoOPPListBox.setEnabled(false);
-				setLabelVisibility(7, false);
-				desdeDate.setEnabled(false);
-				setLabelVisibility(8, false);
-				hastaDate.setEnabled(false);
-			} else if (box == numeroDocumentoTextBox) {
-				// inhabilitar todos menos TipoDoc
-				setLabelVisibility(0, false);
-				numeroClienteTextBox.setEnabled(false);
-				numeroClienteTextBox.setReadOnly(true);
-				setLabelVisibility(1, false);
-				razonSocialTextBox.setEnabled(false);
-				razonSocialTextBox.setReadOnly(true);
-				setLabelVisibility(2, false);
-				nombreTextBox.setEnabled(false);
-				nombreTextBox.setReadOnly(true);
-				setLabelVisibility(3, false);
-				apellidoTextBox.setEnabled(false);
-				apellidoTextBox.setReadOnly(true);
+			}  else if (w == lastWidget) {
+				cleanAndEnableFields();
+			}	
+		}
+	}
+	
+	private void validateNumeroDocumento(RegexTextBox w) {
+		if ((estadoOPPListBox.getSelectedIndex() == 0) || (estadoOPPListBox.getSelectedIndex() == 2)) {
+		} else {
+			if(!"".equals(w.getText())) { 
+				disableFields();
+				disableLabels();
 				setLabelVisibility(4, true);
 				tipoDocListBox.setEnabled(true);
 				setLabelVisibility(5, true);
 				numeroDocumentoTextBox.setEnabled(true);
 				numeroDocumentoTextBox.setReadOnly(false);
-				setLabelVisibility(6, false);
-				estadoOPPListBox.setEnabled(false);
-				setLabelVisibility(7, false);
-				desdeDate.setEnabled(false);
-				setLabelVisibility(8, false);
-				hastaDate.setEnabled(false);
-			}
-		} else if (box == lastWidget) {
-			enableAll();
-		}
-	}
-
-	private void validateWidget(TextBox box) {
-		if (!"".equals(box.getText())) {
-			lastWidget = box;
-			if (box == razonSocialTextBox) {
-				// deshabilitar NroCliente y Numero
-				setLabelVisibility(0, false);
-				numeroClienteTextBox.setEnabled(false);
-				numeroClienteTextBox.setReadOnly(true);
-				setLabelVisibility(1, true);
-				razonSocialTextBox.setEnabled(true);
-				razonSocialTextBox.setReadOnly(false);
-				setLabelVisibility(2, true);
-				nombreTextBox.setEnabled(true);
-				nombreTextBox.setReadOnly(false);
-				setLabelVisibility(3, true);
-				apellidoTextBox.setEnabled(true);
-				apellidoTextBox.setReadOnly(false);
-				setLabelVisibility(4, true);
-				tipoDocListBox.setEnabled(true);
-				setLabelVisibility(5, false);
-				numeroDocumentoTextBox.setEnabled(false);
-				numeroDocumentoTextBox.setReadOnly(true);
-				setLabelVisibility(6, true);
-				estadoOPPListBox.setEnabled(true);
-				setLabelVisibility(7, true);
-				desdeDate.setEnabled(true);
-				setLabelVisibility(8, true);
-				hastaDate.setEnabled(true);
-			} else if (box == nombreTextBox) {
-				// deshabilitar Numero
-				setLabelVisibility(0, false);
-				numeroClienteTextBox.setEnabled(false);
-				numeroClienteTextBox.setReadOnly(true);
-				setLabelVisibility(1, true);
-				razonSocialTextBox.setEnabled(true);
-				razonSocialTextBox.setReadOnly(false);
-				setLabelVisibility(2, true);
-				nombreTextBox.setEnabled(true);
-				nombreTextBox.setReadOnly(false);
-				setLabelVisibility(3, true);
-				apellidoTextBox.setEnabled(true);
-				apellidoTextBox.setReadOnly(false);
-				setLabelVisibility(4, true);
-				tipoDocListBox.setEnabled(true);
-				setLabelVisibility(5, false);
-				numeroDocumentoTextBox.setEnabled(false);
-				numeroDocumentoTextBox.setReadOnly(true);
-				setLabelVisibility(6, true);
-				estadoOPPListBox.setEnabled(true);
-				setLabelVisibility(7, true);
-				desdeDate.setEnabled(true);
-				setLabelVisibility(8, true);
-				hastaDate.setEnabled(true);
-			} else if (box == apellidoTextBox) {
-				// deshabilitar NroCliente y Numero
-				setLabelVisibility(0, false);
-				numeroClienteTextBox.setEnabled(false);
-				numeroClienteTextBox.setReadOnly(true);
-				setLabelVisibility(1, true);
-				razonSocialTextBox.setEnabled(true);
-				razonSocialTextBox.setReadOnly(false);
-				setLabelVisibility(2, true);
-				nombreTextBox.setEnabled(true);
-				nombreTextBox.setReadOnly(false);
-				setLabelVisibility(3, true);
-				apellidoTextBox.setEnabled(true);
-				apellidoTextBox.setReadOnly(false);
-				setLabelVisibility(4, true);
-				tipoDocListBox.setEnabled(true);
-				setLabelVisibility(5, false);
-				numeroDocumentoTextBox.setEnabled(false);
-				numeroDocumentoTextBox.setReadOnly(true);
-				setLabelVisibility(6, true);
-				estadoOPPListBox.setEnabled(true);
-				setLabelVisibility(7, true);
-				desdeDate.setEnabled(true);
-				setLabelVisibility(8, true);
-				hastaDate.setEnabled(true);
-			}
-		} else if (box == lastWidget) {
-			enableAll();
-		}
-	}
-
-	private void validateWidget(ListBox box) {
-		// La opcion "Todos" deshabilita NroCliente y Numero
-		if (box == estadoOPPListBox) {
-			if (box.getSelectedIndex() == 0) {
-				setLabelVisibility(0, false);
-				numeroClienteTextBox.setEnabled(false);
-				numeroClienteTextBox.setReadOnly(true);
-				setLabelVisibility(1, true);
-				razonSocialTextBox.setEnabled(true);
-				razonSocialTextBox.setReadOnly(false);
-				setLabelVisibility(2, true);
-				nombreTextBox.setEnabled(true);
-				nombreTextBox.setReadOnly(false);
-				setLabelVisibility(3, true);
-				apellidoTextBox.setEnabled(true);
-				apellidoTextBox.setReadOnly(false);
-				setLabelVisibility(4, true);
-				tipoDocListBox.setEnabled(true);
-				setLabelVisibility(5, false);
-				numeroDocumentoTextBox.setEnabled(false);
-				numeroDocumentoTextBox.setReadOnly(true);
-				setLabelVisibility(6, true);
-				estadoOPPListBox.setEnabled(true);
-				setLabelVisibility(7, true);
-				desdeDate.setEnabled(true);
-				setLabelVisibility(8, true);
-				hastaDate.setEnabled(true);
 			} else {
-				// con las opciones "Activa" y "No Cerrada"
-				enableAll();
-			}
-
+				cleanAndEnableFields();
+			}	
 		}
 	}
+	
+	private void validateRazonSocialNombreApellido(TextBox w) {
+		if ((estadoOPPListBox.getSelectedIndex() == 0) || (estadoOPPListBox.getSelectedIndex() == 2)) {			
+		} else {	
+			if((!"".equals(nombreTextBox.getText())) || (!"".equals(apellidoTextBox.getText())) || (!"".equals(razonSocialTextBox.getText()))) {
+				nombreTextBox.setText(nombreTextBox.getText().toUpperCase());
+				apellidoTextBox.setText(apellidoTextBox.getText().toUpperCase());
+				razonSocialTextBox.setText(razonSocialTextBox.getText().toUpperCase());
+				enableFields();
+				enableLabels();
+				setLabelVisibility(0, false);
+				numeroClienteTextBox.setEnabled(false);
+				numeroClienteTextBox.setReadOnly(true);
+				setLabelVisibility(5, false);
+				numeroDocumentoTextBox.setEnabled(false);
+				numeroDocumentoTextBox.setReadOnly(true);
+			} else {
+				cleanAndEnableFields();
+			}
+		}
+	}
+	
+	private void validateEstadoOpp(ListBox w) {
+		if ((w.getSelectedIndex() == 0) || (w.getSelectedIndex() == 2)) {
+			enableFields();
+			enableLabels();
+			setLabelVisibility(0, false);
+			numeroClienteTextBox.setEnabled(false);
+			numeroClienteTextBox.setReadOnly(true);
+			setLabelVisibility(5, false);
+			numeroDocumentoTextBox.setEnabled(false);
+			numeroDocumentoTextBox.setReadOnly(true);
+		} else {
+			cleanAndEnableFields();
+		}
+	}
+	
 
-	private void enableAll() {
-		setLabelVisibility(0, true);
-		numeroClienteTextBox.setEnabled(true);
-		numeroClienteTextBox.setReadOnly(false);
-		setLabelVisibility(1, true);
-		razonSocialTextBox.setEnabled(true);
-		razonSocialTextBox.setReadOnly(false);
-		setLabelVisibility(2, true);
-		nombreTextBox.setEnabled(true);
-		nombreTextBox.setReadOnly(false);
-		setLabelVisibility(3, true);
-		apellidoTextBox.setEnabled(true);
-		apellidoTextBox.setReadOnly(false);
-		setLabelVisibility(4, true);
-		tipoDocListBox.setEnabled(true);
-		setLabelVisibility(5, true);
-		numeroDocumentoTextBox.setEnabled(true);
-		numeroDocumentoTextBox.setReadOnly(false);
-		setLabelVisibility(5, true);
-		estadoOPPListBox.setEnabled(true);
-		setLabelVisibility(7, true);
-		desdeDate.setEnabled(true);
-		setLabelVisibility(8, true);
-		hastaDate.setEnabled(true);
+	public void cleanAndEnableFields() {
+		super.cleanAndEnableFields();
+		getDesdeDate();
+		getHastaDate();
+		getEstadoOPPListBox().setSelectedItem(new ListBoxItemImpl("Activa", "1"));
 	}
 
 	private void setLabelVisibility(int index, boolean enabled) {
@@ -429,6 +301,20 @@ public class BuscarOportunidadFilterUIData extends UIData {
 		}
 	}
 
+	public void enableLabels() {
+		List<Label> labels = getListaLabels();
+		for (int index = 0; index < labels.size(); index++) {
+			labels.get(index).removeStyleName("gwt-labelDisabled");
+		}
+	}
+	
+	public void disableLabels() {
+		List<Label> labels = getListaLabels();
+		for (int index = 0; index < labels.size(); index++) {
+			labels.get(index).addStyleName("gwt-labelDisabled");
+		}
+	}
+	
 	/**
 	 * @author eSalvador
 	 **/
