@@ -14,6 +14,7 @@ import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.nextel.sfa.client.widget.ValidationTextBox;
+import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 
@@ -113,8 +114,10 @@ public class DomiciliosUIData extends UIData {
 	}
 
 	public void loadTipoDomicilioListBox(ListBox listBox, boolean selectPrincipal) {
-		listBox.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
-		listBox.setSelectedIndex(selectPrincipal ? 0 : 1);
+		List<ListBoxItem> estados = EstadoTipoDomicilioDto.getListBoxItems();
+		for (int i = selectPrincipal ? 0 : 1; i < estados.size(); i++) {
+			listBox.addItem(estados.get(i));
+		}
 	}
 
 	private boolean containsPpalEntrega(List<DomiciliosCuentaDto> listaDomicilios) {
