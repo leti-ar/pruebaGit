@@ -381,7 +381,7 @@ public class CuentaEdicionTabPanel {
 	private void guardar(){
 		CuentaDto ctaDto = (CuentaDto)cuentaDatosForm.getCuentaDtoFromEditor();
         //agrego domicilios
-		ctaDto.getPersona().setDomicilios(CuentaDomiciliosForm.getInstance().cuentaDto.getPersona().getDomicilios());
+		ctaDto.getPersona().setDomicilios(CuentaDomiciliosForm.getInstance().getCuenta().getPersona().getDomicilios());
 		//asegura que los contatos esten cargados en la granCuenta (para divisiones y suscriptores)
 		agregarContactos(ctaDto);
 		//solo para actualizar imagen (sin mensaje de error).
