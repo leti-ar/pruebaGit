@@ -1,20 +1,15 @@
 package ar.com.nextel.sfa.client.domicilio;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.tools.ant.taskdefs.LoadProperties;
-
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.cuenta.CuentaDomiciliosForm;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
-import ar.com.nextel.sfa.client.infocom.InfocomUI;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.UIData;
@@ -22,9 +17,9 @@ import ar.com.nextel.sfa.client.widget.ValidationTextBox;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 
-import com.google.gwt.user.client.Command;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
@@ -36,63 +31,50 @@ import com.google.gwt.user.client.ui.Widget;
  **/
 public class DomiciliosUIData extends UIData {
 
-	private static DomiciliosUIData instance;
 	private DomiciliosCuentaDto domicilio;
-	private List listaDomicilios = new ArrayList<DomiciliosCuentaDto>();
-	//private boolean tienePpalEntrega = false;
-	//private boolean tienePpalFacturacion = false;
-	
-	ValidationTextBox cpa = new ValidationTextBox("[0-9a-zA-Z]*");
-	ValidationTextBox numero = new ValidationTextBox("[0-9a-zA-Z]*");
-	TextBox calle = new TextBox();
-	TextBox piso = new TextBox();
-	ValidationTextBox codigoPostal = new ValidationTextBox("[0-9]*");
-	ValidationTextBox departamento = new ValidationTextBox("[0-9a-zA-Z]*");
-	TextBox entreCalle = new TextBox();
-	ValidationTextBox manzana = new ValidationTextBox("[0-9a-zA-Z]*");
-	TextBox puerta = new TextBox();
-	TextBox ycalle = new TextBox();
-	ValidationTextBox torre = new ValidationTextBox("[0-9a-zA-Z]*");
-	ValidationTextBox unidadFuncional = new ValidationTextBox("[0-9a-zA-Z]*");
-	TextArea observaciones = new TextArea();
-	ValidationTextBox localidad = new ValidationTextBox("[0-9a-zA-Z\\s]*");
-	ValidationTextBox partido = new ValidationTextBox("[0-9a-zA-Z\\s]*");
-	PersonaDto persona = new PersonaDto();
-	ListBox facturacion = new ListBox();
-	ListBox entrega = new ListBox();
-	ListBox provincia = new ListBox();
+	private boolean tienePrincipalFacturacion = false;
+	private boolean tienePrincipalEntrega = false;
+
+	private ValidationTextBox cpa = new ValidationTextBox("[0-9a-zA-Z]*");
+	private ValidationTextBox numero = new ValidationTextBox("[0-9a-zA-Z]*");
+	private TextBox calle = new TextBox();
+	private TextBox piso = new TextBox();
+	private ValidationTextBox codigoPostal = new ValidationTextBox("[0-9]*");
+	private ValidationTextBox departamento = new ValidationTextBox("[0-9a-zA-Z]*");
+	private TextBox entreCalle = new TextBox();
+	private ValidationTextBox manzana = new ValidationTextBox("[0-9a-zA-Z]*");
+	private TextBox puerta = new TextBox();
+	private TextBox ycalle = new TextBox();
+	private ValidationTextBox torre = new ValidationTextBox("[0-9a-zA-Z]*");
+	private ValidationTextBox unidadFuncional = new ValidationTextBox("[0-9a-zA-Z]*");
+	private TextArea observaciones = new TextArea();
+	private ValidationTextBox localidad = new ValidationTextBox("[0-9a-zA-Z\\s]*");
+	private ValidationTextBox partido = new ValidationTextBox("[0-9a-zA-Z\\s]*");
+	private PersonaDto persona = new PersonaDto();
+	private ListBox facturacion = new ListBox();
+	private ListBox entrega = new ListBox();
+	private ListBox provincia = new ListBox();
 
 	// Boolean noNormalizar;
 
-	CheckBox validado = new CheckBox();
-	TextBox codigoFNCL = new TextBox();
-	CheckBox enCarga = new CheckBox();
-	Label nombreUsuarioUltimaModificacion = new Label();
-	Label fechaUltimaModificacion = new Label();
-	
-	Label labelValidado1 = new Label(Sfa.constant().validado1());
-	Label labelValidado2 = new Label(Sfa.constant().validado2());
+	private CheckBox validado = new CheckBox();
+	private TextBox codigoFNCL = new TextBox();
+	private CheckBox enCarga = new CheckBox();
+	private Label nombreUsuarioUltimaModificacion = new Label();
+	private Label fechaUltimaModificacion = new Label();
 
-	
-	public static DomiciliosUIData getInstance() {
-		if (instance == null) {
-			instance = new DomiciliosUIData();
-		}
-		return instance;
-	}
-	
 	public DomiciliosUIData() {
 		configFields();
 		fields.add(cpa);
 		fields.add(numero);
-		fields.add(calle);		
+		fields.add(calle);
 		fields.add(piso);
 		fields.add(codigoPostal);
 		fields.add(departamento);
 		fields.add(entreCalle);
 		fields.add(manzana);
 		fields.add(puerta);
-		fields.add(ycalle);		
+		fields.add(ycalle);
 		fields.add(torre);
 		fields.add(unidadFuncional);
 		fields.add(observaciones);
@@ -110,70 +92,48 @@ public class DomiciliosUIData extends UIData {
 
 		cpa.setTabIndex(1);
 		calle.setTabIndex(2);
-		numero.setTabIndex(3);		
+		numero.setTabIndex(3);
 	}
-	
-	// Si la cuenta todavia no tiene un domicilio principal cargado, se sugiere "Principal", sino "Si"
-	public void inicializarListBox() {
-		listaDomicilios = CuentaDomiciliosForm.getInstance().getDomicilios();
-		cargarListBox(listaDomicilios);
-	}
-		
-		
-		public void cargarListBox(List<DomiciliosCuentaDto> listaDomicilios) {
-			
-		if(listaDomicilios!=null) {
-			if((entrega.getItemCount()!=0) && (facturacion.getItemCount()!=0)) {
+
+	public void cargarListBox(List<DomiciliosCuentaDto> listaDomicilios) {
+
+		if (listaDomicilios != null) {
+			if ((entrega.getItemCount() != 0) && (facturacion.getItemCount() != 0)) {
 				entrega.clear();
 				facturacion.clear();
 			}
-			if(!verificarPpalEntrega(listaDomicilios)) {
-				loadListBoxPpal(entrega);
-			} else {
-				loadListBoxSi(entrega);
-			}
-
-			if(!verificarPpalFacturacion(listaDomicilios)) {
-				loadListBoxPpal(facturacion);
-			} else {
-				loadListBoxSi(facturacion);
-			}
-
+			tienePrincipalEntrega = containsPpalEntrega(listaDomicilios);
+			tienePrincipalFacturacion = containsPpalFacturacion(listaDomicilios);
 		} else {
-			loadListBoxPpal(entrega);
-			loadListBoxPpal(facturacion);
+			tienePrincipalEntrega = false;
+			tienePrincipalFacturacion = false;
 		}
+		loadTipoDomicilioListBox(entrega, !tienePrincipalEntrega);
+		loadTipoDomicilioListBox(facturacion, !tienePrincipalFacturacion);
 	}
-	
-	public void loadListBoxPpal(ListBox listBox) {
-		listBox.addItem(EstadoTipoDomicilioDto.getListBoxItems().get(0));
-		listBox.addItem(EstadoTipoDomicilioDto.getListBoxItems().get(1));
-		listBox.addItem(EstadoTipoDomicilioDto.getListBoxItems().get(2));
+
+	public void loadTipoDomicilioListBox(ListBox listBox, boolean selectPrincipal) {
+		listBox.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
+		listBox.setSelectedIndex(selectPrincipal ? 0 : 1);
 	}
-	
-	public void loadListBoxSi(ListBox listBox) {
-		listBox.addItem(EstadoTipoDomicilioDto.getListBoxItems().get(1));
-		listBox.addItem(EstadoTipoDomicilioDto.getListBoxItems().get(2));
-		listBox.addItem(EstadoTipoDomicilioDto.getListBoxItems().get(0));
-	}
-	
-	public boolean verificarPpalEntrega(List<DomiciliosCuentaDto> listaDomicilios) {
+
+	private boolean containsPpalEntrega(List<DomiciliosCuentaDto> listaDomicilios) {
 		for (Iterator iter = listaDomicilios.iterator(); iter.hasNext();) {
 			DomiciliosCuentaDto domicilioCuenta = (DomiciliosCuentaDto) iter.next();
-			if(domicilioCuenta.getIdEntrega()==2){
+			if (EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilioCuenta.getIdEntrega())) {
 				return true;
 			}
-		}				
+		}
 		return false;
 	}
-	
-	public boolean verificarPpalFacturacion(List<DomiciliosCuentaDto> listaDomicilios) {
+
+	private boolean containsPpalFacturacion(List<DomiciliosCuentaDto> listaDomicilios) {
 		for (Iterator iter = listaDomicilios.iterator(); iter.hasNext();) {
 			DomiciliosCuentaDto domicilioCuenta = (DomiciliosCuentaDto) iter.next();
-			if(domicilioCuenta.getIdFacturacion()==2){
+			if (EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilioCuenta.getIdFacturacion())) {
 				return true;
 			}
-		}				
+		}
 		return false;
 	}
 
@@ -197,27 +157,16 @@ public class DomiciliosUIData extends UIData {
 			cpa.setText(domicilio.getCpa());
 			torre.setText(domicilio.getTorre());
 			unidadFuncional.setText(domicilio.getUnidad_funcional());
-			validado.setChecked(domicilio.getValidado());
+			validado.setValue(domicilio.getValidado());
 			observaciones.setText(domicilio.getObservaciones());
 			nombreUsuarioUltimaModificacion.setText(domicilio.getNombre_usuario_ultima_modificacion());
 			fechaUltimaModificacion.setText(domicilio.getFecha_ultima_modificacion());
-			// VER EstadoTipoDomicilioDto
-//			if(entrega.getItemCount()==0) {
-//				
-//			}
-			
 			entrega.selectByValue("" + domicilio.getIdEntrega());
 			facturacion.selectByValue("" + domicilio.getIdFacturacion());
-			
-			
-//			inicializarListBox();		
-			
 		}
 	}
 
-	
 	public DomiciliosCuentaDto getDomicilio() {
-		/** TODO: Deberia hacer alguna validacion?? */
 		domicilio.setCalle(calle.getText());
 		domicilio.setEntre_calle(entreCalle.getText());
 		domicilio.setY_calle(ycalle.getText());
@@ -234,7 +183,7 @@ public class DomiciliosUIData extends UIData {
 		domicilio.setPuerta(puerta.getText());
 		domicilio.setTorre(torre.getText());
 		domicilio.setUnidad_funcional(unidadFuncional.getText());
-		domicilio.setValidado(validado.isChecked());
+		domicilio.setValidado(validado.getValue());
 		domicilio.setNombre_usuario_ultima_modificacion(nombreUsuarioUltimaModificacion.getText());
 		domicilio.setFecha_ultima_modificacion(fechaUltimaModificacion.getText());
 		domicilio.setIdEntrega(Long.parseLong(entrega.getSelectedItem().getItemValue()));
@@ -266,27 +215,16 @@ public class DomiciliosUIData extends UIData {
 		FocusWidget field;
 		for (int i = 0; i < fields.size(); i++) {
 			field = (FocusWidget) fields.get(i);
-			field.addFocusListener(new FocusListener() {
-				public void onFocus(Widget arg0) {
-				}
-
-				public void onLostFocus(Widget w) {
-					validateFields(w);
-					if (w instanceof TextBox) {
-						((TextBox) w).setText(((TextBox) w).getText().trim().toUpperCase());
+			field.addBlurHandler(new BlurHandler() {
+				public void onBlur(BlurEvent event) {
+					Widget sender = (Widget) event.getSource();
+					validateFields(sender);
+					if (sender instanceof TextBox) {
+						((TextBox) sender).setText(((TextBox) sender).getText().trim().toUpperCase());
 					}
 				}
 			});
 		}
-	}
-
-	private Command getComandoAceptarAlert() {
-		Command comandoAceptar = new Command() {
-			public void execute() {
-				MessageDialog.getInstance().hide();
-			}
-		};
-		return comandoAceptar;
 	}
 
 	private void validateFields(Widget w) {
@@ -313,7 +251,7 @@ public class DomiciliosUIData extends UIData {
 			if (numero.getText().length() == 0) {
 				MessageDialog.getInstance().setDialogTitle("SFA - Alert");
 				MessageDialog.getInstance().showAceptar("Debe ingresar un Numero correcto.",
-						getComandoAceptarAlert());
+						MessageDialog.getCloseCommand());
 			}
 		}
 	}
@@ -436,6 +374,14 @@ public class DomiciliosUIData extends UIData {
 
 	public ListBox getProvincia() {
 		return provincia;
+	}
+
+	public boolean isTienePrincipalFacturacion() {
+		return tienePrincipalFacturacion;
+	}
+
+	public boolean isTienePrincipalEntrega() {
+		return tienePrincipalEntrega;
 	}
 
 }

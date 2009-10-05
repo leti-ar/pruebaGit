@@ -25,7 +25,17 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * @author eSalvador
+ * Componente para editar DomicilioDto.<br>
+ * Antes de abrirlo, se debe llamar a:<br>
+ * <ul>
+ * <li>cargarListBoxEntregaFacturacion();
+ * <li>setParentContacto()
+ * <li>setComandoAceptar()
+ * </ul>
+ * Para abrirlo en modo no editable se puede setear el Domicilio con setDomicilioAEditar() y utilizar el
+ * getOpenDomicilioUICommand. <br>
+ * Para abrirlo en modo editable, se puede usar cargarPopupEditarDomicilio(), cargarPopupNuevoDomicilio() o
+ * cargarPopupCopiarDomicilio().
  **/
 public class DomicilioUI extends NextelDialog {
 
@@ -39,13 +49,11 @@ public class DomicilioUI extends NextelDialog {
 	private FormButtonsBar footerBar;
 	private SimpleLink linkCerrar;
 	private SimpleLink linkAceptar;
-	private DomiciliosUIData domiciliosData;
+	private DomiciliosUIData domiciliosUIData;
 	private boolean noEditable;
 	private static DomicilioUI instance = new DomicilioUI();
 	private DomiciliosCuentaDto domicilioAEditar;
-	private boolean tienePrincipalFacturacion;
-	private boolean tienePrincipalEntrega;
-	private int rowDomicilioABorrar;
+
 	private PersonaDto persona;
 	private boolean parentContacto;
 	private boolean isDomicilioPpalEntrega;
@@ -76,43 +84,42 @@ public class DomicilioUI extends NextelDialog {
 		super.clear();
 	}
 
+	/** Carga y muestra el dialog con el titulo 'Crear Domicilio' */
 	public void cargarPopupNuevoDomicilio(DomiciliosCuentaDto domicilio) {
 		cargarPopupDomicilio(domicilio, "Crear Domicilio");
 	}
 
+	/** Carga y muestra el dialog con el titulo 'Copiar Domicilio' */
 	public void cargarPopupCopiarDomicilio(DomiciliosCuentaDto domicilio) {
 		cargarPopupDomicilio(domicilio, "Copiar Domicilio");
 	}
 
+	/** Carga y muestra el dialog con el titulo 'Editar Domicilio' */
 	public void cargarPopupEditarDomicilio(DomiciliosCuentaDto domicilio) {
 		cargarPopupDomicilio(domicilio, "Editar Domicilio");
 	}
 
-	public void cargarPopupDomicilio(DomiciliosCuentaDto domicilio, String title) {
+	private void cargarPopupDomicilio(DomiciliosCuentaDto domicilio, String title) {
 		isDomicilioPpalEntrega = EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdEntrega());
 		isDomicilioPpalFacturacion = EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(
 				domicilio.getIdFacturacion());
 		noEditable = domicilio.getVantiveId() != null;
 		domicilioAEditar = domicilio;
-		domiciliosData.clean();
-		domiciliosData.setDomicilio(domicilio);
+		domiciliosUIData.clean();
+		domiciliosUIData.setDomicilio(domicilio);
 		showAndCenter();
 		if (noEditable) {
-			domiciliosData.disableFields();
+			domiciliosUIData.disableFields();
 			linkAceptar.setVisible(false);
 		} else {
-			domiciliosData.enableFields();
+			domiciliosUIData.enableFields();
 			linkAceptar.setVisible(true);
 		}
 		setDialogTitle(title);
 	}
 
-	/**
-	 *@author eSalvador
-	 **/
-	public void init() {
-		domiciliosData = DomiciliosUIData.getInstance();
-		//domiciliosData = new DomiciliosUIData();
+	private void init() {
+		domiciliosUIData = new DomiciliosUIData();
 		footerBar = new FormButtonsBar();
 		linkCerrar = new SimpleLink("Cerrar");
 		linkAceptar = new SimpleLink("Aceptar");
@@ -123,7 +130,7 @@ public class DomicilioUI extends NextelDialog {
 		gridUser = new Grid(1, 5);
 		setWidth("635px");
 		validadoPorPanel = new HorizontalPanel();
-		validadoPorPanel.add(domiciliosData.getValidado());
+		validadoPorPanel.add(domiciliosUIData.getValidado());
 		validadoPorPanel.add(labelValidado1);
 		validadoPorPanel.addStyleName("ml15");
 
@@ -138,11 +145,11 @@ public class DomicilioUI extends NextelDialog {
 		gridUp.getColumnFormatter().setWidth(3, "85px");
 		gridUp.addStyleName("layout");
 		gridUp.setText(1, 1, Sfa.constant().cpa());
-		gridUp.setWidget(1, 2, domiciliosData.getCpa());
+		gridUp.setWidget(1, 2, domiciliosUIData.getCpa());
 		gridUp.setWidget(2, 1, calleLabel);
-		gridUp.setWidget(2, 2, domiciliosData.getCalle());
+		gridUp.setWidget(2, 2, domiciliosUIData.getCalle());
 		gridUp.setWidget(2, 3, numCalleLabel);
-		gridUp.setWidget(2, 4, domiciliosData.getNumero());
+		gridUp.setWidget(2, 4, domiciliosUIData.getNumero());
 		//
 		gridMed.getColumnFormatter().setWidth(1, "85px");
 		gridMed.getColumnFormatter().setWidth(3, "65px");
@@ -151,45 +158,45 @@ public class DomicilioUI extends NextelDialog {
 		gridMed.getColumnFormatter().setWidth(9, "65px");
 		gridMed.addStyleName("layout");
 		gridMed.setText(0, 1, Sfa.constant().piso());
-		gridMed.setWidget(0, 2, domiciliosData.getPiso());
+		gridMed.setWidget(0, 2, domiciliosUIData.getPiso());
 		gridMed.setText(0, 3, Sfa.constant().dpto());
-		gridMed.setWidget(0, 4, domiciliosData.getDepartamento());
+		gridMed.setWidget(0, 4, domiciliosUIData.getDepartamento());
 		gridMed.setText(0, 5, Sfa.constant().uf());
-		gridMed.setWidget(0, 6, domiciliosData.getUnidadFuncional());
+		gridMed.setWidget(0, 6, domiciliosUIData.getUnidadFuncional());
 		gridMed.setText(0, 7, Sfa.constant().torre());
-		gridMed.setWidget(0, 8, domiciliosData.getTorre());
+		gridMed.setWidget(0, 8, domiciliosUIData.getTorre());
 		gridMed.setText(0, 9, Sfa.constant().manzana());
-		gridMed.setWidget(0, 10, domiciliosData.getManzana());
+		gridMed.setWidget(0, 10, domiciliosUIData.getManzana());
 		//
 		gridDown.getColumnFormatter().setWidth(1, "85px");
 		gridDown.getColumnFormatter().setWidth(3, "80px");
 		gridDown.addStyleName("layout");
 		gridDown.setText(0, 1, Sfa.constant().entre_calle());
-		gridDown.setWidget(0, 2, domiciliosData.getEntreCalle());
+		gridDown.setWidget(0, 2, domiciliosUIData.getEntreCalle());
 		gridDown.setText(0, 3, Sfa.constant().y_calle());
-		gridDown.setWidget(0, 4, domiciliosData.getYcalle());
+		gridDown.setWidget(0, 4, domiciliosUIData.getYcalle());
 		gridDown.setWidget(1, 1, localidadLabel);
-		gridDown.setWidget(1, 2, domiciliosData.getLocalidad());
+		gridDown.setWidget(1, 2, domiciliosUIData.getLocalidad());
 		gridDown.setWidget(1, 3, cpLabel);
-		gridDown.setWidget(1, 4, domiciliosData.getCodigoPostal());
+		gridDown.setWidget(1, 4, domiciliosUIData.getCodigoPostal());
 		cargaComboProvinciasDto();
 		gridDown.setWidget(2, 1, provinciaLabel);
-		gridDown.setWidget(2, 2, domiciliosData.getProvincia());
+		gridDown.setWidget(2, 2, domiciliosUIData.getProvincia());
 		//
 		gridDown.setText(2, 3, Sfa.constant().partido());
-		gridDown.setWidget(2, 4, domiciliosData.getPartido());
+		gridDown.setWidget(2, 4, domiciliosUIData.getPartido());
 		gridDown.setWidget(3, 1, labelEntrega);
-		gridDown.setWidget(3, 2, domiciliosData.getEntrega());
+		gridDown.setWidget(3, 2, domiciliosUIData.getEntrega());
 		gridDown.setWidget(3, 3, labelFacturacion);
-		gridDown.setWidget(3, 4, domiciliosData.getFacturacion());
+		gridDown.setWidget(3, 4, domiciliosUIData.getFacturacion());
 		gridObs.addStyleName("layout");
 		gridObs.setText(0, 1, Sfa.constant().obs_domicilio());
-		gridObs.setWidget(1, 1, domiciliosData.getObservaciones());
+		gridObs.setWidget(1, 1, domiciliosUIData.getObservaciones());
 		gridUser.addStyleName("layout");
 		gridUser.setWidget(0, 1, labelUsuario);
-		gridUser.setWidget(0, 2, domiciliosData.getNombreUsuarioUltimaModificacion());
+		gridUser.setWidget(0, 2, domiciliosUIData.getNombreUsuarioUltimaModificacion());
 		gridUser.setWidget(0, 3, labelFecha);
-		gridUser.setWidget(0, 4, domiciliosData.getFechaUltimaModificacion());
+		gridUser.setWidget(0, 4, domiciliosUIData.getFechaUltimaModificacion());
 
 		add(gridUp);
 		add(gridMed);
@@ -227,7 +234,7 @@ public class DomicilioUI extends NextelDialog {
 		CuentaRpcService.Util.getInstance().getProvinciasInitializer(
 				new DefaultWaitCallback<List<ProvinciaDto>>() {
 					public void success(List<ProvinciaDto> result) {
-						domiciliosData.getProvincia().addAllItems(result);
+						domiciliosUIData.getProvincia().addAllItems(result);
 					}
 				});
 	}
@@ -239,16 +246,8 @@ public class DomicilioUI extends NextelDialog {
 		this.comandoAceptar = comandoAceptar;
 	}
 
-	public DomiciliosUIData getDomiciliosData() {
-		return domiciliosData;
-	}
-
 	public void showAndCenter() {
-		if (parentContacto) {
-			ocultaFieldsParaContactos();
-		} else {
-			habilitaFieldsParaContactos();
-		}
+		enableFieldsParaContactos(!parentContacto);
 		super.showAndCenter();
 	}
 
@@ -260,10 +259,6 @@ public class DomicilioUI extends NextelDialog {
 		this.noEditable = editable;
 	}
 
-	public int getRowDomicilioABorrar() {
-		return rowDomicilioABorrar;
-	}
-
 	public DomiciliosCuentaDto getDomicilioAEditar() {
 		return domicilioAEditar;
 	}
@@ -272,17 +267,13 @@ public class DomicilioUI extends NextelDialog {
 		this.domicilioAEditar = domicilioAEditar;
 	}
 
-	public void setRowDomicilioABorrar(int rowDomicilioABorrar) {
-		this.rowDomicilioABorrar = rowDomicilioABorrar;
-	}
-
 	/**
 	 * @author eSalvador
 	 **/
 	public Command getComandoAceptarDomicilioServiceCall() {
 		Command comandoAceptar = new Command() {
 			public void execute() {
-				domicilioAEditar = getDomiciliosData().getDomicilio();
+				domicilioAEditar = domiciliosUIData.getDomicilio();
 				if (camposValidos()) {
 					CuentaRpcService.Util.getInstance().normalizarDomicilio(domicilioAEditar,
 							new DefaultWaitCallback<NormalizarDomicilioResultDto>() {
@@ -296,22 +287,22 @@ public class DomicilioUI extends NextelDialog {
 										NormalizarDomicilioUI.getInstance().setNormalizado(true);
 										abrirPopupNormalizacion(listaDomicilios,
 												getComandoAgregarDomicilioSinNormalizar(),
-												getComandoAgregarDomicilio());
+												getComandoAceptarNormalizado());
 									} else if (result.getTipo().equals("no_encontrado")) {
 										setMotivosNoNormalizacion(result);
 										abrirPopupNormalizacion(listaDomicilios,
 												getComandoAgregarDomicilioSinNormalizar(),
-												getComandoAgregarDomicilio());
+												getComandoAceptarNormalizado());
 									} else if (result.getTipo().equals("dudas")) {
 										NormalizarDomicilioUI.getInstance().setNormalizado(true);
 										abrirPopupNormalizacion(result.getDudas(),
 												getComandoAgregarDomicilioSinNormalizar(),
-												getComandoAgregarDomicilio());
+												getComandoAceptarNormalizado());
 									} else if (result.getTipo().equals("no_parseado")) {
 										setMotivosNoNormalizacion(result);
 										abrirPopupNormalizacion(listaDomicilios,
 												getComandoAgregarDomicilioSinNormalizar(),
-												getComandoAgregarDomicilio());
+												getComandoAceptarNormalizado());
 									}
 								}
 
@@ -326,10 +317,9 @@ public class DomicilioUI extends NextelDialog {
 	}
 
 	private DomiciliosCuentaDto mapeoDomicilioNormalizado(DomiciliosCuentaDto domicilioNormalizado) {
-		DomiciliosUIData datosDomicilioNuevo = DomicilioUI.getInstance().getDomiciliosData();
 		// Mapeos a Mano para no perder Datos: REVISAR:
-		domicilioNormalizado.setObservaciones(datosDomicilioNuevo.getObservaciones().getText());
-		domicilioNormalizado.setValidado(datosDomicilioNuevo.getValidado().getValue());
+		domicilioNormalizado.setObservaciones(domiciliosUIData.getObservaciones().getText());
+		domicilioNormalizado.setValidado(domiciliosUIData.getValidado().getValue());
 		domicilioNormalizado.setId(domicilioAEditar.getId());
 		domicilioNormalizado.setIdEntrega(domicilioAEditar.getIdEntrega());
 		domicilioNormalizado.setIdFacturacion(domicilioAEditar.getIdFacturacion());
@@ -340,7 +330,8 @@ public class DomicilioUI extends NextelDialog {
 		return domicilioNormalizado;
 	}
 
-	private Command getComandoAgregarDomicilio() {
+	/** Comando para el boton 'Normalizar' del NormalizadorUI */
+	private Command getComandoAceptarNormalizado() {
 		Command comandoAceptarNormalizado = new Command() {
 			public void execute() {
 				if (NormalizarDomicilioUI.getInstance().getRowSelected() < 0) {
@@ -358,6 +349,7 @@ public class DomicilioUI extends NextelDialog {
 		return comandoAceptarNormalizado;
 	}
 
+	/** Comando para el boton 'No Normalizar' del NormalizadorUI */
 	private Command getComandoAgregarDomicilioSinNormalizar() {
 		Command comandoAceptarSinNormalizar = new Command() {
 			public void execute() {
@@ -401,7 +393,7 @@ public class DomicilioUI extends NextelDialog {
 
 	private boolean camposValidos() {
 		boolean valido = true;
-		List<String> errores = DomicilioUI.getInstance().getDomiciliosData().validarCamposObligatorios();
+		List<String> errores = domiciliosUIData.validarCamposObligatorios();
 		if (errores.size() != 0) {
 			valido = false;
 			ErrorDialog.getInstance().setDialogTitle("Error");
@@ -417,7 +409,7 @@ public class DomicilioUI extends NextelDialog {
 	}
 
 	/**
-	 * @author eSalvador
+	 * Advierte que no se seleccionó una fila.
 	 **/
 	public void openPopupSelectDomicilioDialog() {
 		MessageDialog.getInstance().setDialogTitle("Error");
@@ -427,7 +419,7 @@ public class DomicilioUI extends NextelDialog {
 	}
 
 	/**
-	 * @author eSalvador
+	 * Advierte la imposibilidad de modificación del domicilio. Ejecuta el comando al hacer click en aceptar
 	 **/
 	public void openPopupAdviseDialog(Command comandoGenerico) {
 		MessageDialog.getInstance().setDialogTitle("Advertencia");
@@ -438,8 +430,7 @@ public class DomicilioUI extends NextelDialog {
 	}
 
 	/**
-	 * @author eSalvador
-	 * @param command
+	 * Pregunta si desea borrar el domicilio. Si se elije el 'SI', ejecuta el comando.
 	 **/
 	public void openPopupDeleteDialog(PersonaDto persona, DomiciliosCuentaDto domicilio, Command afterDelete) {
 		MessageDialog.getInstance().setDialogTitle("Eliminar Domicilio");
@@ -454,6 +445,10 @@ public class DomicilioUI extends NextelDialog {
 		}
 	}
 
+	/**
+	 * Devuelve un comando que habre el DomicilioUI cargando el domicilioAEditar. Llamar antes a
+	 * setDomicilioAEditar()
+	 */
 	public Command getOpenDomicilioUICommand() {
 		Command openUICommand = new Command() {
 			public void execute() {
@@ -465,23 +460,22 @@ public class DomicilioUI extends NextelDialog {
 		return openUICommand;
 	}
 
-	public void setYaTieneDomiciliosPrincipales(boolean ppalEntrega, boolean ppalfacturacion) {
-		this.tienePrincipalEntrega = ppalEntrega;
-		this.tienePrincipalFacturacion = ppalfacturacion;
-	}
-
+	/** Comprueba si la cuenta tiene algun domicilio principal (Tomando el estado actual del editado) */
 	public boolean getTieneDomiciliosPrincipales() {
-		boolean tienePpales = false;
-
-		if (!isDomicilioPpalFacturacion && domiciliosData.getFacturacion().getSelectedItemId().equals("2")
-				&& (tienePrincipalFacturacion)) {
-			tienePpales = true;
+		Long idDomicilioFacturacionSelected = Long.parseLong(domiciliosUIData.getFacturacion()
+				.getSelectedItemId());
+		if (!isDomicilioPpalFacturacion
+				&& EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(idDomicilioFacturacionSelected)
+				&& domiciliosUIData.isTienePrincipalFacturacion()) {
+			return true;
 		}
-		if (!isDomicilioPpalEntrega && domiciliosData.getEntrega().getSelectedItemId().equals("2")
-				&& (tienePrincipalEntrega)) {
-			tienePpales = true;
+		Long idDomicilioEntregaSelected = Long.parseLong(domiciliosUIData.getEntrega().getSelectedItemId());
+		if (!isDomicilioPpalEntrega
+				&& EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(idDomicilioEntregaSelected)
+				&& domiciliosUIData.isTienePrincipalEntrega()) {
+			return true;
 		}
-		return tienePpales;
+		return false;
 	}
 
 	public boolean isParentContacto() {
@@ -492,38 +486,19 @@ public class DomicilioUI extends NextelDialog {
 		this.parentContacto = parentContacto;
 	}
 
-	public void refrescaTablaConNuevoDomicilio(DomiciliosCuentaDto domicilioNuevo) {
+	public void enableFieldsParaContactos(boolean enable) {
+		labelEntrega.setVisible(enable);
+		labelUsuario.setVisible(enable);
+		labelFecha.setVisible(enable);
+		labelFacturacion.setVisible(enable);
+		labelValidado1.setVisible(enable);
+		labelValidado2.setVisible(enable);
+		domiciliosUIData.getEntrega().setVisible(enable);
+		domiciliosUIData.getFacturacion().setVisible(enable);
+		domiciliosUIData.getValidado().setVisible(enable);
 	}
 
-	public void setDomicilioPpalEntrega(boolean isDomicilioPpalEntrega) {
-		this.isDomicilioPpalEntrega = isDomicilioPpalEntrega;
-	}
-
-	public void setDomicilioPpalFacturacion(boolean isDomicilioPpalFacturacion) {
-		this.isDomicilioPpalFacturacion = isDomicilioPpalFacturacion;
-	}
-
-	public void ocultaFieldsParaContactos() {
-		labelEntrega.setVisible(false);
-		labelUsuario.setVisible(false);
-		labelFecha.setVisible(false);
-		labelFacturacion.setVisible(false);
-		labelValidado1.setVisible(false);
-		labelValidado2.setVisible(false);
-		getDomiciliosData().getEntrega().setVisible(false);
-		getDomiciliosData().getFacturacion().setVisible(false);
-		getDomiciliosData().getValidado().setVisible(false);
-	}
-
-	public void habilitaFieldsParaContactos() {
-		labelEntrega.setVisible(true);
-		labelUsuario.setVisible(true);
-		labelFecha.setVisible(true);
-		labelFacturacion.setVisible(true);
-		labelValidado1.setVisible(true);
-		labelValidado2.setVisible(true);
-		getDomiciliosData().getEntrega().setVisible(true);
-		getDomiciliosData().getFacturacion().setVisible(true);
-		getDomiciliosData().getValidado().setVisible(true);
+	public void cargarListBoxEntregaFacturacion(List<DomiciliosCuentaDto> domicilios) {
+		domiciliosUIData.cargarListBox(domicilios);
 	}
 }

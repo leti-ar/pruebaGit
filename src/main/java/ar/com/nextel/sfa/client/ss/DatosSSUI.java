@@ -6,7 +6,6 @@ import java.util.List;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.domicilio.DomicilioUI;
-import ar.com.nextel.sfa.client.domicilio.DomiciliosUIData;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
@@ -248,21 +247,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				|| ((sender == editarDomicioFacturacion) && (editarSSUIData.getFacturacion()
 						.getSelectedItemText() == null))) {
 		} else {
-
 			DomicilioUI.getInstance().setComandoAceptar(getCommandGuardarDomicilio());
-			boolean principalEntrega = false;
-			boolean principalFacturacion = false;
-			// for (DomiciliosCuentaDto domicilio : editarSSUIData.getCuenta().getPersona().getDomicilios()) {
-			// principalEntrega = principalEntrega ||
-			// EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdEntrega());
-			// principalFacturacion = principalFacturacion ||
-			// EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdFacturacion());
-			// }
-			// DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(principalEntrega,
-			// principalFacturacion);
-
 			listaDomicilios = editarSSUIData.getCuenta().getPersona().getDomicilios();
-			DomiciliosUIData.getInstance().cargarListBox(listaDomicilios);
+			DomicilioUI.getInstance().cargarListBoxEntregaFacturacion(listaDomicilios);
 
 			if (sender == crearDomicilio) {
 				domicilioAEditar = new DomiciliosCuentaDto();
@@ -271,14 +258,10 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			} else if (sender == editarDomicioFacturacion) {
 				domicilioAEditar = (DomiciliosCuentaDto) editarSSUIData.getFacturacion().getSelectedItem();
 			}
-			// DomiciliosUIData.getInstance().setTienePpalEntrega(principalEntrega);
-			// DomiciliosUIData.getInstance().setTienePpalFacturacion(principalFacturacion);
-			// Desde aca tengo que tener una lista con los domicilios de la persona, como en
-			// CuentaDomiciliosForm
 			domicilioAEditar = domicilioAEditar != null ? domicilioAEditar : new DomiciliosCuentaDto();
+			DomicilioUI.getInstance().setParentContacto(false);
 			DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
 		}
-
 	}
 
 	private Command getCommandGuardarDomicilio() {

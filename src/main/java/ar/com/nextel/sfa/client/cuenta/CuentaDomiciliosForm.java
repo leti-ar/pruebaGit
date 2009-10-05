@@ -1,12 +1,10 @@
 package ar.com.nextel.sfa.client.cuenta;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.domicilio.DomicilioUI;
-import ar.com.nextel.sfa.client.domicilio.DomiciliosUIData;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
@@ -17,16 +15,16 @@ import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.SourcesTableEvents;
-import com.google.gwt.user.client.ui.TableListener;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 /**
  * @author eSalvador
@@ -44,14 +42,13 @@ public class CuentaDomiciliosForm extends Composite {
 	private boolean huboCambios = false;
 	private Button crearDomicilio;
 	private List<DomiciliosCuentaDto> domicilios = new ArrayList<DomiciliosCuentaDto>();
-	
-	//private List listaDomicilios = new ArrayList<DomiciliosCuentaDto>();
+
+	// private List listaDomicilios = new ArrayList<DomiciliosCuentaDto>();
 
 	public static CuentaDomiciliosForm getInstance() {
 		return instance;
 	}
 
-			
 	private CuentaDomiciliosForm() {
 		mainPanel = new FlowPanel();
 		footerBar = new FormButtonsBar();
@@ -62,15 +59,9 @@ public class CuentaDomiciliosForm extends Composite {
 		mainPanel.addStyleName("gwt-BuscarCuentaResultTable");
 		//
 		crearDomicilio = new Button("Crear nuevo");
-		crearDomicilio.addClickListener(new ClickListener() {
-			public void onClick(Widget arg0) {
-				DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,
-						tienePrincipalFacturacion);
-				
-				
-				DomiciliosUIData domiciliosUIData = DomiciliosUIData.getInstance();
-				domiciliosUIData.inicializarListBox();
-				
+		crearDomicilio.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				DomicilioUI.getInstance().cargarListBoxEntregaFacturacion(domicilios);
 				DomicilioUI.getInstance().setComandoAceptar(new Command() {
 					public void execute() {
 						PersonaDto persona = null;
@@ -138,16 +129,17 @@ public class CuentaDomiciliosForm extends Composite {
 		setTienePrincipalEntrega(false);
 		setTienePrincipalFacturacion(false);
 
-		//List<DomiciliosCuentaDto> domicilios = new ArrayList<DomiciliosCuentaDto>();
+		// List<DomiciliosCuentaDto> domicilios = new ArrayList<DomiciliosCuentaDto>();
 		if (isSuscriptor(cuentaDto)) {
-			if (((SuscriptorDto) cuentaDto).getDivision()!=null)
-				domicilios = ((SuscriptorDto) cuentaDto).getDivision().getGranCuenta().getPersona().getDomicilios();
+			if (((SuscriptorDto) cuentaDto).getDivision() != null)
+				domicilios = ((SuscriptorDto) cuentaDto).getDivision().getGranCuenta().getPersona()
+						.getDomicilios();
 			else
 				domicilios = ((SuscriptorDto) cuentaDto).getGranCuenta().getPersona().getDomicilios();
 		} else {
 			domicilios = cuentaDto.getPersona().getDomicilios();
 		}
-		
+
 		limpiaTablaDomicilios();
 		for (int i = 0; i < domicilios.size(); i++) {
 			if (domicilios.get(i) != null) {
@@ -200,8 +192,14 @@ public class CuentaDomiciliosForm extends Composite {
 	}
 
 	public void agregaTableListeners() {
-		datosTabla.addTableListener(new TableListener() {
-			public void onCellClicked(SourcesTableEvents arg0, int row, int col) {
+		datosTabla.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent clickEvent) {
+				Cell cell = ((HTMLTable) clickEvent.getSource()).getCellForEvent(clickEvent);
+				if (cell == null) {
+					return;
+				}
+				int row = cell.getRowIndex();
+				int col = cell.getCellIndex();
 				if (row != 0) {
 					DomiciliosCuentaDto domicilio = null;
 					if (isSuscriptor(cuentaDto)) {
@@ -212,24 +210,20 @@ public class CuentaDomiciliosForm extends Composite {
 					}
 					// Acciones a tomar cuando haga click en los lapices de edicion:
 					if (col == 0) {
+
 						domicilioAEditar = domicilio;
 						DomicilioUI.getInstance().setDomicilioAEditar(domicilioAEditar);
-						DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,
-								tienePrincipalFacturacion);
+						DomicilioUI.getInstance().cargarListBoxEntregaFacturacion(
+								cuentaDto.getPersona().getDomicilios());
+						DomicilioUI.getInstance().setParentContacto(false);
 						DomicilioUI.getInstance().hide();
 						if (domicilio.getVantiveId() != null) {
-							DomicilioUI.getInstance().setParentContacto(false);
 							DomicilioUI.getInstance().openPopupAdviseDialog(
 									DomicilioUI.getInstance().getOpenDomicilioUICommand());
 						} else {
 							DomicilioUI.getInstance().setComandoAceptar(new Command() {
 								public void execute() {
-									PersonaDto persona = null;
-									if (isSuscriptor(cuentaDto)) {
-										persona = ((SuscriptorDto) cuentaDto).getGranCuenta().getPersona();
-									} else {
-										persona = cuentaDto.getPersona();
-									}
+									PersonaDto persona = cuentaDto.getPersona();
 									int index = persona.getDomicilios().indexOf(domicilioAEditar);
 									persona.getDomicilios().remove(index);
 									persona.getDomicilios().add(index,
@@ -239,7 +233,6 @@ public class CuentaDomiciliosForm extends Composite {
 									huboCambios = true;
 								}
 							});
-							DomicilioUI.getInstance().setParentContacto(false);
 							DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
 						}
 					}
@@ -257,8 +250,8 @@ public class CuentaDomiciliosForm extends Composite {
 								domicilioCopiado.getIdFacturacion())) {
 							domicilioCopiado.setIdFacturacion(EstadoTipoDomicilioDto.SI.getId());
 						}
-						DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,
-								tienePrincipalFacturacion);
+						DomicilioUI.getInstance().cargarListBoxEntregaFacturacion(
+								cuentaDto.getPersona().getDomicilios());
 						DomicilioUI.getInstance().setComandoAceptar(new Command() {
 							public void execute() {
 								PersonaDto persona = null;
@@ -376,7 +369,7 @@ public class CuentaDomiciliosForm extends Composite {
 	public void setDomicilioAEditar(DomiciliosCuentaDto domicilioAEditar) {
 		this.domicilioAEditar = domicilioAEditar;
 	}
-	
+
 	public Button getCrearDomicilio() {
 		return crearDomicilio;
 	}
@@ -384,5 +377,5 @@ public class CuentaDomiciliosForm extends Composite {
 	public List<DomiciliosCuentaDto> getDomicilios() {
 		return domicilios;
 	}
-	
+
 }

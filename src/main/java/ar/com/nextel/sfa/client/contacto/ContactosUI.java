@@ -33,11 +33,10 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TabPanel;
-import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 public class ContactosUI extends NextelDialog implements ClickListener {
 
@@ -50,41 +49,33 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	private DomicilioUI domicilioUI;
 	private DomiciliosCuentaDto domicilioAEditar;
 	private FlexTable domicilioTable;
-	private boolean tienePrincipalFacturacion = false;
-	private boolean tienePrincipalEntrega  = false;
 	private TabPanel mainTabPanel = new TabPanel();
-	
-	private int contactoABorrar = -1;
-	
+
 	private HTML iconoLupa = IconFactory.vistaPreliminar();
-	
+
 	private List<String> estilos = new ArrayList<String>();
 	private int estiloUsado = 0;
 	private Command aceptarCommand;
-	
-	private static ContactosUI cuentaCrearContactoPopUp = null;
 
-	ClickListener listener = new ClickListener(){
-		public void onClick(Widget sender){
-		if(sender == aceptar){
-			List errors = contactosData.validarCampoObligatorio();
-			if(errors.isEmpty()){
-				aceptarCommand.execute();
+	ClickListener listener = new ClickListener() {
+		public void onClick(Widget sender) {
+			if (sender == aceptar) {
+				List errors = contactosData.validarCampoObligatorio();
+				if (errors.isEmpty()) {
+					aceptarCommand.execute();
+					hide();
+				} else {
+					ErrorDialog.getInstance().show(errors);
+				}
+			} else if (sender == cancelar) {
 				hide();
 			} else {
-				ErrorDialog.getInstance().show(errors);
+				DomicilioUI.getInstance().setParentContacto(true);
+				DomicilioUI.getInstance().showAndCenter();
 			}
+			CuentaContactoForm.getInstance().setFormDirty(!contactosData.isSaved());
 		}
-		else if(sender == cancelar){
-			hide();
-		}
-		else{
-			DomicilioUI.getInstance().setParentContacto(true);
-			DomicilioUI.getInstance().showAndCenter();
-		}
-		CuentaContactoForm.getInstance().setFormDirty(!contactosData.isSaved());
-	}};
-
+	};
 
 	public ContactosUI() {
 		super("Crear Contacto", false, true);
@@ -94,9 +85,8 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	private void init() {
 		setWidth("740px");
 		contactosData = new ContactoUIData();
-		//TabPanel mainTabPanel = new TabPanel();
-		mainTabPanel
-				.addStyleDependentName("gwt-TabPanelBottom crearCuentaTabPanel");
+		// TabPanel mainTabPanel = new TabPanel();
+		mainTabPanel.addStyleDependentName("gwt-TabPanelBottom crearCuentaTabPanel");
 		mainTabPanel.setWidth("98%");
 		mainTabPanel.add(createDatosCuentaPanel(), "Datos");
 		mainTabPanel.add(createDomicilioPanel(), "Domicilios");
@@ -109,7 +99,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 
 		cancelar = new SimpleLink("Cerrar");
 		cancelar.addClickListener(listener);
-		
+
 		addFormButtons(aceptar);
 		addFormButtons(cancelar);
 		setFormButtonsVisible(true);
@@ -117,9 +107,9 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	}
 
 	public void cargarPopupEditarContacto(ContactoCuentaDto contacto) {
-		contactosData.clean(); 	
-		//Limpia la tabla de domicilios
-		while(domicilioTable.getRowCount() > 1){
+		contactosData.clean();
+		// Limpia la tabla de domicilios
+		while (domicilioTable.getRowCount() > 1) {
 			domicilioTable.removeRow(1);
 		}
 		contactosData.setContactoDto(contacto);
@@ -129,14 +119,13 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		mainTabPanel.selectTab(0);
 		showAndCenter();
 	}
-			
 
 	private Widget createDatosCuentaPanel() {
 		datosCuentaTable = new FlexTable();
 		datosCuentaTable.setWidth("100%");
 		datosCuentaTable.getFlexCellFormatter().setColSpan(1, 1, 4);
 		datosCuentaTable.setCellSpacing(5);
-		
+
 		FlowPanel datosCuentaPanel = new FlowPanel();
 		datosCuentaPanel.addStyleName("gwt-TabPanelBottom content");
 
@@ -156,51 +145,54 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		verazTable.setWidget(0, 0, iconoLupa);
 		verazTable.setText(0, 1, Sfa.constant().veraz());
 		verazTable.setWidget(0, 2, contactosData.getVeraz());
-	
+
 		datosCuentaPanel.add(datosCuentaTable);
 		datosCuentaPanel.add(verazTable);
-		
+
 		iconoLupa.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				if ("".equals(contactosData.getNumeroDocumento().getText())) {
 					MessageDialog.getInstance();
-					MessageDialog.getInstance().showAceptar("Debe ingresar un número de documento", MessageDialog.getCloseCommand());
+					MessageDialog.getInstance().showAceptar("Debe ingresar un número de documento",
+							MessageDialog.getCloseCommand());
 				} else {
-					PersonaDto personaDto = getVerazSearch(contactosData.getNumeroDocumento(), contactosData.getTipoDocumento(), contactosData.getSexo());
+					PersonaDto personaDto = getVerazSearch(contactosData.getNumeroDocumento(), contactosData
+							.getTipoDocumento(), contactosData.getSexo());
 					inicializarVeraz(contactosData.getVeraz());
-					CuentaRpcService.Util.getInstance().consultarVeraz(personaDto, 
+					CuentaRpcService.Util.getInstance().consultarVeraz(personaDto,
 							new DefaultWaitCallback<VerazResponseDto>() {
-						public void success(VerazResponseDto result) {
-							if (result != null) {
-								setearValoresRtaVeraz(result, contactosData.getApellido(), contactosData.getNombre(), 
-										null, contactosData.getSexo(), contactosData.getVeraz());
-							}
-						}
-					});
+								public void success(VerazResponseDto result) {
+									if (result != null) {
+										setearValoresRtaVeraz(result, contactosData.getApellido(),
+												contactosData.getNombre(), null, contactosData.getSexo(),
+												contactosData.getVeraz());
+									}
+								}
+							});
 				}
 			}
 		});
-		
+
 		return datosCuentaPanel;
 	}
 
-	
 	public void inicializarVeraz(Label verazLabel) {
 		estilos.add("verazAceptar");
-        estilos.add("verazRevisar");
-        estilos.add("verazRechazar");
-        verazLabel.setText("");
-        verazLabel.removeStyleName(estilos.get(estiloUsado));
+		estilos.add("verazRevisar");
+		estilos.add("verazRechazar");
+		verazLabel.setText("");
+		verazLabel.removeStyleName(estilos.get(estiloUsado));
 	}
-	
-	public void setearValoresRtaVeraz(VerazResponseDto result, TextBox apellido, TextBox nombre, TextBox razonSocial, ListBox sexo, Label veraz) {
+
+	public void setearValoresRtaVeraz(VerazResponseDto result, TextBox apellido, TextBox nombre,
+			TextBox razonSocial, ListBox sexo, Label veraz) {
 		apellido.setText(result.getApellido());
 		apellido.setEnabled(true);
 		apellido.setReadOnly(false);
 		nombre.setText(result.getNombre());
 		nombre.setEnabled(true);
 		nombre.setReadOnly(false);
-		if (razonSocial!=null) {
+		if (razonSocial != null) {
 			razonSocial.setText(result.getRazonSocial());
 		}
 		sexo.setEnabled(true);
@@ -211,7 +203,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		} else if ("REVISAR".equals(result.getEstado())) {
 			veraz.addStyleName(estilos.get(1));
 			estiloUsado = 1;
-		}else {
+		} else {
 			veraz.addStyleName(estilos.get(2));
 			estiloUsado = 2;
 		}
@@ -220,54 +212,54 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		MessageDialog.getInstance().setDialogTitle("Resultado Veraz");
 		MessageDialog.getInstance().showAceptar(result.getMensaje(), MessageDialog.getCloseCommand());
 	}
-	
+
 	private PersonaDto getVerazSearch(TextBox numDoc, ListBox tipoDoc, ListBox sexo) {
 		PersonaDto personaDto = new PersonaDto();
-		DocumentoDto documentoDto = new DocumentoDto(numDoc.getText(), (TipoDocumentoDto) tipoDoc.getSelectedItem());
+		DocumentoDto documentoDto = new DocumentoDto(numDoc.getText(), (TipoDocumentoDto) tipoDoc
+				.getSelectedItem());
 		personaDto.setDocumento(documentoDto);
 		personaDto.setIdTipoDocumento(documentoDto.getTipoDocumento().getId());
 		personaDto.setSexo((SexoDto) sexo.getSelectedItem());
-		return personaDto;	
+		return personaDto;
 	}
 
 	/**
-	 * @author eSalvador
-	 * Refresca la grilla de domicilios
+	 * @author eSalvador Refresca la grilla de domicilios
 	 **/
-	public void refrescaTablaConNuevoDomicilio(){
+	public void refrescaTablaConNuevoDomicilio() {
 		domicilioTable.clear();
 		setearDomicilio();
 	}
-	
+
 	private Widget createDomicilioPanel() {
 		FlowPanel domicilioPanel = new FlowPanel();
 		domicilioTable = new FlexTable();
-		domicilioTable.addTableListener(new Listener());
+		domicilioTable.addClickHandler(new DomicilioTableListener());
 		agregar = new Button("Crear Nuevo");
-		agregar.addClickListener(new ClickListener() {
-			public void onClick(Widget arg0) {
-				DomicilioUI.getInstance().setComandoAceptar(new Command(){
+		agregar.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				DomicilioUI.getInstance().setComandoAceptar(new Command() {
 					public void execute() {
-						   DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
-						   contactosData.getDomicilios().add(domicilio);
-						   refrescaTablaConNuevoDomicilio();
+						DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
+						contactosData.getDomicilios().add(domicilio);
+						refrescaTablaConNuevoDomicilio();
 					}
 				});
+				DomicilioUI.getInstance().cargarListBoxEntregaFacturacion(null);
 				DomicilioUI.getInstance().setParentContacto(true);
-				DomicilioUI.getInstance().showAndCenter();
 				DomicilioUI.getInstance().cargarPopupNuevoDomicilio(new DomiciliosCuentaDto());
 			}
 		});
-		
+
 		agregar.addStyleName("crearDomicilioButton");
-		SimplePanel crearNuevo = new SimplePanel(); 
-				
+		SimplePanel crearNuevo = new SimplePanel();
+
 		crearNuevo.setHeight("17px");
 		crearNuevo.setWidth("750");
 		domicilioPanel.addStyleDependentName("gwt-TabPanelBottom content");
 		crearNuevo.add(agregar);
 		domicilioPanel.add(crearNuevo);
-	
+
 		String[] widths = { "24px", "100%" };
 		for (int col = 0; col < widths.length; col++) {
 			domicilioTable.getColumnFormatter().setWidth(col, widths[col]);
@@ -283,61 +275,68 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		domicilioTable.setText(0, 1, Sfa.constant().domicilios());
 		domicilioPanel.add(domicilioTable);
 
-		
 		return domicilioPanel;
 	}
 
-
 	public void setearDomicilio() {
-		int row = 1; 
+		int row = 1;
 		if (contactosData.getDomicilios() != null) {
-			for (Iterator<DomiciliosCuentaDto> iter = contactosData.getDomicilios().iterator(); iter.hasNext();) {
+			for (Iterator<DomiciliosCuentaDto> iter = contactosData.getDomicilios().iterator(); iter
+					.hasNext();) {
 				DomiciliosCuentaDto domicilioCuentaDto = (DomiciliosCuentaDto) iter.next();
 				domicilioTable.setWidget(row, 0, IconFactory.lapiz());
-				domicilioTable.setHTML(row, 1, domicilioCuentaDto.getDomicilios());			
+				domicilioTable.setHTML(row, 1, domicilioCuentaDto.getDomicilios());
 				row++;
 			}
 		}
 	}
 
-	private class Listener implements TableListener {
-		public void onCellClicked(SourcesTableEvents arg0, int fila, int columna) {
+	private class DomicilioTableListener implements ClickHandler {
+		public void onClick(ClickEvent clickEvent) {
+			Cell cell = ((com.google.gwt.user.client.ui.HTMLTable) clickEvent.getSource())
+					.getCellForEvent(clickEvent);
+			if (cell == null) {
+				return;
+			}
+			int fila = cell.getRowIndex();
+			int columna = cell.getCellIndex();
+
 			if (fila != 0) {
 				DomiciliosCuentaDto domicilio = contactosData.getPersonaDto().getDomicilios().get(fila - 1);
-				//Acciones a tomar cuando haga click en los lapices de edicion:
+				// Acciones a tomar cuando haga click en los lapices de edicion:
 				if (columna == 0) {
 					domicilioAEditar = domicilio;
 					DomicilioUI.getInstance().setDomicilioAEditar(domicilioAEditar);
-					DomicilioUI.getInstance().setYaTieneDomiciliosPrincipales(tienePrincipalEntrega,tienePrincipalFacturacion);
-					DomicilioUI.getInstance().hide();
-					if (domicilio.getVantiveId() != null){
+					DomicilioUI.getInstance().cargarListBoxEntregaFacturacion(null);
+					if (domicilio.getVantiveId() != null) {
 						DomicilioUI.getInstance().setParentContacto(true);
-						DomicilioUI.getInstance().openPopupAdviseDialog(DomicilioUI.getInstance().getOpenDomicilioUICommand());
-					}else{
-						DomicilioUI.getInstance().setComandoAceptar(new Command(){
+						DomicilioUI.getInstance().openPopupAdviseDialog(
+								DomicilioUI.getInstance().getOpenDomicilioUICommand());
+					} else {
+						DomicilioUI.getInstance().setComandoAceptar(new Command() {
 							public void execute() {
 								PersonaDto persona = contactosData.getPersonaDto();
 								int index = persona.getDomicilios().indexOf(domicilioAEditar);
 								persona.getDomicilios().remove(index);
-								persona.getDomicilios().add(index, DomicilioUI.getInstance().getDomicilioAEditar());
+								persona.getDomicilios().add(index,
+										DomicilioUI.getInstance().getDomicilioAEditar());
 								domicilioAEditar = null;
 								refrescaTablaConNuevoDomicilio();
-								}
-							});
-						DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
+							}
+						});
 						DomicilioUI.getInstance().setParentContacto(true);
-						DomicilioUI.getInstance().showAndCenter();
+						DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
 					}
 				}
 			}
 		}
 	}
-	
-	public void refrescaTablaConDomiciliosBorrados(int row){
+
+	public void refrescaTablaConDomiciliosBorrados(int row) {
 		domicilioTable.removeRow(row);
 		setearDomicilio();
 	}
-	
+
 	private Widget createTelefonoPanel() {
 		telefonoTable = new FlexTable();
 		telefonoTable.getFlexCellFormatter().setColSpan(1, 1, 4);
@@ -358,8 +357,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		telefonoTable.setWidget(2, 1, contactosData.getTelefonoCelular());
 		telefonoTable.setText(2, 2, Sfa.constant().fax());
 		telefonoTable.setWidget(2, 3, contactosData.getFax());
-		telefonoTable.setWidget(3, 0, new Label(Sfa.constant()
-				.emailPanelTitle()));
+		telefonoTable.setWidget(3, 0, new Label(Sfa.constant().emailPanelTitle()));
 		telefonoTable.setText(4, 0, Sfa.constant().personal());
 		telefonoTable.setWidget(4, 1, contactosData.getEmailPersonal());
 		telefonoTable.setText(4, 2, Sfa.constant().laboral());
@@ -367,21 +365,20 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 
 		return telefonoPanel;
 	}
-	
+
 	public DomicilioUI getDomicilioUI() {
 		return this.domicilioUI;
 	}
-	
 
 	public void onClick(Widget arg0) {
 	}
-	
+
 	public void setAceptarCommand(Command aceptarCommand) {
 		this.aceptarCommand = aceptarCommand;
 	}
-	
-	public ContactoCuentaDto getContacto(){
+
+	public ContactoCuentaDto getContacto() {
 		return contactosData.getContactoDto();
 	}
-	
+
 }
