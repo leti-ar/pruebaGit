@@ -37,8 +37,7 @@ public class RazonSocialClienteBar extends Composite {
 		cuentaLink = IconFactory.silvioSoldan();
 		cuentaLink.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent arg0) {
-				//CuentaClientService.cargarDatosCuenta(Long.parseLong(params.get("cuenta_id")), null);
-				CuentaClientService.cargarDatosCuenta(Long.parseLong(HistoryUtils.getParam("cuenta_id")), null);
+				CuentaClientService.cargarDatosCuenta(Long.parseLong(HistoryUtils.getParam("idCuenta")), null);
 			}
 		});
 		right.setWidget(0, 0, cuentaLink);
