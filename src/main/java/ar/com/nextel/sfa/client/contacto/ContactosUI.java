@@ -61,11 +61,12 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		public void onClick(Widget sender) {
 			if (sender == aceptar) {
 				List errors = contactosData.validarCampoObligatorio();
+				errors.addAll(contactosData.validarNumeroDocumento());
 				if (errors.isEmpty()) {
 					aceptarCommand.execute();
 					hide();
 				} else {
-					ErrorDialog.getInstance().show(errors);
+					ErrorDialog.getInstance().show(errors,false);
 				}
 			} else if (sender == cancelar) {
 				hide();

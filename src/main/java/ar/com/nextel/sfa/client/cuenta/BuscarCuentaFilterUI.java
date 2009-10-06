@@ -6,6 +6,9 @@ package ar.com.nextel.sfa.client.cuenta;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
+import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
+import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.EventWrapper;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
@@ -129,4 +132,27 @@ public class BuscarCuentaFilterUI extends Composite {
 	public void cleanAndEnableFields() {
 		buscadorCuentasFilterEditor.cleanAndEnableFields();
 	}
+	
+	private boolean validarNumero() {
+		GwtValidator validator = new GwtValidator();
+			if (buscadorCuentasFilterEditor.getGrupoDocumentoCombo().getSelectedItemId().equals(TipoDocumentoEnum.CUITCUIL.getTipo()+"")) {
+				if (!buscadorCuentasFilterEditor.getNumeroDocumentoTextBox().getText().matches(RegularExpressionConstants.cuilCuit)) {
+					validator.addError(Sfa.constant().ERR_FORMATO_CUIL());
+				} else {
+					validator.addTarget(buscadorCuentasFilterEditor.getNumeroDocumentoTextBox()).cuil(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));	
+				}
+			} else {
+				if (buscadorCuentasFilterEditor.getNumeroDocumentoTextBox().getText().length() > 8 ||buscadorCuentasFilterEditor.getNumeroDocumentoTextBox().getText().length()<7) {
+					validator.addError(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
+				} else {
+					validator.addTarget(buscadorCuentasFilterEditor.getNumeroDocumentoTextBox()).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
+				}
+			}
+		validator.fillResult();
+		if (!validator.getErrors().isEmpty()) {
+			ErrorDialog.getInstance().show(validator.getErrors(),false);
+		}	
+		return validator.getErrors().isEmpty();
+	}
+
 }

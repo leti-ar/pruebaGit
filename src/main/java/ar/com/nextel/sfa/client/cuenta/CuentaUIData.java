@@ -192,12 +192,18 @@ public class CuentaUIData extends UIData {
 				CuentaDatosForm.getInstance().validarTarjeta();
 			}
 		});
+
 		observaciones.addKeyUpHandler(new KeyUpHandler() {
 			public void onKeyUp(KeyUpEvent arg0) {
                 if (observaciones.getText().length()>MAX_LENGHT_OBSERVACIONES) {
 					ErrorDialog.getInstance().setDialogTitle("Error");
 					ErrorDialog.getInstance().show(Sfa.constant().ERR_MAX_LARGO_CAMPO(), false);
                 	observaciones.setText(observaciones.getText().substring(0,MAX_LENGHT_OBSERVACIONES));
+                }
+                if (palabraMuuuyLarga(observaciones.getText())) {
+					ErrorDialog.getInstance().setDialogTitle("Error");
+					ErrorDialog.getInstance().show("por favor utilice un idioma humano conocido", false);
+					observaciones.setText(observaciones.getText().substring(0,50));
                 }
 			}
 		});
@@ -251,6 +257,19 @@ public class CuentaUIData extends UIData {
 		fields.add(oppTerminalesEstimadas);
 	}
 
+	private boolean palabraMuuuyLarga(String palabra) {
+		if (!palabra.contains(" ") && palabra.length()>50) {
+			return true;
+		} else {
+			for (String pal: palabra.split("\\s")) {
+				if (pal.length()>50) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	private void setCombos() {
 		CuentaRpcService.Util.getInstance().getAgregarCuentaInitializer(
 			new DefaultWaitCallback<AgregarCuentaInitializer>() {

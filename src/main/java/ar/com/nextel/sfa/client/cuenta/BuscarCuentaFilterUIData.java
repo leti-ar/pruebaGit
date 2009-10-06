@@ -13,6 +13,7 @@ import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
 import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
+import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.ExcluyenteWidget;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.nextel.sfa.client.widget.ValidationListBox;
@@ -88,7 +89,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 				numeroDocumentoTextBox.setText("");
 				if (grupoDocumentoCombo.getSelectedItemId().equals(TipoDocumentoEnum.CUITCUIL.getTipo() + "")) {
 					numeroDocumentoTextBox.setPattern(RegularExpressionConstants.cuilCuit);
-				} else if (grupoDocumentoCombo.getSelectedItemId().equals(TipoDocumentoEnum.DNI.getTipo() + "")) {
+				} else {  
 					numeroDocumentoTextBox.setPattern(RegularExpressionConstants.getNumerosLimitado(10));
 				}
 			}
@@ -130,7 +131,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 		// Numero de Documento
 		fields.add(numeroDocumentoTextBox);
 		numeroDocumentoTextBox.setMaxLength(13);
-		numeroDocumentoTextBox.setExcluyente(true);
+		//numeroDocumentoTextBox.setExcluyente(true);
 		// Combos
 		fields.add(predefinidasCombo = new ValidationListBox(""));
 		fields.add(resultadosCombo = new ListBox());
@@ -359,7 +360,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 				}
 			}
 		}
-
+		
 		if (vacio) {
 			// Valida que todos los campos ListBoxs no sean vacios (excepto tipoDocumento y cantResultados que
 			// no tienen valor nulo para cargar):
@@ -384,6 +385,9 @@ public class BuscarCuentaFilterUIData extends UIData {
 				}
 			}
 		}
+		
+		list.addAll(validarNumeroDocumento());
+		
 		return list;
 	}
 
@@ -529,4 +533,21 @@ public class BuscarCuentaFilterUIData extends UIData {
 		return "".equals(s) ? null : s;
 	}
 
+	private List<String> validarNumeroDocumento() {
+		GwtValidator validator = new GwtValidator();
+			if (grupoDocumentoCombo.getSelectedItemId().equals(TipoDocumentoEnum.CUITCUIL.getTipo()+"")) {
+				if (!numeroDocumentoTextBox.getText().matches(RegularExpressionConstants.cuilCuit)) {
+					validator.addError(Sfa.constant().ERR_FORMATO_CUIL());
+				} else {
+					validator.addTarget(numeroDocumentoTextBox).cuil(Sfa.constant().ERR_DATO_CUIL());	
+				}
+			} else {
+				if (!numeroDocumentoTextBox.getText().matches(RegularExpressionConstants.getNumerosLimitado(10))) {
+					validator.addError(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
+				}
+			}
+		validator.fillResult();
+		return validator.getErrors();
+	}
+	
 }

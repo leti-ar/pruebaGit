@@ -69,6 +69,25 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 		return validator.getErrors();
 	}
 	
+	public List<String> validarNumeroDocumento() {
+		GwtValidator validator = new GwtValidator();
+		if (numeroDocumento.getText().equals("")) {
+			validator.addError(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
+		} else {
+			if (tipoDocumento.getSelectedItemId().equals(Long.toString(TipoDocumentoEnum.CUIL.getTipo())) ||
+					tipoDocumento.getSelectedItemId().equals(Long.toString(TipoDocumentoEnum.CUIT.getTipo())) ||
+					  tipoDocumento.getSelectedItemId().equals(Long.toString(TipoDocumentoEnum.CUIT_EXT.getTipo()))) {
+				if (!numeroDocumento.getText().matches(RegularExpressionConstants.cuilCuit)) {
+					validator.addError(Sfa.constant().ERR_FORMATO_CUIL());
+				} else {
+					validator.addTarget(numeroDocumento).cuil(Sfa.constant().ERR_DATO_CUIL());	
+				}
+			}
+		}
+		validator.fillResult();
+		return validator.getErrors();
+	}
+	
 	public List<String> validarVeraz(){
 		GwtValidator validator = new GwtValidator();
 		if (numeroDocumento.getText().equals("")) {

@@ -11,8 +11,6 @@ import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.enums.BuscoCuentaPorDniEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.infocom.InfocomUI;
-import ar.com.nextel.sfa.client.infocom.VerInfocomUI;
-import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
@@ -337,5 +335,4 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickListener, Cl
 					ModalMessageDialog.getCloseCommand());
 		}
 	}
-
 }

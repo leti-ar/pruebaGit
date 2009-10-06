@@ -15,8 +15,10 @@ import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
-import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -43,8 +45,8 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 		super(title, false, true);
         init();	
 	
-		aceptar.addClickListener(new ClickListener() {
-			public void onClick(Widget sender) {
+		aceptar.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent arg0) {
 				reservaCreacionCuenta();
 			}
 		});		
@@ -56,8 +58,8 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 				cleanForm();
 			}
 		});
-		tipoDocumento.addChangeListener(new ChangeListener() {
-			public void onChange(Widget sender) {
+		tipoDocumento.addChangeHandler(new ChangeHandler() {
+			public void onChange(ChangeEvent event) {
 				numeroDocTextBox.setText("");
 				if (tipoDocumento.getSelectedItemId().equals(TipoDocumentoEnum.CUIL.getTipo()+"") ||
 					tipoDocumento.getSelectedItemId().equals(TipoDocumentoEnum.CUIT.getTipo()+"") ||
@@ -123,7 +125,7 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 		aceptar.ensureDebugId(DebugConstants.AGREGAR_CUENTAS_POPUP_BUTTON_ACEPTAR_ID);
 	}
 	
-	private boolean validarNumero() {
+	private boolean validarNumeroDocumento() {
 		GwtValidator validator = new GwtValidator();
 		if (numeroDocTextBox.getText().equals("")) {
 			validator.addError(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
@@ -134,13 +136,7 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 				if (!numeroDocTextBox.getText().matches(RegularExpressionConstants.cuilCuit)) {
 					validator.addError(Sfa.constant().ERR_FORMATO_CUIL());
 				} else {
-					validator.addTarget(numeroDocTextBox).cuil(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));	
-				}
-			} else {
-				if (numeroDocTextBox.getText().length() > 8 ||numeroDocTextBox.getText().length()<7) {
-					validator.addError(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
-				} else {
-					validator.addTarget(numeroDocTextBox).numericPositive(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
+					validator.addTarget(numeroDocTextBox).cuil(Sfa.constant().ERR_DATO_CUIL());	
 				}
 			}
 		}
@@ -152,7 +148,7 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 	}
 	
 	private void reservaCreacionCuenta() {
-		if (validarNumero()) {
+		if (validarNumeroDocumento()) {
 			CuentaClientService.reservaCreacionCuenta(new Long(tipoDocumento.getSelectedItemId()), numeroDocTextBox.getText(), fromMenu?null:idOpp);
 			hide();
 			cleanForm();	
