@@ -67,7 +67,7 @@ public class VerazUIData extends UIData {
 	private void setCombos(VerazInitializer datos) {
 		tipoDocListBox.addAllItems(datos.getTiposDocumento());
 		sexoListBox.addAllItems(datos.getSexos());
-		sexoListBox.setSelectedIndex(2);
+		sexoListBox.setSelectedIndex(1);
 	}
 
 
