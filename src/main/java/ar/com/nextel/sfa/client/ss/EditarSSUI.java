@@ -68,7 +68,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private SimpleLink generarSolicitud;
 	private DefaultWaitCallback<GeneracionCierreResultDto> generacionCierreCallback;
 	private CerrarSSUI generarSSUI;
-	private boolean cerrandoSolicitud;
+	private boolean guardandoSolicitud = false;
+	private boolean cerrandoSolicitud = false;
 
 	public EditarSSUI() {
 		super();
@@ -259,14 +260,24 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	}
 
 	private void guardar() {
+		if (guardandoSolicitud) {
+			return;
+		}
+		guardandoSolicitud = true;
 		SolicitudRpcService.Util.getInstance().saveSolicituServicio(editarSSUIData.getSolicitudServicio(),
 				new DefaultWaitCallback<SolicitudServicioDto>() {
 					public void success(SolicitudServicioDto result) {
+						guardandoSolicitud = false;
 						editarSSUIData.setSolicitud(result);
 						datos.refresh();
 						// MessageDialog.getInstance().showAceptar("Guardado Exitoso",
 						// Sfa.constant().MSG_SOLICITUD_GUARDADA_OK(), MessageDialog.getCloseCommand());
 						editarSSUIData.setSaved(true);
+					}
+
+					public void failure(Throwable caught) {
+						guardandoSolicitud = false;
+						super.failure(caught);
 					}
 				});
 	}
@@ -418,7 +429,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		builder.append(EditarSSUI.ID_GRUPO_SS + "=" + idGrupo);
 		return builder.toString();
 	}
-	
+
 	public static String getEditarSSUrl(Long idCuentaPotencial, Long idGrupo, String codigoVanvite) {
 		StringBuilder builder = new StringBuilder(UILoader.AGREGAR_SOLICITUD + "?");
 		builder.append(EditarSSUI.ID_CUENTA_POTENCIAL + "=" + idCuentaPotencial + "&");
