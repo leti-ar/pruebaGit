@@ -4,6 +4,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.AvailableNumberDto;
+import ar.com.nextel.sfa.client.util.ModalUtils;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
@@ -12,6 +13,7 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -24,6 +26,7 @@ public class ReservarNumeroDialog extends NextelDialog implements ClickListener 
 	private SimplePanel numerosDiponiblesWrapper;
 	private Command commandAceptar;
 	private HTML mensaje;
+	private PopupPanel modalPopup;
 
 	public ReservarNumeroDialog() {
 		super("Números sugeridos", false, true);
@@ -81,5 +84,15 @@ public class ReservarNumeroDialog extends NextelDialog implements ClickListener 
 
 	public long getSelectedNumber() {
 		return numerosDiponibles.get(numerosDiponiblesTable.getRowSelected()).getAvailableNumber();
+	}
+
+	public void show() {
+		modalPopup = ModalUtils.showModal(modalPopup);
+		super.show();
+	}
+
+	public void hide() {
+		modalPopup = ModalUtils.hideModal(modalPopup);
+		super.hide();
 	}
 }

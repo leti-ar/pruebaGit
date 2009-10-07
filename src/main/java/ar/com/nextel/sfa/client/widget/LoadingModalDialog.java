@@ -1,13 +1,16 @@
 package ar.com.nextel.sfa.client.widget;
 
+import ar.com.nextel.sfa.client.util.ModalUtils;
+
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 public class LoadingModalDialog extends NextelDialog {
 
 	private static LoadingModalDialog loadingModalDialog;
-
+	private PopupPanel modalPopup;
 	private HTML loadingMessage;
 
 	public static LoadingModalDialog getInstance() {
@@ -41,5 +44,15 @@ public class LoadingModalDialog extends NextelDialog {
 		setDialogTitle(title);
 		loadingMessage.setHTML(message);
 		super.showAndCenter();
+	}
+	
+	public void show() {
+		modalPopup = ModalUtils.showModal(modalPopup);
+		super.show();
+	}
+	
+	public void hide() {
+		modalPopup = ModalUtils.hideModal(modalPopup);
+		super.hide();
 	}
 }
