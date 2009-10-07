@@ -52,6 +52,7 @@ public class SolicitudServicioDto implements IsSerializable {
 	private Date fechaCreacion;
 	private double precioListaTotal = 0;
 	private double precioVentaTotal = 0;
+	private double precioItemTotal = 0;
 
 	private SolicitudServicioGeneracionDto solicitudServicioGeneracion;
 
@@ -295,10 +296,12 @@ public class SolicitudServicioDto implements IsSerializable {
 	public void refreshPreciosTotales() {
 		precioListaTotal = 0;
 		precioVentaTotal = 0;
+		precioItemTotal = 0;
 		for (LineaSolicitudServicioDto linea : getLineas()) {
 			linea.refreshPrecioServiciosAdicionales();
 			precioListaTotal = precioListaTotal + linea.getPrecioListaTotal();
 			precioVentaTotal = precioVentaTotal + linea.getPrecioVentaTotal();
+			precioItemTotal = precioItemTotal + linea.getPrecioVenta() + linea.getPrecioAlquilerVenta();
 		}
 	}
 
@@ -310,6 +313,14 @@ public class SolicitudServicioDto implements IsSerializable {
 	/** Retorna precioVentaTotal. Se debe llamar antes a refreshPreciosTotales() */
 	public double getPrecioVentaTotal() {
 		return precioVentaTotal;
+	}
+
+	/**
+	 * Retorna la suma de los precios de todos los items y AUVs. Se debe llamar antes a
+	 * refreshPreciosTotales()
+	 */
+	public double getPrecioItemTotal() {
+		return precioItemTotal;
 	}
 
 }

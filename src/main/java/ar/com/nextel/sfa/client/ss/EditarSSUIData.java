@@ -69,6 +69,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private List<List<ServicioAdicionalLineaSolicitudServicioDto>> serviciosAdicionales;
 	private boolean saved = true;
 	private long lastFakeId = -1;
+	private NumberFormat currencyFormat = NumberFormat.getCurrencyFormat();
 
 	private static final String V1 = "\\{1\\}";
 	private static final String FORMA_CONTRATACION_ALQUILER = "Alquiler";
@@ -349,8 +350,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			validarCargoActivacion(validator, linea);
 		}
 		solicitudServicio.refreshPreciosTotales();
-		validator.addTarget(pataconex).smallerOrEqual(Sfa.constant().ERR_PATACONEX(),
-				solicitudServicio.getPrecioVentaTotal());
+		validator.addTarget(pataconex).smallerOrEqual(
+				Sfa.constant().ERR_PATACONEX() + " ( "
+						+ currencyFormat.format(solicitudServicio.getPrecioItemTotal()) + " )",
+				solicitudServicio.getPrecioItemTotal());
 		if (solicitudServicio.getMontoDisponible() != null)
 			validator.addTarget(credFidelizacion).smallerOrEqual(Sfa.constant().ERR_FIDELIZACION(),
 					solicitudServicio.getMontoDisponible());
@@ -388,7 +391,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 					solicitudServicio.getMontoDisponible());
 		solicitudServicio.refreshPreciosTotales();
 		validator.addTarget(pataconex).smallerOrEqual(Sfa.constant().ERR_PATACONEX(),
-				solicitudServicio.getPrecioVentaTotal());
+				solicitudServicio.getPrecioItemTotal());
+		validator.addTarget(pataconex).smallerOrEqual(
+				Sfa.constant().ERR_PATACONEX() + " ( "
+						+ currencyFormat.format(solicitudServicio.getPrecioItemTotal()) + " )",
+				solicitudServicio.getPrecioItemTotal());
 
 		if (solicitudServicio.getLineas().isEmpty()) {
 			validator.addError(Sfa.constant().ERR_REQUIRED_LINEA());
