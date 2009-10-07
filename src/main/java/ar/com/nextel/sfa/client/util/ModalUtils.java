@@ -8,6 +8,10 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * Herramientas para solucionar problemas con paneles modal. Por ejemplo para el bug de Explorer con los
+ * listBox
+ */
 public class ModalUtils {
 
 	public static PopupPanel showModal(PopupPanel popupPanel) {
