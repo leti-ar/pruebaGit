@@ -666,6 +666,12 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-b>
 	</mapping>
 	<mapping>
+		<class-a>ar.com.nextel.model.oportunidades.beans.Reserva
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.ReservaDto
+		</class-b>
+	</mapping>
+	<mapping>
 		<class-a>ar.com.nextel.model.oportunidades.beans.EstadoOportunidadJustificado
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.EstadoOportunidadJustificadoDto
