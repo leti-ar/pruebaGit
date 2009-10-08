@@ -6,6 +6,7 @@ import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
+import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.enums.TipoContribuyenteEnum;
@@ -84,13 +85,13 @@ public class EditarCuentaUI extends ApplicationUI {
 			
 		//viene de busqueda OPP			
 		} else if (HistoryUtils.getParam("opp")!=null) {
-			if(CuentaClientService.oportunidadDto!=null) {
+			if(CuentaClientService.cuentaPotencialDto!=null) {
 				doBusquedaOPP();
 			} else {
 				CuentaClientService.getOportunidadNegocio(HistoryUtils.getParam("idOpp")!=null?Long.parseLong(HistoryUtils.getParam("idOpp")):null,false);
 				DeferredCommand.addCommand(new IncrementalCommand() {
 					public boolean execute() {
-						if (CuentaClientService.oportunidadDto == null) 
+						if (CuentaClientService.cuentaPotencialDto == null) 
 							return true;
 						doBusquedaOPP();
 						return false;
@@ -230,12 +231,14 @@ public class EditarCuentaUI extends ApplicationUI {
 	}
 	private void doBusquedaOPP() {
 		esEdicionCuenta = false;
-		cuentaTab.setCuenta2editDto(CuentaClientService.oportunidadDto.getCuentaOrigen());
-		cuentaTab.setPriorityFlag(CuentaClientService.oportunidadDto.getPrioridad().getId());
-		cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusquedaFromOpp(CuentaClientService.oportunidadDto.getCuentaOrigen());
-		cuentaTab.getCuentaDatosForm().ponerDatosOportunidadEnFormulario(CuentaClientService.oportunidadDto);
-		cuentaTab.setNumeroCtaPot(CuentaClientService.oportunidadDto.getNumero());
-		completarVisualizacionDatos(CuentaClientService.oportunidadDto.getCuentaOrigen());
+		cuentaTab.setCuenta2editDto(CuentaClientService.cuentaPotencialDto.getCuentaOrigen());
+        if(!CuentaClientService.cuentaPotencialDto.isEsReserva()) {
+		    cuentaTab.setPriorityFlag(((OportunidadNegocioDto)CuentaClientService.cuentaPotencialDto).getPrioridad().getId());
+	    }	
+		cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusquedaFromOpp(CuentaClientService.cuentaPotencialDto);
+		cuentaTab.getCuentaDatosForm().ponerDatosOportunidadEnFormulario(CuentaClientService.cuentaPotencialDto);
+		cuentaTab.setNumeroCtaPot(CuentaClientService.cuentaPotencialDto.getNumero());
+		completarVisualizacionDatos(CuentaClientService.cuentaPotencialDto.getCuentaOrigen());
 	}
 	private void doBusquedaCuenta() {
 		if(RegularExpressionConstants.isVancuc(CuentaClientService.cuentaDto.getCodigoVantive())) {
@@ -247,5 +250,4 @@ public class EditarCuentaUI extends ApplicationUI {
 		}
 		completarVisualizacionDatos(CuentaClientService.cuentaDto);
 	}
-
 }

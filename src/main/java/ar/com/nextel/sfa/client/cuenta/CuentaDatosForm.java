@@ -7,6 +7,7 @@ import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoTarjetaCreditoDto;
 import ar.com.nextel.sfa.client.dto.DatosEfectivoDto;
@@ -40,7 +41,6 @@ import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.FormUtils;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
-import ar.com.nextel.sfa.client.validator.target.TextBoxBaseValidationTarget;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
@@ -85,7 +85,7 @@ public class CuentaDatosForm extends Composite {
 
 	private HTML iconoLupa = IconFactory.vistaPreliminar();
 	private HTML iconoEditarEstdo = IconFactory.lapiz();
-	private OportunidadNegocioDto oportunidadDto;
+	private CuentaPotencialDto oportunidadDto;
 	private CuentaUIData camposTabDatos   = new CuentaUIData();
 	private DatosPagoDto datosPago;
 	private List <Widget>camposObligatorios = new ArrayList<Widget>();
@@ -306,7 +306,7 @@ public class CuentaDatosForm extends Composite {
 		datosOppTable.setWidget(row, 2, camposTabDatos.getOppTerminalesEstimadasLabel());
 		datosOppTable.setWidget(row, 3, camposTabDatos.getOppTerminalesEstimadas());
 		datosOppTable.getFlexCellFormatter().setWidth(row, 0, ANCHO_PRIMER_COLUMNA);
-		datosOppTable.getFlexCellFormatter().setWidth(row, 2, ANCHO_TERCER_COLUMNA);
+		datosOppTable.getFlexCellFormatter().setWidth(row, 2, "8%"/*ANCHO_TERCER_COLUMNA*/);
 		row++;
 		datosOppTable.setWidget(row, 0, camposTabDatos.getOppVisitasLabel());
 		datosOppTable.setWidget(row, 1, camposTabDatos.getOppVisitas());
@@ -512,7 +512,7 @@ public class CuentaDatosForm extends Composite {
 		cargarPanelUsuario(cuentaDto);
 	}
 
-	public void ponerDatosOportunidadEnFormulario(OportunidadNegocioDto oportunidadDto) {
+	public void ponerDatosOportunidadEnFormulario(CuentaPotencialDto oportunidadDto) {
 		cargarPanelDatosOportunidad(oportunidadDto);
 		cargarPanelTelefonoFax(oportunidadDto.getCuentaOrigen());
 		cargarPanelEmails(oportunidadDto.getCuentaOrigen());
@@ -545,7 +545,7 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getUse().setText(cuentaDto.getUse());
 	}
 	
-	public void cargarPanelDatosOportunidad(OportunidadNegocioDto oportunidadDto) {
+	public void cargarPanelDatosOportunidad(CuentaPotencialDto oportunidadDto) {
 		this.oportunidadDto = oportunidadDto;
 		camposTabDatos.getRazonSocial().setText(oportunidadDto.getPersona().getRazonSocial());
 		camposTabDatos.getNombre().setText(oportunidadDto.getPersona().getNombre());
@@ -553,18 +553,20 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getOppTipoDocumento().setText(oportunidadDto.getPersona().getDocumento()!=null?oportunidadDto.getPersona().getDocumento().tipoDocumento.getDescripcion():"");
 		camposTabDatos.getNumeroDocumento().setText(oportunidadDto.getPersona().getDocumento()!=null?oportunidadDto.getPersona().getDocumento().getNumero():"");
 		camposTabDatos.getOppVencimiento().setText(oportunidadDto.getFechaVencimiento()!=null?DateTimeFormat.getMediumDateFormat().format(oportunidadDto.getFechaVencimiento()):"");
-		camposTabDatos.getOppEstado().setText(oportunidadDto.getEstadoJustificado()!=null?oportunidadDto.getEstadoJustificado().getEstado().getDescripcion():"");
 		camposTabDatos.getOppRubro().setText(oportunidadDto.getRubro()!=null?oportunidadDto.getRubro().getDescripcion():"");
-		camposTabDatos.getOppCompetenciaProv().setText(oportunidadDto.getProveedorCompetencia()!=null?oportunidadDto.getProveedorCompetencia().getDescripcion():"");
-		camposTabDatos.getOppCompetenciaEquipo().setText(oportunidadDto.getCantidadEquiposCompetencia()!=null?oportunidadDto.getCantidadEquiposCompetencia().toString():"");
 		camposTabDatos.getOppTerminalesEstimadas().setText(oportunidadDto.getTerminalesEstimadas()!=null?oportunidadDto.getTerminalesEstimadas().toString():"");
-		camposTabDatos.getOppVisitas().setText(oportunidadDto.getCantidadVisitas()!=null?oportunidadDto.getCantidadVisitas().toString():"");
 		//popup motivo no cerrado
 		camposTabDatos.getOppNroOpp().setText(oportunidadDto.getNumero());
-		camposTabDatos.getEstadoOpp().setSelectedItem(oportunidadDto.getEstadoJustificado().getEstado());
-		camposTabDatos.getRadioGroupMotivos().setValueChecked(oportunidadDto.getEstadoJustificado().getMotivo()!=null?oportunidadDto.getEstadoJustificado().getMotivo().getId().toString():"1");
-		camposTabDatos.getOppObservaciones().setText(oportunidadDto.getEstadoJustificado().getObservacionesMotivo());
-		CambioEstadoOppForm.getInstance().showHideTablaMotivos();
+		if(!oportunidadDto.isEsReserva()) {
+			camposTabDatos.getEstadoOpp().setSelectedItem(((OportunidadNegocioDto)oportunidadDto).getEstadoJustificado().getEstado());
+			camposTabDatos.getRadioGroupMotivos().setValueChecked(((OportunidadNegocioDto)oportunidadDto).getEstadoJustificado().getMotivo()!=null?((OportunidadNegocioDto)oportunidadDto).getEstadoJustificado().getMotivo().getId().toString():"1");
+			camposTabDatos.getOppObservaciones().setText(((OportunidadNegocioDto)oportunidadDto).getEstadoJustificado().getObservacionesMotivo());
+			camposTabDatos.getOppVisitas().setText(((OportunidadNegocioDto)oportunidadDto).getCantidadVisitas()!=null?((OportunidadNegocioDto)oportunidadDto).getCantidadVisitas().toString():"");
+			camposTabDatos.getOppEstado().setText(((OportunidadNegocioDto)oportunidadDto).getEstadoJustificado()!=null?((OportunidadNegocioDto)oportunidadDto).getEstadoJustificado().getEstado().getDescripcion():"");
+			camposTabDatos.getOppCompetenciaEquipo().setText(((OportunidadNegocioDto)oportunidadDto).getCantidadEquiposCompetencia()!=null?((OportunidadNegocioDto)oportunidadDto).getCantidadEquiposCompetencia().toString():"");
+			camposTabDatos.getOppCompetenciaProv().setText(((OportunidadNegocioDto)oportunidadDto).getProveedorCompetencia()!=null?((OportunidadNegocioDto)oportunidadDto).getProveedorCompetencia().getDescripcion():"");
+			CambioEstadoOppForm.getInstance().showHideTablaMotivos();
+		}
 	}
 	
 	public void cargarPanelTelefonoFax(CuentaDto cuentaDto) {
@@ -779,16 +781,24 @@ public class CuentaDatosForm extends Composite {
 		
 	}
 	
-	public void setAtributosCamposAlMostrarResuladoBusquedaFromOpp(CuentaDto cuentaDto) {
+	public void setAtributosCamposAlMostrarResuladoBusquedaFromOpp(CuentaPotencialDto cuentaPotencialDto) {
 		
 		List <Widget>disabledFields = new ArrayList<Widget>();
 		
-		if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.SUS.getTipo())) 
-			setAtributosCamposAlAgregarSuscriptor(cuentaDto);
+		if (cuentaPotencialDto.getCuentaOrigen().getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.SUS.getTipo())) 
+			setAtributosCamposAlAgregarSuscriptor(cuentaPotencialDto.getCuentaOrigen());
 		else 
-			setAtributosCamposCuenta(cuentaDto);
+			setAtributosCamposCuenta(cuentaPotencialDto.getCuentaOrigen());
 
 		camposTabDatos.disableFields();
+		
+		camposTabDatos.getOppEstado().setVisible(!cuentaPotencialDto.isEsReserva());
+		camposTabDatos.getOppEstadoLabel().setVisible(!cuentaPotencialDto.isEsReserva());
+		camposTabDatos.getOppCompetenciaEquipo().setVisible(!cuentaPotencialDto.isEsReserva());
+		camposTabDatos.getOppCompetenciaEquipoLabel().setVisible(!cuentaPotencialDto.isEsReserva());
+		camposTabDatos.getOppCompetenciaProv().setVisible(!cuentaPotencialDto.isEsReserva());
+		camposTabDatos.getOppCompetenciaProvLabel().setVisible(!cuentaPotencialDto.isEsReserva());
+		iconoEditarEstdo.setVisible(!cuentaPotencialDto.isEsReserva());
 		
 		FormUtils.disableFields(disabledFields);
 		camposTabDatos.getObservaciones().setVisible(false);
@@ -1251,10 +1261,10 @@ public class CuentaDatosForm extends Composite {
 		this.camposTabDatos = camposTabDatos;
 	}
 	
-	public OportunidadNegocioDto getOportunidadDto() {
+	public CuentaPotencialDto getOportunidadDto() {
 		return oportunidadDto;
 	}
-	public void setOportunidadDto(OportunidadNegocioDto oportunidadDto) {
+	public void setOportunidadDto(CuentaPotencialDto oportunidadDto) {
 		this.oportunidadDto = oportunidadDto;
 	}	
 	

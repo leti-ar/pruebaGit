@@ -22,7 +22,6 @@ public class CuentaClientService {
 
 	public static GranCuentaDto         granCuentaDto;
 	public static CuentaDto             cuentaDto;
-	public static OportunidadNegocioDto oportunidadDto;
 	public static CuentaPotencialDto cuentaPotencialDto;
 	private static boolean error;
 

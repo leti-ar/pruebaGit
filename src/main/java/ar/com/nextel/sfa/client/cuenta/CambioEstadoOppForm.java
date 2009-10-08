@@ -116,7 +116,7 @@ public class CambioEstadoOppForm extends NextelDialog {
 	}
 	
 	public void updateEstadoOportunidad() {
-		OportunidadNegocioDto oportunidadDto = CuentaDatosForm.getInstance().getOportunidadDto();
+		OportunidadNegocioDto oportunidadDto = (OportunidadNegocioDto)CuentaDatosForm.getInstance().getOportunidadDto();
         oportunidadDto.getEstadoJustificado().setEstado(new EstadoOportunidadDto(new Long(cuentaData.getEstadoOpp().getSelectedItemId()),cuentaData.getEstadoOpp().getSelectedItemText()));
         oportunidadDto.getEstadoJustificado().setMotivo(new MotivoNoCierreDto(new Long(cuentaData.getRadioGroupMotivos().getValueChecked()),cuentaData.getRadioGroupMotivos().getLabelChecked()));
         oportunidadDto.getEstadoJustificado().setObservacionesMotivo(cuentaData.getOppObservaciones().getText());
