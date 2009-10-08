@@ -5,6 +5,7 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
@@ -22,6 +23,7 @@ public class CuentaClientService {
 	public static GranCuentaDto         granCuentaDto;
 	public static CuentaDto             cuentaDto;
 	public static OportunidadNegocioDto oportunidadDto;
+	public static CuentaPotencialDto cuentaPotencialDto;
 	private static boolean error;
 
 	/**
@@ -157,11 +159,11 @@ public class CuentaClientService {
 	 * @param redir
 	 */
 	public static void getOportunidadNegocio(final Long idOpp,boolean redir) {
-		oportunidadDto = null;
+		cuentaPotencialDto = null;
 		error = false;
-		CuentaRpcService.Util.getInstance().getOportunidadNegocio(idOpp,new DefaultWaitCallback<OportunidadNegocioDto>() {
-			public void success(OportunidadNegocioDto opDto) {
-				oportunidadDto = opDto;
+		CuentaRpcService.Util.getInstance().getOportunidadNegocio(idOpp,new DefaultWaitCallback<CuentaPotencialDto>() {
+			public void success(CuentaPotencialDto ctaPot) {
+				cuentaPotencialDto = ctaPot;
 			}
 			public void failure(Throwable caught) {
 				error = true;
@@ -171,7 +173,7 @@ public class CuentaClientService {
 		if (redir) {
 			DeferredCommand.addCommand(new IncrementalCommand() {
 				public boolean execute() {
-					if (oportunidadDto == null && !error) 
+					if (cuentaPotencialDto == null && !error) 
 						return true;
 					if (!error)
 						History.newItem(UILoader.EDITAR_CUENTA + "?opp=true"+"&idOpp="+idOpp);

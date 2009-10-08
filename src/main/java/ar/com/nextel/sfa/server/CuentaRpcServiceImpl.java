@@ -48,7 +48,9 @@ import ar.com.nextel.model.oportunidades.beans.CuentaPotencial;
 import ar.com.nextel.model.oportunidades.beans.EstadoOportunidad;
 import ar.com.nextel.model.oportunidades.beans.MotivoNoCierre;
 import ar.com.nextel.model.oportunidades.beans.OportunidadNegocio;
+import ar.com.nextel.model.oportunidades.beans.Reserva;
 import ar.com.nextel.model.oportunidades.beans.Rubro;
+import ar.com.nextel.model.oportunidades.beans.VentaPotencialVista;
 import ar.com.nextel.model.personas.beans.Documento;
 import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.personas.beans.GrupoDocumento;
@@ -67,6 +69,7 @@ import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
 import ar.com.nextel.sfa.client.dto.ClaseCuentaDto;
 import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DivisionDto;
@@ -84,6 +87,7 @@ import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.PrioridadDto;
 import ar.com.nextel.sfa.client.dto.ProveedorDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
+import ar.com.nextel.sfa.client.dto.ReservaDto;
 import ar.com.nextel.sfa.client.dto.RubroDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.SuscriptorDto;
@@ -93,6 +97,7 @@ import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.dto.TipoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoTarjetaDto;
+import ar.com.nextel.sfa.client.dto.VentaPotencialVistaDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
@@ -450,33 +455,81 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	/**
 	 * 
 	 */
-	public OportunidadNegocioDto getOportunidadNegocio(Long cuenta_id) throws RpcExceptionMessages {
+//	public OportunidadNegocioDto getOportunidadNegocio(Long cuenta_id) throws RpcExceptionMessages {
+//		AppLogger.info("Obteniendo venta potencial con id: " + cuenta_id.longValue());
+//		OportunidadNegocio oportunidad = (OportunidadNegocio) repository.retrieve(OportunidadNegocio.class,
+//				cuenta_id);
+//		if (Calendar.getInstance().getTime().after(oportunidad.getFechaVencimiento())) {
+//			throw new RpcExceptionMessages(ERROR_OPORTUNIDAD_VENCIDA);
+//		}
+//		cuentaBusinessService.marcarOppComoConsultada(oportunidad);
+//		OportunidadNegocioDto oportunidadDto = mapper.map(oportunidad, OportunidadNegocioDto.class);
+//		if (oportunidad.getPrioridad() != null)
+//			oportunidadDto.setPrioridadDto(new PrioridadDto(oportunidad.getPrioridad().getId(), oportunidad
+//					.getPrioridad().getDescripcion()));
+//
+//		String categoriaCuenta = oportunidadDto.getCuentaOrigen().getCategoriaCuenta().getDescripcion();
+//		if (categoriaCuenta.equals(KnownInstanceIdentifier.GRAN_CUENTA.getKey())) {
+//			oportunidadDto.setCuentaOrigen((GranCuentaDto) mapper.map((GranCuenta) oportunidad
+//					.getCuentaOrigen(), GranCuentaDto.class));
+//		} else if (categoriaCuenta.equals(KnownInstanceIdentifier.DIVISION.getKey())) {
+//			oportunidadDto.setCuentaOrigen((DivisionDto) mapper.map((Division) oportunidad.getCuentaOrigen(),
+//					DivisionDto.class));
+//		} else if (categoriaCuenta.equals(KnownInstanceIdentifier.SUSCRIPTOR.getKey())) {
+//			oportunidadDto.setCuentaOrigen((SuscriptorDto) mapper.map((Suscriptor) oportunidad
+//					.getCuentaOrigen(), SuscriptorDto.class));
+//		}
+//		AppLogger.info("Obtención finalizada");
+//		return oportunidadDto;
+//	}
+	
+	//  Devuelve la reservaDto o la oportunidadDto según sea el caso
+	public CuentaPotencialDto getOportunidadNegocio(Long cuenta_id) throws RpcExceptionMessages {
 		AppLogger.info("Obteniendo venta potencial con id: " + cuenta_id.longValue());
-		OportunidadNegocio oportunidad = (OportunidadNegocio) repository.retrieve(OportunidadNegocio.class,
-				cuenta_id);
-		if (Calendar.getInstance().getTime().after(oportunidad.getFechaVencimiento())) {
-			throw new RpcExceptionMessages(ERROR_OPORTUNIDAD_VENCIDA);
+		CuentaPotencial cuentaPotencial = (CuentaPotencial) repository.retrieve(CuentaPotencial.class, cuenta_id);
+		CuentaPotencialDto cuentaPotencialDto = mapper.map(cuentaPotencial, CuentaPotencialDto.class);
+		if(!cuentaPotencialDto.isEsReserva()) {
+			OportunidadNegocio oportunidad = (OportunidadNegocio) repository.retrieve(OportunidadNegocio.class,
+					cuenta_id);
+			OportunidadNegocioDto oportunidadDto = mapper.map(oportunidad, OportunidadNegocioDto.class);
+			if (Calendar.getInstance().getTime().after(oportunidad.getFechaVencimiento())) {
+				throw new RpcExceptionMessages(ERROR_OPORTUNIDAD_VENCIDA);
+			}
+			cuentaBusinessService.marcarOppComoConsultada(cuentaPotencial);
+			if (oportunidad.getPrioridad() != null)
+				oportunidadDto.setPrioridadDto(new PrioridadDto(oportunidad.getPrioridad().getId(), oportunidad
+						.getPrioridad().getDescripcion()));	
+			String categoriaCuenta = oportunidadDto.getCuentaOrigen().getCategoriaCuenta().getDescripcion();
+			if (categoriaCuenta.equals(KnownInstanceIdentifier.GRAN_CUENTA.getKey())) {
+				oportunidadDto.setCuentaOrigen((GranCuentaDto) mapper.map((GranCuenta) oportunidad
+						.getCuentaOrigen(), GranCuentaDto.class));
+			} else if (categoriaCuenta.equals(KnownInstanceIdentifier.DIVISION.getKey())) {
+				oportunidadDto.setCuentaOrigen((DivisionDto) mapper.map((Division) oportunidad.getCuentaOrigen(),
+						DivisionDto.class));
+			} else if (categoriaCuenta.equals(KnownInstanceIdentifier.SUSCRIPTOR.getKey())) {
+				oportunidadDto.setCuentaOrigen((SuscriptorDto) mapper.map((Suscriptor) oportunidad
+						.getCuentaOrigen(), SuscriptorDto.class));
+			}
+			AppLogger.info("Obtención finalizada");
+			return oportunidadDto;  
+		} else {
+			Reserva reserva = (Reserva) repository.retrieve(Reserva.class, cuenta_id);
+			ReservaDto reservaDto = mapper.map(reserva, ReservaDto.class);
+			String categoriaCuenta = reservaDto.getCuentaOrigen().getCategoriaCuenta().getDescripcion();
+			if (categoriaCuenta.equals(KnownInstanceIdentifier.GRAN_CUENTA.getKey())) {
+				reservaDto.setCuentaOrigen((GranCuentaDto) mapper.map((GranCuenta) reserva.getCuentaOrigen(), GranCuentaDto.class));
+			} else if (categoriaCuenta.equals(KnownInstanceIdentifier.DIVISION.getKey())) {
+				reservaDto.setCuentaOrigen((DivisionDto) mapper.map((Division) reserva.getCuentaOrigen(),
+						DivisionDto.class));
+			} else if (categoriaCuenta.equals(KnownInstanceIdentifier.SUSCRIPTOR.getKey())) {
+				reservaDto.setCuentaOrigen((SuscriptorDto) mapper.map((Suscriptor) reserva
+						.getCuentaOrigen(), SuscriptorDto.class));
+			}
+			AppLogger.info("Obtención finalizada");
+			return reservaDto;     
 		}
-		cuentaBusinessService.marcarOppComoConsultada(oportunidad);
-		OportunidadNegocioDto oportunidadDto = mapper.map(oportunidad, OportunidadNegocioDto.class);
-		if (oportunidad.getPrioridad() != null)
-			oportunidadDto.setPrioridadDto(new PrioridadDto(oportunidad.getPrioridad().getId(), oportunidad
-					.getPrioridad().getDescripcion()));
-
-		String categoriaCuenta = oportunidadDto.getCuentaOrigen().getCategoriaCuenta().getDescripcion();
-		if (categoriaCuenta.equals(KnownInstanceIdentifier.GRAN_CUENTA.getKey())) {
-			oportunidadDto.setCuentaOrigen((GranCuentaDto) mapper.map((GranCuenta) oportunidad
-					.getCuentaOrigen(), GranCuentaDto.class));
-		} else if (categoriaCuenta.equals(KnownInstanceIdentifier.DIVISION.getKey())) {
-			oportunidadDto.setCuentaOrigen((DivisionDto) mapper.map((Division) oportunidad.getCuentaOrigen(),
-					DivisionDto.class));
-		} else if (categoriaCuenta.equals(KnownInstanceIdentifier.SUSCRIPTOR.getKey())) {
-			oportunidadDto.setCuentaOrigen((SuscriptorDto) mapper.map((Suscriptor) oportunidad
-					.getCuentaOrigen(), SuscriptorDto.class));
-		}
-		AppLogger.info("Obtención finalizada");
-		return oportunidadDto;
 	}
+
 
 	/**
 	 * 

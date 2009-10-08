@@ -4,6 +4,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
@@ -39,7 +40,8 @@ public interface CuentaRpcServiceAsync {
     public void normalizarDomicilio(DomiciliosCuentaDto domicilioANormalizar, AsyncCallback<NormalizarDomicilioResultDto> callback);
 	public void getCrearContactoInitializer(AsyncCallback<CrearContactoInitializer> callback); 
 	public void getProvinciasInitializer(AsyncCallback<List<ProvinciaDto>> callback);
-	public void getOportunidadNegocio(Long cuenta_id, AsyncCallback<OportunidadNegocioDto> callback);
+	//public void getOportunidadNegocio(Long cuenta_id, AsyncCallback<OportunidadNegocioDto> callback);
+	public void getOportunidadNegocio(Long cuenta_id, AsyncCallback<CuentaPotencialDto> callback);
 	public void updateEstadoOportunidad(OportunidadNegocioDto oportunidadDto, AsyncCallback<OportunidadNegocioDto> callback);
 	public void getCuentasAsociadasAVentaPotencial(Long idVentaPotencial, AsyncCallback<List<CuentaDto>> callback);
 }

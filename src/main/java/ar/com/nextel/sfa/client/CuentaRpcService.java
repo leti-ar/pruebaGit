@@ -4,6 +4,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
@@ -55,7 +56,8 @@ public interface CuentaRpcService extends RemoteService {
 	public NormalizarDomicilioResultDto normalizarDomicilio(DomiciliosCuentaDto domicilioANormalizar)throws RpcExceptionMessages;
 	public CrearContactoInitializer getCrearContactoInitializer() throws RpcExceptionMessages;
 	public List<ProvinciaDto> getProvinciasInitializer() throws RpcExceptionMessages;
-	public OportunidadNegocioDto getOportunidadNegocio(Long cuenta_id) throws RpcExceptionMessages;
+	//public OportunidadNegocioDto getOportunidadNegocio(Long cuenta_id) throws RpcExceptionMessages;
+	public CuentaPotencialDto getOportunidadNegocio(Long cuenta_id) throws RpcExceptionMessages;
 	public OportunidadNegocioDto updateEstadoOportunidad(OportunidadNegocioDto oportunidadDto) throws RpcExceptionMessages;
 	public List <CuentaDto> getCuentasAsociadasAVentaPotencial(Long idVentaPotencial) throws RpcExceptionMessages;
 	

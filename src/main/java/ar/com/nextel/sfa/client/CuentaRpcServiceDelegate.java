@@ -6,6 +6,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
@@ -93,10 +94,14 @@ public class CuentaRpcServiceDelegate {
 		WaitWindow.show();
 		cuentaRpcService.getProvinciasInitializer(callback);
 	}	
-	public void getOportunidadNegocio(Long cuenta_id,DefaultWaitCallback<OportunidadNegocioDto> callback) {
-		WaitWindow.show();
-		cuentaRpcService.getOportunidadNegocio(cuenta_id,callback);
-	}
+//	public void getOportunidadNegocio(Long cuenta_id,DefaultWaitCallback<OportunidadNegocioDto> callback) {
+//		WaitWindow.show();
+//		cuentaRpcService.getOportunidadNegocio(cuenta_id,callback);
+//	}
+	public void getOportunidadNegocio(Long cuenta_id,DefaultWaitCallback<CuentaPotencialDto> callback) {
+	WaitWindow.show();
+	cuentaRpcService.getOportunidadNegocio(cuenta_id,callback);
+}
 	public void updateEstadoOportunidad(OportunidadNegocioDto oportunidadDto,DefaultWaitCallback<OportunidadNegocioDto> callback) {
 		WaitWindow.show();
 		cuentaRpcService.updateEstadoOportunidad(oportunidadDto,callback);
