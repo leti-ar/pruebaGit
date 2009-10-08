@@ -489,13 +489,12 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		CuentaPotencial cuentaPotencial = (CuentaPotencial) repository.retrieve(CuentaPotencial.class, cuenta_id);
 		CuentaPotencialDto cuentaPotencialDto = mapper.map(cuentaPotencial, CuentaPotencialDto.class);
 		if(!cuentaPotencialDto.isEsReserva()) {
-			OportunidadNegocio oportunidad = (OportunidadNegocio) repository.retrieve(OportunidadNegocio.class,
-					cuenta_id);
+			OportunidadNegocio oportunidad = (OportunidadNegocio) repository.retrieve(OportunidadNegocio.class,	cuenta_id);
 			OportunidadNegocioDto oportunidadDto = mapper.map(oportunidad, OportunidadNegocioDto.class);
 			if (Calendar.getInstance().getTime().after(oportunidad.getFechaVencimiento())) {
 				throw new RpcExceptionMessages(ERROR_OPORTUNIDAD_VENCIDA);
 			}
-			cuentaBusinessService.marcarOppComoConsultada(cuentaPotencial);
+			cuentaBusinessService.marcarOppComoConsultada((OportunidadNegocio)cuentaPotencial);
 			if (oportunidad.getPrioridad() != null)
 				oportunidadDto.setPrioridadDto(new PrioridadDto(oportunidad.getPrioridad().getId(), oportunidad
 						.getPrioridad().getDescripcion()));	
