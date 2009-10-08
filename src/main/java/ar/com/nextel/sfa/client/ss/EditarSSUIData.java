@@ -6,6 +6,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.cuenta.CuentaDomiciliosForm;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
@@ -573,7 +574,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		return nombreMovil;
 	}
 
-	public CuentaDto getCuenta() {
+	public CuentaSSDto getCuenta() {
 		return solicitudServicio.getCuenta();
 	}
 

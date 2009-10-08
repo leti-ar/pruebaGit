@@ -367,7 +367,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 	<mapping map-id="cuentaSolicitud" wildcard="false">
 		<class-a>ar.com.nextel.model.cuentas.beans.Cuenta
 		</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.CuentaDto
+		<class-b>ar.com.nextel.sfa.client.dto.CuentaSSDto
 		</class-b>
 		<field type="one-way">
 			<a>id</a>
@@ -393,11 +393,11 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>plainDomicilios</a>
 			<b>domicilios</b>
 		</field>
-		<field>
+		<field type="one-way">
 			<a>emails</a>
 			<b>emails</b>
 		</field>
-		<field>
+		<field type="one-way">
 			<a>razonSocial</a>
 			<b>razonSocial</b>
 		</field>
