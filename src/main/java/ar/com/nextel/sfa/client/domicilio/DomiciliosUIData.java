@@ -44,7 +44,6 @@ public class DomiciliosUIData extends UIData {
 	private ValidationTextBox departamento = new ValidationTextBox("[0-9a-zA-Z]*");
 	private TextBox entreCalle = new TextBox();
 	private ValidationTextBox manzana = new ValidationTextBox("[0-9a-zA-Z]*");
-	private TextBox puerta = new TextBox();
 	private TextBox ycalle = new TextBox();
 	private ValidationTextBox torre = new ValidationTextBox("[0-9a-zA-Z]*");
 	private ValidationTextBox unidadFuncional = new ValidationTextBox("[0-9a-zA-Z]*");
@@ -57,43 +56,38 @@ public class DomiciliosUIData extends UIData {
 	private ListBox provincia = new ListBox();
 
 	// Boolean noNormalizar;
-
 	private CheckBox validado = new CheckBox();
-	private TextBox codigoFNCL = new TextBox();
-	private CheckBox enCarga = new CheckBox();
 	private Label nombreUsuarioUltimaModificacion = new Label();
 	private Label fechaUltimaModificacion = new Label();
 
 	public DomiciliosUIData() {
 		configFields();
 		fields.add(cpa);
-		fields.add(numero);
 		fields.add(calle);
+		fields.add(numero);
 		fields.add(piso);
-		fields.add(codigoPostal);
 		fields.add(departamento);
-		fields.add(entreCalle);
-		fields.add(manzana);
-		fields.add(puerta);
-		fields.add(ycalle);
-		fields.add(torre);
 		fields.add(unidadFuncional);
-		fields.add(observaciones);
+		fields.add(torre);
+		fields.add(manzana);
+		fields.add(entreCalle);
+		fields.add(ycalle);
 		fields.add(localidad);
+		fields.add(codigoPostal);
+		fields.add(provincia);
 		fields.add(partido);
-		fields.add((Widget) validado);
-		fields.add(codigoFNCL);
-		fields.add(enCarga);
 		fields.add(entrega);
 		fields.add(facturacion);
-		fields.add(provincia);
+		fields.add((Widget) validado);
+		fields.add(observaciones);
 		this.addFocusListeners(fields);
 		entrega.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
 		facturacion.addAllItems(EstadoTipoDomicilioDto.getListBoxItems());
 
-		cpa.setTabIndex(1);
-		calle.setTabIndex(2);
-		numero.setTabIndex(3);
+		int i = 1;
+		for (Widget field : fields) {
+			((FocusWidget) field).setTabIndex(i++);
+		}
 	}
 
 	public void cargarListBox(List<DomiciliosCuentaDto> listaDomicilios) {
@@ -155,7 +149,6 @@ public class DomiciliosUIData extends UIData {
 			departamento.setText(domicilio.getDepartamento());
 			entreCalle.setText(domicilio.getEntre_calle());
 			manzana.setText(domicilio.getManzana());
-			puerta.setText(domicilio.getPuerta());
 			ycalle.setText(domicilio.getY_calle());
 			cpa.setText(domicilio.getCpa());
 			torre.setText(domicilio.getTorre());
@@ -183,7 +176,6 @@ public class DomiciliosUIData extends UIData {
 		domicilio.setObservaciones(observaciones.getText());
 		domicilio.setPiso(piso.getText());
 		domicilio.setProvincia((ProvinciaDto) provincia.getSelectedItem());
-		domicilio.setPuerta(puerta.getText());
 		domicilio.setTorre(torre.getText());
 		domicilio.setUnidad_funcional(unidadFuncional.getText());
 		domicilio.setValidado(validado.getValue());
@@ -306,10 +298,6 @@ public class DomiciliosUIData extends UIData {
 		return manzana;
 	}
 
-	public TextBox getPuerta() {
-		return puerta;
-	}
-
 	public TextBox getYcalle() {
 		return ycalle;
 	}
@@ -348,14 +336,6 @@ public class DomiciliosUIData extends UIData {
 
 	public CheckBox getValidado() {
 		return validado;
-	}
-
-	public TextBox getCodigoFNCL() {
-		return codigoFNCL;
-	}
-
-	public CheckBox getEnCarga() {
-		return enCarga;
 	}
 
 	public ListBox getFacturacion() {
