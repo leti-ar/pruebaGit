@@ -59,7 +59,7 @@ public class CuentaDomiciliosForm extends Composite {
 		crearDomicilio.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				DomicilioUI.getInstance().cargarListBoxEntregaFacturacion(
-						cuentaDto.getPersona().getDomicilios());
+						cuentaDto.getPersona().getDomicilios(), null);
 				DomicilioUI.getInstance().setComandoAceptar(new Command() {
 					public void execute() {
 						DomiciliosCuentaDto domicilio = DomicilioUI.getInstance().getDomicilioAEditar();
@@ -191,7 +191,7 @@ public class CuentaDomiciliosForm extends Composite {
 						domicilioAEditar = domicilio;
 						DomicilioUI.getInstance().setDomicilioAEditar(domicilioAEditar);
 						DomicilioUI.getInstance().cargarListBoxEntregaFacturacion(
-								cuentaDto.getPersona().getDomicilios());
+								cuentaDto.getPersona().getDomicilios(), domicilioAEditar);
 						DomicilioUI.getInstance().setParentContacto(false);
 						DomicilioUI.getInstance().hide();
 						if (domicilio.getVantiveId() != null) {
@@ -227,8 +227,6 @@ public class CuentaDomiciliosForm extends Composite {
 								domicilioCopiado.getIdFacturacion())) {
 							domicilioCopiado.setIdFacturacion(EstadoTipoDomicilioDto.SI.getId());
 						}
-						DomicilioUI.getInstance().cargarListBoxEntregaFacturacion(
-								cuentaDto.getPersona().getDomicilios());
 						DomicilioUI.getInstance().setComandoAceptar(new Command() {
 							public void execute() {
 								DomiciliosCuentaDto domicilio = DomicilioUI.getInstance()
@@ -239,6 +237,8 @@ public class CuentaDomiciliosForm extends Composite {
 							}
 						});
 						DomicilioUI.getInstance().setParentContacto(false);
+						DomicilioUI.getInstance().cargarListBoxEntregaFacturacion(
+								cuentaDto.getPersona().getDomicilios(), domicilioCopiado);
 						DomicilioUI.getInstance().cargarPopupCopiarDomicilio(domicilioCopiado);
 					}
 					// Acciones a tomar cuando haga click en iconos de borrado de domicilios:

@@ -249,7 +249,6 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		} else {
 			DomicilioUI.getInstance().setComandoAceptar(getCommandGuardarDomicilio());
 			listaDomicilios = editarSSUIData.getCuenta().getPersona().getDomicilios();
-			DomicilioUI.getInstance().cargarListBoxEntregaFacturacion(listaDomicilios);
 
 			if (sender == crearDomicilio) {
 				domicilioAEditar = new DomiciliosCuentaDto();
@@ -260,6 +259,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			}
 			domicilioAEditar = domicilioAEditar != null ? domicilioAEditar : new DomiciliosCuentaDto();
 			DomicilioUI.getInstance().setParentContacto(false);
+			DomicilioUI.getInstance().cargarListBoxEntregaFacturacion(listaDomicilios, domicilioAEditar);
 			DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
 		}
 	}

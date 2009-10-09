@@ -498,7 +498,7 @@ public class DomicilioUI extends NextelDialog {
 		domiciliosUIData.getValidado().setVisible(enable);
 	}
 
-	public void cargarListBoxEntregaFacturacion(List<DomiciliosCuentaDto> domicilios) {
-		domiciliosUIData.cargarListBox(domicilios);
+	public void cargarListBoxEntregaFacturacion(List<DomiciliosCuentaDto> domicilios, DomiciliosCuentaDto domicilioAEditar) {
+		domiciliosUIData.cargarListBox(domicilios, domicilioAEditar);
 	}
 }

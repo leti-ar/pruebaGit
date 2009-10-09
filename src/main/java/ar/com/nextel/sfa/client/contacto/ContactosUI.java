@@ -66,7 +66,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 					aceptarCommand.execute();
 					hide();
 				} else {
-					ErrorDialog.getInstance().show(errors,false);
+					ErrorDialog.getInstance().show(errors, false);
 				}
 			} else if (sender == cancelar) {
 				hide();
@@ -246,7 +246,7 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 						refrescaTablaConNuevoDomicilio();
 					}
 				});
-				DomicilioUI.getInstance().cargarListBoxEntregaFacturacion(null);
+				DomicilioUI.getInstance().cargarListBoxEntregaFacturacion(null, null);
 				DomicilioUI.getInstance().setParentContacto(true);
 				DomicilioUI.getInstance().cargarPopupNuevoDomicilio(new DomiciliosCuentaDto());
 			}
@@ -308,7 +308,8 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 				if (columna == 0) {
 					domicilioAEditar = domicilio;
 					DomicilioUI.getInstance().setDomicilioAEditar(domicilioAEditar);
-					DomicilioUI.getInstance().cargarListBoxEntregaFacturacion(null);
+					DomicilioUI.getInstance().cargarListBoxEntregaFacturacion(
+							contactosData.getPersonaDto().getDomicilios(), domicilioAEditar);
 					if (domicilio.getVantiveId() != null) {
 						DomicilioUI.getInstance().setParentContacto(true);
 						DomicilioUI.getInstance().openPopupAdviseDialog(

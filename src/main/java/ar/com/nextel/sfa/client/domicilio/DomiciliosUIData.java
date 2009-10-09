@@ -90,15 +90,22 @@ public class DomiciliosUIData extends UIData {
 		}
 	}
 
-	public void cargarListBox(List<DomiciliosCuentaDto> listaDomicilios) {
-
+	public void cargarListBox(List<DomiciliosCuentaDto> listaDomicilios, DomiciliosCuentaDto domicilioAEditar) {
 		if (listaDomicilios != null) {
 			if ((entrega.getItemCount() != 0) && (facturacion.getItemCount() != 0)) {
 				entrega.clear();
 				facturacion.clear();
 			}
-			tienePrincipalEntrega = containsPpalEntrega(listaDomicilios);
-			tienePrincipalFacturacion = containsPpalFacturacion(listaDomicilios);
+			if (domicilioAEditar != null) {
+				Long idPrincipal = EstadoTipoDomicilioDto.PRINCIPAL.getId();
+				tienePrincipalEntrega = !idPrincipal.equals(domicilioAEditar.getIdEntrega())
+						&& tienePrincipalEntrega;
+				tienePrincipalFacturacion = !idPrincipal.equals(domicilioAEditar.getIdFacturacion())
+						&& tienePrincipalFacturacion;
+			} else {
+				tienePrincipalEntrega = containsPpalEntrega(listaDomicilios);
+				tienePrincipalFacturacion = containsPpalEntrega(listaDomicilios);
+			}
 		} else {
 			tienePrincipalEntrega = false;
 			tienePrincipalFacturacion = false;
