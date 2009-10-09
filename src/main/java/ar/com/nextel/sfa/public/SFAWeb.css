@@ -288,8 +288,43 @@ A {
 }
 
 .WaitWindow {
+	display: none;
+	/*
 	background-color: #AA0000;
 	color: #FFFFFF;
+	*/
+}
+
+.gwt-LoadingPopup {
+}
+
+.gwt-LoadingPopup-blackPanel {
+	width: 247px;
+	height: 60px;
+	background-color: #000000;
+	filter:alpha(opacity=30);
+	-moz-opacity:0.3;
+	-khtml-opacity: 0.3;
+	opacity: 0.3;
+}
+	
+.gwt-LoadingPopup-tableWrapper {
+	position: relative;
+	top: -61px;
+	width: 235px;
+	height: 50px;
+	margin: 5px;
+	background-color: #FFFFFF;
+	border: 1px #999 solid;
+}
+
+.gwt-LoadingPopup-panel table {
+	margin: 5px;
+}
+
+.gwt-LoadingPopup-text {
+	margin-left: 15px;
+	font-size: 14px;
 }
 
 .gwt-TabBarItem-selected {
