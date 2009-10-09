@@ -7,6 +7,7 @@ import ar.com.nextel.sfa.client.dto.DatosEquipoPorEstadoDto;
 import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
+import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
 import com.google.gwt.user.client.ui.ClickListener;
@@ -15,7 +16,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class EstadoEquipoPopUp extends NextelDialog {
-	private FlexTable table;
+	private NextelTable table;
 	private List estadosList = new ArrayList<DatosEquipoPorEstadoDto>();
 
 	public EstadoEquipoPopUp(String title, String width, List<DatosEquipoPorEstadoDto> estadosList) {
@@ -23,7 +24,7 @@ public class EstadoEquipoPopUp extends NextelDialog {
 		this.setWidth(width);
 		this.addStyleName("estadoDialog");
 		this.estadosList = estadosList;
-		table = new FlexTable();
+		table = new NextelTable();
 		initTable(table);
 		SimpleLink cerrar = new SimpleLink("Cerrar");
 		cerrar.addStyleName("cerrarLink");

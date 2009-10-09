@@ -6,6 +6,7 @@ import ar.com.nextel.sfa.client.dto.DatosEquipoPorEstadoDto;
 import ar.com.nextel.sfa.client.dto.EquipoDto;
 import ar.com.nextel.sfa.client.dto.ResumenEquipoDto;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
+import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLabel;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
@@ -20,7 +21,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class ResumenEquipoPopUp extends NextelDialog {
 
 	private FlexTable encabezadoTable;
-	private FlexTable resumenTable;
+	private NextelTable resumenTable;
 	private InlineHTML razonSocial;
 	private InlineHTML numeroCliente;
 	private InlineHTML flota;
@@ -57,7 +58,7 @@ public class ResumenEquipoPopUp extends NextelDialog {
 		encabezadoTable.setWidget(2, 2, new Label("Emision:"));
 		encabezadoTable.setWidget(2, 3, emision);
 		this.add(encabezadoTable);
-		resumenTable = new FlexTable();
+		resumenTable = new NextelTable();
 		resumenTable.addStyleName("miTablaInvisible");
 		initTable(resumenTable);
 		
