@@ -9,6 +9,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
+import ar.com.nextel.model.oportunidades.beans.CuentaPotencial;
 import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.sfa.client.OperacionesRpcService;
@@ -55,23 +56,14 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 	public VentaPotencialVistaResultDto searchReservas() {
 		Vendedor vendedor = sessionContextLoader.getVendedor();
 		AppLogger.info("Obteniendo reservas para vendedor: " + vendedor.getUserName(), this);
-		List<VentaPotencialVistaDto> ventasPotencialesEnCursoDto = mapper.convertList(vendedor
-				.getVentasPotencialesVistaEnCurso(), VentaPotencialVistaDto.class);
-		VentaPotencialVistaResultDto ventaPotencialVistaResultDto = new VentaPotencialVistaResultDto(
-				ventasPotencialesEnCursoDto, vendedor
-						.getCantidadCuentasPotencialesNoConsultadasActivasYVigentes().toString());
+		List<VentaPotencialVistaDto> ventasPotencialesEnCursoDto = mapper.convertList(vendedor.getVentasPotencialesVistaEnCurso(), VentaPotencialVistaDto.class);
+		for (VentaPotencialVistaDto venta:ventasPotencialesEnCursoDto) {
+			CuentaPotencial ctaPot = repository.retrieve(CuentaPotencial.class, venta.getIdCuentaPotencial());
+			venta.setIdCuenta(ctaPot.getCuentaOrigen().getId());
+		}
+		VentaPotencialVistaResultDto ventaPotencialVistaResultDto = new VentaPotencialVistaResultDto(ventasPotencialesEnCursoDto, vendedor.getCantidadCuentasPotencialesNoConsultadasActivasYVigentes().toString());
 		return ventaPotencialVistaResultDto;
 	}
-
-	// private PersonaDto mapeoPersona(CuentaPotencial cuentaPotencial) {
-	// PersonaDto personaDto = new PersonaDto();
-	// personaDto.setRazonSocial(cuentaPotencial.getPersona().getRazonSocial());
-	// //Set<Telefono> tel = reserva.getPersona().getTelefonos();
-	// //Set<TelefonoDto> telDto = new HashSet<TelefonoDto>();
-	// //telDto.add((TelefonoDto)tel);
-	// //personaDto.setTelefonos(telDto);
-	// return personaDto;
-	// }
 
 	public void cancelarOperacionEnCurso(String idOperacionEnCurso) throws RpcExceptionMessages {
 		try {
@@ -83,5 +75,4 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 			throw ExceptionUtil.wrap(e);
 		}
 	}
-
 }

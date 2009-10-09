@@ -430,10 +430,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		return builder.toString();
 	}
 
-	public static String getEditarSSUrl(Long idCuentaPotencial, Long idGrupo, String codigoVanvite) {
+	public static String getEditarSSUrl(Long idCuentaPotencial, Long idGrupo, String codigoVanvite,Long idCuenta) {
 		StringBuilder builder = new StringBuilder(UILoader.AGREGAR_SOLICITUD + "?");
 		builder.append(EditarSSUI.ID_CUENTA_POTENCIAL + "=" + idCuentaPotencial + "&");
 		builder.append(EditarSSUI.CODIGO_VANTIVE + "=" + codigoVanvite + "&");
+		builder.append(EditarSSUI.ID_CUENTA + "=" + idCuenta + "&");
 		builder.append(EditarSSUI.ID_GRUPO_SS + "=" + idGrupo);
 		return builder.toString();
 	}
