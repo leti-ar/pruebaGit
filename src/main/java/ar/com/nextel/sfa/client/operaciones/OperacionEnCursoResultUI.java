@@ -65,7 +65,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 	private Label oppEnCursoLabel;
 	private Label reservasNoConsultadas;
 	private Label numOperaciones;
-	private static final int cantResultadosPorPagina = 5;
+	private static final int cantResultadosPorPagina = 7;
 	private String numeroVtasPotNoConsultadas;
 	private OperacionEnCursoUIController controller;
 	private List<OperacionEnCursoDto> opEnCursoActuales;
