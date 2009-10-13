@@ -45,7 +45,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
     private List<NormalizacionDomicilioMotivoDto> motivos = new ArrayList();
 	private int rowSelected;
 	private Label msgNoNormalizado = new Label("No se pudo normalizar el domicilio");
-    
+	    
 	private static NormalizarDomicilioUI instance = new NormalizarDomicilioUI();
 
 	public static NormalizarDomicilioUI getInstance() {
@@ -86,7 +86,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 			domicilioResultWrapper.setVisible(true);
 			linkAceptar.setVisible(true);
 			grillaPpal.setText(3, 0, "");
-			grillaMotivo.setVisible(false);
+			grillaMotivo.setVisible(true);
 		}
 	}
 	
@@ -214,6 +214,8 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		domicilioResult.getRowFormatter().addStyleName(0, "header");
 		domicilioResult.setHTML(0, 0, "Seleccione alguna de estas opciones");
 		domicilioResultWrapper.setWidget(domicilioResult);
+		motivoText.setStyleName("fontNormal");
+		motivoText.setText("CPA modificado al normalizar por diferencia de alturas");
 	}
 	
 	public void setTienePrincipales(boolean ppalEntrega, boolean ppalfacturacion){
