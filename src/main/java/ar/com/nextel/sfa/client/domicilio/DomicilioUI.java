@@ -371,8 +371,6 @@ public class DomicilioUI extends NextelDialog {
 		NormalizarDomicilioUI.getInstance().setComandoAceptar(comandoAceptar);
 		NormalizarDomicilioUI.getInstance().setComandoNoNormalizar(comandoNoNormalizar);
 		NormalizarDomicilioUI.getInstance().showAndCenter();
-		MessageDialog.getInstance().showAceptar("Domicilio Modificado", "cpa modificado al normalizar por diferencia de altura",
-				MessageDialog.getCloseCommand());
 	}
 
 	private Command getComandoBorrar(final Command afterDelete) {
