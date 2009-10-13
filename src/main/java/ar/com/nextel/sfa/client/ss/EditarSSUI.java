@@ -300,6 +300,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			public void execute() {
 				editarSSUIData.setSolicitudServicioGeneracion(getGenerarSSUI().getGenerarSSUIData()
 						.getSolicitudServicioGeneracion());
+				// Se comenta por el nuevo cartel de cargando;
 				CerradoSSExitosoDialog.getInstance().showLoading(cerrandoSolicitud);
 				List errors = editarSSUIData.validarParaCerrarGenerar(true);
 				if (errors.isEmpty()) {
@@ -307,7 +308,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							editarSSUIData.getSolicitudServicio(), "", cerrandoSolicitud,
 							getGeneracionCierreCallback());
 				} else {
-					CerradoSSExitosoDialog.getInstance().hide();
+					CerradoSSExitosoDialog.getInstance().hideLoading();
 					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
 					ErrorDialog.getInstance().show(errors, false);
 				}
@@ -319,7 +320,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		if (generacionCierreCallback == null) {
 			generacionCierreCallback = new DefaultWaitCallback<GeneracionCierreResultDto>() {
 				public void success(GeneracionCierreResultDto result) {
-					CerradoSSExitosoDialog.getInstance().hide();
+					CerradoSSExitosoDialog.getInstance().hideLoading();
 					if (!result.isError()) {
 						editarSSUIData.setSaved(true);
 						Command aceptar = null;
@@ -430,7 +431,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		return builder.toString();
 	}
 
-	public static String getEditarSSUrl(Long idCuentaPotencial, Long idGrupo, String codigoVanvite,Long idCuenta) {
+	public static String getEditarSSUrl(Long idCuentaPotencial, Long idGrupo, String codigoVanvite,
+			Long idCuenta) {
 		StringBuilder builder = new StringBuilder(UILoader.AGREGAR_SOLICITUD + "?");
 		builder.append(EditarSSUI.ID_CUENTA_POTENCIAL + "=" + idCuentaPotencial + "&");
 		builder.append(EditarSSUI.CODIGO_VANTIVE + "=" + codigoVanvite + "&");

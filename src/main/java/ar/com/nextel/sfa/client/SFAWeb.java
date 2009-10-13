@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.UserCenterDto;
 import ar.com.nextel.sfa.client.widget.HeaderMenu;
+import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
 import ar.com.nextel.sfa.client.widget.LoadingPopup;
 import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.CallListener;
@@ -21,7 +22,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 public class SFAWeb implements EntryPoint {
 
 	private static HeaderMenu headerMenu;
-	private LoadingPopup loadingPopup;
+	private static LoadingPopup loadingPopup;
 
 	private boolean usarUserCenter = true;
 
@@ -81,8 +82,11 @@ public class SFAWeb implements EntryPoint {
 		}
 
 		public void onStartCall() {
-			loadingPopup.show();
-			loadingPopup.center();
+			if (!LoadingModalDialog.getInstance().isShowing()) {
+				loadingPopup.show();
+				loadingPopup.center();
+			}
 		}
 	}
+
 }

@@ -19,7 +19,6 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineHTML;
@@ -33,13 +32,11 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class CerradoSSExitosoDialog extends NextelDialog implements ClickListener {
 
-	private FlowPanel loadingPanel;
 	private FlowPanel cierreExitoso;
 	private Command aceptarCommand;
 	private InlineHTML successText;
 	private SimpleLink solicitudLink;
 	private SimpleLink aceptar;
-	private HTML loadingMessage;
 	private String fileName;
 
 	private static Command closeCommand;
@@ -65,14 +62,6 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 	private void init() {
 		addStyleName("gwt-CerrarSSDialog");
 		mainPanel.setWidth("350px");
-		loadingPanel = new FlowPanel();
-		loadingPanel.addStyleName("alignCenter m30");
-		loadingMessage = new HTML("Cerrando solicitud");
-		loadingPanel.add(loadingMessage);
-		loadingPanel.add(new Image("images/loader.gif"));
-		add(loadingPanel);
-		loadingPanel.setVisible(false);
-
 		successText = new InlineHTML();
 		cierreExitoso = new FlowPanel();
 		Grid layout = new Grid(1, 2);
@@ -143,15 +132,17 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 	public void showLoading(boolean cerrando) {
 		successText.setText("La solicitud se " + (cerrando ? "cerró" : "generó") + " correctamente");
 		setDialogTitle(cerrando ? "Cerrar SS" : "Generar SS");
-		loadingMessage.setHTML(cerrando ? "Cerrando solicitud" : "Generando solicitud");
-		loadingPanel.setVisible(true);
+		LoadingModalDialog.getInstance().showAndCenter(cerrando ? "Cerrar SS" : "Generar SS",
+				cerrando ? "Cerrando solicitud" : "Generando solicitud");
 		cierreExitoso.setVisible(false);
 		formButtons.setVisible(false);
-		showAndCenter();
+	}
+	
+	public void hideLoading(){
+		LoadingModalDialog.getInstance().hide();
 	}
 
 	public void showCierreExitoso(String fileName) {
-		loadingPanel.setVisible(false);
 		cierreExitoso.setVisible(true);
 		formButtons.setVisible(true);
 		this.fileName = fileName;
