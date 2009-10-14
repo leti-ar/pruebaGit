@@ -98,10 +98,10 @@ public class DomiciliosUIData extends UIData {
 			}
 			if (domicilioAEditar != null) {
 				Long idPrincipal = EstadoTipoDomicilioDto.PRINCIPAL.getId();
-				tienePrincipalEntrega = idPrincipal.equals(domicilioAEditar.getIdEntrega())
-						|| containsPpalEntrega(listaDomicilios);
-				tienePrincipalFacturacion = idPrincipal.equals(domicilioAEditar.getIdFacturacion())
-						|| containsPpalFacturacion(listaDomicilios);
+				tienePrincipalEntrega = !idPrincipal.equals(domicilioAEditar.getIdEntrega())
+						&& containsPpalEntrega(listaDomicilios);
+				tienePrincipalFacturacion = !idPrincipal.equals(domicilioAEditar.getIdFacturacion())
+						&& containsPpalFacturacion(listaDomicilios);
 			} else {
 				tienePrincipalEntrega = containsPpalEntrega(listaDomicilios);
 				tienePrincipalFacturacion = containsPpalFacturacion(listaDomicilios);
