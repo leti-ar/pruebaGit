@@ -437,7 +437,7 @@ public class CuentaDatosForm extends Composite {
 
 		tarjetaTable.setText(2, 0, Sfa.constant().vtoAnio());
 		tarjetaTable.setWidget(2, 1, camposTabDatos.getAnioVto());		
-		tarjetaTable.setWidget(2, 3, camposTabDatos.getValidarTarjeta());
+		tarjetaTable.setWidget(2, 3, null /*camposTabDatos.getValidarTarjeta()*/);
 		tarjetaTable.setWidget(2, 4, null);
 		
 		tarjetaTable.getFlexCellFormatter().addStyleName(1, 0, "req");
