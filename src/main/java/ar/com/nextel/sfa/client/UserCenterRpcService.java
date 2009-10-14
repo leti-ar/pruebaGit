@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.client;
 
 import ar.com.nextel.sfa.client.dto.UserCenterDto;
+import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -24,7 +25,7 @@ public interface UserCenterRpcService extends RemoteService {
 		}
 	}
 
-	public UserCenterDto getUserCenter();
-	public UserCenterDto getDevUserData();
+	public UserCenterDto getUserCenter() throws RpcExceptionMessages;
+	public UserCenterDto getDevUserData() throws RpcExceptionMessages;
 }
 	
