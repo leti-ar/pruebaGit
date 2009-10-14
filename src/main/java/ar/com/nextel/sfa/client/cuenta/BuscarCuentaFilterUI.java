@@ -81,6 +81,7 @@ public class BuscarCuentaFilterUI extends Composite {
 		layout.setWidget(3, 5, buscadorCuentasFilterEditor.getResultadosCombo());
 		EventWrapper eventWrapper = new EventWrapper() {
 			public void doEnter() {
+				buscadorCuentasFilterEditor.getBuscarButton().setFocus(true);
 				doSearch();
 			}
 		};
