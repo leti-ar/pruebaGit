@@ -5,6 +5,8 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.cuenta.AgregarCuentaUI;
+import ar.com.nextel.sfa.client.cuenta.CuentaContactoForm;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
@@ -54,12 +56,21 @@ public class DomiciliosUIData extends UIData {
 	private ListBox facturacion = new ListBox();
 	private ListBox entrega = new ListBox();
 	private ListBox provincia = new ListBox();
+	
+	private static DomiciliosUIData instance = null; 
 
 	// Boolean noNormalizar;
 	private CheckBox validado = new CheckBox();
 	private Label nombreUsuarioUltimaModificacion = new Label();
 	private Label fechaUltimaModificacion = new Label();
 
+	public static DomiciliosUIData getInstance() {
+		if (instance == null) {
+			instance = new DomiciliosUIData();
+		}
+		return instance;
+	}
+	
 	public DomiciliosUIData() {
 		configFields();
 		fields.add(cpa);

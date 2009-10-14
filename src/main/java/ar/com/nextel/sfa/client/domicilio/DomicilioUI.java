@@ -119,7 +119,7 @@ public class DomicilioUI extends NextelDialog {
 	}
 
 	private void init() {
-		domiciliosUIData = new DomiciliosUIData();
+		domiciliosUIData = DomiciliosUIData.getInstance();
 		footerBar = new FormButtonsBar();
 		linkCerrar = new SimpleLink("Cerrar");
 		linkAceptar = new SimpleLink("Aceptar");

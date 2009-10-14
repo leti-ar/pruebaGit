@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.client.domicilio;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -200,6 +201,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	}
 	
 	private void initTable(){
+		boolean cambioCpa = false;
 		domicilioResult = new NextelTable();
 		String[] widths = { "650px",};
 		for (int col = 0; col < widths.length; col++) {
@@ -214,8 +216,24 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		domicilioResult.getRowFormatter().addStyleName(0, "header");
 		domicilioResult.setHTML(0, 0, "Seleccione alguna de estas opciones");
 		domicilioResultWrapper.setWidget(domicilioResult);
-		motivoText.setStyleName("fontNormal");
-		motivoText.setText("CPA modificado al normalizar por diferencia de alturas");
+		if(normalizado) {
+			for (Iterator<DomiciliosCuentaDto> iter = domiciliosEnGrilla.iterator(); iter.hasNext();) {
+				DomiciliosCuentaDto domicilio = (DomiciliosCuentaDto) iter.next();
+				if((!DomiciliosUIData.getInstance().getCpa().getText().equals(domicilio.getCpa())) && (!cambioCpa)) {
+					grillaMotivo.setVisible(true);
+					motivoText.setStyleName("fontNormal");
+					motivoLabel.setVisible(true);
+					motivoText.setText("CPA modificado al normalizar por diferencia de alturas");	
+					cambioCpa = true;
+				}
+				else {
+					grillaMotivo.setVisible(false);
+					motivoLabel.setVisible(false);
+					motivoText.setText("");
+					cambioCpa = false;
+				}
+			}
+		}
 	}
 	
 	public void setTienePrincipales(boolean ppalEntrega, boolean ppalfacturacion){
