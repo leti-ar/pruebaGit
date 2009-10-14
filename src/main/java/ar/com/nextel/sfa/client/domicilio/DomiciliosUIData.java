@@ -5,8 +5,6 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.cuenta.AgregarCuentaUI;
-import ar.com.nextel.sfa.client.cuenta.CuentaContactoForm;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
@@ -56,21 +54,12 @@ public class DomiciliosUIData extends UIData {
 	private ListBox facturacion = new ListBox();
 	private ListBox entrega = new ListBox();
 	private ListBox provincia = new ListBox();
-	
-	private static DomiciliosUIData instance = null; 
 
 	// Boolean noNormalizar;
 	private CheckBox validado = new CheckBox();
 	private Label nombreUsuarioUltimaModificacion = new Label();
 	private Label fechaUltimaModificacion = new Label();
 
-	public static DomiciliosUIData getInstance() {
-		if (instance == null) {
-			instance = new DomiciliosUIData();
-		}
-		return instance;
-	}
-	
 	public DomiciliosUIData() {
 		configFields();
 		fields.add(cpa);
@@ -109,13 +98,13 @@ public class DomiciliosUIData extends UIData {
 			}
 			if (domicilioAEditar != null) {
 				Long idPrincipal = EstadoTipoDomicilioDto.PRINCIPAL.getId();
-				tienePrincipalEntrega = !idPrincipal.equals(domicilioAEditar.getIdEntrega())
-						&& tienePrincipalEntrega;
-				tienePrincipalFacturacion = !idPrincipal.equals(domicilioAEditar.getIdFacturacion())
-						&& tienePrincipalFacturacion;
+				tienePrincipalEntrega = idPrincipal.equals(domicilioAEditar.getIdEntrega())
+						|| containsPpalEntrega(listaDomicilios);
+				tienePrincipalFacturacion = idPrincipal.equals(domicilioAEditar.getIdFacturacion())
+						|| containsPpalFacturacion(listaDomicilios);
 			} else {
 				tienePrincipalEntrega = containsPpalEntrega(listaDomicilios);
-				tienePrincipalFacturacion = containsPpalEntrega(listaDomicilios);
+				tienePrincipalFacturacion = containsPpalFacturacion(listaDomicilios);
 			}
 		} else {
 			tienePrincipalEntrega = false;
@@ -165,9 +154,9 @@ public class DomiciliosUIData extends UIData {
 			numero.setText(domicilio.getNumero() != null ? "" + domicilio.getNumero() : "");
 			piso.setText(domicilio.getPiso());
 			departamento.setText(domicilio.getDepartamento());
-			entreCalle.setText(domicilio.getEntre_calle());
+			entreCalle.setText(domicilio.getEntreCalle());
 			manzana.setText(domicilio.getManzana());
-			ycalle.setText(domicilio.getY_calle());
+			ycalle.setText(domicilio.getYcalle());
 			cpa.setText(domicilio.getCpa());
 			torre.setText(domicilio.getTorre());
 			unidadFuncional.setText(domicilio.getUnidad_funcional());
@@ -182,8 +171,8 @@ public class DomiciliosUIData extends UIData {
 
 	public DomiciliosCuentaDto getDomicilio() {
 		domicilio.setCalle(calle.getText());
-		domicilio.setEntre_calle(entreCalle.getText());
-		domicilio.setY_calle(ycalle.getText());
+		domicilio.setEntreCalle(entreCalle.getText());
+		domicilio.setYcalle(ycalle.getText());
 		domicilio.setCodigo_postal(codigoPostal.getText());
 		domicilio.setLocalidad(localidad.getText());
 		domicilio.setPartido(partido.getText());

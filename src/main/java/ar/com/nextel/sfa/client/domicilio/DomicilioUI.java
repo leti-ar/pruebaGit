@@ -119,7 +119,7 @@ public class DomicilioUI extends NextelDialog {
 	}
 
 	private void init() {
-		domiciliosUIData = DomiciliosUIData.getInstance();
+		domiciliosUIData = new DomiciliosUIData();
 		footerBar = new FormButtonsBar();
 		linkCerrar = new SimpleLink("Cerrar");
 		linkAceptar = new SimpleLink("Aceptar");
@@ -498,7 +498,8 @@ public class DomicilioUI extends NextelDialog {
 		domiciliosUIData.getValidado().setVisible(enable);
 	}
 
-	public void cargarListBoxEntregaFacturacion(List<DomiciliosCuentaDto> domicilios, DomiciliosCuentaDto domicilioAEditar) {
+	public void cargarListBoxEntregaFacturacion(List<DomiciliosCuentaDto> domicilios,
+			DomiciliosCuentaDto domicilioAEditar) {
 		domiciliosUIData.cargarListBox(domicilios, domicilioAEditar);
 	}
 }
