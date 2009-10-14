@@ -62,6 +62,9 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickListener, Cl
 	private InfocomUI infocomUI;
 	private String cuentaID;
 	private static BuscarCuentaResultUI instance;
+	private static Long dialogCuentaId;
+	private static String dialogCodVantive;
+	private static String dialogBusquedaPorDoc;
 
 	public BuscarCuentaResultUI(BuscarCuentaController controller) {
 
@@ -232,16 +235,15 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickListener, Cl
 			ModalMessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(),
 					Sfa.constant().ERR_NO_ACCESO_CUENTA(), ModalMessageDialog.getCloseCommand());
 		} else if (cuentaSearch.getLockingState() == 2) {
-			String msg = Sfa.constant().ERR_CUENTA_LOCKEADA_POR_OTRO().replaceAll("\\{1\\}",
-					cuentaSearch.getNumero()).replaceAll("\\{2\\}", cuentaSearch.getSupervisor());
-			ModalMessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_DIALOG_TITLE(), msg,
-					getAceptarConsultarCtaLockeada(cuentaSearch, getCondicionBusquedaPorDni()),
-					ModalMessageDialog.getCloseCommand());
+			this.dialogCuentaId = cuentaSearch.getId();
+			this.dialogCodVantive =	 cuentaSearch.getCodigoVantive();
+			this.dialogBusquedaPorDoc = getCondicionBusquedaPorDni();
+			String msg = Sfa.constant().ERR_CUENTA_LOCKEADA_POR_OTRO().replaceAll("\\{1\\}", cuentaSearch.getNumero()).replaceAll("\\{2\\}", cuentaSearch.getSupervisor());
+			ModalMessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_DIALOG_TITLE(), msg, getAceptarConsultarCtaLockeada(),	ModalMessageDialog.getCloseCommand());
 		} else {
 			// CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(),
 			// cuentaSearch.getCodigoVantive(),getCondicionBusquedaPorDni());
-			CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(), cuentaSearch.getNumero(),
-					getCondicionBusquedaPorDni());
+			CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(), cuentaSearch.getNumero(), getCondicionBusquedaPorDni());
 		}
 	}
 
@@ -307,14 +309,12 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickListener, Cl
 		return cuenta;
 	}
 
-	public static Command getAceptarConsultarCtaLockeada(final CuentaSearchResultDto cuenta,
-			final String busquedaPorDni) {
+	public static Command getAceptarConsultarCtaLockeada() {
 		if (aceptarCommand == null) {
 			aceptarCommand = new Command() {
 				public void execute() {
 					ModalMessageDialog.getInstance().hide();
-					CuentaClientService.cargarDatosCuenta(cuenta.getId(), cuenta.getCodigoVantive(),
-							busquedaPorDni, true);
+					CuentaClientService.cargarDatosCuenta(dialogCuentaId, dialogCodVantive, dialogBusquedaPorDoc, true);
 				}
 			};
 		}

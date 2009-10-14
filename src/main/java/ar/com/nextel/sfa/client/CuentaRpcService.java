@@ -49,7 +49,7 @@ public interface CuentaRpcService extends RemoteService {
 	public CuentaDto crearSuscriptor(Long id_cuentaPadre) throws RpcExceptionMessages;
 	public VerazInitializer getVerazInitializer() throws RpcExceptionMessages;
 	public VerazResponseDto consultarVeraz(PersonaDto personaDto) throws RpcExceptionMessages;
-	public CuentaDto selectCuenta(Long cuentaId, String cod_vantiveu) throws RpcExceptionMessages;
+	public CuentaDto selectCuenta(Long cuentaId, String cod_vantiveu,boolean filtradoPorDni) throws RpcExceptionMessages;
 	public GranCuentaDto reservaCreacionCuenta(CrearCuentaDto crearCuentaDto) throws RpcExceptionMessages;
 	public TarjetaCreditoValidatorResultDto validarTarjeta(String numeroTarjeta, Integer mesVto,Integer anoVto) throws RpcExceptionMessages;
 	public NormalizarCPAResultDto getDomicilioPorCPA(String cpa) throws RpcExceptionMessages;

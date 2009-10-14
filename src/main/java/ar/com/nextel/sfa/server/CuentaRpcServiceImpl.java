@@ -318,8 +318,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	/**
 	 * 
 	 */
-	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive) throws RpcExceptionMessages {
-		return cuentaBusinessService.selectCuenta(cuentaId, cod_vantive, getVendedor(), mapper);
+	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive,boolean filtradoPorDni) throws RpcExceptionMessages {
+		return cuentaBusinessService.selectCuenta(cuentaId, cod_vantive, getVendedor(), filtradoPorDni, mapper);
 	}
 
 	/**
@@ -339,10 +339,10 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 			solicitudCta.setVentaPotencialOrigen((CuentaPotencial) repository.retrieve(CuentaPotencial.class,
 					crearCuentaDto.getIdOportunidadNegocio()));
 		}
-
 		try {
 			// crea
 			cuenta = (GranCuenta) cuentaBusinessService.reservarCrearCta(solicitudCta);
+			cuentaBusinessService.validarAccesoCuenta(cuenta, getVendedor(), false);
 			if (asociarCuentaSiCorresponde(solicitudCta, cuenta)) {
 				// lockea
 				cuentaBusinessService.saveCuenta(selectCuentaBusinessOperator.getCuentaYLockear(cuenta.getCodigoVantive(), vendedor));
@@ -353,18 +353,13 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 			}
 		} catch (NullPointerException npe) {
 			cuenta = (GranCuenta) searchCuentaBusinessOperator.searchProspectAjenoEnCarga(documento);
-			String nombre = cuenta.getVendedor().getResponsable().getNombre() + " "
-					+ cuenta.getVendedor().getResponsable().getApellido();
+			String nombre = cuenta.getVendedor().getResponsable().getNombre() + " "	+ cuenta.getVendedor().getResponsable().getApellido();
 			String cargo = cuenta.getVendedor().getResponsable().getCargo();
 			String errMsg = ERROR_OPER_OTRO_VENDEDOR.replaceAll("\\{1\\}", cargo);
 			errMsg = errMsg.replaceAll("\\{2\\}", nombre);
-			// throw new
-			// RpcExceptionMessages("El prospect/cliente tiene una operación en curso con otro vendedor. No puede ver sus datos. El "
-			// +cargo+ " es " +nombre);
 			throw new RpcExceptionMessages(errMsg);
-
 		} catch (RpcExceptionMessages rem) {
-			throw ExceptionUtil.wrap(rem);
+			throw new RpcExceptionMessages(rem.getMessage());
 		} catch (Exception e) {
 			AppLogger.info("ERROR al reservarCrearCta: " + e.getMessage());
 			throw ExceptionUtil.wrap(e);
@@ -379,8 +374,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	 * @return
 	 * @throws RpcExceptionMessages
 	 */
-	private boolean asociarCuentaSiCorresponde(SolicitudCuenta solicitudCuenta, Cuenta cuenta)
-			throws RpcExceptionMessages {
+	private boolean asociarCuentaSiCorresponde(SolicitudCuenta solicitudCuenta, Cuenta cuenta) throws RpcExceptionMessages {
 		boolean isValid;
 		if (solicitudCuenta.hasVentaPotencialOrigen()) {
 			// Intentará asociar

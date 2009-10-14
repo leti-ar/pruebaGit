@@ -33,7 +33,7 @@ public interface CuentaRpcServiceAsync {
 	public void searchCuenta(CuentaSearchDto cuentaSearchDto, AsyncCallback<List<CuentaSearchResultDto>> callback);
 	public void getVerazInitializer(AsyncCallback<VerazInitializer> callback);
 	public void consultarVeraz(PersonaDto personaDto, AsyncCallback<VerazResponseDto> callback);
-	public void selectCuenta(Long cuentaId, String cod_vantive,AsyncCallback<CuentaDto> callback);
+	public void selectCuenta(Long cuentaId, String cod_vantive,boolean filtradoPorDni,AsyncCallback<CuentaDto> callback);
 	public void reservaCreacionCuenta(CrearCuentaDto crearCuentaDto, AsyncCallback<GranCuentaDto> callback);
 	public void validarTarjeta(String numeroTarjeta, Integer mesVto, Integer anoVto,AsyncCallback<TarjetaCreditoValidatorResultDto> callback);
 	public void getDomicilioPorCPA(String cpa, AsyncCallback<NormalizarCPAResultDto> callback);

@@ -66,9 +66,9 @@ public class CuentaRpcServiceDelegate {
 		WaitWindow.show();
 		cuentaRpcService.consultarVeraz(personaDto, callback);
 	}
-	public void selectCuenta(Long cuentaId,String cod_vantive,DefaultWaitCallback<CuentaDto> callback) {
+	public void selectCuenta(Long cuentaId,String cod_vantive,boolean filtradoPorDni,DefaultWaitCallback<CuentaDto> callback) {
 		WaitWindow.show();
-		cuentaRpcService.selectCuenta(cuentaId, cod_vantive,callback);
+		cuentaRpcService.selectCuenta(cuentaId, cod_vantive,filtradoPorDni,callback);
 	}
 	public void reservaCreacionCuenta(CrearCuentaDto crearCuentaDto,DefaultWaitCallback<GranCuentaDto>  callback) {
 		WaitWindow.show();

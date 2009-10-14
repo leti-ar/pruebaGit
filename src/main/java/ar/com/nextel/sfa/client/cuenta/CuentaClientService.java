@@ -1,8 +1,6 @@
 package ar.com.nextel.sfa.client.cuenta;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
-import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
@@ -11,7 +9,6 @@ import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
-import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.History;
@@ -209,7 +206,7 @@ public class CuentaClientService {
 	public static void cargarDatosCuenta(final Long cuentaID, final String cod_vantive, final String filtradoPorDni, boolean redir) {
 		cuentaDto = null;
 		error = false;
-		CuentaRpcService.Util.getInstance().selectCuenta(cuentaID, cod_vantive,new DefaultWaitCallback<CuentaDto>() {
+		CuentaRpcService.Util.getInstance().selectCuenta(cuentaID, cod_vantive,(filtradoPorDni!=null),new DefaultWaitCallback<CuentaDto>() {
 			public void success(CuentaDto ctaDto) {
 				cuentaDto = ctaDto;
 			}
@@ -223,7 +220,7 @@ public class CuentaClientService {
 				public boolean execute() {
 					if (cuentaDto == null && !error) 
 						return true;
-					if (!error && puedenMostrarseDatos(cuentaDto,filtradoPorDni)) { 
+					if (!error) { 
 						History.newItem(UILoader.EDITAR_CUENTA + "?cuenta_id=" + cuentaID + "&cod_vantive="+cod_vantive+"&filByDni="+filtradoPorDni);
 					}
 					return false;
@@ -231,23 +228,4 @@ public class CuentaClientService {
 			});
 		}
 	}
-
-	/**
-	 * 
-	 * @param cuentaDto
-	 * @return
-	 */
-	public static boolean puedenMostrarseDatos(CuentaDto cuentaDto, String filtradoPorDni) {
-		boolean result = true;
-		if (filtradoPorDni!=null && filtradoPorDni.equals("0")) { //se filtro busqueda por documento/dni
-			//usuario logueado no es el mismo que el vendedor de la cuenta
-			if (!ClientContext.getInstance().getUsuario().getUserName().equals(cuentaDto.getVendedor(). getUsuarioDto().getUserName())) {
-				result = false;
-				ErrorDialog.getInstance().show(Sfa.constant().ERR_NO_ACCESO_CUENTA(), false);
-				//History.back();
-			}
-		}
-		return result;
-	}
-	
 }

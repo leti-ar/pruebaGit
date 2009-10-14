@@ -25,6 +25,7 @@ import ar.com.nextel.components.accessMode.controller.AccessAuthorizationControl
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.AbstractDatosPago;
+import ar.com.nextel.model.cuentas.beans.ClaseCuenta;
 import ar.com.nextel.model.cuentas.beans.ContactoCuenta;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoCuentaBancaria;
@@ -62,7 +63,11 @@ import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
 @Service
 public class CuentaBusinessService {
 	
-	private final String CUENTA_FILTRADA = "Acceso denegado. No puede operar con esta cuenta.";
+	private final String ERR_CUENTA_PREFIX      = "La cuenta no puede abrirse. <BR/>";
+	private final String ERR_CUENTA_NO_ACCESS   = "Acceso denegado. No puede operar con esta cuenta.";
+	private final String ERR_CUENTA_NO_EDITABLE = ERR_CUENTA_PREFIX + "La Cuenta es de clase {1}";
+	private final String ERR_CUENTA_GOBIERNO    = ERR_CUENTA_PREFIX + "La Cuenta: {1} ({2}) es de clase {3} y pertenece a la cartera de otro vendedor";
+	private final String ERR_CUENTA_NO_PERMISO  = "No tiene permiso para ver esa cuenta.";
 	
 	@Qualifier("createCuentaBusinessOperator")
 	private CreateCuentaBusinessOperator createCuentaBusinessOperator;
@@ -158,7 +163,7 @@ public class CuentaBusinessService {
 			((DatosDebitoTarjetaCredito)cuenta.getDatosPago()).setTipoTarjeta(tipoTarjeta);
 		}
 
-		//FIXME: los contactos no se actualizan cuendo se está guardando suscriptores o divisiones...
+		//FIXME: lo que sigue es para asegurar que los contactos se actualicen cuando se están guardando suscriptores o divisiones...
 		Set<ContactoCuenta>  listaContactos = new HashSet<ContactoCuenta>();
 		for (ContactoCuentaDto contDto: getListaContactosDto(cuentaDto)) {
 			ContactoCuenta contacto = (ContactoCuenta) mapper.map(contDto, ContactoCuenta.class);
@@ -245,13 +250,16 @@ public class CuentaBusinessService {
 	}
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive, Vendedor vendedor, MapperExtended mapper) throws RpcExceptionMessages {
+	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive, Vendedor vendedor, boolean filtradoPorDni, MapperExtended mapper) throws RpcExceptionMessages {
         AppLogger.info("Iniciando SelectCuenta...");
         CuentaDto cuentaDto = null;
         BaseAccessObject accessCuenta = null;
         try {
 			accessCuenta  = cod_vantive!=null && !cod_vantive.equals("null") ? getAccessCuenta(cod_vantive,vendedor) : getAccessCuenta(cuentaId,vendedor);
 			Cuenta cuenta = (Cuenta) accessCuenta.getTargetObject();
+			
+			validarAccesoCuenta(cuenta, vendedor, filtradoPorDni);
+			
 			// Lockea la cuenta
 			if (accessCuenta.getAccessAuthorization().hasSamePermissionsAs(AccessAuthorization.editOnly()) ||
 			                accessCuenta.getAccessAuthorization().hasSamePermissionsAs(AccessAuthorization.fullAccess())) {
@@ -268,7 +276,8 @@ public class CuentaBusinessService {
 			}
 		} catch (Exception e) {
 			AppLogger.error(e);
-			throw ExceptionUtil.wrap(e);
+			//throw ExceptionUtil.wrap(e);
+			throw new RpcExceptionMessages(e.getMessage());
 		}
        	AppLogger.info("SelectCuenta finalizado.");
 		return cuentaDto;
@@ -296,6 +305,31 @@ public class CuentaBusinessService {
         return listaContactosDto;
 	}
 
+	public void validarAccesoCuenta(Cuenta cuenta, Vendedor vendedor, boolean filtradoPorDni) throws RpcExceptionMessages {
+		if (!vendedor.getId().equals(cuenta.getVendedor().getId())) {
+			if (cuenta.isClaseEmpleados()) {
+				throw new RpcExceptionMessages( ERR_CUENTA_NO_EDITABLE.replaceAll("\\{1\\}", ((ClaseCuenta)knownInstanceRetriever.getObject(KnownInstanceIdentifier.CLASE_CUENTA_EMPLEADOS)).getDescripcion()));
+			} else if (cuenta.isGobiernoBsAs()) {
+				String err = ERR_CUENTA_GOBIERNO.replaceAll("\\{1\\}", cuenta.getCodigoVantive()); 
+				err = err.replaceAll("\\{2\\}", cuenta.getPersona().getRazonSocial());
+				err = err.replaceAll("\\{3\\}", ((ClaseCuenta)knownInstanceRetriever.getObject(KnownInstanceIdentifier.CLASE_CUENTA_GOB_BS_AS)).getDescripcion());
+				throw new RpcExceptionMessages(err);
+			} else if (cuenta.isGobierno()) {
+				String err = ERR_CUENTA_GOBIERNO.replaceAll("\\{1\\}", cuenta.getCodigoVantive()); 
+				err = err.replaceAll("\\{2\\}", cuenta.getPersona().getRazonSocial());
+				err = err.replaceAll("\\{3\\}", ((ClaseCuenta)knownInstanceRetriever.getObject(KnownInstanceIdentifier.CLASE_CUENTA_GOBIERNO)).getDescripcion());
+				throw new RpcExceptionMessages(err);
+			} else if (cuenta.isLAP()) {
+				throw new RpcExceptionMessages(ERR_CUENTA_NO_EDITABLE.replaceAll("\\{1\\}", ((ClaseCuenta)knownInstanceRetriever.getObject(KnownInstanceIdentifier.CLASE_CUENTA_LAP)).getDescripcion()));
+			} else if (cuenta.isLA()) {
+				throw new RpcExceptionMessages(ERR_CUENTA_NO_EDITABLE.replaceAll("\\{1\\}", ((ClaseCuenta)knownInstanceRetriever.getObject(KnownInstanceIdentifier.CLASE_CUENTA_LA)).getDescripcion()));				
+			} else if (!filtradoPorDni) { 
+				throw new RpcExceptionMessages(ERR_CUENTA_NO_PERMISO);
+			}
+		}
+	}
+	
+	
 	/**
 	 * 
 	 * @param listaContactos
@@ -397,8 +431,8 @@ public class CuentaBusinessService {
 							AccessAuthorization.fullAccess())) {
 				cuenta.editar(vendedor);
 			} else {
-				accessCuentaPadre.getAccessAuthorization().setReasonPrefix(CUENTA_FILTRADA);
-				throw new RpcExceptionMessages(CUENTA_FILTRADA);
+				accessCuentaPadre.getAccessAuthorization().setReasonPrefix(ERR_CUENTA_NO_ACCESS);
+				throw new RpcExceptionMessages(ERR_CUENTA_NO_ACCESS);
 			}
 		} catch (Exception e) {
 			throw new RpcExceptionMessages(e.getMessage());
