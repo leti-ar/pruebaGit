@@ -434,7 +434,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 				if (op.getIdGrupoSolicitud() != null) {
 					History.newItem(EditarSSUI.getEditarSSUrl(op.getIdCuenta(), op.getIdGrupoSolicitud()));
 				} else {
-					ErrorDialog.getInstance().setDialogTitle("Error");
+					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 					ErrorDialog.getInstance().show(Sfa.constant().ERR_SIN_SS(), false);
 				}
 			} else if (cell.getCellIndex() == 1) {
@@ -462,7 +462,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 					CuentaClientService.getOportunidadNegocio(vta.getIdCuentaPotencial());
 
 				} else {
-					ErrorDialog.getInstance().setDialogTitle("Error");
+					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 					ErrorDialog.getInstance().show(Sfa.constant().ERR_SIN_SS(), false);
 				}
 			} else if (cell.getCellIndex() == 1) {
@@ -505,7 +505,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 				popupCrearSS.hide();
 			}
 		} else {
-			MessageDialog.getInstance().showAceptar("Error", Sfa.constant().ERR_NO_CUENTA_SELECTED(),
+			MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_NO_CUENTA_SELECTED(),
 					MessageDialog.getCloseCommand());
 		}
 	}

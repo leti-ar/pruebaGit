@@ -7,6 +7,7 @@ import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.util.WindowUtils;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
 import com.google.gwt.http.client.Request;
@@ -125,7 +126,7 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 	}
 
 	private void showFileNotFoundError() {
-		MessageDialog.getInstance().showAceptar("Error", Sfa.constant().ERR_FILE_NOT_FOUND(),
+		MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),
 				MessageDialog.getCloseCommand());
 	}
 

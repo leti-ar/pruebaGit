@@ -109,7 +109,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 				guardarItem(sender == aceptar);
 			}
 		} else {
-			ErrorDialog.getInstance().setDialogTitle("Error");
+			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 			ErrorDialog.getInstance().show(errors, false);
 		}
 	}

@@ -9,6 +9,7 @@ import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -112,7 +113,7 @@ public class ServiciosAdicionalesTable extends Composite {
 		servicioSelected = editarSSUIData.getServiciosAdicionales().get(selectedLineaSSRow - 1).get(
 				editingServicioAdicionalRow - 1);
 		double valor = servicioSelected.getPrecioVenta();
-		MessageDialog.getInstance().setDialogTitle("Error");
+		MessageDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 		try {
 			valor = NumberFormat.getDecimalFormat().parse(precioVenta);
 		} catch (NumberFormatException e) {

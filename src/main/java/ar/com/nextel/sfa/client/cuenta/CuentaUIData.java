@@ -196,7 +196,7 @@ public class CuentaUIData extends UIData {
 		observaciones.addKeyUpHandler(new KeyUpHandler() {
 			public void onKeyUp(KeyUpEvent arg0) {
                 if (observaciones.getText().length()>MAX_LENGHT_OBSERVACIONES) {
-					ErrorDialog.getInstance().setDialogTitle("Error");
+					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 					ErrorDialog.getInstance().show(Sfa.constant().ERR_MAX_LARGO_CAMPO(), false);
                 	observaciones.setText(observaciones.getText().substring(0,MAX_LENGHT_OBSERVACIONES));
                 }

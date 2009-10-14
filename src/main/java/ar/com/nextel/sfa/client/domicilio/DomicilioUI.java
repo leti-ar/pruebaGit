@@ -396,7 +396,7 @@ public class DomicilioUI extends NextelDialog {
 		List<String> errores = domiciliosUIData.validarCamposObligatorios();
 		if (errores.size() != 0) {
 			valido = false;
-			ErrorDialog.getInstance().setDialogTitle("Error");
+			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 			ErrorDialog.getInstance().show(errores);
 		}
 		return valido;
@@ -412,7 +412,7 @@ public class DomicilioUI extends NextelDialog {
 	 * Advierte que no se seleccionó una fila.
 	 **/
 	public void openPopupSelectDomicilioDialog() {
-		MessageDialog.getInstance().setDialogTitle("Error");
+		MessageDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 		MessageDialog.getInstance().showAceptar(
 				"Para realizar la acción debe seleccionar una fila de la tabla.",
 				MessageDialog.getCloseCommand());

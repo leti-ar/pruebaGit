@@ -19,6 +19,7 @@ import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
 import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import ar.com.snoop.gwt.commons.client.widget.table.RowListener;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -249,7 +250,7 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickHandler
 				popupCrearSS.hide();
 			}
 		} else {
-			MessageDialog.getInstance().showAceptar("Error", Sfa.constant().ERR_NO_CUENTA_SELECTED(),
+			MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_NO_CUENTA_SELECTED(),
 					MessageDialog.getCloseCommand());
 		}
 	}

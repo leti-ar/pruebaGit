@@ -13,6 +13,7 @@ import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -155,7 +156,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 							|| (DomicilioUI.getInstance().isParentContacto())) {
 						comandoNoNormalizar.execute();
 					} else {
-						MessageDialog.getInstance().setDialogTitle("Error");
+						MessageDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 						MessageDialog.getInstance().showAceptar(
 								Sfa.constant().ERR_DOMICILIO_PPAL_DUPLICADO(),
 								MessageDialog.getCloseCommand());
@@ -170,7 +171,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 							|| (DomicilioUI.getInstance().isParentContacto())) {
 						comandoAceptar.execute();
 					} else {
-						MessageDialog.getInstance().setDialogTitle("Error");
+						MessageDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 						MessageDialog.getInstance().showAceptar(
 								Sfa.constant().ERR_DOMICILIO_PPAL_DUPLICADO(),
 								MessageDialog.getCloseCommand());

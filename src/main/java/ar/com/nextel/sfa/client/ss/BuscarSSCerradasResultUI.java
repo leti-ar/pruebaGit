@@ -14,6 +14,7 @@ import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.WindowUtils;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import ar.com.snoop.gwt.commons.client.widget.table.RowListener;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -244,7 +245,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 						WindowUtils.redirect("/" + contextRoot + "/download/" + filenameFinal
 								+ "?module=solicitudes&service=rtf&name=" + filenameFinal);
 					} else {
-						MessageDialog.getInstance().showAceptar("Error", Sfa.constant().ERR_FILE_NOT_FOUND(),
+						MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),
 								MessageDialog.getCloseCommand());
 					}
 				}

@@ -85,7 +85,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		mainPanel.setVisible(false);
 		tabs.selectTab(0);
 		if (cuenta == null && cuentaPotencial == null) {
-			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
+			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 			ErrorDialog.getInstance().show("No ingreso la cuenta para la cual desea cargar la solicitud",
 					false);
 		} else {
@@ -220,7 +220,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				if (errors.isEmpty()) {
 					guardar();
 				} else {
-					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
+					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 					ErrorDialog.getInstance().show(errors, false);
 				}
 			}
@@ -242,7 +242,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			if (errors.isEmpty()) {
 				guardar();
 			} else {
-				ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
+				ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 				ErrorDialog.getInstance().show(errors, false);
 			}
 		} else if (sender == cancelarButton) {
@@ -290,7 +290,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			getGenerarSSUI().show(editarSSUIData.getCuenta().getPersona(),
 					editarSSUIData.getSolicitudServicioGeneracion(), editarSSUIData.isCDW());
 		} else {
-			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
+			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 			ErrorDialog.getInstance().show(errors, false);
 		}
 	}
@@ -309,7 +309,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							getGeneracionCierreCallback());
 				} else {
 					CerradoSSExitosoDialog.getInstance().hideLoading();
-					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
+					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 					ErrorDialog.getInstance().show(errors, false);
 				}
 			}
@@ -357,7 +357,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		if (!errors.isEmpty()) {
 			validarCompletitud.addStyleName(validarCompletitudFailStyle);
 			if (showErrorDialog) {
-				ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
+				ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 				ErrorDialog.getInstance().show(errors, false);
 			}
 		} else {

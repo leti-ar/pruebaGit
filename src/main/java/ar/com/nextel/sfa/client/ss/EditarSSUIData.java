@@ -142,7 +142,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	private void showMaxLengthTextAreaError(TextArea textArea, int maxLength) {
 		if (textArea.getText().length() > maxLength) {
-			ErrorDialog.getInstance().setDialogTitle("Error");
+			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 			ErrorDialog.getInstance().show(Sfa.constant().ERR_MAX_LARGO_CAMPO(), false);
 			textArea.setText(textArea.getText().substring(0, maxLength));
 		}
