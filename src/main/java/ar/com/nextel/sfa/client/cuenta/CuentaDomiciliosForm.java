@@ -287,11 +287,11 @@ public class CuentaDomiciliosForm extends Composite {
 		} else {
 			for (DomiciliosCuentaDto domi : domicilios) {
 				if ((domi.getIdEntrega() != null) && (domi.getIdFacturacion() != null)) {
-					if (!domi.getIdEntrega().equals(EstadoTipoDomicilioDto.NO.getId())) {
+					if (domi.getIdEntrega().equals(EstadoTipoDomicilioDto.PRINCIPAL.getId())) {
 						hayDomicilioEntrega = new Boolean(true);
 					}
 					;
-					if (!domi.getIdFacturacion().equals(EstadoTipoDomicilioDto.NO.getId())) {
+					if (domi.getIdFacturacion().equals(EstadoTipoDomicilioDto.PRINCIPAL.getId())) {
 						hayDomicilioFacturacion = new Boolean(true);
 					}
 					;
