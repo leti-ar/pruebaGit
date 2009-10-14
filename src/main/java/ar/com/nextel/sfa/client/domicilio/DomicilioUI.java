@@ -5,6 +5,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.cuenta.EditarCuentaUI;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
@@ -115,6 +116,10 @@ public class DomicilioUI extends NextelDialog {
 			domiciliosUIData.enableFields();
 			linkAceptar.setVisible(true);
 		}
+		domiciliosUIData.getEntrega().setVisible(EditarCuentaUI.esEdicionCuenta);
+		domiciliosUIData.getFacturacion().setVisible(EditarCuentaUI.esEdicionCuenta);
+		labelEntrega.setVisible(EditarCuentaUI.esEdicionCuenta);
+		labelFacturacion.setVisible(EditarCuentaUI.esEdicionCuenta);
 		setDialogTitle(title);
 	}
 
