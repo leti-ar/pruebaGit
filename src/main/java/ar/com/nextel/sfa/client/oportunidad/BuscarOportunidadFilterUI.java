@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.widget.EventWrapper;
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItemImpl;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
@@ -64,8 +65,18 @@ public class BuscarOportunidadFilterUI extends Composite {
 		layout.setWidget(3, 1, buscarOportunidadFilterEditor.getDesdeDate());
 		layout.setWidget(3, 2, listaLabels.get(8));
 		layout.setWidget(3, 3, buscarOportunidadFilterEditor.getHastaDate());
+		
+		EventWrapper eventWrapper = new EventWrapper() {
+			public void doEnter() {
+				buscarOportunidadFilterEditor.getBuscarButton().setFocus(true);
+				buscarOportunidadResultPanel.searchOportunidades(buscarOportunidadFilterEditor
+						.getOportunidadSearch());
+			}
+		};
+		eventWrapper.add(layout);
+		mainPanel.add(eventWrapper);
 
-		mainPanel.add(layout);
+//		mainPanel.add(layout);
 
 		FlowPanel commandPanel = new FlowPanel();
 		commandPanel.add(buscarOportunidadFilterEditor.getBuscarButton());
