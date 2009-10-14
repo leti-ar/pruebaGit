@@ -590,11 +590,11 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</field>
 		<field>
 			<a>entre1</a>
-			<b>entre_calle</b>
+			<b>entreCalle</b>
 		</field>
 		<field>
 			<a>entre2</a>
-			<b>y_calle</b>
+			<b>ycalle</b>
 		</field>
 	</mapping>
 	<mapping>
