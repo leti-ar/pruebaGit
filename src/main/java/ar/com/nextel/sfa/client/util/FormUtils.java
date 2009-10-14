@@ -115,20 +115,26 @@ public class FormUtils {
 	 * @return
 	 */
 	public static boolean fieldDirty(Widget field, String dato) {
-		if (!field.isVisible())
-			return false;
 		if (dato == null)
 			dato = "";
 		if (field == null && !dato.equals(""))
 			return true;
 		String fieldText = "";
 		if (field instanceof DatePicker) {
+			if (!((DatePicker) field).isVisible()) 
+				return false;
 			fieldText = ((DatePicker) field).getTextBox().getText();
 		} else if (field instanceof TextBox) {
+			if (!((TextBox) field).isVisible() || !((TextBox) field).isEnabled())
+				return false;
 			fieldText = ((TextBox) field).getText();
 		} else if (field instanceof TextArea) {
+			if (!((TextArea) field).isVisible() || !((TextArea) field).isEnabled())
+				return false;
 			fieldText = ((TextArea) field).getText();
 		} else if (field instanceof ListBox) {
+			if (!((ListBox) field).isVisible() || !((ListBox) field).isEnabled()) 
+				return false;
 			fieldText = ((ListBox) field).getValue((((ListBox) field).getSelectedIndex()));
 		}
 		if (!fieldText.trim().equals(((String) dato).trim())) {
