@@ -69,7 +69,8 @@ public class NormalizarDomicilioUI extends NextelDialog {
 			linkAceptar.setVisible(false);
 			msgNoNormalizado.addStyleName("msgNoNormalizado");
 			grillaPpal.setWidget(3, 0, msgNoNormalizado);
-			grillaMotivo.setVisible(true);
+			motivoLabel.setVisible(true);
+//			grillaMotivo.setVisible(true);
 			//OJO con el get(0):
 						
 			motivoText.setStyleName("fontNormal");
@@ -220,14 +221,14 @@ public class NormalizarDomicilioUI extends NextelDialog {
 			for (Iterator<DomiciliosCuentaDto> iter = domiciliosEnGrilla.iterator(); iter.hasNext();) {
 				DomiciliosCuentaDto domicilio = (DomiciliosCuentaDto) iter.next();
 				if((!DomiciliosUIData.getInstance().getCpa().getText().equals(domicilio.getCpa())) && (!cambioCpa)) {
-					grillaMotivo.setVisible(true);
+//					grillaMotivo.setVisible(true);
 					motivoText.setStyleName("fontNormal");
 					motivoLabel.setVisible(true);
 					motivoText.setText("CPA modificado al normalizar por diferencia de alturas");	
 					cambioCpa = true;
 				}
 				else {
-					grillaMotivo.setVisible(false);
+//					grillaMotivo.setVisible(false);
 					motivoLabel.setVisible(false);
 					motivoText.setText("");
 					cambioCpa = false;
