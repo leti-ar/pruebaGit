@@ -71,10 +71,6 @@ div.popFooter A,div.popFormButtons A {
 	margin-right: 5px;
 }
 
-.gwt-ErrorDialog {
-	width: 400px;
-}
-
 .gwt-ErrorDialog .stackTrace {
 	width: 380px;
 	height: 200px;
