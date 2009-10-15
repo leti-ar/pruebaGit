@@ -1,11 +1,11 @@
 package ar.com.nextel.sfa.client.ss;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.cuenta.CuentaDomiciliosForm;
-import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
@@ -271,7 +271,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		double montoDisponibleValue = solicitud.getMontoDisponible() != null ? solicitud.getMontoDisponible()
 				: 0;
 		double credFidelizacionValue = 0;
-		if (montoDisponibleValue > 0) {
+		boolean fechaCredFidelizacionValida = solicitud.getFechaVencimientoCreditoFidelizacion() == null
+				|| solicitud.getFechaVencimientoCreditoFidelizacion().before(new Date());
+		if (montoDisponibleValue > 0 && fechaCredFidelizacionValida) {
 			credFidelizacion.setEnabled(true);
 			credFidelizacion.setReadOnly(false);
 			credFidelizacionValue = solicitud.getMontoCreditoFidelizacion() != null ? solicitud
@@ -463,7 +465,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 		precioListaText.setHTML(currFormatter.format(precioLista));
 		desvioText.setHTML(currFormatter.format(precioLista - precioVenta));
-		precioVentaText.setHTML(currFormatter.format(precioVenta));
+		double precioVentaTotal = solicitudServicio.getMontoCreditoFidelizacion() != null ? precioVenta
+				- solicitudServicio.getMontoCreditoFidelizacion() : precioVenta;
+		precioVentaText.setHTML(currFormatter.format(precioVentaTotal));
 		if (solicitudServicio.getMontoCreditoFidelizacion() != null) {
 			credFidelText.setHTML(currFormatter.format(solicitudServicio.getMontoCreditoFidelizacion()));
 		} else {
