@@ -52,6 +52,7 @@ import ar.com.snoop.gwt.commons.client.window.MessageWindow;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -1013,8 +1014,11 @@ public class CuentaDatosForm extends Composite {
 				if (((TextBox) campo).isEnabled()) 
 					validator.addTarget((TextBox)campo).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", ((TextBox)campo).getName()));
 			if (campo instanceof ListBox)
-				if (((ListBox) campo).isEnabled()) 
-					validator.addTarget(((ListBox)campo).getSelectedItemText()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}",((ListBox)campo).getName()));
+				if (((ListBox) campo).isEnabled()) {
+//					String texto = ((ListBox)campo).getSelectedItemText().trim();
+//					Window.alert("Ver: " + texto);
+					validator.addTarget(((ListBox)campo).getSelectedItemText().trim()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}",((ListBox)campo).getName()));				
+				}
 		}
 		validator.fillResult();
 		return validator.getErrors();
