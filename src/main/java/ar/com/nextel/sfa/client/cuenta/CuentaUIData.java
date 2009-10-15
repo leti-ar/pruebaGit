@@ -601,6 +601,7 @@ public class CuentaUIData extends UIData {
 		return telFaxTextBox;
 	}
 	public List<Widget> getCamposObligatorios() {
+		//ademas de devolver la lista de campos obligatorios, actua de reset.
 		camposObligatorios.clear();
 		camposObligatorios.add(nombre);
 		camposObligatorios.add(apellido);
