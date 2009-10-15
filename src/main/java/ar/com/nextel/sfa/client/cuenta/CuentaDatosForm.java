@@ -52,7 +52,6 @@ import ar.com.snoop.gwt.commons.client.window.MessageWindow;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -840,6 +839,8 @@ public class CuentaDatosForm extends Composite {
 
 		//PANEL DATOS		
 		if ( (FormUtils.fieldDirty(camposTabDatos.getRazonSocial(), cuentaTab.getCuenta2editDto().getPersona().getRazonSocial()))
+		   ||(FormUtils.fieldDirty(camposTabDatos.getNombre(), cuentaTab.getCuenta2editDto().getPersona().getNombre()))				
+		   ||(FormUtils.fieldDirty(camposTabDatos.getApellido(), cuentaTab.getCuenta2editDto().getPersona().getApellido()))
 		   ||(FormUtils.fieldDirty(camposTabDatos.getSexo(), cuentaTab.getCuenta2editDto().getPersona().getSexo().getItemValue()))
 		   ||(FormUtils.fieldDirty(camposTabDatos.getFechaNacimiento(), cuentaTab.getCuenta2editDto().getPersona().getFechaNacimiento()!=null?DateTimeFormat.getMediumDateFormat().format(cuentaTab.getCuenta2editDto().getPersona().getFechaNacimiento()):""))
    		   ||(FormUtils.fieldDirty(camposTabDatos.getContribuyente(), cuentaTab.getCuenta2editDto().getTipoContribuyente()!=null?cuentaTab.getCuenta2editDto().getTipoContribuyente().getItemValue():null))
@@ -847,7 +848,6 @@ public class CuentaDatosForm extends Composite {
 		   ||(FormUtils.fieldDirty(camposTabDatos.getRubro(), cuentaTab.getCuenta2editDto().getRubro()!=null?cuentaTab.getCuenta2editDto().getRubro().getItemValue():null))
 		   ||(FormUtils.fieldDirty(camposTabDatos.getClaseCliente(), cuentaTab.getCuenta2editDto().getClaseCuenta().getItemValue()))
 		   ||(FormUtils.fieldDirty(camposTabDatos.getCategoria(), cuentaTab.getCuenta2editDto().getCategoriaCuenta().getItemText()))
-   		   //||(FormUtils.fieldDirty(camposTabDatos.getCicloFacturacion(), cuentaTab.getCuenta2editDto().getCicloFacturacion().getDescripcion()))
 		   ||(FormUtils.fieldDirty(camposTabDatos.getObservaciones(), cuentaTab.getCuenta2editDto().getObservacionesTelMail()))
 		) return true;
 
@@ -1014,11 +1014,8 @@ public class CuentaDatosForm extends Composite {
 				if (((TextBox) campo).isEnabled()) 
 					validator.addTarget((TextBox)campo).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", ((TextBox)campo).getName()));
 			if (campo instanceof ListBox)
-				if (((ListBox) campo).isEnabled()) {
-//					String texto = ((ListBox)campo).getSelectedItemText().trim();
-//					Window.alert("Ver: " + texto);
-					validator.addTarget(((ListBox)campo).getSelectedItemText().trim()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}",((ListBox)campo).getName()));				
-				}
+				if (((ListBox) campo).isEnabled()) 
+					validator.addTarget(((ListBox)campo).getSelectedItemText().trim()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}",((ListBox)campo).getName()));
 		}
 		validator.fillResult();
 		return validator.getErrors();
