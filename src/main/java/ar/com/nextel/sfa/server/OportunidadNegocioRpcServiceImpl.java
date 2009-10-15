@@ -65,6 +65,7 @@ public class OportunidadNegocioRpcServiceImpl extends RemoteService implements O
 			throws RpcExceptionMessages {
 		AppLogger.info("Iniciando busqueda de oportunidades...");
 		Vendedor vendedor = sessionContextLoader.getVendedor();
+		oportunidadDto.toUppercase();
 		OportunidadSearchData oportunidadSearchData = mapper.map(oportunidadDto, OportunidadSearchData.class);
 		List<OportunidadNegocioSearchResult> oportunidades = null;
 		try {
