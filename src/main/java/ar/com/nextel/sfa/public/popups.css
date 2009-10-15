@@ -71,6 +71,10 @@ div.popFooter A,div.popFormButtons A {
 	margin-right: 5px;
 }
 
+.gwt-ErrorDialog {
+	width: 400px;
+}
+
 .gwt-ErrorDialog .stackTrace {
 	width: 380px;
 	height: 200px;
@@ -80,6 +84,11 @@ div.popFooter A,div.popFormButtons A {
 .gwt-ErrorDialog .errorMessages {
 	text-align: center;
 	margin: 10px;
+}
+
+.gwt-ErrorDialog .errorMessages-maxHeigth {
+	height: 200px;
+	overflow: auto;
 }
 
 .gwt-CustomDialogBox .message {
