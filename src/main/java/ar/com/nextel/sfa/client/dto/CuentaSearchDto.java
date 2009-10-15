@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.dto;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class CuentaSearchDto implements IsSerializable{
+public class CuentaSearchDto implements IsSerializable {
 
 	private CategoriaCuentaDto categoria;
 	private String numeroCuenta;
@@ -16,7 +16,7 @@ public class CuentaSearchDto implements IsSerializable{
 	private int offset;
 	private String numeroDocumento;
 	private GrupoDocumentoDto grupoDocumentoId;
-	
+
 	public CategoriaCuentaDto getCategoria() {
 		return categoria;
 	}
@@ -113,19 +113,25 @@ public class CuentaSearchDto implements IsSerializable{
 		this.offset = offset;
 	}
 
-//	
-	public String toString(){
+	/** Convierte los campos a mayuscula para la busqueda */
+	public void toUppercase() {
+		razonSocial = razonSocial != null ? razonSocial.toUpperCase() : null;
+		responsable = responsable != null ? responsable.toUpperCase() : null;
+	}
+
+	//	
+	public String toString() {
 		StringBuilder string = new StringBuilder();
 		string.append("Razón Social:" + razonSocial);
-		string.append("\nTipo Doc:"+grupoDocumentoId);
-		string.append("\nNºDocumento:"+numeroDocumento);
-		string.append("\nCategoría:"+categoria);
-		string.append("\nNº Cuenta:"+numeroCuenta);
-		string.append("\nNº Nextel:"+numeroNextel);
-		string.append("\nId de flota:"+flotaId);
-		string.append("\nNº Solicitud:"+numeroSolicitudServicio);
-		string.append("\nResponsable:"+responsable);
-		string.append("\nBusqueda Pred.:"+busquedaPredefinida);
+		string.append("\nTipo Doc:" + grupoDocumentoId);
+		string.append("\nNºDocumento:" + numeroDocumento);
+		string.append("\nCategoría:" + categoria);
+		string.append("\nNº Cuenta:" + numeroCuenta);
+		string.append("\nNº Nextel:" + numeroNextel);
+		string.append("\nId de flota:" + flotaId);
+		string.append("\nNº Solicitud:" + numeroSolicitudServicio);
+		string.append("\nResponsable:" + responsable);
+		string.append("\nBusqueda Pred.:" + busquedaPredefinida);
 		return string.toString();
 	}
 }
