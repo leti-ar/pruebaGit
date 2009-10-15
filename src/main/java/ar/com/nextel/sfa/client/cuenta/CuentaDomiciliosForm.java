@@ -210,7 +210,7 @@ public class CuentaDomiciliosForm extends Composite {
 									huboCambios = true;
 								}
 							});
-							DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
+							DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar,EditarCuentaUI.esEdicionCuenta);
 						}
 					}
 					// Acciones a tomar cuando haga click en iconos de copiado de domicilios:

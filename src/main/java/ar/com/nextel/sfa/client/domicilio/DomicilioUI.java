@@ -100,7 +100,16 @@ public class DomicilioUI extends NextelDialog {
 		cargarPopupDomicilio(domicilio, "Editar Domicilio");
 	}
 
+	public void cargarPopupEditarDomicilio(DomiciliosCuentaDto domicilio,boolean fromReserva) {
+		cargarPopupDomicilio(domicilio, "Editar Domicilio",fromReserva);
+	}
+	
+	
 	private void cargarPopupDomicilio(DomiciliosCuentaDto domicilio, String title) {
+		cargarPopupDomicilio(domicilio, title,true); 
+	}
+	
+	private void cargarPopupDomicilio(DomiciliosCuentaDto domicilio, String title, boolean fromReserva) {
 		isDomicilioPpalEntrega = EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdEntrega());
 		isDomicilioPpalFacturacion = EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(
 				domicilio.getIdFacturacion());
@@ -116,10 +125,10 @@ public class DomicilioUI extends NextelDialog {
 			domiciliosUIData.enableFields();
 			linkAceptar.setVisible(true);
 		}
-		domiciliosUIData.getEntrega().setVisible(EditarCuentaUI.esEdicionCuenta);
-		domiciliosUIData.getFacturacion().setVisible(EditarCuentaUI.esEdicionCuenta);
-		labelEntrega.setVisible(EditarCuentaUI.esEdicionCuenta);
-		labelFacturacion.setVisible(EditarCuentaUI.esEdicionCuenta);
+		domiciliosUIData.getEntrega().setVisible(fromReserva);
+		domiciliosUIData.getFacturacion().setVisible(fromReserva);
+		labelEntrega.setVisible(fromReserva);
+		labelFacturacion.setVisible(fromReserva);
 		setDialogTitle(title);
 	}
 
@@ -458,7 +467,7 @@ public class DomicilioUI extends NextelDialog {
 		Command openUICommand = new Command() {
 			public void execute() {
 				DomicilioUI.getInstance().setComandoAceptar(MessageDialog.getCloseCommand());
-				DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar);
+				DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar,EditarCuentaUI.esEdicionCuenta);
 				MessageDialog.getInstance().hide();
 			}
 		};
