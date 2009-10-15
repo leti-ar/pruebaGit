@@ -414,10 +414,6 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>provincia</a>
 			<b>provincia</b>
 		</field>
-		<field>
-			<a>codigoPostal</a>
-			<b>codigo_postal</b>
-		</field>
 		<field custom-converter-id="enumToDto">
 			<a>estado</a>
 			<b>estado</b>
@@ -574,7 +570,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-b>
 		<field>
 			<a>cp</a>
-			<b>codigo_postal</b>
+			<b>codigoPostal</b>
 		</field>
 		<field>
 			<a>depto</a>

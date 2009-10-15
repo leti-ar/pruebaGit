@@ -218,7 +218,7 @@ public class CuentaDomiciliosForm extends Composite {
 						domicilioAEditar = domicilio;
 						DomiciliosCuentaDto domicilioCopiado = domicilioAEditar.clone();
 						domicilioCopiado.setId(null);
-						domicilioCopiado.setNombre_usuario_ultima_modificacion(null);
+						domicilioCopiado.setNombreUsuarioUltimaModificacion(null);
 						domicilioCopiado.setFecha_ultima_modificacion(null);
 						if (EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilioCopiado.getIdEntrega())) {
 							domicilioCopiado.setIdEntrega(EstadoTipoDomicilioDto.SI.getId());

@@ -337,8 +337,8 @@ public class DomicilioUI extends NextelDialog {
 		domicilioNormalizado.setId(domicilioAEditar.getId());
 		domicilioNormalizado.setIdEntrega(domicilioAEditar.getIdEntrega());
 		domicilioNormalizado.setIdFacturacion(domicilioAEditar.getIdFacturacion());
-		domicilioNormalizado.setNombre_usuario_ultima_modificacion(domicilioAEditar
-				.getNombre_usuario_ultima_modificacion());
+		domicilioNormalizado.setNombreUsuarioUltimaModificacion(domicilioAEditar
+				.getNombreUsuarioUltimaModificacion());
 		domicilioNormalizado.setFecha_ultima_modificacion(domicilioAEditar.getFecha_ultima_modificacion());
 		domicilioNormalizado.setActivo(domicilioAEditar.getActivo());
 		return domicilioNormalizado;

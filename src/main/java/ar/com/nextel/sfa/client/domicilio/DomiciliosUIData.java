@@ -148,7 +148,7 @@ public class DomiciliosUIData extends UIData {
 			this.domicilio = domicilio;
 			/** TODO: Terminar este mapeo! */
 			calle.setText(domicilio.getCalle());
-			codigoPostal.setText(domicilio.getCodigo_postal());
+			codigoPostal.setText(domicilio.getCodigoPostal());
 			localidad.setText(domicilio.getLocalidad());
 			partido.setText(domicilio.getPartido());
 			numero.setText(domicilio.getNumero() != null ? "" + domicilio.getNumero() : "");
@@ -159,10 +159,10 @@ public class DomiciliosUIData extends UIData {
 			ycalle.setText(domicilio.getYcalle());
 			cpa.setText(domicilio.getCpa());
 			torre.setText(domicilio.getTorre());
-			unidadFuncional.setText(domicilio.getUnidad_funcional());
+			unidadFuncional.setText(domicilio.getUnidadFuncional());
 			validado.setValue(domicilio.getValidado());
 			observaciones.setText(domicilio.getObservaciones());
-			nombreUsuarioUltimaModificacion.setText(domicilio.getNombre_usuario_ultima_modificacion());
+			nombreUsuarioUltimaModificacion.setText(domicilio.getNombreUsuarioUltimaModificacion());
 			fechaUltimaModificacion.setText(domicilio.getFecha_ultima_modificacion());
 			entrega.selectByValue("" + domicilio.getIdEntrega());
 			facturacion.selectByValue("" + domicilio.getIdFacturacion());
@@ -173,7 +173,7 @@ public class DomiciliosUIData extends UIData {
 		domicilio.setCalle(calle.getText());
 		domicilio.setEntreCalle(entreCalle.getText());
 		domicilio.setYcalle(ycalle.getText());
-		domicilio.setCodigo_postal(codigoPostal.getText());
+		domicilio.setCodigoPostal(codigoPostal.getText());
 		domicilio.setLocalidad(localidad.getText());
 		domicilio.setPartido(partido.getText());
 		domicilio.setCpa(cpa.getText());
@@ -184,9 +184,9 @@ public class DomiciliosUIData extends UIData {
 		domicilio.setPiso(piso.getText());
 		domicilio.setProvincia((ProvinciaDto) provincia.getSelectedItem());
 		domicilio.setTorre(torre.getText());
-		domicilio.setUnidad_funcional(unidadFuncional.getText());
+		domicilio.setUnidadFuncional(unidadFuncional.getText());
 		domicilio.setValidado(validado.getValue());
-		domicilio.setNombre_usuario_ultima_modificacion(nombreUsuarioUltimaModificacion.getText());
+		domicilio.setNombreUsuarioUltimaModificacion(nombreUsuarioUltimaModificacion.getText());
 		domicilio.setFecha_ultima_modificacion(fechaUltimaModificacion.getText());
 		domicilio.setIdEntrega(Long.parseLong(entrega.getSelectedItem().getItemValue()));
 		domicilio.setIdFacturacion(Long.parseLong(facturacion.getSelectedItem().getItemValue()));

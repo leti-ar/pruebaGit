@@ -14,7 +14,7 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 	private String calle;
 	private String numero;
 	private String piso;
-	private String codigo_postal;
+	private String codigoPostal;
 	private String departamento;
 	private String manzana;
 	private String puerta;
@@ -26,11 +26,9 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 	private ProvinciaDto provincia;
 	private String cpa;
 	private String torre;
-	private String unidad_funcional;
-	private Boolean no_normalizar;
+	private String unidadFuncional;
 	private Boolean validado = false;
-	// private String en_carga;
-	private String nombre_usuario_ultima_modificacion;
+	private String nombreUsuarioUltimaModificacion;
 	private String fecha_ultima_modificacion;
 	private String activo;
 	private Long vantiveId;
@@ -51,15 +49,15 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 				+ this.numero
 				+ (this.piso != null ? " " + this.piso : "")
 				+ (this.departamento != null ? " " + this.departamento : "")
-				+ (this.getUnidad_funcional() != null ? " " + this.getUnidad_funcional() : "")
+				+ (this.getUnidadFuncional() != null ? " " + this.getUnidadFuncional() : "")
 				+ (this.torre != null ? " " + this.torre : "")
 				+ ". "
 				+ this.localidad
 				+ (this.partido != null && !this.partido.equals("") ? "-" + this.partido : "")
 				+ ", "
 				+ this.provincia.getDescripcion()
-				+ (this.cpa != null ? " (" + this.cpa + ")" : this.codigo_postal != null ? " ("
-						+ this.codigo_postal + ")" : "");
+				+ (this.cpa != null ? " (" + this.cpa + ")" : this.codigoPostal != null ? " ("
+						+ this.codigoPostal + ")" : "");
 
 		return domicilios;
 	}
@@ -88,12 +86,12 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 		this.piso = piso;
 	}
 
-	public String getCodigo_postal() {
-		return codigo_postal;
+	public String getCodigoPostal() {
+		return codigoPostal;
 	}
 
-	public void setCodigo_postal(String codigo_postal) {
-		this.codigo_postal = codigo_postal;
+	public void setCodigoPostal(String codigo_postal) {
+		this.codigoPostal = codigo_postal;
 	}
 
 	public String getDepartamento() {
@@ -184,20 +182,12 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 		this.torre = torre;
 	}
 
-	public String getUnidad_funcional() {
-		return unidad_funcional;
+	public String getUnidadFuncional() {
+		return unidadFuncional;
 	}
 
-	public void setUnidad_funcional(String unidad_funcional) {
-		this.unidad_funcional = unidad_funcional;
-	}
-
-	public Boolean getNo_normalizar() {
-		return no_normalizar;
-	}
-
-	public void setNo_normalizar(Boolean no_normalizar) {
-		this.no_normalizar = no_normalizar;
+	public void setUnidadFuncional(String unidadFuncional) {
+		this.unidadFuncional = unidadFuncional;
 	}
 
 	public boolean getValidado() {
@@ -208,24 +198,16 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 		this.validado = validado;
 	}
 
-	// public String getEn_carga() {
-	// return en_carga;
-	// }
-	//
-	// public void setEn_carga(String en_carga) {
-	// this.en_carga = en_carga;
-	// }
-
-	public String getNombre_usuario_ultima_modificacion() {
-		return nombre_usuario_ultima_modificacion;
-	}
-
-	public void setNombre_usuario_ultima_modificacion(String nombre_usuario_ultima_modificacion) {
-		this.nombre_usuario_ultima_modificacion = nombre_usuario_ultima_modificacion;
-	}
-
 	public String getFecha_ultima_modificacion() {
 		return fecha_ultima_modificacion;
+	}
+
+	public String getNombreUsuarioUltimaModificacion() {
+		return nombreUsuarioUltimaModificacion;
+	}
+
+	public void setNombreUsuarioUltimaModificacion(String nombreUsuarioUltimaModificacion) {
+		this.nombreUsuarioUltimaModificacion = nombreUsuarioUltimaModificacion;
 	}
 
 	public void setFecha_ultima_modificacion(String fecha_ultima_modificacion) {
@@ -253,7 +235,7 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 		domicilioCopiado.setCalle(calle);
 		domicilioCopiado.setEntreCalle(entreCalle);
 		domicilioCopiado.setYcalle(ycalle);
-		domicilioCopiado.setCodigo_postal(codigo_postal);
+		domicilioCopiado.setCodigoPostal(codigoPostal);
 		domicilioCopiado.setLocalidad(localidad);
 		domicilioCopiado.setPartido(partido);
 		domicilioCopiado.setCpa(cpa);
@@ -268,7 +250,7 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 		domicilioCopiado.setPuerta(puerta);
 		domicilioCopiado.setTorre(torre);
 		domicilioCopiado.setValidado(validado);
-		domicilioCopiado.setNombre_usuario_ultima_modificacion(nombre_usuario_ultima_modificacion);
+		domicilioCopiado.setNombreUsuarioUltimaModificacion(nombreUsuarioUltimaModificacion);
 		domicilioCopiado.setFecha_ultima_modificacion(fecha_ultima_modificacion);
 		domicilioCopiado.setIdEntrega(idEntrega);
 		domicilioCopiado.setIdFacturacion(idFacturacion);
