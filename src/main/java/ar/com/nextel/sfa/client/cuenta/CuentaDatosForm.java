@@ -1014,8 +1014,10 @@ public class CuentaDatosForm extends Composite {
 				if (((TextBox) campo).isEnabled()) 
 					validator.addTarget((TextBox)campo).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", ((TextBox)campo).getName()));
 			if (campo instanceof ListBox)
-				if (((ListBox) campo).isEnabled()) 
-					validator.addTarget(((ListBox)campo).getSelectedItemText().trim()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}",((ListBox)campo).getName()));
+				if (((ListBox) campo).isEnabled()) { 
+					String texto = ((ListBox)campo).getSelectedItemText()!=null?((ListBox)campo).getSelectedItemText().trim():"";
+					validator.addTarget(texto).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}",((ListBox)campo).getName()));
+				}	
 		}
 		validator.fillResult();
 		return validator.getErrors();
