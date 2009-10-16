@@ -9,6 +9,7 @@ import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
+import ar.com.nextel.sfa.client.enums.CondicionCuentaEnum;
 import ar.com.nextel.sfa.client.enums.TipoContribuyenteEnum;
 import ar.com.nextel.sfa.client.enums.TipoCuentaEnum;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
@@ -218,7 +219,10 @@ public class EditarCuentaUI extends ApplicationUI {
 	}
 	
 	private void doAgregarCuenta() {
-		cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.granCuentaDto);
+		if (CuentaClientService.cuentaDto.getCondicionCuenta().getId()==CondicionCuentaEnum.PROSPECT.getId()) 
+			cuentaTab.getCuentaDatosForm().setAtributosCamposSoloLectura();
+		else
+		    cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.granCuentaDto);
 		completarVisualizacionDatos(CuentaClientService.granCuentaDto);
 	}
 	private void doAgregarDivision() {
@@ -240,9 +244,13 @@ public class EditarCuentaUI extends ApplicationUI {
 		cuentaTab.setNumeroCtaPot(CuentaClientService.cuentaPotencialDto.getNumero());
 		completarVisualizacionDatos(CuentaClientService.cuentaPotencialDto.getCuentaOrigen());
 	}
+
 	private void doBusquedaCuenta() {
 		if(RegularExpressionConstants.isVancuc(CuentaClientService.cuentaDto.getCodigoVantive())) {
-			cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.cuentaDto);
+			if (CuentaClientService.cuentaDto.getCondicionCuenta().getId()==CondicionCuentaEnum.PROSPECT.getId()) 
+				cuentaTab.getCuentaDatosForm().setAtributosCamposSoloLectura();
+			else
+				cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.cuentaDto);
 		} else if(HistoryUtils.getParam("ro")!=null) { 
 			cuentaTab.getCuentaDatosForm().setAtributosCamposSoloLectura();
 		} else {
