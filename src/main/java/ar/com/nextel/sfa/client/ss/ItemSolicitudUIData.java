@@ -113,7 +113,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		fields.add(modalidadCobro = new ListBox());
 		fields.add(alias = new TextBox());
 		fields.add(reservarHidden = new TextBox());
-		fields.add(reservar = new TextBox());
+		fields.add(reservar = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(4)));
 		fields.add(imei = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(15)));
 		fields.add(modeloEq = new ListBox());
 		fields.add(item = new ListBox(" "));
