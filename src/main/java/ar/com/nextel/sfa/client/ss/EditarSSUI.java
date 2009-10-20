@@ -219,14 +219,18 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				errors = editarSSUIData.validarParaGuardar();
 				if (errors.isEmpty()) {
 					guardar();
+					editarSSUIData.setSaved(true);
 				} else {
 					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 					ErrorDialog.getInstance().show(errors, false);
 				}
+			} else {
+				editarSSUIData.setSaved(true);
 			}
-			editarSSUIData.setSaved(true);
-			// Continuo a la página a la que me dirigía.
-			History.newItem(token);
+			// Continuo a la página a la que me dirigía en el caso de que no haya errores.
+			if (errors == null || errors.isEmpty()) {
+				History.newItem(token);
+			}
 			ModalMessageDialog.getInstance().hide();
 		}
 	}
