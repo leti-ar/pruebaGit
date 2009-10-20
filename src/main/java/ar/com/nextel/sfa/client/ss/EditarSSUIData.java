@@ -420,7 +420,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			}
 		}
 		validator.fillResult();
-		return validator.getErrors();
+		List<String> errores = validator.getErrors();
+		errores.addAll(validarCompletitud());
+		return errores;
 	}
 
 	private void validarAlquileresDeLineaSS(GwtValidator validator, LineaSolicitudServicioDto linea) {
