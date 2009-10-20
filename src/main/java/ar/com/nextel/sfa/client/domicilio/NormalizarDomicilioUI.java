@@ -41,7 +41,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	private List<DomiciliosCuentaDto> domiciliosEnGrilla;
 	boolean tienePrincipalEntrega;
 	boolean tienePrincipalFacturacion;
-	private Label motivoLabel = new Label("Motivo: ");
+	private Label motivoLabel = new Label();
 	private Label motivoText = new Label();
 	private boolean normalizado = true;
 	private List<NormalizacionDomicilioMotivoDto> motivos = new ArrayList();
@@ -70,6 +70,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 			linkAceptar.setVisible(false);
 			msgNoNormalizado.addStyleName("msgNoNormalizado");
 			grillaPpal.setWidget(3, 0, msgNoNormalizado);
+			motivoLabel.setText("Motivo: ");
 			motivoLabel.setVisible(true);
 
 			motivoText.setStyleName("fontNormal");
@@ -219,6 +220,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		domicilioResult.addStyleName("gwt-BuscarCuentaResultTable");
 		domicilioResult.getRowFormatter().addStyleName(0, "header");
 		domicilioResult.setHTML(0, 0, "Seleccione alguna de estas opciones");
+		domicilioResult.setRowSelected(0);
 		domicilioResultWrapper.setWidget(domicilioResult);
 		if (normalizado) {
 			for (Iterator<DomiciliosCuentaDto> iter = domiciliosEnGrilla.iterator(); iter.hasNext();) {
@@ -227,6 +229,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 				if ((!domicilio.getCpa().equals(domicilioI.getCpa())) && (!cambioCpa)) {
 					// grillaMotivo.setVisible(true);
 					motivoText.setStyleName("fontNormal");
+					motivoLabel.setText("Aviso: ");
 					motivoLabel.setVisible(true);
 					motivoText.setText("CPA modificado al normalizar por diferencia de alturas");
 					cambioCpa = true;
