@@ -84,6 +84,7 @@ public class InfocomUIData extends UIData {
 		cicloPanel.setWidth("200px");
 		flotaPanel = new HorizontalPanel();
 		flotaPanel.setWidth("70px");
+		flotaPanel.setStyleName("mr30");
 		estadoTerminales = new EstadoTerminales();
 		cicloLabel = new Label("Ciclo: ");
 		ciclo = new InlineHTML();
@@ -131,6 +132,7 @@ public class InfocomUIData extends UIData {
 		responsablePanel.add(responsablePago);
 		scoring = new SimpleLink("Scoring");
 		scoring.addStyleName("infocomSimpleLink");
+		scoring.addStyleName("mr30");
 		scoring.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				getScoring(Long.valueOf(idCuenta));
