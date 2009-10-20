@@ -227,12 +227,14 @@ public class EditarCuentaUI extends ApplicationUI {
 	}
 
 	private void doAgregarCuenta() {
-		if (CuentaClientService.cuentaDto != null
-				&& CuentaClientService.cuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.PROSPECT
-						.getId())
-			cuentaTab.getCuentaDatosForm().setAtributosCamposSoloLectura();
-		else
+		if (CuentaClientService.cuentaDto == null
+				|| CuentaClientService.cuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.PROSPECT_EN_CARGA
+						.getId()) {
 			cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.granCuentaDto);
+		} else {
+			cuentaTab.getCuentaDatosForm().setAtributosCamposSoloLectura();
+		}
+
 		completarVisualizacionDatos(CuentaClientService.granCuentaDto);
 	}
 
