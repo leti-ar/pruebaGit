@@ -109,6 +109,7 @@ public class BuscarCuentaFilterUI extends Composite {
 			for (int i = 0; i < listaErrores.size(); i++) {
 				error.append(listaErrores.get(i) + "<br />");
 			}
+			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 			ErrorDialog.getInstance().show(error.toString(), false);
 		} else {
 			controller.searchCuentas(buscadorCuentasFilterEditor.getCuentaSearch());

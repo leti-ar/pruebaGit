@@ -27,6 +27,7 @@ public class SFAWeb implements EntryPoint {
 	private boolean usarUserCenter = true;
 
 	public void onModuleLoad() {
+		ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 		loadingPopup = new LoadingPopup();
 		WaitWindow.callListenerCollection = new CallListenerCollection();
 		WaitWindow.callListenerCollection.add(new CargandoBigPanelListener());

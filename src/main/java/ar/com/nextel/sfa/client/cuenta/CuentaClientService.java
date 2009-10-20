@@ -9,6 +9,7 @@ import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.History;
@@ -212,6 +213,7 @@ public class CuentaClientService {
 			}
 			public void failure(Throwable caught) {
 				error = true;
+				ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 				super.failure(caught);
 			}
 		});
