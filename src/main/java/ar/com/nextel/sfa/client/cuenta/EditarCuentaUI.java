@@ -227,14 +227,12 @@ public class EditarCuentaUI extends ApplicationUI {
 	}
 
 	private void doAgregarCuenta() {
-		if (CuentaClientService.cuentaDto == null
-				|| CuentaClientService.cuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.PROSPECT_EN_CARGA
-						.getId()) {
-			cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.granCuentaDto);
-		} else {
+		if (CuentaClientService.granCuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.PROSPECT.getId() ||
+			CuentaClientService.granCuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.CUSTOMER.getId()) {
 			cuentaTab.getCuentaDatosForm().setAtributosCamposSoloLectura();
+		} else {
+			cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.granCuentaDto);
 		}
-
 		completarVisualizacionDatos(CuentaClientService.granCuentaDto);
 	}
 
@@ -265,11 +263,12 @@ public class EditarCuentaUI extends ApplicationUI {
 
 	private void doBusquedaCuenta() {
 		if (RegularExpressionConstants.isVancuc(CuentaClientService.cuentaDto.getCodigoVantive())) {
-			if (CuentaClientService.cuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.PROSPECT
-					.getId())
+			if (CuentaClientService.cuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.PROSPECT.getId()||
+				CuentaClientService.cuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.CUSTOMER.getId()) {
 				cuentaTab.getCuentaDatosForm().setAtributosCamposSoloLectura();
-			else
+			} else {
 				cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.cuentaDto);
+			}	
 		} else if (HistoryUtils.getParam("ro") != null) {
 			cuentaTab.getCuentaDatosForm().setAtributosCamposSoloLectura();
 		} else {
