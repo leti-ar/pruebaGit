@@ -128,6 +128,8 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		domicilioResultWrapper.setVisible(true);
 		setWidth("480px");
 
+		this.setRowSelected(0);
+		
 		grillaPpal.getColumnFormatter().setWidth(0, "550px");
 		grillaPpal.setText(0, 0, "Domicilio Ingresado:");
 		grillaPpal.getRowFormatter().addStyleName(0, "layout");
@@ -220,7 +222,6 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		domicilioResult.addStyleName("gwt-BuscarCuentaResultTable");
 		domicilioResult.getRowFormatter().addStyleName(0, "header");
 		domicilioResult.setHTML(0, 0, "Seleccione alguna de estas opciones");
-		domicilioResult.setRowSelected(0);
 		domicilioResultWrapper.setWidget(domicilioResult);
 		if (normalizado) {
 			for (Iterator<DomiciliosCuentaDto> iter = domiciliosEnGrilla.iterator(); iter.hasNext();) {
