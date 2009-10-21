@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.constant;
 
 /**
  * Interface to represent the constants contained in resource bundle:
- * 	'/home/rgrippo/jobs/SFA/workspaceSFA2/sfa-web2/war/WEB-INF/classes/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
+ * 	'/home/jlgperez/workspaceSFASVN/sfa-web2/src/main/java/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
  */
 public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
@@ -106,11 +106,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ERR_DATO_CUIL();
 
   /**
-   * Translated "Error".
+   * Translated "Aviso".
    * 
-   * @return translated "Error"
+   * @return translated "Aviso"
    */
-  @DefaultStringValue("Error")
+  @DefaultStringValue("Aviso")
   @Key("ERR_DIALOG_TITLE")
   String ERR_DIALOG_TITLE();
 
@@ -124,20 +124,20 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ERR_DIA_HABIL();
 
   /**
-   * Translated "La cuenta debe tener un domicilio de entrega.".
+   * Translated "La cuenta debe tener un domicilio principal de entrega.".
    * 
-   * @return translated "La cuenta debe tener un domicilio de entrega."
+   * @return translated "La cuenta debe tener un domicilio principal de entrega."
    */
-  @DefaultStringValue("La cuenta debe tener un domicilio de entrega.")
+  @DefaultStringValue("La cuenta debe tener un domicilio principal de entrega.")
   @Key("ERR_DOMICILIO_ENTREGA")
   String ERR_DOMICILIO_ENTREGA();
 
   /**
-   * Translated "La cuenta debe tener un domicilio de facturación.".
+   * Translated "La cuenta debe tener un domicilio principal de facturación.".
    * 
-   * @return translated "La cuenta debe tener un domicilio de facturación."
+   * @return translated "La cuenta debe tener un domicilio principal de facturación."
    */
-  @DefaultStringValue("La cuenta debe tener un domicilio de facturación.")
+  @DefaultStringValue("La cuenta debe tener un domicilio principal de facturación.")
   @Key("ERR_DOMICILIO_FACTURACION")
   String ERR_DOMICILIO_FACTURACION();
 
@@ -448,11 +448,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String MSG_CUENTA_GUARDADA_OK();
 
   /**
-   * Translated "Mensaje".
+   * Translated "Aviso".
    * 
-   * @return translated "Mensaje"
+   * @return translated "Aviso"
    */
-  @DefaultStringValue("Mensaje")
+  @DefaultStringValue("Aviso")
   @Key("MSG_DIALOG_TITLE")
   String MSG_DIALOG_TITLE();
 
