@@ -35,7 +35,7 @@ public class HeaderMenu extends Composite {
 		menuWrapper.setWidget(mainMenu);
 		menuWrapper.addStyleName("menuWrapper");
 
-		mainPanel.add(new Image("images/toolbar/topbanner_final_01.gif"));
+		mainPanel.add(new Image("images/toolbar/topbanner_final.gif"));
 		mainPanel.add(menuWrapper);
 		menuButton.setVisible(false);
 		menuButton.addStyleName("btn-menu");
