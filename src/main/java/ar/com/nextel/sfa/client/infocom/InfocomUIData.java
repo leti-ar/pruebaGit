@@ -183,7 +183,7 @@ public class InfocomUIData extends UIData {
 		InfocomRpcService.Util.getInstance().getResumenEquipos(numeroCuenta, numeroResponsablePago, new DefaultWaitCallback<ResumenEquipoDto>() {			
 			public void success(ResumenEquipoDto result) {
 				if (result != null) {
-					ResumenEquipoPopUp resumenEquipoPopUp = new ResumenEquipoPopUp("Cuentas - Resumen Por Equipos", "750", numeroResponsablePago);
+					ResumenEquipoPopUp resumenEquipoPopUp = new ResumenEquipoPopUp("Cuentas - Resumen Por Equipos", "785", numeroResponsablePago);
 					resumenEquipoPopUp.setResumenPorEquipo(result);
 					resumenEquipoPopUp.showAndCenter();
 				}
