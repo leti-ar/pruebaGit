@@ -128,7 +128,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		domicilioResultWrapper.setVisible(true);
 		setWidth("480px");
 
-		this.setRowSelected(0);
+		this.setRowSelected(1);
 		
 		grillaPpal.getColumnFormatter().setWidth(0, "550px");
 		grillaPpal.setText(0, 0, "Domicilio Ingresado:");
@@ -297,7 +297,7 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	}
 
 	public void setRowSelected(int rowSelected) {
-		this.rowSelected = rowSelected;
+		domicilioResult.setRowSelected(rowSelected);
 	}
 
 	public DomiciliosCuentaDto getDomicilioEnGrillaSelected() {

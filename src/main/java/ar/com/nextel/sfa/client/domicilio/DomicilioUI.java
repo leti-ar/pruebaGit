@@ -349,7 +349,8 @@ public class DomicilioUI extends NextelDialog {
 		Command comandoAceptarNormalizado = new Command() {
 			public void execute() {
 				if (NormalizarDomicilioUI.getInstance().getRowSelected() < 0) {
-					openPopupSelectDomicilioDialog();
+//					openPopupSelectDomicilioDialog();
+					NormalizarDomicilioUI.getInstance().setRowSelected(1);
 				} else {
 					DomiciliosCuentaDto domicilioNormalizado = NormalizarDomicilioUI.getInstance()
 							.getDomicilioEnGrillaSelected();
