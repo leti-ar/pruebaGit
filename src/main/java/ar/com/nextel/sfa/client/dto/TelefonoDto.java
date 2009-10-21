@@ -12,6 +12,9 @@ public class TelefonoDto implements IsSerializable , IdentifiableDto, Cloneable 
 	private Boolean principal = Boolean.FALSE;
 	//private PersonaDto persona;
     private Long idPersona;
+    
+    private boolean enCarga = true;
+    
 	public TelefonoDto() {}
 	
 	public TelefonoDto(String area, String interno, String numeroLocal,
@@ -75,4 +78,12 @@ public class TelefonoDto implements IsSerializable , IdentifiableDto, Cloneable 
 	public Long getIdPersona() {
 		return idPersona;
 	}
+	
+	public boolean isEnCarga() {
+		return enCarga;
+	}
+	public void setEnCarga(boolean enCarga) {
+		this.enCarga = enCarga;
+	}
+	
 }

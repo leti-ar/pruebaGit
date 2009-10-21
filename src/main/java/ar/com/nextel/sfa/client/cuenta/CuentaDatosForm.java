@@ -756,9 +756,33 @@ public class CuentaDatosForm extends Composite {
 		campos.add(camposTabDatos.getTelPrincipalTextBox().getInterno());
 		campos.add(camposTabDatos.getObservaciones());
 
-		if (!camposTabDatos.getEmailPersonal().getText().equals("")) 
-			campos.add(camposTabDatos.getEmailPersonal());
-
+		//deshabilita los campos tel/email que NO estan en carga.
+		for (TelefonoDto tel: cuentaDto.getPersona().getTelefonos()) {
+			if (!tel.isEnCarga()) {
+				if(tel.getTipoTelefono().getId() == TipoTelefonoEnum.ADICIONAL.getTipo()) {
+					campos.add(camposTabDatos.getTelAdicionalTextBox().getArea());
+					campos.add(camposTabDatos.getTelAdicionalTextBox().getNumero());
+					campos.add(camposTabDatos.getTelAdicionalTextBox().getInterno());
+				} else if(tel.getTipoTelefono().getId() == TipoTelefonoEnum.CELULAR.getTipo()) {
+					campos.add(camposTabDatos.getTelCelularTextBox().getArea());
+					campos.add(camposTabDatos.getTelCelularTextBox().getNumero());
+				} else if(tel.getTipoTelefono().getId() == TipoTelefonoEnum.FAX.getTipo()) {
+					campos.add(camposTabDatos.getTelFaxTextBox().getArea());
+					campos.add(camposTabDatos.getTelFaxTextBox().getNumero());
+					campos.add(camposTabDatos.getTelFaxTextBox().getInterno());
+				}
+			}
+		}
+		for (EmailDto email: cuentaDto.getPersona().getEmails()) {
+			if (!email.isEnCarga()) {
+				if(email.getTipoEmail().getId() == TipoEmailEnum.PERSONAL.getTipo()) {
+					campos.add(camposTabDatos.getEmailPersonal());
+				} else if(email.getTipoEmail().getId() == TipoEmailEnum.LABORAL.getTipo()) {
+					campos.add(camposTabDatos.getEmailLaboral());
+				}
+			}
+		}
+		
 		campos.add(camposTabDatos.getFormaPago());
 		campos.add(camposTabDatos.getCbu());
 		campos.add(camposTabDatos.getTipoCuentaBancaria());
