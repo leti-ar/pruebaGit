@@ -366,7 +366,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		try {
 			// crea
 			cuenta = (GranCuenta) cuentaBusinessService.reservarCrearCta(solicitudCta);
-			cuentaBusinessService.validarAccesoCuenta(cuenta, getVendedor(), false);
+			cuentaBusinessService.validarAccesoCuenta(cuenta, getVendedor(), true);
 			if (asociarCuentaSiCorresponde(solicitudCta, cuenta)) {
 				// lockea
 				cuentaBusinessService.saveCuenta(selectCuentaBusinessOperator.getCuentaYLockear(cuenta
