@@ -77,10 +77,11 @@ public class ResumenEquipoPopUp extends NextelDialog {
 	private void initTable(FlexTable table) {
 		SimplePanel contPanel = new SimplePanel();
 		contPanel.addStyleName("resultTableWrapper");
-		String[] widths = { "74px", "99px", "99px", "99px", "99px", "99px",
-				"99px", "99px", "99px", "99px", "99px", "99px", "99px", "99px" };
+		String[] widths = { "74px", "65px", "65px", "65px", "65px", "65px",
+				"65px", "65px", "65px", "65px", "65px", "65px", "65px", "65px", };
 		for (int col = 1; col < widths.length; col++) {
-			table.getColumnFormatter().setWidth(col, widths[col]);
+//			table.getColumnFormatter().setWidth(col, widths[col]);
+			table.getCellFormatter().setWidth(0, col, widths[col]);
 			table.getColumnFormatter().addStyleName(col, "alignCenter");
 		}
 		
@@ -103,6 +104,7 @@ public class ResumenEquipoPopUp extends NextelDialog {
 		table.setHTML(0, 12, "DDI y Roam");
 		table.setHTML(0, 13, "Pagers");
 		table.setHTML(0, 14, "Tot c/imp");
+		table.setHTML(0, 15, "");
 		if (responsablePago!=null) {
 			table.getColumnFormatter().addStyleName(0, "cg1");
 			table.setHTML(0, 0, "");
