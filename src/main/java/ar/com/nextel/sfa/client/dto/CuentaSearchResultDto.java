@@ -4,7 +4,7 @@ import ar.com.nextel.sfa.client.context.ClientContext;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class CuentaSearchResultDto implements IsSerializable{
+public class CuentaSearchResultDto implements IsSerializable {
 
 	private long id;
 	private String codigoVantive;
@@ -105,6 +105,10 @@ public class CuentaSearchResultDto implements IsSerializable{
 		this.ejecutivo = ejecutivo;
 	}
 
+	public boolean isEjecutivoOwner(String ejecutivo) {
+		return this.ejecutivo == null || this.ejecutivo.equals(ejecutivo);
+	}
+
 	public long getCondicionCuenta() {
 		return condicionCuenta;
 	}
@@ -127,6 +131,10 @@ public class CuentaSearchResultDto implements IsSerializable{
 
 	public void setClaseCuenta(long claseCuenta) {
 		this.claseCuenta = claseCuenta;
+	}
+
+	public boolean isCuentaGobierno() {
+		return claseCuenta == ClaseCuentaDto.ID_GOB_BS_AS || claseCuenta == ClaseCuentaDto.ID_GOBIERNO;
 	}
 
 	public String getSupervisor() {
@@ -153,7 +161,7 @@ public class CuentaSearchResultDto implements IsSerializable{
 		this.sincronizada = sincronizada;
 	}
 
-	public boolean isPuedeVerInfocom() {		
+	public boolean isPuedeVerInfocom() {
 		return ClientContext.getInstance().getUsuario().getUserName().equals(this.ejecutivo);
 	}
 

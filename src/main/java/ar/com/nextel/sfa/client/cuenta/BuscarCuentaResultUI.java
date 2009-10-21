@@ -5,6 +5,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
@@ -23,7 +24,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -38,7 +38,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author jlgperez
  * 
  */
-public class BuscarCuentaResultUI extends FlowPanel implements ClickListener, ClickHandler {
+public class BuscarCuentaResultUI extends FlowPanel implements ClickHandler {
 
 	static final String LUPA_TITLE = "Ver Infocom";
 	static final String BLOQUEADO_TITLE = "Bloqueado para el usuario actual";
@@ -218,8 +218,17 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickListener, Cl
 				resultTable.setHTML(i + 1, 3, cuentasActuales.get(i).getNumero());
 				resultTable.setHTML(i + 1, 4, cuentasActuales.get(i).getRazonSocial());
 				resultTable.setHTML(i + 1, 5, cuentasActuales.get(i).getApellidoContacto());
-				resultTable.setHTML(i + 1, 6, cuentasActuales.get(i).getNumeroTelefono() != null ? cuentas
-						.get(i).getNumeroTelefono() : "");
+				// No muestro telefono en cuentas del gobierno de otro usuario
+				boolean ocultarTelefono = !cuentasActuales.get(i).isEjecutivoOwner(
+						ClientContext.getInstance().getUsuario().getUserName())
+						&& cuentasActuales.get(i).isCuentaGobierno();
+				if (ocultarTelefono) {
+					resultTable.setHTML(i + 1, 6, Sfa.constant().whiteSpace());
+				} else {
+					resultTable.setHTML(i + 1, 6,
+							cuentasActuales.get(i).getNumeroTelefono() != null ? cuentas.get(i)
+									.getNumeroTelefono() : "");
+				}
 			}
 		}
 		setVisible(true);
@@ -236,14 +245,17 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickListener, Cl
 					Sfa.constant().ERR_NO_ACCESO_CUENTA(), ModalMessageDialog.getCloseCommand());
 		} else if (cuentaSearch.getLockingState() == 2) {
 			this.dialogCuentaId = cuentaSearch.getId();
-			this.dialogCodVantive =	 cuentaSearch.getCodigoVantive();
+			this.dialogCodVantive = cuentaSearch.getCodigoVantive();
 			this.dialogBusquedaPorDoc = getCondicionBusquedaPorDni();
-			String msg = Sfa.constant().ERR_CUENTA_LOCKEADA_POR_OTRO().replaceAll("\\{1\\}", cuentaSearch.getNumero()).replaceAll("\\{2\\}", cuentaSearch.getSupervisor());
-			ModalMessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_DIALOG_TITLE(), msg, getAceptarConsultarCtaLockeada(),	ModalMessageDialog.getCloseCommand());
+			String msg = Sfa.constant().ERR_CUENTA_LOCKEADA_POR_OTRO().replaceAll("\\{1\\}",
+					cuentaSearch.getNumero()).replaceAll("\\{2\\}", cuentaSearch.getSupervisor());
+			ModalMessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_DIALOG_TITLE(), msg,
+					getAceptarConsultarCtaLockeada(), ModalMessageDialog.getCloseCommand());
 		} else {
 			// CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(),
 			// cuentaSearch.getCodigoVantive(),getCondicionBusquedaPorDni());
-			CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(), cuentaSearch.getNumero(), getCondicionBusquedaPorDni());
+			CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(), cuentaSearch.getNumero(),
+					getCondicionBusquedaPorDni());
 		}
 	}
 
@@ -314,14 +326,12 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickListener, Cl
 			aceptarCommand = new Command() {
 				public void execute() {
 					ModalMessageDialog.getInstance().hide();
-					CuentaClientService.cargarDatosCuenta(dialogCuentaId, dialogCodVantive, dialogBusquedaPorDoc, true);
+					CuentaClientService.cargarDatosCuenta(dialogCuentaId, dialogCodVantive,
+							dialogBusquedaPorDoc, true);
 				}
 			};
 		}
 		return aceptarCommand;
-	}
-
-	public void onClick(Widget sender) {
 	}
 
 	public void onClick(ClickEvent arg0) {

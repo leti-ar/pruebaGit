@@ -6,6 +6,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ClaseCuentaDto extends EnumDto implements IsSerializable, ListBoxItem  {
 
+	public static long ID_GOBIERNO = 6;
+	public static long ID_GOB_BS_AS = 50;
+	
 	public ClaseCuentaDto() {
 	}
 	public ClaseCuentaDto(long id, String descripcion) {
