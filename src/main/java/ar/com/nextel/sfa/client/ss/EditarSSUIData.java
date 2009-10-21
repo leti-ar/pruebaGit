@@ -272,7 +272,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				: 0;
 		double credFidelizacionValue = 0;
 		boolean fechaCredFidelizacionValida = solicitud.getFechaVencimientoCreditoFidelizacion() == null
-				|| solicitud.getFechaVencimientoCreditoFidelizacion().before(new Date());
+				|| solicitud.getFechaVencimientoCreditoFidelizacion().after(new Date());
 		if (montoDisponibleValue > 0 && fechaCredFidelizacionValida) {
 			credFidelizacion.setEnabled(true);
 			credFidelizacion.setReadOnly(false);
