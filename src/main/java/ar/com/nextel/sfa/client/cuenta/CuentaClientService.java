@@ -60,7 +60,7 @@ public class CuentaClientService {
 					if (granCuentaDto == null && !error) 
 						return true;
 					if (!error)
-						History.newItem(UILoader.EDITAR_CUENTA + "?nroDoc=" + nroDoc +"&idDoc=" + idTipoDoc + "&idOpp="+idOpp);
+						History.newItem(UILoader.EDITAR_CUENTA + "?nroDoc=" + nroDoc +"&idDoc=" + idTipoDoc + "&idOpp="+idOpp + "&cuenta_id="+granCuentaDto.getId());
 					return false;
 				}
 			});
@@ -98,7 +98,7 @@ public class CuentaClientService {
 					if (cuentaDto==null && !error) 
 						return true;
 					if (!error)
-						History.newItem(UILoader.EDITAR_CUENTA + "?div=true" + "&idCtaPadre="+id_cuentaPadre);
+						History.newItem(UILoader.EDITAR_CUENTA + "?div=true" + "&idCtaPadre="+id_cuentaPadre + "&cuenta_id="+cuentaDto.getId());
 					return false;
 				}
 			});
@@ -135,7 +135,7 @@ public class CuentaClientService {
 					if (cuentaDto == null && !error) 
 						return true;
 					if (!error)
-						History.newItem(UILoader.EDITAR_CUENTA + "?sus=true" + "&idCtaPadre="+id_cuentaPadre);
+						History.newItem(UILoader.EDITAR_CUENTA + "?sus=true" + "&idCtaPadre="+id_cuentaPadre + "&cuenta_id="+cuentaDto.getId());
 					return false;
 				}
 			});
@@ -172,7 +172,7 @@ public class CuentaClientService {
 					if (cuentaPotencialDto == null && !error) 
 						return true;
 					if (!error)
-						History.newItem(UILoader.EDITAR_CUENTA + "?opp=true"+"&idOpp="+idOpp);
+						History.newItem(UILoader.EDITAR_CUENTA + "?opp=true"+"&idOpp="+idOpp + "&cuenta_id=" + cuentaPotencialDto.getCuentaOrigen().getId());
 					return false;
 				}
 			});
