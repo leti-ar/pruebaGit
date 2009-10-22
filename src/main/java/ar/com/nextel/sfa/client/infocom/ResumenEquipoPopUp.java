@@ -28,7 +28,6 @@ public class ResumenEquipoPopUp extends NextelDialog {
 	private InlineHTML factura;
 	private InlineHTML emision;
 	private String responsablePago;
-
 	
 	private final NumberFormat numberFormat = NumberFormat.getCurrencyFormat();
 
@@ -77,8 +76,8 @@ public class ResumenEquipoPopUp extends NextelDialog {
 	private void initTable(FlexTable table) {
 		SimplePanel contPanel = new SimplePanel();
 		contPanel.addStyleName("resultTableWrapper");
-		String[] widths = { "74px", "65px", "65px", "65px", "65px", "65px",
-				"65px", "65px", "65px", "65px", "65px", "65px", "65px", "65px", };
+		String[] widths = { "74px", "70px", "70px", "70px", "70px", "70px",
+				"70px", "70px", "70px", "70px", "70px", "70px", "70px", "70px", "70px"};
 		for (int col = 1; col < widths.length; col++) {
 //			table.getColumnFormatter().setWidth(col, widths[col]);
 			table.getCellFormatter().setWidth(0, col, widths[col]);
