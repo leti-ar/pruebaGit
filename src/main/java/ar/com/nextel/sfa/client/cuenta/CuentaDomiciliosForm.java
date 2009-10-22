@@ -22,6 +22,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
@@ -50,6 +52,7 @@ public class CuentaDomiciliosForm extends Composite {
 		mainPanel = new FlowPanel();
 		footerBar = new FormButtonsBar();
 		datosTabla = new FlexTable();
+		datosTabla.setWidth("100%");
 		agregaTableListeners();
 		initWidget(mainPanel);
 		mainPanel.setWidth("100%");
@@ -78,13 +81,12 @@ public class CuentaDomiciliosForm extends Composite {
 		crearDomicilioWrapper.addStyleName("h20");
 		mainPanel.add(crearDomicilioWrapper);
 		//
-		initTable(datosTabla);
 		mainPanel.add(datosTabla);
 		mainPanel.add(footerBar);
 	}
 
-	private void initTable(FlexTable table) {
-
+	private void initTableCompleta(FlexTable table) {
+        limpiarPrimeraFilaTabla();
 		String[] widths = { "24px", "24px", "24px", "100px", "100px", "75%", "50px" };
 		for (int col = 0; col < widths.length; col++) {
 			table.getColumnFormatter().setWidth(col, widths[col]);
@@ -105,6 +107,22 @@ public class CuentaDomiciliosForm extends Composite {
 		table.setHTML(0, 6, Sfa.constant().whiteSpace());
 	}
 
+	private void initTableOpp(FlexTable table) {
+		limpiarPrimeraFilaTabla();
+		String[] widths = { "5%", "95%"};
+		for (int col = 0; col < widths.length; col++) {
+			table.getColumnFormatter().setWidth(col, widths[col]);
+		}
+		table.getColumnFormatter().addStyleName(0, "alignCenter");
+		table.setCellPadding(0);
+		table.setCellSpacing(0);
+		table.addStyleName("gwt-BuscarCuentaResultTable");
+		table.getRowFormatter().addStyleName(0, "header");
+		table.setHTML(0, 0, Sfa.constant().whiteSpace());
+		table.setHTML(0, 1, Sfa.constant().domicilios());
+	}
+	
+	
 	/**
 	 * @author eSalvador Refresca la grilla de domicilios
 	 **/
@@ -117,51 +135,62 @@ public class CuentaDomiciliosForm extends Composite {
 	 **/
 	public void cargaTablaDomicilios(final CuentaDto cuentaDto) {
 		this.cuentaDto = cuentaDto;
-
+        int col;
 		List<DomiciliosCuentaDto> domicilios = cuentaDto.getPersona().getDomicilios();
 		limpiaTablaDomicilios();
+		if (EditarCuentaUI.esEdicionCuenta) {
+			initTableCompleta(datosTabla);
+		} else {
+			initTableOpp(datosTabla);
+		}
+
 		for (int i = 0; i < domicilios.size(); i++) {
 			if (domicilios.get(i) != null) {
 				// Carga los iconos:
-				datosTabla.setWidget(i + 1, 0, IconFactory.lapiz());
+				col = 0;
+				datosTabla.setWidget(i + 1, col, IconFactory.lapiz());
+				datosTabla.getCellFormatter().setAlignment(i+1, col, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
+
 				if (EditarCuentaUI.esEdicionCuenta) {
-					datosTabla.setWidget(i + 1, 1, IconFactory.copiar());
-					datosTabla.setWidget(i + 1, 2, IconFactory.cancel());
-				}
-				if ((domicilios.get(i).getIdEntrega() != null)
-						&& (domicilios.get(i).getIdFacturacion() != null)) {
-
-					Long idEntrega = domicilios.get(i).getIdEntrega();
-					Long idFacturacion = domicilios.get(i).getIdFacturacion();
-					/** Logica para mostrar tipoDomicilio en la grilla de Resultados: */
-
-					datosTabla.getCellFormatter().addStyleName(i + 1, 3, "alignCenter");
-					datosTabla.getCellFormatter().addStyleName(i + 1, 4, "alignCenter");
-					if (EditarCuentaUI.esEdicionCuenta) {
+					datosTabla.setWidget(i + 1, ++col, IconFactory.copiar());
+					datosTabla.getCellFormatter().setAlignment(i+1, col, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
+					datosTabla.setWidget(i + 1, ++col, IconFactory.cancel());
+					datosTabla.getCellFormatter().setAlignment(i+1, col, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
+					if ((domicilios.get(i).getIdEntrega() != null)	&& (domicilios.get(i).getIdFacturacion() != null)) {
+						Long idEntrega = domicilios.get(i).getIdEntrega();
+						Long idFacturacion = domicilios.get(i).getIdFacturacion();
 						// Entrega;
 						if (idEntrega == 2) {
-							datosTabla.setHTML(i + 1, 3, "Principal");
+							datosTabla.setHTML(i + 1, ++col, "Principal");
 						} else if (idEntrega == 0) {
-							datosTabla.setHTML(i + 1, 3, "Si");
+							datosTabla.setHTML(i + 1, ++col, "Si");
 						} else if (idEntrega == 1) {
-							datosTabla.setHTML(i + 1, 3, "No");
+							datosTabla.setHTML(i + 1, ++col, "No");
 						}
+						datosTabla.getCellFormatter().addStyleName(i + 1, col, "alignCenter");
 
 						// Facturacion:
 						if (idFacturacion == 2) {
-							datosTabla.setHTML(i + 1, 4, "Principal");
+							datosTabla.setHTML(i + 1, ++col, "Principal");
 						} else if (idFacturacion == 0) {
-							datosTabla.setHTML(i + 1, 4, "Si");
+							datosTabla.setHTML(i + 1, ++col, "Si");
 						} else if (idFacturacion == 1) {
-							datosTabla.setHTML(i + 1, 4, "No");
+							datosTabla.setHTML(i + 1, ++col, "No");
 						}
+						datosTabla.getCellFormatter().addStyleName(i + 1, col, "alignCenter");
 					}
 				}
-				datosTabla.setHTML(i + 1, 5, domicilios.get(i).getDomicilios());
+				datosTabla.setHTML(i + 1, ++col, domicilios.get(i).getDomicilios());
 			}
 		}
 	}
 
+	private void limpiarPrimeraFilaTabla() {
+		if (datosTabla.isCellPresent(0, 0)) {
+			datosTabla.removeRow(0);
+		}
+	}
+	
 	public void limpiaTablaDomicilios() {
 		while (datosTabla.getRowCount() > 1) {
 			datosTabla.removeRow(1);
