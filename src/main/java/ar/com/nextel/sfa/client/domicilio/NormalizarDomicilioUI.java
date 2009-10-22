@@ -45,7 +45,6 @@ public class NormalizarDomicilioUI extends NextelDialog {
 	private Label motivoText = new Label();
 	private boolean normalizado = true;
 	private List<NormalizacionDomicilioMotivoDto> motivos = new ArrayList();
-	private int rowSelected;
 	private Label msgNoNormalizado = new Label("No se pudo normalizar el domicilio");
 
 	private static NormalizarDomicilioUI instance = new NormalizarDomicilioUI();
@@ -128,8 +127,6 @@ public class NormalizarDomicilioUI extends NextelDialog {
 		domicilioResultWrapper.setVisible(true);
 		setWidth("480px");
 
-		this.setRowSelected(1);
-		
 		grillaPpal.getColumnFormatter().setWidth(0, "550px");
 		grillaPpal.setText(0, 0, "Domicilio Ingresado:");
 		grillaPpal.getRowFormatter().addStyleName(0, "layout");
