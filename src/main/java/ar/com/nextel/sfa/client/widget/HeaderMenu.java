@@ -25,6 +25,20 @@ public class HeaderMenu extends Composite {
 	private FlowPanel mainPanel = new FlowPanel();
 	private MenuBar mainMenu = new MenuBar();
 	private Button menuButton = new Button();
+	private MenuItem cuentasMenuItem;
+	private MenuItem cuentasBuscarMenuItem;
+	private MenuItem cuentasAgregarMenuItem;
+	private MenuItem ssBuscarMenuItem;
+	private MenuItem verazMenuItem;
+	private MenuItem oppBuscarMenuItem;
+	private MenuItem opEnCursoMenuItem;
+	public static final int MENU_CUENTA = 1;
+	public static final int MENU_CUENTA_BUSCAR = 2;
+	public static final int MENU_CUENTA_AGREGAR = 4;
+	public static final int MENU_SOLICITUD = 8;
+	public static final int MENU_VERAZ = 16;
+	public static final int MENU_OPORTUNIDADES = 32;
+	public static final int MENU_OP_EN_CURSO = 64;
 
 	public HeaderMenu() {
 		initWidget(mainPanel);
@@ -62,38 +76,50 @@ public class HeaderMenu extends Composite {
 
 		// NOTA: si se establecen debug IDs, setear primero los de los Menues y después lo de los submenues.
 		// rgm
-		MenuItem cuentasMenuItem = mainMenu.addItem("Cuentas", menuCuentas);
+		cuentasMenuItem = mainMenu.addItem("Cuentas", menuCuentas);
 		cuentasMenuItem.ensureDebugId(DebugConstants.MENU_CUENTAS);
 
-		MenuItem cuentasBuscar = new MenuItem("Buscar", new OpenPageCommand(UILoader.BUSCAR_CUENTA));
-		cuentasBuscar.ensureDebugId(DebugConstants.MENU_CUENTAS_BUSCAR);
-		menuCuentas.addItem(cuentasBuscar);
+		cuentasBuscarMenuItem = new MenuItem("Buscar", new OpenPageCommand(UILoader.BUSCAR_CUENTA));
+		cuentasBuscarMenuItem.ensureDebugId(DebugConstants.MENU_CUENTAS_BUSCAR);
+		menuCuentas.addItem(cuentasBuscarMenuItem);
 
-		MenuItem cuentasAgregar = new MenuItem("Agregar", new OpenPageCommand(UILoader.AGREGAR_CUENTA));
-		cuentasAgregar.ensureDebugId(DebugConstants.MENU_CUENTAS_AGREGAR);
-		menuCuentas.addItem(cuentasAgregar);
-
-		mainMenu.addSeparator();
-
-		MenuItem ssBuscar = new MenuItem("SS", new OpenPageCommand(UILoader.BUSCAR_SOLICITUD));
-		ssBuscar.ensureDebugId(DebugConstants.MENU_SS_BUSCAR);
-		mainMenu.addItem(ssBuscar);
+		cuentasAgregarMenuItem = new MenuItem("Agregar", new OpenPageCommand(UILoader.AGREGAR_CUENTA));
+		cuentasAgregarMenuItem.ensureDebugId(DebugConstants.MENU_CUENTAS_AGREGAR);
+		menuCuentas.addItem(cuentasAgregarMenuItem);
 
 		mainMenu.addSeparator();
 
-		MenuItem verazVeraz = new MenuItem("Veraz", new OpenPageCommand(UILoader.VERAZ));
-		verazVeraz.ensureDebugId(DebugConstants.MENU_VERAZ_VERAZ);
-		mainMenu.addItem(verazVeraz);
+		ssBuscarMenuItem = new MenuItem("SS", new OpenPageCommand(UILoader.BUSCAR_SOLICITUD));
+		ssBuscarMenuItem.ensureDebugId(DebugConstants.MENU_SS_BUSCAR);
+		mainMenu.addItem(ssBuscarMenuItem);
 
 		mainMenu.addSeparator();
-		mainMenu.addItem("OPP", new OpenPageCommand(UILoader.BUSCAR_OPP));
+
+		verazMenuItem = new MenuItem("Veraz", new OpenPageCommand(UILoader.VERAZ));
+		verazMenuItem.ensureDebugId(DebugConstants.MENU_VERAZ_VERAZ);
+		mainMenu.addItem(verazMenuItem);
+
 		mainMenu.addSeparator();
-		mainMenu.addItem("Op. en Curso", new OpenPageCommand(UILoader.OP_EN_CURSO));
+		oppBuscarMenuItem = new MenuItem("OPP", new OpenPageCommand(UILoader.BUSCAR_OPP));
+		mainMenu.addItem(oppBuscarMenuItem);
+		mainMenu.addSeparator();
+		opEnCursoMenuItem = new MenuItem("Op. en Curso", new OpenPageCommand(UILoader.OP_EN_CURSO));
+		mainMenu.addItem(opEnCursoMenuItem);
 
 	}
 
 	public void setVisible(boolean visible) {
 		super.setVisible(visible);
 		menuButton.setVisible(!visible);
+	}
+
+	public void enableMenuItems(int items) {
+		cuentasMenuItem.setVisible((items & MENU_CUENTA) != 0);
+		cuentasBuscarMenuItem.setVisible((items & MENU_CUENTA_BUSCAR) != 0);
+		cuentasAgregarMenuItem.setVisible((items & MENU_CUENTA_AGREGAR) != 0);
+		ssBuscarMenuItem.setVisible((items & MENU_SOLICITUD) != 0);
+		verazMenuItem.setVisible((items & MENU_VERAZ) != 0);
+		oppBuscarMenuItem.setVisible((items & MENU_OPORTUNIDADES) != 0);
+		opEnCursoMenuItem.setVisible((items & MENU_OP_EN_CURSO) != 0);
 	}
 }
