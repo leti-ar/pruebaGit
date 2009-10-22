@@ -62,9 +62,7 @@ public class InfocomUI extends ApplicationUI {
 	}
 	
 	public boolean load() {
-		String cuentaID = HistoryUtils.getParam("cuenta_id");
-		if (cuentaID==null)
-			cuentaID = CuentaClientService.granCuentaDto.getId().toString();
+		String cuentaID =HistoryUtils.getParam("cuenta_id");
 		return loadInfocom(cuentaID);
 	}
 	
