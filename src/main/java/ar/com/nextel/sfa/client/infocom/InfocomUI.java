@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client.infocom;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.InfocomRpcService;
+import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.dto.CreditoFidelizacionDto;
 import ar.com.nextel.sfa.client.dto.TransaccionCCDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
@@ -62,6 +63,8 @@ public class InfocomUI extends ApplicationUI {
 	
 	public boolean load() {
 		String cuentaID = HistoryUtils.getParam("cuenta_id");
+		if (cuentaID==null)
+			cuentaID = CuentaClientService.granCuentaDto.getId().toString();
 		return loadInfocom(cuentaID);
 	}
 	
