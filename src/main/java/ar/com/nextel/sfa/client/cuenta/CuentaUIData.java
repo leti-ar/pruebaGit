@@ -65,7 +65,7 @@ public class CuentaUIData extends UIData {
 	private RegexTextBox apellido      = new RegexTextBox(RegularExpressionConstants.letras);
 	private TextBox categoria          = new TextBox();
 	private TextBox nombreDivision     = new TextBox();
-	private TextBox iibb               = new TextBox();
+	private RegexTextBox iibb          = new RegexTextBox(RegularExpressionConstants.iibb);
 	private TextBox use                = new TextBox();
 	private TextBox cicloFacturacion   = new TextBox();
 	private TextBox emailPersonal      = new TextBox();
@@ -546,7 +546,7 @@ public class CuentaUIData extends UIData {
 	public TextBox getFechaCreacion() {
 		return fechaCreacion;
 	}
-	public TextBox getIibb() {
+	public RegexTextBox getIibb() {
 		return iibb;
 	}
 	public TextBox getVendedorNombre() {
