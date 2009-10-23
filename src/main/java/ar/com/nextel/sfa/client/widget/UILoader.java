@@ -1,8 +1,10 @@
 package ar.com.nextel.sfa.client.widget;
 
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.AgregarCuentaUI;
 import ar.com.nextel.sfa.client.cuenta.BuscarCuentaUI;
 import ar.com.nextel.sfa.client.cuenta.EditarCuentaUI;
+import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.infocom.VerInfocomUI;
 import ar.com.nextel.sfa.client.operaciones.OperacionEnCursoUI;
 import ar.com.nextel.sfa.client.oportunidad.BuscarOportunidadUI;
@@ -10,6 +12,7 @@ import ar.com.nextel.sfa.client.ss.BuscarSSCerradaUI;
 import ar.com.nextel.sfa.client.ss.EditarSSUI;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.veraz.VerazUI;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -69,6 +72,10 @@ public class UILoader extends SimplePanel implements ValueChangeHandler<String> 
 	 * @param token
 	 */
 	public void setPage(int page, String historyToken) {
+		if(!checkPermission(page)){
+			ErrorDialog.getInstance().show("No posee permisos para acceder a esta funcionalidad.");
+			return;
+		}
 		if (getWidget() != null) {
 			// Si no puede descargar la página anterior, vueve a poner el último token
 			if (!((ApplicationUI) getWidget()).unload(historyToken)) {
@@ -133,6 +140,43 @@ public class UILoader extends SimplePanel implements ValueChangeHandler<String> 
 			GWT.log("Page not found. Check PageLoader.createPageWidget()", null);
 			break;
 		}
+	}
+	
+	private boolean checkPermission(int pageCode){
+		boolean authorized;
+		switch (pageCode) {
+		case BUSCAR_CUENTA:
+			authorized = ClientContext.getInstance().checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU.getValue());
+			break;
+		case AGREGAR_CUENTA:
+			authorized = ClientContext.getInstance().checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU.getValue());
+			break;
+		case BUSCAR_SOLICITUD:
+			authorized = ClientContext.getInstance().checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_SS_BUTTON.getValue());
+			break;
+		case AGREGAR_SOLICITUD:
+			authorized = true;
+			break;
+		case VERAZ:
+			authorized = ClientContext.getInstance().checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_VERAZ_BUTTON.getValue());
+			break;
+		case BUSCAR_OPP:
+			authorized = ClientContext.getInstance().checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_BUSQUEDA_OPORTUNIDADES_BUTTON.getValue());
+			break;
+		case OP_EN_CURSO:
+			authorized = ClientContext.getInstance().checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_OPERACIONES_EN_CURSO_BUTTON.getValue());
+			break;
+		case EDITAR_CUENTA:
+			authorized = ClientContext.getInstance().checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU.getValue());
+			break;
+		case VER_INFOCOM:
+			authorized = true;
+			break;
+		default:
+			authorized = true;
+			break;
+		}
+		return authorized;
 	}
 
 	public void onValueChange(ValueChangeEvent<String> valueChangeEvent) {
