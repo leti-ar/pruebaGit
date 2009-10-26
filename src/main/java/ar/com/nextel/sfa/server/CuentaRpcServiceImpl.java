@@ -366,25 +366,26 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		try {
 			// crea
 			cuenta = (GranCuenta) cuentaBusinessService.reservarCrearCta(solicitudCta);
+            
+			if (cuenta==null) {
+				cuenta = (GranCuenta) searchCuentaBusinessOperator.searchProspectAjenoEnCarga(documento);
+				String nombre = cuenta.getVendedor().getResponsable().getNombre() + " "	+ cuenta.getVendedor().getResponsable().getApellido();
+				String cargo  = cuenta.getVendedor().getResponsable().getCargo();
+				String errMsg = ERROR_OPER_OTRO_VENDEDOR.replaceAll("\\{1\\}", cargo);
+				errMsg = errMsg.replaceAll("\\{2\\}", nombre);
+				throw new RpcExceptionMessages(errMsg);
+			}
+			
 			cuentaBusinessService.validarAccesoCuenta(cuenta, getVendedor(), true);
 			if (asociarCuentaSiCorresponde(solicitudCta, cuenta)) {
 				// lockea
-				cuentaBusinessService.saveCuenta(selectCuentaBusinessOperator.getCuentaYLockear(cuenta
-						.getCodigoVantive(), vendedor));
+				cuentaBusinessService.saveCuenta(selectCuentaBusinessOperator.getCuentaYLockear(cuenta.getCodigoVantive(), vendedor));
 				// agrega contactos
-				cuenta.addContactosCuenta(contactosCuentaBusinessOperator.obtenerContactosCuentas(cuenta
-						.getId()));
+				cuenta.addContactosCuenta(contactosCuentaBusinessOperator.obtenerContactosCuentas(cuenta.getId()));
 				// mapea
 				cuentaDto = (GranCuentaDto) mapper.map(cuenta, GranCuentaDto.class);
 			}
-		} catch (NullPointerException npe) {
-			cuenta = (GranCuenta) searchCuentaBusinessOperator.searchProspectAjenoEnCarga(documento);
-			String nombre = cuenta.getVendedor().getResponsable().getNombre() + " "
-					+ cuenta.getVendedor().getResponsable().getApellido();
-			String cargo = cuenta.getVendedor().getResponsable().getCargo();
-			String errMsg = ERROR_OPER_OTRO_VENDEDOR.replaceAll("\\{1\\}", cargo);
-			errMsg = errMsg.replaceAll("\\{2\\}", nombre);
-			throw new RpcExceptionMessages(errMsg);
+			
 		} catch (RpcExceptionMessages rem) {
 			throw new RpcExceptionMessages(rem.getMessage());
 		} catch (Exception e) {
