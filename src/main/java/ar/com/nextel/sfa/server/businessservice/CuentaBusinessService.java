@@ -58,7 +58,6 @@ import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
-import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
 
 @Service
 public class CuentaBusinessService {
@@ -306,6 +305,8 @@ public class CuentaBusinessService {
 	}
 
 	public void validarAccesoCuenta(Cuenta cuenta, Vendedor vendedor, boolean filtradoPorDni) throws RpcExceptionMessages {
+			    
+ 		      //logueado no es el de la cuenta
 		if (!vendedor.getId().equals(cuenta.getVendedor().getId())) {
 			if (cuenta.isClaseEmpleados()) {
 				throw new RpcExceptionMessages( ERR_CUENTA_NO_EDITABLE.replaceAll("\\{1\\}", ((ClaseCuenta)knownInstanceRetriever.getObject(KnownInstanceIdentifier.CLASE_CUENTA_EMPLEADOS)).getDescripcion()));
@@ -323,12 +324,15 @@ public class CuentaBusinessService {
 				throw new RpcExceptionMessages(ERR_CUENTA_NO_EDITABLE.replaceAll("\\{1\\}", ((ClaseCuenta)knownInstanceRetriever.getObject(KnownInstanceIdentifier.CLASE_CUENTA_LAP)).getDescripcion()));
 			} else if (cuenta.isLA()) {
 				throw new RpcExceptionMessages(ERR_CUENTA_NO_EDITABLE.replaceAll("\\{1\\}", ((ClaseCuenta)knownInstanceRetriever.getObject(KnownInstanceIdentifier.CLASE_CUENTA_LA)).getDescripcion()));				
-			} else if (!filtradoPorDni) { 
-				throw new RpcExceptionMessages(ERR_CUENTA_NO_PERMISO);
+			} else if (!filtradoPorDni){			       		   
+				// no soy el de la cuenta y ademas no filtre	
+				// la tiene lockeada alguien y no soy yo				
+				if ((cuenta.getVendedorLockeo()!=null) && (!vendedor.getId().equals(cuenta.getVendedorLockeo().getId()))) {				
+					throw new RpcExceptionMessages(ERR_CUENTA_NO_PERMISO);
+				}
 			}
 		}
 	}
-	
 	
 	/**
 	 * 
