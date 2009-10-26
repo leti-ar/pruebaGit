@@ -185,38 +185,17 @@ public class EditarCuentaUI extends ApplicationUI {
 		if (cuenta.getPersona() != null) {
 			cuentaTab.getCuentaDomicilioForm().cargaTablaDomicilios(cuenta);
 		}
+
 		// carga info pestaña Contactos
 		cuentaTab.getCuentaContactoForm().getCrearButton().setVisible(esEdicionCuenta);
-		cargarInfoContactos(cuentaTab.getCuenta2editDto().getCategoriaCuenta().getDescripcion());
-
+		cuentaTab.getCuentaContactoForm().cargarTablaContactos(cuentaTab.getCuenta2editDto());
+		
 		// prepara UI para edicion cuenta o visualizacion opp
 		cuentaTab.setTabsTipoEditorCuenta(esEdicionCuenta);
 		cuentaTab.getCuentaDatosForm().setUItipoEditorCuenta(esEdicionCuenta);
 
 		// agrega tabs al panel principal
 		mainPanel.add(cuentaTab.getCuentaEdicionPanel());
-	}
-
-	/**
-	 * 
-	 * @param categoriaCuenta
-	 */
-	private void cargarInfoContactos(String categoriaCuenta) {
-		List<ContactoCuentaDto> contactos = null;
-		if (categoriaCuenta.equals(TipoCuentaEnum.CTA.getTipo())) {
-			contactos = ((GranCuentaDto) cuentaTab.getCuenta2editDto()).getContactos();
-		} else if (categoriaCuenta.equals(TipoCuentaEnum.SUS.getTipo())) {
-			if (((SuscriptorDto) cuentaTab.getCuenta2editDto()).getDivision() != null)
-				contactos = ((SuscriptorDto) cuentaTab.getCuenta2editDto()).getDivision().getGranCuenta().getContactos();
-			else
-				contactos = ((SuscriptorDto) cuentaTab.getCuenta2editDto()).getGranCuenta().getContactos();
-		} else if (categoriaCuenta.equals(TipoCuentaEnum.DIV.getTipo())) {
-			contactos = ((DivisionDto) cuentaTab.getCuenta2editDto()).getGranCuenta().getContactos();
-		}
-		if (contactos != null) {
-			cuentaTab.getCuentaContactoForm().setListaContactos(contactos);
-			cuentaTab.getCuentaContactoForm().cargarTabla();
-		}
 	}
 
 	/**

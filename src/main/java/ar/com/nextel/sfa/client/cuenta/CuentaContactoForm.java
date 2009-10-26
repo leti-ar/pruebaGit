@@ -7,7 +7,12 @@ import java.util.List;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.contacto.ContactosUI;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.DivisionDto;
+import ar.com.nextel.sfa.client.dto.GranCuentaDto;
+import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
+import ar.com.nextel.sfa.client.enums.TipoCuentaEnum;
 import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
@@ -157,6 +162,25 @@ public class CuentaContactoForm extends Composite {
 		return null;
 	}
 
+	public void cargarTablaContactos(CuentaDto cuentaDto) {
+		String categoriaCuenta =  cuentaDto.getCategoriaCuenta().getDescripcion();
+		List<ContactoCuentaDto> contactos = null;
+		if (categoriaCuenta.equals(TipoCuentaEnum.CTA.getTipo())) {
+			contactos = ((GranCuentaDto) cuentaDto).getContactos();
+		} else if (categoriaCuenta.equals(TipoCuentaEnum.SUS.getTipo())) {
+			if (((SuscriptorDto) cuentaDto).getDivision() != null)
+				contactos = ((SuscriptorDto) cuentaDto).getDivision().getGranCuenta().getContactos();
+			else
+				contactos = ((SuscriptorDto) cuentaDto).getGranCuenta().getContactos();
+		} else if (categoriaCuenta.equals(TipoCuentaEnum.DIV.getTipo())) {
+			contactos = ((DivisionDto) cuentaDto).getGranCuenta().getContactos();
+		}
+		if (contactos != null) {
+			setListaContactos(contactos);
+			cargarTabla();
+		}
+	}
+	
 	private String comprobarArea(String area) {
 		return (area!=null && !"".equals(area)) ? "(" + area + ")" + " ":  "";
 	}

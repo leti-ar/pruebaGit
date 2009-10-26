@@ -390,11 +390,16 @@ public class CuentaEdicionTabPanel {
 		CuentaRpcService.Util.getInstance().saveCuenta(ctaDto,new DefaultWaitCallback<CuentaDto>() {
 			public void success(CuentaDto cuentaDto) {
 				CuentaEdicionTabPanel.getInstance().setCuenta2editDto(cuentaDto);
+				//actualiza pestaña datos
 				cuentaDatosForm.ponerDatosBusquedaEnFormulario(cuentaDto);
 				razonSocial.setText(cuentaDto.getPersona().getRazonSocial());
-//				MessageDialog.getInstance().showAceptar("", Sfa.constant().MSG_CUENTA_GUARDADA_OK(), MessageDialog.getCloseCommand());
+				//actualiza pestaña domicilios
+				cuentaDomiciliosForm.cargaTablaDomicilios(cuentaDto);
 				cuentaDomiciliosForm.setHuboCambios(false);
+				//actualiza pestaña contactos
+				cuentaContactoForm.cargarTablaContactos(cuentaDto);
 				CuentaContactoForm.getInstance().setFormDirty(false);
+//				MessageDialog.getInstance().showAceptar("", Sfa.constant().MSG_CUENTA_GUARDADA_OK(), MessageDialog.getCloseCommand());
 			}
 		});	
 	}
