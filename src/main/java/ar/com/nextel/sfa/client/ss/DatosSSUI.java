@@ -175,6 +175,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		}
 		detalleSS.setCellPadding(0);
 		detalleSS.setCellSpacing(0);
+		detalleSS.ensureDebugId(DebugConstants.GWT_EDITAR_SOLICITUD_DATOS_DETTALE_TABLE);
 		detalleSS.addStyleName("dataTable");
 		detalleSS.setWidth("98%");
 		detalleSS.getRowFormatter().addStyleName(0, "header");
