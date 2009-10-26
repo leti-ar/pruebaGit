@@ -144,6 +144,15 @@ public class EditarCuentaUI extends ApplicationUI {
 		else
 			cuentaTab.getCuentaDatosForm().armarTablaPanelDatos();
 		cargaPanelesCuenta();
+		if (CuentaClientService.apellidoFromVeraz!=null) {
+			String nom = CuentaClientService.nombreFromVeraz;
+			String ape = CuentaClientService.apellidoFromVeraz;
+			cuentaTab.getCuentaDatosForm().getCamposTabDatos().getNombre().setText(nom);
+			cuentaTab.getCuentaDatosForm().getCamposTabDatos().getApellido().setText(ape);
+			cuentaTab.getCuentaDatosForm().getCamposTabDatos().getRazonSocial().setText(nom + " " + ape);
+			CuentaClientService.nombreFromVeraz   = null;
+			CuentaClientService.apellidoFromVeraz = null;
+		}
 		cuentaTab.validarCompletitud(false);
 	}
 

@@ -17,11 +17,27 @@ import com.google.gwt.user.client.IncrementalCommand;
 
 public class CuentaClientService {
 
-	public static GranCuentaDto         granCuentaDto;
-	public static CuentaDto             cuentaDto;
-	public static CuentaPotencialDto cuentaPotencialDto;
-	private static boolean error;
+	public  static GranCuentaDto       granCuentaDto;
+	public  static CuentaDto           cuentaDto;
+	public  static CuentaPotencialDto  cuentaPotencialDto;
+	private static boolean             error;
+	public static String nombreFromVeraz;
+	public static String apellidoFromVeraz;
 
+	/**
+	 * 
+	 * @param idTipoDoc
+	 * @param nroDoc
+	 * @param idOpp
+	 * @param nombre
+	 * @param apellido
+	 */
+	public static void reservaCreacionCuentaFromVeraz(Long idTipoDoc, String nroDoc, String nombre, String apellido) {
+		nombreFromVeraz   = nombre   !=null ? nombre.toUpperCase()   : "";
+		apellidoFromVeraz = apellido !=null ? apellido.toUpperCase() : "";
+		reservaCreacionCuenta(idTipoDoc, nroDoc, null, true);
+	}
+	
 	/**
 	 * 	
 	 * @param idTipoDoc
@@ -31,6 +47,7 @@ public class CuentaClientService {
 	public static void reservaCreacionCuenta(Long idTipoDoc, String nroDoc, Long idOpp) {
 		reservaCreacionCuenta(idTipoDoc, nroDoc, idOpp, true);
 	}
+	
 	/**
 	 * 
 	 * @param idTipoDoc

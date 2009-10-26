@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.widget.EventWrapper;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -69,6 +70,17 @@ public class VerazFilterUI extends Composite {
 			public void onClick (Widget arg0) {
 				validarVeraz();			
 			}
+		});
+		
+		verazEditor.getAgregarProspectLink().addClickListener(new ClickListener() {
+			public void onClick(Widget arg0) {
+				if (verazEditor.validarDatosParaCrearProspect()) {
+					CuentaClientService.reservaCreacionCuentaFromVeraz(new Long(verazEditor.getTipoDocListBox().getSelectedItemId()),
+							                                           verazEditor.getNumeroDocTextBox().getText() ,
+							                                           verazResultUI.getVerazResponseDto().getNombre(),
+							                                           verazResultUI.getVerazResponseDto().getApellido());
+				}
+			}			
 		});
 	}
 

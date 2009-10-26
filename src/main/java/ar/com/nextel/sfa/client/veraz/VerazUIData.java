@@ -5,7 +5,6 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
@@ -20,9 +19,7 @@ import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * 
@@ -47,14 +44,6 @@ public class VerazUIData extends UIData {
 		validarVerazLink = new SimpleLink("Validar Veraz", "#", true);
 		agregarProspectLink = new SimpleLink("Agregar Prospect", "#", true);
 
-		agregarProspectLink.addClickListener(new ClickListener() {
-			public void onClick(Widget arg0) {
-				if (validarDatosParaCrearProspect()) {
-					CuentaClientService.reservaCreacionCuenta(new Long(tipoDocListBox.getSelectedItemId()),numeroDocTextBox.getText() , null);
-				}
-			}			
-		});
-		
 		CuentaRpcService.Util.getInstance().getVerazInitializer(
 			new DefaultWaitCallback<VerazInitializer>() {
 				public void success(VerazInitializer result) {
@@ -105,7 +94,7 @@ public class VerazUIData extends UIData {
 		return personaDto;
 	}
 
-	private boolean validarDatosParaCrearProspect() {
+	public boolean validarDatosParaCrearProspect() {
 		GwtValidator validator = new GwtValidator();
 		if (numeroDocTextBox.getText().equals("")) {
 			validator.addError(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));

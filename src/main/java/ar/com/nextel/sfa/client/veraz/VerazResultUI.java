@@ -148,4 +148,7 @@ public class VerazResultUI extends FlowPanel {
 		verazResultTable.setWidget(2, 0, nombre);
 		verazResultTable.setWidget(3, 0, apellido);
 	}
+	public VerazResponseDto getVerazResponseDto() {
+		return verazResponseDto;
+	}
 }
