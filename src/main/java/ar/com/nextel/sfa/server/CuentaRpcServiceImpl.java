@@ -477,37 +477,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return resultDto;
 	}
 
-	/**
-	 * 
-	 */
-	// public OportunidadNegocioDto getOportunidadNegocio(Long cuenta_id) throws RpcExceptionMessages {
-	// AppLogger.info("Obteniendo venta potencial con id: " + cuenta_id.longValue());
-	// OportunidadNegocio oportunidad = (OportunidadNegocio) repository.retrieve(OportunidadNegocio.class,
-	// cuenta_id);
-	// if (Calendar.getInstance().getTime().after(oportunidad.getFechaVencimiento())) {
-	// throw new RpcExceptionMessages(ERROR_OPORTUNIDAD_VENCIDA);
-	// }
-	// cuentaBusinessService.marcarOppComoConsultada(oportunidad);
-	// OportunidadNegocioDto oportunidadDto = mapper.map(oportunidad, OportunidadNegocioDto.class);
-	// if (oportunidad.getPrioridad() != null)
-	// oportunidadDto.setPrioridadDto(new PrioridadDto(oportunidad.getPrioridad().getId(), oportunidad
-	// .getPrioridad().getDescripcion()));
-	//
-	// String categoriaCuenta = oportunidadDto.getCuentaOrigen().getCategoriaCuenta().getDescripcion();
-	// if (categoriaCuenta.equals(KnownInstanceIdentifier.GRAN_CUENTA.getKey())) {
-	// oportunidadDto.setCuentaOrigen((GranCuentaDto) mapper.map((GranCuenta) oportunidad
-	// .getCuentaOrigen(), GranCuentaDto.class));
-	// } else if (categoriaCuenta.equals(KnownInstanceIdentifier.DIVISION.getKey())) {
-	// oportunidadDto.setCuentaOrigen((DivisionDto) mapper.map((Division) oportunidad.getCuentaOrigen(),
-	// DivisionDto.class));
-	// } else if (categoriaCuenta.equals(KnownInstanceIdentifier.SUSCRIPTOR.getKey())) {
-	// oportunidadDto.setCuentaOrigen((SuscriptorDto) mapper.map((Suscriptor) oportunidad
-	// .getCuentaOrigen(), SuscriptorDto.class));
-	// }
-	// AppLogger.info("Obtención finalizada");
-	// return oportunidadDto;
-	// }
-
 	// Devuelve la reservaDto o la oportunidadDto según sea el caso
 	public CuentaPotencialDto getOportunidadNegocio(Long cuenta_id) throws RpcExceptionMessages {
 		AppLogger.info("Obteniendo venta potencial con id: " + cuenta_id.longValue());
