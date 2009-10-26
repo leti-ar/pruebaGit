@@ -326,8 +326,7 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickHandler {
 			aceptarCommand = new Command() {
 				public void execute() {
 					ModalMessageDialog.getInstance().hide();
-					CuentaClientService.cargarDatosCuenta(dialogCuentaId, dialogCodVantive,
-							dialogBusquedaPorDoc, true);
+					CuentaClientService.cargarDatosCuenta(dialogCuentaId, dialogCodVantive,dialogBusquedaPorDoc, true, true);
 				}
 			};
 		}

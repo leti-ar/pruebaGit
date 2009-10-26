@@ -24,37 +24,16 @@ public class CuentaClientService {
 	public static String nombreFromVeraz;
 	public static String apellidoFromVeraz;
 
-	/**
-	 * 
-	 * @param idTipoDoc
-	 * @param nroDoc
-	 * @param idOpp
-	 * @param nombre
-	 * @param apellido
-	 */
 	public static void reservaCreacionCuentaFromVeraz(Long idTipoDoc, String nroDoc, String nombre, String apellido) {
 		nombreFromVeraz   = nombre   !=null ? nombre.toUpperCase()   : "";
 		apellidoFromVeraz = apellido !=null ? apellido.toUpperCase() : "";
 		reservaCreacionCuenta(idTipoDoc, nroDoc, null, true);
 	}
 	
-	/**
-	 * 	
-	 * @param idTipoDoc
-	 * @param nroDoc
-	 * @param idOpp
-	 */
 	public static void reservaCreacionCuenta(Long idTipoDoc, String nroDoc, Long idOpp) {
 		reservaCreacionCuenta(idTipoDoc, nroDoc, idOpp, true);
 	}
 	
-	/**
-	 * 
-	 * @param idTipoDoc
-	 * @param nroDoc
-	 * @param idOpp
-	 * @param redir
-	 */
 	public static void reservaCreacionCuenta(final Long idTipoDoc, final String nroDoc, final Long idOpp, boolean redir) {
 		granCuentaDto = null;
 		error         = false;
@@ -84,18 +63,10 @@ public class CuentaClientService {
 		}
 	}	
 
-	/**
-	 * 	
-	 * @param id_cuentaPadre
-	 */
 	public static void crearDivision(final Long id_cuentaPadre) {
 		crearDivision(id_cuentaPadre,true);
 	}
-	/**
-	 * 
-	 * @param id_cuentaPadre
-	 * @param redir
-	 */
+	
 	public static void crearDivision(final Long id_cuentaPadre, boolean redir) {
 		cuentaDto = null;
 		error     = false;
@@ -122,18 +93,10 @@ public class CuentaClientService {
 		}
 	}
 	
-	/**
-	 * 
-	 * @param id_cuentaPadre
-	 */
 	public static void crearSuscriptor(final Long id_cuentaPadre) {
 		crearSuscriptor(id_cuentaPadre,true);
 	}
-	/**
-	 * 
-	 * @param id_cuentaPadre
-	 * @param redir
-	 */
+	
 	public static void crearSuscriptor(final Long id_cuentaPadre, boolean redir) {
 		cuentaDto = null;
 		error = false;
@@ -159,18 +122,10 @@ public class CuentaClientService {
 		}
 	}
 	
-	/**
-	 * 
-	 * @param idOpp
-	 */
 	public static void getOportunidadNegocio(final Long idOpp) {
 		getOportunidadNegocio(idOpp,true); 
 	}
-	/**
-	 * 
-	 * @param idOpp
-	 * @param redir
-	 */
+	
 	public static void getOportunidadNegocio(final Long idOpp,boolean redir) {
 		cuentaPotencialDto = null;
 		error = false;
@@ -196,32 +151,19 @@ public class CuentaClientService {
 		}
 	}
 
-	/**
-	 * 
-	 * @param cuentaID
-	 * @param cod_vantive
-	 */
 	public static void cargarDatosCuenta(Long cuentaID, String cod_vantive) {
 		cargarDatosCuenta(cuentaID, cod_vantive, null,true);
 	}
 
-	/**
-	 * 
-	 * @param cuentaID
-	 * @param cod_vantive
-	 */
 	public static void cargarDatosCuenta(final Long cuentaID, final String cod_vantive, final String filtradoPorDni) {
 		cargarDatosCuenta(cuentaID, cod_vantive, filtradoPorDni,true);
 	}
-	/**
-	 * 
-	 * @param cuentaID
-	 * @param cod_vantive
-	 * @param filtradoPorDni
-	 * @param readOnly
-	 * @param redir
-	 */
+	
 	public static void cargarDatosCuenta(final Long cuentaID, final String cod_vantive, final String filtradoPorDni, boolean redir) {
+		cargarDatosCuenta(cuentaID, cod_vantive, filtradoPorDni,true,false);
+	}
+	
+	public static void cargarDatosCuenta(final Long cuentaID, final String cod_vantive, final String filtradoPorDni, boolean redir, final boolean readOnly) {
 		cuentaDto = null;
 		error = false;
 		CuentaRpcService.Util.getInstance().selectCuenta(cuentaID, cod_vantive,(filtradoPorDni!=null),new DefaultWaitCallback<CuentaDto>() {
@@ -240,7 +182,7 @@ public class CuentaClientService {
 					if (cuentaDto == null && !error) 
 						return true;
 					if (!error) { 
-						History.newItem(UILoader.EDITAR_CUENTA + "?cuenta_id=" + cuentaID + "&cod_vantive="+cod_vantive+"&filByDni="+filtradoPorDni);
+						History.newItem(UILoader.EDITAR_CUENTA + "?cuenta_id=" + cuentaID + "&cod_vantive="+cod_vantive+"&filByDni="+filtradoPorDni + (readOnly?"&ro=true":""));
 					}
 					return false;
 				}

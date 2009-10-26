@@ -264,10 +264,11 @@ public class EditarCuentaUI extends ApplicationUI {
 					CuentaClientService.cuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.CUSTOMER.getId()) {
 				cuentaTab.getCuentaDatosForm().setAtributosCamposSoloLectura();
 			} 
-		} else if (HistoryUtils.getParam("ro") != null) {
-			cuentaTab.getCuentaDatosForm().setAtributosCamposSoloLectura();
 		} else {
 			cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusqueda(CuentaClientService.cuentaDto);
+		}
+		if (HistoryUtils.getParam("ro") != null) {
+			cuentaTab.getCuentaDatosForm().setAtributosCamposSoloLectura();
 		}
 		completarVisualizacionDatos(CuentaClientService.cuentaDto);
 	}
