@@ -55,14 +55,18 @@ public class SFAWeb implements EntryPoint {
 		int items = 0;
 		ClientContext cc = ClientContext.getInstance();
 		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU.getValue()) ? items
-				+ HeaderMenu.MENU_CUENTA + HeaderMenu.MENU_CUENTA_AGREGAR + HeaderMenu.MENU_CUENTA_BUSCAR
-				: items;
+				+ HeaderMenu.MENU_CUENTA : items;
+		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUSCAR_MENU.getValue()) ? items
+				+ HeaderMenu.MENU_CUENTA_BUSCAR : items;
+		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_AGREGAR_MENU.getValue()) ? items
+				+ HeaderMenu.MENU_CUENTA_AGREGAR : items;
 		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_SS_BUTTON.getValue()) ? items
 				+ HeaderMenu.MENU_SOLICITUD : items;
 		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_VERAZ_BUTTON.getValue()) ? items
 				+ HeaderMenu.MENU_VERAZ : items;
 		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_BUSQUEDA_OPORTUNIDADES_BUTTON.getValue()) ? items
-				+ HeaderMenu.MENU_OPORTUNIDADES : items;
+				+ HeaderMenu.MENU_OPORTUNIDADES
+				: items;
 		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_OPERACIONES_EN_CURSO_BUTTON.getValue()) ? items
 				+ HeaderMenu.MENU_OP_EN_CURSO : items;
 		headerMenu.enableMenuItems(items);

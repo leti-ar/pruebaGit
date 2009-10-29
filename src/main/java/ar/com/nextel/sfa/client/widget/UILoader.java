@@ -72,8 +72,9 @@ public class UILoader extends SimplePanel implements ValueChangeHandler<String> 
 	 * @param token
 	 */
 	public void setPage(int page, String historyToken) {
-		if(!checkPermission(page)){
+		if (!checkPermission(page)) {
 			ErrorDialog.getInstance().show("No posee permisos para acceder a esta funcionalidad.");
+			History.newItem(lastToken, false);
 			return;
 		}
 		if (getWidget() != null) {
@@ -141,33 +142,44 @@ public class UILoader extends SimplePanel implements ValueChangeHandler<String> 
 			break;
 		}
 	}
-	
-	private boolean checkPermission(int pageCode){
+
+	private boolean checkPermission(int pageCode) {
 		boolean authorized;
 		switch (pageCode) {
 		case BUSCAR_CUENTA:
-			authorized = ClientContext.getInstance().checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU.getValue());
+			authorized = ClientContext.getInstance().checkPermiso(
+					PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU.getValue())
+					&& ClientContext.getInstance().checkPermiso(
+							PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUSCAR_MENU.getValue());
 			break;
 		case AGREGAR_CUENTA:
-			authorized = ClientContext.getInstance().checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU.getValue());
+			authorized = ClientContext.getInstance().checkPermiso(
+					PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU.getValue())
+					&& ClientContext.getInstance().checkPermiso(
+							PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_AGREGAR_MENU.getValue());
 			break;
 		case BUSCAR_SOLICITUD:
-			authorized = ClientContext.getInstance().checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_SS_BUTTON.getValue());
+			authorized = ClientContext.getInstance().checkPermiso(
+					PermisosEnum.ROOTS_MENU_PANEL_SS_BUTTON.getValue());
 			break;
 		case AGREGAR_SOLICITUD:
-			authorized = true;
+			authorized = ClientContext.getInstance().checkPermiso(PermisosEnum.CREAR_NUEVA_SS.getValue());
 			break;
 		case VERAZ:
-			authorized = ClientContext.getInstance().checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_VERAZ_BUTTON.getValue());
+			authorized = ClientContext.getInstance().checkPermiso(
+					PermisosEnum.ROOTS_MENU_PANEL_VERAZ_BUTTON.getValue());
 			break;
 		case BUSCAR_OPP:
-			authorized = ClientContext.getInstance().checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_BUSQUEDA_OPORTUNIDADES_BUTTON.getValue());
+			authorized = ClientContext.getInstance().checkPermiso(
+					PermisosEnum.ROOTS_MENU_PANEL_BUSQUEDA_OPORTUNIDADES_BUTTON.getValue());
 			break;
 		case OP_EN_CURSO:
-			authorized = ClientContext.getInstance().checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_OPERACIONES_EN_CURSO_BUTTON.getValue());
+			authorized = ClientContext.getInstance().checkPermiso(
+					PermisosEnum.ROOTS_MENU_PANEL_OPERACIONES_EN_CURSO_BUTTON.getValue());
 			break;
 		case EDITAR_CUENTA:
-			authorized = ClientContext.getInstance().checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU.getValue());
+			authorized = ClientContext.getInstance().checkPermiso(
+					PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU.getValue());
 			break;
 		case VER_INFOCOM:
 			authorized = true;

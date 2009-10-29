@@ -10,6 +10,7 @@ import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.enums.BuscoCuentaPorDniEnum;
+import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.infocom.InfocomUI;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
@@ -196,13 +197,16 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickHandler {
 		for (int i = 0; i < totalABuscar; i++) {
 			indiceRowTabla = i;
 			if (cuentasActuales.size() != 0) {
-				HTML iconLapiz = IconFactory.lapiz(LAPIZ_TITLE);
-				iconLapiz.addClickHandler(new ClickHandler() {
-					public void onClick(ClickEvent event) {
-						cargarDatosCuenta();
-					}
-				});
-				resultTable.setWidget(i + 1, 0, iconLapiz);
+				if (ClientContext.getInstance().checkPermiso(
+						PermisosEnum.VISUALIZAR_CUENTA.getValue())) {
+					HTML iconLapiz = IconFactory.lapiz(LAPIZ_TITLE);
+					iconLapiz.addClickHandler(new ClickHandler() {
+						public void onClick(ClickEvent event) {
+							cargarDatosCuenta();
+						}
+					});
+					resultTable.setWidget(i + 1, 0, iconLapiz);
+				}
 
 				HTML iconLupa = IconFactory.lupa(LUPA_TITLE);
 				iconLupa.addClickHandler(this);
@@ -326,7 +330,8 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickHandler {
 			aceptarCommand = new Command() {
 				public void execute() {
 					ModalMessageDialog.getInstance().hide();
-					CuentaClientService.cargarDatosCuenta(dialogCuentaId, dialogCodVantive,dialogBusquedaPorDoc, true, true);
+					CuentaClientService.cargarDatosCuenta(dialogCuentaId, dialogCodVantive,
+							dialogBusquedaPorDoc, true, true);
 				}
 			};
 		}

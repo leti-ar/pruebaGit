@@ -1,6 +1,8 @@
 package ar.com.nextel.sfa.client.infocom;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
+import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
@@ -38,6 +40,11 @@ public class VerInfocomUI extends ApplicationUI {
 
 	public void firstLoad() {
 		razonSocialClienteBar = new RazonSocialClienteBar();
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VISUALIZAR_CUENTA.getValue())){
+			razonSocialClienteBar.setEnabledSilvioSoldan();
+		} else {
+			razonSocialClienteBar.setDisabledSilvioSoldan();
+		}
 		footerBar = new FormButtonsBar();
 		infocomUI = InfocomUI.getInstance();
 		//Agrega la barra de razon social y cliente
