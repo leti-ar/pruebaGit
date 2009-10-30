@@ -170,6 +170,10 @@
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
 
+	<session-config>
+		<session-timeout>120</session-timeout>
+	</session-config>
+
 	<resource-ref>
 		<description>SFA DS</description>
 		<res-ref-name>jdbc/sfaDS</res-ref-name>
