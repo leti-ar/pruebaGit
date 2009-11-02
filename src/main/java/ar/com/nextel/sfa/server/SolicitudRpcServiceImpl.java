@@ -148,7 +148,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	}
 
 	public List<SolicitudServicioCerradaResultDto> searchSSCerrada(
-			SolicitudServicioCerradaDto solicitudServicioCerradaDto) {
+			SolicitudServicioCerradaDto solicitudServicioCerradaDto) throws RpcExceptionMessages {
 		AppLogger.info("Iniciando busqueda de SS cerradas...");
 		SolicitudServicioCerradaSearchCriteria solicitudServicioCerradaSearchCriteria = mapper.map(
 				solicitudServicioCerradaDto, SolicitudServicioCerradaSearchCriteria.class);
@@ -160,7 +160,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			list = this.solicitudesBusinessOperator
 					.searchSolicitudesServicioHistoricas(solicitudServicioCerradaSearchCriteria);
 		} catch (Exception e) {
-			AppLogger.info("Error buscando Solicitudes de Servicio cerradas: " + e.getMessage());
+			AppLogger.info("Error buscando Solicitudes de Servicio cerradas: " + e.getMessage(), e);
+			throw ExceptionUtil.wrap(e);
 		}
 		List result = mapper.convertList(list, SolicitudServicioCerradaResultDto.class, "ssCerradaResult");
 		AppLogger.info("Busqueda de SS cerradas finalizada...");
