@@ -33,7 +33,7 @@ public class VerazUI extends ApplicationUI {
 		verazResultUI.setVisible(false);
 		verazForm.getVerazEditor().getNumeroDocTextBox().setText("");
 		verazForm.getVerazEditor().getTipoDocListBox().selectByValue(TipoDocumentoEnum.DNI.toString());
-		verazForm.getVerazEditor().getSexoListBox().selectByText(SexoEnum.ORGANIZACION.getDescripcion());
+		verazForm.getVerazEditor().getSexoListBox().selectByText(SexoEnum.MASCULINO.getDescripcion());
 		return true;
 	}
 

@@ -25,8 +25,8 @@ public class CuentaClientService {
 	public static String apellidoFromVeraz;
 
 	public static void reservaCreacionCuentaFromVeraz(Long idTipoDoc, String nroDoc, String nombre, String apellido) {
-		nombreFromVeraz   = nombre   !=null ? nombre.toUpperCase()   : "";
-		apellidoFromVeraz = apellido !=null ? apellido.toUpperCase() : "";
+		nombreFromVeraz   = nombre;
+		apellidoFromVeraz = apellido;
 		reservaCreacionCuenta(idTipoDoc, nroDoc, null, true);
 	}
 	

@@ -144,7 +144,8 @@ public class EditarCuentaUI extends ApplicationUI {
 		else
 			cuentaTab.getCuentaDatosForm().armarTablaPanelDatos();
 		cargaPanelesCuenta();
-		if (CuentaClientService.apellidoFromVeraz!=null) {
+		//si hay apellido recibido de veraz y NO hay nadie en la DB aplica los datos aportados por veraz
+		if (CuentaClientService.apellidoFromVeraz!=null && cuentaTab.getCuentaDatosForm().getCamposTabDatos().getApellido().getText().equals("")) {
 			String nom = CuentaClientService.nombreFromVeraz;
 			String ape = CuentaClientService.apellidoFromVeraz;
 			cuentaTab.getCuentaDatosForm().getCamposTabDatos().getNombre().setText(nom);

@@ -75,10 +75,16 @@ public class VerazFilterUI extends Composite {
 		verazEditor.getAgregarProspectLink().addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				if (verazEditor.validarDatosParaCrearProspect()) {
+					String nombreFromVeraz   = null;
+					String apellidoFromVeraz = null;
+					if (verazResultUI.getVerazResponseDto()!=null) {
+						nombreFromVeraz   = verazResultUI.getVerazResponseDto().getNombre();
+						apellidoFromVeraz = verazResultUI.getVerazResponseDto().getApellido();
+						verazResultUI.getVerazResponseDto().setNombre("");
+						verazResultUI.getVerazResponseDto().setApellido("");
+					}
 					CuentaClientService.reservaCreacionCuentaFromVeraz(new Long(verazEditor.getTipoDocListBox().getSelectedItemId()),
-							                                           verazEditor.getNumeroDocTextBox().getText() ,
-							                                           verazResultUI.getVerazResponseDto().getNombre(),
-							                                           verazResultUI.getVerazResponseDto().getApellido());
+							                                           verazEditor.getNumeroDocTextBox().getText(),	nombreFromVeraz, apellidoFromVeraz);
 				}
 			}			
 		});
