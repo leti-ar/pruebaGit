@@ -87,6 +87,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>cuenta.id</a>
 			<b>idCuenta</b>
 		</field>
+		<field>
+			<a>cuenta.codigoVantive</a>
+			<b>numeroDeCuenta</b>
+		</field>
 	</mapping>
 	
 <!--	<mapping map-id="">-->
