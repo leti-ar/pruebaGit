@@ -54,17 +54,17 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 		resultTableWrapper.addStyleName("resultTableWrapper");
 		resultTable = new NextelTable();
 		resultTable.addClickHandler(this);
-		resultTable.addRowListener(new RowListener() {
-			public void onRowClick(Widget sender, int row) {
-			}
-
-			public void onRowEnter(Widget sender, int row) {
-				indiceRowTabla = row - 1;
-			}
-
-			public void onRowLeave(Widget sender, int row) {
-			}
-		});
+//		resultTable.addRowListener(new RowListener() {
+//			public void onRowClick(Widget sender, int row) {
+//			}
+//
+//			public void onRowEnter(Widget sender, int row) {
+//				indiceRowTabla = row - 1;
+//			}
+//
+//			public void onRowLeave(Widget sender, int row) {
+//			}
+//		});
 		initTable(resultTable);
 		resultTableWrapper.add(resultTable);
 
@@ -147,15 +147,15 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 		if (solicitudesServicioCerradaResultDto != null) {
 			// exportarExcel.setVisible(true);
 			for (Iterator iter = solicitudesServicioCerradaResultDto.iterator(); iter.hasNext();) {
-				final SolicitudServicioCerradaResultDto solicitudServicioCerradaResultDto = (SolicitudServicioCerradaResultDto) iter
+				SolicitudServicioCerradaResultDto solicitudServicioCerradaResultDto = (SolicitudServicioCerradaResultDto) iter
 						.next();
-				SolicitudRpcService.Util.getInstance().getDetalleSolicitudServicio(solicitudServicioCerradaResultDto.getId(),
-						new DefaultWaitCallback<DetalleSolicitudServicioDto>() {
-							public void success(DetalleSolicitudServicioDto result) {
+//				SolicitudRpcService.Util.getInstance().getDetalleSolicitudServicio(solicitudServicioCerradaResultDto.getId(),
+//						new DefaultWaitCallback<DetalleSolicitudServicioDto>() {
+//							public void success(DetalleSolicitudServicioDto result) {
 								resultTable.setWidget(indiceRowTabla, 0, IconFactory.word());
 								resultTable.setHTML(indiceRowTabla, 1, solicitudServicioCerradaResultDto.getNumero());
-								resultTable.setText(indiceRowTabla, 2, result.getNumeroCuenta());								
-//								resultTable.setHTML(indiceRowTabla, 2, solicitudServicioCerradaResultDto.getNumeroCuenta());
+//								resultTable.setText(indiceRowTabla, 2, result.getNumeroCuenta());
+								resultTable.setHTML(indiceRowTabla, 2, solicitudServicioCerradaResultDto.getNumeroDeCuenta());
 								if (solicitudServicioCerradaResultDto.getRazonSocialCuenta() != null) {
 									resultTable.setHTML(indiceRowTabla, 3, solicitudServicioCerradaResultDto
 											.getRazonSocialCuenta());
@@ -180,8 +180,8 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 								cantEquipos = cantEquipos + solicitudServicioCerradaResultDto.getCantidadEquipos();
 								cantPataconex = cantPataconex + solicitudServicioCerradaResultDto.getPataconex();
 								indiceRowTabla++;
-							}
-						});
+//							}
+//						});
 				
 
 			}
