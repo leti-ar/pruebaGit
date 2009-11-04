@@ -44,7 +44,6 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 	private int cantEqFirmados = 0;
 	private SolicitudServicioCerradaDto solicitudServicioCerradaDto;
 	private int indiceRowTabla;
-	private DetalleSolicitudServicioDto detalleSolicitudServicioDto;
 
 	public BuscarSSCerradasResultUI() {
 		super();
@@ -54,21 +53,8 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 		resultTableWrapper.addStyleName("resultTableWrapper");
 		resultTable = new NextelTable();
 		resultTable.addClickHandler(this);
-//		resultTable.addRowListener(new RowListener() {
-//			public void onRowClick(Widget sender, int row) {
-//			}
-//
-//			public void onRowEnter(Widget sender, int row) {
-//				indiceRowTabla = row - 1;
-//			}
-//
-//			public void onRowLeave(Widget sender, int row) {
-//			}
-//		});
 		initTable(resultTable);
 		resultTableWrapper.add(resultTable);
-
-		// resultTotalTableWrapper.add(exportarExcel);
 		resultTotalTableWrapper.add(resultTableWrapper);
 		setVisible(false);
 	}
@@ -145,44 +131,34 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 		indiceRowTabla = 1;
 
 		if (solicitudesServicioCerradaResultDto != null) {
-			// exportarExcel.setVisible(true);
 			for (Iterator iter = solicitudesServicioCerradaResultDto.iterator(); iter.hasNext();) {
 				SolicitudServicioCerradaResultDto solicitudServicioCerradaResultDto = (SolicitudServicioCerradaResultDto) iter
 						.next();
-//				SolicitudRpcService.Util.getInstance().getDetalleSolicitudServicio(solicitudServicioCerradaResultDto.getId(),
-//						new DefaultWaitCallback<DetalleSolicitudServicioDto>() {
-//							public void success(DetalleSolicitudServicioDto result) {
-								resultTable.setWidget(indiceRowTabla, 0, IconFactory.word());
-								resultTable.setHTML(indiceRowTabla, 1, solicitudServicioCerradaResultDto.getNumero());
-//								resultTable.setText(indiceRowTabla, 2, result.getNumeroCuenta());
-								resultTable.setHTML(indiceRowTabla, 2, solicitudServicioCerradaResultDto.getNumeroDeCuenta());
-								if (solicitudServicioCerradaResultDto.getRazonSocialCuenta() != null) {
-									resultTable.setHTML(indiceRowTabla, 3, solicitudServicioCerradaResultDto
-											.getRazonSocialCuenta());
-								} else {
-									// resultTable.setHTML(row, 3, solicitudServicioCerradaResultDto.getCuenta().getPersona()
-									// .getRazonSocial());
-									resultTable.setHTML(indiceRowTabla, 3, solicitudServicioCerradaResultDto
-											.getRazonSocialCuenta());
-								}
-								resultTable.setHTML(indiceRowTabla, 4, solicitudServicioCerradaResultDto
-										.getCantidadEquiposPorCuenta().toString());
-								resultTable.setHTML(indiceRowTabla, 5, solicitudServicioCerradaResultDto.getPataconex()
-										.toString());
-								if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == true) {
-									resultTable.setWidget(indiceRowTabla, 6, IconFactory.tildeVerde());
-								} else {
-									resultTable.setText(indiceRowTabla, 6, "");
-								}
-								if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == Boolean.TRUE) {
-									cantEqFirmados++;
-								}
-								cantEquipos = cantEquipos + solicitudServicioCerradaResultDto.getCantidadEquipos();
-								cantPataconex = cantPataconex + solicitudServicioCerradaResultDto.getPataconex();
-								indiceRowTabla++;
-//							}
-//						});
-				
+				resultTable.setWidget(indiceRowTabla, 0, IconFactory.word());
+				resultTable.setHTML(indiceRowTabla, 1, solicitudServicioCerradaResultDto.getNumero());
+				resultTable.setHTML(indiceRowTabla, 2, solicitudServicioCerradaResultDto.getNumeroDeCuenta());
+				if (solicitudServicioCerradaResultDto.getRazonSocialCuenta() != null) {
+					resultTable.setHTML(indiceRowTabla, 3, solicitudServicioCerradaResultDto
+							.getRazonSocialCuenta());
+				} else {
+					resultTable.setHTML(indiceRowTabla, 3, solicitudServicioCerradaResultDto
+							.getRazonSocialCuenta());
+				}
+				resultTable.setHTML(indiceRowTabla, 4, solicitudServicioCerradaResultDto
+						.getCantidadEquiposPorCuenta().toString());
+				resultTable.setHTML(indiceRowTabla, 5, solicitudServicioCerradaResultDto.getPataconex()
+						.toString());
+				if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == true) {
+					resultTable.setWidget(indiceRowTabla, 6, IconFactory.tildeVerde());
+				} else {
+					resultTable.setText(indiceRowTabla, 6, "");
+				}
+				if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == Boolean.TRUE) {
+					cantEqFirmados++;
+				}
+				cantEquipos = cantEquipos + solicitudServicioCerradaResultDto.getCantidadEquipos();
+				cantPataconex = cantPataconex + solicitudServicioCerradaResultDto.getPataconex();
+				indiceRowTabla++;
 
 			}
 			setVisible(true);
@@ -229,7 +205,6 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 			SolicitudRpcService.Util.getInstance().getDetalleSolicitudServicio(solicitud.getId(),
 					new DefaultWaitCallback<DetalleSolicitudServicioDto>() {
 						public void success(DetalleSolicitudServicioDto result) {
-							detalleSolicitudServicioDto = result;
 							cambiosSSCerradasResultUI.setSolicitudServicioCerradaDto(result);
 							cambiosSSCerradasResultUI.setVisible(true);
 						}
@@ -255,8 +230,8 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 						WindowUtils.redirect("/" + contextRoot + "/download/" + filenameFinal
 								+ "?module=solicitudes&service=rtf&name=" + filenameFinal);
 					} else {
-						MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),
-								MessageDialog.getCloseCommand());
+						MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO,
+								Sfa.constant().ERR_FILE_NOT_FOUND(), MessageDialog.getCloseCommand());
 					}
 				}
 
