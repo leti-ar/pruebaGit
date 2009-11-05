@@ -9,6 +9,7 @@ import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
+import ar.com.nextel.sfa.client.dto.MessageDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
@@ -20,7 +21,6 @@ import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
-import ar.com.nextel.sfa.client.util.MessageUtils;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
@@ -342,8 +342,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 						CerradoSSExitosoDialog.getInstance().showCierreExitoso(result.getRtfFileName());
 					} else {
 						ErrorDialog.getInstance().setDialogTitle("Aviso");
-						ErrorDialog.getInstance().show(MessageUtils.getMessagesHTML(result.getMessages()),
-								false);
+						StringBuilder msgString = new StringBuilder();
+						for (MessageDto msg : result.getMessages()) {
+							msgString.append("<span class=\"error\">- " + msg.getDescription()
+									+ "</span><br>");
+						}
+						ErrorDialog.getInstance().show(msgString.toString(), false);
 					}
 				}
 
