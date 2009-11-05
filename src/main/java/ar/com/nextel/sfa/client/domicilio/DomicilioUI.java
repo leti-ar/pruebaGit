@@ -333,18 +333,29 @@ public class DomicilioUI extends NextelDialog {
 	}
 
 	private DomiciliosCuentaDto mapeoDomicilioNormalizado(DomiciliosCuentaDto domicilioNormalizado) {
-		// Mapeos a Mano para no perder Datos: REVISAR:
-		domicilioNormalizado.setObservaciones(domiciliosUIData.getObservaciones().getText());
-		domicilioNormalizado.setValidado(domiciliosUIData.getValidado().getValue());
+		domicilioNormalizado.setObservaciones(domicilioAEditar.getObservaciones());
+		domicilioNormalizado.setValidado(domicilioAEditar.getValidado());
 		domicilioNormalizado.setId(domicilioAEditar.getId());
 		domicilioNormalizado.setIdEntrega(domicilioAEditar.getIdEntrega());
 		domicilioNormalizado.setIdFacturacion(domicilioAEditar.getIdFacturacion());
-		domicilioNormalizado.setNombreUsuarioUltimaModificacion(domicilioAEditar
-				.getNombreUsuarioUltimaModificacion());
+		domicilioNormalizado.setNombreUsuarioUltimaModificacion(domicilioAEditar.getNombreUsuarioUltimaModificacion());
 		domicilioNormalizado.setFecha_ultima_modificacion(domicilioAEditar.getFecha_ultima_modificacion());
 		domicilioNormalizado.setActivo(domicilioAEditar.getActivo());
+		domicilioNormalizado.setPiso(getPrimerDatoNoNulo(domicilioNormalizado.getPiso(),domicilioAEditar.getPiso()));
+		domicilioNormalizado.setDepartamento(getPrimerDatoNoNulo(domicilioNormalizado.getDepartamento(),domicilioAEditar.getDepartamento()));
+		domicilioNormalizado.setUnidadFuncional(getPrimerDatoNoNulo(domicilioNormalizado.getUnidadFuncional(),domicilioAEditar.getUnidadFuncional()));		
+		domicilioNormalizado.setTorre(getPrimerDatoNoNulo(domicilioNormalizado.getTorre(),domicilioAEditar.getTorre()));
+		domicilioNormalizado.setManzana(getPrimerDatoNoNulo(domicilioNormalizado.getManzana(),domicilioAEditar.getManzana()));
+		domicilioNormalizado.setEntreCalle(getPrimerDatoNoNulo(domicilioNormalizado.getEntreCalle(),domicilioAEditar.getEntreCalle()));
+		domicilioNormalizado.setYcalle(getPrimerDatoNoNulo(domicilioNormalizado.getYcalle(),domicilioAEditar.getYcalle()));
 		return domicilioNormalizado;
+		
 	}
+	
+	private String getPrimerDatoNoNulo(String dato1, String dato2) {
+		return dato1!=null && !dato1.trim().equals("") ? dato1 : dato2;
+	}
+	
 
 	/** Comando para el boton 'Normalizar' del NormalizadorUI */
 	private Command getComandoAceptarNormalizado() {
