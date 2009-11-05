@@ -134,31 +134,33 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 			for (Iterator iter = solicitudesServicioCerradaResultDto.iterator(); iter.hasNext();) {
 				SolicitudServicioCerradaResultDto solicitudServicioCerradaResultDto = (SolicitudServicioCerradaResultDto) iter
 						.next();
-				resultTable.setWidget(indiceRowTabla, 0, IconFactory.word());
-				resultTable.setHTML(indiceRowTabla, 1, solicitudServicioCerradaResultDto.getNumero());
-				resultTable.setHTML(indiceRowTabla, 2, solicitudServicioCerradaResultDto.getNumeroDeCuenta());
-				if (solicitudServicioCerradaResultDto.getRazonSocialCuenta() != null) {
-					resultTable.setHTML(indiceRowTabla, 3, solicitudServicioCerradaResultDto
-							.getRazonSocialCuenta());
-				} else {
-					resultTable.setHTML(indiceRowTabla, 3, solicitudServicioCerradaResultDto
-							.getRazonSocialCuenta());
-				}
-				resultTable.setHTML(indiceRowTabla, 4, solicitudServicioCerradaResultDto
-						.getCantidadEquiposPorCuenta().toString());
-				resultTable.setHTML(indiceRowTabla, 5, solicitudServicioCerradaResultDto.getPataconex()
-						.toString());
-				if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == true) {
-					resultTable.setWidget(indiceRowTabla, 6, IconFactory.tildeVerde());
-				} else {
-					resultTable.setText(indiceRowTabla, 6, "");
-				}
-				if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == Boolean.TRUE) {
-					cantEqFirmados++;
-				}
-				cantEquipos = cantEquipos + solicitudServicioCerradaResultDto.getCantidadEquipos();
-				cantPataconex = cantPataconex + solicitudServicioCerradaResultDto.getPataconex();
-				indiceRowTabla++;
+								resultTable.setWidget(indiceRowTabla, 0, IconFactory.word());
+								resultTable.setHTML(indiceRowTabla, 1, solicitudServicioCerradaResultDto.getNumero());
+								resultTable.setHTML(indiceRowTabla, 2, solicitudServicioCerradaResultDto.getNumeroDeCuenta());
+								if (solicitudServicioCerradaResultDto.getRazonSocialCuenta() != null) {
+									 resultTable.setHTML(indiceRowTabla, 3, solicitudServicioCerradaResultDto.getRazonSocial());
+								} else {
+									resultTable.setHTML(indiceRowTabla, 3, solicitudServicioCerradaResultDto
+											.getRazonSocialCuenta());
+								}
+								resultTable.setHTML(indiceRowTabla, 4, solicitudServicioCerradaResultDto
+										.getCantidadEquiposPorCuenta().toString());
+								resultTable.setHTML(indiceRowTabla, 5, solicitudServicioCerradaResultDto.getPataconex()
+										.toString());
+								if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == true) {
+									resultTable.setWidget(indiceRowTabla, 6, IconFactory.tildeVerde());
+								} else {
+									resultTable.setText(indiceRowTabla, 6, "");
+								}
+								if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == Boolean.TRUE) {
+									cantEqFirmados++;
+								}
+								cantEquipos = cantEquipos + solicitudServicioCerradaResultDto.getCantidadEquipos();
+								cantPataconex = cantPataconex + solicitudServicioCerradaResultDto.getPataconex();
+								indiceRowTabla++;
+//							}
+//						});
+				
 
 			}
 			setVisible(true);
@@ -216,7 +218,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 			if (solicitud.isCliente()) {
 				// Si es cliente usamos el codigo Vantive, sino el Id (ya que no podemos
 				// guardar archivos con los caracteres de VANCUC
-				filename = solicitud.getNumeroCuenta() + "-5-" + numeroSS + ".rtf";
+				filename = solicitud.getNumeroDeCuenta() + "-5-" + numeroSS + ".rtf";
 			} else {
 				filename = solicitud.getIdCuenta().toString() + "-5-" + numeroSS + ".rtf";
 			}
@@ -230,8 +232,8 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 						WindowUtils.redirect("/" + contextRoot + "/download/" + filenameFinal
 								+ "?module=solicitudes&service=rtf&name=" + filenameFinal);
 					} else {
-						MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO,
-								Sfa.constant().ERR_FILE_NOT_FOUND(), MessageDialog.getCloseCommand());
+						MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),
+								MessageDialog.getCloseCommand());
 					}
 				}
 
