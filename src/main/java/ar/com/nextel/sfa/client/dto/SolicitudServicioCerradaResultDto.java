@@ -20,9 +20,9 @@ public class SolicitudServicioCerradaResultDto implements IsSerializable {
 	private Long id;
 	private Long cantidadEquiposPorCuenta;
 	private List<CambiosSolicitudServicioDto> cambios;
-//	private CuentaDto cuenta;
 	private boolean cliente;
 	private String numeroDeCuenta;
+	private String razonSocial;
 	
 
 //	// asumo que: que tenga el codigo de Vantive es sinonimo de que sea cliente
@@ -142,13 +142,12 @@ public class SolicitudServicioCerradaResultDto implements IsSerializable {
 		this.numeroDeCuenta = numeroDeCuenta;
 	}
 
+	public String getRazonSocial() {
+		return razonSocial;
+	}
 
-//	public void setCuenta(CuentaDto cuenta) {
-//		this.cuenta = cuenta;
-//	}
-//
-//	public CuentaDto getCuenta() {
-//		return cuenta;
-//	}
+	public void setRazonSocial(String razonSocial) {
+		this.razonSocial = razonSocial;
+	}
 
 }
