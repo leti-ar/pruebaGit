@@ -135,8 +135,8 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 				SolicitudServicioCerradaResultDto solicitudServicioCerradaResultDto = (SolicitudServicioCerradaResultDto) iter
 						.next();
 								resultTable.setWidget(indiceRowTabla, 0, IconFactory.word());
-								resultTable.setHTML(indiceRowTabla, 1, solicitudServicioCerradaResultDto.getNumero());
-								resultTable.setHTML(indiceRowTabla, 2, solicitudServicioCerradaResultDto.getNumeroDeCuenta());
+								resultTable.setHTML(indiceRowTabla, 1, solicitudServicioCerradaResultDto.getNumeroSS());
+								resultTable.setHTML(indiceRowTabla, 2, solicitudServicioCerradaResultDto.getNumeroCuenta());
 								if (solicitudServicioCerradaResultDto.getRazonSocialCuenta() != null) {
 									 resultTable.setHTML(indiceRowTabla, 3, solicitudServicioCerradaResultDto.getRazonSocial());
 								} else {
@@ -214,14 +214,14 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 		} else if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() == 0)) {
 
 			final String contextRoot = WindowUtils.getContextRoot();
-			String filename = null;
-			if (solicitud.isCliente()) {
-				// Si es cliente usamos el codigo Vantive, sino el Id (ya que no podemos
-				// guardar archivos con los caracteres de VANCUC
-				filename = solicitud.getNumeroDeCuenta() + "-5-" + numeroSS + ".rtf";
-			} else {
-				filename = solicitud.getIdCuenta().toString() + "-5-" + numeroSS + ".rtf";
-			}
+			String filename = null;			
+			if (solicitud.isNumeroCuentaAlCierreSSIdVantive()) {
+                // Si es cliente usamos el codigo Vantive, sino el Id (ya que no podemos
+                // guardar archivos con los caracteres de VANCUC
+                filename = solicitud.getNumeroCuentaAlCierreSS() + "-5-" + numeroSS + ".rtf";
+            } else {
+                filename = solicitud.getIdCuenta().toString() + "-5-" + numeroSS + ".rtf";
+            }
 			final String filenameFinal = filename;
 			LoadingModalDialog.getInstance()
 					.showAndCenter("Solicitud", "Esperando Solicitud de Servicio ...");
@@ -251,7 +251,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 		for (Iterator iterator = solicitudesServicioCerradaResultDto.iterator(); iterator.hasNext();) {
 			SolicitudServicioCerradaResultDto solicitudServicioDto = (SolicitudServicioCerradaResultDto) iterator
 					.next();
-			if (solicitudServicioDto.getNumero().equals(numeroSS)) {
+			if (solicitudServicioDto.getNumeroSS().equals(numeroSS)) {
 				return solicitudServicioDto;
 			}
 		}

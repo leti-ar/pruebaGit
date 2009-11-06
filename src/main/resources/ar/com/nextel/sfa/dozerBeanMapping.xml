@@ -89,11 +89,23 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</field>
 		<field>
 			<a>cuenta.codigoVantive</a>
-			<b>numeroDeCuenta</b>
+			<b>numeroCuenta</b>
 		</field>
+		<field>
+			<a>numeroCuenta</a>
+			<b>numeroCuentaAlCierreSS</b>
+		</field>
+		<field-exclude>
+			<a>numeroCuenta</a>
+			<b>numeroCuenta</b>
+		</field-exclude>
 		<field>
 			<a>cuenta.persona.razonSocial</a>
 			<b>razonSocial</b>
+		</field>
+		<field>
+			<a>numero</a>
+			<b>numeroSS</b>
 		</field>
 	</mapping>
 	
