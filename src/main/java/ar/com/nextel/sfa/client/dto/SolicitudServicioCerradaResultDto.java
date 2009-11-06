@@ -9,7 +9,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class SolicitudServicioCerradaResultDto implements IsSerializable {
 
 	private Long idSolicitudServicio;
-	private String numero;
+	private String numeroSS;
 	private String numeroCuenta;
 	private String razonSocialCuenta;
 	private Long cantidadEquipos;
@@ -21,14 +21,16 @@ public class SolicitudServicioCerradaResultDto implements IsSerializable {
 	private Long cantidadEquiposPorCuenta;
 	private List<CambiosSolicitudServicioDto> cambios;
 	private boolean cliente;
-	private String numeroDeCuenta;
+	private String numeroCuentaAlCierreSS;
 	private String razonSocial;
 	
-
-//	// asumo que: que tenga el codigo de Vantive es sinonimo de que sea cliente
-//	public boolean isCliente() {
-//		return !cuenta.getCondicionCuenta().getCodigoVantive().trim().equals("");
-//	}
+	/** 
+	 * 
+	 * @return true si numeroCuentaAlCierreSS es un ID Vantive (o sea, no comienza ni con S ni con V)
+	 */
+    public boolean isNumeroCuentaAlCierreSSIdVantive() {
+        return !(("S".equals(numeroCuentaAlCierreSS.substring(0,1))) || ("V".equals(numeroCuentaAlCierreSS.substring(0,1))));       
+    }
 
 	public Long getIdSolicitudServicio() {
 		return idSolicitudServicio;
@@ -38,12 +40,12 @@ public class SolicitudServicioCerradaResultDto implements IsSerializable {
 		this.idSolicitudServicio = idSolicitudServicio;
 	}
 
-	public String getNumero() {
-		return numero;
+	public String getNumeroSS() {
+		return numeroSS;
 	}
 
-	public void setNumero(String numero) {
-		this.numero = numero;
+	public void setNumeroSS(String numero) {
+		this.numeroSS = numero;
 	}
 
 	public String getRazonSocialCuenta() {
@@ -134,12 +136,12 @@ public class SolicitudServicioCerradaResultDto implements IsSerializable {
 		this.idCuenta = idCuenta;
 	}
 
-	public String getNumeroDeCuenta() {
-		return numeroDeCuenta;
+	public String getNumeroCuentaAlCierreSS() {
+		return numeroCuentaAlCierreSS;
 	}
 
-	public void setNumeroDeCuenta(String numeroDeCuenta) {
-		this.numeroDeCuenta = numeroDeCuenta;
+	public void setNumeroCuentaAlCierreSS(String numeroDeCuenta) {
+		this.numeroCuentaAlCierreSS = numeroDeCuenta;
 	}
 
 	public String getRazonSocial() {
