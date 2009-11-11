@@ -73,7 +73,7 @@ public class UILoader extends SimplePanel implements ValueChangeHandler<String> 
 	 */
 	public void setPage(int page, String historyToken) {
 		if (!checkPermission(page)) {
-			ErrorDialog.getInstance().show("No posee permisos para acceder a esta funcionalidad.");
+			ErrorDialog.getInstance().show("No posee permisos para acceder a esta funcionalidad.", false);
 			History.newItem(lastToken, false);
 			return;
 		}
