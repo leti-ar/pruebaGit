@@ -550,7 +550,7 @@ public class CuentaDatosForm extends Composite {
 	public void cargarPanelDatosOportunidad(CuentaPotencialDto oportunidadDto) {
 		this.oportunidadDto = oportunidadDto;
 		idCuentaSolicitudOperacionEnCurso = 0;
-		hayOperacionesEnCurso = oportunidadDto.getCuentaOrigen().getSolicitudesServicio()!=null && oportunidadDto.getCuentaOrigen().getSolicitudesServicio().size()>0;
+		hayOperacionesEnCurso = !oportunidadDto.getCuentaOrigen().isSolicitudesServicioEmpty();
         if (hayOperacionesEnCurso) {
         	idCuentaSolicitudOperacionEnCurso = oportunidadDto.getCuentaOrigen().getId().longValue();
         }
