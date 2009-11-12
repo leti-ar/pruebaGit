@@ -288,7 +288,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		pataconex.setText(decFormatter.format(pataconexValue));
 		firmarss.setValue(solicitud.getFirmar());
 		observaciones.setText(solicitud.getObservaciones());
-
+		if(solicitud.getGrupoSolicitud().isCDW()){
+			email.setText(solicitud.getEmail());
+		}
 		if (anticipo.getItemCount() != 0) {
 			origen.setSelectedItem(solicitud.getOrigen());
 			anticipo.setSelectedItem(solicitud.getTipoAnticipo());
@@ -338,6 +340,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		solicitudServicio.setAclaracionEntrega(aclaracion.getText());
 		solicitudServicio.setFirmar(firmarss.getValue());
 		solicitudServicio.setObservaciones(observaciones.getText());
+		if(solicitudServicio.getGrupoSolicitud().isCDW()){
+			solicitudServicio.setEmail(email.getText());
+		}
 		return solicitudServicio;
 	}
 
@@ -365,11 +370,12 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	}
 
 	/**
-	 * @param cerrarSS
-	 *            true si debe validar para cierre de solicitud
+	 * @param generacionCierreDefinitivo
+	 *            true si debe validar para la generacion o cierre definitiva de la solicitud, que seria el
+	 *            aceptar de la pantalla que pide los mails
 	 * @return Lista de errores
 	 */
-	public List<String> validarParaCerrarGenerar(boolean cerrarSS) {
+	public List<String> validarParaCerrarGenerar(boolean generacionCierreDefinitivo) {
 		recarcularValores();
 		GwtValidator validator = new GwtValidator();
 		TextBoxBaseValidationTarget nnsValidator = validator.addTarget(nss).required(
@@ -411,7 +417,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 		// Para el cierre
 		SolicitudServicioGeneracionDto ssg = solicitudServicio.getSolicitudServicioGeneracion();
-		if (cerrarSS == true && ssg != null) {
+		if (generacionCierreDefinitivo == true && ssg != null) {
 			if (ssg.isEmailNuevoChecked()) {
 				validator.addTarget(ssg.getEmailNuevo()).required(
 						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nuevo Email")).regEx(
