@@ -287,7 +287,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	}
 
 	private void openGenerarCerrarSolicitdDialog(boolean cerrando) {
-		List errors = editarSSUIData.validarParaCerrarGenerar(cerrando);
+		List errors = editarSSUIData.validarParaCerrarGenerar(false);
 		if (errors.isEmpty()) {
 			cerrandoSolicitud = cerrando;
 			getGenerarSSUI().setTitleCerrar(cerrando);
