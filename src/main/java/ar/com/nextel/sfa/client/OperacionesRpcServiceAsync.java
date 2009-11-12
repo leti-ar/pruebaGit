@@ -17,7 +17,8 @@ public interface OperacionesRpcServiceAsync {
 
 	public void searchReservas(AsyncCallback<VentaPotencialVistaResultDto> callback);
 
-	public void cancelarOperacionEnCurso(String idOperacionEnCurso,
-			AsyncCallback callback);
+	public void cancelarOperacionEnCurso(String idOperacionEnCurso,	AsyncCallback callback);
 
+	public void cancelarOperacionEnCurso(Long idCuenta,	AsyncCallback callback);
+	
 }

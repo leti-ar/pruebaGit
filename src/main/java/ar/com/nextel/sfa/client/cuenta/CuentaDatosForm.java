@@ -91,6 +91,8 @@ public class CuentaDatosForm extends Composite {
 	private List <Widget>camposObligatorios = new ArrayList<Widget>();
 	private boolean showPanelDatosCuenta = true;
 	private boolean showCamposUSE = false;
+	public  boolean hayOperacionesEnCurso = false;
+	public  long    idCuentaSolicitudOperacionEnCurso;
 	private static final String ANCHO_PRIMER_COLUMNA = "11%";
 	private static final String ANCHO_TERCER_COLUMNA = "6%";
 	private static final String ANCHO_TABLA_PANEL    = "80%";
@@ -547,6 +549,11 @@ public class CuentaDatosForm extends Composite {
 	
 	public void cargarPanelDatosOportunidad(CuentaPotencialDto oportunidadDto) {
 		this.oportunidadDto = oportunidadDto;
+		idCuentaSolicitudOperacionEnCurso = 0;
+		hayOperacionesEnCurso = oportunidadDto.getCuentaOrigen().getSolicitudesServicio()!=null && oportunidadDto.getCuentaOrigen().getSolicitudesServicio().size()>0;
+        if (hayOperacionesEnCurso) {
+        	idCuentaSolicitudOperacionEnCurso = oportunidadDto.getCuentaOrigen().getId().longValue();
+        }
 		camposTabDatos.getRazonSocial().setText(oportunidadDto.getPersona().getRazonSocial());
 		camposTabDatos.getNombre().setText(oportunidadDto.getPersona().getNombre());
 		camposTabDatos.getApellido().setText(oportunidadDto.getPersona().getApellido());

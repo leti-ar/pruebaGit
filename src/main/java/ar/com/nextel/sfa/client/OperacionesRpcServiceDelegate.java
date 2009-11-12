@@ -37,4 +37,10 @@ public class OperacionesRpcServiceDelegate {
 		WaitWindow.show();
 		opRpcService.cancelarOperacionEnCurso(idOperacionEnCurso, callback);
 	}
+
+	public void cancelarOperacionEnCurso(Long idCuenta,
+			DefaultWaitCallback<VentaPotencialVistaResultDto> callback) {
+		WaitWindow.show();
+		opRpcService.cancelarOperacionEnCurso(idCuenta, callback);
+	}
 }

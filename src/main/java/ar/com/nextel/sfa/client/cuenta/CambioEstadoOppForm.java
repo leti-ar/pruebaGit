@@ -1,16 +1,19 @@
 package ar.com.nextel.sfa.client.cuenta;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
+import ar.com.nextel.sfa.client.OperacionesRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.EstadoOportunidadDto;
 import ar.com.nextel.sfa.client.dto.MotivoNoCierreDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.enums.EstadoOportunidadEnum;
+import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -23,32 +26,53 @@ public class CambioEstadoOppForm extends NextelDialog {
 	private FlexTable  mainTable;
 	private SimpleLink aceptar;
 	private SimpleLink cancelar;
-    private CuentaUIData cuentaData = CuentaDatosForm.getInstance().getCamposTabDatos();	
+    private CuentaUIData cuentaData = CuentaDatosForm.getInstance().getCamposTabDatos();
     private FlexTable blankTable = new FlexTable();
     
 	private static CambioEstadoOppForm cambioEstadoPopUp = null;
 
-	ClickListener listener = new ClickListener(){
-		public void onClick(Widget sender){
+	ClickListener listener = new ClickListener() {
+		public void onClick(Widget sender) {
 			if(sender == aceptar) {
-				if(cuentaData.getRadioGroupMotivos().getValueChecked()!=null)
-				   updateEstadoOportunidad();
-				else
-					MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(), Sfa.constant().ERR_NO_OPCION_SELECCIONADA(), 
-							MessageDialog.getCloseCommand());
-			}
-			else if(sender == cancelar){
+				if (CuentaDatosForm.getInstance().hayOperacionesEnCurso) {
+					MessageDialog.getInstance().showAceptarCancelar(Sfa.constant().ERR_DIALOG_TITLE(), Sfa.constant().MSG_EXISTE_SS(), getAceptarCommand(), MessageDialog.getInstance().getCloseCommand());
+				} else {
+					updateEstadoOportunidad();
+					MessageDialog.getInstance().hide();
+				}
+			}else if(sender == cancelar){
 				hide();
 			}
 		}};
-
+		
     public static CambioEstadoOppForm getInstance() {
     	if (cambioEstadoPopUp==null) {
     		cambioEstadoPopUp = new CambioEstadoOppForm();
     	}
     	return cambioEstadoPopUp;
     }
-	
+
+    private Command getAceptarCommand() {
+    	return new Command() {
+    		public void execute() {
+    			if(cuentaData.getRadioGroupMotivos().getValueChecked()!=null) {
+    				OperacionesRpcService.Util.getInstance().cancelarOperacionEnCurso(new Long (CuentaDatosForm.getInstance().idCuentaSolicitudOperacionEnCurso),new DefaultWaitCallback() {
+    					public void success(Object result) {
+    						updateEstadoOportunidad();
+    						MessageDialog.getInstance().hide();
+    					}
+    					public void failure(Throwable caught) {
+    						LoadingModalDialog.getInstance().hide();
+    						super.failure(caught);
+    					}
+    				});
+    			} else {
+    				MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(), Sfa.constant().ERR_NO_OPCION_SELECCIONADA(),	MessageDialog.getCloseCommand());
+    			}
+    		}
+    	};
+    }
+    
 	private  CambioEstadoOppForm() {
 		super(Sfa.constant().LBL_CAMBIAR_ESTADO(), false, true);
 		init();

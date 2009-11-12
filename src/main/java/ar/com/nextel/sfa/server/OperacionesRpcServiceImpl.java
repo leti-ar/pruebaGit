@@ -8,9 +8,11 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import ar.com.nextel.framework.repository.Repository;
+import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.CuentaPotencial;
 import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
+import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.sfa.client.OperacionesRpcService;
 import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
@@ -67,12 +69,26 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 
 	public void cancelarOperacionEnCurso(String idOperacionEnCurso) throws RpcExceptionMessages {
 		try {
-			OperacionEnCurso operacionEnCurso = repository.retrieve(OperacionEnCurso.class,
-					idOperacionEnCurso);
+			OperacionEnCurso operacionEnCurso = repository.retrieve(OperacionEnCurso.class,	idOperacionEnCurso);
 			solicitudBusinessService.cancelarOperacionEnCurso(operacionEnCurso);
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
 	}
+	
+	public void cancelarOperacionEnCurso(Long idCuenta) throws RpcExceptionMessages {
+		try {
+			Cuenta cuenta = repository.retrieve(Cuenta.class, idCuenta);
+			List <SolicitudServicio> listaSolicitudes = (List <SolicitudServicio>)cuenta.getSolicitudesEnCarga();
+			for (SolicitudServicio solicitud : listaSolicitudes) {
+				OperacionEnCurso operacionEnCurso = new OperacionEnCurso(sessionContextLoader.getSessionContext().getVendedor(), cuenta, solicitud);
+				solicitudBusinessService.cancelarOperacionEnCurso(operacionEnCurso);
+			}
+		} catch (Exception e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+	}
+	
 }

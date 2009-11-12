@@ -32,4 +32,7 @@ public interface OperacionesRpcService extends RemoteService {
 	public VentaPotencialVistaResultDto searchReservas() throws RpcExceptionMessages;
 
 	public void cancelarOperacionEnCurso(String idOperacionEnCurso) throws RpcExceptionMessages;
+	
+	public void cancelarOperacionEnCurso(Long idCuenta) throws RpcExceptionMessages;
+	
 }

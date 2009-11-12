@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.constant;
 
 /**
  * Interface to represent the constants contained in resource bundle:
- * 	'/home/jlgperez/workspaceSFASVN/sfa-web2/src/main/java/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
+ * 	'/home/rgrippo/jobs/SFA/workspaceSFA2/sfa-web2/war/WEB-INF/classes/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
  */
 public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
@@ -455,6 +455,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Aviso")
   @Key("MSG_DIALOG_TITLE")
   String MSG_DIALOG_TITLE();
+
+  /**
+   * Translated "\"Existe una solicitud de servicio para la oportunidad. ¿Desea eliminarla?\"".
+   * 
+   * @return translated "\"Existe una solicitud de servicio para la oportunidad. ¿Desea eliminarla?\""
+   */
+  @DefaultStringValue("\"Existe una solicitud de servicio para la oportunidad. ¿Desea eliminarla?\"")
+  @Key("MSG_EXISTE_SS")
+  String MSG_EXISTE_SS();
 
   /**
    * Translated "No hay datos nuevos para guardar".

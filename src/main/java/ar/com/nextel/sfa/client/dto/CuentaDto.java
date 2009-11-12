@@ -27,7 +27,7 @@ public class CuentaDto implements IsSerializable {
     private ProveedorDto proveedorInicial;
     private RubroDto rubro;
 //    private Set<ServicioAdicionalDto> serviciosAdicionales;
-//    private Set<SolicitudServicioDto> solicitudesServicio;
+    private List<SolicitudServicioDto> solicitudesServicio;
     private TipoCanalVentasDto tipoCanalVentas;
     private TipoContribuyenteDto tipoContribuyente;
     private String use;
@@ -176,12 +176,12 @@ public class CuentaDto implements IsSerializable {
 //			Set<ServicioAdicionalDto> serviciosAdicionales) {
 //		this.serviciosAdicionales = serviciosAdicionales;
 //	}
-//	public Set<SolicitudServicioDto> getSolicitudesServicio() {
-//		return solicitudesServicio;
-//	}
-//	public void setSolicitudesServicio(Set<SolicitudServicioDto> solicitudesServicio) {
-//		this.solicitudesServicio = solicitudesServicio;
-//	}
+	public List<SolicitudServicioDto> getSolicitudesServicio() {
+		return solicitudesServicio;
+	}
+	public void setSolicitudesServicio(List<SolicitudServicioDto> solicitudesServicio) {
+		this.solicitudesServicio = solicitudesServicio;
+	}
 	public TipoCanalVentasDto getTipoCanalVentas() {
 		return tipoCanalVentas;
 	}
