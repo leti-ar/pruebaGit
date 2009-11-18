@@ -31,48 +31,6 @@ public class CambioEstadoOppForm extends NextelDialog {
     
 	private static CambioEstadoOppForm cambioEstadoPopUp = null;
 
-	ClickListener listener = new ClickListener() {
-		public void onClick(Widget sender) {
-			if(sender == aceptar) {
-				if (CuentaDatosForm.getInstance().hayOperacionesEnCurso) {
-					MessageDialog.getInstance().showAceptarCancelar(Sfa.constant().ERR_DIALOG_TITLE(), Sfa.constant().MSG_EXISTE_SS(), getAceptarCommand(), MessageDialog.getInstance().getCloseCommand());
-				} else {
-					updateEstadoOportunidad();
-					MessageDialog.getInstance().hide();
-				}
-			}else if(sender == cancelar){
-				hide();
-			}
-		}};
-		
-    public static CambioEstadoOppForm getInstance() {
-    	if (cambioEstadoPopUp==null) {
-    		cambioEstadoPopUp = new CambioEstadoOppForm();
-    	}
-    	return cambioEstadoPopUp;
-    }
-
-    private Command getAceptarCommand() {
-    	return new Command() {
-    		public void execute() {
-    			if(cuentaData.getRadioGroupMotivos().getValueChecked()!=null) {
-    				OperacionesRpcService.Util.getInstance().cancelarOperacionEnCurso(new Long (CuentaDatosForm.getInstance().idCuentaSolicitudOperacionEnCurso),new DefaultWaitCallback() {
-    					public void success(Object result) {
-    						updateEstadoOportunidad();
-    						MessageDialog.getInstance().hide();
-    					}
-    					public void failure(Throwable caught) {
-    						LoadingModalDialog.getInstance().hide();
-    						super.failure(caught);
-    					}
-    				});
-    			} else {
-    				MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(), Sfa.constant().ERR_NO_OPCION_SELECCIONADA(),	MessageDialog.getCloseCommand());
-    			}
-    		}
-    	};
-    }
-    
 	private  CambioEstadoOppForm() {
 		super(Sfa.constant().LBL_CAMBIAR_ESTADO(), false, true);
 		init();
@@ -86,7 +44,7 @@ public class CambioEstadoOppForm extends NextelDialog {
 		cuentaData.getRadioOpsTable().setVisible(false);
 		cuentaData.getEstadoOpp().addChangeListener(new ChangeListener() {
 			public void onChange(Widget sender) {
-				showHideTablaMotivos();
+				showHideTablaMotivos(cuentaData.getEstadoOpp().getSelectedItemId()!=null && cuentaData.getEstadoOpp().getSelectedItemId().equals(EstadoOportunidadEnum.NO_CERRADA.getId().toString()));
 			}
 		});
 		
@@ -110,31 +68,75 @@ public class CambioEstadoOppForm extends NextelDialog {
 		marco.setWidget(0, 0, mainTable);
 		add(marco);
 
-		aceptar = new SimpleLink("Aceptar");
+		aceptar = new SimpleLink(Sfa.constant().guardar());
 		aceptar.addClickListener(listener);
 
-		cancelar = new SimpleLink("Cerrar");
+		cancelar = new SimpleLink(Sfa.constant().cerrar());
 		cancelar.addClickListener(listener);
 		
 		addFormButtons(aceptar);
 		addFormButtons(cancelar);
 		setFormButtonsVisible(true);
 		setFooterVisible(false);
-
 	}
 	
 	private void initBlankTable() {
 		blankTable.setWidget(0, 0, new HTML("<br/>"));
 		blankTable.getFlexCellFormatter().setHeight(0, 1, "156");
 	}
+
+	ClickListener listener = new ClickListener() {
+		public void onClick(Widget sender) {
+			if(sender == aceptar) {
+				if(cuentaData.getRadioGroupMotivos().getValueChecked()!=null) {
+					if (!CuentaDatosForm.getInstance().getOportunidadDto().getCuentaOrigen().isSolicitudesServicioEmpty()) {
+						MessageDialog.getInstance().showAceptarCancelar(Sfa.constant().ERR_DIALOG_TITLE(), Sfa.constant().MSG_EXISTE_SS(), getGuardarCommand(), MessageDialog.getInstance().getCloseCommand());
+					} else {
+						doCambio();
+					}
+				} else {
+					MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(), Sfa.constant().ERR_NO_OPCION_SELECCIONADA(),	MessageDialog.getCloseCommand());
+				}
+			} else if(sender == cancelar){
+				hide();
+			}
+		}};
+		
+    public static CambioEstadoOppForm getInstance() {
+    	if (cambioEstadoPopUp==null) {
+    		cambioEstadoPopUp = new CambioEstadoOppForm();
+    	}
+    	return cambioEstadoPopUp;
+    }
+
+    private Command getGuardarCommand() {
+    	return new Command() {
+    		public void execute() {
+    			OperacionesRpcService.Util.getInstance().cancelarOperacionEnCurso(CuentaDatosForm.getInstance().getOportunidadDto().getCuentaOrigen().getId(),new DefaultWaitCallback() {
+    				public void success(Object result) {
+    					doCambio();
+    				}
+    				public void failure(Throwable caught) {
+    					LoadingModalDialog.getInstance().hide();
+    					super.failure(caught);
+    				}
+    			});
+    		}
+    	};
+    }
+    
+    private void doCambio() {
+		CuentaDatosForm.getInstance().getOportunidadDto().getCuentaOrigen().setSolicitudesServicioEmpty(true);
+		updateEstadoOportunidad();
+		MessageDialog.getInstance().hide();
+    }
 	
 	public void cargarPopup() {
 		aceptar.setVisible(true);
 		showAndCenter();
 	}
 	
-	public void showHideTablaMotivos() {
-		boolean show = cuentaData.getEstadoOpp().getSelectedItemId()!=null && cuentaData.getEstadoOpp().getSelectedItemId().equals(EstadoOportunidadEnum.NO_CERRADA.getId().toString());
+	public void showHideTablaMotivos(boolean show) {
 		cuentaData.getRadioOpsTable().setVisible(show);
 		blankTable.setVisible(!show);
 	}

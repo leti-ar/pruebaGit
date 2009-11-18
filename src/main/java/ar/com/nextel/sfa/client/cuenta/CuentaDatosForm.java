@@ -30,6 +30,7 @@ import ar.com.nextel.sfa.client.dto.TipoEmailDto;
 import ar.com.nextel.sfa.client.dto.TipoTarjetaDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
+import ar.com.nextel.sfa.client.enums.EstadoOportunidadEnum;
 import ar.com.nextel.sfa.client.enums.SexoEnum;
 import ar.com.nextel.sfa.client.enums.TipoCuentaEnum;
 import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
@@ -52,6 +53,8 @@ import ar.com.snoop.gwt.commons.client.window.MessageWindow;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -62,7 +65,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class CuentaDatosForm extends Composite {
 
-	private static CuentaDatosForm instance = new CuentaDatosForm();
+	private static CuentaDatosForm instance;
 	
 	private DualPanel fechaUsuarioTable;
 	private FlexTable usuario;
@@ -86,13 +89,11 @@ public class CuentaDatosForm extends Composite {
 	private HTML iconoLupa = IconFactory.vistaPreliminar();
 	private HTML iconoEditarEstdo = IconFactory.lapiz();
 	private CuentaPotencialDto oportunidadDto;
-	private CuentaUIData camposTabDatos   = new CuentaUIData();
+	private CuentaUIData camposTabDatos;
 	private DatosPagoDto datosPago;
 	private List <Widget>camposObligatorios = new ArrayList<Widget>();
 	private boolean showPanelDatosCuenta = true;
 	private boolean showCamposUSE = false;
-	public  boolean hayOperacionesEnCurso = false;
-	public  long    idCuentaSolicitudOperacionEnCurso;
 	private static final String ANCHO_PRIMER_COLUMNA = "11%";
 	private static final String ANCHO_TERCER_COLUMNA = "6%";
 	private static final String ANCHO_TABLA_PANEL    = "80%";
@@ -103,10 +104,14 @@ public class CuentaDatosForm extends Composite {
 	private int estiloUsado = 0;
 	
 	public static CuentaDatosForm getInstance() {
+		if (instance==null) {
+			instance = new CuentaDatosForm();
+		}
 		return instance;
 	}
 	
 	private CuentaDatosForm() {
+		camposTabDatos  = new CuentaUIData();
 		initWidget(mainPanel);
 		iconoEditarEstdo.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent arg0) {
@@ -547,13 +552,8 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getUse().setText(cuentaDto.getUse());
 	}
 	
-	public void cargarPanelDatosOportunidad(CuentaPotencialDto oportunidadDto) {
+	public void cargarPanelDatosOportunidad(final CuentaPotencialDto oportunidadDto) {
 		this.oportunidadDto = oportunidadDto;
-		idCuentaSolicitudOperacionEnCurso = 0;
-		hayOperacionesEnCurso = !oportunidadDto.getCuentaOrigen().isSolicitudesServicioEmpty();
-        if (hayOperacionesEnCurso) {
-        	idCuentaSolicitudOperacionEnCurso = oportunidadDto.getCuentaOrigen().getId().longValue();
-        }
 		camposTabDatos.getRazonSocial().setText(oportunidadDto.getPersona().getRazonSocial());
 		camposTabDatos.getNombre().setText(oportunidadDto.getPersona().getNombre());
 		camposTabDatos.getApellido().setText(oportunidadDto.getPersona().getApellido());
@@ -566,13 +566,21 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getOppNroOpp().setText(oportunidadDto.getNumero());
 		if(!oportunidadDto.isEsReserva()) {
 			camposTabDatos.getEstadoOpp().setSelectedItem(((OportunidadNegocioDto)oportunidadDto).getEstadoJustificado().getEstado());
-			camposTabDatos.getRadioGroupMotivos().setValueChecked(((OportunidadNegocioDto)oportunidadDto).getEstadoJustificado().getMotivo()!=null?((OportunidadNegocioDto)oportunidadDto).getEstadoJustificado().getMotivo().getId().toString():"1");
+			DeferredCommand.addCommand(new IncrementalCommand() {
+				public boolean execute() {
+					if (camposTabDatos.getMotivosNoCierre()==null || camposTabDatos.getMotivosNoCierre().isEmpty()) {
+						return true;
+					}
+					camposTabDatos.getRadioGroupMotivos().setValueChecked(((OportunidadNegocioDto)oportunidadDto).getEstadoJustificado().getMotivo()!=null?((OportunidadNegocioDto)oportunidadDto).getEstadoJustificado().getMotivo().getId().toString():"1");
+					return false;
+				}
+			});
 			camposTabDatos.getOppObservaciones().setText(((OportunidadNegocioDto)oportunidadDto).getEstadoJustificado().getObservacionesMotivo());
 			camposTabDatos.getOppVisitas().setText(((OportunidadNegocioDto)oportunidadDto).getCantidadVisitas()!=null?((OportunidadNegocioDto)oportunidadDto).getCantidadVisitas().toString():"");
 			camposTabDatos.getOppEstado().setText(((OportunidadNegocioDto)oportunidadDto).getEstadoJustificado()!=null?((OportunidadNegocioDto)oportunidadDto).getEstadoJustificado().getEstado().getDescripcion():"");
 			camposTabDatos.getOppCompetenciaEquipo().setText(((OportunidadNegocioDto)oportunidadDto).getCantidadEquiposCompetencia()!=null?((OportunidadNegocioDto)oportunidadDto).getCantidadEquiposCompetencia().toString():"");
 			camposTabDatos.getOppCompetenciaProv().setText(((OportunidadNegocioDto)oportunidadDto).getProveedorCompetencia()!=null?((OportunidadNegocioDto)oportunidadDto).getProveedorCompetencia().getDescripcion():"");
-			CambioEstadoOppForm.getInstance().showHideTablaMotivos();
+			CambioEstadoOppForm.getInstance().showHideTablaMotivos( EstadoOportunidadEnum.NO_CERRADA.getId().equals(((OportunidadNegocioDto)oportunidadDto).getEstadoJustificado().getEstado().getId()));
 		}
 	}
 	

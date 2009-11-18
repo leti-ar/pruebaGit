@@ -28,7 +28,6 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Grid;
@@ -145,15 +144,19 @@ public class CuentaUIData extends UIData {
 	private TextBox oppRubro                  = new TextBox();
 	private TextBox oppTerminalesEstimadas    = new TextBox();
 	private FlexTable radioOpsTable           = new FlexTable();
+	private List<MotivoNoCierreDto> motivosNoCierre;
+	
 	
 	private int currentYear;	
 	
 	public CuentaUIData() {
-        init();
+	    init();
 	}
 
 	public void init() {
 		fechaNacimiento.setWeekendSelectable(true);
+		setCombos();
+
 		sexo.addChangeHandler(new ChangeHandler() {
 			public void onChange(ChangeEvent event) {
 				CuentaDatosForm.getInstance().cambiarVisibilidadCamposSegunSexo();
@@ -202,9 +205,7 @@ public class CuentaUIData extends UIData {
                 }
 			}
 		});
-		
 		setAtributosDeCampos();
-		setCombos();
 		fields.add(tipoDocumento);
 		fields.add(numeroDocumento);
 		fields.add(razonSocial);
@@ -268,10 +269,10 @@ public class CuentaUIData extends UIData {
 					tipoTarjeta.addAllItems(result.getTipoTarjeta());
 					tipoCanalVentas.addAllItems(result.getTipoCanalVentas());
 		        	currentYear = result.getAnio();
-		        	llenarListaMotivoNoCierre(result.getMotivoNoCierre());
+		        	motivosNoCierre = result.getMotivoNoCierre();
+		        	llenarListaMotivoNoCierre();
 		        	estadoOpp.addAllItems(result.getEstadoOportunidad());
 		        	estadoOpp.removeItem(EstadoOportunidadEnum.CERRADA.getId().intValue()-1);
-		        	
 				}
 			});
 		for(int i=1;i<13;i++) {
@@ -279,14 +280,14 @@ public class CuentaUIData extends UIData {
         }
 	}
 
-	private void llenarListaMotivoNoCierre(List<MotivoNoCierreDto> motivos) {
-		for (MotivoNoCierreDto motivo: motivos) {
+	private void llenarListaMotivoNoCierre() {
+		for (MotivoNoCierreDto motivo: motivosNoCierre) {
 			radioGroupMotivos.addRadio(motivo.getDescripcion(),motivo.getId().toString());
 		}
 		armarRadioOption();
 	}
 	
-	private void armarRadioOption() {
+	public void armarRadioOption() {
 		int indexRow = 0;
 		int indexCol = 0;
 
@@ -713,5 +714,8 @@ public class CuentaUIData extends UIData {
 	}
 	public FlexTable getRadioOpsTable() {
 		return radioOpsTable;
+	}
+	public List<MotivoNoCierreDto> getMotivosNoCierre() {
+		return motivosNoCierre;
 	}
 }
