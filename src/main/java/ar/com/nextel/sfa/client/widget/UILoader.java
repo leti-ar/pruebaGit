@@ -179,7 +179,9 @@ public class UILoader extends SimplePanel implements ValueChangeHandler<String> 
 			break;
 		case EDITAR_CUENTA:
 			authorized = ClientContext.getInstance().checkPermiso(
-					PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU.getValue());
+					PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU.getValue())
+					&& ClientContext.getInstance().checkPermiso(
+							PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_AGREGAR_MENU.getValue());
 			break;
 		case VER_INFOCOM:
 			authorized = true;
