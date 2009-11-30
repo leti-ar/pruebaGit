@@ -133,6 +133,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	private String ERROR_OPER_OTRO_VENDEDOR = "El prospect/cliente tiene una operación en curso con otro vendedor. No puede ver sus datos. El {1} es {2}";
 	private final String ERROR_OPORTUNIDAD_VENCIDA = "La oportunidad/Reserva está vencida";
 
+	private static String queryNameSexoSinIndefinido = "SEXO_SIN_INDEFINIDO";
+	
 	@Override
 	public void init() throws ServletException {
 		super.init();
@@ -229,7 +231,9 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		buscarDTOinit.setTiposDocumento(mapper.convertList(repository.getAll(TipoDocumento.class),
 				TipoDocumentoDto.class));
 		buscarDTOinit.setRubro(mapper.convertList(repository.getAll(Rubro.class), RubroDto.class));
-		buscarDTOinit.setSexo(mapper.convertList(repository.getAll(Sexo.class), SexoDto.class));
+		List listaSexos = this.getRepository().executeCustomQuery(queryNameSexoSinIndefinido);
+		buscarDTOinit.setSexo(mapper.convertList(listaSexos, SexoDto.class));
+//		buscarDTOinit.setSexo(mapper.convertList(genericDao.getList(Sexo.class), SexoDto.class));
 		buscarDTOinit.setFormaPago(mapper
 				.convertList(repository.getAll(FormaPago.class), FormaPagoDto.class));
 		buscarDTOinit.setClaseCliente(mapper.convertList(repository.getAll(ClaseCuenta.class),
@@ -255,7 +259,9 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		VerazInitializer verazInitializer = new VerazInitializer();
 		verazInitializer.setTiposDocumento(mapper.convertList(repository.getAll(TipoDocumento.class),
 				TipoDocumentoDto.class));
-		verazInitializer.setSexos(mapper.convertList(repository.getAll(Sexo.class), SexoDto.class));
+		List listaSexos = this.getRepository().executeCustomQuery(queryNameSexoSinIndefinido);
+		verazInitializer.setSexos(mapper.convertList(listaSexos, SexoDto.class));
+//		verazInitializer.setSexos(mapper.convertList(genericDao.getList(Sexo.class), SexoDto.class));
 		return verazInitializer;
 	}
 
@@ -609,4 +615,11 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return cuentaBusinessService.obtenerCtaPadre(ctaPadreId, categoriaCuenta, getVendedor());
 	}
 
+	public Repository getRepository() {
+		return repository;
+	}
+
+	public void setRepository(Repository repository) {
+		this.repository = repository;
+	}
 }
