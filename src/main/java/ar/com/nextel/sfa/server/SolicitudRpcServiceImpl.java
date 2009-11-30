@@ -1,9 +1,6 @@
 package ar.com.nextel.sfa.server;
 
 import java.io.File;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,7 +22,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
-import ar.com.nextel.business.dao.GenericDao;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.vantive.VantiveSystem;
 import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO;
@@ -96,7 +92,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private WebApplicationContext context;
 	private SolicitudBusinessService solicitudBusinessService;
 	private Repository repository;
-	private GenericDao genericDao;
 	private SolicitudServicioBusinessOperator solicitudesBusinessOperator;
 	private VantiveSystem vantiveSystem;
 	private FinancialSystem financialSystem;
@@ -113,7 +108,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		solicitudesBusinessOperator = (SolicitudServicioBusinessOperator) context
 				.getBean("solicitudServicioBusinessOperatorBean");
 		solicitudBusinessService = (SolicitudBusinessService) context.getBean("solicitudBusinessService");
-		genericDao = (GenericDao) context.getBean("genericDao");
 		repository = (Repository) context.getBean("repository");
 
 		solicitudServicioRepository = (SolicitudServicioRepository) context
@@ -252,8 +246,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		listaPataconex = Arrays.asList(opcionesPataconex.split(";"));
 		buscarSSCerradasInitializer.setOpcionesPatacones(listaPataconex);
 
-		buscarSSCerradasInitializer.setOpcionesEstado(mapper.convertList(genericDao
-				.getList(EstadoSolicitud.class), EstadoSolicitudDto.class));
+		buscarSSCerradasInitializer.setOpcionesEstado(mapper.convertList(repository
+				.getAll(EstadoSolicitud.class), EstadoSolicitudDto.class));
 
 		return buscarSSCerradasInitializer;
 	}
@@ -461,7 +455,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					&& response.getMessages().hasErrors() == false
 					&& sessionContextLoader.getVendedor().getTipoVendedor().getCodigoVantive().equals(
 							KnownInstanceIdentifier.TIPO_VENDEDOR_EECC.getKey())) {
-				generarChangeLog(solicitudServicioDto.getId(), solicitudServicio.getVendedor().getId());
+				solicitudBusinessService.generarChangeLog(solicitudServicioDto.getId(), solicitudServicio
+						.getVendedor().getId());
 			}
 			result.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
 			result.setRtfFileName(getReporteFileName(solicitudServicio));
@@ -483,34 +478,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					+ solicitudServicio.getNumero() + ".rtf";
 		}
 		return filename;
-	}
-
-	private void generarChangeLog(Long idServicioDto, Long idVendedor) {
-		Connection conn = genericDao.getSessionFactory().getCurrentSession().connection();
-		String command = "{call SFA_GENERAR_CHANGELOG_PKG.SFA_GENERAR_CHANGELOG(?,?)}";
-		CallableStatement cstmt = null;
-		try {
-			cstmt = conn.prepareCall(command);
-			cstmt.setLong(1, idServicioDto);
-			cstmt.setLong(2, idVendedor);
-			cstmt.execute();
-		} catch (SQLException e) {
-
-			e.printStackTrace();
-
-		} finally {
-			try {
-				if (cstmt != null)
-					cstmt.close();
-				if (conn != null)
-					conn.close();
-			} catch (SQLException e) {
-			} finally {
-				cstmt = null;
-				conn = null;
-			}
-		}
-
 	}
 
 	public Boolean existReport(String report) {
