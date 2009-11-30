@@ -7,10 +7,10 @@ import javax.servlet.ServletException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import ar.com.nextel.business.dao.GenericDao;
 import ar.com.nextel.business.oportunidades.search.SearchOportunidadBusinessOperator;
 import ar.com.nextel.business.oportunidades.search.businessUnits.OportunidadSearchData;
 import ar.com.nextel.business.oportunidades.search.result.OportunidadNegocioSearchResult;
+import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.EstadoOportunidad;
 import ar.com.nextel.model.personas.beans.GrupoDocumento;
@@ -35,7 +35,7 @@ public class OportunidadNegocioRpcServiceImpl extends RemoteService implements O
 	private SearchOportunidadBusinessOperator searchOportunidadBusinessOperator;
 	private MapperExtended mapper;
 	private SessionContextLoader sessionContextLoader;
-	private GenericDao genericDao;
+	private Repository repository;
 
 	@Override
 	public void init() throws ServletException {
@@ -45,15 +45,15 @@ public class OportunidadNegocioRpcServiceImpl extends RemoteService implements O
 				.getBean("searchOportunidadBusinessOperatorBean");
 		sessionContextLoader = (SessionContextLoader) context.getBean("sessionContextLoader");
 		mapper = (MapperExtended) context.getBean("dozerMapper");
-		genericDao = (GenericDao) context.getBean("genericDao");
+		repository = (Repository) context.getBean("repository");
 	}
 
 	public BuscarOportunidadNegocioInitializer getBuscarOportunidadInitializer() throws RpcExceptionMessages {
 		BuscarOportunidadNegocioInitializer buscarOportunidadNegocioInitializer = new BuscarOportunidadNegocioInitializer();
-		buscarOportunidadNegocioInitializer.setGrupoDocumento(mapper.convertList(genericDao
-				.getList(GrupoDocumento.class), GrupoDocumentoDto.class));
-		List<EstadoOportunidadDto> listaEstados = mapper.convertList(genericDao
-				.getList(EstadoOportunidad.class), EstadoOportunidadDto.class);
+		buscarOportunidadNegocioInitializer.setGrupoDocumento(mapper.convertList(repository
+				.getAll(GrupoDocumento.class), GrupoDocumentoDto.class));
+		List<EstadoOportunidadDto> listaEstados = mapper.convertList(repository
+				.getAll(EstadoOportunidad.class), EstadoOportunidadDto.class);
 		while (listaEstados.size() > 2) {
 			listaEstados.remove(2);
 		}
