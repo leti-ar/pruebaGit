@@ -23,8 +23,11 @@ import ar.com.nextel.business.solicitudes.generacionCierre.GeneracionCierreBusin
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreRequest;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
 import ar.com.nextel.business.solicitudes.provider.SolicitudServicioProviderResult;
+import ar.com.nextel.business.solicitudes.repository.GenerarChangelogConfig;
 import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepository;
 import ar.com.nextel.components.accessMode.AccessAuthorization;
+import ar.com.nextel.framework.connectionDAO.ConnectionDAOException;
+import ar.com.nextel.framework.connectionDAO.TransactionConnectionDAO;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoTarjetaCredito;
@@ -57,6 +60,8 @@ public class SolicitudBusinessService {
 	private Repository repository;
 	private SolicitudServicioRepository solicitudServicioRepository;
 	private final String CUENTA_FILTRADA = "Acceso denegado. No puede operar con esta cuenta.";
+	private TransactionConnectionDAO sfaConnectionDAO;
+	private GenerarChangelogConfig generarChangelogConfig;
 
 	@Autowired
 	public void setSolicitudesBusinessOperator(
@@ -101,6 +106,17 @@ public class SolicitudBusinessService {
 	public void setSolicitudServicioRepository(
 			@Qualifier("solicitudServicioRepositoryBean") SolicitudServicioRepository solicitudServicioRepository) {
 		this.solicitudServicioRepository = solicitudServicioRepository;
+	}
+
+	@Autowired
+	public void setSfaConnectionDAO(
+			@Qualifier("sfaConnectionDAOBean") TransactionConnectionDAO sfaConnectionDAOBean) {
+		this.sfaConnectionDAO = sfaConnectionDAOBean;
+	}
+	
+	@Autowired
+	public void setGenerarChangelogConfig(GenerarChangelogConfig generarChangelogConfig) {
+		this.generarChangelogConfig = generarChangelogConfig;
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
@@ -300,5 +316,17 @@ public class SolicitudBusinessService {
 			}
 		}
 		operacionEnCursoBusinessOperator.cancelarOperacionEnCurso(operacionEnCurso);
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void generarChangeLog(Long idServicioDto, Long idVendedor) throws ConnectionDAOException {
+		GenerarChangelogConfig generarChangelogConfig = getGenerarChangelogConfig();
+		generarChangelogConfig.setIdServicio(idServicioDto);
+		generarChangelogConfig.setIdVendedor(idVendedor);
+		sfaConnectionDAO.execute(generarChangelogConfig);
+	}
+
+	public GenerarChangelogConfig getGenerarChangelogConfig() {
+		return generarChangelogConfig;
 	}
 }
