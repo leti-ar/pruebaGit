@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.server;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -343,18 +344,26 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	/**
 	 * 
 	 */
-	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive, boolean filtradoPorDni)
-			throws RpcExceptionMessages {
-		return cuentaBusinessService.selectCuenta(cuentaId, cod_vantive, getVendedor(), filtradoPorDni,
-				mapper);
+	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive, boolean filtradoPorDni) throws RpcExceptionMessages {
+	    CuentaDto cuentaDto = null;
+		Cuenta cuenta = cuentaBusinessService.selectCuenta(cuentaId, cod_vantive, getVendedor(), filtradoPorDni);
+		String categoriaCuenta = cuenta.getCategoriaCuenta().getDescripcion();
+		if (categoriaCuenta.equals(KnownInstanceIdentifier.GRAN_CUENTA.getKey())) {
+			cuentaDto = (GranCuentaDto) mapper.map((GranCuenta) cuenta, GranCuentaDto.class);
+		} else if (categoriaCuenta.equals(KnownInstanceIdentifier.DIVISION.getKey())) {
+			cuentaDto = (DivisionDto)   mapper.map((Division) cuenta, DivisionDto.class);
+		} else if (categoriaCuenta.equals(KnownInstanceIdentifier.SUSCRIPTOR.getKey())) {
+			cuentaDto = (SuscriptorDto) mapper.map((Suscriptor) cuenta, SuscriptorDto.class);
+		}
+	    return cuentaDto;
 	}
 
 	/**
 	 * 
 	 */
-	public GranCuentaDto reservaCreacionCuenta(CrearCuentaDto crearCuentaDto) throws RpcExceptionMessages {
-		GranCuenta cuenta = null;
-		GranCuentaDto cuentaDto = null;
+	public CuentaDto reservaCreacionCuenta(CrearCuentaDto crearCuentaDto) throws RpcExceptionMessages {
+		Cuenta cuenta = null;
+		CuentaDto cuentaDto = null;
 		Vendedor vendedor = getVendedor();
 		Documento documento = getDocumento(crearCuentaDto.getDocumento());
 
@@ -368,10 +377,10 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		}
 		try {
 			// crea
-			cuenta = (GranCuenta) cuentaBusinessService.reservarCrearCta(solicitudCta);
+			cuenta = cuentaBusinessService.reservarCrearCta(solicitudCta,mapper);
 
 			if (cuenta == null) {
-				cuenta = (GranCuenta) searchCuentaBusinessOperator.searchProspectAjenoEnCarga(documento);
+				cuenta = searchCuentaBusinessOperator.searchProspectAjenoEnCarga(documento);
 				String nombre = cuenta.getVendedor().getResponsable().getNombre() + " "
 						+ cuenta.getVendedor().getResponsable().getApellido();
 				String cargo = cuenta.getVendedor().getResponsable().getCargo();
@@ -379,19 +388,22 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 				errMsg = errMsg.replaceAll("\\{2\\}", nombre);
 				throw new RpcExceptionMessages(errMsg);
 			}
-
+			cuenta = repository.retrieve( Cuenta.class, cuenta.getId());
+			Collection<Domicilio> collection = cuenta.getPersona().getPlainDomicilios();
+			collection.iterator().next().getCalle();
 			cuentaBusinessService.validarAccesoCuenta(cuenta, getVendedor(), true);
 			if (asociarCuentaSiCorresponde(solicitudCta, cuenta)) {
 				// lockea
-				cuentaBusinessService.saveCuenta(selectCuentaBusinessOperator.getCuentaYLockear(cuenta
-						.getCodigoVantive(), vendedor));
-				// agrega contactos
-				cuenta.addContactosCuenta(contactosCuentaBusinessOperator.obtenerContactosCuentas(cuenta
-						.getId()));
+				cuentaBusinessService.saveCuenta(cuenta, vendedor);
 				// mapea
-				cuentaDto = (GranCuentaDto) mapper.map(cuenta, GranCuentaDto.class);
+				if (cuenta.esGranCuenta()) {
+				    cuentaDto = (GranCuentaDto) mapper.map(cuenta, GranCuentaDto.class);
+				} else if (cuenta.esDivision()) {
+					cuentaDto = (DivisionDto) mapper.map(cuenta, DivisionDto.class);
+				} else if (cuenta.esSuscriptor()) {
+					cuentaDto = (SuscriptorDto) mapper.map(cuenta, SuscriptorDto.class);
+				}
 			}
-
 		} catch (RpcExceptionMessages rem) {
 			throw new RpcExceptionMessages(rem.getMessage());
 		} catch (Exception e) {

@@ -2,8 +2,6 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
@@ -70,7 +68,7 @@ public class CuentaRpcServiceDelegate {
 		WaitWindow.show();
 		cuentaRpcService.selectCuenta(cuentaId, cod_vantive,filtradoPorDni,callback);
 	}
-	public void reservaCreacionCuenta(CrearCuentaDto crearCuentaDto,DefaultWaitCallback<GranCuentaDto>  callback) {
+	public void reservaCreacionCuenta(CrearCuentaDto crearCuentaDto,DefaultWaitCallback<CuentaDto>  callback) {
 		WaitWindow.show();
 		cuentaRpcService.reservaCreacionCuenta(crearCuentaDto,callback);
 	}

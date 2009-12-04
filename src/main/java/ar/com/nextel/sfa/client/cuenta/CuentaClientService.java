@@ -5,7 +5,6 @@ import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
-import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -17,7 +16,6 @@ import com.google.gwt.user.client.IncrementalCommand;
 
 public class CuentaClientService {
 
-	public  static GranCuentaDto       granCuentaDto;
 	public  static CuentaDto           cuentaDto;
 	public  static CuentaPotencialDto  cuentaPotencialDto;
 	private static boolean             error;
@@ -35,15 +33,15 @@ public class CuentaClientService {
 	}
 	
 	public static void reservaCreacionCuenta(final Long idTipoDoc, final String nroDoc, final Long idOpp, boolean redir) {
-		granCuentaDto = null;
+		cuentaDto = null;
 		error         = false;
 		TipoDocumentoDto tipoDoc      = new TipoDocumentoDto(idTipoDoc,null);
 		DocumentoDto docDto           = new DocumentoDto(nroDoc,tipoDoc);
 		CrearCuentaDto crearCuentaDto = new CrearCuentaDto(docDto,idOpp);
 
-		CuentaRpcService.Util.getInstance().reservaCreacionCuenta(crearCuentaDto,new DefaultWaitCallback<GranCuentaDto>() {
-			public void success(GranCuentaDto ctaDto) {
-				granCuentaDto = ctaDto;
+		CuentaRpcService.Util.getInstance().reservaCreacionCuenta(crearCuentaDto,new DefaultWaitCallback<CuentaDto>() {
+			public void success(CuentaDto ctaDto) {
+				cuentaDto = ctaDto;
 			}
 			public void failure(Throwable caught) {
 				error = true;
@@ -53,10 +51,10 @@ public class CuentaClientService {
 		if (redir) {
 			DeferredCommand.addCommand(new IncrementalCommand() {
 				public boolean execute() {
-					if (granCuentaDto == null && !error) 
+					if (cuentaDto == null && !error) 
 						return true;
 					if (!error)
-						History.newItem(UILoader.EDITAR_CUENTA + "?nroDoc=" + nroDoc +"&idDoc=" + idTipoDoc + "&idOpp="+idOpp + "&cuenta_id="+granCuentaDto.getId());
+						History.newItem(UILoader.EDITAR_CUENTA + "?nroDoc=" + nroDoc +"&idDoc=" + idTipoDoc + "&idOpp="+idOpp + "&cuenta_id="+cuentaDto.getId());
 					return false;
 				}
 			});

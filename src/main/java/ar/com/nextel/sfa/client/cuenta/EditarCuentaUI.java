@@ -1,13 +1,7 @@
 package ar.com.nextel.sfa.client.cuenta;
 
-import java.util.List;
-
-import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
-import ar.com.nextel.sfa.client.dto.DivisionDto;
-import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
-import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.enums.CondicionCuentaEnum;
 import ar.com.nextel.sfa.client.enums.TipoContribuyenteEnum;
@@ -35,7 +29,7 @@ public class EditarCuentaUI extends ApplicationUI {
 
 		// viene de popup "Agregar Cuenta"
 		if (HistoryUtils.getParam("nroDoc") != null) {
-			if (CuentaClientService.granCuentaDto != null) {
+			if (CuentaClientService.cuentaDto != null) {
 				doAgregarCuenta();
 			} else {
 				Long idTipoDoc = HistoryUtils.getParam("idDoc") != null ? Long.parseLong(HistoryUtils.getParam("idDoc")) : null;
@@ -44,7 +38,7 @@ public class EditarCuentaUI extends ApplicationUI {
 				CuentaClientService.reservaCreacionCuenta(idTipoDoc, nroDoc, idOpp, false);
 				DeferredCommand.addCommand(new IncrementalCommand() {
 					public boolean execute() {
-						if (CuentaClientService.granCuentaDto == null)
+						if (CuentaClientService.cuentaDto == null)
 							return true;
 						doAgregarCuenta();
 						return false;
@@ -207,12 +201,18 @@ public class EditarCuentaUI extends ApplicationUI {
 	}
 
 	private void doAgregarCuenta() {
-		cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.granCuentaDto);
-		if (CuentaClientService.granCuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.PROSPECT.getId() ||
-			CuentaClientService.granCuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.CUSTOMER.getId()) {
-			cuentaTab.getCuentaDatosForm().setAtributosCamposSoloLectura();
-		} 
-		completarVisualizacionDatos(CuentaClientService.granCuentaDto);
+		if (CuentaClientService.cuentaDto.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.CTA.getTipo())) {
+			cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.cuentaDto);
+			if (CuentaClientService.cuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.PROSPECT.getId() ||
+					CuentaClientService.cuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.CUSTOMER.getId()) {
+				cuentaTab.getCuentaDatosForm().setAtributosCamposSoloLectura();
+			} 
+			completarVisualizacionDatos(CuentaClientService.cuentaDto);
+		} else if (CuentaClientService.cuentaDto.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.DIV.getTipo())) { 
+			doAgregarDivision();
+		} else if (CuentaClientService.cuentaDto.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.SUS.getTipo())) {
+			doAgregarSuscriptor();
+		}
 	}
 
 	private void doAgregarDivision() {

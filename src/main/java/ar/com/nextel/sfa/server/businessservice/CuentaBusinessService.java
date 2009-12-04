@@ -124,14 +124,31 @@ public class CuentaBusinessService {
 	
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public Cuenta reservarCrearCta(SolicitudCuenta solicitudCta) throws BusinessException {
+	public Cuenta reservarCrearCta(SolicitudCuenta solicitudCta,MapperExtended mapper) throws BusinessException {
 		ReservaCreacionCuentaBusinessOperatorResult reservarCrearCta = reservaCreacionCuentaBusinessOperator.reservarCrearCuenta(solicitudCta);
-		return reservarCrearCta.getCuenta();
+		Cuenta cuenta = reservarCrearCta.getCuenta();
+
+		//FIXME: parche para evitar problemas de transaccion con cuentas migradas de vantive. 
+		CuentaDto cuentaDto = null;
+		if (cuenta.esGranCuenta()) {
+		    cuentaDto = (GranCuentaDto) mapper.map(cuenta, GranCuentaDto.class);
+		} else if (cuenta.esDivision()) {
+			cuentaDto = (DivisionDto) mapper.map(cuenta, DivisionDto.class);
+		} else if (cuenta.esSuscriptor()) {
+			cuentaDto = (SuscriptorDto) mapper.map(cuenta, SuscriptorDto.class);
+		}
+		return cuenta;
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void saveCuenta(Cuenta cuenta) throws BusinessException {
+	public void saveCuenta(Cuenta cuenta, Vendedor vendedor) throws BusinessException {
+		selectCuentaBusinessOperator.getCuentaYLockear(cuenta.getCodigoVantive(), vendedor);
 		repository.save(cuenta);
+	}
+	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void updateCuenta(Cuenta cuenta) throws BusinessException {
+		repository.update(cuenta);
 	}
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
@@ -249,13 +266,13 @@ public class CuentaBusinessService {
 	}
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive, Vendedor vendedor, boolean filtradoPorDni, MapperExtended mapper) throws RpcExceptionMessages {
+	public Cuenta selectCuenta(Long cuentaId, String cod_vantive, Vendedor vendedor, boolean filtradoPorDni) throws RpcExceptionMessages {
         AppLogger.info("Iniciando SelectCuenta...");
-        CuentaDto cuentaDto = null;
+        Cuenta cuenta = null;
         BaseAccessObject accessCuenta = null;
         try {
 			accessCuenta  = cod_vantive!=null && !cod_vantive.equals("null") ? getAccessCuenta(cod_vantive,vendedor) : getAccessCuenta(cuentaId,vendedor);
-			Cuenta cuenta = (Cuenta) accessCuenta.getTargetObject();
+			cuenta = (Cuenta) accessCuenta.getTargetObject();
 			
 			validarAccesoCuenta(cuenta, vendedor, filtradoPorDni);
 			
@@ -263,15 +280,7 @@ public class CuentaBusinessService {
 			if (accessCuenta.getAccessAuthorization().hasSamePermissionsAs(AccessAuthorization.editOnly()) ||
 			                accessCuenta.getAccessAuthorization().hasSamePermissionsAs(AccessAuthorization.fullAccess())) {
 			    cuenta.editar(vendedor);
-			    saveCuenta(cuenta);
-			}
-			String categoriaCuenta = cuenta.getCategoriaCuenta().getDescripcion();
-			if (categoriaCuenta.equals(KnownInstanceIdentifier.GRAN_CUENTA.getKey())) {
-				cuentaDto = (GranCuentaDto) mapper.map((GranCuenta) cuenta, GranCuentaDto.class);
-			} else if (categoriaCuenta.equals(KnownInstanceIdentifier.DIVISION.getKey())) {
-				cuentaDto = (DivisionDto) mapper.map((Division) cuenta, DivisionDto.class);
-			} else if (categoriaCuenta.equals(KnownInstanceIdentifier.SUSCRIPTOR.getKey())) {
-				cuentaDto = (SuscriptorDto) mapper.map((Suscriptor) cuenta, SuscriptorDto.class);
+		        repository.save(cuenta);
 			}
 		} catch (Exception e) {
 			AppLogger.error(e);
@@ -279,7 +288,7 @@ public class CuentaBusinessService {
 			throw new RpcExceptionMessages(e.getMessage());
 		}
        	AppLogger.info("SelectCuenta finalizado.");
-		return cuentaDto;
+		return cuenta;
 	}
 	
 	/**
