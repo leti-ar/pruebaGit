@@ -389,8 +389,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 				throw new RpcExceptionMessages(errMsg);
 			}
 			cuenta = repository.retrieve( Cuenta.class, cuenta.getId());
-			Collection<Domicilio> collection = cuenta.getPersona().getPlainDomicilios();
-			collection.iterator().next().getCalle();
 			cuentaBusinessService.validarAccesoCuenta(cuenta, getVendedor(), true);
 			if (asociarCuentaSiCorresponde(solicitudCta, cuenta)) {
 				// lockea
@@ -489,7 +487,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 			resultDto = (TarjetaCreditoValidatorResultDto) mapper.map(tarjetaCreditoValidatorResult,
 					TarjetaCreditoValidatorResultDto.class);
 		} catch (TarjetaCreditoValidatorServiceException e) {
-			AppLogger.info("ERROR al reservarCrearCta: " + e.getMessage());
+			AppLogger.info("ERROR al validar tarjeta: " + e.getMessage());
 			throw ExceptionUtil.wrap(e);
 		}
 		return resultDto;

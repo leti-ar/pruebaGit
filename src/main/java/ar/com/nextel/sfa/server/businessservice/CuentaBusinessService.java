@@ -129,13 +129,15 @@ public class CuentaBusinessService {
 		Cuenta cuenta = reservarCrearCta.getCuenta();
 
 		//FIXME: parche para evitar problemas de transaccion con cuentas migradas de vantive. 
-		CuentaDto cuentaDto = null;
-		if (cuenta.esGranCuenta()) {
-		    cuentaDto = (GranCuentaDto) mapper.map(cuenta, GranCuentaDto.class);
-		} else if (cuenta.esDivision()) {
-			cuentaDto = (DivisionDto) mapper.map(cuenta, DivisionDto.class);
-		} else if (cuenta.esSuscriptor()) {
-			cuentaDto = (SuscriptorDto) mapper.map(cuenta, SuscriptorDto.class);
+		if (cuenta!=null) {
+			CuentaDto cuentaDto = null;
+			if (cuenta.esGranCuenta()) {
+				cuentaDto = (GranCuentaDto) mapper.map(cuenta, GranCuentaDto.class);
+			} else if (cuenta.esDivision()) {
+				cuentaDto = (DivisionDto) mapper.map(cuenta, DivisionDto.class);
+			} else if (cuenta.esSuscriptor()) {
+				cuentaDto = (SuscriptorDto) mapper.map(cuenta, SuscriptorDto.class);
+			}
 		}
 		return cuenta;
 	}
