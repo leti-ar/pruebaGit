@@ -100,35 +100,33 @@ public class DomicilioUI extends NextelDialog {
 		cargarPopupDomicilio(domicilio, "Editar Domicilio");
 	}
 
-	public void cargarPopupEditarDomicilio(DomiciliosCuentaDto domicilio,boolean fromReserva) {
-		cargarPopupDomicilio(domicilio, "Editar Domicilio",fromReserva);
+	public void cargarPopupEditarDomicilio(DomiciliosCuentaDto domicilio, boolean readOnly) {
+		cargarPopupDomicilio(domicilio, "Editar Domicilio",readOnly);
 	}
-	
 	
 	private void cargarPopupDomicilio(DomiciliosCuentaDto domicilio, String title) {
 		cargarPopupDomicilio(domicilio, title,true); 
 	}
 	
-	private void cargarPopupDomicilio(DomiciliosCuentaDto domicilio, String title, boolean fromReserva) {
+	private void cargarPopupDomicilio(DomiciliosCuentaDto domicilio, String title, boolean readOnly) {
 		isDomicilioPpalEntrega = EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdEntrega());
-		isDomicilioPpalFacturacion = EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(
-				domicilio.getIdFacturacion());
+		isDomicilioPpalFacturacion = EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilio.getIdFacturacion());
 		noEditable = domicilio.getVantiveId() != null;
 		domicilioAEditar = domicilio;
 		domiciliosUIData.clean();
 		domiciliosUIData.setDomicilio(domicilio);
 		showAndCenter();
-		if (noEditable) {
+		if (noEditable || readOnly) {
 			domiciliosUIData.disableFields();
 			linkAceptar.setVisible(false);
 		} else {
 			domiciliosUIData.enableFields();
 			linkAceptar.setVisible(true);
 		}
-		domiciliosUIData.getEntrega().setVisible(fromReserva);
-		domiciliosUIData.getFacturacion().setVisible(fromReserva);
-		labelEntrega.setVisible(fromReserva);
-		labelFacturacion.setVisible(fromReserva);
+		domiciliosUIData.getEntrega().setVisible(!readOnly);
+		domiciliosUIData.getFacturacion().setVisible(!readOnly);
+		labelEntrega.setVisible(!readOnly);
+		labelFacturacion.setVisible(!readOnly);
 		setDialogTitle(title);
 	}
 
@@ -481,7 +479,8 @@ public class DomicilioUI extends NextelDialog {
 		Command openUICommand = new Command() {
 			public void execute() {
 				DomicilioUI.getInstance().setComandoAceptar(MessageDialog.getCloseCommand());
-				DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar,EditarCuentaUI.esEdicionCuenta);
+				//DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar,EditarCuentaUI.esEdicionCuenta);
+				DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar,EditarCuentaUI.edicionReadOnly);
 				MessageDialog.getInstance().hide();
 			}
 		};

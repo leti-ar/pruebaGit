@@ -22,18 +22,22 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.Widget;
 
 public class CuentaContactoForm extends Composite {
 
-	private FlexTable mainPanel;
+	private FlowPanel mainPanel;
 	private FlexTable datosTabla = new FlexTable();
+	private FlexTable datosTablaRO = new FlexTable();
 	private List<ContactoCuentaDto> listaContactos = new ArrayList<ContactoCuentaDto>();
 	private ContactosUI contactosUI;
 	private boolean formDirty = false;	
 	private Button crearButton;
+	private SimplePanel crearContactoWrapper;
 	private static CuentaContactoForm instance = null;
 	private ContactoCuentaDto contactoAEditar;
 
@@ -46,19 +50,20 @@ public class CuentaContactoForm extends Composite {
 
 	private CuentaContactoForm() {
 		contactosUI = new ContactosUI();
-		mainPanel = new FlexTable();
+		mainPanel = new FlowPanel();
 		mainPanel.setWidth("100%");
 		initWidget(mainPanel);
 		mainPanel.addStyleName("gwt-BuscarCuentaResultTable");
-		mainPanel.setCellPadding(20);
 		crearButton = new Button("Crear nuevo");
 		crearButton.addStyleName("crearDomicilioButton");
-		mainPanel.setWidget(0, 0, crearButton);
+		crearContactoWrapper = new SimplePanel();
+		crearContactoWrapper.add(crearButton);
+		crearContactoWrapper.addStyleName("h20");
+		mainPanel.add(crearContactoWrapper);
+		
 		datosTabla.addTableListener(new Listener());
-		initTable(datosTabla);
-		mainPanel.getColumnFormatter().addStyleName(0, "alignRight");
-		mainPanel.getRowFormatter().addStyleName(0, "alignRight");
-		mainPanel.setWidget(1, 0, datosTabla);
+		
+		mainPanel.add(datosTabla);
 		contactosUI.setAceptarCommand(new Command() {
 			public void execute() {
 				int index = listaContactos.indexOf(contactoAEditar);
@@ -78,12 +83,11 @@ public class CuentaContactoForm extends Composite {
 				contactosUI.cargarPopupEditarContacto(contactoAEditar);
 			}
 		});
-
 	}
 
 	private void initTable(FlexTable table) {
-
-		String[] widths = { "24px", "24px", "150px", "150px", "200px", "45%", };
+		limpiarPrimeraFilaTabla();
+		String[] widths = { "24px", "24px", "150px", "150px", "200px", "45%" };
 		for (int col = 0; col < widths.length; col++) {
 			table.getColumnFormatter().setWidth(col, widths[col]);
 		}
@@ -101,9 +105,42 @@ public class CuentaContactoForm extends Composite {
 		table.setHTML(0, 4, Sfa.constant().telefono());
 		table.setHTML(0, 5, Sfa.constant().whiteSpace());
 	}
-
+	
+	private void initTableRO(FlexTable table) {
+		limpiarPrimeraFilaTabla();
+		String[] widths = {"150px", "150px", "200px", "55%" };
+		for (int col = 0; col < widths.length; col++) {
+			table.getColumnFormatter().setWidth(col, widths[col]);
+		}
+		table.getColumnFormatter().addStyleName(0, "alignCenter");
+		table.setCellPadding(0);
+		table.setCellSpacing(0);
+		table.addStyleName("gwt-BuscarCuentaResultTable");
+		table.getRowFormatter().addStyleName(0, "header");
+		table.setHTML(0, 0, Sfa.constant().nombre());
+		table.setHTML(0, 1, Sfa.constant().apellido());
+		table.setHTML(0, 2, Sfa.constant().telefono());
+		table.setHTML(0, 3, Sfa.constant().whiteSpace());
+	}
+	
+	private void limpiarPrimeraFilaTabla() {
+		if (datosTabla.isCellPresent(0, 0)) {
+			datosTabla.removeRow(0);
+		}
+	}
+	
 	public void cargarTabla() {
+		crearContactoWrapper.setVisible(!EditarCuentaUI.edicionReadOnly);
+		if (EditarCuentaUI.edicionReadOnly) {
+			initTableRO(datosTabla);
+			datosTabla.removeTableListener(new Listener());
+		} else {
+			initTable(datosTabla);
+			datosTabla.addTableListener(new Listener());
+		}
+		
 		int row = 1;
+		int col = 0;
 		while (datosTabla.getRowCount() > 1) {
 			datosTabla.removeRow(1);
 		}
@@ -111,12 +148,15 @@ public class CuentaContactoForm extends Composite {
 			for (Iterator iter = listaContactos.iterator(); iter.hasNext();) {
 				ContactoCuentaDto contacto = (ContactoCuentaDto) iter.next();
 				if (contacto.getPersona()!=null) {
-					datosTabla.setWidget(row, 0, IconFactory.lapiz());
-					datosTabla.setWidget(row, 1, IconFactory.cancel());
-					datosTabla.setHTML(row, 2, contacto.getPersona().getNombre());
-					datosTabla.setHTML(row, 3, contacto.getPersona().getApellido());
-					datosTabla.setHTML(row, 4, obtenerTelefonoPrincipal(contacto));
-					datosTabla.setHTML(row, 5, Sfa.constant().whiteSpace());
+					col = 0;
+					if(!EditarCuentaUI.edicionReadOnly) { 
+						datosTabla.setWidget(row, col++, IconFactory.lapiz());
+						datosTabla.setWidget(row, col++, IconFactory.cancel());
+					}
+					datosTabla.setHTML(row, col++, contacto.getPersona().getNombre());
+					datosTabla.setHTML(row, col++, contacto.getPersona().getApellido());
+					datosTabla.setHTML(row, col++, obtenerTelefonoPrincipal(contacto));
+					datosTabla.setHTML(row, col++, Sfa.constant().whiteSpace());
 					row++;
 				}
 			}
@@ -126,15 +166,17 @@ public class CuentaContactoForm extends Composite {
 	private class Listener implements TableListener {
 		public void onCellClicked(SourcesTableEvents arg0, int fila, int columna) {
 			// boton editar
-			if ((fila >= 1) && (columna == 0)) {
-				contactoAEditar = listaContactos.get(fila -1);
-				contactosUI.cargarPopupEditarContacto(contactoAEditar);
-			}
-			// boton eliminar
-			if ((fila >= 1) && (columna == 1)) {
-				ModalMessageDialog.getInstance().showAceptarCancelar("Eliminar Contacto",
-						"¿Esta seguro que desea eliminar el contacto seleccionado?",
-						getComandoAceptar(fila - 1), ModalMessageDialog.getInstance().getCloseCommand());
+			if (!EditarCuentaUI.edicionReadOnly) {
+				if ((fila >= 1) && (columna == 0)) {
+					contactoAEditar = listaContactos.get(fila -1);
+					contactosUI.cargarPopupEditarContacto(contactoAEditar);
+				}
+				// boton eliminar
+				if ((fila >= 1) && (columna == 1)) {
+					ModalMessageDialog.getInstance().showAceptarCancelar("Eliminar Contacto",
+							"¿Esta seguro que desea eliminar el contacto seleccionado?",
+							getComandoAceptar(fila - 1), ModalMessageDialog.getInstance().getCloseCommand());
+				}
 			}
 		}
 	}

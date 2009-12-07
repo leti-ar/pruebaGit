@@ -6,7 +6,6 @@ import java.util.List;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
-import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
@@ -346,7 +345,7 @@ public class CuentaEdicionTabPanel {
 //			tabPanel.add(cuentaNotasForm, Sfa.constant().notas());
 //		}
 		
-		validarCompletitudButton.setVisible(editorCuenta);
+		validarCompletitudButton.setVisible(editorCuenta && !EditarCuentaUI.edicionReadOnly);
 		numeroCtaPotPanel.setVisible(!editorCuenta);
 		
 		guardar.setVisible(editorCuenta);

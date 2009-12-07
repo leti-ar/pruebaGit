@@ -18,13 +18,13 @@ public class EditarCuentaUI extends ApplicationUI {
 	private final CuentaEdicionTabPanel cuentaTab = CuentaEdicionTabPanel.getInstance();
 
 	public static boolean esEdicionCuenta = true;
+	public static boolean edicionReadOnly = false;
 
 	public EditarCuentaUI() {
 		super();
 	}
 
 	public boolean load() {
-		esEdicionCuenta = true;
 		resetEditor();
 
 		// viene de popup "Agregar Cuenta"
@@ -120,6 +120,8 @@ public class EditarCuentaUI extends ApplicationUI {
 	 * 
 	 */
 	private void resetEditor() {
+		esEdicionCuenta = true;
+		edicionReadOnly = HistoryUtils.getParam("ro") != null;
 		cuentaTab.clean();
 		cuentaTab.getTabPanel().selectTab(0);
 		CuentaDomiciliosForm.getInstance().setHuboCambios(false);
@@ -227,6 +229,7 @@ public class EditarCuentaUI extends ApplicationUI {
 
 	private void doBusquedaOPP() {
 		esEdicionCuenta = false;
+		edicionReadOnly = true;
 		cuentaTab.setCuenta2editDto(CuentaClientService.cuentaPotencialDto.getCuentaOrigen());
 		if (!CuentaClientService.cuentaPotencialDto.isEsReserva()) {
 			cuentaTab.setPriorityFlag(((OportunidadNegocioDto) CuentaClientService.cuentaPotencialDto).getPrioridad().getId());
@@ -243,6 +246,7 @@ public class EditarCuentaUI extends ApplicationUI {
 			if (CuentaClientService.cuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.PROSPECT.getId()||
 					CuentaClientService.cuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.CUSTOMER.getId()) {
 				cuentaTab.getCuentaDatosForm().setAtributosCamposSoloLectura();
+				edicionReadOnly = true;
 			} 
 		} else {
 			cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusqueda(CuentaClientService.cuentaDto);

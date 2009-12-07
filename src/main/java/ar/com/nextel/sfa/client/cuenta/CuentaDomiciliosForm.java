@@ -40,6 +40,7 @@ public class CuentaDomiciliosForm extends Composite {
 	private CuentaDto cuentaDto;
 	private boolean huboCambios = false;
 	private Button crearDomicilio;
+	private SimplePanel crearDomicilioWrapper;
 
 	public static CuentaDomiciliosForm getInstance() {
 		if (instance == null) {
@@ -76,7 +77,7 @@ public class CuentaDomiciliosForm extends Composite {
 			}
 		});
 		crearDomicilio.addStyleName("crearDomicilioButton");
-		SimplePanel crearDomicilioWrapper = new SimplePanel();
+		crearDomicilioWrapper = new SimplePanel();
 		crearDomicilioWrapper.add(crearDomicilio);
 		crearDomicilioWrapper.addStyleName("h20");
 		mainPanel.add(crearDomicilioWrapper);
@@ -84,7 +85,7 @@ public class CuentaDomiciliosForm extends Composite {
 		mainPanel.add(datosTabla);
 		mainPanel.add(footerBar);
 	}
-
+	
 	private void initTableCompleta(FlexTable table) {
         limpiarPrimeraFilaTabla();
 		String[] widths = { "24px", "24px", "24px", "100px", "100px", "75%", "50px" };
@@ -138,10 +139,11 @@ public class CuentaDomiciliosForm extends Composite {
         int col;
 		List<DomiciliosCuentaDto> domicilios = cuentaDto.getPersona().getDomicilios();
 		limpiaTablaDomicilios();
-		if (EditarCuentaUI.esEdicionCuenta) {
-			initTableCompleta(datosTabla);
-		} else {
+		crearDomicilioWrapper.setVisible(!EditarCuentaUI.edicionReadOnly);
+		if (EditarCuentaUI.edicionReadOnly) {
 			initTableOpp(datosTabla);
+		} else {
+			initTableCompleta(datosTabla);
 		}
 
 		for (int i = 0; i < domicilios.size(); i++) {
@@ -151,7 +153,7 @@ public class CuentaDomiciliosForm extends Composite {
 				datosTabla.setWidget(i + 1, col, IconFactory.lapiz());
 				datosTabla.getCellFormatter().setAlignment(i+1, col, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
 
-				if (EditarCuentaUI.esEdicionCuenta) {
+				if (!EditarCuentaUI.edicionReadOnly) {
 					datosTabla.setWidget(i + 1, ++col, IconFactory.copiar());
 					datosTabla.getCellFormatter().setAlignment(i+1, col, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
 					datosTabla.setWidget(i + 1, ++col, IconFactory.cancel());
@@ -239,7 +241,7 @@ public class CuentaDomiciliosForm extends Composite {
 									huboCambios = true;
 								}
 							});
-							DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar,EditarCuentaUI.esEdicionCuenta);
+							DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar,EditarCuentaUI.edicionReadOnly);
 						}
 					}
 					// Acciones a tomar cuando haga click en iconos de copiado de domicilios:
