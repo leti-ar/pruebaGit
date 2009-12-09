@@ -7,6 +7,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.cuenta.CuentaContactoForm;
+import ar.com.nextel.sfa.client.cuenta.EditarCuentaUI;
 import ar.com.nextel.sfa.client.domicilio.DomicilioUI;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
@@ -115,7 +116,11 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		}
 		contactosData.setContactoDto(contacto);
 		aceptar.setVisible(true);
-		contactosData.enableFields();
+		if (EditarCuentaUI.edicionReadOnly) {
+		   contactosData.disableFields();
+		} else {
+		   contactosData.enableFields();
+		}
 		setearDomicilio();
 		mainTabPanel.selectTab(0);
 		showAndCenter();

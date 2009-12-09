@@ -49,6 +49,7 @@ public class CuentaContactoForm extends Composite {
 	}
 
 	private CuentaContactoForm() {
+		datosTabla.setWidth("100%");
 		contactosUI = new ContactosUI();
 		mainPanel = new FlowPanel();
 		mainPanel.setWidth("100%");
@@ -85,42 +86,42 @@ public class CuentaContactoForm extends Composite {
 		});
 	}
 
-	private void initTable(FlexTable table) {
+	private void initTable() {
 		limpiarPrimeraFilaTabla();
 		String[] widths = { "24px", "24px", "150px", "150px", "200px", "45%" };
 		for (int col = 0; col < widths.length; col++) {
-			table.getColumnFormatter().setWidth(col, widths[col]);
+			datosTabla.getColumnFormatter().setWidth(col, widths[col]);
 		}
-		table.getColumnFormatter().addStyleName(0, "alignCenter");
-		table.getColumnFormatter().addStyleName(1, "alignCenter");
-		table.getColumnFormatter().addStyleName(2, "alignCenter");
-		table.setCellPadding(0);
-		table.setCellSpacing(0);
-		table.addStyleName("gwt-BuscarCuentaResultTable");
-		table.getRowFormatter().addStyleName(0, "header");
-		table.setHTML(0, 0, Sfa.constant().whiteSpace());
-		table.setHTML(0, 1, Sfa.constant().whiteSpace());
-		table.setHTML(0, 2, Sfa.constant().nombre());
-		table.setHTML(0, 3, Sfa.constant().apellido());
-		table.setHTML(0, 4, Sfa.constant().telefono());
-		table.setHTML(0, 5, Sfa.constant().whiteSpace());
+		datosTabla.getColumnFormatter().addStyleName(0, "alignCenter");
+		datosTabla.getColumnFormatter().addStyleName(1, "alignCenter");
+		datosTabla.getColumnFormatter().addStyleName(2, "alignCenter");
+		datosTabla.setCellPadding(0);
+		datosTabla.setCellSpacing(0);
+		datosTabla.addStyleName("gwt-BuscarCuentaResultTable");
+		datosTabla.getRowFormatter().addStyleName(0, "header");
+		datosTabla.setHTML(0, 0, Sfa.constant().whiteSpace());
+		datosTabla.setHTML(0, 1, Sfa.constant().whiteSpace());
+		datosTabla.setHTML(0, 2, Sfa.constant().nombre());
+		datosTabla.setHTML(0, 3, Sfa.constant().apellido());
+		datosTabla.setHTML(0, 4, Sfa.constant().telefono());
+		datosTabla.setHTML(0, 5, Sfa.constant().whiteSpace());
 	}
 	
-	private void initTableRO(FlexTable table) {
+	private void initTableRO() {
 		limpiarPrimeraFilaTabla();
 		String[] widths = {"150px", "150px", "200px", "55%" };
 		for (int col = 0; col < widths.length; col++) {
-			table.getColumnFormatter().setWidth(col, widths[col]);
+			datosTabla.getColumnFormatter().setWidth(col, widths[col]);
 		}
-		table.getColumnFormatter().addStyleName(0, "alignCenter");
-		table.setCellPadding(0);
-		table.setCellSpacing(0);
-		table.addStyleName("gwt-BuscarCuentaResultTable");
-		table.getRowFormatter().addStyleName(0, "header");
-		table.setHTML(0, 0, Sfa.constant().nombre());
-		table.setHTML(0, 1, Sfa.constant().apellido());
-		table.setHTML(0, 2, Sfa.constant().telefono());
-		table.setHTML(0, 3, Sfa.constant().whiteSpace());
+		datosTabla.getColumnFormatter().addStyleName(0, "alignCenter");
+		datosTabla.setCellPadding(0);
+		datosTabla.setCellSpacing(0);
+		datosTabla.addStyleName("gwt-BuscarCuentaResultTable");
+		datosTabla.getRowFormatter().addStyleName(0, "header");
+		datosTabla.setHTML(0, 0, Sfa.constant().nombre());
+		datosTabla.setHTML(0, 1, Sfa.constant().apellido());
+		datosTabla.setHTML(0, 2, Sfa.constant().telefono());
+		datosTabla.setHTML(0, 3, Sfa.constant().whiteSpace());
 	}
 	
 	private void limpiarPrimeraFilaTabla() {
@@ -132,10 +133,10 @@ public class CuentaContactoForm extends Composite {
 	public void cargarTabla() {
 		crearContactoWrapper.setVisible(!EditarCuentaUI.edicionReadOnly);
 		if (EditarCuentaUI.edicionReadOnly) {
-			initTableRO(datosTabla);
+			initTableRO();
 			datosTabla.removeTableListener(new Listener());
 		} else {
-			initTable(datosTabla);
+			initTable();
 			datosTabla.addTableListener(new Listener());
 		}
 		
