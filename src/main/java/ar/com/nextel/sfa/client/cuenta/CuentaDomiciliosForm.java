@@ -13,6 +13,8 @@ import ar.com.nextel.sfa.client.enums.TipoCuentaEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
+import ar.com.nextel.sfa.client.widget.MessageDialog;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -140,10 +142,10 @@ public class CuentaDomiciliosForm extends Composite {
 		List<DomiciliosCuentaDto> domicilios = cuentaDto.getPersona().getDomicilios();
 		limpiaTablaDomicilios();
 		crearDomicilioWrapper.setVisible(!EditarCuentaUI.edicionReadOnly);
-		if (EditarCuentaUI.edicionReadOnly) {
-			initTableOpp(datosTabla);
-		} else {
+		if (!EditarCuentaUI.edicionReadOnly || EditarCuentaUI.esEdicionCuenta) {
 			initTableCompleta(datosTabla);
+		} else {
+			initTableOpp(datosTabla);
 		}
 
 		for (int i = 0; i < domicilios.size(); i++) {
@@ -153,7 +155,7 @@ public class CuentaDomiciliosForm extends Composite {
 				datosTabla.setWidget(i + 1, col, IconFactory.lapiz());
 				datosTabla.getCellFormatter().setAlignment(i+1, col, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
 
-				if (!EditarCuentaUI.edicionReadOnly) {
+				if (!EditarCuentaUI.edicionReadOnly || EditarCuentaUI.esEdicionCuenta) {
 					datosTabla.setWidget(i + 1, ++col, IconFactory.copiar());
 					datosTabla.getCellFormatter().setAlignment(i+1, col, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
 					datosTabla.setWidget(i + 1, ++col, IconFactory.cancel());
@@ -246,44 +248,52 @@ public class CuentaDomiciliosForm extends Composite {
 					}
 					// Acciones a tomar cuando haga click en iconos de copiado de domicilios:
 					if (col == 1) {
-						domicilioAEditar = domicilio;
-						DomiciliosCuentaDto domicilioCopiado = domicilioAEditar.clone();
-						domicilioCopiado.setId(null);
-						domicilioCopiado.setNombreUsuarioUltimaModificacion(null);
-						domicilioCopiado.setFecha_ultima_modificacion(null);
-						if (EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilioCopiado.getIdEntrega())) {
-							domicilioCopiado.setIdEntrega(EstadoTipoDomicilioDto.SI.getId());
-						}
-						if (EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(
-								domicilioCopiado.getIdFacturacion())) {
-							domicilioCopiado.setIdFacturacion(EstadoTipoDomicilioDto.SI.getId());
-						}
-						DomicilioUI.getInstance().setComandoAceptar(new Command() {
-							public void execute() {
-								DomiciliosCuentaDto domicilio = DomicilioUI.getInstance()
-										.getDomicilioAEditar();
-								cuentaDto.getPersona().getDomicilios().add(domicilio);
-								refrescaTablaConNuevoDomicilio();
-								huboCambios = true;
+						if (EditarCuentaUI.edicionReadOnly && EditarCuentaUI.esEdicionCuenta) {
+						    MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_NO_COPY(), MessageDialog.getCloseCommand());
+						} else {
+							domicilioAEditar = domicilio;
+							DomiciliosCuentaDto domicilioCopiado = domicilioAEditar.clone();
+							domicilioCopiado.setId(null);
+							domicilioCopiado.setNombreUsuarioUltimaModificacion(null);
+							domicilioCopiado.setFecha_ultima_modificacion(null);
+							if (EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(domicilioCopiado.getIdEntrega())) {
+								domicilioCopiado.setIdEntrega(EstadoTipoDomicilioDto.SI.getId());
 							}
-						});
-						DomicilioUI.getInstance().setParentContacto(false);
-						DomicilioUI.getInstance().cargarListBoxEntregaFacturacion(
-								cuentaDto.getPersona().getDomicilios(), domicilioCopiado);
-						DomicilioUI.getInstance().cargarPopupCopiarDomicilio(domicilioCopiado);
+							if (EstadoTipoDomicilioDto.PRINCIPAL.getId().equals(
+									domicilioCopiado.getIdFacturacion())) {
+								domicilioCopiado.setIdFacturacion(EstadoTipoDomicilioDto.SI.getId());
+							}
+							DomicilioUI.getInstance().setComandoAceptar(new Command() {
+								public void execute() {
+									DomiciliosCuentaDto domicilio = DomicilioUI.getInstance()
+									.getDomicilioAEditar();
+									cuentaDto.getPersona().getDomicilios().add(domicilio);
+									refrescaTablaConNuevoDomicilio();
+									huboCambios = true;
+								}
+							});
+							DomicilioUI.getInstance().setParentContacto(false);
+							DomicilioUI.getInstance().cargarListBoxEntregaFacturacion(
+									cuentaDto.getPersona().getDomicilios(), domicilioCopiado);
+							DomicilioUI.getInstance().cargarPopupCopiarDomicilio(domicilioCopiado);
+						}
 					}
 					// Acciones a tomar cuando haga click en iconos de borrado de domicilios:
 					if (col == 2) {
-						final int rowABorrar = row;
-						DomicilioUI.getInstance().hide();
-						domicilioAEditar = domicilio;
-						DomicilioUI.getInstance().openPopupDeleteDialog(cuentaDto.getPersona(),
-								domicilioAEditar, new Command() {
-									public void execute() {
-										refrescaTablaConNuevoDomicilio();
-										huboCambios = true;
-									}
-								});
+						if (EditarCuentaUI.edicionReadOnly && EditarCuentaUI.esEdicionCuenta) {
+							MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_NO_DELETE(), MessageDialog.getCloseCommand());
+						} else {
+							final int rowABorrar = row;
+							DomicilioUI.getInstance().hide();
+							domicilioAEditar = domicilio;
+							DomicilioUI.getInstance().openPopupDeleteDialog(cuentaDto.getPersona(),
+									domicilioAEditar, new Command() {
+								public void execute() {
+									refrescaTablaConNuevoDomicilio();
+									huboCambios = true;
+								}
+							});
+						}
 					}
 				}
 			}

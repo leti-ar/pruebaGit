@@ -15,6 +15,7 @@ import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.enums.TipoCuentaEnum;
 import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 
 import com.google.gwt.user.client.Command;
@@ -32,7 +33,6 @@ public class CuentaContactoForm extends Composite {
 
 	private FlowPanel mainPanel;
 	private FlexTable datosTabla = new FlexTable();
-	private FlexTable datosTablaRO = new FlexTable();
 	private List<ContactoCuentaDto> listaContactos = new ArrayList<ContactoCuentaDto>();
 	private ContactosUI contactosUI;
 	private boolean formDirty = false;	
@@ -107,23 +107,6 @@ public class CuentaContactoForm extends Composite {
 		datosTabla.setHTML(0, 5, Sfa.constant().whiteSpace());
 	}
 	
-	private void initTableRO() {
-		limpiarPrimeraFilaTabla();
-		String[] widths = {"150px", "150px", "200px", "55%" };
-		for (int col = 0; col < widths.length; col++) {
-			datosTabla.getColumnFormatter().setWidth(col, widths[col]);
-		}
-		datosTabla.getColumnFormatter().addStyleName(0, "alignCenter");
-		datosTabla.setCellPadding(0);
-		datosTabla.setCellSpacing(0);
-		datosTabla.addStyleName("gwt-BuscarCuentaResultTable");
-		datosTabla.getRowFormatter().addStyleName(0, "header");
-		datosTabla.setHTML(0, 0, Sfa.constant().nombre());
-		datosTabla.setHTML(0, 1, Sfa.constant().apellido());
-		datosTabla.setHTML(0, 2, Sfa.constant().telefono());
-		datosTabla.setHTML(0, 3, Sfa.constant().whiteSpace());
-	}
-	
 	private void limpiarPrimeraFilaTabla() {
 		if (datosTabla.isCellPresent(0, 0)) {
 			datosTabla.removeRow(0);
@@ -132,13 +115,7 @@ public class CuentaContactoForm extends Composite {
 	
 	public void cargarTabla() {
 		crearContactoWrapper.setVisible(!EditarCuentaUI.edicionReadOnly);
-		if (EditarCuentaUI.edicionReadOnly) {
-			initTableRO();
-			datosTabla.removeTableListener(new Listener());
-		} else {
-			initTable();
-			datosTabla.addTableListener(new Listener());
-		}
+		initTable();
 		
 		int row = 1;
 		int col = 0;
@@ -150,10 +127,8 @@ public class CuentaContactoForm extends Composite {
 				ContactoCuentaDto contacto = (ContactoCuentaDto) iter.next();
 				if (contacto.getPersona()!=null) {
 					col = 0;
-					if(!EditarCuentaUI.edicionReadOnly) { 
-						datosTabla.setWidget(row, col++, IconFactory.lapiz());
-						datosTabla.setWidget(row, col++, IconFactory.cancel());
-					}
+					datosTabla.setWidget(row, col++, IconFactory.lapiz());
+					datosTabla.setWidget(row, col++, IconFactory.cancel());
 					datosTabla.setHTML(row, col++, contacto.getPersona().getNombre());
 					datosTabla.setHTML(row, col++, contacto.getPersona().getApellido());
 					datosTabla.setHTML(row, col++, obtenerTelefonoPrincipal(contacto));
@@ -167,13 +142,16 @@ public class CuentaContactoForm extends Composite {
 	private class Listener implements TableListener {
 		public void onCellClicked(SourcesTableEvents arg0, int fila, int columna) {
 			// boton editar
-			if (!EditarCuentaUI.edicionReadOnly) {
-				if ((fila >= 1) && (columna == 0)) {
-					contactoAEditar = listaContactos.get(fila -1);
-					contactosUI.cargarPopupEditarContacto(contactoAEditar);
-				}
-				// boton eliminar
-				if ((fila >= 1) && (columna == 1)) {
+			if ((fila >= 1) && (columna == 0)) {
+				contactoAEditar = listaContactos.get(fila -1);
+				contactosUI.cargarPopupEditarContacto(contactoAEditar);
+			}
+			// boton eliminar
+			if ((fila >= 1) && (columna == 1)) {
+				if (EditarCuentaUI.edicionReadOnly || !EditarCuentaUI.esEdicionCuenta) {
+					MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_NO_DELETE(), MessageDialog.getCloseCommand());
+				} else {
+
 					ModalMessageDialog.getInstance().showAceptarCancelar("Eliminar Contacto",
 							"¿Esta seguro que desea eliminar el contacto seleccionado?",
 							getComandoAceptar(fila - 1), ModalMessageDialog.getInstance().getCloseCommand());

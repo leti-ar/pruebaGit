@@ -123,10 +123,10 @@ public class DomicilioUI extends NextelDialog {
 			domiciliosUIData.enableFields();
 			linkAceptar.setVisible(true);
 		}
-		domiciliosUIData.getEntrega().setVisible(!readOnly);
-		domiciliosUIData.getFacturacion().setVisible(!readOnly);
-		labelEntrega.setVisible(!readOnly);
-		labelFacturacion.setVisible(!readOnly);
+		domiciliosUIData.getEntrega().setVisible(!readOnly || EditarCuentaUI.esEdicionCuenta);
+		domiciliosUIData.getFacturacion().setVisible(!readOnly || EditarCuentaUI.esEdicionCuenta);
+		labelEntrega.setVisible(!readOnly || EditarCuentaUI.esEdicionCuenta);
+		labelFacturacion.setVisible(!readOnly || EditarCuentaUI.esEdicionCuenta);
 		setDialogTitle(title);
 	}
 

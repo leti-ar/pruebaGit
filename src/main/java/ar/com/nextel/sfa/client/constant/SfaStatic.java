@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.constant;
 
 /**
  * Interface to represent the constants contained in resource bundle:
- * 	'/home/rgrippo/jobs/SFA/workspaceSFA2/sfa-web2/war/WEB-INF/classes/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
+ * 	'/home/rgrippo/jobs/SFA/workspaceSFA2/sfa-web2/src/main/java/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
  */
 public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
@@ -313,6 +313,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ERR_NO_ACCESO_CUENTA();
 
   /**
+   * Translated "No se permite copiar este elemento".
+   * 
+   * @return translated "No se permite copiar este elemento"
+   */
+  @DefaultStringValue("No se permite copiar este elemento")
+  @Key("ERR_NO_COPY")
+  String ERR_NO_COPY();
+
+  /**
    * Translated "Debe seleccionar una Cuenta".
    * 
    * @return translated "Debe seleccionar una Cuenta"
@@ -320,6 +329,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Debe seleccionar una Cuenta")
   @Key("ERR_NO_CUENTA_SELECTED")
   String ERR_NO_CUENTA_SELECTED();
+
+  /**
+   * Translated "No se permite borrar este elemento".
+   * 
+   * @return translated "No se permite borrar este elemento"
+   */
+  @DefaultStringValue("No se permite borrar este elemento")
+  @Key("ERR_NO_DELETE")
+  String ERR_NO_DELETE();
 
   /**
    * Translated "Por favor, seleccione una opción.".
