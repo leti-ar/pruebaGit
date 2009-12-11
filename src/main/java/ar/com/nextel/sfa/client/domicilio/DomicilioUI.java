@@ -105,7 +105,7 @@ public class DomicilioUI extends NextelDialog {
 	}
 	
 	private void cargarPopupDomicilio(DomiciliosCuentaDto domicilio, String title) {
-		cargarPopupDomicilio(domicilio, title,EditarCuentaUI.edicionReadOnly); 
+		cargarPopupDomicilio(domicilio, title, false); 
 	}
 	
 	private void cargarPopupDomicilio(DomiciliosCuentaDto domicilio, String title, boolean readOnly) {
