@@ -23,7 +23,8 @@ public class RazonSocialClienteBar extends Composite {
 	private InlineHTML razonSocial;
 	private InlineHTML cliente;
 	private HTML cuentaLink;
-	private Map<String, String> params;
+	private Long idCuenta;
+	private String codigoVantive;
 
 	public RazonSocialClienteBar() {
 		left = new FlowPanel();
@@ -39,7 +40,7 @@ public class RazonSocialClienteBar extends Composite {
 			public void onClick(ClickEvent arg0) {
 				Long idCuenta = HistoryUtils.getParam("idCuenta")!=null ? Long.parseLong(HistoryUtils.getParam("idCuenta")) 
 				                                                        : Long.parseLong(HistoryUtils.getParam("cuenta_id"));
-				CuentaClientService.cargarDatosCuenta(idCuenta, null);
+				CuentaClientService.cargarDatosCuenta(idCuenta, codigoVantive);
 			}
 		});
 		right.setWidget(0, 0, cuentaLink);
@@ -64,14 +65,8 @@ public class RazonSocialClienteBar extends Composite {
 		this.cliente.setText(cliente);
 	}
 
-	public void setIdCuenta(Long idCuenta, Long idVantive) {
-		params = new HashMap<String, String>();
-		if (idCuenta != null) {
-			params.put("cuenta_id", idCuenta.toString());
-		}
-		if (idVantive != null) {
-			params.put("idVantive", idVantive.toString());
-		}
-		// cuentaLink.setTargetHistoryToken(UILoader.EDITAR_CUENTA + HistoryUtils.getParamsFromMap(params));
+	public void setIdCuenta(Long idCuenta, String codigoVantive) {
+		this.idCuenta = idCuenta;
+		this.codigoVantive = codigoVantive;
 	}
 }
