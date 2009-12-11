@@ -15,7 +15,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import ar.com.nextel.business.cuentas.scoring.CuentaScoringBusinessOperator;
 import ar.com.nextel.business.cuentas.scoring.result.CuentaScoringBusinessResult;
-import ar.com.nextel.business.cuentas.select.SelectCuentaBusinessOperator;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.legacy.avalon.dto.CantidadEquiposDTO;
 import ar.com.nextel.business.legacy.avalon.dto.CuentaCorrienteArbolDTO;
@@ -35,7 +34,6 @@ import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.CicloFacturacion;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.GranCuenta;
-import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.InfocomRpcService;
 import ar.com.nextel.sfa.client.dto.CreditoFidelizacionDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
@@ -47,6 +45,7 @@ import ar.com.nextel.sfa.client.dto.ResumenEquipoDto;
 import ar.com.nextel.sfa.client.dto.ScoringDto;
 import ar.com.nextel.sfa.client.dto.TransaccionCCDto;
 import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
+import ar.com.nextel.sfa.server.businessservice.CuentaBusinessService;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
@@ -68,8 +67,9 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 	private VantiveLegacyDAO vantiveLegacyDAO;
 	private Repository repository;
 
-	private SelectCuentaBusinessOperator selectCuentaBusinessOperator;
+	// private SelectCuentaBusinessOperator selectCuentaBusinessOperator;
 	private CuentaScoringBusinessOperator cuentaScoringBusinessOperator;
+	private CuentaBusinessService cuentaBusinessService;
 
 	private String codigoVantiveRP;
 
@@ -79,11 +79,10 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 		mapper = (MapperExtended) context.getBean("dozerMapper");
 		financialSystem = (FinancialSystem) context.getBean("financialSystemBean");
 		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
-		selectCuentaBusinessOperator = (SelectCuentaBusinessOperator) context
-				.getBean("selectCuentaBusinessOperator");
 		vantiveLegacyDAO = (VantiveLegacyDAO) context.getBean("vantiveLegacyDAOBean");
 		cuentaScoringBusinessOperator = (CuentaScoringBusinessOperator) context
 				.getBean("cuentaScoringBusinessOperator");
+		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");
 		repository = (Repository) context.getBean("repository");
 	}
 
@@ -131,7 +130,7 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 			throws RpcExceptionMessages {
 		Set<Cuenta> cuentasRP = new HashSet<Cuenta>();
 		try {
-			Cuenta cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(numeroCuenta);
+			Cuenta cuenta = cuentaBusinessService.getCuentaSinLockear(numeroCuenta);
 			cuentasRP = cuenta.cuentasResponsablesPago();
 		} catch (Exception e) {
 			AppLogger.error(e);
@@ -158,7 +157,7 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 			InfocomInitializer infocomInitializer) throws RpcExceptionMessages {
 		Cuenta cuenta = null;
 		try {
-			cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(numeroCuenta);
+			cuenta = cuentaBusinessService.getCuentaSinLockear(numeroCuenta);
 		} catch (Exception e) {
 			throw ExceptionUtil.wrap(e);
 		}
@@ -294,7 +293,7 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 
 	private GranCuenta getCuentaRaiz(String numeroCuenta) throws RpcExceptionMessages {
 		try {
-			Cuenta cuenta = this.selectCuentaBusinessOperator.getCuentaSinLockear(numeroCuenta);
+			Cuenta cuenta = cuentaBusinessService.getCuentaSinLockear(numeroCuenta);
 			return cuenta.getCuentaRaiz();
 		} catch (Exception e) {
 			throw ExceptionUtil.wrap(e);
@@ -334,7 +333,7 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 	private void getResumenEncabezadoCuenta(String numeroCuenta, ResumenEquipoDto resumenEquipoDto)
 			throws RpcExceptionMessages {
 		try {
-			Cuenta cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(numeroCuenta);
+			Cuenta cuenta = cuentaBusinessService.getCuentaSinLockear(numeroCuenta);
 			resumenEquipoDto.setRazonSocial(cuenta.getPersona().getRazonSocial());
 			resumenEquipoDto.setNumeroCliente(cuenta.getCodigoVantive());
 			resumenEquipoDto.setFlota(cuenta.getFlota());
@@ -405,10 +404,10 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 		AppLogger.info("Iniciando consulta de scoring para " + codigoVantive);
 		CuentaScoringBusinessResult result;
 		try {
-			Cuenta cuentaSinLockear = selectCuentaBusinessOperator.getCuentaSinLockear(codigoVantive);
+			Cuenta cuentaSinLockear = cuentaBusinessService.getCuentaSinLockear(codigoVantive);
 			result = cuentaScoringBusinessOperator.obtenerCuentaScoring(cuentaSinLockear.getCuentaRaiz()
 					.getCodigoVantive());
-		} catch (BusinessException e) {
+		} catch (Exception e) {
 			throw ExceptionUtil.wrap(e);
 			// AppLogger.info("Error al consultar el scoring: " + e.getMessage());
 		}
