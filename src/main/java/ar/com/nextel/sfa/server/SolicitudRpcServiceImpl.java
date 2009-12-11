@@ -37,6 +37,7 @@ import ar.com.nextel.components.knownInstances.GlobalParameter;
 import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
 import ar.com.nextel.framework.repository.Repository;
+import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.personas.beans.Localidad;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
@@ -135,6 +136,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
+		// Se pide la cuenta nuevamente para renovar el proxy de hibernate. Fix para cuentas que vienen de Vantive
+		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitud.getCuenta().getId());
+		solicitud.setCuenta(cuenta);
 		SolicitudServicioDto solicitudServicioDto = mapper.map(solicitud, SolicitudServicioDto.class);
 
 		AppLogger.info("Creacion de Solicitud de Servicio finalizada");
