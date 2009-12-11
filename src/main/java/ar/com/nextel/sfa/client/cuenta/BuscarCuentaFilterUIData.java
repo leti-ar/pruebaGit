@@ -53,7 +53,8 @@ public class BuscarCuentaFilterUIData extends UIData {
 	private ValidationTextBox numeroSolicitudServicioTextBox = new ValidationTextBox("[0-9]*");
 	private ValidationTextBox responsableTextBox = new ValidationTextBox("[a-zA-Z\\%]*");
 	private ValidationListBox grupoDocumentoCombo;
-	private ValidationTextBox numeroDocumentoTextBox = new ValidationTextBox(RegularExpressionConstants.getNumerosLimitado(10));
+	private ValidationTextBox numeroDocumentoTextBox = new ValidationTextBox(RegularExpressionConstants
+			.getNumerosLimitado(10));
 	private ValidationListBox predefinidasCombo;
 	private ListBox resultadosCombo;
 
@@ -73,6 +74,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 		limpiarButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				cleanAndEnableFields();
+				setNumeroDocumentoTextBoxPattern();
 			}
 		});
 
@@ -87,13 +89,17 @@ public class BuscarCuentaFilterUIData extends UIData {
 		grupoDocumentoCombo.addChangeHandler(new ChangeHandler() {
 			public void onChange(ChangeEvent arg0) {
 				numeroDocumentoTextBox.setText("");
-				if (grupoDocumentoCombo.getSelectedItemId().equals(TipoDocumentoEnum.CUITCUIL.getTipo() + "")) {
-					numeroDocumentoTextBox.setPattern(RegularExpressionConstants.cuilCuit);
-				} else {  
-					numeroDocumentoTextBox.setPattern(RegularExpressionConstants.getNumerosLimitado(10));
-				}
+				setNumeroDocumentoTextBoxPattern();
 			}
 		});
+	}
+
+	private void setNumeroDocumentoTextBoxPattern() {
+		if (grupoDocumentoCombo.getSelectedItemId().equals(TipoDocumentoEnum.CUITCUIL.getTipo() + "")) {
+			numeroDocumentoTextBox.setPattern(RegularExpressionConstants.cuilCuit);
+		} else {
+			numeroDocumentoTextBox.setPattern(RegularExpressionConstants.getNumerosLimitado(10));
+		}
 	}
 
 	/**
@@ -131,7 +137,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 		// Numero de Documento
 		fields.add(numeroDocumentoTextBox);
 		numeroDocumentoTextBox.setMaxLength(13);
-		//numeroDocumentoTextBox.setExcluyente(true);
+		// numeroDocumentoTextBox.setExcluyente(true);
 		// Combos
 		fields.add(predefinidasCombo = new ValidationListBox(""));
 		fields.add(resultadosCombo = new ListBox());
@@ -360,7 +366,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 				}
 			}
 		}
-		
+
 		if (vacio) {
 			// Valida que todos los campos ListBoxs no sean vacios (excepto tipoDocumento y cantResultados que
 			// no tienen valor nulo para cargar):
@@ -385,9 +391,9 @@ public class BuscarCuentaFilterUIData extends UIData {
 				}
 			}
 		}
-		
+
 		list.addAll(validarNumeroDocumento());
-		
+
 		return list;
 	}
 
@@ -535,19 +541,20 @@ public class BuscarCuentaFilterUIData extends UIData {
 
 	private List<String> validarNumeroDocumento() {
 		GwtValidator validator = new GwtValidator();
-			if (grupoDocumentoCombo.getSelectedItemId().equals(TipoDocumentoEnum.CUITCUIL.getTipo()+"")) {
-				if (!numeroDocumentoTextBox.getText().matches(RegularExpressionConstants.cuilCuit)) {
-					validator.addError(Sfa.constant().ERR_FORMATO_CUIL());
-				} else {
-					validator.addTarget(numeroDocumentoTextBox).cuil(Sfa.constant().ERR_DATO_CUIL());	
-				}
+		if (grupoDocumentoCombo.getSelectedItemId().equals(TipoDocumentoEnum.CUITCUIL.getTipo() + "")) {
+			if (!numeroDocumentoTextBox.getText().matches(RegularExpressionConstants.cuilCuit)) {
+				validator.addError(Sfa.constant().ERR_FORMATO_CUIL());
 			} else {
-				if (!numeroDocumentoTextBox.getText().matches(RegularExpressionConstants.getNumerosLimitado(10))) {
-					validator.addError(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
-				}
+				validator.addTarget(numeroDocumentoTextBox).cuil(Sfa.constant().ERR_DATO_CUIL());
 			}
+		} else {
+			if (!numeroDocumentoTextBox.getText().matches(RegularExpressionConstants.getNumerosLimitado(10))) {
+				validator.addError(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}",
+						Sfa.constant().numeroDocumento()));
+			}
+		}
 		validator.fillResult();
 		return validator.getErrors();
 	}
-	
+
 }
