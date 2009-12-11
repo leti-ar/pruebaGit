@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -268,7 +269,7 @@ public class CuentaBusinessService {
 	}
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public Cuenta selectCuenta(Long cuentaId, String cod_vantive, Vendedor vendedor, boolean filtradoPorDni) throws RpcExceptionMessages {
+	public Cuenta selectCuenta(Long cuentaId, String cod_vantive, Vendedor vendedor, boolean filtradoPorDni, DozerBeanMapper mapper) throws RpcExceptionMessages {
         AppLogger.info("Iniciando SelectCuenta...");
         Cuenta cuenta = null;
         BaseAccessObject accessCuenta = null;
@@ -283,6 +284,17 @@ public class CuentaBusinessService {
 			                accessCuenta.getAccessAuthorization().hasSamePermissionsAs(AccessAuthorization.fullAccess())) {
 			    cuenta.editar(vendedor);
 		        repository.save(cuenta);
+			}
+			
+			//FIXME: parche para evitar problemas de transaccion con cuentas migradas de vantive.
+		    CuentaDto cuentaDto = null;
+		    String categoriaCuenta = cuenta.getCategoriaCuenta().getDescripcion();
+			if (categoriaCuenta.equals(KnownInstanceIdentifier.GRAN_CUENTA.getKey())) {
+				cuentaDto = (GranCuentaDto) mapper.map((GranCuenta) cuenta, GranCuentaDto.class);
+			} else if (categoriaCuenta.equals(KnownInstanceIdentifier.DIVISION.getKey())) {
+				cuentaDto = (DivisionDto)   mapper.map((Division) cuenta, DivisionDto.class);
+			} else if (categoriaCuenta.equals(KnownInstanceIdentifier.SUSCRIPTOR.getKey())) {
+				cuentaDto = (SuscriptorDto) mapper.map((Suscriptor) cuenta, SuscriptorDto.class);
 			}
 		} catch (Exception e) {
 			AppLogger.error(e);
@@ -488,4 +500,5 @@ public class CuentaBusinessService {
 		BaseAccessObject accessCuenta = new BaseAccessObject(accessAuthorization, cuenta);
 		return accessCuenta;
 	}
+
 }

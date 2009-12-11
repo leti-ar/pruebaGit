@@ -346,7 +346,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	 */
 	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive, boolean filtradoPorDni) throws RpcExceptionMessages {
 	    CuentaDto cuentaDto = null;
-		Cuenta cuenta = cuentaBusinessService.selectCuenta(cuentaId, cod_vantive, getVendedor(), filtradoPorDni);
+		Cuenta cuenta = cuentaBusinessService.selectCuenta(cuentaId, cod_vantive, getVendedor(), filtradoPorDni, mapper);
 		String categoriaCuenta = cuenta.getCategoriaCuenta().getDescripcion();
 		if (categoriaCuenta.equals(KnownInstanceIdentifier.GRAN_CUENTA.getKey())) {
 			cuentaDto = (GranCuentaDto) mapper.map((GranCuenta) cuenta, GranCuentaDto.class);
