@@ -79,12 +79,13 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public boolean load() {
 		tokenLoaded = History.getToken();
 		String cuenta = HistoryUtils.getParam(ID_CUENTA);
+		cuenta = cuenta != null && !"".equals(cuenta) ? cuenta : null;
 		String grupoSS = HistoryUtils.getParam(ID_GRUPO_SS);
 		String cuentaPotencial = HistoryUtils.getParam(ID_CUENTA_POTENCIAL);
 		String codigoVantive = HistoryUtils.getParam(CODIGO_VANTIVE);
 		mainPanel.setVisible(false);
 		tabs.selectTab(0);
-		if (cuenta == null && cuentaPotencial == null) {
+		if (cuenta == null && cuentaPotencial == null && codigoVantive == null) {
 			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 			ErrorDialog.getInstance().show("No ingreso la cuenta para la cual desea cargar la solicitud",
 					false);
@@ -434,7 +435,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 	public static String getEditarSSUrl(Long idCuenta, Long idGrupo) {
 		StringBuilder builder = new StringBuilder(UILoader.AGREGAR_SOLICITUD + "?");
-		builder.append(EditarSSUI.ID_CUENTA + "=" + idCuenta + "&");
+		if (idCuenta != null && idCuenta > 0)
+			builder.append(EditarSSUI.ID_CUENTA + "=" + idCuenta + "&");
 		builder.append(EditarSSUI.ID_GRUPO_SS + "=" + idGrupo);
 		return builder.toString();
 	}
@@ -442,10 +444,14 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public static String getEditarSSUrl(Long idCuentaPotencial, Long idGrupo, String codigoVanvite,
 			Long idCuenta) {
 		StringBuilder builder = new StringBuilder(UILoader.AGREGAR_SOLICITUD + "?");
-		builder.append(EditarSSUI.ID_CUENTA_POTENCIAL + "=" + idCuentaPotencial + "&");
-		builder.append(EditarSSUI.CODIGO_VANTIVE + "=" + codigoVanvite + "&");
-		builder.append(EditarSSUI.ID_CUENTA + "=" + idCuenta + "&");
-		builder.append(EditarSSUI.ID_GRUPO_SS + "=" + idGrupo);
+		if (idCuentaPotencial != null)
+			builder.append(EditarSSUI.ID_CUENTA_POTENCIAL + "=" + idCuentaPotencial + "&");
+		if (codigoVanvite != null)
+			builder.append(EditarSSUI.CODIGO_VANTIVE + "=" + codigoVanvite + "&");
+		if (idCuenta != null && idCuenta > 0)
+			builder.append(EditarSSUI.ID_CUENTA + "=" + idCuenta + "&");
+		if (idGrupo != null)
+			builder.append(EditarSSUI.ID_GRUPO_SS + "=" + idGrupo);
 		return builder.toString();
 	}
 }
