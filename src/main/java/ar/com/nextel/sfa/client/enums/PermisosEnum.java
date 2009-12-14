@@ -52,7 +52,8 @@ public enum PermisosEnum {
 	ROOTS_MENU_PANEL_SS_BUTTON("rootsMenuPanel.ssButton",Accion.X,true),
 	ROOTS_MENU_PANEL_OPERACIONES_EN_CURSO_BUTTON("rootsMenuPanel.operacionesEnCursoButton",Accion.X,true),
 	ROOTS_MENU_PANEL_BUSQUEDA_OPORTUNIDADES_BUTTON("rootsMenuPanel.busquedaOportunidadesButton",Accion.X,true),
-	SCORING_CHECKED("scoringChecked",Accion.X,true);
+	SCORING_CHECKED("scoringChecked",Accion.X,true),
+	CERRAR_SS_CON_PIN("cerrarSSConPin",Accion.X,true);
 
 	private String value;
     private String accion;
