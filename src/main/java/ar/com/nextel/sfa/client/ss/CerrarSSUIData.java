@@ -13,6 +13,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 
 public class CerrarSSUIData extends UIData implements ClickHandler {
@@ -21,6 +22,7 @@ public class CerrarSSUIData extends UIData implements ClickHandler {
 	private CheckBox personal;
 	private CheckBox nuevo;
 	private CheckBox scoring;
+	private TextBox pin;
 	private HTML emailLaboral;
 	private HTML emailPersonal;
 	private TextBox emailNuevo;
@@ -31,10 +33,12 @@ public class CerrarSSUIData extends UIData implements ClickHandler {
 		fields.add(personal = new CheckBox());
 		fields.add(nuevo = new CheckBox());
 		fields.add(scoring = new CheckBox());
+		fields.add(pin = new PasswordTextBox());
 		fields.add(emailNuevo = new RegexTextBox(RegularExpressionConstants.lazyEmail));
 		fields.add(emailLaboral = new HTML());
 		fields.add(emailPersonal = new HTML());
 
+		pin.setMaxLength(6);
 		laboral.addClickHandler(this);
 		personal.addClickHandler(this);
 		nuevo.addClickHandler(this);
@@ -101,6 +105,10 @@ public class CerrarSSUIData extends UIData implements ClickHandler {
 
 	public CheckBox getScoring() {
 		return scoring;
+	}
+
+	public TextBox getPin() {
+		return pin;
 	}
 
 	public TextBox getEmail() {

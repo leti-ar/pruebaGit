@@ -16,7 +16,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class CerrarSSUI extends NextelDialog implements ClickListener {
 
-	private CerrarSSUIData generarSSData;
+	private CerrarSSUIData cerarSSUIData;
 	private SimpleLink aceptar;
 	private SimpleLink cancelar;
 	private Command aceptarCommand;
@@ -39,7 +39,7 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 		addFormButtons(cancelar);
 		setFooterVisible(false);
 		setFormButtonsVisible(true);
-		generarSSData = new CerrarSSUIData();
+		cerarSSUIData = new CerrarSSUIData();
 		layout = new FlexTable();
 		layout.setWidth("100%");
 		// primeraTabla.getFlexCellFormatter().setColSpan(1, 1, 2);
@@ -47,18 +47,18 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 		emailLabel.addStyleName("req");
 		add(emailLabel);
 		layout.addStyleName("layout");
-		layout.setWidget(0, 0, generarSSData.getLaboral());
+		layout.setWidget(0, 0, cerarSSUIData.getLaboral());
 		layout.setHTML(0, 1, Sfa.constant().laboral());
-		layout.setWidget(0, 3, generarSSData.getEmailLaboral());
-		layout.setWidget(1, 0, generarSSData.getPersonal());
+		layout.setWidget(0, 3, cerarSSUIData.getEmailLaboral());
+		layout.setWidget(1, 0, cerarSSUIData.getPersonal());
 		layout.setHTML(1, 1, Sfa.constant().personal());
-		layout.setWidget(1, 3, generarSSData.getEmailPersonal());
-		layout.setWidget(2, 0, generarSSData.getNuevo());
+		layout.setWidget(1, 3, cerarSSUIData.getEmailPersonal());
+		layout.setWidget(2, 0, cerarSSUIData.getNuevo());
 		layout.setHTML(2, 1, Sfa.constant().nuevo());
 		layout.setHTML(2, 2, Sfa.constant().emailReq());
-		layout.setWidget(2, 3, generarSSData.getEmail());
+		layout.setWidget(2, 3, cerarSSUIData.getEmail());
 		layout.setHTML(3, 1, Sfa.constant().scoringTitle());
-		layout.setWidget(3, 0, generarSSData.getScoring());
+		layout.setWidget(3, 0, cerarSSUIData.getScoring());
 		add(layout);
 	}
 
@@ -79,21 +79,27 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 
 	public void show(PersonaDto persona, SolicitudServicioGeneracionDto solicitudServicioGeneracion,
 			boolean cdw) {
-		generarSSData.setEmails(persona.getEmails(), solicitudServicioGeneracion);
+		cerarSSUIData.setEmails(persona.getEmails(), solicitudServicioGeneracion);
 		boolean permisoCierreScoring = ClientContext.getInstance().checkPermiso(
 				PermisosEnum.SCORING_CHECKED.getValue());
-		if (cdw || !permisoCierreScoring) {
-			layout.setHTML(3, 1, "");
-			layout.setHTML(3, 0, "");
-		} else {
+		boolean permisoCierrePin = ClientContext.getInstance().checkPermiso(
+				PermisosEnum.CERRAR_SS_CON_PIN.getValue());
+
+		if (!cdw || permisoCierreScoring) {
+			layout.setWidget(3, 0, cerarSSUIData.getScoring());
 			layout.setHTML(3, 1, Sfa.constant().scoringTitle());
-			layout.setWidget(3, 0, generarSSData.getScoring());
+		} else if (!cdw || permisoCierrePin) {
+			layout.setHTML(3, 0, Sfa.constant().pinMaestro());
+			layout.setWidget(3, 1, cerarSSUIData.getPin());
+		} else {
+			layout.setHTML(3, 0, "");
+			layout.setHTML(3, 1, "");
 		}
 		showAndCenter();
 	}
 
-	public CerrarSSUIData getGenerarSSUIData() {
-		return generarSSData;
+	public CerrarSSUIData getCerrarSSUIData() {
+		return cerarSSUIData;
 	}
 
 	public void setTitleCerrar(boolean cerrando) {
