@@ -39,7 +39,7 @@ public class ItemSolicitudActivacionUI extends Composite {
 		segundaTabla.setWidget(0, 3, itemSolicitudUIData.getSim());
 		segundaTabla.setWidget(1, 0, new InlineLabel(Sfa.constant().serie()));
 		segundaTabla.setWidget(1, 1, itemSolicitudUIData.getSerie());
-		segundaTabla.setWidget(1, 2, new InlineLabel(Sfa.constant().pin()));
+		segundaTabla.setWidget(1, 2, new InlineLabel(Sfa.constant().nPinReq()));
 		segundaTabla.setWidget(1, 3, itemSolicitudUIData.getPin());
 		mainPanel.add(segundaTabla);
 		Grid terceraTabla = new Grid(4, 2);

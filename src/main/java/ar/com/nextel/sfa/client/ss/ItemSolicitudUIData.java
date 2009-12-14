@@ -82,7 +82,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private Command reservarCommnad = null;
 	private HTML verificarImeiWrapper;
 	private HTML verificarSimWrapper;
-	private InlineHTML pinLabel = new InlineHTML(Sfa.constant().pin());
+	private InlineHTML pinLabel = new InlineHTML(Sfa.constant().nPinReq());
 	private InlineHTML serieLabel = new InlineHTML(Sfa.constant().serie());
 
 	private Long idPlanAnterior;
