@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.constant;
 
 /**
  * Interface to represent the constants contained in resource bundle:
- * 	'/home/rgrippo/jobs/SFA/workspaceSFA2/sfa-web2/src/main/java/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
+ * 	'/home/jlgperez/workspaceSFASVN/sfa-web2/src/main/java/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
  */
 public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
@@ -313,15 +313,6 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ERR_NO_ACCESO_CUENTA();
 
   /**
-   * Translated "Acceso denegado. No puede operar con esta cuenta. <BR/>La Cuenta {1} asociada a la SS  no es responsable a pago.".
-   * 
-   * @return translated "Acceso denegado. No puede operar con esta cuenta. <BR/>La Cuenta {1} asociada a la SS  no es responsable a pago."
-   */
-  @DefaultStringValue("Acceso denegado. No puede operar con esta cuenta. <BR/>La Cuenta {1} asociada a la SS  no es responsable a pago.")
-  @Key("ERR_NO_ACCESO_NO_ES_RESP_PAGO")
-  String ERR_NO_ACCESO_NO_ES_RESP_PAGO();
-
-  /**
    * Translated "No se permite copiar este elemento".
    * 
    * @return translated "No se permite copiar este elemento"
@@ -446,6 +437,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Tarjeta no válida: La tarjeta ingresada no es válida. (se)")
   @Key("ERR_TARJETA_NO_VALIDA")
   String ERR_TARJETA_NO_VALIDA();
+
+  /**
+   * Translated "No ingreso la cuenta para la cual desea cargar la solicitud".
+   * 
+   * @return translated "No ingreso la cuenta para la cual desea cargar la solicitud"
+   */
+  @DefaultStringValue("No ingreso la cuenta para la cual desea cargar la solicitud")
+  @Key("ERR_URL_PARAMS_EMPTY")
+  String ERR_URL_PARAMS_EMPTY();
 
   /**
    * Translated "Cambiar Estado".
@@ -1402,6 +1402,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String modeloEq();
 
   /**
+   * Translated "<span class=\"req\">Nº Pin:</span>".
+   * 
+   * @return translated "<span class=\"req\">Nº Pin:</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Nº Pin:</span>")
+  @Key("nPinReq")
+  String nPinReq();
+
+  /**
    * Translated "NºFlota:".
    * 
    * @return translated "NºFlota:"
@@ -1681,13 +1690,13 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String personal();
 
   /**
-   * Translated "<span class=\"req\">Nº Pin:</span>".
+   * Translated "PIN".
    * 
-   * @return translated "<span class=\"req\">Nº Pin:</span>"
+   * @return translated "PIN"
    */
-  @DefaultStringValue("<span class=\"req\">Nº Pin:</span>")
-  @Key("pin")
-  String pin();
+  @DefaultStringValue("PIN")
+  @Key("pinMaestro")
+  String pinMaestro();
 
   /**
    * Translated "Piso:".
