@@ -67,7 +67,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private SimpleLink cerrarSolicitud;
 	private SimpleLink generarSolicitud;
 	private DefaultWaitCallback<GeneracionCierreResultDto> generacionCierreCallback;
-	private CerrarSSUI generarSSUI;
+	private CerrarSSUI cerrarSSUI;
 	private boolean guardandoSolicitud = false;
 	private boolean cerrandoSolicitud = false;
 
@@ -87,7 +87,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		tabs.selectTab(0);
 		if (cuenta == null && cuentaPotencial == null && codigoVantive == null) {
 			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-			ErrorDialog.getInstance().show("No ingreso la cuenta para la cual desea cargar la solicitud",
+			ErrorDialog.getInstance().show(Sfa.constant().ERR_URL_PARAMS_EMPTY(),
+					false);
+		} else if(codigoVantive != null && codigoVantive.length() > 9 && codigoVantive.endsWith(".100000")){
+			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+			ErrorDialog.getInstance().show(Sfa.constant().ERR_NO_ACCESO_CREAR_SS(),
 					false);
 		} else {
 			SolicitudServicioRequestDto solicitudServicioRequestDto = new SolicitudServicioRequestDto();
@@ -291,8 +295,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		List errors = editarSSUIData.validarParaCerrarGenerar(false);
 		if (errors.isEmpty()) {
 			cerrandoSolicitud = cerrando;
-			getGenerarSSUI().setTitleCerrar(cerrando);
-			getGenerarSSUI().show(editarSSUIData.getCuenta().getPersona(),
+			getCerrarSSUI().setTitleCerrar(cerrando);
+			getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
 					editarSSUIData.getSolicitudServicioGeneracion(), editarSSUIData.isCDW());
 		} else {
 			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
@@ -303,14 +307,15 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private Command generarCerrarSolicitudCommand() {
 		return new Command() {
 			public void execute() {
-				editarSSUIData.setSolicitudServicioGeneracion(getGenerarSSUI().getGenerarSSUIData()
+				editarSSUIData.setSolicitudServicioGeneracion(getCerrarSSUI().getCerrarSSUIData()
 						.getSolicitudServicioGeneracion());
 				// Se comenta por el nuevo cartel de cargando;
 				CerradoSSExitosoDialog.getInstance().showLoading(cerrandoSolicitud);
 				List errors = editarSSUIData.validarParaCerrarGenerar(true);
+				String pinMaestro = getCerrarSSUI().getCerrarSSUIData().getPin().getText();
 				if (errors.isEmpty()) {
 					SolicitudRpcService.Util.getInstance().generarCerrarSolicitud(
-							editarSSUIData.getSolicitudServicio(), "", cerrandoSolicitud,
+							editarSSUIData.getSolicitudServicio(), pinMaestro, cerrandoSolicitud,
 							getGeneracionCierreCallback());
 				} else {
 					CerradoSSExitosoDialog.getInstance().hideLoading();
@@ -375,12 +380,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		return errors.isEmpty();
 	}
 
-	private CerrarSSUI getGenerarSSUI() {
-		if (generarSSUI == null) {
-			generarSSUI = new CerrarSSUI();
-			generarSSUI.setAceptarCommand(generarCerrarSolicitudCommand());
+	private CerrarSSUI getCerrarSSUI() {
+		if (cerrarSSUI == null) {
+			cerrarSSUI = new CerrarSSUI();
+			cerrarSSUI.setAceptarCommand(generarCerrarSolicitudCommand());
 		}
-		return generarSSUI;
+		return cerrarSSUI;
 	}
 
 	public EditarSSUIData getEditarSSUIData() {
