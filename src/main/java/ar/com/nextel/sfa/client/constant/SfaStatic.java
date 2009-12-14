@@ -313,6 +313,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ERR_NO_ACCESO_CUENTA();
 
   /**
+   * Translated "Acceso denegado. No puede operar con esta cuenta. <BR/>La Cuenta {1} asociada a la SS  no es responsable a pago.".
+   * 
+   * @return translated "Acceso denegado. No puede operar con esta cuenta. <BR/>La Cuenta {1} asociada a la SS  no es responsable a pago."
+   */
+  @DefaultStringValue("Acceso denegado. No puede operar con esta cuenta. <BR/>La Cuenta {1} asociada a la SS  no es responsable a pago.")
+  @Key("ERR_NO_ACCESO_NO_ES_RESP_PAGO")
+  String ERR_NO_ACCESO_NO_ES_RESP_PAGO();
+
+  /**
    * Translated "No se permite copiar este elemento".
    * 
    * @return translated "No se permite copiar este elemento"

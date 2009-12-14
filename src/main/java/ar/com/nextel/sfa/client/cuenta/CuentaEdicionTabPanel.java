@@ -255,13 +255,17 @@ public class CuentaEdicionTabPanel {
 		});
 		crearSSButton.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				if (isFormCompletoYguardado()) {
-					popupCrearSS.show();
-					popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton.getAbsoluteTop() - 50);
+				if(!cuenta2editDto.getResponsablePago()) {
+					MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(),
+							Sfa.constant().ERR_NO_ACCESO_NO_ES_RESP_PAGO().replaceAll("\\{1\\}", cuenta2editDto.getCodigoVantive()), MessageDialog.getCloseCommand());
+				} else {
+					if (isFormCompletoYguardado()) {
+						popupCrearSS.show();
+						popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton.getAbsoluteTop() - 50);
+					}
 				}
 			}
 		});
-
 		agregarCuentaButton.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				if (isFormCompletoYguardado()) {

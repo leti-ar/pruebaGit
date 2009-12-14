@@ -111,9 +111,12 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 		Long idCuenta = cuentaSearch != null ? cuentaSearch.getId() : null;
 		if (idCuenta != null) {
 			if (sender == crearSSButton) {
-				if (cuentaSearch.getRazonSocial().equals("***")) {
+				if ("***".equals(cuentaSearch.getRazonSocial())) { 
 					MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(),
 							Sfa.constant().ERR_NO_ACCESO_CREAR_SS(), MessageDialog.getCloseCommand());
+				} else if(!cuentaSearch.isResponsablePago()) {
+					MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(),
+							Sfa.constant().ERR_NO_ACCESO_NO_ES_RESP_PAGO().replaceAll("\\{1\\}", cuentaSearch.getNumero()), MessageDialog.getCloseCommand());
 				} else {
 					crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(null,
 							GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS, cuentaSearch.getNumero(),
