@@ -1,8 +1,5 @@
 package ar.com.nextel.sfa.client.widget;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.image.IconFactory;
@@ -38,8 +35,12 @@ public class RazonSocialClienteBar extends Composite {
 		cuentaLink = IconFactory.silvioSoldan();
 		cuentaLink.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent arg0) {
-				Long idCuenta = HistoryUtils.getParam("idCuenta")!=null ? Long.parseLong(HistoryUtils.getParam("idCuenta")) 
-				                                                        : Long.parseLong(HistoryUtils.getParam("cuenta_id"));
+				Long idCuenta = null;
+				if (HistoryUtils.getParam("idCuenta") != null) {
+					idCuenta = Long.parseLong(HistoryUtils.getParam("idCuenta"));
+				} else if (HistoryUtils.getParam("cuenta_id") != null) {
+					idCuenta = Long.parseLong(HistoryUtils.getParam("cuenta_id"));
+				}
 				CuentaClientService.cargarDatosCuenta(idCuenta, codigoVantive);
 			}
 		});
@@ -52,11 +53,11 @@ public class RazonSocialClienteBar extends Composite {
 	public void setDisabledSilvioSoldan() {
 		cuentaLink.setVisible(false);
 	}
-	
+
 	public void setEnabledSilvioSoldan() {
 		cuentaLink.setVisible(true);
 	}
-	
+
 	public void setRazonSocial(String razonSocial) {
 		this.razonSocial.setText(razonSocial);
 	}
