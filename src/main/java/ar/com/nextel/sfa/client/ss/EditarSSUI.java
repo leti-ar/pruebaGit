@@ -87,12 +87,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		tabs.selectTab(0);
 		if (cuenta == null && cuentaPotencial == null && codigoVantive == null) {
 			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-			ErrorDialog.getInstance().show(Sfa.constant().ERR_URL_PARAMS_EMPTY(),
-					false);
-		} else if(codigoVantive != null && codigoVantive.length() > 9 && codigoVantive.endsWith(".100000")){
+			ErrorDialog.getInstance().show(Sfa.constant().ERR_URL_PARAMS_EMPTY(), false);
+		} else if (codigoVantive != null && codigoVantive.length() > 9 && codigoVantive.endsWith(".100000")) {
 			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-			ErrorDialog.getInstance().show(Sfa.constant().ERR_NO_ACCESO_CREAR_SS(),
-					false);
+			ErrorDialog.getInstance().show(Sfa.constant().ERR_NO_ACCESO_CREAR_SS(), false);
 		} else {
 			SolicitudServicioRequestDto solicitudServicioRequestDto = new SolicitudServicioRequestDto();
 			solicitudServicioRequestDto.setIdCuenta(cuenta != null ? Long.parseLong(cuenta) : null);
@@ -297,7 +295,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			cerrandoSolicitud = cerrando;
 			getCerrarSSUI().setTitleCerrar(cerrando);
 			getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
-					editarSSUIData.getSolicitudServicioGeneracion(), editarSSUIData.isCDW());
+					editarSSUIData.getSolicitudServicioGeneracion(), editarSSUIData.isCDW(),
+					editarSSUIData.hasItemBB());
 		} else {
 			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 			ErrorDialog.getInstance().show(errors, false);

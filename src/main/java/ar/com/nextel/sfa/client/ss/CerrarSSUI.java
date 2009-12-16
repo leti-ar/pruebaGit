@@ -78,7 +78,7 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 	}
 
 	public void show(PersonaDto persona, SolicitudServicioGeneracionDto solicitudServicioGeneracion,
-			boolean cdw) {
+			boolean cdw, boolean cerrandoConItemBB) {
 		cerarSSUIData.setEmails(persona.getEmails(), solicitudServicioGeneracion);
 		boolean permisoCierreScoring = ClientContext.getInstance().checkPermiso(
 				PermisosEnum.SCORING_CHECKED.getValue());
@@ -88,7 +88,7 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 		if (!cdw || permisoCierreScoring) {
 			layout.setWidget(3, 0, cerarSSUIData.getScoring());
 			layout.setHTML(3, 1, Sfa.constant().scoringTitle());
-		} else if (!cdw || permisoCierrePin) {
+		} else if (!cdw || (permisoCierrePin && !cerrandoConItemBB)) {
 			layout.setHTML(3, 0, Sfa.constant().pinMaestro());
 			layout.setWidget(3, 1, cerarSSUIData.getPin());
 		} else {

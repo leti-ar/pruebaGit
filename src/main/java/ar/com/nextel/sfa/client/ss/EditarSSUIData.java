@@ -11,6 +11,7 @@ import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
@@ -646,4 +647,14 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		return solicitudServicio.getGrupoSolicitud().getId().equals(GrupoSolicitudDto.ID_CDW);
 	}
 
+	/** Indica si contiene lineas de solicitud con item BlackBerry */
+	public boolean hasItemBB() {
+		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
+			ModeloDto modelo = linea.getModelo();
+			if(modelo != null && modelo.isEsBlackberry()){
+				return true;
+			}
+		}
+		return false;
+	}
 }
