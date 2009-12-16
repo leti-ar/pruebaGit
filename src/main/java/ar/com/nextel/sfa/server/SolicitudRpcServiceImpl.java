@@ -129,7 +129,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		AppLogger.info("Creando Solicitud de Servicio con Request -> " + request.toString());
 		SolicitudServicio solicitud = null;
 		try {
-			solicitud = solicitudBusinessService.createSolicitudServicio(request);
+			solicitud = solicitudBusinessService.createSolicitudServicio(request, mapper);
 		} catch (BusinessException e) {
 			throw new RpcExceptionMessages((String) e.getParameters().get(0));
 		} catch (Exception e) {

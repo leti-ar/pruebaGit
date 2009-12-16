@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.validator.GenericValidator;
+import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,8 @@ import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
+import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
@@ -113,15 +116,15 @@ public class SolicitudBusinessService {
 			@Qualifier("sfaConnectionDAOBean") TransactionConnectionDAO sfaConnectionDAOBean) {
 		this.sfaConnectionDAO = sfaConnectionDAOBean;
 	}
-	
+
 	@Autowired
 	public void setGenerarChangelogConfig(GenerarChangelogConfig generarChangelogConfig) {
 		this.generarChangelogConfig = generarChangelogConfig;
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public SolicitudServicio createSolicitudServicio(SolicitudServicioRequest solicitudServicioRequest)
-			throws BusinessException, FinancialSystemException {
+	public SolicitudServicio createSolicitudServicio(SolicitudServicioRequest solicitudServicioRequest,
+			DozerBeanMapper mapper) throws BusinessException, FinancialSystemException {
 
 		SolicitudServicioProviderResult providerResult = null;
 		providerResult = this.solicitudesBusinessOperator.provideSolicitudServicio(solicitudServicioRequest);
@@ -152,6 +155,8 @@ public class SolicitudBusinessService {
 			}
 			repository.save(solicitud);
 		}
+
+		mapper.map(solicitud.getCuenta(), CuentaSSDto.class, "cuentaSolicitud");
 		return solicitud;
 	}
 
