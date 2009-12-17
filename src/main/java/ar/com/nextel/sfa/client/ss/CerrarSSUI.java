@@ -85,10 +85,10 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 		boolean permisoCierrePin = ClientContext.getInstance().checkPermiso(
 				PermisosEnum.CERRAR_SS_CON_PIN.getValue());
 
-		if (!cdw || permisoCierreScoring) {
+		if (!cdw && permisoCierreScoring && !permisoCierrePin) {
 			layout.setWidget(3, 0, cerarSSUIData.getScoring());
 			layout.setHTML(3, 1, Sfa.constant().scoringTitle());
-		} else if (!cdw || (permisoCierrePin && !cerrandoConItemBB)) {
+		} else if (!cdw && permisoCierrePin && !cerrandoConItemBB) {
 			layout.setHTML(3, 0, Sfa.constant().pinMaestro());
 			layout.setWidget(3, 1, cerarSSUIData.getPin());
 		} else {
