@@ -39,6 +39,7 @@ public class CerrarSSUIData extends UIData implements ClickHandler {
 		fields.add(emailPersonal = new HTML());
 
 		pin.setMaxLength(6);
+		pin.setWidth("55px");
 		laboral.addClickHandler(this);
 		personal.addClickHandler(this);
 		nuevo.addClickHandler(this);
