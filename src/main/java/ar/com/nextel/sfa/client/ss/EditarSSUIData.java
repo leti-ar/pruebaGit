@@ -289,7 +289,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		pataconex.setText(decFormatter.format(pataconexValue));
 		firmarss.setValue(solicitud.getFirmar());
 		observaciones.setText(solicitud.getObservaciones());
-		if(solicitud.getGrupoSolicitud().isCDW()){
+		if (solicitud.getGrupoSolicitud().isCDW()) {
 			email.setText(solicitud.getEmail());
 		}
 		if (anticipo.getItemCount() != 0) {
@@ -341,7 +341,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		solicitudServicio.setAclaracionEntrega(aclaracion.getText());
 		solicitudServicio.setFirmar(firmarss.getValue());
 		solicitudServicio.setObservaciones(observaciones.getText());
-		if(solicitudServicio.getGrupoSolicitud().isCDW()){
+		if (solicitudServicio.getGrupoSolicitud().isCDW()) {
 			solicitudServicio.setEmail(email.getText());
 		}
 		return solicitudServicio;
@@ -379,14 +379,25 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	public List<String> validarParaCerrarGenerar(boolean generacionCierreDefinitivo) {
 		recarcularValores();
 		GwtValidator validator = new GwtValidator();
-		TextBoxBaseValidationTarget nnsValidator = validator.addTarget(nss).required(
+		validator.addTarget(nss).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nº de Solicitud")).maxLength(10,
 				Sfa.constant().ERR_NSS_LONG());
 		GrupoSolicitudDto grupoSS = solicitudServicio.getGrupoSolicitud();
-		if (grupoSS.getRangoMinimoSinPin() != null && grupoSS.getRangoMaximoSinPin() != null) {
-			nnsValidator.greaterOrEqual(Sfa.constant().ERR_NNS_RANGO(), grupoSS.getRangoMinimoSinPin())
-					.smallerOrEqual(Sfa.constant().ERR_NNS_RANGO(), grupoSS.getRangoMaximoSinPin());
+
+		// Validacion rango NSS con y sin PIN
+		Long numeroSS = "".equals(nss.getText()) ? null : Long.valueOf(nss.getText());
+		if (numeroSS != null && grupoSS.getRangoMinimoSinPin() != null
+				&& grupoSS.getRangoMaximoSinPin() != null && grupoSS.getRangoMinimoConPin() != null
+				&& grupoSS.getRangoMaximoConPin() != null) {
+			boolean enRangoSinPin = numeroSS >= grupoSS.getRangoMinimoSinPin()
+					&& numeroSS <= grupoSS.getRangoMaximoSinPin();
+			boolean enRangoConPin = numeroSS >= grupoSS.getRangoMinimoConPin()
+					&& numeroSS <= grupoSS.getRangoMaximoConPin();
+			if (!enRangoSinPin && !enRangoConPin) {
+				validator.addError(Sfa.constant().ERR_NNS_RANGO());
+			}
 		}
+
 		validator.addTarget(facturacion).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Facturación"));
 		if (!solicitudServicio.getGrupoSolicitud().isCDW()) {
@@ -651,7 +662,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	public boolean hasItemBB() {
 		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
 			ModeloDto modelo = linea.getModelo();
-			if(modelo != null && modelo.isEsBlackberry()){
+			if (modelo != null && modelo.isEsBlackberry()) {
 				return true;
 			}
 		}
