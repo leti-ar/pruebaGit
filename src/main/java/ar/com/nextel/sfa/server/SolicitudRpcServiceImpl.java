@@ -496,7 +496,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		Calendar calendar = Calendar.getInstance();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMM");
 		return pathGlobalParameter.getValue() + String.valueOf(File.separatorChar)
-				+ dateFormat.format(calendar.getTime());
+				+ dateFormat.format(calendar.getTime()).toUpperCase();
 	}
 
 }
