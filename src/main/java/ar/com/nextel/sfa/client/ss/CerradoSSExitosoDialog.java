@@ -99,7 +99,7 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 				public void onResponseReceived(Request request, Response response) {
 					WaitWindow.hide();
 					LoadingModalDialog.getInstance().hide();
-					if (response.getStatusCode() == 200) {
+					if (response.getStatusCode() == Response.SC_OK) {
 						WindowUtils.redirect(getUrlReporte(fileName));
 					} else {
 						showFileNotFoundError();
