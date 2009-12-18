@@ -136,7 +136,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
-		// Se pide la cuenta nuevamente para renovar el proxy de hibernate. Fix para cuentas que vienen de Vantive
+		// Se pide la cuenta nuevamente para renovar el proxy de hibernate. Fix para cuentas que vienen de
+		// Vantive
 		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitud.getCuenta().getId());
 		solicitud.setCuenta(cuenta);
 		SolicitudServicioDto solicitudServicioDto = mapper.map(solicitud, SolicitudServicioDto.class);
@@ -494,9 +495,12 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		GlobalParameter pathGlobalParameter = (GlobalParameter) globalParameterRetriever
 				.getObject(GlobalParameterIdentifier.SAMBA_PATH_RTF);
 		Calendar calendar = Calendar.getInstance();
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMM");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy");
 		return pathGlobalParameter.getValue() + String.valueOf(File.separatorChar)
-				+ dateFormat.format(calendar.getTime()).toUpperCase();
+				+ dateFormat.format(calendar.getTime()) + months[calendar.get(Calendar.MONTH)];
 	}
+
+	private static String[] months = { "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT",
+			"NOV", "DEC" };
 
 }
