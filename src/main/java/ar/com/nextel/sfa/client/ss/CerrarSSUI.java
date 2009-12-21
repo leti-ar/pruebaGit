@@ -30,7 +30,7 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 	}
 
 	private void init() {
-		setWidth("450px");
+		setWidth("480px");
 		aceptar = new SimpleLink(Sfa.constant().aceptar());
 		aceptar.addClickListener(this);
 		cancelar = new SimpleLink(Sfa.constant().cancelar());
