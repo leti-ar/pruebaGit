@@ -35,7 +35,8 @@
           return ffCheckBackspace(document.onkeydown);
         }
         //Mantiene backspace para textbox
-        if(window.event.srcElement.type &&  window.event.srcElement.type.match("text")) {
+        if(window.event.srcElement.type &&  (window.event.srcElement.type.match("text") 
+                || window.event.srcElement.type.match("password"))) {
           return true;
         }
         if(window.event && window.event.keyCode == 8) {
