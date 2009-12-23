@@ -584,7 +584,6 @@ A {
 
 .verazRechazar {
 	background-color: #FE003E;
-	border: 2px solid #FE003E;
 	color: #FFFFFF;
 	margin-left: 27px;
 	width: 90px;
@@ -592,7 +591,6 @@ A {
 
 .verazRevisar {
 	background-color: #FFC000;
-	border: 2px solid #FFC000;
 	color: #FFFFFF;
 	margin-left: 27px;
 	width: 90px;
@@ -600,7 +598,6 @@ A {
 
 .verazAceptar {
 	background-color: #CAE8A9;
-	border: 2px solid #CAE8A9;
 	color: #189D21;
 	margin-left: 27px;
 	width: 90px;
