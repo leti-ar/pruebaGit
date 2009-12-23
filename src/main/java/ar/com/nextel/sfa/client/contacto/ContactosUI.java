@@ -106,9 +106,15 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		addFormButtons(cancelar);
 		setFormButtonsVisible(true);
 		setFooterVisible(false);
+		
+		estilos.add("verazAceptar");
+		estilos.add("verazRevisar");
+		estilos.add("verazRechazar");
+		
 	}
 
 	public void cargarPopupEditarContacto(ContactoCuentaDto contacto) {
+		inicializarVeraz(contactosData.getVeraz());
 		contactosData.clean();
 		// Limpia la tabla de domicilios
 		while (domicilioTable.getRowCount() > 1) {
@@ -183,9 +189,6 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 	}
 
 	public void inicializarVeraz(Label verazLabel) {
-		estilos.add("verazAceptar");
-		estilos.add("verazRevisar");
-		estilos.add("verazRechazar");
 		verazLabel.setText("");
 		verazLabel.removeStyleName(estilos.get(estiloUsado));
 	}
@@ -204,13 +207,13 @@ public class ContactosUI extends NextelDialog implements ClickListener {
 		sexo.setEnabled(true);
 
 		if ("ACEPTAR".equals(result.getEstado())) {
-			veraz.addStyleName(estilos.get(0));
+			veraz.setStyleName(estilos.get(0));
 			estiloUsado = 0;
 		} else if ("REVISAR".equals(result.getEstado())) {
-			veraz.addStyleName(estilos.get(1));
+			veraz.setStyleName(estilos.get(1));
 			estiloUsado = 1;
 		} else {
-			veraz.addStyleName(estilos.get(2));
+			veraz.setStyleName(estilos.get(2));
 			estiloUsado = 2;
 		}
 
