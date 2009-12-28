@@ -120,7 +120,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		fields.add(terminoPago = new ListBox());
 		fields.add(sim = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(15)));
 		fields.add(serie = new RegexTextBox(RegularExpressionConstants.getNumerosYLetrasLimitado(10)));
-		fields.add(pin = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(8)));
+		fields.add(pin = new RegexTextBox(RegularExpressionConstants.getNumerosYLetrasLimitado(8)));
 		fields.add(ddn = new CheckBox());
 		fields.add(ddi = new CheckBox());
 		fields.add(roaming = new CheckBox());
@@ -799,7 +799,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		if (tipoEdicion == ACTIVACION) {
 			imei.setText(linea.getNumeroIMEI());
 			modeloEq.setSelectedItem(linea.getModelo());
-			serie.setText(linea.getNumeroSerie());
+			if (linea.getModelo() != null && linea.getModelo().isEsBlackberry()) {
+				pin.setText(linea.getNumeroSerie());
+			} else {
+				serie.setText(linea.getNumeroSerie());
+			}
 			sim.setText(linea.getNumeroSimcard());
 			// pin.setText(linea.get)
 		}
@@ -829,7 +833,12 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		if (tipoEdicion == ACTIVACION) {
 			lineaSolicitudServicio.setModelo((ModeloDto) modeloEq.getSelectedItem());
 			lineaSolicitudServicio.setNumeroIMEI(imei.getText());
-			lineaSolicitudServicio.setNumeroSerie(serie.getText());
+			if (lineaSolicitudServicio.getModelo() != null
+					&& lineaSolicitudServicio.getModelo().isEsBlackberry()) {
+				lineaSolicitudServicio.setNumeroSerie(pin.getText());
+			} else {
+				lineaSolicitudServicio.setNumeroSerie(serie.getText());
+			}
 			lineaSolicitudServicio.setNumeroSimcard(sim.getText());
 			lineaSolicitudServicio.setCantidad(1);
 		} else {
