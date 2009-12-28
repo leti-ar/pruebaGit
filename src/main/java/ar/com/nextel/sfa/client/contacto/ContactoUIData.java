@@ -238,29 +238,41 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 	
 	public ContactoCuentaDto getContactoDto() {
 		ContactoCuentaDto contactoDto = contactoCuentaDto;
-		contactoDto.setCuenta(CuentaEdicionTabPanel.getInstance().getCuenta2editDto());
 		newContactosId--;
-		contactoDto.setId(newContactosId);
-		contactoDto.setPersona(this.getPersonaDto());
+		contactoDto.setCuenta(CuentaEdicionTabPanel.getInstance().getCuenta2editDto());
+		
+		if (contactoDto.getId()==null)
+			contactoDto.setId(newContactosId);
+
+		if (contactoDto.getPersona()!=null) { 
+            updatePersonaDto(contactoDto.getPersona());
+	    } else {	
+	    	contactoDto.setPersona(this.getPersonaDto());
+	    }
+		
 		if(this.getCargo().getSelectedItemId()!=null) {
-		CargoDto cargo = new CargoDto(new Long (this.getCargo().getSelectedItemId()),this.getCargo().getSelectedItemText());
-		contactoDto.getPersona().setCargo(cargo);
+			CargoDto cargo = new CargoDto(new Long (this.getCargo().getSelectedItemId()),this.getCargo().getSelectedItemText());
+			contactoDto.getPersona().setCargo(cargo);
 		}
 		return contactoDto;
 	}
-	
+
 	public PersonaDto getPersonaDto() {
 		PersonaDto persona = new PersonaDto();
+		updatePersonaDto(persona);
+		return persona;
+	}
+	
+	public void updatePersonaDto(PersonaDto persona) {
 		persona.setApellido(apellido.getText());
 		persona.setNombre(nombre.getText());
 		persona.setCargo((CargoDto)cargo.getSelectedItem());
 		persona.setIdTipoDocumento((Long.parseLong(tipoDocumento.getSelectedItem().getItemValue())));
 		persona.setDocumento(getDocumentoDto());
 		persona.setDomicilios(getDomicilios());
-		persona.setEmails(getEmailDto());
+		persona.setEmails(getEmailDto(persona));
 		persona.setSexo((SexoDto)sexo.getSelectedItem());
-		persona.setTelefonos(getTelefonoDto());
-		return persona;
+		persona.setTelefonos(getTelefonoDto(persona));
 	}
 	
 	public List<DomiciliosCuentaDto> getDomicilios(){
@@ -280,75 +292,98 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 		return tipoDocumentoDto;
 	}
 	
-	public List<EmailDto> getEmailDto() {
+	public List<EmailDto> getEmailDto(PersonaDto persona) {
+		List<EmailDto> newEmails = new ArrayList<EmailDto>();
 		List<EmailDto> emails = new ArrayList<EmailDto>();
+		if (persona.getEmails()!= null) {
+			emails = persona.getEmails(); 
+		}
 		Long personalId = getIdEmail(emails, TipoEmailEnum.PERSONAL.getTipo());
 		if(!emailPersonal.getText().trim().equals("") || personalId != null) {
-			EmailDto emailPersonalDto = new EmailDto();
-			emailPersonalDto.setId(personalId);
-			emailPersonalDto.setTipoEmail(getTipoEmailDto(TipoEmailEnum.PERSONAL.getTipo(),TipoEmailEnum.PERSONAL.getDesc()));
-			emailPersonalDto.setEmail(emailPersonal.getText().trim());
-			emails.add(emailPersonalDto);
+			EmailDto emailPersonalDto = new EmailDto(
+					personalId,
+					emailPersonal.getText().trim(),
+					true,
+					getTipoEmailDto(TipoEmailEnum.PERSONAL.getTipo(),TipoEmailEnum.PERSONAL.getDesc())
+			);
+			newEmails.add(emailPersonalDto);
 		}
 		Long laboralId = getIdEmail(emails, TipoEmailEnum.LABORAL.getTipo());
 		if(!emailLaboral.getText().trim().equals("") || laboralId != null) {
-			EmailDto emailLaboralDto = new EmailDto();
-			emailLaboralDto.setId(laboralId);
-			emailLaboralDto.setTipoEmail(getTipoEmailDto(TipoEmailEnum.LABORAL.getTipo(),TipoEmailEnum.LABORAL.getDesc()));
-			emailLaboralDto.setEmail(emailLaboral.getText().trim());
-			emails.add(emailLaboralDto);
+			EmailDto emailLaboralDto = new EmailDto(
+					laboralId,		
+					emailLaboral.getText().trim(),
+					true,
+					getTipoEmailDto(TipoEmailEnum.LABORAL.getTipo(),TipoEmailEnum.LABORAL.getDesc())
+			);
+			newEmails.add(emailLaboralDto);
 		}
-		return emails;
+		return newEmails;
 	}
 	
-	
-	public List<TelefonoDto> getTelefonoDto() {
+	public List<TelefonoDto> getTelefonoDto(PersonaDto persona ) {
 		List<TelefonoDto> telefonos = new ArrayList<TelefonoDto>();
+		List<TelefonoDto> newtelefonos = new ArrayList<TelefonoDto>();
+		if (persona.getTelefonos()!= null) {
+			telefonos = persona.getTelefonos(); 
+		}
 		Long principalId = getIdTelefono(telefonos, TipoTelefonoEnum.PRINCIPAL.getDesc());
 		if (!telefonoPrincipal.getNumero().getText().trim().equals("") || principalId!=null) {
 			String principalText = telefonoPrincipal.getNumero().getText().trim();
-			TelefonoDto telefonoPrincipalDto = new TelefonoDto();
-			telefonoPrincipalDto.setId(principalId);
-			telefonoPrincipalDto.setTipoTelefono(getTipoTelefonoDto(TipoTelefonoEnum.PRINCIPAL.getTipo(),TipoTelefonoEnum.PRINCIPAL.getDesc()));
-			telefonoPrincipalDto.setNumeroLocal(principalText);
-			telefonoPrincipalDto.setArea(!principalText.equals("") ? telefonoPrincipal.getArea().getText() : "");
-			telefonoPrincipalDto.setInterno(!principalText.equals("") ? telefonoPrincipal.getInterno().getText() : "");
-			telefonoPrincipalDto.setPrincipal(true);
-			telefonos.add(telefonoPrincipalDto);
+			TelefonoDto telefonoPrincipalDto = new TelefonoDto(
+					principalId, 
+					!principalText.equals("") ? telefonoPrincipal.getArea().getText() : "", 
+					!principalText.equals("") ? telefonoPrincipal.getInterno().getText() : "", 
+					principalText,
+					persona.getId(), 
+					true, 
+					getTipoTelefonoDto(TipoTelefonoEnum.PRINCIPAL.getTipo(),TipoTelefonoEnum.PRINCIPAL.getDesc()) 
+			);
+			newtelefonos.add(telefonoPrincipalDto);
 		}
 		Long celularId = getIdTelefono(telefonos, TipoTelefonoEnum.CELULAR.getDesc());
 		if (!telefonoCelular.getNumero().getText().trim().equals("") || celularId!=null) {
 			String celularText = telefonoCelular.getNumero().getText().trim();
-			TelefonoDto telefonoCelularDto = new TelefonoDto();
-			telefonoCelularDto.setId(celularId);
-			telefonoCelularDto.setTipoTelefono(getTipoTelefonoDto(TipoTelefonoEnum.CELULAR.getTipo(),TipoTelefonoEnum.CELULAR.getDesc()));
-			telefonoCelularDto.setArea(!celularText.equals("") ? telefonoCelular.getArea().getText() : "");
-			telefonoCelularDto.setNumeroLocal(celularText);
-			telefonos.add(telefonoCelularDto);
+			TelefonoDto telefonoCelularDto = new TelefonoDto(
+					celularId,
+					!celularText.equals("") ? telefonoCelular.getArea().getText() : "",
+					"",
+					celularText,
+					persona.getId(),
+					false,
+					getTipoTelefonoDto(TipoTelefonoEnum.CELULAR.getTipo(),TipoTelefonoEnum.CELULAR.getDesc())
+			);
+			newtelefonos.add(telefonoCelularDto);
 		}
 		Long adicionalId = getIdTelefono(telefonos, TipoTelefonoEnum.ADICIONAL.getDesc());
 		if (!telefonoAdicional.getNumero().getText().trim().equals("") || adicionalId!=null) {
 			String adicionalText = telefonoAdicional.getNumero().getText().trim();
-			TelefonoDto telefonoAdicionalDto = new TelefonoDto();
-			telefonoAdicionalDto.setId(adicionalId);
-			telefonoAdicionalDto.setTipoTelefono(getTipoTelefonoDto(TipoTelefonoEnum.ADICIONAL.getTipo(),TipoTelefonoEnum.ADICIONAL.getDesc()));
-			telefonoAdicionalDto.setNumeroLocal(adicionalText);
-			telefonoAdicionalDto.setArea(!adicionalText.equals("") ? telefonoAdicional.getArea().getText() : "");
-			telefonoAdicionalDto.setInterno(!adicionalText.equals("") ? telefonoAdicional.getInterno().getText() : "");
-			telefonos.add(telefonoAdicionalDto);
+			TelefonoDto telefonoAdicionalDto = new TelefonoDto(
+					adicionalId,
+					!adicionalText.equals("") ? telefonoAdicional.getArea().getText() : "",
+					!adicionalText.equals("") ? telefonoAdicional.getInterno().getText() : "",
+					adicionalText,
+					persona.getId(),
+					false,
+					getTipoTelefonoDto(TipoTelefonoEnum.ADICIONAL.getTipo(),TipoTelefonoEnum.ADICIONAL.getDesc())
+			);
+			newtelefonos.add(telefonoAdicionalDto);
 		}
 		Long faxId = getIdTelefono(telefonos, TipoTelefonoEnum.FAX.getDesc());
 		if (!fax.getNumero().getText().trim().equals("") || faxId!=null) {
 			String faxText = fax.getNumero().getText().trim();
-			TelefonoDto telefonoFaxDto = new TelefonoDto();
-			telefonoFaxDto.setId(faxId);
-			telefonoFaxDto.setTipoTelefono(getTipoTelefonoDto(TipoTelefonoEnum.FAX.getTipo(),TipoTelefonoEnum.FAX.getDesc()));
-			telefonoFaxDto.setNumeroLocal(faxText);
-			telefonoFaxDto.setArea(!faxText.equals("") ? fax.getArea().getText() : "");
-			telefonoFaxDto.setInterno(!faxText.equals("") ? fax.getInterno().getText() : "");	
-			telefonos.add(telefonoFaxDto);
+			TelefonoDto telefonoFaxDto = new TelefonoDto(
+					faxId,		
+					!faxText.equals("") ? fax.getArea().getText() : "",
+			        !faxText.equals("") ? fax.getInterno().getText() : "",
+			        faxText,
+			        persona.getId(),
+			        false,
+			        getTipoTelefonoDto(TipoTelefonoEnum.FAX.getTipo(),TipoTelefonoEnum.FAX.getDesc())
+			);
+			newtelefonos.add(telefonoFaxDto);
 		}
-		return telefonos;
+		return newtelefonos;
 	}
 	
 	private Long getIdTelefono(List<TelefonoDto> telefonos , String tipo) {
