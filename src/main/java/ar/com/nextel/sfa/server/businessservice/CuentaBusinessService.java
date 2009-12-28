@@ -1,7 +1,6 @@
 package ar.com.nextel.sfa.server.businessservice;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,7 +54,6 @@ import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.EmailDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
-import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.server.util.MapperExtended;
@@ -205,17 +203,13 @@ public class CuentaBusinessService {
 		//*************************************************************************************************
 
 		//FIXME: revisar mapeo de Persona/Telefono/Mail en dozer para no tener que hacer esto ***********************
-	//	removerTelefonosDePersona(cuenta.getPersona(), cuentaDto.getPersona());
 		for (TelefonoDto tel : cuentaDto.getPersona().getTelefonos()) {
-			//addTelefonosAPersona(tel,cuenta.getPersona(),mapper);
 			updateTelefonosAPersona(tel,cuenta.getPersona(),mapper);
 		}
 
 		for (EmailDto email : cuentaDto.getPersona().getEmails()) {
-			//addEmailsAPersona(email,cuenta.getPersona());
 			updateEmailsAPersona(email, cuenta.getPersona(), mapper);
 		}
-		//removerEmailsDePersona(cuenta.getPersona(),cuentaDto.getPersona());
 
 		if (cuenta.esGranCuenta()) {
 			updateTelefonoEmailContactos(cuenta.getContactos(), cuentaDto, mapper);
@@ -368,81 +362,15 @@ public class CuentaBusinessService {
 			for (ContactoCuentaDto contDto : listaContactosDto) {
 				if (cont.getId()==contDto.getId())  {
 					for (TelefonoDto tel : contDto.getPersona().getTelefonos()) {
-						//addTelefonosAPersona(tel,persona,mapper);
 						updateTelefonosAPersona(tel,persona,mapper);
 					}
-//					removerTelefonosDePersona(persona,contDto.getPersona());
 					for (EmailDto email : contDto.getPersona().getEmails()) {
-						//addEmailsAPersona(email,persona);
 						updateEmailsAPersona(email,persona,mapper);
 					}
-//					removerEmailsDePersona(persona, contDto.getPersona());
 				}
 			}
 		}
 	}
-	
-//	private void removerTelefonosDePersona(Persona persona, PersonaDto personaDto) {
-//		if(persona.getTelefonos()!=null) {
-//			List<Telefono>    telefonos    = new ArrayList<Telefono>(persona.getTelefonos());
-//			List<TelefonoDto> telefonosDto = new ArrayList<TelefonoDto>(personaDto.getTelefonos());
-//			List<Long> baseIds = new ArrayList<Long>();
-//			for (Telefono tel : telefonos) {
-//				if (tel.getId()!=null)
-//					baseIds.add(tel.getId());
-//			}
-//			List<Long> dtoIds = new ArrayList<Long>();
-//			for (TelefonoDto tel : telefonosDto) {
-//				if (tel.getId()!=null)
-//					dtoIds.add(tel.getId());
-//			}
-//			List <Long>tel2del = new ArrayList<Long>();
-//			for (Long id : baseIds) {
-//				int index = Collections.binarySearch(dtoIds, id);
-//				if (index<0) {
-//					tel2del.add(id);
-//				}
-//			}
-//			for (Long id : tel2del) {
-//				Telefono tel = repository.retrieve(Telefono.class, id);
-//				if(!tel.getDeleted()) {
-//					persona.removeTelefono(tel);
-//					repository.delete(tel);
-//				}
-//			}
-//		}
-//	}
-	
-//	private void removerEmailsDePersona(Persona persona, PersonaDto personaDto) {
-//		if(persona.getEmails()!=null) {
-//			List<Email>    emails   = new ArrayList<Email>(persona.getEmails());
-//			List<EmailDto> emailsDto = new ArrayList<EmailDto>(personaDto.getEmails());
-//			List<Long> baseIds = new ArrayList<Long>();
-//			for (Email email : emails) {
-//				if (email.getId()!=null)
-//				    baseIds.add(email.getId());
-//			} 
-//			List<Long> dtoIds = new ArrayList<Long>();
-//			for (EmailDto email : emailsDto) {
-//				if (email.getId()!=null)
-//				    dtoIds.add(email.getId());
-//			}
-//			List <Long>email2del = new ArrayList<Long>();
-//			for (Long id : baseIds) {
-//				int index = Collections.binarySearch(dtoIds, id);
-//				if (index<0) {
-//					email2del.add(id);
-//				}
-//			}
-//			for (Long id : email2del) {
-//				Email email = repository.retrieve(Email.class, id);
-//				if (!email.getDeleted()) {
-//					persona.removeEmail(email);
-//					repository.delete(email);
-//				}
-//			}
-//		}
-//	}
 	
 	private void updateTelefonosAPersona(TelefonoDto tel, Persona persona, MapperExtended mapper) {
 		Telefono t = null;
