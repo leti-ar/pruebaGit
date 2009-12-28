@@ -10,6 +10,7 @@ public class TelefonoDto implements IsSerializable , IdentifiableDto, Cloneable 
 	private String area;
 	private String interno;
 	private Boolean principal = Boolean.FALSE;
+	private Boolean deleted;
 	//private PersonaDto persona;
     private Long idPersona;
     
@@ -17,9 +18,10 @@ public class TelefonoDto implements IsSerializable , IdentifiableDto, Cloneable 
     
 	public TelefonoDto() {}
 	
-	public TelefonoDto(String area, String interno, String numeroLocal,
+	public TelefonoDto(Long id, String area, String interno, String numeroLocal,
 			Long idPersona, Boolean principal, TipoTelefonoDto tipoTelefono) {
 		super();
+		this.id = id;
 		this.area = area;
 		this.interno = interno;
 		this.numeroLocal = numeroLocal;
@@ -85,5 +87,10 @@ public class TelefonoDto implements IsSerializable , IdentifiableDto, Cloneable 
 	public void setEnCarga(boolean enCarga) {
 		this.enCarga = enCarga;
 	}
-	
+	public Boolean getDeleted() {
+		return deleted;
+	}
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
 }

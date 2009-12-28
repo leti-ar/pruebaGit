@@ -4,19 +4,27 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class EmailDto implements IsSerializable {
 
+	private Long id;
 	private TipoEmailDto tipoEmail;
     private String email;
     private boolean enCarga = true;
 	
     public EmailDto() {}
     
-    public EmailDto(String email, boolean enCarga, TipoEmailDto tipoEmail) {
+    public EmailDto(Long id,String email, boolean enCarga, TipoEmailDto tipoEmail) {
 		super();
+		this.id = id;
 		this.email = email;
 		this.enCarga = enCarga;
 		this.tipoEmail = tipoEmail;
 	}
     
+    public Long getId() {
+		return id;
+	}
+    public void setId(Long id) {
+		this.id = id;
+	}
 	public TipoEmailDto getTipoEmail() {
 		return tipoEmail;
 	}

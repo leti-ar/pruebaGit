@@ -282,16 +282,20 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 	
 	public List<EmailDto> getEmailDto() {
 		List<EmailDto> emails = new ArrayList<EmailDto>();
-		if(!emailPersonal.getText().trim().equals("")) {
+		Long personalId = getIdEmail(emails, TipoEmailEnum.PERSONAL.getTipo());
+		if(!emailPersonal.getText().trim().equals("") || personalId != null) {
 			EmailDto emailPersonalDto = new EmailDto();
+			emailPersonalDto.setId(personalId);
 			emailPersonalDto.setTipoEmail(getTipoEmailDto(TipoEmailEnum.PERSONAL.getTipo(),TipoEmailEnum.PERSONAL.getDesc()));
-			emailPersonalDto.setEmail(emailPersonal.getText());
+			emailPersonalDto.setEmail(emailPersonal.getText().trim());
 			emails.add(emailPersonalDto);
 		}
-		if(!emailLaboral.getText().trim().equals("")) {
+		Long laboralId = getIdEmail(emails, TipoEmailEnum.LABORAL.getTipo());
+		if(!emailLaboral.getText().trim().equals("") || laboralId != null) {
 			EmailDto emailLaboralDto = new EmailDto();
+			emailLaboralDto.setId(laboralId);
 			emailLaboralDto.setTipoEmail(getTipoEmailDto(TipoEmailEnum.LABORAL.getTipo(),TipoEmailEnum.LABORAL.getDesc()));
-			emailLaboralDto.setEmail(emailLaboral.getText());
+			emailLaboralDto.setEmail(emailLaboral.getText().trim());
 			emails.add(emailLaboralDto);
 		}
 		return emails;
@@ -300,43 +304,73 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 	
 	public List<TelefonoDto> getTelefonoDto() {
 		List<TelefonoDto> telefonos = new ArrayList<TelefonoDto>();
-		
-		if (!telefonoPrincipal.getNumero().getText().trim().equals("")) {
+		Long principalId = getIdTelefono(telefonos, TipoTelefonoEnum.PRINCIPAL.getDesc());
+		if (!telefonoPrincipal.getNumero().getText().trim().equals("") || principalId!=null) {
+			String principalText = telefonoPrincipal.getNumero().getText().trim();
 			TelefonoDto telefonoPrincipalDto = new TelefonoDto();
+			telefonoPrincipalDto.setId(principalId);
 			telefonoPrincipalDto.setTipoTelefono(getTipoTelefonoDto(TipoTelefonoEnum.PRINCIPAL.getTipo(),TipoTelefonoEnum.PRINCIPAL.getDesc()));
-			telefonoPrincipalDto.setNumeroLocal(telefonoPrincipal.getNumero().getText());
-			telefonoPrincipalDto.setArea(telefonoPrincipal.getArea().getText());
-			telefonoPrincipalDto.setInterno(telefonoPrincipal.getInterno().getText());
+			telefonoPrincipalDto.setNumeroLocal(principalText);
+			telefonoPrincipalDto.setArea(!principalText.equals("") ? telefonoPrincipal.getArea().getText() : "");
+			telefonoPrincipalDto.setInterno(!principalText.equals("") ? telefonoPrincipal.getInterno().getText() : "");
 			telefonoPrincipalDto.setPrincipal(true);
 			telefonos.add(telefonoPrincipalDto);
 		}
-		if (!telefonoCelular.getNumero().getText().trim().equals("")) {
+		Long celularId = getIdTelefono(telefonos, TipoTelefonoEnum.CELULAR.getDesc());
+		if (!telefonoCelular.getNumero().getText().trim().equals("") || celularId!=null) {
+			String celularText = telefonoCelular.getNumero().getText().trim();
 			TelefonoDto telefonoCelularDto = new TelefonoDto();
+			telefonoCelularDto.setId(celularId);
 			telefonoCelularDto.setTipoTelefono(getTipoTelefonoDto(TipoTelefonoEnum.CELULAR.getTipo(),TipoTelefonoEnum.CELULAR.getDesc()));
-			telefonoCelularDto.setArea(telefonoCelular.getArea().getText());
-			telefonoCelularDto.setNumeroLocal(telefonoCelular.getNumero().getText());
+			telefonoCelularDto.setArea(!celularText.equals("") ? telefonoCelular.getArea().getText() : "");
+			telefonoCelularDto.setNumeroLocal(celularText);
 			telefonos.add(telefonoCelularDto);
 		}
-		if (!telefonoAdicional.getNumero().getText().trim().equals("")) {
+		Long adicionalId = getIdTelefono(telefonos, TipoTelefonoEnum.ADICIONAL.getDesc());
+		if (!telefonoAdicional.getNumero().getText().trim().equals("") || adicionalId!=null) {
+			String adicionalText = telefonoAdicional.getNumero().getText().trim();
 			TelefonoDto telefonoAdicionalDto = new TelefonoDto();
+			telefonoAdicionalDto.setId(adicionalId);
 			telefonoAdicionalDto.setTipoTelefono(getTipoTelefonoDto(TipoTelefonoEnum.ADICIONAL.getTipo(),TipoTelefonoEnum.ADICIONAL.getDesc()));
-			telefonoAdicionalDto.setNumeroLocal(telefonoAdicional.getNumero().getText());
-			telefonoAdicionalDto.setArea(telefonoAdicional.getArea().getText());
-			telefonoAdicionalDto.setInterno(telefonoAdicional.getInterno().getText());
+			telefonoAdicionalDto.setNumeroLocal(adicionalText);
+			telefonoAdicionalDto.setArea(!adicionalText.equals("") ? telefonoAdicional.getArea().getText() : "");
+			telefonoAdicionalDto.setInterno(!adicionalText.equals("") ? telefonoAdicional.getInterno().getText() : "");
 			telefonos.add(telefonoAdicionalDto);
 		}
-		if (!fax.getNumero().getText().trim().equals("")) {
+		Long faxId = getIdTelefono(telefonos, TipoTelefonoEnum.FAX.getDesc());
+		if (!fax.getNumero().getText().trim().equals("") || faxId!=null) {
+			String faxText = fax.getNumero().getText().trim();
 			TelefonoDto telefonoFaxDto = new TelefonoDto();
+			telefonoFaxDto.setId(faxId);
 			telefonoFaxDto.setTipoTelefono(getTipoTelefonoDto(TipoTelefonoEnum.FAX.getTipo(),TipoTelefonoEnum.FAX.getDesc()));
-			telefonoFaxDto.setNumeroLocal(fax.getNumero().getText());
-			telefonoFaxDto.setArea(fax.getArea().getText());
-			telefonoFaxDto.setInterno(fax.getInterno().getText());	
+			telefonoFaxDto.setNumeroLocal(faxText);
+			telefonoFaxDto.setArea(!faxText.equals("") ? fax.getArea().getText() : "");
+			telefonoFaxDto.setInterno(!faxText.equals("") ? fax.getInterno().getText() : "");	
 			telefonos.add(telefonoFaxDto);
 		}
 		return telefonos;
 	}
 	
-
+	private Long getIdTelefono(List<TelefonoDto> telefonos , String tipo) {
+		Long id = null;
+	    for (TelefonoDto tel : telefonos) {
+	    	if (tel.getTipoTelefono().getDescripcion().equals(tipo)) {
+	    		return tel.getId();
+	    	}
+	    }
+		return id;
+	}
+	
+	private Long getIdEmail(List<EmailDto> emails , Long tipo) {
+		Long id = null;
+	    for (EmailDto email : emails) {
+	    	if (email.getTipoEmail().getId().equals(tipo)) {
+	    		return email.getId();
+	    	}
+	    }
+		return id;
+	}
+	
 	public TipoTelefonoDto getTipoTelefonoDto(long tipoEnum, String tipo ) {
 		TipoTelefonoDto tipoTelefonoDto = new TipoTelefonoDto();
 		tipoTelefonoDto.setId(tipoEnum);

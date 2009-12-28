@@ -1205,44 +1205,56 @@ public class CuentaDatosForm extends Composite {
 
 		//Panel Telefono/Fax
 		List <TelefonoDto>phonos = new ArrayList<TelefonoDto>();
-        if (!camposTabDatos.getTelPrincipalTextBox().getNumero().getText().equals("")) {
+        Long principalId = getIdTelefono(CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getPersona().getTelefonos(),TipoTelefonoEnum.PRINCIPAL.getDesc()); 
+		if (!camposTabDatos.getTelPrincipalTextBox().getNumero().getText().equals("") || principalId != null) {
+			String principalText = camposTabDatos.getTelPrincipalTextBox().getNumero().getText().trim();
         	phonos.add(new TelefonoDto(
-        			camposTabDatos.getTelPrincipalTextBox().getArea().getText().trim(),
-        			camposTabDatos.getTelPrincipalTextBox().getInterno().getText().trim(),
-        			camposTabDatos.getTelPrincipalTextBox().getNumero().getText().trim(),
+        			principalId,
+        			!principalText.equals("") ? camposTabDatos.getTelPrincipalTextBox().getArea().getText().trim() : "",
+     				!principalText.equals("") ? camposTabDatos.getTelPrincipalTextBox().getInterno().getText().trim() : "",
+    				principalText,
         			personaDto.getId(),
         			Boolean.TRUE,
         			new TipoTelefonoDto(TipoTelefonoEnum.PRINCIPAL.getTipo(),TipoTelefonoEnum.PRINCIPAL.getDesc())
         	    )
         	);
          }
-        if (!camposTabDatos.getTelAdicionalTextBox().getNumero().getText().equals("")) {
+		Long adicionalId =getIdTelefono(CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getPersona().getTelefonos(),TipoTelefonoEnum.ADICIONAL.getDesc()); 
+        if (!camposTabDatos.getTelAdicionalTextBox().getNumero().getText().equals("") || adicionalId != null) {
+        	String adicionalText = camposTabDatos.getTelAdicionalTextBox().getNumero().getText().trim(); 
         	phonos.add(new TelefonoDto(
-        			camposTabDatos.getTelAdicionalTextBox().getArea().getText().trim(),
-        			camposTabDatos.getTelAdicionalTextBox().getInterno().getText().trim(),
-        			camposTabDatos.getTelAdicionalTextBox().getNumero().getText().trim(),
+        			adicionalId,
+        			!adicionalText.equals("") ? camposTabDatos.getTelAdicionalTextBox().getArea().getText().trim() : "",
+ 					!adicionalText.equals("") ? camposTabDatos.getTelAdicionalTextBox().getInterno().getText().trim() : "",
+ 					adicionalText,
         			personaDto.getId(),
         			Boolean.FALSE,
         			new TipoTelefonoDto(TipoTelefonoEnum.ADICIONAL.getTipo(),TipoTelefonoEnum.ADICIONAL.getDesc())
         		)
         	);
          }
-        if (!camposTabDatos.getTelCelularTextBox().getNumero().getText().equals("")) {
+        Long celularId =getIdTelefono(CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getPersona().getTelefonos(),TipoTelefonoEnum.CELULAR.getDesc());
+        if (!camposTabDatos.getTelCelularTextBox().getNumero().getText().equals("") || celularId != null) {
+        	String celularText = camposTabDatos.getTelCelularTextBox().getNumero().getText().trim();
         	phonos.add(new TelefonoDto(
-        			camposTabDatos.getTelCelularTextBox().getArea().getText().trim(),
+        			celularId,
+        			!celularText.equals("") ? camposTabDatos.getTelCelularTextBox().getArea().getText().trim() : "",
                     "",
-        			camposTabDatos.getTelCelularTextBox().getNumero().getText().trim(),
+                    celularText,
         			personaDto.getId(),
         			Boolean.FALSE,
         			new TipoTelefonoDto(TipoTelefonoEnum.CELULAR.getTipo(),TipoTelefonoEnum.CELULAR.toString())
         		)
         	);
          }
-        if (!camposTabDatos.getTelFaxTextBox().getNumero().getText().equals("")) {
+        Long faxId =getIdTelefono(CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getPersona().getTelefonos(),TipoTelefonoEnum.FAX.getDesc()); 
+        if (!camposTabDatos.getTelFaxTextBox().getNumero().getText().equals("") || faxId != null) {
+        	String  faxText = camposTabDatos.getTelFaxTextBox().getNumero().getText().trim(); 
         	phonos.add(new TelefonoDto(
-        			camposTabDatos.getTelFaxTextBox().getArea().getText().trim(),
-        			camposTabDatos.getTelFaxTextBox().getInterno().getText().trim(),
-        			camposTabDatos.getTelFaxTextBox().getNumero().getText().trim(),
+        			faxId,
+        			!faxText.equals("") ? camposTabDatos.getTelFaxTextBox().getArea().getText().trim() : "",
+        			!faxText.equals("") ? camposTabDatos.getTelFaxTextBox().getInterno().getText().trim() : "",
+   					faxText,
         			personaDto.getId(),
         			Boolean.FALSE,
         			new TipoTelefonoDto(TipoTelefonoEnum.FAX.getTipo(),TipoTelefonoEnum.FAX.toString())
@@ -1254,13 +1266,25 @@ public class CuentaDatosForm extends Composite {
         
         //Panel Emails
 		List <EmailDto>mails = new ArrayList<EmailDto>();
-        if (!camposTabDatos.getEmailPersonal().getText().equals("")) {
-       	   TipoEmailDto tipoEmail = new TipoEmailDto(TipoEmailEnum.PERSONAL.getTipo(),TipoEmailEnum.PERSONAL.getDesc());
-        	mails.add(new EmailDto(camposTabDatos.getEmailPersonal().getText().trim(),false,tipoEmail ));	
+		Long personalId = getIdEmail(CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getPersona().getEmails(), TipoEmailEnum.PERSONAL.getTipo()); 
+        if (!camposTabDatos.getEmailPersonal().getText().equals("") || personalId != null) {
+        	TipoEmailDto tipoEmail = new TipoEmailDto(TipoEmailEnum.PERSONAL.getTipo(),TipoEmailEnum.PERSONAL.getDesc());
+        	mails.add(new EmailDto(
+        			personalId,
+        			camposTabDatos.getEmailPersonal().getText().trim(),
+        			false,
+        			tipoEmail )
+        	);	
         }
-        if (!camposTabDatos.getEmailLaboral().getText().equals("")) {
-        	   TipoEmailDto tipoEmail = new TipoEmailDto(TipoEmailEnum.LABORAL.getTipo(),TipoEmailEnum.LABORAL.getDesc());
-         	mails.add(new EmailDto(camposTabDatos.getEmailLaboral().getText().trim(),false,tipoEmail ));	
+        Long laboralId = getIdEmail(CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getPersona().getEmails(), TipoEmailEnum.LABORAL.getTipo()); 
+        if (!camposTabDatos.getEmailLaboral().getText().equals("") || laboralId != null) {
+         	mails.add(new EmailDto(
+        			laboralId,
+         			camposTabDatos.getEmailLaboral().getText().trim(),
+         			false,
+         			new TipoEmailDto(TipoEmailEnum.LABORAL.getTipo(),TipoEmailEnum.LABORAL.getDesc())
+        			)
+         	);	
         }
         personaDto.setEmails(mails);        
         
@@ -1295,6 +1319,26 @@ public class CuentaDatosForm extends Composite {
 		return CuentaEdicionTabPanel.getInstance().getCuenta2editDto();
 	}
 
+	private Long getIdTelefono(List<TelefonoDto> telefonos , String tipo) {
+		Long id = null;
+	    for (TelefonoDto tel : telefonos) {
+	    	if (tel.getTipoTelefono().getDescripcion().equals(tipo)) {
+	    		return tel.getId();
+	    	}
+	    }
+		return id;
+	}
+	
+	private Long getIdEmail(List<EmailDto> emails , Long tipo) {
+		Long id = null;
+	    for (EmailDto email : emails) {
+	    	if (email.getTipoEmail().getId().equals(tipo)) {
+	    		return email.getId();
+	    	}
+	    }
+		return id;
+	}
+	
 	public CuentaUIData getCamposTabDatos() {
 		return camposTabDatos;
 	}

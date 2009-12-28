@@ -3,7 +3,6 @@ package ar.com.nextel.sfa.server;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -55,6 +54,7 @@ import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.personas.beans.GrupoDocumento;
 import ar.com.nextel.model.personas.beans.Provincia;
 import ar.com.nextel.model.personas.beans.Sexo;
+import ar.com.nextel.model.personas.beans.Telefono;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
@@ -91,6 +91,7 @@ import ar.com.nextel.sfa.client.dto.RubroDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
+import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.dto.TipoCanalVentasDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.dto.TipoCuentaBancariaDto;
@@ -411,6 +412,16 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return cuentaDto;
 	}
 
+//	private CuentaDto sacarTelefonosBorrados(CuentaDto cuenta) {
+//		List <TelefonoDto>telefonos = (List<TelefonoDto>) cuenta.getPersona().getTelefonos();
+//		for (TelefonoDto tel : telefonos) {
+//			if (tel.getDeleted()) {
+//				cuenta.getPersona().getTelefonos().remove(tel);
+//			}
+//		}
+//		return cuenta;
+//	}
+	
 	/**
 	 * 
 	 * @param solicitudCuenta
