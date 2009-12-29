@@ -83,11 +83,6 @@ public class CerrarSSUIData extends UIData implements ClickHandler {
 				laboral.setEnabled(true);
 			}
 		}
-//		if (laboral.isEnabled()) {
-//			laboral.setValue(true);
-//		} else if (personal.isEnabled()) {
-//			personal.setValue(true);
-//		}
 		emailNuevo.setEnabled(nuevo.getValue());
 		emailNuevo.setReadOnly(!nuevo.getValue());
 	}
