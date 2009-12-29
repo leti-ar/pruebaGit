@@ -16,7 +16,7 @@ public class RegularExpressionConstants {
 
 	public static final String caracter = "[^0-9]";
 
-	public static final String letras = "[A-Za-z]+";
+	public static final String letras = "[A-Za-z\\s]+";
 	
 	/** Numeros enteros infinito */
 	public static final String numeros = "[0-9]*";
