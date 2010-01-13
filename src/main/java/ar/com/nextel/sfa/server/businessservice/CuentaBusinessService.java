@@ -26,6 +26,7 @@ import ar.com.nextel.components.accessMode.controller.AccessAuthorizationControl
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.AbstractDatosPago;
+import ar.com.nextel.model.cuentas.beans.CicloFacturacion;
 import ar.com.nextel.model.cuentas.beans.ClaseCuenta;
 import ar.com.nextel.model.cuentas.beans.ContactoCuenta;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
@@ -288,7 +289,11 @@ public class CuentaBusinessService {
 			
 		    CuentaDto cuentaDto = null;
 		    String categoriaCuenta = cuenta.getCategoriaCuenta().getDescripcion();
-			if (categoriaCuenta.equals(KnownInstanceIdentifier.GRAN_CUENTA.getKey())) {
+		    
+		    // Falla el hidratate del KnownInstance
+		    repository.retrieve(CicloFacturacion.class, cuenta.getCicloFacturacion().getId());
+			
+		    if (categoriaCuenta.equals(KnownInstanceIdentifier.GRAN_CUENTA.getKey())) {
 				cuentaDto = (GranCuentaDto) mapper.map((GranCuenta) cuenta, GranCuentaDto.class);
 			} else if (categoriaCuenta.equals(KnownInstanceIdentifier.DIVISION.getKey())) {
 				cuentaDto = (DivisionDto)   mapper.map((Division) cuenta, DivisionDto.class);
