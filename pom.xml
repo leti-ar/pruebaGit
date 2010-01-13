@@ -52,31 +52,59 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-incubator</artifactId>
-      <version>july-14-2009</version>
-    </dependency>
-    <dependency>
       <groupId>ar.com.snoop.gwt</groupId>
       <artifactId>GwtCommons</artifactId>
       <version>1.1-SNAPSHOT</version>
     </dependency>
     <!--  Spring deps  -->
     <dependency>
+		<groupId>winit</groupId>
+		<artifactId>usercenter</artifactId>
+		<version>3.8.1-fixed</version>
+		<scope>provided</scope>
+	</dependency>
+	<dependency>
+		<groupId>winit</groupId>
+		<artifactId>wel</artifactId>
+		<version>3.1.14</version>
+		<scope>provided</scope>
+	</dependency>
+    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring</artifactId>
       <version>${spring.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
       <version>${spring.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>net.sf.dozer</groupId>
       <artifactId>dozer</artifactId>
       <version>5.1</version>
+      <scope>provided</scope>
     </dependency>
+	<dependency>
+		<groupId>commons-validator</groupId>
+		<artifactId>commons-validator</artifactId>
+		<version>1.3.1</version>
+		<scope>provided</scope>
+	</dependency>    
+   	<dependency>
+		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate</artifactId>
+		<version>3.2.6.ga</version>
+		<scope>provided</scope>
+		<exclusions>
+			<exclusion>
+				<groupId>net.sf.ehcache</groupId>
+				<artifactId>ehcache</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
     <!--  test -->
     <dependency>
       <groupId>junit</groupId>
