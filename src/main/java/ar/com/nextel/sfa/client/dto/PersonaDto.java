@@ -17,7 +17,7 @@ public class PersonaDto implements IsSerializable {
     private SexoDto sexo;
     private DocumentoDto documento;
     private String razonSocial;
-    private Date fechaNacimiento;
+    private String fechaNacimiento;
     private CargoDto cargo;
     
     //TODO: Arreglar esto, no me esta mapeando este domicilios con el de Persona!!!
@@ -81,10 +81,10 @@ public class PersonaDto implements IsSerializable {
 	public void setRazonSocial(String razonSocial) {
 		this.razonSocial = razonSocial;
 	}
-	public Date getFechaNacimiento() {
+	public String getFechaNacimiento() {
 		return fechaNacimiento;
 	}
-	public void setFechaNacimiento(Date fechaNacimiento) {
+	public void setFechaNacimiento(String fechaNacimiento) {
 		this.fechaNacimiento = fechaNacimiento;
 	}
 	public Long getId() {
