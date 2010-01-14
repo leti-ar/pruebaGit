@@ -255,6 +255,7 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements Infoc
 					CuentaCorrienteResponsablePagoDTO result = (CuentaCorrienteResponsablePagoDTO) iterator
 							.next();
 					TransaccionCCDto transaccion = new TransaccionCCDto();
+					transaccion.setNumeroCuenta(result.getNumeroCuenta());
 					transaccion.setClase(result.getClase());
 					transaccion.setFechaVenc(result.getVencimiento());
 					transaccion.setDescripcion(result.getDescripcion());
