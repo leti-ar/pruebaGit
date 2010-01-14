@@ -100,6 +100,8 @@ public class CuentaDatosForm extends Composite {
 	
 	private static int SCORE_DNI_INEXISTENTE = 3;
 	
+	private static final DateTimeFormat DATE_TIME_FORMAT = DateTimeFormat.getMediumDateFormat();
+	
 	private List<String> estilos = new ArrayList<String>();
 	private int estiloUsado = 0;
 	
@@ -538,7 +540,8 @@ public class CuentaDatosForm extends Composite {
 		camposTabDatos.getApellido().setText(cuentaDto.getPersona().getApellido());
 		camposTabDatos.getSexo().setSelectedItem(cuentaDto.getPersona().getSexo());
 		camposTabDatos.getRubro().setSelectedItem(cuentaDto.getRubro());
-		camposTabDatos.getFechaNacimiento().setSelectedDate(cuentaDto.getPersona().getFechaNacimiento());
+		if (cuentaDto.getPersona().getFechaNacimiento() != null)
+		camposTabDatos.getFechaNacimiento().setSelectedDate(DATE_TIME_FORMAT.parse(cuentaDto.getPersona().getFechaNacimiento()));
 		camposTabDatos.getContribuyente().setSelectedItem(cuentaDto.getTipoContribuyente());
 		camposTabDatos.getCargo().setSelectedItem(cuentaDto.getPersona().getCargo());
 		camposTabDatos.getIibb().setText(cuentaDto.getIibb());
@@ -881,7 +884,7 @@ public class CuentaDatosForm extends Composite {
 		   ||(FormUtils.fieldDirty(camposTabDatos.getNombre(), cuentaTab.getCuenta2editDto().getPersona().getNombre()))				
 		   ||(FormUtils.fieldDirty(camposTabDatos.getApellido(), cuentaTab.getCuenta2editDto().getPersona().getApellido()))
 		   ||(FormUtils.fieldDirty(camposTabDatos.getSexo(), cuentaTab.getCuenta2editDto().getPersona().getSexo().getItemValue()))
-		   ||(FormUtils.fieldDirty(camposTabDatos.getFechaNacimiento(), cuentaTab.getCuenta2editDto().getPersona().getFechaNacimiento()!=null?DateTimeFormat.getMediumDateFormat().format(cuentaTab.getCuenta2editDto().getPersona().getFechaNacimiento()):""))
+		   ||(FormUtils.fieldDirty(camposTabDatos.getFechaNacimiento(), cuentaTab.getCuenta2editDto().getPersona().getFechaNacimiento()!=null?DateTimeFormat.getMediumDateFormat().format(DATE_TIME_FORMAT.parse(cuentaTab.getCuenta2editDto().getPersona().getFechaNacimiento())):""))
    		   ||(FormUtils.fieldDirty(camposTabDatos.getContribuyente(), cuentaTab.getCuenta2editDto().getTipoContribuyente()!=null?cuentaTab.getCuenta2editDto().getTipoContribuyente().getItemValue():null))
 		   ||(FormUtils.fieldDirty(camposTabDatos.getProveedorAnterior(), cuentaTab.getCuenta2editDto().getProveedorInicial().getItemValue())) 
 		   ||(FormUtils.fieldDirty(camposTabDatos.getRubro(), cuentaTab.getCuenta2editDto().getRubro()!=null?cuentaTab.getCuenta2editDto().getRubro().getItemValue():null))
@@ -1195,7 +1198,7 @@ public class CuentaDatosForm extends Composite {
 		personaDto.setApellido(camposTabDatos.getApellido().getText());
 		personaDto.setSexo(new SexoDto(Long.parseLong(camposTabDatos.getSexo().getSelectedItemId()),camposTabDatos.getSexo().getSelectedItemText()));
 		if (!camposTabDatos.getFechaNacimiento().getTextBox().getText().equals(""))
-			personaDto.setFechaNacimiento(camposTabDatos.getFechaNacimiento().getSelectedDate());
+			personaDto.setFechaNacimiento(DATE_TIME_FORMAT.format(camposTabDatos.getFechaNacimiento().getSelectedDate()));
 		CuentaEdicionTabPanel.getInstance().getCuenta2editDto().setTipoContribuyente(new TipoContribuyenteDto(Long.parseLong(camposTabDatos.getContribuyente().getSelectedItemId()),camposTabDatos.getContribuyente().getSelectedItemText()));
 		if(camposTabDatos.getSexo().getSelectedItemId().equals(SexoEnum.ORGANIZACION.getId())) {
 			CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getPersona().setCargo(new CargoDto(Long.parseLong(camposTabDatos.getCargo().getSelectedItemId()),camposTabDatos.getCargo().getSelectedItemText()));
