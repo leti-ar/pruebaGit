@@ -24,6 +24,8 @@ public class TransaccionCCDto implements IsSerializable {
 	public static final String COD_DEP_GARAN = "DP";
 
 	private String[] row;
+	
+	private String numeroCuenta; 
 
 	public TransaccionCCDto() {
 		row = new String[9];
@@ -159,4 +161,12 @@ public class TransaccionCCDto implements IsSerializable {
 		return row;
 	}
 
+	public String getNumeroCuenta() {
+		return numeroCuenta;
+	}
+
+	public void setNumeroCuenta(String numeroCuenta) {
+		this.numeroCuenta = numeroCuenta;
+	}
+		
 }
