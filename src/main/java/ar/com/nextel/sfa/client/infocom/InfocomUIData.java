@@ -292,6 +292,9 @@ public class InfocomUIData extends UIData {
 	}
 
 	private void refreshCreditoFidelizacionTable(List<DetalleFidelizacionDto> detallesFidelizacion) {
+		while(creditoFidelizacionTable.getRowCount()>1) {
+			creditoFidelizacionTable.removeRow(1);
+		}
 		int row = 1;
 		DateTimeFormat dateFormatter = DateTimeFormat.getMediumDateFormat();
 		for (Iterator iterator = detallesFidelizacion.iterator(); iterator.hasNext();) {
@@ -304,13 +307,15 @@ public class InfocomUIData extends UIData {
 	}
 
 	private void refreshCuentaCorrienteTable(List<TransaccionCCDto> transacciones) {
+		while(cuentaCorrienteTable.getRowCount()>1) {
+			cuentaCorrienteTable.removeRow(1);
+		}
 		int row = 1;
 		DateTimeFormat dateFormatter = DateTimeFormat.getMediumDateFormat();
 		for (Iterator iterator = transacciones.iterator(); iterator.hasNext();) {
 			TransaccionCCDto transaccion = (TransaccionCCDto) iterator.next();
-			//cuentaCorriente.setHTML(row, 1, transaccion.getNumero());
+			cuentaCorrienteTable.setHTML(row, 0, transaccion.getNumeroCuenta());
 			cuentaCorrienteTable.setHTML(row, 1, transaccion.getClase());
-			//ver si no hay que formatear la fecha
 			cuentaCorrienteTable.setHTML(row, 2, transaccion.getFechaVenc());
 			cuentaCorrienteTable.setHTML(row, 3, transaccion.getDescripcion());
 			cuentaCorrienteTable.setHTML(row, 4, transaccion.getNumero());
