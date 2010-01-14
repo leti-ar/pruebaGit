@@ -5,6 +5,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
 	<configuration>
+    	<date-format>dd/MM/yyyy</date-format>
 	</configuration>
 	<mapping>
 		<class-a>ar.com.nextel.sfa.client.dto.CuentaSearchDto
