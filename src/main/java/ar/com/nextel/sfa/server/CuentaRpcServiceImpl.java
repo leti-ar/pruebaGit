@@ -28,6 +28,8 @@ import ar.com.nextel.business.externalConnection.exception.MerlinException;
 import ar.com.nextel.business.personas.normalizarDomicilio.NormalizadorDomicilio;
 import ar.com.nextel.business.personas.normalizarDomicilio.businessUnits.NormalizarDomicilioRequest;
 import ar.com.nextel.components.filter.Filter;
+import ar.com.nextel.components.knownInstances.retrievers.message.MessageRetriever;
+import ar.com.nextel.components.message.Message;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Cargo;
 import ar.com.nextel.model.cuentas.beans.CategoriaCuenta;
@@ -130,13 +132,14 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	private Repository repository;
 	private NormalizadorDomicilio normalizadorDomicilio;
 	private SessionContextLoader sessionContextLoader;
+	private MessageRetriever messageRetriever;
 
 	private final String ASOCIAR_CUENTA_A_OPP_ERROR = "La cuenta ya existe. No puede asociarse a la Oportunidad.";
 	private String ERROR_OPER_OTRO_VENDEDOR = "El prospect/cliente tiene una operación en curso con otro vendedor. No puede ver sus datos. El {1} es {2}";
 	private final String ERROR_OPORTUNIDAD_VENCIDA = "La oportunidad/Reserva está vencida";
 
 	private static String queryNameSexoSinIndefinido = "SEXO_SIN_INDEFINIDO";
-	
+
 	@Override
 	public void init() throws ServletException {
 		super.init();
@@ -158,6 +161,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		veraz = (NextelServices) context.getBean("nextelServices");
 		repository = (Repository) context.getBean("repository");
 		normalizadorDomicilio = (NormalizadorDomicilio) context.getBean("normalizadorDomicilio");
+		messageRetriever = (MessageRetriever) context.getBean("messageRetriever");
 
 		// Engancho el BOperator
 		setGetAllBusinessOperator((GetAllBusinessOperator) context.getBean("getAllBusinessOperatorBean"));
@@ -235,9 +239,9 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		buscarDTOinit.setRubro(mapper.convertList(repository.getAll(Rubro.class), RubroDto.class));
 		List listaSexos = this.getRepository().executeCustomQuery(queryNameSexoSinIndefinido);
 		buscarDTOinit.setSexo(mapper.convertList(listaSexos, SexoDto.class));
-//		buscarDTOinit.setSexo(mapper.convertList(genericDao.getList(Sexo.class), SexoDto.class));
-		buscarDTOinit.setFormaPago(mapper
-				.convertList(repository.getAll(FormaPago.class), FormaPagoDto.class));
+		// buscarDTOinit.setSexo(mapper.convertList(genericDao.getList(Sexo.class), SexoDto.class));
+		buscarDTOinit
+				.setFormaPago(mapper.convertList(repository.getAll(FormaPago.class), FormaPagoDto.class));
 		buscarDTOinit.setClaseCliente(mapper.convertList(repository.getAll(ClaseCuenta.class),
 				ClaseCuentaDto.class));
 		buscarDTOinit.setProveedorAnterior(mapper.convertList(repository.getAll(Proveedor.class),
@@ -263,14 +267,14 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 				TipoDocumentoDto.class));
 		List listaSexos = this.getRepository().executeCustomQuery(queryNameSexoSinIndefinido);
 		verazInitializer.setSexos(mapper.convertList(listaSexos, SexoDto.class));
-//		verazInitializer.setSexos(mapper.convertList(genericDao.getList(Sexo.class), SexoDto.class));
+		// verazInitializer.setSexos(mapper.convertList(genericDao.getList(Sexo.class), SexoDto.class));
 		return verazInitializer;
 	}
 
 	public CrearContactoInitializer getCrearContactoInitializer() {
 		CrearContactoInitializer crearContactoInitializer = new CrearContactoInitializer();
-		crearContactoInitializer.setTiposDocumento(mapper.convertList(
-				repository.getAll(TipoDocumento.class), TipoDocumentoDto.class));
+		crearContactoInitializer.setTiposDocumento(mapper.convertList(repository.getAll(TipoDocumento.class),
+				TipoDocumentoDto.class));
 		List<SexoDto> listaSexosCompleta = mapper.convertList(repository.getAll(Sexo.class), SexoDto.class);
 		List<SexoDto> listaSexos = new ArrayList<SexoDto>();
 		for (Iterator<SexoDto> iterator = listaSexosCompleta.iterator(); iterator.hasNext();) {
@@ -280,8 +284,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 			}
 		}
 		crearContactoInitializer.setSexos(listaSexos);
-		crearContactoInitializer.setCargos(mapper
-				.convertList(repository.getAll(Cargo.class), CargoDto.class));
+		crearContactoInitializer
+				.setCargos(mapper.convertList(repository.getAll(Cargo.class), CargoDto.class));
 		return crearContactoInitializer;
 	}
 
@@ -345,18 +349,20 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	/**
 	 * 
 	 */
-	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive, boolean filtradoPorDni) throws RpcExceptionMessages {
-	    CuentaDto cuentaDto = null;
-		Cuenta cuenta = cuentaBusinessService.selectCuenta(cuentaId, cod_vantive, getVendedor(), filtradoPorDni, mapper);
+	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive, boolean filtradoPorDni)
+			throws RpcExceptionMessages {
+		CuentaDto cuentaDto = null;
+		Cuenta cuenta = cuentaBusinessService.selectCuenta(cuentaId, cod_vantive, getVendedor(),
+				filtradoPorDni, mapper);
 		String categoriaCuenta = cuenta.getCategoriaCuenta().getDescripcion();
 		if (categoriaCuenta.equals(KnownInstanceIdentifier.GRAN_CUENTA.getKey())) {
 			cuentaDto = (GranCuentaDto) mapper.map((GranCuenta) cuenta, GranCuentaDto.class);
 		} else if (categoriaCuenta.equals(KnownInstanceIdentifier.DIVISION.getKey())) {
-			cuentaDto = (DivisionDto)   mapper.map((Division) cuenta, DivisionDto.class);
+			cuentaDto = (DivisionDto) mapper.map((Division) cuenta, DivisionDto.class);
 		} else if (categoriaCuenta.equals(KnownInstanceIdentifier.SUSCRIPTOR.getKey())) {
 			cuentaDto = (SuscriptorDto) mapper.map((Suscriptor) cuenta, SuscriptorDto.class);
 		}
-	    return cuentaDto;
+		return cuentaDto;
 	}
 
 	/**
@@ -378,7 +384,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		}
 		try {
 			// crea
-			cuenta = cuentaBusinessService.reservarCrearCta(solicitudCta,mapper);
+			cuenta = cuentaBusinessService.reservarCrearCta(solicitudCta, mapper);
 
 			if (cuenta == null) {
 				cuenta = searchCuentaBusinessOperator.searchProspectAjenoEnCarga(documento);
@@ -389,20 +395,24 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 				errMsg = errMsg.replaceAll("\\{2\\}", nombre);
 				throw new RpcExceptionMessages(errMsg);
 			}
-			cuenta = repository.retrieve( Cuenta.class, cuenta.getId());
+			cuenta = repository.retrieve(Cuenta.class, cuenta.getId());
 			cuentaBusinessService.validarAccesoCuenta(cuenta, getVendedor(), true);
 			if (asociarCuentaSiCorresponde(solicitudCta, cuenta)) {
 				// lockea
 				cuentaBusinessService.saveCuenta(cuenta, vendedor);
 				// mapea
 				if (cuenta.esGranCuenta()) {
-				    cuentaDto = (GranCuentaDto) mapper.map(cuenta, GranCuentaDto.class);
+					cuentaDto = (GranCuentaDto) mapper.map(cuenta, GranCuentaDto.class);
 				} else if (cuenta.esDivision()) {
 					cuentaDto = (DivisionDto) mapper.map(cuenta, DivisionDto.class);
 				} else if (cuenta.esSuscriptor()) {
 					cuentaDto = (SuscriptorDto) mapper.map(cuenta, SuscriptorDto.class);
 				}
 			}
+		} catch (BusinessException be) {
+			Message message = (Message) messageRetriever.getMessage(be.getMessageIdentifier(), be
+					.getParameters().toArray());
+			throw new RpcExceptionMessages(message.getDescription());
 		} catch (RpcExceptionMessages rem) {
 			throw new RpcExceptionMessages(rem.getMessage());
 		} catch (Exception e) {
@@ -412,16 +422,16 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return cuentaDto;
 	}
 
-//	private CuentaDto sacarTelefonosBorrados(CuentaDto cuenta) {
-//		List <TelefonoDto>telefonos = (List<TelefonoDto>) cuenta.getPersona().getTelefonos();
-//		for (TelefonoDto tel : telefonos) {
-//			if (tel.getDeleted()) {
-//				cuenta.getPersona().getTelefonos().remove(tel);
-//			}
-//		}
-//		return cuenta;
-//	}
-	
+	// private CuentaDto sacarTelefonosBorrados(CuentaDto cuenta) {
+	// List <TelefonoDto>telefonos = (List<TelefonoDto>) cuenta.getPersona().getTelefonos();
+	// for (TelefonoDto tel : telefonos) {
+	// if (tel.getDeleted()) {
+	// cuenta.getPersona().getTelefonos().remove(tel);
+	// }
+	// }
+	// return cuenta;
+	// }
+
 	/**
 	 * 
 	 * @param solicitudCuenta
