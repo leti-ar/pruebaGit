@@ -32,12 +32,16 @@
 			</plugin>
 		</plugins>
 	</build>
-  <distributionManagement>
-    <snapshotRepository>
-      <id>server04</id>
-      <name>Snoop REPO Snapshots</name>
-      <url>
-      http://server04:8081/nexus/content/repositories/SnoopREPOSnap/</url>
-    </snapshotRepository>
-  </distributionManagement>	
+	<distributionManagement>
+		<repository>
+			<id>serverNextel</id>
+			<name>Snoop REPO Release</name>
+			<url>http://basliap12c.nextel.com.ar:8080/artifactory/NexusRelease</url>
+		</repository>
+		<snapshotRepository>
+			<id>serverNextel</id>
+			<name>Snoop REPO Snapshots</name>
+			<url>http://basliap12c.nextel.com.ar:8080/artifactory/NexusSnapshot</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
