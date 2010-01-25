@@ -23,6 +23,9 @@ public class RegularExpressionConstants {
 	
 	/** Numeros enteros infinito y caracter punto */
 	public static final String numerosYPunto = "[0-9|\\.]*";
+	
+	/** Numeros decimales infinito con caracter coma */
+	public static final String decimal = "[0-9]+,?[0-9]*";
 
 	/** Ingresos brutos*/
 	public static final String iibb = "[0-9|\\-]*";
