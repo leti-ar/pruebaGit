@@ -167,17 +167,21 @@ public class CuentaUIData extends UIData {
 				CuentaDatosForm.getInstance().setVisiblePanelFormaPagoYActualizarCamposObligatorios(((ListBox) event.getSource()).getSelectedItemId());
 				setAtributosNumeroTarjeta();
 			}
-		});		
-		nombre.addBlurHandler(new BlurHandler() {
-			public void onBlur(BlurEvent arg0) {
-				exportarNombreApellidoARazonSocial();
-			}
-		});
-		apellido.addBlurHandler(new BlurHandler() {
-			public void onBlur(BlurEvent arg0) {
-				exportarNombreApellidoARazonSocial();
-			}
-		});
+		});	
+        nombre.addBlurHandler(new BlurHandler() {
+        	public void onBlur(BlurEvent arg0) {
+        		if (!"CUIT".equals(tipoDocumento.getSelectedItemText())) {
+        			exportarNombreApellidoARazonSocial();
+        		}
+        	}
+        });
+        apellido.addBlurHandler(new BlurHandler() {
+        	public void onBlur(BlurEvent arg0) {
+        		if (!"CUIT".equals(tipoDocumento.getSelectedItemText())) {
+        			exportarNombreApellidoARazonSocial();
+        		}
+        	}
+        });
 		nombreDivision.addBlurHandler(new BlurHandler() {
 			public void onBlur(BlurEvent arg0) {
 				nombreDivision.setText(nombreDivision.getText().trim().toUpperCase());
@@ -318,9 +322,11 @@ public class CuentaUIData extends UIData {
 
 	
 	public void exportarNombreApellidoARazonSocial() {
-		nombre.setText(nombre.getText().trim().toUpperCase());
-		apellido.setText(apellido.getText().trim().toUpperCase());
-		razonSocial.setText(nombre.getText() + " " + apellido.getText());
+		if (tipoDocumento.getSelectedItemText()!="CUIT") {
+			nombre.setText(nombre.getText().trim().toUpperCase());
+			apellido.setText(apellido.getText().trim().toUpperCase());
+			razonSocial.setText(nombre.getText() + " " + apellido.getText());
+		}
 	}
 	
 	private void setAtributosDeCampos() {

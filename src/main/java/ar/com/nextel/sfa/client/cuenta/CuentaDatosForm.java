@@ -697,12 +697,16 @@ public class CuentaDatosForm extends Composite {
 		showPanelDatosCuenta = true;
 		
         boolean docTipoCUIL = false; 
+        boolean docTipoCUIT = false;
         if (cuentaDto.getPersona().getDocumento()!=null) {
         	docTipoCUIL = cuentaDto.getPersona().getDocumento().getTipoDocumento().getId()==TipoDocumentoEnum.CUIL.getTipo() ||
         	cuentaDto.getPersona().getDocumento().getTipoDocumento().getId()==TipoDocumentoEnum.CUIT.getTipo();
+        	docTipoCUIT = cuentaDto.getPersona().getDocumento().getTipoDocumento().getId()==TipoDocumentoEnum.CUIT.getTipo();
         }
 		List <Widget>campos = new ArrayList<Widget>();
-		campos.add(camposTabDatos.getRazonSocial());
+		if (!docTipoCUIT) {
+			campos.add(camposTabDatos.getRazonSocial());
+		}
 		campos.add(camposTabDatos.getTipoDocumento());
 		campos.add(camposTabDatos.getNumeroDocumento());
 		campos.add(camposTabDatos.getCategoria());
