@@ -95,8 +95,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		aclaracion.setHeight("35px");
 		fields.add(email = new RegexTextBox(RegularExpressionConstants.lazyEmail));
 		email.setWidth("480px");
-		fields.add(credFidelizacion = new RegexTextBox(RegularExpressionConstants.numerosYPunto));
-		fields.add(pataconex = new RegexTextBox(RegularExpressionConstants.numerosYPunto));
+		fields.add(credFidelizacion = new RegexTextBox(RegularExpressionConstants.decimal));
+		fields.add(pataconex = new RegexTextBox(RegularExpressionConstants.decimal));
 		fields.add(firmarss = new CheckBox());
 		fields.add(anticipo = new ListBox());
 		fields.add(observaciones = new TextArea());
