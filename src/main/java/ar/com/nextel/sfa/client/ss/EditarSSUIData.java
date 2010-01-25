@@ -21,7 +21,6 @@ import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudBaseDto;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
-import ar.com.nextel.sfa.client.validator.target.TextBoxBaseValidationTarget;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
@@ -154,11 +153,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		boolean isEmpty = false;
 		if (sender == pataconex) {
 			isEmpty = "".equals(pataconex.getText());
-			solicitudServicio.setPataconex(!isEmpty ? Double.parseDouble(pataconex.getText()) : 0d);
+			solicitudServicio.setPataconex(!isEmpty ? decFormatter.parse(pataconex.getText()) : 0d);
 			recarcularValores();
 		} else if (sender == credFidelizacion) {
 			isEmpty = "".equals(credFidelizacion.getText());
-			solicitudServicio.setMontoCreditoFidelizacion(!isEmpty ? Double.parseDouble(credFidelizacion
+			solicitudServicio.setMontoCreditoFidelizacion(!isEmpty ? decFormatter.parse(credFidelizacion
 					.getText()) : 0d);
 			recarcularValores();
 		}
@@ -328,12 +327,12 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				.valueOf(facturacion.getSelectedItemId()) : null);
 		solicitudServicio.setAclaracionEntrega(aclaracion.getText());
 		if (!"".equals(credFidelizacion.getText().trim())) {
-			solicitudServicio.setMontoCreditoFidelizacion(Double.parseDouble(credFidelizacion.getText()));
+			solicitudServicio.setMontoCreditoFidelizacion(decFormatter.parse(credFidelizacion.getText()));
 		} else {
 			solicitudServicio.setMontoCreditoFidelizacion(0d);
 		}
 		if (!"".equals(pataconex.getText().trim())) {
-			solicitudServicio.setPataconex(Double.parseDouble(pataconex.getText()));
+			solicitudServicio.setPataconex(decFormatter.parse(pataconex.getText()));
 		} else {
 			solicitudServicio.setPataconex(0d);
 		}
@@ -359,13 +358,16 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			validarCargoActivacion(validator, linea);
 		}
 		solicitudServicio.refreshPreciosTotales();
-		validator.addTarget(pataconex).smallerOrEqual(
+		String pataconexConPunto = "" + decFormatter.parse(pataconex.getText());
+		validator.addTarget(pataconexConPunto).smallerOrEqual(
 				Sfa.constant().ERR_PATACONEX() + " ( "
 						+ currencyFormat.format(solicitudServicio.getPrecioItemTotal()) + " )",
 				solicitudServicio.getPrecioItemTotal());
-		if (solicitudServicio.getMontoDisponible() != null)
-			validator.addTarget(credFidelizacion).smallerOrEqual(Sfa.constant().ERR_FIDELIZACION(),
+		if (solicitudServicio.getMontoDisponible() != null) {
+			String credFidelizacionConPunto = "" + decFormatter.parse(credFidelizacion.getText());
+			validator.addTarget(credFidelizacionConPunto).smallerOrEqual(Sfa.constant().ERR_FIDELIZACION(),
 					solicitudServicio.getMontoDisponible());
+		}
 		validator.fillResult();
 		return validator.getErrors();
 	}
@@ -407,13 +409,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			validator.addTarget(email).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Email"));
 		}
-		if (solicitudServicio.getMontoDisponible() != null)
-			validator.addTarget(credFidelizacion).smallerOrEqual(Sfa.constant().ERR_FIDELIZACION(),
+		if (solicitudServicio.getMontoDisponible() != null){
+			String credFidelizacionConPunto = "" + decFormatter.parse(credFidelizacion.getText());
+			validator.addTarget(credFidelizacionConPunto).smallerOrEqual(Sfa.constant().ERR_FIDELIZACION(),
 					solicitudServicio.getMontoDisponible());
+		}
 		solicitudServicio.refreshPreciosTotales();
-		validator.addTarget(pataconex).smallerOrEqual(Sfa.constant().ERR_PATACONEX(),
-				solicitudServicio.getPrecioItemTotal());
-		validator.addTarget(pataconex).smallerOrEqual(
+		String pataconexConPunto = "" + decFormatter.parse(pataconex.getText());
+		validator.addTarget(pataconexConPunto).smallerOrEqual(Sfa.constant().ERR_PATACONEX(),
+				solicitudServicio.getPrecioItemTotal()).smallerOrEqual(
 				Sfa.constant().ERR_PATACONEX() + " ( "
 						+ currencyFormat.format(solicitudServicio.getPrecioItemTotal()) + " )",
 				solicitudServicio.getPrecioItemTotal());
