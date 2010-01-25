@@ -25,7 +25,7 @@
 						<webModule>
 							<groupId>ar.com.nextel.sfa</groupId>
 							<artifactId>sfa-web</artifactId>
-							<contextRoot>/sfa-web2</contextRoot>
+							<contextRoot>/sfa</contextRoot>
 						</webModule>
 					</modules>
 				</configuration>

@@ -4,13 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ar.com.nextel.sfa</groupId>
 	<artifactId>sfa-web</artifactId>
-	<packaging>war</packaging>
 	<version>2.0-SNAPSHOT</version>
-	<name>SFA Revolution</name>
-	<description>
-	SFA Revolution 2009
-  </description>
-	<url>http://sfasrv1.snoop.com.ar:8080/job/site%20sfa-web2/site/</url>
+	<packaging>war</packaging>
+	<name>SFA WEB</name>
+	<description>SFA Revolution Web - IE support</description>
+	<inceptionYear>2009</inceptionYear>
+	
   <!--  convenience to define GWT version in one place -->
   <properties>
     <gwtVersion>1.7.0</gwtVersion>
@@ -51,11 +50,11 @@
       <classifier>${platform}</classifier>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-incubator</artifactId>
-      <version>july-14-2009</version>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>com.google.gwt</groupId>-->
+<!--      <artifactId>gwt-incubator</artifactId>-->
+<!--      <version>july-14-2009</version>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>ar.com.snoop.gwt</groupId>
       <artifactId>GwtCommons</artifactId>
@@ -66,16 +65,49 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring</artifactId>
       <version>${spring.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
       <version>${spring.version}</version>
+      <scope>provided</scope>
     </dependency>
+   	<dependency>
+		<groupId>winit</groupId>
+		<artifactId>usercenter</artifactId>
+		<version>3.8.1-fixed</version>
+		<scope>provided</scope>
+	</dependency>
+	<dependency>
+		<groupId>winit</groupId>
+		<artifactId>wel</artifactId>
+		<version>3.1.14</version>
+		<scope>provided</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate</artifactId>
+		<version>3.2.6.ga</version>
+		<scope>provided</scope>
+		<exclusions>
+			<exclusion>
+				<groupId>net.sf.ehcache</groupId>
+				<artifactId>ehcache</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+	<dependency>
+		<groupId>commons-validator</groupId>
+		<artifactId>commons-validator</artifactId>
+		<version>1.3.1</version>
+		<scope>provided</scope>
+	</dependency>
     <dependency>
       <groupId>net.sf.dozer</groupId>
       <artifactId>dozer</artifactId>
       <version>5.1</version>
+      <scope>provided</scope>
     </dependency>
     <!--  test -->
     <dependency>
@@ -356,7 +388,6 @@
           <configLocation>config/sun_checks.xml</configLocation>
         </configuration>
       </plugin>
-      
     </plugins>
   </reporting>
   <distributionManagement>
