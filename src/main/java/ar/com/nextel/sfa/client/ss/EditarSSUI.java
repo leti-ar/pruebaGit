@@ -142,7 +142,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		tabs.setWidth("98%");
 		tabs.addStyleName("mlr5 mb10 mt5");
 		mainPanel.add(tabs);
-		editarSSUIData = new EditarSSUIData();
+		editarSSUIData = new EditarSSUIData(this);
 		tabs.add(datos = new DatosSSUI(this), "Datos");
 		tabs.add(varios = new VariosSSUI(this), "Varios");
 		tabs.selectTab(0);

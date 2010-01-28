@@ -22,6 +22,7 @@ import ar.com.nextel.sfa.client.dto.TipoSolicitudBaseDto;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.UIData;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -71,6 +72,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private boolean saved = true;
 	private long lastFakeId = -1;
 	private NumberFormat currencyFormat = NumberFormat.getCurrencyFormat();
+	private EditarSSUIController controller;
 
 	private static final String V1 = "\\{1\\}";
 	private static final String FORMA_CONTRATACION_ALQUILER = "Alquiler";
@@ -79,7 +81,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	private SolicitudServicioDto solicitudServicio;
 
-	public EditarSSUIData() {
+	public EditarSSUIData(EditarSSUIController controller) {
+		this.controller = controller;
 		serviciosAdicionales = new ArrayList();
 
 		fields.add(nss = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(10), true));
@@ -409,7 +412,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			validator.addTarget(email).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Email"));
 		}
-		if (solicitudServicio.getMontoDisponible() != null){
+		if (solicitudServicio.getMontoDisponible() != null) {
 			String credFidelizacionConPunto = "" + decFormatter.parse(credFidelizacion.getText());
 			validator.addTarget(credFidelizacionConPunto).smallerOrEqual(Sfa.constant().ERR_FIDELIZACION(),
 					solicitudServicio.getMontoDisponible());
@@ -526,6 +529,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	/** Elimina la linea, renumera las restantes y borra los servicios adicionales asociados */
 	public int removeLineaSolicitudServicio(int index) {
 		saved = false;
+		String numeroReservado = solicitudServicio.getLineas().get(index).getNumeroReserva();
+		boolean tieneNReserva = numeroReservado != null && numeroReservado.length() > 4;
+		if (tieneNReserva) {
+			controller.desreservarNumeroTelefonico(Long.parseLong(numeroReservado),
+					new DefaultWaitCallback() {
+						public void success(Object result) {
+						}
+					});
+		}
 		solicitudServicio.getLineas().remove(index);
 		serviciosAdicionales.remove(index);
 		for (; index < solicitudServicio.getLineas().size(); index++) {
