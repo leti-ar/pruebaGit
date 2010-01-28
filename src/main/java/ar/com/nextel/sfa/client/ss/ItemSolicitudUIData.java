@@ -17,6 +17,7 @@ import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.TerminoPagoValidoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
+import ar.com.nextel.sfa.client.dto.TipoTelefoniaDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
@@ -463,6 +464,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			// Cargo Modalidades de Cobro posibles
 			if (plan.getSelectedItem() != null) {
 				PlanDto planDto = (PlanDto) plan.getSelectedItem();
+				if(planDto.getTipoTelefonia().equals(TipoTelefoniaDto.TIPO_PREPAGO)){
+					ddi.setValue(Boolean.TRUE);
+				} else {
+					ddi.setValue(Boolean.FALSE);
+				}
 				precioListaPlan.setInnerHTML(currencyFormat.format(planDto.getPrecio()));
 				if (modalidadCobro.getItemCount() > 0) {
 					modalidadCobro.clear();
