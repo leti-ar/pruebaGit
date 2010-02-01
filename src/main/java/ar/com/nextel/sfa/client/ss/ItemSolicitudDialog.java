@@ -87,9 +87,12 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		if (sender == aceptar || sender == nuevoItem) {
 			executeItemCreation(sender);
 		} else if (sender == cerrar) {
+			itemSolicitudUIData.desreservarSiNoFueGrabado();
 			hide();
 		}
 	}
+	
+
 
 	private void executeItemCreation(final Widget sender) {
 		List errors = itemSolicitudUIData.validate();

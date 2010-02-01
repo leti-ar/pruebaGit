@@ -302,7 +302,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 	private void desreservar() {
 		LoadingModalDialog.getInstance().showAndCenter("Reserva", "Desreservando número telefónico ...");
-		controller.desreservarNumeroTelefonico(Long.parseLong(getNumeroTelefonicoCompleto()),
+		controller.desreservarNumeroTelefonico(Long.parseLong(getNumeroTelefonicoCompletoFromFields()),
 				new DefaultWaitCallback() {
 					public void success(Object result) {
 						LoadingModalDialog.getInstance().hide();
@@ -464,7 +464,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			// Cargo Modalidades de Cobro posibles
 			if (plan.getSelectedItem() != null) {
 				PlanDto planDto = (PlanDto) plan.getSelectedItem();
-				if(planDto.getTipoTelefonia().equals(TipoTelefoniaDto.TIPO_PREPAGO)){
+				if (planDto.getTipoTelefonia().equals(TipoTelefoniaDto.TIPO_PREPAGO)) {
 					ddi.setValue(Boolean.TRUE);
 				} else {
 					ddi.setValue(Boolean.FALSE);
@@ -551,7 +551,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		};
 	}
 
-	private String getNumeroTelefonicoCompleto() {
+	private String getNumeroTelefonicoCompletoFromFields() {
 		return reservarHidden.getText() + reservar.getText();
 	}
 
@@ -857,7 +857,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			if (tipoEdicion != VENTA_CDW) {
 				lineaSolicitudServicio
 						.setModalidadCobro((ModalidadCobroDto) modalidadCobro.getSelectedItem());
-				lineaSolicitudServicio.setNumeroReserva(getNumeroTelefonicoCompleto());
+				lineaSolicitudServicio.setNumeroReserva(getNumeroTelefonicoCompletoFromFields());
 				lineaSolicitudServicio.setNumeroReservaArea(reservarHidden.getText());
 				lineaSolicitudServicio.setDdi(ddi.getValue());
 				lineaSolicitudServicio.setDdn(ddn.getValue());
@@ -933,5 +933,20 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	public void resetIMEICheck() {
 		verificarImeiWrapper.setHTML(IconFactory.comprobarNegro(Sfa.constant().verificarImei()).toString());
 		verificarSimWrapper.setHTML(IconFactory.comprobarNegro(Sfa.constant().verificarSim()).toString());
+	}
+
+	public void desreservarSiNoFueGrabado() {
+		// Si no fue guardado nunca no tiene tipo
+		if (lineaSolicitudServicio.getTipoSolicitud() != null) {
+			String numeroReservado = lineaSolicitudServicio.getNumeroReserva();
+			boolean tieneNReserva = numeroReservado != null && numeroReservado.length() > 4;
+			if (tieneNReserva) {
+				controller.desreservarNumeroTelefonico(Long.parseLong(numeroReservado),
+						new DefaultWaitCallback() {
+							public void success(Object result) {
+							}
+						});
+			}
+		}
 	}
 }
