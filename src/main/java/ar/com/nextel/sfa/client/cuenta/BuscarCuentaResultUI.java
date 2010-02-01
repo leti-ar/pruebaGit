@@ -65,7 +65,7 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickHandler {
 	private static BuscarCuentaResultUI instance;
 	private static Long dialogCuentaId;
 	private static String dialogCodVantive;
-	private static String dialogBusquedaPorDoc;
+	private static boolean dialogBusquedaPorDoc;
 
 	public BuscarCuentaResultUI(BuscarCuentaController controller) {
 
@@ -170,15 +170,9 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickHandler {
 		loadTable(cuentasActuales);
 	}
 
-	private String getCondicionBusquedaPorDni() {
-		String cond = "0";
-		if ((lastCuentaSearchDto.getNumeroDocumento() == "")
-				|| (lastCuentaSearchDto.getNumeroDocumento() == null)) {
-			cond = BuscoCuentaPorDniEnum.NO.getCondicion();
-		} else {
-			cond = BuscoCuentaPorDniEnum.SI.getCondicion();
-		}
-		return cond;
+	private boolean getCondicionBusquedaPorDni() {
+		return (lastCuentaSearchDto.getNumeroDocumento() != null)
+				&& (!"".equals(lastCuentaSearchDto.getNumeroDocumento()));
 	}
 
 	/**
@@ -197,8 +191,7 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickHandler {
 		for (int i = 0; i < totalABuscar; i++) {
 			indiceRowTabla = i;
 			if (cuentasActuales.size() != 0) {
-				if (ClientContext.getInstance().checkPermiso(
-						PermisosEnum.VISUALIZAR_CUENTA.getValue())) {
+				if (ClientContext.getInstance().checkPermiso(PermisosEnum.VISUALIZAR_CUENTA.getValue())) {
 					HTML iconLapiz = IconFactory.lapiz(LAPIZ_TITLE);
 					iconLapiz.addClickHandler(new ClickHandler() {
 						public void onClick(ClickEvent event) {

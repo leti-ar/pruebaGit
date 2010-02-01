@@ -1,5 +1,8 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import java.util.HashMap;
+
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
@@ -9,6 +12,7 @@ import ar.com.nextel.sfa.client.enums.TipoCuentaEnum;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
+import ar.com.nextel.sfa.client.widget.UILoader;
 
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
@@ -20,6 +24,18 @@ public class EditarCuentaUI extends ApplicationUI {
 	public static boolean esEdicionCuenta = true;
 	public static boolean edicionReadOnly = false;
 
+	public static final String PARAM_CUENTA_ID = "cuenta_id";
+	public static final String PARAM_COD_VANTIVE = "cod_vantive";
+	public static final String PARAM_N_DOCUMENTO = "nroDoc";
+	public static final String PARAM_ID_DOCUMENTO = "idDoc";
+	public static final String PARAM_OPORTUNIDAD = "opp";
+	public static final String PARAM_ID_OPORTUNIDAD = "idOpp";
+	public static final String PARAM_ID_CUENTA_PADRE = "idCtaPadre";
+	public static final String PARAM_DIVISION = "div";
+	public static final String PARAM_SUSCRIPTOR = "sus";
+	public static final String PARAM_READ_ONLY = "ro";
+	public static final String PARAM_FILTRADO_X_DNI = "filByDni";
+
 	public EditarCuentaUI() {
 		super();
 	}
@@ -28,13 +44,16 @@ public class EditarCuentaUI extends ApplicationUI {
 		resetEditor();
 
 		// viene de popup "Agregar Cuenta"
-		if (HistoryUtils.getParam("nroDoc") != null) {
+		if (HistoryUtils.getParam(PARAM_N_DOCUMENTO) != null) {
 			if (CuentaClientService.cuentaDto != null) {
 				doAgregarCuenta();
 			} else {
-				Long idTipoDoc = HistoryUtils.getParam("idDoc") != null ? Long.parseLong(HistoryUtils.getParam("idDoc")) : null;
-				String nroDoc = HistoryUtils.getParam("nroDoc");
-				Long idOpp = HistoryUtils.getParam("idOpp") != null	&& !HistoryUtils.getParam("idOpp").equals("null") ? Long.parseLong(HistoryUtils.getParam("idOpp")) : null;
+				Long idTipoDoc = HistoryUtils.getParam(PARAM_ID_DOCUMENTO) != null ? Long
+						.parseLong(HistoryUtils.getParam(PARAM_ID_DOCUMENTO)) : null;
+				String nroDoc = HistoryUtils.getParam(PARAM_N_DOCUMENTO);
+				Long idOpp = HistoryUtils.getParam(PARAM_ID_OPORTUNIDAD) != null
+						&& !HistoryUtils.getParam(PARAM_ID_OPORTUNIDAD).equals("null") ? Long
+						.parseLong(HistoryUtils.getParam(PARAM_ID_OPORTUNIDAD)) : null;
 				CuentaClientService.reservaCreacionCuenta(idTipoDoc, nroDoc, idOpp, false);
 				DeferredCommand.addCommand(new IncrementalCommand() {
 					public boolean execute() {
@@ -47,11 +66,12 @@ public class EditarCuentaUI extends ApplicationUI {
 			}
 
 			// viene de popup "Agregar Division"
-		} else if (HistoryUtils.getParam("div") != null) {
+		} else if (HistoryUtils.getParam(PARAM_DIVISION) != null) {
 			if (CuentaClientService.cuentaDto != null) {
 				doAgregarDivision();
 			} else {
-				CuentaClientService.crearDivision(HistoryUtils.getParam("idCtaPadre") != null ? Long.parseLong(HistoryUtils.getParam("idCtaPadre")) : null, false);
+				CuentaClientService.crearDivision(HistoryUtils.getParam(PARAM_ID_CUENTA_PADRE) != null ? Long
+						.parseLong(HistoryUtils.getParam(PARAM_ID_CUENTA_PADRE)) : null, false);
 				DeferredCommand.addCommand(new IncrementalCommand() {
 					public boolean execute() {
 						if (CuentaClientService.cuentaDto == null)
@@ -63,11 +83,13 @@ public class EditarCuentaUI extends ApplicationUI {
 			}
 
 			// viene de popup "Agregar Suscriptor"
-		} else if (HistoryUtils.getParam("sus") != null) {
+		} else if (HistoryUtils.getParam(PARAM_SUSCRIPTOR) != null) {
 			if (CuentaClientService.cuentaDto != null) {
 				doAgregarSuscriptor();
 			} else {
-				CuentaClientService.crearSuscriptor(HistoryUtils.getParam("idCtaPadre") != null ? Long.parseLong(HistoryUtils.getParam("idCtaPadre")) : null, false);
+				CuentaClientService.crearSuscriptor(
+						HistoryUtils.getParam(PARAM_ID_CUENTA_PADRE) != null ? Long.parseLong(HistoryUtils
+								.getParam(PARAM_ID_CUENTA_PADRE)) : null, false);
 				DeferredCommand.addCommand(new IncrementalCommand() {
 					public boolean execute() {
 						if (CuentaClientService.cuentaDto == null)
@@ -79,11 +101,13 @@ public class EditarCuentaUI extends ApplicationUI {
 			}
 
 			// viene de busqueda OPP
-		} else if (HistoryUtils.getParam("opp") != null) {
+		} else if (HistoryUtils.getParam(PARAM_OPORTUNIDAD) != null) {
 			if (CuentaClientService.cuentaPotencialDto != null) {
 				doBusquedaOPP();
 			} else {
-				CuentaClientService.getOportunidadNegocio(HistoryUtils.getParam("idOpp") != null ? Long.parseLong(HistoryUtils.getParam("idOpp")) : null, false);
+				CuentaClientService.getOportunidadNegocio(
+						HistoryUtils.getParam(PARAM_ID_OPORTUNIDAD) != null ? Long.parseLong(HistoryUtils
+								.getParam(PARAM_ID_OPORTUNIDAD)) : null, false);
 				DeferredCommand.addCommand(new IncrementalCommand() {
 					public boolean execute() {
 						if (CuentaClientService.cuentaPotencialDto == null)
@@ -95,14 +119,17 @@ public class EditarCuentaUI extends ApplicationUI {
 			}
 
 			// viene de pantallas de busqueda
-		} else if (HistoryUtils.getParam("cuenta_id") != null) {
+		} else if (HistoryUtils.getParam(PARAM_CUENTA_ID) != null) {
 			if (CuentaClientService.cuentaDto != null) {
 				doBusquedaCuenta();
 			} else {
-				Long cuentaID = Long.parseLong(HistoryUtils.getParam("cuenta_id") != null ? HistoryUtils.getParam("cuenta_id") : null);
-				String cod_vantive = HistoryUtils.getParam("cod_vantive");
-				String filtradoPorDni = HistoryUtils.getParam("filByDni");
-				CuentaClientService.cargarDatosCuenta(cuentaID, cod_vantive, filtradoPorDni, false);
+				Long cuentaID = Long.parseLong(HistoryUtils.getParam(PARAM_CUENTA_ID) != null ? HistoryUtils
+						.getParam(PARAM_CUENTA_ID) : null);
+				String cod_vantive = HistoryUtils.getParam(PARAM_COD_VANTIVE);
+				String filtradoPorDni = ClientContext.getInstance().getSecretParams().get(
+						PARAM_FILTRADO_X_DNI);
+				// String filtradoPorDni = HistoryUtils.getParam(PARAM_FILTRADO_X_DNI);
+				CuentaClientService.cargarDatosCuenta(cuentaID, cod_vantive, filtradoPorDni != null, false);
 				DeferredCommand.addCommand(new IncrementalCommand() {
 					public boolean execute() {
 						if (CuentaClientService.cuentaDto == null)
@@ -121,7 +148,8 @@ public class EditarCuentaUI extends ApplicationUI {
 	 */
 	private void resetEditor() {
 		esEdicionCuenta = true;
-		edicionReadOnly = HistoryUtils.getParam("ro") != null;
+		String paramReadOnly = ClientContext.getInstance().getSecretParams().get(PARAM_READ_ONLY);
+		edicionReadOnly = paramReadOnly != null && "true".equals(paramReadOnly);
 		cuentaTab.clean();
 		cuentaTab.getTabPanel().selectTab(0);
 		CuentaDomiciliosForm.getInstance().setHuboCambios(false);
@@ -140,14 +168,15 @@ public class EditarCuentaUI extends ApplicationUI {
 		else
 			cuentaTab.getCuentaDatosForm().armarTablaPanelDatos();
 		cargaPanelesCuenta();
-		//si hay apellido recibido de veraz y NO hay nadie en la DB aplica los datos aportados por veraz
-		if (CuentaClientService.apellidoFromVeraz!=null && cuentaTab.getCuentaDatosForm().getCamposTabDatos().getApellido().getText().equals("")) {
+		// si hay apellido recibido de veraz y NO hay nadie en la DB aplica los datos aportados por veraz
+		if (CuentaClientService.apellidoFromVeraz != null
+				&& cuentaTab.getCuentaDatosForm().getCamposTabDatos().getApellido().getText().equals("")) {
 			String nom = CuentaClientService.nombreFromVeraz;
 			String ape = CuentaClientService.apellidoFromVeraz;
 			cuentaTab.getCuentaDatosForm().getCamposTabDatos().getNombre().setText(nom);
 			cuentaTab.getCuentaDatosForm().getCamposTabDatos().getApellido().setText(ape);
 			cuentaTab.getCuentaDatosForm().getCamposTabDatos().getRazonSocial().setText(nom + " " + ape);
-			CuentaClientService.nombreFromVeraz   = null;
+			CuentaClientService.nombreFromVeraz = null;
 			CuentaClientService.apellidoFromVeraz = null;
 		}
 		cuentaTab.validarCompletitud(false);
@@ -172,7 +201,8 @@ public class EditarCuentaUI extends ApplicationUI {
 		cuentaTab.setRazonSocial(cuenta.getPersona() != null ? cuenta.getPersona().getRazonSocial() : "");
 		// carga info pestaña Datos
 		if (cuenta.getTipoContribuyente() == null) {
-			cuenta.setTipoContribuyente(new TipoContribuyenteDto(TipoContribuyenteEnum.CONS_FINAL.getId(),TipoContribuyenteEnum.CONS_FINAL.getDescripcion()));
+			cuenta.setTipoContribuyente(new TipoContribuyenteDto(TipoContribuyenteEnum.CONS_FINAL.getId(),
+					TipoContribuyenteEnum.CONS_FINAL.getDescripcion()));
 		}
 		if (esEdicionCuenta)
 			cuentaTab.getCuentaDatosForm().ponerDatosBusquedaEnFormulario(cuenta);
@@ -186,7 +216,7 @@ public class EditarCuentaUI extends ApplicationUI {
 		// carga info pestaña Contactos
 		cuentaTab.getCuentaContactoForm().getCrearButton().setVisible(esEdicionCuenta);
 		cuentaTab.getCuentaContactoForm().cargarTablaContactos(cuentaTab.getCuenta2editDto());
-		
+
 		// prepara UI para edicion cuenta o visualizacion opp
 		cuentaTab.setTabsTipoEditorCuenta(esEdicionCuenta);
 		cuentaTab.getCuentaDatosForm().setUItipoEditorCuenta(esEdicionCuenta);
@@ -203,16 +233,21 @@ public class EditarCuentaUI extends ApplicationUI {
 	}
 
 	private void doAgregarCuenta() {
-		if (CuentaClientService.cuentaDto.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.CTA.getTipo())) {
+		if (CuentaClientService.cuentaDto.getCategoriaCuenta().getDescripcion().equals(
+				TipoCuentaEnum.CTA.getTipo())) {
 			cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.cuentaDto);
-			if (CuentaClientService.cuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.PROSPECT.getId() ||
-					CuentaClientService.cuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.CUSTOMER.getId()) {
+			if (CuentaClientService.cuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.PROSPECT
+					.getId()
+					|| CuentaClientService.cuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.CUSTOMER
+							.getId()) {
 				cuentaTab.getCuentaDatosForm().setAtributosCamposSoloLectura();
-			} 
+			}
 			completarVisualizacionDatos(CuentaClientService.cuentaDto);
-		} else if (CuentaClientService.cuentaDto.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.DIV.getTipo())) { 
+		} else if (CuentaClientService.cuentaDto.getCategoriaCuenta().getDescripcion().equals(
+				TipoCuentaEnum.DIV.getTipo())) {
 			doAgregarDivision();
-		} else if (CuentaClientService.cuentaDto.getCategoriaCuenta().getDescripcion().equals(TipoCuentaEnum.SUS.getTipo())) {
+		} else if (CuentaClientService.cuentaDto.getCategoriaCuenta().getDescripcion().equals(
+				TipoCuentaEnum.SUS.getTipo())) {
 			doAgregarSuscriptor();
 		}
 	}
@@ -232,10 +267,13 @@ public class EditarCuentaUI extends ApplicationUI {
 		edicionReadOnly = true;
 		cuentaTab.setCuenta2editDto(CuentaClientService.cuentaPotencialDto.getCuentaOrigen());
 		if (!CuentaClientService.cuentaPotencialDto.isEsReserva()) {
-			cuentaTab.setPriorityFlag(((OportunidadNegocioDto) CuentaClientService.cuentaPotencialDto).getPrioridad().getId());
+			cuentaTab.setPriorityFlag(((OportunidadNegocioDto) CuentaClientService.cuentaPotencialDto)
+					.getPrioridad().getId());
 		}
-		cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusquedaFromOpp(CuentaClientService.cuentaPotencialDto);
-		cuentaTab.getCuentaDatosForm().ponerDatosOportunidadEnFormulario(CuentaClientService.cuentaPotencialDto);
+		cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusquedaFromOpp(
+				CuentaClientService.cuentaPotencialDto);
+		cuentaTab.getCuentaDatosForm().ponerDatosOportunidadEnFormulario(
+				CuentaClientService.cuentaPotencialDto);
 		cuentaTab.setNumeroCtaPot(CuentaClientService.cuentaPotencialDto.getNumero());
 		completarVisualizacionDatos(CuentaClientService.cuentaPotencialDto.getCuentaOrigen());
 	}
@@ -243,17 +281,44 @@ public class EditarCuentaUI extends ApplicationUI {
 	private void doBusquedaCuenta() {
 		if (RegularExpressionConstants.isVancuc(CuentaClientService.cuentaDto.getCodigoVantive())) {
 			cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.cuentaDto);
-			if (CuentaClientService.cuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.PROSPECT.getId()||
-					CuentaClientService.cuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.CUSTOMER.getId()) {
+			if (CuentaClientService.cuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.PROSPECT
+					.getId()
+					|| CuentaClientService.cuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.CUSTOMER
+							.getId()) {
 				cuentaTab.getCuentaDatosForm().setAtributosCamposSoloLectura();
 				edicionReadOnly = true;
-			} 
+			}
 		} else {
-			cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusqueda(CuentaClientService.cuentaDto);
+			cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusqueda(
+					CuentaClientService.cuentaDto);
 		}
-		if (HistoryUtils.getParam("ro") != null) {
+		if (HistoryUtils.getParam(PARAM_READ_ONLY) != null) {
 			cuentaTab.getCuentaDatosForm().setAtributosCamposSoloLectura();
 		}
 		completarVisualizacionDatos(CuentaClientService.cuentaDto);
+	}
+
+	public static String getEditarCuentaUrl(String idCuenta, String idCuentaPadre, String idOportunidad,
+			boolean oportunidad, boolean division, boolean suscriptor) {
+		return getEditarCuentaUrl(idCuenta, null, null, null, idOportunidad, idCuentaPadre, oportunidad,
+				division, suscriptor, false, false);
+	}
+
+	public static String getEditarCuentaUrl(String idCuenta, String codVantive, String nDocumento,
+			String idDocumento, String idOportunidad, String idCuentaPadre, boolean oportunidad,
+			boolean division, boolean suscriptor, boolean filtradoDni, boolean readOnly) {
+		HashMap<String, String> params = new HashMap<String, String>();
+		params.put(PARAM_CUENTA_ID, idCuenta);
+		params.put(PARAM_COD_VANTIVE, codVantive);
+		params.put(PARAM_N_DOCUMENTO, nDocumento);
+		params.put(PARAM_ID_DOCUMENTO, idDocumento);
+		params.put(PARAM_OPORTUNIDAD, oportunidad ? "true" : null);
+		params.put(PARAM_ID_OPORTUNIDAD, idOportunidad);
+		params.put(PARAM_ID_CUENTA_PADRE, idCuentaPadre);
+		params.put(PARAM_DIVISION, division ? "true" : null);
+		params.put(PARAM_SUSCRIPTOR, suscriptor ? "true" : null);
+		ClientContext.getInstance().getSecretParams().put(PARAM_READ_ONLY, readOnly ? "true" : null);
+		ClientContext.getInstance().getSecretParams().put(PARAM_FILTRADO_X_DNI, filtradoDni ? "true" : null);
+		return UILoader.EDITAR_CUENTA + HistoryUtils.getParamsFromMap(params);
 	}
 }

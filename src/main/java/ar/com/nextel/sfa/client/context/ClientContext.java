@@ -1,6 +1,6 @@
 package ar.com.nextel.sfa.client.context;
 
-import java.util.Map;
+import java.util.HashMap;
 
 import ar.com.nextel.sfa.client.dto.UsuarioDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
@@ -14,7 +14,8 @@ public class ClientContext {
 	private static ClientContext instance;
 	private UsuarioDto usuario;
 	private VendedorDto vendedor;
-	private Map<String, Boolean> mapaPermisos;
+	private HashMap<String, Boolean> mapaPermisos;
+	private HashMap<String, String> secretParams = new HashMap();
 
 	private ClientContext() {
 	}
@@ -31,7 +32,7 @@ public class ClientContext {
 	}
 
 	public boolean checkPermiso(String tag) {
-		return getMapaPermisos().get(tag)!=null?getMapaPermisos().get(tag) : false;
+		return getMapaPermisos().get(tag) != null ? getMapaPermisos().get(tag) : false;
 	}
 
 	public UsuarioDto getUsuario() {
@@ -42,11 +43,11 @@ public class ClientContext {
 		this.usuario = usuario;
 	}
 
-	public Map<String, Boolean> getMapaPermisos() {
+	public HashMap<String, Boolean> getMapaPermisos() {
 		return mapaPermisos;
 	}
 
-	public void setMapaPermisos(Map<String, Boolean> mapaPermisos) {
+	public void setMapaPermisos(HashMap<String, Boolean> mapaPermisos) {
 		this.mapaPermisos = mapaPermisos;
 	}
 
@@ -56,6 +57,10 @@ public class ClientContext {
 
 	public void setVendedor(VendedorDto vendedor) {
 		this.vendedor = vendedor;
+	}
+
+	public HashMap<String, String> getSecretParams() {
+		return secretParams;
 	}
 
 }

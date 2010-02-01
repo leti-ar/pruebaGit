@@ -106,14 +106,28 @@ public class HistoryUtils {
 		Map.Entry entry = null;
 		linea.append("?");
 
-		if (it.hasNext()) {
+		boolean first = true;
+		
+		while (it.hasNext()) {
 			entry = it.next();
-			linea.append("" + entry.getKey() + "=" + entry.getValue());
-			while (it.hasNext()) {
-				entry = it.next();
-				linea.append("&" + entry.getKey() + "=" + entry.getValue());
+			if(entry.getValue() != null){
+				if(first){
+					linea.append("" + entry.getKey() + "=" + entry.getValue());
+					first = false;
+				} else {
+					linea.append("&" + entry.getKey() + "=" + entry.getValue());
+				}
 			}
 		}
+		
+//		if (it.hasNext()) {
+//			entry = it.next();
+//			linea.append("" + entry.getKey() + "=" + entry.getValue());
+//			while (it.hasNext()) {
+//				entry = it.next();
+//				linea.append("&" + entry.getKey() + "=" + entry.getValue());
+//			}
+//		}
 		return linea.toString();
 	}
 }
