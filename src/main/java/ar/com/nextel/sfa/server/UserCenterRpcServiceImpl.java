@@ -42,8 +42,8 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 	 * 
 	 */
 	public UserCenterDto getUserCenter() {
-		Map<String, Boolean> mapaPermisosServer = new HashMap<String, Boolean>(); // se cargan todos
-		Map<String, Boolean> mapaPermisosClient = new HashMap<String, Boolean>(); // se cargan solo los usados
+		HashMap<String, Boolean> mapaPermisosServer = new HashMap<String, Boolean>(); // se cargan todos
+		HashMap<String, Boolean> mapaPermisosClient = new HashMap<String, Boolean>(); // se cargan solo los usados
 		// en el cliente.
 		for (PermisosEnum permiso : PermisosEnum.values()) {
 			String tag = permiso.getValue();
@@ -67,7 +67,7 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 	 * Permisos para desarrollo
 	 */
 	public UserCenterDto getDevUserData() {
-		Map<String, Boolean> mapaPermisos = new HashMap<String, Boolean>();
+		HashMap<String, Boolean> mapaPermisos = new HashMap<String, Boolean>();
 		for (PermisosEnum permiso : PermisosEnum.values()) {
 			String tag = permiso.getValue();
 			if (tag.equals("MI_DEV_TAG") || tag.equals("MI_OTRO_DEV_TAG"))

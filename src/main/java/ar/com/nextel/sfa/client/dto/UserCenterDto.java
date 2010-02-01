@@ -1,6 +1,6 @@
 package ar.com.nextel.sfa.client.dto;
 
-import java.util.Map;
+import java.util.HashMap;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -8,7 +8,7 @@ public class UserCenterDto implements IsSerializable {
 
 	private UsuarioDto usuario;
 	private VendedorDto vendedor;
-	private Map<String, Boolean> mapaPermisos;
+	private HashMap<String, Boolean> mapaPermisos;
 
 	public UsuarioDto getUsuario() {
 		return usuario;
@@ -18,11 +18,11 @@ public class UserCenterDto implements IsSerializable {
 		this.usuario = usuario;
 	}
 
-	public Map<String, Boolean> getMapaPermisos() {
+	public HashMap<String, Boolean> getMapaPermisos() {
 		return mapaPermisos;
 	}
 
-	public void setMapaPermisos(Map<String, Boolean> mapaPermisos) {
+	public void setMapaPermisos(HashMap<String, Boolean> mapaPermisos) {
 		this.mapaPermisos = mapaPermisos;
 	}
 
