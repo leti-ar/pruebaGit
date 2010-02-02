@@ -55,7 +55,7 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickHandler
 	private Hyperlink crearCDW;
 	private int rowIndexSelected;
 
-	// private Hyperlink crearMDS;
+	private Hyperlink crearMDS;
 
 	public Long getTotalRegistrosBusqueda() {
 		return totalRegistrosBusqueda;
@@ -237,7 +237,7 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickHandler
 				crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta,
 						GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
 				crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_CDW));
-				// crearMDS.setTargetHistoryToken(getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_MDS));
+				crearMDS.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_MDS));
 				popupCrearSS.show();
 				popupCrearSS.setPopupPosition(
 						buscarOportunidadFilterUIData.getCrearSS().getAbsoluteLeft() - 10,
@@ -246,7 +246,7 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickHandler
 				AgregarCuentaUI.getInstance().load();
 				BuscadorDocumentoPopup.idOpp = oportunidadSelected.getIdOportunidadNegocio();
 				BuscadorDocumentoPopup.fromMenu = false;
-			} else if (sender == crearEquipos || sender == crearCDW) { // || sender == crearMDS
+			} else if (sender == crearEquipos || sender == crearCDW || sender == crearMDS) { 
 				popupCrearSS.hide();
 			}
 		} else {
@@ -264,11 +264,11 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickHandler
 		FlowPanel linksCrearSS = new FlowPanel();
 		linksCrearSS.add(crearEquipos = new Hyperlink("Equipos/Accesorios", "" + UILoader.BUSCAR_CUENTA));
 		linksCrearSS.add(crearCDW = new Hyperlink("CDW", "" + UILoader.BUSCAR_CUENTA));
-		// linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.BUSCAR_CUENTA));
+		linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.BUSCAR_CUENTA));
 		popupCrearSS.setWidget(linksCrearSS);
 		crearEquipos.addClickHandler(this);
 		crearCDW.addClickHandler(this);
-		// crearMDS.addClickListener(this);
+		crearMDS.addClickListener(this);
 
 		footerBar = new FormButtonsBar();
 		footerBar.addLink(buscarOportunidadFilterUIData.getCrearSS());

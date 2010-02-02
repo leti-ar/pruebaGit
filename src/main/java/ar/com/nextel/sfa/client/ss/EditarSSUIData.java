@@ -358,6 +358,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		GwtValidator validator = new GwtValidator();
 		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
 			validarAlquileresDeLineaSS(validator, linea);
+			validarServicioMDS(validator, linea);
 			validarCargoActivacion(validator, linea);
 		}
 		solicitudServicio.refreshPreciosTotales();
@@ -463,6 +464,25 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			}
 			if (alquileres != 1) {
 				validator.addError(Sfa.constant().ERR_FALTA_ALQUILER().replaceAll(V1, linea.getAlias()));
+			}
+		}
+	}
+	
+	private void validarServicioMDS(GwtValidator validator, LineaSolicitudServicioDto linea) {
+		// Pregunta si es de tipo MDS y busca si tiene un servicio MDS seleccionado
+		if ( (linea.getTipoSolicitud().getTipoSolicitudBase().getId().equals(TipoSolicitudBaseDto.VENTA_EQUIPOS_NUEVOS_G4))
+				||(linea.getTipoSolicitud().getTipoSolicitudBase().getId().equals(TipoSolicitudBaseDto.ALQUILER_EQUIPOS_NUEVOS_G4))
+				||(linea.getTipoSolicitud().getTipoSolicitudBase().getId().equals(TipoSolicitudBaseDto.VENTA_EQUIPOS_USADOS_G4))
+				||(linea.getTipoSolicitud().getTipoSolicitudBase().getId().equals(TipoSolicitudBaseDto.ALQUILER_EQUIPOS_USADOS_G4)) ) {
+			int servicioMds = 0;
+			for (ServicioAdicionalLineaSolicitudServicioDto servicioAdicional : linea
+					.getServiciosAdicionales()) {
+				if ((servicioAdicional.isEsWap() || servicioAdicional.isEsTethered()) && servicioAdicional.isChecked()) {
+					servicioMds++;
+				}
+			}
+			if (servicioMds != 1) {
+				validator.addError(Sfa.constant().ERR_FALTA_MDS().replaceAll(V1, linea.getAlias()));
 			}
 		}
 	}

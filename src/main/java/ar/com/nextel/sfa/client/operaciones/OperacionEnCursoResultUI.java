@@ -74,7 +74,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 	private PopupPanel popupCrearSS;
 	private Hyperlink crearEquipos;
 	private Hyperlink crearCDW;
-	// private Hyperlink crearMDS;
+	private Hyperlink crearMDS;
 	private Long idCuenta;
 	private Long idCuentaPotencial;
 
@@ -94,12 +94,12 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 		FlowPanel linksCrearSS = new FlowPanel();
 		linksCrearSS.add(crearEquipos = new Hyperlink("Equipos/Accesorios", "" + UILoader.OP_EN_CURSO));
 		linksCrearSS.add(crearCDW = new Hyperlink("CDW", "" + UILoader.OP_EN_CURSO));
-		// linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.OP_EN_CURSO));
+		linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.OP_EN_CURSO));
 
 		popupCrearSS.setWidget(linksCrearSS);
 		crearEquipos.addClickListener(this);
 		crearCDW.addClickListener(this);
-		// crearMDS.addClickListener(this);
+		crearMDS.addClickListener(this);
 
 		resultTableWrapperReserva = new SimplePanel();
 		resultTableWrapperReserva.addStyleName("resultTableWrapper");
@@ -491,17 +491,20 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 							.getNumeroCliente(),vtaPot.getIdCuentaOrigen()));
 					crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(vtaPot.getIdCuentaPotencial(),
 							GrupoSolicitudDto.ID_CDW, vtaPot.getNumeroCliente(),vtaPot.getIdCuentaOrigen()));
-					// crearMDS.setTargetHistoryToken(getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_MDS));
+					crearMDS.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(vtaPot.getIdCuentaPotencial(),
+							GrupoSolicitudDto.ID_MDS, vtaPot.getNumeroCliente(),vtaPot.getIdCuentaOrigen()));
 				} else {
 					crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(operacionEnCurso
 							.getIdCuenta(), GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
 					crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(operacionEnCurso.getIdCuenta(),
 							GrupoSolicitudDto.ID_CDW));
+					crearMDS.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(operacionEnCurso.getIdCuenta(),
+							GrupoSolicitudDto.ID_MDS));
 				}
 				popupCrearSS.show();
 				popupCrearSS.setPopupPosition(crearSSLink.getAbsoluteLeft() - 10, crearSSLink
 						.getAbsoluteTop() - 50);
-			} else if (sender == crearEquipos || sender == crearCDW) { // || sender == crearMDS
+			} else if (sender == crearEquipos || sender == crearCDW || sender == crearMDS) { 
 				popupCrearSS.hide();
 			}
 		} else {
