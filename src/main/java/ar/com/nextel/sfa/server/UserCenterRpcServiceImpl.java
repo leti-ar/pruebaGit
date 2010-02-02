@@ -20,6 +20,7 @@ import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.ApplicationContextUtil;
+import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.server.RemoteService;
 
 public class UserCenterRpcServiceImpl extends RemoteService implements UserCenterRpcService {
@@ -41,9 +42,10 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 	/**
 	 * 
 	 */
-	public UserCenterDto getUserCenter() {
+	public UserCenterDto getUserCenter() throws RpcExceptionMessages {
 		HashMap<String, Boolean> mapaPermisosServer = new HashMap<String, Boolean>(); // se cargan todos
-		HashMap<String, Boolean> mapaPermisosClient = new HashMap<String, Boolean>(); // se cargan solo los usados
+		HashMap<String, Boolean> mapaPermisosClient = new HashMap<String, Boolean>(); // se cargan solo los
+		// usados
 		// en el cliente.
 		for (PermisosEnum permiso : PermisosEnum.values()) {
 			String tag = permiso.getValue();
@@ -66,7 +68,7 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 	/**
 	 * Permisos para desarrollo
 	 */
-	public UserCenterDto getDevUserData() {
+	public UserCenterDto getDevUserData() throws RpcExceptionMessages {
 		HashMap<String, Boolean> mapaPermisos = new HashMap<String, Boolean>();
 		for (PermisosEnum permiso : PermisosEnum.values()) {
 			String tag = permiso.getValue();
@@ -120,8 +122,7 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 		try {
 			ucFacade = (UCFacade) getThreadLocalRequest().getSession().getAttribute("UCFacade");
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getMessage(), e);
 		}
 	}
 }
