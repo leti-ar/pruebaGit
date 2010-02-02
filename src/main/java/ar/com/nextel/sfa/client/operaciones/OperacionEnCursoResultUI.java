@@ -488,9 +488,9 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 				if (vtaPot != null) {
 					crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(vtaPot
 							.getIdCuentaPotencial(), GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS, vtaPot
-							.getNumeroCliente(),vtaPot.getIdCuenta()));
+							.getNumeroCliente(),vtaPot.getIdCuentaOrigen()));
 					crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(vtaPot.getIdCuentaPotencial(),
-							GrupoSolicitudDto.ID_CDW, vtaPot.getNumeroCliente(),vtaPot.getIdCuenta()));
+							GrupoSolicitudDto.ID_CDW, vtaPot.getNumeroCliente(),vtaPot.getIdCuentaOrigen()));
 					// crearMDS.setTargetHistoryToken(getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_MDS));
 				} else {
 					crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(operacionEnCurso

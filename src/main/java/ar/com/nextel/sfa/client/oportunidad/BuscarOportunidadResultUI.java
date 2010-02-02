@@ -187,7 +187,7 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickHandler
 			resultTable.setHTML(rowIndex, 5, oportunidad.getNroDocumento());
 			resultTable.setHTML(rowIndex, 6, oportunidad.getNroCuenta());
 			resultTable.setHTML(rowIndex, 7, FormattedDate.format(oportunidad.getFechaAsignacion()));
-			resultTable.setHTML(rowIndex, 8, oportunidad.getEstadoOportunidad().getDescripcion());
+			resultTable.setHTML(rowIndex, 8, oportunidad.getDescripcionEstadoOportunidad());
 			rowIndex++;
 		}
 		numResultadosLabel.setText("Numero de Resultados: " + oportunidades.size());
@@ -232,7 +232,7 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickHandler
 					.getRowSelected() - 1);
 			// Long idCuenta;
 			// if (oportunidadSelected != null && oportunidadSelected.getCuentaOrigen().getId() != null) {
-			Long idCuenta = oportunidadSelected.getCuentaOrigen().getId();
+			Long idCuenta = oportunidadSelected.getIdCuentaOrigen();
 			if (sender == buscarOportunidadFilterUIData.getCrearSS()) {
 				crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta,
 						GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));

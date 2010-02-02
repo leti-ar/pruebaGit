@@ -14,9 +14,8 @@ public class OportunidadNegocioSearchResultDto implements IsSerializable {
 	private String nroDocumento;
 	private String nroCuenta;
 	private Date fechaAsignacion;
-	private EstadoOportunidadDto estadoOportunidad;
-	// private List cuentasCreadas = new ArrayList();
-	private CuentaDto cuentaOrigen;
+	private String descripcionEstadoOportunidad;
+	private Long idCuentaOrigen;
 	private Long idEstadoOpp;
 
 	public Long getIdOportunidadNegocio() {
@@ -83,26 +82,20 @@ public class OportunidadNegocioSearchResultDto implements IsSerializable {
 		this.fechaAsignacion = fechaAsignacion;
 	}
 
-	public EstadoOportunidadDto getEstadoOportunidad() {
-		return estadoOportunidad;
+	public String getDescripcionEstadoOportunidad() {
+		return descripcionEstadoOportunidad;
 	}
 
-	public void setEstadoOportunidad(EstadoOportunidadDto estadoOportunidad) {
-		this.estadoOportunidad = estadoOportunidad;
+	public void setDescripcionEstadoOportunidad(String descripcionEstadoOportunidad) {
+		this.descripcionEstadoOportunidad = descripcionEstadoOportunidad;
 	}
 
-	// public List getCuentasCreadas() {
-	// return cuentasCreadas;
-	// }
-	// public void setCuentasCreadas(List cuentasCreadas) {
-	// this.cuentasCreadas = cuentasCreadas;
-	// }
-	public CuentaDto getCuentaOrigen() {
-		return cuentaOrigen;
+	public Long getIdCuentaOrigen() {
+		return idCuentaOrigen;
 	}
 
-	public void setCuentaOrigen(CuentaDto cuentaOrigen) {
-		this.cuentaOrigen = cuentaOrigen;
+	public void setIdCuentaOrigen(Long idCuentaOrigen) {
+		this.idCuentaOrigen = idCuentaOrigen;
 	}
 
 	public Long getIdEstadoOpp() {
