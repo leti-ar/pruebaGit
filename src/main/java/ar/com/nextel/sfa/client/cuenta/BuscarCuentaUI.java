@@ -37,7 +37,7 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 	private PopupPanel popupAgregarCuenta;
 	private Hyperlink crearEquipos;
 	private Hyperlink crearCDW;
-	// private Hyperlink crearMDS;
+	private Hyperlink crearMDS;
 	private Hyperlink agregarDivision;
 	private Hyperlink agregarSuscriptor;
 
@@ -69,11 +69,11 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 			FlowPanel linksCrearSS = new FlowPanel();
 			linksCrearSS.add(crearEquipos = new Hyperlink("Equipos/Accesorios", "" + UILoader.BUSCAR_CUENTA));
 			linksCrearSS.add(crearCDW = new Hyperlink("CDW", "" + UILoader.BUSCAR_CUENTA));
-			// linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.BUSCAR_CUENTA));
+			linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.BUSCAR_CUENTA));
 			popupCrearSS.setWidget(linksCrearSS);
 			crearEquipos.addClickListener(this);
 			crearCDW.addClickListener(this);
-			// crearMDS.addClickListener(this);
+			crearMDS.addClickListener(this);
 		}
 
 		// Creacion del boton Agregar, con su popup y links
@@ -123,7 +123,7 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 							idCuenta));
 					crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(null, GrupoSolicitudDto.ID_CDW,
 							cuentaSearch.getNumero(), idCuenta));
-					// crearMDS.setTargetHistoryToken(getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_MDS));
+					crearMDS.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_MDS));
 					popupCrearSS.show();
 					popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton
 							.getAbsoluteTop() - 50);
@@ -137,7 +137,7 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 					popupAgregarCuenta.setPopupPosition(agregarCuentaButton.getAbsoluteLeft(),
 							agregarCuentaButton.getAbsoluteTop() - 35);
 				}
-			} else if (sender == crearEquipos || sender == crearCDW) { // || sender == crearMDS
+			} else if (sender == crearEquipos || sender == crearCDW || sender == crearMDS) {
 				popupCrearSS.hide();
 			} else if (sender == agregarDivision) {
 				popupAgregarCuenta.hide();
