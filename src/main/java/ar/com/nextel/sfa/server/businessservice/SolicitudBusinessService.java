@@ -45,7 +45,6 @@ import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
-import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.server.util.MapperExtended;
@@ -313,8 +312,10 @@ public class SolicitudBusinessService {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void cancelarOperacionEnCurso(OperacionEnCurso operacionEnCurso) throws BusinessException,
 			NumberFormatException {
-		if (operacionEnCurso.getSolicitud() != null) {
-			for (LineaSolicitudServicio linea : operacionEnCurso.getSolicitud().getLineas()) {
+		if (operacionEnCurso.getIdSolicitudServicio() != null) {
+			SolicitudServicio solicitudServicio = repository.retrieve(SolicitudServicio.class,
+					operacionEnCurso.getIdSolicitudServicio());
+			for (LineaSolicitudServicio linea : solicitudServicio.getLineas()) {
 				if (linea.getNumeroReserva() != null && !"".equals(linea.getNumeroReserva().trim())) {
 					desreservarNumeroTelefono(Long.parseLong(linea.getNumeroReserva()));
 				}

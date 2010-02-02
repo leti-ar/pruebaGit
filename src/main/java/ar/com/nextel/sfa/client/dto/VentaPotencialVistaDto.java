@@ -18,10 +18,9 @@ public class VentaPotencialVistaDto implements IsSerializable {
 	private String razonSocial;
 	private String telefono;
 	private String numero;
-	// private Vendedor vendedor;
 	private Boolean consultada;
 	private Date fechaAsignacion;
-	private Long idCuenta;
+	private Long idCuentaOrigen;
 	
 	public Long getIdCuentaPotencial() {
 		return idCuentaPotencial;
@@ -71,12 +70,6 @@ public class VentaPotencialVistaDto implements IsSerializable {
 		this.numero = numero;
 	}
 
-	// public Vendedor getVendedor() {
-	// return vendedor;
-	// }
-	// public void setVendedor(Vendedor vendedor) {
-	// this.vendedor = vendedor;
-	// }
 	public Boolean getConsultada() {
 		return consultada;
 	}
@@ -93,11 +86,12 @@ public class VentaPotencialVistaDto implements IsSerializable {
 		this.fechaAsignacion = fechaAsignacion;
 	}
 
-	public Long getIdCuenta() {
-		return idCuenta;
+	public Long getIdCuentaOrigen() {
+		return idCuentaOrigen;
 	}
-	
-	public void setIdCuenta(Long idCuenta) {
-		this.idCuenta = idCuenta;
+
+	public void setIdCuentaOrigen(Long idCuentaOrigen) {
+		this.idCuentaOrigen = idCuentaOrigen;
 	}
+
 }

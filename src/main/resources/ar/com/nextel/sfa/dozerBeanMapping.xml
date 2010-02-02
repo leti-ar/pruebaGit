@@ -674,10 +674,6 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.OperacionEnCursoDto
 		</class-b>
-		<field>
-			<a>solicitud.grupoSolicitud.id</a>
-			<b>idGrupoSolicitud</b>
-		</field>
 	</mapping>	
 
 	<mapping>

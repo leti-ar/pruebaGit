@@ -59,10 +59,6 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 		Vendedor vendedor = sessionContextLoader.getVendedor();
 		AppLogger.info("Obteniendo reservas para vendedor: " + vendedor.getUserName(), this);
 		List<VentaPotencialVistaDto> ventasPotencialesEnCursoDto = mapper.convertList(vendedor.getVentasPotencialesVistaEnCurso(), VentaPotencialVistaDto.class);
-		for (VentaPotencialVistaDto venta:ventasPotencialesEnCursoDto) {
-			CuentaPotencial ctaPot = repository.retrieve(CuentaPotencial.class, venta.getIdCuentaPotencial());
-			venta.setIdCuenta(ctaPot.getCuentaOrigen().getId());
-		}
 		VentaPotencialVistaResultDto ventaPotencialVistaResultDto = new VentaPotencialVistaResultDto(ventasPotencialesEnCursoDto, vendedor.getCantidadCuentasPotencialesNoConsultadasActivasYVigentes().toString());
 		return ventaPotencialVistaResultDto;
 	}
