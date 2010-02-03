@@ -10,6 +10,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import winit.uc.facade.UCFacade;
+import ar.com.nextel.business.vendedores.RegistroVendedores;
 import ar.com.nextel.framework.security.Usuario;
 import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
@@ -19,7 +20,6 @@ import ar.com.nextel.sfa.client.dto.UsuarioDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.server.util.MapperExtended;
-import ar.com.nextel.util.ApplicationContextUtil;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.server.RemoteService;
 
@@ -30,6 +30,7 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 	private MapperExtended mapper;
 	private SessionContextLoader sessionContext;
 	private UCFacade ucFacade;
+	private RegistroVendedores registroVendedores;
 
 	@Override
 	public void init() throws ServletException {
@@ -37,6 +38,7 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 		context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		mapper = (MapperExtended) context.getBean("dozerMapper");
 		sessionContext = (SessionContextLoader) context.getBean("sessionContextLoader");
+		registroVendedores = (RegistroVendedores) context.getBean("registroVendedores");
 	}
 
 	/**
@@ -58,8 +60,7 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 		UserCenterDto userCenter = new UserCenterDto();
 		Usuario usuario = (Usuario) sessionContext.getSessionContext().get(SessionContext.USUARIO);
 		userCenter.setUsuario(mapper.map(usuario, UsuarioDto.class));
-		userCenter.getUsuario().setId(
-				ApplicationContextUtil.getInstance().getRegistroVendedores().getVendedor(usuario).getId());
+		userCenter.getUsuario().setId(registroVendedores.getVendedor(usuario).getId());
 		userCenter.setMapaPermisos(mapaPermisosClient);
 		userCenter.setVendedor(mapper.map(sessionContext.getVendedor(), VendedorDto.class));
 		return userCenter;

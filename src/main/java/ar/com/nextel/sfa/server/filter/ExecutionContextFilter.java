@@ -23,6 +23,7 @@ import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.usercenter.SFAUserCenter;
 import ar.com.nextel.services.usercenter.factory.SFAUserCenterFactory;
+import ar.com.nextel.util.ApplicationContextUtil;
 
 /**
  * Este filtro prepara el contexto de ejecución de la aplicación
@@ -40,6 +41,8 @@ public class ExecutionContextFilter implements Filter {
 	public void init(FilterConfig config) throws ServletException {
 		ServletContext sc = config.getServletContext();
 		ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(sc);
+		// Carga el contexto en el Utils para que no levante nuevamente si se utiliza.
+		ApplicationContextUtil.getInstance(springContext);
 		registroVendedores = (RegistroVendedores) springContext.getBean("registroVendedores");
 		sessionContext = (SessionContextLoader) springContext.getBean("sessionContextLoader");
 		sfaUserCenterFactory = (SFAUserCenterFactory) springContext.getBean("userCenterFactory");
