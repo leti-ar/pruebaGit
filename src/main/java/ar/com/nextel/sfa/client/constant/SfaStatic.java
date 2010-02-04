@@ -196,6 +196,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ERR_FALTA_DOMICILIO_FACTURACION();
 
   /**
+   * Translated "El ítem {1} debe tener un servicio MDS seleccionado.".
+   * 
+   * @return translated "El ítem {1} debe tener un servicio MDS seleccionado."
+   */
+  @DefaultStringValue("El ítem {1} debe tener un servicio MDS seleccionado.")
+  @Key("ERR_FALTA_MDS")
+  String ERR_FALTA_MDS();
+
+  /**
    * Translated "La fecha de nacimiento debe ser inferior a la de hoy.".
    * 
    * @return translated "La fecha de nacimiento debe ser inferior a la de hoy."
