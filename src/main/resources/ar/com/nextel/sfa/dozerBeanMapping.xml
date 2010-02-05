@@ -716,4 +716,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>grupoDocumentoId</b>
 		</field>
 	</mapping>
+	<mapping>
+		<class-a>ar.com.nextel.model.oportunidades.beans.ComentarioCuentaPotencial
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.ComentarioDto
+		</class-b>
+	</mapping>	
 </mappings>
