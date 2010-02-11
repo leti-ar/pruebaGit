@@ -283,11 +283,6 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 		for (final VentaPotencialVistaDto vtaPotencialDto : vtaPotencialActuales) {
 
 			HTML iconAbrirOpp = IconFactory.lapiz(Sfa.constant().ALT_ABRIR_OPORTUNIDAD());
-			iconAbrirOpp.addClickHandler(new ClickHandler() {
-				public void onClick(ClickEvent event) {
-					CuentaClientService.getOportunidadNegocio(vtaPotencialDto.getIdCuentaPotencial());
-				}
-			});
 			resultTableReservas.setWidget(row, 0, iconAbrirOpp);
 
 			// if (reserva.isPuedeVerInfocom()) {
@@ -320,11 +315,11 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 				}
 			});
 			resultTableReservas.setWidget(row, 2, iconAddProspect);
-			if(vtaPotencialDto.isEsReserva()) {
+			if (vtaPotencialDto.isEsReserva()) {
 				resultTableReservas.setWidget(row, 3, IconFactory.locked());
-			} else { 
+			} else {
 				resultTableReservas.setWidget(row, 3, IconFactory.oportunidad());
-			}			
+			}
 			resultTableReservas.setHTML(row, 4, vtaPotencialDto.getNumeroCliente());
 			resultTableReservas.setHTML(row, 5, vtaPotencialDto.getRazonSocial());
 			resultTableReservas.setHTML(row, 6, vtaPotencialDto.getTelefono().toString());
@@ -488,11 +483,11 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 				if (vtaPot != null) {
 					crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(vtaPot
 							.getIdCuentaPotencial(), GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS, vtaPot
-							.getNumeroCliente(),vtaPot.getIdCuentaOrigen()));
+							.getNumeroCliente(), vtaPot.getIdCuentaOrigen()));
 					crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(vtaPot.getIdCuentaPotencial(),
-							GrupoSolicitudDto.ID_CDW, vtaPot.getNumeroCliente(),vtaPot.getIdCuentaOrigen()));
+							GrupoSolicitudDto.ID_CDW, vtaPot.getNumeroCliente(), vtaPot.getIdCuentaOrigen()));
 					crearMDS.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(vtaPot.getIdCuentaPotencial(),
-							GrupoSolicitudDto.ID_MDS, vtaPot.getNumeroCliente(),vtaPot.getIdCuentaOrigen()));
+							GrupoSolicitudDto.ID_MDS, vtaPot.getNumeroCliente(), vtaPot.getIdCuentaOrigen()));
 				} else {
 					crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(operacionEnCurso
 							.getIdCuenta(), GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
@@ -504,12 +499,12 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 				popupCrearSS.show();
 				popupCrearSS.setPopupPosition(crearSSLink.getAbsoluteLeft() - 10, crearSSLink
 						.getAbsoluteTop() - 50);
-			} else if (sender == crearEquipos || sender == crearCDW || sender == crearMDS) { 
+			} else if (sender == crearEquipos || sender == crearCDW || sender == crearMDS) {
 				popupCrearSS.hide();
 			}
 		} else {
-			MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_NO_CUENTA_SELECTED(),
-					MessageDialog.getCloseCommand());
+			MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO,
+					Sfa.constant().ERR_NO_CUENTA_SELECTED(), MessageDialog.getCloseCommand());
 		}
 	}
 }
