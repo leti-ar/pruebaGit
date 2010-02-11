@@ -1654,6 +1654,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String observaciones();
 
   /**
+   * Translated "Origen".
+   * 
+   * @return translated "Origen"
+   */
+  @DefaultStringValue("Origen")
+  @Key("origen")
+  String origen();
+
+  /**
    * Translated "<span class=\"req\">Origen:</span>".
    * 
    * @return translated "<span class=\"req\">Origen:</span>"
@@ -2040,6 +2049,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("tipoPlan")
   String tipoPlan();
 
+  /**
+   * Translated "Título".
+   * 
+   * @return translated "Título"
+   */
+  @DefaultStringValue("titulo")
+  @Key("titulo")
+  String titulo();
+  
   /**
    * Translated "Torre:".
    * 

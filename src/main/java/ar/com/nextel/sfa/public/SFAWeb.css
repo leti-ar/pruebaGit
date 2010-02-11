@@ -738,3 +738,27 @@ border:1px solid gray;
 clear:left;
 margin:8px;
 }*/
+
+.htmlTituloAreaCuentaNotas {
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 5px;
+	height: 20px;
+	width: 98%;
+	white-space: normal;
+	overflow: auto;
+	border: 1px solid #BCBCBC;
+	background-color: #ECEBEB;
+}
+
+.htmlComentarioAreaCuentaNotas {	
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 5px;
+	height: 80px;
+	width: 98%;
+	white-space: normal;
+	overflow: auto;
+	border: 1px solid #BCBCBC;
+	background-color: #ECEBEB;
+}

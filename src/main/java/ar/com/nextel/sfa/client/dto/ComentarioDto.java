@@ -2,7 +2,9 @@ package ar.com.nextel.sfa.client.dto;
 
 import java.util.Date;
 
-public class ComentarioDto {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class ComentarioDto implements IsSerializable{
 	private Date fechaAlta;
 	private String usuario;
 	private String textoComentario;

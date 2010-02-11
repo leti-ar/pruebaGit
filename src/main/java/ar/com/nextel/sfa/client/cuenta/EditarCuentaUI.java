@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.enums.CondicionCuentaEnum;
@@ -216,7 +217,7 @@ public class EditarCuentaUI extends ApplicationUI {
 		// carga info pestaña Contactos
 		cuentaTab.getCuentaContactoForm().getCrearButton().setVisible(esEdicionCuenta);
 		cuentaTab.getCuentaContactoForm().cargarTablaContactos(cuentaTab.getCuenta2editDto());
-
+		
 		// prepara UI para edicion cuenta o visualizacion opp
 		cuentaTab.setTabsTipoEditorCuenta(esEdicionCuenta);
 		cuentaTab.getCuentaDatosForm().setUItipoEditorCuenta(esEdicionCuenta);
@@ -275,6 +276,7 @@ public class EditarCuentaUI extends ApplicationUI {
 		cuentaTab.getCuentaDatosForm().ponerDatosOportunidadEnFormulario(
 				CuentaClientService.cuentaPotencialDto);
 		cuentaTab.setNumeroCtaPot(CuentaClientService.cuentaPotencialDto.getNumero());
+		cuentaTab.getCuentaNotasForm().cargarTablaCuentas(CuentaClientService.cuentaPotencialDto);
 		completarVisualizacionDatos(CuentaClientService.cuentaPotencialDto.getCuentaOrigen());
 	}
 

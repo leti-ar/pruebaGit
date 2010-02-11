@@ -66,7 +66,7 @@ public class CuentaEdicionTabPanel {
 	private CuentaDomiciliosForm cuentaDomiciliosForm = CuentaDomiciliosForm.getInstance();
 	private CuentaContactoForm   cuentaContactoForm   = CuentaContactoForm.getInstance();
 	private CuentaInfocomForm    cuentaInfocomForm    = CuentaInfocomForm.getInstance();
-	//private CuentaNotasForm      cuentaNotasForm      = CuentaNotasForm.getInstance();
+	private CuentaNotasForm      cuentaNotasForm      = CuentaNotasForm.getInstance();
 	private TabPanel tabPanel;
 	private FormButtonsBar footerBar;
 	
@@ -154,6 +154,7 @@ public class CuentaEdicionTabPanel {
 		tabPanel.add(cuentaDomiciliosForm, Sfa.constant().domicilios());
 		tabPanel.add(cuentaContactoForm, Sfa.constant().contactos());
 		tabPanel.add(cuentaInfocomForm, Sfa.constant().infocom());
+		tabPanel.add(cuentaNotasForm, Sfa.constant().notas());
 		tabPanel.selectTab(0);
 		tabPanel.addTabListener(new TabListener(){
 			public boolean onBeforeTabSelected(SourcesTabEvents arg0, int arg1) {
@@ -346,9 +347,9 @@ public class CuentaEdicionTabPanel {
 			tabPanel.add(cuentaInfocomForm, Sfa.constant().infocom());
 
 		//si viene de opp agrega notas (Dejar comentado)
-//		if (!editorCuenta ) { 
-//			tabPanel.add(cuentaNotasForm, Sfa.constant().notas());
-//		}
+		if (!editorCuenta ) { 
+			tabPanel.add(cuentaNotasForm, Sfa.constant().notas());
+		}
 		
 		validarCompletitudButton.setVisible(editorCuenta && !EditarCuentaUI.edicionReadOnly);
 		numeroCtaPotPanel.setVisible(!editorCuenta);
@@ -526,12 +527,12 @@ public class CuentaEdicionTabPanel {
 	public void setCuentaInfocomForm(CuentaInfocomForm cuentaInfocomForm) {
 		this.cuentaInfocomForm = cuentaInfocomForm;
 	}	
-//	public CuentaNotasForm getCuentaNotasForm() {
-//		return cuentaNotasForm;
-//	}
-//	public void setCuentaNotasForm(CuentaNotasForm cuentaNotasForm) {
-//		this.cuentaNotasForm = cuentaNotasForm;
-//	}
+	public CuentaNotasForm getCuentaNotasForm() {
+		return cuentaNotasForm;
+	}
+	public void setCuentaNotasForm(CuentaNotasForm cuentaNotasForm) {
+		this.cuentaNotasForm = cuentaNotasForm;
+	}
 	public GwtValidator getValidator() {
 		return validator;
 	}
