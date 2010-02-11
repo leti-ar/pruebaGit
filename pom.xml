@@ -50,14 +50,9 @@
       <classifier>${platform}</classifier>
       <scope>provided</scope>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>com.google.gwt</groupId>-->
-<!--      <artifactId>gwt-incubator</artifactId>-->
-<!--      <version>july-14-2009</version>-->
-<!--    </dependency>-->
     <dependency>
       <groupId>ar.com.snoop.gwt</groupId>
-      <artifactId>GwtCommons</artifactId>
+      <artifactId>GwtCommons-sfa</artifactId>
       <version>1.1-SNAPSHOT</version>
     </dependency>
     <!--  Spring deps  -->
@@ -172,7 +167,7 @@
 	<plugin>
 		<groupId>org.codehaus.mojo</groupId>
 		<artifactId>gwt-maven-plugin</artifactId>
-		<version>1.1</version>
+		<version>1.2</version>
 		<configuration>
 			<output>${basedir}/war</output>
 			<runTarget>ar.com.nextel.sfa.SFAWeb/SFAWeb.html</runTarget>
