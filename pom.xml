@@ -167,7 +167,7 @@
 	<plugin>
 		<groupId>org.codehaus.mojo</groupId>
 		<artifactId>gwt-maven-plugin</artifactId>
-		<version>1.2</version>
+		<version>1.1</version>
 		<configuration>
 			<output>${basedir}/war</output>
 			<runTarget>ar.com.nextel.sfa.SFAWeb/SFAWeb.html</runTarget>
