@@ -938,7 +938,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	public void desreservarSiNoFueGrabado() {
 		// Si no fue guardado nunca no tiene tipo
 		if (lineaSolicitudServicio.getTipoSolicitud() == null) {
-			String numeroReservado = lineaSolicitudServicio.getNumeroReserva();
+			String numeroReservado = getNumeroTelefonicoCompletoFromFields();
 			boolean tieneNReserva = numeroReservado != null && numeroReservado.length() > 4;
 			if (tieneNReserva) {
 				controller.desreservarNumeroTelefonico(Long.parseLong(numeroReservado),
