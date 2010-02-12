@@ -774,7 +774,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			localidad.setSelectedItem(ClientContext.getInstance().getVendedor().getLocalidad());
 		}
 		setFieldsFromNumeroTelefonicoCompleto(linea.getNumeroReserva());
-		boolean tieneNReserva = sinReservaAlAbrir();
+		boolean tieneNReserva = !sinReservaAlAbrir();
 		setEnableReservaRelatedInputs(!tieneNReserva);
 		desreservar.setVisible(tieneNReserva);
 		confirmarReserva.setVisible(!tieneNReserva);
