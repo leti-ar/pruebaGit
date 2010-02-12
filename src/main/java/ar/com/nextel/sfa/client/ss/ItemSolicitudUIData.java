@@ -275,7 +275,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 							setEnableReservaRelatedInputs(false);
 							desreservar.setVisible(true);
 							confirmarReserva.setVisible(false);
-							setNumeroTelefonicoCompleto("" + result.getReservedNumber());
+							setFieldsFromNumeroTelefonicoCompleto("" + result.getReservedNumber());
 							MessageDialog.getInstance().showAceptar("Reserva Exitosa",
 									Sfa.constant().MSG_NUMERO_RESERVADO(), MessageDialog.getCloseCommand());
 						}
@@ -555,7 +555,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		return reservarHidden.getText() + reservar.getText();
 	}
 
-	private void setNumeroTelefonicoCompleto(String numero) {
+	private void setFieldsFromNumeroTelefonicoCompleto(String numero) {
 		if (numero != null) {
 			if (numero.length() > 4) {
 				reservarHidden.setText(numero.substring(0, numero.length() - 4));
@@ -773,13 +773,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		} else {
 			localidad.setSelectedItem(ClientContext.getInstance().getVendedor().getLocalidad());
 		}
-		setNumeroTelefonicoCompleto(linea.getNumeroReserva());
-		boolean tieneNReserva = linea.getNumeroReserva() != null && linea.getNumeroReserva().length() > 4;
+		setFieldsFromNumeroTelefonicoCompleto(linea.getNumeroReserva());
+		boolean tieneNReserva = sinReservaAlAbrir();
 		setEnableReservaRelatedInputs(!tieneNReserva);
 		desreservar.setVisible(tieneNReserva);
 		confirmarReserva.setVisible(!tieneNReserva);
-		// reservar.setText(linea.getNumeroReserva());
-		// reservarHidden.setText(linea.getNumeroReservaArea());
 		serie.setText(linea.getNumeroSerie());
 		sim.setText(linea.getNumeroSimcard());
 		roaming.setValue(linea.getRoaming());
@@ -811,7 +809,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				serie.setText(linea.getNumeroSerie());
 			}
 			sim.setText(linea.getNumeroSimcard());
-			// pin.setText(linea.get)
 		}
 	}
 
@@ -937,7 +934,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 	public void desreservarSiNoFueGrabado() {
 		// Si no fue guardado nunca no tiene tipo
-		if (lineaSolicitudServicio.getTipoSolicitud() == null) {
+		if (sinReservaAlAbrir()) {
 			String numeroReservado = getNumeroTelefonicoCompletoFromFields();
 			boolean tieneNReserva = numeroReservado != null && numeroReservado.length() > 4;
 			if (tieneNReserva) {
@@ -948,5 +945,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 						});
 			}
 		}
+	}
+
+	private boolean sinReservaAlAbrir() {
+		return lineaSolicitudServicio.getNumeroReservaArea() == null
+				|| "".equals(lineaSolicitudServicio.getNumeroReservaArea().trim());
 	}
 }
