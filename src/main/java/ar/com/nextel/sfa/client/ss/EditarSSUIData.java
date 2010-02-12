@@ -467,17 +467,22 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			}
 		}
 	}
-	
+
 	private void validarServicioMDS(GwtValidator validator, LineaSolicitudServicioDto linea) {
 		// Pregunta si es de tipo MDS y busca si tiene un servicio MDS seleccionado
-		if ( (linea.getTipoSolicitud().getTipoSolicitudBase().getId().equals(TipoSolicitudBaseDto.VENTA_EQUIPOS_NUEVOS_G4))
-				||(linea.getTipoSolicitud().getTipoSolicitudBase().getId().equals(TipoSolicitudBaseDto.ALQUILER_EQUIPOS_NUEVOS_G4))
-				||(linea.getTipoSolicitud().getTipoSolicitudBase().getId().equals(TipoSolicitudBaseDto.VENTA_EQUIPOS_USADOS_G4))
-				||(linea.getTipoSolicitud().getTipoSolicitudBase().getId().equals(TipoSolicitudBaseDto.ALQUILER_EQUIPOS_USADOS_G4)) ) {
+		if ((linea.getTipoSolicitud().getTipoSolicitudBase().getId()
+				.equals(TipoSolicitudBaseDto.VENTA_EQUIPOS_NUEVOS_G4))
+				|| (linea.getTipoSolicitud().getTipoSolicitudBase().getId()
+						.equals(TipoSolicitudBaseDto.ALQUILER_EQUIPOS_NUEVOS_G4))
+				|| (linea.getTipoSolicitud().getTipoSolicitudBase().getId()
+						.equals(TipoSolicitudBaseDto.VENTA_EQUIPOS_USADOS_G4))
+				|| (linea.getTipoSolicitud().getTipoSolicitudBase().getId()
+						.equals(TipoSolicitudBaseDto.ALQUILER_EQUIPOS_USADOS_G4))) {
 			int servicioMds = 0;
 			for (ServicioAdicionalLineaSolicitudServicioDto servicioAdicional : linea
 					.getServiciosAdicionales()) {
-				if ((servicioAdicional.isEsWap() || servicioAdicional.isEsTethered()) && servicioAdicional.isChecked()) {
+				if ((servicioAdicional.isEsWap() || servicioAdicional.isEsTethered())
+						&& servicioAdicional.isChecked()) {
 					servicioMds++;
 				}
 			}
@@ -549,10 +554,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	/** Elimina la linea, renumera las restantes y borra los servicios adicionales asociados */
 	public int removeLineaSolicitudServicio(int index) {
 		saved = false;
-		String numeroReservado = solicitudServicio.getLineas().get(index).getNumeroReserva();
-		boolean tieneNReserva = numeroReservado != null && numeroReservado.length() > 4;
+		LineaSolicitudServicioDto linea = solicitudServicio.getLineas().get(index);
+		String numeroReservado = linea.getNumeroReservaArea();
+		boolean tieneNReserva = numeroReservado != null && numeroReservado.length() > 0;
 		if (tieneNReserva) {
-			controller.desreservarNumeroTelefonico(Long.parseLong(numeroReservado),
+			controller.desreservarNumeroTelefonico(Long.parseLong(numeroReservado), linea.getId(),
 					new DefaultWaitCallback() {
 						public void success(Object result) {
 						}
@@ -703,5 +709,19 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			}
 		}
 		return false;
+	}
+
+	public void desreservarNumerosNoGuardados() {
+		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
+			if (linea.getId() == null && linea.getNumeroReservaArea() != null
+					&& linea.getNumeroReservaArea().length() > 0) {
+				controller.desreservarNumeroTelefonico(Long.parseLong(linea.getNumeroReserva()), null,
+						new DefaultWaitCallback() {
+							public void success(Object result) {
+							};
+						});
+			}
+		}
+
 	}
 }

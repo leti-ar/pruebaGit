@@ -272,7 +272,16 @@ public class SolicitudBusinessService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void desreservarNumeroTelefono(long numero) throws BusinessException {
+	public void desreservarNumeroTelefono(long numero, Long idLineaSolicitudServicio)
+			throws BusinessException {
+		if (idLineaSolicitudServicio != null) {
+			LineaSolicitudServicio linea = repository.retrieve(LineaSolicitudServicio.class,
+					idLineaSolicitudServicio);
+			linea.setNumeroReservaArea("");
+			int beginIndex = linea.getNumeroReserva().length() - 4;
+			linea.setNumeroReserva(linea.getNumeroReserva().substring(beginIndex));
+			repository.save(linea);
+		}
 		reservaNumeroTelefonoBusinessOperator.desreservarNumeroTelefono(numero, sessionContextLoader
 				.getVendedor());
 
@@ -317,7 +326,7 @@ public class SolicitudBusinessService {
 					operacionEnCurso.getIdSolicitudServicio());
 			for (LineaSolicitudServicio linea : solicitudServicio.getLineas()) {
 				if (linea.getNumeroReserva() != null && !"".equals(linea.getNumeroReserva().trim())) {
-					desreservarNumeroTelefono(Long.parseLong(linea.getNumeroReserva()));
+					desreservarNumeroTelefono(Long.parseLong(linea.getNumeroReserva()), null);
 				}
 			}
 		}

@@ -303,7 +303,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private void desreservar() {
 		LoadingModalDialog.getInstance().showAndCenter("Reserva", "Desreservando número telefónico ...");
 		controller.desreservarNumeroTelefonico(Long.parseLong(getNumeroTelefonicoCompletoFromFields()),
-				new DefaultWaitCallback() {
+				lineaSolicitudServicio.getId(), new DefaultWaitCallback() {
 					public void success(Object result) {
 						LoadingModalDialog.getInstance().hide();
 						setEnableReservaRelatedInputs(true);
@@ -939,7 +939,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			boolean tieneNReserva = numeroReservado != null && numeroReservado.length() > 4;
 			if (tieneNReserva) {
 				controller.desreservarNumeroTelefonico(Long.parseLong(numeroReservado),
-						new DefaultWaitCallback() {
+						lineaSolicitudServicio.getId(), new DefaultWaitCallback() {
 							public void success(Object result) {
 							}
 						});

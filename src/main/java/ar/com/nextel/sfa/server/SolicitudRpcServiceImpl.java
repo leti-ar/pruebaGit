@@ -42,6 +42,7 @@ import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.personas.beans.Localidad;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
+import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
@@ -409,9 +410,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return mapper.map(result, ResultadoReservaNumeroTelefonoDto.class);
 	}
 
-	public void desreservarNumeroTelefono(long numero) throws RpcExceptionMessages {
+	public void desreservarNumeroTelefono(long numero, Long idLineaSolicitudServicio)
+			throws RpcExceptionMessages {
 		try {
-			solicitudBusinessService.desreservarNumeroTelefono(numero);
+			solicitudBusinessService.desreservarNumeroTelefono(numero, idLineaSolicitudServicio);
 		} catch (BusinessException e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);

@@ -35,7 +35,8 @@ public interface EditarSSUIController {
 	public void reservarNumeroTelefonico(long numero, long idTipoTelefonia, long idModalidadCobro,
 			long idLocalidad, DefaultWaitCallback<ResultadoReservaNumeroTelefonoDto> callback);
 
-	public void desreservarNumeroTelefonico(long numero, DefaultWaitCallback callback);
+	public void desreservarNumeroTelefonico(long numero, Long idLineaSolicitudServicio,
+			DefaultWaitCallback callback);
 
 	public void getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios,
 			DefaultWaitCallback<List<ModeloDto>> callback);

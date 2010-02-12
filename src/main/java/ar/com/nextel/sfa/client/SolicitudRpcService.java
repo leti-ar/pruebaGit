@@ -79,7 +79,7 @@ public interface SolicitudRpcService extends RemoteService {
 	public ResultadoReservaNumeroTelefonoDto reservarNumeroTelefonico(long numero, long idTipoTelefonia,
 			long idModalidadCobro, long idLocalidad) throws RpcExceptionMessages;
 
-	public void desreservarNumeroTelefono(long numero) throws RpcExceptionMessages;
+	public void desreservarNumeroTelefono(long numero, Long idLineaSolicitudServicio) throws RpcExceptionMessages;
 
 	public List<ModeloDto> getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios)
 			throws RpcExceptionMessages;

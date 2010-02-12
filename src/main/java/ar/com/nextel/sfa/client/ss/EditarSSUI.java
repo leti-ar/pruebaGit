@@ -228,6 +228,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					ErrorDialog.getInstance().show(errors, false);
 				}
 			} else {
+				editarSSUIData.desreservarNumerosNoGuardados();
 				editarSSUIData.setSaved(true);
 			}
 			// Continuo a la página a la que me dirigía en el caso de que no haya errores.
@@ -424,8 +425,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				idModalidadCobro, idLocalidad, callback);
 	}
 
-	public void desreservarNumeroTelefonico(long numero, DefaultWaitCallback callback) {
-		SolicitudRpcService.Util.getInstance().desreservarNumeroTelefono(numero, callback);
+	public void desreservarNumeroTelefonico(long numero, Long idLineaSolicitudServicio,
+			DefaultWaitCallback callback) {
+		SolicitudRpcService.Util.getInstance().desreservarNumeroTelefono(numero, idLineaSolicitudServicio,
+				callback);
 	}
 
 	public void getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios,

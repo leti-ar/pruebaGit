@@ -107,9 +107,9 @@ public class SolicitudRpcServiceDelegate {
 				idLocalidad, callback);
 	}
 
-	public void desreservarNumeroTelefono(long numero, DefaultWaitCallback callback) {
+	public void desreservarNumeroTelefono(long numero, Long idLineaSolicitudServicio, DefaultWaitCallback callback) {
 		WaitWindow.show();
-		solicitudRpcServiceAsync.desreservarNumeroTelefono(numero, callback);
+		solicitudRpcServiceAsync.desreservarNumeroTelefono(numero, idLineaSolicitudServicio, callback);
 	}
 
 	public void getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios,

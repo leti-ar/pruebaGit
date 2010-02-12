@@ -61,7 +61,7 @@ public interface SolicitudRpcServiceAsync {
 	public void reservarNumeroTelefonico(long numero, long idTipoTelefonia, long idModalidadCobro,
 			long idLocalidad, AsyncCallback<ResultadoReservaNumeroTelefonoDto> callback);
 
-	public void desreservarNumeroTelefono(long numero, AsyncCallback callback);
+	public void desreservarNumeroTelefono(long numero, Long idLineaSolicitudServicio, AsyncCallback callback);
 
 	public void getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios,
 			AsyncCallback<List<ModeloDto>> callback);
