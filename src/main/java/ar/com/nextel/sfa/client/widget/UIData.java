@@ -19,30 +19,25 @@ public class UIData {
 	protected List<Widget> fields = new ArrayList<Widget>();
 	private List<Label> listaLabels = new ArrayList();
 
+	/** Limpia todos los campos de la coleccion (fields) */
 	public void clean() {
 		FormUtils.clearFields(fields);
 	}
-	
-	/**
-	 * @author eSalvador
-	 */
+
+	/** Limpia y habilita todos los campos de la coleccion (fields) */
 	public void cleanAndEnableFields() {
 		FormUtils.cleanAndEnableFields(fields);
 		for (int i = 0; i < listaLabels.size(); i++) {
-			listaLabels.get(i).removeStyleName("gwt-labelDisabled");	
+			listaLabels.get(i).removeStyleName("gwt-labelDisabled");
 		}
 	}
-	
-	/**
-	 * @author eSalvador
-	 */
+
+	/** Habilita todos los campos de la coleccion (fields) */
 	public void enableFields() {
 		FormUtils.enableFields(fields);
 	}
-	
-	/**
-	 * @author eSalvador
-	 */
+
+	/** Deshabilita todos los campos de la coleccion (fields) */
 	public void disableFields() {
 		FormUtils.disableFields(fields);
 	}
