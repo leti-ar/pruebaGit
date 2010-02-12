@@ -144,8 +144,8 @@ public class ServicioAdicionalLineaSolicitudServicioDto implements IsSerializabl
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((servicioAdicional.getId() == null) ? 0 : servicioAdicional.getId().hashCode());
+		Long id = servicioAdicional != null ? servicioAdicional.getId() : null;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
 
@@ -162,8 +162,8 @@ public class ServicioAdicionalLineaSolicitudServicioDto implements IsSerializabl
 			return false;
 		return true;
 	}
-	
-	public ServicioAdicionalLineaSolicitudServicioDto clone(){
+
+	public ServicioAdicionalLineaSolicitudServicioDto clone() {
 		ServicioAdicionalLineaSolicitudServicioDto servicio = new ServicioAdicionalLineaSolicitudServicioDto();
 		servicio.precioVenta = precioVenta;
 		servicio.servicioAdicional = servicioAdicional;
