@@ -291,7 +291,11 @@ public class SolicitudBusinessService {
 	public GeneracionCierreResponse generarCerrarSolicitud(SolicitudServicio solicitudServicio,
 			String pinMaestro, boolean cerrar) {
 
-		setScoringChecked(solicitudServicio, pinMaestro);
+		if (!GenericValidator.isBlankOrNull(pinMaestro) && solicitudServicio.getCuenta().isEnCarga()) {
+			solicitudServicio.getCuenta().setPinMaestro(pinMaestro);
+		} else {
+			setScoringChecked(solicitudServicio, pinMaestro);
+		}
 		if (cerrar) {
 			// La SS se está invocando desde Objeto B (Interfaz web)
 			solicitudServicio.setSourceModule("B");
