@@ -27,6 +27,7 @@ public class InfocomUI extends ApplicationUI {
 	private String responsablePago;
 	private String razonSocial;
 	private String idCliente;
+	private String codigoVantive;
 	private static InfocomUI instance;
 	
 	
@@ -51,44 +52,46 @@ public class InfocomUI extends ApplicationUI {
 		mainPanel.add(ccInfocomUI.getCCTitledPanel());	
 	}
 			
-	public void reload(String idCuenta, String responsablePago) {
+	public void reload(String idCuenta, String responsablePago, String codigoVantive) {
 		this.idCuenta = idCuenta;
 		this.responsablePago = responsablePago;
 		if ("Todos".equals(responsablePago)) {
-			invocarServiciosTodos(idCuenta, responsablePago);
+			invocarServiciosTodos(idCuenta, responsablePago, codigoVantive);
 		} else {
-			invocarServicios(idCuenta, responsablePago);
+			invocarServicios(idCuenta, responsablePago, codigoVantive);
 		}
 	}
 	
 	public boolean load() {
-		String cuentaID =HistoryUtils.getParam("cuenta_id");
-		return loadInfocom(cuentaID);
+		String codigoVantive = null;
+		String cuentaID = HistoryUtils.getParam("cuenta_id");
+		if ("0".equals(cuentaID)) {
+			codigoVantive = HistoryUtils.getParam("cod_vantive");
+		}
+		return loadInfocom(cuentaID, codigoVantive);
 	}
 	
-	private boolean loadInfocom(String cuentaID) {
+	private boolean loadInfocom(String cuentaID, String codigoVantive) {
 		razonSocial = null;
 		idCliente = null;
 		infocomUIData.setIdCuenta(cuentaID);
+		infocomUIData.setCodigoVantive(codigoVantive);
 		idCuenta = cuentaID;
+		this.codigoVantive = codigoVantive;
 		infocomUIData.getResponsablePago().clear();
-		this.getInfocomData(idCuenta, idCuenta);
-		invocarServicios(idCuenta, idCuenta);
+		this.getInfocomData(idCuenta, idCuenta, codigoVantive);
+		invocarServicios(idCuenta, idCuenta, codigoVantive);
 		return true;
 	}
 	
-//	public boolean loadVerInfocom(long cuentaId) {
-//		String cuentaID = String.valueOf(cuentaId);
-//		return loadInfocom(cuentaID);
-//	}
-	
-	public void invocarServicios (String idCuenta, String responsablePago) {
-		this.getDetalleCreditoFidelizacion(idCuenta, true);	
+
+	public void invocarServicios (String idCuenta, String responsablePago, String codigoVantive) {
+		this.getDetalleCreditoFidelizacion(idCuenta, codigoVantive, true);	
 		fidelizacionInfocomUI.getFidelizacionTitledPanel().setVisible(true);
-		this.getCuentaCorriente(idCuenta, responsablePago);
+		this.getCuentaCorriente(idCuenta, responsablePago, codigoVantive);
 	}
 	
-	public void invocarServiciosTodos (String idCuenta, String responsablePago) {
+	public void invocarServiciosTodos (String idCuenta, String responsablePago, String codigoVantive) {
 		fidelizacionInfocomUI.getFidelizacionTitledPanel().setVisible(false);
 		infocomUIData.getLimCredito().setText("");
 	}
@@ -123,8 +126,8 @@ public class InfocomUI extends ApplicationUI {
 		return true;
 	}
 	
-	private void getDetalleCreditoFidelizacion(String idCuenta, boolean firstTime) {
-		InfocomRpcService.Util.getInstance().getDetalleCreditoFidelizacion(idCuenta, new DefaultWaitCallback<CreditoFidelizacionDto>() {
+	private void getDetalleCreditoFidelizacion(String idCuenta, String codigoVantive, boolean firstTime) {
+		InfocomRpcService.Util.getInstance().getDetalleCreditoFidelizacion(idCuenta, codigoVantive, new DefaultWaitCallback<CreditoFidelizacionDto>() {
 			public void success(CreditoFidelizacionDto result) {
 				if (result != null) {
 					infocomUIData.setCreditoFidelizacion(result);
@@ -133,8 +136,8 @@ public class InfocomUI extends ApplicationUI {
 		});
 	}	
 	
-	private void getInfocomData(String idCuenta, String responsablePago) {
-		InfocomRpcService.Util.getInstance().getInfocomInitializer(idCuenta, responsablePago, new DefaultWaitCallback<InfocomInitializer>() {
+	private void getInfocomData(String idCuenta, String responsablePago, String codigoVantive) {
+		InfocomRpcService.Util.getInstance().getInfocomInitializer(idCuenta, codigoVantive, responsablePago, new DefaultWaitCallback<InfocomInitializer>() {
 			public void success(InfocomInitializer result) {
 				if (result != null) {
 					infocomUIData.setInfocom(result);
@@ -145,8 +148,8 @@ public class InfocomUI extends ApplicationUI {
 		});
 	}
 	
-	private void getCuentaCorriente(String idCuenta, String responsablePago) {
-		InfocomRpcService.Util.getInstance().getCuentaCorriente(idCuenta, responsablePago, new DefaultWaitCallback<List<TransaccionCCDto>>() {
+	private void getCuentaCorriente(String idCuenta, String responsablePago, String codigoVantive) {
+		InfocomRpcService.Util.getInstance().getCuentaCorriente(idCuenta, codigoVantive, responsablePago, new DefaultWaitCallback<List<TransaccionCCDto>>() {
 			public void success(List<TransaccionCCDto> result) {
 				if (result != null) {
 					infocomUIData.setCuentaCorriente(result);
@@ -181,7 +184,6 @@ public class InfocomUI extends ApplicationUI {
 
 	public void setIdCliente(String idCliente) {
 		this.idCliente = idCliente;
-	}	
-
+	}
 	
 }

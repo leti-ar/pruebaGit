@@ -14,18 +14,16 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface InfocomRpcServiceAsync {
 
-	public void getInfocomInitializer(String numeroCuenta, String responsablePago, AsyncCallback<InfocomInitializer> callback);
+	public void getInfocomInitializer(String numeroCuenta, String codigoVantive, String responsablePago, AsyncCallback<InfocomInitializer> callback);
 
-	public void getDetalleCreditoFidelizacion(String idCuenta, AsyncCallback<CreditoFidelizacionDto> callback);
+	public void getDetalleCreditoFidelizacion(String idCuenta, String codigoVantive, AsyncCallback<CreditoFidelizacionDto> callback);
 
-    public void getCuentaCorriente(String numeroCuenta, String responsablePago, AsyncCallback<List<TransaccionCCDto>> callback);
+    public void getCuentaCorriente(String numeroCuenta, String codigoVantive, String responsablePago, AsyncCallback<List<TransaccionCCDto>> callback);
 	
-	public void getInformacionEquipos(String numeroCuenta, String estado, AsyncCallback<List<DatosEquipoPorEstadoDto>> callback);
+	public void getInformacionEquipos(String numeroCuenta, String codigoVantive, String estado, AsyncCallback<List<DatosEquipoPorEstadoDto>> callback);
 	
-	public void getResumenEquipos(String numeroCuenta, String responsablePago, AsyncCallback<ResumenEquipoDto> callback);
+	public void getResumenEquipos(String numeroCuenta, String codigoVantive, String responsablePago, AsyncCallback<ResumenEquipoDto> callback);
 	
-	public void consultarScoring(Long numeroCuenta, AsyncCallback<ScoringDto> callback);
-	
-	//public void getInfocomData(String numeroCuenta, String responsablePago, AsyncCallback<InfocomInitializer> callback);
+	public void consultarScoring(Long numeroCuenta, String codigoVantive, AsyncCallback<ScoringDto> callback);
 
 }

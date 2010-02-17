@@ -154,7 +154,7 @@ public class VariosSSUI extends Composite {
 		consultarScoring.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				InfocomRpcService.Util.getInstance().consultarScoring(
-						controller.getEditarSSUIData().getCuentaId(), new DefaultWaitCallback<ScoringDto>() {
+						controller.getEditarSSUIData().getCuentaId(), controller.getEditarSSUIData().getCuenta().getCodigoVantive(), new DefaultWaitCallback<ScoringDto>() {
 							public void success(ScoringDto result) {
 								if (result != null) {
 									scoring.setText(result.getMensajeAdicional());

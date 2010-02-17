@@ -25,39 +25,35 @@ public class InfocomRpcServiceDelegate {
 		this.infocomRpcService = infocomRpcSerive;
 	}
 
-	public void getInfocomInitializer(String numeroCuenta, String responsablePago, DefaultWaitCallback<InfocomInitializer> callback) {
+	public void getInfocomInitializer(String numeroCuenta, String codigoVantive, String responsablePago, DefaultWaitCallback<InfocomInitializer> callback) {
 		WaitWindow.show();
-		infocomRpcService.getInfocomInitializer(numeroCuenta, responsablePago, callback);
+		infocomRpcService.getInfocomInitializer(numeroCuenta, codigoVantive, responsablePago, callback);
 	}
 
-	public void getDetalleCreditoFidelizacion(String idCuenta,
+	public void getDetalleCreditoFidelizacion(String idCuenta, String codigoVantive,
 			DefaultWaitCallback<CreditoFidelizacionDto> callback) {
 		WaitWindow.show();
-		infocomRpcService.getDetalleCreditoFidelizacion(idCuenta, callback);
+		infocomRpcService.getDetalleCreditoFidelizacion(idCuenta, codigoVantive, callback);
 	}
 
-	public void getCuentaCorriente(String numeroCuenta, String responsablePago, DefaultWaitCallback<List<TransaccionCCDto>> callback) {
+	public void getCuentaCorriente(String numeroCuenta, String codigoVantive, String responsablePago, DefaultWaitCallback<List<TransaccionCCDto>> callback) {
 		WaitWindow.show();
-		infocomRpcService.getCuentaCorriente(numeroCuenta, responsablePago, callback);
+		infocomRpcService.getCuentaCorriente(numeroCuenta, codigoVantive, responsablePago, callback);
 	}
 	
-	public void getInformacionEquipos(String numeroCuenta, String estado, DefaultWaitCallback<List<DatosEquipoPorEstadoDto>> callback) {
+	public void getInformacionEquipos(String numeroCuenta, String codigoVantive, String estado, DefaultWaitCallback<List<DatosEquipoPorEstadoDto>> callback) {
 		WaitWindow.show();
-		infocomRpcService.getInformacionEquipos(numeroCuenta, estado, callback);
+		infocomRpcService.getInformacionEquipos(numeroCuenta, codigoVantive, estado, callback);
 	}
 	
-	public void getResumenEquipos(String numeroCuenta, String responsablePago, DefaultWaitCallback<ResumenEquipoDto> callback) {
+	public void getResumenEquipos(String numeroCuenta, String codigoVantive, String responsablePago, DefaultWaitCallback<ResumenEquipoDto> callback) {
 		WaitWindow.show();
-		infocomRpcService.getResumenEquipos(numeroCuenta, responsablePago, callback);
+		infocomRpcService.getResumenEquipos(numeroCuenta, codigoVantive, responsablePago, callback);
 	}
 	
-	public void consultarScoring(Long numeroCuenta, DefaultWaitCallback<ScoringDto> callback) {
+	public void consultarScoring(Long numeroCuenta, String codigoVantive, DefaultWaitCallback<ScoringDto> callback) {
 		WaitWindow.show();
-		infocomRpcService.consultarScoring(numeroCuenta, callback);
+		infocomRpcService.consultarScoring(numeroCuenta, codigoVantive, callback);
 	}
-	
-//	public void getInfocomData(String numeroCuenta, String responsablePago, DefaultWaitCallback<InfocomInitializer> callback) {
-//		WaitWindow.show();
-//		infocomRpcService.getInfocomData(numeroCuenta, responsablePago, callback);
-//	}
+
 }

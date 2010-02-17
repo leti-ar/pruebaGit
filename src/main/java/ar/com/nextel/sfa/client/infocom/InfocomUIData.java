@@ -71,6 +71,7 @@ public class InfocomUIData extends UIData {
 	private final DateTimeFormat dateFormat = DateTimeFormat.getMediumDateFormat();
 	
 	private String idCuenta;
+	private String codigoVantive;
 	private InfocomInitializer infocom;
 	
 	
@@ -106,10 +107,10 @@ public class InfocomUIData extends UIData {
 		responsablePago.addChangeListener(new ChangeListener() {
 			public void onChange (Widget arg0) {
 				if (responsablePago.getSelectedIndex()==0) {
-					InfocomUI.getInstance().reload(idCuenta, "Todos");
+					InfocomUI.getInstance().reload(idCuenta, "Todos", codigoVantive);
 				} else {
 					limCredito.setText(numberFormat.format(infocom.getLimiteCredito()));
-					InfocomUI.getInstance().reload(idCuenta, responsablePago.getSelectedItemText());
+					InfocomUI.getInstance().reload(idCuenta, responsablePago.getSelectedItemText(), codigoVantive);
 				}
 			}
 		});		
@@ -145,7 +146,7 @@ public class InfocomUIData extends UIData {
 		resumenPorEquipo.addStyleName("infocomSimpleLink");
 		resumenPorEquipo.addClickListener(new ClickListener() {
 			public void onClick (Widget arg0) {
-				getResumenPorEquipo(idCuenta, responsablePago.getSelectedItemText());
+				getResumenPorEquipo(idCuenta, responsablePago.getSelectedItemText(), codigoVantive);
 			}
 		});
 	}	
@@ -168,7 +169,7 @@ public class InfocomUIData extends UIData {
 
 	/**Obtiene la información del scoring*/
 	private void getScoring(Long numeroCuenta) {
-		InfocomRpcService.Util.getInstance().consultarScoring(numeroCuenta, new DefaultWaitCallback<ScoringDto>() {
+		InfocomRpcService.Util.getInstance().consultarScoring(numeroCuenta, codigoVantive, new DefaultWaitCallback<ScoringDto>() {
 			public void success(ScoringDto result) {
 				if (result != null) {
 					ScoringPopUpUI scoringPopUpUI = new ScoringPopUpUI("Cuentas - Scoring", "350", result);
@@ -179,8 +180,8 @@ public class InfocomUIData extends UIData {
 	}
 	
 	/**Obtiene la información de Resumen Por Equipo*/
-	private void getResumenPorEquipo(String numeroCuenta, final String numeroResponsablePago) {
-		InfocomRpcService.Util.getInstance().getResumenEquipos(numeroCuenta, numeroResponsablePago, new DefaultWaitCallback<ResumenEquipoDto>() {			
+	private void getResumenPorEquipo(String numeroCuenta, final String numeroResponsablePago, String codigoVantive) {
+		InfocomRpcService.Util.getInstance().getResumenEquipos(numeroCuenta, codigoVantive, numeroResponsablePago, new DefaultWaitCallback<ResumenEquipoDto>() {			
 			public void success(ResumenEquipoDto result) {
 				if (result != null) {
 					ResumenEquipoPopUp resumenEquipoPopUp = new ResumenEquipoPopUp("Cuentas - Resumen Por Equipos", "785", numeroResponsablePago);
@@ -572,6 +573,14 @@ public class InfocomUIData extends UIData {
 
 	public void setLimCreditoPanel(HorizontalPanel limCreditoPanel) {
 		this.limCreditoPanel = limCreditoPanel;
+	}
+
+	public String getCodigoVantive() {
+		return codigoVantive;
+	}
+
+	public void setCodigoVantive(String codigoVantive) {
+		this.codigoVantive = codigoVantive;
 	}	
 	
 }

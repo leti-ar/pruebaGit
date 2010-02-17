@@ -31,18 +31,16 @@ public interface InfocomRpcService extends RemoteService {
 		}
 	}
 
-	public InfocomInitializer getInfocomInitializer(String numeroCuenta, String responsablePago) throws RpcExceptionMessages;
+	public InfocomInitializer getInfocomInitializer(String numeroCuenta, String codigoVantive, String responsablePago) throws RpcExceptionMessages;
 
-	public CreditoFidelizacionDto getDetalleCreditoFidelizacion(String idCuenta) throws RpcExceptionMessages;
+	public CreditoFidelizacionDto getDetalleCreditoFidelizacion(String idCuenta, String codigoVantive) throws RpcExceptionMessages;
 
-	public List<TransaccionCCDto> getCuentaCorriente(String numeroCuenta, String responsablePago) throws RpcExceptionMessages;
+	public List<TransaccionCCDto> getCuentaCorriente(String numeroCuenta, String codigoVantive, String responsablePago) throws RpcExceptionMessages;
 	
-	public List<DatosEquipoPorEstadoDto> getInformacionEquipos(String numeroCuenta, String estado) throws RpcExceptionMessages;
+	public List<DatosEquipoPorEstadoDto> getInformacionEquipos(String numeroCuenta, String codigoVantive, String estado) throws RpcExceptionMessages;
 	
-	public ResumenEquipoDto getResumenEquipos(String numeroCuenta, String responsablePago) throws RpcExceptionMessages;
+	public ResumenEquipoDto getResumenEquipos(String numeroCuenta, String codigoVantive, String responsablePago) throws RpcExceptionMessages;
 	
-	public ScoringDto consultarScoring(Long numeroCuenta) throws RpcExceptionMessages;
-
-	//public InfocomInitializer getInfocomData(String numeroCuenta, String responsablePago) throws RpcExceptionMessages;
+	public ScoringDto consultarScoring(Long numeroCuenta, String codigoVantive) throws RpcExceptionMessages;
 
 }

@@ -32,21 +32,21 @@ public class EstadoTerminales extends Composite {
 		HTML verde = IconFactory.ledVerde();		
 		verde.addClickListener(new ClickListener() {
 			public void onClick (Widget arg0) {
-				getInformacionEquipos(InfocomUI.getInstance().getIdCuenta(), "a");				
+				getInformacionEquipos(InfocomUI.getInstance().getIdCuenta(), InfocomUI.getInstance().getIdCliente(), "a");				
 			}
 		});
 		
 		HTML amarillo = IconFactory.ledAmarillo();
 		amarillo.addClickListener(new ClickListener() {
 			public void onClick (Widget arg0) {
-				getInformacionEquipos(InfocomUI.getInstance().getIdCuenta(), "s");
+				getInformacionEquipos(InfocomUI.getInstance().getIdCuenta(), InfocomUI.getInstance().getIdCliente(), "s");
 			}
 		});
 		
 		HTML rojo = IconFactory.ledRojo();
 		rojo.addClickListener(new ClickListener() {
 			public void onClick (Widget arg0) {
-				getInformacionEquipos(InfocomUI.getInstance().getIdCuenta(), "d");
+				getInformacionEquipos(InfocomUI.getInstance().getIdCuenta(), InfocomUI.getInstance().getIdCliente(), "d");
 			}
 		});
 		
@@ -65,8 +65,8 @@ public class EstadoTerminales extends Composite {
 		initWidget(panel);
 	}
 	
-	private void getInformacionEquipos(String numeroCuenta, String estado) {
-		InfocomRpcService.Util.getInstance().getInformacionEquipos(numeroCuenta, estado, new DefaultWaitCallback<List<DatosEquipoPorEstadoDto>>() {
+	private void getInformacionEquipos(String numeroCuenta, String codigoVantive, String estado) {
+		InfocomRpcService.Util.getInstance().getInformacionEquipos(numeroCuenta, codigoVantive, estado, new DefaultWaitCallback<List<DatosEquipoPorEstadoDto>>() {
 			public void success(List<DatosEquipoPorEstadoDto>  result) {
 				if (result != null) {
 					EstadoEquipoPopUp estadoEquipoPopUp = new EstadoEquipoPopUp("Cuentas - Información de Equipos", "750", result);
