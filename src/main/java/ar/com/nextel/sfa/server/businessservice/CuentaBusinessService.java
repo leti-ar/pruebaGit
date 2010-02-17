@@ -259,12 +259,12 @@ public class CuentaBusinessService {
 	}
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public Cuenta getCuentaSinLockear(Long ctaId) throws Exception {
+	public Cuenta getCuentaSinLockear(Long ctaId) throws BusinessException {
 		return selectCuentaBusinessOperator.getCuentaSinLockear(ctaId);
 	}
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public Cuenta getCuentaSinLockear(String codVantive) throws Exception {
+	public Cuenta getCuentaSinLockear(String codVantive) throws BusinessException {
 		return selectCuentaBusinessOperator.getCuentaSinLockear(codVantive);
 	}
 	
