@@ -12,7 +12,7 @@
 	
   <!--  convenience to define GWT version in one place -->
   <properties>
-    <gwtVersion>1.7.0</gwtVersion>
+    <gwtVersion>2.0.2</gwtVersion>
     <spring.version>2.5.6</spring.version>
   </properties>
   <dependencies>
@@ -39,15 +39,6 @@
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
       <version>${gwtVersion}</version>
-      <classifier>${platform}-libs</classifier>
-      <type>zip</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-dev</artifactId>
-      <version>${gwtVersion}</version>
-      <classifier>${platform}</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
