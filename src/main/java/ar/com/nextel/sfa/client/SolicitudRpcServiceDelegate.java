@@ -2,6 +2,8 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
@@ -18,6 +20,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
@@ -132,5 +135,10 @@ public class SolicitudRpcServiceDelegate {
 	public void existReport(String report, DefaultWaitCallback<Boolean> callback) {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.existReport(report, callback);
+	}
+	
+	public void getVendedoresDae(DefaultWaitCallback<List<VendedorDto>> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getVendedoresDae(callback);
 	}
 }

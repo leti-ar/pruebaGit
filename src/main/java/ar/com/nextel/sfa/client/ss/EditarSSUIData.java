@@ -699,6 +699,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	public boolean isCDW() {
 		return solicitudServicio.getGrupoSolicitud().getId().equals(GrupoSolicitudDto.ID_CDW);
 	}
+	
+	public boolean isMDS() {
+		return solicitudServicio.getGrupoSolicitud().getId().equals(GrupoSolicitudDto.ID_MDS);
+	}
 
 	/** Indica si contiene lineas de solicitud con item BlackBerry */
 	public boolean hasItemBB() {

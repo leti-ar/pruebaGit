@@ -1,8 +1,10 @@
 package ar.com.nextel.sfa.client.dto;
 
+import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class VendedorDto implements IsSerializable {
+public class VendedorDto implements IsSerializable, ListBoxItem {
 
 	private Long id;
 	private UsuarioDto usuarioDto;
@@ -66,6 +68,14 @@ public class VendedorDto implements IsSerializable {
 
 	public void setLocalidad(LocalidadDto localidad) {
 		this.localidad = localidad;
+	}
+
+	public String getItemText() {
+		return apellido + ", " + nombre;
+	}
+
+	public String getItemValue() {
+		return id + "";
 	}
 
 }

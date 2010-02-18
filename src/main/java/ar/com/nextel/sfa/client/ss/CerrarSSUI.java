@@ -23,9 +23,11 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 	private static final String generarTitle = "SS - Generar SS";
 	private static final String cerrarTitle = "SS - Cerrar SS";
 	private FlexTable layout;
+	private Boolean esMDS;
 
-	public CerrarSSUI() {
+	public CerrarSSUI(Boolean esMDS) {
 		super("SS - Generar SS", false, true);
+		this.esMDS=esMDS;
 		init();
 	}
 
@@ -59,6 +61,12 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 		layout.setWidget(2, 3, cerarSSUIData.getEmail());
 		layout.setHTML(3, 1, Sfa.constant().scoringTitle());
 		layout.setWidget(3, 0, cerarSSUIData.getScoring());
+
+		if (esMDS==Boolean.TRUE) {
+			layout.setHTML(4, 2, Sfa.constant().dae());
+			layout.setWidget(4, 3, cerarSSUIData.getDAEListBox());	
+		}		
+
 		add(layout);
 	}
 

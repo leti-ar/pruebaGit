@@ -382,7 +382,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 	private CerrarSSUI getCerrarSSUI() {
 		if (cerrarSSUI == null) {
-			cerrarSSUI = new CerrarSSUI();
+			if (editarSSUIData.isMDS()) {
+				cerrarSSUI = new CerrarSSUI(Boolean.TRUE);
+			} else {
+				cerrarSSUI = new CerrarSSUI(Boolean.FALSE);
+			}
 			cerrarSSUI.setAceptarCommand(generarCerrarSolicitudCommand());
 		}
 		return cerrarSSUI;

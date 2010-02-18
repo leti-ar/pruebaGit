@@ -2,11 +2,16 @@ package ar.com.nextel.sfa.client.ss;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.CuentaRpcService;
+import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.dto.EmailDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioGeneracionDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.TipoEmailEnum;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.UIData;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -26,6 +31,7 @@ public class CerrarSSUIData extends UIData implements ClickHandler {
 	private HTML emailLaboral;
 	private HTML emailPersonal;
 	private TextBox emailNuevo;
+	private ListBox DAEListBox;
 	private SolicitudServicioGeneracionDto solicitudServicioGeneracion;
 
 	public CerrarSSUIData() {
@@ -37,6 +43,7 @@ public class CerrarSSUIData extends UIData implements ClickHandler {
 		fields.add(emailNuevo = new RegexTextBox(RegularExpressionConstants.lazyEmail));
 		fields.add(emailLaboral = new HTML());
 		fields.add(emailPersonal = new HTML());
+		fields.add(DAEListBox = new ListBox());
 
 		pin.setMaxLength(6);
 		pin.setWidth("70px");
@@ -46,6 +53,15 @@ public class CerrarSSUIData extends UIData implements ClickHandler {
 		emailNuevo.setEnabled(false);
 		emailNuevo.setReadOnly(true);
 		emailNuevo.setWidth("300px");
+		
+		SolicitudRpcService.Util.getInstance().getVendedoresDae(
+				new DefaultWaitCallback<List<VendedorDto>>() {
+					public void success(List<VendedorDto> result) {
+ 						for (VendedorDto vendedorDto : result) {
+							DAEListBox.addItem(vendedorDto.getItemText());
+						}
+					}
+			});
 	}
 
 	public void onClick(ClickEvent event) {
@@ -118,6 +134,14 @@ public class CerrarSSUIData extends UIData implements ClickHandler {
 	public HTML getEmailPersonal() {
 		return emailPersonal;
 	}
+	
+	public ListBox getDAEListBox() {
+		return DAEListBox;
+	}
+
+	public void setDAEListBox(ListBox dAEListBox) {
+		DAEListBox = dAEListBox;
+	}
 
 	public SolicitudServicioGeneracionDto getSolicitudServicioGeneracion() {
 		solicitudServicioGeneracion.setEmailLaboralChecked(laboral.getValue());
@@ -144,5 +168,5 @@ public class CerrarSSUIData extends UIData implements ClickHandler {
 		scoring.setValue(solicitudServicioGeneracion.isScoringChecked());
 		emailNuevo.setText(solicitudServicioGeneracion.getEmailNuevo());
 	}
-
+	
 }

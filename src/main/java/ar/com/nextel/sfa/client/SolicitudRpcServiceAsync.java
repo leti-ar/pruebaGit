@@ -18,6 +18,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
@@ -72,4 +73,6 @@ public interface SolicitudRpcServiceAsync {
 			boolean cerrar, AsyncCallback<GeneracionCierreResultDto> callback);
 
 	public void existReport(String report, AsyncCallback<Boolean> callback);
+	
+	public void getVendedoresDae(AsyncCallback<List<VendedorDto>> callback);
 }
