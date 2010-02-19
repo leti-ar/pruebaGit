@@ -31,7 +31,6 @@ import ar.com.nextel.model.cuentas.beans.ContactoCuenta;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoTarjetaCredito;
-import ar.com.nextel.model.cuentas.beans.DatosPago;
 import ar.com.nextel.model.cuentas.beans.Division;
 import ar.com.nextel.model.cuentas.beans.FormaPago;
 import ar.com.nextel.model.cuentas.beans.GranCuenta;
@@ -159,7 +158,7 @@ public class CuentaBusinessService {
 		Cuenta cuenta = repository.retrieve(Cuenta.class, cuentaDto.getId());
 		
         //DATOS PAGO
-		DatosPago datosPagoOriginal = (DatosPago) repository.retrieve(AbstractDatosPago.class, cuenta.getDatosPago().getId());
+		AbstractDatosPago datosPagoOriginal = (AbstractDatosPago) repository.retrieve(AbstractDatosPago.class, cuenta.getDatosPago().getId());
 		cuenta.setDatosPago(null);
 		repository.delete(datosPagoOriginal);
 		cuenta.setFormaPago(null);
