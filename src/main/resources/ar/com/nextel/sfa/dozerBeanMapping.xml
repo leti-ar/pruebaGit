@@ -109,23 +109,6 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>numeroSS</b>
 		</field>
 	</mapping>
-	
-<!--	<mapping map-id="">-->
-<!--		<class-a>-->
-<!--			ar.com.nextel.model.cuentas.beans.Cuenta-->
-<!--		</class-a>-->
-<!--		<class-b>ar.com.nextel.sfa.client.dto.CuentaDto-->
-<!--		</class-b>-->
-<!--		<field>-->
-<!--			<a>idVantive</a>-->
-<!--			<b>idSolicitudServicio</b>-->
-<!--		</field>-->
-<!--		<field>-->
-<!--			<a>cuenta</a>-->
-<!--			<b>cuenta</b>-->
-<!--		</field>-->
-<!--	</mapping>-->
-<!--	-->
 
 	<mapping>
 		<class-a>
@@ -563,6 +546,12 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>solicitudesServicioEmpty</a>
 			<b>solicitudesServicioEmpty</b>
 		</field>
+		<field type="one-way">
+			<a>cuentasPotenciales</a>
+			<b>cuentasPotenciales</b>
+			<a-hint>ar.com.nextel.model.oportunidades.beans.OportunidadNegocio,ar.com.nextel.model.oportunidades.beans.Reserva</a-hint>
+			<b-hint>ar.com.nextel.sfa.client.dto.OportunidadNegocioDto,ar.com.nextel.sfa.client.dto.ReservaDto</b-hint>
+		</field>
 	</mapping>
 
 	<mapping>
@@ -675,7 +664,6 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<class-b>ar.com.nextel.sfa.client.dto.OperacionEnCursoDto
 		</class-b>
 	</mapping>	
-
 	<mapping>
 		<class-a>ar.com.nextel.model.oportunidades.beans.OportunidadNegocio
 		</class-a>
@@ -686,6 +674,12 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<class-a>ar.com.nextel.model.oportunidades.beans.Reserva
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.ReservaDto
+		</class-b>
+	</mapping>
+	<mapping>
+		<class-a>ar.com.nextel.model.oportunidades.beans.CuentaPotencial
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.CuentaPotencialDto
 		</class-b>
 	</mapping>
 	<mapping>

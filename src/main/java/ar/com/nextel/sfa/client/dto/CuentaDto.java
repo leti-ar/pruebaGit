@@ -13,14 +13,12 @@ public class CuentaDto implements IsSerializable {
 	private CategoriaCuentaDto categoriaCuenta;
 	private String codigoVantive;
 	private CondicionCuentaDto condicionCuenta;
-	// private Set<CuentaCorrienteDto> cuentasCorrientes;
 	private VendedorDto vendedor;
 	private EstadoCuentaDto estadoCuenta;
 	private FormaPagoDto formaPago;
 	private DatosPagoDto datosPago;
 	private String iibb;
 	private Boolean responsablePago;
-	// private Set<PlanDto> planesPropios;
 	private List<CuentaPotencialDto> cuentasPotenciales;
 	private CuentaPotencialDto cuentaPotencialOrigen;
 	private PersonaDto persona;
@@ -31,29 +29,10 @@ public class CuentaDto implements IsSerializable {
 	private TipoContribuyenteDto tipoContribuyente;
 	private String use;
 	private CicloFacturacionDto cicloFacturacion;
-	// private String pinMaestro;
-	// private EstadoCreditoFidelizacionDto estadoCreditoFidelizacion;
-	// private Boolean esPropia;
-	// private EstadoLockeoDto estadoLockeo;
-	// private String flota;
 	private String observacionesTelMail;
-	// private Double limiteCredito;
-	// private Long firmas;
 	private String nombreUsuarioCreacion;
 	private Date fechaCreacion;
 
-	// Codigos que se migran de vantive
-	// private String codigoBSCS;
-	// private String customerClassCode;
-	// private Long idVantiveRA;
-	// private Long codigoFNCL;
-	// private Long codigoFNCLPadre;
-	// private Long codigoBSCSPadre;
-	// private Boolean facturaElectronica;
-	// private Boolean autorretiene;
-	// private Boolean completa;
-
-	/* *********************************************** */
 	public Long getId() {
 		return id;
 	}
