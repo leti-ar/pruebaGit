@@ -158,7 +158,7 @@
 	<plugin>
 		<groupId>org.codehaus.mojo</groupId>
 		<artifactId>gwt-maven-plugin</artifactId>
-		<version>1.1</version>
+		<version>1.2</version>
 		<configuration>
 			<output>${basedir}/war</output>
 			<runTarget>ar.com.nextel.sfa.SFAWeb/SFAWeb.html</runTarget>
@@ -172,7 +172,7 @@
 		<executions>
 			<execution>
 				<goals>
-					<goal>i18n</goal>
+<!--					<goal>i18n</goal>-->
 					<goal>compile</goal>
 					<!-- <goal>generateAsync</goal> -->
 				</goals>
@@ -188,7 +188,7 @@
           <webXml>war/WEB-INF/web.xml</webXml>
         </configuration>
      </plugin>
-      <!--  Use the dependency plugin to unpack gwt-dev-PLATFORM-libs.zip -->
+      <!--  Use the dependency plugin to unpack gwt-dev-PLATFORM-libs.zip 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -215,7 +215,7 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
+      </plugin>-->
       <!--  tell the compiler we can use 1.5 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -278,7 +278,7 @@
 	  </plugin>	  
     </plugins>
   </build>
-  <!--  profiles (with activation per platform) -->
+  <!--  profiles (with activation per platform) 
   <profiles>
     <profile>
       <id>gwt-dev-windows</id>
@@ -315,6 +315,7 @@
       </activation>
     </profile>
   </profiles>
+  -->
   <reporting>
     <plugins>
       <plugin>
