@@ -14,12 +14,10 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
-import ar.com.nextel.business.cuentas.contactos.ContactosCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
 import ar.com.nextel.business.cuentas.search.SearchCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.search.businessUnits.CuentaSearchData;
 import ar.com.nextel.business.cuentas.search.result.CuentaSearchResult;
-import ar.com.nextel.business.cuentas.select.SelectCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorResult;
 import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorServiceAxisImpl;
 import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorServiceException;
@@ -56,7 +54,6 @@ import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.personas.beans.GrupoDocumento;
 import ar.com.nextel.model.personas.beans.Provincia;
 import ar.com.nextel.model.personas.beans.Sexo;
-import ar.com.nextel.model.personas.beans.Telefono;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
@@ -93,7 +90,6 @@ import ar.com.nextel.sfa.client.dto.RubroDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
-import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.dto.TipoCanalVentasDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.dto.TipoCuentaBancariaDto;
@@ -112,16 +108,11 @@ import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.server.RemoteService;
 import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
 
-/**
- * @author eSalvador
- **/
 public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcService {
 
 	private static final long serialVersionUID = 1L;
 	private WebApplicationContext context;
 	private SearchCuentaBusinessOperator searchCuentaBusinessOperator;
-	private SelectCuentaBusinessOperator selectCuentaBusinessOperator;
-	private ContactosCuentaBusinessOperator contactosCuentaBusinessOperator;
 	private TarjetaCreditoValidatorServiceAxisImpl tarjetaCreditoValidatorService;
 	private CuentaBusinessService cuentaBusinessService;
 
@@ -134,9 +125,9 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	private SessionContextLoader sessionContextLoader;
 	private MessageRetriever messageRetriever;
 
-	private final String ASOCIAR_CUENTA_A_OPP_ERROR = "La cuenta ya existe. No puede asociarse a la Oportunidad.";
-	private String ERROR_OPER_OTRO_VENDEDOR = "El prospect/cliente tiene una operación en curso con otro vendedor. No puede ver sus datos. El {1} es {2}";
-	private final String ERROR_OPORTUNIDAD_VENCIDA = "La oportunidad/Reserva está vencida";
+	private static final String ASOCIAR_CUENTA_A_OPP_ERROR = "La cuenta ya existe. No puede asociarse a la Oportunidad.";
+	private static final String ERROR_OPER_OTRO_VENDEDOR = "El prospect/cliente tiene una operación en curso con otro vendedor. No puede ver sus datos. El {1} es {2}";
+	private static final String ERROR_OPORTUNIDAD_VENCIDA = "La oportunidad/Reserva está vencida";
 
 	private static String queryNameSexoSinIndefinido = "SEXO_SIN_INDEFINIDO";
 
@@ -147,23 +138,16 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		sessionContextLoader = (SessionContextLoader) context.getBean("sessionContextLoader");
 		searchCuentaBusinessOperator = (SearchCuentaBusinessOperator) context
 				.getBean("searchCuentaBusinessOperatorBean");
-		selectCuentaBusinessOperator = (SelectCuentaBusinessOperator) context
-				.getBean("selectCuentaBusinessOperator");
-		contactosCuentaBusinessOperator = (ContactosCuentaBusinessOperator) context
-				.getBean("contactosCuentaBusinessOperator");
 		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");
 		tarjetaCreditoValidatorService = (TarjetaCreditoValidatorServiceAxisImpl) context
 				.getBean("tarjetaCreditoValidatorService");
-
 		transformer = (Transformer) context.getBean("cuentaToSearchResultTransformer");
 		mapper = (MapperExtended) context.getBean("dozerMapper");
-		// veraz = (VerazService) context.getBean("verazService");
 		veraz = (NextelServices) context.getBean("nextelServices");
 		repository = (Repository) context.getBean("repository");
 		normalizadorDomicilio = (NormalizadorDomicilio) context.getBean("normalizadorDomicilio");
 		messageRetriever = (MessageRetriever) context.getBean("messageRetriever");
 
-		// Engancho el BOperator
 		setGetAllBusinessOperator((GetAllBusinessOperator) context.getBean("getAllBusinessOperatorBean"));
 	}
 
@@ -183,7 +167,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 			for (CuentaSearchResult cuentaSearchResult : result) {
 				dtoResult.add(mapper.map(cuentaSearchResult, CuentaSearchResultDto.class));
 			}
-
 		} catch (BusinessException e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
@@ -205,7 +188,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		List<BusquedaPredefinidaDto> listaBusquedaPredef = new ArrayList<BusquedaPredefinidaDto>();
 		listaBusquedaPredef.add(0, new BusquedaPredefinidaDto(1, "Ctas. propias"));
 		listaBusquedaPredef.add(1, new BusquedaPredefinidaDto(3, "Últimas consultadas"));
-		// listaBusquedaPredef.add(1, new BusquedaPredefinidaDto("3", "Ctas. c/Créd.Fideliz."));
 
 		List<String> listaResult = new ArrayList<String>();
 		String cantResult = "10;25;50;75;100";
@@ -215,8 +197,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 				listaCategorias, listaGrupoDoc);
 		return buscarDTOinit;
 	}
-
-	// Prueba rgm
 
 	/**
 	 * @param getAllBusinessOperator
@@ -289,8 +269,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return crearContactoInitializer;
 	}
 
-	/****/
-
 	public VerazResponseDto consultarVeraz(PersonaDto personaDto) throws RpcExceptionMessages {
 		AppLogger.info("Iniciando consulta a Veraz...");
 		VerazResponseDTO responseDTO = null;
@@ -337,8 +315,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 				cuentaDto = mapper.map(repository.retrieve(Cuenta.class, idCuenta), GranCuentaDto.class);
 		} catch (MappingException e) {
 			AppLogger.error("*** Error de mapeo al actualizar la cuenta: " + cuentaDto.getCodigoVantive()
-					+ " *** ");
-			AppLogger.error(e);
+					+ " *** ",e);
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
@@ -346,9 +323,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return cuentaDto;
 	}
 
-	/**
-	 * 
-	 */
 	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive, boolean filtradoPorDni)
 			throws RpcExceptionMessages {
 		CuentaDto cuentaDto = null;
@@ -365,9 +339,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return cuentaDto;
 	}
 
-	/**
-	 * 
-	 */
 	public CuentaDto reservaCreacionCuenta(CrearCuentaDto crearCuentaDto) throws RpcExceptionMessages {
 		Cuenta cuenta = null;
 		CuentaDto cuentaDto = null;
@@ -422,23 +393,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return cuentaDto;
 	}
 
-	// private CuentaDto sacarTelefonosBorrados(CuentaDto cuenta) {
-	// List <TelefonoDto>telefonos = (List<TelefonoDto>) cuenta.getPersona().getTelefonos();
-	// for (TelefonoDto tel : telefonos) {
-	// if (tel.getDeleted()) {
-	// cuenta.getPersona().getTelefonos().remove(tel);
-	// }
-	// }
-	// return cuenta;
-	// }
-
-	/**
-	 * 
-	 * @param solicitudCuenta
-	 * @param cuenta
-	 * @return
-	 * @throws RpcExceptionMessages
-	 */
 	private boolean asociarCuentaSiCorresponde(SolicitudCuenta solicitudCuenta, Cuenta cuenta)
 			throws RpcExceptionMessages {
 		boolean isValid;
@@ -462,14 +416,12 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return isValid;
 	}
 
-	/**
-	 * 
-	 */
 	public DivisionDto crearDivision(Long id_CuentaPadre) throws RpcExceptionMessages {
 		AppLogger.info("Creando Division...");
 		DivisionDto divisionDto;
 		try {
-			Cuenta cuenta = obtenerCtaPadre(id_CuentaPadre, KnownInstanceIdentifier.DIVISION.getKey());
+			Cuenta cuenta = obtenerCtaPadreSinLockear(id_CuentaPadre, KnownInstanceIdentifier.DIVISION
+					.getKey());
 			divisionDto = (DivisionDto) mapper.map(
 					cuentaBusinessService.crearDivision(cuenta, getVendedor()), DivisionDto.class);
 		} catch (Exception e) {
@@ -479,14 +431,12 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return divisionDto;
 	}
 
-	/**
-	 * 
-	 */
 	public SuscriptorDto crearSuscriptor(Long id_CuentaPadre) throws RpcExceptionMessages {
 		AppLogger.info("Creando Suscriptor...");
 		SuscriptorDto suscriptorDto;
 		try {
-			Cuenta cuenta = obtenerCtaPadre(id_CuentaPadre, KnownInstanceIdentifier.SUSCRIPTOR.getKey());
+			Cuenta cuenta = obtenerCtaPadreSinLockear(id_CuentaPadre, KnownInstanceIdentifier.SUSCRIPTOR
+					.getKey());
 			suscriptorDto = (SuscriptorDto) mapper.map(cuentaBusinessService.crearSuscriptor(cuenta,
 					getVendedor()), SuscriptorDto.class);
 		} catch (Exception e) {
@@ -496,9 +446,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return suscriptorDto;
 	}
 
-	/**
-	 * 
-	 */
 	public TarjetaCreditoValidatorResultDto validarTarjeta(String numeroTarjeta, Integer mesVto,
 			Integer anoVto) throws RpcExceptionMessages {
 		TarjetaCreditoValidatorResultDto resultDto = null;
@@ -514,7 +461,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return resultDto;
 	}
 
-	// Devuelve la reservaDto o la oportunidadDto según sea el caso
+	/** Devuelve la reservaDto o la oportunidadDto según sea el caso */
 	public CuentaPotencialDto getOportunidadNegocio(Long cuenta_id) throws RpcExceptionMessages {
 		AppLogger.info("Obteniendo venta potencial con id: " + cuenta_id.longValue());
 		CuentaPotencial cuentaPotencial = (CuentaPotencial) repository.retrieve(CuentaPotencial.class,
@@ -563,20 +510,12 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		}
 	}
 
-	/**
-	 * 
-	 */
 	public OportunidadNegocioDto updateEstadoOportunidad(OportunidadNegocioDto oportunidadDto)
 			throws RpcExceptionMessages {
 		return (OportunidadNegocioDto) mapper.map(cuentaBusinessService.updateEstadoOportunidad(
 				oportunidadDto, mapper), OportunidadNegocioDto.class);
 	}
 
-	/**
-	 * 
-	 * @param idVentaPotencial
-	 * @return
-	 */
 	public List<CuentaDto> getCuentasAsociadasAVentaPotencial(Long idVentaPotencial)
 			throws RpcExceptionMessages {
 		CuentaPotencial cuentaPotencial = (CuentaPotencial) repository.retrieve(CuentaPotencial.class,
@@ -584,19 +523,10 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return (List<CuentaDto>) mapper.convertList(cuentaPotencial.getCuentasAsociadas(), CuentaDto.class);
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	private Vendedor getVendedor() {
 		return sessionContextLoader.getSessionContext().getVendedor();
 	}
 
-	/**
-	 * 
-	 * @param docDto
-	 * @return
-	 */
 	private Documento getDocumento(DocumentoDto docDto) {
 		TipoDocumento tipoDoc = repository.retrieve(TipoDocumento.class, docDto.getTipoDocumento().getId());
 		Documento doc = repository.createNewObject(Documento.class);
@@ -605,9 +535,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return doc;
 	}
 
-	/**
-	 * @author eSalvador
-	 **/
 	public NormalizarDomicilioResultDto normalizarDomicilio(DomiciliosCuentaDto domicilioANormalizar)
 			throws RpcExceptionMessages {
 		NormalizarDomicilioResultDto domicilioResultNormalizacion = null;
@@ -624,9 +551,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return domicilioResultNormalizacion;
 	}
 
-	/**
-	 * @author eSalvador
-	 **/
 	public NormalizarCPAResultDto getDomicilioPorCPA(String cpa) throws RpcExceptionMessages {
 		NormalizarCPAResultDto resultConCPANormalizado = null;
 		try {
@@ -642,8 +566,9 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return mapper.convertList(repository.getAll(Provincia.class), ProvinciaDto.class);
 	}
 
-	public Cuenta obtenerCtaPadre(Long ctaPadreId, String categoriaCuenta) throws RpcExceptionMessages {
-		return cuentaBusinessService.obtenerCtaPadre(ctaPadreId, categoriaCuenta, getVendedor());
+	public Cuenta obtenerCtaPadreSinLockear(Long ctaPadreId, String categoriaCuenta)
+			throws RpcExceptionMessages {
+		return cuentaBusinessService.obtenerCtaPadreSinLockear(ctaPadreId, categoriaCuenta, getVendedor());
 	}
 
 	public Repository getRepository() {
