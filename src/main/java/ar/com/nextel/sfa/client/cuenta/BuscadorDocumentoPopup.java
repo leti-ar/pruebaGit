@@ -12,20 +12,17 @@ import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
-import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
 
 public class BuscadorDocumentoPopup extends NextelDialog {
 	
@@ -36,8 +33,8 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 	private RegexTextBox numeroDocTextBox = new RegexTextBox(RegularExpressionConstants.dni);
 	private Label tipoDocLabel;
 	private Label numeroDocLabel;
-	private Hyperlink aceptar = new Hyperlink(Sfa.constant().aceptar(),null);
-	private SimpleLink cerrar = new SimpleLink(Sfa.constant().cerrar(), "#", true);
+	private Anchor aceptar = new Anchor(Sfa.constant().aceptar());
+	private Anchor cerrar = new Anchor(Sfa.constant().cerrar());
 	public static Long idOpp;
 	public static boolean fromMenu = true;
 	
@@ -51,10 +48,9 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 			}
 		});		
 	
-		cerrar.addClickListener(new ClickListener() {
-			public void onClick(Widget sender) {
+		cerrar.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent arg0) {
 				hide();
-				//History.newItem("");
 				cleanForm();
 			}
 		});
