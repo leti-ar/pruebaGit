@@ -265,7 +265,12 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 	public SolicitudInitializer getSolicitudInitializer() {
 		SolicitudInitializer initializer = new SolicitudInitializer();
-		List origenes = repository.getAll(OrigenSolicitud.class);
+		List<OrigenSolicitud> origenes = repository.getAll(OrigenSolicitud.class);
+		Collections.sort(origenes, new Comparator<OrigenSolicitud>() {
+			public int compare(OrigenSolicitud o1, OrigenSolicitud o2) {
+				return o1.getIndice() - o2.getIndice();
+			}
+		});
 		initializer.setOrigenesSolicitud(mapper.convertList(origenes, OrigenSolicitudDto.class));
 		List tiposAnticipo = repository.getAll(TipoAnticipo.class);
 		initializer.setTiposAnticipo(mapper.convertList(tiposAnticipo, TipoAnticipoDto.class));

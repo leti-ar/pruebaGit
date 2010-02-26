@@ -87,7 +87,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 		fields.add(nss = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(10), true));
 		fields.add(nflota = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(5)));
-		fields.add(origen = new ListBox());
+		fields.add(origen = new ListBox(""));
 		fields.add(entrega = new ListBox());
 		entrega.setWidth("480px");
 		fields.add(facturacion = new ListBox());
@@ -362,6 +362,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			validarCargoActivacion(validator, linea);
 		}
 		solicitudServicio.refreshPreciosTotales();
+		validator.addTarget(origen).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
 		String pataconexConPunto = "" + decFormatter.parse(pataconex.getText());
 		validator.addTarget(pataconexConPunto).smallerOrEqual(
 				Sfa.constant().ERR_PATACONEX() + " ( "
@@ -403,7 +405,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				validator.addError(Sfa.constant().ERR_NNS_RANGO());
 			}
 		}
-
+		validator.addTarget(origen).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
 		validator.addTarget(facturacion).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Facturación"));
 		if (!solicitudServicio.getGrupoSolicitud().isCDW()) {
@@ -699,7 +702,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	public boolean isCDW() {
 		return solicitudServicio.getGrupoSolicitud().getId().equals(GrupoSolicitudDto.ID_CDW);
 	}
-	
+
 	public boolean isMDS() {
 		return solicitudServicio.getGrupoSolicitud().getId().equals(GrupoSolicitudDto.ID_MDS);
 	}
