@@ -239,7 +239,6 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 	public ContactoCuentaDto getContactoDto() {
 		ContactoCuentaDto contactoDto = contactoCuentaDto;
 		newContactosId--;
-		contactoDto.setCuenta(CuentaEdicionTabPanel.getInstance().getCuenta2editDto());
 		
 		if (contactoDto.getId()==null)
 			contactoDto.setId(newContactosId);
