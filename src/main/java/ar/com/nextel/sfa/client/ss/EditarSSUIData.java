@@ -558,7 +558,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	public int removeLineaSolicitudServicio(int index) {
 		saved = false;
 		LineaSolicitudServicioDto linea = solicitudServicio.getLineas().get(index);
-		String numeroReservado = linea.getNumeroReservaArea();
+		String numeroReservado = linea.getNumeroReserva();
 		boolean tieneNReserva = numeroReservado != null && numeroReservado.length() > 0;
 		if (tieneNReserva) {
 			controller.desreservarNumeroTelefonico(Long.parseLong(numeroReservado), linea.getId(),
