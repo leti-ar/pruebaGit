@@ -400,20 +400,15 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 			ListaPreciosDto listaSelected = (ListaPreciosDto) listaPrecio.getSelectedItem();
 			item.addAllItems(listaSelected.getItemsListaPrecioVisibles());
-			// Selecciono Cuenta Corriente Vencimiento Ciclo por default
-			int indexCuentaCorrienteVencimientoCiclo = -1;
-			int index = 0;
-			for (TerminoPagoValidoDto terminoPagoValido : listaSelected.getTerminosPagoValido()) {
-				if (terminoPagoValido.getTerminoPago().getId().longValue() == CUENTA_CORRIENTE_VENC_CICLO_ID) {
-					indexCuentaCorrienteVencimientoCiclo = index;
-					break;
-				}
-				index++;
+
+			// Selecciono Cuenta Corriente Vencimiento Ciclo por default si no tiene ninguno seleccionado
+			TerminoPagoValidoDto terminoPagoValido = getTerminoPagoValidoByIdTerminoPago(listaSelected
+					.getTerminosPagoValido(), CUENTA_CORRIENTE_VENC_CICLO_ID);
+			if (!terminoPago.hasPreseleccionados()) {
+				terminoPago.setSelectedItem(terminoPagoValido);
 			}
 			terminoPago.addAllItems(listaSelected.getTerminosPagoValido());
-			if (indexCuentaCorrienteVencimientoCiclo >= 0) {
-				terminoPago.setSelectedIndex(indexCuentaCorrienteVencimientoCiclo);
-			}
+
 			if (listaSelected.getItemsListaPrecioVisibles().size() == 1) {
 				item.setSelectedIndex(1);
 			}
@@ -800,6 +795,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		plan.setSelectedItem(linea.getPlan());
 		idPlanAnterior = linea.getPlan() != null ? linea.getPlan().getId() : null;
 		modalidadCobro.setSelectedItem(linea.getModalidadCobro());
+		if (linea.getTerminoPago() != null) {
+			terminoPago.setSelectedItem(getTerminoPagoValidoByIdTerminoPago(linea.getListaPrecios()
+					.getTerminosPagoValido(), linea.getTerminoPago().getId().longValue()));
+		}
 		if (tipoEdicion == ACTIVACION) {
 			imei.setText(linea.getNumeroIMEI());
 			modeloEq.setSelectedItem(linea.getModelo());
@@ -824,6 +823,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		modalidadCobro.clearPreseleccionados();
 		modeloEq.clear();
 		modeloEq.clearPreseleccionados();
+		terminoPago.clear();
+		terminoPago.clearPreseleccionados();
 	}
 
 	public LineaSolicitudServicioDto getLineaSolicitudServicio() {
@@ -950,5 +951,19 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private boolean sinReservaAlAbrir() {
 		return lineaSolicitudServicio.getNumeroReservaArea() == null
 				|| "".equals(lineaSolicitudServicio.getNumeroReservaArea().trim());
+	}
+
+	private TerminoPagoValidoDto getTerminoPagoValidoByIdTerminoPago(
+			List<TerminoPagoValidoDto> terminosPagoValido, long id) {
+		int i = 0;
+		int index = -1;
+		for (TerminoPagoValidoDto terminoPagoValido : terminosPagoValido) {
+			if (terminoPagoValido.getTerminoPago().getId().longValue() == id) {
+				index = i;
+				break;
+			}
+			i++;
+		}
+		return index >= 0 ? terminosPagoValido.get(index) : null;
 	}
 }
