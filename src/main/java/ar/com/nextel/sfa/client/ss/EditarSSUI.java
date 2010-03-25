@@ -296,8 +296,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			cerrandoSolicitud = cerrando;
 			getCerrarSSUI().setTitleCerrar(cerrando);
 			getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
-					editarSSUIData.getSolicitudServicioGeneracion(), editarSSUIData.isCDW(),
-					editarSSUIData.hasItemBB());
+					editarSSUIData.getCuenta().isCliente(), editarSSUIData.getSolicitudServicioGeneracion(),
+					editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB());
 		} else {
 			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 			ErrorDialog.getInstance().show(errors, false);
@@ -382,11 +382,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 	private CerrarSSUI getCerrarSSUI() {
 		if (cerrarSSUI == null) {
-			if (editarSSUIData.isMDS()) {
-				cerrarSSUI = new CerrarSSUI(Boolean.TRUE);
-			} else {
-				cerrarSSUI = new CerrarSSUI(Boolean.FALSE);
-			}
+			cerrarSSUI = new CerrarSSUI();
 			cerrarSSUI.setAceptarCommand(generarCerrarSolicitudCommand());
 		}
 		return cerrarSSUI;

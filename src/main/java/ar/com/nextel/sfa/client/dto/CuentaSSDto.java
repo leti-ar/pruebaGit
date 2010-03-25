@@ -41,4 +41,7 @@ public class CuentaSSDto implements IsSerializable {
 		this.persona = persona;
 	}
 
+	public boolean isCliente(){
+		return getIdVantive() != null;
+	}
 }

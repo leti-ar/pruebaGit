@@ -3,6 +3,8 @@ package ar.com.nextel.sfa.client.dto;
 import java.util.Date;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.enums.CondicionCuentaEnum;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class CuentaDto implements IsSerializable {
@@ -287,58 +289,14 @@ public class CuentaDto implements IsSerializable {
 	public void setFechaCreacion(Date fechaCreacion) {
 		this.fechaCreacion = fechaCreacion;
 	}
-	// public String getCodigoBSCS() {
-	// return codigoBSCS;
-	// }
-	// public void setCodigoBSCS(String codigoBSCS) {
-	// this.codigoBSCS = codigoBSCS;
-	// }
-	// public String getCustomerClassCode() {
-	// return customerClassCode;
-	// }
-	// public void setCustomerClassCode(String customerClassCode) {
-	// this.customerClassCode = customerClassCode;
-	// }
-	// public Long getIdVantiveRA() {
-	// return idVantiveRA;
-	// }
-	// public void setIdVantiveRA(Long idVantiveRA) {
-	// this.idVantiveRA = idVantiveRA;
-	// }
-	// public Long getCodigoFNCL() {
-	// return codigoFNCL;
-	// }
-	// public void setCodigoFNCL(Long codigoFNCL) {
-	// this.codigoFNCL = codigoFNCL;
-	// }
-	// public Long getCodigoFNCLPadre() {
-	// return codigoFNCLPadre;
-	// }
-	// public void setCodigoFNCLPadre(Long codigoFNCLPadre) {
-	// this.codigoFNCLPadre = codigoFNCLPadre;
-	// }
-	// public Long getCodigoBSCSPadre() {
-	// return codigoBSCSPadre;
-	// }
-	// public void setCodigoBSCSPadre(Long codigoBSCSPadre) {
-	// this.codigoBSCSPadre = codigoBSCSPadre;
-	// }
-	// public Boolean getFacturaElectronica() {
-	// return facturaElectronica;
-	// }
-	// public void setFacturaElectronica(Boolean facturaElectronica) {
-	// this.facturaElectronica = facturaElectronica;
-	// }
-	// public Boolean getAutorretiene() {
-	// return autorretiene;
-	// }
-	// public void setAutorretiene(Boolean autorretiene) {
-	// this.autorretiene = autorretiene;
-	// }
-	// public Boolean getCompleta() {
-	// return completa;
-	// }
-	// public void setCompleta(Boolean completa) {
-	// this.completa = completa;
-	// }
+
+	public boolean isProspect() {
+		return getCondicionCuenta().getId() == CondicionCuentaEnum.PROSPECT.getId()
+				|| getCondicionCuenta().getId() == CondicionCuentaEnum.PROSPECT_EN_CARGA.getId();
+	}
+
+	public boolean isCustomer() {
+		return getCondicionCuenta().getId() == CondicionCuentaEnum.CUSTOMER.getId();
+	}
+
 }
