@@ -23,11 +23,9 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 	private static final String generarTitle = "SS - Generar SS";
 	private static final String cerrarTitle = "SS - Cerrar SS";
 	private FlexTable layout;
-	private Boolean esMDS;
 
-	public CerrarSSUI(Boolean esMDS) {
+	public CerrarSSUI() {
 		super("SS - Generar SS", false, true);
-		this.esMDS=esMDS;
 		init();
 	}
 
@@ -61,12 +59,6 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 		layout.setWidget(2, 3, cerarSSUIData.getEmail());
 		layout.setHTML(3, 1, Sfa.constant().scoringTitle());
 		layout.setWidget(3, 0, cerarSSUIData.getScoring());
-
-		if (esMDS==Boolean.TRUE) {
-			layout.setHTML(4, 2, Sfa.constant().dae());
-			layout.setWidget(4, 3, cerarSSUIData.getDAEListBox());	
-		}		
-
 		add(layout);
 	}
 
@@ -85,24 +77,33 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 		this.aceptarCommand = aceptarCommand;
 	}
 
-	public void show(PersonaDto persona, SolicitudServicioGeneracionDto solicitudServicioGeneracion,
-			boolean cdw, boolean cerrandoConItemBB) {
+	public void show(PersonaDto persona, boolean isCliente, SolicitudServicioGeneracionDto solicitudServicioGeneracion,
+			boolean isCDW, boolean isMDS, boolean cerrandoConItemBB) {
 		cerarSSUIData.setEmails(persona.getEmails(), solicitudServicioGeneracion);
 		boolean permisoCierreScoring = ClientContext.getInstance().checkPermiso(
 				PermisosEnum.SCORING_CHECKED.getValue());
 		boolean permisoCierrePin = ClientContext.getInstance().checkPermiso(
 				PermisosEnum.CERRAR_SS_CON_PIN.getValue());
 
-		if (!cdw && permisoCierreScoring && !permisoCierrePin) {
+		if (!isCDW && permisoCierreScoring && !permisoCierrePin && isCliente) {
 			layout.setWidget(3, 0, cerarSSUIData.getScoring());
 			layout.setHTML(3, 1, Sfa.constant().scoringTitle());
-		} else if (!cdw && permisoCierrePin && !cerrandoConItemBB && esMDS==Boolean.FALSE) {
+		} else if (!isCDW && permisoCierrePin && !cerrandoConItemBB && isMDS==Boolean.FALSE) {
 			layout.setHTML(3, 0, Sfa.constant().pinMaestro());
 			layout.setWidget(3, 1, cerarSSUIData.getPin());
 		} else {
 			layout.setHTML(3, 0, "");
 			layout.setHTML(3, 1, "");
 		}
+		
+		if(isMDS){
+			layout.setHTML(4, 2, Sfa.constant().dae());
+			layout.setWidget(4, 3, cerarSSUIData.getDAEListBox());	
+		} else {
+			layout.setHTML(2, 2, "");
+			layout.setHTML(4, 3, "");
+		}
+		
 		showAndCenter();
 	}
 
