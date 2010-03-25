@@ -278,8 +278,10 @@ public class SolicitudBusinessService {
 			LineaSolicitudServicio linea = repository.retrieve(LineaSolicitudServicio.class,
 					idLineaSolicitudServicio);
 			linea.setNumeroReservaArea("");
-			int beginIndex = linea.getNumeroReserva().length() - 4;
-			linea.setNumeroReserva(linea.getNumeroReserva().substring(beginIndex));
+			if (linea.getNumeroReserva() != null && linea.getNumeroReserva().length() > 4) {
+				int beginIndex = linea.getNumeroReserva().length() - 4;
+				linea.setNumeroReserva(linea.getNumeroReserva().substring(beginIndex));
+			}
 			repository.save(linea);
 		}
 		reservaNumeroTelefonoBusinessOperator.desreservarNumeroTelefono(numero, sessionContextLoader
