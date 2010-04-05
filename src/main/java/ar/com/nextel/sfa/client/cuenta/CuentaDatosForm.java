@@ -975,7 +975,8 @@ public class CuentaDatosForm extends Composite {
 				|| (FormUtils.fieldDirty(camposTabDatos.getCategoria(), cuentaTab.getCuenta2editDto()
 						.getCategoriaCuenta().getItemText()))
 				|| (FormUtils.fieldDirty(camposTabDatos.getObservaciones(), cuentaTab.getCuenta2editDto()
-						.getObservacionesTelMail())))
+						.getObservacionesTelMail()))
+				|| (FormUtils.fieldDirty(camposTabDatos.getIibb(), cuentaTab.getCuenta2editDto().getIibb())))
 			return true;
 
 		if (cuentaTab.getCuenta2editDto().getCategoriaCuenta().getDescripcion().equals(
@@ -1391,10 +1392,15 @@ public class CuentaDatosForm extends Composite {
 				new TipoContribuyenteDto(Long
 						.parseLong(camposTabDatos.getContribuyente().getSelectedItemId()), camposTabDatos
 						.getContribuyente().getSelectedItemText()));
-		if (camposTabDatos.getSexo().getSelectedItemId().equals(SexoEnum.ORGANIZACION.getId())) {
+		long selectedSexo = camposTabDatos.getSexo().getSelectedItemId() != null
+				&& !"".equals(camposTabDatos.getSexo().getSelectedItemId().trim()) ? Long
+				.parseLong(camposTabDatos.getSexo().getSelectedItemId()) : -1;
+		if ( selectedSexo == SexoEnum.ORGANIZACION.getId()) {
 			CuentaEdicionTabPanel.getInstance().getCuenta2editDto().getPersona().setCargo(
 					new CargoDto(Long.parseLong(camposTabDatos.getCargo().getSelectedItemId()),
 							camposTabDatos.getCargo().getSelectedItemText()));
+			CuentaEdicionTabPanel.getInstance().getCuenta2editDto().setIibb(
+					camposTabDatos.getIibb().getText());
 		}
 		CuentaEdicionTabPanel.getInstance().getCuenta2editDto().setProveedorInicial(
 				new ProveedorDto(Long.parseLong(camposTabDatos.getProveedorAnterior().getSelectedItemId()),
