@@ -375,7 +375,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		solicitudServicio.refreshPreciosTotales();
 		validator.addTarget(origen).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
-		String pataconexConPunto = "" + decFormatter.parse(pataconex.getText());
+		String pataconexConPunto = "0";
+		try {
+			pataconexConPunto = "" + decFormatter.parse(pataconex.getText());
+		} catch (NumberFormatException e) {
+		}
 		validator.addTarget(pataconexConPunto).smallerOrEqual(
 				Sfa.constant().ERR_PATACONEX() + " ( "
 						+ currencyFormat.format(solicitudServicio.getPrecioItemTotal()) + " )",
