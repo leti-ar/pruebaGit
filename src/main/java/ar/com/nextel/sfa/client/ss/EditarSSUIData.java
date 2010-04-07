@@ -155,13 +155,24 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		saved = false;
 		boolean isEmpty = false;
 		if (sender == pataconex) {
-			isEmpty = "".equals(pataconex.getText());
-			solicitudServicio.setPataconex(!isEmpty ? decFormatter.parse(pataconex.getText()) : 0d);
+			isEmpty = "".equals(pataconex.getText().trim());
+			try {
+				solicitudServicio
+						.setPataconex(!isEmpty ? decFormatter.parse(pataconex.getText().trim()) : 0d);
+			} catch (NumberFormatException e) {
+				pataconex.setText("0");
+				solicitudServicio.setPataconex(0d);
+			}
 			recarcularValores();
 		} else if (sender == credFidelizacion) {
-			isEmpty = "".equals(credFidelizacion.getText());
-			solicitudServicio.setMontoCreditoFidelizacion(!isEmpty ? decFormatter.parse(credFidelizacion
-					.getText()) : 0d);
+			isEmpty = "".equals(credFidelizacion.getText().trim());
+			try {
+				solicitudServicio.setMontoCreditoFidelizacion(!isEmpty ? decFormatter.parse(credFidelizacion
+						.getText().trim()) : 0d);
+			} catch (NumberFormatException e) {
+				credFidelizacion.setText("0");
+				solicitudServicio.setMontoCreditoFidelizacion(0d);
+			}
 			recarcularValores();
 		}
 	}
