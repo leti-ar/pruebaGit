@@ -48,6 +48,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private RegexTextBox nss;
 	private RegexTextBox nflota;
 	private ListBox origen;
+	private CheckBox despacho;
 	private ListBox entrega;
 	private ListBox facturacion;
 	private TextArea aclaracion;
@@ -88,6 +89,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		fields.add(nss = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(10), true));
 		fields.add(nflota = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(5)));
 		fields.add(origen = new ListBox(""));
+		fields.add(despacho = new CheckBox());
 		fields.add(entrega = new ListBox());
 		entrega.setWidth("480px");
 		fields.add(facturacion = new ListBox());
@@ -191,6 +193,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	public ListBox getOrigen() {
 		return origen;
+	}
+	
+	public CheckBox getDespacho() {
+		return despacho;
 	}
 
 	public ListBox getEntrega() {

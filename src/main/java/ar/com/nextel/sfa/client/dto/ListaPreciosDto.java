@@ -11,6 +11,7 @@ public class ListaPreciosDto extends EnumDto implements IsSerializable, ListBoxI
 	private List<TerminoPagoValidoDto> terminosPagoValido;
 	private List<ItemSolicitudTasadoDto> itemsListaPrecioVisibles;
 	private List<AjustesDto> ajustes;
+	private Boolean despacho;
 
 	public String getItemText() {
 		return descripcion;
@@ -44,4 +45,11 @@ public class ListaPreciosDto extends EnumDto implements IsSerializable, ListBoxI
 		this.ajustes = ajustes;
 	}
 
+	public void setDespacho(Boolean despacho) {
+		this.despacho = despacho;
+	}
+
+	public Boolean getDespacho() {
+		return despacho;
+	}
 }

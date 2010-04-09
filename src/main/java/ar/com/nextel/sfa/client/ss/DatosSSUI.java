@@ -74,7 +74,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	}
 
 	private Widget getNssLayout() {
-		nnsLayout = new Grid(1, 6);
+		nnsLayout = new Grid(1, 8);
 		nnsLayout.addStyleName("layout");
 		refreshNssLayout();
 		return nnsLayout;
@@ -89,11 +89,13 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			nnsLayout.setWidget(0, 3, editarSSUIData.getNflota());
 			nnsLayout.setHTML(0, 4, Sfa.constant().origenReq());
 			nnsLayout.setWidget(0, 5, editarSSUIData.getOrigen());
+			nnsLayout.setHTML(0, 6, Sfa.constant().despacho());
+			nnsLayout.setWidget(0, 7, editarSSUIData.getDespacho());
 		} else {
 			nnsLayout.setHTML(0, 2, Sfa.constant().origenReq());
 			nnsLayout.setWidget(0, 3, editarSSUIData.getOrigen());
-			nnsLayout.clearCell(0, 4);
-			nnsLayout.clearCell(0, 5);
+			nnsLayout.setHTML(0, 4, Sfa.constant().despacho());
+			nnsLayout.setWidget(0, 5, editarSSUIData.getDespacho());
 		}
 	}
 

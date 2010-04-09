@@ -2327,4 +2327,13 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("y Calle:")
   @Key("y_calle")
   String y_calle();
+
+  /**
+   * Translated "Despacho".
+   * 
+   * @return translated "Despacho"
+   */
+  @DefaultStringValue("Despacho")
+  @Key("Despacho")
+  String despacho();
 }
