@@ -6,13 +6,20 @@
 	<artifactId>sfa-web-ear</artifactId>
 	<name>sfa-web-ear</name>
 	<packaging>ear</packaging>
-	<version>2.0-SNAPSHOT</version>
+	<version>web.2.0.0-SNAPSHOT</version>
+	
+	<parent>
+		<groupId>ar.com.nextel.parent</groupId>
+		<artifactId>nexus</artifactId>
+		<version>1.0</version>
+	</parent>
+	
 	<dependencies>
 		<dependency>
 			<groupId>ar.com.nextel.sfa</groupId>
 			<artifactId>sfa-web</artifactId>
 			<type>war</type>
-			<version>2.0-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -32,16 +39,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<distributionManagement>
-		<repository>
-			<id>serverNextel</id>
-			<name>Snoop REPO Release</name>
-			<url>http://basliap12c.nextel.com.ar:8080/artifactory/NexusRelease</url>
-		</repository>
-		<snapshotRepository>
-			<id>serverNextel</id>
-			<name>Snoop REPO Snapshots</name>
-			<url>http://basliap12c.nextel.com.ar:8080/artifactory/NexusSnapshot</url>
-		</snapshotRepository>
-	</distributionManagement>
 </project>

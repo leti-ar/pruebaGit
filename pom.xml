@@ -4,11 +4,17 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ar.com.nextel.sfa</groupId>
 	<artifactId>sfa-web</artifactId>
-	<version>2.0-SNAPSHOT</version>
+	<version>web.2.0.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>SFA WEB</name>
 	<description>SFA Revolution Web - IE support</description>
 	<inceptionYear>2009</inceptionYear>
+	
+	<parent>
+		<groupId>ar.com.nextel.parent</groupId>
+		<artifactId>nexus</artifactId>
+		<version>1.0</version>
+	</parent>
 	
   <!--  convenience to define GWT version in one place -->
   <properties>
@@ -21,7 +27,7 @@
     <dependency>
       <groupId>ar.com.nextel.sfa</groupId>
       <artifactId>sfa-srv</artifactId>
-      <version>2.2-SNAPSHOT</version>
+      <version>web.2.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
@@ -44,7 +50,7 @@
     <dependency>
       <groupId>ar.com.snoop.gwt</groupId>
       <artifactId>GwtCommons</artifactId>
-      <version>1.1-sfa-SNAPSHOT</version>
+      <version>1.1-sfa</version>
     </dependency>
     <!--  Spring deps  -->
     <dependency>
@@ -378,16 +384,5 @@
       </plugin>
     </plugins>
   </reporting>
-  <distributionManagement>
-		<repository>
-			<id>serverNextel</id>
-			<name>Snoop REPO Release</name>
-			<url>http://basliap12c.nextel.com.ar:8080/artifactory/NexusRelease</url>
-		</repository>
-		<snapshotRepository>
-			<id>serverNextel</id>
-			<name>Snoop REPO Snapshots</name>
-			<url>http://basliap12c.nextel.com.ar:8080/artifactory/NexusSnapshot</url>
-		</snapshotRepository>
-	</distributionManagement>
+
 </project>
