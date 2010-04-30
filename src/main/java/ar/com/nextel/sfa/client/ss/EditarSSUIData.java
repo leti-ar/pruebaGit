@@ -518,15 +518,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	private void validarCargoActivacion(GwtValidator validator, LineaSolicitudServicioDto linea) {
 		if (linea.getTipoSolicitud().getTipoSolicitudBase().getId().equals(TipoSolicitudBaseDto.ID_VENTA_CDW)) {
-			boolean hasCargoActivaciónCDW = false;
+			boolean hasCargoActivacionCDW = false;
 			for (ServicioAdicionalLineaSolicitudServicioDto servicioAdicional : linea
 					.getServiciosAdicionales()) {
 				if (servicioAdicional.isUnicaVez() && servicioAdicional.isChecked()) {
-					hasCargoActivaciónCDW = true;
+					hasCargoActivacionCDW = true;
 					break;
 				}
 			}
-			if (!hasCargoActivaciónCDW) {
+			if (!hasCargoActivacionCDW) {
 				validator.addError(Sfa.constant().ERR_FALTA_CARGO_ACTIVACION_CDW().replaceAll(V1,
 						linea.getAlias()));
 			}
