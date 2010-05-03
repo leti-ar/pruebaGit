@@ -1,7 +1,6 @@
 package ar.com.nextel.sfa.client.ss;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -400,25 +399,23 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				terminoPago.clear();
 			}
 			ListaPreciosDto listaSelected = (ListaPreciosDto) listaPrecio.getSelectedItem();
-			if (listaSelected != null) {
-				item.addAllItems(listaSelected.getItemsListaPrecioVisibles());
-				
-				// Selecciono Cuenta Corriente Vencimiento Ciclo por default si no tiene ninguno seleccionado
-				TerminoPagoValidoDto terminoPagoValido = getTerminoPagoValidoByIdTerminoPago(listaSelected
-						.getTerminosPagoValido(), CUENTA_CORRIENTE_VENC_CICLO_ID);
-				if (!terminoPago.hasPreseleccionados()) {
-					terminoPago.setSelectedItem(terminoPagoValido);
-				}
-				terminoPago.addAllItems(listaSelected.getTerminosPagoValido());
-				
-				if (listaSelected.getItemsListaPrecioVisibles().size() == 1) {
-					item.setSelectedIndex(1);
-				}
-				if (tipoEdicion == ACTIVACION) {
-					refreshModelos();
-				} else {
-					onChange(item);
-				}
+			item.addAllItems(listaSelected.getItemsListaPrecioVisibles());
+
+			// Selecciono Cuenta Corriente Vencimiento Ciclo por default si no tiene ninguno seleccionado
+			TerminoPagoValidoDto terminoPagoValido = getTerminoPagoValidoByIdTerminoPago(listaSelected
+					.getTerminosPagoValido(), CUENTA_CORRIENTE_VENC_CICLO_ID);
+			if (!terminoPago.hasPreseleccionados()) {
+				terminoPago.setSelectedItem(terminoPagoValido);
+			}
+			terminoPago.addAllItems(listaSelected.getTerminosPagoValido());
+
+			if (listaSelected.getItemsListaPrecioVisibles().size() == 1) {
+				item.setSelectedIndex(1);
+			}
+			if (tipoEdicion == ACTIVACION) {
+				refreshModelos();
+			} else {
+				onChange(item);
 			}
 		} else if (sender == item) {
 			// Seteo el precio del item, ajustado por el Termino de Pago y cargo el ListBox de Planes
@@ -723,19 +720,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		return validator.fillResult().getErrors();
 	}
 
-	public void load(List<ListaPreciosDto> listasPrecios, Boolean despacho) {
+	public void load(List<ListaPreciosDto> listasPrecios) {
 		if (listaPrecio.getItemCount() > 0) {
 			listaPrecio.clear();
 		}
-		List<ListaPreciosDto> listasAux = new ArrayList<ListaPreciosDto>();
-		for (Iterator<ListaPreciosDto> iterator = listasPrecios.iterator(); iterator.hasNext();) {
-			ListaPreciosDto listaPrecioDto = (ListaPreciosDto) iterator.next();
-			//Si el checkBox está tildado, muestro las listas de precios que permiten despacho
-			if (!(despacho == listaPrecioDto.getDespacho())) {
-				listasAux.add(listaPrecioDto);
-			}
-		}
-		listasPrecios.removeAll(listasAux);
 		listaPrecio.addAllItems(listasPrecios);
 		onChange(listaPrecio);
 	}

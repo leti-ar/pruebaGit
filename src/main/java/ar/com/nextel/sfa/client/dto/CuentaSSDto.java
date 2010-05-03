@@ -8,6 +8,7 @@ public class CuentaSSDto implements IsSerializable {
 	private Long idVantive;
 	private String codigoVantive;
 	private PersonaDto persona;
+	private boolean empresa;
 
 	public Long getId() {
 		return id;
@@ -41,7 +42,15 @@ public class CuentaSSDto implements IsSerializable {
 		this.persona = persona;
 	}
 
-	public boolean isCliente(){
+	public boolean isCliente() {
 		return getIdVantive() != null;
+	}
+
+	public boolean isEmpresa() {
+		return empresa;
+	}
+
+	public void setEmpresa(boolean empresa) {
+		this.empresa = empresa;
 	}
 }

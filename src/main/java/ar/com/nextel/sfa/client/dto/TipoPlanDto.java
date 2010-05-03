@@ -6,6 +6,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class TipoPlanDto implements IsSerializable, ListBoxItem {
 
+	public static String TIPO_PLAN_DIRECTO_O_EMPRESA_CODE = "Y";
+	private static long TIPO_PLAN_DIRECTO_ID = 8;
+	private static long TIPO_PLAN_EMPRESA_ID = 7;
+
 	private Long id;
 	private String descripcion;
 	private String codigoBSCS;
@@ -49,5 +53,13 @@ public class TipoPlanDto implements IsSerializable, ListBoxItem {
 
 	public void setCodigoBSCS(String codigoBSCS) {
 		this.codigoBSCS = codigoBSCS;
+	}
+
+	public boolean isEmpresa() {
+		return id.longValue() == TIPO_PLAN_EMPRESA_ID;
+	}
+	
+	public boolean isDirecto() {
+		return id.longValue() == TIPO_PLAN_DIRECTO_ID;
 	}
 }

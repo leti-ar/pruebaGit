@@ -2,7 +2,6 @@ package ar.com.nextel.sfa.client.ss;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +9,7 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
+import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
@@ -23,6 +23,8 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -44,14 +46,13 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	private Map<Long, TipoSolicitudDto> tiposSolicitudes = new HashMap();
 	private Map<Long, List<TipoSolicitudDto>> tiposSolicitudesPorGrupo = new HashMap();
 	private Long idGrupoSolicitudLoaded;
-	boolean tiposSolicitudLoaded = false;
+	private boolean tiposSolicitudLoaded = false;
 	private HTML nuevoItem;
-	private EditarSSUIData editarSSUIData;
-	private boolean checkBoxValue = false;
+	private List<TipoPlanDto> tiposPlan = null;
+	private boolean empresa = false;
 
 	public ItemSolicitudDialog(String title, EditarSSUIController controller) {
 		super(title, false, true);
-		editarSSUIData = controller.getEditarSSUIData();
 		addStyleName("gwt-ItemSolicitudDialog");
 		this.controller = controller;
 		tipoSolicitudPanel = new SimplePanel();
@@ -94,8 +95,6 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 			hide();
 		}
 	}
-	
-
 
 	private void executeItemCreation(final Widget sender) {
 		List errors = itemSolicitudUIData.validate();
@@ -150,7 +149,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 				for (TipoSolicitudDto tipoSS : tiposSS) {
 					tiposSolicitudes.put(tipoSS.getId(), tipoSS);
 				}
-				itemSolicitudUIData.getTipoPlan().addAllItems(initializer.getTiposPlanes());
+				tiposPlan = initializer.getTiposPlanes();
 				itemSolicitudUIData.getLocalidad().addAllItems(initializer.getLocalidades());
 				refreshTipoOrden();
 			}
@@ -160,27 +159,27 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	public void onChange(ChangeEvent event) {
 		TipoSolicitudDto tipoSolicitud = (TipoSolicitudDto) tipoOrden.getSelectedItem();
 		if (tipoSolicitud != null) {
-			if (itemSolicitudUIData.getIdsTipoSolicitudBaseItemYPlan().contains(
-					tipoSolicitud.getTipoSolicitudBase().getId())) {
-				tipoSolicitudPanel.setWidget(getItemYPlanSolicitudUI());
-				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.ITEM_PLAN);
-			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseItem().contains(
-					tipoSolicitud.getTipoSolicitudBase().getId())) {
-				tipoSolicitudPanel.setWidget(getSoloItemSolicitudUI());
-				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.SOLO_ITEM);
-			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseActivacion().contains(
-					tipoSolicitud.getTipoSolicitudBase().getId())) {
-				tipoSolicitudPanel.setWidget(getItemSolicitudActivacionUI());
-				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.ACTIVACION);
-			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseCDW().contains(
-					tipoSolicitud.getTipoSolicitudBase().getId())) {
-				tipoSolicitudPanel.setWidget(getItemSolicitudCDWUI());
-				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.VENTA_CDW);
-			} else {
-				tipoSolicitudPanel.clear();
-			}
-			loadUIData(tipoSolicitud);
+		if (itemSolicitudUIData.getIdsTipoSolicitudBaseItemYPlan().contains(
+				tipoSolicitud.getTipoSolicitudBase().getId())) {
+			tipoSolicitudPanel.setWidget(getItemYPlanSolicitudUI());
+			itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.ITEM_PLAN);
+		} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseItem().contains(
+				tipoSolicitud.getTipoSolicitudBase().getId())) {
+			tipoSolicitudPanel.setWidget(getSoloItemSolicitudUI());
+			itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.SOLO_ITEM);
+		} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseActivacion().contains(
+				tipoSolicitud.getTipoSolicitudBase().getId())) {
+			tipoSolicitudPanel.setWidget(getItemSolicitudActivacionUI());
+			itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.ACTIVACION);
+		} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseCDW().contains(
+				tipoSolicitud.getTipoSolicitudBase().getId())) {
+			tipoSolicitudPanel.setWidget(getItemSolicitudCDWUI());
+			itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.VENTA_CDW);
+		} else {
+			tipoSolicitudPanel.clear();
 		}
+		loadUIData(tipoSolicitud);
+	}
 	}
 
 	private void loadUIData(final TipoSolicitudDto tiposSolicitud) {
@@ -188,13 +187,11 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 			controller.getListaPrecios(tiposSolicitud, new DefaultWaitCallback<List<ListaPreciosDto>>() {
 				public void success(List<ListaPreciosDto> listasPrecios) {
 					tiposSolicitudes.get(tiposSolicitud.getId()).setListasPrecios(listasPrecios);
-					List<ListaPreciosDto> tipos = new ArrayList<ListaPreciosDto>(tiposSolicitud.getListasPrecios());
-					itemSolicitudUIData.load(tipos, editarSSUIData.getDespacho().getValue());
+					itemSolicitudUIData.load(tiposSolicitud.getListasPrecios());
 				};
 			});
 		} else {
-			List<ListaPreciosDto> tipos = new ArrayList<ListaPreciosDto>(tiposSolicitudes.get(tiposSolicitud.getId()).getListasPrecios());
-			itemSolicitudUIData.load(tipos, editarSSUIData.getDespacho().getValue());
+			itemSolicitudUIData.load(tiposSolicitudes.get(tiposSolicitud.getId()).getListasPrecios());
 		}
 	}
 
@@ -237,49 +234,52 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 			tipoOrden.setSelectedItem(linea.getTipoSolicitud());
 		}
 		// Si ya esta cargado el ListBox actualizo el resto. Sino se actualizará al cargarse.
-		if (tipoOrden.getItems() != null) {
+		if (tipoOrden.getItemCount() > 0) {
 			refreshTipoOrden();
 		}
+		DeferredCommand.addCommand(new IncrementalCommand() {
+			public boolean execute() {
+				if (tiposPlan == null) {
+					return true;
+				}
+				itemSolicitudUIData.getTipoPlan().clear();
+				itemSolicitudUIData.getTipoPlan().clearPreseleccionados();
+				TipoPlanDto aSeleccionar = null;
+				for (TipoPlanDto tipoPlan : tiposPlan) {
+					if (tipoPlan.getCodigoBSCS().equals(TipoPlanDto.TIPO_PLAN_DIRECTO_O_EMPRESA_CODE)) {
+						if (empresa == tipoPlan.isEmpresa()) {
+							itemSolicitudUIData.getTipoPlan().addItem(tipoPlan);
+							aSeleccionar = tipoPlan;
+						}
+					} else {
+						itemSolicitudUIData.getTipoPlan().addItem(tipoPlan);
+					}
+				}
+				itemSolicitudUIData.getTipoPlan().setSelectedItem(aSeleccionar);
+				itemSolicitudUIData.onChange(itemSolicitudUIData.getTipoPlan());
+				return false;
+			}
+		});
 		showAndCenter();
 	}
 
 	private void refreshTipoOrden() {
 		GrupoSolicitudDto grupoSolicitudSelected = controller.getEditarSSUIData().getGrupoSolicitud();
-		List<TipoSolicitudDto> tipos = null;
 		if (grupoSolicitudSelected != null) {
-			if (!grupoSolicitudSelected.getId().equals(idGrupoSolicitudLoaded)
-					|| !(checkBoxValue == editarSSUIData.getDespacho().getValue())) {
-				tipos = new ArrayList<TipoSolicitudDto>(tiposSolicitudesPorGrupo.get(grupoSolicitudSelected.getId()));
-				if (editarSSUIData.getDespacho().getValue()) {
-					tipos = filtrar(tipos);
-				}
+			if (!grupoSolicitudSelected.getId().equals(idGrupoSolicitudLoaded)) {
 				tipoOrden.clear();
-				tipoOrden.addAllItems(tipos);
+				tipoOrden.addAllItems(tiposSolicitudesPorGrupo.get(grupoSolicitudSelected.getId()));
 				idGrupoSolicitudLoaded = grupoSolicitudSelected.getId();
 			}
 		} else {
-			tipos = new ArrayList<TipoSolicitudDto>(tiposSolicitudesPorGrupo.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
-			if (editarSSUIData.getDespacho().getValue()) {
-				tipos = filtrar(tipos);
-			}
 			tipoOrden.clear();
-			tipoOrden.addAllItems(tipos);
+			tipoOrden.addAllItems(tiposSolicitudesPorGrupo.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
 			idGrupoSolicitudLoaded = GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS;
 		}
-		checkBoxValue = editarSSUIData.getDespacho().getValue();
 		onChange(null);
 	}
-	
-	private List<TipoSolicitudDto> filtrar(List<TipoSolicitudDto> tipos) {
-		List<TipoSolicitudDto> tiposAux = new ArrayList<TipoSolicitudDto>();
-		for (Iterator<TipoSolicitudDto> iterator = tipos.iterator(); iterator.hasNext();) {
-			TipoSolicitudDto solicitudDto = (TipoSolicitudDto) iterator.next();
-			//Si el checkBox está tildado, solo muestro los tipos de orden que permiten despacho
-			if(!solicitudDto.getPermiteDespacho()){
-				tiposAux.add(solicitudDto);
-			}		
-		}
-		tipos.removeAll(tiposAux);
-		return tipos;
+
+	public void setCuentaEmpresa(boolean empresa) {
+		this.empresa = empresa;
 	}
 }

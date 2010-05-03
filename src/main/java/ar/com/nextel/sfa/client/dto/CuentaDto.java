@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.enums.CondicionCuentaEnum;
+import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -297,6 +298,12 @@ public class CuentaDto implements IsSerializable {
 
 	public boolean isCustomer() {
 		return getCondicionCuenta().getId() == CondicionCuentaEnum.CUSTOMER.getId();
+	}
+
+	public boolean isEmpresa() {
+		return TipoDocumentoEnum.CUIT.getCodigoVantive().equals(
+				persona.getDocumento().getTipoDocumento().getCodigoVantive())
+				&& persona.getDocumento().getNumero().startsWith("3");
 	}
 
 }

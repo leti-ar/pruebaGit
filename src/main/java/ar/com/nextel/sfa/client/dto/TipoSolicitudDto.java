@@ -11,7 +11,6 @@ public class TipoSolicitudDto extends EnumDto implements IsSerializable, ListBox
 	private TipoSolicitudBaseDto tipoSolicitudBase;
 	private String formaContratacion;
 	private List<ListaPreciosDto> listasPrecios;
-	private Boolean permiteDespacho; 
 
 	public String getItemText() {
 		return descripcion;
@@ -55,14 +54,6 @@ public class TipoSolicitudDto extends EnumDto implements IsSerializable, ListBox
 
 	public void setListasPrecios(List<ListaPreciosDto> listasPrecios) {
 		this.listasPrecios = listasPrecios;
-	}
-
-	public void setPermiteDespacho(Boolean permiteDespacho) {
-		this.permiteDespacho = permiteDespacho;
-	}
-
-	public Boolean getPermiteDespacho() {
-		return permiteDespacho;
 	}
 
 }

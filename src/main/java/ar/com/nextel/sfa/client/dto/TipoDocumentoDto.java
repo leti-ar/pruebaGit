@@ -1,15 +1,16 @@
 package ar.com.nextel.sfa.client.dto;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class TipoDocumentoDto extends EnumDto implements ListBoxItem, IsSerializable {
 
+	private String codigoVantive;
 
 	public TipoDocumentoDto() {
 	}
-	
+
 	public TipoDocumentoDto(long id, String descripcion) {
 		super();
 		this.id = id;
@@ -22,6 +23,14 @@ public class TipoDocumentoDto extends EnumDto implements ListBoxItem, IsSerializ
 
 	public String getItemValue() {
 		return id + "";
+	}
+
+	public String getCodigoVantive() {
+		return codigoVantive;
+	}
+
+	public void setCodigoVantive(String codigoVantive) {
+		this.codigoVantive = codigoVantive;
 	}
 
 }
