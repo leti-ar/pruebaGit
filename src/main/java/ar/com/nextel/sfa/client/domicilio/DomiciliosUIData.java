@@ -208,6 +208,8 @@ public class DomiciliosUIData extends UIData {
 		cpa.setMaxLength(10);
 		codigoPostal.setMaxLength(5);
 		piso.setMaxLength(3);
+		entreCalle.setMaxLength(80);
+		ycalle.setMaxLength(80);
 	}
 
 	/**
