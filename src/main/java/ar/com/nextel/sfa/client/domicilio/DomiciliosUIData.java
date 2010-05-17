@@ -53,7 +53,7 @@ public class DomiciliosUIData extends UIData {
 	private PersonaDto persona = new PersonaDto();
 	private ListBox facturacion = new ListBox();
 	private ListBox entrega = new ListBox();
-	private ListBox provincia = new ListBox();
+	private ListBox provincia = new ListBox("");
 
 	// Boolean noNormalizar;
 	private CheckBox validado = new CheckBox();
@@ -268,6 +268,8 @@ public class DomiciliosUIData extends UIData {
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", Sfa.constant().calle()));
 		validator.addTarget(localidad).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", Sfa.constant().localidad()));
+		validator.addTarget(provincia).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", Sfa.constant().provincia()));		
 		validator.addTarget(codigoPostal).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", Sfa.constant().cp()));
 		validator.fillResult();
