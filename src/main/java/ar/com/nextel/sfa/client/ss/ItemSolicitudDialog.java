@@ -159,27 +159,27 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	public void onChange(ChangeEvent event) {
 		TipoSolicitudDto tipoSolicitud = (TipoSolicitudDto) tipoOrden.getSelectedItem();
 		if (tipoSolicitud != null) {
-		if (itemSolicitudUIData.getIdsTipoSolicitudBaseItemYPlan().contains(
-				tipoSolicitud.getTipoSolicitudBase().getId())) {
-			tipoSolicitudPanel.setWidget(getItemYPlanSolicitudUI());
-			itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.ITEM_PLAN);
-		} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseItem().contains(
-				tipoSolicitud.getTipoSolicitudBase().getId())) {
-			tipoSolicitudPanel.setWidget(getSoloItemSolicitudUI());
-			itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.SOLO_ITEM);
-		} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseActivacion().contains(
-				tipoSolicitud.getTipoSolicitudBase().getId())) {
-			tipoSolicitudPanel.setWidget(getItemSolicitudActivacionUI());
-			itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.ACTIVACION);
-		} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseCDW().contains(
-				tipoSolicitud.getTipoSolicitudBase().getId())) {
-			tipoSolicitudPanel.setWidget(getItemSolicitudCDWUI());
-			itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.VENTA_CDW);
-		} else {
-			tipoSolicitudPanel.clear();
+			if (itemSolicitudUIData.getIdsTipoSolicitudBaseItemYPlan().contains(
+					tipoSolicitud.getTipoSolicitudBase().getId())) {
+				tipoSolicitudPanel.setWidget(getItemYPlanSolicitudUI());
+				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.ITEM_PLAN);
+			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseItem().contains(
+					tipoSolicitud.getTipoSolicitudBase().getId())) {
+				tipoSolicitudPanel.setWidget(getSoloItemSolicitudUI());
+				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.SOLO_ITEM);
+			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseActivacion().contains(
+					tipoSolicitud.getTipoSolicitudBase().getId())) {
+				tipoSolicitudPanel.setWidget(getItemSolicitudActivacionUI());
+				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.ACTIVACION);
+			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseCDW().contains(
+					tipoSolicitud.getTipoSolicitudBase().getId())) {
+				tipoSolicitudPanel.setWidget(getItemSolicitudCDWUI());
+				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.VENTA_CDW);
+			} else {
+				tipoSolicitudPanel.clear();
+			}
+			loadUIData(tipoSolicitud);
 		}
-		loadUIData(tipoSolicitud);
-	}
 	}
 
 	private void loadUIData(final TipoSolicitudDto tiposSolicitud) {
@@ -228,8 +228,12 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	}
 
 	public void show(LineaSolicitudServicioDto linea) {
+		itemSolicitudUIData.getTipoPlan().clear();
+		itemSolicitudUIData.getTipoPlan().clearPreseleccionados();
 		itemSolicitudUIData.setNombreMovil(controller.getNombreProximoMovil());
 		itemSolicitudUIData.setLineaSolicitudServicio(linea);
+		final TipoPlanDto tipoPlan = linea != null && linea.getPlan() != null ? linea.getPlan().getTipoPlan()
+				: null;
 		if (linea.getTipoSolicitud() != null) {
 			tipoOrden.setSelectedItem(linea.getTipoSolicitud());
 		}
@@ -242,8 +246,6 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 				if (tiposPlan == null) {
 					return true;
 				}
-				itemSolicitudUIData.getTipoPlan().clear();
-				itemSolicitudUIData.getTipoPlan().clearPreseleccionados();
 				TipoPlanDto aSeleccionar = null;
 				for (TipoPlanDto tipoPlan : tiposPlan) {
 					if (tipoPlan.getCodigoBSCS().equals(TipoPlanDto.TIPO_PLAN_DIRECTO_O_EMPRESA_CODE)) {
@@ -255,7 +257,8 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 						itemSolicitudUIData.getTipoPlan().addItem(tipoPlan);
 					}
 				}
-				itemSolicitudUIData.getTipoPlan().setSelectedItem(aSeleccionar);
+				itemSolicitudUIData.getTipoPlan().setSelectedItem(tipoPlan != null ? tipoPlan : aSeleccionar);
+
 				itemSolicitudUIData.onChange(itemSolicitudUIData.getTipoPlan());
 				return false;
 			}
