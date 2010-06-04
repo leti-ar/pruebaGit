@@ -151,6 +151,7 @@ public class DomiciliosUIData extends UIData {
 			codigoPostal.setText(domicilio.getCodigoPostal());
 			localidad.setText(domicilio.getLocalidad());
 			partido.setText(domicilio.getPartido());
+			provincia.setSelectedItem(domicilio.getProvincia());
 			numero.setText(domicilio.getNumero() != null ? "" + domicilio.getNumero() : "");
 			piso.setText(domicilio.getPiso());
 			departamento.setText(domicilio.getDepartamento());
