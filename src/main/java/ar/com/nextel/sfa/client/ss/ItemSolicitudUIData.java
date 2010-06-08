@@ -409,7 +409,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 			terminoPago.addAllItems(listaSelected.getTerminosPagoValido());
 
-			if (listaSelected.getItemsListaPrecioVisibles().size() == 1) {
+			if (listaSelected.getItemsListaPrecioVisibles() != null && listaSelected.getItemsListaPrecioVisibles().size() == 1) {
 				item.setSelectedIndex(1);
 			}
 			if (tipoEdicion == ACTIVACION) {
