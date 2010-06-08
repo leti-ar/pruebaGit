@@ -370,12 +370,20 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		List<ListaPreciosDto> listasPreciosDto = new ArrayList<ListaPreciosDto>();
 
 		boolean activacion = isTipoSolicitudActivacion(tipoSolicitud);
+		boolean accesorios = isTipoSolicitudAccesorios(tipoSolicitud);
 		// Se realiaza el mapeo de la coleccion a mano para poder filtrar los items por warehouse
 		for (ListaPrecios listaPrecios : listasPrecios) {
 			ListaPreciosDto lista = mapper.map(listaPrecios, ListaPreciosDto.class);
 			if (!activacion) {
 				lista.setItemsListaPrecioVisibles(mapper.convertList(listaPrecios
 						.getItemsTasados(tipoSolicitud), ItemSolicitudTasadoDto.class));
+			}
+			if(accesorios){
+				Collections.sort(lista.getItemsListaPrecioVisibles(), new Comparator<ItemSolicitudTasadoDto>() {
+					public int compare(ItemSolicitudTasadoDto o1, ItemSolicitudTasadoDto o2) {
+						return o1.getItemText().compareTo(o2.getItemText());
+					}
+				});
 			}
 			listasPreciosDto.add(lista);
 		}
@@ -384,10 +392,18 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	}
 
 	private boolean isTipoSolicitudActivacion(TipoSolicitud tipoSolicitud) {
-		return tipoSolicitud.equals(knownInstanceRetriever
+		return tipoSolicitud.getTipoSolicitudBase().equals(knownInstanceRetriever
 				.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION))
-				|| tipoSolicitud.equals(knownInstanceRetriever
+				|| tipoSolicitud.getTipoSolicitudBase().equals(knownInstanceRetriever
 						.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION_G4));
+
+	}
+	
+	private boolean isTipoSolicitudAccesorios(TipoSolicitud tipoSolicitud) {
+		return tipoSolicitud.getTipoSolicitudBase().equals(knownInstanceRetriever
+				.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_VENTA_ACCESORIOS))
+				|| tipoSolicitud.getTipoSolicitudBase().equals(knownInstanceRetriever
+						.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_VENTA_ACCESORIOS_G4));
 
 	}
 
