@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.cuentas.create.CreateCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
+import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaService;
 import ar.com.nextel.business.cuentas.select.SelectCuentaBusinessOperator;
 import ar.com.nextel.business.oportunidades.CuentaPotencialBusinessOperator;
 import ar.com.nextel.business.oportunidades.ReservaCreacionCuentaBusinessOperator;
@@ -32,6 +33,7 @@ import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoTarjetaCredito;
 import ar.com.nextel.model.cuentas.beans.Division;
+import ar.com.nextel.model.cuentas.beans.FacturaElectronica;
 import ar.com.nextel.model.cuentas.beans.FormaPago;
 import ar.com.nextel.model.cuentas.beans.GranCuenta;
 import ar.com.nextel.model.cuentas.beans.Suscriptor;
@@ -51,6 +53,7 @@ import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoTarjetaCreditoDto;
 import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.EmailDto;
+import ar.com.nextel.sfa.client.dto.FacturaElectronicaDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.SuscriptorDto;
@@ -86,6 +89,8 @@ public class CuentaBusinessService {
 
 	@Qualifier("knownInstancesRetriever")
 	private KnownInstanceRetriever knownInstanceRetriever;
+
+	private FacturaElectronicaService facturaElectronicaService;
 
 	private Repository repository;
 
@@ -127,6 +132,11 @@ public class CuentaBusinessService {
 		this.repository = repository;
 	}
 
+	@Autowired
+	public void setFacturaElectronicaService(FacturaElectronicaService facturaElectronicaService) {
+		this.facturaElectronicaService = facturaElectronicaService;
+	}
+
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Cuenta reservarCrearCta(SolicitudCuenta solicitudCta, MapperExtended mapper)
 			throws BusinessException {
@@ -145,6 +155,7 @@ public class CuentaBusinessService {
 				cuentaDto = (SuscriptorDto) mapper.map(cuenta, SuscriptorDto.class);
 			}
 		}
+
 		return cuenta;
 	}
 
@@ -160,7 +171,7 @@ public class CuentaBusinessService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public Long saveCuenta(CuentaDto cuentaDto, MapperExtended mapper) throws Exception {
+	public Long saveCuenta(CuentaDto cuentaDto, MapperExtended mapper, Vendedor vendedor) throws Exception {
 		Cuenta cuenta = repository.retrieve(Cuenta.class, cuentaDto.getId());
 
 		// DATOS PAGO
@@ -191,6 +202,7 @@ public class CuentaBusinessService {
 					((DatosDebitoTarjetaCreditoDto) cuentaDto.getDatosPago()).getTipoTarjeta().getId());
 			((DatosDebitoTarjetaCredito) cuenta.getDatosPago()).setTipoTarjeta(tipoTarjeta);
 		}
+		guardarFacturaElectronica(cuenta, cuentaDto, mapper, vendedor);
 
 		// FIXME: lo que sigue es para asegurar que los contactos se actualicen cuando se están guardando
 		// suscriptores o divisiones...
@@ -242,6 +254,47 @@ public class CuentaBusinessService {
 		repository.save(cuenta.getDatosPago());
 		repository.save(cuenta);
 		return cuenta.getId();
+	}
+
+	private void guardarFacturaElectronica(Cuenta cuenta, CuentaDto cuentaDto, MapperExtended mapper,
+			Vendedor vendedor) {
+		if (cuenta.isEnCarga()) {
+			if (cuentaDto.getFacturaElectronica() == null && cuenta.getFacturaElectronica() != null) {
+				repository.delete(cuenta.getFacturaElectronica());
+				cuenta.setFacturaElectronica(null);
+			} else if (cuentaDto.getFacturaElectronica() != null) {
+				if (cuenta.getFacturaElectronica() == null) {
+					cuenta.setFacturaElectronica(mapper.map(cuentaDto.getFacturaElectronica(),
+							FacturaElectronica.class));
+				} else {
+					mapper.map(cuentaDto.getFacturaElectronica(), cuenta.getFacturaElectronica());
+				}
+			}
+		} else {
+			if (cuentaDto.getFacturaElectronica() != null
+					&& !cuentaDto.getFacturaElectronica().isCargadaEnVantive()) {
+				facturaElectronicaService.adherirFacturaElectronica(cuenta.getIdVantive(), cuenta
+						.getCodigoVantive(), cuentaDto.getFacturaElectronica().getEmail(), "", vendedor
+						.getUserName());
+			}
+		}
+	}
+
+	public void cargarFacturaElectronica(CuentaDto cuenta, boolean isEnCarga) {
+		if (!isEnCarga) {
+			if (cuenta.getFacturaElectronica() != null) {
+				repository.delete(cuenta.getFacturaElectronica());
+				cuenta.setFacturaElectronica(null);
+			}
+			if (facturaElectronicaService.isAdheridoFacturaElectronica(cuenta.getCodigoVantive())) {
+				FacturaElectronicaDto facturaElectronica = new FacturaElectronicaDto();
+				List<String> mails = facturaElectronicaService.obtenerMailFacturaElectronica(cuenta
+						.getCodigoVantive());
+				facturaElectronica.setEmail(mails.isEmpty() ? "" : mails.iterator().next());
+				facturaElectronica.setCargadaEnVantive(true);
+				cuenta.setFacturaElectronica(facturaElectronica);
+			}
+		}
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
@@ -465,7 +518,7 @@ public class CuentaBusinessService {
 		Cuenta cuenta = null;
 		try {
 			accessCuentaPadre = getAccessCuenta(ctaPadreId, vendedor);
-//			AccessAuthorization accessAuthorizationPadre = accessCuentaPadre.getAccessAuthorization();
+			// AccessAuthorization accessAuthorizationPadre = accessCuentaPadre.getAccessAuthorization();
 			cuenta = (Cuenta) accessCuentaPadre.getTargetObject();
 
 			if (!accessCuentaPadre.getAccessAuthorization().hasSamePermissionsAs(

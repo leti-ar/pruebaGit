@@ -556,6 +556,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a-hint>ar.com.nextel.model.oportunidades.beans.OportunidadNegocio,ar.com.nextel.model.oportunidades.beans.Reserva</a-hint>
 			<b-hint>ar.com.nextel.sfa.client.dto.OportunidadNegocioDto,ar.com.nextel.sfa.client.dto.ReservaDto</b-hint>
 		</field>
+		<field-exclude>
+			<a>facturaElectronica</a>
+			<b>facturaElectronica</b>
+		</field-exclude>
 	</mapping>
 
 	<mapping>
@@ -572,13 +576,16 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 	</mapping>
 	<mapping>
 		<class-a>ar.com.nextel.model.cuentas.beans.Division</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.DivisionDto
-		</class-b>
+		<class-b>ar.com.nextel.sfa.client.dto.DivisionDto</class-b>
 	</mapping>
 	<mapping>
 		<class-a>ar.com.nextel.model.cuentas.beans.Suscriptor</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.SuscriptorDto
-		</class-b>
+		<class-b>ar.com.nextel.sfa.client.dto.SuscriptorDto</class-b>
+	</mapping>
+	
+	<mapping>
+		<class-a>ar.com.nextel.model.cuentas.beans.FacturaElectronica</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.FacturaElectronicaDto</class-b>
 	</mapping>
 
 	<mapping>

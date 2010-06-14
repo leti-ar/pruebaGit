@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.constant;
 
 /**
  * Interface to represent the constants contained in resource bundle:
- * 	'/home/mrial/workspaceSFA/sfa-web2/src/main/java/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
+ * 	'/home/jperez/workspaceSFASVN/sfa-web2/src/main/java/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
  */
 public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
@@ -1083,6 +1083,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
    * @return translated "E-Mail"
    */
   @DefaultStringValue("E-Mail")
+  @Key("email")
+  String email();
+
+  /**
+   * Translated "E-Mail".
+   * 
+   * @return translated "E-Mail"
+   */
+  @DefaultStringValue("E-Mail")
   @Key("emailPanelTitle")
   String emailPanelTitle();
 
@@ -1292,6 +1301,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("guardar")
   @Key("guardar")
   String guardar();
+
+  /**
+   * Translated "Habilitar".
+   * 
+   * @return translated "Habilitar"
+   */
+  @DefaultStringValue("Habilitar")
+  @Key("habilitar")
+  String habilitar();
 
   /**
    * Translated "Hasta:".

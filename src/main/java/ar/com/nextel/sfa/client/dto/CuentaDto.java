@@ -35,6 +35,7 @@ public class CuentaDto implements IsSerializable {
 	private String observacionesTelMail;
 	private String nombreUsuarioCreacion;
 	private Date fechaCreacion;
+	private FacturaElectronicaDto facturaElectronica;
 
 	public Long getId() {
 		return id;
@@ -304,6 +305,14 @@ public class CuentaDto implements IsSerializable {
 		return TipoDocumentoEnum.CUIT.getCodigoVantive().equals(
 				persona.getDocumento().getTipoDocumento().getCodigoVantive())
 				&& persona.getDocumento().getNumero().startsWith("3");
+	}
+
+	public FacturaElectronicaDto getFacturaElectronica() {
+		return facturaElectronica;
+	}
+
+	public void setFacturaElectronica(FacturaElectronicaDto facturaElectronica) {
+		this.facturaElectronica = facturaElectronica;
 	}
 
 }

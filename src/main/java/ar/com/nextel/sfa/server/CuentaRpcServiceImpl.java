@@ -302,20 +302,25 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 
 	public CuentaDto saveCuenta(CuentaDto cuentaDto) throws RpcExceptionMessages {
 		try {
-			Long idCuenta = cuentaBusinessService.saveCuenta(cuentaDto, mapper);
+			Long idCuenta = cuentaBusinessService.saveCuenta(cuentaDto, mapper, sessionContextLoader
+					.getVendedor());
+			Cuenta cuenta = null;
 			if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(
-					KnownInstanceIdentifier.DIVISION.getKey()))
-				cuentaDto = (DivisionDto) mapper.map(repository.retrieve(Division.class, idCuenta),
-						DivisionDto.class);
-			else if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(
-					KnownInstanceIdentifier.SUSCRIPTOR.getKey()))
-				cuentaDto = (SuscriptorDto) mapper.map(repository.retrieve(Suscriptor.class, idCuenta),
-						SuscriptorDto.class);
-			else
-				cuentaDto = mapper.map(repository.retrieve(Cuenta.class, idCuenta), GranCuentaDto.class);
+					KnownInstanceIdentifier.DIVISION.getKey())) {
+				cuenta = repository.retrieve(Division.class, idCuenta);
+				cuentaDto = (DivisionDto) mapper.map(cuenta, DivisionDto.class);
+			} else if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(
+					KnownInstanceIdentifier.SUSCRIPTOR.getKey())) {
+				cuenta = repository.retrieve(Suscriptor.class, idCuenta);
+				cuentaDto = (SuscriptorDto) mapper.map(cuenta, SuscriptorDto.class);
+			} else {
+				cuenta = repository.retrieve(Cuenta.class, idCuenta);
+				cuentaDto = mapper.map(cuenta, GranCuentaDto.class);
+			}
+			cuentaBusinessService.cargarFacturaElectronica(cuentaDto, cuenta.isEnCarga());
 		} catch (MappingException e) {
 			AppLogger.error("*** Error de mapeo al actualizar la cuenta: " + cuentaDto.getCodigoVantive()
-					+ " *** ",e);
+					+ " *** ", e);
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
@@ -336,6 +341,9 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		} else if (categoriaCuenta.equals(KnownInstanceIdentifier.SUSCRIPTOR.getKey())) {
 			cuentaDto = (SuscriptorDto) mapper.map((Suscriptor) cuenta, SuscriptorDto.class);
 		}
+		
+		cuentaBusinessService.cargarFacturaElectronica(cuentaDto, cuenta.isEnCarga());
+		
 		return cuentaDto;
 	}
 
@@ -379,6 +387,9 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 				} else if (cuenta.esSuscriptor()) {
 					cuentaDto = (SuscriptorDto) mapper.map(cuenta, SuscriptorDto.class);
 				}
+				
+				cuentaBusinessService.cargarFacturaElectronica(cuentaDto, cuenta.isEnCarga());
+				
 			}
 		} catch (BusinessException be) {
 			Message message = (Message) messageRetriever.getMessage(be.getMessageIdentifier(), be
