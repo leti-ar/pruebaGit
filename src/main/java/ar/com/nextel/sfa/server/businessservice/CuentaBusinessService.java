@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.cuentas.create.CreateCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
@@ -25,6 +26,8 @@ import ar.com.nextel.components.accessMode.AccessAuthorization;
 import ar.com.nextel.components.accessMode.accessObject.BaseAccessObject;
 import ar.com.nextel.components.accessMode.accessRequest.AccessRequest;
 import ar.com.nextel.components.accessMode.controller.AccessAuthorizationController;
+import ar.com.nextel.components.knownInstances.GlobalParameter;
+import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.repository.hibernate.HibernateRepository;
@@ -96,6 +99,9 @@ public class CuentaBusinessService {
 	private FacturaElectronicaService facturaElectronicaService;
 
 	private Repository repository;
+	
+	
+	private DefaultRetriever globalParameterRetriever;
 
 	@Autowired
 	public void setReservaCreacionCuentaBusinessOperator(
@@ -142,6 +148,12 @@ public class CuentaBusinessService {
 	public void setFacturaElectronicaService(
 			FacturaElectronicaService facturaElectronicaService) {
 		this.facturaElectronicaService = facturaElectronicaService;
+	}
+	
+	@Autowired
+	public void setGlobalParameterRetriever(
+			@Qualifier("globalParameterRetriever") DefaultRetriever globalParameterRetriever) {
+		this.globalParameterRetriever = globalParameterRetriever;
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
@@ -211,6 +223,10 @@ public class CuentaBusinessService {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Long saveCuenta(CuentaDto cuentaDto, MapperExtended mapper,
 			Vendedor vendedor) throws Exception {
+	
+		GlobalParameter pciGlobalParameter = (GlobalParameter) globalParameterRetriever
+		.getObject(GlobalParameterIdentifier.PCI_ENABLED);
+	
 		Cuenta cuenta = repository.retrieve(Cuenta.class, cuentaDto.getId());
 
 		// DATOS PAGO
@@ -223,23 +239,6 @@ public class CuentaBusinessService {
 
 		mapper.map(cuentaDto, cuenta);
 
-		// MGR - 05-07-2010 - Cambio realizado para PCI
-		boolean flag = true;
-		if (cuenta.getDatosPago().isDebitoTarjetaCredito()) {
-			String numeroTarj = ((DatosDebitoTarjetaCredito) cuenta
-					.getDatosPago()).getNumero();
-			String newNumber = changeByAsterisks(numeroTarj);
-			Long numEncriptado = encriptarNumeroTrajeta(numeroTarj);
-
-			// encrypt
-			if (flag) {
-				((DatosDebitoTarjetaCredito) cuenta.getDatosPago())
-						.setNumero(newNumber);
-				((DatosDebitoTarjetaCredito) cuenta.getDatosPago())
-				.setNumeroEncriptado(numEncriptado);
-			}
-			// ((DatosDebitoTarjetaCredito)cuenta.getDatosPago()).setNumero("9876543210987654321");
-		}
 
 		if (cuenta.getCategoriaCuenta().getDescripcion().equals(
 				KnownInstanceIdentifier.DIVISION.getKey())) {
@@ -267,6 +266,23 @@ public class CuentaBusinessService {
 							.getTipoTarjeta().getId());
 			((DatosDebitoTarjetaCredito) cuenta.getDatosPago())
 					.setTipoTarjeta(tipoTarjeta);
+		
+			boolean pciEnabled = pciGlobalParameter.getValue().equalsIgnoreCase("T");
+			if ( pciEnabled ) {
+				String numeroTarj = ((DatosDebitoTarjetaCredito) cuenta
+						.getDatosPago()).getNumero();
+				String newNumber = changeByAsterisks(numeroTarj);
+				Long numEncriptado = encriptarNumeroTrajeta(numeroTarj);
+
+				// encrypt
+					((DatosDebitoTarjetaCredito) cuenta.getDatosPago())
+							.setNumero(newNumber);
+					((DatosDebitoTarjetaCredito) cuenta.getDatosPago())
+					.setNumeroEncriptado(numEncriptado);
+				// ((DatosDebitoTarjetaCredito)cuenta.getDatosPago()).setNumero("9876543210987654321");
+			}
+			
+			
 		}
 		guardarFacturaElectronica(cuenta, cuentaDto, mapper, vendedor);
 
@@ -702,5 +718,7 @@ public class CuentaBusinessService {
 				accessAuthorization, cuenta);
 		return accessCuenta;
 	}
+
+
 
 }
