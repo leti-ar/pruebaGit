@@ -208,6 +208,8 @@ public class CuentaBusinessService {
 	}
 
 	private Long encriptarNumeroTrajeta(String numero) throws Exception {
+		
+		AppLogger.info("numero tarjeta: " + numero);
 		CallableStatement stmt = ((HibernateRepository) repository)
 				.getHibernateDaoSupport().getSessionFactory()
 				.getCurrentSession().connection().prepareCall(
@@ -229,11 +231,21 @@ public class CuentaBusinessService {
 	
 		Cuenta cuenta = repository.retrieve(Cuenta.class, cuentaDto.getId());
 
-		// DATOS PAGO
+		Long numeroEncriptadoOriginal = null;
+		if(cuenta.getDatosPago().isDebitoTarjetaCredito()){
+			DatosDebitoTarjetaCredito datosPagoTarjetaCredito = (DatosDebitoTarjetaCredito) repository
+			.retrieve(DatosDebitoTarjetaCredito.class, cuenta.getDatosPago()
+					.getId());
+	
+			numeroEncriptadoOriginal = datosPagoTarjetaCredito.getNumeroEncriptado();
+		}
+			// DATOS PAGO
+			
 		AbstractDatosPago datosPagoOriginal = (AbstractDatosPago) repository
-				.retrieve(AbstractDatosPago.class, cuenta.getDatosPago()
-						.getId());
-		cuenta.setDatosPago(null);
+		.retrieve(AbstractDatosPago.class, cuenta.getDatosPago()
+				.getId());
+        cuenta.setDatosPago(null);
+	
 		repository.delete(datosPagoOriginal);
 		cuenta.setFormaPago(null);
 
@@ -271,14 +283,24 @@ public class CuentaBusinessService {
 			if ( pciEnabled ) {
 				String numeroTarj = ((DatosDebitoTarjetaCredito) cuenta
 						.getDatosPago()).getNumero();
-				String newNumber = changeByAsterisks(numeroTarj);
-				Long numEncriptado = encriptarNumeroTrajeta(numeroTarj);
+				
+				if (!numeroTarj.contains("*")) {
+					
+					String newNumber = changeByAsterisks(numeroTarj);
 
-				// encrypt
+					Long numEncriptado = encriptarNumeroTrajeta(numeroTarj);
+
+					// encrypt
 					((DatosDebitoTarjetaCredito) cuenta.getDatosPago())
 							.setNumero(newNumber);
 					((DatosDebitoTarjetaCredito) cuenta.getDatosPago())
-					.setNumeroEncriptado(numEncriptado);
+							.setNumeroEncriptado(numEncriptado);
+				}else{
+			//copio el encriptado original
+					((DatosDebitoTarjetaCredito) cuenta.getDatosPago())
+					.setNumeroEncriptado(numeroEncriptadoOriginal);
+			
+				}
 				// ((DatosDebitoTarjetaCredito)cuenta.getDatosPago()).setNumero("9876543210987654321");
 			}
 			
