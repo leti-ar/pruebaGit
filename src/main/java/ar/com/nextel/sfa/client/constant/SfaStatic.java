@@ -1742,6 +1742,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Personal")
   @Key("personal")
   String personal();
+  
+  /**
+   * Translated "Factura Electronica".
+   * 
+   * @return translated "Factura Electronica"
+   */
+  @DefaultStringValue("Factura Electronica")
+  @Key("facturaElectronica")
+  String facturaElectronica();
 
   /**
    * Translated "PIN:".
