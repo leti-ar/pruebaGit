@@ -70,6 +70,9 @@ public class CuentaUIData extends UIData {
 	private TextBox cicloFacturacion = new TextBox();
 	private TextBox emailPersonal = new TextBox();
 	private TextBox emailLaboral = new TextBox();
+	private TextBox emailFacturaElectronica = new TextBox();
+	
+
 	private RegexTextBox cbu = new RegexTextBox(RegularExpressionConstants.numeros);
 	private RegexTextBox anioVto = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(4));
 	private RegexTextBox numeroTarjeta = new RegexTextBox(RegularExpressionConstants.numeros);
@@ -244,6 +247,7 @@ public class CuentaUIData extends UIData {
 		fields.add(telFaxTextBox.getNumero());
 		fields.add(telFaxTextBox.getInterno());
 		fields.add(emailPersonal);
+		fields.add(emailFacturaElectronica);
 		fields.add(emailLaboral);
 		fields.add(formaPago);
 		fields.add(vendedorNombre);
@@ -387,6 +391,7 @@ public class CuentaUIData extends UIData {
 						+ Sfa.constant().numero());
 		emailPersonal.setName(Sfa.constant().emailPanelTitle() + " " + Sfa.constant().personal());
 		emailLaboral.setName(Sfa.constant().emailPanelTitle() + " " + Sfa.constant().laboral());
+		emailFacturaElectronica.setName(Sfa.constant().emailPanelTitle() + " " + Sfa.constant().facturaElectronica());
 		cbu.setName(Sfa.constant().cbu());
 		numeroTarjeta.setName(Sfa.constant().nroTarjeta());
 		numeroTarjeta.setName(Sfa.constant().nroTarjeta());
@@ -414,6 +419,7 @@ public class CuentaUIData extends UIData {
 		telCelularTextBox.getNumero().setMaxLength(10);
 		emailLaboral.setMaxLength(50);
 		emailPersonal.setMaxLength(50);
+		emailFacturaElectronica.setMaxLength(50);
 		cbu.setMaxLength(22);
 
 		// formato
@@ -603,7 +609,15 @@ public class CuentaUIData extends UIData {
 	public TextBox getEmailLaboral() {
 		return emailLaboral;
 	}
+	
+	public TextBox getEmailFacturaElectronica() {
+		return emailFacturaElectronica;
+	}
 
+	public void setEmailFacturaElectronica(TextBox emailFacturaElectronica) {
+		this.emailFacturaElectronica = emailFacturaElectronica;
+	}
+	
 	public ListBox getFormaPago() {
 		return formaPago;
 	}

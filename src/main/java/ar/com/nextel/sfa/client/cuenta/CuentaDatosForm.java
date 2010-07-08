@@ -84,6 +84,8 @@ public class CuentaDatosForm extends Composite {
 	private FlexTable cuentaBancariaTable = new FlexTable();
 	private FlexTable tarjetaTable = new FlexTable();
 
+	private FacturaElectronicaDto facturaElectronicaOriginal;
+	
 	private TitledPanel datosCuentaPanel = new TitledPanel(Sfa.constant().cuentaPanelTitle());
 	private TitledPanel datosOppPanel = new TitledPanel(Sfa.constant().cuentaPanelTitle());
 	private TitledPanel formaDePagoPanel = new TitledPanel(Sfa.constant().formaDePagoPanelTitle());;
@@ -383,6 +385,8 @@ public class CuentaDatosForm extends Composite {
 		emailTable.setWidget(0, 1, cuentaUIData.getEmailPersonal());
 		emailTable.setText(0, 2, Sfa.constant().laboral());
 		emailTable.setWidget(0, 3, cuentaUIData.getEmailLaboral());
+		emailTable.setText(0, 4, Sfa.constant().facturaElectronica());
+		emailTable.setWidget(0, 5, cuentaUIData.getEmailFacturaElectronica());
 		emailTable.getFlexCellFormatter().setWidth(0, 0, ANCHO_PRIMER_COLUMNA);
 
 		return emailPanel;
@@ -740,7 +744,8 @@ public class CuentaDatosForm extends Composite {
 			id_formaPago = TipoFormaPagoEnum.TARJETA_CREDITO.getTipo();
 		}
 		cuentaUIData.setFacturaElectronica(cuentaDto.getFacturaElectronica());
-		facturaElectronicaUI.setFacturaElectronicaOriginal(cuentaUIData.getFacturaElectronica());
+		//el param tiene null(pero está bien porque no tenia)
+		this.setFacturaElectronicaOriginal(cuentaUIData.getFacturaElectronica());
 		setVisiblePanelFormaPagoYActualizarCamposObligatorios(id_formaPago);
 	}
 
@@ -1150,6 +1155,7 @@ public class CuentaDatosForm extends Composite {
 		// PANEL MAILS
 		boolean noTienePersonal = true;
 		boolean noTieneLaboral = true;
+		boolean noTieneFacturaElectronica = true;
 
 		for (EmailDto email : cuentaTab.getCuenta2editDto().getPersona().getEmails()) {
 			TipoEmailDto tipo = email.getTipoEmail();
@@ -1164,6 +1170,8 @@ public class CuentaDatosForm extends Composite {
 				noTieneLaboral = false;
 			}
 		}
+		
+		
 		if (noTienePersonal) {
 			if (!cuentaUIData.getEmailPersonal().getText().equals(""))
 				retorno = true;
@@ -1173,6 +1181,22 @@ public class CuentaDatosForm extends Composite {
 				retorno = true;
 		}
 
+		FacturaElectronicaDto facturaElectronicaDto = cuentaTab.getCuenta2editDto().getFacturaElectronica();
+		if (facturaElectronicaDto != null) {
+			if ((FormUtils.fieldDirty(cuentaUIData.getEmailFacturaElectronica(), cuentaTab.getCuenta2editDto().getFacturaElectronica().getEmail()))) {
+				retorno = true;
+				noTieneFacturaElectronica = false;
+			}
+		} else
+			retorno = true;
+	
+
+		if (noTieneFacturaElectronica) {
+			if (!cuentaUIData.getEmailFacturaElectronica().getText().equals(""))
+				retorno = true;
+		}
+		
+	
 		return retorno;
 	}
 
@@ -1508,7 +1532,16 @@ public class CuentaDatosForm extends Composite {
 					new TipoEmailDto(TipoEmailEnum.LABORAL.getTipo(), TipoEmailEnum.LABORAL.getDesc())));
 		}
 		personaDto.setEmails(mails);
-
+		
+		//Factura electrónica
+		if (!cuentaUIData.getEmailFacturaElectronica().getText().equals("")) {
+			if (cuentaUIData.getFacturaElectronica() == null) {
+				cuentaUIData.setFacturaElectronica(new FacturaElectronicaDto());
+			} 
+			cuentaUIData.getFacturaElectronica().setEmail(cuentaUIData.getEmailFacturaElectronica().getValue());
+		}		
+		
+				
 		// Panel Formas de Pago
 		DatosPagoDto datosPago = null;
 		if (cuentaUIData.getFormaPago().getSelectedItemId().equals(
@@ -1553,7 +1586,7 @@ public class CuentaDatosForm extends Composite {
 			CuentaEdicionTabPanel.getInstance().getCuenta2editDto().setDatosPago(datosPago);
 		}
 		//Forma de pago
-		if (cuentaUIData.tieneFacturaElectronicaHabilitada()) {
+		if (!cuentaUIData.getEmailFacturaElectronica().getValue().equals("")) {
 			CuentaEdicionTabPanel.getInstance().getCuenta2editDto().setFacturaElectronica(
 					cuentaUIData.getFacturaElectronica());
 		} else {
@@ -1675,5 +1708,14 @@ public class CuentaDatosForm extends Composite {
 					MessageDialog.getCloseCommand());
 		}
 	}
+	
+	public void setFacturaElectronicaOriginal(FacturaElectronicaDto facturaElectronica) {
+		this.facturaElectronicaOriginal = facturaElectronica;
+		if (facturaElectronica != null) {
+			cuentaUIData.getEmailFacturaElectronica().setText(facturaElectronica.getEmail());
+		}
+	}
+	
+	
 
 }
