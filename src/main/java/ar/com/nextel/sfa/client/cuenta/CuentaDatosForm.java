@@ -398,7 +398,7 @@ public class CuentaDatosForm extends Composite {
 		formaDePagoTable.setWidget(0, 0, getCuentaBancariaPanel());
 		formaDePagoTable.setWidget(1, 0, getTarjetaCreditoPanel());
 		formaDePagoTable.setWidget(2, 0, getEfectivoPanel());
-		formaDePagoTable.setWidget(3, 0, getFacturaElectronicaLink());
+	//	formaDePagoTable.setWidget(3, 0, getFacturaElectronicaLink());
 
 		formaDePagoPanel.add(formaDePagoTable);
 		return formaDePagoPanel;
