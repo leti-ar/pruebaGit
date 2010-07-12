@@ -74,6 +74,7 @@ import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoOportunidadDto;
+import ar.com.nextel.sfa.client.dto.FacturaElectronicaDto;
 import ar.com.nextel.sfa.client.dto.FormaPagoDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
@@ -317,7 +318,16 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 				cuenta = repository.retrieve(Cuenta.class, idCuenta);
 				cuentaDto = mapper.map(cuenta, GranCuentaDto.class);
 			}
-			cuentaBusinessService.cargarFacturaElectronica(cuentaDto, cuenta.isEnCarga());
+			if (!cuenta.isEnCarga()) {
+				cuentaBusinessService.cargarFacturaElectronica(cuentaDto,
+						cuenta.isEnCarga());
+			} else if(cuenta.getFacturaElectronica() != null) {
+				FacturaElectronicaDto fdto = (FacturaElectronicaDto) mapper
+						.map(cuenta.getFacturaElectronica(),
+								FacturaElectronicaDto.class);
+				cuentaDto.setFacturaElectronica(fdto);
+
+			}
 		} catch (MappingException e) {
 			AppLogger.error("*** Error de mapeo al actualizar la cuenta: " + cuentaDto.getCodigoVantive()
 					+ " *** ", e);
@@ -341,8 +351,13 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		} else if (categoriaCuenta.equals(KnownInstanceIdentifier.SUSCRIPTOR.getKey())) {
 			cuentaDto = (SuscriptorDto) mapper.map((Suscriptor) cuenta, SuscriptorDto.class);
 		}
-		
-		cuentaBusinessService.cargarFacturaElectronica(cuentaDto, cuenta.isEnCarga());
+		if(!cuenta.isEnCarga()){
+		  cuentaBusinessService.cargarFacturaElectronica(cuentaDto, cuenta.isEnCarga());
+		}else if(cuenta.getFacturaElectronica() != null){
+			FacturaElectronicaDto fdto = (FacturaElectronicaDto) mapper.map(cuenta.getFacturaElectronica(), FacturaElectronicaDto.class);
+			cuentaDto.setFacturaElectronica(fdto);
+			
+		}
 		
 		return cuentaDto;
 	}
@@ -388,7 +403,13 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 					cuentaDto = (SuscriptorDto) mapper.map(cuenta, SuscriptorDto.class);
 				}
 				
-				cuentaBusinessService.cargarFacturaElectronica(cuentaDto, cuenta.isEnCarga());
+				if(!cuenta.isEnCarga()){
+					  cuentaBusinessService.cargarFacturaElectronica(cuentaDto, cuenta.isEnCarga());
+					}else if (cuenta.getFacturaElectronica() != null) {
+						FacturaElectronicaDto fdto = (FacturaElectronicaDto) mapper.map(cuenta.getFacturaElectronica(), FacturaElectronicaDto.class);
+						cuentaDto.setFacturaElectronica(fdto);
+						
+					}
 				
 			}
 		} catch (BusinessException be) {

@@ -1020,8 +1020,9 @@ public class CuentaDatosForm extends Composite {
 						.getCategoriaCuenta().getItemText()))
 				|| (FormUtils.fieldDirty(cuentaUIData.getObservaciones(), cuentaTab.getCuenta2editDto()
 						.getObservacionesTelMail()))
-				|| (FormUtils.fieldDirty(cuentaUIData.getIibb(), cuentaTab.getCuenta2editDto().getIibb()))
-				|| facturaElectronicaUI.isDirty())
+				|| (FormUtils.fieldDirty(cuentaUIData.getIibb(), cuentaTab.getCuenta2editDto().getIibb())))
+				//|| facturaElectronicaUI.isDirty())
+				
 			return true;
 
 		if (cuentaTab.getCuenta2editDto().getCategoriaCuenta().getDescripcion().equals(
@@ -1183,12 +1184,11 @@ public class CuentaDatosForm extends Composite {
 
 		FacturaElectronicaDto facturaElectronicaDto = cuentaTab.getCuenta2editDto().getFacturaElectronica();
 		if (facturaElectronicaDto != null) {
+			noTieneFacturaElectronica = false;
 			if ((FormUtils.fieldDirty(cuentaUIData.getEmailFacturaElectronica(), cuentaTab.getCuenta2editDto().getFacturaElectronica().getEmail()))) {
 				retorno = true;
-				noTieneFacturaElectronica = false;
 			}
-		} else
-			retorno = true;
+		} 
 	
 
 		if (noTieneFacturaElectronica) {
@@ -1713,6 +1713,9 @@ public class CuentaDatosForm extends Composite {
 		this.facturaElectronicaOriginal = facturaElectronica;
 		if (facturaElectronica != null) {
 			cuentaUIData.getEmailFacturaElectronica().setText(facturaElectronica.getEmail());
+			if(facturaElectronica.isCargadaEnVantive())
+				cuentaUIData.getEmailFacturaElectronica().setEnabled(false);
+				
 		}
 	}
 	
