@@ -1717,19 +1717,21 @@ public class CuentaDatosForm extends Composite {
 		}
 	}
 	
-	public void setFacturaElectronicaOriginal(FacturaElectronicaDto facturaElectronica) {
+	public void setFacturaElectronicaOriginal(
+			FacturaElectronicaDto facturaElectronica) {
 		this.facturaElectronicaOriginal = facturaElectronica;
 		if (facturaElectronica != null) {
-			cuentaUIData.getFacturaElectronicaPanel().setText(facturaElectronica.getEmail());
-					if(facturaElectronica.isCargadaEnVantive())
+			cuentaUIData.getFacturaElectronicaPanel().setText(
+					facturaElectronica.getEmail());
+			if (facturaElectronica.isCargadaEnVantive())
 				cuentaUIData.getFacturaElectronicaPanel().setEnabled(false);
-				
-		}else{
+
+		} else {
 			cuentaUIData.getFacturaElectronicaPanel().setText("");
-			
+			cuentaUIData.getFacturaElectronicaPanel().setEnabled(true);
+
 		}
 	}
-	
 	
 
 }
