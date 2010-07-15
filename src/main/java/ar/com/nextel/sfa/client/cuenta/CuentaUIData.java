@@ -70,7 +70,8 @@ public class CuentaUIData extends UIData {
 	private TextBox cicloFacturacion = new TextBox();
 	private TextBox emailPersonal = new TextBox();
 	private TextBox emailLaboral = new TextBox();
-	private TextBox emailFacturaElectronica = new TextBox();
+	
+	private FacturaElectronicaPanel facturaElectronicaPanel = new FacturaElectronicaPanel();
 	
 
 	private RegexTextBox cbu = new RegexTextBox(RegularExpressionConstants.numeros);
@@ -247,7 +248,7 @@ public class CuentaUIData extends UIData {
 		fields.add(telFaxTextBox.getNumero());
 		fields.add(telFaxTextBox.getInterno());
 		fields.add(emailPersonal);
-		fields.add(emailFacturaElectronica);
+		fields.add(getFacturaElectronicaPanel());
 		fields.add(emailLaboral);
 		fields.add(formaPago);
 		fields.add(vendedorNombre);
@@ -391,7 +392,9 @@ public class CuentaUIData extends UIData {
 						+ Sfa.constant().numero());
 		emailPersonal.setName(Sfa.constant().emailPanelTitle() + " " + Sfa.constant().personal());
 		emailLaboral.setName(Sfa.constant().emailPanelTitle() + " " + Sfa.constant().laboral());
-		emailFacturaElectronica.setName(Sfa.constant().emailPanelTitle() + " " + Sfa.constant().facturaElectronica());
+		
+		//emailFacturaElectronica.setName(Sfa.constant().emailPanelTitle() + " " + Sfa.constant().facturaElectronica());
+		
 		cbu.setName(Sfa.constant().cbu());
 		numeroTarjeta.setName(Sfa.constant().nroTarjeta());
 		numeroTarjeta.setName(Sfa.constant().nroTarjeta());
@@ -419,7 +422,7 @@ public class CuentaUIData extends UIData {
 		telCelularTextBox.getNumero().setMaxLength(10);
 		emailLaboral.setMaxLength(50);
 		emailPersonal.setMaxLength(50);
-		emailFacturaElectronica.setMaxLength(50);
+	//	emailFacturaElectronica.setMaxLength(50);
 		cbu.setMaxLength(22);
 
 		// formato
@@ -610,14 +613,7 @@ public class CuentaUIData extends UIData {
 		return emailLaboral;
 	}
 	
-	public TextBox getEmailFacturaElectronica() {
-		return emailFacturaElectronica;
-	}
 
-	public void setEmailFacturaElectronica(TextBox emailFacturaElectronica) {
-		this.emailFacturaElectronica = emailFacturaElectronica;
-	}
-	
 	public ListBox getFormaPago() {
 		return formaPago;
 	}
@@ -857,5 +853,13 @@ public class CuentaUIData extends UIData {
 
 	public void setFacturaElectronica(FacturaElectronicaDto facturaElectronica) {
 		this.facturaElectronica = facturaElectronica;
+	}
+
+	public void setFacturaElectronicaPanel(FacturaElectronicaPanel facturaElectronicaPanel) {
+		this.facturaElectronicaPanel = facturaElectronicaPanel;
+	}
+
+	public FacturaElectronicaPanel getFacturaElectronicaPanel() {
+		return facturaElectronicaPanel;
 	}
 }

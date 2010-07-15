@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.constant;
 
 /**
  * Interface to represent the constants contained in resource bundle:
- * 	'/home/jperez/workspaceSFASVN/sfa-web2/src/main/java/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
+ * 	'/home/lmolinero/workspaceSFAHead/sfa-web2/src/main/java/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
  */
 public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
@@ -1168,6 +1168,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String estadoOpp();
 
   /**
+   * Translated "Factura Electronica".
+   * 
+   * @return translated "Factura Electronica"
+   */
+  @DefaultStringValue("Factura Electronica")
+  @Key("facturaElectronica")
+  String facturaElectronica();
+
+  /**
    * Translated "Facturación:".
    * 
    * @return translated "Facturación:"
@@ -1310,6 +1319,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Habilitar")
   @Key("habilitar")
   String habilitar();
+
+  /**
+   * Translated "Factura Electronica".
+   * 
+   * @return translated "Factura Electronica"
+   */
+  @DefaultStringValue("Factura Electronica")
+  @Key("habilitarFacturaElectronica")
+  String habilitarFacturaElectronica();
 
   /**
    * Translated "Hasta:".
@@ -1742,15 +1760,6 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Personal")
   @Key("personal")
   String personal();
-  
-  /**
-   * Translated "Factura Electronica".
-   * 
-   * @return translated "Factura Electronica"
-   */
-  @DefaultStringValue("Factura Electronica")
-  @Key("facturaElectronica")
-  String facturaElectronica();
 
   /**
    * Translated "PIN:".

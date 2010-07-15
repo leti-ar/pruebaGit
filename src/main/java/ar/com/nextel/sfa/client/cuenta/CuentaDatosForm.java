@@ -61,6 +61,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
@@ -385,9 +386,16 @@ public class CuentaDatosForm extends Composite {
 		emailTable.setWidget(0, 1, cuentaUIData.getEmailPersonal());
 		emailTable.setText(0, 2, Sfa.constant().laboral());
 		emailTable.setWidget(0, 3, cuentaUIData.getEmailLaboral());
-		emailTable.setText(0, 4, Sfa.constant().facturaElectronica());
-		emailTable.setWidget(0, 5, cuentaUIData.getEmailFacturaElectronica());
+		//emailTable.setText(0, 4, Sfa.constant().facturaElectronica());
+		emailTable.setWidget(0, 4, cuentaUIData.getFacturaElectronicaPanel());
+		
+
+		
 		emailTable.getFlexCellFormatter().setWidth(0, 0, ANCHO_PRIMER_COLUMNA);
+		emailTable.getFlexCellFormatter().setWidth(0, 1, ANCHO_PRIMER_COLUMNA);
+		emailTable.getFlexCellFormatter().setWidth(0, 2, ANCHO_PRIMER_COLUMNA);
+		emailTable.getFlexCellFormatter().setWidth(0, 3, ANCHO_PRIMER_COLUMNA);
+		
 
 		return emailPanel;
 	}
@@ -1185,14 +1193,14 @@ public class CuentaDatosForm extends Composite {
 		FacturaElectronicaDto facturaElectronicaDto = cuentaTab.getCuenta2editDto().getFacturaElectronica();
 		if (facturaElectronicaDto != null) {
 			noTieneFacturaElectronica = false;
-			if ((FormUtils.fieldDirty(cuentaUIData.getEmailFacturaElectronica(), cuentaTab.getCuenta2editDto().getFacturaElectronica().getEmail()))) {
+			if (cuentaUIData.getFacturaElectronicaPanel().isDirty( cuentaTab.getCuenta2editDto().getFacturaElectronica().getEmail())) {
 				retorno = true;
 			}
 		} 
 	
 
 		if (noTieneFacturaElectronica) {
-			if (!cuentaUIData.getEmailFacturaElectronica().getText().equals(""))
+			if (!cuentaUIData.getFacturaElectronicaPanel().getText().equals(""))
 				retorno = true;
 		}
 		
@@ -1534,11 +1542,11 @@ public class CuentaDatosForm extends Composite {
 		personaDto.setEmails(mails);
 		
 		//Factura electrónica
-		if (!cuentaUIData.getEmailFacturaElectronica().getText().equals("")) {
+		if (!cuentaUIData.getFacturaElectronicaPanel().getText().equals("")) {
 			if (cuentaUIData.getFacturaElectronica() == null) {
 				cuentaUIData.setFacturaElectronica(new FacturaElectronicaDto());
 			} 
-			cuentaUIData.getFacturaElectronica().setEmail(cuentaUIData.getEmailFacturaElectronica().getValue());
+			cuentaUIData.getFacturaElectronica().setEmail(cuentaUIData.getFacturaElectronicaPanel().getEmail().getValue());
 		}		
 		
 				
@@ -1586,7 +1594,7 @@ public class CuentaDatosForm extends Composite {
 			CuentaEdicionTabPanel.getInstance().getCuenta2editDto().setDatosPago(datosPago);
 		}
 		//Forma de pago
-		if (!cuentaUIData.getEmailFacturaElectronica().getValue().equals("")) {
+		if (!cuentaUIData.getFacturaElectronicaPanel().getText().equals("")) {
 			CuentaEdicionTabPanel.getInstance().getCuenta2editDto().setFacturaElectronica(
 					cuentaUIData.getFacturaElectronica());
 		} else {
@@ -1712,10 +1720,13 @@ public class CuentaDatosForm extends Composite {
 	public void setFacturaElectronicaOriginal(FacturaElectronicaDto facturaElectronica) {
 		this.facturaElectronicaOriginal = facturaElectronica;
 		if (facturaElectronica != null) {
-			cuentaUIData.getEmailFacturaElectronica().setText(facturaElectronica.getEmail());
-			if(facturaElectronica.isCargadaEnVantive())
-				cuentaUIData.getEmailFacturaElectronica().setEnabled(false);
+			cuentaUIData.getFacturaElectronicaPanel().setText(facturaElectronica.getEmail());
+					if(facturaElectronica.isCargadaEnVantive())
+				cuentaUIData.getFacturaElectronicaPanel().setEnabled(false);
 				
+		}else{
+			cuentaUIData.getFacturaElectronicaPanel().setText("");
+			
 		}
 	}
 	
