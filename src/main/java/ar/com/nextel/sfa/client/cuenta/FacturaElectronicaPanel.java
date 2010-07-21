@@ -87,4 +87,12 @@ public class FacturaElectronicaPanel extends Composite implements ClickHandler {
 
 	}
 
+	public InlineHTML getEmailLabel() {
+		return emailLabel;
+	}
+
+	public void setEmailLabel(InlineHTML emailLabel) {
+		this.emailLabel = emailLabel;
+	}
+
 }

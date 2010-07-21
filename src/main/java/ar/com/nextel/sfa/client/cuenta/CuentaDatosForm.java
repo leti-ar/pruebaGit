@@ -1286,6 +1286,7 @@ public class CuentaDatosForm extends Composite {
 				validator.addTarget(cuentaUIData.getFechaNacimiento().getTextBox()).dateSmallerToday(
 						Sfa.constant().ERR_FECHA_NAC_MENOR_HOY());
 		}
+		
 		if (!cuentaUIData.getEmailPersonal().getText().equals("")
 				&& cuentaUIData.getEmailPersonal().isEnabled())
 			validator.addTarget(cuentaUIData.getEmailPersonal()).mail(
@@ -1296,6 +1297,13 @@ public class CuentaDatosForm extends Composite {
 			validator.addTarget(cuentaUIData.getEmailLaboral()).mail(
 					Sfa.constant().ERR_EMAIL_NO_VALIDO().replaceAll("\\{1\\}",
 							cuentaUIData.getEmailLaboral().getName()));
+		if (!cuentaUIData.getFacturaElectronicaPanel().getEmail().getText().equals("")
+				&& cuentaUIData.getFacturaElectronicaPanel().getEmail().isEnabled())
+			validator.addTarget(cuentaUIData.getFacturaElectronicaPanel().getEmail()).mail(
+					Sfa.constant().ERR_EMAIL_NO_VALIDO().replaceAll("\\{1\\}",
+							cuentaUIData.getFacturaElectronicaPanel().getEmailLabel().getText().concat(" " + Sfa.constant().habilitarFacturaElectronica())));
+
+
 
 		if (!cuentaUIData.getTelPrincipalTextBox().getArea().getText().equals("")
 				&& cuentaUIData.getTelPrincipalTextBox().getArea().isEnabled())
