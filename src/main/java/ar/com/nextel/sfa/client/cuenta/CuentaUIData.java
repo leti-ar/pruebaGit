@@ -44,7 +44,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class CuentaUIData extends UIData {
 
-	private static final int MAX_LENGHT_OBSERVACIONES = 250;
+	private static final int MAX_LENGHT_OBSERVACIONES = 200;
 	private ListBox tipoDocumento = new ListBox();
 	private ListBox sexo = new ListBox();
 	private ListBox contribuyente = new ListBox();
