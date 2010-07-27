@@ -1731,8 +1731,10 @@ public class CuentaDatosForm extends Composite {
 		if (facturaElectronica != null) {
 			cuentaUIData.getFacturaElectronicaPanel().setText(
 					facturaElectronica.getEmail());
-			if (facturaElectronica.isCargadaEnVantive())
+			if (facturaElectronica.isCargadaEnVantive()){
 				cuentaUIData.getFacturaElectronicaPanel().setEnabled(false);
+				cuentaUIData.getFacturaElectronicaPanel().setFacturaElectronicaHabilitada(true);
+			}
 
 		} else {
 			cuentaUIData.getFacturaElectronicaPanel().setText("");

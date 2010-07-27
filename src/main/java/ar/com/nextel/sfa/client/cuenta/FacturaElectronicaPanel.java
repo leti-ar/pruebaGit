@@ -87,6 +87,11 @@ public class FacturaElectronicaPanel extends Composite implements ClickHandler {
 
 	}
 
+	public void setFacturaElectronicaHabilitada(boolean val) {
+		facturaElectronicaHabilitada.setValue(val);
+		email.setVisible(val);
+	}
+
 	public InlineHTML getEmailLabel() {
 		return emailLabel;
 	}
