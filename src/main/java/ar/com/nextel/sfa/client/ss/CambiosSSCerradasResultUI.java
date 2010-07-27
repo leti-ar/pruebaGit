@@ -97,6 +97,7 @@ public class CambiosSSCerradasResultUI extends FlowPanel {
 	
 	private void loadTable() {
 		int row = 1;
+		CleanCambiosTable();
 		if (detalleSolicitudServicioDto.getCambiosEstadoSolicitud() != null) {
 			for (CambiosSolicitudServicioDto cambiosDto : detalleSolicitudServicioDto.getCambiosEstadoSolicitud()) {
 				resultTable.setHTML(row, 0, cambiosDto.getFechaCambioEstado().toString());
