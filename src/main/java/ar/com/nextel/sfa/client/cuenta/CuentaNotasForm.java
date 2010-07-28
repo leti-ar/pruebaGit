@@ -91,10 +91,10 @@ public class CuentaNotasForm extends Composite {
 		while (datosTabla.getRowCount() > 1) {
 			datosTabla.removeRow(1);
 		}
-		
+
 		htmlTitulo.setText("");
 		htmlComentario.setText("");
-		
+
 		if (listaComentarios != null) {
 			for (Iterator iter = listaComentarios.iterator(); iter.hasNext();) {
 				ComentarioDto comentario = (ComentarioDto) iter.next();
@@ -105,15 +105,44 @@ public class CuentaNotasForm extends Composite {
 				datosTabla.setHTML(row, 3, comentario.getUsuario());
 				row++;
 			}
+
+			//Ni bien ingresa a la pantalla se muestra la primer nota			
+			ComentarioDto comentario = (ComentarioDto) listaComentarios.get(0);
+			htmlTitulo.setText(comentario.getTitulo());
+			calcularYSetearBlancos(comentario.getTextoComentario());			
+			//Cambia la tabla de abajo
+			htmlComentario.setHTML(reemplazarEnter(comentario.getTextoComentario()));
 		}
 	}
 
+	
+	private void calcularYSetearBlancos(String nota) {
+		//Cuento la cantidad de ocurrencias del caracter \n para agregar esa cant de líneas en blanco
+		String notaSinN = nota.replace("\n", "");
+		int longConN = nota.length();
+		int longSinN = notaSinN.length();
+		//Se cargan líneas en blanco para evitar un problema de refresco que ocurre en IE 
+		for (int i = 0; i <= (longConN-longSinN + 1); i++) {
+			htmlComentario.setHTML("" + "<br>");
+		}
+	}
+	
+	private String reemplazarEnter(String comentarioOriginal) {
+		//Hay que hacer un replace de los enter porque los navegadores lo interpretan distinto
+		String comentarioModificado = comentarioOriginal.replace("\n", "<br>");
+		if (comentarioOriginal.contains("\r"))
+			comentarioModificado = comentarioModificado.replace("\r", "");			
+		return comentarioModificado;
+	}
+	
 	private class Listener implements TableListener {
 		public void onCellClicked(SourcesTableEvents arg0, int row, int columna) {
-			// Cambia la tabla de abajo
+			//Cambia la tabla de abajo
 			ComentarioDto comentario = (ComentarioDto) listaComentarios.get(row - 1);
 			htmlTitulo.setText(comentario.getTitulo());
-			htmlComentario.setText(comentario.getTextoComentario());
+			calcularYSetearBlancos(comentario.getTextoComentario());			
+			//Cambia la tabla de abajo
+			htmlComentario.setHTML(reemplazarEnter(comentario.getTextoComentario()));
 		}
 	}
 	
