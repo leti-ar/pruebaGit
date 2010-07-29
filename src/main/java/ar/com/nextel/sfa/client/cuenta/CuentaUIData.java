@@ -7,6 +7,8 @@ import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.FacturaElectronicaDto;
 import ar.com.nextel.sfa.client.dto.MotivoNoCierreDto;
+import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
+import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
 import ar.com.nextel.sfa.client.enums.EstadoOportunidadEnum;
 import ar.com.nextel.sfa.client.enums.TipoTarjetaEnum;
@@ -23,6 +25,7 @@ import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.dev.js.rhino.ObjToIntMap.Iterator;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -155,6 +158,9 @@ public class CuentaUIData extends UIData {
 	private FacturaElectronicaDto facturaElectronica = null;
 
 	private int currentYear;
+	
+	//MGR - 26-07-2010 - Incidente #0000703 - Guardo todas las opciones para no tener que regresar al servidor
+	List<TipoContribuyenteDto> tiposContribuyentes = null;
 
 	public CuentaUIData() {
 		init();
@@ -265,13 +271,59 @@ public class CuentaUIData extends UIData {
 		fields.add(oppRubro);
 		fields.add(oppTerminalesEstimadas);
 	}
+	
+	//MGR - 26-07-2010 - Incidente #0000703
+	public void soloContribConsumidorFinal(){
+		if(tiposContribuyentes != null){
+			
+			TipoContribuyenteDto tipoContTemp = null;
+			java.util.Iterator<TipoContribuyenteDto> it = tiposContribuyentes.iterator();
+			
+			while (it.hasNext() && tipoContTemp == null) {
+				
+				TipoContribuyenteDto tipoCont = (TipoContribuyenteDto) it.next();
+				if (tipoCont.isConsumidorFinal()) {
+					tipoContTemp = tipoCont;
+				}
+			}
+			
+			if (tipoContTemp != null) {
+				contribuyente.clear();
+				contribuyente.clearPreseleccionados();
+				contribuyente.addItem(tipoContTemp);
+			}
+		}
+	}
+	
+	public void todosContribuyentes(){
+		if(tiposContribuyentes != null){
+			contribuyente.clear(); 
+			//contribuyente.clearPreseleccionados();
+			contribuyente.addAllItems(tiposContribuyentes);
+		}
+	}
 
 	private void setCombos() {
 		CuentaRpcService.Util.getInstance().getAgregarCuentaInitializer(
 				new DefaultWaitCallback<AgregarCuentaInitializer>() {
 					public void success(AgregarCuentaInitializer result) {
 						tipoDocumento.addAllItems(result.getTiposDocumento());
-						contribuyente.addAllItems(result.getTiposContribuyentes());
+						
+						//contribuyente.addAllItems(result.getTiposContribuyentes());
+						//MGR - 26/07/2010 - Incidente #0000703
+						//Si el documento es DNI y es un nuevo cliente (combo esta habilitado), en el combo de contribuyente 
+						//solo puede aparecer la opcion "CONSUMIDOR FINAL"
+						tiposContribuyentes = result.getTiposContribuyentes();
+						if( getTipoDocumento().getSelectedItem() != null &&
+								((TipoDocumentoDto)getTipoDocumento().getSelectedItem()).getCodigoVantive().equals("96") &&
+								getContribuyente().isEnabled()){
+							soloContribConsumidorFinal();
+						}
+						else{
+							todosContribuyentes();
+						}
+						
+						
 						rubro.addAllItems(result.getRubro());
 						sexo.addAllItems(result.getSexo());
 						claseCliente.addAllItems(result.getClaseCliente());

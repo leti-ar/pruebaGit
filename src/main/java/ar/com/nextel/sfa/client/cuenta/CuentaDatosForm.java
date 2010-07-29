@@ -1,7 +1,9 @@
 package ar.com.nextel.sfa.client.cuenta;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -46,11 +48,14 @@ import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
+import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import ar.com.snoop.gwt.commons.client.window.MessageWindow;
 
+import com.google.gwt.dev.js.rhino.ObjToIntMap.Iterator;
+import com.google.gwt.dev.util.collect.HashMap;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -585,9 +590,23 @@ public class CuentaDatosForm extends Composite {
 			cuentaUIData.getNumeroDocumento().setText(cuentaDto.getPersona().getDocumento().getNumero());
 			setDefaultComboSexo(cuentaDto.getPersona().getIdTipoDocumento(), cuentaDto.getPersona()
 					.getDocumento().getNumero());
+		
+		
+			//MGR - 26/07/2010 - Incidente #0000703
+			//Si el documento es DNI y es un nuevo cliente (combo esta habilitado), en el combo de contribuyente 
+			//solo puede aparecer la opcion "CONSUMIDOR FINAL"
+			if( cuentaDto.getPersona().getDocumento().tipoDocumento.getCodigoVantive().equals("96") &&
+					cuentaUIData.getContribuyente().isEnabled()){
+				cuentaUIData.soloContribConsumidorFinal();
+			}
+			else{
+				cuentaUIData.todosContribuyentes();
+			}
+		
 		} catch (Exception e) {
 			// la cuenta puede llegar sin datos de documento... en ese caso que no haga nada.
 		}
+		
 		cuentaUIData.getRazonSocial().setText(cuentaDto.getPersona().getRazonSocial());
 		cuentaUIData.getNombre().setText(cuentaDto.getPersona().getNombre());
 		cuentaUIData.getApellido().setText(cuentaDto.getPersona().getApellido());
