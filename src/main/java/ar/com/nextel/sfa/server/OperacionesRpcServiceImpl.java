@@ -48,18 +48,25 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 	}
 
 	public List<OperacionEnCursoDto> searchOpEnCurso() {
+		AppLogger.debug("#Comienzo busqueda de Oportunidades En Curso");
 		Vendedor vendedor = sessionContextLoader.getVendedor();
+		AppLogger.debug("#Obtengo Vendedor");
 		AppLogger.info("Obteniendo operaciones en curso para vendedor: " + vendedor.getUserName(), this);
 		List<OperacionEnCursoDto> operacionesEnCursoDto = mapper.convertList(
 				vendedor.getOperacionesEnCurso(), OperacionEnCursoDto.class);
+		AppLogger.debug("#devuelvo la lista de Op En Curso");
 		return operacionesEnCursoDto;
 	}
 
 	public VentaPotencialVistaResultDto searchReservas() {
+		AppLogger.debug("#Comienzo busqueda de Reservas");
 		Vendedor vendedor = sessionContextLoader.getVendedor();
+		AppLogger.debug("#Obtengo Vendedor");
 		AppLogger.info("Obteniendo reservas para vendedor: " + vendedor.getUserName(), this);
 		List<VentaPotencialVistaDto> ventasPotencialesEnCursoDto = mapper.convertList(vendedor.getVentasPotencialesVistaEnCurso(), VentaPotencialVistaDto.class);
+		AppLogger.debug("#tengo lista de ventas potenciales en curso y voy a contar las no consultadas...");
 		VentaPotencialVistaResultDto ventaPotencialVistaResultDto = new VentaPotencialVistaResultDto(ventasPotencialesEnCursoDto, vendedor.getCantidadCuentasPotencialesNoConsultadasActivasYVigentes().toString());
+		AppLogger.debug("#obtengo cantidad de las no consultadas...y retorno lista");
 		return ventaPotencialVistaResultDto;
 	}
 
