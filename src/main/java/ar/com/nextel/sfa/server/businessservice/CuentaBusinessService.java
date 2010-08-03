@@ -72,8 +72,7 @@ public class CuentaBusinessService {
 
 	private final String ERR_CUENTA_PREFIX = "La cuenta no puede abrirse. <BR/>";
 	private final String ERR_CUENTA_NO_ACCESS = "Acceso denegado. No puede operar con esta cuenta.";
-	private final String ERR_CUENTA_NO_EDITABLE = ERR_CUENTA_PREFIX
-			+ "La Cuenta es de clase {1}";
+	private final String ERR_CUENTA_NO_EDITABLE = ERR_CUENTA_PREFIX + "La Cuenta es de clase {1}";
 	private final String ERR_CUENTA_GOBIERNO = ERR_CUENTA_PREFIX
 			+ "La Cuenta: {1} ({2}) es de clase {3} y pertenece a la cartera de otro vendedor";
 	private final String ERR_CUENTA_NO_PERMISO = "No tiene permiso para ver esa cuenta.";
@@ -99,8 +98,7 @@ public class CuentaBusinessService {
 	private FacturaElectronicaService facturaElectronicaService;
 
 	private Repository repository;
-	
-	
+
 	private DefaultRetriever globalParameterRetriever;
 
 	@Autowired
@@ -116,14 +114,12 @@ public class CuentaBusinessService {
 	}
 
 	@Autowired
-	public void setSelectCuentaBusinessOperator(
-			SelectCuentaBusinessOperator selectCuentaBusinessOperatorBean) {
+	public void setSelectCuentaBusinessOperator(SelectCuentaBusinessOperator selectCuentaBusinessOperatorBean) {
 		this.selectCuentaBusinessOperator = selectCuentaBusinessOperatorBean;
 	}
 
 	@Autowired
-	public void setCreateCuentaBusinessOperator(
-			CreateCuentaBusinessOperator createCuentaBusinessOperatorBean) {
+	public void setCreateCuentaBusinessOperator(CreateCuentaBusinessOperator createCuentaBusinessOperatorBean) {
 		this.createCuentaBusinessOperator = createCuentaBusinessOperatorBean;
 	}
 
@@ -134,8 +130,7 @@ public class CuentaBusinessService {
 	}
 
 	@Autowired
-	public void setKnownInstanceRetriever(
-			KnownInstanceRetriever knownInstanceRetrieverBean) {
+	public void setKnownInstanceRetriever(KnownInstanceRetriever knownInstanceRetrieverBean) {
 		this.knownInstanceRetriever = knownInstanceRetrieverBean;
 	}
 
@@ -145,11 +140,10 @@ public class CuentaBusinessService {
 	}
 
 	@Autowired
-	public void setFacturaElectronicaService(
-			FacturaElectronicaService facturaElectronicaService) {
+	public void setFacturaElectronicaService(FacturaElectronicaService facturaElectronicaService) {
 		this.facturaElectronicaService = facturaElectronicaService;
 	}
-	
+
 	@Autowired
 	public void setGlobalParameterRetriever(
 			@Qualifier("globalParameterRetriever") DefaultRetriever globalParameterRetriever) {
@@ -157,8 +151,8 @@ public class CuentaBusinessService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public Cuenta reservarCrearCta(SolicitudCuenta solicitudCta,
-			MapperExtended mapper) throws BusinessException {
+	public Cuenta reservarCrearCta(SolicitudCuenta solicitudCta, MapperExtended mapper)
+			throws BusinessException {
 		ReservaCreacionCuentaBusinessOperatorResult reservarCrearCta = reservaCreacionCuentaBusinessOperator
 				.reservarCrearCuenta(solicitudCta);
 		Cuenta cuenta = reservarCrearCta.getCuenta();
@@ -168,13 +162,11 @@ public class CuentaBusinessService {
 		if (cuenta != null) {
 			CuentaDto cuentaDto = null;
 			if (cuenta.esGranCuenta()) {
-				cuentaDto = (GranCuentaDto) mapper.map(cuenta,
-						GranCuentaDto.class);
+				cuentaDto = (GranCuentaDto) mapper.map(cuenta, GranCuentaDto.class);
 			} else if (cuenta.esDivision()) {
 				cuentaDto = (DivisionDto) mapper.map(cuenta, DivisionDto.class);
 			} else if (cuenta.esSuscriptor()) {
-				cuentaDto = (SuscriptorDto) mapper.map(cuenta,
-						SuscriptorDto.class);
+				cuentaDto = (SuscriptorDto) mapper.map(cuenta, SuscriptorDto.class);
 			}
 		}
 
@@ -182,10 +174,8 @@ public class CuentaBusinessService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void saveCuenta(Cuenta cuenta, Vendedor vendedor)
-			throws BusinessException {
-		selectCuentaBusinessOperator.getCuentaYLockear(cuenta
-				.getCodigoVantive(), vendedor);
+	public void saveCuenta(Cuenta cuenta, Vendedor vendedor) throws BusinessException {
+		selectCuentaBusinessOperator.getCuentaYLockear(cuenta.getCodigoVantive(), vendedor);
 		repository.save(cuenta);
 	}
 
@@ -208,11 +198,10 @@ public class CuentaBusinessService {
 	}
 
 	private Long encriptarNumeroTrajeta(String numero) throws Exception {
-		
+
 		AppLogger.info("numero tarjeta: " + numero);
-		CallableStatement stmt = ((HibernateRepository) repository)
-				.getHibernateDaoSupport().getSessionFactory()
-				.getCurrentSession().connection().prepareCall(
+		CallableStatement stmt = ((HibernateRepository) repository).getHibernateDaoSupport()
+				.getSessionFactory().getCurrentSession().connection().prepareCall(
 						"{?= call PCIED_SFA.ENCRIPTAR(?)}");
 		stmt.registerOutParameter(1, java.sql.Types.INTEGER);
 		stmt.setString(2, numero);
@@ -223,88 +212,72 @@ public class CuentaBusinessService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public Long saveCuenta(CuentaDto cuentaDto, MapperExtended mapper,
-			Vendedor vendedor) throws Exception {
-	
+	public Long saveCuenta(CuentaDto cuentaDto, MapperExtended mapper, Vendedor vendedor) throws Exception {
+
 		GlobalParameter pciGlobalParameter = (GlobalParameter) globalParameterRetriever
-		.getObject(GlobalParameterIdentifier.PCI_ENABLED);
-	
+				.getObject(GlobalParameterIdentifier.PCI_ENABLED);
+
 		Cuenta cuenta = repository.retrieve(Cuenta.class, cuentaDto.getId());
 
 		Long numeroEncriptadoOriginal = null;
-		if(cuenta.getDatosPago().isDebitoTarjetaCredito()){
+		if (cuenta.getDatosPago().isDebitoTarjetaCredito()) {
 			DatosDebitoTarjetaCredito datosPagoTarjetaCredito = (DatosDebitoTarjetaCredito) repository
-			.retrieve(DatosDebitoTarjetaCredito.class, cuenta.getDatosPago()
-					.getId());
-	
+					.retrieve(DatosDebitoTarjetaCredito.class, cuenta.getDatosPago().getId());
+
 			numeroEncriptadoOriginal = datosPagoTarjetaCredito.getNumeroEncriptado();
 		}
-			// DATOS PAGO
-			
-		AbstractDatosPago datosPagoOriginal = (AbstractDatosPago) repository
-		.retrieve(AbstractDatosPago.class, cuenta.getDatosPago()
-				.getId());
-        cuenta.setDatosPago(null);
-	
+		// DATOS PAGO
+
+		AbstractDatosPago datosPagoOriginal = (AbstractDatosPago) repository.retrieve(
+				AbstractDatosPago.class, cuenta.getDatosPago().getId());
+		cuenta.setDatosPago(null);
+
 		repository.delete(datosPagoOriginal);
 		cuenta.setFormaPago(null);
 
 		mapper.map(cuentaDto, cuenta);
 
-
-		if (cuenta.getCategoriaCuenta().getDescripcion().equals(
-				KnownInstanceIdentifier.DIVISION.getKey())) {
-			((Division) cuenta)
-					.setNombre(((DivisionDto) cuentaDto).getNombre());
+		if (cuenta.getCategoriaCuenta().getDescripcion().equals(KnownInstanceIdentifier.DIVISION.getKey())) {
+			((Division) cuenta).setNombre(((DivisionDto) cuentaDto).getNombre());
 		}
 
 		// FORMA PAGO
-		FormaPago formaPagoNueva = (FormaPago) repository.retrieve(
-				FormaPago.class, cuentaDto.getFormaPago().getId());
+		FormaPago formaPagoNueva = (FormaPago) repository.retrieve(FormaPago.class, cuentaDto.getFormaPago()
+				.getId());
 		cuenta.setFormaPago(formaPagoNueva);
 
 		if (cuentaDto.getDatosPago() instanceof DatosDebitoCuentaBancariaDto) {
-			TipoCuentaBancaria tipoCuenta = (TipoCuentaBancaria) repository
-					.retrieve(TipoCuentaBancaria.class,
-							((DatosDebitoCuentaBancariaDto) cuentaDto
-									.getDatosPago()).getTipoCuentaBancaria()
-									.getId());
-			((DatosDebitoCuentaBancaria) cuenta.getDatosPago())
-					.setTipoCuentaBancaria(tipoCuenta);
+			TipoCuentaBancaria tipoCuenta = (TipoCuentaBancaria) repository.retrieve(
+					TipoCuentaBancaria.class, ((DatosDebitoCuentaBancariaDto) cuentaDto.getDatosPago())
+							.getTipoCuentaBancaria().getId());
+			((DatosDebitoCuentaBancaria) cuenta.getDatosPago()).setTipoCuentaBancaria(tipoCuenta);
 		} else if (cuentaDto.getDatosPago() instanceof DatosDebitoTarjetaCreditoDto) {
-			TipoTarjeta tipoTarjeta = (TipoTarjeta) repository.retrieve(
-					TipoTarjeta.class,
-					((DatosDebitoTarjetaCreditoDto) cuentaDto.getDatosPago())
-							.getTipoTarjeta().getId());
-			((DatosDebitoTarjetaCredito) cuenta.getDatosPago())
-					.setTipoTarjeta(tipoTarjeta);
-		
+			TipoTarjeta tipoTarjeta = (TipoTarjeta) repository.retrieve(TipoTarjeta.class,
+					((DatosDebitoTarjetaCreditoDto) cuentaDto.getDatosPago()).getTipoTarjeta().getId());
+			((DatosDebitoTarjetaCredito) cuenta.getDatosPago()).setTipoTarjeta(tipoTarjeta);
+
 			boolean pciEnabled = pciGlobalParameter.getValue().equalsIgnoreCase("T");
-			if ( pciEnabled ) {
-				String numeroTarj = ((DatosDebitoTarjetaCredito) cuenta
-						.getDatosPago()).getNumero();
-				
+			if (pciEnabled) {
+				String numeroTarj = ((DatosDebitoTarjetaCredito) cuenta.getDatosPago()).getNumero();
+
 				if (!numeroTarj.contains("*")) {
-					
+
 					String newNumber = changeByAsterisks(numeroTarj);
 
 					Long numEncriptado = encriptarNumeroTrajeta(numeroTarj);
 
 					// encrypt
+					((DatosDebitoTarjetaCredito) cuenta.getDatosPago()).setNumero(newNumber);
+					((DatosDebitoTarjetaCredito) cuenta.getDatosPago()).setNumeroEncriptado(numEncriptado);
+				} else {
+					// copio el encriptado original
 					((DatosDebitoTarjetaCredito) cuenta.getDatosPago())
-							.setNumero(newNumber);
-					((DatosDebitoTarjetaCredito) cuenta.getDatosPago())
-							.setNumeroEncriptado(numEncriptado);
-				}else{
-			//copio el encriptado original
-					((DatosDebitoTarjetaCredito) cuenta.getDatosPago())
-					.setNumeroEncriptado(numeroEncriptadoOriginal);
-			
+							.setNumeroEncriptado(numeroEncriptadoOriginal);
+
 				}
 				// ((DatosDebitoTarjetaCredito)cuenta.getDatosPago()).setNumero("9876543210987654321");
 			}
-			
-			
+
 		}
 		guardarFacturaElectronica(cuenta, cuentaDto, mapper, vendedor);
 
@@ -313,24 +286,19 @@ public class CuentaBusinessService {
 		// suscriptores o divisiones...
 		Set<ContactoCuenta> listaContactos = new HashSet<ContactoCuenta>();
 		for (ContactoCuentaDto contDto : getListaContactosDto(cuentaDto)) {
-			ContactoCuenta contacto = (ContactoCuenta) mapper.map(contDto,
-					ContactoCuenta.class);
+			ContactoCuenta contacto = (ContactoCuenta) mapper.map(contDto, ContactoCuenta.class);
 			if (cuenta.esGranCuenta()) {
 				contacto.setCuenta((GranCuenta) cuenta);
 			} else if (cuenta.esSuscriptor()) {
 				if (((Suscriptor) cuenta).getDivision() != null) {
-					contacto.setCuenta((GranCuenta) ((Suscriptor) cuenta)
-							.getDivision().getGranCuenta());
+					contacto.setCuenta((GranCuenta) ((Suscriptor) cuenta).getDivision().getGranCuenta());
 				} else {
-					contacto.setCuenta((GranCuenta) ((Suscriptor) cuenta)
-							.getGranCuenta());
+					contacto.setCuenta((GranCuenta) ((Suscriptor) cuenta).getGranCuenta());
 				}
 			} else if (cuenta.esDivision()) {
-				contacto.setCuenta((GranCuenta) ((Division) cuenta)
-						.getGranCuenta());
+				contacto.setCuenta((GranCuenta) ((Division) cuenta).getGranCuenta());
 			}
-			listaContactos.add((ContactoCuenta) mapper.map(contDto,
-					ContactoCuenta.class));
+			listaContactos.add((ContactoCuenta) mapper.map(contDto, ContactoCuenta.class));
 		}
 		cuenta.getPlainContactos().addAll(listaContactos);
 		// *************************************************************************************************
@@ -347,19 +315,17 @@ public class CuentaBusinessService {
 		}
 
 		if (cuenta.esGranCuenta()) {
-			updateTelefonoEmailContactos(cuenta.getContactos(), cuentaDto,
-					mapper);
+			updateTelefonoEmailContactos(cuenta.getContactos(), cuentaDto, mapper);
 		} else if (cuenta.esDivision()) {
-			updateTelefonoEmailContactos(((Division) cuenta).getGranCuenta()
-					.getContactos(), cuentaDto, mapper);
+			updateTelefonoEmailContactos(((Division) cuenta).getGranCuenta().getContactos(), cuentaDto,
+					mapper);
 		} else if (cuenta.esSuscriptor()) {
 			if (((Suscriptor) cuenta).getDivision() != null) {
-				updateTelefonoEmailContactos(((Suscriptor) cuenta)
-						.getDivision().getGranCuenta().getContactos(),
-						cuentaDto, mapper);
+				updateTelefonoEmailContactos(((Suscriptor) cuenta).getDivision().getGranCuenta()
+						.getContactos(), cuentaDto, mapper);
 			} else {
-				updateTelefonoEmailContactos(((Suscriptor) cuenta)
-						.getGranCuenta().getContactos(), cuentaDto, mapper);
+				updateTelefonoEmailContactos(((Suscriptor) cuenta).getGranCuenta().getContactos(), cuentaDto,
+						mapper);
 			}
 		}
 		// **********************************************************************************************
@@ -369,65 +335,67 @@ public class CuentaBusinessService {
 		return cuenta.getId();
 	}
 
-	private void guardarFacturaElectronica(Cuenta cuenta, CuentaDto cuentaDto,
-			MapperExtended mapper, Vendedor vendedor) {
-		if (cuenta.isEnCarga()) {
-			if (cuentaDto.getFacturaElectronica() == null
-					&& cuenta.getFacturaElectronica() != null) {
-				repository.delete(cuenta.getFacturaElectronica());
-				cuenta.setFacturaElectronica(null);
-			} else if (cuentaDto.getFacturaElectronica() != null) {
-				if (cuenta.getFacturaElectronica() == null) {
-					cuenta
-							.setFacturaElectronica(mapper.map(cuentaDto
-									.getFacturaElectronica(),
-									FacturaElectronica.class));
-				} else {
-					mapper.map(cuentaDto.getFacturaElectronica(), cuenta
-							.getFacturaElectronica());
-				}
+	private void guardarFacturaElectronica(Cuenta cuenta, CuentaDto cuentaDto, MapperExtended mapper,
+			Vendedor vendedor) {
+
+		if (cuentaDto.getFacturaElectronica() == null && cuenta.getFacturaElectronica() != null) {
+			repository.delete(cuenta.getFacturaElectronica());
+			cuenta.setFacturaElectronica(null);
+		} else if (cuentaDto.getFacturaElectronica() != null
+				&& !cuentaDto.getFacturaElectronica().isCargadaEnVantive()) {
+
+			if (cuenta.getFacturaElectronica() == null) {
+				cuenta.setFacturaElectronica(mapper.map(cuentaDto.getFacturaElectronica(),
+						FacturaElectronica.class));
+			} else {
+				mapper.map(cuentaDto.getFacturaElectronica(), cuenta.getFacturaElectronica());
 			}
-		} else {
-			if (cuentaDto.getFacturaElectronica() != null
-					&& !cuentaDto.getFacturaElectronica().isCargadaEnVantive()) {
-				facturaElectronicaService.adherirFacturaElectronica(cuenta
-						.getIdVantive(), cuenta.getCodigoVantive(), cuentaDto
-						.getFacturaElectronica().getEmail(), "", vendedor
-						.getUserName());
-			}
+
 		}
+		// else {
+		// if (cuentaDto.getFacturaElectronica() != null
+		// && !cuentaDto.getFacturaElectronica().isCargadaEnVantive()) {
+		// facturaElectronicaService.adherirFacturaElectronica(cuenta.getIdVantive(), cuenta
+		// .getCodigoVantive(), cuentaDto.getFacturaElectronica().getEmail(), "", vendedor
+		// .getUserName());
+		// }
+		// }
 	}
 
-	public void cargarFacturaElectronica(CuentaDto cuenta, boolean isEnCarga) {
-		if (!isEnCarga) {
-			if (cuenta.getFacturaElectronica() != null) {
-				repository.delete(cuenta.getFacturaElectronica());
-				cuenta.setFacturaElectronica(null);
-			}
-			if (facturaElectronicaService.isAdheridoFacturaElectronica(cuenta
-					.getCodigoVantive())) {
+	public void cargarFacturaElectronica(CuentaDto cuentaDto, Cuenta cuenta, MapperExtended mapper,
+			boolean isEnCarga) {
+		// if (!isEnCarga) {
+		// if (cuenta.getFacturaElectronica() != null) {
+		// repository.delete(cuenta.getFacturaElectronica());
+		// cuenta.setFacturaElectronica(null);
+		// }
+
+		if (cuenta.getFacturaElectronica() != null) {
+			FacturaElectronicaDto fdto = (FacturaElectronicaDto) mapper.map(cuenta.getFacturaElectronica(),
+					FacturaElectronicaDto.class);
+			cuentaDto.setFacturaElectronica(fdto);
+		} else {
+			if (!isEnCarga
+					&& facturaElectronicaService.isAdheridoFacturaElectronica(cuentaDto.getCodigoVantive())) {
 				FacturaElectronicaDto facturaElectronica = new FacturaElectronicaDto();
-				List<String> mails = facturaElectronicaService
-						.obtenerMailFacturaElectronica(cuenta
-								.getCodigoVantive());
-				facturaElectronica.setEmail(mails.isEmpty() ? "" : mails
-						.iterator().next());
+				List<String> mails = facturaElectronicaService.obtenerMailFacturaElectronica(cuentaDto
+						.getCodigoVantive());
+				facturaElectronica.setEmail(mails.isEmpty() ? "" : mails.iterator().next());
 				facturaElectronica.setCargadaEnVantive(true);
-				cuenta.setFacturaElectronica(facturaElectronica);
+				cuentaDto.setFacturaElectronica(facturaElectronica);
 			}
 		}
+		// }
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Division crearDivision(Cuenta cuenta, Vendedor vendedor) {
-		return (Division) createCuentaBusinessOperator.createDivisionFrom(
-				cuenta, vendedor);
+		return (Division) createCuentaBusinessOperator.createDivisionFrom(cuenta, vendedor);
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Suscriptor crearSuscriptor(Cuenta cuenta, Vendedor vendedor) {
-		return (Suscriptor) createCuentaBusinessOperator.createSuscriptorFrom(
-				cuenta, vendedor);
+		return (Suscriptor) createCuentaBusinessOperator.createSuscriptorFrom(cuenta, vendedor);
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
@@ -436,15 +404,14 @@ public class CuentaBusinessService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public OportunidadNegocio updateEstadoOportunidad(
-			OportunidadNegocioDto oportunidadDto, MapperExtended mapper) {
-		OportunidadNegocio oportunidad = (OportunidadNegocio) repository
-				.retrieve(OportunidadNegocio.class, oportunidadDto.getId());
-		EstadoOportunidad nuevoEstado = repository.retrieve(
-				EstadoOportunidad.class, oportunidadDto.getEstadoJustificado()
-						.getEstado().getId());
-		MotivoNoCierre nuevoMotivo = repository.retrieve(MotivoNoCierre.class,
-				oportunidadDto.getEstadoJustificado().getMotivo().getId());
+	public OportunidadNegocio updateEstadoOportunidad(OportunidadNegocioDto oportunidadDto,
+			MapperExtended mapper) {
+		OportunidadNegocio oportunidad = (OportunidadNegocio) repository.retrieve(OportunidadNegocio.class,
+				oportunidadDto.getId());
+		EstadoOportunidad nuevoEstado = repository.retrieve(EstadoOportunidad.class, oportunidadDto
+				.getEstadoJustificado().getEstado().getId());
+		MotivoNoCierre nuevoMotivo = repository.retrieve(MotivoNoCierre.class, oportunidadDto
+				.getEstadoJustificado().getMotivo().getId());
 		oportunidad.getEstadoJustificado().setEstado(nuevoEstado);
 		oportunidad.setEstado(nuevoEstado);
 		oportunidad.getEstadoJustificado().setMotivo(nuevoMotivo);
@@ -460,51 +427,39 @@ public class CuentaBusinessService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public Cuenta getCuentaSinLockear(String codVantive)
-			throws BusinessException {
+	public Cuenta getCuentaSinLockear(String codVantive) throws BusinessException {
 		return selectCuentaBusinessOperator.getCuentaSinLockear(codVantive);
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public Cuenta selectCuenta(Long cuentaId, String cod_vantive,
-			Vendedor vendedor, boolean filtradoPorDni, DozerBeanMapper mapper)
-			throws RpcExceptionMessages {
+	public Cuenta selectCuenta(Long cuentaId, String cod_vantive, Vendedor vendedor, boolean filtradoPorDni,
+			DozerBeanMapper mapper) throws RpcExceptionMessages {
 		AppLogger.info("Iniciando SelectCuenta...");
 		Cuenta cuenta = null;
 		BaseAccessObject accessCuenta = null;
 		try {
-			accessCuenta = cod_vantive != null && !cod_vantive.equals("null") ? getAccessCuenta(
-					cod_vantive, vendedor)
-					: getAccessCuenta(cuentaId, vendedor);
+			accessCuenta = cod_vantive != null && !cod_vantive.equals("null") ? getAccessCuenta(cod_vantive,
+					vendedor) : getAccessCuenta(cuentaId, vendedor);
 			cuenta = (Cuenta) accessCuenta.getTargetObject();
 
 			validarAccesoCuenta(cuenta, vendedor, filtradoPorDni);
 
 			// Lockea la cuenta
-			if (accessCuenta.getAccessAuthorization().hasSamePermissionsAs(
-					AccessAuthorization.editOnly())
-					|| accessCuenta.getAccessAuthorization()
-							.hasSamePermissionsAs(
-									AccessAuthorization.fullAccess())) {
+			if (accessCuenta.getAccessAuthorization().hasSamePermissionsAs(AccessAuthorization.editOnly())
+					|| accessCuenta.getAccessAuthorization().hasSamePermissionsAs(
+							AccessAuthorization.fullAccess())) {
 				cuenta.editar(vendedor);
 				repository.save(cuenta);
 			}
 
 			CuentaDto cuentaDto = null;
-			String categoriaCuenta = cuenta.getCategoriaCuenta()
-					.getDescripcion();
-			if (categoriaCuenta.equals(KnownInstanceIdentifier.GRAN_CUENTA
-					.getKey())) {
-				cuentaDto = (GranCuentaDto) mapper.map((GranCuenta) cuenta,
-						GranCuentaDto.class);
-			} else if (categoriaCuenta.equals(KnownInstanceIdentifier.DIVISION
-					.getKey())) {
-				cuentaDto = (DivisionDto) mapper.map((Division) cuenta,
-						DivisionDto.class);
-			} else if (categoriaCuenta
-					.equals(KnownInstanceIdentifier.SUSCRIPTOR.getKey())) {
-				cuentaDto = (SuscriptorDto) mapper.map((Suscriptor) cuenta,
-						SuscriptorDto.class);
+			String categoriaCuenta = cuenta.getCategoriaCuenta().getDescripcion();
+			if (categoriaCuenta.equals(KnownInstanceIdentifier.GRAN_CUENTA.getKey())) {
+				cuentaDto = (GranCuentaDto) mapper.map((GranCuenta) cuenta, GranCuentaDto.class);
+			} else if (categoriaCuenta.equals(KnownInstanceIdentifier.DIVISION.getKey())) {
+				cuentaDto = (DivisionDto) mapper.map((Division) cuenta, DivisionDto.class);
+			} else if (categoriaCuenta.equals(KnownInstanceIdentifier.SUSCRIPTOR.getKey())) {
+				cuentaDto = (SuscriptorDto) mapper.map((Suscriptor) cuenta, SuscriptorDto.class);
 			}
 		} catch (Exception e) {
 			AppLogger.error(e);
@@ -524,92 +479,65 @@ public class CuentaBusinessService {
 		List<ContactoCuentaDto> listaContactosDto = new ArrayList<ContactoCuentaDto>();
 		if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(
 				KnownInstanceIdentifier.GRAN_CUENTA.getKey())) {
-			listaContactosDto = (List<ContactoCuentaDto>) ((GranCuentaDto) cuentaDto)
-					.getContactos();
+			listaContactosDto = (List<ContactoCuentaDto>) ((GranCuentaDto) cuentaDto).getContactos();
 		} else if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(
 				KnownInstanceIdentifier.SUSCRIPTOR.getKey())) {
 			if (((SuscriptorDto) cuentaDto).getDivision() != null) {
-				listaContactosDto = (List<ContactoCuentaDto>) ((SuscriptorDto) cuentaDto)
-						.getDivision().getGranCuenta().getContactos();
-			} else {
-				listaContactosDto = (List<ContactoCuentaDto>) ((SuscriptorDto) cuentaDto)
+				listaContactosDto = (List<ContactoCuentaDto>) ((SuscriptorDto) cuentaDto).getDivision()
 						.getGranCuenta().getContactos();
+			} else {
+				listaContactosDto = (List<ContactoCuentaDto>) ((SuscriptorDto) cuentaDto).getGranCuenta()
+						.getContactos();
 			}
 
 		} else if (cuentaDto.getCategoriaCuenta().getDescripcion().equals(
 				KnownInstanceIdentifier.DIVISION.getKey())) {
-			listaContactosDto = (List<ContactoCuentaDto>) ((DivisionDto) cuentaDto)
-					.getGranCuenta().getContactos();
+			listaContactosDto = (List<ContactoCuentaDto>) ((DivisionDto) cuentaDto).getGranCuenta()
+					.getContactos();
 		}
 		return listaContactosDto;
 	}
 
-	public void validarAccesoCuenta(Cuenta cuenta, Vendedor vendedor,
-			boolean filtradoPorDni) throws RpcExceptionMessages {
+	public void validarAccesoCuenta(Cuenta cuenta, Vendedor vendedor, boolean filtradoPorDni)
+			throws RpcExceptionMessages {
 		// logueado no es el de la cuenta
 		if (!vendedor.getId().equals(cuenta.getVendedor().getId())) {
 			if (cuenta.isClaseEmpleados()) {
-				throw new RpcExceptionMessages(
-						ERR_CUENTA_NO_EDITABLE
-								.replaceAll(
-										"\\{1\\}",
-										((ClaseCuenta) knownInstanceRetriever
-												.getObject(KnownInstanceIdentifier.CLASE_CUENTA_EMPLEADOS))
-												.getDescripcion()));
+				throw new RpcExceptionMessages(ERR_CUENTA_NO_EDITABLE.replaceAll("\\{1\\}",
+						((ClaseCuenta) knownInstanceRetriever
+								.getObject(KnownInstanceIdentifier.CLASE_CUENTA_EMPLEADOS)).getDescripcion()));
 			} else if (cuenta.isGobiernoBsAs()) {
-				String err = ERR_CUENTA_GOBIERNO.replaceAll("\\{1\\}", cuenta
-						.getCodigoVantive());
-				err = err.replaceAll("\\{2\\}", cuenta.getPersona()
-						.getRazonSocial());
-				err = err
-						.replaceAll(
-								"\\{3\\}",
-								((ClaseCuenta) knownInstanceRetriever
-										.getObject(KnownInstanceIdentifier.CLASE_CUENTA_GOB_BS_AS))
-										.getDescripcion());
+				String err = ERR_CUENTA_GOBIERNO.replaceAll("\\{1\\}", cuenta.getCodigoVantive());
+				err = err.replaceAll("\\{2\\}", cuenta.getPersona().getRazonSocial());
+				err = err.replaceAll("\\{3\\}", ((ClaseCuenta) knownInstanceRetriever
+						.getObject(KnownInstanceIdentifier.CLASE_CUENTA_GOB_BS_AS)).getDescripcion());
 				throw new RpcExceptionMessages(err);
 			} else if (cuenta.isGobierno()) {
-				String err = ERR_CUENTA_GOBIERNO.replaceAll("\\{1\\}", cuenta
-						.getCodigoVantive());
-				err = err.replaceAll("\\{2\\}", cuenta.getPersona()
-						.getRazonSocial());
-				err = err
-						.replaceAll(
-								"\\{3\\}",
-								((ClaseCuenta) knownInstanceRetriever
-										.getObject(KnownInstanceIdentifier.CLASE_CUENTA_GOBIERNO))
-										.getDescripcion());
+				String err = ERR_CUENTA_GOBIERNO.replaceAll("\\{1\\}", cuenta.getCodigoVantive());
+				err = err.replaceAll("\\{2\\}", cuenta.getPersona().getRazonSocial());
+				err = err.replaceAll("\\{3\\}", ((ClaseCuenta) knownInstanceRetriever
+						.getObject(KnownInstanceIdentifier.CLASE_CUENTA_GOBIERNO)).getDescripcion());
 				throw new RpcExceptionMessages(err);
 			} else if (cuenta.isLAP()) {
-				throw new RpcExceptionMessages(
-						ERR_CUENTA_NO_EDITABLE
-								.replaceAll(
-										"\\{1\\}",
-										((ClaseCuenta) knownInstanceRetriever
-												.getObject(KnownInstanceIdentifier.CLASE_CUENTA_LAP))
-												.getDescripcion()));
+				throw new RpcExceptionMessages(ERR_CUENTA_NO_EDITABLE.replaceAll("\\{1\\}",
+						((ClaseCuenta) knownInstanceRetriever
+								.getObject(KnownInstanceIdentifier.CLASE_CUENTA_LAP)).getDescripcion()));
 			} else if (cuenta.isLA()) {
-				throw new RpcExceptionMessages(
-						ERR_CUENTA_NO_EDITABLE
-								.replaceAll(
-										"\\{1\\}",
-										((ClaseCuenta) knownInstanceRetriever
-												.getObject(KnownInstanceIdentifier.CLASE_CUENTA_LA))
-												.getDescripcion()));
+				throw new RpcExceptionMessages(ERR_CUENTA_NO_EDITABLE.replaceAll("\\{1\\}",
+						((ClaseCuenta) knownInstanceRetriever
+								.getObject(KnownInstanceIdentifier.CLASE_CUENTA_LA)).getDescripcion()));
 			} else if (!filtradoPorDni) {
 				// no soy el de la cuenta y ademas no filtre
 				// la tiene lockeada alguien y no soy yo
 				if ((cuenta.getVendedorLockeo() != null)
-						&& (!vendedor.getId().equals(
-								cuenta.getVendedorLockeo().getId()))) {
+						&& (!vendedor.getId().equals(cuenta.getVendedorLockeo().getId()))) {
 					throw new RpcExceptionMessages(ERR_CUENTA_NO_PERMISO);
 				}
 			}
 		}
 	}
 
-	private void updateTelefonoEmailContactos(
-			Set<ContactoCuenta> listaContactos, CuentaDto cuentaDto,
+	private void updateTelefonoEmailContactos(Set<ContactoCuenta> listaContactos, CuentaDto cuentaDto,
 			MapperExtended mapper) {
 		List<ContactoCuentaDto> listaContactosDto = getListaContactosDto(cuentaDto);
 		for (ContactoCuenta cont : listaContactos) {
@@ -627,8 +555,7 @@ public class CuentaBusinessService {
 		}
 	}
 
-	private void updateTelefonosAPersona(TelefonoDto tel, Persona persona,
-			MapperExtended mapper) {
+	private void updateTelefonosAPersona(TelefonoDto tel, Persona persona, MapperExtended mapper) {
 		Telefono t = null;
 		if (tel.getId() != null) {
 			t = repository.retrieve(Telefono.class, tel.getId());
@@ -636,26 +563,22 @@ public class CuentaBusinessService {
 		} else {
 			t = mapper.map(tel, Telefono.class);
 		}
-		if (tel.getTipoTelefono().getId() == knownInstanceRetriever
-				.getObjectId(KnownInstanceIdentifier.TIPO_TEL_PRINCIPAL)
-				.longValue()) {
+		if (tel.getTipoTelefono().getId() == knownInstanceRetriever.getObjectId(
+				KnownInstanceIdentifier.TIPO_TEL_PRINCIPAL).longValue()) {
 			persona.setTelefonoPrincipal(t);
-		} else if (tel.getTipoTelefono().getId() == knownInstanceRetriever
-				.getObjectId(KnownInstanceIdentifier.TIPO_TEL_ADICIONAL)
-				.longValue()) {
+		} else if (tel.getTipoTelefono().getId() == knownInstanceRetriever.getObjectId(
+				KnownInstanceIdentifier.TIPO_TEL_ADICIONAL).longValue()) {
 			persona.setTelefonoAdicional(t);
-		} else if (tel.getTipoTelefono().getId() == knownInstanceRetriever
-				.getObjectId(KnownInstanceIdentifier.TIPO_TEL_CELULAR)
-				.longValue()) {
+		} else if (tel.getTipoTelefono().getId() == knownInstanceRetriever.getObjectId(
+				KnownInstanceIdentifier.TIPO_TEL_CELULAR).longValue()) {
 			persona.setTelefonoCelular(t);
-		} else if (tel.getTipoTelefono().getId() == knownInstanceRetriever
-				.getObjectId(KnownInstanceIdentifier.TIPO_TEL_FAX).longValue()) {
+		} else if (tel.getTipoTelefono().getId() == knownInstanceRetriever.getObjectId(
+				KnownInstanceIdentifier.TIPO_TEL_FAX).longValue()) {
 			persona.setTelefonoFax(t);
 		}
 	}
 
-	private void updateEmailsAPersona(EmailDto email, Persona persona,
-			MapperExtended mapper) {
+	private void updateEmailsAPersona(EmailDto email, Persona persona, MapperExtended mapper) {
 		Email e = null;
 		if (email.getId() != null) {
 			e = repository.retrieve(Email.class, email.getId());
@@ -663,17 +586,15 @@ public class CuentaBusinessService {
 		} else {
 			e = mapper.map(email, Email.class);
 		}
-		if (email.getTipoEmail().getId().longValue() == knownInstanceRetriever
-				.getObjectId(KnownInstanceIdentifier.TIPO_EMAIL_PERSONAL)
-				.longValue()) {
+		if (email.getTipoEmail().getId().longValue() == knownInstanceRetriever.getObjectId(
+				KnownInstanceIdentifier.TIPO_EMAIL_PERSONAL).longValue()) {
 			if (persona.getEmailPersonal() != null) {
 				persona.getEmailPersonal().setEmail(e.getEmail());
 			} else {
 				persona.setEmailPersonalAddress(e.getEmail());
 			}
-		} else if (email.getTipoEmail().getId().longValue() == knownInstanceRetriever
-				.getObjectId(KnownInstanceIdentifier.TIPO_EMAIL_LABORAL)
-				.longValue()) {
+		} else if (email.getTipoEmail().getId().longValue() == knownInstanceRetriever.getObjectId(
+				KnownInstanceIdentifier.TIPO_EMAIL_LABORAL).longValue()) {
 			if (persona.getEmailLaboral() != null) {
 				persona.getEmailLaboral().setEmail(e.getEmail());
 			} else {
@@ -682,8 +603,7 @@ public class CuentaBusinessService {
 		}
 	}
 
-	public Cuenta obtenerCtaPadreSinLockear(Long ctaPadreId,
-			String categoriaCuenta, Vendedor vendedor)
+	public Cuenta obtenerCtaPadreSinLockear(Long ctaPadreId, String categoriaCuenta, Vendedor vendedor)
 			throws RpcExceptionMessages {
 		BaseAccessObject accessCuentaPadre;
 		Cuenta cuenta = null;
@@ -693,14 +613,12 @@ public class CuentaBusinessService {
 			// accessCuentaPadre.getAccessAuthorization();
 			cuenta = (Cuenta) accessCuentaPadre.getTargetObject();
 
-			if (!accessCuentaPadre.getAccessAuthorization()
-					.hasSamePermissionsAs(AccessAuthorization.editOnly())
-					&& !accessCuentaPadre.getAccessAuthorization()
-							.hasSamePermissionsAs(
-									AccessAuthorization.fullAccess())) {
+			if (!accessCuentaPadre.getAccessAuthorization().hasSamePermissionsAs(
+					AccessAuthorization.editOnly())
+					&& !accessCuentaPadre.getAccessAuthorization().hasSamePermissionsAs(
+							AccessAuthorization.fullAccess())) {
 
-				accessCuentaPadre.getAccessAuthorization().setReasonPrefix(
-						ERR_CUENTA_NO_ACCESS);
+				accessCuentaPadre.getAccessAuthorization().setReasonPrefix(ERR_CUENTA_NO_ACCESS);
 				throw new RpcExceptionMessages(ERR_CUENTA_NO_ACCESS);
 			}
 		} catch (Exception e) {
@@ -709,8 +627,7 @@ public class CuentaBusinessService {
 		return cuenta;
 	}
 
-	public BaseAccessObject getAccessCuenta(Long ctaId, Vendedor vendedor)
-			throws Exception {
+	public BaseAccessObject getAccessCuenta(Long ctaId, Vendedor vendedor) throws Exception {
 		Cuenta cuenta = null;
 		BaseAccessObject accessCuenta = null;
 		cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(ctaId);
@@ -718,8 +635,7 @@ public class CuentaBusinessService {
 		return accessCuenta;
 	}
 
-	public BaseAccessObject getAccessCuenta(String codVantive, Vendedor vendedor)
-			throws Exception {
+	public BaseAccessObject getAccessCuenta(String codVantive, Vendedor vendedor) throws Exception {
 		Cuenta cuenta = null;
 		BaseAccessObject accessCuenta = null;
 		cuenta = selectCuentaBusinessOperator.getCuentaSinLockear(codVantive);
@@ -728,19 +644,14 @@ public class CuentaBusinessService {
 	}
 
 	public BaseAccessObject obtenerAcceso(Vendedor vendedor, Cuenta cuenta) {
-		AppLogger.info("Calculando acceso de vendedor: "
-				+ vendedor.getUserName() + " a cuenta "
+		AppLogger.info("Calculando acceso de vendedor: " + vendedor.getUserName() + " a cuenta "
 				+ cuenta.getCodigoVantive(), this);
 		AccessRequest accessRequest = new AccessRequest(vendedor, cuenta);
 		AccessAuthorization accessAuthorization = accessAuthorizationController
 				.accessAuthorizationFor(accessRequest);
-		AppLogger.info(
-				"accessAuthorization: " + accessAuthorization.toString(), this);
-		BaseAccessObject accessCuenta = new BaseAccessObject(
-				accessAuthorization, cuenta);
+		AppLogger.info("accessAuthorization: " + accessAuthorization.toString(), this);
+		BaseAccessObject accessCuenta = new BaseAccessObject(accessAuthorization, cuenta);
 		return accessCuenta;
 	}
-
-
 
 }

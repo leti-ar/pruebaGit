@@ -318,17 +318,9 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 				cuenta = repository.retrieve(Cuenta.class, idCuenta);
 				cuentaDto = mapper.map(cuenta, GranCuentaDto.class);
 			}
-			if (!cuenta.isEnCarga()) {
-				cuentaBusinessService.cargarFacturaElectronica(cuentaDto,
+				cuentaBusinessService.cargarFacturaElectronica(cuentaDto,cuenta,mapper,
 						cuenta.isEnCarga());
-			} else if(cuenta.getFacturaElectronica() != null) {
-				FacturaElectronicaDto fdto = (FacturaElectronicaDto) mapper
-						.map(cuenta.getFacturaElectronica(),
-								FacturaElectronicaDto.class);
-				cuentaDto.setFacturaElectronica(fdto);
-
-			}
-		} catch (MappingException e) {
+				} catch (MappingException e) {
 			AppLogger.error("*** Error de mapeo al actualizar la cuenta: " + cuentaDto.getCodigoVantive()
 					+ " *** ", e);
 		} catch (Exception e) {
@@ -351,14 +343,15 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		} else if (categoriaCuenta.equals(KnownInstanceIdentifier.SUSCRIPTOR.getKey())) {
 			cuentaDto = (SuscriptorDto) mapper.map((Suscriptor) cuenta, SuscriptorDto.class);
 		}
-		if(!cuenta.isEnCarga()){
-		  cuentaBusinessService.cargarFacturaElectronica(cuentaDto, cuenta.isEnCarga());
-		}else if(cuenta.getFacturaElectronica() != null){
-			FacturaElectronicaDto fdto = (FacturaElectronicaDto) mapper.map(cuenta.getFacturaElectronica(), FacturaElectronicaDto.class);
-			cuentaDto.setFacturaElectronica(fdto);
-			
-		}
-		
+		// if(!cuenta.isEnCarga()){
+		cuentaBusinessService.cargarFacturaElectronica(cuentaDto, cuenta, mapper, cuenta.isEnCarga());
+		// }else if(cuenta.getFacturaElectronica() != null){
+		// FacturaElectronicaDto fdto = (FacturaElectronicaDto) mapper.map(cuenta.getFacturaElectronica(),
+		// FacturaElectronicaDto.class);
+		// cuentaDto.setFacturaElectronica(fdto);
+		//			
+		// }
+
 		return cuentaDto;
 	}
 
@@ -402,15 +395,9 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 				} else if (cuenta.esSuscriptor()) {
 					cuentaDto = (SuscriptorDto) mapper.map(cuenta, SuscriptorDto.class);
 				}
-				
-				if(!cuenta.isEnCarga()){
-					  cuentaBusinessService.cargarFacturaElectronica(cuentaDto, cuenta.isEnCarga());
-					}else if (cuenta.getFacturaElectronica() != null) {
-						FacturaElectronicaDto fdto = (FacturaElectronicaDto) mapper.map(cuenta.getFacturaElectronica(), FacturaElectronicaDto.class);
-						cuentaDto.setFacturaElectronica(fdto);
-						
-					}
-				
+
+				cuentaBusinessService.cargarFacturaElectronica(cuentaDto,cuenta,mapper, cuenta.isEnCarga());
+		
 			}
 		} catch (BusinessException be) {
 			Message message = (Message) messageRetriever.getMessage(be.getMessageIdentifier(), be

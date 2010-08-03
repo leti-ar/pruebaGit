@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaService;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.financial.dto.EncabezadoCreditoDTO;
 import ar.com.nextel.business.legacy.financial.exception.FinancialSystemException;
@@ -64,6 +65,12 @@ public class SolicitudBusinessService {
 	private final String CUENTA_FILTRADA = "Acceso denegado. No puede operar con esta cuenta.";
 	private TransactionConnectionDAO sfaConnectionDAO;
 	private GenerarChangelogConfig generarChangelogConfig;
+	private FacturaElectronicaService facturaElectronicaService;
+
+	@Autowired
+	public void setFacturaElectronicaService(FacturaElectronicaService facturaElectronicaService) {
+		this.facturaElectronicaService = facturaElectronicaService;
+	}
 
 	@Autowired
 	public void setSolicitudesBusinessOperator(
@@ -311,6 +318,12 @@ public class SolicitudBusinessService {
 			response = generacionCierreBusinessOperator.generarSolicitudServicio(generacionCierreRequest);
 		}
 		repository.save(solicitudServicio);
+		if (solicitudServicio.getCuenta().getFacturaElectronica() != null)
+			facturaElectronicaService.adherirFacturaElectronica(solicitudServicio.getCuenta().getId(),
+					solicitudServicio.getCuenta().getCodigoVantive(), solicitudServicio.getCuenta()
+							.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor()
+							.getUserName());
+
 		return response;
 	}
 
