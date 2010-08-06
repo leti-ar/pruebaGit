@@ -100,4 +100,9 @@ public class FacturaElectronicaPanel extends Composite implements ClickHandler {
 		this.emailLabel = emailLabel;
 	}
 
+	public boolean isEnabled(){
+		return facturaElectronicaHabilitada.isEnabled() && email.isEnabled(); 
+
+	}
+	
 }

@@ -1310,8 +1310,7 @@ public class CuentaDatosForm extends Composite {
 			validator.addTarget(cuentaUIData.getEmailLaboral()).mail(
 					Sfa.constant().ERR_EMAIL_NO_VALIDO().replaceAll("\\{1\\}",
 							cuentaUIData.getEmailLaboral().getName()));
-		if (!cuentaUIData.getFacturaElectronica().isCargadaEnVantive()
-				&& cuentaUIData.getFacturaElectronicaPanel().getEmail().isEnabled()
+		if ( cuentaUIData.getFacturaElectronicaPanel().isEnabled() && cuentaUIData.getFacturaElectronicaPanel().getEmail().isEnabled()
 				&& !cuentaUIData.getFacturaElectronicaPanel().getEmail().getText().equals(""))
 			validator.addTarget(cuentaUIData.getFacturaElectronicaPanel().getEmail()).mail(
 					Sfa.constant().ERR_EMAIL_NO_VALIDO().replaceAll(
@@ -1743,7 +1742,7 @@ public class CuentaDatosForm extends Composite {
 		this.facturaElectronicaOriginal = facturaElectronica;
 		if (facturaElectronica != null) {
 			cuentaUIData.getFacturaElectronicaPanel().setText(facturaElectronica.getEmail());
-			if (facturaElectronica.isCargadaEnVantive()) {
+			if (facturaElectronica.isCargadaEnVantive() || facturaElectronica.isReplicadaAutogestion()) {
 				cuentaUIData.getFacturaElectronicaPanel().setEnabled(false);
 				cuentaUIData.getFacturaElectronicaPanel().setFacturaElectronicaHabilitada(true);
 			}

@@ -65,12 +65,9 @@ public class SolicitudBusinessService {
 	private final String CUENTA_FILTRADA = "Acceso denegado. No puede operar con esta cuenta.";
 	private TransactionConnectionDAO sfaConnectionDAO;
 	private GenerarChangelogConfig generarChangelogConfig;
-	private FacturaElectronicaService facturaElectronicaService;
 
-	@Autowired
-	public void setFacturaElectronicaService(FacturaElectronicaService facturaElectronicaService) {
-		this.facturaElectronicaService = facturaElectronicaService;
-	}
+
+
 
 	@Autowired
 	public void setSolicitudesBusinessOperator(
@@ -317,12 +314,9 @@ public class SolicitudBusinessService {
 		} else {
 			response = generacionCierreBusinessOperator.generarSolicitudServicio(generacionCierreRequest);
 		}
+	
 		repository.save(solicitudServicio);
-		if (solicitudServicio.getCuenta().getFacturaElectronica() != null)
-			facturaElectronicaService.adherirFacturaElectronica(solicitudServicio.getCuenta().getId(),
-					solicitudServicio.getCuenta().getCodigoVantive(), solicitudServicio.getCuenta()
-							.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor()
-							.getUserName());
+		
 
 		return response;
 	}

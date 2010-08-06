@@ -7,6 +7,7 @@ public class FacturaElectronicaDto implements IsSerializable {
 	private Long id;
 	private String email;
 	private boolean cargadaEnVantive;
+	private boolean replicadaAutogestion;
 
 	public Long getId() {
 		return id;
@@ -30,5 +31,13 @@ public class FacturaElectronicaDto implements IsSerializable {
 	
 	public void setCargadaEnVantive(boolean cargadaEnVantive) {
 		this.cargadaEnVantive = cargadaEnVantive;
+	}
+
+	public void setReplicadaAutogestion(boolean replicadaAutogestion) {
+		this.replicadaAutogestion = replicadaAutogestion;
+	}
+
+	public boolean isReplicadaAutogestion() {
+		return replicadaAutogestion;
 	}
 }
