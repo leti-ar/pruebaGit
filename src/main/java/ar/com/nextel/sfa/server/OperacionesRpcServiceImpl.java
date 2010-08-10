@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.server;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 
@@ -12,6 +13,7 @@ import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.CuentaPotencial;
 import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
+import ar.com.nextel.model.oportunidades.beans.VentaPotencialVista;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.sfa.client.OperacionesRpcService;
@@ -59,11 +61,14 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 	}
 
 	public VentaPotencialVistaResultDto searchReservas() {
-		AppLogger.info("#Comienzo busqueda de Reservas");
+		AppLogger.info("#Comienzo busqueda de Reservas",this);
 		Vendedor vendedor = sessionContextLoader.getVendedor();
-		AppLogger.info("#Obtengo Vendedor");
-		AppLogger.info("Obteniendo reservas para vendedor: " + vendedor.getUserName(), this);
-		List<VentaPotencialVistaDto> ventasPotencialesEnCursoDto = mapper.convertList(vendedor.getVentasPotencialesVistaEnCurso(), VentaPotencialVistaDto.class);
+		AppLogger.info("#Obtengo Vendedor",this);
+		AppLogger.info("#Obteniendo reservas para vendedor: " + vendedor.getUserName(), this);
+		Set<VentaPotencialVista> ventasPotencialesVistaEnCurso = vendedor.getVentasPotencialesVistaEnCurso();
+		AppLogger.info("#tengo la lista de ventasPotencialesVistaEnCurso",this);
+		AppLogger.info("#cant: " + ventasPotencialesVistaEnCurso.size(),this);
+		List<VentaPotencialVistaDto> ventasPotencialesEnCursoDto = mapper.convertList(ventasPotencialesVistaEnCurso, VentaPotencialVistaDto.class);
 		AppLogger.info("#tengo lista de ventas potenciales en curso y voy a contar las no consultadas...");
 		VentaPotencialVistaResultDto ventaPotencialVistaResultDto = new VentaPotencialVistaResultDto(ventasPotencialesEnCursoDto, vendedor.getCantidadCuentasPotencialesNoConsultadasActivasYVigentes().toString());
 		AppLogger.info("#obtengo cantidad de las no consultadas...y retorno lista");
