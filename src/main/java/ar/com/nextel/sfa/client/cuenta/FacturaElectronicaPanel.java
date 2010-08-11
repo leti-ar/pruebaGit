@@ -73,8 +73,8 @@ public class FacturaElectronicaPanel extends Composite implements ClickHandler {
 	}
 
 	public RegexTextBox getEmail() {
-		if (!facturaElectronicaHabilitada.isEnabled())
-			return null;
+//		if (!facturaElectronicaHabilitada.getValue())
+//			return null;
 		return email;
 	}
 
