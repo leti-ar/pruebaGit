@@ -65,9 +65,12 @@ public class SolicitudBusinessService {
 	private final String CUENTA_FILTRADA = "Acceso denegado. No puede operar con esta cuenta.";
 	private TransactionConnectionDAO sfaConnectionDAO;
 	private GenerarChangelogConfig generarChangelogConfig;
+	private FacturaElectronicaService facturaElectronicaService;
 
-
-
+	@Autowired
+	public void setFacturaElectronicaService(FacturaElectronicaService facturaElectronicaService) {
+		this.facturaElectronicaService = facturaElectronicaService;
+	}
 
 	@Autowired
 	public void setSolicitudesBusinessOperator(
@@ -311,12 +314,21 @@ public class SolicitudBusinessService {
 		GeneracionCierreResponse response = null;
 		if (cerrar) {
 			response = generacionCierreBusinessOperator.cerrarSolicitudServicio(generacionCierreRequest);
+			if (solicitudServicio.getCuenta().getFacturaElectronica() != null && !response.getMessages().hasErrors()) {
+				facturaElectronicaService.adherirFacturaElectronica(solicitudServicio.getCuenta().getId(), solicitudServicio
+						.getCuenta().getCodigoVantive(), solicitudServicio.getCuenta().getFacturaElectronica()
+						.getEmail(), "", solicitudServicio.getVendedor().getUserName());
+				solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
+				AppLogger.error("Actualice el valor de replicacion a autogestion " + "Cuenta: "
+						+ solicitudServicio.getCuenta().getCodigoVantive() + " valor: "
+						+ solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion(), this);
+				repository.save(solicitudServicio.getCuenta().getFacturaElectronica());
+			}
 		} else {
 			response = generacionCierreBusinessOperator.generarSolicitudServicio(generacionCierreRequest);
 		}
-	
+
 		repository.save(solicitudServicio);
-		
 
 		return response;
 	}

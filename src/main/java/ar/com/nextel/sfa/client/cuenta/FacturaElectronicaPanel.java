@@ -80,7 +80,7 @@ public class FacturaElectronicaPanel extends Composite implements ClickHandler {
 
 	public boolean isDirty(String oldEmail) {
 		if (oldEmail == null || oldEmail.equals("")) {
-			return getText().equals("");
+			return !getText().equals("");
 		} else {
 			return !getText().equalsIgnoreCase(oldEmail);
 		}
