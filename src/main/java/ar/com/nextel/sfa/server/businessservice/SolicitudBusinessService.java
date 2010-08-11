@@ -314,14 +314,22 @@ public class SolicitudBusinessService {
 		GeneracionCierreResponse response = null;
 		if (cerrar) {
 			response = generacionCierreBusinessOperator.cerrarSolicitudServicio(generacionCierreRequest);
-			if (solicitudServicio.getCuenta().getFacturaElectronica() != null && !response.getMessages().hasErrors()) {
-				facturaElectronicaService.adherirFacturaElectronica(solicitudServicio.getCuenta().getId(), solicitudServicio
-						.getCuenta().getCodigoVantive(), solicitudServicio.getCuenta().getFacturaElectronica()
-						.getEmail(), "", solicitudServicio.getVendedor().getUserName());
+
+			AppLogger.error("IF replicacion a autogestion, FE: "
+					+ solicitudServicio.getCuenta().getFacturaElectronica() + " tiene errores: "
+					+ response.getMessages().hasErrors(), this);
+
+			if (solicitudServicio.getCuenta().getFacturaElectronica() != null
+					&& !response.getMessages().hasErrors()) {
+				facturaElectronicaService.adherirFacturaElectronica(solicitudServicio.getCuenta().getId(),
+						solicitudServicio.getCuenta().getCodigoVantive(), solicitudServicio.getCuenta()
+								.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor()
+								.getUserName());
 				solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
 				AppLogger.error("Actualice el valor de replicacion a autogestion " + "Cuenta: "
 						+ solicitudServicio.getCuenta().getCodigoVantive() + " valor: "
-						+ solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion(), this);
+						+ solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion(),
+						this);
 				repository.save(solicitudServicio.getCuenta().getFacturaElectronica());
 			}
 		} else {
