@@ -95,7 +95,7 @@ public class CuentaNotasForm extends Composite {
 		htmlTitulo.setText("");
 		htmlComentario.setText("");
 
-		if (listaComentarios != null) {
+		if (listaComentarios != null  && !listaComentarios.isEmpty()) {
 			for (Iterator iter = listaComentarios.iterator(); iter.hasNext();) {
 				ComentarioDto comentario = (ComentarioDto) iter.next();
 				datosTabla.setHTML(row, 0, DateTimeFormat.getMediumDateFormat()

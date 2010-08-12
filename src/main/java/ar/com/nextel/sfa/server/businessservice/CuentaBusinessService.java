@@ -543,7 +543,7 @@ public class CuentaBusinessService {
 		for (ContactoCuenta cont : listaContactos) {
 			Persona persona = cont.getPersona();
 			for (ContactoCuentaDto contDto : listaContactosDto) {
-				if (cont.getId() == contDto.getId()) {
+				if (cont.getId() == contDto.getId() && contDto.getPersona() != null) {
 					for (TelefonoDto tel : contDto.getPersona().getTelefonos()) {
 						updateTelefonosAPersona(tel, persona, mapper);
 					}
