@@ -1,7 +1,7 @@
 package ar.com.nextel.sfa.server;
 
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import javax.servlet.ServletException;
 
@@ -10,11 +10,16 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import winit.uc.facade.UCFacade;
+import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepository;
+import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepositoryImpl;
 import ar.com.nextel.business.vendedores.RegistroVendedores;
+import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.security.Usuario;
+import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.sfa.client.UserCenterRpcService;
+import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.UserCenterDto;
 import ar.com.nextel.sfa.client.dto.UsuarioDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
@@ -31,6 +36,7 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 	private SessionContextLoader sessionContext;
 	private UCFacade ucFacade;
 	private RegistroVendedores registroVendedores;
+	private SolicitudServicioRepository solicitudServicioRepository; 
 
 	@Override
 	public void init() throws ServletException {
@@ -39,12 +45,14 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 		mapper = (MapperExtended) context.getBean("dozerMapper");
 		sessionContext = (SessionContextLoader) context.getBean("sessionContextLoader");
 		registroVendedores = (RegistroVendedores) context.getBean("registroVendedores");
+		solicitudServicioRepository = (SolicitudServicioRepository) context.getBean("solicitudServicioRepositoryBean");
 	}
 
 	/**
 	 * 
 	 */
 	public UserCenterDto getUserCenter() throws RpcExceptionMessages {
+		
 		HashMap<String, Boolean> mapaPermisosServer = new HashMap<String, Boolean>(); // se cargan todos
 		HashMap<String, Boolean> mapaPermisosClient = new HashMap<String, Boolean>(); // se cargan solo los
 		// usados
@@ -62,7 +70,13 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 		userCenter.setUsuario(mapper.map(usuario, UsuarioDto.class));
 		userCenter.getUsuario().setId(registroVendedores.getVendedor(usuario).getId());
 		userCenter.setMapaPermisos(mapaPermisosClient);
+		
 		userCenter.setVendedor(mapper.map(sessionContext.getVendedor(), VendedorDto.class));
+
+		//MGR - #873 - Se buscan los grupos que le corresponden. El filtro ya esta activado y por lo tanto
+		//tiene en cuenta el TipoVendedor
+		List<GrupoSolicitud> grupos =  solicitudServicioRepository.getGruposSolicitudesServicio();
+		userCenter.getVendedor().getTipoVendedor().setGrupos(mapper.convertList(grupos, GrupoSolicitudDto.class));
 		return userCenter;
 	}
 

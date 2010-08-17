@@ -5,6 +5,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.OportunidadNegocioRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.AgregarCuentaUI;
 import ar.com.nextel.sfa.client.cuenta.BuscadorDocumentoPopup;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
@@ -13,6 +14,7 @@ import ar.com.nextel.sfa.client.dto.OportunidadDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioSearchResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.ss.EditarSSUI;
+import ar.com.nextel.sfa.client.ss.LinksCrearSS;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
@@ -51,11 +53,12 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickHandler
 	private int cantResultadosPorPagina = 10;
 	private PopupPanel popupCrearSS;
 	private PopupPanel popupAgregarCuenta;
-	private Hyperlink crearEquipos;
-	private Hyperlink crearCDW;
+//	private Hyperlink crearEquipos;
+//	private Hyperlink crearCDW;
 	private int rowIndexSelected;
 
-	private Hyperlink crearMDS;
+//	private Hyperlink crearMDS;
+	private LinksCrearSS linksCrearSS;
 
 	public Long getTotalRegistrosBusqueda() {
 		return totalRegistrosBusqueda;
@@ -234,20 +237,17 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickHandler
 			// if (oportunidadSelected != null && oportunidadSelected.getCuentaOrigen().getId() != null) {
 			Long idCuenta = oportunidadSelected.getIdCuentaOrigen();
 			if (sender == buscarOportunidadFilterUIData.getCrearSS()) {
-				crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta,
-						GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
-				crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_CDW));
-				crearMDS.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_MDS));
+				linksCrearSS.setHistoryToken(idCuenta);
 				popupCrearSS.show();
 				popupCrearSS.setPopupPosition(
 						buscarOportunidadFilterUIData.getCrearSS().getAbsoluteLeft() - 10,
-						buscarOportunidadFilterUIData.getCrearSS().getAbsoluteTop() - 50);
+						buscarOportunidadFilterUIData.getCrearSS().getAbsoluteTop() - popupCrearSS.getOffsetHeight());
 			} else if (sender == buscarOportunidadFilterUIData.getCrearCuenta()) {
 				AgregarCuentaUI.getInstance().load();
 				BuscadorDocumentoPopup.idOpp = oportunidadSelected.getIdOportunidadNegocio();
 				BuscadorDocumentoPopup.fromMenu = false;
-			} else if (sender == crearEquipos || sender == crearCDW || sender == crearMDS) { 
-				popupCrearSS.hide();
+//			} else if (sender == crearEquipos || sender == crearCDW || sender == crearMDS) { 
+//				popupCrearSS.hide();
 			}
 		} else {
 			MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_NO_CUENTA_SELECTED(),
@@ -261,14 +261,9 @@ public class BuscarOportunidadResultUI extends FlowPanel implements ClickHandler
 		popupCrearSS.addStyleName("dropUpStyle");
 		popupAgregarCuenta.addStyleName("dropUpStyle");
 
-		FlowPanel linksCrearSS = new FlowPanel();
-		linksCrearSS.add(crearEquipos = new Hyperlink("Equipos/Accesorios", "" + UILoader.BUSCAR_CUENTA));
-		linksCrearSS.add(crearCDW = new Hyperlink("CDW", "" + UILoader.BUSCAR_CUENTA));
-		linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.BUSCAR_CUENTA));
+		//MGR - #873 - Se indica el Vendedor
+		linksCrearSS = new LinksCrearSS(ClientContext.getInstance().getVendedor());
 		popupCrearSS.setWidget(linksCrearSS);
-		crearEquipos.addClickHandler(this);
-		crearCDW.addClickHandler(this);
-		crearMDS.addClickListener(this);
 
 		footerBar = new FormButtonsBar();
 		footerBar.addLink(buscarOportunidadFilterUIData.getCrearSS());

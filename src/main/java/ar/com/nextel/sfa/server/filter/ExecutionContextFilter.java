@@ -18,6 +18,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import winit.uc.exception.UCException;
 import ar.com.nextel.business.vendedores.RegistroVendedores;
+import ar.com.nextel.framework.repository.hibernate.HibernateRepository;
 import ar.com.nextel.framework.security.Usuario;
 import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
@@ -36,6 +37,8 @@ public class ExecutionContextFilter implements Filter {
 	private SessionContextLoader sessionContext;
  	private SFAUserCenterFactory sfaUserCenterFactory;
  	private SFAUserCenter sfaUserCenter;
+ 	//MGR - #873
+ 	private HibernateRepository hibernateRepository;
     private boolean usarUserCenter = true;
 
 	public void init(FilterConfig config) throws ServletException {
@@ -46,6 +49,8 @@ public class ExecutionContextFilter implements Filter {
 		registroVendedores = (RegistroVendedores) springContext.getBean("registroVendedores");
 		sessionContext = (SessionContextLoader) springContext.getBean("sessionContextLoader");
 		sfaUserCenterFactory = (SFAUserCenterFactory) springContext.getBean("userCenterFactory");
+		//MGR - #873
+		hibernateRepository = (HibernateRepository) springContext.getBean("repository");
 	}
 
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -63,6 +68,7 @@ public class ExecutionContextFilter implements Filter {
 				sfaUserCenter =  sfaUserCenterFactory.createUserCenter((HttpServletRequest) request);
 				sessionContext.getSessionContext().put(SessionContext.USUARIO, sfaUserCenter.getUsuario());
 				sessionContext.getSessionContext().setVendedor(registroVendedores.getVendedor(sfaUserCenter.getUsuario()));
+				
 			} catch (UCException e) {
 				log.error(e);
 			} 
@@ -76,6 +82,8 @@ public class ExecutionContextFilter implements Filter {
 				sessionContext.getSessionContext().setVendedor(registroVendedores.getVendedor(usuario));
 			}
 		}
+		//MGR - #873 - Se agrega el filtro
+		hibernateRepository.enableTipoVendedorFilter();
 	}
 
 	/**

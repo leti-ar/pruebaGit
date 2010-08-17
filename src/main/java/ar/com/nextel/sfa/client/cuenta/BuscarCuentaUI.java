@@ -7,6 +7,7 @@ import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.ss.EditarSSUI;
+import ar.com.nextel.sfa.client.ss.LinksCrearSS;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
@@ -35,9 +36,10 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 	private SimpleLink agregarCuentaButton = null;
 	private PopupPanel popupCrearSS;
 	private PopupPanel popupAgregarCuenta;
-	private Hyperlink crearEquipos;
-	private Hyperlink crearCDW;
-	private Hyperlink crearMDS;
+//	private Hyperlink crearEquipos;
+//	private Hyperlink crearCDW;
+//	private Hyperlink crearMDS;
+	LinksCrearSS linksCrearSS;
 	private Hyperlink agregarDivision;
 	private Hyperlink agregarSuscriptor;
 
@@ -66,14 +68,9 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 
 			popupCrearSS = new PopupPanel(true);
 			popupCrearSS.addStyleName("dropUpStyle");
-			FlowPanel linksCrearSS = new FlowPanel();
-			linksCrearSS.add(crearEquipos = new Hyperlink("Equipos/Accesorios", "" + UILoader.BUSCAR_CUENTA));
-			linksCrearSS.add(crearCDW = new Hyperlink("CDW", "" + UILoader.BUSCAR_CUENTA));
-			linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.BUSCAR_CUENTA));
+			//MGR - #873 - Se indica el Vendedor
+			linksCrearSS = new LinksCrearSS(ClientContext.getInstance().getVendedor());
 			popupCrearSS.setWidget(linksCrearSS);
-			crearEquipos.addClickListener(this);
-			crearCDW.addClickListener(this);
-			crearMDS.addClickListener(this);
 		}
 
 		// Creacion del boton Agregar, con su popup y links
@@ -118,15 +115,11 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 					MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(),
 							Sfa.constant().ERR_NO_ACCESO_NO_ES_RESP_PAGO().replaceAll("\\{1\\}", cuentaSearch.getNumero()), MessageDialog.getCloseCommand());
 				} else {
-					crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(null,
-							GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS, cuentaSearch.getNumero(),
-							idCuenta));
-					crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(null, GrupoSolicitudDto.ID_CDW,
-							cuentaSearch.getNumero(), idCuenta));
-					crearMDS.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(idCuenta, GrupoSolicitudDto.ID_MDS));
+					linksCrearSS.setHistoryToken(null, cuentaSearch.getNumero(),
+							idCuenta);
 					popupCrearSS.show();
 					popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton
-							.getAbsoluteTop() - 50);
+							.getAbsoluteTop() - popupCrearSS.getOffsetHeight());
 				}
 			} else if (sender == agregarCuentaButton) {
 				if (cuentaSearch.getRazonSocial().equals("***")) {
@@ -137,8 +130,8 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 					popupAgregarCuenta.setPopupPosition(agregarCuentaButton.getAbsoluteLeft(),
 							agregarCuentaButton.getAbsoluteTop() - 35);
 				}
-			} else if (sender == crearEquipos || sender == crearCDW || sender == crearMDS) {
-				popupCrearSS.hide();
+//			} else if (sender == linksCrearSS) {
+//				popupCrearSS.hide();
 			} else if (sender == agregarDivision) {
 				popupAgregarCuenta.hide();
 				CuentaClientService.crearDivision(idCuenta);

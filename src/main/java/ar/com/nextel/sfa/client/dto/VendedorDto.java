@@ -13,6 +13,7 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
     private String email;
     private String telefono;
     private LocalidadDto localidad;
+    private TipoVendedorDto tipoVendedor;
 
 	public Long getId() {
 		return id;
@@ -76,6 +77,14 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
 
 	public String getItemValue() {
 		return id + "";
+	}
+
+	public void setTipoVendedor(TipoVendedorDto tipoVendedor) {
+		this.tipoVendedor = tipoVendedor;
+	}
+
+	public TipoVendedorDto getTipoVendedor() {
+		return tipoVendedor;
 	}
 
 }

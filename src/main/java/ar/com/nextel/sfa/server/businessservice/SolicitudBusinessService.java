@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaService;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.financial.dto.EncabezadoCreditoDTO;
 import ar.com.nextel.business.legacy.financial.exception.FinancialSystemException;
@@ -65,12 +64,6 @@ public class SolicitudBusinessService {
 	private final String CUENTA_FILTRADA = "Acceso denegado. No puede operar con esta cuenta.";
 	private TransactionConnectionDAO sfaConnectionDAO;
 	private GenerarChangelogConfig generarChangelogConfig;
-	private FacturaElectronicaService facturaElectronicaService;
-
-	@Autowired
-	public void setFacturaElectronicaService(FacturaElectronicaService facturaElectronicaService) {
-		this.facturaElectronicaService = facturaElectronicaService;
-	}
 
 	@Autowired
 	public void setSolicitudesBusinessOperator(
@@ -176,8 +169,9 @@ public class SolicitudBusinessService {
 			Cuenta cuenta = solicitud.getCuenta();
 			Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales = null;
 			if (tipoSolicitud != null && plan != null && item != null && cuenta != null) {
+				//MGR - #873 - Se agrega el Vendedor
 				serviciosAdicionales = solicitudServicioRepository.getServiciosAdicionales(tipoSolicitud
-						.getId(), plan.getId(), item.getId(), cuenta.getId());
+						.getId(), plan.getId(), item.getId(), cuenta.getId(),sessionContextLoader.getVendedor());
 			} else {
 				AppLogger.warn("No se pudo validar los Servicios Adicionales de la Linea de "
 						+ "Solicitud de Servicio " + linea.getId() + " (" + linea.getAlias()
@@ -299,7 +293,7 @@ public class SolicitudBusinessService {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public GeneracionCierreResponse generarCerrarSolicitud(SolicitudServicio solicitudServicio,
 			String pinMaestro, boolean cerrar) {
-		boolean esProspect = solicitudServicio.getCuenta().isEnCarga();
+
 		if (!GenericValidator.isBlankOrNull(pinMaestro) && solicitudServicio.getCuenta().isEnCarga()) {
 			solicitudServicio.getCuenta().setPinMaestro(pinMaestro);
 		} else {
@@ -314,30 +308,10 @@ public class SolicitudBusinessService {
 		GeneracionCierreResponse response = null;
 		if (cerrar) {
 			response = generacionCierreBusinessOperator.cerrarSolicitudServicio(generacionCierreRequest);
-
-			AppLogger.error("IF replicacion a autogestion, FE: "
-					+ solicitudServicio.getCuenta().getFacturaElectronica() + " tiene errores: "
-					+ response.getMessages().hasErrors(), this);
-
-			if (solicitudServicio.getCuenta().getFacturaElectronica() != null
-					&& !solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion()
-					&& !response.getMessages().hasErrors()) {
-				if (!esProspect) {
-					facturaElectronicaService.adherirFacturaElectronica(
-							solicitudServicio.getCuenta().getId(), solicitudServicio.getCuenta()
-									.getCodigoVantive(), solicitudServicio.getCuenta()
-									.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor()
-									.getUserName());
-				}
-				solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
-				repository.save(solicitudServicio.getCuenta().getFacturaElectronica());
-			}
 		} else {
 			response = generacionCierreBusinessOperator.generarSolicitudServicio(generacionCierreRequest);
 		}
-
 		repository.save(solicitudServicio);
-
 		return response;
 	}
 

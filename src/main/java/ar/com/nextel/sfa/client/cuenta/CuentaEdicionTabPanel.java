@@ -14,6 +14,7 @@ import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.enums.PrioridadEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.ss.EditarSSUI;
+import ar.com.nextel.sfa.client.ss.LinksCrearSS;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
@@ -86,9 +87,10 @@ public class CuentaEdicionTabPanel {
 	
 	private PopupPanel popupCrearSS;
 	private PopupPanel popupAgregarCuenta;
-	private SimpleLink  crearEquipos;
-	private SimpleLink  crearCDW;
-	private SimpleLink  crearMDS;
+//	private SimpleLink  crearEquipos;
+//	private SimpleLink  crearCDW;
+//	private SimpleLink  crearMDS;
+	private LinksCrearSS linksCrearSS;
 	private SimpleLink  agregarDivision;
 	private SimpleLink  agregarSuscriptor;
 	
@@ -220,11 +222,9 @@ public class CuentaEdicionTabPanel {
 		popupAgregarCuenta = new PopupPanel(true);
 		popupCrearSS.addStyleName("dropUpStyle");
 		popupAgregarCuenta.addStyleName("dropUpStyle");
-
-		FlowPanel linksCrearSS = new FlowPanel();
-		linksCrearSS.add(crearEquipos = new SimpleLink("<div>"+"Equipos/Accesorios"+"</div>"));
-		linksCrearSS.add(crearCDW = new SimpleLink("<div>"+"CDW"+"</div>"));
-		linksCrearSS.add(crearMDS = new SimpleLink("<div>"+"MDS"+"</div>"));
+		
+		//MGR - #873 - Se indica el Vendedor
+		linksCrearSS = new LinksCrearSS(ClientContext.getInstance().getVendedor());
 		popupCrearSS.setWidget(linksCrearSS);
 		
 		FlowPanel linksAgregarCuenta = new FlowPanel();
@@ -261,8 +261,9 @@ public class CuentaEdicionTabPanel {
 							Sfa.constant().ERR_NO_ACCESO_NO_ES_RESP_PAGO().replaceAll("\\{1\\}", cuenta2editDto.getCodigoVantive()), MessageDialog.getCloseCommand());
 				} else {
 					if (isFormCompletoYguardado()) {
+						linksCrearSS.setHistoryToken(cuenta2editDto.getId());
 						popupCrearSS.show();
-						popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton.getAbsoluteTop() - 50);
+						popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton.getAbsoluteTop() - popupCrearSS.getOffsetHeight());
 					}
 				}
 			}
@@ -275,30 +276,30 @@ public class CuentaEdicionTabPanel {
 				}
 			}
 		});
-		crearEquipos.addClickListener(new ClickListener() {
-			public void onClick(Widget arg0) {
-				String targetHistoryToken = UILoader.AGREGAR_SOLICITUD + "?" + ID_CUENTA + "=" + cuenta2editDto.getId();
-				History.newItem(targetHistoryToken + "&" + EditarSSUI.ID_GRUPO_SS + "=" + GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS);
-				popupCrearSS.hide();
-			}
-		});
-		crearCDW.addClickListener(new ClickListener() {
-			public void onClick(Widget arg0) {
-				String targetHistoryToken = UILoader.AGREGAR_SOLICITUD + "?" + ID_CUENTA + "=" + cuenta2editDto.getId();
-				History.newItem(targetHistoryToken + "&" + EditarSSUI.ID_GRUPO_SS + "=" + GrupoSolicitudDto.ID_CDW);
-				popupCrearSS.hide();
-			}
-		});
-		crearMDS.addClickListener(new ClickListener() {
-			public void onClick(Widget arg0) {
-//				if (isFormCleanAndSave()) {
-					String targetHistoryToken = UILoader.AGREGAR_SOLICITUD + "?" + ID_CUENTA + "=" + cuenta2editDto.getId();
-					History.newItem(targetHistoryToken + "&" + EditarSSUI.ID_GRUPO_SS + "=" + GrupoSolicitudDto.ID_MDS);
-					//History.newItem(targetHistoryToken);
-					popupCrearSS.hide();
-//				}
-			}
-		});
+//		crearEquipos.addClickListener(new ClickListener() {
+//			public void onClick(Widget arg0) {
+//				String targetHistoryToken = UILoader.AGREGAR_SOLICITUD + "?" + ID_CUENTA + "=" + cuenta2editDto.getId();
+//				History.newItem(targetHistoryToken + "&" + EditarSSUI.ID_GRUPO_SS + "=" + GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS);
+//				popupCrearSS.hide();
+//			}
+//		});
+//		crearCDW.addClickListener(new ClickListener() {
+//			public void onClick(Widget arg0) {
+//				String targetHistoryToken = UILoader.AGREGAR_SOLICITUD + "?" + ID_CUENTA + "=" + cuenta2editDto.getId();
+//				History.newItem(targetHistoryToken + "&" + EditarSSUI.ID_GRUPO_SS + "=" + GrupoSolicitudDto.ID_CDW);
+//				popupCrearSS.hide();
+//			}
+//		});
+//		crearMDS.addClickListener(new ClickListener() {
+//			public void onClick(Widget arg0) {
+////				if (isFormCleanAndSave()) {
+//					String targetHistoryToken = UILoader.AGREGAR_SOLICITUD + "?" + ID_CUENTA + "=" + cuenta2editDto.getId();
+//					History.newItem(targetHistoryToken + "&" + EditarSSUI.ID_GRUPO_SS + "=" + GrupoSolicitudDto.ID_MDS);
+//					//History.newItem(targetHistoryToken);
+//					popupCrearSS.hide();
+////				}
+//			}
+//		});
 		agregarDivision.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				popupAgregarCuenta.hide();

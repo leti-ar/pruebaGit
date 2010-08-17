@@ -317,42 +317,40 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(
 			GrupoSolicitudDto grupoSolicitudDto) {
+
 		LineasSolicitudServicioInitializer initializer = new LineasSolicitudServicioInitializer();
-
-		GrupoSolicitud grupoEquipos = (GrupoSolicitud) knownInstanceRetriever
-				.getObject(KnownInstanceIdentifier.GRUPO_EQUIPOS_ACCESORIOS);
-		GrupoSolicitud grupoCDW = (GrupoSolicitud) knownInstanceRetriever
-				.getObject(KnownInstanceIdentifier.GRUPO_CDW);
-		GrupoSolicitud grupoMDS = (GrupoSolicitud) knownInstanceRetriever
-				.getObject(KnownInstanceIdentifier.GRUPO_MDS);
-
+		List<GrupoSolicitud> grupos = 
+				solicitudServicioRepository.getGruposSolicitudesServicio();
+		
 		Sucursal sucursal = sessionContextLoader.getVendedor().getSucursal();
 
 		// Obtengo los tipos de solicitud de cada Grupo para la sucursal en particular
 		Map<Long, List<TipoSolicitudDto>> tiposSolicitudPorGrupo = new HashMap();
-		tiposSolicitudPorGrupo.put(grupoEquipos.getId(), mapper.convertList(grupoEquipos
-				.calculateTiposSolicitud(sucursal), TipoSolicitudDto.class));
-		tiposSolicitudPorGrupo.put(grupoCDW.getId(), mapper.convertList(grupoCDW
-				.calculateTiposSolicitud(sucursal), TipoSolicitudDto.class));
-		tiposSolicitudPorGrupo.put(grupoMDS.getId(), mapper.convertList(grupoMDS
-				.calculateTiposSolicitud(sucursal), TipoSolicitudDto.class));
+		for (GrupoSolicitud gp : grupos) {
+			tiposSolicitudPorGrupo.put(gp.getId(), 
+					mapper.convertList(gp.calculateTiposSolicitud(sucursal, sessionContextLoader.getVendedor()),
+							TipoSolicitudDto.class));
+		}
 		initializer.setTiposSolicitudPorGrupo(tiposSolicitudPorGrupo);
 
 		List<TipoSolicitudDto> tiposSolicitudDeGrupoSelected = tiposSolicitudPorGrupo.get(grupoSolicitudDto
 				.getId());
-		// Si no es vacio (no deberia serlo) carga la lista de precios del primer tipoSolicitud que se muestra
+		// Si no es vació (no debería serlo) carga la lista de precios del primer tipoSolicitud que se muestra
 		if (!tiposSolicitudDeGrupoSelected.isEmpty()) {
 			TipoSolicitudDto firstTipoSolicitudDto = tiposSolicitudDeGrupoSelected.get(0);
 			TipoSolicitud firstTipoSolicitud = repository.retrieve(TipoSolicitud.class, firstTipoSolicitudDto
 					.getId());
+			
 			List<ListaPrecios> listasPrecios = new ArrayList<ListaPrecios>(firstTipoSolicitud
 					.getListasPrecios());
 
 			firstTipoSolicitudDto.setListasPrecios(new ArrayList<ListaPreciosDto>());
 			for (ListaPrecios listaPrecios : listasPrecios) {
 				ListaPreciosDto lista = mapper.map(listaPrecios, ListaPreciosDto.class);
+				//MGR - #873 - Se agrega el Vendedor
 				lista.setItemsListaPrecioVisibles(mapper.convertList(listaPrecios
-						.getItemsTasados(firstTipoSolicitud), ItemSolicitudTasadoDto.class));
+						.getItemsTasados(firstTipoSolicitud, sessionContextLoader.getVendedor()),
+								ItemSolicitudTasadoDto.class));
 				firstTipoSolicitudDto.getListasPrecios().add(lista);
 			}
 		}
@@ -371,12 +369,13 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 		boolean activacion = isTipoSolicitudActivacion(tipoSolicitud);
 		boolean accesorios = isTipoSolicitudAccesorios(tipoSolicitud);
-		// Se realiaza el mapeo de la coleccion a mano para poder filtrar los items por warehouse
+		// Se realiza el mapeo de la colección a mano para poder filtrar los items por warehouse
 		for (ListaPrecios listaPrecios : listasPrecios) {
 			ListaPreciosDto lista = mapper.map(listaPrecios, ListaPreciosDto.class);
 			if (!activacion) {
+				//MGR - #873 - Se agrega el Vendedor
 				lista.setItemsListaPrecioVisibles(mapper.convertList(listaPrecios
-						.getItemsTasados(tipoSolicitud), ItemSolicitudTasadoDto.class));
+						.getItemsTasados(tipoSolicitud, sessionContextLoader.getVendedor()), ItemSolicitudTasadoDto.class));
 			}
 			if(accesorios){
 				Collections.sort(lista.getItemsListaPrecioVisibles(), new Comparator<ItemSolicitudTasadoDto>() {
@@ -417,9 +416,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 	public List<ServicioAdicionalLineaSolicitudServicioDto> getServiciosAdicionales(
 			LineaSolicitudServicioDto linea, Long idCuenta) {
+		//MGR - #873 - Se agrega el Vendedor
 		Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales = solicitudServicioRepository
 				.getServiciosAdicionales(linea.getTipoSolicitud().getId(), linea.getPlan().getId(), linea
-						.getItem().getId(), idCuenta);
+						.getItem().getId(), idCuenta, sessionContextLoader.getVendedor());
 		return mapper.convertList(serviciosAdicionales, ServicioAdicionalLineaSolicitudServicioDto.class);
 	}
 
@@ -451,8 +451,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		List<ModeloDto> modelos = mapper.convertList(solicitudServicioRepository.getModelos(imei),
 				ModeloDto.class);
 		for (ModeloDto modelo : modelos) {
+			//MGR - #873 - Se agrega el Vendedor
 			modelo.setItems(mapper.convertList(solicitudServicioRepository.getItems(idTipoSolicitud,
-					idListaPrecios, modelo.getId()), ItemSolicitudTasadoDto.class));
+					idListaPrecios, modelo.getId(), sessionContextLoader.getVendedor() ), ItemSolicitudTasadoDto.class));
 		}
 		return modelos;
 	}

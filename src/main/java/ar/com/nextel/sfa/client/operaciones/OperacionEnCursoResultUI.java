@@ -6,6 +6,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.OperacionesRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.AgregarCuentaUI;
 import ar.com.nextel.sfa.client.cuenta.BuscadorDocumentoPopup;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
@@ -16,6 +17,7 @@ import ar.com.nextel.sfa.client.dto.VentaPotencialVistaDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.ss.EditarSSUI;
+import ar.com.nextel.sfa.client.ss.LinksCrearSS;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
@@ -72,9 +74,10 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 	private FormButtonsBar footerBar;
 	private SimpleLink crearSSLink;
 	private PopupPanel popupCrearSS;
-	private Hyperlink crearEquipos;
-	private Hyperlink crearCDW;
-	private Hyperlink crearMDS;
+//	private Hyperlink crearEquipos;
+//	private Hyperlink crearCDW;
+//	private Hyperlink crearMDS;
+	private LinksCrearSS linksCrearSS;
 	private Long idCuenta;
 	private Long idCuentaPotencial;
 
@@ -91,15 +94,9 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 		popupCrearSS = new PopupPanel(true);
 		popupCrearSS.addStyleName("dropUpStyle");
 
-		FlowPanel linksCrearSS = new FlowPanel();
-		linksCrearSS.add(crearEquipos = new Hyperlink("Equipos/Accesorios", "" + UILoader.OP_EN_CURSO));
-		linksCrearSS.add(crearCDW = new Hyperlink("CDW", "" + UILoader.OP_EN_CURSO));
-		linksCrearSS.add(crearMDS = new Hyperlink("MDS", "" + UILoader.OP_EN_CURSO));
-
+		//MGR - #873 - Se indica el Vendedor
+		linksCrearSS = new LinksCrearSS(ClientContext.getInstance().getVendedor());
 		popupCrearSS.setWidget(linksCrearSS);
-		crearEquipos.addClickListener(this);
-		crearCDW.addClickListener(this);
-		crearMDS.addClickListener(this);
 
 		resultTableWrapperReserva = new SimplePanel();
 		resultTableWrapperReserva.addStyleName("resultTableWrapper");
@@ -481,26 +478,16 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 
 			if (sender == crearSSLink) {
 				if (vtaPot != null) {
-					crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(vtaPot
-							.getIdCuentaPotencial(), GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS, vtaPot
-							.getNumeroCliente(), vtaPot.getIdCuentaOrigen()));
-					crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(vtaPot.getIdCuentaPotencial(),
-							GrupoSolicitudDto.ID_CDW, vtaPot.getNumeroCliente(), vtaPot.getIdCuentaOrigen()));
-					crearMDS.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(vtaPot.getIdCuentaPotencial(),
-							GrupoSolicitudDto.ID_MDS, vtaPot.getNumeroCliente(), vtaPot.getIdCuentaOrigen()));
+					linksCrearSS.setHistoryToken(vtaPot.getIdCuentaPotencial(), vtaPot.getNumeroCliente(), 
+							vtaPot.getIdCuentaOrigen());
 				} else {
-					crearEquipos.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(operacionEnCurso
-							.getIdCuenta(), GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
-					crearCDW.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(operacionEnCurso.getIdCuenta(),
-							GrupoSolicitudDto.ID_CDW));
-					crearMDS.setTargetHistoryToken(EditarSSUI.getEditarSSUrl(operacionEnCurso.getIdCuenta(),
-							GrupoSolicitudDto.ID_MDS));
+					linksCrearSS.setHistoryToken(operacionEnCurso.getIdCuenta());
 				}
 				popupCrearSS.show();
 				popupCrearSS.setPopupPosition(crearSSLink.getAbsoluteLeft() - 10, crearSSLink
-						.getAbsoluteTop() - 50);
-			} else if (sender == crearEquipos || sender == crearCDW || sender == crearMDS) {
-				popupCrearSS.hide();
+						.getAbsoluteTop() - popupCrearSS.getOffsetHeight());
+//			} else if (sender == crearEquipos || sender == crearCDW || sender == crearMDS) {
+//				popupCrearSS.hide();
 			}
 		} else {
 			MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO,
