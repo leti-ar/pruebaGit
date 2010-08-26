@@ -149,7 +149,7 @@ public class SolicitudBusinessService {
 
 		solicitud.consultarCuentaPotencial();
 		if (providerResult.wasCreationNeeded()) {
-			if (!solicitud.getCuenta().isLockedForAnyone() || solicitud.getCuenta().isLockedFor(vendedor)) {
+			if (!solicitud.getCuenta().isLockedByAnyone(vendedor) || solicitud.getCuenta().isUnlockedFor(vendedor)) {
 				solicitud.getCuenta().iniciarOperacion(vendedor);
 			}
 			repository.save(solicitud);
