@@ -335,7 +335,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 		List<TipoSolicitudDto> tiposSolicitudDeGrupoSelected = tiposSolicitudPorGrupo.get(grupoSolicitudDto
 				.getId());
-		// Si no es vació (no debería serlo) carga la lista de precios del primer tipoSolicitud que se muestra
+		// Si no es vaciï¿½ (no deberï¿½a serlo) carga la lista de precios del primer tipoSolicitud que se muestra
 		if (!tiposSolicitudDeGrupoSelected.isEmpty()) {
 			TipoSolicitudDto firstTipoSolicitudDto = tiposSolicitudDeGrupoSelected.get(0);
 			TipoSolicitud firstTipoSolicitud = repository.retrieve(TipoSolicitud.class, firstTipoSolicitudDto
@@ -358,7 +358,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		initializer
 				.setLocalidades(mapper.convertList(repository.getAll(Localidad.class), LocalidadDto.class));
 
-		System.out.println(new Date());
+		//System.out.println(new Date());
 		return initializer;
 	}
 
@@ -369,7 +369,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 		boolean activacion = isTipoSolicitudActivacion(tipoSolicitud);
 		boolean accesorios = isTipoSolicitudAccesorios(tipoSolicitud);
-		// Se realiza el mapeo de la colección a mano para poder filtrar los items por warehouse
+		// Se realiza el mapeo de la colecciï¿½n a mano para poder filtrar los items por warehouse
 		for (ListaPrecios listaPrecios : listasPrecios) {
 			ListaPreciosDto lista = mapper.map(listaPrecios, ListaPreciosDto.class);
 			if (!activacion) {
