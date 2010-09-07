@@ -15,6 +15,7 @@ import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaResultDto;
+import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.ss.EditarSSUI;
 import ar.com.nextel.sfa.client.ss.LinksCrearSS;
@@ -156,10 +157,15 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 		});
 
 		add(refresh);
-		add(reservasLabel);
-		add(reservasNoConsultadas);
-		add(flowPanelReservaT);
-		add(tablePageBarReserva);
+		
+		//MGR - Integracion
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.OP_EN_CURSO_SECCION_RESERVAS.getValue())){
+			add(reservasLabel);
+			add(reservasNoConsultadas);
+			add(flowPanelReservaT);
+			add(tablePageBarReserva);
+		}
+		
 		add(oppEnCursoLabel);
 		add(numOperaciones);
 		add(flowPanelOppEnCursoT);

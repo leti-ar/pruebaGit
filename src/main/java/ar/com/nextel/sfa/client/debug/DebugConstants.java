@@ -38,6 +38,10 @@ public class DebugConstants {
 
 
 	public static final String CUENTAS = "Cuentas";
+	//MGR - Integracion - Preguntar
+	public static final String AGREGAR_PROSPECT = "Agregar Prospect";
+	public static final String CREAR_SS = "Crear SS";
+	
 	public static final String SS = "SS";
 	public static final String VERAZ = "Veraz";
 	public static final String DATOS = "Datos";
@@ -49,6 +53,10 @@ public class DebugConstants {
 	public static final String MENU_CUENTAS = SFA_DEBUGID_PREFIX + SEP + MENU + SEP + CUENTAS;
 	public static final String MENU_CUENTAS_BUSCAR = SFA_DEBUGID_PREFIX + SEP + MENU + SEP + CUENTAS + SEP + "buscar";
 	public static final String MENU_CUENTAS_AGREGAR = SFA_DEBUGID_PREFIX + SEP + MENU + SEP + CUENTAS + SEP + "agregar";
+	//MGR - Integracion - Preguntar
+	public static final String MENU_AGREGAR_PROSPECT = SFA_DEBUGID_PREFIX + SEP + MENU + SEP + AGREGAR_PROSPECT + SEP + AGREGAR_PROSPECT;
+	public static final String MENU_CREAR_SS = SFA_DEBUGID_PREFIX + SEP + MENU + SEP + CREAR_SS + SEP + CREAR_SS;
+	
 	public static final String MENU_SS_BUSCAR = SFA_DEBUGID_PREFIX + SEP + MENU + SEP + SS + SEP + "buscar";
 	public static final String MENU_VERAZ_VERAZ = SFA_DEBUGID_PREFIX + SEP + MENU + SEP + VERAZ + SEP + VERAZ;
 

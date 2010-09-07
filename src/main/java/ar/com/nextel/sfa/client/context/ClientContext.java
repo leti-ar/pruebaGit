@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client.context;
 
 import java.util.HashMap;
 
+import ar.com.nextel.sfa.client.dto.ClienteNexusDto;
 import ar.com.nextel.sfa.client.dto.UsuarioDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 
@@ -16,7 +17,9 @@ public class ClientContext {
 	private VendedorDto vendedor;
 	private HashMap<String, Boolean> mapaPermisos;
 	private HashMap<String, String> secretParams = new HashMap();
-
+	//MGR - Integracion
+	private ClienteNexusDto clienteNexus;
+	
 	private ClientContext() {
 	}
 
@@ -61,6 +64,14 @@ public class ClientContext {
 
 	public HashMap<String, String> getSecretParams() {
 		return secretParams;
+	}
+
+	public ClienteNexusDto getClienteNexus() {
+		return clienteNexus;
+	}
+
+	public void setClienteNexus(ClienteNexusDto clienteNexus) {
+		this.clienteNexus = clienteNexus;
 	}
 
 }

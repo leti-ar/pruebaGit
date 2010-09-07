@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 
-public class LinksCrearSS extends Composite {
+public class LinksCrearSS extends Composite{
 	
 	private FlowPanel flwPanel = null;
 	private HashMap<Long, Hyperlink> links = null;

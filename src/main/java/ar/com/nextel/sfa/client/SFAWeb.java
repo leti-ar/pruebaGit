@@ -1,8 +1,10 @@
 package ar.com.nextel.sfa.client;
 
 import ar.com.nextel.sfa.client.context.ClientContext;
+import ar.com.nextel.sfa.client.dto.ClienteNexusDto;
 import ar.com.nextel.sfa.client.dto.UserCenterDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
+import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.widget.HeaderMenu;
 import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
 import ar.com.nextel.sfa.client.widget.LoadingPopup;
@@ -37,6 +39,17 @@ public class SFAWeb implements EntryPoint {
 		} else {
 			cargarMenuConDevUserData();
 		}
+		
+		Boolean vieneDeNexus = Boolean.valueOf(HistoryUtils.getParam("vieneDeNexus"));
+		if(vieneDeNexus){
+			ClienteNexusDto clienteNexus = new ClienteNexusDto();
+			clienteNexus.setCustomerCode(HistoryUtils.getParam("customerCode"));
+			clienteNexus.setCustomerId(HistoryUtils.getParam("customerId"));
+			ClientContext.getInstance().setClienteNexus(clienteNexus);
+			
+		}else{
+			ClientContext.getInstance().setClienteNexus(null);
+		}
 	}
 
 	private void addHeaderMenu() {
@@ -54,19 +67,27 @@ public class SFAWeb implements EntryPoint {
 	private void setPermisosMenu(HeaderMenu headerMenu) {
 		int items = 0;
 		ClientContext cc = ClientContext.getInstance();
+
 		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU.getValue()) ? items
 				+ HeaderMenu.MENU_CUENTA : items;
 		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUSCAR_MENU.getValue()) ? items
 				+ HeaderMenu.MENU_CUENTA_BUSCAR : items;
 		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_AGREGAR_MENU.getValue()) ? items
 				+ HeaderMenu.MENU_CUENTA_AGREGAR : items;
+		
+		//MGR - Integracion
+		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_AGREGAR_PROSPECT.getValue()) ? items
+				+ HeaderMenu.MENU_PROSPECT : items;
+		items = cc.checkPermiso(PermisosEnum.CREAR_NUEVA_SS.getValue()) ? items
+				+ HeaderMenu.MENU_CREAR_SS : items;
+		
+
 		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_SS_BUTTON.getValue()) ? items
 				+ HeaderMenu.MENU_SOLICITUD : items;
 		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_VERAZ_BUTTON.getValue()) ? items
 				+ HeaderMenu.MENU_VERAZ : items;
 		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_BUSQUEDA_OPORTUNIDADES_BUTTON.getValue()) ? items
-				+ HeaderMenu.MENU_OPORTUNIDADES
-				: items;
+				+ HeaderMenu.MENU_OPORTUNIDADES : items;
 		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_OPERACIONES_EN_CURSO_BUTTON.getValue()) ? items
 				+ HeaderMenu.MENU_OP_EN_CURSO : items;
 		headerMenu.enableMenuItems(items);

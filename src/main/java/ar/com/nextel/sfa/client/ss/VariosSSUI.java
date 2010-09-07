@@ -2,8 +2,10 @@ package ar.com.nextel.sfa.client.ss;
 
 import ar.com.nextel.sfa.client.InfocomRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ScoringDto;
+import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -39,11 +41,21 @@ public class VariosSSUI extends Composite {
 		initWidget(mainpanel);
 		// this.controller = controller;
 		this.editarSSUIData = controller.getEditarSSUIData();
-
-		mainpanel.add(getCreditoFidelizacion());
-		mainpanel.add(getPataconex());
-		mainpanel.add(getFirmas());
-		mainpanel.add(getAnticipo());
+		
+		//MGR - Integracion
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VARIOS_CREDITO_FIDELIZACION.getValue())){
+			mainpanel.add(getCreditoFidelizacion());
+		}
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VARIOS_PATACONEX.getValue())){
+			mainpanel.add(getPataconex());
+		}
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VARIOS_FIRMAS.getValue())){
+			mainpanel.add(getFirmas());
+		}
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VARIOS_ANTICIPO.getValue())){
+			mainpanel.add(getAnticipo());
+		}
+		
 		mainpanel.add(getResumen());
 		mainpanel.add(getScoring());
 

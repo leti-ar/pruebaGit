@@ -43,6 +43,7 @@ public enum PermisosEnum {
 	AGREGAR_DIVISION_SUSCRIPTOR("Agregar división/suscriptor",Accion.X,false),
 	NXS_BUSCAR_CLIENTE("NXS_BUSCAR_CLIENTE",Accion.X,false),
 
+	//MGR - Integracion - Tambien use este 
 	CREAR_NUEVA_SS("crearNuevaSS",Accion.X,true),
 	VISUALIZAR_CUENTA("visualizarCuenta",Accion.X,true),
 	ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU("rootsMenuPanel.cuentasButtonMenu",Accion.X,true),
@@ -53,7 +54,22 @@ public enum PermisosEnum {
 	ROOTS_MENU_PANEL_OPERACIONES_EN_CURSO_BUTTON("rootsMenuPanel.operacionesEnCursoButton",Accion.X,true),
 	ROOTS_MENU_PANEL_BUSQUEDA_OPORTUNIDADES_BUTTON("rootsMenuPanel.busquedaOportunidadesButton",Accion.X,true),
 	SCORING_CHECKED("scoringChecked",Accion.X,true),
-	CERRAR_SS_CON_PIN("cerrarSSConPin",Accion.X,true);
+	CERRAR_SS_CON_PIN("cerrarSSConPin",Accion.X,true),
+	
+	//MGR - Integracion
+	//Verificar que los permisos que estoy usando son correctos
+	ROOTS_MENU_PANEL_AGREGAR_PROSPECT("rootsMenuPanel.agregarProspectButton",Accion.X,true),
+	//Para ver infocom
+	VER_INFOCOM("verInfocom",Accion.X,true),
+	//Para quitar la tabla de "Reservas" de la opcion "Op. en Curso"
+	OP_EN_CURSO_SECCION_RESERVAS("opEnCursoSeccionReservas", Accion.X, true),
+	//Al crear SS, en la pestaña "Varios
+	VARIOS_CREDITO_FIDELIZACION("variosCreditoFidelizacion",Accion.X,true),
+	VARIOS_PATACONEX("variosPataconex",Accion.X,true),
+	VARIOS_FIRMAS("variosFirmas",Accion.X,true),
+	VARIOS_ANTICIPO("variosAnticipos",Accion.X,true),
+	//Para editar cuenta
+	ROOTS_MENU_PANEL_CUENTAS_EDITAR("rootsMenuPanel.cuentasEditar",Accion.X,true);
 
 	private String value;
     private String accion;
