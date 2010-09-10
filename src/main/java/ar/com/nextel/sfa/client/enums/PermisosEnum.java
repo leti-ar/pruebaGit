@@ -69,7 +69,10 @@ public enum PermisosEnum {
 	VARIOS_FIRMAS("variosFirmas",Accion.X,true),
 	VARIOS_ANTICIPO("variosAnticipos",Accion.X,true),
 	//Para editar cuenta
-	ROOTS_MENU_PANEL_CUENTAS_EDITAR("rootsMenuPanel.cuentasEditar",Accion.X,true);
+	ROOTS_MENU_PANEL_CUENTAS_EDITAR("rootsMenuPanel.cuentasEditar",Accion.X,true),
+	
+	//Para editar domicilio
+	EDITAR_DOMICILIO("editarDomicilio", Accion.X, true);
 
 	private String value;
     private String accion;

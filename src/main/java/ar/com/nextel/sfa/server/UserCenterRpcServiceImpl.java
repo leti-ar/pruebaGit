@@ -97,6 +97,7 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 			mapaPermisosClient.put("rootsMenuPanel.verazButton",true);
 			mapaPermisosClient.put("rootsMenuPanel.busquedaOportunidadesButton",false);
 			mapaPermisosClient.put("rootsMenuPanel.operacionesEnCursoButton", true);
+			mapaPermisosClient.put("editarDomicilio", true);
 		}
 		
 

@@ -5,12 +5,14 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.EditarCuentaUI;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
+import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
@@ -23,6 +25,9 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -116,11 +121,19 @@ public class DomicilioUI extends NextelDialog {
 		domiciliosUIData.clean();
 		domiciliosUIData.setDomicilio(domicilio);
 		showAndCenter();
-		if (noEditable || readOnly) {
-			domiciliosUIData.disableFields();
-			linkAceptar.setVisible(false);
-		} else {
-			domiciliosUIData.enableFields();
+		domiciliosUIData.disableFields();
+		linkAceptar.setVisible(false);
+		if (ClientContext.getInstance().checkPermiso(PermisosEnum.EDITAR_DOMICILIO.getValue())) {
+			habilitarCampo(domiciliosUIData.getCpa());
+			habilitarCampo(domiciliosUIData.getPiso());
+			habilitarCampo(domiciliosUIData.getDepartamento());
+			habilitarCampo(domiciliosUIData.getUnidadFuncional());
+			habilitarCampo(domiciliosUIData.getTorre());
+			habilitarCampo(domiciliosUIData.getManzana());
+			habilitarCampo(domiciliosUIData.getEntreCalle());
+			habilitarCampo(domiciliosUIData.getYcalle());
+			habilitarCampo(domiciliosUIData.getObservaciones());
+			linkAceptar.setVisible(true);
 			linkAceptar.setVisible(true);
 		}
 		domiciliosUIData.getEntrega().setVisible(!readOnly || EditarCuentaUI.esEdicionCuenta);
@@ -128,6 +141,13 @@ public class DomicilioUI extends NextelDialog {
 		labelEntrega.setVisible(!readOnly || EditarCuentaUI.esEdicionCuenta);
 		labelFacturacion.setVisible(!readOnly || EditarCuentaUI.esEdicionCuenta);
 		setDialogTitle(title);
+	}
+
+	private void habilitarCampo(TextBoxBase campo) {
+		if("".equals(campo.getText()) || " ".equals(campo.getText())) {
+			campo.setEnabled(true);
+			campo.setReadOnly(false);
+		}
 	}
 
 	private void init() {
