@@ -120,7 +120,11 @@ public class CuentaEdicionTabPanel {
 		marco.setWidth("100%");
 		marco.setWidget(0, 0, new HTML("<br/>"));
 		
-		marco.setWidget(1, 0, marcoCliente);
+		//MGR - #961
+		if( (ClientContext.getInstance().vengoDeNexus() && !ClientContext.getInstance().soyClienteNexus())
+				|| !ClientContext.getInstance().vengoDeNexus()){
+			marco.setWidget(1, 0, marcoCliente);
+		}
 		marco.setWidget(2, 0, validarCompletitudButton);
 		marco.setWidget(3, 0, tabPanel);
 		marco.setWidget(4, 0, footerBar);
@@ -241,7 +245,14 @@ public class CuentaEdicionTabPanel {
 		
 		footerBar.addLink(guardar);
 		footerBar.addLink(crearCuenta);
-		footerBar.addLink(crearSSButton);
+		
+		//MGR - Integracion
+		if(!ClientContext.getInstance().soyClienteNexus())
+		{
+			footerBar.addLink(crearSSButton);
+		}
+		
+		
 		footerBar.addLink(agregarCuentaButton);
 		footerBar.addLink(cancelar);
 		footerBar.addLink(cerrar);

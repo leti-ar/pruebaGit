@@ -158,7 +158,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 
 		add(refresh);
 		
-		//MGR - Integracion
+		//MGR - #959
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.OP_EN_CURSO_SECCION_RESERVAS.getValue())){
 			add(reservasLabel);
 			add(reservasNoConsultadas);

@@ -73,5 +73,30 @@ public class ClientContext {
 	public void setClienteNexus(ClienteNexusDto clienteNexus) {
 		this.clienteNexus = clienteNexus;
 	}
+	
+	//MGR - Integracion
+	/**
+	 * Indica si se viene de Nexus o no
+	 */
+	public boolean vengoDeNexus(){
+		if(this.clienteNexus != null){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	/**
+	 * Verifica si se llamo de Nexus a la aplicacion enviandole un cliente o no
+	 * @return True si se llamo desde Nexus con un cliente existente. 
+	 * False si se llamo desde Nexus sin un cliente existente	
+	 */
+	public boolean soyClienteNexus(){
+		if(vengoDeNexus() && this.getClienteNexus().getCustomerCode() != null){
+			return true;
+		}else{
+			return false;
+		}
+		
+	}
 
 }

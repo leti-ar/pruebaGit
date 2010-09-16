@@ -211,10 +211,10 @@ public class UILoader extends SimplePanel implements ValueChangeHandler<String> 
 							PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_EDITAR.getValue());
 			break;
 		case VER_INFOCOM:
-			//authorized = true;
+			authorized = true;
 			//MGR - Integracion
-			authorized = ClientContext.getInstance().checkPermiso(
-					PermisosEnum.VER_INFOCOM.getValue());
+//			authorized = ClientContext.getInstance().checkPermiso(
+//					PermisosEnum.VER_INFOCOM.getValue());
 			break;
 		default:
 			authorized = true;

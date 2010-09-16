@@ -63,45 +63,6 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 				mapaPermisosClient.put(tag, result);
 		}
 		
-		//MGR - Integracion
-		//Ambos deben poder editar
-		mapaPermisosClient.put("rootsMenuPanel.cuentasEditar", true);
-		//Para que se vea Infocom si no es telemarketing
-		mapaPermisosClient.put("verInfocom", true);
-		//Para ver la seccion "Reservas" de "Op. en Curso"
-		mapaPermisosClient.put("opEnCursoSeccionReservas", true);
-		//Para ver todas las secciones en la pestaña "Varios"
-		mapaPermisosClient.put("variosCreditoFidelizacion",true);
-		mapaPermisosClient.put("variosPataconex",true);
-		mapaPermisosClient.put("variosFirmas",true);
-		mapaPermisosClient.put("variosAnticipos",true);
-		//Solo para que funcione por ahora
-		if(sessionContext.getVendedor().getTipoVendedor().getCodigoVantive().equals("TELE")){
-			mapaPermisosClient.put("rootsMenuPanel.verazButton", true);
-			mapaPermisosClient.put("verInfocom", false);
-			mapaPermisosClient.put("opEnCursoSeccionReservas", false);
-			mapaPermisosClient.put("variosCreditoFidelizacion",false);
-			mapaPermisosClient.put("variosPataconex",false);
-			mapaPermisosClient.put("variosFirmas",false);
-			mapaPermisosClient.put("variosAnticipos",false);
-			
-			
-			
-			mapaPermisosClient.put("rootsMenuPanel.cuentasButtonMenu",true);
-			mapaPermisosClient.put("rootsMenuPanel.cuentasBuscarMenu",false);
-			mapaPermisosClient.put("rootsMenuPanel.cuentasAgregarMenu",false);
-			mapaPermisosClient.put("rootsMenuPanel.agregarProspectButton", true);
-			mapaPermisosClient.put("crearNuevaSS",true);
-			mapaPermisosClient.put("rootsMenuPanel.ssButton",false);
-			
-			mapaPermisosClient.put("rootsMenuPanel.verazButton",true);
-			mapaPermisosClient.put("rootsMenuPanel.busquedaOportunidadesButton",false);
-			mapaPermisosClient.put("rootsMenuPanel.operacionesEnCursoButton", true);
-			mapaPermisosClient.put("editarDomicilio", true);
-		}
-		
-
-		
 		sessionContext.getSessionContext().put(SessionContext.PERMISOS, mapaPermisosServer);
 		UserCenterDto userCenter = new UserCenterDto();
 		

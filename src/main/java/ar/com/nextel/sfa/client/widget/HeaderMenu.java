@@ -65,7 +65,7 @@ public class HeaderMenu extends Composite {
 		menuWrapper.addStyleName("menuWrapper");
 
 		//MGR - Integracion
-		if(ClientContext.getInstance().getClienteNexus() == null){
+		if(!ClientContext.getInstance().vengoDeNexus()){
 			mainPanel.add(new Image("images/toolbar/topbanner_final.gif"));
 		}
 		
@@ -99,6 +99,15 @@ public class HeaderMenu extends Composite {
 		cuentasMenuItem = mainMenu.addItem("Cuentas", menuCuentas);
 		cuentasMenuItem.ensureDebugId(DebugConstants.MENU_CUENTAS);
 
+		
+		//MGR - #955
+		//Si ya se realizo las busqueda de un cliente, creo un link en el boton, sino funciona solo
+		//como opcion de menu
+		if(ClientContext.getInstance().vengoDeNexus() && ClientContext.getInstance().soyClienteNexus()){
+			cuentasMenuItem.setCommand(new OpenPageCommand(UILoader.EDITAR_CUENTA));
+		}
+		
+		
 		cuentasBuscarMenuItem = new MenuItem("Buscar", new OpenPageCommand(UILoader.BUSCAR_CUENTA));
 		cuentasBuscarMenuItem.ensureDebugId(DebugConstants.MENU_CUENTAS_BUSCAR);
 		menuCuentas.addItem(cuentasBuscarMenuItem);
@@ -155,7 +164,7 @@ public class HeaderMenu extends Composite {
 		//MGR - Integracion
 		String customerCode = null;
 		Boolean vieneDeNexus = false;
-		if(ClientContext.getInstance().getClienteNexus() != null){
+		if(ClientContext.getInstance().vengoDeNexus()){
 			vieneDeNexus = true;
 			customerCode = ClientContext.getInstance().getClienteNexus().getCustomerCode();
 		}
@@ -177,7 +186,7 @@ public class HeaderMenu extends Composite {
 		}
 		
 		//MGR - Integracion
-		if(vieneDeNexus && customerCode == null){
+		if( (vieneDeNexus && customerCode == null) || !vieneDeNexus){
 			menuItemCrearSS.setVisible(false);
 		}else{
 			menuItemCrearSS.setVisible((items & MENU_CREAR_SS) != 0);
@@ -195,6 +204,7 @@ public class HeaderMenu extends Composite {
 		}
 	}
 	
+	//MGR - Integracion
 	//Este metodo crea las opciones del menu "Crear SS" que corresponda para el usuario logeado
 	private void crearMenuSS(MenuBar menuBarCrearSS){
 		
@@ -203,7 +213,7 @@ public class HeaderMenu extends Composite {
 		Long customerId = null;
 		MenuItem item;
 		
-		if(ClientContext.getInstance().getClienteNexus() != null){
+		if(ClientContext.getInstance().vengoDeNexus()){
 			customerCode = ClientContext.getInstance().getClienteNexus().getCustomerCode();
 			String aux = ClientContext.getInstance().getClienteNexus().getCustomerId();
 			if(aux != null)
@@ -215,13 +225,9 @@ public class HeaderMenu extends Composite {
 		for(int i=0; i < grupos.size(); i++){
 			GrupoSolicitudDto grup = grupos.get(i);
 			url = this.getEditarSSUrl(grup.getId(), customerCode, customerId);
-			//menuCrearSS.addItem(new MenuItem(grup.getDescripcion(),
-				//	new OpenPageCommand(UILoader.AGREGAR_SOLICITUD,url)));
 			item = new MenuItem(grup.getDescripcion(), new OpenPageCommand(UILoader.AGREGAR_SOLICITUD,url));
 			menuBarCrearSS.addItem(item);
 		}
-		
-		
 	}
 	
 	private String getEditarSSUrl(Long idGrupo, String codigoVanvite,Long idCuenta) {

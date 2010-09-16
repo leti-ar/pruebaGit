@@ -7,6 +7,7 @@ import java.util.Map;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
@@ -34,6 +35,7 @@ import ar.com.nextel.sfa.client.dto.TipoTarjetaDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.enums.EstadoOportunidadEnum;
+import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.enums.SexoEnum;
 import ar.com.nextel.sfa.client.enums.TipoCuentaEnum;
 import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
@@ -91,7 +93,7 @@ public class CuentaDatosForm extends Composite {
 	private FlexTable tarjetaTable = new FlexTable();
 
 	private FacturaElectronicaDto facturaElectronicaOriginal;
-
+	
 	private TitledPanel datosCuentaPanel = new TitledPanel(Sfa.constant().cuentaPanelTitle());
 	private TitledPanel datosOppPanel = new TitledPanel(Sfa.constant().cuentaPanelTitle());
 	private TitledPanel formaDePagoPanel = new TitledPanel(Sfa.constant().formaDePagoPanelTitle());;
@@ -391,13 +393,21 @@ public class CuentaDatosForm extends Composite {
 		emailTable.setWidget(0, 1, cuentaUIData.getEmailPersonal());
 		emailTable.setText(0, 2, Sfa.constant().laboral());
 		emailTable.setWidget(0, 3, cuentaUIData.getEmailLaboral());
-		// emailTable.setText(0, 4, Sfa.constant().facturaElectronica());
+		//emailTable.setText(0, 4, Sfa.constant().facturaElectronica());
 		emailTable.setWidget(0, 4, cuentaUIData.getFacturaElectronicaPanel());
-
+		
+		//MGR - #965
+		if(ClientContext.getInstance().vengoDeNexus() && 
+				ClientContext.getInstance().soyClienteNexus() &&
+				!ClientContext.getInstance().checkPermiso(PermisosEnum.VER_CAMPO_FACTURA_ELECTRONICA.getValue())){
+			emailTable.getWidget(0, 4).setVisible(false);
+		}
+		
 		emailTable.getFlexCellFormatter().setWidth(0, 0, ANCHO_PRIMER_COLUMNA);
 		emailTable.getFlexCellFormatter().setWidth(0, 1, ANCHO_PRIMER_COLUMNA);
 		emailTable.getFlexCellFormatter().setWidth(0, 2, ANCHO_PRIMER_COLUMNA);
 		emailTable.getFlexCellFormatter().setWidth(0, 3, ANCHO_PRIMER_COLUMNA);
+		
 
 		return emailPanel;
 	}
@@ -408,7 +418,7 @@ public class CuentaDatosForm extends Composite {
 		formaDePagoTable.setWidget(0, 0, getCuentaBancariaPanel());
 		formaDePagoTable.setWidget(1, 0, getTarjetaCreditoPanel());
 		formaDePagoTable.setWidget(2, 0, getEfectivoPanel());
-		// formaDePagoTable.setWidget(3, 0, getFacturaElectronicaLink());
+	//	formaDePagoTable.setWidget(3, 0, getFacturaElectronicaLink());
 
 		formaDePagoPanel.add(formaDePagoTable);
 		return formaDePagoPanel;
@@ -436,9 +446,9 @@ public class CuentaDatosForm extends Composite {
 		});
 		return facturaElectronicaLink;
 	}
-
-	public Command getAceptarFacturaelectronica() {
-		if (aceptarFacturaElectronica == null) {
+	
+	public Command getAceptarFacturaelectronica(){
+		if(aceptarFacturaElectronica == null){
 			aceptarFacturaElectronica = new Command() {
 				public void execute() {
 					if (facturaElectronicaUI.getFacturaElectronicaHabilitada()) {
@@ -587,22 +597,23 @@ public class CuentaDatosForm extends Composite {
 			cuentaUIData.getNumeroDocumento().setText(cuentaDto.getPersona().getDocumento().getNumero());
 			setDefaultComboSexo(cuentaDto.getPersona().getIdTipoDocumento(), cuentaDto.getPersona()
 					.getDocumento().getNumero());
-
-			// MGR - 26/07/2010 - Incidente #0000703
-			// Si el documento es DNI y es un nuevo cliente (combo esta habilitado), en el combo de
-			// contribuyente
-			// solo puede aparecer la opcion "CONSUMIDOR FINAL"
-			if (cuentaDto.getPersona().getDocumento().tipoDocumento.getCodigoVantive().equals("96")
-					&& cuentaUIData.getContribuyente().isEnabled()) {
+		
+		
+			//MGR - 26/07/2010 - Incidente #0000703
+			//Si el documento es DNI y es un nuevo cliente (combo esta habilitado), en el combo de contribuyente 
+			//solo puede aparecer la opcion "CONSUMIDOR FINAL"
+			if( cuentaDto.getPersona().getDocumento().tipoDocumento.getCodigoVantive().equals("96") &&
+					cuentaUIData.getContribuyente().isEnabled()){
 				cuentaUIData.soloContribConsumidorFinal();
-			} else {
+			}
+			else{
 				cuentaUIData.todosContribuyentes();
 			}
-
+		
 		} catch (Exception e) {
 			// la cuenta puede llegar sin datos de documento... en ese caso que no haga nada.
 		}
-
+		
 		cuentaUIData.getRazonSocial().setText(cuentaDto.getPersona().getRazonSocial());
 		cuentaUIData.getNombre().setText(cuentaDto.getPersona().getNombre());
 		cuentaUIData.getApellido().setText(cuentaDto.getPersona().getApellido());
@@ -767,7 +778,7 @@ public class CuentaDatosForm extends Composite {
 			id_formaPago = TipoFormaPagoEnum.TARJETA_CREDITO.getTipo();
 		}
 		cuentaUIData.setFacturaElectronica(cuentaDto.getFacturaElectronica());
-		// el param tiene null(pero está bien porque no tenia)
+		//el param tiene null(pero está bien porque no tenia)
 		this.setFacturaElectronicaOriginal(cuentaUIData.getFacturaElectronica());
 		setVisiblePanelFormaPagoYActualizarCamposObligatorios(id_formaPago);
 	}
@@ -1044,8 +1055,8 @@ public class CuentaDatosForm extends Composite {
 				|| (FormUtils.fieldDirty(cuentaUIData.getObservaciones(), cuentaTab.getCuenta2editDto()
 						.getObservacionesTelMail()))
 				|| (FormUtils.fieldDirty(cuentaUIData.getIibb(), cuentaTab.getCuenta2editDto().getIibb())))
-			// || facturaElectronicaUI.isDirty())
-
+				//|| facturaElectronicaUI.isDirty())
+				
 			return true;
 
 		if (cuentaTab.getCuenta2editDto().getCategoriaCuenta().getDescripcion().equals(
@@ -1194,7 +1205,8 @@ public class CuentaDatosForm extends Composite {
 				noTieneLaboral = false;
 			}
 		}
-
+		
+		
 		if (noTienePersonal) {
 			if (!cuentaUIData.getEmailPersonal().getText().equals(""))
 				retorno = true;
@@ -1207,17 +1219,18 @@ public class CuentaDatosForm extends Composite {
 		FacturaElectronicaDto facturaElectronicaDto = cuentaTab.getCuenta2editDto().getFacturaElectronica();
 		if (facturaElectronicaDto != null) {
 			noTieneFacturaElectronica = false;
-			if (cuentaUIData.getFacturaElectronicaPanel().isDirty(
-					cuentaTab.getCuenta2editDto().getFacturaElectronica().getEmail())) {
+			if (cuentaUIData.getFacturaElectronicaPanel().isDirty( cuentaTab.getCuenta2editDto().getFacturaElectronica().getEmail())) {
 				retorno = true;
 			}
-		}
+		} 
+	
 
 		if (noTieneFacturaElectronica) {
 			if (!cuentaUIData.getFacturaElectronicaPanel().getText().equals(""))
 				retorno = true;
 		}
-
+		
+	
 		return retorno;
 	}
 
@@ -1299,7 +1312,7 @@ public class CuentaDatosForm extends Composite {
 				validator.addTarget(cuentaUIData.getFechaNacimiento().getTextBox()).dateSmallerToday(
 						Sfa.constant().ERR_FECHA_NAC_MENOR_HOY());
 		}
-
+		
 		if (!cuentaUIData.getEmailPersonal().getText().equals("")
 				&& cuentaUIData.getEmailPersonal().isEnabled())
 			validator.addTarget(cuentaUIData.getEmailPersonal()).mail(
@@ -1310,13 +1323,13 @@ public class CuentaDatosForm extends Composite {
 			validator.addTarget(cuentaUIData.getEmailLaboral()).mail(
 					Sfa.constant().ERR_EMAIL_NO_VALIDO().replaceAll("\\{1\\}",
 							cuentaUIData.getEmailLaboral().getName()));
-		if ( cuentaUIData.getFacturaElectronicaPanel().isEnabled() 
-				&& cuentaUIData.getFacturaElectronicaPanel().isFacturaElectronicaChecked())
+		if (!cuentaUIData.getFacturaElectronicaPanel().getEmail().getText().equals("")
+				&& cuentaUIData.getFacturaElectronicaPanel().getEmail().isEnabled())
 			validator.addTarget(cuentaUIData.getFacturaElectronicaPanel().getEmail()).mail(
-					Sfa.constant().ERR_EMAIL_NO_VALIDO().replaceAll(
-							"\\{1\\}",
-							cuentaUIData.getFacturaElectronicaPanel().getEmailLabel().getText().concat(
-									" " + Sfa.constant().habilitarFacturaElectronica())));
+					Sfa.constant().ERR_EMAIL_NO_VALIDO().replaceAll("\\{1\\}",
+							cuentaUIData.getFacturaElectronicaPanel().getEmailLabel().getText().concat(" " + Sfa.constant().habilitarFacturaElectronica())));
+
+
 
 		if (!cuentaUIData.getTelPrincipalTextBox().getArea().getText().equals("")
 				&& cuentaUIData.getTelPrincipalTextBox().getArea().isEnabled())
@@ -1561,16 +1574,16 @@ public class CuentaDatosForm extends Composite {
 					new TipoEmailDto(TipoEmailEnum.LABORAL.getTipo(), TipoEmailEnum.LABORAL.getDesc())));
 		}
 		personaDto.setEmails(mails);
-
-		// Factura electrónica
+		
+		//Factura electrónica
 		if (!cuentaUIData.getFacturaElectronicaPanel().getText().equals("")) {
 			if (cuentaUIData.getFacturaElectronica() == null) {
 				cuentaUIData.setFacturaElectronica(new FacturaElectronicaDto());
-			}
-			cuentaUIData.getFacturaElectronica().setEmail(
-					cuentaUIData.getFacturaElectronicaPanel().getEmail().getValue());
-		}
-
+			} 
+			cuentaUIData.getFacturaElectronica().setEmail(cuentaUIData.getFacturaElectronicaPanel().getEmail().getValue());
+		}		
+		
+				
 		// Panel Formas de Pago
 		DatosPagoDto datosPago = null;
 		if (cuentaUIData.getFormaPago().getSelectedItemId().equals(
@@ -1614,7 +1627,7 @@ public class CuentaDatosForm extends Composite {
 					.getCuenta2editDto().getFormaPago());
 			CuentaEdicionTabPanel.getInstance().getCuenta2editDto().setDatosPago(datosPago);
 		}
-		// Forma de pago
+		//Forma de pago
 		if (!cuentaUIData.getFacturaElectronicaPanel().getText().equals("")) {
 			CuentaEdicionTabPanel.getInstance().getCuenta2editDto().setFacturaElectronica(
 					cuentaUIData.getFacturaElectronica());
@@ -1737,12 +1750,14 @@ public class CuentaDatosForm extends Composite {
 					MessageDialog.getCloseCommand());
 		}
 	}
-
-	public void setFacturaElectronicaOriginal(FacturaElectronicaDto facturaElectronica) {
+	
+	public void setFacturaElectronicaOriginal(
+			FacturaElectronicaDto facturaElectronica) {
 		this.facturaElectronicaOriginal = facturaElectronica;
 		if (facturaElectronica != null) {
-			cuentaUIData.getFacturaElectronicaPanel().setText(facturaElectronica.getEmail());
-			if (facturaElectronica.isCargadaEnVantive() || facturaElectronica.isReplicadaAutogestion()) {
+			cuentaUIData.getFacturaElectronicaPanel().setText(
+					facturaElectronica.getEmail());
+			if (facturaElectronica.isCargadaEnVantive()){
 				cuentaUIData.getFacturaElectronicaPanel().setEnabled(false);
 				cuentaUIData.getFacturaElectronicaPanel().setFacturaElectronicaHabilitada(true);
 			}
@@ -1753,5 +1768,6 @@ public class CuentaDatosForm extends Composite {
 
 		}
 	}
+	
 
 }

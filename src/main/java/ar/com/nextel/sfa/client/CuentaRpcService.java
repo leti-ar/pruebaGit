@@ -48,6 +48,8 @@ public interface CuentaRpcService extends RemoteService {
 	public CuentaDto crearSuscriptor(Long id_cuentaPadre) throws RpcExceptionMessages;
 	public VerazInitializer getVerazInitializer() throws RpcExceptionMessages;
 	public VerazResponseDto consultarVeraz(PersonaDto personaDto) throws RpcExceptionMessages;
+	//MGR - #960
+	public VerazResponseDto consultarVeraz(String customerId) throws RpcExceptionMessages;
 	public CuentaDto selectCuenta(Long cuentaId, String cod_vantiveu,boolean filtradoPorDni) throws RpcExceptionMessages;
 	public CuentaDto reservaCreacionCuenta(CrearCuentaDto crearCuentaDto) throws RpcExceptionMessages;
 	public TarjetaCreditoValidatorResultDto validarTarjeta(String numeroTarjeta, Integer mesVto,Integer anoVto) throws RpcExceptionMessages;
@@ -59,5 +61,7 @@ public interface CuentaRpcService extends RemoteService {
 	public CuentaPotencialDto getOportunidadNegocio(Long cuenta_id) throws RpcExceptionMessages;
 	public OportunidadNegocioDto updateEstadoOportunidad(OportunidadNegocioDto oportunidadDto) throws RpcExceptionMessages;
 	public List <CuentaDto> getCuentasAsociadasAVentaPotencial(Long idVentaPotencial) throws RpcExceptionMessages;
+	
+	
 	
 }
