@@ -51,19 +51,16 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 	 */
 	public UserCenterDto getUserCenter() throws RpcExceptionMessages {
 		
-		HashMap<String, Boolean> mapaPermisosServer = new HashMap<String, Boolean>(); // se cargan todos
+		HashMap<String, Boolean> mapaPermisosServer = (HashMap<String, Boolean>)sessionContext.getSessionContext().get(SessionContext.PERMISOS);
 		HashMap<String, Boolean> mapaPermisosClient = new HashMap<String, Boolean>(); // se cargan solo los
 		// usados
 		// en el cliente.
 		for (PermisosEnum permiso : PermisosEnum.values()) {
-			String tag = permiso.getValue();
-			Boolean result = checkPermiso(tag, permiso.getAccion());
-			mapaPermisosServer.put(tag, result);
-			if (permiso.isForBrowser())
-				mapaPermisosClient.put(tag, result);
+		 	if (permiso.isForBrowser())
+				mapaPermisosClient.put(permiso.getValue(),	mapaPermisosServer.get(permiso.getValue()));
 		}
 		
-		sessionContext.getSessionContext().put(SessionContext.PERMISOS, mapaPermisosServer);
+		
 		UserCenterDto userCenter = new UserCenterDto();
 		
 		Usuario usuario = (Usuario) sessionContext.getSessionContext().get(SessionContext.USUARIO);
