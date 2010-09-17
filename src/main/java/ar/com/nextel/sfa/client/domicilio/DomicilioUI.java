@@ -124,6 +124,8 @@ public class DomicilioUI extends NextelDialog {
 		domiciliosUIData.disableFields();
 		linkAceptar.setVisible(false);
 		if (ClientContext.getInstance().checkPermiso(PermisosEnum.EDITAR_DOMICILIO.getValue())) {
+			habilitarCampo(domiciliosUIData.getCalle());
+			habilitarCampo(domiciliosUIData.getNumero());
 			habilitarCampo(domiciliosUIData.getCpa());
 			habilitarCampo(domiciliosUIData.getPiso());
 			habilitarCampo(domiciliosUIData.getDepartamento());
@@ -132,6 +134,15 @@ public class DomicilioUI extends NextelDialog {
 			habilitarCampo(domiciliosUIData.getManzana());
 			habilitarCampo(domiciliosUIData.getEntreCalle());
 			habilitarCampo(domiciliosUIData.getYcalle());
+			habilitarCampo(domiciliosUIData.getLocalidad());
+			habilitarCampo(domiciliosUIData.getCodigoPostal());
+			if (domiciliosUIData.getProvincia().getSelectedItemId() == null) {
+				domiciliosUIData.getProvincia().setEnabled(true);
+				domiciliosUIData.getValidado().setEnabled(true);
+				domiciliosUIData.getEntrega().setEnabled(true);
+				domiciliosUIData.getFacturacion().setEnabled(true);
+			}
+			habilitarCampo(domiciliosUIData.getPartido());
 			habilitarCampo(domiciliosUIData.getObservaciones());
 			linkAceptar.setVisible(true);
 			linkAceptar.setVisible(true);
