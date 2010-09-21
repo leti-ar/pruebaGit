@@ -74,7 +74,9 @@ public enum PermisosEnum {
 	//MGR - #963
 	ENVIAR_MAIL_EJECUTIVO_CTA("enviarMailEjecutivoCta",Accion.X,true),
 	//Para editar domicilio
-	EDITAR_DOMICILIO("editarDomicilio", Accion.X, true);
+	EDITAR_DOMICILIO("editarDomicilio", Accion.X, true),
+	//MGR - #1014
+	COMPARTEN_SS("compartenSS", Accion.X, true);
 
 
 	private String value;

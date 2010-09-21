@@ -2,8 +2,6 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
