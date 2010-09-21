@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client.ss;
 
 import java.util.List;
 
+import ar.com.nextel.components.sequence.Sequence;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -73,6 +74,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private CerrarSSUI cerrarSSUI;
 	private boolean guardandoSolicitud = false;
 	private boolean cerrandoSolicitud = false;
+	
 
 	public EditarSSUI() {
 		super();
@@ -116,6 +118,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							razonSocialClienteBar.setIdCuenta(solicitud.getCuenta().getId(), solicitud
 									.getCuenta().getCodigoVantive());
 							editarSSUIData.setSolicitud(solicitud);
+							
+							editarSSUIData.getNss().setText(String.valueOf(solicitud.getTripticoNumber()));
+							
+							
 							validarCompletitud(false);
 							datos.refresh();
 							mainPanel.setVisible(true);

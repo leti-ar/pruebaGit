@@ -36,14 +36,13 @@ import ar.com.nextel.business.solicitudes.search.dto.SolicitudServicioCerradaSea
 import ar.com.nextel.components.knownInstances.GlobalParameter;
 import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
+import ar.com.nextel.components.sequence.DefaultSequenceImpl;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.personas.beans.Localidad;
-import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
-import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
@@ -70,20 +69,17 @@ import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
-import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
-import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
-import ar.com.nextel.sfa.client.initializer.VerazInitializer;
 import ar.com.nextel.sfa.server.businessservice.SolicitudBusinessService;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
@@ -107,6 +103,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private SolicitudServicioRepository solicitudServicioRepository;
 	private NegativeFilesBusinessOperator negativeFilesBusinessOperator;
 	private DefaultRetriever globalParameterRetriever;
+	
+	//MELI
+	private DefaultSequenceImpl tripticoNextValue;
+	
 
 	public void init() throws ServletException {
 		super.init();
@@ -126,6 +126,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		negativeFilesBusinessOperator = (NegativeFilesBusinessOperator) context
 				.getBean("negativeFilesBusinessOperator");
 		globalParameterRetriever = (DefaultRetriever) context.getBean("globalParameterRetriever");
+		
+		tripticoNextValue = (DefaultSequenceImpl)context.getBean("tripticoNextValue");
 	}
 
 	public SolicitudServicioDto createSolicitudServicio(
@@ -147,6 +149,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitud.getCuenta().getId());
 		solicitud.setCuenta(cuenta);
 		SolicitudServicioDto solicitudServicioDto = mapper.map(solicitud, SolicitudServicioDto.class);
+		
+		//le agrego el triptico
+		solicitudServicioDto.setTripticoNumber(tripticoNextValue.nextNumber());
 
 		AppLogger.info("Creacion de Solicitud de Servicio finalizada");
 		return solicitudServicioDto;

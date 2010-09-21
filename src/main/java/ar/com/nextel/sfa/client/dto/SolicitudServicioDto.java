@@ -54,6 +54,8 @@ public class SolicitudServicioDto implements IsSerializable {
 	private double precioVentaTotal = 0;
 	private double precioItemTotal = 0;
 
+	private long tripticoNumber;
+	
 	private SolicitudServicioGeneracionDto solicitudServicioGeneracion;
 
 	public SolicitudServicioDto() {
@@ -321,6 +323,15 @@ public class SolicitudServicioDto implements IsSerializable {
 	 */
 	public double getPrecioItemTotal() {
 		return precioItemTotal;
+	}
+	
+	public void setTripticoNumber(long tripticoNumber) {
+		this.tripticoNumber = tripticoNumber;
+	}
+
+	public long getTripticoNumber() {
+		// TODO Auto-generated method stub
+		return this.tripticoNumber;
 	}
 
 }
