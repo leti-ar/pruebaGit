@@ -13,7 +13,6 @@ import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.MessageDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
-import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
@@ -119,6 +118,13 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 									.getCuenta().getCodigoVantive());
 							editarSSUIData.setSolicitud(solicitud);
 							
+							//MGR - #962 - #1017
+							if(ClientContext.getInstance().
+									checkPermiso(PermisosEnum.SELECT_OPC_TELEMARKETING_COMB_ORIGEN.getValue())){
+								editarSSUIData.getOrigen().selectByText("Telemarketing");
+							}
+							
+							
 							editarSSUIData.getNss().setText(String.valueOf(solicitud.getTripticoNumber()));
 							
 							
@@ -140,7 +146,13 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 	public void firstLoad() {
 		razonSocialClienteBar = new RazonSocialClienteBar();
-		mainPanel.add(razonSocialClienteBar);
+		
+		//MGR - #1015
+		if( (ClientContext.getInstance().vengoDeNexus() && !ClientContext.getInstance().soyClienteNexus())
+				|| !ClientContext.getInstance().vengoDeNexus()){
+			mainPanel.add(razonSocialClienteBar);
+		}
+		
 		razonSocialClienteBar.setEnabledSilvioSoldan();
 
 		validarCompletitud = new Button("Validar Completitud");
@@ -168,12 +180,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				new DefaultWaitCallback<SolicitudInitializer>() {
 					public void success(SolicitudInitializer initializer) {
 						loadInitializer(initializer);
-						//MGR - #962
-						if(ClientContext.getInstance().
-								checkPermiso(PermisosEnum.SELECT_OPC_TELEMARKETING_COMB_ORIGEN.getValue())){
-							editarSSUIData.getOrigen().selectByText("Telemarketing");
-						}
-						
 					};
 				});
 

@@ -120,7 +120,7 @@ public class CuentaEdicionTabPanel {
 		marco.setWidth("100%");
 		marco.setWidget(0, 0, new HTML("<br/>"));
 		
-		//MGR - #961
+		//MGR - #961 
 		if( (ClientContext.getInstance().vengoDeNexus() && !ClientContext.getInstance().soyClienteNexus())
 				|| !ClientContext.getInstance().vengoDeNexus()){
 			marco.setWidget(1, 0, marcoCliente);
