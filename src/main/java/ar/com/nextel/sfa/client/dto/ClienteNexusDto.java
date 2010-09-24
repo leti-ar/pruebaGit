@@ -14,7 +14,7 @@ public class ClienteNexusDto implements Serializable {
 	public void setCustomerCode(String customerCode) {
 		this.customerCode = customerCode;
 	}
-
+	
 	public String getCustomerId() {
 		return customerId;
 	}

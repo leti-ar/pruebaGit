@@ -194,7 +194,7 @@ public class CuentaBusinessService {
 		repository.update(cuenta);
 	}
 
-	// MGR - 05-07-2010 - Se cambian digitos de la tarjeta por asteriscos (*)
+	//MGR - 05-07-2010 - Se cambian digitos de la tarjeta por asteriscos (*)
 	private String changeByAsterisks(String numero) {
 
 		StringBuffer nuevaTarj = new StringBuffer();

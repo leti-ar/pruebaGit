@@ -44,5 +44,7 @@ public interface CuentaRpcServiceAsync {
 	public void getOportunidadNegocio(Long cuenta_id, AsyncCallback<CuentaPotencialDto> callback);
 	public void updateEstadoOportunidad(OportunidadNegocioDto oportunidadDto, AsyncCallback<OportunidadNegocioDto> callback);
 	public void getCuentasAsociadasAVentaPotencial(Long idVentaPotencial, AsyncCallback<List<CuentaDto>> callback);
+	//MGR - Dado un codigo vantive, devuelve el numero de cuenta que le corresponde en SFA
+	public void selectCuenta(String codigoVantive,AsyncCallback<Long> callback);
 	
 }

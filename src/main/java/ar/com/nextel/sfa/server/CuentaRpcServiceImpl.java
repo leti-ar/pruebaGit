@@ -623,4 +623,15 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	public void setRepository(Repository repository) {
 		this.repository = repository;
 	}
+
+	//MGR - Dado un codigo vantive, devuelve el numero de cuenta que le corresponde en SFA
+	public Long selectCuenta(String codigoVantive) throws RpcExceptionMessages{
+		Cuenta cuenta  = null;
+		cuenta = cuentaBusinessService.selectCuenta(null, codigoVantive, getVendedor(),
+				true, mapper);
+		if(cuenta != null){
+			return cuenta.getId();
+		}
+		return null;
+	}
 }

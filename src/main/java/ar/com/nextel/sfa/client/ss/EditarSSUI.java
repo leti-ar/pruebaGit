@@ -2,7 +2,6 @@ package ar.com.nextel.sfa.client.ss;
 
 import java.util.List;
 
-import ar.com.nextel.components.sequence.Sequence;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;

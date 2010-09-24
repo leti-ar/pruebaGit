@@ -61,6 +61,8 @@ public interface CuentaRpcService extends RemoteService {
 	public CuentaPotencialDto getOportunidadNegocio(Long cuenta_id) throws RpcExceptionMessages;
 	public OportunidadNegocioDto updateEstadoOportunidad(OportunidadNegocioDto oportunidadDto) throws RpcExceptionMessages;
 	public List <CuentaDto> getCuentasAsociadasAVentaPotencial(Long idVentaPotencial) throws RpcExceptionMessages;
+	//MGR - Dado un codigo vantive, devuelve el numero de cuenta que le corresponde en SFA
+	public Long selectCuenta(String codigoVantive) throws RpcExceptionMessages;
 	
 	
 	

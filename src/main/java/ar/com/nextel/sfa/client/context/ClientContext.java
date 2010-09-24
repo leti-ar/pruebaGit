@@ -96,7 +96,6 @@ public class ClientContext {
 		}else{
 			return false;
 		}
-		
 	}
 
 }

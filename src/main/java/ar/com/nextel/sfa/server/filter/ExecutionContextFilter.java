@@ -42,7 +42,7 @@ public class ExecutionContextFilter implements Filter {
 	private SessionContextLoader sessionContext;
 	private SFAUserCenterFactory sfaUserCenterFactory;
 	private SFAUserCenter sfaUserCenter;
-	// MGR - #873
+	//MGR - #873
 	private HibernateRepository hibernateRepository;
 	private boolean usarUserCenter = true;
 	private UCFacade ucFacade;
@@ -115,7 +115,7 @@ public class ExecutionContextFilter implements Filter {
 						registroVendedores.getVendedor(usuario));
 			}
 		}
-		// MGR - #873 - Se agrega el filtro
+		//MGR - #873 - Se agrega el filtro
 		hibernateRepository.enableTipoVendedorFilter();
 	}
 
