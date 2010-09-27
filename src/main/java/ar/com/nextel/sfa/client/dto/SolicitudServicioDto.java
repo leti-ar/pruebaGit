@@ -57,6 +57,9 @@ public class SolicitudServicioDto implements IsSerializable {
 	private long tripticoNumber;
 	
 	private SolicitudServicioGeneracionDto solicitudServicioGeneracion;
+	
+	//MGR - #1027
+    private String ordenCompra;
 
 	public SolicitudServicioDto() {
 		solicitudServicioGeneracion = new SolicitudServicioGeneracionDto();
@@ -333,5 +336,12 @@ public class SolicitudServicioDto implements IsSerializable {
 		// TODO Auto-generated method stub
 		return this.tripticoNumber;
 	}
+	
+	public String getOrdenCompra() {
+		return ordenCompra;
+	}
 
+	public void setOrdenCompra(String ordenCompra) {
+		this.ordenCompra = ordenCompra;
+	}
 }

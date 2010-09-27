@@ -74,7 +74,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	}
 
 	private Widget getNssLayout() {
-		nnsLayout = new Grid(1, 6);
+		//nnsLayout = new Grid(1, 6);
+		//MGR - #1027
+		nnsLayout = new Grid(1, 10);
 		nnsLayout.addStyleName("layout");
 		refreshNssLayout();
 		return nnsLayout;
@@ -95,6 +97,19 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			nnsLayout.clearCell(0, 4);
 			nnsLayout.clearCell(0, 5);
 		}
+		//MGR - #1027
+		//MGR - Por ahora se ponen vacias estas posiciones pero deben llenarse con el combo que falta
+		nnsLayout.clearCell(0, 6);
+		nnsLayout.clearCell(0, 7);
+		if(editarSSUIData.getGrupoSolicitud() != null &&
+				GrupoSolicitudDto.ID_FAC_MENSUAL.equals(editarSSUIData.getGrupoSolicitud().getId())){
+			nnsLayout.setHTML(0, 8, Sfa.constant().ordenCompraReq());
+			nnsLayout.setWidget(0, 9, editarSSUIData.getOrdenCompra());
+		} else {
+			nnsLayout.clearCell(0, 8);
+			nnsLayout.clearCell(0, 9);
+		}
+		
 	}
 
 	private Widget getDomicilioPanel() {

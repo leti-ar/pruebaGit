@@ -51,6 +51,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private ListBox entrega;
 	private ListBox facturacion;
 	private TextArea aclaracion;
+	//MGR - #1027
+	private RegexTextBox ordenCompra;
 	private RegexTextBox email;
 	private InlineHTML credFidelDisponibleText;
 	private InlineHTML credFidelVencimientoText;
@@ -78,6 +80,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private static final String FORMA_CONTRATACION_ALQUILER = "Alquiler";
 	private static final int MAX_LENGHT_OBSERVACIONES = 150;
 	private static final int MAX_LENGHT_ACLARACION = 200;
+	//MGR - #1027
+	private static final int MAX_LENGHT_ORDEN_COMPRA = 150;
 
 	private SolicitudServicioDto solicitudServicio;
 
@@ -89,6 +93,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		fields.add(nflota = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(5)));
 		fields.add(origen = new ListBox(""));
 		fields.add(entrega = new ListBox());
+		//MGR - #1027
+		fields.add(ordenCompra = new RegexTextBox(RegularExpressionConstants.getCantCaracteres(150)));
+
 		entrega.setWidth("480px");
 		fields.add(facturacion = new ListBox());
 		facturacion.setWidth("480px");
@@ -116,7 +123,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				showMaxLengthTextAreaError(aclaracion, MAX_LENGHT_ACLARACION);
 			}
 		});
-
+		
 		// Change listener para detectar cambios
 		for (Widget field : fields) {
 			if (field instanceof SourcesChangeEvents) {
@@ -205,6 +212,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		return aclaracion;
 	}
 
+	//MGR - #1027
+	public RegexTextBox getOrdenCompra() {
+		return ordenCompra;
+	}
+	
 	public RegexTextBox getEmail() {
 		return email;
 	}
@@ -266,9 +278,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 		solicitudServicio = solicitud;
 		nss.setText(solicitud.getNumero());
+		//MGR - #1026
+		nss.setEnabled(false);
+		
 		nflota.setEnabled(solicitud.getCuenta().getIdVantive() == null);
 		nflota.setReadOnly(!nflota.isEnabled());
 		nflota.setText(solicitud.getNumeroFlota());
+		//MGR - #1027
+		ordenCompra.setText(solicitud.getOrdenCompra());
+		
 		entrega.clear();
 		facturacion.clear();
 		refreshDomiciliosListBox();
@@ -335,6 +353,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		solicitudServicio.setNumero(nss.getText());
 		solicitudServicio.setNumeroFlota(nflota.getText());
 		solicitudServicio.setOrigen((OrigenSolicitudDto) origen.getSelectedItem());
+		//MGR - #1027
+		solicitudServicio.setOrdenCompra(ordenCompra.getText());
+		
 		solicitudServicio.setIdDomicilioEnvio(entrega.getSelectedItemId() != null ? Long.valueOf(entrega
 				.getSelectedItemId()) : null);
 		solicitudServicio.setIdDomicilioFacturacion(facturacion.getSelectedItemId() != null ? Long
@@ -389,6 +410,14 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			validator.addTarget(credFidelizacionConPunto).smallerOrEqual(Sfa.constant().ERR_FIDELIZACION(),
 					solicitudServicio.getMontoDisponible());
 		}
+		
+		//MGR - #1027
+		if(solicitudServicio.getGrupoSolicitud() != null &&
+				GrupoSolicitudDto.ID_FAC_MENSUAL.equals(solicitudServicio.getGrupoSolicitud().getId())){
+			validator.addTarget(ordenCompra).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().ordenCompra()));
+		}
+		
 		validator.fillResult();
 		return validator.getErrors();
 	}
