@@ -72,11 +72,15 @@ public enum PermisosEnum {
 	//MGR - #962
 	SELECT_OPC_TELEMARKETING_COMB_ORIGEN("selectOpcTelemarketingComboOrigen",Accion.X,true),
 	//MGR - #963
-	ENVIAR_MAIL_EJECUTIVO_CTA("enviarMailEjecutivoCta",Accion.X,true),
+	ENVIAR_MAIL_EJECUTIVO_CTA("enviarMailEjecutivoCta",Accion.X,false),
 	//Para editar domicilio
 	EDITAR_DOMICILIO("editarDomicilio", Accion.X, true),
 	//MGR - #1014
-	COMPARTEN_SS("compartenSS", Accion.X, true);
+	COMPARTEN_SS("compartenSS", Accion.X, true),
+	//MGR - #1026
+	NRO_SS_EDITABLE("nroSSEditable", Accion.X, true),
+	//MGR - #1029
+	VALIDAR_TRIPTICO("validarTriptico", Accion.X, false);
 
 
 	private String value;
