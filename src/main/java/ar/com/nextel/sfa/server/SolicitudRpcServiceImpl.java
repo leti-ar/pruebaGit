@@ -348,7 +348,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			
 			List<ListaPrecios> listasPrecios = new ArrayList<ListaPrecios>(firstTipoSolicitud
 					.getListasPrecios());
-
+			
 			firstTipoSolicitudDto.setListasPrecios(new ArrayList<ListaPreciosDto>());
 			for (ListaPrecios listaPrecios : listasPrecios) {
 				ListaPreciosDto lista = mapper.map(listaPrecios, ListaPreciosDto.class);

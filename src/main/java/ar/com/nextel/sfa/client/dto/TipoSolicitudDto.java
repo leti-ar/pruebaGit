@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.dto;
 
+import java.util.Collections;
 import java.util.List;
 
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
@@ -49,6 +50,10 @@ public class TipoSolicitudDto extends EnumDto implements IsSerializable, ListBox
 	}
 
 	public List<ListaPreciosDto> getListasPrecios() {
+		//MGR - #998 - La lista de precio debe estar ordenada por el campo Orden_Aparicion
+		if(this.listasPrecios != null && !this.listasPrecios.isEmpty()){
+			Collections.sort(this.listasPrecios);
+		}
 		return listasPrecios;
 	}
 
