@@ -3,12 +3,14 @@ package ar.com.nextel.sfa.client.cuenta;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.domicilio.DomicilioUI;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SuscriptorDto;
+import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.enums.TipoCuentaEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
@@ -227,23 +229,24 @@ public class CuentaDomiciliosForm extends Composite {
 								cuentaDto.getPersona().getDomicilios(), domicilioAEditar);
 						DomicilioUI.getInstance().setParentContacto(false);
 						DomicilioUI.getInstance().hide();
-						if (domicilio.getVantiveId() != null) {
-							DomicilioUI.getInstance().openPopupAdviseDialog(
-									DomicilioUI.getInstance().getOpenDomicilioUICommand());
-						} else {
+						if (domicilio.getVantiveId() == null ||
+								ClientContext.getInstance().checkPermiso(PermisosEnum.EDITAR_DOMICILIO.getValue())) {
 							DomicilioUI.getInstance().setComandoAceptar(new Command() {
-								public void execute() {
-									PersonaDto persona = cuentaDto.getPersona();
-									int index = persona.getDomicilios().indexOf(domicilioAEditar);
-									persona.getDomicilios().remove(index);
-									persona.getDomicilios().add(index,
-											DomicilioUI.getInstance().getDomicilioAEditar());
-									domicilioAEditar = DomicilioUI.getInstance().getDomicilioAEditar();
-									refrescaTablaConNuevoDomicilio();
-									huboCambios = true;
+							public void execute() {
+								PersonaDto persona = cuentaDto.getPersona();
+								int index = persona.getDomicilios().indexOf(domicilioAEditar);
+								persona.getDomicilios().remove(index);
+								persona.getDomicilios().add(index,
+									DomicilioUI.getInstance().getDomicilioAEditar());
+								domicilioAEditar = DomicilioUI.getInstance().getDomicilioAEditar();
+								refrescaTablaConNuevoDomicilio();
+								huboCambios = true;
 								}
 							});
 							DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar,EditarCuentaUI.edicionReadOnly);
+						} else {
+							DomicilioUI.getInstance().openPopupAdviseDialog(
+									DomicilioUI.getInstance().getOpenDomicilioUICommand());
 						}
 					}
 					// Acciones a tomar cuando haga click en iconos de copiado de domicilios:
