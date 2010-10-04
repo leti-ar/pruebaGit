@@ -8,6 +8,8 @@ public class GrupoSolicitudDto implements IsSerializable {
 	public static final Long ID_CDW = Long.valueOf(3);
 	public static final Long ID_MDS = Long.valueOf(4);
 	public static final Long ID_FAC_MENSUAL	 = Long.valueOf(61);
+	//MGR - #1039
+	public static final Long DESPACHO_TEL_ANEXO	 = Long.valueOf(21);
 
 	private Long id;
 	private String descripcion;

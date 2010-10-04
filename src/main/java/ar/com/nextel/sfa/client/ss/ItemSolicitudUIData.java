@@ -6,6 +6,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
+import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
@@ -417,6 +418,29 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			} else {
 				onChange(item);
 			}
+			
+			//MGR - #1039 - Si se cumplen los requisitos, debo ocultar ciertos campos
+			Long idGrupoSS = controller.getEditarSSUIData().getGrupoSolicitud().getId();
+			Long idTipoOrden = Long.valueOf(tipoOrden.getSelectedItemId());
+			Long idLista = Long.valueOf(this.listaPrecio.getSelectedItemId());
+			ItemYPlanSolicitudUI itemPlanSolicAux = ItemSolicitudDialog.obtenerItemYPlanSolicitudUI();
+			
+			if(itemPlanSolicAux != null){
+				if(idGrupoSS != null && idTipoOrden != null && idLista != null){
+					if(idGrupoSS.equals(GrupoSolicitudDto.DESPACHO_TEL_ANEXO) &&
+						idTipoOrden.equals(TipoSolicitudDto.VTA_POR_TEL) &&
+						idLista.equals(ListaPreciosDto.AR_EQUIP_VTA_SOLO_EQUIP)){
+						
+						itemPlanSolicAux.ocultarCamposBBRed();
+					} else{
+						itemPlanSolicAux.mostrarCamposBBRed();
+					}
+				}else{
+					itemPlanSolicAux.mostrarCamposBBRed();
+				}
+			}
+			
+		
 		} else if (sender == item) {
 			// Seteo el precio del item, ajustado por el Termino de Pago y cargo el ListBox de Planes
 			ItemSolicitudTasadoDto is = (ItemSolicitudTasadoDto) item.getSelectedItem();

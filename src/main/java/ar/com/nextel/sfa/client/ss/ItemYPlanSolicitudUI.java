@@ -1,6 +1,16 @@
 package ar.com.nextel.sfa.client.ss;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
+import ar.com.nextel.sfa.client.dto.ModalidadCobroDto;
+import ar.com.nextel.sfa.client.dto.PlanDto;
+import ar.com.nextel.sfa.client.dto.TipoPlanDto;
+import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -25,6 +35,8 @@ public class ItemYPlanSolicitudUI extends Composite {
 	private Grid roamingTable;
 	private Grid aliasTable;
 	private FlexTable cppAliasReservaTable;
+	//MGR - #1039 - Necesito poder identificar la tabla para poder ocultarla
+	private Grid table;
 
 	public ItemYPlanSolicitudUI(SoloItemSolicitudUI soloItemSolicitudUI,
 			ItemSolicitudUIData itemSolicitudUIData) {
@@ -40,7 +52,10 @@ public class ItemYPlanSolicitudUI extends Composite {
 		soloItemSolicitudWrapper.setWidget(soloItemSolicitudUI);
 		mainPanel.add(soloItemSolicitudWrapper);
 		
-		Grid table = new Grid(4, 2);
+		//MGR - #1039
+		//Grid table = new Grid(4, 2);
+		table = new Grid(4, 2);
+		
 		table.addStyleName("layout");
 		table.getCellFormatter().setWidth(0, 0, "100px");
 		table.setHTML(0, 0, Sfa.constant().tipoPlan());
@@ -113,5 +128,32 @@ public class ItemYPlanSolicitudUI extends Composite {
 		roamingTable.setVisible(false);
 		return this;
 	}
-
+	
+	//MGR - #1039
+	/**
+	 * Este metodo se encarga de ocultar los campos que no deben ser visibles al seleccionar
+	 * Grupo SS: Despacho tel anexo, Tipo Orden: Venta x tel, Lista Precio: Ar equipos vta solo equipo
+	 */
+	public ItemYPlanSolicitudUI ocultarCamposBBRed(){
+		table.setVisible(false);
+		aliasTable.setVisible(false);
+		cppAliasReservaTable.setVisible(false);
+		roamingTable.setVisible(false);
+		itemSolicitudUIData.getLocalidad().setSelectedItem(ClientContext.getInstance().getVendedor().getLocalidad());
+		itemSolicitudUIData.getTipoPlan().setSelectedItem(ItemSolicitudDialog.obtenerTipoPlanPorDefecto());
+		itemSolicitudUIData.onChange(itemSolicitudUIData.getTipoPlan());
+		return this;
+	}
+	
+	/**
+	 * Este metodo se encarga de mostar los campos que se ocultaron al seleccionar
+	 * Grupo SS: Despacho tel anexo, Tipo Orden: Venta x tel, Lista Precio: Ar equipos vta solo equipo
+	 */
+	public ItemYPlanSolicitudUI mostrarCamposBBRed(){
+		table.setVisible(true);
+		aliasTable.setVisible(true);
+		cppAliasReservaTable.setVisible(true);
+		roamingTable.setVisible(true);
+		return this;
+	}
 }

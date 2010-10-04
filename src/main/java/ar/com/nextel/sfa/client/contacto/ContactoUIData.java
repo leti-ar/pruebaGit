@@ -71,9 +71,11 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 	
 	public List<String> validarNumeroDocumento() {
 		GwtValidator validator = new GwtValidator();
-		if (numeroDocumento.getText().equals("")) {
-			validator.addError(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
-		} else {
+		//MGR - #1034
+//		if (numeroDocumento.getText().equals("")) {
+//			validator.addError(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
+//		} else {
+		if (!numeroDocumento.getText().equals("")){
 			if (tipoDocumento.getSelectedItemId().equals(Long.toString(TipoDocumentoEnum.CUIL.getTipo())) ||
 					tipoDocumento.getSelectedItemId().equals(Long.toString(TipoDocumentoEnum.CUIT.getTipo())) ||
 					  tipoDocumento.getSelectedItemId().equals(Long.toString(TipoDocumentoEnum.CUIT_EXT.getTipo()))) {
@@ -83,6 +85,7 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 					validator.addTarget(numeroDocumento).cuil(Sfa.constant().ERR_DATO_CUIL());	
 				}
 			}
+//		}
 		}
 		validator.fillResult();
 		return validator.getErrors();

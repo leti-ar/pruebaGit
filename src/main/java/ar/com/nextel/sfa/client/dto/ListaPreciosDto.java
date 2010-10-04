@@ -9,6 +9,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 //MGR - #998 - Se agrega que implemente Comparable
 public class ListaPreciosDto extends EnumDto implements IsSerializable, ListBoxItem, Comparable {
 
+	//MGR - #1039
+	public static final Long AR_EQUIP_VTA_SOLO_EQUIP = Long.valueOf(57966);
+	
 	private List<TerminoPagoValidoDto> terminosPagoValido;
 	private List<ItemSolicitudTasadoDto> itemsListaPrecioVisibles;
 	private List<AjustesDto> ajustes;
