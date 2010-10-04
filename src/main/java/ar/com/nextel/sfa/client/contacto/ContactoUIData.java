@@ -6,6 +6,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
 import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
@@ -18,6 +19,7 @@ import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoEmailDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
+import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
 import ar.com.nextel.sfa.client.enums.TipoEmailEnum;
 import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
@@ -72,9 +74,14 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 	public List<String> validarNumeroDocumento() {
 		GwtValidator validator = new GwtValidator();
 		//MGR - #1034
-//		if (numeroDocumento.getText().equals("")) {
-//			validator.addError(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.DOC_OBLIGATORIO_CONTACTO.getValue()))
+		{
+			if (numeroDocumento.getText().equals("")) {
+				validator.addError(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
+			}
+		}
 //		} else {
+		
 		if (!numeroDocumento.getText().equals("")){
 			if (tipoDocumento.getSelectedItemId().equals(Long.toString(TipoDocumentoEnum.CUIL.getTipo())) ||
 					tipoDocumento.getSelectedItemId().equals(Long.toString(TipoDocumentoEnum.CUIT.getTipo())) ||

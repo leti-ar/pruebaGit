@@ -80,7 +80,9 @@ public enum PermisosEnum {
 	//MGR - #1026
 	NRO_SS_EDITABLE("nroSSEditable", Accion.X, true),
 	//MGR - #1029
-	VALIDAR_TRIPTICO("validarTriptico", Accion.X, false);
+	VALIDAR_TRIPTICO("validarTriptico", Accion.X, false),
+	//MGR - #1034
+	DOC_OBLIGATORIO_CONTACTO("docObligatorioContacto", Accion.X, true);
 
 
 	private String value;
