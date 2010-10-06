@@ -82,8 +82,10 @@ public enum PermisosEnum {
 	//MGR - #1029
 	VALIDAR_TRIPTICO("validarTriptico", Accion.X, false),
 	//MGR - #1034
-	DOC_OBLIGATORIO_CONTACTO("docObligatorioContacto", Accion.X, true);
-
+	DOC_OBLIGATORIO_CONTACTO("docObligatorioContacto", Accion.X, true),
+	//MR
+	AUTOCOMPLETAR_TRIPTICO("autocompletarTriptico", Accion.X, true);
+	
 
 	private String value;
     private String accion;
