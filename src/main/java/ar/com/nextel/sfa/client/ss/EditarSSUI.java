@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.ss;
 
+import java.util.HashMap;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
@@ -103,7 +104,13 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			if (grupoSS != null) {
 				solicitudServicioRequestDto.setIdGrupoSolicitud(Long.parseLong(grupoSS));
 			} else {
-				solicitudServicioRequestDto.setIdGrupoSolicitud(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS);
+				//MGR - #1050
+				HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+				if(instancias != null){
+					solicitudServicioRequestDto.setIdGrupoSolicitud(
+							instancias.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
+				}
+				
 			}
 			SolicitudRpcService.Util.getInstance().createSolicitudServicio(solicitudServicioRequestDto,
 					new DefaultWaitCallback<SolicitudServicioDto>() {

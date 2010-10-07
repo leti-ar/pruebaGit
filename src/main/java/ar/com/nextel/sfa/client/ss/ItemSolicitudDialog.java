@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
@@ -282,8 +283,13 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 			}
 		} else {
 			tipoOrden.clear();
-			tipoOrden.addAllItems(tiposSolicitudesPorGrupo.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
-			idGrupoSolicitudLoaded = GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS;
+			//MGR - #1050
+			HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+			if(instancias != null){
+				tipoOrden.addAllItems(tiposSolicitudesPorGrupo.get(instancias.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS)));
+				idGrupoSolicitudLoaded = instancias.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS);	
+			}
+			
 		}
 		onChange(null);
 	}

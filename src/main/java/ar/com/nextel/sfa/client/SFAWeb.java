@@ -1,5 +1,7 @@
 package ar.com.nextel.sfa.client;
 
+import java.util.HashMap;
+
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.ClienteNexusDto;
 import ar.com.nextel.sfa.client.dto.UserCenterDto;
@@ -39,6 +41,9 @@ public class SFAWeb implements EntryPoint {
 		} else {
 			cargarMenuConDevUserData();
 		}
+		
+		//MGR - #1050
+		cargarInstanciasConocidas();
 		
 		Boolean vieneDeNexus = Boolean.valueOf(HistoryUtils.getParam("vieneDeNexus"));
 		if(vieneDeNexus){
@@ -147,4 +152,16 @@ public class SFAWeb implements EntryPoint {
 		}
 	}
 
+	//MGR - #1050
+	/**
+	 * Este metodo se encarga de cargar todas las instancias de la tabla SFA_KNOWNINSTANCE_ITEM
+	 */
+	private void cargarInstanciasConocidas() {
+		
+		UserCenterRpcService.Util.getInstance().getKnownInstance(new DefaultWaitCallback<HashMap<String, Long>>() {
+			public void success(HashMap<String, Long> result) {
+				ClientContext.getInstance().setKnownInstance(result);
+			}
+		});
+	}
 }

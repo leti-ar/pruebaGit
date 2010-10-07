@@ -1,9 +1,11 @@
 package ar.com.nextel.sfa.client.ss;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.domicilio.DomicilioUI;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
@@ -83,10 +85,16 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	}
 
 	private void refreshNssLayout() {
+		//MGR - #1050
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias == null){
+			throw new RuntimeException("Error al acceder a las instancias conocidas.");
+		}
+		
 		nnsLayout.setHTML(0, 0, Sfa.constant().nssReq());
 		nnsLayout.setWidget(0, 1, editarSSUIData.getNss());
 		if (editarSSUIData.getGrupoSolicitud() == null
-				|| !GrupoSolicitudDto.ID_CDW.equals(editarSSUIData.getGrupoSolicitud().getId())) {
+				|| !instancias.get(GrupoSolicitudDto.ID_CDW).equals(editarSSUIData.getGrupoSolicitud().getId())) {
 			nnsLayout.setHTML(0, 2, Sfa.constant().nflota());
 			nnsLayout.setWidget(0, 3, editarSSUIData.getNflota());
 			nnsLayout.setHTML(0, 4, Sfa.constant().origenReq());
@@ -102,7 +110,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		nnsLayout.clearCell(0, 6);
 		nnsLayout.clearCell(0, 7);
 		if(editarSSUIData.getGrupoSolicitud() != null &&
-				GrupoSolicitudDto.ID_FAC_MENSUAL.equals(editarSSUIData.getGrupoSolicitud().getId())){
+				instancias.get(GrupoSolicitudDto.ID_FAC_MENSUAL).equals(editarSSUIData.getGrupoSolicitud().getId())){
 			nnsLayout.setHTML(0, 8, Sfa.constant().ordenCompraReq());
 			nnsLayout.setWidget(0, 9, editarSSUIData.getOrdenCompra());
 		} else {
@@ -142,8 +150,14 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	}
 
 	private void refreshDomicilioLayout() {
+		//MGR - #1050
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias == null){
+			throw new RuntimeException("Error al acceder a las instancias conocidas.");
+		}
+		
 		if (editarSSUIData.getGrupoSolicitud() == null
-				|| !GrupoSolicitudDto.ID_CDW.equals(editarSSUIData.getGrupoSolicitud().getId())) {
+				|| !instancias.get(GrupoSolicitudDto.ID_CDW).equals(editarSSUIData.getGrupoSolicitud().getId())) {
 			domicilioLayout.setHTML(0, 0, Sfa.constant().entregaReq());
 			domicilioLayout.setWidget(0, 1, editarSSUIData.getEntrega());
 			domicilioLayout.setWidget(0, 2, editarDomicioEntrega);

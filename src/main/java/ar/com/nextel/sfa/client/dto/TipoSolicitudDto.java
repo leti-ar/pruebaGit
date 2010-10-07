@@ -10,7 +10,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class TipoSolicitudDto extends EnumDto implements IsSerializable, ListBoxItem {
 
 	//MGR - #1039
-	public static final Long VTA_POR_TEL = Long.valueOf(85);
+	public static final String VTA_POR_TEL = "VENTA_POR_TELEFONO";
 	
 	private TipoSolicitudBaseDto tipoSolicitudBase;
 	private String formaContratacion;

@@ -12,6 +12,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import winit.uc.facade.UCFacade;
 import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepository;
 import ar.com.nextel.business.vendedores.RegistroVendedores;
+import ar.com.nextel.components.knownInstances.KnownInstanceConfigItem;
+import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.security.Usuario;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContext;
@@ -35,6 +37,8 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 	private UCFacade ucFacade;
 	private RegistroVendedores registroVendedores;
 	private SolicitudServicioRepository solicitudServicioRepository; 
+	//MGR - #1050
+	private Repository repository;
 
 	@Override
 	public void init() throws ServletException {
@@ -44,6 +48,7 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 		sessionContext = (SessionContextLoader) context.getBean("sessionContextLoader");
 		registroVendedores = (RegistroVendedores) context.getBean("registroVendedores");
 		solicitudServicioRepository = (SolicitudServicioRepository) context.getBean("solicitudServicioRepositoryBean");
+		repository = (Repository) context.getBean("repository");
 	}
 
 	/**
@@ -75,6 +80,18 @@ public class UserCenterRpcServiceImpl extends RemoteService implements UserCente
 		List<GrupoSolicitud> grupos =  solicitudServicioRepository.getGruposSolicitudesServicio();
 		userCenter.getVendedor().getTipoVendedor().setGrupos(mapper.convertList(grupos, GrupoSolicitudDto.class));
 		return userCenter;
+	}
+	
+	//MGR - #1050
+	//Se encarga de cargar todas las instancias de la tabla SFA_KNOWNINSTANCE_ITEM
+	public HashMap<String, Long> getKnownInstance() {
+		HashMap<String, Long> knownInstance = new HashMap<String, Long>();
+		List<KnownInstanceConfigItem> instancias = repository.find("from KnownInstanceConfigItem");
+		
+		for (KnownInstanceConfigItem inst : instancias) {
+			knownInstance.put(inst.getKey(), inst.getInstanceId());
+		}
+		return knownInstance;
 	}
 
 	/**

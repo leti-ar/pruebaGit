@@ -10,7 +10,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class ListaPreciosDto extends EnumDto implements IsSerializable, ListBoxItem, Comparable {
 
 	//MGR - #1039
-	public static final Long AR_EQUIP_VTA_SOLO_EQUIP = Long.valueOf(57966);
+	public static final String AR_EQUIP_VTA_SOLO_EQUIP = "AR_EQUIP_VTA_SOLO_EQUIP";
 	
 	private List<TerminoPagoValidoDto> terminosPagoValido;
 	private List<ItemSolicitudTasadoDto> itemsListaPrecioVisibles;

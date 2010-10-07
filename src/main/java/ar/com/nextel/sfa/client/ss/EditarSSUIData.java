@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client.ss;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -418,8 +419,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 		
 		//MGR - #1027
-		if(solicitudServicio.getGrupoSolicitud() != null &&
-				GrupoSolicitudDto.ID_FAC_MENSUAL.equals(solicitudServicio.getGrupoSolicitud().getId())){
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+			
+		if(solicitudServicio.getGrupoSolicitud() != null && instancias != null &&
+				instancias.get(GrupoSolicitudDto.ID_FAC_MENSUAL).equals(solicitudServicio.getGrupoSolicitud().getId())){
 			validator.addTarget(ordenCompra).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().ordenCompra()));
 		}
@@ -750,11 +753,23 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	}
 
 	public boolean isCDW() {
-		return solicitudServicio.getGrupoSolicitud().getId().equals(GrupoSolicitudDto.ID_CDW);
+		//MGR - #1050
+		//return solicitudServicio.getGrupoSolicitud().getId().equals(GrupoSolicitudDto.ID_CDW);
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias != null){
+			return solicitudServicio.getGrupoSolicitud().getId().equals(instancias.get(GrupoSolicitudDto.ID_CDW));
+		}
+		return false;
 	}
 
 	public boolean isMDS() {
-		return solicitudServicio.getGrupoSolicitud().getId().equals(GrupoSolicitudDto.ID_MDS);
+		//MGR - #1050
+		//return solicitudServicio.getGrupoSolicitud().getId().equals(GrupoSolicitudDto.ID_MDS);
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias != null){
+			return solicitudServicio.getGrupoSolicitud().getId().equals(instancias.get(GrupoSolicitudDto.ID_MDS));
+		}
+		return false;
 	}
 
 	/** Indica si contiene lineas de solicitud con item BlackBerry */

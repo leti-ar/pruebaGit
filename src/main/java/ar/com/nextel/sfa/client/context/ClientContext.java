@@ -19,6 +19,8 @@ public class ClientContext {
 	private HashMap<String, String> secretParams = new HashMap();
 	//MGR - Integracion
 	private ClienteNexusDto clienteNexus;
+	//MGR - #1050
+	private HashMap<String, Long> knownInstance;
 	
 	private ClientContext() {
 	}
@@ -96,6 +98,14 @@ public class ClientContext {
 		}else{
 			return false;
 		}
+	}
+
+	public HashMap<String, Long> getKnownInstance() {
+		return knownInstance;
+	}
+
+	public void setKnownInstance(HashMap<String, Long> knownInstance) {
+		this.knownInstance = knownInstance;
 	}
 
 }

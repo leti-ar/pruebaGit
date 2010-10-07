@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.client.ss;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -427,9 +428,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			
 			if(itemPlanSolicAux != null){
 				if(idGrupoSS != null && idTipoOrden != null && idLista != null){
-					if(idGrupoSS.equals(GrupoSolicitudDto.DESPACHO_TEL_ANEXO) &&
-						idTipoOrden.equals(TipoSolicitudDto.VTA_POR_TEL) &&
-						idLista.equals(ListaPreciosDto.AR_EQUIP_VTA_SOLO_EQUIP)){
+					HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+					
+					if(instancias != null && idGrupoSS.equals(instancias.get(GrupoSolicitudDto.DESPACHO_TEL_ANEXO))
+							&& idTipoOrden.equals(instancias.get(TipoSolicitudDto.VTA_POR_TEL)) 
+							&& idLista.equals(instancias.get(ListaPreciosDto.AR_EQUIP_VTA_SOLO_EQUIP))){
 						
 						itemPlanSolicAux.ocultarCamposBBRed();
 					} else{
