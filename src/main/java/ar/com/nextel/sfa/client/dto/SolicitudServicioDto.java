@@ -18,6 +18,8 @@ public class SolicitudServicioDto implements IsSerializable {
 	private CuentaSSDto cuenta;
 	private String numero;
 	private String numeroFlota;
+	private Long nroTriptico;
+
 
 	// private CuentaPotencial cuentaPotencial;
 	private OrigenSolicitudDto origen;
@@ -343,5 +345,13 @@ public class SolicitudServicioDto implements IsSerializable {
 
 	public void setOrdenCompra(String ordenCompra) {
 		this.ordenCompra = ordenCompra;
+	}
+	
+	public Long getNroTriptico() {
+		return nroTriptico;
+	}
+
+	public void setNroTriptico(Long nroTriptico) {
+		this.nroTriptico = nroTriptico;
 	}
 }

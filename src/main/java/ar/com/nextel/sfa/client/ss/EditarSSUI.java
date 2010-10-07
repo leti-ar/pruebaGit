@@ -124,7 +124,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							}
 							
 							
+							if(ClientContext.getInstance().
+									checkPermiso(PermisosEnum.AUTOCOMPLETAR_TRIPTICO.getValue())){
+								editarSSUIData.getNss().setText(String.valueOf(solicitud.getNroTriptico()));
+							} else {							
 							editarSSUIData.getNss().setText(String.valueOf(solicitud.getTripticoNumber()));
+							}
 							
 							
 							validarCompletitud(false);

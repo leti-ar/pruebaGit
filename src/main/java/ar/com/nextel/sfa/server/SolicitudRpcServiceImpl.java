@@ -153,10 +153,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		SolicitudServicioDto solicitudServicioDto = mapper.map(solicitud, SolicitudServicioDto.class);
 		
 		//MR - le agrego el triptico
-		if(ClientContext.getInstance().
-				checkPermiso(PermisosEnum.AUTOCOMPLETAR_TRIPTICO.getValue())){
-			solicitudServicioDto.setTripticoNumber(tripticoNextValue.nextNumber());
-		}
+		solicitudServicioDto.setNroTriptico(tripticoNextValue.nextNumber());
 
 		AppLogger.info("Creacion de Solicitud de Servicio finalizada");
 		return solicitudServicioDto;
