@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.server.businessservice;
 
 import java.sql.CallableStatement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,6 +52,8 @@ import ar.com.nextel.model.oportunidades.beans.OportunidadNegocio;
 import ar.com.nextel.model.personas.beans.Email;
 import ar.com.nextel.model.personas.beans.Persona;
 import ar.com.nextel.model.personas.beans.Telefono;
+import ar.com.nextel.services.components.sessionContext.SessionContext;
+import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
@@ -65,6 +68,7 @@ import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
+import ar.com.nextel.util.PermisosUserCenter;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 
 @Service
@@ -568,18 +572,26 @@ public class CuentaBusinessService {
 										.getObject(KnownInstanceIdentifier.CLASE_CUENTA_GOB_BS_AS))
 										.getDescripcion());
 				throw new RpcExceptionMessages(err);
-			} else if (cuenta.isGobierno()) {
-				String err = ERR_CUENTA_GOBIERNO.replaceAll("\\{1\\}", cuenta
-						.getCodigoVantive());
-				err = err.replaceAll("\\{2\\}", cuenta.getPersona()
-						.getRazonSocial());
-				err = err
-						.replaceAll(
-								"\\{3\\}",
-								((ClaseCuenta) knownInstanceRetriever
-										.getObject(KnownInstanceIdentifier.CLASE_CUENTA_GOBIERNO))
-										.getDescripcion());
-				throw new RpcExceptionMessages(err);
+			} else if (cuenta.isGobierno()){
+				//MGR - #1063				
+				HashMap<String, Boolean> mapaPermisosClient = (HashMap<String, Boolean>) 
+					SessionContextLoader.getInstance().getSessionContext().get(SessionContext.PERMISOS);
+		        
+		        if(!(Boolean)mapaPermisosClient.get(PermisosUserCenter.TIENE_ACCESO_CTA_GOBIERNO.getValue())){
+		        	String err = ERR_CUENTA_GOBIERNO.replaceAll("\\{1\\}", cuenta
+							.getCodigoVantive());
+					err = err.replaceAll("\\{2\\}", cuenta.getPersona()
+							.getRazonSocial());
+					err = err
+							.replaceAll(
+									"\\{3\\}",
+									((ClaseCuenta) knownInstanceRetriever
+											.getObject(KnownInstanceIdentifier.CLASE_CUENTA_GOBIERNO))
+											.getDescripcion());
+					throw new RpcExceptionMessages(err);
+		        }
+				
+				
 			} else if (cuenta.isLAP()) {
 				throw new RpcExceptionMessages(
 						ERR_CUENTA_NO_EDITABLE

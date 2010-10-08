@@ -84,7 +84,9 @@ public enum PermisosEnum {
 	//MGR - #1034
 	DOC_OBLIGATORIO_CONTACTO("docObligatorioContacto", Accion.X, true),
 	//MR
-	AUTOCOMPLETAR_TRIPTICO("autocompletarTriptico", Accion.X, true);
+	AUTOCOMPLETAR_TRIPTICO("autocompletarTriptico", Accion.X, true),
+	//MGR - #1063
+	TIENE_ACCESO_CTA_GOBIERNO("tieneAccesoCtaGobierno", Accion.X, true);
 	
 
 	private String value;
