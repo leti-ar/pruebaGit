@@ -595,7 +595,15 @@ public class CuentaDatosForm extends Composite {
 			if (cuentaDto.getPersona().getDocumento().tipoDocumento.getCodigoVantive().equals("96")
 					&& cuentaUIData.getContribuyente().isEnabled()) {
 				cuentaUIData.soloContribConsumidorFinal();
-			} else {
+			}
+			//MGR - #1069
+			/* Si el documento es CUIT/CUIL y es un nuevo cliente (combo esta habilitado), en el combo de contribuyente 
+			no debe aparecer la opcion "CONSUMIDOR FINAL"*/
+			else if( ( cuentaDto.getPersona().getDocumento().tipoDocumento.getCodigoVantive().equals("80") 
+				 || cuentaDto.getPersona().getDocumento().tipoDocumento.getCodigoVantive().equals("1000") ) 
+				&& cuentaUIData.getContribuyente().isEnabled()){
+				cuentaUIData.sinOpcionConsumidorFinal();
+			}else {
 				cuentaUIData.todosContribuyentes();
 			}
 
