@@ -29,6 +29,7 @@ public class UserCenterRpcServiceDelegate {
 
 	//MGR - #1050
 	public void getKnownInstance(DefaultWaitCallback<HashMap<String, Long>> callback) {
+		WaitWindow.show();
 		this.userCenterRpcService.getKnownInstance(callback);
 	}
 

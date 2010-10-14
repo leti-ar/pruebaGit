@@ -118,6 +118,7 @@ public class CuentaRpcServiceDelegate {
 	//MGR - Dado un codigo vantive, devuelve el numero de cuenta que le corresponde en SFA
 	public void selectCuenta(String codigoVantive,
 			DefaultWaitCallback<Long> callback) {
+		WaitWindow.show();
 		cuentaRpcService.selectCuenta(codigoVantive,callback);
 		
 	}

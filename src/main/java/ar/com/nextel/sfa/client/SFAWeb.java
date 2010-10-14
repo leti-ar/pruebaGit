@@ -36,37 +36,14 @@ public class SFAWeb implements EntryPoint {
 		loadingPopup = new LoadingPopup();
 		WaitWindow.callListenerCollection = new CallListenerCollection();
 		WaitWindow.callListenerCollection.add(new CargandoBigPanelListener());
-		if (usarUserCenter) {
-			cargarMenuConDatosUserCenter();
-		} else {
-			cargarMenuConDevUserData();
-		}
 		
 		//MGR - #1050
 		cargarInstanciasConocidas();
 		
-		Boolean vieneDeNexus = Boolean.valueOf(HistoryUtils.getParam("vieneDeNexus"));
-		if(vieneDeNexus){
-			ClienteNexusDto clienteNexus = new ClienteNexusDto();
-			String customerCode = HistoryUtils.getParam("customerCode");
-			clienteNexus.setCustomerCode(customerCode);
-			ClientContext.getInstance().setClienteNexus(clienteNexus);
-			
-			//MGR - Si llega un codigo de cliente, busco el numero de su cuenta es SFA
-			if(customerCode != null){
-				CuentaRpcService.Util.getInstance().selectCuenta(clienteNexus.getCustomerCode(), 
-						new DefaultWaitCallback<Long>() {
-					public void success(Long IdCuenta) {
-						ClientContext.getInstance().getClienteNexus().setCustomerId(IdCuenta.toString());
-					}
-
-					public void failure(Throwable caught) {
-						ErrorDialog.getInstance().show(caught);
-					}
-				});
-			}
-		}else{
-			ClientContext.getInstance().setClienteNexus(null);
+		if (usarUserCenter) {
+			cargarMenuConDatosUserCenter();
+		} else {
+			cargarMenuConDevUserData();
 		}
 	}
 
@@ -115,7 +92,8 @@ public class SFAWeb implements EntryPoint {
 		UserCenterRpcService.Util.getInstance().getUserCenter(new DefaultWaitCallback<UserCenterDto>() {
 			public void success(UserCenterDto result) {
 				setDatosUsuario((UserCenterDto) result);
-				addHeaderMenu();
+				//MGR - #1044
+				//addHeaderMenu();
 			}
 		});
 	}
@@ -124,15 +102,49 @@ public class SFAWeb implements EntryPoint {
 		UserCenterRpcService.Util.getInstance().getDevUserData(new DefaultWaitCallback<UserCenterDto>() {
 			public void success(UserCenterDto result) {
 				setDatosUsuario(result);
-				addHeaderMenu();
+				//MGR - #1044
+				//addHeaderMenu();
 			}
 		});
 	}
+	
+	//MGR - #1044
+	//Se encarga de buscar la cuenta que le viene desde Nexus y hace la replicacion a SFA si corresponde
+	private void cargarCuentaVantive(){
+		Boolean vieneDeNexus = Boolean.valueOf(HistoryUtils.getParam("vieneDeNexus"));
+		if(vieneDeNexus){
+			ClienteNexusDto clienteNexus = new ClienteNexusDto();
+			String customerCode = HistoryUtils.getParam("customerCode");
+			clienteNexus.setCustomerCode(customerCode);
+			ClientContext.getInstance().setClienteNexus(clienteNexus);
+			
+			//MGR - Si llega un codigo de cliente, busco el numero de su cuenta es SFA
+			if(customerCode != null){
+				CuentaRpcService.Util.getInstance().selectCuenta(clienteNexus.getCustomerCode(), 
+						new DefaultWaitCallback<Long>() {
+					public void success(Long IdCuenta) {
+						ClientContext.getInstance().getClienteNexus().setCustomerId(IdCuenta.toString());
+						addHeaderMenu();
+					}
 
+					public void failure(Throwable caught) {
+						addHeaderMenu();
+						ErrorDialog.getInstance().show(caught);
+					}
+				});
+			}
+		}else{
+			ClientContext.getInstance().setClienteNexus(null);
+			addHeaderMenu();
+		}
+	}
+	
 	private void setDatosUsuario(UserCenterDto userCenter) {
 		ClientContext.getInstance().setUsuario(userCenter.getUsuario());
 		ClientContext.getInstance().setMapaPermisos(userCenter.getMapaPermisos());
 		ClientContext.getInstance().setVendedor(userCenter.getVendedor());
+		//MGR - #1044
+		cargarCuentaVantive();
 	}
 
 	public static HeaderMenu getHeaderMenu() {
