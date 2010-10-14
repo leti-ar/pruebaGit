@@ -103,8 +103,7 @@ public class CuentaBusinessService {
 	private FacturaElectronicaService facturaElectronicaService;
 
 	private Repository repository;
-	
-	
+
 	private DefaultRetriever globalParameterRetriever;
 
 	@Autowired
@@ -153,7 +152,7 @@ public class CuentaBusinessService {
 			FacturaElectronicaService facturaElectronicaService) {
 		this.facturaElectronicaService = facturaElectronicaService;
 	}
-	
+
 	@Autowired
 	public void setGlobalParameterRetriever(
 			@Qualifier("globalParameterRetriever") DefaultRetriever globalParameterRetriever) {
@@ -198,7 +197,7 @@ public class CuentaBusinessService {
 		repository.update(cuenta);
 	}
 
-	//MGR - 05-07-2010 - Se cambian digitos de la tarjeta por asteriscos (*)
+	// MGR - 05-07-2010 - Se cambian digitos de la tarjeta por asteriscos (*)
 	private String changeByAsterisks(String numero) {
 
 		StringBuffer nuevaTarj = new StringBuffer();
@@ -212,7 +211,7 @@ public class CuentaBusinessService {
 	}
 
 	private Long encriptarNumeroTrajeta(String numero) throws Exception {
-		
+
 		AppLogger.info("numero tarjeta: " + numero);
 		CallableStatement stmt = ((HibernateRepository) repository)
 				.getHibernateDaoSupport().getSessionFactory()
@@ -229,32 +228,32 @@ public class CuentaBusinessService {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Long saveCuenta(CuentaDto cuentaDto, MapperExtended mapper,
 			Vendedor vendedor) throws Exception {
-	
+
 		GlobalParameter pciGlobalParameter = (GlobalParameter) globalParameterRetriever
-		.getObject(GlobalParameterIdentifier.PCI_ENABLED);
-	
+				.getObject(GlobalParameterIdentifier.PCI_ENABLED);
+
 		Cuenta cuenta = repository.retrieve(Cuenta.class, cuentaDto.getId());
 
 		Long numeroEncriptadoOriginal = null;
-		if(cuenta.getDatosPago().isDebitoTarjetaCredito()){
+		if (cuenta.getDatosPago().isDebitoTarjetaCredito()) {
 			DatosDebitoTarjetaCredito datosPagoTarjetaCredito = (DatosDebitoTarjetaCredito) repository
-			.retrieve(DatosDebitoTarjetaCredito.class, cuenta.getDatosPago()
-					.getId());
-	
-			numeroEncriptadoOriginal = datosPagoTarjetaCredito.getNumeroEncriptado();
+					.retrieve(DatosDebitoTarjetaCredito.class, cuenta
+							.getDatosPago().getId());
+
+			numeroEncriptadoOriginal = datosPagoTarjetaCredito
+					.getNumeroEncriptado();
 		}
-			// DATOS PAGO
-			
+		// DATOS PAGO
+
 		AbstractDatosPago datosPagoOriginal = (AbstractDatosPago) repository
-		.retrieve(AbstractDatosPago.class, cuenta.getDatosPago()
-				.getId());
-        cuenta.setDatosPago(null);
-	
+				.retrieve(AbstractDatosPago.class, cuenta.getDatosPago()
+						.getId());
+		cuenta.setDatosPago(null);
+
 		repository.delete(datosPagoOriginal);
 		cuenta.setFormaPago(null);
 
 		mapper.map(cuentaDto, cuenta);
-
 
 		if (cuenta.getCategoriaCuenta().getDescripcion().equals(
 				KnownInstanceIdentifier.DIVISION.getKey())) {
@@ -282,14 +281,15 @@ public class CuentaBusinessService {
 							.getTipoTarjeta().getId());
 			((DatosDebitoTarjetaCredito) cuenta.getDatosPago())
 					.setTipoTarjeta(tipoTarjeta);
-		
-			boolean pciEnabled = pciGlobalParameter.getValue().equalsIgnoreCase("T");
-			if ( pciEnabled ) {
+
+			boolean pciEnabled = pciGlobalParameter.getValue()
+					.equalsIgnoreCase("T");
+			if (pciEnabled) {
 				String numeroTarj = ((DatosDebitoTarjetaCredito) cuenta
 						.getDatosPago()).getNumero();
-				
+
 				if (!numeroTarj.contains("*")) {
-					
+
 					String newNumber = changeByAsterisks(numeroTarj);
 
 					Long numEncriptado = encriptarNumeroTrajeta(numeroTarj);
@@ -299,16 +299,15 @@ public class CuentaBusinessService {
 							.setNumero(newNumber);
 					((DatosDebitoTarjetaCredito) cuenta.getDatosPago())
 							.setNumeroEncriptado(numEncriptado);
-				}else{
-			//copio el encriptado original
+				} else {
+					// copio el encriptado original
 					((DatosDebitoTarjetaCredito) cuenta.getDatosPago())
-					.setNumeroEncriptado(numeroEncriptadoOriginal);
-			
+							.setNumeroEncriptado(numeroEncriptadoOriginal);
+
 				}
 				// ((DatosDebitoTarjetaCredito)cuenta.getDatosPago()).setNumero("9876543210987654321");
 			}
-			
-			
+
 		}
 		guardarFacturaElectronica(cuenta, cuentaDto, mapper, vendedor);
 
@@ -572,14 +571,17 @@ public class CuentaBusinessService {
 										.getObject(KnownInstanceIdentifier.CLASE_CUENTA_GOB_BS_AS))
 										.getDescripcion());
 				throw new RpcExceptionMessages(err);
-			} else if (cuenta.isGobierno()){
-				//MGR - #1063				
-				HashMap<String, Boolean> mapaPermisosClient = (HashMap<String, Boolean>) 
-					SessionContextLoader.getInstance().getSessionContext().get(SessionContext.PERMISOS);
-		        
-		        if(!(Boolean)mapaPermisosClient.get(PermisosUserCenter.TIENE_ACCESO_CTA_GOBIERNO.getValue())){
-		        	String err = ERR_CUENTA_GOBIERNO.replaceAll("\\{1\\}", cuenta
-							.getCodigoVantive());
+			} else if (cuenta.isGobierno()) {
+				// MGR - #1063
+				HashMap<String, Boolean> mapaPermisosClient = (HashMap<String, Boolean>) SessionContextLoader
+						.getInstance().getSessionContext().get(
+								SessionContext.PERMISOS);
+
+				if (!(Boolean) mapaPermisosClient
+						.get(PermisosUserCenter.TIENE_ACCESO_CTA_GOBIERNO
+								.getValue())) {
+					String err = ERR_CUENTA_GOBIERNO.replaceAll("\\{1\\}",
+							cuenta.getCodigoVantive());
 					err = err.replaceAll("\\{2\\}", cuenta.getPersona()
 							.getRazonSocial());
 					err = err
@@ -589,9 +591,8 @@ public class CuentaBusinessService {
 											.getObject(KnownInstanceIdentifier.CLASE_CUENTA_GOBIERNO))
 											.getDescripcion());
 					throw new RpcExceptionMessages(err);
-		        }
-				
-				
+				}
+
 			} else if (cuenta.isLAP()) {
 				throw new RpcExceptionMessages(
 						ERR_CUENTA_NO_EDITABLE
@@ -613,7 +614,8 @@ public class CuentaBusinessService {
 				// la tiene lockeada alguien y no soy yo
 				if ((cuenta.getVendedorLockeo() != null)
 						&& (!vendedor.getId().equals(
-								cuenta.getVendedorLockeo().getId())) && vendedor.getTipoVendedor().isUsaLockeo()) {
+								cuenta.getVendedorLockeo().getId()))
+						&& vendedor.getTipoVendedor().isUsaLockeo()) {
 					throw new RpcExceptionMessages(ERR_CUENTA_NO_PERMISO);
 				}
 			}
@@ -752,7 +754,5 @@ public class CuentaBusinessService {
 				accessAuthorization, cuenta);
 		return accessCuenta;
 	}
-
-
 
 }
