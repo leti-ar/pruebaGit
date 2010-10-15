@@ -132,6 +132,8 @@ public class SFAWeb implements EntryPoint {
 						ErrorDialog.getInstance().show(caught);
 					}
 				});
+			}else{
+				addHeaderMenu();
 			}
 		}else{
 			ClientContext.getInstance().setClienteNexus(null);
