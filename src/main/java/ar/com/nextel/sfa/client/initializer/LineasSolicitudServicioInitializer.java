@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.initializer;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,10 @@ public class LineasSolicitudServicioInitializer implements IsSerializable {
 	}
 
 	public List<LocalidadDto> getLocalidades() {
+		//MGR - #934 - La lista de localidades debe estar ordenada por orden alfabetico
+		if(this.localidades != null && !this.localidades.isEmpty()){
+			Collections.sort(this.localidades);
+		}
 		return localidades;
 	}
 

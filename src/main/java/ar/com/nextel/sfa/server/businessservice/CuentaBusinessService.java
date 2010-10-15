@@ -374,51 +374,64 @@ public class CuentaBusinessService {
 
 	private void guardarFacturaElectronica(Cuenta cuenta, CuentaDto cuentaDto,
 			MapperExtended mapper, Vendedor vendedor) {
-		if (cuenta.isEnCarga()) {
-			if (cuentaDto.getFacturaElectronica() == null
-					&& cuenta.getFacturaElectronica() != null) {
-				repository.delete(cuenta.getFacturaElectronica());
-				cuenta.setFacturaElectronica(null);
-			} else if (cuentaDto.getFacturaElectronica() != null) {
-				if (cuenta.getFacturaElectronica() == null) {
-					cuenta
-							.setFacturaElectronica(mapper.map(cuentaDto
-									.getFacturaElectronica(),
-									FacturaElectronica.class));
-				} else {
-					mapper.map(cuentaDto.getFacturaElectronica(), cuenta
-							.getFacturaElectronica());
-				}
+
+		if (cuentaDto.getFacturaElectronica() == null
+				&& cuenta.getFacturaElectronica() != null) {
+			repository.delete(cuenta.getFacturaElectronica());
+			cuenta.setFacturaElectronica(null);
+		} else if (cuentaDto.getFacturaElectronica() != null
+				&& !cuentaDto.getFacturaElectronica().isCargadaEnVantive()) {
+
+			if (cuenta.getFacturaElectronica() == null) {
+				cuenta.setFacturaElectronica(mapper.map(cuentaDto
+						.getFacturaElectronica(), FacturaElectronica.class));
+			} else {
+				mapper.map(cuentaDto.getFacturaElectronica(), cuenta
+						.getFacturaElectronica());
 			}
-		} else {
-			if (cuentaDto.getFacturaElectronica() != null
-					&& !cuentaDto.getFacturaElectronica().isCargadaEnVantive()) {
-				facturaElectronicaService.adherirFacturaElectronica(cuenta
-						.getIdVantive(), cuenta.getCodigoVantive(), cuentaDto
-						.getFacturaElectronica().getEmail(), "", vendedor
-						.getUserName());
-			}
+
 		}
+		// else {
+		// if (cuentaDto.getFacturaElectronica() != null
+		// && !cuentaDto.getFacturaElectronica().isCargadaEnVantive()) {
+		// facturaElectronicaService.adherirFacturaElectronica(cuenta.getIdVantive(),
+		// cuenta
+		// .getCodigoVantive(), cuentaDto.getFacturaElectronica().getEmail(),
+		// "", vendedor
+		// .getUserName());
+		// }
+		// }
 	}
 
-	public void cargarFacturaElectronica(CuentaDto cuenta, boolean isEnCarga) {
-		if (!isEnCarga) {
-			if (cuenta.getFacturaElectronica() != null) {
-				repository.delete(cuenta.getFacturaElectronica());
-				cuenta.setFacturaElectronica(null);
-			}
-			if (facturaElectronicaService.isAdheridoFacturaElectronica(cuenta
-					.getCodigoVantive())) {
+	public void cargarFacturaElectronica(CuentaDto cuentaDto, Cuenta cuenta,
+			MapperExtended mapper, boolean isEnCarga) {
+		// if (!isEnCarga) {
+		// if (cuenta.getFacturaElectronica() != null) {
+		// repository.delete(cuenta.getFacturaElectronica());
+		// cuenta.setFacturaElectronica(null);
+		// }
+
+		if (cuenta.getFacturaElectronica() != null) {
+			FacturaElectronicaDto fdto = (FacturaElectronicaDto) mapper
+					.map(cuenta.getFacturaElectronica(),
+							FacturaElectronicaDto.class);
+			cuentaDto.setFacturaElectronica(fdto);
+		} else {
+			if (!isEnCarga
+					&& facturaElectronicaService
+							.isAdheridoFacturaElectronica(cuentaDto
+									.getCodigoVantive())) {
 				FacturaElectronicaDto facturaElectronica = new FacturaElectronicaDto();
 				List<String> mails = facturaElectronicaService
-						.obtenerMailFacturaElectronica(cuenta
+						.obtenerMailFacturaElectronica(cuentaDto
 								.getCodigoVantive());
 				facturaElectronica.setEmail(mails.isEmpty() ? "" : mails
 						.iterator().next());
 				facturaElectronica.setCargadaEnVantive(true);
-				cuenta.setFacturaElectronica(facturaElectronica);
+				cuentaDto.setFacturaElectronica(facturaElectronica);
 			}
 		}
+		// }
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
@@ -629,7 +642,8 @@ public class CuentaBusinessService {
 		for (ContactoCuenta cont : listaContactos) {
 			Persona persona = cont.getPersona();
 			for (ContactoCuentaDto contDto : listaContactosDto) {
-				if (cont.getId() == contDto.getId()) {
+				if (cont.getId() == contDto.getId()
+						&& contDto.getPersona() != null) {
 					for (TelefonoDto tel : contDto.getPersona().getTelefonos()) {
 						updateTelefonosAPersona(tel, persona, mapper);
 					}

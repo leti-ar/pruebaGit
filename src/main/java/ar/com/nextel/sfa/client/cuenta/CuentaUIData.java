@@ -295,6 +295,23 @@ public class CuentaUIData extends UIData {
 		}
 	}
 	
+	//MGR - #1069
+	public void sinOpcionConsumidorFinal(){
+		if(tiposContribuyentes != null){
+			
+			contribuyente.clear();
+			contribuyente.clearPreseleccionados();
+						
+			java.util.Iterator<TipoContribuyenteDto> it = tiposContribuyentes.iterator();
+			while (it.hasNext()){
+				TipoContribuyenteDto tipoCont = (TipoContribuyenteDto) it.next();
+				if (!tipoCont.isConsumidorFinal()) {
+					contribuyente.addItem(tipoCont);
+				}
+			}
+		}
+	}
+	
 	public void todosContribuyentes(){
 		if(tiposContribuyentes != null){
 			contribuyente.clear(); 
@@ -318,6 +335,15 @@ public class CuentaUIData extends UIData {
 								((TipoDocumentoDto)getTipoDocumento().getSelectedItem()).getCodigoVantive().equals("96") &&
 								getContribuyente().isEnabled()){
 							soloContribConsumidorFinal();
+						}
+						//MGR - #1069
+						/* Si el documento es CUIT/CUIL y es un nuevo cliente (combo esta habilitado), en el combo de contribuyente 
+						no debe aparecer la opcion "CONSUMIDOR FINAL"*/
+						else if(getTipoDocumento().getSelectedItem() != null &&
+							( ((TipoDocumentoDto)getTipoDocumento().getSelectedItem()).getCodigoVantive().equals("80") 
+							 || ((TipoDocumentoDto)getTipoDocumento().getSelectedItem()).getCodigoVantive().equals("1000") ) 
+							&& getContribuyente().isEnabled()){
+							sinOpcionConsumidorFinal();
 						}
 						else{
 							todosContribuyentes();
