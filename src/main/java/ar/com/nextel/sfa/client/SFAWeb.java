@@ -116,6 +116,7 @@ public class SFAWeb implements EntryPoint {
 			ClienteNexusDto clienteNexus = new ClienteNexusDto();
 			String customerCode = HistoryUtils.getParam("customerCode");
 			clienteNexus.setCustomerCode(customerCode);
+			clienteNexus.setVieneDeNexus(vieneDeNexus);
 			ClientContext.getInstance().setClienteNexus(clienteNexus);
 			
 			//MGR - Si llega un codigo de cliente, busco el numero de su cuenta es SFA

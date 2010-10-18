@@ -1,8 +1,9 @@
 package ar.com.nextel.sfa.client;
 
-import java.io.File;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.dto.DescuentoDto;
+import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
@@ -17,6 +18,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
+import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
@@ -92,5 +94,18 @@ public interface SolicitudRpcService extends RemoteService {
 
 	public Boolean existReport(String report) throws RpcExceptionMessages;
 	
-	public List<VendedorDto> getVendedoresDae() throws RpcExceptionMessages;                       
+	public List<VendedorDto> getVendedoresDae() throws RpcExceptionMessages;
+
+	public List<DescuentoDto> getDescuentos(Long idLinea) throws RpcExceptionMessages;
+
+	public List<DescuentoDto> getDescuentosItemNull(Long idLinea) throws RpcExceptionMessages;
+
+	public List<DescuentoLineaDto> getDescuentosAplicados(Long idLinea) throws RpcExceptionMessages;
+	
+	public List<TipoDescuentoDto> getTiposDescuento(Long idLinea) throws RpcExceptionMessages;
+	
+	public List<TipoDescuentoDto> getTiposDescuentoItemNull(Long idLinea) throws RpcExceptionMessages;
+
+	public List<TipoDescuentoDto> getTiposDescuentoAplicados(Long idLinea) throws RpcExceptionMessages;
+
 }

@@ -33,6 +33,9 @@
 				<entry key="collectionDomiciliosServicioConverter" value-ref="collectionDomiciliosServicioConverter" />
 				<entry key="estadoTipoDomicilioOwnedConverter" value-ref="estadoTipoDomicilioOwnedConverter" />
 			    <entry key="collectionContactoCuentaConverter" value-ref="collectionContactoCuentaConverter" />
+			    <entry key="collectionTipoDescuentoConverter" value-ref="collectionTipoDescuentoConverter"/>
+			    <entry key="collectionDescuentoConverter" value-ref="collectionDescuentoConverter"/>
+			    <entry key="collectionDescuentoLineaConverter" value-ref="collectionDescuentoLineaConverter"/>
 		    </map>
 		</property>
 	</bean>
@@ -83,5 +86,38 @@
 			<bean class="ar.com.nextel.sfa.client.dto.ContactoCuentaDto"></bean>
 		</property>
 	</bean>
+	
+	<bean id="collectionDescuentoLineaConverter" class="ar.com.nextel.sfa.server.converter.CollectionOwnedConverter">
+		<property name="dozerMapper" ref="dozerMapper" />
+		<property name="repository" ref="repository" />
+		<property name="modelClass">
+			<bean class="ar.com.nextel.model.solicitudes.beans.DescuentoLinea"></bean>
+		</property>
+		<property name="dtoClass">
+			<bean class="ar.com.nextel.sfa.client.dto.DescuentoLineaDto"></bean>
+		</property>
+	</bean>
 
+	<bean id="collectionDescuentoConverter" class="ar.com.nextel.sfa.server.converter.CollectionOwnedConverter">
+		<property name="dozerMapper" ref="dozerMapper" />
+		<property name="repository" ref="repository" />
+		<property name="modelClass">
+			<bean class="ar.com.nextel.model.solicitudes.beans.Descuento"></bean>
+		</property>
+		<property name="dtoClass">
+			<bean class="ar.com.nextel.sfa.client.dto.DescuentoDto"></bean>
+		</property>
+	</bean>
+		
+	<bean id="collectionTipoDescuentoConverter" class="ar.com.nextel.sfa.server.converter.CollectionOwnedConverter">
+		<property name="dozerMapper" ref="dozerMapper" />
+		<property name="repository" ref="repository" />
+		<property name="modelClass">
+			<bean class="ar.com.nextel.model.solicitudes.beans.TipoDescuento"></bean>
+		</property>
+		<property name="dtoClass">
+			<bean class="ar.com.nextel.sfa.client.dto.TipoDescuentoDto"></bean>
+		</property>
+	</bean>		
+	
 </beans>

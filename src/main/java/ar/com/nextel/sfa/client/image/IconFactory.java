@@ -40,6 +40,7 @@ public class IconFactory {
 	private static final String ICON_YELLOW_FLAG_STYLE = "icon-yellow-flag";
 	private static final String ICON_RED_FLAG_STYLE    = "icon-red-flag";
 	private static final String ICON_REFRESH_STYLE = "icon-refresh";
+	private static final String ICON_BOLSA_PESOS_STYLE = "icon-bolsaPesos";
 
 	public static HTML lockedOther() {
 		return createDiv(ICON_LOCKED_OTHER_STYLE);
@@ -239,6 +240,10 @@ public class IconFactory {
 
 	public static HTML refresh(String title) {
 		return createDiv(ICON_REFRESH_STYLE, title);
+	}
+	
+	public static HTML bolsaPesos() {
+		return createDiv(ICON_BOLSA_PESOS_STYLE);
 	}
 
 	/**

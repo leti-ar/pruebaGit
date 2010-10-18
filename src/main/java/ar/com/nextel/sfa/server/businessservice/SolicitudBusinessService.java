@@ -71,7 +71,7 @@ public class SolicitudBusinessService {
 	public void setFacturaElectronicaService(FacturaElectronicaService facturaElectronicaService) {
 		this.facturaElectronicaService = facturaElectronicaService;
 	}
-
+	
 	@Autowired
 	public void setSolicitudesBusinessOperator(
 			SolicitudServicioBusinessOperator solicitudServicioBusinessOperatorBean) {
@@ -315,7 +315,7 @@ public class SolicitudBusinessService {
 		GeneracionCierreResponse response = null;
 		if (cerrar) {
 			response = generacionCierreBusinessOperator.cerrarSolicitudServicio(generacionCierreRequest);
-
+			
 			AppLogger.error("IF replicacion a autogestion, FE: "
 					+ solicitudServicio.getCuenta().getFacturaElectronica() + " tiene errores: "
 					+ response.getMessages().hasErrors(), this);
@@ -336,9 +336,9 @@ public class SolicitudBusinessService {
 		} else {
 			response = generacionCierreBusinessOperator.generarSolicitudServicio(generacionCierreRequest);
 		}
-
+		
 		repository.save(solicitudServicio);
-
+		
 		return response;
 	}
 

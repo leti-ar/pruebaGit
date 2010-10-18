@@ -4,18 +4,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.domicilio.DomicilioUI;
+import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
@@ -62,7 +66,15 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private DomiciliosCuentaDto domicilioAEditar = null;
 	private TextBox precioVentaPlan;
 	private List listaDomicilios = new ArrayList<DomiciliosCuentaDto>();
-
+	private DescuentoDialog descuentoDialog;
+	private int rowG;
+	private Long idLinea;
+	private LineaSolicitudServicioDto lineaSeleccionada;
+	private DescuentoDto descuento;
+	private List<DescuentoDto> descuentos = new ArrayList<DescuentoDto>();
+	private List<TipoDescuentoDto> descuentosAplicados = new ArrayList<TipoDescuentoDto>();
+	private List<TipoDescuentoDto> descuentosAAplicar = new ArrayList<TipoDescuentoDto>();
+	
 	private static final String SELECTED_ROW = "selectedRow";
 
 	public DatosSSUI(EditarSSUIController controller) {
@@ -78,7 +90,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private Widget getNssLayout() {
 		//nnsLayout = new Grid(1, 6);
 		//MGR - #1027
-		nnsLayout = new Grid(1, 10);
+		nnsLayout = new Grid(1, 11);
 		nnsLayout.addStyleName("layout");
 		refreshNssLayout();
 		return nnsLayout;
@@ -196,11 +208,20 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		SimplePanel wrapper = new SimplePanel();
 		wrapper.addStyleName("resumenSSTableWrapper mlr5");
 		detalleSS = new FlexTable();
-		String[] titlesDetalle = { Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), "Item",
-				"Pcio Vta.", "Alias", "Plan", "Pcio Vta. Plan", "Localidad", "Nº Reserva", "Tipo SS",
-				"Cant.", "DDN", "DDI", "Roaming" };
-		for (int i = 0; i < titlesDetalle.length; i++) {
-			detalleSS.setHTML(0, i, titlesDetalle[i]);
+		if(ClientContext.getInstance().getClienteNexus().isVieneDeNexus()) {
+			String[] titlesDetalle = { Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), 
+					Sfa.constant().whiteSpace(), "Item", "Pcio Vta.", "Precio con Desc.", "Alias", "Plan", 
+					"Pcio Vta. Plan", "Localidad", "Nº Reserva", "Tipo SS", "Cant.", "DDN", "DDI", "Roaming" };			
+			for (int i = 0; i < titlesDetalle.length; i++) {
+				detalleSS.setHTML(0, i, titlesDetalle[i]);
+			}
+		} else {
+			String[] titlesDetalle = { Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), "Item",
+					"Pcio Vta.", "Alias", "Plan", "Pcio Vta. Plan", "Localidad", "Nº Reserva", "Tipo SS",
+					"Cant.", "DDN", "DDI", "Roaming" };
+			for (int i = 0; i < titlesDetalle.length; i++) {
+				detalleSS.setHTML(0, i, titlesDetalle[i]);
+			}
 		}
 		detalleSS.setCellPadding(0);
 		detalleSS.setCellSpacing(0);
@@ -308,11 +329,11 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	public void onTableClick(Widget sender, final int row, int col) {
 		if (detalleSS == sender) {
 			if (row > 0) {
-				if (col == 6) {
+				if (col == 8) {
 					if (!serviciosAdicionales.isEditing()) {
 						editarPrecioDeVentaPlan();
 					}
-				} else if (col > 1) {
+				} else if (col > 2) {
 					// Carga servicios adicionales en la tabla
 					if (!serviciosAdicionales.isEditing()) {
 						selectDetalleLineaSSRow(row);
@@ -328,12 +349,17 @@ public class DatosSSUI extends Composite implements ClickHandler {
 									removeDetalleLineaSSRow(row);
 								};
 							}, ModalMessageDialog.getCloseCommand());
+				} else if (col == 2) {
+					//Abre el panel de descuento de la LineaSolicitudServicio
+					lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1); 
+					verificarDescuento(lineaSeleccionada);
+					rowG = row;
 				}
 			}
 		} else if (serviciosAdicionales.getTable() == sender) {
 			if (col == 0 && row > 0) {
 				serviciosAdicionales.agregarQuitarServicioAdicional(row);
-			} else if (col == 3 && row > 0) {
+			} else if (col == 4 && row > 0) {
 				serviciosAdicionales.editarPrecioDeVentaServicioAdicional(row);
 			}
 		}
@@ -375,6 +401,83 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		itemSolicitudDialog.show(linea);
 	}
 
+	/**Verifica si se puede aplicar un descuento al item seleccionado*/
+	private void verificarDescuento(LineaSolicitudServicioDto linea) {
+		idLinea = linea.getId();
+		SolicitudRpcService.Util.getInstance().getDescuentos(idLinea, new DefaultWaitCallback<List<DescuentoDto>>() {
+			@Override
+			public void success(List<DescuentoDto> result) {
+				if (result.size() > 0) {
+					openAplicarDescuentoDialog(lineaSeleccionada, result);
+				} else {
+					SolicitudRpcService.Util.getInstance().getDescuentosItemNull(idLinea, new DefaultWaitCallback<List<DescuentoDto>>() {
+						@Override
+						public void success(List<DescuentoDto> result) {
+							if (result.size() > 0) {
+								openAplicarDescuentoDialog(lineaSeleccionada, result);
+							} else {
+								MessageDialog.getInstance().setDialogTitle("Advertencia");
+								MessageDialog.getInstance().showAceptar(
+										"No se puede aplicar un descuento a este item",
+										MessageDialog.getCloseCommand());
+							}
+						}
+					});
+				}
+			}
+		});
+	}
+
+	/**Crea y abre el Dialog para aplicar un descuento a la LineaSolicitudServicioDto */
+	private void openAplicarDescuentoDialog(LineaSolicitudServicioDto linea, List<DescuentoDto> result) {
+		descuentosAAplicar.clear();
+		descuentosAplicados.clear();
+		descuentos = result;
+		descuento = result.get(0);
+		if (descuentoDialog == null) {
+			descuentoDialog = new DescuentoDialog("Aplicar Descuento", controller);
+			Command aceptarCommand = new Command() {
+				public void execute() {
+					editarPrecionConDescuento(lineaSeleccionada, descuentos);
+				}
+			};
+			descuentoDialog.setAceptarCommand(aceptarCommand);
+		}
+		//Obtengo los tipos de descuento que ya aplicó
+		SolicitudRpcService.Util.getInstance().getTiposDescuentoAplicados(idLinea, new DefaultWaitCallback<List<TipoDescuentoDto>>() {
+			@Override
+			public void success(List<TipoDescuentoDto> result) {
+				descuentosAplicados = result;
+				//Obtengo los tipos de descuento que puede aplicar
+				SolicitudRpcService.Util.getInstance().getTiposDescuento(idLinea, new DefaultWaitCallback<List<TipoDescuentoDto>>() {
+					@Override
+					public void success(List<TipoDescuentoDto> result) {
+						if (result.size() > 0) {
+							descuentosAAplicar = result;
+						} else {
+							SolicitudRpcService.Util.getInstance().getTiposDescuentoItemNull(idLinea, new DefaultWaitCallback<List<TipoDescuentoDto>>() {
+								@Override
+								public void success(List<TipoDescuentoDto> result) {
+									if (result.size() > 0) {
+										descuentosAAplicar = result;
+									}							
+								}						
+							});
+						}
+						if (descuentosAAplicar.size() > 0) {
+							descuentoDialog.show(lineaSeleccionada, descuento, descuentosAplicados, descuentosAAplicar);
+						} else {
+							MessageDialog.getInstance().setDialogTitle("Advertencia");
+							MessageDialog.getInstance().showAceptar(
+									"No se puede aplicar un descuento a este item",
+									MessageDialog.getCloseCommand());
+						}
+					}
+				});
+			}
+		});
+	}
+
 	/**
 	 * Agrega una LineaSolicitudServicioDto tanto a la tabla como a la Solicitud de Servicio. Maneja la lógica
 	 * de la clonación de items con plan cuando la cantidad es mayor a 1.
@@ -407,7 +510,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			drawDetalleSSRow(nueva, newRow);
 		}
 
-		onTableClick(detalleSS, firstNewRow, 2);
+		onTableClick(detalleSS, firstNewRow, 3);
 	}
 
 	/** Limpia y recarga la tabla de Detalle de Solicitud de Servicio completamente */
@@ -419,7 +522,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			drawDetalleSSRow(linea, editarSSUIData.getLineasSolicitudServicio().indexOf(linea) + 1);
 		}
 		if (!editarSSUIData.getLineasSolicitudServicio().isEmpty()) {
-			onTableClick(detalleSS, 1, 2);
+			onTableClick(detalleSS, 1, 3);
 		} else {
 			serviciosAdicionales.clear();
 		}
@@ -429,25 +532,31 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private void drawDetalleSSRow(LineaSolicitudServicioDto linea, int newRow) {
 		detalleSS.setWidget(newRow, 0, IconFactory.lapiz());
 		detalleSS.setWidget(newRow, 1, IconFactory.cancel());
-		detalleSS.setHTML(newRow, 2, linea.getItem().getDescripcion());
-		detalleSS.setHTML(newRow, 3, currencyFormat.format(linea.getPrecioVenta()));
-		detalleSS.setHTML(newRow, 4, linea.getAlias() != null ? linea.getAlias() : "");
-		detalleSS.setHTML(newRow, 5, linea.getPlan() != null ? linea.getPlan().getDescripcion() : "");
-		detalleSS.setHTML(newRow, 6, linea.getPlan() != null ? currencyFormat.format(linea
+		detalleSS.setWidget(newRow, 2, IconFactory.bolsaPesos());
+		detalleSS.setHTML(newRow, 3, linea.getItem().getDescripcion());
+		detalleSS.setHTML(newRow, 4, currencyFormat.format(linea.getPrecioVenta()));
+		if (linea.getPrecioConDescuento() == null) {
+			linea.setPrecioConDescuento(linea.getPrecioVenta());
+		}
+		detalleSS.setHTML(newRow, 5, currencyFormat.format(linea.getPrecioConDescuento()));
+		detalleSS.setHTML(newRow, 6, linea.getAlias() != null ? linea.getAlias() : "");
+		detalleSS.setHTML(newRow, 7, linea.getPlan() != null ? linea.getPlan().getDescripcion() : "");
+		detalleSS.setHTML(newRow, 8, linea.getPlan() != null ? currencyFormat.format(linea
 				.getPrecioVentaPlan()) : "");
-		detalleSS.setHTML(newRow, 7, linea.getLocalidad() != null ? linea.getLocalidad().getDescripcion()
+		detalleSS.setHTML(newRow, 9, linea.getLocalidad() != null ? linea.getLocalidad().getDescripcion()
 				: "");
-		detalleSS.setHTML(newRow, 8, linea.getNumeroReserva());
-		detalleSS.setHTML(newRow, 9, linea.getTipoSolicitud().getDescripcion());
-		detalleSS.setHTML(newRow, 10, "" + linea.getCantidad());
-		detalleSS.setHTML(newRow, 11, linea.getDdn() ? IconFactory.tildeVerde().toString() : Sfa.constant()
+		detalleSS.setHTML(newRow, 10, linea.getNumeroReserva());
+		detalleSS.setHTML(newRow, 11, linea.getTipoSolicitud().getDescripcion());
+		detalleSS.setHTML(newRow, 12, "" + linea.getCantidad());
+		detalleSS.setHTML(newRow, 13, linea.getDdn() ? IconFactory.tildeVerde().toString() : Sfa.constant()
 				.whiteSpace());
-		detalleSS.setHTML(newRow, 12, linea.getDdi() ? IconFactory.tildeVerde().toString() : Sfa.constant()
+		detalleSS.setHTML(newRow, 14, linea.getDdi() ? IconFactory.tildeVerde().toString() : Sfa.constant()
 				.whiteSpace());
-		detalleSS.setHTML(newRow, 13, linea.getRoaming() ? IconFactory.tildeVerde().toString() : Sfa
+		detalleSS.setHTML(newRow, 15, linea.getRoaming() ? IconFactory.tildeVerde().toString() : Sfa
 				.constant().whiteSpace());
-		detalleSS.getCellFormatter().addStyleName(newRow, 3, "alignRight");
-		detalleSS.getCellFormatter().addStyleName(newRow, 6, "alignRight");
+		detalleSS.getCellFormatter().addStyleName(newRow, 4, "alignRight");
+		detalleSS.getCellFormatter().addStyleName(newRow, 5, "alignRight");
+		detalleSS.getCellFormatter().addStyleName(newRow, 8, "alignRight");
 	}
 
 	public void editarPrecioDeVentaPlan() {
@@ -455,7 +564,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				selectedDetalleRow - 1);
 		getPlanPrecioVentaTextBox().setText(
 				NumberFormat.getDecimalFormat().format(lineaSS.getPrecioVentaPlan()));
-		detalleSS.setWidget(selectedDetalleRow, 6, getPlanPrecioVentaTextBox());
+		detalleSS.setWidget(selectedDetalleRow, 8, getPlanPrecioVentaTextBox());
 		getPlanPrecioVentaTextBox().setFocus(true);
 	}
 
@@ -496,10 +605,16 @@ public class DatosSSUI extends Composite implements ClickHandler {
 					MessageDialog.getCloseCommand());
 			valor = lineaSS.getPrecioVentaPlan();
 		}
-		detalleSS.setHTML(selectedDetalleRow, 6, NumberFormat.getCurrencyFormat().format(valor));
+		detalleSS.setHTML(selectedDetalleRow, 8, NumberFormat.getCurrencyFormat().format(valor));
 		editarSSUIData.modificarValorPlan(selectedDetalleRow - 1, valor);
 	}
 
+	public void editarPrecionConDescuento(LineaSolicitudServicioDto linea, List<DescuentoDto> descuentos) {
+		descuentoDialog.modificarPrecioConDescuento(linea, descuentos);
+		int newRow = editarSSUIData.addLineaSolicitudServicio(linea) + 1;
+		drawDetalleSSRow(linea, newRow);
+	}
+	
 	public void refresh() {
 		refreshNssLayout();
 		refreshDomicilioLayout();

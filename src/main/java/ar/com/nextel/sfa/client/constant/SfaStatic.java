@@ -2383,5 +2383,12 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("ordenCompraReq")
   String ordenCompraReq();
   
-  
+  /**
+   * Translated "Precio con desc.".
+   * 
+   * @return translated "Precio con desc."
+   */
+  @DefaultStringValue("Precio con desc.")
+  @Key("precioConDesc")
+  String precioConDesc();  
 }

@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,8 +55,9 @@ import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
-import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.DescuentoDto;
+import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
@@ -75,6 +77,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
+import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
@@ -153,7 +156,25 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		SolicitudServicioDto solicitudServicioDto = mapper.map(solicitud, SolicitudServicioDto.class);
 		
 		//MR - le agrego el triptico
-		solicitudServicioDto.setNroTriptico(tripticoNextValue.nextNumber());
+		solicitudServicioDto.setTripticoNumber(tripticoNextValue.nextNumber());
+		
+		//calculo los descuentos aplicados a cada línea y se los seteo 
+		List<LineaSolicitudServicioDto> lineas = solicitudServicioDto.getLineas(); 
+		int a = 0;
+		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
+			Double descuentoAplicado = 0.0;
+			Double precioConDescuento = 0.0;
+			LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
+			Long idLinea = linea.getId();
+			List descuentosAplicados = solicitudServicioRepository.getDescuentosAplicados(idLinea);
+			List<DescuentoLineaDto> descuentos = mapper.convertList(descuentosAplicados, DescuentoLineaDto.class);
+			for (Iterator<DescuentoLineaDto> it = descuentos.iterator(); it.hasNext();) {
+				DescuentoLineaDto descuentoLineaDto = (DescuentoLineaDto) it.next();
+				descuentoAplicado += descuentoLineaDto.getMonto();
+			}
+			precioConDescuento = linea.getPrecioVenta() - descuentoAplicado;
+			linea.setPrecioConDescuento(precioConDescuento);
+		}
 
 		AppLogger.info("Creacion de Solicitud de Servicio finalizada");
 		return solicitudServicioDto;
@@ -546,5 +567,38 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
         AppLogger.info("Retrieve VENDEDORES DAE finalizado...");
         return vendedoresDae;
     }
+
+	public List<DescuentoDto> getDescuentos(Long idLinea) throws RpcExceptionMessages {
+		List descuentos = solicitudServicioRepository.getDescuentos(idLinea);
+    	return mapper.convertList(descuentos, DescuentoDto.class);
+	}
+	
+	public List<DescuentoDto> getDescuentosItemNull(Long idLinea) throws RpcExceptionMessages {
+		List descuentos = solicitudServicioRepository.getDescuentosItemNull(idLinea);
+		return mapper.convertList(descuentos, DescuentoDto.class);
+	}
+
+	public List<DescuentoLineaDto> getDescuentosAplicados(Long idLinea) throws RpcExceptionMessages {
+		List descuentosAplicados = solicitudServicioRepository.getDescuentosAplicados(idLinea);
+		return mapper.convertList(descuentosAplicados, DescuentoLineaDto.class);
+	}
+
+	public List<TipoDescuentoDto> getTiposDescuento(Long idLinea)
+			throws RpcExceptionMessages {
+		List tiposDescuento = solicitudServicioRepository.getTiposDescuento(idLinea);
+		return mapper.convertList(tiposDescuento, TipoDescuentoDto.class);
+	}
+
+	public List<TipoDescuentoDto> getTiposDescuentoItemNull(Long idLinea)
+			throws RpcExceptionMessages {
+		List tiposDescuento = solicitudServicioRepository.getTiposDescuentoItemNull(idLinea);
+		return mapper.convertList(tiposDescuento, TipoDescuentoDto.class);
+	}
+
+	public List<TipoDescuentoDto> getTiposDescuentoAplicados(Long idLinea)
+			throws RpcExceptionMessages {
+		List tiposDescuentoAplicados = solicitudServicioRepository.getTiposDescuentoAplicados(idLinea);
+		return mapper.convertList(tiposDescuentoAplicados, TipoDescuentoDto.class);
+	}
 
 }
