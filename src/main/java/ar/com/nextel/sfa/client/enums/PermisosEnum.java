@@ -86,8 +86,12 @@ public enum PermisosEnum {
 	//MR
 	AUTOCOMPLETAR_TRIPTICO("autocompletarTriptico", Accion.X, true),
 	//MGR - #1063
-	TIENE_ACCESO_CTA_GOBIERNO("tieneAccesoCtaGobierno", Accion.X, true);
+	TIENE_ACCESO_CTA_GOBIERNO("tieneAccesoCtaGobierno", Accion.X, true),
 	
+	//LM
+	TIENE_ACCESO_CTA_GOBIERNO_BS_AS("tieneAccesoCtaGobiernoBsAs", Accion.X, true),
+	TIENE_ACCESO_CTA_LAP("tieneAccesoCtaLAP", Accion.X, true),
+	TIENE_ACCESO_CTA_LA("tieneAccesoCtaLA", Accion.X, true);
 
 	private String value;
     private String accion;
