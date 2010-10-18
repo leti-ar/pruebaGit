@@ -152,7 +152,7 @@ public class CuentaBusinessService {
 			FacturaElectronicaService facturaElectronicaService) {
 		this.facturaElectronicaService = facturaElectronicaService;
 	}
-
+	
 	@Autowired
 	public void setGlobalParameterRetriever(
 			@Qualifier("globalParameterRetriever") DefaultRetriever globalParameterRetriever) {
@@ -197,7 +197,7 @@ public class CuentaBusinessService {
 		repository.update(cuenta);
 	}
 
-	// MGR - 05-07-2010 - Se cambian digitos de la tarjeta por asteriscos (*)
+	//MGR - 05-07-2010 - Se cambian digitos de la tarjeta por asteriscos (*)
 	private String changeByAsterisks(String numero) {
 
 		StringBuffer nuevaTarj = new StringBuffer();
@@ -211,7 +211,7 @@ public class CuentaBusinessService {
 	}
 
 	private Long encriptarNumeroTrajeta(String numero) throws Exception {
-
+		
 		AppLogger.info("numero tarjeta: " + numero);
 		CallableStatement stmt = ((HibernateRepository) repository)
 				.getHibernateDaoSupport().getSessionFactory()
@@ -433,7 +433,6 @@ public class CuentaBusinessService {
 		}
 		// }
 	}
-
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Division crearDivision(Cuenta cuenta, Vendedor vendedor) {
 		return (Division) createCuentaBusinessOperator.createDivisionFrom(
@@ -497,11 +496,11 @@ public class CuentaBusinessService {
 			validarAccesoCuenta(cuenta, vendedor, filtradoPorDni);
 
 			// Lockea la cuenta
-			if (accessCuenta.getAccessAuthorization().hasSamePermissionsAs(
+			if (vendedor.getTipoVendedor().isUsaLockeo() && ( accessCuenta.getAccessAuthorization().hasSamePermissionsAs(
 					AccessAuthorization.editOnly())
 					|| accessCuenta.getAccessAuthorization()
 							.hasSamePermissionsAs(
-									AccessAuthorization.fullAccess())) {
+									AccessAuthorization.fullAccess()))) {
 				cuenta.editar(vendedor);
 				repository.save(cuenta);
 			}
@@ -563,7 +562,10 @@ public class CuentaBusinessService {
 	public void validarAccesoCuenta(Cuenta cuenta, Vendedor vendedor,
 			boolean filtradoPorDni) throws RpcExceptionMessages {
 		// logueado no es el de la cuenta
-		if (!vendedor.getId().equals(cuenta.getVendedor().getId())) {
+		if ( !vendedor.getId().equals(cuenta.getVendedor().getId())) {
+			HashMap<String, Boolean> mapaPermisosClient = (HashMap<String, Boolean>) 
+			SessionContextLoader.getInstance().getSessionContext().get(SessionContext.PERMISOS);
+
 			if (cuenta.isClaseEmpleados()) {
 				throw new RpcExceptionMessages(
 						ERR_CUENTA_NO_EDITABLE
@@ -572,7 +574,7 @@ public class CuentaBusinessService {
 										((ClaseCuenta) knownInstanceRetriever
 												.getObject(KnownInstanceIdentifier.CLASE_CUENTA_EMPLEADOS))
 												.getDescripcion()));
-			} else if (cuenta.isGobiernoBsAs()) {
+			} else if (cuenta.isGobiernoBsAs() && !(Boolean)mapaPermisosClient.get(PermisosUserCenter.TIENE_ACCESO_CTA_GOBIERNO_BS_AS.getValue())) {
 				String err = ERR_CUENTA_GOBIERNO.replaceAll("\\{1\\}", cuenta
 						.getCodigoVantive());
 				err = err.replaceAll("\\{2\\}", cuenta.getPersona()
@@ -584,17 +586,10 @@ public class CuentaBusinessService {
 										.getObject(KnownInstanceIdentifier.CLASE_CUENTA_GOB_BS_AS))
 										.getDescripcion());
 				throw new RpcExceptionMessages(err);
-			} else if (cuenta.isGobierno()) {
-				// MGR - #1063
-				HashMap<String, Boolean> mapaPermisosClient = (HashMap<String, Boolean>) SessionContextLoader
-						.getInstance().getSessionContext().get(
-								SessionContext.PERMISOS);
-
-				if (!(Boolean) mapaPermisosClient
-						.get(PermisosUserCenter.TIENE_ACCESO_CTA_GOBIERNO
-								.getValue())) {
-					String err = ERR_CUENTA_GOBIERNO.replaceAll("\\{1\\}",
-							cuenta.getCodigoVantive());
+			} else if ( cuenta.isGobierno() && !(Boolean)mapaPermisosClient.get(PermisosUserCenter.TIENE_ACCESO_CTA_GOBIERNO.getValue())){
+				//MGR - #1063				
+		        	String err = ERR_CUENTA_GOBIERNO.replaceAll("\\{1\\}", cuenta
+							.getCodigoVantive());
 					err = err.replaceAll("\\{2\\}", cuenta.getPersona()
 							.getRazonSocial());
 					err = err
@@ -604,9 +599,7 @@ public class CuentaBusinessService {
 											.getObject(KnownInstanceIdentifier.CLASE_CUENTA_GOBIERNO))
 											.getDescripcion());
 					throw new RpcExceptionMessages(err);
-				}
-
-			} else if (cuenta.isLAP()) {
+		  } else if (cuenta.isLAP() && !(Boolean)mapaPermisosClient.get(PermisosUserCenter.TIENE_ACCESO_CTA_LAP.getValue())) {
 				throw new RpcExceptionMessages(
 						ERR_CUENTA_NO_EDITABLE
 								.replaceAll(
@@ -614,7 +607,7 @@ public class CuentaBusinessService {
 										((ClaseCuenta) knownInstanceRetriever
 												.getObject(KnownInstanceIdentifier.CLASE_CUENTA_LAP))
 												.getDescripcion()));
-			} else if (cuenta.isLA()) {
+			} else if (cuenta.isLA() && !(Boolean)mapaPermisosClient.get(PermisosUserCenter.TIENE_ACCESO_CTA_LA.getValue())) {
 				throw new RpcExceptionMessages(
 						ERR_CUENTA_NO_EDITABLE
 								.replaceAll(
@@ -627,8 +620,7 @@ public class CuentaBusinessService {
 				// la tiene lockeada alguien y no soy yo
 				if ((cuenta.getVendedorLockeo() != null)
 						&& (!vendedor.getId().equals(
-								cuenta.getVendedorLockeo().getId()))
-						&& vendedor.getTipoVendedor().isUsaLockeo()) {
+								cuenta.getVendedorLockeo().getId())) && vendedor.getTipoVendedor().isUsaLockeo()) {
 					throw new RpcExceptionMessages(ERR_CUENTA_NO_PERMISO);
 				}
 			}
@@ -654,6 +646,7 @@ public class CuentaBusinessService {
 			}
 		}
 	}
+
 
 	private void updateTelefonosAPersona(TelefonoDto tel, Persona persona,
 			MapperExtended mapper) {
@@ -768,5 +761,7 @@ public class CuentaBusinessService {
 				accessAuthorization, cuenta);
 		return accessCuenta;
 	}
+
+
 
 }
