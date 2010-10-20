@@ -8,7 +8,13 @@ public class TerminoPagoValidoDto extends EnumDto implements IsSerializable, Lis
 
 	private TerminoPagoDto terminoPago;
 	private Double ajuste;
-
+	
+	//MGR - #1077
+	/**
+     * Indica si se aplica como default
+     */
+    private Boolean terminoPagoDefault;
+    
 	public String getItemText() {
 		return getDescripcion();
 	}
@@ -36,5 +42,13 @@ public class TerminoPagoValidoDto extends EnumDto implements IsSerializable, Lis
 	public void setTerminoPago(TerminoPagoDto terminoPago) {
 		this.terminoPago = terminoPago;
 	}
+	
+	//MGR - #1077
+	public Boolean getTerminoPagoDefault() {
+		return terminoPagoDefault;
+	}
 
+	public void setTerminoPagoDefault(Boolean terminoPagoDefault) {
+		this.terminoPagoDefault = terminoPagoDefault;
+	}
 }

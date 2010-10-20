@@ -24,9 +24,9 @@ public class ClienteNexusDto implements Serializable {
 		this.customerId = customerId;
 	}
 	
-	public boolean isVieneDeNexus() {
-		return vieneDeNexus;
-	}
+//	public boolean isVieneDeNexus() {
+//		return vieneDeNexus;
+//	}
 	
 	public void setVieneDeNexus(boolean vieneDeNexus) {
 		this.vieneDeNexus = vieneDeNexus;

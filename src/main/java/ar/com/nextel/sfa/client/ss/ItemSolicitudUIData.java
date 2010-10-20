@@ -402,11 +402,15 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 			ListaPreciosDto listaSelected = (ListaPreciosDto) listaPrecio.getSelectedItem();
 			item.addAllItems(listaSelected.getItemsListaPrecioVisibles());
-
-			// Selecciono Cuenta Corriente Vencimiento Ciclo por default si no tiene ninguno seleccionado
-			TerminoPagoValidoDto terminoPagoValido = getTerminoPagoValidoByIdTerminoPago(listaSelected
-					.getTerminosPagoValido(), CUENTA_CORRIENTE_VENC_CICLO_ID);
+			
+			//MGR - #1077
 			if (!terminoPago.hasPreseleccionados()) {
+				TerminoPagoValidoDto terminoPagoValido = getTerminoPagoValidoDefault(listaSelected.getTerminosPagoValido());
+				if(terminoPagoValido == null){
+					//Selecciono Cuenta Corriente Vencimiento Ciclo si no tiene ninguno por default
+					terminoPagoValido = getTerminoPagoValidoByIdTerminoPago(listaSelected
+							.getTerminosPagoValido(), CUENTA_CORRIENTE_VENC_CICLO_ID);
+				}
 				terminoPago.setSelectedItem(terminoPagoValido);
 			}
 			terminoPago.addAllItems(listaSelected.getTerminosPagoValido());
@@ -992,5 +996,16 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			i++;
 		}
 		return index >= 0 ? terminosPagoValido.get(index) : null;
+	}
+	
+	//MGR - #1077
+	private TerminoPagoValidoDto getTerminoPagoValidoDefault(
+			List<TerminoPagoValidoDto> terminosPagoValido) {
+		for (TerminoPagoValidoDto terminoPagoValido : terminosPagoValido) {
+			if (terminoPagoValido.getTerminoPagoDefault()) {
+				return terminoPagoValido;
+			}
+		}
+		return null;
 	}
 }
