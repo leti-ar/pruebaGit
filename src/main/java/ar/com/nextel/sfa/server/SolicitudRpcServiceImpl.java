@@ -156,7 +156,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		SolicitudServicioDto solicitudServicioDto = mapper.map(solicitud, SolicitudServicioDto.class);
 		
 		//MR - le agrego el triptico
-		if(solicitudServicioDto.getNumero() != null)
+		if(solicitudServicioDto.getNumero() == null)
 			solicitudServicioDto.setTripticoNumber(tripticoNextValue.nextNumber());
 		
 		//calculo los descuentos aplicados a cada línea y se los seteo 
