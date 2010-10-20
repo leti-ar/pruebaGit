@@ -208,7 +208,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		SimplePanel wrapper = new SimplePanel();
 		wrapper.addStyleName("resumenSSTableWrapper mlr5");
 		detalleSS = new FlexTable();
-		if(ClientContext.getInstance().getClienteNexus().isVieneDeNexus()) {
+		if(ClientContext.getInstance().vengoDeNexus()) {
 			String[] titlesDetalle = { Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), 
 					Sfa.constant().whiteSpace(), "Item", "Pcio Vta.", "Precio con Desc.", "Alias", "Plan", 
 					"Pcio Vta. Plan", "Localidad", "Nº Reserva", "Tipo SS", "Cant.", "DDN", "DDI", "Roaming" };			
