@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client.ss;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
@@ -14,6 +15,7 @@ import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
+import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
@@ -67,13 +69,14 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private TextBox precioVentaPlan;
 	private List listaDomicilios = new ArrayList<DomiciliosCuentaDto>();
 	private DescuentoDialog descuentoDialog;
-	private int rowG;
 	private Long idLinea;
 	private LineaSolicitudServicioDto lineaSeleccionada;
 	private DescuentoDto descuento;
 	private List<DescuentoDto> descuentos = new ArrayList<DescuentoDto>();
 	private List<TipoDescuentoDto> descuentosAplicados = new ArrayList<TipoDescuentoDto>();
 	private List<TipoDescuentoDto> descuentosAAplicar = new ArrayList<TipoDescuentoDto>();
+	private List<TipoDescuentoSeleccionado> descuentoSeleccionados = new ArrayList<TipoDescuentoSeleccionado>();
+	private boolean sacarTipoDescuento;
 	
 	private static final String SELECTED_ROW = "selectedRow";
 
@@ -208,7 +211,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		SimplePanel wrapper = new SimplePanel();
 		wrapper.addStyleName("resumenSSTableWrapper mlr5");
 		detalleSS = new FlexTable();
-		if(ClientContext.getInstance().vengoDeNexus()) {
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
 			String[] titlesDetalle = { Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), 
 					Sfa.constant().whiteSpace(), "Item", "Pcio Vta.", "Precio con Desc.", "Alias", "Plan", 
 					"Pcio Vta. Plan", "Localidad", "Nº Reserva", "Tipo SS", "Cant.", "DDN", "DDI", "Roaming" };			
@@ -353,7 +356,6 @@ public class DatosSSUI extends Composite implements ClickHandler {
 					//Abre el panel de descuento de la LineaSolicitudServicio
 					lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1); 
 					verificarDescuento(lineaSeleccionada);
-					rowG = row;
 				}
 			}
 		} else if (serviciosAdicionales.getTable() == sender) {
@@ -404,28 +406,29 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	/**Verifica si se puede aplicar un descuento al item seleccionado*/
 	private void verificarDescuento(LineaSolicitudServicioDto linea) {
 		idLinea = linea.getId();
-		SolicitudRpcService.Util.getInstance().getDescuentos(idLinea, new DefaultWaitCallback<List<DescuentoDto>>() {
-			@Override
-			public void success(List<DescuentoDto> result) {
-				if (result.size() > 0) {
-					openAplicarDescuentoDialog(lineaSeleccionada, result);
-				} else {
-					SolicitudRpcService.Util.getInstance().getDescuentosItemNull(idLinea, new DefaultWaitCallback<List<DescuentoDto>>() {
-						@Override
-						public void success(List<DescuentoDto> result) {
-							if (result.size() > 0) {
-								openAplicarDescuentoDialog(lineaSeleccionada, result);
-							} else {
-								MessageDialog.getInstance().setDialogTitle("Advertencia");
-								MessageDialog.getInstance().showAceptar(
-										"No se puede aplicar un descuento a este item",
-										MessageDialog.getCloseCommand());
+		if (idLinea != null) {
+			SolicitudRpcService.Util.getInstance().getDescuentos(idLinea, new DefaultWaitCallback<List<DescuentoDto>>() {
+				@Override
+				public void success(List<DescuentoDto> result) {
+					if (result.size() > 0) {
+						openAplicarDescuentoDialog(lineaSeleccionada, result);
+					} else {
+						SolicitudRpcService.Util.getInstance().getDescuentosItemNull(idLinea, new DefaultWaitCallback<List<DescuentoDto>>() {
+							@Override
+							public void success(List<DescuentoDto> result) {
+								if (result.size() > 0) {
+									openAplicarDescuentoDialog(lineaSeleccionada, result);
+								} else {
+									noSePuedeAplicarDescuento();
+								}
 							}
-						}
-					});
+						});
+					}
 				}
-			}
-		});
+			});
+		} else {
+			noSePuedeAplicarDescuento();
+		}
 	}
 
 	/**Crea y abre el Dialog para aplicar un descuento a la LineaSolicitudServicioDto */
@@ -439,6 +442,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			Command aceptarCommand = new Command() {
 				public void execute() {
 					editarPrecionConDescuento(lineaSeleccionada, descuentos);
+					descuentoSeleccionados = descuentoDialog.getDescuentosSeleccionados();
 				}
 			};
 			descuentoDialog.setAceptarCommand(aceptarCommand);
@@ -448,6 +452,15 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			@Override
 			public void success(List<TipoDescuentoDto> result) {
 				descuentosAplicados = result;
+				for (Iterator<TipoDescuentoSeleccionado> iterator = descuentoSeleccionados.iterator(); iterator.hasNext();) {
+					TipoDescuentoSeleccionado seleccionado = (TipoDescuentoSeleccionado) iterator.next();
+					if (lineaSeleccionada.getId().equals(seleccionado.getIdLineaSeleccionada())) {
+						sacarTipoDescuento = true;
+						TipoDescuentoDto tipoDescuentoDto = new TipoDescuentoDto();
+						tipoDescuentoDto.setDescripcion(seleccionado.getDescripcion());
+						descuentosAplicados.add(tipoDescuentoDto);
+					}
+				}
 				//Obtengo los tipos de descuento que puede aplicar
 				SolicitudRpcService.Util.getInstance().getTiposDescuento(idLinea, new DefaultWaitCallback<List<TipoDescuentoDto>>() {
 					@Override
@@ -465,12 +478,26 @@ public class DatosSSUI extends Composite implements ClickHandler {
 							});
 						}
 						if (descuentosAAplicar.size() > 0) {
-							descuentoDialog.show(lineaSeleccionada, descuento, descuentosAplicados, descuentosAAplicar);
+							if (sacarTipoDescuento) {
+								Iterator<TipoDescuentoDto> iterator = descuentosAAplicar.iterator();
+								while (iterator.hasNext()) {
+									TipoDescuentoDto tipoDescuento = (TipoDescuentoDto) iterator.next();
+									for (Iterator<TipoDescuentoSeleccionado> iterator2 = descuentoSeleccionados.iterator(); iterator2.hasNext();) {
+										TipoDescuentoSeleccionado seleccionado = (TipoDescuentoSeleccionado) iterator2.next();
+										if (lineaSeleccionada.getId().equals(seleccionado.getIdLineaSeleccionada()) &&
+												tipoDescuento.getDescripcion().equals(seleccionado.getDescripcion())) {
+											iterator.remove();
+										}
+									}
+								}
+							}
+							if (descuentosAAplicar.size() > 0) {
+								descuentoDialog.show(lineaSeleccionada, descuento, descuentosAplicados, descuentosAAplicar);
+							} else {
+								noSePuedeAplicarDescuento();
+							}
 						} else {
-							MessageDialog.getInstance().setDialogTitle("Advertencia");
-							MessageDialog.getInstance().showAceptar(
-									"No se puede aplicar un descuento a este item",
-									MessageDialog.getCloseCommand());
+							noSePuedeAplicarDescuento();
 						}
 					}
 				});
@@ -613,6 +640,13 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		descuentoDialog.modificarPrecioConDescuento(linea, descuentos);
 		int newRow = editarSSUIData.addLineaSolicitudServicio(linea) + 1;
 		drawDetalleSSRow(linea, newRow);
+	}
+
+	private void noSePuedeAplicarDescuento() {
+		MessageDialog.getInstance().setDialogTitle("Advertencia");
+		MessageDialog.getInstance().showAceptar(
+				"No se puede aplicar un descuento a este item",
+				MessageDialog.getCloseCommand());		
 	}
 	
 	public void refresh() {

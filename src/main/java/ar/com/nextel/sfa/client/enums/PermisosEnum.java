@@ -91,7 +91,10 @@ public enum PermisosEnum {
 	//LM
 	TIENE_ACCESO_CTA_GOBIERNO_BS_AS("tieneAccesoCtaGobiernoBsAs", Accion.X, true),
 	TIENE_ACCESO_CTA_LAP("tieneAccesoCtaLAP", Accion.X, true),
-	TIENE_ACCESO_CTA_LA("tieneAccesoCtaLA", Accion.X, true);
+	TIENE_ACCESO_CTA_LA("tieneAccesoCtaLA", Accion.X, true),
+	
+	//Para agregar descuentos a las lineas de solicitud de servicio
+	AGREGAR_DESCUENTOS("puedeVerDescuentos", Accion.X, true);
 
 	private String value;
     private String accion;

@@ -52,10 +52,13 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 	private Double valorTotal = 0.0;
 	private NumberFormat decimalFormat = NumberFormat.getFormat("##########.##");
 	private List<TipoDescuentoDto> tiposDeDescuento;
+	private List<TipoDescuentoSeleccionado> descuentosSeleccionados;
+	private TipoDescuentoSeleccionado seleccionado;
 	
 	public DescuentoDialog(String title, EditarSSUIController controller) {
 		super(title, false, true);
 		tiposDeDescuento = new ArrayList<TipoDescuentoDto>();
+		descuentosSeleccionados = new ArrayList<TipoDescuentoSeleccionado>();
 		addStyleName("gwt-DescuentoDialog");
 		aceptar = new SimpleLink("ACEPTAR");
 		cancelar = new SimpleLink("CANCELAR");
@@ -152,6 +155,7 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 	}
 
 	public void show(LineaSolicitudServicioDto linea, DescuentoDto descuento, List<TipoDescuentoDto> descuentosAplicados, List<TipoDescuentoDto> descuentosAAplicar) {
+		//reseteo valores
 		montoTB.setText("");
 		porcentajeTB.setText("");
 		precioVenta.setText("");
@@ -161,6 +165,8 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 		precioConDescuento = linea.getPrecioConDescuento();
 		porcentajeTB.setEnabled(true);
 		montoTB.setEnabled(true);
+		
+		//si la linea ya tiene un porcentaje de descuento por default, lo seteo
 		if (!descuento.isSobreescribir()) {
 			porcentajeTB.setText(String.valueOf(descuento.getOperand()));
 			porcentajeTB.setEnabled(false);
@@ -169,8 +175,9 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 					* Double.valueOf(porcentajeTB.getValue()) / 100);
 			precioVenta.setText(String.valueOf(decimalFormat.format(valorTotal)).replace(",", "."));
 		}
+		
 		if(descuentosAAplicar.size() > 0) {
-			//cargo el listBox
+			//cargo el listBox con los descuento que puede aplicar el usuario
 			for (Iterator<TipoDescuentoDto> iterator = descuentosAAplicar.iterator(); iterator.hasNext();) {
 				TipoDescuentoDto tipoDescuentoDto = (TipoDescuentoDto) iterator.next();
 				tipoDeDescuento.addItem(tipoDescuentoDto.getDescripcion());
@@ -178,12 +185,16 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 		}
 		this.tiposDeDescuento = descuentosAAplicar;
 		
+		//cargo el textArea con los descuento que ya aplicó el usuario
 		String label = "";
 		for (Iterator<TipoDescuentoDto> iterator = descuentosAplicados.iterator(); iterator.hasNext();) {
 			TipoDescuentoDto tipoDescuento = (TipoDescuentoDto) iterator.next();
 			label += tipoDescuento.getDescripcion() + "\n";
 		}
 		descuentoAplicado.setText(label);
+		
+		seleccionado = new TipoDescuentoSeleccionado();
+		seleccionado.setIdLinea(linea.getId());
 		showAndCenter();
 	}
 
@@ -195,6 +206,9 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 						"Debe ingresar un Monto o Porcentaje para aplicar el descuento",
 						MessageDialog.getCloseCommand());
 			} else {
+				//agrego el tipo de descuento que eligió para que no pueda volverlo a elegir
+				seleccionado.setDescripcion(tipoDeDescuento.getSelectedItemText());
+				descuentosSeleccionados.add(seleccionado);
 				aceptarCommand.execute();
 				hide();
 			}
@@ -206,11 +220,13 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 	public void aplicarDescuentoTotal(List<LineaSolicitudServicioDto> lineas) {
 		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
 			LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
-			linea.setPrecioConDescuento(new Double("0,00"));
+			linea.setPrecioConDescuento(new Double(0.0));
+			linea.setMonto(linea.getPrecioVenta());
 		}
 	}
 
 	public void modificarPrecioConDescuento(LineaSolicitudServicioDto linea, List<DescuentoDto> descuentos) {		
+		//guardo en la linea los valores que modificó el usuario
 		if (!"".equals(porcentajeTB.getValue())) {
 			linea.setPorcentaje(Double.valueOf(porcentajeTB.getValue()));
 		} else {
@@ -219,7 +235,7 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 		linea.setMonto(precioConDescuento - valorTotal);
 		linea.setPrecioConDescuento(new Double(precioVenta.getText()));		
 		
-		//agrego una linea de descuento
+		//creo una linea de descuento y la agrego a la linea de solicitud de servicio
 		DescuentoLineaDto descuentoLinea = new DescuentoLineaDto();
 		descuentoLinea.setDescripcionTipoDescuento(tipoDeDescuento.getSelectedItemText());
 		
@@ -242,4 +258,8 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 		linea.addDescuentoLinea(descuentoLinea);
 	}
 
+	public List<TipoDescuentoSeleccionado> getDescuentosSeleccionados() {
+		return descuentosSeleccionados;
+	}
+	
 }
