@@ -54,6 +54,7 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 	private List<TipoDescuentoDto> tiposDeDescuento;
 	private List<TipoDescuentoSeleccionado> descuentosSeleccionados;
 	private TipoDescuentoSeleccionado seleccionado;
+	private boolean noAplicarDesc = false;
 	
 	public DescuentoDialog(String title, EditarSSUIController controller) {
 		super(title, false, true);
@@ -119,6 +120,7 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 						MessageDialog.getInstance().showAceptar(
 								"El monto no puede ser mayor al precio de lista",
 								MessageDialog.getCloseCommand());
+						noAplicarDesc = true;
 					}
 				} catch (Exception e) {
 				}
@@ -138,6 +140,7 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 						MessageDialog.getInstance().showAceptar(
 								"El porcentaje no puede ser mayor al 100%",
 								MessageDialog.getCloseCommand());
+						noAplicarDesc = true;
 					}
 				} catch (Exception e) {
 				}
@@ -206,22 +209,17 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 						"Debe ingresar un Monto o Porcentaje para aplicar el descuento",
 						MessageDialog.getCloseCommand());
 			} else {
-				//agrego el tipo de descuento que eligió para que no pueda volverlo a elegir
-				seleccionado.setDescripcion(tipoDeDescuento.getSelectedItemText());
-				descuentosSeleccionados.add(seleccionado);
+				if (!noAplicarDesc) {
+					//agrego el tipo de descuento que eligió para que no pueda volverlo a elegir
+					seleccionado.setDescripcion(tipoDeDescuento.getSelectedItemText());
+					descuentosSeleccionados.add(seleccionado);
+				}
+				noAplicarDesc = false;
 				aceptarCommand.execute();
 				hide();
 			}
 		} else if (sender == cancelar) {
 			hide();
-		}
-	}
-
-	public void aplicarDescuentoTotal(List<LineaSolicitudServicioDto> lineas) {
-		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
-			LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
-			linea.setPrecioConDescuento(new Double(0.0));
-			linea.setMonto(linea.getPrecioVenta());
 		}
 	}
 
