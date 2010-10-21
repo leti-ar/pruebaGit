@@ -233,7 +233,11 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 			linea.setPorcentaje(new Double(0.0));
 		}
 		linea.setMonto(precioConDescuento - valorTotal);
-		linea.setPrecioConDescuento(new Double(precioVenta.getText()));		
+		if (!"".equals(precioVenta.getText())) {
+			linea.setPrecioConDescuento(new Double(precioVenta.getText()));		
+		} else {
+			linea.setPrecioConDescuento(new Double(0.0));
+		}
 		
 		//creo una linea de descuento y la agrego a la linea de solicitud de servicio
 		DescuentoLineaDto descuentoLinea = new DescuentoLineaDto();

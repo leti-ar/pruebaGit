@@ -132,7 +132,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			nnsLayout.clearCell(0, 8);
 			nnsLayout.clearCell(0, 9);
 		}
-		
+
 	}
 
 	private Widget getDomicilioPanel() {
@@ -467,37 +467,59 @@ public class DatosSSUI extends Composite implements ClickHandler {
 					public void success(List<TipoDescuentoDto> result) {
 						if (result.size() > 0) {
 							descuentosAAplicar = result;
+							if (descuentosAAplicar.size() > 0) {
+								if (sacarTipoDescuento) {
+									Iterator<TipoDescuentoDto> iterator = descuentosAAplicar.iterator();
+									while (iterator.hasNext()) {
+										TipoDescuentoDto tipoDescuento = (TipoDescuentoDto) iterator.next();
+										for (Iterator<TipoDescuentoSeleccionado> iterator2 = descuentoSeleccionados.iterator(); iterator2.hasNext();) {
+											TipoDescuentoSeleccionado seleccionado = (TipoDescuentoSeleccionado) iterator2.next();
+											if (lineaSeleccionada.getId().equals(seleccionado.getIdLineaSeleccionada()) &&
+													tipoDescuento.getDescripcion().equals(seleccionado.getDescripcion())) {
+												iterator.remove();
+											}
+										}
+									}
+								}
+								if (descuentosAAplicar.size() > 0) {
+									descuentoDialog.show(lineaSeleccionada, descuento, descuentosAplicados, descuentosAAplicar);
+								} else {
+									noSePuedeAplicarDescuento();
+								}
+							} else {
+								noSePuedeAplicarDescuento();
+							}							
 						} else {
 							SolicitudRpcService.Util.getInstance().getTiposDescuentoItemNull(idLinea, new DefaultWaitCallback<List<TipoDescuentoDto>>() {
 								@Override
 								public void success(List<TipoDescuentoDto> result) {
 									if (result.size() > 0) {
 										descuentosAAplicar = result;
+										if (descuentosAAplicar.size() > 0) {
+											if (sacarTipoDescuento) {
+												Iterator<TipoDescuentoDto> iterator = descuentosAAplicar.iterator();
+												while (iterator.hasNext()) {
+													TipoDescuentoDto tipoDescuento = (TipoDescuentoDto) iterator.next();
+													for (Iterator<TipoDescuentoSeleccionado> iterator2 = descuentoSeleccionados.iterator(); iterator2.hasNext();) {
+														TipoDescuentoSeleccionado seleccionado = (TipoDescuentoSeleccionado) iterator2.next();
+														if (lineaSeleccionada.getId().equals(seleccionado.getIdLineaSeleccionada()) &&
+																tipoDescuento.getDescripcion().equals(seleccionado.getDescripcion())) {
+															iterator.remove();
+														}
+													}
+												}
+											}
+											if (descuentosAAplicar.size() > 0) {
+												descuentoDialog.show(lineaSeleccionada, descuento, descuentosAplicados, descuentosAAplicar);
+											} else {
+												noSePuedeAplicarDescuento();
+											}
+										} else {
+											noSePuedeAplicarDescuento();
+										}										
 									}							
 								}						
 							});
-						}
-						if (descuentosAAplicar.size() > 0) {
-							if (sacarTipoDescuento) {
-								Iterator<TipoDescuentoDto> iterator = descuentosAAplicar.iterator();
-								while (iterator.hasNext()) {
-									TipoDescuentoDto tipoDescuento = (TipoDescuentoDto) iterator.next();
-									for (Iterator<TipoDescuentoSeleccionado> iterator2 = descuentoSeleccionados.iterator(); iterator2.hasNext();) {
-										TipoDescuentoSeleccionado seleccionado = (TipoDescuentoSeleccionado) iterator2.next();
-										if (lineaSeleccionada.getId().equals(seleccionado.getIdLineaSeleccionada()) &&
-												tipoDescuento.getDescripcion().equals(seleccionado.getDescripcion())) {
-											iterator.remove();
-										}
-									}
-								}
-							}
-							if (descuentosAAplicar.size() > 0) {
-								descuentoDialog.show(lineaSeleccionada, descuento, descuentosAplicados, descuentosAAplicar);
-							} else {
-								noSePuedeAplicarDescuento();
-							}
-						} else {
-							noSePuedeAplicarDescuento();
 						}
 					}
 				});
