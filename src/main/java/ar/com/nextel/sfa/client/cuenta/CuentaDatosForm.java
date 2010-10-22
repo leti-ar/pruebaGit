@@ -851,7 +851,7 @@ public class CuentaDatosForm extends Composite {
 		campos.add(cuentaUIData.getTipoDocumento());
 		campos.add(cuentaUIData.getNumeroDocumento());
 		campos.add(cuentaUIData.getCategoria());
-		campos.add(cuentaUIData.getClaseCliente());
+//		campos.add(cuentaUIData.getClaseCliente());
 		campos.add(cuentaUIData.getCicloFacturacion());
 
 		FormUtils.disableFields(campos);
