@@ -92,7 +92,8 @@ public enum PermisosEnum {
 	TIENE_ACCESO_CTA_GOBIERNO_BS_AS("tieneAccesoCtaGobiernoBsAs", Accion.X, true),
 	TIENE_ACCESO_CTA_LAP("tieneAccesoCtaLAP", Accion.X, true),
 	TIENE_ACCESO_CTA_LA("tieneAccesoCtaLA", Accion.X, true),
-	
+	//MGR - #1073
+	BUSQUEDA_POR_CATEG_DOC("busquedaPorCategDoc", Accion.X, true),
 	//Para agregar descuentos a las lineas de solicitud de servicio
 	AGREGAR_DESCUENTOS("puedeVerDescuentos", Accion.X, true);
 

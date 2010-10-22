@@ -1,11 +1,14 @@
 package ar.com.nextel.sfa.client.dto;
 
+import java.util.HashMap;
+
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class VendedorDto implements IsSerializable, ListBoxItem {
-
+	
 	private Long id;
 	private UsuarioDto usuarioDto;
     private String nombre;
@@ -16,7 +19,7 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
     private TipoVendedorDto tipoVendedor;
 
 	public Long getId() {
-		return id;
+		return id; 
 	}
 
 	public UsuarioDto getUsuarioDto() {
@@ -86,5 +89,4 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
 	public TipoVendedorDto getTipoVendedor() {
 		return tipoVendedor;
 	}
-
 }
