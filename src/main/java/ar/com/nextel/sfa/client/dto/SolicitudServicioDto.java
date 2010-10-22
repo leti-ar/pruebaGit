@@ -62,6 +62,9 @@ public class SolicitudServicioDto implements IsSerializable {
 	
 	//MGR - #1027
     private String ordenCompra;
+    
+    //MGR - #1013
+    private String validacionPin;
 
 	public SolicitudServicioDto() {
 		solicitudServicioGeneracion = new SolicitudServicioGeneracionDto();
@@ -353,5 +356,13 @@ public class SolicitudServicioDto implements IsSerializable {
 
 	public void setNroTriptico(Long nroTriptico) {
 		this.nroTriptico = nroTriptico;
+	}
+	
+	public String getValidacionPin() {
+		return validacionPin;
+	}
+
+	public void setValidacionPin(String validacionPin) {
+		this.validacionPin = validacionPin;
 	}
 }
