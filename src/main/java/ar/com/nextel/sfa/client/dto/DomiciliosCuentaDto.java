@@ -38,6 +38,7 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 	private Long idFacturacion;
 
 	private boolean locked;
+	private boolean enCarga = true;
 
 	public String getDomicilios() {
 		/**
@@ -327,6 +328,14 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+
+	public boolean isEnCarga() {
+		return enCarga;
+	}
+
+	public void setEnCarga(boolean enCarga) {
+		this.enCarga = enCarga;
 	}
 
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
+import ar.com.nextel.sfa.client.cuenta.CuentaDatosForm;
 import ar.com.nextel.sfa.client.cuenta.EditarCuentaUI;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
@@ -123,7 +124,7 @@ public class DomicilioUI extends NextelDialog {
 		showAndCenter();
 		domiciliosUIData.disableFields();
 		linkAceptar.setVisible(false);
-		if (ClientContext.getInstance().checkPermiso(PermisosEnum.EDITAR_DOMICILIO.getValue())) {
+		if ( CuentaDatosForm.getInstance().getCuentaDtoFromEditor().isProspect() || ClientContext.getInstance().checkPermiso(PermisosEnum.EDITAR_DOMICILIO.getValue())) {
 			habilitarCampo(domiciliosUIData.getCalle());
 			habilitarCampo(domiciliosUIData.getNumero());
 			habilitarCampo(domiciliosUIData.getCpa());
@@ -155,7 +156,7 @@ public class DomicilioUI extends NextelDialog {
 	}
 
 	private void habilitarCampo(TextBoxBase campo) {
-		if("".equals(campo.getText()) || " ".equals(campo.getText())) {
+		if(domicilioAEditar.isEnCarga() ||  (  "".equals(campo.getText()) || " ".equals(campo.getText()))) {
 			campo.setEnabled(true);
 			campo.setReadOnly(false);
 		}
