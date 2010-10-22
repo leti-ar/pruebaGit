@@ -77,6 +77,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private List<TipoDescuentoDto> descuentosAAplicar = new ArrayList<TipoDescuentoDto>();
 	private List<TipoDescuentoSeleccionado> descuentoSeleccionados = new ArrayList<TipoDescuentoSeleccionado>();
 	private boolean sacarTipoDescuento;
+	private boolean descuentoTotalAplicado = false;
 	
 	private static final String SELECTED_ROW = "selectedRow";
 
@@ -120,17 +121,34 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			nnsLayout.clearCell(0, 4);
 			nnsLayout.clearCell(0, 5);
 		}
-		//MGR - #1027
-		//MGR - Por ahora se ponen vacias estas posiciones pero deben llenarse con el combo que falta
-		nnsLayout.clearCell(0, 6);
-		nnsLayout.clearCell(0, 7);
+//		nnsLayout.setHTML(0, 6, "Descuento Total:");
+//		nnsLayout.setWidget(0, 7, editarSSUIData.getDescuentoTotal());
+//		nnsLayout.setWidget(0, 8, editarSSUIData.getTildeVerde());
+//		editarSSUIData.getTildeVerde().addClickHandler(new ClickHandler() {
+//			public void onClick(ClickEvent arg0) {
+//				descuentoTotalAplicado = true;
+//				int i = 1;
+//				for (Iterator<LineaSolicitudServicioDto> iterator = editarSSUIData.getLineasSolicitudServicio().iterator(); iterator.hasNext();) {
+//					LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
+//					linea.setPrecioConDescuento(new Double(0.0));
+//					linea.setMonto(linea.getPrecioVenta());
+//					drawDetalleSSRow(linea, i);
+//					i++;
+////					TipoDescuentoSeleccionado seleccionado = new TipoDescuentoSeleccionado();
+////					seleccionado.setIdLinea(linea.getId());
+////					seleccionado.setDescripcion(editarSSUIData.getDescuentoTotal().getSelectedItemText());
+////					descuentoSeleccionados.add(seleccionado);
+//				}
+//				editarSSUIData.deshabilitarDescuentoTotal();
+//			}
+//		});
 		if(editarSSUIData.getGrupoSolicitud() != null &&
 				instancias.get(GrupoSolicitudDto.ID_FAC_MENSUAL).equals(editarSSUIData.getGrupoSolicitud().getId())){
-			nnsLayout.setHTML(0, 8, Sfa.constant().ordenCompraReq());
-			nnsLayout.setWidget(0, 9, editarSSUIData.getOrdenCompra());
+			nnsLayout.setHTML(0, 9, Sfa.constant().ordenCompraReq());
+			nnsLayout.setWidget(0, 10, editarSSUIData.getOrdenCompra());
 		} else {
-			nnsLayout.clearCell(0, 8);
 			nnsLayout.clearCell(0, 9);
+			nnsLayout.clearCell(0, 10);
 		}
 
 	}
@@ -353,9 +371,13 @@ public class DatosSSUI extends Composite implements ClickHandler {
 								};
 							}, ModalMessageDialog.getCloseCommand());
 				} else if (col == 2) {
-					//Abre el panel de descuento de la LineaSolicitudServicio
-					lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1); 
-					verificarDescuento(lineaSeleccionada);
+					if (descuentoTotalAplicado) {
+						noSePuedeAplicarDescuento();
+					} else {
+						//Abre el panel de descuento de la LineaSolicitudServicio
+						lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1); 
+						verificarDescuento(lineaSeleccionada);
+					}
 				}
 			}
 		} else if (serviciosAdicionales.getTable() == sender) {
@@ -413,16 +435,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 					if (result.size() > 0) {
 						openAplicarDescuentoDialog(lineaSeleccionada, result);
 					} else {
-						SolicitudRpcService.Util.getInstance().getDescuentosItemNull(idLinea, new DefaultWaitCallback<List<DescuentoDto>>() {
-							@Override
-							public void success(List<DescuentoDto> result) {
-								if (result.size() > 0) {
-									openAplicarDescuentoDialog(lineaSeleccionada, result);
-								} else {
-									noSePuedeAplicarDescuento();
-								}
-							}
-						});
+						noSePuedeAplicarDescuento();
 					}
 				}
 			});
@@ -443,6 +456,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				public void execute() {
 					editarPrecionConDescuento(lineaSeleccionada, descuentos);
 					descuentoSeleccionados = descuentoDialog.getDescuentosSeleccionados();
+//					editarSSUIData.modificarDescuentoTotal(descuentoSeleccionados);
 				}
 			};
 			descuentoDialog.setAceptarCommand(aceptarCommand);
@@ -467,7 +481,6 @@ public class DatosSSUI extends Composite implements ClickHandler {
 					public void success(List<TipoDescuentoDto> result) {
 						if (result.size() > 0) {
 							descuentosAAplicar = result;
-							if (descuentosAAplicar.size() > 0) {
 								if (sacarTipoDescuento) {
 									Iterator<TipoDescuentoDto> iterator = descuentosAAplicar.iterator();
 									while (iterator.hasNext()) {
@@ -486,40 +499,8 @@ public class DatosSSUI extends Composite implements ClickHandler {
 								} else {
 									noSePuedeAplicarDescuento();
 								}
-							} else {
-								noSePuedeAplicarDescuento();
-							}							
 						} else {
-							SolicitudRpcService.Util.getInstance().getTiposDescuentoItemNull(idLinea, new DefaultWaitCallback<List<TipoDescuentoDto>>() {
-								@Override
-								public void success(List<TipoDescuentoDto> result) {
-									if (result.size() > 0) {
-										descuentosAAplicar = result;
-										if (descuentosAAplicar.size() > 0) {
-											if (sacarTipoDescuento) {
-												Iterator<TipoDescuentoDto> iterator = descuentosAAplicar.iterator();
-												while (iterator.hasNext()) {
-													TipoDescuentoDto tipoDescuento = (TipoDescuentoDto) iterator.next();
-													for (Iterator<TipoDescuentoSeleccionado> iterator2 = descuentoSeleccionados.iterator(); iterator2.hasNext();) {
-														TipoDescuentoSeleccionado seleccionado = (TipoDescuentoSeleccionado) iterator2.next();
-														if (lineaSeleccionada.getId().equals(seleccionado.getIdLineaSeleccionada()) &&
-																tipoDescuento.getDescripcion().equals(seleccionado.getDescripcion())) {
-															iterator.remove();
-														}
-													}
-												}
-											}
-											if (descuentosAAplicar.size() > 0) {
-												descuentoDialog.show(lineaSeleccionada, descuento, descuentosAplicados, descuentosAAplicar);
-											} else {
-												noSePuedeAplicarDescuento();
-											}
-										} else {
-											noSePuedeAplicarDescuento();
-										}										
-									}							
-								}						
-							});
+							noSePuedeAplicarDescuento();
 						}
 					}
 				});
