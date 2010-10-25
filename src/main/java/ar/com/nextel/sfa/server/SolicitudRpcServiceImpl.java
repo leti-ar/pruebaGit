@@ -534,7 +534,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private String getReporteFileName(SolicitudServicio solicitudServicio) {
 		String filename;
 		if (solicitudServicio.getCuenta().isCliente()) {
-			filename = solicitudServicio.getCuenta().getCodigoVantive() + "-5-"
+			filename = solicitudServicio.getCuenta().getId().toString() + "-5-"
 					+ solicitudServicio.getNumero() + ".rtf";
 		} else {
 			filename = solicitudServicio.getCuenta().getId().toString() + "-5-"
