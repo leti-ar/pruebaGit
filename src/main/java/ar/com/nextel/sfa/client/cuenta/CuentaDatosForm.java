@@ -1765,8 +1765,16 @@ public class CuentaDatosForm extends Composite {
 			}
 
 		} else {
-			cuentaUIData.getFacturaElectronicaPanel().setText("");
-			cuentaUIData.getFacturaElectronicaPanel().setEnabled(true);
+			
+			//MGR - #1096
+			if(!cuentaUIData.getEmailPersonal().isEnabled()){
+				cuentaUIData.getFacturaElectronicaPanel().setEnabled(false);
+			}
+			else{ 
+				cuentaUIData.getFacturaElectronicaPanel().setText("");
+				cuentaUIData.getFacturaElectronicaPanel().setEnabled(true);
+			}
+			
 
 		}
 	}
