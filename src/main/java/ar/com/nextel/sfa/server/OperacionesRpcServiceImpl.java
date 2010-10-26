@@ -12,6 +12,7 @@ import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.CuentaPotencial;
 import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
+import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.sfa.client.OperacionesRpcService;
@@ -36,6 +37,9 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 	private SolicitudBusinessService solicitudBusinessService;
 	private MapperExtended mapper;
 	private Repository repository;
+	
+	//MGR - #1094
+	private static String oppEnCursoPorTipoVendedor= "OPP_CURSO_TIPO_VENDEDOR";
 
 	@Override
 	public void init() throws ServletException {
@@ -49,10 +53,23 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 
 	public List<OperacionEnCursoDto> searchOpEnCurso() {
 		Vendedor vendedor = sessionContextLoader.getVendedor();
-		AppLogger.info("Obteniendo operaciones en curso para vendedor: " + vendedor.getUserName(), this);
-		List<OperacionEnCursoDto> operacionesEnCursoDto = mapper.convertList(
-				vendedor.getOperacionesEnCurso(), OperacionEnCursoDto.class);
-		return operacionesEnCursoDto;
+		
+		//MGR - #1094
+		if(!vendedor.isTelemarketing()){
+			AppLogger.info("Obteniendo operaciones en curso para vendedor: " + vendedor.getUserName(), this);
+			List<OperacionEnCursoDto> operacionesEnCursoDto = mapper.convertList(
+					vendedor.getOperacionesEnCurso(), OperacionEnCursoDto.class);
+			return operacionesEnCursoDto;
+		}
+		else{
+			AppLogger.info("Obteniendo operaciones en curso para vendedores del tipo Telemarketing.", this);
+			List<OperacionEnCurso> oppEnCurso = this.repository.executeCustomQuery
+						(oppEnCursoPorTipoVendedor,vendedor.getTipoVendedor().getId());
+			List<OperacionEnCursoDto> operacionesEnCursoDto = mapper.convertList(
+					oppEnCurso, OperacionEnCursoDto.class);
+			return operacionesEnCursoDto;
+		}
+		
 	}
 
 	public VentaPotencialVistaResultDto searchReservas() {
