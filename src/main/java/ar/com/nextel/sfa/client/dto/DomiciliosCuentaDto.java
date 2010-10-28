@@ -39,6 +39,7 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 
 	private boolean locked;
 	private boolean enCarga = true;
+	private boolean transferido;
 
 	public String getDomicilios() {
 		/**
@@ -255,6 +256,8 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 		domicilioCopiado.setFecha_ultima_modificacion(fecha_ultima_modificacion);
 		domicilioCopiado.setIdEntrega(idEntrega);
 		domicilioCopiado.setIdFacturacion(idFacturacion);
+		domicilioCopiado.setTransferido(transferido);
+		domicilioCopiado.setEnCarga(enCarga);
 		return domicilioCopiado;
 	}
 
@@ -336,6 +339,14 @@ public class DomiciliosCuentaDto implements IsSerializable, ListBoxItem, Identif
 
 	public void setEnCarga(boolean enCarga) {
 		this.enCarga = enCarga;
+	}
+
+	public boolean isTransferido() {
+		return transferido;
+	}
+
+	public void setTransferido(boolean transferido) {
+		this.transferido = transferido;
 	}
 
 }

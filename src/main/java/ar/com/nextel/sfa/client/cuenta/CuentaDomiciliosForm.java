@@ -245,8 +245,11 @@ public class CuentaDomiciliosForm extends Composite {
 							});
 							DomicilioUI.getInstance().cargarPopupEditarDomicilio(domicilioAEditar,EditarCuentaUI.edicionReadOnly);
 						} else {
+//							DomicilioUI.getInstance().openPopupAdviseDialog(
+//							DomicilioUI.getInstance().getOpenDomicilioUICommand());
 							DomicilioUI.getInstance().openPopupAdviseDialog(
-									DomicilioUI.getInstance().getOpenDomicilioUICommand());
+									MessageDialog.getInstance().getCloseCommand());
+							
 						}
 					}
 					// Acciones a tomar cuando haga click en iconos de copiado de domicilios:
@@ -254,8 +257,10 @@ public class CuentaDomiciliosForm extends Composite {
 						if (EditarCuentaUI.edicionReadOnly && EditarCuentaUI.esEdicionCuenta) {
 						    MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_NO_COPY(), MessageDialog.getCloseCommand());
 						} else {
-							domicilioAEditar = domicilio;
-							DomiciliosCuentaDto domicilioCopiado = domicilioAEditar.clone();
+							DomiciliosCuentaDto domicilioCopiado = domicilio.clone();
+							domicilioCopiado.setEnCarga(true);
+							domicilioCopiado.setTransferido(false);
+							domicilioAEditar = domicilioCopiado;
 							domicilioCopiado.setId(null);
 							domicilioCopiado.setNombreUsuarioUltimaModificacion(null);
 							domicilioCopiado.setFecha_ultima_modificacion(null);

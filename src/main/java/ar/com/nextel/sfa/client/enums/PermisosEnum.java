@@ -95,7 +95,10 @@ public enum PermisosEnum {
 	//MGR - #1073
 	BUSQUEDA_POR_CATEG_DOC("busquedaPorCategDoc", Accion.X, true),
 	//Para agregar descuentos a las lineas de solicitud de servicio
-	AGREGAR_DESCUENTOS("puedeVerDescuentos", Accion.X, true);
+	AGREGAR_DESCUENTOS("puedeVerDescuentos", Accion.X, true),
+
+	//LM 
+	OCULTA_CAMPO_VALIDADO_DOMICILIO("ocultaCampoValidadoDomicilio", Accion.X, true);
 
 	private String value;
     private String accion;
