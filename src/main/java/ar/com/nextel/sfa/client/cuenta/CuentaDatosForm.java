@@ -640,7 +640,10 @@ public class CuentaDatosForm extends Composite {
 				.setText(
 						cuentaDto.getCategoriaCuenta() != null ? cuentaDto.getCategoriaCuenta()
 								.getDescripcion() : "");
+		//FIXME: 
+		cuentaUIData.getClaseCliente().addItem(cuentaDto.getClaseCuenta());
 		cuentaUIData.getClaseCliente().setSelectedItem(cuentaDto.getClaseCuenta());
+		
 		cuentaUIData.getCicloFacturacion().setText(
 				cuentaDto.getCicloFacturacion() != null ? cuentaDto.getCicloFacturacion().getDescripcion()
 						: "");
