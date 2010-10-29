@@ -28,6 +28,7 @@ public class AgregarCuentaInitializer implements IsSerializable {
 	private List<SexoDto> sexo = new ArrayList<SexoDto>();
 	private List<FormaPagoDto> formaPago = new ArrayList<FormaPagoDto>();
 	private List<RubroDto> rubro = new ArrayList<RubroDto>();
+	private List<ClaseCuentaDto> claseClientePorVendedor = new ArrayList<ClaseCuentaDto>();
 	private List<ClaseCuentaDto> claseCliente = new ArrayList<ClaseCuentaDto>();
 	private List<ProveedorDto> proveedorAnterior = new ArrayList<ProveedorDto>();
 	private List<TipoTelefonoDto> tipoTelefono = new ArrayList<TipoTelefonoDto>();
@@ -149,5 +150,15 @@ public class AgregarCuentaInitializer implements IsSerializable {
 	public List<EstadoOportunidadDto> getEstadoOportunidad() {
 		return estadoOportunidad;
 	}
+
+	public void setClaseClientePorVendedor(
+			List<ClaseCuentaDto> claseClientePorVendedor) {
+		this.claseClientePorVendedor = claseClientePorVendedor;
+	}
+	
+	public List<ClaseCuentaDto> getClaseClientePorVendedor() {
+		return claseClientePorVendedor;
+	}
+	
 	
 }

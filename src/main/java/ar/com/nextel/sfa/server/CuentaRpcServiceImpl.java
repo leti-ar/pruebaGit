@@ -226,9 +226,11 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 				.setFormaPago(mapper.convertList(repository.getAll(FormaPago.class), FormaPagoDto.class));
 		
 		// lo modifico para que traigo solo los del vendedor
-		
 		List<?> listaClaseCuenta = this.getRepository().executeCustomQuery(QUERY_NAME_CLASE_CUENTA_POR_VENDEDOR,sessionContextLoader.getVendedor().getTipoVendedor().getId());
-		buscarDTOinit.setClaseCliente(mapper.convertList(listaClaseCuenta,ClaseCuentaDto.class));
+		buscarDTOinit.setClaseClientePorVendedor(mapper.convertList(listaClaseCuenta,ClaseCuentaDto.class));
+
+		buscarDTOinit.setClaseCliente(mapper.convertList(repository.getAll(ClaseCuenta.class),
+				ClaseCuentaDto.class));
 		
 		buscarDTOinit.setProveedorAnterior(mapper.convertList(repository.getAll(Proveedor.class),
 				ProveedorDto.class));

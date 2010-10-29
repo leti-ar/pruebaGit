@@ -18,6 +18,7 @@ import ar.com.nextel.sfa.client.widget.RadioButtonGroup;
 import ar.com.nextel.sfa.client.widget.RadioButtonWithValue;
 import ar.com.nextel.sfa.client.widget.TelefonoTextBox;
 import ar.com.nextel.sfa.client.widget.UIData;
+import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
@@ -330,17 +331,18 @@ public class CuentaUIData extends UIData {
 						//Si el documento es DNI y es un nuevo cliente (combo esta habilitado), en el combo de contribuyente 
 						//solo puede aparecer la opcion "CONSUMIDOR FINAL"
 						tiposContribuyentes = result.getTiposContribuyentes();
-						if( getTipoDocumento().getSelectedItem() != null &&
-								((TipoDocumentoDto)getTipoDocumento().getSelectedItem()).getCodigoVantive().equals("96") &&
+						ListBoxItem selectedDocumentoItem = getTipoDocumento().getSelectedItem();
+						if( selectedDocumentoItem != null &&
+								((TipoDocumentoDto)selectedDocumentoItem).getCodigoVantive().equals("96") &&
 								getContribuyente().isEnabled()){
 							soloContribConsumidorFinal();
 						}
 						//MGR - #1069
 						/* Si el documento es CUIT/CUIL y es un nuevo cliente (combo esta habilitado), en el combo de contribuyente 
 						no debe aparecer la opcion "CONSUMIDOR FINAL"*/
-						else if(getTipoDocumento().getSelectedItem() != null &&
-							( ((TipoDocumentoDto)getTipoDocumento().getSelectedItem()).getCodigoVantive().equals("80") 
-							 || ((TipoDocumentoDto)getTipoDocumento().getSelectedItem()).getCodigoVantive().equals("1000") ) 
+						else if(selectedDocumentoItem != null &&
+							( ((TipoDocumentoDto)selectedDocumentoItem).getCodigoVantive().equals("80") 
+							 || ((TipoDocumentoDto)selectedDocumentoItem).getCodigoVantive().equals("1000") ) 
 							&& getContribuyente().isEnabled()){
 							sinOpcionConsumidorFinal();
 						}
@@ -351,7 +353,16 @@ public class CuentaUIData extends UIData {
 						
 						rubro.addAllItems(result.getRubro());
 						sexo.addAllItems(result.getSexo());
-						claseCliente.addAllItems(result.getClaseCliente());
+						
+//						si es prospect le agrego solo los perfilados, sino agrego todo
+//						cómo se que es prospect?, pregunto por el combo de contribuyente TODO validar si está ok
+						if(selectedDocumentoItem != null &&
+								RegularExpressionConstants.isVancuc(((TipoDocumentoDto)selectedDocumentoItem).getCodigoVantive())){
+							claseCliente.addAllItems(result.getClaseClientePorVendedor());
+						}else{
+							claseCliente.addAllItems(result.getClaseCliente());
+						}
+						
 						formaPago.addAllItems(result.getFormaPago());
 						proveedorAnterior.addAllItems(result.getProveedorAnterior());
 						cargo.addAllItems(result.getCargo());
