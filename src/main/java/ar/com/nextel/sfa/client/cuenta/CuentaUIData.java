@@ -325,12 +325,16 @@ public class CuentaUIData extends UIData {
 				new DefaultWaitCallback<AgregarCuentaInitializer>() {
 					public void success(AgregarCuentaInitializer result) {
 						tipoDocumento.addAllItems(result.getTiposDocumento());
+
+						//TODO no entiendo porque CuentaClientService.cuentaDto es nulo cuando es un cliente...es por asincronismo? analizar
+						boolean esProspect = CuentaClientService.cuentaDto != null && RegularExpressionConstants.isVancuc(CuentaClientService.cuentaDto.getCodigoVantive());
 						
 						//contribuyente.addAllItems(result.getTiposContribuyentes());
 						//MGR - 26/07/2010 - Incidente #0000703
 						//Si el documento es DNI y es un nuevo cliente (combo esta habilitado), en el combo de contribuyente 
 						//solo puede aparecer la opcion "CONSUMIDOR FINAL"
 						tiposContribuyentes = result.getTiposContribuyentes();
+						
 						ListBoxItem selectedDocumentoItem = getTipoDocumento().getSelectedItem();
 						if( selectedDocumentoItem != null &&
 								((TipoDocumentoDto)selectedDocumentoItem).getCodigoVantive().equals("96") &&
@@ -353,11 +357,8 @@ public class CuentaUIData extends UIData {
 						
 						rubro.addAllItems(result.getRubro());
 						sexo.addAllItems(result.getSexo());
-						
 //						si es prospect le agrego solo los perfilados, sino agrego todo
-//						cómo se que es prospect?, pregunto por el combo de contribuyente TODO validar si está ok
-						if(selectedDocumentoItem != null &&
-								RegularExpressionConstants.isVancuc(((TipoDocumentoDto)selectedDocumentoItem).getCodigoVantive())){
+						if(esProspect){
 							claseCliente.addAllItems(result.getClaseClientePorVendedor());
 						}else{
 							claseCliente.addAllItems(result.getClaseCliente());
