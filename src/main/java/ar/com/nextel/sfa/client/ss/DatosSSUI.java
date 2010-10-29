@@ -574,14 +574,21 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		}
 		detalleSS.setHTML(newRow, 3-i, linea.getItem().getDescripcion());
 		detalleSS.setHTML(newRow, 4-i, currencyFormat.format(linea.getPrecioVenta()));
+		detalleSS.getCellFormatter().addStyleName(newRow, 4-i, "alignRight");
 		if (linea.getPrecioConDescuento() == null) {
 			linea.setPrecioConDescuento(linea.getPrecioVenta());
 		}
-		detalleSS.setHTML(newRow, 5-i, currencyFormat.format(linea.getPrecioConDescuento()));
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
+			detalleSS.setHTML(newRow, 5-i, currencyFormat.format(linea.getPrecioConDescuento()));
+			detalleSS.getCellFormatter().addStyleName(newRow, 5-i, "alignRight");
+		} else {
+			i = 2;
+		}
 		detalleSS.setHTML(newRow, 6-i, linea.getAlias() != null ? linea.getAlias() : "");
 		detalleSS.setHTML(newRow, 7-i, linea.getPlan() != null ? linea.getPlan().getDescripcion() : "");
 		detalleSS.setHTML(newRow, 8-i, linea.getPlan() != null ? currencyFormat.format(linea
 				.getPrecioVentaPlan()) : "");
+		detalleSS.getCellFormatter().addStyleName(newRow, 8-i, "alignRight");
 		detalleSS.setHTML(newRow, 9-i, linea.getLocalidad() != null ? linea.getLocalidad().getDescripcion()
 				: "");
 		detalleSS.setHTML(newRow, 10-i, linea.getNumeroReserva());
@@ -593,9 +600,6 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				.whiteSpace());
 		detalleSS.setHTML(newRow, 15-i, linea.getRoaming() ? IconFactory.tildeVerde().toString() : Sfa
 				.constant().whiteSpace());
-		detalleSS.getCellFormatter().addStyleName(newRow, 4-i, "alignRight");
-		detalleSS.getCellFormatter().addStyleName(newRow, 5-i, "alignRight");
-		detalleSS.getCellFormatter().addStyleName(newRow, 8-i, "alignRight");
 	}
 
 	public void editarPrecioDeVentaPlan() {
