@@ -44,6 +44,7 @@ import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.personas.beans.Localidad;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
+import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
@@ -58,6 +59,7 @@ import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
+import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
@@ -81,7 +83,6 @@ import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
-import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
@@ -573,11 +574,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		List descuentos = solicitudServicioRepository.getDescuentos(idLinea);
     	return mapper.convertList(descuentos, DescuentoDto.class);
 	}
-	
-	public List<DescuentoDto> getDescuentosItemNull(Long idLinea) throws RpcExceptionMessages {
-		List descuentos = solicitudServicioRepository.getDescuentosItemNull(idLinea);
-		return mapper.convertList(descuentos, DescuentoDto.class);
-	}
 
 	public List<DescuentoLineaDto> getDescuentosAplicados(Long idLinea) throws RpcExceptionMessages {
 		List descuentosAplicados = solicitudServicioRepository.getDescuentosAplicados(idLinea);
@@ -590,16 +586,33 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return mapper.convertList(tiposDescuento, TipoDescuentoDto.class);
 	}
 
-	public List<TipoDescuentoDto> getTiposDescuentoItemNull(Long idLinea)
-			throws RpcExceptionMessages {
-		List tiposDescuento = solicitudServicioRepository.getTiposDescuentoItemNull(idLinea);
-		return mapper.convertList(tiposDescuento, TipoDescuentoDto.class);
-	}
-
 	public List<TipoDescuentoDto> getTiposDescuentoAplicados(Long idLinea)
 			throws RpcExceptionMessages {
 		List tiposDescuentoAplicados = solicitudServicioRepository.getTiposDescuentoAplicados(idLinea);
 		return mapper.convertList(tiposDescuentoAplicados, TipoDescuentoDto.class);
+	}
+
+	public boolean puedeAplicarDescuento(List<LineaSolicitudServicioDto> lineas)
+		throws RpcExceptionMessages {
+		List<LineaSolicitudServicio> convertList = mapper.convertList(lineas, LineaSolicitudServicio.class);
+		return solicitudServicioRepository.puedeAplicarDescuento(convertList);
+	}
+	
+	public List<TipoDescuentoDto> getInterseccionTiposDescuento(List<LineaSolicitudServicioDto> lineas) 
+			throws RpcExceptionMessages {
+		List tiposDescuento = solicitudServicioRepository.getInterseccionTiposDescuento(mapper.convertList(lineas, LineaSolicitudServicio.class));
+		return mapper.convertList(tiposDescuento, TipoDescuentoDto.class);
+	}
+
+	public DescuentoTotalDto getDescuentosTotales(Long idLinea)
+			throws RpcExceptionMessages {
+		DescuentoTotalDto descuentoTotal = new DescuentoTotalDto();
+		List descuentos = solicitudServicioRepository.getDescuentos(idLinea);
+		descuentoTotal.setDescuentos(mapper.convertList(descuentos, DescuentoDto.class));
+		List tiposDescuento = solicitudServicioRepository.getTiposDescuento(idLinea);
+		descuentoTotal.setTiposDescuento(mapper.convertList(tiposDescuento, TipoDescuentoDto.class));
+		descuentoTotal.setIdLinea(idLinea);
+		return descuentoTotal;
 	}
 
 }

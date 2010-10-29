@@ -4,6 +4,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
+import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
@@ -80,14 +81,19 @@ public interface SolicitudRpcServiceAsync {
 	
 	public void getDescuentos(Long idLinea, AsyncCallback<List<DescuentoDto>> callback);
 
-	public void getDescuentosItemNull(Long idLinea, AsyncCallback<List<DescuentoDto>> callback);
-
 	public void getDescuentosAplicados(Long idLinea, AsyncCallback<List<DescuentoLineaDto>> callback);
 
 	public void getTiposDescuento(Long idLinea, AsyncCallback<List<TipoDescuentoDto>> callback);
 
-	public void getTiposDescuentoItemNull(Long idLinea, AsyncCallback<List<TipoDescuentoDto>> callback);
-
 	public void getTiposDescuentoAplicados(Long idLinea, AsyncCallback<List<TipoDescuentoDto>> callback);
+
+	public void puedeAplicarDescuento(List<LineaSolicitudServicioDto> lineas,
+			AsyncCallback<Boolean> defaultWaitCallback);
+
+	public void getInterseccionTiposDescuento(List<LineaSolicitudServicioDto> lineas,
+			AsyncCallback<List<TipoDescuentoDto>> defaultWaitCallback);
+
+	public void getDescuentosTotales(Long idLinea,
+			AsyncCallback<DescuentoTotalDto> defaultWaitCallback);
 
 }

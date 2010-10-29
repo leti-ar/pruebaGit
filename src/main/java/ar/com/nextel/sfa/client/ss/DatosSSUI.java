@@ -11,6 +11,8 @@ import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.domicilio.DomicilioUI;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
+import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
+import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
@@ -121,27 +123,29 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			nnsLayout.clearCell(0, 4);
 			nnsLayout.clearCell(0, 5);
 		}
-//		nnsLayout.setHTML(0, 6, "Descuento Total:");
-//		nnsLayout.setWidget(0, 7, editarSSUIData.getDescuentoTotal());
-//		nnsLayout.setWidget(0, 8, editarSSUIData.getTildeVerde());
-//		editarSSUIData.getTildeVerde().addClickHandler(new ClickHandler() {
-//			public void onClick(ClickEvent arg0) {
-//				descuentoTotalAplicado = true;
-//				int i = 1;
-//				for (Iterator<LineaSolicitudServicioDto> iterator = editarSSUIData.getLineasSolicitudServicio().iterator(); iterator.hasNext();) {
-//					LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
-//					linea.setPrecioConDescuento(new Double(0.0));
-//					linea.setMonto(linea.getPrecioVenta());
-//					drawDetalleSSRow(linea, i);
-//					i++;
-////					TipoDescuentoSeleccionado seleccionado = new TipoDescuentoSeleccionado();
-////					seleccionado.setIdLinea(linea.getId());
-////					seleccionado.setDescripcion(editarSSUIData.getDescuentoTotal().getSelectedItemText());
-////					descuentoSeleccionados.add(seleccionado);
-//				}
-//				editarSSUIData.deshabilitarDescuentoTotal();
-//			}
-//		});
+		nnsLayout.setHTML(0, 6, "Descuento Total:");
+		nnsLayout.setWidget(0, 7, editarSSUIData.getDescuentoTotal());
+		nnsLayout.setWidget(0, 8, editarSSUIData.getTildeVerde());
+		editarSSUIData.getTildeVerde().addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent clickEvent) {
+				if (editarSSUIData.getTildeVerde().isEnabled()) {
+					descuentoTotalAplicado = true;
+					List<LineaSolicitudServicioDto> lineas = editarSSUIData.getLineasSolicitudServicio();
+					for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
+						LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
+						if (!linea.getPrecioConDescuento().equals(0.0)) {
+							SolicitudRpcService.Util.getInstance().getDescuentosTotales(linea.getId(), new DefaultWaitCallback<DescuentoTotalDto>() {
+								@Override
+								public void success(DescuentoTotalDto result) {
+									agregarDescuentoTotal(result);
+								}
+							});
+						}
+					}
+				}
+				editarSSUIData.deshabilitarDescuentoTotal();
+			}
+		});
 		if(editarSSUIData.getGrupoSolicitud() != null &&
 				instancias.get(GrupoSolicitudDto.ID_FAC_MENSUAL).equals(editarSSUIData.getGrupoSolicitud().getId())){
 			nnsLayout.setHTML(0, 9, Sfa.constant().ordenCompraReq());
@@ -456,7 +460,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				public void execute() {
 					editarPrecionConDescuento(lineaSeleccionada, descuentos);
 					descuentoSeleccionados = descuentoDialog.getDescuentosSeleccionados();
-//					editarSSUIData.modificarDescuentoTotal(descuentoSeleccionados);
+					editarSSUIData.modificarDescuentoTotal(descuentoSeleccionados);
 				}
 			};
 			descuentoDialog.setAceptarCommand(aceptarCommand);
@@ -562,31 +566,36 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private void drawDetalleSSRow(LineaSolicitudServicioDto linea, int newRow) {
 		detalleSS.setWidget(newRow, 0, IconFactory.lapiz());
 		detalleSS.setWidget(newRow, 1, IconFactory.cancel());
-		detalleSS.setWidget(newRow, 2, IconFactory.bolsaPesos());
-		detalleSS.setHTML(newRow, 3, linea.getItem().getDescripcion());
-		detalleSS.setHTML(newRow, 4, currencyFormat.format(linea.getPrecioVenta()));
+		int i = 0;
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
+			detalleSS.setWidget(newRow, 2-i, IconFactory.bolsaPesos());
+		} else {
+			i = 1;
+		}
+		detalleSS.setHTML(newRow, 3-i, linea.getItem().getDescripcion());
+		detalleSS.setHTML(newRow, 4-i, currencyFormat.format(linea.getPrecioVenta()));
 		if (linea.getPrecioConDescuento() == null) {
 			linea.setPrecioConDescuento(linea.getPrecioVenta());
 		}
-		detalleSS.setHTML(newRow, 5, currencyFormat.format(linea.getPrecioConDescuento()));
-		detalleSS.setHTML(newRow, 6, linea.getAlias() != null ? linea.getAlias() : "");
-		detalleSS.setHTML(newRow, 7, linea.getPlan() != null ? linea.getPlan().getDescripcion() : "");
-		detalleSS.setHTML(newRow, 8, linea.getPlan() != null ? currencyFormat.format(linea
+		detalleSS.setHTML(newRow, 5-i, currencyFormat.format(linea.getPrecioConDescuento()));
+		detalleSS.setHTML(newRow, 6-i, linea.getAlias() != null ? linea.getAlias() : "");
+		detalleSS.setHTML(newRow, 7-i, linea.getPlan() != null ? linea.getPlan().getDescripcion() : "");
+		detalleSS.setHTML(newRow, 8-i, linea.getPlan() != null ? currencyFormat.format(linea
 				.getPrecioVentaPlan()) : "");
-		detalleSS.setHTML(newRow, 9, linea.getLocalidad() != null ? linea.getLocalidad().getDescripcion()
+		detalleSS.setHTML(newRow, 9-i, linea.getLocalidad() != null ? linea.getLocalidad().getDescripcion()
 				: "");
-		detalleSS.setHTML(newRow, 10, linea.getNumeroReserva());
-		detalleSS.setHTML(newRow, 11, linea.getTipoSolicitud().getDescripcion());
-		detalleSS.setHTML(newRow, 12, "" + linea.getCantidad());
-		detalleSS.setHTML(newRow, 13, linea.getDdn() ? IconFactory.tildeVerde().toString() : Sfa.constant()
+		detalleSS.setHTML(newRow, 10-i, linea.getNumeroReserva());
+		detalleSS.setHTML(newRow, 11-i, linea.getTipoSolicitud().getDescripcion());
+		detalleSS.setHTML(newRow, 12-i, "" + linea.getCantidad());
+		detalleSS.setHTML(newRow, 13-i, linea.getDdn() ? IconFactory.tildeVerde().toString() : Sfa.constant()
 				.whiteSpace());
-		detalleSS.setHTML(newRow, 14, linea.getDdi() ? IconFactory.tildeVerde().toString() : Sfa.constant()
+		detalleSS.setHTML(newRow, 14-i, linea.getDdi() ? IconFactory.tildeVerde().toString() : Sfa.constant()
 				.whiteSpace());
-		detalleSS.setHTML(newRow, 15, linea.getRoaming() ? IconFactory.tildeVerde().toString() : Sfa
+		detalleSS.setHTML(newRow, 15-i, linea.getRoaming() ? IconFactory.tildeVerde().toString() : Sfa
 				.constant().whiteSpace());
-		detalleSS.getCellFormatter().addStyleName(newRow, 4, "alignRight");
-		detalleSS.getCellFormatter().addStyleName(newRow, 5, "alignRight");
-		detalleSS.getCellFormatter().addStyleName(newRow, 8, "alignRight");
+		detalleSS.getCellFormatter().addStyleName(newRow, 4-i, "alignRight");
+		detalleSS.getCellFormatter().addStyleName(newRow, 5-i, "alignRight");
+		detalleSS.getCellFormatter().addStyleName(newRow, 8-i, "alignRight");
 	}
 
 	public void editarPrecioDeVentaPlan() {
@@ -644,6 +653,43 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		int newRow = editarSSUIData.addLineaSolicitudServicio(linea) + 1;
 		drawDetalleSSRow(linea, newRow);
 	}
+	
+	public void agregarDescuentoTotal(DescuentoTotalDto result) {		
+		for (Iterator<LineaSolicitudServicioDto> iterator = editarSSUIData.getLineasSolicitudServicio().iterator(); iterator.hasNext();) {
+			LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
+			if (result.getIdLinea().equals(linea.getId())) {
+				//guardo en la linea los valores que modificó el usuario
+				linea.setPorcentaje(new Double(100));
+				linea.setMonto(linea.getPrecioLista());
+				linea.setPrecioConDescuento(new Double(0.0));
+					
+				//creo una linea de descuento y la agrego a la linea de solicitud de servicio
+				DescuentoLineaDto descuentoLinea = new DescuentoLineaDto();
+					
+				Long idTipoDescuento = null;
+				for (Iterator<TipoDescuentoDto> iterator2 = result.getTiposDescuento().iterator(); iterator2.hasNext();) {
+					TipoDescuentoDto tipoDescuentoDto = (TipoDescuentoDto) iterator2.next();
+					if (editarSSUIData.getDescuentoTotal().getSelectedItemText().equals(tipoDescuentoDto.getDescripcion())) {
+						idTipoDescuento = tipoDescuentoDto.getId();
+					}
+				}
+				for (Iterator<DescuentoDto> iterator2 = result.getDescuentos().iterator(); iterator2.hasNext();) {
+					DescuentoDto descuentoDto = (DescuentoDto) iterator2.next();
+					if (descuentoDto.getIdTipoDescuento().equals(idTipoDescuento)) {
+						descuentoLinea.setIdDescuento(descuentoDto.getId());
+					}
+				}
+				descuentoLinea.setIdLinea(linea.getId());
+				descuentoLinea.setMonto(linea.getMonto());
+				descuentoLinea.setPorcentaje(linea.getPorcentaje());
+				linea.addDescuentoLinea(descuentoLinea);
+				
+				int newRow = editarSSUIData.addLineaSolicitudServicio(linea) + 1;
+				drawDetalleSSRow(linea, newRow);
+				break;
+			}
+		} 
+	}	
 
 	private void noSePuedeAplicarDescuento() {
 		MessageDialog.getInstance().setDialogTitle("Advertencia");

@@ -4,6 +4,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
+import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
@@ -98,14 +99,16 @@ public interface SolicitudRpcService extends RemoteService {
 
 	public List<DescuentoDto> getDescuentos(Long idLinea) throws RpcExceptionMessages;
 
-	public List<DescuentoDto> getDescuentosItemNull(Long idLinea) throws RpcExceptionMessages;
-
 	public List<DescuentoLineaDto> getDescuentosAplicados(Long idLinea) throws RpcExceptionMessages;
 	
 	public List<TipoDescuentoDto> getTiposDescuento(Long idLinea) throws RpcExceptionMessages;
 	
-	public List<TipoDescuentoDto> getTiposDescuentoItemNull(Long idLinea) throws RpcExceptionMessages;
-
 	public List<TipoDescuentoDto> getTiposDescuentoAplicados(Long idLinea) throws RpcExceptionMessages;
+
+	public boolean puedeAplicarDescuento(List<LineaSolicitudServicioDto> lineas) throws RpcExceptionMessages;
+
+	public List<TipoDescuentoDto> getInterseccionTiposDescuento(List<LineaSolicitudServicioDto> lineas) throws RpcExceptionMessages;
+
+	public DescuentoTotalDto getDescuentosTotales(Long idLinea) throws RpcExceptionMessages;
 
 }
