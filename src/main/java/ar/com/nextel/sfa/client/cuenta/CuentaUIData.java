@@ -5,6 +5,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.dto.ClaseCuentaDto;
 import ar.com.nextel.sfa.client.dto.FacturaElectronicaDto;
 import ar.com.nextel.sfa.client.dto.MotivoNoCierreDto;
 import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
@@ -25,6 +26,7 @@ import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
+import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -32,6 +34,8 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Grid;
@@ -321,13 +325,16 @@ public class CuentaUIData extends UIData {
 	}
 
 	private void setCombos() {
+		
+		
 		CuentaRpcService.Util.getInstance().getAgregarCuentaInitializer(
 				new DefaultWaitCallback<AgregarCuentaInitializer>() {
+					private List<ClaseCuentaDto> listaClaseClientePorVendedor;
+					private List<ClaseCuentaDto> listaClaseCliente;
+
 					public void success(AgregarCuentaInitializer result) {
 						tipoDocumento.addAllItems(result.getTiposDocumento());
 
-						//TODO no entiendo porque CuentaClientService.cuentaDto es nulo cuando es un cliente...es por asincronismo? analizar
-						boolean esProspect = CuentaClientService.cuentaDto != null && RegularExpressionConstants.isVancuc(CuentaClientService.cuentaDto.getCodigoVantive());
 						
 						//contribuyente.addAllItems(result.getTiposContribuyentes());
 						//MGR - 26/07/2010 - Incidente #0000703
@@ -357,12 +364,9 @@ public class CuentaUIData extends UIData {
 						
 						rubro.addAllItems(result.getRubro());
 						sexo.addAllItems(result.getSexo());
-//						si es prospect le agrego solo los perfilados, sino agrego todo
-						if(esProspect){
-							claseCliente.addAllItems(result.getClaseClientePorVendedor());
-						}else{
-							claseCliente.addAllItems(result.getClaseCliente());
-						}
+
+						
+												
 						
 						formaPago.addAllItems(result.getFormaPago());
 						proveedorAnterior.addAllItems(result.getProveedorAnterior());
@@ -375,6 +379,37 @@ public class CuentaUIData extends UIData {
 						llenarListaMotivoNoCierre();
 						estadoOpp.addAllItems(result.getEstadoOportunidad());
 						estadoOpp.removeItem(EstadoOportunidadEnum.CERRADA.getId().intValue() - 1);
+						
+						listaClaseClientePorVendedor = result.getClaseClientePorVendedor();
+						listaClaseCliente = result.getClaseCliente();
+						
+						
+						//agrego un deferredCommand para asegurarme que la cuenta exista y en base a ello saber que valor ponerle a los combos
+						//le agrego un waitWindow 
+						WaitWindow.show();
+						DeferredCommand.addCommand(new IncrementalCommand() {
+							public boolean execute() {
+								if (CuentaClientService.cuentaDto == null){
+									return true;
+								}
+								cargarValoresComboClaseCliente();
+								WaitWindow.hide();
+								return false;
+							}
+
+							private void cargarValoresComboClaseCliente() {
+								boolean esProspect =RegularExpressionConstants.isVancuc(CuentaClientService.cuentaDto.getCodigoVantive());
+//						si es prospect le agrego solo los perfilados, sino agrego todo
+								if(esProspect){
+									claseCliente.addAllItems(listaClaseClientePorVendedor);
+								}else{
+									claseCliente.addAllItems(listaClaseCliente);
+								}
+								
+							}
+						});
+
+						
 					}
 				});
 		for (int i = 1; i < 13; i++) {
