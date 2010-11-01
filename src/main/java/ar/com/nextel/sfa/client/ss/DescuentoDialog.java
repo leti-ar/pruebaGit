@@ -112,8 +112,8 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 		montoTB.addChangeHandler(new ChangeHandler() {			
 			public void onChange(ChangeEvent arg0) {
 				try {
-					if (Double.valueOf(montoTB.getValue()) <= precioConDescuento) {
-						valorTotal = precioConDescuento - Double.valueOf(montoTB.getValue());
+					if (Double.valueOf(montoTB.getValue().replace(",", ".")) <= precioConDescuento) {
+						valorTotal = precioConDescuento - Double.valueOf(montoTB.getValue().replace(",", "."));
 						precioVenta.setText(String.valueOf(decimalFormat.format(valorTotal)).replace(",", "."));
 					} else {
 						MessageDialog.getInstance().setDialogTitle("Advertencia");
@@ -131,9 +131,9 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 		porcentajeTB.addChangeHandler(new ChangeHandler() {			
 			public void onChange(ChangeEvent arg0) {
 				try {
-					if (Double.valueOf(porcentajeTB.getValue()) < 100) {
+					if (Double.valueOf(porcentajeTB.getValue().replace(",", ".")) < 100) {
 						valorTotal = precioConDescuento - (precioConDescuento
-									* Double.valueOf(porcentajeTB.getValue()) / 100);
+									* Double.valueOf(porcentajeTB.getValue().replace(",", ".")) / 100);
 						precioVenta.setText(String.valueOf(decimalFormat.format(valorTotal)).replace(",", "."));
 					} else {
 						MessageDialog.getInstance().setDialogTitle("Advertencia");
@@ -175,7 +175,7 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 			porcentajeTB.setEnabled(false);
 			montoTB.setEnabled(false);
 			valorTotal = precioConDescuento - (precioConDescuento
-					* Double.valueOf(porcentajeTB.getValue()) / 100);
+					* Double.valueOf(porcentajeTB.getValue().replace(",", ".")) / 100);
 			precioVenta.setText(String.valueOf(decimalFormat.format(valorTotal)).replace(",", "."));
 		}
 		
@@ -226,13 +226,13 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 	public void modificarPrecioConDescuento(LineaSolicitudServicioDto linea, List<DescuentoDto> descuentos) {		
 		//guardo en la linea los valores que modificó el usuario
 		if (!"".equals(porcentajeTB.getValue())) {
-			linea.setPorcentaje(Double.valueOf(porcentajeTB.getValue()));
+			linea.setPorcentaje(Double.valueOf(porcentajeTB.getValue().replace(",", ".")));
 		} else {
 			linea.setPorcentaje(new Double(0.0));
 		}
 		linea.setMonto(precioConDescuento - valorTotal);
 		if (!"".equals(precioVenta.getText())) {
-			linea.setPrecioConDescuento(new Double(precioVenta.getText()));		
+			linea.setPrecioConDescuento(new Double(precioVenta.getText().replace(",", ".")));		
 		} else {
 			linea.setPrecioConDescuento(new Double(0.0));
 		}
