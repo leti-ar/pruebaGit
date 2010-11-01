@@ -98,7 +98,11 @@ public enum PermisosEnum {
 	AGREGAR_DESCUENTOS("puedeVerDescuentos", Accion.X, true),
 
 	//LM 
-	OCULTA_CAMPO_VALIDADO_DOMICILIO("ocultaCampoValidadoDomicilio", Accion.X, true);
+	OCULTA_CAMPO_VALIDADO_DOMICILIO("ocultaCampoValidadoDomicilio", Accion.X, true),
+	//MGR - #1030
+	EVITA_CONTROL_TERMINO_PAGO("evitaControlTerminoPago", Accion.X, false),
+	//MGR - #1033
+	EVITA_ANEXA_POR_SCORING("evitaAnexaPorScoring", Accion.X, false);
 
 	private String value;
     private String accion;
