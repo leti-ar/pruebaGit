@@ -123,29 +123,36 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			nnsLayout.clearCell(0, 4);
 			nnsLayout.clearCell(0, 5);
 		}
-		nnsLayout.setHTML(0, 6, "Descuento Total:");
-		nnsLayout.setWidget(0, 7, editarSSUIData.getDescuentoTotal());
-		nnsLayout.setWidget(0, 8, editarSSUIData.getTildeVerde());
-		editarSSUIData.getTildeVerde().addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent clickEvent) {
-				if (editarSSUIData.getTildeVerde().isEnabled()) {
-					descuentoTotalAplicado = true;
-					List<LineaSolicitudServicioDto> lineas = editarSSUIData.getLineasSolicitudServicio();
-					for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
-						LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
-						if (!linea.getPrecioConDescuento().equals(0.0)) {
-							SolicitudRpcService.Util.getInstance().getDescuentosTotales(linea.getId(), new DefaultWaitCallback<DescuentoTotalDto>() {
-								@Override
-								public void success(DescuentoTotalDto result) {
-									agregarDescuentoTotal(result);
-								}
-							});
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
+			nnsLayout.setHTML(0, 6, "Descuento Total:");
+			nnsLayout.setWidget(0, 7, editarSSUIData.getDescuentoTotal());
+			nnsLayout.setWidget(0, 8, editarSSUIData.getTildeVerde());
+			editarSSUIData.getTildeVerde().addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent clickEvent) {
+					if (editarSSUIData.getTildeVerde().isEnabled()) {
+						descuentoTotalAplicado = true;
+						List<LineaSolicitudServicioDto> lineas = editarSSUIData.getLineasSolicitudServicio();
+						for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
+							LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
+							if (!linea.getPrecioConDescuento().equals(0.0)) {
+								SolicitudRpcService.Util.getInstance().getDescuentosTotales(linea.getId(), new DefaultWaitCallback<DescuentoTotalDto>() {
+									@Override
+									public void success(DescuentoTotalDto result) {
+										agregarDescuentoTotal(result);
+									}
+								});
+							}
 						}
 					}
+					editarSSUIData.deshabilitarDescuentoTotal();
 				}
-				editarSSUIData.deshabilitarDescuentoTotal();
-			}
-		});
+			});
+		} else {
+			nnsLayout.clearCell(0, 6);
+			nnsLayout.clearCell(0, 7);
+			nnsLayout.clearCell(0, 8);
+		}
+			
 		if(editarSSUIData.getGrupoSolicitud() != null &&
 				instancias.get(GrupoSolicitudDto.ID_FAC_MENSUAL).equals(editarSSUIData.getGrupoSolicitud().getId())){
 			nnsLayout.setHTML(0, 9, Sfa.constant().ordenCompraReq());
