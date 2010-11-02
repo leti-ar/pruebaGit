@@ -3,6 +3,8 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.HashMap;
 import java.util.List;
 
+import ar.com.nextel.services.components.sessionContext.SessionContext;
+import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -29,6 +31,7 @@ import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.RazonSocialClienteBar;
 import ar.com.nextel.sfa.client.widget.UILoader;
+import ar.com.nextel.util.PermisosUserCenter;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -197,7 +200,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		FlowPanel linksCrearSS = new FlowPanel();
 		generarSolicitud = new SimpleLink("Generar");
 		cerrarSolicitud = new SimpleLink("Cerrar");
-		linksCrearSS.add(wrap(generarSolicitud));
+		
+		//MGR - #1122
+		if(!ClientContext.getInstance().checkPermiso(PermisosEnum.OCULTA_LINK_GENERAR_SS.getValue())){
+			linksCrearSS.add(wrap(generarSolicitud));
+		}
+		
 		linksCrearSS.add(wrap(cerrarSolicitud));
 		generarSolicitud.addClickListener(this);
 		cerrarSolicitud.addClickListener(this);
@@ -289,7 +297,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		} else if (sender == acionesSS) {
 			generarCerrarMenu.show();
 			generarCerrarMenu.setPopupPosition(acionesSS.getAbsoluteLeft() - 10,
-					acionesSS.getAbsoluteTop() - 50);
+					acionesSS.getAbsoluteTop() - generarCerrarMenu.getOffsetHeight());
 		} else if (sender == generarSolicitud || sender == cerrarSolicitud) {
 			generarCerrarMenu.hide();
 			openGenerarCerrarSolicitdDialog(sender == cerrarSolicitud);

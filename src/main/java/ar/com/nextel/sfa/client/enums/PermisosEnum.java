@@ -106,7 +106,9 @@ public enum PermisosEnum {
 	//MGR - #1031
 	MONTO_MAX_ACCESORIOS_DIFERENCIAL("montoMaxAccesoriosDiferencial", Accion.X, false),
 	//MGR - #1110
-	EVITA_CONTROL_RANGO_TRIPTICO("evitaControlRangoTriptico", Accion.X, false);
+	EVITA_CONTROL_RANGO_TRIPTICO("evitaControlRangoTriptico", Accion.X, false),
+	//MGR - #1122
+	OCULTA_LINK_GENERAR_SS("ocultaGenerarSS", Accion.X, true);
 
 	private String value;
     private String accion;
