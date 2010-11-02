@@ -361,44 +361,78 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	}
 
 	public void onTableClick(Widget sender, final int row, int col) {
-		if (detalleSS == sender) {
-			if (row > 0) {
-				if (col == 8) {
-					if (!serviciosAdicionales.isEditing()) {
-						editarPrecioDeVentaPlan();
-					}
-				} else if (col > 2) {
-					// Carga servicios adicionales en la tabla
-					if (!serviciosAdicionales.isEditing()) {
-						selectDetalleLineaSSRow(row);
-					}
-				} else if (col == 0) {
-					// Abre panel de edicion de la LineaSolicitudServicio
-					openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
-					lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1); 
-				} else if (col == 1) {
-					// Elimina la LineaSolicitudServicio
-					ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
-							new Command() {
-								public void execute() {
-									removeDetalleLineaSSRow(row);
-								};
-							}, ModalMessageDialog.getCloseCommand());
-				} else if (col == 2) {
-					if (descuentoTotalAplicado) {
-						noSePuedeAplicarDescuento(false);
-					} else {
-						//Abre el panel de descuento de la LineaSolicitudServicio
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
+			if (detalleSS == sender) {
+				if (row > 0) {
+					if (col == 8) {
+						if (!serviciosAdicionales.isEditing()) {
+							editarPrecioDeVentaPlan();
+						}
+					} else if (col > 2) {
+						// Carga servicios adicionales en la tabla
+						if (!serviciosAdicionales.isEditing()) {
+							selectDetalleLineaSSRow(row);
+						}
+					} else if (col == 0) {
+						// Abre panel de edicion de la LineaSolicitudServicio
+						openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
 						lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1); 
-						verificarDescuento(lineaSeleccionada);
+					} else if (col == 1) {
+						// Elimina la LineaSolicitudServicio
+						ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
+								new Command() {
+							public void execute() {
+								removeDetalleLineaSSRow(row);
+							};
+						}, ModalMessageDialog.getCloseCommand());
+					} else if (col == 2) {
+						if (descuentoTotalAplicado) {
+							noSePuedeAplicarDescuento(false);
+						} else {
+							//Abre el panel de descuento de la LineaSolicitudServicio
+							lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1); 
+							verificarDescuento(lineaSeleccionada);
+						}
 					}
 				}
+			} else if (serviciosAdicionales.getTable() == sender) {
+				if (col == 0 && row > 0) {
+					serviciosAdicionales.agregarQuitarServicioAdicional(row);
+				} else if (col == 4 && row > 0) {
+					serviciosAdicionales.editarPrecioDeVentaServicioAdicional(row);
+				}
 			}
-		} else if (serviciosAdicionales.getTable() == sender) {
-			if (col == 0 && row > 0) {
-				serviciosAdicionales.agregarQuitarServicioAdicional(row);
-			} else if (col == 4 && row > 0) {
-				serviciosAdicionales.editarPrecioDeVentaServicioAdicional(row);
+		} else {
+			if (detalleSS == sender) {
+				if (row > 0) {
+					if (col == 6) {
+						if (!serviciosAdicionales.isEditing()) {
+							editarPrecioDeVentaPlan();
+						}
+					} else if (col > 1) {
+						// Carga servicios adicionales en la tabla
+						if (!serviciosAdicionales.isEditing()) {
+							selectDetalleLineaSSRow(row);
+						}
+					} else if (col == 0) {
+						// Abre panel de edicion de la LineaSolicitudServicio
+						openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
+					} else if (col == 1) {
+						// Elimina la LineaSolicitudServicio
+						ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
+								new Command() {
+									public void execute() {
+										removeDetalleLineaSSRow(row);
+									};
+								}, ModalMessageDialog.getCloseCommand());
+					}
+				}
+			} else if (serviciosAdicionales.getTable() == sender) {
+				if (col == 0 && row > 0) {
+					serviciosAdicionales.agregarQuitarServicioAdicional(row);
+				} else if (col == 3 && row > 0) {
+					serviciosAdicionales.editarPrecioDeVentaServicioAdicional(row);
+				}
 			}
 		}
 	}
@@ -621,7 +655,11 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				selectedDetalleRow - 1);
 		getPlanPrecioVentaTextBox().setText(
 				NumberFormat.getDecimalFormat().format(lineaSS.getPrecioVentaPlan()));
-		detalleSS.setWidget(selectedDetalleRow, 8, getPlanPrecioVentaTextBox());
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
+			detalleSS.setWidget(selectedDetalleRow, 8, getPlanPrecioVentaTextBox());
+		} else {
+			detalleSS.setWidget(selectedDetalleRow, 6, getPlanPrecioVentaTextBox());
+		}
 		getPlanPrecioVentaTextBox().setFocus(true);
 	}
 
@@ -662,7 +700,11 @@ public class DatosSSUI extends Composite implements ClickHandler {
 					MessageDialog.getCloseCommand());
 			valor = lineaSS.getPrecioVentaPlan();
 		}
-		detalleSS.setHTML(selectedDetalleRow, 8, NumberFormat.getCurrencyFormat().format(valor));
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
+			detalleSS.setHTML(selectedDetalleRow, 8, NumberFormat.getCurrencyFormat().format(valor));
+		} else {
+			detalleSS.setHTML(selectedDetalleRow, 6, NumberFormat.getCurrencyFormat().format(valor));
+		}
 		editarSSUIData.modificarValorPlan(selectedDetalleRow - 1, valor);
 	}
 
