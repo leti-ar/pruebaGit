@@ -73,6 +73,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private DescuentoDialog descuentoDialog;
 	private Long idLinea;
 	private LineaSolicitudServicioDto lineaSeleccionada;
+	private Long lineaModificada = new Long(0);
 	private DescuentoDto descuento;
 	private List<DescuentoDto> descuentos = new ArrayList<DescuentoDto>();
 	private List<TipoDescuentoDto> descuentosAplicados = new ArrayList<TipoDescuentoDto>();
@@ -103,6 +104,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	}
 
 	private void refreshNssLayout() {
+		lineaModificada = new Long(0);
 		//MGR - #1050
 		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
 		if(instancias == null){
@@ -373,6 +375,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				} else if (col == 0) {
 					// Abre panel de edicion de la LineaSolicitudServicio
 					openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
+					lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1); 
 				} else if (col == 1) {
 					// Elimina la LineaSolicitudServicio
 					ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
@@ -383,7 +386,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 							}, ModalMessageDialog.getCloseCommand());
 				} else if (col == 2) {
 					if (descuentoTotalAplicado) {
-						noSePuedeAplicarDescuento();
+						noSePuedeAplicarDescuento(false);
 					} else {
 						//Abre el panel de descuento de la LineaSolicitudServicio
 						lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1); 
@@ -428,6 +431,8 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				public void execute() {
 					addLineaSolicitudServicio(itemSolicitudDialog.getItemSolicitudUIData()
 							.getLineaSolicitudServicio());
+					lineaModificada = itemSolicitudDialog.getItemSolicitudUIData()
+					.getLineaSolicitudServicio().getId();
 				}
 			};
 			itemSolicitudDialog.setAceptarCommand(aceptarCommand);
@@ -443,15 +448,16 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			SolicitudRpcService.Util.getInstance().getDescuentos(idLinea, new DefaultWaitCallback<List<DescuentoDto>>() {
 				@Override
 				public void success(List<DescuentoDto> result) {
-					if (result.size() > 0) {
+					if (result.size() > 0
+							&& !lineaSeleccionada.getId().equals(lineaModificada)) {
 						openAplicarDescuentoDialog(lineaSeleccionada, result);
 					} else {
-						noSePuedeAplicarDescuento();
+						noSePuedeAplicarDescuento(false);
 					}
 				}
 			});
 		} else {
-			noSePuedeAplicarDescuento();
+			noSePuedeAplicarDescuento(true);
 		}
 	}
 
@@ -490,7 +496,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				SolicitudRpcService.Util.getInstance().getTiposDescuento(idLinea, new DefaultWaitCallback<List<TipoDescuentoDto>>() {
 					@Override
 					public void success(List<TipoDescuentoDto> result) {
-						if (result.size() > 0) {
+						if (result.size() > 0 && !lineaSeleccionada.getId().equals(lineaModificada)) {
 							descuentosAAplicar = result;
 								if (sacarTipoDescuento) {
 									Iterator<TipoDescuentoDto> iterator = descuentosAAplicar.iterator();
@@ -505,13 +511,14 @@ public class DatosSSUI extends Composite implements ClickHandler {
 										}
 									}
 								}
-								if (descuentosAAplicar.size() > 0) {
+								if (descuentosAAplicar.size() > 0
+										&& !lineaSeleccionada.getId().equals(lineaModificada)) {
 									descuentoDialog.show(lineaSeleccionada, descuento, descuentosAplicados, descuentosAAplicar);
 								} else {
-									noSePuedeAplicarDescuento();
+									noSePuedeAplicarDescuento(false);
 								}
 						} else {
-							noSePuedeAplicarDescuento();
+							noSePuedeAplicarDescuento(false);
 						}
 					}
 				});
@@ -702,11 +709,20 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		} 
 	}	
 
-	private void noSePuedeAplicarDescuento() {
+	private void noSePuedeAplicarDescuento(boolean recienCreada) {
+		String mensaje;
+		if (recienCreada) {
+			mensaje = "Para aplicar descuentos debe guardar la solicitud";
+		} else {
+			if (lineaSeleccionada.getId().equals(lineaModificada)) {
+				mensaje = "Para aplicar descuentos debe guardar la solicitud";
+			} else {
+				mensaje = "No se puede aplicar un descuento a este item";
+			}
+		}
 		MessageDialog.getInstance().setDialogTitle("Advertencia");
-		MessageDialog.getInstance().showAceptar(
-				"No se puede aplicar un descuento a este item",
-				MessageDialog.getCloseCommand());		
+		MessageDialog.getInstance().showAceptar(mensaje,
+				MessageDialog.getCloseCommand());
 	}
 	
 	public void refresh() {
