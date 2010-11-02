@@ -56,6 +56,7 @@ import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import ar.com.snoop.gwt.commons.client.window.MessageWindow;
+import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
 import com.google.gwt.dev.js.rhino.ObjToIntMap.Iterator;
 import com.google.gwt.dev.util.collect.HashMap;
@@ -398,11 +399,32 @@ public class CuentaDatosForm extends Composite {
 		emailTable.setWidget(0, 4, cuentaUIData.getFacturaElectronicaPanel());
 		
 		//MGR - #965
+		boolean seOcultoFacElec = false;
 		if(ClientContext.getInstance().vengoDeNexus() && 
 				ClientContext.getInstance().soyClienteNexus() &&
 				!ClientContext.getInstance().checkPermiso(PermisosEnum.VER_CAMPO_FACTURA_ELECTRONICA.getValue())){
 			emailTable.getWidget(0, 4).setVisible(false);
+			seOcultoFacElec = true;
 		}
+		
+		//MGR - #1096
+		if(!seOcultoFacElec && ClientContext.getInstance().vengoDeNexus()){
+			WaitWindow.show();
+			DeferredCommand.addCommand(new IncrementalCommand() {
+				public boolean execute() {
+					if (CuentaClientService.cuentaDto == null){
+						return true;
+					}
+					boolean esProspect =RegularExpressionConstants.isVancuc(CuentaClientService.cuentaDto.getCodigoVantive());
+					if(!esProspect){
+						emailTable.getWidget(0, 4).setVisible(false);
+					}
+					WaitWindow.hide();
+					return false;
+				}
+			});
+		}
+		
 		
 		emailTable.getFlexCellFormatter().setWidth(0, 0, ANCHO_PRIMER_COLUMNA);
 		emailTable.getFlexCellFormatter().setWidth(0, 1, ANCHO_PRIMER_COLUMNA);
@@ -1770,16 +1792,8 @@ public class CuentaDatosForm extends Composite {
 
 		} else {
 			
-			//MGR - #1096
-			if(!cuentaUIData.getEmailPersonal().isEnabled()){
-				cuentaUIData.getFacturaElectronicaPanel().setEnabled(false);
-			}
-			else{ 
 				cuentaUIData.getFacturaElectronicaPanel().setText("");
 				cuentaUIData.getFacturaElectronicaPanel().setEnabled(true);
-			}
-			
-
 		}
 	}
 
