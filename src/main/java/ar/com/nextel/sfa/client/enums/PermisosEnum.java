@@ -102,7 +102,9 @@ public enum PermisosEnum {
 	//MGR - #1030
 	EVITA_CONTROL_TERMINO_PAGO("evitaControlTerminoPago", Accion.X, false),
 	//MGR - #1033
-	EVITA_ANEXA_POR_SCORING("evitaAnexaPorScoring", Accion.X, false);
+	EVITA_ANEXA_POR_SCORING("evitaAnexaPorScoring", Accion.X, false),
+	//MGR - #1031
+	MONTO_MAX_ACCESORIOS_DIFERENCIAL("montoMaxAccesoriosDiferencial", Accion.X, false);
 
 	private String value;
     private String accion;
