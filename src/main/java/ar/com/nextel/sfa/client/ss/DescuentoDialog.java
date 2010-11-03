@@ -128,7 +128,7 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 		porcentajeTB.addChangeHandler(new ChangeHandler() {			
 			public void onChange(ChangeEvent arg0) {
 				try {
-					if (Double.valueOf(porcentajeTB.getValue().replace(",", ".")) < 100) {
+					if (Double.valueOf(porcentajeTB.getValue().replace(",", ".")) <= 100) {
 						valorTotal = precioConDescuento - (precioConDescuento
 									* Double.valueOf(porcentajeTB.getValue().replace(",", ".")) / 100);
 						precioVenta.setText(String.valueOf(decimalFormat.format(valorTotal)).replace(",", "."));
@@ -213,7 +213,7 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 							"El monto no puede ser mayor al precio de lista", MessageDialog.getCloseCommand());
 				} else {
 					if (!"".equals(porcentajeTB.getValue()) &&
-							!(Double.valueOf(porcentajeTB.getValue().replace(",", ".")) < 100)) {
+							!(Double.valueOf(porcentajeTB.getValue().replace(",", ".")) <= 100)) {
 						MessageDialog.getInstance().setDialogTitle("Advertencia");
 						MessageDialog.getInstance().showAceptar(
 								"El porcentaje no puede ser mayor al 100%", MessageDialog.getCloseCommand());
