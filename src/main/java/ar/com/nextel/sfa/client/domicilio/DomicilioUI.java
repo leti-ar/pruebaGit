@@ -24,7 +24,6 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -317,7 +316,8 @@ public class DomicilioUI extends NextelDialog {
 			}
 		});
 		setParentContacto(false);
-		this.showAndCenter();
+		
+//		this.showAndCenter();
 	}
 
 	/**
