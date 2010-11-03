@@ -11,8 +11,6 @@ import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.domicilio.DomicilioUI;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
-import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
-import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
@@ -73,7 +71,6 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private DescuentoDialog descuentoDialog;
 	private Long idLinea;
 	private LineaSolicitudServicioDto lineaSeleccionada;
-	private Long lineaModificada = new Long(0);
 	private DescuentoDto descuento;
 	private List<DescuentoDto> descuentos = new ArrayList<DescuentoDto>();
 	private List<TipoDescuentoDto> descuentosAplicados = new ArrayList<TipoDescuentoDto>();
@@ -104,7 +101,6 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	}
 
 	private void refreshNssLayout() {
-		lineaModificada = new Long(0);
 		//MGR - #1050
 		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
 		if(instancias == null){
@@ -125,36 +121,27 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			nnsLayout.clearCell(0, 4);
 			nnsLayout.clearCell(0, 5);
 		}
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
-			nnsLayout.setHTML(0, 6, "Descuento Total:");
-			nnsLayout.setWidget(0, 7, editarSSUIData.getDescuentoTotal());
-			nnsLayout.setWidget(0, 8, editarSSUIData.getTildeVerde());
-			editarSSUIData.getTildeVerde().addClickHandler(new ClickHandler() {
-				public void onClick(ClickEvent clickEvent) {
-					if (editarSSUIData.getTildeVerde().isEnabled()) {
-						descuentoTotalAplicado = true;
-						List<LineaSolicitudServicioDto> lineas = editarSSUIData.getLineasSolicitudServicio();
-						for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
-							LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
-							if (!linea.getPrecioConDescuento().equals(0.0)) {
-								SolicitudRpcService.Util.getInstance().getDescuentosTotales(linea.getId(), new DefaultWaitCallback<DescuentoTotalDto>() {
-									@Override
-									public void success(DescuentoTotalDto result) {
-										agregarDescuentoTotal(result);
-									}
-								});
-							}
-						}
-					}
-					editarSSUIData.deshabilitarDescuentoTotal();
-				}
-			});
-		} else {
-			nnsLayout.clearCell(0, 6);
-			nnsLayout.clearCell(0, 7);
-			nnsLayout.clearCell(0, 8);
-		}
-			
+//		nnsLayout.setHTML(0, 6, "Descuento Total:");
+//		nnsLayout.setWidget(0, 7, editarSSUIData.getDescuentoTotal());
+//		nnsLayout.setWidget(0, 8, editarSSUIData.getTildeVerde());
+//		editarSSUIData.getTildeVerde().addClickHandler(new ClickHandler() {
+//			public void onClick(ClickEvent arg0) {
+//				descuentoTotalAplicado = true;
+//				int i = 1;
+//				for (Iterator<LineaSolicitudServicioDto> iterator = editarSSUIData.getLineasSolicitudServicio().iterator(); iterator.hasNext();) {
+//					LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
+//					linea.setPrecioConDescuento(new Double(0.0));
+//					linea.setMonto(linea.getPrecioVenta());
+//					drawDetalleSSRow(linea, i);
+//					i++;
+////					TipoDescuentoSeleccionado seleccionado = new TipoDescuentoSeleccionado();
+////					seleccionado.setIdLinea(linea.getId());
+////					seleccionado.setDescripcion(editarSSUIData.getDescuentoTotal().getSelectedItemText());
+////					descuentoSeleccionados.add(seleccionado);
+//				}
+//				editarSSUIData.deshabilitarDescuentoTotal();
+//			}
+//		});
 		if(editarSSUIData.getGrupoSolicitud() != null &&
 				instancias.get(GrupoSolicitudDto.ID_FAC_MENSUAL).equals(editarSSUIData.getGrupoSolicitud().getId())){
 			nnsLayout.setHTML(0, 9, Sfa.constant().ordenCompraReq());
@@ -315,8 +302,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	}
 
 	public void borrarDomicilioEntrega() {
-		if (editarSSUIData.getEntrega().getSelectedItemText() == null) {
-		} else {
+		if (editarSSUIData.getEntrega().getSelectedItemText() != null){
 			domicilioAEditar = (DomiciliosCuentaDto) editarSSUIData.getEntrega().getSelectedItem();
 			DomicilioUI.getInstance().openPopupDeleteDialog(editarSSUIData.getCuenta().getPersona(),
 					domicilioAEditar, new Command() {
@@ -361,78 +347,43 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	}
 
 	public void onTableClick(Widget sender, final int row, int col) {
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
-			if (detalleSS == sender) {
-				if (row > 0) {
-					if (col == 8) {
-						if (!serviciosAdicionales.isEditing()) {
-							editarPrecioDeVentaPlan();
-						}
-					} else if (col > 2) {
-						// Carga servicios adicionales en la tabla
-						if (!serviciosAdicionales.isEditing()) {
-							selectDetalleLineaSSRow(row);
-						}
-					} else if (col == 0) {
-						// Abre panel de edicion de la LineaSolicitudServicio
-						openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
-						lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1); 
-					} else if (col == 1) {
-						// Elimina la LineaSolicitudServicio
-						ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
-								new Command() {
-							public void execute() {
-								removeDetalleLineaSSRow(row);
-							};
-						}, ModalMessageDialog.getCloseCommand());
-					} else if (col == 2) {
-						if (descuentoTotalAplicado) {
-							noSePuedeAplicarDescuento(false);
-						} else {
-							//Abre el panel de descuento de la LineaSolicitudServicio
-							lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1); 
-							verificarDescuento(lineaSeleccionada);
-						}
+		if (detalleSS == sender) {
+			if (row > 0) {
+				if (col == 8) {
+					if (!serviciosAdicionales.isEditing()) {
+						editarPrecioDeVentaPlan();
 					}
-				}
-			} else if (serviciosAdicionales.getTable() == sender) {
-				if (col == 0 && row > 0) {
-					serviciosAdicionales.agregarQuitarServicioAdicional(row);
-				} else if (col == 4 && row > 0) {
-					serviciosAdicionales.editarPrecioDeVentaServicioAdicional(row);
+				} else if (col > 2) {
+					// Carga servicios adicionales en la tabla
+					if (!serviciosAdicionales.isEditing()) {
+						selectDetalleLineaSSRow(row);
+					}
+				} else if (col == 0) {
+					// Abre panel de edicion de la LineaSolicitudServicio
+					openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
+				} else if (col == 1) {
+					// Elimina la LineaSolicitudServicio
+					ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
+							new Command() {
+								public void execute() {
+									removeDetalleLineaSSRow(row);
+								};
+							}, ModalMessageDialog.getCloseCommand());
+				} else if (col == 2) {
+					if (descuentoTotalAplicado) {
+						noSePuedeAplicarDescuento();
+					} else {
+						//Abre el panel de descuento de la LineaSolicitudServicio
+						lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1); 
+						verificarDescuento(lineaSeleccionada);
+					}
 				}
 			}
-		} else {
-			if (detalleSS == sender) {
-				if (row > 0) {
-					if (col == 6) {
-						if (!serviciosAdicionales.isEditing()) {
-							editarPrecioDeVentaPlan();
-						}
-					} else if (col > 1) {
-						// Carga servicios adicionales en la tabla
-						if (!serviciosAdicionales.isEditing()) {
-							selectDetalleLineaSSRow(row);
-						}
-					} else if (col == 0) {
-						// Abre panel de edicion de la LineaSolicitudServicio
-						openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
-					} else if (col == 1) {
-						// Elimina la LineaSolicitudServicio
-						ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
-								new Command() {
-									public void execute() {
-										removeDetalleLineaSSRow(row);
-									};
-								}, ModalMessageDialog.getCloseCommand());
-					}
-				}
-			} else if (serviciosAdicionales.getTable() == sender) {
-				if (col == 0 && row > 0) {
-					serviciosAdicionales.agregarQuitarServicioAdicional(row);
-				} else if (col == 3 && row > 0) {
-					serviciosAdicionales.editarPrecioDeVentaServicioAdicional(row);
-				}
+		} else if (serviciosAdicionales.getTable() == sender) {
+			if (col == 0 && row > 0) {
+				serviciosAdicionales.agregarQuitarServicioAdicional(row);
+			} else if (col == 4 && row > 0) {
+				serviciosAdicionales.editarPrecioDeVentaServicioAdicional(row);
 			}
 		}
 	}
@@ -465,8 +416,6 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				public void execute() {
 					addLineaSolicitudServicio(itemSolicitudDialog.getItemSolicitudUIData()
 							.getLineaSolicitudServicio());
-					lineaModificada = itemSolicitudDialog.getItemSolicitudUIData()
-					.getLineaSolicitudServicio().getId();
 				}
 			};
 			itemSolicitudDialog.setAceptarCommand(aceptarCommand);
@@ -482,16 +431,15 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			SolicitudRpcService.Util.getInstance().getDescuentos(idLinea, new DefaultWaitCallback<List<DescuentoDto>>() {
 				@Override
 				public void success(List<DescuentoDto> result) {
-					if (result.size() > 0
-							&& !lineaSeleccionada.getId().equals(lineaModificada)) {
+					if (result.size() > 0) {
 						openAplicarDescuentoDialog(lineaSeleccionada, result);
 					} else {
-						noSePuedeAplicarDescuento(false);
+						noSePuedeAplicarDescuento();
 					}
 				}
 			});
 		} else {
-			noSePuedeAplicarDescuento(true);
+			noSePuedeAplicarDescuento();
 		}
 	}
 
@@ -507,7 +455,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				public void execute() {
 					editarPrecionConDescuento(lineaSeleccionada, descuentos);
 					descuentoSeleccionados = descuentoDialog.getDescuentosSeleccionados();
-					editarSSUIData.modificarDescuentoTotal(descuentoSeleccionados);
+//					editarSSUIData.modificarDescuentoTotal(descuentoSeleccionados);
 				}
 			};
 			descuentoDialog.setAceptarCommand(aceptarCommand);
@@ -530,7 +478,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				SolicitudRpcService.Util.getInstance().getTiposDescuento(idLinea, new DefaultWaitCallback<List<TipoDescuentoDto>>() {
 					@Override
 					public void success(List<TipoDescuentoDto> result) {
-						if (result.size() > 0 && !lineaSeleccionada.getId().equals(lineaModificada)) {
+						if (result.size() > 0) {
 							descuentosAAplicar = result;
 								if (sacarTipoDescuento) {
 									Iterator<TipoDescuentoDto> iterator = descuentosAAplicar.iterator();
@@ -545,14 +493,13 @@ public class DatosSSUI extends Composite implements ClickHandler {
 										}
 									}
 								}
-								if (descuentosAAplicar.size() > 0
-										&& !lineaSeleccionada.getId().equals(lineaModificada)) {
+								if (descuentosAAplicar.size() > 0) {
 									descuentoDialog.show(lineaSeleccionada, descuento, descuentosAplicados, descuentosAAplicar);
 								} else {
-									noSePuedeAplicarDescuento(false);
+									noSePuedeAplicarDescuento();
 								}
 						} else {
-							noSePuedeAplicarDescuento(false);
+							noSePuedeAplicarDescuento();
 						}
 					}
 				});
@@ -614,40 +561,31 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private void drawDetalleSSRow(LineaSolicitudServicioDto linea, int newRow) {
 		detalleSS.setWidget(newRow, 0, IconFactory.lapiz());
 		detalleSS.setWidget(newRow, 1, IconFactory.cancel());
-		int i = 0;
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
-			detalleSS.setWidget(newRow, 2-i, IconFactory.bolsaPesos());
-		} else {
-			i = 1;
-		}
-		detalleSS.setHTML(newRow, 3-i, linea.getItem().getDescripcion());
-		detalleSS.setHTML(newRow, 4-i, currencyFormat.format(linea.getPrecioVenta()));
-		detalleSS.getCellFormatter().addStyleName(newRow, 4-i, "alignRight");
+		detalleSS.setWidget(newRow, 2, IconFactory.bolsaPesos());
+		detalleSS.setHTML(newRow, 3, linea.getItem().getDescripcion());
+		detalleSS.setHTML(newRow, 4, currencyFormat.format(linea.getPrecioVenta()));
 		if (linea.getPrecioConDescuento() == null) {
 			linea.setPrecioConDescuento(linea.getPrecioVenta());
 		}
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
-			detalleSS.setHTML(newRow, 5-i, currencyFormat.format(linea.getPrecioConDescuento()));
-			detalleSS.getCellFormatter().addStyleName(newRow, 5-i, "alignRight");
-		} else {
-			i = 2;
-		}
-		detalleSS.setHTML(newRow, 6-i, linea.getAlias() != null ? linea.getAlias() : "");
-		detalleSS.setHTML(newRow, 7-i, linea.getPlan() != null ? linea.getPlan().getDescripcion() : "");
-		detalleSS.setHTML(newRow, 8-i, linea.getPlan() != null ? currencyFormat.format(linea
+		detalleSS.setHTML(newRow, 5, currencyFormat.format(linea.getPrecioConDescuento()));
+		detalleSS.setHTML(newRow, 6, linea.getAlias() != null ? linea.getAlias() : "");
+		detalleSS.setHTML(newRow, 7, linea.getPlan() != null ? linea.getPlan().getDescripcion() : "");
+		detalleSS.setHTML(newRow, 8, linea.getPlan() != null ? currencyFormat.format(linea
 				.getPrecioVentaPlan()) : "");
-		detalleSS.getCellFormatter().addStyleName(newRow, 8-i, "alignRight");
-		detalleSS.setHTML(newRow, 9-i, linea.getLocalidad() != null ? linea.getLocalidad().getDescripcion()
+		detalleSS.setHTML(newRow, 9, linea.getLocalidad() != null ? linea.getLocalidad().getDescripcion()
 				: "");
-		detalleSS.setHTML(newRow, 10-i, linea.getNumeroReserva());
-		detalleSS.setHTML(newRow, 11-i, linea.getTipoSolicitud().getDescripcion());
-		detalleSS.setHTML(newRow, 12-i, "" + linea.getCantidad());
-		detalleSS.setHTML(newRow, 13-i, linea.getDdn() ? IconFactory.tildeVerde().toString() : Sfa.constant()
+		detalleSS.setHTML(newRow, 10, linea.getNumeroReserva());
+		detalleSS.setHTML(newRow, 11, linea.getTipoSolicitud().getDescripcion());
+		detalleSS.setHTML(newRow, 12, "" + linea.getCantidad());
+		detalleSS.setHTML(newRow, 13, linea.getDdn() ? IconFactory.tildeVerde().toString() : Sfa.constant()
 				.whiteSpace());
-		detalleSS.setHTML(newRow, 14-i, linea.getDdi() ? IconFactory.tildeVerde().toString() : Sfa.constant()
+		detalleSS.setHTML(newRow, 14, linea.getDdi() ? IconFactory.tildeVerde().toString() : Sfa.constant()
 				.whiteSpace());
-		detalleSS.setHTML(newRow, 15-i, linea.getRoaming() ? IconFactory.tildeVerde().toString() : Sfa
+		detalleSS.setHTML(newRow, 15, linea.getRoaming() ? IconFactory.tildeVerde().toString() : Sfa
 				.constant().whiteSpace());
+		detalleSS.getCellFormatter().addStyleName(newRow, 4, "alignRight");
+		detalleSS.getCellFormatter().addStyleName(newRow, 5, "alignRight");
+		detalleSS.getCellFormatter().addStyleName(newRow, 8, "alignRight");
 	}
 
 	public void editarPrecioDeVentaPlan() {
@@ -655,11 +593,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				selectedDetalleRow - 1);
 		getPlanPrecioVentaTextBox().setText(
 				NumberFormat.getDecimalFormat().format(lineaSS.getPrecioVentaPlan()));
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
-			detalleSS.setWidget(selectedDetalleRow, 8, getPlanPrecioVentaTextBox());
-		} else {
-			detalleSS.setWidget(selectedDetalleRow, 6, getPlanPrecioVentaTextBox());
-		}
+		detalleSS.setWidget(selectedDetalleRow, 8, getPlanPrecioVentaTextBox());
 		getPlanPrecioVentaTextBox().setFocus(true);
 	}
 
@@ -700,11 +634,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 					MessageDialog.getCloseCommand());
 			valor = lineaSS.getPrecioVentaPlan();
 		}
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
-			detalleSS.setHTML(selectedDetalleRow, 8, NumberFormat.getCurrencyFormat().format(valor));
-		} else {
-			detalleSS.setHTML(selectedDetalleRow, 6, NumberFormat.getCurrencyFormat().format(valor));
-		}
+		detalleSS.setHTML(selectedDetalleRow, 8, NumberFormat.getCurrencyFormat().format(valor));
 		editarSSUIData.modificarValorPlan(selectedDetalleRow - 1, valor);
 	}
 
@@ -713,58 +643,12 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		int newRow = editarSSUIData.addLineaSolicitudServicio(linea) + 1;
 		drawDetalleSSRow(linea, newRow);
 	}
-	
-	public void agregarDescuentoTotal(DescuentoTotalDto result) {		
-		for (Iterator<LineaSolicitudServicioDto> iterator = editarSSUIData.getLineasSolicitudServicio().iterator(); iterator.hasNext();) {
-			LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
-			if (result.getIdLinea().equals(linea.getId())) {
-				//guardo en la linea los valores que modificó el usuario
-				linea.setPorcentaje(new Double(100));
-				linea.setMonto(linea.getPrecioLista());
-				linea.setPrecioConDescuento(new Double(0.0));
-					
-				//creo una linea de descuento y la agrego a la linea de solicitud de servicio
-				DescuentoLineaDto descuentoLinea = new DescuentoLineaDto();
-					
-				Long idTipoDescuento = null;
-				for (Iterator<TipoDescuentoDto> iterator2 = result.getTiposDescuento().iterator(); iterator2.hasNext();) {
-					TipoDescuentoDto tipoDescuentoDto = (TipoDescuentoDto) iterator2.next();
-					if (editarSSUIData.getDescuentoTotal().getSelectedItemText().equals(tipoDescuentoDto.getDescripcion())) {
-						idTipoDescuento = tipoDescuentoDto.getId();
-					}
-				}
-				for (Iterator<DescuentoDto> iterator2 = result.getDescuentos().iterator(); iterator2.hasNext();) {
-					DescuentoDto descuentoDto = (DescuentoDto) iterator2.next();
-					if (descuentoDto.getIdTipoDescuento().equals(idTipoDescuento)) {
-						descuentoLinea.setIdDescuento(descuentoDto.getId());
-					}
-				}
-				descuentoLinea.setIdLinea(linea.getId());
-				descuentoLinea.setMonto(linea.getMonto());
-				descuentoLinea.setPorcentaje(linea.getPorcentaje());
-				linea.addDescuentoLinea(descuentoLinea);
-				
-				int newRow = editarSSUIData.addLineaSolicitudServicio(linea) + 1;
-				drawDetalleSSRow(linea, newRow);
-				break;
-			}
-		} 
-	}	
 
-	private void noSePuedeAplicarDescuento(boolean recienCreada) {
-		String mensaje;
-		if (recienCreada) {
-			mensaje = "Para aplicar descuentos debe guardar la solicitud";
-		} else {
-			if (lineaSeleccionada.getId().equals(lineaModificada)) {
-				mensaje = "Para aplicar descuentos debe guardar la solicitud";
-			} else {
-				mensaje = "No se puede aplicar un descuento a este item";
-			}
-		}
+	private void noSePuedeAplicarDescuento() {
 		MessageDialog.getInstance().setDialogTitle("Advertencia");
-		MessageDialog.getInstance().showAceptar(mensaje,
-				MessageDialog.getCloseCommand());
+		MessageDialog.getInstance().showAceptar(
+				"No se puede aplicar un descuento a este item",
+				MessageDialog.getCloseCommand());		
 	}
 	
 	public void refresh() {
