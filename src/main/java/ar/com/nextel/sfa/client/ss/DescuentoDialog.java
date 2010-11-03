@@ -54,7 +54,6 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 	private List<TipoDescuentoDto> tiposDeDescuento;
 	private List<TipoDescuentoSeleccionado> descuentosSeleccionados;
 	private TipoDescuentoSeleccionado seleccionado;
-	private boolean noAplicarDesc = false;
 	
 	public DescuentoDialog(String title, EditarSSUIController controller) {
 		super(title, false, true);
@@ -117,10 +116,8 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 						precioVenta.setText(String.valueOf(decimalFormat.format(valorTotal)).replace(",", "."));
 					} else {
 						MessageDialog.getInstance().setDialogTitle("Advertencia");
-						MessageDialog.getInstance().showAceptar(
-								"El monto no puede ser mayor al precio de lista",
+						MessageDialog.getInstance().showAceptar("El monto no puede ser mayor al precio de lista", 
 								MessageDialog.getCloseCommand());
-						noAplicarDesc = true;
 					}
 				} catch (Exception e) {
 				}
@@ -137,10 +134,8 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 						precioVenta.setText(String.valueOf(decimalFormat.format(valorTotal)).replace(",", "."));
 					} else {
 						MessageDialog.getInstance().setDialogTitle("Advertencia");
-						MessageDialog.getInstance().showAceptar(
-								"El porcentaje no puede ser mayor al 100%",
+						MessageDialog.getInstance().showAceptar("El porcentaje no puede ser mayor al 100%", 
 								MessageDialog.getCloseCommand());
-						noAplicarDesc = true;
 					}
 				} catch (Exception e) {
 				}
@@ -203,20 +198,33 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 
 	public void onClick(Widget sender) {
 		if (sender == aceptar) {
+			//valido que haya ingresado un valor
 			if ("".equals(montoTB.getValue()) && "".equals(porcentajeTB.getValue())) {
 				MessageDialog.getInstance().setDialogTitle("Advertencia");
 				MessageDialog.getInstance().showAceptar(
 						"Debe ingresar un Monto o Porcentaje para aplicar el descuento",
 						MessageDialog.getCloseCommand());
-			} else {
-				if (!noAplicarDesc) {
-					//agrego el tipo de descuento que eligió para que no pueda volverlo a elegir
-					seleccionado.setDescripcion(tipoDeDescuento.getSelectedItemText());
-					descuentosSeleccionados.add(seleccionado);
+			} else {				
+				//valido que el monto no sea mayor al precio de venta y el porcentaje no sea mayor a 100
+				if (!"".equals(montoTB.getValue()) &&
+						!(Double.valueOf(montoTB.getValue().replace(",", ".")) <= precioConDescuento)) {
+					MessageDialog.getInstance().setDialogTitle("Advertencia");
+					MessageDialog.getInstance().showAceptar(
+							"El monto no puede ser mayor al precio de lista", MessageDialog.getCloseCommand());
+				} else {
+					if (!"".equals(porcentajeTB.getValue()) &&
+							!(Double.valueOf(porcentajeTB.getValue().replace(",", ".")) < 100)) {
+						MessageDialog.getInstance().setDialogTitle("Advertencia");
+						MessageDialog.getInstance().showAceptar(
+								"El porcentaje no puede ser mayor al 100%", MessageDialog.getCloseCommand());
+					} else {
+						//agrego el tipo de descuento que eligió para que no pueda volverlo a elegir
+						seleccionado.setDescripcion(tipoDeDescuento.getSelectedItemText());
+						descuentosSeleccionados.add(seleccionado);
+						aceptarCommand.execute();
+						hide();
+					}
 				}
-				noAplicarDesc = false;
-				aceptarCommand.execute();
-				hide();
 			}
 		} else if (sender == cancelar) {
 			hide();
