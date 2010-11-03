@@ -359,7 +359,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		} else {
 			deferredLoad();
 		}
-		comprobarDescuentoTotal();		
+//		comprobarDescuentoTotal();		
 		recarcularValores();
 	}
 
@@ -821,52 +821,52 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	}
 
-	public void comprobarDescuentoTotal() {
-		List<LineaSolicitudServicioDto> lineas = solicitudServicio.getLineas();
-		descuentoTotal.clear();
-		descuentoTotal.setEnabled(true);
-		SolicitudRpcService.Util.getInstance().puedeAplicarDescuento(lineas, new DefaultWaitCallback<Boolean>() {
-			@Override
-			public void success(Boolean result) {
-				if (!result) {
-					descuentoTotal.setEnabled(false);
-				} else {
-						SolicitudRpcService.Util.getInstance().getInterseccionTiposDescuento(solicitudServicio.getLineas(),
-											new DefaultWaitCallback<List<TipoDescuentoDto>>() {
-						@Override
-						public void success(List<TipoDescuentoDto> result) {
-							for (Iterator<TipoDescuentoDto> iterator = result.iterator(); iterator.hasNext();) {
-								TipoDescuentoDto tipoDescuento = (TipoDescuentoDto) iterator.next();
-								descuentoTotal.addItem(tipoDescuento.getDescripcion());
-							}
-						}
-					});
-				}
-			}
-		});
-	}
+//	public void comprobarDescuentoTotal() {
+//		List<LineaSolicitudServicioDto> lineas = solicitudServicio.getLineas();
+//		descuentoTotal.clear();
+//		descuentoTotal.setEnabled(true);
+//		SolicitudRpcService.Util.getInstance().puedeAplicarDescuento(lineas, new DefaultWaitCallback<Boolean>() {
+//			@Override
+//			public void success(Boolean result) {
+//				if (!result) {
+//					descuentoTotal.setEnabled(false);
+//				} else {
+//						SolicitudRpcService.Util.getInstance().getInterseccionTiposDescuento(solicitudServicio.getLineas(),
+//											new DefaultWaitCallback<List<TipoDescuentoDto>>() {
+//						@Override
+//						public void success(List<TipoDescuentoDto> result) {
+//							for (Iterator<TipoDescuentoDto> iterator = result.iterator(); iterator.hasNext();) {
+//								TipoDescuentoDto tipoDescuento = (TipoDescuentoDto) iterator.next();
+//								descuentoTotal.addItem(tipoDescuento.getDescripcion());
+//							}
+//						}
+//					});
+//				}
+//			}
+//		});
+//	}
 
-	public void deshabilitarDescuentoTotal() {
-		descuentoTotal.setEnabled(false);
-		tildeVerde.setEnabled(false);
-	}
+//	public void deshabilitarDescuentoTotal() {
+//		descuentoTotal.setEnabled(false);
+//		tildeVerde.setEnabled(false);
+//	}
 
 	/**
 	 * Elimino del listBox descuentoTotal aquellos tipos de descuento que el usuario haya elegido
 	 * para cada linea de solicitud de servicio 
 	 * @param descuentosSeleccionados
 	 */
-	public void modificarDescuentoTotal(List<TipoDescuentoSeleccionado> descuentosSeleccionados) {
-		for (int i = 0; i < descuentoTotal.getItemCount(); i++) {
-			Iterator<TipoDescuentoSeleccionado> it = descuentosSeleccionados.iterator();
-			while (it.hasNext()) {
-				TipoDescuentoSeleccionado seleccionado = (TipoDescuentoSeleccionado) it.next();
-				if (seleccionado.getDescripcion().equals(descuentoTotal.getItemText(i))) {
-					descuentoTotal.removeItem(i);
-					break;
-				}
-			}
-		}
-	}
+//	public void modificarDescuentoTotal(List<TipoDescuentoSeleccionado> descuentosSeleccionados) {
+//		for (int i = 0; i < descuentoTotal.getItemCount(); i++) {
+//			Iterator<TipoDescuentoSeleccionado> it = descuentosSeleccionados.iterator();
+//			while (it.hasNext()) {
+//				TipoDescuentoSeleccionado seleccionado = (TipoDescuentoSeleccionado) it.next();
+//				if (seleccionado.getDescripcion().equals(descuentoTotal.getItemText(i))) {
+//					descuentoTotal.removeItem(i);
+//					break;
+//				}
+//			}
+//		}
+//	}
 	
 }
