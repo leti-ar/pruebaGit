@@ -108,7 +108,9 @@ public enum PermisosEnum {
 	//MGR - #1110
 	EVITA_CONTROL_RANGO_TRIPTICO("evitaControlRangoTriptico", Accion.X, false),
 	//MGR - #1122
-	OCULTA_LINK_GENERAR_SS("ocultaGenerarSS", Accion.X, true);
+	OCULTA_LINK_GENERAR_SS("ocultaGenerarSS", Accion.X, true),
+	//MGR - #1137
+	EVITA_CONTROL_TRIPTICO_RANGO_GRUPO("evitaControlTripticoDentroRangoDelGrupo", Accion.X, false);;
 
 	private String value;
     private String accion;
