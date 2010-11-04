@@ -865,6 +865,12 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		lineaSolicitudServicio.setPrecioLista(itemTasadoSelected.getPrecioLista());
 		lineaSolicitudServicio.setPrecioVenta(itemTasadoSelected.getPrecioLista());
 		lineaSolicitudServicio.setListaPrecios((ListaPreciosDto) listaPrecio.getSelectedItem());
+		TerminoPagoValidoDto terminoSelected = (TerminoPagoValidoDto) terminoPago.getSelectedItem();
+		if(terminoSelected != null){
+			lineaSolicitudServicio.setTerminoPago(terminoSelected.getTerminoPago());
+		}else{
+			lineaSolicitudServicio.setTerminoPago(null);
+		}
 		if (tipoEdicion == ACTIVACION) {
 			lineaSolicitudServicio.setModelo((ModeloDto) modeloEq.getSelectedItem());
 			lineaSolicitudServicio.setNumeroIMEI(imei.getText());
@@ -905,12 +911,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				lineaSolicitudServicio.setPlan(planSelected);
 				lineaSolicitudServicio.setPrecioListaPlan(0d);
 				lineaSolicitudServicio.setPrecioVentaPlan(0d);
-			}
-			TerminoPagoValidoDto terminoSelected = (TerminoPagoValidoDto) terminoPago.getSelectedItem();
-			if(terminoSelected != null){
-				lineaSolicitudServicio.setTerminoPago(terminoSelected.getTerminoPago());
-			}else{
-				lineaSolicitudServicio.setTerminoPago(null);
 			}
 			double precio = itemTasadoSelected.getPrecioLista();
 			if (terminoSelected != null && terminoSelected.getAjuste() != null) {
