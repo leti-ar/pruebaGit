@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import ar.com.nextel.model.solicitudes.beans.TipoDescuento;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
@@ -22,9 +21,9 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 
 public class DescuentoDialog extends NextelDialog implements ChangeHandler, ClickListener {
@@ -36,7 +35,7 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 	
 	private FlowPanel topBar = new FlowPanel();
 	private InlineLabel descuentoAplicadoLabel;
-	private TextArea descuentoAplicado;
+	private HTML descuentoAplicado;
 	private InlineLabel descuentoLabel;
 	private ListBox tipoDeDescuento;
 	private InlineLabel montoLabel;
@@ -187,9 +186,9 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 		String label = "";
 		for (Iterator<TipoDescuentoDto> iterator = descuentosAplicados.iterator(); iterator.hasNext();) {
 			TipoDescuentoDto tipoDescuento = (TipoDescuentoDto) iterator.next();
-			label += tipoDescuento.getDescripcion() + "\n";
+			label += tipoDescuento.getDescripcion() + "<br>";
 		}
-		descuentoAplicado.setText(label);
+		descuentoAplicado.setHTML(label);
 		
 		seleccionado = new TipoDescuentoSeleccionado();
 		seleccionado.setIdLinea(linea.getId());

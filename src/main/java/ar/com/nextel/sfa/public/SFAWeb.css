@@ -769,7 +769,6 @@ margin:8px;
 }
 
 .gwt-DescuentoDialog .textBoxDesc {
-	margin-top: 10px;
 	margin-left: 20px;
 	width: 140px;
 }
@@ -777,9 +776,14 @@ margin:8px;
 .gwt-DescuentoDialog .labelDesc {
 	margin-top: 10px;
 	margin-left: 5px;
+	font-weight: bold; 
 }
 
 .gwt-DescuentoDialog .tableDesc {
 	margin-top: 10px;
 	margin-left: 5px;
+}
+
+.gwt-DescuentoDialog td {
+	vertical-align: top;
 }

@@ -5,14 +5,14 @@ import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.nextel.sfa.client.widget.ValidationTextBox;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextArea;
 
 public class DescuentoUIData extends UIData {
 
 	private InlineLabel descuentoAplicadoLabel;
-	private TextArea descuentoAplicado;
+	private HTML descuentoAplicado;
 	private InlineLabel descuentoLabel;
 	private ListBox tipoDeDescuento;
 	private InlineLabel montoLabel;
@@ -28,9 +28,7 @@ public class DescuentoUIData extends UIData {
 		
 		descuentoAplicadoLabel = new InlineLabel("Tipo de descuento aplicado: ");
 		descuentoAplicadoLabel.setStyleName("labelDesc");
-		descuentoAplicado = new TextArea();
-		descuentoAplicado.setEnabled(false);
-		descuentoAplicado.setReadOnly(true);
+		descuentoAplicado = new HTML();
 		descuentoLabel = new InlineLabel("Tipo de descuento: ");
 		descuentoLabel.setStyleName("labelDesc");
 		tipoDeDescuento = new ListBox();
@@ -61,11 +59,11 @@ public class DescuentoUIData extends UIData {
 		this.descuentoAplicadoLabel = descuentoAplicadoLabel;
 	}
 	
-	public TextArea getDescuentoAplicado() {
+	public HTML getDescuentoAplicado() {
 		return descuentoAplicado;
 	}
 
-	public void setDescuentoAplicado(TextArea descuentoAplicado) {
+	public void setDescuentoAplicado(HTML descuentoAplicado) {
 		this.descuentoAplicado = descuentoAplicado;
 	}
 
