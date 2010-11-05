@@ -205,7 +205,9 @@ public class VariosSSUI extends Composite {
 					.getTipoSolicitud().getTipoSolicitudBase().getFormaContratacion() : "");
 			resumenSS.setHTML(row, 3, currencyFormat.format(linea.getPrecioVenta()
 					+ linea.getPrecioAlquilerVenta()));
-			totales[3] = totales[3] + linea.getPrecioVenta() + linea.getPrecioAlquilerVenta();
+			//MGR - #1135
+			totales[3] = totales[3] + (linea.getPrecioVenta() * linea.getCantidad() ) 
+							+ (linea.getPrecioAlquilerVenta() * linea.getCantidad());
 			resumenSS.setHTML(row, 4, linea.getPlan() != null ? linea.getPlan().getDescripcion() : "");
 			resumenSS.setHTML(row, 5, currencyFormat.format(linea.getPrecioVentaPlan()));
 			totales[5] = totales[5] + linea.getPrecioVentaPlan();

@@ -361,13 +361,18 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 	}
 
 	public double getPrecioListaTotal() {
-		return getPrecioLista() + getPrecioListaPlan() + getPrecioServiciosAdicionalesLista()
+		//MGR - #1135
+		double total = getPrecioLista() + getPrecioListaPlan() + getPrecioServiciosAdicionalesLista()
 				+ getPrecioGarantiaLista() + getPrecioAlquilerLista();
+		
+		return (total * this.getCantidad());
 	}
 
 	public double getPrecioVentaTotal() {
-		return getPrecioVenta() + getPrecioVentaPlan() + getPrecioServiciosAdicionalesVenta()
+		//MGR - #1135
+		double total = getPrecioVenta() + getPrecioVentaPlan() + getPrecioServiciosAdicionalesVenta()
 				+ getPrecioGarantiaVenta() + getPrecioAlquilerVenta();
+		return (total * this.getCantidad());
 	}
 
 	public LineaSolicitudServicioDto clone() {
