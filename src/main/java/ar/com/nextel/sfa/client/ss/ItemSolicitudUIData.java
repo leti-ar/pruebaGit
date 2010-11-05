@@ -492,8 +492,15 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				PlanDto planDto = (PlanDto) plan.getSelectedItem();
 				if (planDto.getTipoTelefonia().equals(TipoTelefoniaDto.TIPO_PREPAGO)) {
 					ddi.setValue(Boolean.TRUE);
+					//MGR - #1129
+					ddi.setEnabled(Boolean.TRUE);
+					roaming.setValue(Boolean.FALSE);
+					roaming.setEnabled(Boolean.FALSE);
 				} else {
 					ddi.setValue(Boolean.FALSE);
+					//MGR - #1129
+					ddi.setEnabled(Boolean.TRUE);
+					roaming.setEnabled(Boolean.TRUE);
 				}
 				precioListaPlan.setInnerHTML(currencyFormat.format(planDto.getPrecio()));
 				if (modalidadCobro.getItemCount() > 0) {
