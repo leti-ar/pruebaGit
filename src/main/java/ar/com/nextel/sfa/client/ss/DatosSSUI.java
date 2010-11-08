@@ -620,7 +620,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			i = 1;
 		}
 		detalleSS.setHTML(newRow, 3-i, linea.getItem().getDescripcion());
-		detalleSS.setHTML(newRow, 4-i, currencyFormat.format(linea.getPrecioVenta()));
+		detalleSS.setHTML(newRow, 4-i, currencyFormat.format(linea.getPrecioLista()));
 		detalleSS.getCellFormatter().addStyleName(newRow, 4-i, "alignRight");
 		if (linea.getPrecioConDescuento() == null) {
 			linea.setPrecioConDescuento(linea.getPrecioVenta());

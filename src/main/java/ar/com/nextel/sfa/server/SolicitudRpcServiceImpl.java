@@ -174,7 +174,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				DescuentoLineaDto descuentoLineaDto = (DescuentoLineaDto) it.next();
 				descuentoAplicado += descuentoLineaDto.getMonto();
 			}
-			precioConDescuento = linea.getPrecioVenta() - descuentoAplicado;
+			precioConDescuento = linea.getPrecioLista() - descuentoAplicado;
 			linea.setPrecioConDescuento(precioConDescuento);
 		}
 
