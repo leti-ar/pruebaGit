@@ -305,9 +305,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		solicitudServicio = solicitud;
 		nss.setText(solicitud.getNumero());
 		
+		//MGR - #1152
+		boolean esProspect = !solicitud.getCuenta().isCliente();
 		//MGR - #1026
 		if(!ClientContext.getInstance().
-				checkPermiso(PermisosEnum.NRO_SS_EDITABLE.getValue())){
+				checkPermiso(PermisosEnum.NRO_SS_EDITABLE.getValue()) && !esProspect){
 			nss.setEnabled(false);
 		}
 		

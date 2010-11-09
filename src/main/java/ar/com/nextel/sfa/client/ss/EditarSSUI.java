@@ -8,6 +8,7 @@ import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
+import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -26,6 +27,7 @@ import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
+import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
@@ -133,9 +135,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 								editarSSUIData.getOrigen().selectByText("Telemarketing");
 							}
 							
-							
+							//MGR - #1152
+							boolean esProspect =RegularExpressionConstants.isVancuc(solicitud.getCuenta().getCodigoVantive());
 							if(solicitud.getNumero() == null && ClientContext.getInstance().
-									checkPermiso(PermisosEnum.AUTOCOMPLETAR_TRIPTICO.getValue())){
+									checkPermiso(PermisosEnum.AUTOCOMPLETAR_TRIPTICO.getValue()) && !esProspect){
 								editarSSUIData.getNss().setText(String.valueOf(solicitud.getTripticoNumber()));
 							} 
 														
