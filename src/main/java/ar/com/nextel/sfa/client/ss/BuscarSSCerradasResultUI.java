@@ -218,7 +218,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 			if (solicitud.isNumeroCuentaAlCierreSSIdVantive()) {
                 // Si es cliente usamos el codigo Vantive, sino el Id (ya que no podemos
                 // guardar archivos con los caracteres de VANCUC
-                filename = solicitud.getNumeroCuentaAlCierreSS() + "-5-" + numeroSS + ".rtf";
+                filename = solicitud.getIdCuenta().toString() + "-5-" + numeroSS + ".rtf";
             } else {
                 filename = solicitud.getIdCuenta().toString() + "-5-" + numeroSS + ".rtf";
             }

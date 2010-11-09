@@ -2,8 +2,10 @@ package ar.com.nextel.sfa.client.ss;
 
 import ar.com.nextel.sfa.client.InfocomRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ScoringDto;
+import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -39,11 +41,21 @@ public class VariosSSUI extends Composite {
 		initWidget(mainpanel);
 		// this.controller = controller;
 		this.editarSSUIData = controller.getEditarSSUIData();
-
-		mainpanel.add(getCreditoFidelizacion());
-		mainpanel.add(getPataconex());
-		mainpanel.add(getFirmas());
-		mainpanel.add(getAnticipo());
+		
+		//MGR - Integracion
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VARIOS_CREDITO_FIDELIZACION.getValue())){
+			mainpanel.add(getCreditoFidelizacion());
+		}
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VARIOS_PATACONEX.getValue())){
+			mainpanel.add(getPataconex());
+		}
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VARIOS_FIRMAS.getValue())){
+			mainpanel.add(getFirmas());
+		}
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VARIOS_ANTICIPO.getValue())){
+			mainpanel.add(getAnticipo());
+		}
+		
 		mainpanel.add(getResumen());
 		mainpanel.add(getScoring());
 
@@ -193,7 +205,9 @@ public class VariosSSUI extends Composite {
 					.getTipoSolicitud().getTipoSolicitudBase().getFormaContratacion() : "");
 			resumenSS.setHTML(row, 3, currencyFormat.format(linea.getPrecioVenta()
 					+ linea.getPrecioAlquilerVenta()));
-			totales[3] = totales[3] + linea.getPrecioVenta() + linea.getPrecioAlquilerVenta();
+			//MGR - #1135
+			totales[3] = totales[3] + (linea.getPrecioVenta() * linea.getCantidad() ) 
+							+ (linea.getPrecioAlquilerVenta() * linea.getCantidad());
 			resumenSS.setHTML(row, 4, linea.getPlan() != null ? linea.getPlan().getDescripcion() : "");
 			resumenSS.setHTML(row, 5, currencyFormat.format(linea.getPrecioVentaPlan()));
 			totales[5] = totales[5] + linea.getPrecioVentaPlan();

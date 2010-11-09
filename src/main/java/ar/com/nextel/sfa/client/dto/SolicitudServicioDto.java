@@ -18,6 +18,8 @@ public class SolicitudServicioDto implements IsSerializable {
 	private CuentaSSDto cuenta;
 	private String numero;
 	private String numeroFlota;
+	private Long nroTriptico;
+
 
 	// private CuentaPotencial cuentaPotencial;
 	private OrigenSolicitudDto origen;
@@ -54,7 +56,15 @@ public class SolicitudServicioDto implements IsSerializable {
 	private double precioVentaTotal = 0;
 	private double precioItemTotal = 0;
 
+	private long tripticoNumber;
+	
 	private SolicitudServicioGeneracionDto solicitudServicioGeneracion;
+	
+	//MGR - #1027
+    private String ordenCompra;
+    
+    //MGR - #1013
+    private String validacionPin;
 
 	public SolicitudServicioDto() {
 		solicitudServicioGeneracion = new SolicitudServicioGeneracionDto();
@@ -322,5 +332,37 @@ public class SolicitudServicioDto implements IsSerializable {
 	public double getPrecioItemTotal() {
 		return precioItemTotal;
 	}
+	
+	public void setTripticoNumber(long tripticoNumber) {
+		this.tripticoNumber = tripticoNumber;
+	}
 
+	public long getTripticoNumber() {
+		// TODO Auto-generated method stub
+		return this.tripticoNumber;
+	}
+	
+	public String getOrdenCompra() {
+		return ordenCompra;
+	}
+
+	public void setOrdenCompra(String ordenCompra) {
+		this.ordenCompra = ordenCompra;
+	}
+	
+	public Long getNroTriptico() {
+		return nroTriptico;
+	}
+
+	public void setNroTriptico(Long nroTriptico) {
+		this.nroTriptico = nroTriptico;
+	}
+	
+	public String getValidacionPin() {
+		return validacionPin;
+	}
+
+	public void setValidacionPin(String validacionPin) {
+		this.validacionPin = validacionPin;
+	}
 }

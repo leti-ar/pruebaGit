@@ -11,6 +11,7 @@ public class UsuarioDto implements IsSerializable {
 	private String userName;
 	private List<String> roles = new ArrayList();
 
+
 	public UsuarioDto() {
 	}
 	

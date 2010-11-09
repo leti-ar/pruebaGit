@@ -2,9 +2,13 @@ package ar.com.nextel.sfa.client.ss;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaDomiciliosForm;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
@@ -18,7 +22,9 @@ import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioGeneracionDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
+import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudBaseDto;
+import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.UIData;
@@ -36,6 +42,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.InlineHTML;
@@ -51,6 +58,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private ListBox entrega;
 	private ListBox facturacion;
 	private TextArea aclaracion;
+	//MGR - #1027
+	private RegexTextBox ordenCompra;
 	private RegexTextBox email;
 	private InlineHTML credFidelDisponibleText;
 	private InlineHTML credFidelVencimientoText;
@@ -78,9 +87,14 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private static final String FORMA_CONTRATACION_ALQUILER = "Alquiler";
 	private static final int MAX_LENGHT_OBSERVACIONES = 150;
 	private static final int MAX_LENGHT_ACLARACION = 200;
+	//MGR - #1027
+	private static final int MAX_LENGHT_ORDEN_COMPRA = 150;
 
 	private SolicitudServicioDto solicitudServicio;
 
+	private ListBox descuentoTotal;
+	private Button tildeVerde;
+	
 	public EditarSSUIData(EditarSSUIController controller) {
 		this.controller = controller;
 		serviciosAdicionales = new ArrayList();
@@ -89,6 +103,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		fields.add(nflota = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(5)));
 		fields.add(origen = new ListBox(""));
 		fields.add(entrega = new ListBox());
+		fields.add(descuentoTotal = new ListBox());
+		tildeVerde = new Button();
+		tildeVerde.addStyleName("icon-tildeVerde");
+		fields.add(tildeVerde);
+		//MGR - #1027
+		fields.add(ordenCompra = new RegexTextBox(RegularExpressionConstants.getCantCaracteres(150)));
+
 		entrega.setWidth("480px");
 		fields.add(facturacion = new ListBox());
 		facturacion.setWidth("480px");
@@ -116,7 +137,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				showMaxLengthTextAreaError(aclaracion, MAX_LENGHT_ACLARACION);
 			}
 		});
-
+		
 		// Change listener para detectar cambios
 		for (Widget field : fields) {
 			if (field instanceof SourcesChangeEvents) {
@@ -205,6 +226,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		return aclaracion;
 	}
 
+	//MGR - #1027
+	public RegexTextBox getOrdenCompra() {
+		return ordenCompra;
+	}
+	
 	public RegexTextBox getEmail() {
 		return email;
 	}
@@ -257,6 +283,18 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		return precioVentaText;
 	}
 
+	public ListBox getDescuentoTotal() {
+		return descuentoTotal;
+	}
+	
+	public Button getTildeVerde() {
+		return tildeVerde;
+	}
+	
+	public void setDescuentoTotal(ListBox descuentoTotal) {
+		this.descuentoTotal = descuentoTotal;
+	}
+	
 	public void setSolicitud(SolicitudServicioDto solicitud) {
 		saved = true;
 		lastFakeId = -1;
@@ -266,9 +304,19 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 		solicitudServicio = solicitud;
 		nss.setText(solicitud.getNumero());
+		
+		//MGR - #1026
+		if(!ClientContext.getInstance().
+				checkPermiso(PermisosEnum.NRO_SS_EDITABLE.getValue())){
+			nss.setEnabled(false);
+		}
+		
 		nflota.setEnabled(solicitud.getCuenta().getIdVantive() == null);
 		nflota.setReadOnly(!nflota.isEnabled());
 		nflota.setText(solicitud.getNumeroFlota());
+		//MGR - #1027
+		ordenCompra.setText(solicitud.getOrdenCompra());
+		
 		entrega.clear();
 		facturacion.clear();
 		refreshDomiciliosListBox();
@@ -311,6 +359,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		} else {
 			deferredLoad();
 		}
+//		comprobarDescuentoTotal();		
 		recarcularValores();
 	}
 
@@ -335,6 +384,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		solicitudServicio.setNumero(nss.getText());
 		solicitudServicio.setNumeroFlota(nflota.getText());
 		solicitudServicio.setOrigen((OrigenSolicitudDto) origen.getSelectedItem());
+		//MGR - #1027
+		solicitudServicio.setOrdenCompra(ordenCompra.getText());
+		
 		solicitudServicio.setIdDomicilioEnvio(entrega.getSelectedItemId() != null ? Long.valueOf(entrega
 				.getSelectedItemId()) : null);
 		solicitudServicio.setIdDomicilioFacturacion(facturacion.getSelectedItemId() != null ? Long
@@ -389,6 +441,16 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			validator.addTarget(credFidelizacionConPunto).smallerOrEqual(Sfa.constant().ERR_FIDELIZACION(),
 					solicitudServicio.getMontoDisponible());
 		}
+		
+		//MGR - #1027
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+			
+		if(solicitudServicio.getGrupoSolicitud() != null && instancias != null &&
+				instancias.get(GrupoSolicitudDto.ID_FAC_MENSUAL).equals(solicitudServicio.getGrupoSolicitud().getId())){
+			validator.addTarget(ordenCompra).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().ordenCompra()));
+		}
+		
 		validator.fillResult();
 		return validator.getErrors();
 	}
@@ -715,11 +777,23 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	}
 
 	public boolean isCDW() {
-		return solicitudServicio.getGrupoSolicitud().getId().equals(GrupoSolicitudDto.ID_CDW);
+		//MGR - #1050
+		//return solicitudServicio.getGrupoSolicitud().getId().equals(GrupoSolicitudDto.ID_CDW);
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias != null){
+			return solicitudServicio.getGrupoSolicitud().getId().equals(instancias.get(GrupoSolicitudDto.ID_CDW));
+		}
+		return false;
 	}
 
 	public boolean isMDS() {
-		return solicitudServicio.getGrupoSolicitud().getId().equals(GrupoSolicitudDto.ID_MDS);
+		//MGR - #1050
+		//return solicitudServicio.getGrupoSolicitud().getId().equals(GrupoSolicitudDto.ID_MDS);
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias != null){
+			return solicitudServicio.getGrupoSolicitud().getId().equals(instancias.get(GrupoSolicitudDto.ID_MDS));
+		}
+		return false;
 	}
 
 	/** Indica si contiene lineas de solicitud con item BlackBerry */
@@ -746,4 +820,53 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 
 	}
+
+//	public void comprobarDescuentoTotal() {
+//		List<LineaSolicitudServicioDto> lineas = solicitudServicio.getLineas();
+//		descuentoTotal.clear();
+//		descuentoTotal.setEnabled(true);
+//		SolicitudRpcService.Util.getInstance().puedeAplicarDescuento(lineas, new DefaultWaitCallback<Boolean>() {
+//			@Override
+//			public void success(Boolean result) {
+//				if (!result) {
+//					descuentoTotal.setEnabled(false);
+//				} else {
+//						SolicitudRpcService.Util.getInstance().getInterseccionTiposDescuento(solicitudServicio.getLineas(),
+//											new DefaultWaitCallback<List<TipoDescuentoDto>>() {
+//						@Override
+//						public void success(List<TipoDescuentoDto> result) {
+//							for (Iterator<TipoDescuentoDto> iterator = result.iterator(); iterator.hasNext();) {
+//								TipoDescuentoDto tipoDescuento = (TipoDescuentoDto) iterator.next();
+//								descuentoTotal.addItem(tipoDescuento.getDescripcion());
+//							}
+//						}
+//					});
+//				}
+//			}
+//		});
+//	}
+
+//	public void deshabilitarDescuentoTotal() {
+//		descuentoTotal.setEnabled(false);
+//		tildeVerde.setEnabled(false);
+//	}
+
+	/**
+	 * Elimino del listBox descuentoTotal aquellos tipos de descuento que el usuario haya elegido
+	 * para cada linea de solicitud de servicio 
+	 * @param descuentosSeleccionados
+	 */
+//	public void modificarDescuentoTotal(List<TipoDescuentoSeleccionado> descuentosSeleccionados) {
+//		for (int i = 0; i < descuentoTotal.getItemCount(); i++) {
+//			Iterator<TipoDescuentoSeleccionado> it = descuentosSeleccionados.iterator();
+//			while (it.hasNext()) {
+//				TipoDescuentoSeleccionado seleccionado = (TipoDescuentoSeleccionado) it.next();
+//				if (seleccionado.getDescripcion().equals(descuentoTotal.getItemText(i))) {
+//					descuentoTotal.removeItem(i);
+//					break;
+//				}
+//			}
+//		}
+//	}
+	
 }

@@ -18,7 +18,6 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 
 	private ListaPreciosDto listaPrecios;
 	private TerminoPagoDto terminoPago;
-	// private List<DescuentoLinea> descuentos;
 
 	private Long numeradorLinea;
 	private double precioLista = 0d;
@@ -52,6 +51,11 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 	private Boolean ddn = Boolean.FALSE;
 	private Boolean ddi = Boolean.FALSE;
 	private Boolean roaming = Boolean.FALSE;
+	
+	private Double precioConDescuento;
+	private Double monto;
+	private Double porcentaje;
+	private List<DescuentoLineaDto> descuentosLinea = new ArrayList<DescuentoLineaDto>();
 
 	public Long getId() {
 		return id;
@@ -357,13 +361,18 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 	}
 
 	public double getPrecioListaTotal() {
-		return getPrecioLista() + getPrecioListaPlan() + getPrecioServiciosAdicionalesLista()
+		//MGR - #1135
+		double total = getPrecioLista() + getPrecioListaPlan() + getPrecioServiciosAdicionalesLista()
 				+ getPrecioGarantiaLista() + getPrecioAlquilerLista();
+		
+		return (total * this.getCantidad());
 	}
 
 	public double getPrecioVentaTotal() {
-		return getPrecioVenta() + getPrecioVentaPlan() + getPrecioServiciosAdicionalesVenta()
+		//MGR - #1135
+		double total = getPrecioVenta() + getPrecioVentaPlan() + getPrecioServiciosAdicionalesVenta()
 				+ getPrecioGarantiaVenta() + getPrecioAlquilerVenta();
+		return (total * this.getCantidad());
 	}
 
 	public LineaSolicitudServicioDto clone() {
@@ -404,6 +413,44 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 		linea.ddn = ddn;
 		linea.ddi = ddi;
 		linea.roaming = roaming;
+		linea.precioConDescuento = precioConDescuento;
 		return linea;
 	}
+	
+	public Double getPrecioConDescuento() {
+		return precioConDescuento;
+	}
+	
+	public void setPrecioConDescuento(Double precioConDescuento) {
+		this.precioConDescuento = precioConDescuento;
+	}
+
+	public Double getMonto() {
+		return monto;
+	}
+
+	public void setMonto(Double monto) {
+		this.monto = monto;
+	}
+
+	public Double getPorcentaje() {
+		return porcentaje;
+	}
+
+	public void setPorcentaje(Double porcentaje) {
+		this.porcentaje = porcentaje;
+	}
+	
+	public List<DescuentoLineaDto> getDescuentosLinea() {
+		return descuentosLinea;
+	}
+	
+	public void setDescuentosLinea(List<DescuentoLineaDto> descuentosLinea) {
+		this.descuentosLinea = descuentosLinea;
+	}
+
+    public void addDescuentoLinea(DescuentoLineaDto descuento) {
+        this.descuentosLinea.add(descuento);
+    }
+    
 }

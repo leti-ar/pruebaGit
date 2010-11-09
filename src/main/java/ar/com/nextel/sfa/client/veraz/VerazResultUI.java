@@ -42,6 +42,15 @@ public class VerazResultUI extends FlowPanel {
 		setVisible(false);		
 	}
 	
+	//MGR - #960
+	public void searchVeraz(String customerCode) {
+		CuentaRpcService.Util.getInstance().consultarVeraz(customerCode, new DefaultWaitCallback<VerazResponseDto>() {
+			public void success(VerazResponseDto result) {
+				setResultado(result);
+			}
+		});
+	}
+	
 	public void searchVeraz(PersonaDto personaDto) {
 		CuentaRpcService.Util.getInstance().consultarVeraz(personaDto, new DefaultWaitCallback<VerazResponseDto>() {
 			public void success(VerazResponseDto result) {

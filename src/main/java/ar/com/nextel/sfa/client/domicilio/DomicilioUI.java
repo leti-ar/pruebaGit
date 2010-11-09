@@ -5,24 +5,30 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.EditarCuentaUI;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
+import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -116,13 +122,60 @@ public class DomicilioUI extends NextelDialog {
 		domiciliosUIData.clean();
 		domiciliosUIData.setDomicilio(domicilio);
 		showAndCenter();
-		if (noEditable || readOnly) {
-			domiciliosUIData.disableFields();
-			linkAceptar.setVisible(false);
-		} else {
-			domiciliosUIData.enableFields();
-			linkAceptar.setVisible(true);
+		domiciliosUIData.disableFields();
+		linkAceptar.setVisible(false);
+
+		habilitarCampo(domiciliosUIData.getCalle());
+		habilitarCampo(domiciliosUIData.getNumero());
+		habilitarCampo(domiciliosUIData.getCpa());
+		habilitarCampo(domiciliosUIData.getPiso());
+		habilitarCampo(domiciliosUIData.getDepartamento());
+		habilitarCampo(domiciliosUIData.getUnidadFuncional());
+		habilitarCampo(domiciliosUIData.getTorre());
+		habilitarCampo(domiciliosUIData.getManzana());
+		habilitarCampo(domiciliosUIData.getEntreCalle());
+		habilitarCampo(domiciliosUIData.getYcalle());
+		habilitarCampo(domiciliosUIData.getLocalidad());
+		habilitarCampo(domiciliosUIData.getCodigoPostal());
+
+		// LM
+		// espero a que el combo de provincias este cargado, sino falla la
+		// habilitacion
+		DeferredCommand.addCommand(new IncrementalCommand() {
+
+			public boolean execute() {
+				if (domiciliosUIData.getProvincia().getItems() != null
+						&& domiciliosUIData.getProvincia().getItems().size() > 1) {
+					if (domiciliosUIData.getDomicilio().isEnCarga() || domiciliosUIData.getProvincia().getSelectedItemId() == null) {
+						domiciliosUIData.getProvincia().setEnabled(true);
+						// domiciliosUIData.getEntrega().setEnabled(true);
+						// domiciliosUIData.getFacturacion().setEnabled(true);
+					}
+
+					return false;
+				}
+				return true;
+			}
+		});
+
+		if( ClientContext.getInstance().checkPermiso(PermisosEnum.OCULTA_CAMPO_VALIDADO_DOMICILIO.getValue())){
+			domiciliosUIData.getValidado().setEnabled(false);
+			domiciliosUIData.getValidado().setVisible(false);
+			labelValidado1.setVisible(false);
+		}else if(domicilioAEditar.isEnCarga()){
+			domiciliosUIData.getValidado().setEnabled(true);
+			domiciliosUIData.getValidado().setVisible(true);
+			labelValidado1.setVisible(true);
+			
 		}
+		habilitarCampo(domiciliosUIData.getEntrega());
+		habilitarCampo(domiciliosUIData.getFacturacion());
+			
+		habilitarCampo(domiciliosUIData.getPartido());
+		habilitarCampo(domiciliosUIData.getObservaciones());
+		linkAceptar.setVisible(true);
+		linkAceptar.setVisible(true);
+
 		domiciliosUIData.getEntrega().setVisible(!readOnly || EditarCuentaUI.esEdicionCuenta);
 		domiciliosUIData.getFacturacion().setVisible(!readOnly || EditarCuentaUI.esEdicionCuenta);
 		labelEntrega.setVisible(!readOnly || EditarCuentaUI.esEdicionCuenta);
@@ -130,8 +183,33 @@ public class DomicilioUI extends NextelDialog {
 		setDialogTitle(title);
 	}
 
+	private void habilitarCampo(TextBoxBase campo) {
+
+		if (domicilioAEditar.isEnCarga()
+				|| (domiciliosUIData.getCamposModificables().contains(campo) && ClientContext
+						.getInstance().checkPermiso(
+								PermisosEnum.EDITAR_DOMICILIO.getValue()))) {
+			campo.setEnabled(true);
+			campo.setReadOnly(false);
+		}
+	}
+	
+	private void habilitarCampo(ListBox campo) {
+
+		if (domicilioAEditar.isEnCarga()
+				|| (domiciliosUIData.getCamposModificables().contains(campo) && ClientContext
+						.getInstance().checkPermiso(
+								PermisosEnum.EDITAR_DOMICILIO.getValue()))) {
+			campo.setEnabled(true);
+			
+		}
+	}
+	
+
 	private void init() {
 		domiciliosUIData = new DomiciliosUIData();
+		cargaComboProvinciasDto();
+		
 		footerBar = new FormButtonsBar();
 		linkCerrar = new SimpleLink("Cerrar");
 		linkAceptar = new SimpleLink("Aceptar");
@@ -193,7 +271,7 @@ public class DomicilioUI extends NextelDialog {
 		gridDown.setWidget(1, 2, domiciliosUIData.getLocalidad());
 		gridDown.setWidget(1, 3, cpLabel);
 		gridDown.setWidget(1, 4, domiciliosUIData.getCodigoPostal());
-		cargaComboProvinciasDto();
+		
 		gridDown.setWidget(2, 1, provinciaLabel);
 		gridDown.setWidget(2, 2, domiciliosUIData.getProvincia());
 		//
@@ -238,7 +316,8 @@ public class DomicilioUI extends NextelDialog {
 			}
 		});
 		setParentContacto(false);
-		this.showAndCenter();
+		
+//		this.showAndCenter();
 	}
 
 	/**
@@ -346,6 +425,9 @@ public class DomicilioUI extends NextelDialog {
 		domicilioNormalizado.setManzana(getPrimerDatoNoNulo(domicilioNormalizado.getManzana(),domicilioAEditar.getManzana()));
 		domicilioNormalizado.setEntreCalle(getPrimerDatoNoNulo(domicilioNormalizado.getEntreCalle(),domicilioAEditar.getEntreCalle()));
 		domicilioNormalizado.setYcalle(getPrimerDatoNoNulo(domicilioNormalizado.getYcalle(),domicilioAEditar.getYcalle()));
+		domicilioNormalizado.setEnCarga(domicilioAEditar.isEnCarga());
+		domicilioNormalizado.setTransferido(Boolean.FALSE);
+		
 		return domicilioNormalizado;
 		
 	}
@@ -381,6 +463,7 @@ public class DomicilioUI extends NextelDialog {
 			public void execute() {
 				DomicilioUI.getInstance().hide();
 				NormalizarDomicilioUI.getInstance().hide();
+				domicilioAEditar.setTransferido(Boolean.FALSE);
 				comandoAceptar.execute();
 			}
 		};

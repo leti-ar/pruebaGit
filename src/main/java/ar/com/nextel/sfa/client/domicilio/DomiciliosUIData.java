@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.domicilio;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -59,6 +60,10 @@ public class DomiciliosUIData extends UIData {
 	private CheckBox validado = new CheckBox();
 	private Label nombreUsuarioUltimaModificacion = new Label();
 	private Label fechaUltimaModificacion = new Label();
+	
+	private List<Widget> camposModificables = new ArrayList<Widget>();
+
+
 
 	public DomiciliosUIData() {
 		configFields();
@@ -66,18 +71,27 @@ public class DomiciliosUIData extends UIData {
 		fields.add(calle);
 		fields.add(numero);
 		fields.add(piso);
+		camposModificables.add(piso);
 		fields.add(departamento);
+		camposModificables.add(departamento);
 		fields.add(unidadFuncional);
+		camposModificables.add(unidadFuncional);
 		fields.add(torre);
+		camposModificables.add(torre);
 		fields.add(manzana);
+		camposModificables.add(manzana);
 		fields.add(entreCalle);
+		camposModificables.add(entreCalle);
 		fields.add(ycalle);
+		camposModificables.add(ycalle);
 		fields.add(localidad);
 		fields.add(codigoPostal);
 		fields.add(provincia);
 		fields.add(partido);
 		fields.add(entrega);
+		camposModificables.add(entrega);
 		fields.add(facturacion);
+		camposModificables.add(facturacion);
 		fields.add((Widget) validado);
 		fields.add(observaciones);
 		this.addFocusListeners(fields);
@@ -379,4 +393,11 @@ public class DomiciliosUIData extends UIData {
 		return tienePrincipalEntrega;
 	}
 
+	public List<Widget> getCamposModificables() {
+		return camposModificables;
+	}
+
+	public void setCamposModificables(List<Widget> camposModificables) {
+		this.camposModificables = camposModificables;
+	}
 }

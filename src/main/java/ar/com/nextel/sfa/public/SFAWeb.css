@@ -762,3 +762,28 @@ margin:8px;
 	border: 1px solid #BCBCBC;
 	background-color: #ECEBEB;
 }
+
+.gwt-DescuentoDialog .panel {
+	height:190px;
+	width:300px;
+}
+
+.gwt-DescuentoDialog .textBoxDesc {
+	margin-left: 20px;
+	width: 140px;
+}
+
+.gwt-DescuentoDialog .labelDesc {
+	margin-top: 10px;
+	margin-left: 5px;
+	font-weight: bold; 
+}
+
+.gwt-DescuentoDialog .tableDesc {
+	margin-top: 10px;
+	margin-left: 5px;
+}
+
+.gwt-DescuentoDialog td {
+	vertical-align: top;
+}

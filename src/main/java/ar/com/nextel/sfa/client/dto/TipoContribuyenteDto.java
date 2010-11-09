@@ -1,5 +1,8 @@
 package ar.com.nextel.sfa.client.dto;
 
+import java.util.HashMap;
+
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -7,7 +10,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class TipoContribuyenteDto extends EnumDto implements ListBoxItem, IsSerializable {
 
 	//MGR - 26-07-2010 - Incidente #0000703
-	private static final Long COD_COSUMIDOR_FINAL = new Long(1); 
+	private static final String COD_COSUMIDOR_FINAL = "CONSUMIDOR_FINAL"; 
 	
 	public TipoContribuyenteDto() {
 	}
@@ -28,10 +31,12 @@ public class TipoContribuyenteDto extends EnumDto implements ListBoxItem, IsSeri
 
 	//MGR - 26-07-2010 - Incidente #0000703
 	public boolean isConsumidorFinal(){
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
 		
-		if(id.compareTo(COD_COSUMIDOR_FINAL) == 0)
-			return true;
-		else
-			return false;
+		if(instancias != null){
+			if(id.compareTo(instancias.get(COD_COSUMIDOR_FINAL)) == 0)
+				return true;
+		}
+		return false;
 	}
 }

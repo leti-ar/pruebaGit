@@ -1,11 +1,13 @@
 package ar.com.nextel.sfa.client.ss;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
+import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
@@ -400,11 +402,15 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 			ListaPreciosDto listaSelected = (ListaPreciosDto) listaPrecio.getSelectedItem();
 			item.addAllItems(listaSelected.getItemsListaPrecioVisibles());
-
-			// Selecciono Cuenta Corriente Vencimiento Ciclo por default si no tiene ninguno seleccionado
-			TerminoPagoValidoDto terminoPagoValido = getTerminoPagoValidoByIdTerminoPago(listaSelected
-					.getTerminosPagoValido(), CUENTA_CORRIENTE_VENC_CICLO_ID);
+			
+			//MGR - #1077
 			if (!terminoPago.hasPreseleccionados()) {
+				TerminoPagoValidoDto terminoPagoValido = getTerminoPagoValidoDefault(listaSelected.getTerminosPagoValido());
+				if(terminoPagoValido == null){
+					//Selecciono Cuenta Corriente Vencimiento Ciclo si no tiene ninguno por default
+					terminoPagoValido = getTerminoPagoValidoByIdTerminoPago(listaSelected
+							.getTerminosPagoValido(), CUENTA_CORRIENTE_VENC_CICLO_ID);
+				}
 				terminoPago.setSelectedItem(terminoPagoValido);
 			}
 			terminoPago.addAllItems(listaSelected.getTerminosPagoValido());
@@ -417,6 +423,31 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			} else {
 				onChange(item);
 			}
+			
+			//MGR - #1039 - Si se cumplen los requisitos, debo ocultar ciertos campos
+			Long idGrupoSS = controller.getEditarSSUIData().getGrupoSolicitud().getId();
+			Long idTipoOrden = Long.valueOf(tipoOrden.getSelectedItemId());
+			Long idLista = Long.valueOf(this.listaPrecio.getSelectedItemId());
+			ItemYPlanSolicitudUI itemPlanSolicAux = ItemSolicitudDialog.obtenerItemYPlanSolicitudUI();
+			
+			if(itemPlanSolicAux != null){
+				if(idGrupoSS != null && idTipoOrden != null && idLista != null){
+					HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+					
+					if(instancias != null && idGrupoSS.equals(instancias.get(GrupoSolicitudDto.DESPACHO_TEL_ANEXO))
+							&& idTipoOrden.equals(instancias.get(TipoSolicitudDto.VTA_POR_TEL)) 
+							&& idLista.equals(instancias.get(ListaPreciosDto.AR_EQUIP_VTA_SOLO_EQUIP))){
+						
+						itemPlanSolicAux.ocultarCamposBBRed();
+					} else{
+						itemPlanSolicAux.mostrarCamposBBRed();
+					}
+				}else{
+					itemPlanSolicAux.mostrarCamposBBRed();
+				}
+			}
+			
+		
 		} else if (sender == item) {
 			// Seteo el precio del item, ajustado por el Termino de Pago y cargo el ListBox de Planes
 			ItemSolicitudTasadoDto is = (ItemSolicitudTasadoDto) item.getSelectedItem();
@@ -424,7 +455,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			if (is != null) {
 				TerminoPagoValidoDto terminoSelected = (TerminoPagoValidoDto) terminoPago.getSelectedItem();
 				double precio = is.getPrecioLista();
-				if (terminoSelected.getAjuste() != null) {
+				if (terminoSelected != null && terminoSelected.getAjuste() != null) {
 					precio = terminoSelected.getAjuste() * precio;
 				}
 				precioListaItem.setInnerHTML(currencyFormat.format(precio));
@@ -461,8 +492,15 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				PlanDto planDto = (PlanDto) plan.getSelectedItem();
 				if (planDto.getTipoTelefonia().equals(TipoTelefoniaDto.TIPO_PREPAGO)) {
 					ddi.setValue(Boolean.TRUE);
+					//MGR - #1129
+					ddi.setEnabled(Boolean.TRUE);
+					roaming.setValue(Boolean.FALSE);
+					roaming.setEnabled(Boolean.FALSE);
 				} else {
 					ddi.setValue(Boolean.FALSE);
+					//MGR - #1129
+					ddi.setEnabled(Boolean.TRUE);
+					roaming.setEnabled(Boolean.TRUE);
 				}
 				precioListaPlan.setInnerHTML(currencyFormat.format(planDto.getPrecio()));
 				if (modalidadCobro.getItemCount() > 0) {
@@ -834,6 +872,12 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		lineaSolicitudServicio.setPrecioLista(itemTasadoSelected.getPrecioLista());
 		lineaSolicitudServicio.setPrecioVenta(itemTasadoSelected.getPrecioLista());
 		lineaSolicitudServicio.setListaPrecios((ListaPreciosDto) listaPrecio.getSelectedItem());
+		TerminoPagoValidoDto terminoSelected = (TerminoPagoValidoDto) terminoPago.getSelectedItem();
+		if(terminoSelected != null){
+			lineaSolicitudServicio.setTerminoPago(terminoSelected.getTerminoPago());
+		}else{
+			lineaSolicitudServicio.setTerminoPago(null);
+		}
 		if (tipoEdicion == ACTIVACION) {
 			lineaSolicitudServicio.setModelo((ModeloDto) modeloEq.getSelectedItem());
 			lineaSolicitudServicio.setNumeroIMEI(imei.getText());
@@ -875,10 +919,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				lineaSolicitudServicio.setPrecioListaPlan(0d);
 				lineaSolicitudServicio.setPrecioVentaPlan(0d);
 			}
-			TerminoPagoValidoDto terminoSelected = (TerminoPagoValidoDto) terminoPago.getSelectedItem();
-			lineaSolicitudServicio.setTerminoPago(terminoSelected.getTerminoPago());
 			double precio = itemTasadoSelected.getPrecioLista();
-			if (terminoSelected.getAjuste() != null) {
+			if (terminoSelected != null && terminoSelected.getAjuste() != null) {
 				precio = terminoSelected.getAjuste() * precio;
 			}
 			lineaSolicitudServicio.setPrecioListaAjustado(precio);
@@ -965,5 +1007,16 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			i++;
 		}
 		return index >= 0 ? terminosPagoValido.get(index) : null;
+	}
+	
+	//MGR - #1077
+	private TerminoPagoValidoDto getTerminoPagoValidoDefault(
+			List<TerminoPagoValidoDto> terminosPagoValido) {
+		for (TerminoPagoValidoDto terminoPagoValido : terminosPagoValido) {
+			if (terminoPagoValido.getTerminoPagoDefault()) {
+				return terminoPagoValido;
+			}
+		}
+		return null;
 	}
 }

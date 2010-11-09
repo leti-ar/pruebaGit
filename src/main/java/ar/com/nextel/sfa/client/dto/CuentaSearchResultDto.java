@@ -1,5 +1,7 @@
 package ar.com.nextel.sfa.client.dto;
 
+import java.util.HashMap;
+
 import ar.com.nextel.sfa.client.context.ClientContext;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -134,7 +136,15 @@ public class CuentaSearchResultDto implements IsSerializable {
 	}
 
 	public boolean isCuentaGobierno() {
-		return claseCuenta == ClaseCuentaDto.ID_GOB_BS_AS || claseCuenta == ClaseCuentaDto.ID_GOBIERNO;
+		//MGR - #1050
+		//return claseCuenta == ClaseCuentaDto.ID_GOB_BS_AS || claseCuenta == ClaseCuentaDto.ID_GOBIERNO;
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias != null){
+			return claseCuenta == instancias.get(ClaseCuentaDto.ID_GOB_BS_AS)
+				|| claseCuenta == instancias.get(ClaseCuentaDto.ID_GOBIERNO);
+		}
+		return false;
+		
 	}
 
 	public String getSupervisor() {

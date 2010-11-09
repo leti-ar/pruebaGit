@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
@@ -40,7 +41,11 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	private SimpleLink cerrar;
 	private SimplePanel tipoSolicitudPanel;
 	private SoloItemSolicitudUI soloItemSolicitudUI;
-	private ItemYPlanSolicitudUI itemYPlanSolicitudUI;
+	//MGR - #1039
+	//private ItemYPlanSolicitudUI itemYPlanSolicitudUI;
+	private static ItemYPlanSolicitudUI itemYPlanSolicitudUI;
+	private static TipoPlanDto tipoPlanPorDefecto = null;
+	
 	private ItemSolicitudUIData itemSolicitudUIData;
 	private EditarSSUIController controller;
 	private Map<Long, TipoSolicitudDto> tiposSolicitudes = new HashMap();
@@ -246,18 +251,20 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 				if (tiposPlan == null) {
 					return true;
 				}
-				TipoPlanDto aSeleccionar = null;
+				//MGR - #1039
+				//TipoPlanDto tipoPlanPorDefecto = null;
+				tipoPlanPorDefecto = null;
 				for (TipoPlanDto tipoPlan : tiposPlan) {
 					if (tipoPlan.getCodigoBSCS().equals(TipoPlanDto.TIPO_PLAN_DIRECTO_O_EMPRESA_CODE)) {
 						if (empresa == tipoPlan.isEmpresa()) {
 							itemSolicitudUIData.getTipoPlan().addItem(tipoPlan);
-							aSeleccionar = tipoPlan;
+							tipoPlanPorDefecto = tipoPlan;
 						}
 					} else {
 						itemSolicitudUIData.getTipoPlan().addItem(tipoPlan);
 					}
 				}
-				itemSolicitudUIData.getTipoPlan().setSelectedItem(tipoPlan != null ? tipoPlan : aSeleccionar);
+				itemSolicitudUIData.getTipoPlan().setSelectedItem(tipoPlan != null ? tipoPlan : tipoPlanPorDefecto);
 
 				itemSolicitudUIData.onChange(itemSolicitudUIData.getTipoPlan());
 				return false;
@@ -276,13 +283,29 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 			}
 		} else {
 			tipoOrden.clear();
-			tipoOrden.addAllItems(tiposSolicitudesPorGrupo.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
-			idGrupoSolicitudLoaded = GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS;
+			//MGR - #1050
+			HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+			if(instancias != null){
+				tipoOrden.addAllItems(tiposSolicitudesPorGrupo.get(instancias.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS)));
+				idGrupoSolicitudLoaded = instancias.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS);	
+			}
+			
 		}
 		onChange(null);
 	}
 
 	public void setCuentaEmpresa(boolean empresa) {
 		this.empresa = empresa;
+	}
+	
+	
+	//MGR - #1039
+	public static ItemYPlanSolicitudUI obtenerItemYPlanSolicitudUI(){
+		return itemYPlanSolicitudUI != null ? itemYPlanSolicitudUI : null;
+	}
+	
+	//MGR - #1039
+	public static TipoPlanDto obtenerTipoPlanPorDefecto(){
+		return tipoPlanPorDefecto;
 	}
 }

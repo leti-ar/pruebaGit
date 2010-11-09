@@ -6,11 +6,18 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ListaPreciosDto extends EnumDto implements IsSerializable, ListBoxItem {
+//MGR - #998 - Se agrega que implemente Comparable
+public class ListaPreciosDto extends EnumDto implements IsSerializable, ListBoxItem, Comparable {
 
+	//MGR - #1039
+	public static final String AR_EQUIP_VTA_SOLO_EQUIP = "AR_EQUIP_VTA_SOLO_EQUIP";
+	
 	private List<TerminoPagoValidoDto> terminosPagoValido;
 	private List<ItemSolicitudTasadoDto> itemsListaPrecioVisibles;
 	private List<AjustesDto> ajustes;
+	
+	//MGR - #998
+	private int ordenAparicion;
 
 	public String getItemText() {
 		return descripcion;
@@ -44,4 +51,18 @@ public class ListaPreciosDto extends EnumDto implements IsSerializable, ListBoxI
 		this.ajustes = ajustes;
 	}
 
+	//MGR - #998
+	public int getOrdenAparicion() {
+		return ordenAparicion;
+	}
+
+	public void setOrdenAparicion(int ordenAparicion) {
+		this.ordenAparicion = ordenAparicion;
+	}
+	
+	//MGR - #998 - La lista de precio debe estar ordenada por el campo Orden_Aparicion
+	public int compareTo(Object o) {
+		ListaPreciosDto o1 = (ListaPreciosDto)o;
+		return this.ordenAparicion <= o1.ordenAparicion? -1 : 1;
+	}
 }
