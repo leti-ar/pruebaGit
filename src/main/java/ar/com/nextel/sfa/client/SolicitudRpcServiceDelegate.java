@@ -2,8 +2,9 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
+import ar.com.nextel.sfa.client.dto.DescuentoDto;
+import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
+import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
@@ -18,6 +19,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
+import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
@@ -141,4 +143,46 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.getVendedoresDae(callback);
 	}
+	
+	public void getDescuentos(Long idLinea, DefaultWaitCallback<List<DescuentoDto>> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getDescuentos(idLinea, callback);
+	}
+
+	public void getDescuentosAplicados(Long idLinea,
+			DefaultWaitCallback<List<DescuentoLineaDto>> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getDescuentosAplicados(idLinea, callback);
+	}
+
+	public void getTiposDescuento(Long idLinea,
+			DefaultWaitCallback<List<TipoDescuentoDto>> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getTiposDescuento(idLinea, callback);
+	}
+	
+	public void getTiposDescuentoAplicados(Long idLinea,
+			DefaultWaitCallback<List<TipoDescuentoDto>> defaultWaitCallback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getTiposDescuentoAplicados(idLinea, defaultWaitCallback);
+	}
+
+	public void puedeAplicarDescuento(List<LineaSolicitudServicioDto> lineas,
+			DefaultWaitCallback<Boolean> defaultWaitCallback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.puedeAplicarDescuento(lineas, defaultWaitCallback);
+	}
+
+	public void getInterseccionTiposDescuento(List<LineaSolicitudServicioDto> lineas,
+			DefaultWaitCallback<List<TipoDescuentoDto>> defaultWaitCallback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getInterseccionTiposDescuento(lineas, defaultWaitCallback);
+	}
+
+	public void getDescuentosTotales(Long idLinea,
+			DefaultWaitCallback<DescuentoTotalDto> defaultWaitCallback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getDescuentosTotales(idLinea, defaultWaitCallback);
+	}
+
 }

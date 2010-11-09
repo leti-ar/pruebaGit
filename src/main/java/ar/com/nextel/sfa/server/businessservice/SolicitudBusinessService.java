@@ -71,7 +71,7 @@ public class SolicitudBusinessService {
 	public void setFacturaElectronicaService(FacturaElectronicaService facturaElectronicaService) {
 		this.facturaElectronicaService = facturaElectronicaService;
 	}
-
+	
 	@Autowired
 	public void setSolicitudesBusinessOperator(
 			SolicitudServicioBusinessOperator solicitudServicioBusinessOperatorBean) {
@@ -156,7 +156,7 @@ public class SolicitudBusinessService {
 
 		solicitud.consultarCuentaPotencial();
 		if (providerResult.wasCreationNeeded()) {
-			if (!solicitud.getCuenta().isLockedForAnyone() || solicitud.getCuenta().isLockedFor(vendedor)) {
+			if (!solicitud.getCuenta().isLockedByAnyone(vendedor) || solicitud.getCuenta().isUnlockedFor(vendedor)) {
 				solicitud.getCuenta().iniciarOperacion(vendedor);
 			}
 			repository.save(solicitud);
@@ -176,8 +176,9 @@ public class SolicitudBusinessService {
 			Cuenta cuenta = solicitud.getCuenta();
 			Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales = null;
 			if (tipoSolicitud != null && plan != null && item != null && cuenta != null) {
+				//MGR - #873 - Se agrega el Vendedor
 				serviciosAdicionales = solicitudServicioRepository.getServiciosAdicionales(tipoSolicitud
-						.getId(), plan.getId(), item.getId(), cuenta.getId());
+						.getId(), plan.getId(), item.getId(), cuenta.getId(),sessionContextLoader.getVendedor());
 			} else {
 				AppLogger.warn("No se pudo validar los Servicios Adicionales de la Linea de "
 						+ "Solicitud de Servicio " + linea.getId() + " (" + linea.getAlias()
@@ -314,7 +315,7 @@ public class SolicitudBusinessService {
 		GeneracionCierreResponse response = null;
 		if (cerrar) {
 			response = generacionCierreBusinessOperator.cerrarSolicitudServicio(generacionCierreRequest);
-
+			
 			AppLogger.error("IF replicacion a autogestion, FE: "
 					+ solicitudServicio.getCuenta().getFacturaElectronica() + " tiene errores: "
 					+ response.getMessages().hasErrors(), this);
@@ -335,9 +336,9 @@ public class SolicitudBusinessService {
 		} else {
 			response = generacionCierreBusinessOperator.generarSolicitudServicio(generacionCierreRequest);
 		}
-
+		
 		repository.save(solicitudServicio);
-
+		
 		return response;
 	}
 

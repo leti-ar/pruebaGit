@@ -1,5 +1,7 @@
 package ar.com.nextel.sfa.client;
 
+import java.util.HashMap;
+
 import ar.com.nextel.sfa.client.dto.UserCenterDto;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 
@@ -27,5 +29,8 @@ public interface UserCenterRpcService extends RemoteService {
 
 	public UserCenterDto getUserCenter() throws RpcExceptionMessages;
 	public UserCenterDto getDevUserData() throws RpcExceptionMessages;
+	//MGR - #1050
+	public HashMap<String, Long> getKnownInstance();
+	
 }
 	

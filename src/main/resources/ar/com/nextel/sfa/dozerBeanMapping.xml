@@ -224,6 +224,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>modalidadCobro</a>
 			<b>modalidadCobro</b>
 		</field>
+		<field custom-converter-id="collectionDescuentoLineaConverter">
+			<a>plainDescuentosLinea</a>
+			<b>descuentosLinea</b>
+		</field>
 	</mapping>
 
 	<mapping>
@@ -732,5 +736,43 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.OrigenSolicitudDto
 		</class-b>
-	</mapping>	
+	</mapping>
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.Descuento
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.DescuentoDto
+		</class-b>
+		<field custom-converter-id="identifiableObjectToId">
+			<a>tipoDescuento</a>
+			<b>idTipoDescuento</b>
+		</field>
+		<field custom-converter-id="collectionDescuentoLineaConverter">
+			<a>plainDescuentosLinea</a>
+			<b>descuentosLinea</b>
+		</field>
+	</mapping>
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.DescuentoLinea
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.DescuentoLineaDto
+		</class-b>
+		<field custom-converter-id="identifiableObjectToId">
+			<a>descuento</a>
+			<b>idDescuento</b>
+		</field>
+		<field custom-converter-id="identifiableObjectToId">
+			<a>linea</a>
+			<b>idLinea</b>
+		</field>
+	</mapping>
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.TipoDescuento
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.TipoDescuentoDto
+		</class-b>
+		<field custom-converter-id="collectionDescuentoConverter">
+			<a>plainDescuentos</a>
+			<b>descuentos</b>
+		</field>
+	</mapping>
 </mappings>

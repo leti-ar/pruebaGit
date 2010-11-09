@@ -5,11 +5,13 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.dto.BusquedaPredefinidaDto;
 import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
+import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
@@ -259,6 +261,18 @@ public class BuscarCuentaFilterUIData extends UIData {
 					setLabelVisibility(7, true);
 					grupoDocumentoCombo.setEnabled(true);
 					flag = false;
+					
+					//MGR - #1073
+					if(ClientContext.getInstance().checkPermiso(PermisosEnum.BUSQUEDA_POR_CATEG_DOC.getValue())){
+						this.responsableTextBox.setEnabled(true);
+						this.responsableTextBox.setReadOnly(false);
+						this.razonSocialTextBox.setEnabled(true);
+						this.razonSocialTextBox.setReadOnly(false);
+						this.categoriaCombo.setEnabled(true);
+						setLabelVisibility(0, true);
+						setLabelVisibility(9, true);
+						setLabelVisibility(5, true);
+					}
 				}
 			}
 
@@ -290,6 +304,15 @@ public class BuscarCuentaFilterUIData extends UIData {
 					setLabelVisibility(9, true);
 					flag = false;
 				}
+				
+				//MGR - #1073
+				if(ClientContext.getInstance().checkPermiso(PermisosEnum.BUSQUEDA_POR_CATEG_DOC.getValue())){
+					this.grupoDocumentoCombo.setEnabled(true);
+					this.numeroDocumentoTextBox.setEnabled(true);
+					this.numeroDocumentoTextBox.setReadOnly(false);
+					setLabelVisibility(6, true);
+					setLabelVisibility(7, true);
+				}
 			}
 		}
 		// Si w es Categoria y el combo de Responsable esta Enabled, no hacer nada.
@@ -314,6 +337,15 @@ public class BuscarCuentaFilterUIData extends UIData {
 			setLabelVisibility(0, true);
 			setLabelVisibility(9, true);
 			setLabelVisibility(5, true);
+			
+			//MGR - #1073
+			if(ClientContext.getInstance().checkPermiso(PermisosEnum.BUSQUEDA_POR_CATEG_DOC.getValue())){
+				this.grupoDocumentoCombo.setEnabled(true);
+				this.numeroDocumentoTextBox.setEnabled(true);
+				this.numeroDocumentoTextBox.setReadOnly(false);
+				setLabelVisibility(6, true);
+				setLabelVisibility(7, true);
+			}
 		}
 
 		// Combo Tipo de documento: no deshabilita el campo Número de documento
@@ -324,6 +356,18 @@ public class BuscarCuentaFilterUIData extends UIData {
 			((FocusWidget) w).setEnabled(true);
 			setLabelVisibility(6, true);
 			setLabelVisibility(7, true);
+			
+			//MGR - #1073
+			if(ClientContext.getInstance().checkPermiso(PermisosEnum.BUSQUEDA_POR_CATEG_DOC.getValue())){
+				this.responsableTextBox.setEnabled(true);
+				this.responsableTextBox.setReadOnly(false);
+				this.razonSocialTextBox.setEnabled(true);
+				this.razonSocialTextBox.setReadOnly(false);
+				this.categoriaCombo.setEnabled(true);
+				setLabelVisibility(0, true);
+				setLabelVisibility(9, true);
+				setLabelVisibility(5, true);
+			}
 		}
 
 		// Combo predefinidasCombo: ??

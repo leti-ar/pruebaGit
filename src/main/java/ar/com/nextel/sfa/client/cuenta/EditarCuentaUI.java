@@ -140,6 +140,18 @@ public class EditarCuentaUI extends ApplicationUI {
 				});
 			}
 		}
+		//MGR - #955
+		//Viene de nexus
+		else if(ClientContext.getInstance().vengoDeNexus()){
+			Long custId = null;
+			String customerCode = ClientContext.getInstance().getClienteNexus().getCustomerCode();
+			String customerId = ClientContext.getInstance().getClienteNexus().getCustomerId();
+			if(customerId != null){
+				custId = Long.valueOf(customerId);
+			}
+			CuentaClientService.cargarDatosCuenta(custId, customerCode);
+		}
+		
 		return false;
 	}
 

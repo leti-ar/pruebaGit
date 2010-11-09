@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,11 +37,11 @@ import ar.com.nextel.business.solicitudes.search.dto.SolicitudServicioCerradaSea
 import ar.com.nextel.components.knownInstances.GlobalParameter;
 import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
+import ar.com.nextel.components.sequence.DefaultSequenceImpl;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.personas.beans.Localidad;
-import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
@@ -56,6 +57,9 @@ import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.DescuentoDto;
+import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
+import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
@@ -70,20 +74,18 @@ import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
-import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
-import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
+import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
-import ar.com.nextel.sfa.client.initializer.VerazInitializer;
 import ar.com.nextel.sfa.server.businessservice.SolicitudBusinessService;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
@@ -107,6 +109,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private SolicitudServicioRepository solicitudServicioRepository;
 	private NegativeFilesBusinessOperator negativeFilesBusinessOperator;
 	private DefaultRetriever globalParameterRetriever;
+	
+	//MELI
+	private DefaultSequenceImpl tripticoNextValue;
+	
 
 	public void init() throws ServletException {
 		super.init();
@@ -126,6 +132,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		negativeFilesBusinessOperator = (NegativeFilesBusinessOperator) context
 				.getBean("negativeFilesBusinessOperator");
 		globalParameterRetriever = (DefaultRetriever) context.getBean("globalParameterRetriever");
+		
+		tripticoNextValue = (DefaultSequenceImpl)context.getBean("tripticoNextValue");
 	}
 
 	public SolicitudServicioDto createSolicitudServicio(
@@ -147,6 +155,28 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitud.getCuenta().getId());
 		solicitud.setCuenta(cuenta);
 		SolicitudServicioDto solicitudServicioDto = mapper.map(solicitud, SolicitudServicioDto.class);
+		
+		//MR - le agrego el triptico
+		if(solicitudServicioDto.getNumero() == null)
+			solicitudServicioDto.setTripticoNumber(tripticoNextValue.nextNumber());
+		
+		//calculo los descuentos aplicados a cada línea y se los seteo 
+		List<LineaSolicitudServicioDto> lineas = solicitudServicioDto.getLineas(); 
+		int a = 0;
+		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
+			Double descuentoAplicado = 0.0;
+			Double precioConDescuento = 0.0;
+			LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
+			Long idLinea = linea.getId();
+			List descuentosAplicados = solicitudServicioRepository.getDescuentosAplicados(idLinea);
+			List<DescuentoLineaDto> descuentos = mapper.convertList(descuentosAplicados, DescuentoLineaDto.class);
+			for (Iterator<DescuentoLineaDto> it = descuentos.iterator(); it.hasNext();) {
+				DescuentoLineaDto descuentoLineaDto = (DescuentoLineaDto) it.next();
+				descuentoAplicado += descuentoLineaDto.getMonto();
+			}
+			precioConDescuento = linea.getPrecioLista() - descuentoAplicado;
+			linea.setPrecioConDescuento(precioConDescuento);
+		}
 
 		AppLogger.info("Creacion de Solicitud de Servicio finalizada");
 		return solicitudServicioDto;
@@ -317,42 +347,40 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(
 			GrupoSolicitudDto grupoSolicitudDto) {
+
 		LineasSolicitudServicioInitializer initializer = new LineasSolicitudServicioInitializer();
-
-		GrupoSolicitud grupoEquipos = (GrupoSolicitud) knownInstanceRetriever
-				.getObject(KnownInstanceIdentifier.GRUPO_EQUIPOS_ACCESORIOS);
-		GrupoSolicitud grupoCDW = (GrupoSolicitud) knownInstanceRetriever
-				.getObject(KnownInstanceIdentifier.GRUPO_CDW);
-		GrupoSolicitud grupoMDS = (GrupoSolicitud) knownInstanceRetriever
-				.getObject(KnownInstanceIdentifier.GRUPO_MDS);
-
+		List<GrupoSolicitud> grupos = 
+				solicitudServicioRepository.getGruposSolicitudesServicio();
+		
 		Sucursal sucursal = sessionContextLoader.getVendedor().getSucursal();
 
 		// Obtengo los tipos de solicitud de cada Grupo para la sucursal en particular
 		Map<Long, List<TipoSolicitudDto>> tiposSolicitudPorGrupo = new HashMap();
-		tiposSolicitudPorGrupo.put(grupoEquipos.getId(), mapper.convertList(grupoEquipos
-				.calculateTiposSolicitud(sucursal), TipoSolicitudDto.class));
-		tiposSolicitudPorGrupo.put(grupoCDW.getId(), mapper.convertList(grupoCDW
-				.calculateTiposSolicitud(sucursal), TipoSolicitudDto.class));
-		tiposSolicitudPorGrupo.put(grupoMDS.getId(), mapper.convertList(grupoMDS
-				.calculateTiposSolicitud(sucursal), TipoSolicitudDto.class));
+		for (GrupoSolicitud gp : grupos) {
+			tiposSolicitudPorGrupo.put(gp.getId(), 
+					mapper.convertList(gp.calculateTiposSolicitud(sucursal, sessionContextLoader.getVendedor()),
+							TipoSolicitudDto.class));
+		}
 		initializer.setTiposSolicitudPorGrupo(tiposSolicitudPorGrupo);
 
 		List<TipoSolicitudDto> tiposSolicitudDeGrupoSelected = tiposSolicitudPorGrupo.get(grupoSolicitudDto
 				.getId());
-		// Si no es vacio (no deberia serlo) carga la lista de precios del primer tipoSolicitud que se muestra
+		// Si no es vaci� (no deber�a serlo) carga la lista de precios del primer tipoSolicitud que se muestra
 		if (!tiposSolicitudDeGrupoSelected.isEmpty()) {
 			TipoSolicitudDto firstTipoSolicitudDto = tiposSolicitudDeGrupoSelected.get(0);
 			TipoSolicitud firstTipoSolicitud = repository.retrieve(TipoSolicitud.class, firstTipoSolicitudDto
 					.getId());
+			
 			List<ListaPrecios> listasPrecios = new ArrayList<ListaPrecios>(firstTipoSolicitud
 					.getListasPrecios());
-
+			
 			firstTipoSolicitudDto.setListasPrecios(new ArrayList<ListaPreciosDto>());
 			for (ListaPrecios listaPrecios : listasPrecios) {
 				ListaPreciosDto lista = mapper.map(listaPrecios, ListaPreciosDto.class);
+				//MGR - #873 - Se agrega el Vendedor
 				lista.setItemsListaPrecioVisibles(mapper.convertList(listaPrecios
-						.getItemsTasados(firstTipoSolicitud), ItemSolicitudTasadoDto.class));
+						.getItemsTasados(firstTipoSolicitud, sessionContextLoader.getVendedor()),
+								ItemSolicitudTasadoDto.class));
 				firstTipoSolicitudDto.getListasPrecios().add(lista);
 			}
 		}
@@ -360,7 +388,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		initializer
 				.setLocalidades(mapper.convertList(repository.getAll(Localidad.class), LocalidadDto.class));
 
-		System.out.println(new Date());
+		//System.out.println(new Date());
 		return initializer;
 	}
 
@@ -371,12 +399,13 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 		boolean activacion = isTipoSolicitudActivacion(tipoSolicitud);
 		boolean accesorios = isTipoSolicitudAccesorios(tipoSolicitud);
-		// Se realiaza el mapeo de la coleccion a mano para poder filtrar los items por warehouse
+		// Se realiza el mapeo de la colecci�n a mano para poder filtrar los items por warehouse
 		for (ListaPrecios listaPrecios : listasPrecios) {
 			ListaPreciosDto lista = mapper.map(listaPrecios, ListaPreciosDto.class);
 			if (!activacion) {
+				//MGR - #873 - Se agrega el Vendedor
 				lista.setItemsListaPrecioVisibles(mapper.convertList(listaPrecios
-						.getItemsTasados(tipoSolicitud), ItemSolicitudTasadoDto.class));
+						.getItemsTasados(tipoSolicitud, sessionContextLoader.getVendedor()), ItemSolicitudTasadoDto.class));
 			}
 			if(accesorios){
 				Collections.sort(lista.getItemsListaPrecioVisibles(), new Comparator<ItemSolicitudTasadoDto>() {
@@ -417,9 +446,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 	public List<ServicioAdicionalLineaSolicitudServicioDto> getServiciosAdicionales(
 			LineaSolicitudServicioDto linea, Long idCuenta) {
+		//MGR - #873 - Se agrega el Vendedor
 		Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales = solicitudServicioRepository
 				.getServiciosAdicionales(linea.getTipoSolicitud().getId(), linea.getPlan().getId(), linea
-						.getItem().getId(), idCuenta);
+						.getItem().getId(), idCuenta, sessionContextLoader.getVendedor());
 		return mapper.convertList(serviciosAdicionales, ServicioAdicionalLineaSolicitudServicioDto.class);
 	}
 
@@ -451,8 +481,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		List<ModeloDto> modelos = mapper.convertList(solicitudServicioRepository.getModelos(imei),
 				ModeloDto.class);
 		for (ModeloDto modelo : modelos) {
+			//MGR - #873 - Se agrega el Vendedor
 			modelo.setItems(mapper.convertList(solicitudServicioRepository.getItems(idTipoSolicitud,
-					idListaPrecios, modelo.getId()), ItemSolicitudTasadoDto.class));
+					idListaPrecios, modelo.getId(), sessionContextLoader.getVendedor() ), ItemSolicitudTasadoDto.class));
 		}
 		return modelos;
 	}
@@ -504,7 +535,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private String getReporteFileName(SolicitudServicio solicitudServicio) {
 		String filename;
 		if (solicitudServicio.getCuenta().isCliente()) {
-			filename = solicitudServicio.getCuenta().getCodigoVantive() + "-5-"
+			filename = solicitudServicio.getCuenta().getId().toString() + "-5-"
 					+ solicitudServicio.getNumero() + ".rtf";
 		} else {
 			filename = solicitudServicio.getCuenta().getId().toString() + "-5-"
@@ -538,5 +569,50 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
         AppLogger.info("Retrieve VENDEDORES DAE finalizado...");
         return vendedoresDae;
     }
+
+	public List<DescuentoDto> getDescuentos(Long idLinea) throws RpcExceptionMessages {
+		List descuentos = solicitudServicioRepository.getDescuentos(idLinea);
+    	return mapper.convertList(descuentos, DescuentoDto.class);
+	}
+
+	public List<DescuentoLineaDto> getDescuentosAplicados(Long idLinea) throws RpcExceptionMessages {
+		List descuentosAplicados = solicitudServicioRepository.getDescuentosAplicados(idLinea);
+		return mapper.convertList(descuentosAplicados, DescuentoLineaDto.class);
+	}
+
+	public List<TipoDescuentoDto> getTiposDescuento(Long idLinea)
+			throws RpcExceptionMessages {
+		List tiposDescuento = solicitudServicioRepository.getTiposDescuento(idLinea);
+		return mapper.convertList(tiposDescuento, TipoDescuentoDto.class);
+	}
+
+	public List<TipoDescuentoDto> getTiposDescuentoAplicados(Long idLinea)
+			throws RpcExceptionMessages {
+		List tiposDescuentoAplicados = solicitudServicioRepository.getTiposDescuentoAplicados(idLinea);
+		return mapper.convertList(tiposDescuentoAplicados, TipoDescuentoDto.class);
+	}
+
+	public boolean puedeAplicarDescuento(List<LineaSolicitudServicioDto> lineas)
+		throws RpcExceptionMessages {
+		List<LineaSolicitudServicio> convertList = mapper.convertList(lineas, LineaSolicitudServicio.class);
+		return solicitudServicioRepository.puedeAplicarDescuento(convertList);
+	}
+	
+	public List<TipoDescuentoDto> getInterseccionTiposDescuento(List<LineaSolicitudServicioDto> lineas) 
+			throws RpcExceptionMessages {
+		List tiposDescuento = solicitudServicioRepository.getInterseccionTiposDescuento(mapper.convertList(lineas, LineaSolicitudServicio.class));
+		return mapper.convertList(tiposDescuento, TipoDescuentoDto.class);
+	}
+
+	public DescuentoTotalDto getDescuentosTotales(Long idLinea)
+			throws RpcExceptionMessages {
+		DescuentoTotalDto descuentoTotal = new DescuentoTotalDto();
+		List descuentos = solicitudServicioRepository.getDescuentos(idLinea);
+		descuentoTotal.setDescuentos(mapper.convertList(descuentos, DescuentoDto.class));
+		List tiposDescuento = solicitudServicioRepository.getTiposDescuento(idLinea);
+		descuentoTotal.setTiposDescuento(mapper.convertList(tiposDescuento, TipoDescuentoDto.class));
+		descuentoTotal.setIdLinea(idLinea);
+		return descuentoTotal;
+	}
 
 }

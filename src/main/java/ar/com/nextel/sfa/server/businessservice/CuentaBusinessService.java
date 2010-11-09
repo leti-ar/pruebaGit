@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.server.businessservice;
 
 import java.sql.CallableStatement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,6 +52,8 @@ import ar.com.nextel.model.oportunidades.beans.OportunidadNegocio;
 import ar.com.nextel.model.personas.beans.Email;
 import ar.com.nextel.model.personas.beans.Persona;
 import ar.com.nextel.model.personas.beans.Telefono;
+import ar.com.nextel.services.components.sessionContext.SessionContext;
+import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
@@ -65,6 +68,7 @@ import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
+import ar.com.nextel.util.PermisosUserCenter;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 
 @Service
@@ -193,7 +197,7 @@ public class CuentaBusinessService {
 		repository.update(cuenta);
 	}
 
-	// MGR - 05-07-2010 - Se cambian digitos de la tarjeta por asteriscos (*)
+	//MGR - 05-07-2010 - Se cambian digitos de la tarjeta por asteriscos (*)
 	private String changeByAsterisks(String numero) {
 
 		StringBuffer nuevaTarj = new StringBuffer();
@@ -429,7 +433,6 @@ public class CuentaBusinessService {
 		}
 		// }
 	}
-
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Division crearDivision(Cuenta cuenta, Vendedor vendedor) {
 		return (Division) createCuentaBusinessOperator.createDivisionFrom(
@@ -493,11 +496,11 @@ public class CuentaBusinessService {
 			validarAccesoCuenta(cuenta, vendedor, filtradoPorDni);
 
 			// Lockea la cuenta
-			if (accessCuenta.getAccessAuthorization().hasSamePermissionsAs(
+			if (vendedor.getTipoVendedor().isUsaLockeo() && ( accessCuenta.getAccessAuthorization().hasSamePermissionsAs(
 					AccessAuthorization.editOnly())
 					|| accessCuenta.getAccessAuthorization()
 							.hasSamePermissionsAs(
-									AccessAuthorization.fullAccess())) {
+									AccessAuthorization.fullAccess()))) {
 				cuenta.editar(vendedor);
 				repository.save(cuenta);
 			}
@@ -559,7 +562,10 @@ public class CuentaBusinessService {
 	public void validarAccesoCuenta(Cuenta cuenta, Vendedor vendedor,
 			boolean filtradoPorDni) throws RpcExceptionMessages {
 		// logueado no es el de la cuenta
-		if (!vendedor.getId().equals(cuenta.getVendedor().getId())) {
+		if ( !vendedor.getId().equals(cuenta.getVendedor().getId())) {
+			HashMap<String, Boolean> mapaPermisosClient = (HashMap<String, Boolean>) 
+			SessionContextLoader.getInstance().getSessionContext().get(SessionContext.PERMISOS);
+
 			if (cuenta.isClaseEmpleados()) {
 				throw new RpcExceptionMessages(
 						ERR_CUENTA_NO_EDITABLE
@@ -568,7 +574,7 @@ public class CuentaBusinessService {
 										((ClaseCuenta) knownInstanceRetriever
 												.getObject(KnownInstanceIdentifier.CLASE_CUENTA_EMPLEADOS))
 												.getDescripcion()));
-			} else if (cuenta.isGobiernoBsAs()) {
+			} else if (cuenta.isGobiernoBsAs() && !(Boolean)mapaPermisosClient.get(PermisosUserCenter.TIENE_ACCESO_CTA_GOBIERNO_BS_AS.getValue())) {
 				String err = ERR_CUENTA_GOBIERNO.replaceAll("\\{1\\}", cuenta
 						.getCodigoVantive());
 				err = err.replaceAll("\\{2\\}", cuenta.getPersona()
@@ -580,19 +586,20 @@ public class CuentaBusinessService {
 										.getObject(KnownInstanceIdentifier.CLASE_CUENTA_GOB_BS_AS))
 										.getDescripcion());
 				throw new RpcExceptionMessages(err);
-			} else if (cuenta.isGobierno()) {
-				String err = ERR_CUENTA_GOBIERNO.replaceAll("\\{1\\}", cuenta
-						.getCodigoVantive());
-				err = err.replaceAll("\\{2\\}", cuenta.getPersona()
-						.getRazonSocial());
-				err = err
-						.replaceAll(
-								"\\{3\\}",
-								((ClaseCuenta) knownInstanceRetriever
-										.getObject(KnownInstanceIdentifier.CLASE_CUENTA_GOBIERNO))
-										.getDescripcion());
-				throw new RpcExceptionMessages(err);
-			} else if (cuenta.isLAP()) {
+			} else if ( cuenta.isGobierno() && !(Boolean)mapaPermisosClient.get(PermisosUserCenter.TIENE_ACCESO_CTA_GOBIERNO.getValue())){
+				//MGR - #1063				
+		        	String err = ERR_CUENTA_GOBIERNO.replaceAll("\\{1\\}", cuenta
+							.getCodigoVantive());
+					err = err.replaceAll("\\{2\\}", cuenta.getPersona()
+							.getRazonSocial());
+					err = err
+							.replaceAll(
+									"\\{3\\}",
+									((ClaseCuenta) knownInstanceRetriever
+											.getObject(KnownInstanceIdentifier.CLASE_CUENTA_GOBIERNO))
+											.getDescripcion());
+					throw new RpcExceptionMessages(err);
+		  } else if (cuenta.isLAP() && !(Boolean)mapaPermisosClient.get(PermisosUserCenter.TIENE_ACCESO_CTA_LAP.getValue())) {
 				throw new RpcExceptionMessages(
 						ERR_CUENTA_NO_EDITABLE
 								.replaceAll(
@@ -600,7 +607,7 @@ public class CuentaBusinessService {
 										((ClaseCuenta) knownInstanceRetriever
 												.getObject(KnownInstanceIdentifier.CLASE_CUENTA_LAP))
 												.getDescripcion()));
-			} else if (cuenta.isLA()) {
+			} else if (cuenta.isLA() && !(Boolean)mapaPermisosClient.get(PermisosUserCenter.TIENE_ACCESO_CTA_LA.getValue())) {
 				throw new RpcExceptionMessages(
 						ERR_CUENTA_NO_EDITABLE
 								.replaceAll(
@@ -613,7 +620,7 @@ public class CuentaBusinessService {
 				// la tiene lockeada alguien y no soy yo
 				if ((cuenta.getVendedorLockeo() != null)
 						&& (!vendedor.getId().equals(
-								cuenta.getVendedorLockeo().getId()))) {
+								cuenta.getVendedorLockeo().getId())) && vendedor.getTipoVendedor().isUsaLockeo()) {
 					throw new RpcExceptionMessages(ERR_CUENTA_NO_PERMISO);
 				}
 			}
@@ -639,6 +646,7 @@ public class CuentaBusinessService {
 			}
 		}
 	}
+
 
 	private void updateTelefonosAPersona(TelefonoDto tel, Persona persona,
 			MapperExtended mapper) {

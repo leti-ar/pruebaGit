@@ -2363,4 +2363,32 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("y Calle:")
   @Key("y_calle")
   String y_calle();
+  
+  //MGR - #1027
+  /**
+   * Translated "Orden de Compra".
+   * 
+   * @return translated "Orden de Compra"
+   */
+  @DefaultStringValue("Orden de Compra")
+  @Key("ordenCompra")
+  String ordenCompra();
+  
+  /**
+   * Translated "<span class=\"req\">Orden de Compra:</span>".
+   * 
+   * @return translated "<span class=\"req\">Orden de Compra:</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Orden de Compra:</span>")
+  @Key("ordenCompraReq")
+  String ordenCompraReq();
+  
+  /**
+   * Translated "Precio con desc.".
+   * 
+   * @return translated "Precio con desc."
+   */
+  @DefaultStringValue("Precio con desc.")
+  @Key("precioConDesc")
+  String precioConDesc();  
 }

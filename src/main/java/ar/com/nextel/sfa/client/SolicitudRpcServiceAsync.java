@@ -2,6 +2,9 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.dto.DescuentoDto;
+import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
+import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
@@ -16,13 +19,13 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
+import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
-import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -75,4 +78,22 @@ public interface SolicitudRpcServiceAsync {
 	public void existReport(String report, AsyncCallback<Boolean> callback);
 	
 	public void getVendedoresDae(AsyncCallback<List<VendedorDto>> callback);
+	
+	public void getDescuentos(Long idLinea, AsyncCallback<List<DescuentoDto>> callback);
+
+	public void getDescuentosAplicados(Long idLinea, AsyncCallback<List<DescuentoLineaDto>> callback);
+
+	public void getTiposDescuento(Long idLinea, AsyncCallback<List<TipoDescuentoDto>> callback);
+
+	public void getTiposDescuentoAplicados(Long idLinea, AsyncCallback<List<TipoDescuentoDto>> callback);
+
+	public void puedeAplicarDescuento(List<LineaSolicitudServicioDto> lineas,
+			AsyncCallback<Boolean> defaultWaitCallback);
+
+	public void getInterseccionTiposDescuento(List<LineaSolicitudServicioDto> lineas,
+			AsyncCallback<List<TipoDescuentoDto>> defaultWaitCallback);
+
+	public void getDescuentosTotales(Long idLinea,
+			AsyncCallback<DescuentoTotalDto> defaultWaitCallback);
+
 }

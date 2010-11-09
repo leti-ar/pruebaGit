@@ -130,7 +130,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	private static final String ERROR_OPER_OTRO_VENDEDOR = "El prospect/cliente tiene una operación en curso con otro vendedor. No puede ver sus datos. El {1} es {2}";
 	private static final String ERROR_OPORTUNIDAD_VENCIDA = "La oportunidad/Reserva está vencida";
 
-	private static String queryNameSexoSinIndefinido = "SEXO_SIN_INDEFINIDO";
+	private static final String queryNameSexoSinIndefinido = "SEXO_SIN_INDEFINIDO";
+	private static final String QUERY_NAME_CLASE_CUENTA_POR_VENDEDOR = "CLASE_CUENTAS_POR_VENDEDOR";
 
 	@Override
 	public void init() throws ServletException {
@@ -218,13 +219,19 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		buscarDTOinit.setTiposDocumento(mapper.convertList(repository.getAll(TipoDocumento.class),
 				TipoDocumentoDto.class));
 		buscarDTOinit.setRubro(mapper.convertList(repository.getAll(Rubro.class), RubroDto.class));
-		List listaSexos = this.getRepository().executeCustomQuery(queryNameSexoSinIndefinido);
+		List<?> listaSexos = this.getRepository().executeCustomQuery(queryNameSexoSinIndefinido);
 		buscarDTOinit.setSexo(mapper.convertList(listaSexos, SexoDto.class));
 		// buscarDTOinit.setSexo(mapper.convertList(genericDao.getList(Sexo.class), SexoDto.class));
 		buscarDTOinit
 				.setFormaPago(mapper.convertList(repository.getAll(FormaPago.class), FormaPagoDto.class));
+		
+		// lo modifico para que traigo solo los del vendedor
+		List<?> listaClaseCuenta = this.getRepository().executeCustomQuery(QUERY_NAME_CLASE_CUENTA_POR_VENDEDOR,sessionContextLoader.getVendedor().getTipoVendedor().getId());
+		buscarDTOinit.setClaseClientePorVendedor(mapper.convertList(listaClaseCuenta,ClaseCuentaDto.class));
+
 		buscarDTOinit.setClaseCliente(mapper.convertList(repository.getAll(ClaseCuenta.class),
 				ClaseCuentaDto.class));
+		
 		buscarDTOinit.setProveedorAnterior(mapper.convertList(repository.getAll(Proveedor.class),
 				ProveedorDto.class));
 		buscarDTOinit.setCargo(mapper.convertList(repository.getAll(Cargo.class), CargoDto.class));
@@ -299,6 +306,19 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		responseDto.setMensaje(responseDTO.getMensaje());
 		AppLogger.info("Consulta a Veraz finalizada.");
 		return responseDto;
+	}
+	
+	//MGR - #960
+	public VerazResponseDto consultarVeraz(String codVantive) throws RpcExceptionMessages {
+		ArrayList<Object> list = (ArrayList<Object>) this.repository.find("from Cuenta c where c.codigoVantive = ?", codVantive);
+		if(!list.isEmpty()){
+			Cuenta cta = (Cuenta) list.get(0);
+			PersonaDto personaDto = mapper.map(cta.getPersona(), PersonaDto.class);
+			return consultarVeraz(personaDto);
+		}
+		else{
+			return new VerazResponseDto();
+		}
 	}
 
 	public CuentaDto saveCuenta(CuentaDto cuentaDto) throws RpcExceptionMessages {
@@ -596,5 +616,16 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 
 	public void setRepository(Repository repository) {
 		this.repository = repository;
+	}
+
+	//MGR - Dado un codigo vantive, devuelve el numero de cuenta que le corresponde en SFA
+	public Long selectCuenta(String codigoVantive) throws RpcExceptionMessages{
+		Cuenta cuenta  = null;
+		cuenta = cuentaBusinessService.selectCuenta(null, codigoVantive, getVendedor(),
+				true, mapper);
+		if(cuenta != null){
+			return cuenta.getId();
+		}
+		return null;
 	}
 }

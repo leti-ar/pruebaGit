@@ -31,6 +31,8 @@ public interface CuentaRpcServiceAsync {
 	public void searchCuenta(CuentaSearchDto cuentaSearchDto, AsyncCallback<List<CuentaSearchResultDto>> callback);
 	public void getVerazInitializer(AsyncCallback<VerazInitializer> callback);
 	public void consultarVeraz(PersonaDto personaDto, AsyncCallback<VerazResponseDto> callback);
+	//MGR - #960
+	public void consultarVeraz(String customerCode, AsyncCallback<VerazResponseDto> callback);
 	public void selectCuenta(Long cuentaId, String cod_vantive,boolean filtradoPorDni,AsyncCallback<CuentaDto> callback);
 	public void reservaCreacionCuenta(CrearCuentaDto crearCuentaDto, AsyncCallback<CuentaDto> callback);
 	public void validarTarjeta(String numeroTarjeta, Integer mesVto, Integer anoVto,AsyncCallback<TarjetaCreditoValidatorResultDto> callback);
@@ -42,4 +44,7 @@ public interface CuentaRpcServiceAsync {
 	public void getOportunidadNegocio(Long cuenta_id, AsyncCallback<CuentaPotencialDto> callback);
 	public void updateEstadoOportunidad(OportunidadNegocioDto oportunidadDto, AsyncCallback<OportunidadNegocioDto> callback);
 	public void getCuentasAsociadasAVentaPotencial(Long idVentaPotencial, AsyncCallback<List<CuentaDto>> callback);
+	//MGR - Dado un codigo vantive, devuelve el numero de cuenta que le corresponde en SFA
+	public void selectCuenta(String codigoVantive,AsyncCallback<Long> callback);
+	
 }

@@ -8,7 +8,6 @@ import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
-import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
 import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
@@ -64,6 +63,13 @@ public class CuentaRpcServiceDelegate {
 		WaitWindow.show();
 		cuentaRpcService.consultarVeraz(personaDto, callback);
 	}
+	
+	//MGR - #960
+	public void consultarVeraz(String customerCode, DefaultWaitCallback<VerazResponseDto> callback) {
+		WaitWindow.show();
+		cuentaRpcService.consultarVeraz(customerCode, callback);
+	}
+	
 	public void selectCuenta(Long cuentaId,String cod_vantive,boolean filtradoPorDni,DefaultWaitCallback<CuentaDto> callback) {
 		WaitWindow.show();
 		cuentaRpcService.selectCuenta(cuentaId, cod_vantive,filtradoPorDni,callback);
@@ -107,5 +113,13 @@ public class CuentaRpcServiceDelegate {
 	public void getCuentasAsociadasAVentaPotencial(Long idVentaPotencial, DefaultWaitCallback<List<CuentaDto>> callback) {
 		WaitWindow.show();
 		cuentaRpcService.getCuentasAsociadasAVentaPotencial(idVentaPotencial, callback);
+	}
+
+	//MGR - Dado un codigo vantive, devuelve el numero de cuenta que le corresponde en SFA
+	public void selectCuenta(String codigoVantive,
+			DefaultWaitCallback<Long> callback) {
+		WaitWindow.show();
+		cuentaRpcService.selectCuenta(codigoVantive,callback);
+		
 	}
 }
