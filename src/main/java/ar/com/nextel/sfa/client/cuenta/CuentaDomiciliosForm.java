@@ -248,8 +248,8 @@ public class CuentaDomiciliosForm extends Composite {
 //							DomicilioUI.getInstance().openPopupAdviseDialog(
 //							DomicilioUI.getInstance().getOpenDomicilioUICommand());
 							DomicilioUI.getInstance().openPopupAdviseDialog(
-									MessageDialog.getInstance().getCloseCommand());
-							
+									DomicilioUI.getInstance().getOpenDomicilioUICommand());
+								
 						}
 					}
 					// Acciones a tomar cuando haga click en iconos de copiado de domicilios:
