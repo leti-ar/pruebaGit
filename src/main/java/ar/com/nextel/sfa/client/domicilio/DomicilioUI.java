@@ -427,6 +427,7 @@ public class DomicilioUI extends NextelDialog {
 		domicilioNormalizado.setYcalle(getPrimerDatoNoNulo(domicilioNormalizado.getYcalle(),domicilioAEditar.getYcalle()));
 		domicilioNormalizado.setEnCarga(domicilioAEditar.isEnCarga());
 		domicilioNormalizado.setTransferido(Boolean.FALSE);
+		domicilioNormalizado.setVantiveId(domicilioAEditar.getVantiveId());
 		
 		return domicilioNormalizado;
 		
