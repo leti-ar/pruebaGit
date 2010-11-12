@@ -30,12 +30,14 @@ import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLabel;
+import ar.com.snoop.gwt.commons.client.widget.dialog.CustomDialogBox;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -832,6 +834,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		}
 		plan.setSelectedItem(linea.getPlan());
 		idPlanAnterior = linea.getPlan() != null ? linea.getPlan().getId() : null;
+		
 		modalidadCobro.setSelectedItem(linea.getModalidadCobro());
 		if (linea.getTerminoPago() != null) {
 			terminoPago.setSelectedItem(getTerminoPagoValidoByIdTerminoPago(linea.getListaPrecios()
@@ -933,6 +936,15 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			lineaSolicitudServicio.setPrecioListaAjustado(itemTasadoSelected.getPrecioLista());
 		}
 		lineaSolicitudServicio.setTipoSolicitud((TipoSolicitudDto) tipoOrden.getSelectedItem());
+		
+		
+		//chino TODO : si tenía descuentos aplicados, se los eliminio
+		if (lineaSolicitudServicio.getDescuentosLinea().size()>0) {
+			MessageDialog.getInstance().setDialogTitle("Advertencia");
+			MessageDialog.getInstance().showAceptar("UNDER CONSTRUCTION -> Se eliminaran los descuentos, debe cargarlos nuevamente", 
+					MessageDialog.getCloseCommand());
+		}
+		
 		return lineaSolicitudServicio;
 	}
 

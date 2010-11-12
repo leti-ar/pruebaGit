@@ -110,6 +110,11 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 		montoTB.addChangeHandler(new ChangeHandler() {			
 			public void onChange(ChangeEvent arg0) {
 				try {
+					//evito el borrado, agregandole un 0
+					if(montoTB.getValue()!=null && montoTB.getValue().length()==0){
+						montoTB.setValue("0");
+					}
+					
 					if (Double.valueOf(montoTB.getValue().replace(",", ".")) <= precioConDescuento) {
 						valorTotal = precioConDescuento - Double.valueOf(montoTB.getValue().replace(",", "."));
 						precioVenta.setText(String.valueOf(decimalFormat.format(valorTotal)).replace(",", "."));
@@ -234,13 +239,13 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 
 	public void modificarPrecioConDescuento(LineaSolicitudServicioDto linea, List<DescuentoDto> descuentos) {		
 		//guardo en la linea los valores que modificó el usuario
-		if (!"".equals(porcentajeTB.getValue())) {
+		if (porcentajeTB.getValue() != null && porcentajeTB.getValue().length() > 0) {
 			linea.setPorcentaje(Double.valueOf(porcentajeTB.getValue().replace(",", ".")));
 		} else {
 			linea.setPorcentaje(new Double(0.0));
 		}
 		linea.setMonto(precioConDescuento - valorTotal);
-		if (!"".equals(precioVenta.getText())) {
+		if (precioVenta.getText() != null && precioVenta.getText().length() > 0) {
 			linea.setPrecioConDescuento(new Double(precioVenta.getText().replace(",", ".")));		
 		} else {
 			linea.setPrecioConDescuento(new Double(0.0));

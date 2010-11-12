@@ -462,10 +462,10 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			itemSolicitudDialog = new ItemSolicitudDialog("Agregar Item", controller);
 			Command aceptarCommand = new Command() {
 				public void execute() {
-					addLineaSolicitudServicio(itemSolicitudDialog.getItemSolicitudUIData()
-							.getLineaSolicitudServicio());
-					lineaModificada = itemSolicitudDialog.getItemSolicitudUIData()
-					.getLineaSolicitudServicio().getId();
+					LineaSolicitudServicioDto lineaSolicitudServicio = itemSolicitudDialog.getItemSolicitudUIData()
+							.getLineaSolicitudServicio();
+					addLineaSolicitudServicio(lineaSolicitudServicio);
+					lineaModificada = lineaSolicitudServicio.getId();
 				}
 			};
 			itemSolicitudDialog.setAceptarCommand(aceptarCommand);
