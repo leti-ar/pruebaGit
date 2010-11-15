@@ -133,6 +133,11 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 		porcentajeTB.addChangeHandler(new ChangeHandler() {			
 			public void onChange(ChangeEvent arg0) {
 				try {
+					//evito el borrado, agregandole un 0
+					if(porcentajeTB.getValue()!=null && porcentajeTB.getValue().length()==0){
+						porcentajeTB.setValue("0");
+					}
+					
 					if (Double.valueOf(porcentajeTB.getValue().replace(",", ".")) <= 100) {
 						valorTotal = precioConDescuento - (precioConDescuento
 									* Double.valueOf(porcentajeTB.getValue().replace(",", ".")) / 100);
