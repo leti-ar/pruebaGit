@@ -173,9 +173,14 @@ public class DomicilioUI extends NextelDialog {
 			
 		habilitarCampo(domiciliosUIData.getPartido());
 		habilitarCampo(domiciliosUIData.getObservaciones());
-		linkAceptar.setVisible(true);
+		
+		
+		if (domicilioAEditar.isEnCarga() || ClientContext
+						.getInstance().checkPermiso(
+								PermisosEnum.EDITAR_DOMICILIO.getValue()))
 		linkAceptar.setVisible(true);
 
+		
 		domiciliosUIData.getEntrega().setVisible(!readOnly || EditarCuentaUI.esEdicionCuenta);
 		domiciliosUIData.getFacturacion().setVisible(!readOnly || EditarCuentaUI.esEdicionCuenta);
 		labelEntrega.setVisible(!readOnly || EditarCuentaUI.esEdicionCuenta);
