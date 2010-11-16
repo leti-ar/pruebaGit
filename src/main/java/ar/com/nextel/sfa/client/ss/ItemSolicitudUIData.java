@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
@@ -936,14 +937,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			lineaSolicitudServicio.setPrecioListaAjustado(itemTasadoSelected.getPrecioLista());
 		}
 		lineaSolicitudServicio.setTipoSolicitud((TipoSolicitudDto) tipoOrden.getSelectedItem());
-		
-		
-		//chino TODO : si tenía descuentos aplicados, se los eliminio
-		if (lineaSolicitudServicio.getDescuentosLinea().size()>0) {
-			MessageDialog.getInstance().setDialogTitle("Advertencia");
-			MessageDialog.getInstance().showAceptar("UNDER CONSTRUCTION -> Se eliminaran los descuentos, debe cargarlos nuevamente", 
-					MessageDialog.getCloseCommand());
-		}
 		
 		return lineaSolicitudServicio;
 	}

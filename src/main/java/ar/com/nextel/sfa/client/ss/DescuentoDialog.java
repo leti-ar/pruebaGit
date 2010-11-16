@@ -170,6 +170,7 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 		precioVenta.setText("");
 		tiposDeDescuento.clear();
 		tipoDeDescuento.clear();
+		descuentoAplicado.setText("");
 		descuentoUIData.getPrecioLista().setText(String.valueOf(linea.getPrecioLista()));
 		precioConDescuento = linea.getPrecioConDescuento();
 		porcentajeTB.setEnabled(true);

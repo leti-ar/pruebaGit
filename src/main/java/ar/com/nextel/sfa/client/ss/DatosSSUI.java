@@ -375,7 +375,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 					} else if (col == 0) {
 						// Abre panel de edicion de la LineaSolicitudServicio
 						openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
-						lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1); 
+						lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1);
 					} else if (col == 1) {
 						// Elimina la LineaSolicitudServicio
 						ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
@@ -623,12 +623,10 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		detalleSS.setHTML(newRow, 4-i, currencyFormat.format(linea.getPrecioLista()));
 		detalleSS.getCellFormatter().addStyleName(newRow, 4-i, "alignRight");
 		if (linea.getPrecioConDescuento() == null) {
-			linea.setPrecioConDescuento(linea.getPrecioVenta());
-			linea.setPrecioVenta(linea.getPrecioVenta());
-		} else {
-			linea.setPrecioVenta(linea.getPrecioConDescuento());
+			linea.setPrecioConDescuento(linea.getPrecioLista());
 		}
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
+			linea.setPrecioVenta(linea.getPrecioConDescuento());
 			detalleSS.setHTML(newRow, 5-i, currencyFormat.format(linea.getPrecioConDescuento()));
 			detalleSS.getCellFormatter().addStyleName(newRow, 5-i, "alignRight");
 		} else {
