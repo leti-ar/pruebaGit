@@ -32,6 +32,7 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 	private SimpleLink aceptar;
 	private SimpleLink cancelar;
 	private DescuentoUIData descuentoUIData;
+	private DescuentoConfirmacionDialog confirmacionDialog;
 	
 	private FlowPanel topBar = new FlowPanel();
 	private InlineLabel descuentoAplicadoLabel;
@@ -53,11 +54,13 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 	private List<TipoDescuentoDto> tiposDeDescuento;
 	private List<TipoDescuentoSeleccionado> descuentosSeleccionados;
 	private TipoDescuentoSeleccionado seleccionado;
+	private String itemDescripcion;
 	
-	public DescuentoDialog(String title, EditarSSUIController controller) {
+	public DescuentoDialog(String title, EditarSSUIController controller, String segment1) {
 		super(title, false, true);
 		tiposDeDescuento = new ArrayList<TipoDescuentoDto>();
 		descuentosSeleccionados = new ArrayList<TipoDescuentoSeleccionado>();
+		itemDescripcion = new String(segment1);
 		addStyleName("gwt-DescuentoDialog");
 		aceptar = new SimpleLink("ACEPTAR");
 		cancelar = new SimpleLink("CANCELAR");
@@ -171,7 +174,7 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 		tiposDeDescuento.clear();
 		tipoDeDescuento.clear();
 		descuentoAplicado.setText("");
-		descuentoUIData.getPrecioLista().setText(String.valueOf(linea.getPrecioLista()));
+		precioLista.setText(String.valueOf(linea.getPrecioLista()));
 		precioConDescuento = linea.getPrecioConDescuento();
 		porcentajeTB.setEnabled(true);
 		montoTB.setEnabled(true);
@@ -230,11 +233,22 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 						MessageDialog.getInstance().showAceptar(
 								"El porcentaje no puede ser mayor al 100%", MessageDialog.getCloseCommand());
 					} else {
-						//agrego el tipo de descuento que eligió para que no pueda volverlo a elegir
-						seleccionado.setDescripcion(tipoDeDescuento.getSelectedItemText());
-						descuentosSeleccionados.add(seleccionado);
-						aceptarCommand.execute();
-						hide();
+						//muestro mensaje de confirmación
+						String campo1 = new String(precioLista.getText());
+						String campo2 = new String(porcentajeTB.getValue().replace(",", "."));
+						String campo3 = new String(precioVenta.getText());
+						confirmacionDialog = new DescuentoConfirmacionDialog(
+								"Confirmar", itemDescripcion, campo1, campo2, campo3);
+						Command confirmarCommand = new Command() {
+							public void execute() {
+								//agrego el tipo de descuento que eligió para que no pueda volverlo a elegir
+								seleccionado.setDescripcion(tipoDeDescuento.getSelectedItemText());
+								descuentosSeleccionados.add(seleccionado);
+								aceptarCommand.execute();
+								hide();
+							}
+						};
+						confirmacionDialog.setAceptarCommand(confirmarCommand);
 					}
 				}
 			}

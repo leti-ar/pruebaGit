@@ -501,7 +501,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		descuentos = result;
 		descuento = result.get(0);
 		if (descuentoDialog == null) {
-			descuentoDialog = new DescuentoDialog("Aplicar Descuento", controller);
+			descuentoDialog = new DescuentoDialog("Aplicar Descuento", controller, linea.getItem().getSegment1());
 			Command aceptarCommand = new Command() {
 				public void execute() {
 					editarPrecionConDescuento(lineaSeleccionada, descuentos);
