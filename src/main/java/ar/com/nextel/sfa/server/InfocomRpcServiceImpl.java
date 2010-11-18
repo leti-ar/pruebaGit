@@ -24,6 +24,7 @@ import ar.com.nextel.business.legacy.avalon.dto.DeudaDTO;
 import ar.com.nextel.business.legacy.avalon.dto.ResumenPorEquipoArbolDTO;
 import ar.com.nextel.business.legacy.avalon.dto.ResumenPorEquipoResponsablePagoDTO;
 import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
+import ar.com.nextel.business.legacy.dao.MibasLegacyDAO;
 import ar.com.nextel.business.legacy.dao.VantiveLegacyDAO;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.financial.dto.DetalleCreditoDTO;
@@ -212,7 +213,16 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements
 		if (cicloFacturacion != null) {
 			infocomInitializer.setCiclo(cicloFacturacion.getDescripcion());
 		}
-		infocomInitializer.setFlota(cuenta.getFlota());
+		//MGR - #887
+		String flota = "";
+		try {
+			flota = vantiveLegacyDAO.searchFlotaByCodigoVantive(cuenta.getCodigoVantive());
+		} catch (LegacyDAOException e) {
+			throw ExceptionUtil.wrap(e);
+		}
+		
+		//infocomInitializer.setFlota(cuenta.getFlota());
+		infocomInitializer.setFlota(flota);
 		infocomInitializer.setRazonSocial(cuenta.getPersona().getRazonSocial());
 		getLimiteCredito(cuenta, responsablePago, infocomInitializer);
 		getEquiposServiciosTable(numeroCuenta, codigoVantive, responsablePago,
