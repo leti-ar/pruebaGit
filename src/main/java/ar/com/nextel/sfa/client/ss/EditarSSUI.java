@@ -3,10 +3,12 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.HashMap;
 import java.util.List;
 
+import ar.com.nextel.services.components.sessionContext.SessionContext;
+import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
-import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
+import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -31,6 +33,7 @@ import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.RazonSocialClienteBar;
 import ar.com.nextel.sfa.client.widget.UILoader;
+import ar.com.nextel.util.PermisosUserCenter;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -328,19 +331,16 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	}
 
 	private void openGenerarCerrarSolicitdDialog(boolean cerrando) {
-		CuentaEdicionTabPanel cuenta = CuentaEdicionTabPanel.getInstance();
-		if(cuenta.isFormCompletoYguardado()) {
-			List errors = editarSSUIData.validarParaCerrarGenerar(false);
-			if (errors.isEmpty()) {
-				cerrandoSolicitud = cerrando;
-				getCerrarSSUI().setTitleCerrar(cerrando);
-				getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
-						editarSSUIData.getCuenta().isCliente(), editarSSUIData.getSolicitudServicioGeneracion(),
-						editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB());
-			} else {
-				ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-				ErrorDialog.getInstance().show(errors, false);
-			}
+		List errors = editarSSUIData.validarParaCerrarGenerar(false);
+		if (errors.isEmpty()) {
+			cerrandoSolicitud = cerrando;
+			getCerrarSSUI().setTitleCerrar(cerrando);
+			getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
+					editarSSUIData.getCuenta().isCliente(), editarSSUIData.getSolicitudServicioGeneracion(),
+					editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB());
+		} else {
+			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+			ErrorDialog.getInstance().show(errors, false);
 		}
 	}
 
