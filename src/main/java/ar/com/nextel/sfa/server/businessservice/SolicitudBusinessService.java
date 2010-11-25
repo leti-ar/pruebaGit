@@ -378,4 +378,11 @@ public class SolicitudBusinessService {
 	public GenerarChangelogConfig getGenerarChangelogConfig() {
 		return generarChangelogConfig;
 	}
+
+	public GeneracionCierreResponse crearArchivo(SolicitudServicio solicitudServicio) {
+		GeneracionCierreRequest generacionCierreRequest = new GeneracionCierreRequest("", solicitudServicio);
+		GeneracionCierreResponse response = generacionCierreBusinessOperator
+				.crearArchivo(generacionCierreRequest);
+		return response;
+	}
 }

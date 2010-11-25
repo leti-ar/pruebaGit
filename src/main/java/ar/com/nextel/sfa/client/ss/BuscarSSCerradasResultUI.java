@@ -3,6 +3,8 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.Iterator;
 import java.util.List;
 
+import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreRequest;
+import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
@@ -12,13 +14,20 @@ import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
+import ar.com.nextel.sfa.server.businessservice.SolicitudBusinessService;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.WindowUtils;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import ar.com.snoop.gwt.commons.client.widget.table.RowListener;
+import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -44,7 +53,10 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 	private int cantEqFirmados = 0;
 	private SolicitudServicioCerradaDto solicitudServicioCerradaDto;
 	private int indiceRowTabla;
-
+	private String fileName;
+	private SolicitudServicioCerradaResultDto solicitud; 
+	private String numeroSS;
+	
 	public BuscarSSCerradasResultUI() {
 		super();
 		addStyleName("gwt-BuscarCuentaResultPanel");
@@ -201,8 +213,8 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 
 		if (cell == null)
 			return;
-		String numeroSS = resultTable.getHTML(cell.getRowIndex(), 1).toString();
-		SolicitudServicioCerradaResultDto solicitud = buscarSS(numeroSS);
+		numeroSS = resultTable.getHTML(cell.getRowIndex(), 1).toString();
+		solicitud = buscarSS(numeroSS);
 		if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() >= 1)) {
 			SolicitudRpcService.Util.getInstance().getDetalleSolicitudServicio(solicitud.getId(),
 					new DefaultWaitCallback<DetalleSolicitudServicioDto>() {
@@ -212,39 +224,61 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 						}
 					});
 		} else if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() == 0)) {
+			
+			SolicitudRpcService.Util.getInstance().crearArchivo(solicitud, new DefaultWaitCallback<Boolean>() {
 
-			final String contextRoot = WindowUtils.getContextRoot();
-			String filename = null;			
-			if (solicitud.isNumeroCuentaAlCierreSSIdVantive()) {
-                // Si es cliente usamos el codigo Vantive, sino el Id (ya que no podemos
-                // guardar archivos con los caracteres de VANCUC
-                filename = solicitud.getIdCuenta().toString() + "-5-" + numeroSS + ".rtf";
-            } else {
-                filename = solicitud.getIdCuenta().toString() + "-5-" + numeroSS + ".rtf";
-            }
-			final String filenameFinal = filename;
-			LoadingModalDialog.getInstance()
-					.showAndCenter("Solicitud", "Esperando Solicitud de Servicio ...");
-			SolicitudRpcService.Util.getInstance().existReport(filename, new DefaultWaitCallback<Boolean>() {
+				@Override
 				public void success(Boolean result) {
-					LoadingModalDialog.getInstance().hide();
-					if (result) {
-						WindowUtils.redirect("/" + contextRoot + "/download/" + filenameFinal
-								+ "?module=solicitudes&service=rtf&name=" + filenameFinal);
-					} else {
+					
+					if (solicitud.isNumeroCuentaAlCierreSSIdVantive()) {
+		                // Si es cliente usamos el codigo Vantive, sino el Id (ya que no podemos
+		                // guardar archivos con los caracteres de VANCUC
+		                fileName = solicitud.getIdCuenta().toString() + "-5-" + numeroSS + ".rtf";
+		            } else {
+		                fileName = solicitud.getIdCuenta().toString() + "-5-" + numeroSS + ".rtf";
+		            }
+					
+					RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getUrlReporte(fileName));
+					requestBuilder.setCallback(new RequestCallback() {
+						public void onResponseReceived(Request request, Response response) {
+							WaitWindow.hide();
+							LoadingModalDialog.getInstance().hide();
+							if (response.getStatusCode() == Response.SC_OK) {
+								WindowUtils.redirect(getUrlReporte(fileName));
+							} else {
+								MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),
+										MessageDialog.getCloseCommand());
+							}
+						}
+
+						public void onError(Request request, Throwable exception) {
+							WaitWindow.hide();
+							LoadingModalDialog.getInstance().hide();
+							MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),
+									MessageDialog.getCloseCommand());
+						}
+					});
+					try {
+						requestBuilder.setTimeoutMillis(10 * 1000);
+						requestBuilder.send();
+						WaitWindow.show();
+						LoadingModalDialog.getInstance().showAndCenter("Solicitud",
+								"Esperando Solicitud de Servicio ...");
+					} catch (RequestException e) {
 						MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),
 								MessageDialog.getCloseCommand());
+						LoadingModalDialog.getInstance().hide();
 					}
-				}
-
-				public void failure(Throwable caught) {
-					LoadingModalDialog.getInstance().hide();
-					super.failure(caught);
 				}
 			});
 
 		}
 
+	}
+	
+	public String getUrlReporte(String fileName) {
+		return "/" + WindowUtils.getContextRoot() + "/download/" + fileName
+		+ "?module=solicitudes&service=rtf&name=" + fileName;
 	}
 
 	private SolicitudServicioCerradaResultDto buscarSS(String numeroSS) {

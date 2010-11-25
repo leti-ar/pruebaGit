@@ -185,4 +185,10 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.getDescuentosTotales(idLinea, defaultWaitCallback);
 	}
 
+	public void crearArchivo(SolicitudServicioCerradaResultDto solicitud,
+			DefaultWaitCallback<Boolean> defaultWaitCallback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.crearArchivo(solicitud, defaultWaitCallback);
+	}
+
 }

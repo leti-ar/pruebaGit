@@ -96,4 +96,7 @@ public interface SolicitudRpcServiceAsync {
 	public void getDescuentosTotales(Long idLinea,
 			AsyncCallback<DescuentoTotalDto> defaultWaitCallback);
 
+	public void crearArchivo(SolicitudServicioCerradaResultDto solicitud,
+			AsyncCallback<Boolean> defaultWaitCallback);
+
 }
