@@ -778,7 +778,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	 */
 	public void borrarDescuentoSeleccionados() {
 		descuentoSeleccionados.clear();
-		lineaSeleccionada.setPrecioConDescuento(null);
+		if(lineaSeleccionada!=null){
+			lineaSeleccionada.setPrecioConDescuento(null);
+		}
 	}	
 
 }
