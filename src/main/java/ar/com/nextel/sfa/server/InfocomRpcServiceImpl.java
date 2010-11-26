@@ -490,7 +490,16 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements
 				resumenEquipoDto.setRazonSocial(cuenta.getPersona()
 						.getRazonSocial());
 				resumenEquipoDto.setNumeroCliente(cuenta.getCodigoVantive());
-				resumenEquipoDto.setFlota(cuenta.getFlota());
+				//resumenEquipoDto.setFlota(cuenta.getFlota());
+				//MGR - #896
+				String flota = "";
+				try {
+					flota = vantiveLegacyDAO.searchFlotaByCodigoVantive(cuenta.getCodigoVantive());
+				} catch (LegacyDAOException e) {
+					throw ExceptionUtil.wrap(e);
+				}
+				resumenEquipoDto.setFlota(flota);
+				
 			} catch (Exception e) {
 				throw ExceptionUtil.wrap(e);
 			}
