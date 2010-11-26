@@ -772,5 +772,13 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		refreshDomicilioLayout();
 		refreshDetalleSSTable();
 	}
+	
+	/**
+	 * Después de modificar una lineaSS elimino los descuentos
+	 */
+	public void borrarDescuentoSeleccionados() {
+		descuentoSeleccionados.clear();
+		lineaSeleccionada.setPrecioConDescuento(null);
+	}	
 
 }

@@ -952,6 +952,15 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		
 		lineaSolicitudServicio.setTipoSolicitud((TipoSolicitudDto) tipoOrden.getSelectedItem());
 		
+		controller.borrarDescuentoSeleccionados();
+		//si tenía descuentos aplicados, se los eliminio
+		if (lineaSolicitudServicio.getDescuentosLinea().size() > 0) {
+			lineaSolicitudServicio.getDescuentosLinea().clear();
+			MessageDialog.getInstance().setDialogTitle("Advertencia");
+			MessageDialog.getInstance().showAceptar("Se han eliminado los descuentos aplicados, si lo desea, puede cargarlos nuevamente", 
+					MessageDialog.getCloseCommand());
+		}
+		
 		return lineaSolicitudServicio;
 	}
 

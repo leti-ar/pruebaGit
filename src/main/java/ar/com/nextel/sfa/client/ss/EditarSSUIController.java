@@ -42,4 +42,6 @@ public interface EditarSSUIController {
 			DefaultWaitCallback<List<ModeloDto>> callback);
 
 	public void verificarNegativeFiles(String numero, DefaultWaitCallback<String> callback);
+
+	public void borrarDescuentoSeleccionados();
 }
