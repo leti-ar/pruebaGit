@@ -38,8 +38,9 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 	private MapperExtended mapper;
 	private Repository repository;
 	
+	//MGR - #1085 - Se vuelve atras con el incidente #1094
 	//MGR - #1094
-	private static String oppEnCursoPorTipoVendedor= "OPP_CURSO_TIPO_VENDEDOR";
+//	private static String oppEnCursoPorTipoVendedor= "OPP_CURSO_TIPO_VENDEDOR";
 
 	@Override
 	public void init() throws ServletException {
@@ -54,21 +55,22 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 	public List<OperacionEnCursoDto> searchOpEnCurso() {
 		Vendedor vendedor = sessionContextLoader.getVendedor();
 		
+		//MGR - #1085 - Se vuelve atras con el incidente #1094
 		//MGR - #1094
-		if(!vendedor.isTelemarketing()){
+//		if(!vendedor.isTelemarketing()){
 			AppLogger.info("Obteniendo operaciones en curso para vendedor: " + vendedor.getUserName(), this);
 			List<OperacionEnCursoDto> operacionesEnCursoDto = mapper.convertList(
 					vendedor.getOperacionesEnCurso(), OperacionEnCursoDto.class);
 			return operacionesEnCursoDto;
-		}
-		else{
-			AppLogger.info("Obteniendo operaciones en curso para vendedores del tipo Telemarketing.", this);
-			List<OperacionEnCurso> oppEnCurso = this.repository.executeCustomQuery
-						(oppEnCursoPorTipoVendedor,vendedor.getTipoVendedor().getId());
-			List<OperacionEnCursoDto> operacionesEnCursoDto = mapper.convertList(
-					oppEnCurso, OperacionEnCursoDto.class);
-			return operacionesEnCursoDto;
-		}
+//		}
+//		else{
+//			AppLogger.info("Obteniendo operaciones en curso para vendedores del tipo Telemarketing.", this);
+//			List<OperacionEnCurso> oppEnCurso = this.repository.executeCustomQuery
+//						(oppEnCursoPorTipoVendedor,vendedor.getTipoVendedor().getId());
+//			List<OperacionEnCursoDto> operacionesEnCursoDto = mapper.convertList(
+//					oppEnCurso, OperacionEnCursoDto.class);
+//			return operacionesEnCursoDto;
+//		}
 		
 	}
 
