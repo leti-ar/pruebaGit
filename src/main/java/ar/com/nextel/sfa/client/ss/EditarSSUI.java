@@ -3,12 +3,11 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.HashMap;
 import java.util.List;
 
-import ar.com.nextel.services.components.sessionContext.SessionContext;
-import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
+import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -33,17 +32,19 @@ import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.RazonSocialClienteBar;
 import ar.com.nextel.sfa.client.widget.UILoader;
-import ar.com.nextel.util.PermisosUserCenter;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
+import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -78,7 +79,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private CerrarSSUI cerrarSSUI;
 	private boolean guardandoSolicitud = false;
 	private boolean cerrandoSolicitud = false;
-	
+	private String codigoVant;
+	private boolean cerrandoAux;
+	private CuentaEdicionTabPanel cuenta; 
 
 	public EditarSSUI() {
 		super();
@@ -127,6 +130,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 									.getRazonSocial());
 							razonSocialClienteBar.setIdCuenta(solicitud.getCuenta().getId(), solicitud
 									.getCuenta().getCodigoVantive());
+							codigoVant = solicitud.getCuenta().getCodigoVantive();
 							editarSSUIData.setSolicitud(solicitud);
 							
 							//MGR - #962 - #1017
@@ -331,17 +335,45 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	}
 
 	private void openGenerarCerrarSolicitdDialog(boolean cerrando) {
-		List errors = editarSSUIData.validarParaCerrarGenerar(false);
-		if (errors.isEmpty()) {
-			cerrandoSolicitud = cerrando;
-			getCerrarSSUI().setTitleCerrar(cerrando);
-			getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
-					editarSSUIData.getCuenta().isCliente(), editarSSUIData.getSolicitudServicioGeneracion(),
-					editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB());
-		} else {
-			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-			ErrorDialog.getInstance().show(errors, false);
+		cerrandoAux = cerrando;
+		cuenta = CuentaEdicionTabPanel.getInstance();
+		
+		//obtengo la cuenta que acaba de seleccionar
+		Long idCuenta = null;
+		if (HistoryUtils.getParam("idCuenta") != null) {
+			idCuenta = Long.parseLong(HistoryUtils.getParam("idCuenta"));
+		} else if (HistoryUtils.getParam("cuenta_id") != null) {
+			idCuenta = Long.parseLong(HistoryUtils.getParam("cuenta_id"));
 		}
+		CuentaClientService.cargarDatosCuenta(idCuenta, codigoVant, false, false);
+			
+		WaitWindow.show();
+        DeferredCommand.addCommand(new IncrementalCommand() {
+	        public boolean execute() {
+	        	if (CuentaClientService.cuentaDto == null){
+	            	return true;
+	        	}
+		        //si el campo nombre no está cargado significa que no están cargados los campos obligatorios de la cuenta
+		        if (CuentaClientService.cuentaDto.getPersona().getNombre() != null) {
+		        	List errors = editarSSUIData.validarParaCerrarGenerar(false);
+		            if (errors.isEmpty()) {
+		            	cerrandoSolicitud = cerrandoAux;
+		                getCerrarSSUI().setTitleCerrar(cerrandoAux);
+		                getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
+		                editarSSUIData.getCuenta().isCliente(), editarSSUIData.getSolicitudServicioGeneracion(),
+		                editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB());
+		            } else {
+		            	ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+		                ErrorDialog.getInstance().show(errors, false);
+		            }
+		        } else {
+		        	ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+	                ErrorDialog.getInstance().show("Debe completar los campos obligatorios de la cuenta");
+		        }
+		        WaitWindow.hide();
+		        return false;
+	        }
+        });
 	}
 
 	private Command generarCerrarSolicitudCommand() {
