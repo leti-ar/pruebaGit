@@ -115,7 +115,9 @@ public enum PermisosEnum {
 	//MGR - #1001
 	EVITA_CONTROL_CTA_GOBIERNO("evitaControlCtaGobierno", Accion.X, false),
 	//MGR - #1165
-	EVITA_CONTROL_DESVIOS("evitaControlDesvios", Accion.X, false);
+	EVITA_CONTROL_DESVIOS("evitaControlDesvios", Accion.X, false),
+	//MGR - #1184
+	OCULTA_CRED_FIDEL_PATACONEX("ocultaCredFidelPataconex", Accion.X, true);
 
 	private String value;
     private String accion;
