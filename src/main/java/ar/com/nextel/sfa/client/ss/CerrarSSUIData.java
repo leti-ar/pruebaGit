@@ -165,7 +165,8 @@ public class CerrarSSUIData extends UIData implements ClickHandler {
 		laboral.setValue(solicitudServicioGeneracion.isEmailLaboralChecked());
 		personal.setValue(solicitudServicioGeneracion.isEmailPersonalChecked());
 		nuevo.setValue(solicitudServicioGeneracion.isEmailNuevoChecked());
-		scoring.setValue(solicitudServicioGeneracion.isScoringChecked());
+		//MGR - #1171 - #1172
+		//scoring.setValue(solicitudServicioGeneracion.isScoringChecked());
 		emailNuevo.setText(solicitudServicioGeneracion.getEmailNuevo());
 	}
 	

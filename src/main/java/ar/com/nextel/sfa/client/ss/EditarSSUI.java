@@ -533,4 +533,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			builder.append(EditarSSUI.ID_GRUPO_SS + "=" + idGrupo);
 		return builder.toString();
 	}
+
+
+	public void borrarDescuentoSeleccionados() {
+		datos.borrarDescuentoSeleccionados();
+	}
+	
 }

@@ -936,7 +936,30 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		} else {
 			lineaSolicitudServicio.setPrecioListaAjustado(itemTasadoSelected.getPrecioLista());
 		}
+		
+		//MGR - #1182
+		if (tipoEdicion == SOLO_ITEM){
+			lineaSolicitudServicio.setLocalidad(null);
+			lineaSolicitudServicio.setModalidadCobro(null);
+			lineaSolicitudServicio.setPlan(null);
+			lineaSolicitudServicio.setPrecioListaPlan(0d);
+			lineaSolicitudServicio.setPrecioVentaPlan(0d);
+			lineaSolicitudServicio.setDdi(false);
+			lineaSolicitudServicio.setDdn(false);
+			lineaSolicitudServicio.setRoaming(false);
+			lineaSolicitudServicio.getServiciosAdicionales().clear();
+		}
+		
 		lineaSolicitudServicio.setTipoSolicitud((TipoSolicitudDto) tipoOrden.getSelectedItem());
+		
+		controller.borrarDescuentoSeleccionados();
+		//si tenía descuentos aplicados, se los eliminio
+		if (lineaSolicitudServicio.getDescuentosLinea().size() > 0) {
+			lineaSolicitudServicio.getDescuentosLinea().clear();
+			MessageDialog.getInstance().setDialogTitle("Advertencia");
+			MessageDialog.getInstance().showAceptar("Se han eliminado los descuentos aplicados, si lo desea, puede cargarlos nuevamente", 
+					MessageDialog.getCloseCommand());
+		}
 		
 		return lineaSolicitudServicio;
 	}

@@ -119,10 +119,14 @@ public class VariosSSUI extends Composite {
 		totales.setWidget(0, 1, editarSSUIData.getPrecioListaText());
 		totales.setHTML(0, 2, Sfa.constant().desvios());
 		totales.setWidget(0, 3, editarSSUIData.getDesvioText());
-		totales.setHTML(0, 4, Sfa.constant().creditoFidel());
-		totales.setWidget(0, 5, editarSSUIData.getCredFidelText());
-		totales.setHTML(1, 0, Sfa.constant().pataconex());
-		totales.setWidget(1, 1, editarSSUIData.getPataconexText());
+		//MGR - #1184
+		if(!ClientContext.getInstance().checkPermiso(PermisosEnum.OCULTA_CRED_FIDEL_PATACONEX.getValue())){
+			totales.setHTML(0, 4, Sfa.constant().creditoFidel());
+			totales.setWidget(0, 5, editarSSUIData.getCredFidelText());
+			totales.setHTML(1, 0, Sfa.constant().pataconex());
+			totales.setWidget(1, 1, editarSSUIData.getPataconexText());
+		}
+
 		totales.setHTML(1, 2, Sfa.constant().precioVenta());
 		totales.setWidget(1, 3, editarSSUIData.getPrecioVentaText());
 

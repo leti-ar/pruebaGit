@@ -474,12 +474,17 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 	public void onClick(Widget sender) {
 		VentaPotencialVistaDto vtaPot = null;
 		OperacionEnCursoDto operacionEnCurso = null;
-
+		//MGR - #1180
+		int offset = 0;
 		if ((resultTableReservas.getRowSelected() > 0) || (resultTableOpEnCurso.getRowSelected() > 0)) {
 			if (resultTableReservas.getRowSelected() > 0) {
-				vtaPot = vtaPotencial.get(resultTableReservas.getRowSelected() - 1);
+				//MGR - #1180
+				offset = (tablePageBarReserva.getPagina() - 1) * tablePageBarReserva.getCantResultadosPorPagina();
+				vtaPot = vtaPotencial.get(offset + (resultTableReservas.getRowSelected() - 1));
 			} else if (resultTableOpEnCurso.getRowSelected() > 0) {
-				operacionEnCurso = opEnCurso.get(resultTableOpEnCurso.getRowSelected() - 1);
+				//MGR - #1180
+				offset = (tablePageBarOpCurso.getPagina() - 1) * tablePageBarOpCurso.getCantResultadosPorPagina();
+				operacionEnCurso = opEnCurso.get(offset + (resultTableOpEnCurso.getRowSelected() - 1));
 			}
 
 			if (sender == crearSSLink) {
