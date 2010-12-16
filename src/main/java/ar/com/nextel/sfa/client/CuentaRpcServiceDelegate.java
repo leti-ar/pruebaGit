@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
@@ -121,5 +122,15 @@ public class CuentaRpcServiceDelegate {
 		WaitWindow.show();
 		cuentaRpcService.selectCuenta(codigoVantive,callback);
 		
+	}
+	
+	public void searchCuentaDto(CuentaSearchDto cuentaSearchDto, DefaultWaitCallback<CuentaDto> callback) {
+		WaitWindow.show();
+		cuentaRpcService.searchCuentaDto(cuentaSearchDto, callback);
+	}
+	
+	public void searchContratosActivos(CuentaDto ctaDto, DefaultWaitCallback<List<ContratoViewDto>> callback) {
+		WaitWindow.show();
+		cuentaRpcService.searchContratosActivos(ctaDto, callback);
 	}
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -65,6 +66,35 @@ public class SolicitudServicioDto implements IsSerializable {
     
     //MGR - #1013
     private String validacionPin;
+    
+    private CuentaDto cuentaCedente;
+    private VendedorDto usuarioCreacion;
+    private Long incidenteCedente;
+    
+    public CuentaDto getCuentaCedente() {
+		return cuentaCedente;
+	}
+
+	public void setCuentaCedente(CuentaDto cuentaCedente) {
+		this.cuentaCedente = cuentaCedente;
+	}
+
+	public VendedorDto getUsuarioCreacion() {
+		return usuarioCreacion;
+	}
+
+	public void setUsuarioCreacion(VendedorDto usuarioCreacion) {
+		this.usuarioCreacion = usuarioCreacion;
+	}
+
+	public Long getIncidenteCedente() {
+		return incidenteCedente;
+	}
+
+	public void setIncidenteCedente(Long incidenteCedente) {
+		this.incidenteCedente = incidenteCedente;
+	}
+    //MGR----
 
 	public SolicitudServicioDto() {
 		solicitudServicioGeneracion = new SolicitudServicioGeneracionDto();

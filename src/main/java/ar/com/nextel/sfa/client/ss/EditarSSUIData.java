@@ -3,10 +3,8 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
-import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaDomiciliosForm;
@@ -22,9 +20,9 @@ import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioGeneracionDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
-import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudBaseDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
+import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.UIData;
@@ -45,9 +43,12 @@ import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineHTML;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SourcesChangeEvents;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class EditarSSUIData extends UIData implements ChangeListener, ClickHandler {
@@ -95,6 +96,20 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private ListBox descuentoTotal;
 	private Button tildeVerde;
 	
+	private InlineHTML clienteCedente;
+	private HTML refreshCedente; 
+	private TextBox canalVtas;
+	private TextBox sucursalOrigen;
+	private ListBox vendedor;
+	private ListBox criterioBusqContrato;
+	private RegexTextBox parametroBusqContrato;
+	
+	private static final String CONTRATO = "1";
+	private static final String TELEFONO = "2";
+	private static final String FLOTA_ID = "3";
+	private static final String SUSCRIPTOR = "4";
+	//MGR---
+	
 	public EditarSSUIData(EditarSSUIController controller) {
 		this.controller = controller;
 		serviciosAdicionales = new ArrayList();
@@ -126,6 +141,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		observaciones.setWidth("480px");
 		observaciones.setHeight("35px");
 
+		//TODO: -MGR- Ver como hago para poner otro limite para las observacioens
 		observaciones.addKeyUpHandler(new KeyUpHandler() {
 			public void onKeyUp(KeyUpEvent arg0) {
 				showMaxLengthTextAreaError(observaciones, MAX_LENGHT_OBSERVACIONES);
@@ -162,6 +178,19 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		credFidelText.addStyleName("normalText");
 		pataconexText.addStyleName("normalText");
 		precioVentaText.addStyleName("normalText");
+		
+		fields.add(clienteCedente = new InlineHTML());
+		refreshCedente = IconFactory.refresh("Cambiar Cedente");
+		refreshCedente.addStyleName("floatRight mr10 mt3");
+		fields.add(refreshCedente);
+		fields.add(canalVtas = new TextBox());
+		fields.add(sucursalOrigen = new TextBox());
+		fields.add(vendedor = new ListBox(""));
+		fields.add(criterioBusqContrato = new ListBox());
+		criterioBusqContrato.setWidth("150px");
+		fields.add(parametroBusqContrato = new RegexTextBox());
+		
+		inicializarBusquedaContratos();
 	}
 
 	private void showMaxLengthTextAreaError(TextArea textArea, int maxLength) {
@@ -195,6 +224,24 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				solicitudServicio.setMontoCreditoFidelizacion(0d);
 			}
 			recarcularValores();
+		}
+		else if(sender == criterioBusqContrato){
+			parametroBusqContrato.setText("");
+			String critBusq = criterioBusqContrato.getValue(criterioBusqContrato.getSelectedIndex());
+			if(critBusq.equals(CONTRATO)){
+				parametroBusqContrato.setPattern(RegularExpressionConstants.numeros);
+				parametroBusqContrato.setMaxLength(25);
+			}
+			else if(critBusq.equals(TELEFONO)){
+				parametroBusqContrato.setPattern(RegularExpressionConstants.getNumerosLimitado(10));
+			}
+			else if(critBusq.equals(FLOTA_ID)){
+				parametroBusqContrato.setPattern("[0-9\\*]*");
+				parametroBusqContrato.setMaxLength(11);
+			}
+			else if(critBusq.equals(SUSCRIPTOR)){
+				parametroBusqContrato.setPattern(RegularExpressionConstants.numeros);
+			}
 		}
 	}
 
@@ -291,6 +338,42 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		return tildeVerde;
 	}
 	
+	public InlineHTML getClienteCedente() {
+		return clienteCedente;
+	}
+
+	public HTML getRefreshCedente() {
+		return refreshCedente;
+	}
+	
+//	public ListBox getCriterioBusqCedente() {
+//		return criterioBusqCedente;
+//	}
+//
+//	public RegexTextBox getParametroBusqCedente() {
+//		return parametroBusqCedente;
+//	}
+
+	public TextBox getCanalVtas() {
+		return canalVtas;
+	}
+	
+	public TextBox getSucursalOrigen(){
+		return sucursalOrigen;
+	}
+
+	public ListBox getVendedor() {
+		return vendedor;
+	}
+
+	public ListBox getCriterioBusqContrato() {
+		return criterioBusqContrato;
+	}
+
+	public RegexTextBox getParametroBusqContrato() {
+		return parametroBusqContrato;
+	}
+
 	public void setDescuentoTotal(ListBox descuentoTotal) {
 		this.descuentoTotal = descuentoTotal;
 	}
@@ -877,5 +960,17 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //			}
 //		}
 //	}
+	
+	
+	private void inicializarBusquedaContratos() {
+		//TODO: -MGR- Obtener las opciones de busqueda
+		criterioBusqContrato.addItem("Contrato", CONTRATO);
+		criterioBusqContrato.addItem("Teléfono", TELEFONO);
+		criterioBusqContrato.addItem("Flota*ID", FLOTA_ID);
+		criterioBusqContrato.addItem("Suscriptor", SUSCRIPTOR);
+
+		criterioBusqContrato.setSelectedIndex(0);
+		
+	}
 	
 }

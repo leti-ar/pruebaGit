@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.HashMap;
 import java.util.List;
 
+import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -60,9 +61,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public static final String ID_CUENTA_POTENCIAL = "idCuentaPotencial";
 	public static final String CODIGO_VANTIVE = "codigoVantive";
 	private static final String validarCompletitudFailStyle = "validarCompletitudFailButton";
-
+	private static final String GRUPO_TRANSFERENCIA = "GRUPO5";
+	
 	private TabPanel tabs;
 	private DatosSSUI datos;
+	private DatosTransferenciaSSUI datosTranferencia;
 	private VariosSSUI varios;
 	private EditarSSUIData editarSSUIData;
 	private FormButtonsBar formButtonsBar;
@@ -81,7 +84,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private boolean cerrandoSolicitud = false;
 	private String codigoVant;
 	private boolean cerrandoAux;
-	private CuentaEdicionTabPanel cuenta; 
+	private CuentaEdicionTabPanel cuenta;
+	
+	private String grupoSS;
 
 	public EditarSSUI() {
 		super();
@@ -92,7 +97,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		tokenLoaded = History.getToken();
 		String cuenta = HistoryUtils.getParam(ID_CUENTA);
 		cuenta = cuenta != null && !"".equals(cuenta) ? cuenta : null;
-		String grupoSS = HistoryUtils.getParam(ID_GRUPO_SS);
+		grupoSS = HistoryUtils.getParam(ID_GRUPO_SS);
 		String cuentaPotencial = HistoryUtils.getParam(ID_CUENTA_POTENCIAL);
 		String codigoVantive = HistoryUtils.getParam(CODIGO_VANTIVE);
 		mainPanel.setVisible(false);
@@ -147,7 +152,28 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							} 
 														
 							validarCompletitud(false);
-							datos.refresh();
+							//datos.refresh();
+
+							HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+							if(instancias != null && grupoSS != null && 
+									grupoSS.equals(instancias.get(GRUPO_TRANSFERENCIA).toString())){
+								//TODO: -MGR- Ver si esto va aqui o cuando se guarda o cierra la SS
+								editarSSUIData.getCanalVtas().setText("Transferencia");
+								editarSSUIData.getSucursalOrigen().setText("No Comisionable");
+								
+								datosTranferencia.refresh();
+								//TODO: -MGR- Si ya existe una ss debo mostrar igual el popup de busqueda??
+								//TODO: -MGR- Como me aseguro que no es nueva??
+								if(editarSSUIData.getClienteCedente().getText() == null){
+									datosTranferencia.showBusqClienteCedente();
+								}
+								
+							}
+							else{
+								datos.refresh();
+							}
+							//MGR----
+							
 							mainPanel.setVisible(true);
 						}
 
@@ -182,8 +208,24 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		tabs.addStyleName("mlr5 mb10 mt5");
 		mainPanel.add(tabs);
 		editarSSUIData = new EditarSSUIData(this);
-		tabs.add(datos = new DatosSSUI(this), "Datos");
-		tabs.add(varios = new VariosSSUI(this), "Varios");
+//		tabs.add(datos = new DatosSSUI(this), "Datos");
+//		tabs.add(varios = new VariosSSUI(this), "Varios");
+
+		datos = new DatosSSUI(this);
+		varios = new VariosSSUI(this);
+		datosTranferencia = new DatosTransferenciaSSUI(this);
+		grupoSS = HistoryUtils.getParam(ID_GRUPO_SS);
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias != null && grupoSS != null && 
+				grupoSS.equals(instancias.get(GRUPO_TRANSFERENCIA).toString())){
+			tabs.add(datosTranferencia, "Transf.");
+		}
+		else{
+			tabs.add(datos, "Datos");
+			tabs.add(varios, "Varios");
+		}
+		//MGR----
+		
 		tabs.selectTab(0);
 
 		tabs.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
@@ -238,6 +280,16 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private void loadInitializer(SolicitudInitializer initializer) {
 		editarSSUIData.getOrigen().addAllItems(initializer.getOrigenesSolicitud());
 		editarSSUIData.getAnticipo().addAllItems(initializer.getTiposAnticipo());
+		//TODO: -MGR- hacerlo bien, ver si es necesario mostrar apellido y nombre
+		if(ClientContext.getInstance().getVendedor().getTipoVendedor().getDescripcion().equalsIgnoreCase("DEALER")){
+			editarSSUIData.getVendedor().addItem(ClientContext.getInstance().getVendedor().getNombre(), "1");
+		} 
+		if(ClientContext.getInstance().getVendedor().getTipoVendedor().getDescripcion().equalsIgnoreCase("Atencion Personal")){
+			editarSSUIData.getVendedor().addItem("No Comisionable", "1");
+		}
+		else{
+			editarSSUIData.getVendedor().addAllItems(initializer.getVendedores());
+		}
 	}
 
 	public boolean unload(String token) {

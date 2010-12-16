@@ -56,6 +56,7 @@ import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
@@ -304,6 +305,21 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		initializer.setOrigenesSolicitud(mapper.convertList(origenes, OrigenSolicitudDto.class));
 		List tiposAnticipo = repository.getAll(TipoAnticipo.class);
 		initializer.setTiposAnticipo(mapper.convertList(tiposAnticipo, TipoAnticipoDto.class));
+		
+		List<Vendedor> vendedores = repository.getAll(Vendedor.class);
+		Collections.sort(vendedores, new Comparator<Vendedor>() {
+			public int compare(Vendedor vend1, Vendedor vend2) {
+				//TODO: -MGR- Ver si no es por nombre y apellido
+				if(vend1.getNombre() == null && vend2.getNombre() == null)
+					return 0;
+				if(vend1.getNombre() == null)
+					return -1;
+				if(vend2.getNombre() == null)
+					return -1;
+				return vend1.getNombre().compareToIgnoreCase(vend2.getNombre());
+			}
+		});
+		initializer.setVendedores(mapper.convertList(vendedores, VendedorDto.class));
 		return initializer;
 	}
 

@@ -2391,4 +2391,49 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Precio con desc.")
   @Key("precioConDesc")
   String precioConDesc();  
+  
+  /**
+   * Translated "Cliente Cedente:".
+   * 
+   * @return translated "Cliente Cedente:"
+   */
+  @DefaultStringValue("Cliente Cedente:")
+  @Key("clienteCedente")
+  String clienteCedente();
+  
+  /**
+   * Translated "Búsqueda:".
+   * 
+   * @return translated "Búsqueda:"
+   */
+  @DefaultStringValue("Búsqueda:")
+  @Key("busqueda")
+  String busqueda();
+  
+  /**
+   * Translated "Ver todos".
+   * 
+   * @return translated "Ver todos"
+   */
+  @DefaultStringValue("Ver todos")
+  @Key("verTodos")
+  String verTodos();
+  
+  /**
+   * Translated "Eliminar".
+   * 
+   * @return translated "Eliminar"
+   */
+  @DefaultStringValue("Eliminar")
+  @Key("eliminar")
+  String eliminar();
+  
+  /**
+   * Translated "Vendedor".
+   * 
+   * @return translated "Vendedor"
+   */
+  @DefaultStringValue("Vendedor")
+  @Key("vendedor")
+  String vendedor();
 }

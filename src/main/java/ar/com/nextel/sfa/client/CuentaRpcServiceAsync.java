@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
@@ -47,4 +48,6 @@ public interface CuentaRpcServiceAsync {
 	//MGR - Dado un codigo vantive, devuelve el numero de cuenta que le corresponde en SFA
 	public void selectCuenta(String codigoVantive,AsyncCallback<Long> callback);
 	
+	public void searchCuentaDto(CuentaSearchDto cuentaSearchDto, AsyncCallback<CuentaDto> callback);
+	public void searchContratosActivos(CuentaDto ctaDto, AsyncCallback<List<ContratoViewDto>> callback);
 }
