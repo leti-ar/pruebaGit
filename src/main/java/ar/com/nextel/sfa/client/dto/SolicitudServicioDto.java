@@ -70,33 +70,9 @@ public class SolicitudServicioDto implements IsSerializable {
     private CuentaDto cuentaCedente;
     private VendedorDto usuarioCreacion;
     private Long incidenteCedente;
+    private List<LineaTransfSolicitudServicioDto> lineasTranf = new ArrayList<LineaTransfSolicitudServicioDto>();
     
-    public CuentaDto getCuentaCedente() {
-		return cuentaCedente;
-	}
-
-	public void setCuentaCedente(CuentaDto cuentaCedente) {
-		this.cuentaCedente = cuentaCedente;
-	}
-
-	public VendedorDto getUsuarioCreacion() {
-		return usuarioCreacion;
-	}
-
-	public void setUsuarioCreacion(VendedorDto usuarioCreacion) {
-		this.usuarioCreacion = usuarioCreacion;
-	}
-
-	public Long getIncidenteCedente() {
-		return incidenteCedente;
-	}
-
-	public void setIncidenteCedente(Long incidenteCedente) {
-		this.incidenteCedente = incidenteCedente;
-	}
-    //MGR----
-
-	public SolicitudServicioDto() {
+    public SolicitudServicioDto() {
 		solicitudServicioGeneracion = new SolicitudServicioGeneracionDto();
 	}
 
@@ -394,5 +370,37 @@ public class SolicitudServicioDto implements IsSerializable {
 
 	public void setValidacionPin(String validacionPin) {
 		this.validacionPin = validacionPin;
+	}
+	
+	public CuentaDto getCuentaCedente() {
+		return cuentaCedente;
+	}
+
+	public void setCuentaCedente(CuentaDto cuentaCedente) {
+		this.cuentaCedente = cuentaCedente;
+	}
+
+	public VendedorDto getUsuarioCreacion() {
+		return usuarioCreacion;
+	}
+
+	public void setUsuarioCreacion(VendedorDto usuarioCreacion) {
+		this.usuarioCreacion = usuarioCreacion;
+	}
+
+	public Long getIncidenteCedente() {
+		return incidenteCedente;
+	}
+
+	public void setIncidenteCedente(Long incidenteCedente) {
+		this.incidenteCedente = incidenteCedente;
+	}
+
+	public List<LineaTransfSolicitudServicioDto> getLineasTranf() {
+		return lineasTranf;
+	}
+
+	public void setLineasTranf(List<LineaTransfSolicitudServicioDto> lineasTranf) {
+		this.lineasTranf = lineasTranf;
 	}
 }
