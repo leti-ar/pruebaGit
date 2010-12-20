@@ -19,6 +19,9 @@ public class ContratoViewDto implements IsSerializable{
 	private String Os;
 	private String modalidad;
 	private String suscriptor;
+	private String numeroIMEI;
+	private String numeroSimCard;
+	private String numeroSerie;
 	
 	
 	public Long getId() {
@@ -123,6 +126,30 @@ public class ContratoViewDto implements IsSerializable{
 
 	public void setSuscriptor(String suscriptor) {
 		this.suscriptor = suscriptor;
+	}
+	
+	public String getNumeroIMEI() {
+		return numeroIMEI;
+	}
+
+	public void setNumeroIMEI(String numeroIMEI) {
+		this.numeroIMEI = numeroIMEI;
+	}
+
+	public String getNumeroSimCard() {
+		return numeroSimCard;
+	}
+
+	public void setNumeroSimCard(String numeroSimCard) {
+		this.numeroSimCard = numeroSimCard;
+	}
+
+	public String getNumeroSerie() {
+		return numeroSerie;
+	}
+
+	public void setNumeroSerie(String numeroSerie) {
+		this.numeroSerie = numeroSerie;
 	}
 	
 	@Override

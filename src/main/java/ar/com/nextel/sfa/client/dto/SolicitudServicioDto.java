@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -69,6 +68,7 @@ public class SolicitudServicioDto implements IsSerializable {
     
     private CuentaDto cuentaCedente;
     private VendedorDto usuarioCreacion;
+    //TODO: Falta la sucursal
     private Long incidenteCedente;
     private List<LineaTransfSolicitudServicioDto> lineasTranf = new ArrayList<LineaTransfSolicitudServicioDto>();
     

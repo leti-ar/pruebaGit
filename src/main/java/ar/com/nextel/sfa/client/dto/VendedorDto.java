@@ -17,6 +17,11 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
     private String telefono;
     private LocalidadDto localidad;
     private TipoVendedorDto tipoVendedor;
+    
+    public static final String TIPO_VENDEDOR_DEALER = "TIPO_VENDEDOR_DEALER";
+    //TODO: -MGR- Verificar con la tabla SFA_KNOWNINSTANCE_ITEM que estas sean la KEYs correctas
+    public static final String TIPO_VENDEDOR_AP = "TIPO_VENDEDOR_AP";
+    public static final String TIPO_VENDEDOR_ADM_CREDITOS = "TIPO_VENDEDOR_ADM_CREDITOS";
 
 	public Long getId() {
 		return id; 
@@ -87,6 +92,30 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
 	}
 
 	public TipoVendedorDto getTipoVendedor() {
-		return tipoVendedor;
+		return tipoVendedor; 
+	}
+	
+	public boolean isDealer(){
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias != null && this.getTipoVendedor() != null){
+			return instancias.get(TIPO_VENDEDOR_DEALER).toString().equals(this.getTipoVendedor().getCodigo());
+		}
+		return false;
+	}
+	
+	public boolean isAP(){
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias != null && this.getTipoVendedor() != null){
+			return instancias.get(TIPO_VENDEDOR_AP).toString().equals(this.getTipoVendedor().getCodigo());
+		}
+		return false;
+	}
+	
+	public boolean isADMCreditos(){
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias != null && this.getTipoVendedor() != null){
+			return instancias.get(TIPO_VENDEDOR_ADM_CREDITOS).toString().equals(this.getTipoVendedor().getCodigo());
+		}
+		return false;
 	}
 }

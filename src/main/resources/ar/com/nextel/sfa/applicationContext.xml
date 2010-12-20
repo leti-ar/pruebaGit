@@ -36,6 +36,9 @@
 			    <entry key="collectionTipoDescuentoConverter" value-ref="collectionTipoDescuentoConverter"/>
 			    <entry key="collectionDescuentoConverter" value-ref="collectionDescuentoConverter"/>
 			    <entry key="collectionDescuentoLineaConverter" value-ref="collectionDescuentoLineaConverter"/>
+			    
+			    <entry key="collectionLineaTransfSolicitudServicioConverter" value-ref="collectionLineaTransfSolicitudServicioConverter" />
+			    <entry key="collectionServicioAdicionalTransfConverter" value-ref="collectionServicioAdicionalTransfConverter" />
 		    </map>
 		</property>
 	</bean>
@@ -118,6 +121,29 @@
 		<property name="dtoClass">
 			<bean class="ar.com.nextel.sfa.client.dto.TipoDescuentoDto"></bean>
 		</property>
-	</bean>		
+	</bean>	
+	
+	
+	<bean id="collectionLineaTransfSolicitudServicioConverter" class="ar.com.nextel.sfa.server.converter.CollectionOwnedConverter">
+        <property name="dozerMapper" ref="dozerMapper" />
+        <property name="repository" ref="repository" />
+        <property name="modelClass">
+            <bean class="ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio"></bean>
+        </property>
+        <property name="dtoClass">
+            <bean class="ar.com.nextel.sfa.client.dto.LineaTransfSolicitudServicioDto"></bean>
+        </property>
+    </bean>
+    
+    <bean id="collectionServicioAdicionalTransfConverter" class="ar.com.nextel.sfa.server.converter.CollectionOwnedConverter">
+        <property name="dozerMapper" ref="dozerMapper" />
+        <property name="repository" ref="repository" />
+        <property name="modelClass">
+            <bean class="ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaTransfSolicitudServicio"></bean>
+        </property>
+        <property name="dtoClass">
+            <bean class="ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaTransfSolicitudServicioDto"></bean>
+        </property>
+    </bean>	
 	
 </beans>

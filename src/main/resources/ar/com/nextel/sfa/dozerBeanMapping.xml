@@ -160,6 +160,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>plainLineas</a>
 			<b>lineas</b>
 		</field>
+		<field custom-converter-id="collectionLineaTransfSolicitudServicioConverter">
+            <a>plainLineasTranf</a>
+            <b>lineasTranf</b>
+        </field>
 	</mapping>
 
 	<mapping>
@@ -775,4 +779,31 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>descuentos</b>
 		</field>
 	</mapping>
+	
+	<mapping>
+        <class-a>ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio
+        </class-a>
+        <class-b>ar.com.nextel.sfa.client.dto.LineaTransfSolicitudServicioDto
+        </class-b>
+        <field custom-converter-id="identifiableObjectToId">
+            <a>cabecera</a>
+            <b>idCabecera</b>
+        </field>
+        <field custom-converter-id="collectionServicioAdicionalTransfConverter">
+            <a>plainServiciosAdicionales</a>
+            <b>serviciosAdicionales</b>
+        </field>
+        <field-exclude>
+            <a>serviciosAdicionales</a>
+            <b>serviciosAdicionales</b>
+        </field-exclude>
+        <field custom-converter-id="enumToDto">
+            <a>planNuevo</a>
+            <b>planNuevo</b>
+        </field>
+        <field custom-converter-id="enumToDto">
+            <a>modalidadCobro</a>
+            <b>modalidadCobro</b>
+        </field>
+    </mapping>
 </mappings>

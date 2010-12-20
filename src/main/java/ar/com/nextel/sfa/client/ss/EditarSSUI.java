@@ -3,7 +3,6 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.HashMap;
 import java.util.List;
 
-import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -101,7 +100,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		String cuentaPotencial = HistoryUtils.getParam(ID_CUENTA_POTENCIAL);
 		String codigoVantive = HistoryUtils.getParam(CODIGO_VANTIVE);
 		mainPanel.setVisible(false);
-		tabs.selectTab(0);
+//		tabs.selectTab(0);
 		if (cuenta == null && cuentaPotencial == null && codigoVantive == null) {
 			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 			ErrorDialog.getInstance().show(Sfa.constant().ERR_URL_PARAMS_EMPTY(), false);
@@ -155,6 +154,17 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							//datos.refresh();
 
 							HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+							tabs.clear();
+							if(instancias != null && grupoSS != null && 
+									grupoSS.equals(instancias.get(GRUPO_TRANSFERENCIA).toString())){
+								tabs.add(datosTranferencia, "Transf.");
+							}
+							else{
+								tabs.add(datos, "Datos");
+								tabs.add(varios, "Varios");
+							}
+							tabs.selectTab(0);
+							
 							if(instancias != null && grupoSS != null && 
 									grupoSS.equals(instancias.get(GRUPO_TRANSFERENCIA).toString())){
 								//TODO: -MGR- Ver si esto va aqui o cuando se guarda o cierra la SS
@@ -162,8 +172,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 								editarSSUIData.getSucursalOrigen().setText("No Comisionable");
 								
 								datosTranferencia.refresh();
-								//TODO: -MGR- Si ya existe una ss debo mostrar igual el popup de busqueda??
-								//TODO: -MGR- Como me aseguro que no es nueva??
+								//TODO: -MGR- Si ya existe una ss guardada, debo mostrar igual el popup de busqueda??
+								//TODO: -MGR- Como se si hay una guardada o es una ss nueva?
 								if(editarSSUIData.getClienteCedente().getText() == null){
 									datosTranferencia.showBusqClienteCedente();
 								}
@@ -210,23 +220,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		editarSSUIData = new EditarSSUIData(this);
 //		tabs.add(datos = new DatosSSUI(this), "Datos");
 //		tabs.add(varios = new VariosSSUI(this), "Varios");
-
+//		tabs.selectTab(0);
 		datos = new DatosSSUI(this);
 		varios = new VariosSSUI(this);
 		datosTranferencia = new DatosTransferenciaSSUI(this);
 		grupoSS = HistoryUtils.getParam(ID_GRUPO_SS);
-		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
-		if(instancias != null && grupoSS != null && 
-				grupoSS.equals(instancias.get(GRUPO_TRANSFERENCIA).toString())){
-			tabs.add(datosTranferencia, "Transf.");
-		}
-		else{
-			tabs.add(datos, "Datos");
-			tabs.add(varios, "Varios");
-		}
-		//MGR----
-		
-		tabs.selectTab(0);
 
 		tabs.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
 			public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
@@ -281,9 +279,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		editarSSUIData.getOrigen().addAllItems(initializer.getOrigenesSolicitud());
 		editarSSUIData.getAnticipo().addAllItems(initializer.getTiposAnticipo());
 		//TODO: -MGR- hacerlo bien, ver si es necesario mostrar apellido y nombre
+		//if(ClientContext.getInstance().getVendedor().isDealer()){
 		if(ClientContext.getInstance().getVendedor().getTipoVendedor().getDescripcion().equalsIgnoreCase("DEALER")){
 			editarSSUIData.getVendedor().addItem(ClientContext.getInstance().getVendedor().getNombre(), "1");
 		} 
+		//if(ClientContext.getInstance().getVendedor().isAP()){
 		if(ClientContext.getInstance().getVendedor().getTipoVendedor().getDescripcion().equalsIgnoreCase("Atencion Personal")){
 			editarSSUIData.getVendedor().addItem("No Comisionable", "1");
 		}
@@ -315,7 +315,15 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		public void execute() {
 			List errors = null;
 			if (save) {
-				errors = editarSSUIData.validarParaGuardar();
+				HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+				if(instancias != null && grupoSS != null && 
+						grupoSS.equals(instancias.get(GRUPO_TRANSFERENCIA).toString())){
+					
+					errors = editarSSUIData.validarTransferenciaParaGuardar();
+				}else{
+					errors = editarSSUIData.validarParaGuardar();
+				}
+				
 				if (errors.isEmpty()) {
 					guardar();
 					editarSSUIData.setSaved(true);
@@ -342,7 +350,16 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 	public void onClick(Widget sender) {
 		if (sender == guardarButton) {
-			List errors = editarSSUIData.validarParaGuardar();
+			//TODO: -MGR- Creo un nuevo validar para transferencia para norealizar validaciones que no corresponden
+			List errors = null;
+			HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+			if(instancias != null && grupoSS != null && 
+					grupoSS.equals(instancias.get(GRUPO_TRANSFERENCIA).toString())){
+				errors = editarSSUIData.validarTransferenciaParaGuardar();
+			}
+			else{
+				errors = editarSSUIData.validarParaGuardar();
+			}
 			if (errors.isEmpty()) {
 				guardar();
 			} else {
@@ -368,12 +385,33 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			return;
 		}
 		guardandoSolicitud = true;
-		SolicitudRpcService.Util.getInstance().saveSolicituServicio(editarSSUIData.getSolicitudServicio(),
+		
+		//MGR****
+		SolicitudServicioDto ssDto;
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias != null && grupoSS != null && 
+				grupoSS.equals(instancias.get(GRUPO_TRANSFERENCIA).toString())){
+			ssDto = editarSSUIData.getSolicitudServicioTranferencia();
+			//ssDto.setCuentaCedente(datosTranferencia.getCuentaDto())
+			ssDto.setLineasTranf(datosTranferencia.getLineasTransferenciaSS());
+			
+		}
+		else{
+			ssDto = editarSSUIData.getSolicitudServicio();
+		}
+		//MGR---
+		//MGR***
+		//TODO: -MGR- NO esta validando que el triptico este disponible al guardar, se puede pasar esa validacion
+		//para cuando cierre o genere la solicitud?
+		//SolicitudRpcService.Util.getInstance().saveSolicituServicio(editarSSUIData.getSolicitudServicio(),
+		SolicitudRpcService.Util.getInstance().saveSolicituServicio(ssDto,
 				new DefaultWaitCallback<SolicitudServicioDto>() {
 					public void success(SolicitudServicioDto result) {
 						guardandoSolicitud = false;
 						editarSSUIData.setSolicitud(result);
 						datos.refresh();
+						datosTranferencia.refresh();
+						
 						// MessageDialog.getInstance().showAceptar("Guardado Exitoso",
 						// Sfa.constant().MSG_SOLICITUD_GUARDADA_OK(), MessageDialog.getCloseCommand());
 						editarSSUIData.setSaved(true);
@@ -407,7 +445,17 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	        	}
 		        //si el campo nombre no está cargado significa que no están cargados los campos obligatorios de la cuenta
 		        if (CuentaClientService.cuentaDto.getPersona().getNombre() != null) {
-		        	List errors = editarSSUIData.validarParaCerrarGenerar(false);
+		        	
+		        	List errors = null;
+		        	HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+					if(instancias != null && grupoSS != null && 
+							grupoSS.equals(instancias.get(GRUPO_TRANSFERENCIA).toString())){
+						
+						errors = editarSSUIData.validarTransferenciaParaCerrarGenerar(false);
+					}else{
+						errors = editarSSUIData.validarParaCerrarGenerar(false);
+					}
+		        	
 		            if (errors.isEmpty()) {
 		            	cerrandoSolicitud = cerrandoAux;
 		                getCerrarSSUI().setTitleCerrar(cerrandoAux);
@@ -435,11 +483,30 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 						.getSolicitudServicioGeneracion());
 				// Se comenta por el nuevo cartel de cargando;
 				CerradoSSExitosoDialog.getInstance().showLoading(cerrandoSolicitud);
-				List errors = editarSSUIData.validarParaCerrarGenerar(true);
+				List errors = null;
+				HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+				if(instancias != null && grupoSS != null && 
+						grupoSS.equals(instancias.get(GRUPO_TRANSFERENCIA).toString())){
+					
+					errors = editarSSUIData.validarTransferenciaParaCerrarGenerar(true);
+					
+				}else{
+					errors = editarSSUIData.validarParaCerrarGenerar(true);
+				}
+				
 				String pinMaestro = getCerrarSSUI().getCerrarSSUIData().getPin().getText();
 				if (errors.isEmpty()) {
+					SolicitudServicioDto ssDto = null;
+					if(instancias != null && grupoSS != null && 
+							grupoSS.equals(instancias.get(GRUPO_TRANSFERENCIA).toString())){
+						
+						ssDto =editarSSUIData.getSolicitudServicioTranferencia();
+					}else{
+						ssDto =editarSSUIData.getSolicitudServicio();
+					}
+					
 					SolicitudRpcService.Util.getInstance().generarCerrarSolicitud(
-							editarSSUIData.getSolicitudServicio(), pinMaestro, cerrandoSolicitud,
+							ssDto, pinMaestro, cerrandoSolicitud,
 							getGeneracionCierreCallback());
 				} else {
 					CerradoSSExitosoDialog.getInstance().hideLoading();

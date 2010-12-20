@@ -2436,4 +2436,13 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Vendedor")
   @Key("vendedor")
   String vendedor();
+  
+  /**
+   * Translated "La Solicitud de Servicio debe tener al menos un contrato.".
+   * 
+   * @return translated "La Solicitud de Servicio debe tener al menos un contrato."
+   */
+  @DefaultStringValue("La Solicitud de Servicio debe tener al menos un contrato.")
+  @Key("ERR_REQUIRED_LINEA_TRANSFERENCIA")
+  String ERR_REQUIRED_LINEA_TRANSFERENCIA();
 }

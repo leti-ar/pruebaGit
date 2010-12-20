@@ -13,6 +13,7 @@ import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.LineaTransfSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
@@ -21,6 +22,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioGeneracionDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudBaseDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
@@ -45,7 +47,6 @@ import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineHTML;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SourcesChangeEvents;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -104,10 +105,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private ListBox criterioBusqContrato;
 	private RegexTextBox parametroBusqContrato;
 	
-	private static final String CONTRATO = "1";
-	private static final String TELEFONO = "2";
-	private static final String FLOTA_ID = "3";
-	private static final String SUSCRIPTOR = "4";
+	private static final String ITEM_CONTRATO = "Contrato";
+	private static final String ITEM_TELEFONO = "Teléfono";
+	private static final String ITEM_FLOTA_ID = "Flota*ID";
+	private static final String ITEM_SUSCRIPTOR = "Suscriptor";
+	
+	private static final String VALUE_CONTRATO = "1";
+	private static final String VALUE_TELEFONO = "2";
+	private static final String VALUE_FLOTA_ID = "3";
+	private static final String VALUE_SUSCRIPTOR = "4";
 	//MGR---
 	
 	public EditarSSUIData(EditarSSUIController controller) {
@@ -228,18 +234,18 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		else if(sender == criterioBusqContrato){
 			parametroBusqContrato.setText("");
 			String critBusq = criterioBusqContrato.getValue(criterioBusqContrato.getSelectedIndex());
-			if(critBusq.equals(CONTRATO)){
+			if(critBusq.equals(VALUE_CONTRATO)){
 				parametroBusqContrato.setPattern(RegularExpressionConstants.numeros);
 				parametroBusqContrato.setMaxLength(25);
 			}
-			else if(critBusq.equals(TELEFONO)){
+			else if(critBusq.equals(VALUE_TELEFONO)){
 				parametroBusqContrato.setPattern(RegularExpressionConstants.getNumerosLimitado(10));
 			}
-			else if(critBusq.equals(FLOTA_ID)){
+			else if(critBusq.equals(VALUE_FLOTA_ID)){
 				parametroBusqContrato.setPattern("[0-9\\*]*");
 				parametroBusqContrato.setMaxLength(11);
 			}
-			else if(critBusq.equals(SUSCRIPTOR)){
+			else if(critBusq.equals(VALUE_SUSCRIPTOR)){
 				parametroBusqContrato.setPattern(RegularExpressionConstants.numeros);
 			}
 		}
@@ -501,6 +507,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		if (solicitudServicio.getGrupoSolicitud().isCDW()) {
 			solicitudServicio.setEmail(email.getText());
 		}
+		
 		return solicitudServicio;
 	}
 
@@ -963,14 +970,104 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	
 	
 	private void inicializarBusquedaContratos() {
-		//TODO: -MGR- Obtener las opciones de busqueda
-		criterioBusqContrato.addItem("Contrato", CONTRATO);
-		criterioBusqContrato.addItem("Teléfono", TELEFONO);
-		criterioBusqContrato.addItem("Flota*ID", FLOTA_ID);
-		criterioBusqContrato.addItem("Suscriptor", SUSCRIPTOR);
+		criterioBusqContrato.addItem(ITEM_CONTRATO, VALUE_CONTRATO);
+		criterioBusqContrato.addItem(ITEM_TELEFONO, VALUE_TELEFONO);
+		criterioBusqContrato.addItem(ITEM_FLOTA_ID, VALUE_FLOTA_ID);
+		criterioBusqContrato.addItem(ITEM_SUSCRIPTOR, VALUE_SUSCRIPTOR);
 
 		criterioBusqContrato.setSelectedIndex(0);
+	}
+
+	public SolicitudServicioDto getSolicitudServicioTranferencia() {
+		solicitudServicio.setNumero(nss.getText());
+		solicitudServicio.setOrigen((OrigenSolicitudDto) origen.getSelectedItem());
+		solicitudServicio.setVendedor((VendedorDto) vendedor.getSelectedItem());
+		solicitudServicio.setObservaciones(observaciones.getText());
 		
+		//ID_CUENTA - ID_VENDEDOR - ID_GRUPO_SOLICITUD
+		//solicitudServicio.setCuentaCedente();
+		solicitudServicio.setUsuarioCreacion(ClientContext.getInstance().getVendedor());
+		solicitudServicio.setIncidenteCedente(0l);
+		//TODO: -MGR- Falta la sucursal
+		   
+		
+		//MGR---
+		return solicitudServicio;
 	}
 	
+	public List<String> validarTransferenciaParaGuardar() {
+		//TODO: -MGR- Por ahora solo pide que se haya ingresado origen y  vendedor.
+		//Verificar que campos deben estar completos a la hora de guardar
+		GwtValidator validator = new GwtValidator();
+		for (LineaTransfSolicitudServicioDto linea : solicitudServicio.getLineasTranf()) {
+			//TODO -MGR- Que validaciones son necesarias para los contratos?
+			//La validacion 15 pueder ir aqui
+		}
+		validator.addTarget(origen).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
+		validator.addTarget(vendedor).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedor()));
+		validator.fillResult();
+		return validator.getErrors();
+	}
+	
+	/**
+	 * @param generacionCierreDefinitivo
+	 *            true si debe validar para la generacion o cierre definitiva de la solicitud, que seria el
+	 *            aceptar de la pantalla que pide los mails
+	 * @return Lista de errores
+	 */
+	public List<String> validarTransferenciaParaCerrarGenerar(boolean generacionCierreDefinitivo) {
+		//TODO: -MGR- Esto seria equivalente a calcular el "total de servicios por equip"?
+		//recarcularValores();
+		GwtValidator validator = new GwtValidator();
+		validator.addTarget(nss).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nº de Solicitud")).maxLength(10,
+				Sfa.constant().ERR_NSS_LONG());
+		GrupoSolicitudDto grupoSS = solicitudServicio.getGrupoSolicitud();
+
+		//TODO: -MGR- Verificar si esto es necesario
+		// Validacion rango NSS con y sin PIN
+//		Long numeroSS = "".equals(nss.getText()) ? null : Long.valueOf(nss.getText());
+//		if (numeroSS != null && grupoSS.getRangoMinimoSinPin() != null
+//				&& grupoSS.getRangoMaximoSinPin() != null && grupoSS.getRangoMinimoConPin() != null
+//				&& grupoSS.getRangoMaximoConPin() != null) {
+//			boolean enRangoSinPin = numeroSS >= grupoSS.getRangoMinimoSinPin()
+//					&& numeroSS <= grupoSS.getRangoMaximoSinPin();
+//			boolean enRangoConPin = numeroSS >= grupoSS.getRangoMinimoConPin()
+//					&& numeroSS <= grupoSS.getRangoMaximoConPin();
+//			if (!enRangoSinPin && !enRangoConPin) {
+//				validator.addError(Sfa.constant().ERR_NNS_RANGO());
+//			}
+//		}
+		validator.addTarget(origen).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
+		validator.addTarget(vendedor).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedor()));
+		
+		if (solicitudServicio.getLineasTranf().isEmpty()) {
+			validator.addError(Sfa.constant().ERR_REQUIRED_LINEA_TRANSFERENCIA());
+		}
+
+		for (LineaTransfSolicitudServicioDto linea : solicitudServicio.getLineasTranf()) {
+			//TODO: -MGR- Las mismas validaciones que al guardar
+		}
+
+		//TODO: -MGR- Verificar que se deja enviar por mail
+		// Para el cierre
+		SolicitudServicioGeneracionDto ssg = solicitudServicio.getSolicitudServicioGeneracion();
+		if (generacionCierreDefinitivo == true && ssg != null) {
+			if (ssg.isEmailNuevoChecked()) {
+				validator.addTarget(ssg.getEmailNuevo()).required(
+						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nuevo Email")).regEx(
+						Sfa.constant().ERR_FORMATO().replaceAll(V1, "Nuevo Email"),
+						RegularExpressionConstants.email);
+			}
+		}
+		validator.fillResult();
+		List<String> errores = validator.getErrors();
+		//TODO: -MGR- Esto valida el domicilio, creo que noe s necesario
+		//errores.addAll(validarCompletitud());
+		return errores;
+	}
 }

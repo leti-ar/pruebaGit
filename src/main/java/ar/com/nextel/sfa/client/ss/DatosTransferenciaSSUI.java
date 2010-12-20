@@ -5,10 +5,9 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
-import ar.com.nextel.sfa.client.enums.PermisosEnum;
+import ar.com.nextel.sfa.client.dto.LineaTransfSolicitudServicioDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
@@ -143,14 +142,15 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler{
 		nnsLayout.setWidget(0, 1, editarSSUIData.getNss());
 		nnsLayout.setHTML(0, 2, Sfa.constant().origenReq());
 		nnsLayout.setWidget(0, 3, editarSSUIData.getOrigen());
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
+		//TODO: -MGR- habilitar esto cuendo se termine todo
+		//if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
 			nnsLayout.setHTML(0, 4, Sfa.constant().vendedor());
 			nnsLayout.setWidget(0, 5, editarSSUIData.getVendedor());
-		}
+		//}
 	}
 	
 	private void refresObsLayout(){
-		//TODO: -MGR- - esta bien usar la misma etiqueta?, por que no son observaciones de domicilio
+		//TODO: -MGR- Esta bien usar la misma etiqueta?, por que no son observaciones de domicilio
 		obsLayout.setHTML(0, 0, Sfa.constant().obs_domicilio());
 		obsLayout.setWidget(0, 1, editarSSUIData.getObservaciones());	
 		editarSSUIData.getObservaciones().setHeight("50px");
@@ -198,18 +198,21 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler{
 			busqClienteCedenteDialog = new BusqClienteCedenteDialog("Buscar cliente cedente", this.controller);
 			Command buscarCommmand = new Command() {
 				public void execute() {
+					//TODO: -MGR- Verificar que validaciones hace al buscar
 					CuentaRpcService.Util.getInstance().searchCuentaDto(
 							busqClienteCedenteDialog.getBusqClienteCedenteUIData().getCuentaSearch(), 
 							new DefaultWaitCallback<CuentaDto>(){
 
 								public void success(CuentaDto result) {
-									//TODO: -MGR- Verificar las validaciones
+									
 									if (result == null) {
 										ErrorDialog.getInstance().show(
 												"No se encontraron contratos con el criterio utilizado.", false);
 									}
 									else{
 										cuentaDto = result;
+										//TODO: -MGR- Verificar si la cuenta que trae es valida, sino
+										//no hay que ir a buscar los contratos
 										controller.getEditarSSUIData().getClienteCedente().setText(cuentaDto.getCodigoVantive());
 										CuentaRpcService.Util.getInstance().searchContratosActivos(
 												result, new DefaultWaitCallback<List<ContratoViewDto>>() {
@@ -302,5 +305,66 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler{
 			chek.setValue(selectAll);
 		}
 		
+	}
+
+	public List<LineaTransfSolicitudServicioDto>  getLineasTransferenciaSS() {
+		List<LineaTransfSolicitudServicioDto> lineas = new ArrayList<LineaTransfSolicitudServicioDto>();
+		for (ContratoViewDto contrato : contratosActivosVisibles) {
+			LineaTransfSolicitudServicioDto lineaTranf = new LineaTransfSolicitudServicioDto();
+			
+			lineaTranf.setContrato(contrato.getId());
+			lineaTranf.setFechaEstadoContrato(contrato.getFechaEstado());
+			lineaTranf.setTelefono(contrato.getTelefono());
+			lineaTranf.setFlotaId(contrato.getFlotaId());
+			lineaTranf.setModelo(contrato.getModelo());
+			lineaTranf.setContratacion(contrato.getContratacion());
+			//TODO: CUSTOMER_NUMBER ok 
+			lineaTranf.setCustomernumber(editarSSUIData.getCuenta().getCodigoVantive());
+			
+			//TODO: ID_PLAN_NUEVO tiene que ser el plan cesionario
+			//lineaTranf.setPlanNuevo(contrato.getPlanCedente())
+			
+			//TODO: PRECIO_VENTA_PLAN_NUEVO es el precio del plan cesionario
+			//lineaTranf.setPrecioVtaPlanNuevo(contrato.getPlanCedente().getprecio())
+			
+			//TODO; PRECIO_PLAN_CEDENTE tengo que sacarlo del plan cedente
+			//lineaTranf.setPrecioPlanCedente(contrato.getPlanCedente())
+			
+			//TODO: DESCRIPCION_PLAN_CEDENTE
+			//lineaTranf.setDescripcionPlanCedente(descripcionPlanCedente)
+			
+			//TODO: ID_TIPO_TELEFONIA_CEDENTE del plan
+			//lineaTranf.setIdTipoTelefoniaCedente(idTipoTelefoniaCedente)
+			
+			//TODO: ID_MODALIDAD_COBRO_PLAN_NUEVO - MODALIDAD_COBRO_PLAN_CEDENTE
+			//lineaTranf.setModalidadCobro(new ModalidadCobroDto());
+			//lineaTranf.setModalidadCobroPlanCedente(modalidadCobroPlanCedente)
+			
+			//TODO: CODIGO_BSCS_PLAN_CEDENTE
+			//lineaTranf.setCodigoBSCSPlanCedente(codigoBSCSPlanCedente)
+			
+			//TODO: NUMERO_IMEI cto
+			lineaTranf.setNumeroIMEI(contrato.getNumeroIMEI());
+			
+			//NUMERO_SIMCARD cto
+			lineaTranf.setSimCard(contrato.getNumeroSimCard());
+			
+			//TODO: NUMERO_SERIE cto
+			lineaTranf.setNumeroSerie(contrato.getNumeroSerie());
+			
+			//TODO: NUMERADOR_LINEA
+			//lineaTranf.setNumeradorLinea(0l);
+			
+			//TODO: ID_VANTIVE_LINEA
+			//lineaTranf.setIdVantiveLinea(0l);
+
+			//TODO: ID_VANTIVE_DETALLE
+			//lineaTranf.setIdVantiveDetalle(0l);
+			
+			lineas.add(lineaTranf);
+			                        
+		}
+		
+		return lineas;
 	}
 }
