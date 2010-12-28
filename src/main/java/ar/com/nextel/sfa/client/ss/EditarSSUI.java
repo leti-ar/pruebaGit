@@ -3,11 +3,13 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.HashMap;
 import java.util.List;
 
+import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalIncluido;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
+import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -17,6 +19,7 @@ import ar.com.nextel.sfa.client.dto.MessageDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
@@ -385,7 +388,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			return;
 		}
 		guardandoSolicitud = true;
-		
+				
 		//MGR****
 		SolicitudServicioDto ssDto;
 		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
@@ -483,7 +486,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 						.getSolicitudServicioGeneracion());
 				// Se comenta por el nuevo cartel de cargando;
 				CerradoSSExitosoDialog.getInstance().showLoading(cerrandoSolicitud);
-				List errors = null;
+								List errors = null;
 				HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
 				if(instancias != null && grupoSS != null && 
 						grupoSS.equals(instancias.get(GRUPO_TRANSFERENCIA).toString())){
@@ -653,9 +656,18 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		return builder.toString();
 	}
 
-
 	public void borrarDescuentoSeleccionados() {
 		datos.borrarDescuentoSeleccionados();
+	}
+
+	public void getPlanesPorTipoPlan(TipoPlanDto tipoPlan,
+			DefaultWaitCallback<List<PlanDto>> callback) {
+		SolicitudRpcService.Util.getInstance().getPlanesPorTipoPlan(tipoPlan.getId(), editarSSUIData.getCuentaId(), callback);
+	}
+
+	public void getServiciosAdicionalesContrato(Long idPlan,
+			DefaultWaitCallback<List<ServicioAdicionalIncluidoDto>> callback) {
+		SolicitudRpcService.Util.getInstance().getServiciosAdicionalesContrato(idPlan, callback);
 	}
 	
 }

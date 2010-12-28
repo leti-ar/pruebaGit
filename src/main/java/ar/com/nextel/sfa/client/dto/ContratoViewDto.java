@@ -2,6 +2,8 @@ package ar.com.nextel.sfa.client.dto;
 
 import java.sql.Date;
 
+import ar.com.nextel.sfa.client.widget.ContratoConChinche;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ContratoViewDto implements IsSerializable{
@@ -21,9 +23,10 @@ public class ContratoViewDto implements IsSerializable{
 	private String suscriptor;
 	private String numeroIMEI;
 	private String numeroSimCard;
-	private String numeroSerie;
-	
-	
+	private String numeroSerie;	
+	private PlanDto plan;
+	private boolean isPinchado = false;
+		
 	public Long getId() {
 		return id;
 	}
@@ -127,7 +130,7 @@ public class ContratoViewDto implements IsSerializable{
 	public void setSuscriptor(String suscriptor) {
 		this.suscriptor = suscriptor;
 	}
-	
+		
 	public String getNumeroIMEI() {
 		return numeroIMEI;
 	}
@@ -152,6 +155,22 @@ public class ContratoViewDto implements IsSerializable{
 		this.numeroSerie = numeroSerie;
 	}
 	
+	public PlanDto getPlan() {
+		return plan;
+	}
+
+	public void setPlan(PlanDto plan) {
+		this.plan = plan;
+	}
+
+	public boolean isPinchado() {
+		return isPinchado;
+	}
+
+	public void setPinchado(boolean isPinchado) {
+		this.isPinchado = isPinchado;
+	}
+
 	@Override
 	public int hashCode() {
 		return this.id.intValue();

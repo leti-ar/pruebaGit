@@ -17,6 +17,7 @@ import ar.com.nextel.sfa.client.dto.LineaTransfSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioGeneracionDto;
@@ -114,11 +115,14 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private static final String VALUE_TELEFONO = "2";
 	private static final String VALUE_FLOTA_ID = "3";
 	private static final String VALUE_SUSCRIPTOR = "4";
+	
+	private List<ServicioAdicionalIncluidoDto> serviciosAdicionalesContrato;
 	//MGR---
 	
 	public EditarSSUIData(EditarSSUIController controller) {
 		this.controller = controller;
 		serviciosAdicionales = new ArrayList();
+		serviciosAdicionalesContrato = new ArrayList<ServicioAdicionalIncluidoDto>();
 
 		fields.add(nss = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(10), true));
 		fields.add(nflota = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(5)));
@@ -232,7 +236,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			recarcularValores();
 		}
 		else if(sender == criterioBusqContrato){
-			parametroBusqContrato.setText("");
+//			parametroBusqContrato.setText("");
 			String critBusq = criterioBusqContrato.getValue(criterioBusqContrato.getSelectedIndex());
 			if(critBusq.equals(VALUE_CONTRATO)){
 				parametroBusqContrato.setPattern(RegularExpressionConstants.numeros);
@@ -1070,4 +1074,14 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		//errores.addAll(validarCompletitud());
 		return errores;
 	}
+
+	public void loadServiciosAdicionalesContrato(List<ServicioAdicionalIncluidoDto> list) {
+		serviciosAdicionalesContrato.clear();
+		serviciosAdicionalesContrato.addAll(list);
+	}
+	
+	public List<ServicioAdicionalIncluidoDto> getServiciosAdicionalesContrato() {
+		return serviciosAdicionalesContrato;
+	}
+	
 }

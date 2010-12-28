@@ -14,6 +14,7 @@ import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
@@ -189,6 +190,18 @@ public class SolicitudRpcServiceDelegate {
 			DefaultWaitCallback<Boolean> defaultWaitCallback) {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.crearArchivo(solicitud, defaultWaitCallback);
+	}
+
+	public void getPlanesPorTipoPlan(Long idTipoPlan, Long idCuenta,
+			DefaultWaitCallback<List<PlanDto>> defaultWaitCallback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getPlanesPorTipoPlan(idTipoPlan, idCuenta, defaultWaitCallback);
+	}
+
+	public void getServiciosAdicionalesContrato(Long idPlan,
+			DefaultWaitCallback<List<ServicioAdicionalIncluidoDto>> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getServiciosAdicionalesContrato(idPlan, callback);
 	}
 
 }

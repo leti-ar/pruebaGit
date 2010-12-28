@@ -2,12 +2,15 @@ package ar.com.nextel.sfa.client.ss;
 
 import java.util.List;
 
+import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalIncluido;
+import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
@@ -44,4 +47,10 @@ public interface EditarSSUIController {
 	public void verificarNegativeFiles(String numero, DefaultWaitCallback<String> callback);
 
 	public void borrarDescuentoSeleccionados();
+
+	public void getPlanesPorTipoPlan(TipoPlanDto selectedItem,
+			DefaultWaitCallback<List<PlanDto>> actualizarPlanCallback);
+
+	void getServiciosAdicionalesContrato(Long idPlan,
+			DefaultWaitCallback<List<ServicioAdicionalIncluidoDto>> defaultWaitCallback);
 }

@@ -1,9 +1,11 @@
 package ar.com.nextel.sfa.client.ss;
 
+import java.util.Iterator;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
@@ -207,5 +209,43 @@ public class ServiciosAdicionalesTable extends Composite {
 
 	public boolean isEditing() {
 		return editing;
+	}
+
+	public void setServiciosAdicionalesForContrato(Long idPlan) {
+
+			controller.getServiciosAdicionalesContrato(idPlan,
+					new DefaultWaitCallback<List<ServicioAdicionalIncluidoDto>>() {
+						public void success(List<ServicioAdicionalIncluidoDto> list) {
+							editarSSUIData.loadServiciosAdicionalesContrato(list);
+							editing = false;
+							refreshServiciosAdicionalesTableContrato();
+						}
+
+						public void failure(Throwable caught) {
+							editing = false;
+							super.failure(caught);
+						}
+					});
+	}
+	
+
+	private void refreshServiciosAdicionalesTableContrato() {
+		List<ServicioAdicionalIncluidoDto> serviciosAdicionales = editarSSUIData.getServiciosAdicionalesContrato();
+		table.resizeRows(serviciosAdicionales.size() + 1);
+		int row = 1;
+		for (Iterator<ServicioAdicionalIncluidoDto> iterator = serviciosAdicionales.iterator(); iterator.hasNext();) {
+			ServicioAdicionalIncluidoDto servicioAdicional = (ServicioAdicionalIncluidoDto) iterator.next();
+			CheckBox check = new CheckBox();
+			check.setEnabled(!servicioAdicional.getObligatorio());
+			check.setValue(servicioAdicional.getObligatorio());
+			table.setWidget(row, 0, check);
+			table.setHTML(row, 1, servicioAdicional.getServicioAdicional().getDescripcion());
+			table.setHTML(row, 2, currencyFormat.format(servicioAdicional.getPrecioFinal()));
+			table.setHTML(row, 3, currencyFormat.format(servicioAdicional.getPrecioFinal()));
+			table.getCellFormatter().addStyleName(row, 1, "alignLeft");
+			table.getCellFormatter().addStyleName(row, 2, "alignRight");
+			table.getCellFormatter().addStyleName(row, 3, "alignRight");
+			row++;
+		}
 	}
 }
