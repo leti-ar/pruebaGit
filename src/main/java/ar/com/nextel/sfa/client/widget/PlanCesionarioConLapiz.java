@@ -5,7 +5,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.InlineHTML;
 
 public class PlanCesionarioConLapiz extends Composite {
 	private FlowPanel flowPanel = new FlowPanel();
@@ -22,8 +22,7 @@ public class PlanCesionarioConLapiz extends Composite {
 			}
 		});
 		flowPanel.add(lapiz);
-		Label planLabel = new Label(planCesionario);
-//		planLabel.addStyleName("normalText");
+		InlineHTML planLabel = new InlineHTML(planCesionario);
 		flowPanel.add(planLabel);
 		initWidget(flowPanel);
 	}

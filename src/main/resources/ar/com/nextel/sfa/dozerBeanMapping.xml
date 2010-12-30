@@ -330,6 +330,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>tipoTelefonia</a>
 			<b>tipoTelefonia</b>
 		</field>
+		<field type="one-way">
+			<a>planBase.precioLista</a>
+			<b>precioLista</b>
+		</field>
 	</mapping>
 
 	<mapping>

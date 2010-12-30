@@ -14,12 +14,15 @@ import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 public class PlanTransferenciaUIData extends UIData implements ChangeListener, ClickHandler {
 
 	private ListBox tipoPlan;
 	private ListBox plan;
+	private Long precioVenta;
 	private EditarSSUIController controller;
 	private ServiciosAdicionalesTable serviciosAdicionales;
 	private static final String v1 = "\\{1\\}";
@@ -35,6 +38,7 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 		tipoPlan.addChangeListener(this);
 		plan.addChangeListener(this);
 		serviciosAdicionales = new ServiciosAdicionalesTable(controller);
+		serviciosAdicionales.getTable().addClickHandler(this);
 	}
 	
 	public ListBox getTipoPlan() {
@@ -51,6 +55,10 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 
 	public void setPlan(ListBox plan) {
 		this.plan = plan;
+	}
+	
+	public Long getPrecioVenta() {
+		return precioVenta;
 	}
 	
 	public ServiciosAdicionalesTable getServiciosAdicionales() {
@@ -71,13 +79,21 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 		} else if (sender == plan) {
 			serviciosAdicionales.clear();
 			PlanDto planDto = (PlanDto) plan.getSelectedItem();
+			precioVenta = planDto.getPrecioLista();
 			serviciosAdicionales.setServiciosAdicionalesForContrato(planDto.getId());
 		}
 	}
-
-	public void onClick(ClickEvent arg0) {
-		// TODO Auto-generated method stub
-		
+	//TODO
+	public void onClick(ClickEvent clickEvent) {
+		Widget sender = (Widget) clickEvent.getSource();
+		if (sender == serviciosAdicionales.getTable()) {
+			Cell cell = ((HTMLTable) sender).getCellForEvent(clickEvent);
+			if (cell != null) {
+				if (cell.getCellIndex() == 0 && cell.getRowIndex() > 0) {
+					serviciosAdicionales.agregarQuitarServicioAdicionalContrato(cell.getRowIndex());
+				}
+			}
+		}
 	}
 	
 	public DefaultWaitCallback<List<PlanDto>> getActualizarPlanCallback() {

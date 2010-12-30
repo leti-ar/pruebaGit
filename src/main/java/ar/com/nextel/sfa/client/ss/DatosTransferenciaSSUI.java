@@ -17,6 +17,7 @@ import ar.com.nextel.sfa.client.event.ClickPincheEvent;
 import ar.com.nextel.sfa.client.event.ClickPincheEventHandler;
 import ar.com.nextel.sfa.client.event.EventBusUtil;
 import ar.com.nextel.sfa.client.widget.ContratoConChinche;
+import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.nextel.sfa.client.widget.PlanCesionarioConLapiz;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
@@ -27,15 +28,19 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
-public class DatosTransferenciaSSUI extends Composite implements ClickHandler{
+public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	
 	private FlowPanel mainpanel;
 	private EditarSSUIData editarSSUIData;
@@ -78,6 +83,12 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler{
 		mainpanel.add(getCedenteLayout());
 		mainpanel.add(getBusqLayout());
 		mainpanel.add(getContratosLayout());
+		
+		verTodos.addClickListener(new ClickListener() {
+			public void onClick(Widget sender) {
+				mostrarTodos();
+			}
+		});
 		
 		//binding de eventos
 		EventBusUtil.getEventBus().addHandler(ClickPincheEvent.TYPE, new ClickPincheEventHandler() {
@@ -133,7 +144,9 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler{
 		contratosLayout = new Grid(5, 1);
 		contratosLayout.setWidth("100%");
 		
-		contratosTable = new FlexTable();
+		SimplePanel wrapper = new SimplePanel();
+		wrapper.addStyleName("resultTableWrapper mlr5");
+		contratosTable = new NextelTable();
 		String[] titlesContratos = { Sfa.constant().whiteSpace(), "Contratos", "Fecha Estado", 
 				"Teléfono", "Flota*ID", "Modelo", "Contratación", "Plan cedente", "Plan cesionario",
 				"Precio plan cesionario", "O.S.", "Modalidad", "Suscriptor"};			
@@ -148,6 +161,8 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler{
 		contratosTable.setWidth("98%");
 		contratosTable.getRowFormatter().addStyleName(0, "header");
 		contratosTable.addClickHandler(this);
+		wrapper.add(contratosTable);
+		contratosLayout.setWidget(0, 0, wrapper);
 		
 		facturadosTable = new FlexTable();
 		String[] titlesFacturados = { "Servicio", "MSISDN", "Fecha Activ.", "Tarifa", "Ajuste",
@@ -160,7 +175,6 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler{
 		facturadosTable.addStyleName("dataTable");
 		facturadosTable.setWidth("98%");
 		facturadosTable.getRowFormatter().addStyleName(0, "header");
-		
 		
 		//totalServEquipos = new InlineHTML("Total servicios por equipo:");
 		refresContratosLayout();		
@@ -213,12 +227,10 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler{
 	}
 	
 	private void refresContratosLayout(){
-		contratosLayout.setWidget(0, 0, contratosTable);
-		//TODO: -MGR- Ver como conviene dejar mas espacio
-		contratosLayout.setHTML(1, 0, " ");
-		contratosLayout.setHTML(2, 0, "Facturados");
+		contratosLayout.setWidget(1, 0, new HTML("<br>"));
+		contratosLayout.setWidget(2, 0, new InlineLabel("Facturados"));
 		contratosLayout.setWidget(3, 0, facturadosTable);
-		contratosLayout.setHTML(4, 0, "Total servicios por equipo:");
+		contratosLayout.setWidget(4, 0, new InlineLabel("Total servicios por equipo:"));
 	}
 
 	public void refresh() {
@@ -230,7 +242,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler{
 		refreshTablaContratos();
 	}
 	
-	public void showBusqClienteCedente(){
+		public void showBusqClienteCedente(){
 		if(busqClienteCedenteDialog == null){
 			busqClienteCedenteDialog = new BusqClienteCedenteDialog("Buscar cliente cedente", this.controller);
 
@@ -277,8 +289,10 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler{
 																		ErrorDialog.getInstance().show(
 																				"El cliente no posee contratos en estado activo que coincidan con la búsqueda.", false);
 																	}
-																	todosContratosActivos = result;
-																	contratosActivosVisibles = result;
+																	todosContratosActivos.clear();
+																	contratosActivosVisibles.clear();
+																	todosContratosActivos.addAll(result);
+																	contratosActivosVisibles.addAll(result);
 																	refreshTablaContratos();
 																}
 															});
@@ -300,18 +314,32 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler{
 		this.busqClienteCedenteDialog.mostrarDialogo();
 	}
 	
+	/**
+	 * Muestro los contratos filtrados
+	 */
 	private void refreshTablaContratos(){
-//		while (facturadosTable.getRowCount() > 0) 
-//		{
-//			facturadosTable.removeRow(0);			
-//		}
 		for (int i = 0; i < contratosActivosVisibles.size(); i++) {
-			drawContrato(i + 1 , contratosActivosVisibles.get(i));
+			drawContrato(i + 1 , contratosActivosVisibles.get(i), true);
 		}
 	}
 	
-	private void drawContrato(int newRow, ContratoViewDto cto){
-		ContratoConChinche contratoConChinche = new ContratoConChinche(cto.getContrato().toString(), cto.isPinchado());
+	/**
+	 * Muestros todos los contratos activos
+	 */
+	private void mostrarTodos() {
+		for (int i = 0; i < todosContratosActivos.size(); i++) {
+			drawContrato(i + 1 , todosContratosActivos.get(i), false);
+		}
+	}
+	
+	private void drawContrato(int newRow, ContratoViewDto cto, boolean isFiltrado){
+		ContratoConChinche contratoConChinche; 
+		if (isFiltrado) {
+			contratoConChinche = new ContratoConChinche(cto.getId().toString(), cto.isPinchado());
+		} else {
+			cto.setPinchado(false);
+			contratoConChinche = new ContratoConChinche(cto.getId().toString(), false);
+		}
 		contratosTable.setWidget(newRow, 0, new CheckBox());
 		contratosTable.setWidget(newRow, 1, contratoConChinche);
 		contratosTable.setHTML(newRow, 2, String.valueOf(cto.getFechaEstado()));
@@ -425,7 +453,8 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler{
 			planTransferenciaDialog = new PlanTransferenciaDialog("Modificar Plan", controller);
 			Command aceptarCommand = new Command() {
 				public void execute() {
-					drawNuevoPlan(planTransferenciaDialog.getSelectedPlan());
+					drawNuevoPlan(planTransferenciaDialog.getSelectedPlan(),
+							planTransferenciaDialog.getPrecioVenta());
 				}
 			};
 			planTransferenciaDialog.setAceptarCommand(aceptarCommand);
@@ -434,9 +463,9 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler{
 		planTransferenciaDialog.show(contratoSeleccionado, filaSeleccionada);
 	}	
 	
-	private void drawNuevoPlan(String nuevoPlan){
+	private void drawNuevoPlan(String nuevoPlan, String precioVenta){
 		contratosTable.setWidget(filaSeleccionada, 8, new PlanCesionarioConLapiz(nuevoPlan));
-		contratosTable.setHTML(filaSeleccionada, 9, "100");
+		contratosTable.setHTML(filaSeleccionada, 9, precioVenta);
 	}
 	
 	private void selectAllContratosRow(){
@@ -446,7 +475,6 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler{
 			CheckBox chek = (CheckBox)contratosTable.getWidget(i, 0);
 			chek.setValue(selectAll);
 		}
-		
 	}
 
 	public List<ContratoViewDto>  getContratosSS() {
@@ -468,4 +496,5 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler{
 		this.ctaCedenteDto = solicitud.getCuentaCedente();
 		this.contratosActivosVisibles = solicitud.getContratosCedidos();
 	}
+		
 }
