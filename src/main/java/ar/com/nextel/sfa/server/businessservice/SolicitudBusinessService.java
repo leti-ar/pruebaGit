@@ -24,6 +24,7 @@ import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequ
 import ar.com.nextel.business.solicitudes.generacionCierre.GeneracionCierreBusinessOperator;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreRequest;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
+import ar.com.nextel.business.solicitudes.generacionCierre.request.SaveSolicitudServicioResponse;
 import ar.com.nextel.business.solicitudes.provider.SolicitudServicioProviderResult;
 import ar.com.nextel.business.solicitudes.repository.GenerarChangelogConfig;
 import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepository;
@@ -43,6 +44,7 @@ import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.Sucursal;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
@@ -229,6 +231,38 @@ public class SolicitudBusinessService {
 				solicitudServicioDto.getId());
 		solicitudServicio.setDomicilioEnvio(null);
 		solicitudServicio.setDomicilioFacturacion(null);
+		
+		
+		if( (solicitudServicio.getVendedor() == null && solicitudServicioDto.getVendedor() != null) ||
+			(solicitudServicio.getVendedor() != null && solicitudServicioDto.getVendedor() != null) &&
+			!solicitudServicio.getVendedor().getId().equals(solicitudServicioDto.getVendedor().getId()) ){
+			
+			Vendedor vendedor = repository.retrieve(Vendedor.class, solicitudServicioDto.getVendedor().getId());
+			solicitudServicio.setVendedor(vendedor);
+		}
+		
+		if( (solicitudServicio.getCuentaCedente() == null && solicitudServicioDto.getCuentaCedente() != null) ||
+			(solicitudServicio.getCuentaCedente() != null && solicitudServicioDto.getCuentaCedente() != null &&
+			!solicitudServicio.getCuentaCedente().getId().equals(solicitudServicioDto.getCuentaCedente().getId())) ){
+			
+			Cuenta ctaCedente = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuentaCedente().getId());
+			solicitudServicio.setCuentaCedente(ctaCedente);
+		}
+		if( (solicitudServicio.getUsuarioCreacion() == null && solicitudServicioDto.getUsuarioCreacion() != null) ||
+			(solicitudServicio.getUsuarioCreacion() != null && solicitudServicioDto.getUsuarioCreacion() != null) &&
+			!solicitudServicio.getUsuarioCreacion().getId().equals(solicitudServicioDto.getUsuarioCreacion().getId()) ){
+			
+			Vendedor vendedor = repository.retrieve(Vendedor.class, solicitudServicioDto.getUsuarioCreacion().getId());
+			solicitudServicio.setUsuarioCreacion(vendedor);
+		}
+		if( (solicitudServicio.getSucursal() == null && solicitudServicioDto.getIdSucursal() != null) ||
+			(solicitudServicio.getSucursal() != null && solicitudServicioDto.getIdSucursal() != null &&
+			!solicitudServicio.getSucursal().getId().equals(solicitudServicioDto.getIdSucursal())) ){
+			
+			Sucursal sucursal = repository.retrieve(Sucursal.class, solicitudServicioDto.getIdSucursal());
+			solicitudServicio.setSucursal(sucursal);
+		}
+		
 		mapper.map(solicitudServicioDto, solicitudServicio);
 
 		// Estas lineas son por un problema no identificado, que hace que al querer guardar el tipo de tarjeta
@@ -266,6 +300,7 @@ public class SolicitudBusinessService {
 				domicilio.setId(null);
 			}
 		}
+		
 		repository.save(solicitudServicio);
 		return solicitudServicio;
 	}
@@ -384,5 +419,9 @@ public class SolicitudBusinessService {
 		GeneracionCierreResponse response = generacionCierreBusinessOperator
 				.crearArchivo(generacionCierreRequest);
 		return response;
+	}
+	
+	public SaveSolicitudServicioResponse validarTriptico(SolicitudServicio solicitud){
+		return generacionCierreBusinessOperator.validarTriptico(solicitud);
 	}
 }

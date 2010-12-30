@@ -65,6 +65,6 @@ public interface CuentaRpcService extends RemoteService {
 	//MGR - Dado un codigo vantive, devuelve el numero de cuenta que le corresponde en SFA
 	public Long selectCuenta(String codigoVantive) throws RpcExceptionMessages;
 	
-	public CuentaDto searchCuentaDto(CuentaSearchDto cuentaSearchDto) throws RpcExceptionMessages;
+	public List<CuentaDto> searchCuentasDto(CuentaSearchDto cuentaSearchDto) throws RpcExceptionMessages;
 	public List<ContratoViewDto> searchContratosActivos(CuentaDto ctaDto) throws RpcExceptionMessages;
 }

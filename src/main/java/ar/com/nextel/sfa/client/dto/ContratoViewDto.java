@@ -1,38 +1,56 @@
 package ar.com.nextel.sfa.client.dto;
 
-import java.sql.Date;
+
+
+import java.util.Date;
 
 import ar.com.nextel.sfa.client.widget.ContratoConChinche;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ContratoViewDto implements IsSerializable{
+public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 	
-	private Long id;
+	//private Long id;
+	private Long contrato;
 	private Date fechaEstado;
 	private String telefono;
 	private String flotaId;
 	private String modelo;
 	private String contratacion;
-	private Long idPlanCedente; //TMCODE
+	private Long idPlanCedente; //TMCODE //**
 	private String planCedente;
 	private Long planCesionario;
+	private String descripPlanCesionario;
 	private String precioPlanCesionario;
 	private String Os;
 	private String modalidad;
 	private String suscriptor;
 	private String numeroIMEI;
 	private String numeroSimCard;
-	private String numeroSerie;	
+	private String numeroSerie;
+	
+	private String codVantiveCesionario;
+	//TODO: -MGR- Este valor se tiene que setear del plan cedente
+	//private Long codigoBSCSPlanCedente;
+	
 	private PlanDto plan;
 	private boolean isPinchado = false;
-		
-	public Long getId() {
-		return id;
+	
+	
+//	public Long getId() {
+//		return id;
+//	}
+//
+//	public void setId(Long id) {
+//		this.id = id;
+//	}
+
+	public Long getContrato() {
+		return contrato;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setContrato(Long contrato) {
+		this.contrato = contrato;
 	}
 
 	public Date getFechaEstado() {
@@ -99,6 +117,14 @@ public class ContratoViewDto implements IsSerializable{
 		this.planCesionario = planCesionario;
 	}
 
+	public String getDescripPlanCesionario() {
+		return descripPlanCesionario;
+	}
+
+	public void setDescripPlanCesionario(String descripPlanCesionario) {
+		this.descripPlanCesionario = descripPlanCesionario;
+	}
+
 	public String getPrecioPlanCesionario() {
 		return precioPlanCesionario;
 	}
@@ -130,7 +156,7 @@ public class ContratoViewDto implements IsSerializable{
 	public void setSuscriptor(String suscriptor) {
 		this.suscriptor = suscriptor;
 	}
-		
+	
 	public String getNumeroIMEI() {
 		return numeroIMEI;
 	}
@@ -155,6 +181,22 @@ public class ContratoViewDto implements IsSerializable{
 		this.numeroSerie = numeroSerie;
 	}
 	
+	public String getCodVantiveCesionario() {
+		return codVantiveCesionario;
+	}
+
+	public void setCodVantiveCesionario(String codVantiveCesionario) {
+		this.codVantiveCesionario = codVantiveCesionario;
+	}
+
+//	public Long getCodigoBSCSPlanCedente() {
+//		return codigoBSCSPlanCedente;
+//	}
+//
+//	public void setCodigoBSCSPlanCedente(Long codigoBSCSPlanCedente) {
+//		this.codigoBSCSPlanCedente = codigoBSCSPlanCedente;
+//	}
+
 	public PlanDto getPlan() {
 		return plan;
 	}
@@ -173,7 +215,8 @@ public class ContratoViewDto implements IsSerializable{
 
 	@Override
 	public int hashCode() {
-		return this.id.intValue();
+		//return this.id.intValue();
+		return this.contrato.intValue();
 	}
 	
 	@Override
@@ -181,11 +224,26 @@ public class ContratoViewDto implements IsSerializable{
 		boolean equals = false;
 		if (obj instanceof ContratoViewDto){
 			ContratoViewDto dto2 = (ContratoViewDto)obj;
-			if(dto2.getId().equals(this.id)){
+			//TODO: -MGR- Por que viene con nul??
+			if(this.contrato == null)
+				return false;
+			if(dto2.getContrato() == null)
+				return false;
+			
+			if(dto2.getContrato().equals(this.contrato)){
 				equals = true;
 			}
 		}
 		return equals;
+	}
+	
+	/**
+	 * NO USAR. Este metodo es necesario solo para poder usar la clase <tt>CollectionOwnedConverter</tt> que 
+	 * utiliza dozer para mapear los objetos
+	 */
+	public Long getId() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

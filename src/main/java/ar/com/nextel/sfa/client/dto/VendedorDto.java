@@ -17,11 +17,11 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
     private String telefono;
     private LocalidadDto localidad;
     private TipoVendedorDto tipoVendedor;
+    private Long idSucursal;
     
     public static final String TIPO_VENDEDOR_DEALER = "TIPO_VENDEDOR_DEALER";
-    //TODO: -MGR- Verificar con la tabla SFA_KNOWNINSTANCE_ITEM que estas sean la KEYs correctas
     public static final String TIPO_VENDEDOR_AP = "TIPO_VENDEDOR_AP";
-    public static final String TIPO_VENDEDOR_ADM_CREDITOS = "TIPO_VENDEDOR_ADM_CREDITOS";
+    public static final String TIPO_VENDEDOR_ADM_CREDITOS = "TIPO_VENDEDOR_CREDITOS";
 
 	public Long getId() {
 		return id; 
@@ -95,6 +95,18 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
 		return tipoVendedor; 
 	}
 	
+	public String getApellidoYNombre() {
+    	return getApellido() + ", " + getNombre();
+    }
+	
+	public Long getIdSucursal() {
+		return idSucursal;
+	}
+
+	public void setIdSucursal(Long idSucursal) {
+		this.idSucursal = idSucursal;
+	}
+
 	public boolean isDealer(){
 		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
 		if(instancias != null && this.getTipoVendedor() != null){

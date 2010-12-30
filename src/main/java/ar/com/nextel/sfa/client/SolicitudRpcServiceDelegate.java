@@ -2,6 +2,8 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
@@ -14,6 +16,7 @@ import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
+import ar.com.nextel.sfa.client.dto.SaveSolicitudServicioTransfResultDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
@@ -203,5 +206,10 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.getServiciosAdicionalesContrato(idPlan, callback);
 	}
-
+	
+	public void saveSolicituServicioTranferencia(SolicitudServicioDto solicitudServicioDto,
+			AsyncCallback<SaveSolicitudServicioTransfResultDto> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.saveSolicituServicioTranferencia(solicitudServicioDto, callback);
+	}
 }

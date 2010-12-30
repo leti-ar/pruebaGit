@@ -124,9 +124,9 @@ public class CuentaRpcServiceDelegate {
 		
 	}
 	
-	public void searchCuentaDto(CuentaSearchDto cuentaSearchDto, DefaultWaitCallback<CuentaDto> callback) {
+	public void searchCuentaDto(CuentaSearchDto cuentaSearchDto, DefaultWaitCallback<List<CuentaDto>> callback) {
 		WaitWindow.show();
-		cuentaRpcService.searchCuentaDto(cuentaSearchDto, callback);
+		cuentaRpcService.searchCuentasDto(cuentaSearchDto, callback);
 	}
 	
 	public void searchContratosActivos(CuentaDto ctaDto, DefaultWaitCallback<List<ContratoViewDto>> callback) {

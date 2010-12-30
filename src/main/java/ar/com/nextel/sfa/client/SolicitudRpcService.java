@@ -14,6 +14,7 @@ import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
+import ar.com.nextel.sfa.client.dto.SaveSolicitudServicioTransfResultDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
@@ -118,4 +119,5 @@ public interface SolicitudRpcService extends RemoteService {
 
 	public List<ServicioAdicionalIncluidoDto> getServiciosAdicionalesContrato(Long idPlan) throws RpcExceptionMessages;
 
+	public SaveSolicitudServicioTransfResultDto saveSolicituServicioTranferencia(SolicitudServicioDto solicitudServicioDto)	throws RpcExceptionMessages;
 }

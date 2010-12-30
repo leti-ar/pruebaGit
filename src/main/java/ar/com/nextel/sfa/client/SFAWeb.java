@@ -2,6 +2,8 @@ package ar.com.nextel.sfa.client;
 
 import java.util.HashMap;
 
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.ClienteNexusDto;
 import ar.com.nextel.sfa.client.dto.UserCenterDto;

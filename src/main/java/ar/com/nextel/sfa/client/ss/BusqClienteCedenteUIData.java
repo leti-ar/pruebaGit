@@ -134,6 +134,8 @@ public class BusqClienteCedenteUIData extends UIData implements ClickListener, C
 		else if(parametroBusqCedente.getText() == null || parametroBusqCedente.getText().equals("")){
 			errores.add("Debe ingresar el criterio de busqueda.");
 		}
+		//-MGR- Esta validacion se esta haciendo tambien luego de buscar la cuenta, por si busca por otro criterio,
+		//conviene dejarla aqui tambien. Buscar Val-6
 		else if(criterioBusqCedente.getValue(criterioBusqCedente.getSelectedIndex()).equals(CODIGO_CLIENTE) && 
 				this.controller.getEditarSSUIData().getCuenta().getCodigoVantive().startsWith(parametroBusqCedente.getText())){
 			errores.add("La cuenta cedente es la misma que el cesionario. Por favor, elija otra cuenta.");

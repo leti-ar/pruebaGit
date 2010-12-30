@@ -48,6 +48,6 @@ public interface CuentaRpcServiceAsync {
 	//MGR - Dado un codigo vantive, devuelve el numero de cuenta que le corresponde en SFA
 	public void selectCuenta(String codigoVantive,AsyncCallback<Long> callback);
 	
-	public void searchCuentaDto(CuentaSearchDto cuentaSearchDto, AsyncCallback<CuentaDto> callback);
+	public void searchCuentasDto(CuentaSearchDto cuentaSearchDto, AsyncCallback<List<CuentaDto>> callback);
 	public void searchContratosActivos(CuentaDto ctaDto, AsyncCallback<List<ContratoViewDto>> callback);
 }

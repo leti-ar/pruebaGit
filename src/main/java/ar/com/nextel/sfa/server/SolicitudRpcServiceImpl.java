@@ -30,6 +30,7 @@ import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumer
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
+import ar.com.nextel.business.solicitudes.generacionCierre.request.SaveSolicitudServicioResponse;
 import ar.com.nextel.business.solicitudes.negativeFiles.NegativeFilesBusinessOperator;
 import ar.com.nextel.business.solicitudes.negativeFiles.result.NegativeFilesBusinessResult;
 import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepository;
@@ -73,12 +74,14 @@ import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
+import ar.com.nextel.sfa.client.dto.SaveSolicitudServicioTransfResultDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
+import ar.com.nextel.sfa.client.dto.SucursalDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
@@ -310,16 +313,19 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		Collections.sort(vendedores, new Comparator<Vendedor>() {
 			public int compare(Vendedor vend1, Vendedor vend2) {
 				//TODO: -MGR- Ver si no es por nombre y apellido
-				if(vend1.getNombre() == null && vend2.getNombre() == null)
+				if(vend1.getApellido() == null && vend2.getApellido() == null)
 					return 0;
-				if(vend1.getNombre() == null)
+				if(vend1.getApellido() == null)
 					return -1;
-				if(vend2.getNombre() == null)
+				if(vend2.getApellido() == null)
 					return -1;
-				return vend1.getNombre().compareToIgnoreCase(vend2.getNombre());
+				return vend1.getApellidoYNombre().compareToIgnoreCase(vend2.getApellidoYNombre());
 			}
 		});
 		initializer.setVendedores(mapper.convertList(vendedores, VendedorDto.class));
+		
+		List<Sucursal> sucursales = repository.getAll(Sucursal.class);
+		initializer.setSucursales(mapper.convertList(sucursales, SucursalDto.class));
 		return initializer;
 	}
 
@@ -535,6 +541,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					&& response.getMessages().hasErrors() == false
 					&& sessionContextLoader.getVendedor().getTipoVendedor().getCodigoVantive().equals(
 							KnownInstanceIdentifier.TIPO_VENDEDOR_EECC.getKey())) {
+				//TODO: -MGR- que es esto?
 				solicitudBusinessService.generarChangeLog(solicitudServicioDto.getId(), solicitudServicio
 						.getVendedor().getId());
 			}
@@ -655,6 +662,32 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			Long idPlan) throws RpcExceptionMessages {
 		List serviciosAdicionales = solicitudServicioRepository.getServiciosAdicionalesContrato(idPlan, sessionContextLoader.getVendedor());
 		return mapper.convertList(serviciosAdicionales, ServicioAdicionalIncluidoDto.class);
+	}
+	
+	public SaveSolicitudServicioTransfResultDto saveSolicituServicioTranferencia(SolicitudServicioDto solicitudServicioDto)
+			throws RpcExceptionMessages {
+		SaveSolicitudServicioTransfResultDto resultDto = new SaveSolicitudServicioTransfResultDto();
+		try {
+			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
+			solicitudServicioDto = mapper.map(solicitudSaved, SolicitudServicioDto.class);
+			resultDto.setSolicitud(solicitudServicioDto);
+			
+			//Si es Adm. de Creditos, entonces valida el triptico al guardar
+			//-MGR- Val-9
+			//TODO: -MGR- Conviene usar el permismo VER_COMBO_VENDEDOR?? o no por si otro ve el combo
+			//pero no debe validar al guardar?
+			if(sessionContextLoader.getVendedor().isADMCreditos()){
+				SaveSolicitudServicioResponse ssResponse = solicitudBusinessService.validarTriptico(solicitudSaved);
+				resultDto.setMessages(mapper.convertList(ssResponse.getMessages().getMessages(), MessageDto.class));
+				if(!resultDto.getMessages().isEmpty()){
+					resultDto.setError(true);
+				}
+			}
+		} catch (Exception e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+		return resultDto;
 	}
 
 }

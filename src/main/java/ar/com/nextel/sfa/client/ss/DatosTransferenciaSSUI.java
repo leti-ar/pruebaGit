@@ -4,14 +4,18 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import ar.com.nextel.business.cuentas.search.businessUnits.CuentaSearchData;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
-import ar.com.nextel.sfa.client.dto.LineaTransfSolicitudServicioDto;
-import ar.com.nextel.sfa.client.event.EventBusUtil;
+import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
+import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
+import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.event.ClickPincheEvent;
 import ar.com.nextel.sfa.client.event.ClickPincheEventHandler;
+import ar.com.nextel.sfa.client.event.EventBusUtil;
 import ar.com.nextel.sfa.client.widget.ContratoConChinche;
 import ar.com.nextel.sfa.client.widget.PlanCesionarioConLapiz;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -31,7 +35,7 @@ import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
-public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
+public class DatosTransferenciaSSUI extends Composite implements ClickHandler{
 	
 	private FlowPanel mainpanel;
 	private EditarSSUIData editarSSUIData;
@@ -53,7 +57,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	
 	private static final String SELECTED_ROW = "selectedRow";
 	
-	private CuentaDto cuentaDto;
+	private CuentaDto ctaCedenteDto;
 	private List<ContratoViewDto> todosContratosActivos = new ArrayList<ContratoViewDto>();
 	private List<ContratoViewDto> contratosActivosVisibles = new ArrayList<ContratoViewDto>();
 		
@@ -86,14 +90,14 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	protected void doClickChinche(ClickPincheEvent event) {
 		for (Iterator<ContratoViewDto> iterator = contratosActivosVisibles.iterator(); iterator.hasNext();) {
 			ContratoViewDto contratoViewDto = (ContratoViewDto) iterator.next();
-			if (contratoViewDto.getId().equals(Long.valueOf(event.getContrato()))) {
+			if (contratoViewDto.getContrato().equals(Long.valueOf(event.getContrato()))) {
 				contratoViewDto.setPinchado(event.isClicked());
 			}
 		}
 	}
 
 	private Widget getNssLayout() {
-		nnsLayout = new Grid(1, 6);
+		nnsLayout = new Grid(1, 8);
 		nnsLayout.addStyleName("layout");
 		refreshNssLayout();
 		return nnsLayout;
@@ -162,16 +166,23 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		refresContratosLayout();		
 		return contratosLayout;
 	}
+	
 	private void refreshNssLayout(){
 		nnsLayout.setHTML(0, 0, Sfa.constant().nssReq());
 		nnsLayout.setWidget(0, 1, editarSSUIData.getNss());
 		nnsLayout.setHTML(0, 2, Sfa.constant().origenReq());
 		nnsLayout.setWidget(0, 3, editarSSUIData.getOrigen());
-		//TODO: -MGR- habilitar esto cuendo se termine todo
-		//if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
+
+		//TODO: -MGR- Habilitar esto cuando este terminado.
+//		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
 			nnsLayout.setHTML(0, 4, Sfa.constant().vendedor());
 			nnsLayout.setWidget(0, 5, editarSSUIData.getVendedor());
-		//}
+//		}
+//		
+//		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
+			nnsLayout.setHTML(0, 6, Sfa.constant().sucOrigen());
+			nnsLayout.setWidget(0, 7, editarSSUIData.getSucursalOrigen());
+//		}
 	}
 	
 	private void refresObsLayout(){
@@ -203,7 +214,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	
 	private void refresContratosLayout(){
 		contratosLayout.setWidget(0, 0, contratosTable);
-		//TODO: Ver como conviene dejar mas espacio
+		//TODO: -MGR- Ver como conviene dejar mas espacio
 		contratosLayout.setHTML(1, 0, " ");
 		contratosLayout.setHTML(2, 0, "Facturados");
 		contratosLayout.setWidget(3, 0, facturadosTable);
@@ -216,61 +227,91 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		refresCedenteLayout();
 		refresBusqLayout();
 		refresContratosLayout();
+		refreshTablaContratos();
 	}
 	
 	public void showBusqClienteCedente(){
 		if(busqClienteCedenteDialog == null){
 			busqClienteCedenteDialog = new BusqClienteCedenteDialog("Buscar cliente cedente", this.controller);
-			Command buscarCommmand = new Command() {
-				public void execute() {
-										//TODO: -MGR- Verificar que validaciones hace al buscar
-					CuentaRpcService.Util.getInstance().searchCuentaDto(
-							busqClienteCedenteDialog.getBusqClienteCedenteUIData().getCuentaSearch(), 
-							new DefaultWaitCallback<CuentaDto>(){
 
-								public void success(CuentaDto result) {
-									
-									if (result == null) {
-										ErrorDialog.getInstance().show(
-												"No se encontraron contratos con el criterio utilizado.", false);
+			Command buscarCommmand = new Command(){
+				public void execute() {
+					final CuentaSearchDto ctaSearch = busqClienteCedenteDialog.getBusqClienteCedenteUIData().getCuentaSearch();
+					CuentaRpcService.Util.getInstance().searchCuentaDto(
+							ctaSearch, new DefaultWaitCallback<List<CuentaDto>>() {
+
+								public void success(List<CuentaDto> result) {
+									ctaCedenteDto = null;
+									if(result.isEmpty()){
+										ErrorDialog.getInstance().show("No se encontraron cuentas con el criterio especificado.");
+									}else{
+										if(result.size() > 1){
+											ErrorDialog.getInstance().show("Existe mas de un resultado por favor comuníquese con Adm Vtas.");
+										
+										}else{
+											CuentaDto cuenta = result.get(0);
+											if(cuenta.getCodigoVantive().contains("*")){
+												if(ClientContext.getInstance().getVendedor().isDealer() &&
+														ctaSearch.getGrupoDocumentoId() == null){
+													ErrorDialog.getInstance().show(
+															"Debe buscar por número de documento o CUIT CUIL los clientes que no son de su cartera.");
+													busqClienteCedenteDialog.hide();
+													//TODO: -MGR- en este caso se tiene que vaciar la grilla. Verificar
+												}else{
+													//TODO: -MGR- Verificar que si no dealer este es el mensaje a mostrar
+													ErrorDialog.getInstance().show("No se encontraron cuentas con el criterio especificado.");
+												}
+											
+											}else{
+												ctaCedenteDto = cuenta;
+												//-MGR- Val-6
+												if(ctaCedenteDto.getCodigoVantive().equals(editarSSUIData.getCuenta().getCodigoVantive())){
+													ErrorDialog.getInstance().show("La cuenta cedente es la misma que el cesionario. Por favor, elija otra cuenta.");
+												}else{
+													controller.getEditarSSUIData().getClienteCedente().setText(ctaCedenteDto.getCodigoVantive());
+													CuentaRpcService.Util.getInstance().searchContratosActivos(
+															cuenta, new DefaultWaitCallback<List<ContratoViewDto>>() {
+																
+																public void success(List<ContratoViewDto> result) {
+																	if (result.isEmpty()) {
+																		ErrorDialog.getInstance().show(
+																				"El cliente no posee contratos en estado activo que coincidan con la búsqueda.", false);
+																	}
+																	todosContratosActivos = result;
+																	contratosActivosVisibles = result;
+																	refreshTablaContratos();
+																}
+															});
+													busqClienteCedenteDialog.hide();
+												}
+											}
+										}
 									}
-									else{
-										cuentaDto = result;
-										//TODO: -MGR- Verificar si la cuenta que trae es valida, sino
-										//no hay que ir a buscar los contratos										
-										controller.getEditarSSUIData().getClienteCedente().setText(cuentaDto.getCodigoVantive());
-										CuentaRpcService.Util.getInstance().searchContratosActivos(
-												result, new DefaultWaitCallback<List<ContratoViewDto>>() {
-													public void success(List<ContratoViewDto> result) {
-														if (result.isEmpty()) {
-															ErrorDialog.getInstance().show(
-																	"No se encontraron contratos con el criterio utilizado.", false);
-														}
-														todosContratosActivos = result;
-														contratosActivosVisibles = result;
-														refreshTablaContratos();
-													}
-												});
-										busqClienteCedenteDialog.hide();
-									}
-									
 								}
 							});
-					}
-				};
+					
+				}
+				
+			};
+			
+			
 			this.busqClienteCedenteDialog.setBuscarCommand(buscarCommmand);
 		}
 		this.busqClienteCedenteDialog.mostrarDialogo();
 	}
 	
 	private void refreshTablaContratos(){
+//		while (facturadosTable.getRowCount() > 0) 
+//		{
+//			facturadosTable.removeRow(0);			
+//		}
 		for (int i = 0; i < contratosActivosVisibles.size(); i++) {
 			drawContrato(i + 1 , contratosActivosVisibles.get(i));
 		}
 	}
 	
 	private void drawContrato(int newRow, ContratoViewDto cto){
-		ContratoConChinche contratoConChinche = new ContratoConChinche(cto.getId().toString(), cto.isPinchado());
+		ContratoConChinche contratoConChinche = new ContratoConChinche(cto.getContrato().toString(), cto.isPinchado());
 		contratosTable.setWidget(newRow, 0, new CheckBox());
 		contratosTable.setWidget(newRow, 1, contratoConChinche);
 		contratosTable.setHTML(newRow, 2, String.valueOf(cto.getFechaEstado()));
@@ -306,7 +347,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 			} else if ("1".equals(criterioBusqueda)) {
 				for (Iterator<ContratoViewDto> iterator = contratosActivosVisibles.iterator(); iterator.hasNext();) {
 					ContratoViewDto contratoActivo = (ContratoViewDto) iterator.next();
-					if (!contratoActivo.isPinchado() && !parametro.equals(String.valueOf(contratoActivo.getId()))) {
+					if (!contratoActivo.isPinchado() && !parametro.equals(String.valueOf(contratoActivo.getContrato()))) {
 						iterator.remove();
 					}
 					filaBorrada++;
@@ -408,65 +449,23 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		
 	}
 
-	public List<LineaTransfSolicitudServicioDto>  getLineasTransferenciaSS() {
-		List<LineaTransfSolicitudServicioDto> lineas = new ArrayList<LineaTransfSolicitudServicioDto>();
-		for (ContratoViewDto contrato : contratosActivosVisibles) {
-			LineaTransfSolicitudServicioDto lineaTranf = new LineaTransfSolicitudServicioDto();
-			
-			lineaTranf.setContrato(contrato.getId());
-			lineaTranf.setFechaEstadoContrato(contrato.getFechaEstado());
-			lineaTranf.setTelefono(contrato.getTelefono());
-			lineaTranf.setFlotaId(contrato.getFlotaId());
-			lineaTranf.setModelo(contrato.getModelo());
-			lineaTranf.setContratacion(contrato.getContratacion());
-			//TODO: CUSTOMER_NUMBER ok 
-			lineaTranf.setCustomernumber(editarSSUIData.getCuenta().getCodigoVantive());
-			
-			//TODO: ID_PLAN_NUEVO tiene que ser el plan cesionario
-			//lineaTranf.setPlanNuevo(contrato.getPlanCedente())
-			
-			//TODO: PRECIO_VENTA_PLAN_NUEVO es el precio del plan cesionario
-			//lineaTranf.setPrecioVtaPlanNuevo(contrato.getPlanCedente().getprecio())
-			
-			//TODO; PRECIO_PLAN_CEDENTE tengo que sacarlo del plan cedente
-			//lineaTranf.setPrecioPlanCedente(contrato.getPlanCedente())
-			
-			//TODO: DESCRIPCION_PLAN_CEDENTE
-			//lineaTranf.setDescripcionPlanCedente(descripcionPlanCedente)
-			
-			//TODO: ID_TIPO_TELEFONIA_CEDENTE del plan
-			//lineaTranf.setIdTipoTelefoniaCedente(idTipoTelefoniaCedente)
-			
-			//TODO: ID_MODALIDAD_COBRO_PLAN_NUEVO - MODALIDAD_COBRO_PLAN_CEDENTE
-			//lineaTranf.setModalidadCobro(new ModalidadCobroDto());
-			//lineaTranf.setModalidadCobroPlanCedente(modalidadCobroPlanCedente)
-			
-			//TODO: CODIGO_BSCS_PLAN_CEDENTE
-			//lineaTranf.setCodigoBSCSPlanCedente(codigoBSCSPlanCedente)
-			
-			//TODO: NUMERO_IMEI cto
-			lineaTranf.setNumeroIMEI(contrato.getNumeroIMEI());
-			
-			//NUMERO_SIMCARD cto
-			lineaTranf.setSimCard(contrato.getNumeroSimCard());
-			
-			//TODO: NUMERO_SERIE cto
-			lineaTranf.setNumeroSerie(contrato.getNumeroSerie());
-			
-			//TODO: NUMERADOR_LINEA
-			//lineaTranf.setNumeradorLinea(0l);
-			
-			//TODO: ID_VANTIVE_LINEA
-			//lineaTranf.setIdVantiveLinea(0l);
-
-			//TODO: ID_VANTIVE_DETALLE
-			//lineaTranf.setIdVantiveDetalle(0l);
-			
-			lineas.add(lineaTranf);
-			                        
+	public List<ContratoViewDto>  getContratosSS() {
+		List<ContratoViewDto> contratos = new ArrayList<ContratoViewDto>();
+		for (ContratoViewDto cto : contratosActivosVisibles) {
+			//TODO: -MGR- Verificar que se esten guardando todos los datos en la linea
+			cto.setCodVantiveCesionario(editarSSUIData.getCuenta().getCodigoVantive());
+			contratos.add(cto);
 		}
 		
-		return lineas;
+		return contratos;
 	}
-		
+	
+	public CuentaDto getCtaCedenteDto() {
+		return ctaCedenteDto;
+	}
+
+	public void setDatosSolicitud(SolicitudServicioDto solicitud){
+		this.ctaCedenteDto = solicitud.getCuentaCedente();
+		this.contratosActivosVisibles = solicitud.getContratosCedidos();
+	}
 }

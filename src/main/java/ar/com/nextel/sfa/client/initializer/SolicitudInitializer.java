@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client.initializer;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
+import ar.com.nextel.sfa.client.dto.SucursalDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 
@@ -13,6 +14,7 @@ public class SolicitudInitializer implements IsSerializable {
 	private List<OrigenSolicitudDto> origenesSolicitud;
 	private List<TipoAnticipoDto> tiposAnticipo;
 	private List<VendedorDto> vendedores;
+	private List<SucursalDto> sucursales;
 
 	public void setOrigenesSolicitud(List<OrigenSolicitudDto> origenesSolicitud) {
 		this.origenesSolicitud = origenesSolicitud;
@@ -36,5 +38,13 @@ public class SolicitudInitializer implements IsSerializable {
 
 	public void setVendedores(List<VendedorDto> vendedores) {
 		this.vendedores = vendedores;
+	}
+
+	public List<SucursalDto> getSucursales() {
+		return sucursales;
+	}
+
+	public void setSucursales(List<SucursalDto> sucursales) {
+		this.sucursales = sucursales;
 	}
 }

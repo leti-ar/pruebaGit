@@ -1,3 +1,5 @@
+//MGR****
+/*
 package ar.com.nextel.sfa.client.dto;
 
 import java.util.ArrayList;
@@ -31,6 +33,8 @@ public class LineaTransfSolicitudServicioDto implements IsSerializable, Identifi
     private Long idVantiveDetalle;
     private String descripcionPlanCedente;
     private Long idTipoTelefoniaCedente;
+    
+    private ContratoViewDto contratoActivo;
 	
     private List<ServicioAdicionalLineaTransfSolicitudServicioDto> serviciosAdicionales = new ArrayList();
     
@@ -227,3 +231,4 @@ public class LineaTransfSolicitudServicioDto implements IsSerializable, Identifi
 		this.serviciosAdicionales = serviciosAdicionales;
 	}
 }
+*/

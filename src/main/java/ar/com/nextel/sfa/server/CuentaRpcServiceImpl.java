@@ -633,25 +633,37 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return null;
 	}
 
-	public CuentaDto searchCuentaDto(CuentaSearchDto cuentaSearchDto) throws RpcExceptionMessages{
-		CuentaDto cta = null;
+	public List<CuentaDto> searchCuentasDto(CuentaSearchDto cuentaSearchDto) throws RpcExceptionMessages{
+		List<CuentaDto> cuentasDto = new ArrayList<CuentaDto>();
+		CuentaDto auxCtaDto;
 		try {
 			List<CuentaSearchResultDto> cuentas = searchCuenta(cuentaSearchDto);
-			if(cuentas.size() > 1){
-				//TODO: -MGR- Verificar estos mensajes
-				AppLogger.error("La busqueda devolvio mas de una cuenta posible.");
-				throw ExceptionUtil.wrap("La busqueda devolvio mas de una cuenta posible.", null);
-			}
-			CuentaSearchResultDto cuentaResult = cuentas.get(0);
-			//TODO: -MGR- Verificar como hacer para saber si corresponde la busqueda
-			if(!cuentaResult.getNumero().contains("*")){
-				cta = selectCuenta(cuentaResult.getId(), cuentaResult.getNumero(), false);
+			for (CuentaSearchResultDto cuentaResult : cuentas) {
+				
+				if(cuentaSearchDto.getGrupoDocumentoId() != null){
+					if(!cuentaResult.getNumero().contains("*")){
+						Cuenta cta2 = cuentaBusinessService.selectCuenta(null, cuentaResult.getNumero(), getVendedor(),
+								true, mapper);
+						if(cta2.esGranCuenta()){
+							auxCtaDto = mapper.map(cta2, CuentaDto.class);
+							cuentasDto.add(auxCtaDto);
+						}
+					}
+				}else{
+					if(cuentaResult.getNumero().contains("*")){
+						auxCtaDto = new CuentaDto();
+						auxCtaDto.setCodigoVantive("***");
+					}else{
+						auxCtaDto = selectCuenta(cuentaResult.getId(), cuentaResult.getNumero(), false);
+					}
+					cuentasDto.add(auxCtaDto);
+				}
 			}
 		} catch (RpcExceptionMessages e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
-		return cta;
+		return cuentasDto;
 	}
 	
 	public List<ContratoViewDto> searchContratosActivos(CuentaDto ctaDto) throws RpcExceptionMessages{

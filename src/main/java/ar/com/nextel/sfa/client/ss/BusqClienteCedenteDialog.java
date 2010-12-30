@@ -56,32 +56,6 @@ public class BusqClienteCedenteDialog extends NextelDialog implements ChangeHand
 	public void setBuscarCommand(Command command){
 		buscarCommand = command;
 	}
-//	private Command getBuscarCommand(){
-//		return new Command() {
-//			public void execute() {
-//				CuentaRpcService.Util.getInstance().searchCuenta(busqClienteCedenteUIData.getCuentaSearch(),
-//						new DefaultWaitCallback<List<CuentaSearchResultDto>>() {
-//							public void success(List<CuentaSearchResultDto> result) {
-//								if (result.isEmpty()) {
-//									ErrorDialog.getInstance().show(
-//											"No se encontraron datos con el criterio utilizado.", false);
-//								}
-//								
-//								CuentaSearchResultDto ctaSearch = result.get(0);
-//								controller.getEditarSSUIData().getClienteCedente().setText(ctaSearch.getNumero());
-//								String text = "";
-//								for (CuentaSearchResultDto cuentaSearchResultDto : result) {
-//									text += cuentaSearchResultDto.getCodigoVantive() + " " + 
-//											cuentaSearchResultDto.getRazonSocial() + "/n";
-//								}
-//								controller.getEditarSSUIData().getObservaciones().setText(text);
-//								
-//							}
-//						});
-//				hide();
-//			}
-//		};
-//	}
 	
 	public BusqClienteCedenteUIData getBusqClienteCedenteUIData() {
 		return busqClienteCedenteUIData;

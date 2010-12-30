@@ -8,12 +8,12 @@ import java.util.List;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaDomiciliosForm;
+import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
-import ar.com.nextel.sfa.client.dto.LineaTransfSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
@@ -101,10 +101,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private InlineHTML clienteCedente;
 	private HTML refreshCedente; 
 	private TextBox canalVtas;
-	private TextBox sucursalOrigen;
+	private ListBox sucursalOrigen;
 	private ListBox vendedor;
 	private ListBox criterioBusqContrato;
 	private RegexTextBox parametroBusqContrato;
+	private List<ServicioAdicionalIncluidoDto> serviciosAdicionalesContrato;
 	
 	private static final String ITEM_CONTRATO = "Contrato";
 	private static final String ITEM_TELEFONO = "Teléfono";
@@ -115,9 +116,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private static final String VALUE_TELEFONO = "2";
 	private static final String VALUE_FLOTA_ID = "3";
 	private static final String VALUE_SUSCRIPTOR = "4";
-	
-	private List<ServicioAdicionalIncluidoDto> serviciosAdicionalesContrato;
-	//MGR---
+	private static final String TIPO_CANAL_VTA_TRANSFERENCIA = "TIPO_CANAL_VENTAS_TRANSFERENCIA";
+	public static final String CANAL_VTA_TRANSFERENCIA = "Transferencia";
 	
 	public EditarSSUIData(EditarSSUIController controller) {
 		this.controller = controller;
@@ -194,8 +194,18 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		refreshCedente.addStyleName("floatRight mr10 mt3");
 		fields.add(refreshCedente);
 		fields.add(canalVtas = new TextBox());
-		fields.add(sucursalOrigen = new TextBox());
-		fields.add(vendedor = new ListBox(""));
+		fields.add(sucursalOrigen = new ListBox());
+		fields.add(vendedor = new ListBox());
+		vendedor.addChangeListener(new ChangeListener() {
+			public void onChange(Widget arg0) {
+				//TODO: -MGR- Esto esta por que hay un vendedor con nombre y apellido null, si eso no puede pasar
+				//este control no seria necesario
+				if( ((VendedorDto)vendedor.getSelectedItem()).getApellido() != null ){
+					sucursalOrigen.selectByValue(((VendedorDto)vendedor.getSelectedItem()).getIdSucursal().toString());
+				}
+			}
+		});
+		
 		fields.add(criterioBusqContrato = new ListBox());
 		criterioBusqContrato.setWidth("150px");
 		fields.add(parametroBusqContrato = new RegexTextBox());
@@ -368,7 +378,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		return canalVtas;
 	}
 	
-	public TextBox getSucursalOrigen(){
+	public ListBox getSucursalOrigen(){
 		return sucursalOrigen;
 	}
 
@@ -463,6 +473,18 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 //		comprobarDescuentoTotal();		
 		recarcularValores();
+		
+		//MGR*****
+		if(solicitud.getGrupoSolicitud().isTransferencia()){
+			cargarDatosTransferencia();
+		}
+	}
+	
+	private void cargarDatosTransferencia(){
+		if(solicitudServicio.getCuentaCedente() != null){
+			clienteCedente.setText(solicitudServicio.getCuentaCedente().getCodigoVantive());
+		}
+		canalVtas.setText(CANAL_VTA_TRANSFERENCIA);
 	}
 
 	private void deferredLoad() {
@@ -985,32 +1007,45 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	public SolicitudServicioDto getSolicitudServicioTranferencia() {
 		solicitudServicio.setNumero(nss.getText());
 		solicitudServicio.setOrigen((OrigenSolicitudDto) origen.getSelectedItem());
-		solicitudServicio.setVendedor((VendedorDto) vendedor.getSelectedItem());
 		solicitudServicio.setObservaciones(observaciones.getText());
-		
-		//ID_CUENTA - ID_VENDEDOR - ID_GRUPO_SOLICITUD
-		//solicitudServicio.setCuentaCedente();
 		solicitudServicio.setUsuarioCreacion(ClientContext.getInstance().getVendedor());
-		solicitudServicio.setIncidenteCedente(0l);
-		//TODO: -MGR- Falta la sucursal
-		   
+		solicitudServicio.setIdSucursal(Long.valueOf(sucursalOrigen.getSelectedItem().getItemValue()));
 		
-		//MGR---
+		//TODO: -MGR- INCIDENTE_CEDENTE
+		solicitudServicio.setIncidenteCedente(0l);
+		
+		//TODO: -MGR- Ver si ID_TIPO_CANAL_VENTAS queda como Long o como TipoCanalVentas, por ahora Long
+		//solicitudServicio.setTipoCanalVentas(tipoCanalVentas)
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias != null){
+			solicitudServicio.setTipoCanalVentas(instancias.get(TIPO_CANAL_VTA_TRANSFERENCIA));
+		}
+		
+		//TODO: -MGR- Falta ver donde se guarda lo del combo vendedor
+		//si es dealer en vendedor va lo del combo
+//		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
+//			solicitudServicio.setVendedor((VendedorDto) vendedor.getSelectedItem());
+//		}
 		return solicitudServicio;
 	}
 	
-	public List<String> validarTransferenciaParaGuardar() {
-		//TODO: -MGR- Por ahora solo pide que se haya ingresado origen y  vendedor.
+	public List<String> validarTransferenciaParaGuardar(List<ContratoViewDto> contratos) {
+		setContratosCedidos(contratos);
+		
+		//-MGR- Por ahora solo pide que se haya ingresado origen y  vendedor.
 		//Verificar que campos deben estar completos a la hora de guardar
 		GwtValidator validator = new GwtValidator();
-		for (LineaTransfSolicitudServicioDto linea : solicitudServicio.getLineasTranf()) {
+		for (ContratoViewDto cto : solicitudServicio.getContratosCedidos()) {
 			//TODO -MGR- Que validaciones son necesarias para los contratos?
 			//La validacion 15 pueder ir aqui
 		}
 		validator.addTarget(origen).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
-		validator.addTarget(vendedor).required(
-				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedor()));
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
+			validator.addTarget(vendedor).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedor()));
+		}
+	
 		validator.fillResult();
 		return validator.getErrors();
 	}
@@ -1021,9 +1056,12 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	 *            aceptar de la pantalla que pide los mails
 	 * @return Lista de errores
 	 */
-	public List<String> validarTransferenciaParaCerrarGenerar(boolean generacionCierreDefinitivo) {
+	public List<String> validarTransferenciaParaCerrarGenerar(List<ContratoViewDto> contratos, boolean generacionCierreDefinitivo) {
+		setContratosCedidos(contratos);
+		
 		//TODO: -MGR- Esto seria equivalente a calcular el "total de servicios por equip"?
 		//recarcularValores();
+		
 		GwtValidator validator = new GwtValidator();
 		validator.addTarget(nss).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nº de Solicitud")).maxLength(10,
@@ -1046,14 +1084,16 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //		}
 		validator.addTarget(origen).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
-		validator.addTarget(vendedor).required(
-				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedor()));
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
+			validator.addTarget(vendedor).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedor()));
+		}
 		
-		if (solicitudServicio.getLineasTranf().isEmpty()) {
-			validator.addError(Sfa.constant().ERR_REQUIRED_LINEA_TRANSFERENCIA());
+		if (solicitudServicio.getContratosCedidos().isEmpty()) {
+			validator.addError(Sfa.constant().ERR_REQUIRED_CONTRATO_TRANSFERENCIA());
 		}
 
-		for (LineaTransfSolicitudServicioDto linea : solicitudServicio.getLineasTranf()) {
+		for (ContratoViewDto cto : solicitudServicio.getContratosCedidos()) {
 			//TODO: -MGR- Las mismas validaciones que al guardar
 		}
 
@@ -1070,9 +1110,27 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 		validator.fillResult();
 		List<String> errores = validator.getErrors();
-		//TODO: -MGR- Esto valida el domicilio, creo que noe s necesario
+		//TODO: -MGR- Esto valida el domicilio, creo que no es necesario
 		//errores.addAll(validarCompletitud());
 		return errores;
+	}
+	
+//	public List<ContratoViewDto> getContratosSS(){
+////		if(solicitudServicio != null){
+//			return solicitudServicio.getContratosCedidos();
+////		}
+////		else{
+////			return new ArrayList<ContratoViewDto>();
+////		}
+//	}
+	
+	/**
+	 * Le setea a la solicitud los contratos cedidos
+	 */
+	private void setContratosCedidos(List<ContratoViewDto> contratos){
+		if(solicitudServicio != null){
+			solicitudServicio.setContratosCedidos(contratos);
+		}
 	}
 
 	public void loadServiciosAdicionalesContrato(List<ServicioAdicionalIncluidoDto> list) {
