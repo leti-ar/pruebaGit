@@ -335,10 +335,10 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	private void drawContrato(int newRow, ContratoViewDto cto, boolean isFiltrado){
 		ContratoConChinche contratoConChinche; 
 		if (isFiltrado) {
-			contratoConChinche = new ContratoConChinche(cto.getId().toString(), cto.isPinchado());
+			contratoConChinche = new ContratoConChinche(cto.getContrato().toString(), cto.isPinchado());
 		} else {
 			cto.setPinchado(false);
-			contratoConChinche = new ContratoConChinche(cto.getId().toString(), false);
+			contratoConChinche = new ContratoConChinche(cto.getContrato().toString(), false);
 		}
 		contratosTable.setWidget(newRow, 0, new CheckBox());
 		contratosTable.setWidget(newRow, 1, contratoConChinche);
