@@ -5,6 +5,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.PlanDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.UIData;
@@ -27,6 +28,8 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 	private ServiciosAdicionalesTable serviciosAdicionales;
 	private static final String v1 = "\\{1\\}";
 	private static final String v2 = "\\{2\\}";
+	
+	private List<ServicioAdicionalIncluidoDto> serviciosAdicionalesInc;
 	
 	public PlanTransferenciaUIData(EditarSSUIController controller) {
 		this.controller = controller;

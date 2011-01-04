@@ -5,13 +5,13 @@ import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class SaveSolicitudServicioTransfResultDto implements IsSerializable{
+public class CreateSaveSSTransfResultDto implements IsSerializable{
 
 	private SolicitudServicioDto solicitud;
 	private List<MessageDto> messages;
 	private boolean error;
 	
-	public SaveSolicitudServicioTransfResultDto(){
+	public CreateSaveSSTransfResultDto(){
 		messages = new ArrayList<MessageDto>();
 		solicitud = null;
 		error = false;

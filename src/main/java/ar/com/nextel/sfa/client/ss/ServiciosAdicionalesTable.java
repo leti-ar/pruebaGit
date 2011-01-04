@@ -7,7 +7,6 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
-import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaTransfSolicitudServicioDto;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -256,13 +255,17 @@ public class ServiciosAdicionalesTable extends Composite {
 		CheckBox check = (CheckBox) table.getWidget(row, COL_AGREGAR_QUITAR);
 		ServicioAdicionalIncluidoDto servicioSelected;
 		servicioSelected = editarSSUIData.getServiciosAdicionalesContrato().get(row - 1);
-		List<ServicioAdicionalLineaTransfSolicitudServicioDto> saGuardados = editarSSUIData
-				.getContratosCedidos().get(row - 1).getServiciosAdicionales();
+		
+		//TODO: Si tildo el primer servicio adicional, row = 1, pero eso no quiere decir que se le
+		//tenga que asignar al primer contrato
+		List<ServicioAdicionalIncluidoDto> saGuardados = editarSSUIData
+		.getContratosCedidos().get(row - 1).getServiciosAdicionalesInc();
+		
 		if (saGuardados.contains(servicioSelected)) {
 			saGuardados.get(saGuardados.indexOf(servicioSelected)).setChecked(check.getValue());
 		} else {
 			servicioSelected.setChecked(check.getValue());
-//			saGuardados.add(servicioSelected);
+			saGuardados.add(servicioSelected);
 		}
 	}
 }

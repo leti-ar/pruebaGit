@@ -22,9 +22,9 @@ import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumer
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
 import ar.com.nextel.business.solicitudes.generacionCierre.GeneracionCierreBusinessOperator;
+import ar.com.nextel.business.solicitudes.generacionCierre.request.CreateSaveSSTransfResponse;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreRequest;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
-import ar.com.nextel.business.solicitudes.generacionCierre.request.SaveSolicitudServicioResponse;
 import ar.com.nextel.business.solicitudes.provider.SolicitudServicioProviderResult;
 import ar.com.nextel.business.solicitudes.repository.GenerarChangelogConfig;
 import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepository;
@@ -154,6 +154,7 @@ public class SolicitudBusinessService {
 		// if(no tiene permiso de edicion){
 		// solicitudServicio.getCuenta().terminarOperacion();
 		// }
+		//TODO: -MGR- Ver si no hay que controlar aqui tambien
 		checkServiciosAdicionales(solicitud);
 
 		solicitud.consultarCuentaPotencial();
@@ -264,6 +265,15 @@ public class SolicitudBusinessService {
 		}
 		
 		mapper.map(solicitudServicioDto, solicitudServicio);
+		
+		//-MGR- Val-punto6 NO esta mapeando directamente los cambios en la cuenta, esta bien que lo haga asi?
+		//Esto es por que debe cambiar el vendedor de la cta cesionario
+		if(!solicitudServicio.getCuenta().getVendedor().getId().equals(
+				solicitudServicioDto.getCuenta().getVendedor().getId())){
+			Vendedor vendedor = repository.retrieve(Vendedor.class, solicitudServicioDto.getCuenta().getVendedor().getId());
+			solicitudServicio.getCuenta().setVendedor(vendedor);
+		}
+		
 
 		// Estas lineas son por un problema no identificado, que hace que al querer guardar el tipo de tarjeta
 		// detecte que el objeto no está attachado a la session
@@ -421,7 +431,11 @@ public class SolicitudBusinessService {
 		return response;
 	}
 	
-	public SaveSolicitudServicioResponse validarTriptico(SolicitudServicio solicitud){
+	public CreateSaveSSTransfResponse validarTriptico(SolicitudServicio solicitud){
 		return generacionCierreBusinessOperator.validarTriptico(solicitud);
+	}
+	
+	public CreateSaveSSTransfResponse validarCreateSSTransf(SolicitudServicio solicitud){
+		return solicitudesBusinessOperator.validarCreateSSTransf(solicitud);
 	}
 }

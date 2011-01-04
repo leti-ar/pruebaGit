@@ -2,7 +2,7 @@ package ar.com.nextel.sfa.client.dto;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ServicioAdicionalIncluidoDto implements IsSerializable {
+public class ServicioAdicionalIncluidoDto implements IsSerializable, IdentifiableDto{
 	private Double precioFinal;
 	private Boolean obligatorio;
 	private ServicioAdicionalDto servicioAdicional;
@@ -65,6 +65,15 @@ public class ServicioAdicionalIncluidoDto implements IsSerializable {
 
 	public void setChecked(boolean checked) {
 		this.checked = checked;
+	}
+
+	/**
+	 * NO USAR. Este metodo es necesario solo para poder usar la clase <tt>CollectionOwnedConverter</tt> que 
+	 * utiliza dozer para mapear los objetos
+	 */
+	public Long getId() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

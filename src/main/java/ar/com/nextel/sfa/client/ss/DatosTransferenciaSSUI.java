@@ -514,6 +514,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	public void setDatosSolicitud(SolicitudServicioDto solicitud){
 		this.ctaCedenteDto = solicitud.getCuentaCedente();
 		this.contratosActivosVisibles = solicitud.getContratosCedidos();
+		//TODO: -MGR- Tiene que buscar todos los contratos y dejarlos cargados en this.todosContratosActivos
 	}
 		
 }

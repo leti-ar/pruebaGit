@@ -118,6 +118,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private static final String VALUE_SUSCRIPTOR = "4";
 	private static final String TIPO_CANAL_VTA_TRANSFERENCIA = "TIPO_CANAL_VENTAS_TRANSFERENCIA";
 	public static final String CANAL_VTA_TRANSFERENCIA = "Transferencia";
+	public static final String NO_COMISIONABLE = "No Comisionable";
 	
 	public EditarSSUIData(EditarSSUIController controller) {
 		this.controller = controller;
@@ -474,7 +475,6 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //		comprobarDescuentoTotal();		
 		recarcularValores();
 		
-		//MGR*****
 		if(solicitud.getGrupoSolicitud().isTransferencia()){
 			cargarDatosTransferencia();
 		}
@@ -1020,12 +1020,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		if(instancias != null){
 			solicitudServicio.setTipoCanalVentas(instancias.get(TIPO_CANAL_VTA_TRANSFERENCIA));
 		}
-		
-		//TODO: -MGR- Falta ver donde se guarda lo del combo vendedor
-		//si es dealer en vendedor va lo del combo
-//		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
-//			solicitudServicio.setVendedor((VendedorDto) vendedor.getSelectedItem());
-//		}
+
 		return solicitudServicio;
 	}
 	

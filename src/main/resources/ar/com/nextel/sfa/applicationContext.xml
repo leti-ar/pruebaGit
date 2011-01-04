@@ -131,7 +131,6 @@
             <bean class="ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio"></bean>
         </property>
         <property name="dtoClass">
-<!--            <bean class="ar.com.nextel.sfa.client.dto.LineaTransfSolicitudServicioDto"></bean>-->
             <bean class="ar.com.nextel.sfa.client.dto.ContratoViewDto"></bean>
         </property>
     </bean>
@@ -143,7 +142,7 @@
             <bean class="ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaTransfSolicitudServicio"></bean>
         </property>
         <property name="dtoClass">
-            <bean class="ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaTransfSolicitudServicioDto"></bean>
+            <bean class="ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto"></bean>
         </property>
     </bean>	
 	

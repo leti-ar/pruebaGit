@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.dto;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -32,17 +33,9 @@ public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 	
 	private PlanDto plan;
 	private boolean isPinchado = false;
-	private List<ServicioAdicionalLineaTransfSolicitudServicioDto> serviciosAdicionales;
+	private List<ServicioAdicionalIncluidoDto> serviciosAdicionalesInc = new ArrayList<ServicioAdicionalIncluidoDto>();
 	
 	
-//	public Long getId() {
-//		return id;
-//	}
-//
-//	public void setId(Long id) {
-//		this.id = id;
-//	}
-
 	public Long getContrato() {
 		return contrato;
 	}
@@ -211,17 +204,17 @@ public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 		this.isPinchado = isPinchado;
 	}
 	
-	public List<ServicioAdicionalLineaTransfSolicitudServicioDto> getServiciosAdicionales() {
-		return serviciosAdicionales;
+	public List<ServicioAdicionalIncluidoDto> getServiciosAdicionalesInc() {
+		return serviciosAdicionalesInc;
 	}
-	
-	public void setServiciosAdicionales(List<ServicioAdicionalLineaTransfSolicitudServicioDto> serviciosAdicionales) {
-		this.serviciosAdicionales = serviciosAdicionales;
+
+	public void setServiciosAdicionalesInc(
+			List<ServicioAdicionalIncluidoDto> serviciosAdicionalesInc) {
+		this.serviciosAdicionalesInc = serviciosAdicionalesInc;
 	}
 
 	@Override
 	public int hashCode() {
-		//return this.id.intValue();
 		return this.contrato.intValue();
 	}
 	

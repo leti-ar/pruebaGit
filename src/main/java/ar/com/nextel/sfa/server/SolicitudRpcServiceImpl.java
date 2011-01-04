@@ -29,8 +29,8 @@ import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaD
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
+import ar.com.nextel.business.solicitudes.generacionCierre.request.CreateSaveSSTransfResponse;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
-import ar.com.nextel.business.solicitudes.generacionCierre.request.SaveSolicitudServicioResponse;
 import ar.com.nextel.business.solicitudes.negativeFiles.NegativeFilesBusinessOperator;
 import ar.com.nextel.business.solicitudes.negativeFiles.result.NegativeFilesBusinessResult;
 import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepository;
@@ -38,6 +38,7 @@ import ar.com.nextel.business.solicitudes.search.dto.SolicitudServicioCerradaSea
 import ar.com.nextel.components.knownInstances.GlobalParameter;
 import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
+import ar.com.nextel.components.message.MessageList;
 import ar.com.nextel.components.sequence.DefaultSequenceImpl;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
@@ -58,6 +59,7 @@ import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
@@ -74,7 +76,6 @@ import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
-import ar.com.nextel.sfa.client.dto.SaveSolicitudServicioTransfResultDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
@@ -166,7 +167,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		
 		//calculo los descuentos aplicados a cada línea y se los seteo 
 		List<LineaSolicitudServicioDto> lineas = solicitudServicioDto.getLineas(); 
-		int a = 0;
 		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
 			Double descuentoAplicado = 0.0;
 			Double precioConDescuento = 0.0;
@@ -664,30 +664,49 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return mapper.convertList(serviciosAdicionales, ServicioAdicionalIncluidoDto.class);
 	}
 	
-	public SaveSolicitudServicioTransfResultDto saveSolicituServicioTranferencia(SolicitudServicioDto solicitudServicioDto)
+	public CreateSaveSSTransfResultDto saveSolicituServicioTranferencia(SolicitudServicioDto solicitudServicioDto)
 			throws RpcExceptionMessages {
-		SaveSolicitudServicioTransfResultDto resultDto = new SaveSolicitudServicioTransfResultDto();
-		try {
-			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
-			solicitudServicioDto = mapper.map(solicitudSaved, SolicitudServicioDto.class);
-			resultDto.setSolicitud(solicitudServicioDto);
+		CreateSaveSSTransfResultDto resultDto = new CreateSaveSSTransfResultDto();
+//		try {
+			SolicitudServicioDto solicitudDto = this.saveSolicituServicio(solicitudServicioDto);
+			resultDto.setSolicitud(solicitudDto);
+		
+//			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
+//			solicitudServicioDto = mapper.map(solicitudSaved, SolicitudServicioDto.class);
+//			resultDto.setSolicitud(solicitudServicioDto);
 			
 			//Si es Adm. de Creditos, entonces valida el triptico al guardar
 			//-MGR- Val-9
 			//TODO: -MGR- Conviene usar el permismo VER_COMBO_VENDEDOR?? o no por si otro ve el combo
 			//pero no debe validar al guardar?
 			if(sessionContextLoader.getVendedor().isADMCreditos()){
-				SaveSolicitudServicioResponse ssResponse = solicitudBusinessService.validarTriptico(solicitudSaved);
+				SolicitudServicio solicitud = repository.retrieve(SolicitudServicio.class,solicitudDto.getId());
+				//mapper.map(solicitudDto, solicitud);
+				CreateSaveSSTransfResponse ssResponse = solicitudBusinessService.validarTriptico(solicitud);
 				resultDto.setMessages(mapper.convertList(ssResponse.getMessages().getMessages(), MessageDto.class));
 				if(!resultDto.getMessages().isEmpty()){
 					resultDto.setError(true);
 				}
 			}
-		} catch (Exception e) {
-			AppLogger.error(e);
-			throw ExceptionUtil.wrap(e);
-		}
+//		} catch (Exception e) {
+//			AppLogger.error(e);
+//			throw ExceptionUtil.wrap(e);
+//		}
 		return resultDto;
 	}
 
+	public CreateSaveSSTransfResultDto createSolicitudServicioTranferencia(
+			SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages {
+		CreateSaveSSTransfResultDto resultDto = new CreateSaveSSTransfResultDto();
+		
+		SolicitudServicioDto solicitudDto = this.createSolicitudServicio(solicitudServicioRequestDto);
+		resultDto.setSolicitud(solicitudDto);
+		SolicitudServicio solicitud = repository.retrieve(SolicitudServicio.class,
+				solicitudDto.getId());
+		//mapper.map(solicitudDto, solicitud);
+		MessageList messages = solicitudBusinessService.validarCreateSSTransf(solicitud).getMessages();
+		resultDto.setError(messages.hasErrors());
+		resultDto.setMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
+		return resultDto;
+	}
 }
