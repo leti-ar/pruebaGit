@@ -8,6 +8,7 @@ public class ServicioAdicionalLineaTransfSolicitudServicioDto implements IsSeria
 	private ServicioAdicionalDto servicioAdicional;
 	private Double precioLista;
 	private Double precioVenta;
+	private boolean checked = false;
 	
 	//private LineaTransfSolicitudServicio linea;
 	
@@ -42,4 +43,13 @@ public class ServicioAdicionalLineaTransfSolicitudServicioDto implements IsSeria
 	public void setPrecioVenta(Double precioVenta) {
 		this.precioVenta = precioVenta;
 	}
+	
+	public boolean isChecked() {
+		return checked;
+	}
+	
+	public void setChecked(boolean checked) {
+		this.checked = checked;
+	}
+	
 }

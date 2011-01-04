@@ -7,6 +7,7 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaTransfSolicitudServicioDto;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -251,16 +252,17 @@ public class ServiciosAdicionalesTable extends Composite {
 	
 	public void agregarQuitarServicioAdicionalContrato(int row) {
 		// agrega o quita servicio adicional
-//		CheckBox check = (CheckBox) table.getWidget(row, COL_AGREGAR_QUITAR);
-//		ServicioAdicionalLineaSolicitudServicioDto servicioSelected;
-//		servicioSelected = editarSSUIData.getServiciosAdicionales().get(selectedLineaSSRow - 1).get(row - 1);
-//		List<ServicioAdicionalLineaSolicitudServicioDto> saGuardados = editarSSUIData
-//				.getLineasSolicitudServicio().get(selectedLineaSSRow - 1).getServiciosAdicionales();
-//		if (saGuardados.contains(servicioSelected)) {
-//			saGuardados.get(saGuardados.indexOf(servicioSelected)).setChecked(check.getValue());
-//		} else {
-//			servicioSelected.setChecked(check.getValue());
+		//TODO SAI o SALTSS
+		CheckBox check = (CheckBox) table.getWidget(row, COL_AGREGAR_QUITAR);
+		ServicioAdicionalIncluidoDto servicioSelected;
+		servicioSelected = editarSSUIData.getServiciosAdicionalesContrato().get(row - 1);
+		List<ServicioAdicionalLineaTransfSolicitudServicioDto> saGuardados = editarSSUIData
+				.getContratosCedidos().get(row - 1).getServiciosAdicionales();
+		if (saGuardados.contains(servicioSelected)) {
+			saGuardados.get(saGuardados.indexOf(servicioSelected)).setChecked(check.getValue());
+		} else {
+			servicioSelected.setChecked(check.getValue());
 //			saGuardados.add(servicioSelected);
-//		}
+		}
 	}
 }

@@ -33,6 +33,7 @@ public class PlanTransferenciaDialog  extends NextelDialog implements ClickListe
 	private EditarSSUIController controller;
 	private List<TipoPlanDto> tiposPlan = null;
 	private String selectedPlan;
+	private String selectedPlanId;
 	private String precioVenta;
 	private boolean empresa = false;
 
@@ -73,6 +74,7 @@ public class PlanTransferenciaDialog  extends NextelDialog implements ClickListe
 	public void onClick(Widget sender) {
 		if (sender == aceptar) {
 			selectedPlan = planTransferenciaUIData.getPlan().getSelectedItemText();
+			selectedPlanId = planTransferenciaUIData.getPlan().getSelectedItemId();
 			precioVenta = String.valueOf(planTransferenciaUIData.getPrecioVenta());
 			executeItemCreation(sender);
 		} else if (sender == cerrar) {
@@ -117,6 +119,10 @@ public class PlanTransferenciaDialog  extends NextelDialog implements ClickListe
 	
 	public String getSelectedPlan() {
 		return selectedPlan;
+	}
+	
+	public String getSelectedPlanId() {
+		return selectedPlanId;
 	}
 	
 	public String getPrecioVenta() {

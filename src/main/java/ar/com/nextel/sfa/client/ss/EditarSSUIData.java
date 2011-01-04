@@ -1141,5 +1141,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	public List<ServicioAdicionalIncluidoDto> getServiciosAdicionalesContrato() {
 		return serviciosAdicionalesContrato;
 	}
-	
+
+	public List<ContratoViewDto> getContratosCedidos() {
+		return solicitudServicio.getContratosCedidos();
+	}
 }

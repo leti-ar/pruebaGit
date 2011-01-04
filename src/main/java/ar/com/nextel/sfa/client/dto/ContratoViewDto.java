@@ -1,10 +1,7 @@
 package ar.com.nextel.sfa.client.dto;
 
-
-
 import java.util.Date;
-
-import ar.com.nextel.sfa.client.widget.ContratoConChinche;
+import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -35,6 +32,7 @@ public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 	
 	private PlanDto plan;
 	private boolean isPinchado = false;
+	private List<ServicioAdicionalLineaTransfSolicitudServicioDto> serviciosAdicionales;
 	
 	
 //	public Long getId() {
@@ -211,6 +209,14 @@ public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 
 	public void setPinchado(boolean isPinchado) {
 		this.isPinchado = isPinchado;
+	}
+	
+	public List<ServicioAdicionalLineaTransfSolicitudServicioDto> getServiciosAdicionales() {
+		return serviciosAdicionales;
+	}
+	
+	public void setServiciosAdicionales(List<ServicioAdicionalLineaTransfSolicitudServicioDto> serviciosAdicionales) {
+		this.serviciosAdicionales = serviciosAdicionales;
 	}
 
 	@Override

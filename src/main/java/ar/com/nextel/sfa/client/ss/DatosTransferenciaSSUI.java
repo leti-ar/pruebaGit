@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import ar.com.nextel.business.cuentas.search.businessUnits.CuentaSearchData;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
-import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.event.ClickPincheEvent;
 import ar.com.nextel.sfa.client.event.ClickPincheEventHandler;
@@ -25,6 +23,7 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -87,6 +86,12 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		verTodos.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
 				mostrarTodos();
+			}
+		});
+		
+		eliminar.addClickListener(new ClickListener() {
+			public void onClick(Widget arg0) {
+				eliminarContratosSeleccionados();
 			}
 		});
 		
@@ -154,7 +159,6 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 			contratosTable.setHTML(0, i, titlesContratos[i]);
 		}
 		contratosTable.setWidget(0, 0, new CheckBox());
-		
 		contratosTable.setCellPadding(0);
 		contratosTable.setCellSpacing(0);
 		contratosTable.addStyleName("dataTable");
@@ -242,7 +246,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		refreshTablaContratos();
 	}
 	
-		public void showBusqClienteCedente(){
+	public void showBusqClienteCedente(){
 		if(busqClienteCedenteDialog == null){
 			busqClienteCedenteDialog = new BusqClienteCedenteDialog("Buscar cliente cedente", this.controller);
 
@@ -293,6 +297,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 																	contratosActivosVisibles.clear();
 																	todosContratosActivos.addAll(result);
 																	contratosActivosVisibles.addAll(result);
+																	limpiarContratosTable();
 																	refreshTablaContratos();
 																}
 															});
@@ -303,12 +308,8 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 									}
 								}
 							});
-					
 				}
-				
 			};
-			
-			
 			this.busqClienteCedenteDialog.setBuscarCommand(buscarCommmand);
 		}
 		this.busqClienteCedenteDialog.mostrarDialogo();
@@ -328,7 +329,23 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	 */
 	private void mostrarTodos() {
 		for (int i = 0; i < todosContratosActivos.size(); i++) {
-			drawContrato(i + 1 , todosContratosActivos.get(i), false);
+			drawContrato(i + 1, todosContratosActivos.get(i), false);
+		}
+	}
+	
+	private void eliminarContratosSeleccionados() {
+		for (int i = contratosTable.getRowCount()-1; i>0; i--) {
+			CheckBox checked = (CheckBox) contratosTable.getWidget(i, 0);
+			if (checked.getValue()) {			
+				for (Iterator<ContratoViewDto> iterator = contratosActivosVisibles.iterator(); iterator.hasNext();) {
+					ContratoViewDto contratoActivo = (ContratoViewDto) iterator.next();
+					ContratoConChinche contratoConChinche = (ContratoConChinche) contratosTable.getWidget(i, 1);
+					if (contratoConChinche.getContrato().equals(contratoActivo.getContrato())) {
+						iterator.remove();
+					}
+				}
+				contratosTable.removeRow(i);
+			}
 		}
 	}
 	
@@ -342,7 +359,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		}
 		contratosTable.setWidget(newRow, 0, new CheckBox());
 		contratosTable.setWidget(newRow, 1, contratoConChinche);
-		contratosTable.setHTML(newRow, 2, String.valueOf(cto.getFechaEstado()));
+		contratosTable.setHTML(newRow, 2, DateTimeFormat.getFormat("dd-M-yyyy").format(cto.getFechaEstado()));
 		contratosTable.setText(newRow, 3, cto.getTelefono());
 		contratosTable.setHTML(newRow, 4, cto.getFlotaId());
 		contratosTable.setText(newRow, 5, cto.getModelo());
@@ -453,7 +470,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 			planTransferenciaDialog = new PlanTransferenciaDialog("Modificar Plan", controller);
 			Command aceptarCommand = new Command() {
 				public void execute() {
-					drawNuevoPlan(planTransferenciaDialog.getSelectedPlan(),
+					drawNuevoPlan(planTransferenciaDialog.getSelectedPlan(), planTransferenciaDialog.getSelectedPlanId(),
 							planTransferenciaDialog.getPrecioVenta());
 				}
 			};
@@ -463,7 +480,9 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		planTransferenciaDialog.show(contratoSeleccionado, filaSeleccionada);
 	}	
 	
-	private void drawNuevoPlan(String nuevoPlan, String precioVenta){
+	private void drawNuevoPlan(String nuevoPlan, String nuevoPlanId, String precioVenta) {
+		contratoSeleccionado.setPlanCesionario(Long.valueOf(nuevoPlanId));
+		contratoSeleccionado.setPrecioPlanCesionario(precioVenta);
 		contratosTable.setWidget(filaSeleccionada, 8, new PlanCesionarioConLapiz(nuevoPlan));
 		contratosTable.setHTML(filaSeleccionada, 9, precioVenta);
 	}
