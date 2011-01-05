@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
@@ -24,10 +25,13 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 	private ListBox tipoPlan;
 	private ListBox plan;
 	private Long precioVenta;
+	private ContratoViewDto contrato;
 	private EditarSSUIController controller;
 	private ServiciosAdicionalesTable serviciosAdicionales;
+	private int row;
 	private static final String v1 = "\\{1\\}";
 	private static final String v2 = "\\{2\\}";
+	private Long idPlanAnterior;
 	
 	private List<ServicioAdicionalIncluidoDto> serviciosAdicionalesInc;
 	
@@ -64,12 +68,56 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 		return precioVenta;
 	}
 	
+	public ContratoViewDto getContrato() {
+		PlanDto planSelected = (PlanDto) plan.getSelectedItem();
+
+		if (planSelected != null) {
+			if (contrato.getPlan() == null
+					|| !planSelected.getId().equals(contrato.getPlan().getId())) {
+				contrato.setPlan(planSelected);
+				contrato.setPlanCesionario(Long.valueOf(plan.getSelectedItemId()));
+				contrato.setPrecioPlanCesionario(String.valueOf(planSelected.getPrecioLista()));
+			}
+		} else {
+			contrato.setPlan(planSelected);
+			contrato.setPlanCesionario(new Long(""));
+			contrato.setPrecioPlanCesionario("");
+		}
+		// Limpio los servicios adicionales para que los actualice
+		if (!(contrato.getPlan().getId().equals(idPlanAnterior))) {
+			contrato.getServiciosAdicionalesInc().clear();
+		}
+		return contrato;
+	}
+	
+	public void setContrato(ContratoViewDto contrato) {
+		plan.clear();
+		plan.clearPreseleccionados();
+		serviciosAdicionales.clear();
+		this.contrato = contrato;
+		if (contrato.getPlan() != null) {
+			tipoPlan.setSelectedItem(contrato.getPlan().getTipoPlan());
+		} else {
+			tipoPlan.setSelectedItem(new TipoPlanDto(Long.valueOf(8), "Plan Directo"));
+		}
+		plan.setSelectedItem(contrato.getPlan());
+		idPlanAnterior = contrato.getPlan() != null ? contrato.getPlan().getId() : null;
+	}
+	
 	public ServiciosAdicionalesTable getServiciosAdicionales() {
 		return serviciosAdicionales;
 	}
 	
 	public void setServiciosAdicionales(ServiciosAdicionalesTable serviciosAdicionales) {
 		this.serviciosAdicionales = serviciosAdicionales;
+	}
+	
+	public int getRow() {
+		return row;
+	}
+	
+	public void setRow(int row) {
+		this.row = row;
 	}
 	
 	public void onChange(Widget sender) {
@@ -82,7 +130,6 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 		} else if (sender == plan) {
 			serviciosAdicionales.clear();
 			PlanDto planDto = (PlanDto) plan.getSelectedItem();
-			precioVenta = planDto.getPrecioLista();
 			serviciosAdicionales.setServiciosAdicionalesForContrato(planDto.getId());
 		}
 	}
@@ -93,7 +140,7 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 			Cell cell = ((HTMLTable) sender).getCellForEvent(clickEvent);
 			if (cell != null) {
 				if (cell.getCellIndex() == 0 && cell.getRowIndex() > 0) {
-					serviciosAdicionales.agregarQuitarServicioAdicionalContrato(cell.getRowIndex());
+					serviciosAdicionales.agregarQuitarServicioAdicionalContrato(cell.getRowIndex(), row);
 				}
 			}
 		}
@@ -108,7 +155,7 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 				plan.addAllItems(result);
 				if (result.size() == 1) {
 					plan.setSelectedIndex(1);
-				}				
+				}
 			}
 		};
 	}

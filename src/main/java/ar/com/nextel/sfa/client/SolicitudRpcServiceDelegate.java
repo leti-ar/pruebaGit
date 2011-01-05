@@ -26,6 +26,7 @@ import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
+import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -218,5 +219,11 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.createSolicitudServicioTranferencia(solicitudServicioRequestDto, callback);
 
+	}
+
+	public void getContratoViewInitializer(GrupoSolicitudDto grupoSolicitud,
+			DefaultWaitCallback<ContratoViewInitializer> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getContratoViewInitializer(grupoSolicitud, callback);
 	}
 }

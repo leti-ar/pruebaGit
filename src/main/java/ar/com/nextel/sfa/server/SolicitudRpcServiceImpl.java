@@ -89,6 +89,7 @@ import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
+import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.server.businessservice.SolicitudBusinessService;
@@ -708,5 +709,14 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		resultDto.setError(messages.hasErrors());
 		resultDto.setMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
 		return resultDto;
+	}
+	
+	public ContratoViewInitializer getContratoViewInitializer(
+			GrupoSolicitudDto grupoSolicitudDto) {
+
+		ContratoViewInitializer initializer = new ContratoViewInitializer();
+		initializer.setTiposPlanes(mapper.convertList(repository.getAll(TipoPlan.class), TipoPlanDto.class));
+
+		return initializer;
 	}
 }

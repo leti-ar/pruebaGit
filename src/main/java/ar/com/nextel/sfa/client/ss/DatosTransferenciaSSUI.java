@@ -10,6 +10,7 @@ import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
+import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.event.ClickPincheEvent;
 import ar.com.nextel.sfa.client.event.ClickPincheEventHandler;
@@ -470,8 +471,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 			planTransferenciaDialog = new PlanTransferenciaDialog("Modificar Plan", controller);
 			Command aceptarCommand = new Command() {
 				public void execute() {
-					drawNuevoPlan(planTransferenciaDialog.getSelectedPlan(), planTransferenciaDialog.getSelectedPlanId(),
-							planTransferenciaDialog.getPrecioVenta());
+					drawNuevoPlan(planTransferenciaDialog.getPlanTransferenciaUIData().getContrato());
 				}
 			};
 			planTransferenciaDialog.setAceptarCommand(aceptarCommand);
@@ -480,11 +480,9 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		planTransferenciaDialog.show(contratoSeleccionado, filaSeleccionada);
 	}	
 	
-	private void drawNuevoPlan(String nuevoPlan, String nuevoPlanId, String precioVenta) {
-		contratoSeleccionado.setPlanCesionario(Long.valueOf(nuevoPlanId));
-		contratoSeleccionado.setPrecioPlanCesionario(precioVenta);
-		contratosTable.setWidget(filaSeleccionada, 8, new PlanCesionarioConLapiz(nuevoPlan));
-		contratosTable.setHTML(filaSeleccionada, 9, precioVenta);
+	private void drawNuevoPlan(ContratoViewDto contrato) {
+		contratosTable.setWidget(filaSeleccionada, 8, new PlanCesionarioConLapiz(contrato.getPlan().getItemText()));
+		contratosTable.setHTML(filaSeleccionada, 9, contrato.getPrecioPlanCesionario());
 	}
 	
 	private void selectAllContratosRow(){

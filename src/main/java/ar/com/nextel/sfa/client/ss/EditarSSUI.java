@@ -26,6 +26,7 @@ import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
+import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
@@ -789,4 +790,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		ssDto.setContratosCedidos(datosTranferencia.getContratosSS());
 		return ssDto;
 	}
+
+	public void getContratoViewInitializer(
+			DefaultWaitCallback<ContratoViewInitializer> defaultWaitCallback) {
+		SolicitudRpcService.Util.getInstance().getContratoViewInitializer(
+				editarSSUIData.getGrupoSolicitud(), defaultWaitCallback);
+	}
+	
 }

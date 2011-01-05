@@ -14,6 +14,7 @@ import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
+import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
@@ -53,4 +54,6 @@ public interface EditarSSUIController {
 
 	void getServiciosAdicionalesContrato(Long idPlan,
 			DefaultWaitCallback<List<ServicioAdicionalIncluidoDto>> defaultWaitCallback);
+
+	void getContratoViewInitializer(DefaultWaitCallback<ContratoViewInitializer> callback);
 }

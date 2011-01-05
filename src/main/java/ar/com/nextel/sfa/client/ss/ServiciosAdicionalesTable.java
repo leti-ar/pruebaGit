@@ -249,17 +249,17 @@ public class ServiciosAdicionalesTable extends Composite {
 		}
 	}
 	
-	public void agregarQuitarServicioAdicionalContrato(int row) {
+	public void agregarQuitarServicioAdicionalContrato(int rowServicioAdicional, int rowContrato) {
 		// agrega o quita servicio adicional
 		//TODO SAI o SALTSS
-		CheckBox check = (CheckBox) table.getWidget(row, COL_AGREGAR_QUITAR);
+		CheckBox check = (CheckBox) table.getWidget(rowServicioAdicional, COL_AGREGAR_QUITAR);
 		ServicioAdicionalIncluidoDto servicioSelected;
-		servicioSelected = editarSSUIData.getServiciosAdicionalesContrato().get(row - 1);
+		servicioSelected = editarSSUIData.getServiciosAdicionalesContrato().get(rowServicioAdicional - 1);
 		
 		//TODO: Si tildo el primer servicio adicional, row = 1, pero eso no quiere decir que se le
 		//tenga que asignar al primer contrato
 		List<ServicioAdicionalIncluidoDto> saGuardados = editarSSUIData
-		.getContratosCedidos().get(row - 1).getServiciosAdicionalesInc();
+		.getContratosCedidos().get(rowContrato - 1).getServiciosAdicionalesInc();
 		
 		if (saGuardados.contains(servicioSelected)) {
 			saGuardados.get(saGuardados.indexOf(servicioSelected)).setChecked(check.getValue());

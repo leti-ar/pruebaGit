@@ -4,8 +4,9 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
+import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
-import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
+import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
@@ -32,7 +33,8 @@ public class PlanTransferenciaDialog  extends NextelDialog implements ClickListe
 	private PlanTransferenciaUIData planTransferenciaUIData;
 	private EditarSSUIController controller;
 	private List<TipoPlanDto> tiposPlan = null;
-	private String selectedPlan;
+	private PlanDto selectedPlan; 
+	private String selectedPlanText;
 	private String selectedPlanId;
 	private String precioVenta;
 	private boolean empresa = false;
@@ -68,12 +70,13 @@ public class PlanTransferenciaDialog  extends NextelDialog implements ClickListe
 		aceptar.addClickListener(this);
 		cerrar.addClickListener(this);
 
-		controller.getLineasSolicitudServicioInitializer(initTiposOrdenCallback());
+		controller.getContratoViewInitializer(initTiposPlanesCallback());
 	}
 
 	public void onClick(Widget sender) {
 		if (sender == aceptar) {
-			selectedPlan = planTransferenciaUIData.getPlan().getSelectedItemText();
+			selectedPlan = (PlanDto) planTransferenciaUIData.getPlan().getSelectedItem();
+			selectedPlanText = planTransferenciaUIData.getPlan().getSelectedItemText();
 			selectedPlanId = planTransferenciaUIData.getPlan().getSelectedItemId();
 			precioVenta = String.valueOf(planTransferenciaUIData.getPrecioVenta());
 			executeItemCreation(sender);
@@ -101,9 +104,9 @@ public class PlanTransferenciaDialog  extends NextelDialog implements ClickListe
 		}
 	}
 
-	private DefaultWaitCallback initTiposOrdenCallback() {
-		return new DefaultWaitCallback<LineasSolicitudServicioInitializer>() {
-			public void success(LineasSolicitudServicioInitializer initializer) {
+	private DefaultWaitCallback initTiposPlanesCallback() {
+		return new DefaultWaitCallback<ContratoViewInitializer>() {
+			public void success(ContratoViewInitializer initializer) {
 				tiposPlan = initializer.getTiposPlanes();
 			}
 		};
@@ -117,8 +120,12 @@ public class PlanTransferenciaDialog  extends NextelDialog implements ClickListe
 		this.aceptarCommand = aceptarCommand;
 	}
 	
-	public String getSelectedPlan() {
+	public PlanDto getSelectedPlan() {
 		return selectedPlan;
+	}
+	
+	public String getSelectedPlanText() {
+		return selectedPlanText;
 	}
 	
 	public String getSelectedPlanId() {
@@ -136,6 +143,9 @@ public class PlanTransferenciaDialog  extends NextelDialog implements ClickListe
 	public void show(ContratoViewDto contrato, int row) {
 		planTransferenciaUIData.getTipoPlan().clear();
 		planTransferenciaUIData.getTipoPlan().clearPreseleccionados();
+//		planTransferenciaUIData.getServiciosAdicionales().clear();
+		planTransferenciaUIData.setRow(row);
+		planTransferenciaUIData.setContrato(contrato);
 
 		final TipoPlanDto tipoPlan = contrato != null && contrato.getPlan() != null ? contrato.getPlan().getTipoPlan() : null;
 		DeferredCommand.addCommand(new IncrementalCommand() {
