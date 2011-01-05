@@ -205,8 +205,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	}
 	
 	private void refresObsLayout(){
-		//TODO: -MGR- Esta bien usar la misma etiqueta?, por que no son observaciones de domicilio
-		obsLayout.setHTML(0, 0, Sfa.constant().obs_domicilio());
+		obsLayout.setHTML(0, 0, Sfa.constant().observ_transf());
 		obsLayout.setWidget(0, 1, editarSSUIData.getObservaciones());	
 		editarSSUIData.getObservaciones().setHeight("50px");
 	}
@@ -273,9 +272,10 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 													ErrorDialog.getInstance().show(
 															"Debe buscar por número de documento o CUIT CUIL los clientes que no son de su cartera.");
 													busqClienteCedenteDialog.hide();
-													//TODO: -MGR- en este caso se tiene que vaciar la grilla. Verificar
+													//TODO: -MGR- en este caso se tiene que vaciar la grilla y eliminar el cliente cedente
+													//de la solicitud. No lo esta haciendo
+													limpiarContratosTable();
 												}else{
-													//TODO: -MGR- Verificar que si no dealer este es el mensaje a mostrar
 													ErrorDialog.getInstance().show("No se encontraron cuentas con el criterio especificado.");
 												}
 											
@@ -512,7 +512,19 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	public void setDatosSolicitud(SolicitudServicioDto solicitud){
 		this.ctaCedenteDto = solicitud.getCuentaCedente();
 		this.contratosActivosVisibles = solicitud.getContratosCedidos();
-		//TODO: -MGR- Tiene que buscar todos los contratos y dejarlos cargados en this.todosContratosActivos
+		if(this.ctaCedenteDto != null){
+			CuentaRpcService.Util.getInstance().searchContratosActivos(
+					this.ctaCedenteDto, new DefaultWaitCallback<List<ContratoViewDto>>() {
+						
+						public void success(List<ContratoViewDto> result) {
+							todosContratosActivos.clear();
+							todosContratosActivos.addAll(result);
+						}
+					});
+		}
+		//-MGR- Ver si esto es necesario
+//		limpiarContratosTable();
+//		refreshTablaContratos();
 	}
 		
 }

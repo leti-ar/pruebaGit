@@ -313,7 +313,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		List<Vendedor> vendedores = repository.getAll(Vendedor.class);
 		Collections.sort(vendedores, new Comparator<Vendedor>() {
 			public int compare(Vendedor vend1, Vendedor vend2) {
-				//TODO: -MGR- Ver si no es por nombre y apellido
 				if(vend1.getApellido() == null && vend2.getApellido() == null)
 					return 0;
 				if(vend1.getApellido() == null)
@@ -542,7 +541,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					&& response.getMessages().hasErrors() == false
 					&& sessionContextLoader.getVendedor().getTipoVendedor().getCodigoVantive().equals(
 							KnownInstanceIdentifier.TIPO_VENDEDOR_EECC.getKey())) {
-				//TODO: -MGR- que es esto?
 				solicitudBusinessService.generarChangeLog(solicitudServicioDto.getId(), solicitudServicio
 						.getVendedor().getId());
 			}

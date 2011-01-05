@@ -37,6 +37,8 @@ import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.RazonSocialClienteBar;
 import ar.com.nextel.sfa.client.widget.UILoader;
+import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
+import ar.com.snoop.gwt.commons.client.dto.ListBoxItemImpl;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -287,7 +289,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		cerrarSolicitud = new SimpleLink("Cerrar");
 		
 		//MGR - #1122
-		if(!ClientContext.getInstance().checkPermiso(PermisosEnum.OCULTA_LINK_GENERAR_SS.getValue())){
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(grupoSS != null && instancias != null && !grupoSS.equals(instancias.get(GrupoSolicitudDto.ID_TRANSFERENCIA)) &&
+				!ClientContext.getInstance().checkPermiso(PermisosEnum.OCULTA_LINK_GENERAR_SS.getValue())){
 			linksCrearSS.add(wrap(generarSolicitud));
 		}
 		
@@ -316,16 +320,18 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private void loadInitializer(SolicitudInitializer initializer) {
 		editarSSUIData.getOrigen().addAllItems(initializer.getOrigenesSolicitud());
 		editarSSUIData.getAnticipo().addAllItems(initializer.getTiposAnticipo());
-		//TODO: -MGR- Habilitar esto cuando este terminado. REVISAR el Id de No comisionable
+		//TODO: -MGR- Habilitar esto cuando este terminado
 //		if(ClientContext.getInstance().getVendedor().isDealer()){
 //			ListBoxItem item = new ListBoxItemImpl(
 //					ClientContext.getInstance().getVendedor().getApellidoYNombre(), 
 //					ClientContext.getInstance().getVendedor().getId().toString());
 //			editarSSUIData.getVendedor().addItem(item);
+//			editarSSUIData.getVendedor().setSelectedItem(item);
 //		} 
 //		else if(ClientContext.getInstance().getVendedor().isAP()){
 //			ListBoxItem item = new ListBoxItemImpl(editarSSUIData.NO_COMISIONABLE, "1");
 //			editarSSUIData.getVendedor().addItem(item);
+//			editarSSUIData.getVendedor().setSelectedItem(item);
 //		}
 //		else{
 			editarSSUIData.getVendedor().addAllItems(initializer.getVendedores());
@@ -336,11 +342,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			editarSSUIData.getSucursalOrigen().addAllItems(initializer.getSucursales());
 //		}
 //		else{
-//			//TODO: -MGR- En este caso no es visible, pero deberia cargarse el nombre y el id, no dos veces el id
 //			ListBoxItem item = new ListBoxItemImpl(
 //			ClientContext.getInstance().getVendedor().getIdSucursal().toString(), 
 //			ClientContext.getInstance().getVendedor().getIdSucursal().toString());
 //			editarSSUIData.getSucursalOrigen().addItem(item);
+//			editarSSUIData.getSucursalOrigen().setSelectedItem(item);
 //		}
 	}
 
@@ -399,9 +405,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 	public void onClick(Widget sender) {
 		if (sender == guardarButton) {
-			//TODO: -MGR- Creo un nuevo validar para transferencia para no realizar validaciones que no corresponden
 			List errors = null;
-			
 			if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){	
 				errors = editarSSUIData.validarTransferenciaParaGuardar(datosTranferencia.getContratosSS());
 			}
@@ -516,7 +520,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		                getCerrarSSUI().setTitleCerrar(cerrandoAux);
 		                getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
 		                editarSSUIData.getCuenta().isCliente(), editarSSUIData.getSolicitudServicioGeneracion(),
-		                editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB());
+		                editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA());
 		            } else {
 		            	ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 		                ErrorDialog.getInstance().show(errors, false);
@@ -633,7 +637,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	}
 
 	private boolean validarCompletitud(boolean showErrorDialog) {
-		List<String> errors = editarSSUIData.validarCompletitud();
+		List<String> errors = null;
+		if(editarSSUIData.getGrupoSolicitud().isTransferencia()){
+			errors = editarSSUIData.validarCompletitudTransferencia();
+		}else{
+			errors = editarSSUIData.validarCompletitud();
+		}
 		if (!errors.isEmpty()) {
 			validarCompletitud.addStyleName(validarCompletitudFailStyle);
 			if (showErrorDialog) {
@@ -753,7 +762,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		//TODO: -MGR- Ver si esto lo hago solo a la hora de cerrar la SS o si al guardar tambien
 		if(!ssDto.getCuenta().isCliente()){
 			if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
-				if(editarSSUIData.getVendedor().getSelectedItemText().equals(editarSSUIData.NO_COMISIONABLE)){
+				if(editarSSUIData.getVendedor().getSelectedItemText().equals(EditarSSUIData.NO_COMISIONABLE)){
 					ssDto.getCuenta().setVendedor(datosTranferencia.getCtaCedenteDto().getVendedor());
 				}else{
 					VendedorDto vendAux = (VendedorDto) editarSSUIData.getVendedor().getSelectedItem();
@@ -776,11 +785,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		ssDto.getCuenta().setVendedor((VendedorDto) editarSSUIData.getVendedor().getSelectedItem());
 		//datosTranferencia.getCtaCedenteDto().setVendedor((VendedorDto) editarSSUIData.getVendedor().getSelectedItem());
 		
+		//-MGR- Val-punto6.2
 		//Si puede ver el combo (Ahora solo Anal. Cred.) en Vendedor se guarda el vendedor seleccionado en el combo vendedor
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
 			ssDto.setVendedor((VendedorDto) editarSSUIData.getVendedor().getSelectedItem());
 		}else{
-			if(editarSSUIData.getVendedor().getSelectedItemText().equals(editarSSUIData.NO_COMISIONABLE) && 
+			if(editarSSUIData.getVendedor().getSelectedItemText().equals(EditarSSUIData.NO_COMISIONABLE) && 
 					!editarSSUIData.getCuenta().isCliente()){
 				ssDto.setVendedor(datosTranferencia.getCtaCedenteDto().getVendedor());
 			}

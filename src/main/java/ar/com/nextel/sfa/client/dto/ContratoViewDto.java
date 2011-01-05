@@ -223,7 +223,6 @@ public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 		boolean equals = false;
 		if (obj instanceof ContratoViewDto){
 			ContratoViewDto dto2 = (ContratoViewDto)obj;
-			//TODO: -MGR- Por que viene con nul??
 			if(this.contrato == null)
 				return false;
 			if(dto2.getContrato() == null)

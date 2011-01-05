@@ -195,13 +195,12 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		refreshCedente.addStyleName("floatRight mr10 mt3");
 		fields.add(refreshCedente);
 		fields.add(canalVtas = new TextBox());
-		fields.add(sucursalOrigen = new ListBox());
-		fields.add(vendedor = new ListBox());
+		fields.add(sucursalOrigen = new ListBox(""));
+		fields.add(vendedor = new ListBox(""));
 		vendedor.addChangeListener(new ChangeListener() {
 			public void onChange(Widget arg0) {
-				//TODO: -MGR- Esto esta por que hay un vendedor con nombre y apellido null, si eso no puede pasar
-				//este control no seria necesario
-				if( ((VendedorDto)vendedor.getSelectedItem()).getApellido() != null ){
+				VendedorDto vendSelected = (VendedorDto)vendedor.getSelectedItem();
+				if( vendSelected != null && vendSelected.getApellido() != null ){
 					sucursalOrigen.selectByValue(((VendedorDto)vendedor.getSelectedItem()).getIdSucursal().toString());
 				}
 			}
@@ -902,23 +901,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	}
 
 	public boolean isCDW() {
-		//MGR - #1050
-		//return solicitudServicio.getGrupoSolicitud().getId().equals(GrupoSolicitudDto.ID_CDW);
-		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
-		if(instancias != null){
-			return solicitudServicio.getGrupoSolicitud().getId().equals(instancias.get(GrupoSolicitudDto.ID_CDW));
-		}
-		return false;
+		return solicitudServicio.getGrupoSolicitud().isCDW();
 	}
 
 	public boolean isMDS() {
-		//MGR - #1050
-		//return solicitudServicio.getGrupoSolicitud().getId().equals(GrupoSolicitudDto.ID_MDS);
-		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
-		if(instancias != null){
-			return solicitudServicio.getGrupoSolicitud().getId().equals(instancias.get(GrupoSolicitudDto.ID_MDS));
-		}
-		return false;
+		return solicitudServicio.getGrupoSolicitud().isMDS();
+	}
+	
+	public boolean isTRANSFERENCIA() {
+		return solicitudServicio.getGrupoSolicitud().isTransferencia();
 	}
 
 	/** Indica si contiene lineas de solicitud con item BlackBerry */
@@ -1016,19 +1007,21 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 		//TODO: -MGR- Ver si ID_TIPO_CANAL_VENTAS queda como Long o como TipoCanalVentas, por ahora Long
 		//solicitudServicio.setTipoCanalVentas(tipoCanalVentas)
-		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
-		if(instancias != null){
-			solicitudServicio.setTipoCanalVentas(instancias.get(TIPO_CANAL_VTA_TRANSFERENCIA));
+		if(canalVtas.getText().equals(CANAL_VTA_TRANSFERENCIA)){
+			HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+			if(instancias != null){
+				solicitudServicio.setTipoCanalVentas(instancias.get(TIPO_CANAL_VTA_TRANSFERENCIA));
+			}
 		}
+		
+		
 
 		return solicitudServicio;
 	}
 	
 	public List<String> validarTransferenciaParaGuardar(List<ContratoViewDto> contratos) {
 		setContratosCedidos(contratos);
-		
-		//-MGR- Por ahora solo pide que se haya ingresado origen y  vendedor.
-		//Verificar que campos deben estar completos a la hora de guardar
+
 		GwtValidator validator = new GwtValidator();
 		for (ContratoViewDto cto : solicitudServicio.getContratosCedidos()) {
 			//TODO -MGR- Que validaciones son necesarias para los contratos?
@@ -1061,28 +1054,38 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		validator.addTarget(nss).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nº de Solicitud")).maxLength(10,
 				Sfa.constant().ERR_NSS_LONG());
-		GrupoSolicitudDto grupoSS = solicitudServicio.getGrupoSolicitud();
 
-		//TODO: -MGR- Verificar si esto es necesario
+		GrupoSolicitudDto grupoSS = solicitudServicio.getGrupoSolicitud();
 		// Validacion rango NSS con y sin PIN
-//		Long numeroSS = "".equals(nss.getText()) ? null : Long.valueOf(nss.getText());
-//		if (numeroSS != null && grupoSS.getRangoMinimoSinPin() != null
-//				&& grupoSS.getRangoMaximoSinPin() != null && grupoSS.getRangoMinimoConPin() != null
-//				&& grupoSS.getRangoMaximoConPin() != null) {
-//			boolean enRangoSinPin = numeroSS >= grupoSS.getRangoMinimoSinPin()
-//					&& numeroSS <= grupoSS.getRangoMaximoSinPin();
-//			boolean enRangoConPin = numeroSS >= grupoSS.getRangoMinimoConPin()
-//					&& numeroSS <= grupoSS.getRangoMaximoConPin();
-//			if (!enRangoSinPin && !enRangoConPin) {
-//				validator.addError(Sfa.constant().ERR_NNS_RANGO());
-//			}
-//		}
+		Long numeroSS = "".equals(nss.getText()) ? null : Long.valueOf(nss.getText());
+		if (numeroSS != null && grupoSS.getRangoMinimoSinPin() != null
+				&& grupoSS.getRangoMaximoSinPin() != null && grupoSS.getRangoMinimoConPin() != null
+				&& grupoSS.getRangoMaximoConPin() != null) {
+			boolean enRangoSinPin = numeroSS >= grupoSS.getRangoMinimoSinPin()
+					&& numeroSS <= grupoSS.getRangoMaximoSinPin();
+			boolean enRangoConPin = numeroSS >= grupoSS.getRangoMinimoConPin()
+					&& numeroSS <= grupoSS.getRangoMaximoConPin();
+			if (!enRangoSinPin && !enRangoConPin) {
+				validator.addError(Sfa.constant().ERR_NNS_RANGO());
+			}
+		}
 		validator.addTarget(origen).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
 			validator.addTarget(vendedor).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedor()));
 		}
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
+			validator.addTarget(sucursalOrigen).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigen()));
+		}
+		
+		
+		//TODO: -MGR- Este text esta oculto, lo pongo igual en la validacion?
+//		validator.addTarget(canalVtas).required(
+//				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Canal de Ventas"));
+		
+		
 		
 		if (solicitudServicio.getContratosCedidos().isEmpty()) {
 			validator.addError(Sfa.constant().ERR_REQUIRED_CONTRATO_TRANSFERENCIA());
@@ -1105,19 +1108,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 		validator.fillResult();
 		List<String> errores = validator.getErrors();
-		//TODO: -MGR- Esto valida el domicilio, creo que no es necesario
-		//errores.addAll(validarCompletitud());
 		return errores;
 	}
-	
-//	public List<ContratoViewDto> getContratosSS(){
-////		if(solicitudServicio != null){
-//			return solicitudServicio.getContratosCedidos();
-////		}
-////		else{
-////			return new ArrayList<ContratoViewDto>();
-////		}
-//	}
 	
 	/**
 	 * Le setea a la solicitud los contratos cedidos
@@ -1139,5 +1131,29 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	public List<ContratoViewDto> getContratosCedidos() {
 		return solicitudServicio.getContratosCedidos();
+	}
+	
+	public List<String> validarCompletitudTransferencia() {
+		
+		GwtValidator validator = new GwtValidator();
+		validator.addTarget(nss).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nº de Solicitud")).maxLength(10,
+				Sfa.constant().ERR_NSS_LONG());
+
+		validator.addTarget(origen).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
+		
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
+			validator.addTarget(vendedor).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedor()));
+		}
+		
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
+			validator.addTarget(sucursalOrigen).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigen()));
+		}
+		validator.fillResult();
+		List<String> errores = validator.getErrors();
+		return errores;
 	}
 }

@@ -2454,4 +2454,13 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Suc. Origen:")
   @Key("sucOrigen")
   String sucOrigen();
+  
+  /**
+   * Translated "Observaciones:".
+   * 
+   * @return translated "Observaciones:"
+   */
+  @DefaultStringValue("Observaciones:")
+  @Key("observ_transf")
+  String observ_transf();
 }
