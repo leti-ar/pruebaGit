@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
@@ -211,26 +212,26 @@ public class ServiciosAdicionalesTable extends Composite {
 		return editing;
 	}
 
-	public void setServiciosAdicionalesForContrato(Long idPlan) {
+	public void setServiciosAdicionalesForContrato(final ContratoViewDto contrato, Long idPlan) {
 
-			controller.getServiciosAdicionalesContrato(idPlan,
-					new DefaultWaitCallback<List<ServicioAdicionalIncluidoDto>>() {
-						public void success(List<ServicioAdicionalIncluidoDto> list) {
-							editarSSUIData.loadServiciosAdicionalesContrato(list);
-							editing = false;
-							refreshServiciosAdicionalesTableContrato();
-						}
-
-						public void failure(Throwable caught) {
-							editing = false;
-							super.failure(caught);
-						}
-					});
+		controller.getServiciosAdicionalesContrato(idPlan,
+				new DefaultWaitCallback<List<ServicioAdicionalIncluidoDto>>() {
+			public void success(List<ServicioAdicionalIncluidoDto> list) {
+				editarSSUIData.loadServiciosAdicionalesContrato(list);
+				editing = false;
+				refreshServiciosAdicionalesTableContrato(contrato);
+			}
+			
+			public void failure(Throwable caught) {
+				editing = false;
+				super.failure(caught);
+			}
+		});
 	}
 	
-
-	private void refreshServiciosAdicionalesTableContrato() {
+	private void refreshServiciosAdicionalesTableContrato(ContratoViewDto contrato) {
 		List<ServicioAdicionalIncluidoDto> serviciosAdicionales = editarSSUIData.getServiciosAdicionalesContrato();
+		List<ServicioAdicionalIncluidoDto> serviciosAdicionalesTildados = contrato.getServiciosAdicionalesInc();
 		table.resizeRows(serviciosAdicionales.size() + 1);
 		int row = 1;
 		for (Iterator<ServicioAdicionalIncluidoDto> iterator = serviciosAdicionales.iterator(); iterator.hasNext();) {
@@ -238,6 +239,12 @@ public class ServiciosAdicionalesTable extends Composite {
 			CheckBox check = new CheckBox();
 			check.setEnabled(!servicioAdicional.getObligatorio());
 			check.setValue(servicioAdicional.getObligatorio());
+			for (Iterator<ServicioAdicionalIncluidoDto> iterator2 = serviciosAdicionalesTildados.iterator(); iterator2.hasNext();) {
+				ServicioAdicionalIncluidoDto servicioAdicionalTildado = (ServicioAdicionalIncluidoDto) iterator2.next();
+				if (servicioAdicionalTildado.getServicioAdicional().getDescripcion().equals(servicioAdicional.getServicioAdicional().getDescripcion())) {
+					check.setValue(servicioAdicionalTildado.isChecked());
+				}
+			}
 			table.setWidget(row, 0, check);
 			table.setHTML(row, 1, servicioAdicional.getServicioAdicional().getDescripcion());
 			table.setHTML(row, 2, currencyFormat.format(servicioAdicional.getPrecioFinal()));
@@ -250,14 +257,11 @@ public class ServiciosAdicionalesTable extends Composite {
 	}
 	
 	public void agregarQuitarServicioAdicionalContrato(int rowServicioAdicional, int rowContrato) {
-		// agrega o quita servicio adicional
-		//TODO SAI o SALTSS
+		// agrega o quita servicio adicional al contrato
 		CheckBox check = (CheckBox) table.getWidget(rowServicioAdicional, COL_AGREGAR_QUITAR);
 		ServicioAdicionalIncluidoDto servicioSelected;
 		servicioSelected = editarSSUIData.getServiciosAdicionalesContrato().get(rowServicioAdicional - 1);
 		
-		//TODO: Si tildo el primer servicio adicional, row = 1, pero eso no quiere decir que se le
-		//tenga que asignar al primer contrato
 		List<ServicioAdicionalIncluidoDto> saGuardados = editarSSUIData
 		.getContratosCedidos().get(rowContrato - 1).getServiciosAdicionalesInc();
 		

@@ -143,7 +143,6 @@ public class PlanTransferenciaDialog  extends NextelDialog implements ClickListe
 	public void show(ContratoViewDto contrato, int row) {
 		planTransferenciaUIData.getTipoPlan().clear();
 		planTransferenciaUIData.getTipoPlan().clearPreseleccionados();
-//		planTransferenciaUIData.getServiciosAdicionales().clear();
 		planTransferenciaUIData.setRow(row);
 		planTransferenciaUIData.setContrato(contrato);
 

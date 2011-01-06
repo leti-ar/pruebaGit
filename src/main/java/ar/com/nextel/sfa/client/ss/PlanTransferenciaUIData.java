@@ -32,6 +32,7 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 	private static final String v1 = "\\{1\\}";
 	private static final String v2 = "\\{2\\}";
 	private Long idPlanAnterior;
+	private Long idContratoAnterior; 
 	
 	private List<ServicioAdicionalIncluidoDto> serviciosAdicionalesInc;
 	
@@ -83,10 +84,6 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 			contrato.setPlanCesionario(new Long(""));
 			contrato.setPrecioPlanCesionario("");
 		}
-		// Limpio los servicios adicionales para que los actualice
-		if (!(contrato.getPlan().getId().equals(idPlanAnterior))) {
-			contrato.getServiciosAdicionalesInc().clear();
-		}
 		return contrato;
 	}
 	
@@ -96,12 +93,14 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 		serviciosAdicionales.clear();
 		this.contrato = contrato;
 		if (contrato.getPlan() != null) {
+			serviciosAdicionales.setServiciosAdicionalesForContrato(contrato, contrato.getPlan().getId());
 			tipoPlan.setSelectedItem(contrato.getPlan().getTipoPlan());
 		} else {
 			tipoPlan.setSelectedItem(new TipoPlanDto(Long.valueOf(8), "Plan Directo"));
 		}
 		plan.setSelectedItem(contrato.getPlan());
 		idPlanAnterior = contrato.getPlan() != null ? contrato.getPlan().getId() : null;
+		idContratoAnterior = contrato != null ? contrato.getContrato() : null;
 	}
 	
 	public ServiciosAdicionalesTable getServiciosAdicionales() {
@@ -128,9 +127,15 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 						.getSelectedItem(), getActualizarPlanCallback());
 			}
 		} else if (sender == plan) {
-			serviciosAdicionales.clear();
 			PlanDto planDto = (PlanDto) plan.getSelectedItem();
-			serviciosAdicionales.setServiciosAdicionalesForContrato(planDto.getId());
+			if (planDto != null) {
+				if (contrato.getPlan() == null || (!(contrato.getPlan().getId().equals(idPlanAnterior))
+						&& contrato.getContrato().equals(idContratoAnterior))) {
+					serviciosAdicionales.setServiciosAdicionalesForContrato(contrato, planDto.getId());
+				} else {
+					serviciosAdicionales.setServiciosAdicionalesForContrato(contrato, planDto.getId());
+				}
+			}
 		}
 	}
 	//TODO
