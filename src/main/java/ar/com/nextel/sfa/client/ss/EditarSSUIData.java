@@ -88,7 +88,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	private static final String V1 = "\\{1\\}";
 	private static final String FORMA_CONTRATACION_ALQUILER = "Alquiler";
-	private static final int MAX_LENGHT_OBSERVACIONES = 150;
+	private static final int MAX_LENGHT_OBS_ACLARACION = 150;
+	private static final int MAX_LENGHT_OBSERVACIONES = 1000;
 	private static final int MAX_LENGHT_ACLARACION = 200;
 	//MGR - #1027
 	private static final int MAX_LENGHT_ORDEN_COMPRA = 150;
@@ -117,7 +118,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private static final String VALUE_FLOTA_ID = "3";
 	private static final String VALUE_SUSCRIPTOR = "4";
 	private static final String TIPO_CANAL_VTA_TRANSFERENCIA = "TIPO_CANAL_VENTAS_TRANSFERENCIA";
-	public static final String CANAL_VTA_TRANSFERENCIA = "Transferencia";
+	private static final String CANAL_VTA_TRANSFERENCIA = "Transferencia";
 	public static final String NO_COMISIONABLE = "No Comisionable";
 	
 	public EditarSSUIData(EditarSSUIController controller) {
@@ -152,10 +153,14 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		observaciones.setWidth("480px");
 		observaciones.setHeight("35px");
 
-		//TODO: -MGR- Ver como hago para poner otro limite para las observacioens
 		observaciones.addKeyUpHandler(new KeyUpHandler() {
 			public void onKeyUp(KeyUpEvent arg0) {
-				showMaxLengthTextAreaError(observaciones, MAX_LENGHT_OBSERVACIONES);
+				if(getGrupoSolicitud() != null && getGrupoSolicitud().isTransferencia()){
+					showMaxLengthTextAreaError(observaciones, MAX_LENGHT_OBSERVACIONES);
+				}else{
+					showMaxLengthTextAreaError(observaciones, MAX_LENGHT_OBS_ACLARACION);	
+				}
+				
 			}
 		});
 
@@ -1027,12 +1032,22 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			//TODO -MGR- Que validaciones son necesarias para los contratos?
 			//La validacion 15 pueder ir aqui
 		}
+		
 		validator.addTarget(origen).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
+		
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
 			validator.addTarget(vendedor).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedor()));
 		}
+		
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
+			validator.addTarget(sucursalOrigen).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigen()));
+		}
+		
+		validator.addTarget(canalVtas).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Canal de Ventas"));
 	
 		validator.fillResult();
 		return validator.getErrors();
@@ -1080,12 +1095,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigen()));
 		}
 		
-		
-		//TODO: -MGR- Este text esta oculto, lo pongo igual en la validacion?
-//		validator.addTarget(canalVtas).required(
-//				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Canal de Ventas"));
-		
-		
+		validator.addTarget(canalVtas).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Canal de Ventas"));
 		
 		if (solicitudServicio.getContratosCedidos().isEmpty()) {
 			validator.addError(Sfa.constant().ERR_REQUIRED_CONTRATO_TRANSFERENCIA());
@@ -1095,7 +1106,6 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			//TODO: -MGR- Las mismas validaciones que al guardar
 		}
 
-		//TODO: -MGR- Verificar que se deja enviar por mail
 		// Para el cierre
 		SolicitudServicioGeneracionDto ssg = solicitudServicio.getSolicitudServicioGeneracion();
 		if (generacionCierreDefinitivo == true && ssg != null) {
@@ -1152,6 +1162,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			validator.addTarget(sucursalOrigen).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigen()));
 		}
+		
+		validator.addTarget(canalVtas).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Canal de Ventas"));
+		
 		validator.fillResult();
 		List<String> errores = validator.getErrors();
 		return errores;

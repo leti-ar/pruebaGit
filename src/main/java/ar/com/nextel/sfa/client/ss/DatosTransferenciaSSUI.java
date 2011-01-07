@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.client.ss;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
+import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.event.ClickPincheEvent;
 import ar.com.nextel.sfa.client.event.ClickPincheEventHandler;
 import ar.com.nextel.sfa.client.event.EventBusUtil;
@@ -192,16 +194,15 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		nnsLayout.setHTML(0, 2, Sfa.constant().origenReq());
 		nnsLayout.setWidget(0, 3, editarSSUIData.getOrigen());
 
-		//TODO: -MGR- Habilitar esto cuando este terminado.
-//		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
 			nnsLayout.setHTML(0, 4, Sfa.constant().vendedor());
 			nnsLayout.setWidget(0, 5, editarSSUIData.getVendedor());
-//		}
-//		
-//		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
+		}
+		
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
 			nnsLayout.setHTML(0, 6, Sfa.constant().sucOrigen());
 			nnsLayout.setWidget(0, 7, editarSSUIData.getSucursalOrigen());
-//		}
+		}
 	}
 	
 	private void refresObsLayout(){
@@ -272,16 +273,18 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 													ErrorDialog.getInstance().show(
 															"Debe buscar por número de documento o CUIT CUIL los clientes que no son de su cartera.");
 													busqClienteCedenteDialog.hide();
-													//TODO: -MGR- en este caso se tiene que vaciar la grilla y eliminar el cliente cedente
-													//de la solicitud. No lo esta haciendo
+													//Se vacia la grilla y se elimina el cliente cedente
 													limpiarContratosTable();
+													todosContratosActivos.clear();
+													contratosActivosVisibles.clear();
+													refreshTablaContratos();
+													controller.getEditarSSUIData().getClienteCedente().setText("");
 												}else{
 													ErrorDialog.getInstance().show("No se encontraron cuentas con el criterio especificado.");
 												}
 											
 											}else{
 												ctaCedenteDto = cuenta;
-												//-MGR- Val-6
 												if(ctaCedenteDto.getCodigoVantive().equals(editarSSUIData.getCuenta().getCodigoVantive())){
 													ErrorDialog.getInstance().show("La cuenta cedente es la misma que el cesionario. Por favor, elija otra cuenta.");
 												}else{
@@ -330,18 +333,24 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	 */
 	private void mostrarTodos() {
 		for (int i = 0; i < todosContratosActivos.size(); i++) {
-			drawContrato(i + 1, todosContratosActivos.get(i), false);
+			ContratoViewDto cto = todosContratosActivos.get(i); 
+			drawContrato(i + 1, cto, false);
+			
+			if(!contratosActivosVisibles.contains(cto)){
+				contratosActivosVisibles.add(cto);
+			}
 		}
 	}
 	
 	private void eliminarContratosSeleccionados() {
 		for (int i = contratosTable.getRowCount()-1; i>0; i--) {
 			CheckBox checked = (CheckBox) contratosTable.getWidget(i, 0);
-			if (checked.getValue()) {			
+			if (checked.getValue()) {
+				ContratoConChinche contratoConChinche = (ContratoConChinche) contratosTable.getWidget(i, 1);
+				
 				for (Iterator<ContratoViewDto> iterator = contratosActivosVisibles.iterator(); iterator.hasNext();) {
 					ContratoViewDto contratoActivo = (ContratoViewDto) iterator.next();
-					ContratoConChinche contratoConChinche = (ContratoConChinche) contratosTable.getWidget(i, 1);
-					if (contratoConChinche.getContrato().equals(contratoActivo.getContrato())) {
+					if (contratoConChinche.getContrato().equals(contratoActivo.getContrato().toString())) {
 						iterator.remove();
 					}
 				}

@@ -3,6 +3,11 @@ package ar.com.nextel.sfa.client.dto;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ServicioAdicionalIncluidoDto implements IsSerializable, IdentifiableDto{
+	
+	//para ServicioAdicionalLineaTransfSolicitudServicio mapea a servicioAdicional.id
+	//para ServicioAdicionalIncluido mapea a id
+	private Long id;
+	
 	private Double precioFinal;
 	private Boolean obligatorio;
 	private ServicioAdicionalDto servicioAdicional;
@@ -11,6 +16,9 @@ public class ServicioAdicionalIncluidoDto implements IsSerializable, Identifiabl
 	private Boolean servicioAdicionalXDefault;
 	private boolean checked;
 
+	private Long idContrato; //Id del contrato al que pertenece (en SS Transferencias)
+	private Long idSALineaTransf; //Id de ServicioAdicionalLineaTransfSolicitudServicio
+	
 	public Double getPrecioFinal() {
 		return precioFinal;
 	}
@@ -89,13 +97,28 @@ public class ServicioAdicionalIncluidoDto implements IsSerializable, Identifiabl
 		return true;
 	}
 	
-	/**
-	 * NO USAR. Este metodo es necesario solo para poder usar la clase <tt>CollectionOwnedConverter</tt> que 
-	 * utiliza dozer para mapear los objetos
-	 */
+	//MGR****
 	public Long getId() {
-		// TODO Auto-generated method stub
-		return null;
+		return id;
+	}
+	
+	public void setId(Long id) {
+		this.id = id;
 	}
 
+	public Long getIdContrato() {
+		return idContrato;
+	}
+
+	public void setIdContrato(Long idContrato) {
+		this.idContrato = idContrato;
+	}
+
+	public Long getIdSALineaTransf() {
+		return idSALineaTransf;
+	}
+
+	public void setIdSALineaTransf(Long idSALineaTransf) {
+		this.idSALineaTransf = idSALineaTransf;
+	}
 }

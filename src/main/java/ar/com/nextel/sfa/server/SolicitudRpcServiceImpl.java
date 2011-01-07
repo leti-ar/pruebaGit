@@ -27,9 +27,9 @@ import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.vantive.VantiveSystem;
 import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
+import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSTransfResponse;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
-import ar.com.nextel.business.solicitudes.generacionCierre.request.CreateSaveSSTransfResponse;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
 import ar.com.nextel.business.solicitudes.negativeFiles.NegativeFilesBusinessOperator;
 import ar.com.nextel.business.solicitudes.negativeFiles.result.NegativeFilesBusinessResult;
@@ -55,6 +55,7 @@ import ar.com.nextel.model.solicitudes.beans.Sucursal;
 import ar.com.nextel.model.solicitudes.beans.TipoAnticipo;
 import ar.com.nextel.model.solicitudes.beans.TipoPlan;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
+import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
@@ -97,6 +98,7 @@ import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
 import ar.com.nextel.util.DateUtils;
 import ar.com.nextel.util.ExcelBuilder;
+import ar.com.nextel.util.PermisosUserCenter;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.server.RemoteService;
 import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
@@ -310,7 +312,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		List tiposAnticipo = repository.getAll(TipoAnticipo.class);
 		initializer.setTiposAnticipo(mapper.convertList(tiposAnticipo, TipoAnticipoDto.class));
 		
-		List<Vendedor> vendedores = repository.getAll(Vendedor.class);
+		//Se cargan todos los vendedores que no sean del tipo Telemarketer ni Dae
+		Long idTipoVendTLM = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_TELEMARKETING);
+		Long idTipoVendDAE = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_DAE);
+		List<Vendedor> vendedores = repository.find("from Vendedor vend where vend.tipoVendedor.id <> ? and vend.tipoVendedor.id <> ?", idTipoVendDAE, idTipoVendTLM);
 		Collections.sort(vendedores, new Comparator<Vendedor>() {
 			public int compare(Vendedor vend1, Vendedor vend2) {
 				if(vend1.getApellido() == null && vend2.getApellido() == null)
@@ -674,11 +679,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 //			solicitudServicioDto = mapper.map(solicitudSaved, SolicitudServicioDto.class);
 //			resultDto.setSolicitud(solicitudServicioDto);
 			
-			//Si es Adm. de Creditos, entonces valida el triptico al guardar
-			//-MGR- Val-9
-			//TODO: -MGR- Conviene usar el permismo VER_COMBO_VENDEDOR?? o no por si otro ve el combo
-			//pero no debe validar al guardar?
-			if(sessionContextLoader.getVendedor().isADMCreditos()){
+			HashMap<String, Boolean> mapaPermisosClient = (HashMap<String, Boolean>) sessionContextLoader.getSessionContext().get(SessionContext.PERMISOS);
+	        if((Boolean)mapaPermisosClient.get(PermisosUserCenter.VALIDAR_TRIPTICO_AL_GUARDAR.getValue())){
 				SolicitudServicio solicitud = repository.retrieve(SolicitudServicio.class,solicitudDto.getId());
 				//mapper.map(solicitudDto, solicitud);
 				CreateSaveSSTransfResponse ssResponse = solicitudBusinessService.validarTriptico(solicitud);

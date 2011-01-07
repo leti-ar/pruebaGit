@@ -262,14 +262,15 @@ public class ServiciosAdicionalesTable extends Composite {
 		ServicioAdicionalIncluidoDto servicioSelected;
 		servicioSelected = editarSSUIData.getServiciosAdicionalesContrato().get(rowServicioAdicional - 1);
 		
-		List<ServicioAdicionalIncluidoDto> saGuardados = editarSSUIData
-		.getContratosCedidos().get(rowContrato - 1).getServiciosAdicionalesInc();
+		ContratoViewDto contratoViewDto = editarSSUIData.getContratosCedidos().get(rowContrato - 1);
+		
+		List<ServicioAdicionalIncluidoDto> saGuardados = contratoViewDto.getServiciosAdicionalesInc();
 		
 		if (saGuardados.contains(servicioSelected)) {
 			saGuardados.get(saGuardados.indexOf(servicioSelected)).setChecked(check.getValue());
 		} else {
 			servicioSelected.setChecked(check.getValue());
-			saGuardados.add(servicioSelected);
+			contratoViewDto.agregarServicioAdicional(servicioSelected);
 		}
 	}
 }

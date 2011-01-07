@@ -129,6 +129,8 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 		} else if (sender == plan) {
 			PlanDto planDto = (PlanDto) plan.getSelectedItem();
 			if (planDto != null) {
+				
+				//MGR**** El if y el else hacen lo mismo?
 				if (contrato.getPlan() == null || (!(contrato.getPlan().getId().equals(idPlanAnterior))
 						&& contrato.getContrato().equals(idContratoAnterior))) {
 					serviciosAdicionales.setServiciosAdicionalesForContrato(contrato, planDto.getId());

@@ -857,6 +857,14 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
         </class-a>
         <class-b>ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto
         </class-b>
+<!--        <field-exclude>-->
+<!--            <a>id</a>-->
+<!--            <b>id</b>-->
+<!--        </field-exclude>-->
+        <field>
+            <a>id</a>
+            <b>idSALineaTransf</b>
+        </field>
         <field>
             <a>precioLista</a>
             <b>precioFinal</b>
@@ -868,6 +876,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
         <field custom-converter-id="enumToDto">
             <a>servicioAdicional</a>
             <b>servicioAdicional</b>
+        </field>
+        <field>
+            <a>linea.id</a>
+            <b>idContrato</b>
         </field>
     </mapping>  
 </mappings>

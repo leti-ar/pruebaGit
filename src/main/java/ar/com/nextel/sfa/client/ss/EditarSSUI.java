@@ -68,6 +68,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public static final String CODIGO_VANTIVE = "codigoVantive";
 	private static final String validarCompletitudFailStyle = "validarCompletitudFailButton";
 //	private static final String GRUPO_TRANSFERENCIA = "GRUPO5";
+	private static final String VENDEDOR_NO_COMISIONABLE = "VENDEDOR_NO_COMISIONABLE";
 	
 	private TabPanel tabs;
 	private DatosSSUI datos;
@@ -93,10 +94,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private CuentaEdicionTabPanel cuenta;
 	
 	private String grupoSS;
+	private HashMap<String, Long> knownInstancias;
 
 	public EditarSSUI() {
 		super();
 		addStyleName("Gwt-EditarSSUI");
+		knownInstancias = ClientContext.getInstance().getKnownInstance();
 	}
 
 	public boolean load() {
@@ -121,20 +124,19 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					.parseLong(cuentaPotencial) : null);
 			solicitudServicioRequestDto.setNumeroCuenta(codigoVantive);
 			
-			HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
 			if (grupoSS != null) {
 				solicitudServicioRequestDto.setIdGrupoSolicitud(Long.parseLong(grupoSS));
 			} else {
 				//MGR - #1050
-				if(instancias != null){
+				if(knownInstancias != null){
 					solicitudServicioRequestDto.setIdGrupoSolicitud(
-							instancias.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
+							knownInstancias.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
 				}
 				
 			}
 
-			if(instancias != null && solicitudServicioRequestDto.getIdGrupoSolicitud().equals(
-					instancias.get(GrupoSolicitudDto.ID_TRANSFERENCIA))){
+			if(knownInstancias != null && solicitudServicioRequestDto.getIdGrupoSolicitud().equals(
+					knownInstancias.get(GrupoSolicitudDto.ID_TRANSFERENCIA))){
 				SolicitudRpcService.Util.getInstance().createSolicitudServicioTranferencia(solicitudServicioRequestDto, 
 						new DefaultWaitCallback<CreateSaveSSTransfResultDto>() {
 							public void success(final CreateSaveSSTransfResultDto result) {
@@ -217,7 +219,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			editarSSUIData.getNss().setText(String.valueOf(solicitud.getTripticoNumber()));
 		} 
 		
-		//TODO: -MGR- Ver si hay que modificar esto
 		validarCompletitud(false);
 		//datos.refresh();
 
@@ -289,8 +290,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		cerrarSolicitud = new SimpleLink("Cerrar");
 		
 		//MGR - #1122
-		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
-		if(grupoSS != null && instancias != null && !grupoSS.equals(instancias.get(GrupoSolicitudDto.ID_TRANSFERENCIA)) &&
+		if(grupoSS != null && knownInstancias != null && !grupoSS.equals(knownInstancias.get(GrupoSolicitudDto.ID_TRANSFERENCIA)) &&
 				!ClientContext.getInstance().checkPermiso(PermisosEnum.OCULTA_LINK_GENERAR_SS.getValue())){
 			linksCrearSS.add(wrap(generarSolicitud));
 		}
@@ -320,34 +320,36 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private void loadInitializer(SolicitudInitializer initializer) {
 		editarSSUIData.getOrigen().addAllItems(initializer.getOrigenesSolicitud());
 		editarSSUIData.getAnticipo().addAllItems(initializer.getTiposAnticipo());
-		//TODO: -MGR- Habilitar esto cuando este terminado
-//		if(ClientContext.getInstance().getVendedor().isDealer()){
-//			ListBoxItem item = new ListBoxItemImpl(
-//					ClientContext.getInstance().getVendedor().getApellidoYNombre(), 
-//					ClientContext.getInstance().getVendedor().getId().toString());
-//			editarSSUIData.getVendedor().addItem(item);
-//			editarSSUIData.getVendedor().setSelectedItem(item);
-//		} 
-//		else if(ClientContext.getInstance().getVendedor().isAP()){
-//			ListBoxItem item = new ListBoxItemImpl(editarSSUIData.NO_COMISIONABLE, "1");
-//			editarSSUIData.getVendedor().addItem(item);
-//			editarSSUIData.getVendedor().setSelectedItem(item);
-//		}
-//		else{
+
+		if(ClientContext.getInstance().getVendedor().isDealer()){
+			ListBoxItem item = new ListBoxItemImpl(
+					ClientContext.getInstance().getVendedor().getApellidoYNombre(), 
+					ClientContext.getInstance().getVendedor().getId().toString());
+			editarSSUIData.getVendedor().addItem(item);
+			editarSSUIData.getVendedor().setSelectedItem(item);
+		} 
+		else if(ClientContext.getInstance().getVendedor().isAP()){
+			if(knownInstancias != null){
+				ListBoxItem item = new ListBoxItemImpl(EditarSSUIData.NO_COMISIONABLE, 
+							knownInstancias.get(VENDEDOR_NO_COMISIONABLE).toString());
+				editarSSUIData.getVendedor().addItem(item);
+				editarSSUIData.getVendedor().setSelectedItem(item);
+			}
+		}
+		else{
 			editarSSUIData.getVendedor().addAllItems(initializer.getVendedores());
-//		}
+		}
 		
-		//TODO: -MGR- Habilitar esto cuando este terminado.
-//		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
 			editarSSUIData.getSucursalOrigen().addAllItems(initializer.getSucursales());
-//		}
-//		else{
-//			ListBoxItem item = new ListBoxItemImpl(
-//			ClientContext.getInstance().getVendedor().getIdSucursal().toString(), 
-//			ClientContext.getInstance().getVendedor().getIdSucursal().toString());
-//			editarSSUIData.getSucursalOrigen().addItem(item);
-//			editarSSUIData.getSucursalOrigen().setSelectedItem(item);
-//		}
+		}
+		else{
+			ListBoxItem item = new ListBoxItemImpl(
+			ClientContext.getInstance().getVendedor().getIdSucursal().toString(), 
+			ClientContext.getInstance().getVendedor().getIdSucursal().toString());
+			editarSSUIData.getSucursalOrigen().addItem(item);
+			editarSSUIData.getSucursalOrigen().setSelectedItem(item);
+		}
 	}
 
 	public boolean unload(String token) {
@@ -440,12 +442,13 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		
 		if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
 			
-			SolicitudRpcService.Util.getInstance().saveSolicituServicioTranferencia(obtenerSolicitudTransferencia(),
+			SolicitudRpcService.Util.getInstance().saveSolicituServicioTranferencia(obtenerSolicitudTransferencia(false),
 					new DefaultWaitCallback<CreateSaveSSTransfResultDto>() {
 
 						public void success(CreateSaveSSTransfResultDto result) {
 							guardandoSolicitud = false;
 							editarSSUIData.setSolicitud(result.getSolicitud());
+							datosTranferencia.setDatosSolicitud(result.getSolicitud());
 							datosTranferencia.refresh();
 							editarSSUIData.setSaved(true);
 							
@@ -557,7 +560,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					
 					if(editarSSUIData.getGrupoSolicitud()!= null &&
 							editarSSUIData.getGrupoSolicitud().isTransferencia()){
-						ssDto = obtenerSolicitudTransferencia();
+						ssDto = obtenerSolicitudTransferencia(true);
 					}else{
 						ssDto =editarSSUIData.getSolicitudServicio();
 					}
@@ -755,44 +758,56 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	/**
 	 * Devuelve la SS de Transferencia con todos los datos ingresados
 	 */
-	private SolicitudServicioDto obtenerSolicitudTransferencia(){
+	private SolicitudServicioDto obtenerSolicitudTransferencia(boolean cerrandoSS){
 		SolicitudServicioDto ssDto = editarSSUIData.getSolicitudServicioTranferencia();
 		
-		//-MGR- Val-punto6 Verificar esta logica. No lo esta mapeando directamente, ver en la parte de guardar
-		//TODO: -MGR- Ver si esto lo hago solo a la hora de cerrar la SS o si al guardar tambien
-		if(!ssDto.getCuenta().isCliente()){
-			if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
-				if(editarSSUIData.getVendedor().getSelectedItemText().equals(EditarSSUIData.NO_COMISIONABLE)){
+		boolean verComboVendedor = ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue());
+		if(cerrandoSS){
+			if(!ssDto.getCuenta().isCliente()){
+				if(knownInstancias != null &&
+						editarSSUIData.getVendedor().getSelectedItemId().equals(knownInstancias.get(VENDEDOR_NO_COMISIONABLE).toString())){
 					ssDto.getCuenta().setVendedor(datosTranferencia.getCtaCedenteDto().getVendedor());
-				}else{
+				}else if(verComboVendedor){
 					VendedorDto vendAux = (VendedorDto) editarSSUIData.getVendedor().getSelectedItem();
-					if(vendAux.isDealer()){
-						ssDto.getCuenta().setVendedor(ClientContext.getInstance().getVendedor());
-					}else if(vendAux.isAP()){
+					if(vendAux.isAP()){
 						ssDto.getCuenta().setVendedor(datosTranferencia.getCtaCedenteDto().getVendedor());
+					}else{
+						ssDto.getCuenta().setVendedor(ClientContext.getInstance().getVendedor());
+					}
+				}else{
+					if(ClientContext.getInstance().getVendedor().isAP()){
+						ssDto.getCuenta().setVendedor(datosTranferencia.getCtaCedenteDto().getVendedor());
+					}else{
+						ssDto.getCuenta().setVendedor(ClientContext.getInstance().getVendedor());
 					}
 				}
-			}else{
-				if(ClientContext.getInstance().getVendedor().isDealer()){
-					ssDto.getCuenta().setVendedor(ClientContext.getInstance().getVendedor());
-				}else if(ClientContext.getInstance().getVendedor().isAP()){
-					ssDto.getCuenta().setVendedor(datosTranferencia.getCtaCedenteDto().getVendedor());
-				}
 			}
-		}
-		
-		
-		ssDto.getCuenta().setVendedor((VendedorDto) editarSSUIData.getVendedor().getSelectedItem());
-		//datosTranferencia.getCtaCedenteDto().setVendedor((VendedorDto) editarSSUIData.getVendedor().getSelectedItem());
-		
-		//-MGR- Val-punto6.2
-		//Si puede ver el combo (Ahora solo Anal. Cred.) en Vendedor se guarda el vendedor seleccionado en el combo vendedor
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
-			ssDto.setVendedor((VendedorDto) editarSSUIData.getVendedor().getSelectedItem());
-		}else{
-			if(editarSSUIData.getVendedor().getSelectedItemText().equals(EditarSSUIData.NO_COMISIONABLE) && 
-					!editarSSUIData.getCuenta().isCliente()){
+
+			if(!ssDto.getCuenta().isCliente() && knownInstancias != null && 
+					editarSSUIData.getVendedor().getSelectedItemId().equals(knownInstancias.get(VENDEDOR_NO_COMISIONABLE).toString())){
 				ssDto.setVendedor(datosTranferencia.getCtaCedenteDto().getVendedor());
+			
+			}else if(verComboVendedor){
+				VendedorDto vendAux = (VendedorDto) editarSSUIData.getVendedor().getSelectedItem();
+				if(vendAux.isAP()){
+					if(knownInstancias != null){
+						VendedorDto vendAuxDto = new VendedorDto();
+						vendAuxDto.setId(knownInstancias.get(VENDEDOR_NO_COMISIONABLE));
+						ssDto.setVendedor(vendAuxDto);
+					}
+				}else{
+					ssDto.setVendedor(ClientContext.getInstance().getVendedor());
+				}
+			}else{
+				if(ClientContext.getInstance().getVendedor().isAP()){
+					if(knownInstancias != null){
+						VendedorDto vendAuxDto = new VendedorDto();
+						vendAuxDto.setId(knownInstancias.get(VENDEDOR_NO_COMISIONABLE));
+						ssDto.setVendedor(vendAuxDto);
+					}
+				}else{
+					ssDto.setVendedor(ClientContext.getInstance().getVendedor());
+				}
 			}
 		}
 		

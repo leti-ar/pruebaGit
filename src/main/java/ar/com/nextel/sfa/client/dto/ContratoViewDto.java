@@ -8,7 +8,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 	
-	//private Long id;
+	private Long id;
 	private Long contrato;
 	private Date fechaEstado;
 	private String telefono;
@@ -235,13 +235,18 @@ public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 		return equals;
 	}
 	
-	/**
-	 * NO USAR. Este metodo es necesario solo para poder usar la clase <tt>CollectionOwnedConverter</tt> que 
-	 * utiliza dozer para mapear los objetos
-	 */
+	//MGR*****
 	public Long getId() {
-		// TODO Auto-generated method stub
-		return null;
+		return id;
+	}
+	
+	public void setId(Long id) {
+		this.id = id;
 	}
 
+	public void agregarServicioAdicional(
+			ServicioAdicionalIncluidoDto servicioSelected) {
+		servicioSelected.setIdContrato(id);
+		serviciosAdicionalesInc.add(servicioSelected);
+	}
 }

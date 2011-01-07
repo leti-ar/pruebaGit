@@ -19,10 +19,10 @@ import ar.com.nextel.business.legacy.financial.exception.FinancialSystemExceptio
 import ar.com.nextel.business.oportunidades.OperacionEnCursoBusinessOperator;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.ReservaNumeroTelefonoBusinessOperator;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
+import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSTransfResponse;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
 import ar.com.nextel.business.solicitudes.generacionCierre.GeneracionCierreBusinessOperator;
-import ar.com.nextel.business.solicitudes.generacionCierre.request.CreateSaveSSTransfResponse;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreRequest;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
 import ar.com.nextel.business.solicitudes.provider.SolicitudServicioProviderResult;
@@ -41,14 +41,18 @@ import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
 import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaTransfSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Sucursal;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
+import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
@@ -265,6 +269,24 @@ public class SolicitudBusinessService {
 		}
 		
 		mapper.map(solicitudServicioDto, solicitudServicio);
+		//PARCHE: Esto es por que dozer mapea los id cuando se le indica que no
+		for (LineaTransfSolicitudServicio lineaTransf : solicitudServicio.getLineasTranf()) {
+			for (ContratoViewDto cto : solicitudServicioDto.getContratosCedidos()) {
+				if(lineaTransf.getContrato().equals(cto.getContrato())){
+					
+					for (ServicioAdicionalLineaTransfSolicitudServicio servAd : lineaTransf.getServiciosAdicionales()) {
+						for (ServicioAdicionalIncluidoDto serAdCto : cto.getServiciosAdicionalesInc()) {
+							
+							if(servAd.getServicioAdicional().getId().equals(serAdCto.getServicioAdicional().getId())){
+								if(serAdCto.getIdSALineaTransf() == null){
+									servAd.setId(serAdCto.getIdSALineaTransf());
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 		
 		//-MGR- Val-punto6 NO esta mapeando directamente los cambios en la cuenta, esta bien que lo haga asi?
 		//Esto es por que debe cambiar el vendedor de la cta cesionario
