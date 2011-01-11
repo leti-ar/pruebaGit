@@ -90,6 +90,7 @@ import ar.com.nextel.sfa.client.dto.ProveedorDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
 import ar.com.nextel.sfa.client.dto.ReservaDto;
 import ar.com.nextel.sfa.client.dto.RubroDto;
+import ar.com.nextel.sfa.client.dto.ServicioContratoDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
@@ -679,5 +680,20 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 			throw ExceptionUtil.wrap(e);
 		}
 		return contratos;
+	}
+	
+	public List<ServicioContratoDto> searchServiciosContratados(Long numeroContrato) throws RpcExceptionMessages{
+		List<ServicioContratoDto> servicios = new ArrayList<ServicioContratoDto>();
+		
+		try {
+			if(numeroContrato != null){
+				servicios = mapper.convertList(
+						avalonSystem.retriveServiciosContratados(numeroContrato), ServicioContratoDto.class);
+			}
+		} catch (AvalonSystemException e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+		return servicios;
 	}
 }

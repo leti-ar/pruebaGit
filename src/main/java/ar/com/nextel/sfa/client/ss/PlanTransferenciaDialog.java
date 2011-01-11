@@ -146,7 +146,7 @@ public class PlanTransferenciaDialog  extends NextelDialog implements ClickListe
 		planTransferenciaUIData.setRow(row);
 		planTransferenciaUIData.setContrato(contrato);
 
-		final TipoPlanDto tipoPlan = contrato != null && contrato.getPlan() != null ? contrato.getPlan().getTipoPlan() : null;
+		final TipoPlanDto tipoPlan = contrato != null && contrato.getPlanCesionario() != null ? contrato.getPlanCesionario().getTipoPlan() : null;
 		DeferredCommand.addCommand(new IncrementalCommand() {
 			public boolean execute() {
 				if (tiposPlan == null) {

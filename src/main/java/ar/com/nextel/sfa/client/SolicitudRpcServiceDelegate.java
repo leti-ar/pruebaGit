@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client;
 
+import java.util.HashMap;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
@@ -225,5 +226,15 @@ public class SolicitudRpcServiceDelegate {
 			DefaultWaitCallback<ContratoViewInitializer> callback) {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.getContratoViewInitializer(grupoSolicitud, callback);
+	}
+	
+	public void getTodosPlanesExistentes(DefaultWaitCallback<List<PlanDto>> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getTodosPlanesExistentes(callback);
+	}
+	
+	public void getTodosPlanesPorTipoPlan(Long idCuenta, DefaultWaitCallback<HashMap<Long, List<PlanDto>>> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getTodosPlanesPorTipoPlan(idCuenta, callback);
 	}
 }

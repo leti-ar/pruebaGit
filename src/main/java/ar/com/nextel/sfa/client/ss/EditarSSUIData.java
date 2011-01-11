@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaDomiciliosForm;
@@ -17,6 +18,7 @@ import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
+import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
@@ -107,6 +109,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private ListBox criterioBusqContrato;
 	private RegexTextBox parametroBusqContrato;
 	private List<ServicioAdicionalIncluidoDto> serviciosAdicionalesContrato;
+	
+	private List<PlanDto> todosPlanesExistentes = null;
+	private HashMap<Long, List<PlanDto>> planesPermitidos = null;
 	
 	private static final String ITEM_CONTRATO = "Contrato";
 	private static final String ITEM_TELEFONO = "Teléfono";
@@ -216,6 +221,14 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		fields.add(parametroBusqContrato = new RegexTextBox());
 		
 		inicializarBusquedaContratos();
+		
+		//TODO: -MGR- Ver como mejorar esto
+		//Cargo los planes existentes
+		SolicitudRpcService.Util.getInstance().getTodosPlanesExistentes(new DefaultWaitCallback<List<PlanDto>>() {
+			public void success(List<PlanDto> result) {
+				todosPlanesExistentes = result;
+			}
+		});
 	}
 
 	private void showMaxLengthTextAreaError(TextArea textArea, int maxLength) {
@@ -482,6 +495,17 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		if(solicitud.getGrupoSolicitud().isTransferencia()){
 			cargarDatosTransferencia();
 		}
+		
+		//TODO: -MGR- Ver como mejorar esto
+		//Cargo todos los planes validos para cada tipo de plan
+		SolicitudRpcService.Util.getInstance().getTodosPlanesPorTipoPlan(getCuentaId(), 
+				new DefaultWaitCallback<HashMap<Long,List<PlanDto>>>() {
+
+					@Override
+					public void success(HashMap<Long, List<PlanDto>> result) {
+						planesPermitidos = result;
+					}
+				});
 	}
 	
 	private void cargarDatosTransferencia(){
@@ -1005,21 +1029,18 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		solicitudServicio.setOrigen((OrigenSolicitudDto) origen.getSelectedItem());
 		solicitudServicio.setObservaciones(observaciones.getText());
 		solicitudServicio.setUsuarioCreacion(ClientContext.getInstance().getVendedor());
+		//-MGR- Esto da error en algunas ocasiones, por que no esta el item seleccionado
 		solicitudServicio.setIdSucursal(Long.valueOf(sucursalOrigen.getSelectedItem().getItemValue()));
 		
 		//TODO: -MGR- INCIDENTE_CEDENTE
 		solicitudServicio.setIncidenteCedente(0l);
 		
-		//TODO: -MGR- Ver si ID_TIPO_CANAL_VENTAS queda como Long o como TipoCanalVentas, por ahora Long
-		//solicitudServicio.setTipoCanalVentas(tipoCanalVentas)
 		if(canalVtas.getText().equals(CANAL_VTA_TRANSFERENCIA)){
 			HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
 			if(instancias != null){
 				solicitudServicio.setTipoCanalVentas(instancias.get(TIPO_CANAL_VTA_TRANSFERENCIA));
 			}
 		}
-		
-		
 
 		return solicitudServicio;
 	}
@@ -1028,10 +1049,6 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		setContratosCedidos(contratos);
 
 		GwtValidator validator = new GwtValidator();
-		for (ContratoViewDto cto : solicitudServicio.getContratosCedidos()) {
-			//TODO -MGR- Que validaciones son necesarias para los contratos?
-			//La validacion 15 pueder ir aqui
-		}
 		
 		validator.addTarget(origen).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
@@ -1048,7 +1065,35 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 		validator.addTarget(canalVtas).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Canal de Ventas"));
-	
+		
+		validator.fillResult();
+		if(!validator.getErrors().isEmpty()){
+			return validator.getErrors();
+		}
+		
+		//TODO: -MGR- Ver como mejoro esto
+		//Busco los planes existentes
+//		if(todosPlanesExistentes == null && !solicitudServicio.getContratosCedidos().isEmpty()){
+//			SolicitudRpcService.Util.getInstance().getTodosPlanesExistentes(new DefaultWaitCallback<List<PlanDto>>() {
+//
+//				public void success(List<PlanDto> result) {
+//					todosPlanesExistentes = result;
+//				}
+//			});
+//		}
+//		
+//		//Espero que se cargen los planes y luego controlo
+//		DeferredCommand.addCommand(new IncrementalCommand() {
+//			public boolean execute() {
+//				if(todosPlanesExistentes != null){
+//					//Control
+//					return false;
+//				}
+//				return true;
+//			}
+//		});
+		
+		validator.addErrors(validarPlanesCedentes());
 		validator.fillResult();
 		return validator.getErrors();
 	}
@@ -1061,9 +1106,6 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	 */
 	public List<String> validarTransferenciaParaCerrarGenerar(List<ContratoViewDto> contratos, boolean generacionCierreDefinitivo) {
 		setContratosCedidos(contratos);
-		
-		//TODO: -MGR- Esto seria equivalente a calcular el "total de servicios por equip"?
-		//recarcularValores();
 		
 		GwtValidator validator = new GwtValidator();
 		validator.addTarget(nss).required(
@@ -1102,10 +1144,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			validator.addError(Sfa.constant().ERR_REQUIRED_CONTRATO_TRANSFERENCIA());
 		}
 
-		for (ContratoViewDto cto : solicitudServicio.getContratosCedidos()) {
-			//TODO: -MGR- Las mismas validaciones que al guardar
+		validator.fillResult();
+		if(!validator.getErrors().isEmpty()){
+			return validator.getErrors();
 		}
-
+		
+		validator.addErrors(validarPlanesCedentes());
+		
 		// Para el cierre
 		SolicitudServicioGeneracionDto ssg = solicitudServicio.getSolicitudServicioGeneracion();
 		if (generacionCierreDefinitivo == true && ssg != null) {
@@ -1117,8 +1162,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			}
 		}
 		validator.fillResult();
-		List<String> errores = validator.getErrors();
-		return errores;
+		return validator.getErrors();
 	}
 	
 	/**
@@ -1169,5 +1213,62 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		validator.fillResult();
 		List<String> errores = validator.getErrors();
 		return errores;
+	}
+	
+	private List<String> validarPlanesCedentes(){
+		GwtValidator validator = new GwtValidator();
+		
+		List<PlanDto> planesCedentes = new ArrayList<PlanDto>();
+		//Valido que los planes existan en SFA
+		boolean error = false;
+		for (int i = 0; !error && i < solicitudServicio.getContratosCedidos().size(); i++) {
+			ContratoViewDto cto = solicitudServicio.getContratosCedidos().get(i);
+			
+			//Si no cambio el plan
+			//-MGR- Verificar si este if es correcto para lo que quiere controlar
+			if(cto.getPlanCesionario() == null){
+				boolean encontrado = false;
+				for (int j = 0; !encontrado && j < todosPlanesExistentes.size(); j++) {
+					PlanDto planExistente = todosPlanesExistentes.get(j);
+					if(planExistente.getId().equals(cto.getIdPlanCedente())){
+						encontrado = true;
+						//guardar planExistente como si fuera el cedente para validar que sea valido
+						planesCedentes.add(planExistente);
+					}
+				}
+				
+				if(!encontrado){
+					//Error, no existe el plan
+					validator.addError(Sfa.constant().ERR_PLAN_INEXISTENTE().replaceAll(V1, cto.getPlanCedente()));
+					error = true;
+				}
+			}
+		}
+		
+		//Si no hubo error (todos los planes existen en SFA), verifico que sean validos para el nuevo cliente
+		if(!error && !planesCedentes.isEmpty()){
+			
+			for (int i = 0; !error && i < planesCedentes.size(); i++) {
+				PlanDto planCedente = planesCedentes.get(i);
+				List<PlanDto> planesValidos = planesPermitidos.get(planCedente.getTipoPlan().getId());
+				
+				boolean encontrado = false;
+				for (int j = 0; !encontrado && j < planesValidos.size(); j++) {
+					PlanDto planValido = planesValidos.get(j);
+					if(planValido.getId().equals(planCedente.getId())){
+						encontrado = true;
+					}
+				}
+				
+				if(!encontrado){
+					//Error, el plan no es valido
+					validator.addError(Sfa.constant().ERR_PLAN_NO_VALIDO().replaceAll(V1, planCedente.getDescripcion()));
+					error = true;
+				}
+			}
+		}
+		
+		validator.fillResult();
+		return validator.getErrors();
 	}
 }

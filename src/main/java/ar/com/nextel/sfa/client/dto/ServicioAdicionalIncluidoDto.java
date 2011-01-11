@@ -97,7 +97,6 @@ public class ServicioAdicionalIncluidoDto implements IsSerializable, Identifiabl
 		return true;
 	}
 	
-	//MGR****
 	public Long getId() {
 		return id;
 	}

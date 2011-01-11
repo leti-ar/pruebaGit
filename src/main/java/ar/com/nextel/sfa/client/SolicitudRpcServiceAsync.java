@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client;
 
+import java.util.HashMap;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
@@ -29,6 +30,7 @@ import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
+import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -118,4 +120,7 @@ public interface SolicitudRpcServiceAsync {
 	public void getContratoViewInitializer(GrupoSolicitudDto grupoSolicitud,
 			AsyncCallback<ContratoViewInitializer> callback);
 	
+	public void getTodosPlanesExistentes(AsyncCallback<List<PlanDto>> callback);
+	
+	public void getTodosPlanesPorTipoPlan(Long idCuenta, AsyncCallback<HashMap<Long, List<PlanDto>>> callback);
 }

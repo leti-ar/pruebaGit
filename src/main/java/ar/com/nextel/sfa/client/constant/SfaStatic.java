@@ -2463,4 +2463,22 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Observaciones:")
   @Key("observ_transf")
   String observ_transf();
+  
+  /**
+   * Translated "No se encontró el plan {1} consulte con Adm Vtas.".
+   * 
+   * @return translated "No se encontró el plan {1} consulte con Adm Vtas."
+   */
+  @DefaultStringValue("No se encontró el plan {1} consulte con Adm Vtas.")
+  @Key("ERR_PLAN_INEXISTENTE")
+  String ERR_PLAN_INEXISTENTE();
+  
+  /**
+   * Translated "El plan {1} no es valido para el nuevo cliente.".
+   * 
+   * @return translated "El plan {1} no es valido para el nuevo cliente."
+   */
+  @DefaultStringValue("El plan {1} no es valido para el nuevo cliente.")
+  @Key("ERR_PLAN_NO_VALIDO")
+  String ERR_PLAN_NO_VALIDO();
 }

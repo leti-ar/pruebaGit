@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client;
 
+import java.util.HashMap;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
@@ -125,4 +126,19 @@ public interface SolicitudRpcService extends RemoteService {
 	public CreateSaveSSTransfResultDto createSolicitudServicioTranferencia(SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages;
 
 	public ContratoViewInitializer getContratoViewInitializer(GrupoSolicitudDto grupoSolicitud) throws RpcExceptionMessages;
+	
+	/**
+	 * Devuelve todos los planes existentes
+	 * @return
+	 */
+	public List<PlanDto> getTodosPlanesExistentes();
+	
+	/**
+	 * Dada una cuenta, devuelve un HashMap que contiene como clave el id del tipo de plan y como valor todos los planes validos 
+	 * para ese tipo de plan
+	 * @param idCuenta
+	 * @return
+	 * @throws RpcExceptionMessages
+	 */
+	public HashMap<Long, List<PlanDto>> getTodosPlanesPorTipoPlan(Long idCuenta) throws RpcExceptionMessages;
 }

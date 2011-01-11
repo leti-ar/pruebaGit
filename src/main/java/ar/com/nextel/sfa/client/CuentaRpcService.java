@@ -14,6 +14,7 @@ import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
+import ar.com.nextel.sfa.client.dto.ServicioContratoDto;
 import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
@@ -67,4 +68,5 @@ public interface CuentaRpcService extends RemoteService {
 	
 	public List<CuentaDto> searchCuentasDto(CuentaSearchDto cuentaSearchDto) throws RpcExceptionMessages;
 	public List<ContratoViewDto> searchContratosActivos(CuentaDto ctaDto) throws RpcExceptionMessages;
+	public List<ServicioContratoDto> searchServiciosContratados(Long numeroContrato) throws RpcExceptionMessages;
 }

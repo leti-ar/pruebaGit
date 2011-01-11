@@ -14,12 +14,14 @@ import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
+import ar.com.nextel.sfa.client.dto.ServicioContratoDto;
 import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
 import ar.com.nextel.sfa.client.initializer.VerazInitializer;
+import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
@@ -131,6 +133,12 @@ public class CuentaRpcServiceDelegate {
 	
 	public void searchContratosActivos(CuentaDto ctaDto, DefaultWaitCallback<List<ContratoViewDto>> callback) {
 		WaitWindow.show();
+		
 		cuentaRpcService.searchContratosActivos(ctaDto, callback);
+	}
+	
+	public void searchServiciosContratados(Long numeroContrato, DefaultWaitCallback<List<ServicioContratoDto>> callback){
+		WaitWindow.show();
+		cuentaRpcService.searchServiciosContratados(numeroContrato, callback);
 	}
 }

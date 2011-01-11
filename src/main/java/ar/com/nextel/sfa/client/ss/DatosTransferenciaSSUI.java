@@ -1,7 +1,7 @@
 package ar.com.nextel.sfa.client.ss;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -11,7 +11,7 @@ import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
-import ar.com.nextel.sfa.client.dto.PlanDto;
+import ar.com.nextel.sfa.client.dto.ServicioContratoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.event.ClickPincheEvent;
@@ -27,7 +27,10 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -38,6 +41,7 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
@@ -51,6 +55,9 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	private Grid cedenteLayout;
 	private Grid busqLayout;
 	private Grid contratosLayout;
+	private Grid grillaTotalServ;
+	private Label labelTotal;
+	
 	private FlexTable contratosTable;
 	private int selectedContratoRow = 0;
 	private FlexTable facturadosTable;
@@ -67,10 +74,16 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	private CuentaDto ctaCedenteDto;
 	private List<ContratoViewDto> todosContratosActivos = new ArrayList<ContratoViewDto>();
 	private List<ContratoViewDto> contratosActivosVisibles = new ArrayList<ContratoViewDto>();
+	//Se guardan los servicios contratados para cada contrato
+	private HashMap<Long, List<ServicioContratoDto>> serviciosContratados = new HashMap<Long, List<ServicioContratoDto>>();
+	private List<ServicioContratoDto> serviciosAMostrar = null;
 		
 	private PlanTransferenciaDialog planTransferenciaDialog;
 	private ContratoViewDto contratoSeleccionado;
 	private int filaSeleccionada;
+	
+	private NumberFormat currFormatter = NumberFormat.getCurrencyFormat();
+	private DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateFormat();
 	
 	public DatosTransferenciaSSUI(EditarSSUIController controller){
 		mainpanel = new FlowPanel();
@@ -104,6 +117,18 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 				doClickChinche(event);
 			}
 		});
+	}
+	
+	@Override
+	protected void onLoad() {
+		super.onLoad();
+		serviciosContratados.clear();
+	}
+	
+	@Override
+	protected void onUnload() {
+		super.onUnload();
+		serviciosContratados.clear();
 	}
 	
 	protected void doClickChinche(ClickPincheEvent event) {
@@ -150,6 +175,9 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	
 	private Widget getContratosLayout(){
 		contratosLayout = new Grid(5, 1);
+		grillaTotalServ = new Grid(1, 2);
+		labelTotal = new Label();
+		
 		contratosLayout.setWidth("100%");
 		
 		SimplePanel wrapper = new SimplePanel();
@@ -157,7 +185,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		contratosTable = new NextelTable();
 		String[] titlesContratos = { Sfa.constant().whiteSpace(), "Contratos", "Fecha Estado", 
 				"Teléfono", "Flota*ID", "Modelo", "Contratación", "Plan cedente", "Plan cesionario",
-				"Precio plan cesionario", "O.S.", "Modalidad", "Suscriptor"};			
+				"Precio plan cesionario", "O.S.", "CPP / MPP", "Suscriptor"};			
 		for (int i = 0; i < titlesContratos.length; i++) {
 			contratosTable.setHTML(0, i, titlesContratos[i]);
 		}
@@ -165,12 +193,14 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		contratosTable.setCellPadding(0);
 		contratosTable.setCellSpacing(0);
 		contratosTable.addStyleName("dataTable");
-		contratosTable.setWidth("98%");
+		contratosTable.setWidth("100%");
 		contratosTable.getRowFormatter().addStyleName(0, "header");
 		contratosTable.addClickHandler(this);
 		wrapper.add(contratosTable);
 		contratosLayout.setWidget(0, 0, wrapper);
 		
+		SimplePanel wrapperFacturados = new SimplePanel();
+		wrapperFacturados.addStyleName("resumenSSTableWrapper mlr5");
 		facturadosTable = new FlexTable();
 		String[] titlesFacturados = { "Servicio", "MSISDN", "Fecha Activ.", "Tarifa", "Ajuste",
 				"Períodos Pend.", "Última fact."};			
@@ -180,10 +210,11 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		facturadosTable.setCellPadding(0);
 		facturadosTable.setCellSpacing(0);
 		facturadosTable.addStyleName("dataTable");
-		facturadosTable.setWidth("98%");
+		facturadosTable.setWidth("100%");
 		facturadosTable.getRowFormatter().addStyleName(0, "header");
-		
-		//totalServEquipos = new InlineHTML("Total servicios por equipo:");
+		wrapperFacturados.add(facturadosTable);
+		contratosLayout.setWidget(3, 0, wrapperFacturados);
+
 		refresContratosLayout();		
 		return contratosLayout;
 	}
@@ -234,8 +265,10 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	private void refresContratosLayout(){
 		contratosLayout.setWidget(1, 0, new HTML("<br>"));
 		contratosLayout.setWidget(2, 0, new InlineLabel("Facturados"));
-		contratosLayout.setWidget(3, 0, facturadosTable);
-		contratosLayout.setWidget(4, 0, new InlineLabel("Total servicios por equipo:"));
+		//contratosLayout.setWidget(3, 0, facturadosTable);
+		grillaTotalServ.setHTML(0, 0, "Total servicios por equipo:");
+		grillaTotalServ.setWidget(0, 1, labelTotal);
+		contratosLayout.setWidget(4, 0, grillaTotalServ);
 	}
 
 	public void refresh() {
@@ -369,21 +402,68 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		}
 		contratosTable.setWidget(newRow, 0, new CheckBox());
 		contratosTable.setWidget(newRow, 1, contratoConChinche);
-		contratosTable.setHTML(newRow, 2, DateTimeFormat.getFormat("dd-M-yyyy").format(cto.getFechaEstado()));
+		contratosTable.setHTML(newRow, 2, dateTimeFormat.format(cto.getFechaEstado()));
 		contratosTable.setText(newRow, 3, cto.getTelefono());
 		contratosTable.setHTML(newRow, 4, cto.getFlotaId());
 		contratosTable.setText(newRow, 5, cto.getModelo());
 		contratosTable.setHTML(newRow, 6, cto.getContratacion());
-		contratosTable.setHTML(newRow, 7, cto.getPlanCedente());
+		contratosTable.setHTML(newRow, 7, cto.getPlanCedente() != null ? cto.getPlanCedente() : Sfa.constant().whiteSpace());
 		contratosTable.setWidget(newRow, 8, new PlanCesionarioConLapiz(""));
-		contratosTable.setHTML(newRow, 9, cto.getPrecioPlanCesionario());
+		if(cto.getPlanCesionario() == null){
+			contratosTable.setHTML(newRow, 9, Sfa.constant().whiteSpace());
+		}else{
+			contratosTable.setHTML(newRow, 9, cto.getPlanCesionario().getPrecio() != null ?
+					cto.getPlanCesionario().getPrecio().toString() : Sfa.constant().whiteSpace());
+		}
+		
 		contratosTable.setHTML(newRow, 10, cto.getOs());
 		contratosTable.setHTML(newRow, 11, cto.getModalidad());
-		contratosTable.setText(newRow, 12, cto.getSuscriptor());
+		contratosTable.setText(newRow, 12, cto.getSuscriptor() != null ? cto.getSuscriptor() : Sfa.constant().whiteSpace());
 	}
 	
-	private void drawFacturados(int selectRow){
-		facturadosTable.setHTML(1, 1, "Se selecciono la fila " + selectRow);
+	private void drawServiciosFacturados(int selectRow){
+		final ContratoViewDto ctoSelected = contratosActivosVisibles.get(selectRow-1);
+		serviciosAMostrar = serviciosContratados.get(ctoSelected.getContrato());
+
+		if(serviciosAMostrar == null){
+			CuentaRpcService.Util.getInstance().searchServiciosContratados(ctoSelected.getContrato(),
+					new DefaultWaitCallback<List<ServicioContratoDto>>() {
+
+						@Override
+						public void success(List<ServicioContratoDto> result) {
+							serviciosAMostrar = result;
+							serviciosContratados.put(ctoSelected.getContrato(), result);
+						}
+					});
+		}
+		
+		//Espero que se cargen los servicios y luego los muestro
+		DeferredCommand.addCommand(new IncrementalCommand() {
+			public boolean execute() {
+				if(serviciosAMostrar != null){
+					limpiarFacturadosTable();
+					Double total = 0.0;
+					for (int i = 0; i < serviciosAMostrar.size(); i++) {
+						ServicioContratoDto serv = serviciosAMostrar.get(i);
+						facturadosTable.setText(i +1, 0, serv.getServicio());
+						facturadosTable.setHTML(i +1, 1, serv.getMsisdn() != null ? serv.getMsisdn() : Sfa.constant().whiteSpace());
+						facturadosTable.setHTML(i +1, 2, dateTimeFormat.format(serv.getFechaEstado()));
+						facturadosTable.setHTML(i +1, 3, serv.getTarifa().toString());
+						facturadosTable.setHTML(i +1, 4, serv.getAjuste() != null ? serv.getAjuste(): Sfa.constant().whiteSpace());
+						facturadosTable.setHTML(i +1, 5, String.valueOf(serv.getPeriodosPendientes()));
+						facturadosTable.setHTML(i +1, 6, dateTimeFormat.format(serv.getUltimaFactura()));
+						facturadosTable.getCellFormatter().addStyleName(i +1, 0, "alignLeft");
+						
+						if(serv.getTarifa() != null){
+							total = total + serv.getTarifa();
+						}
+					}
+					labelTotal.setText(currFormatter.format(total));
+					return false;
+				}
+				return true;
+			}
+		});
 	}
 	
 	public void onClick(ClickEvent clickEvent) {
@@ -458,7 +538,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 					modificarPlanCesionario(contratosActivosVisibles.get(row-1), row);
 				} else {
 					selectContratoRow(row);
-					drawFacturados(row);
+					drawServiciosFacturados(row);
 				}
 			}
 		}
@@ -490,8 +570,9 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	}	
 	
 	private void drawNuevoPlan(ContratoViewDto contrato) {
-		contratosTable.setWidget(filaSeleccionada, 8, new PlanCesionarioConLapiz(contrato.getPlan().getItemText()));
-		contratosTable.setHTML(filaSeleccionada, 9, contrato.getPrecioPlanCesionario());
+		//-MGR- Por que no se usa contrato.getPlan().getDescripcion()?
+		contratosTable.setWidget(filaSeleccionada, 8, new PlanCesionarioConLapiz(contrato.getPlanCesionario().getItemText()));
+		contratosTable.setHTML(filaSeleccionada, 9, contrato.getPlanCesionario().getPrecio().toString());
 	}
 	
 	private void selectAllContratosRow(){
@@ -534,6 +615,12 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		//-MGR- Ver si esto es necesario
 //		limpiarContratosTable();
 //		refreshTablaContratos();
+	}
+	
+	private void limpiarFacturadosTable() {
+		for (int i = facturadosTable.getRowCount()-1; i>0; i--) {
+			facturadosTable.removeRow(i);
+		}
 	}
 		
 }

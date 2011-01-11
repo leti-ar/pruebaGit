@@ -69,12 +69,9 @@ public class SolicitudServicioDto implements IsSerializable {
     private CuentaDto cuentaCedente;
     private VendedorDto usuarioCreacion;
     private Long incidenteCedente;
-//    private List<LineaTransfSolicitudServicioDto> lineasTranf = new ArrayList<LineaTransfSolicitudServicioDto>();
     private List<ContratoViewDto> contratosCedidos = new ArrayList<ContratoViewDto>();
     
     private Long idSucursal;
-    //TODO: -MGR- Ver si esto queda como Long o como TipoCanalVentas
-    //private TipoCanalVentasDto tipoCanalVentas;
     private Long tipoCanalVentas;
     
     public SolicitudServicioDto() {
@@ -401,14 +398,6 @@ public class SolicitudServicioDto implements IsSerializable {
 		this.incidenteCedente = incidenteCedente;
 	}
 
-//	public List<LineaTransfSolicitudServicioDto> getLineasTranf() {
-//		return lineasTranf;
-//	}
-//
-//	public void setLineasTranf(List<LineaTransfSolicitudServicioDto> lineasTranf) {
-//		this.lineasTranf = lineasTranf;
-//	}
-	
 	public List<ContratoViewDto> getContratosCedidos() {
 		return contratosCedidos;
 	}
@@ -424,14 +413,6 @@ public class SolicitudServicioDto implements IsSerializable {
 	public void setIdSucursal(Long idSucursal) {
 		this.idSucursal = idSucursal;
 	}
-	
-//	public TipoCanalVentasDto getTipoCanalVentas() {
-//		return tipoCanalVentas;
-//	}
-//
-//	public void setTipoCanalVentas(TipoCanalVentasDto tipoCanalVentas) {
-//		this.tipoCanalVentas = tipoCanalVentas;
-//	}
 	
 	public Long getTipoCanalVentas() {
 		return tipoCanalVentas;

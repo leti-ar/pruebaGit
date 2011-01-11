@@ -73,16 +73,12 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 		PlanDto planSelected = (PlanDto) plan.getSelectedItem();
 
 		if (planSelected != null) {
-			if (contrato.getPlan() == null
-					|| !planSelected.getId().equals(contrato.getPlan().getId())) {
-				contrato.setPlan(planSelected);
-				contrato.setPlanCesionario(Long.valueOf(plan.getSelectedItemId()));
-				contrato.setPrecioPlanCesionario(String.valueOf(planSelected.getPrecioLista()));
+			if (contrato.getPlanCesionario() == null
+					|| !planSelected.getId().equals(contrato.getPlanCesionario().getId())) {
+				contrato.setPlanCesionario(planSelected);
 			}
 		} else {
-			contrato.setPlan(planSelected);
-			contrato.setPlanCesionario(new Long(""));
-			contrato.setPrecioPlanCesionario("");
+			contrato.setPlanCesionario(planSelected);
 		}
 		return contrato;
 	}
@@ -92,14 +88,14 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 		plan.clearPreseleccionados();
 		serviciosAdicionales.clear();
 		this.contrato = contrato;
-		if (contrato.getPlan() != null) {
-			serviciosAdicionales.setServiciosAdicionalesForContrato(contrato, contrato.getPlan().getId());
-			tipoPlan.setSelectedItem(contrato.getPlan().getTipoPlan());
+		if (contrato.getPlanCesionario() != null) {
+			serviciosAdicionales.setServiciosAdicionalesForContrato(contrato, contrato.getPlanCesionario().getId());
+			tipoPlan.setSelectedItem(contrato.getPlanCesionario().getTipoPlan());
 		} else {
 			tipoPlan.setSelectedItem(new TipoPlanDto(Long.valueOf(8), "Plan Directo"));
 		}
-		plan.setSelectedItem(contrato.getPlan());
-		idPlanAnterior = contrato.getPlan() != null ? contrato.getPlan().getId() : null;
+		plan.setSelectedItem(contrato.getPlanCesionario());
+		idPlanAnterior = contrato.getPlanCesionario() != null ? contrato.getPlanCesionario().getId() : null;
 		idContratoAnterior = contrato != null ? contrato.getContrato() : null;
 	}
 	
@@ -131,7 +127,7 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 			if (planDto != null) {
 				
 				//MGR**** El if y el else hacen lo mismo?
-				if (contrato.getPlan() == null || (!(contrato.getPlan().getId().equals(idPlanAnterior))
+				if (contrato.getPlanCesionario() == null || (!(contrato.getPlanCesionario().getId().equals(idPlanAnterior))
 						&& contrato.getContrato().equals(idContratoAnterior))) {
 					serviciosAdicionales.setServiciosAdicionalesForContrato(contrato, planDto.getId());
 				} else {

@@ -121,7 +121,7 @@ public class SFAWeb implements EntryPoint {
 			clienteNexus.setVieneDeNexus(vieneDeNexus);
 			ClientContext.getInstance().setClienteNexus(clienteNexus);
 			
-			//MGR - Si llega un codigo de cliente, busco el numero de su cuenta es SFA
+			//MGR - Si llega un codigo de cliente, busco el numero de su cuenta en SFA
 			if(customerCode != null){
 				CuentaRpcService.Util.getInstance().selectCuenta(clienteNexus.getCustomerCode(), 
 						new DefaultWaitCallback<Long>() {

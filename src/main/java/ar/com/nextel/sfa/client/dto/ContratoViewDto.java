@@ -15,26 +15,21 @@ public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 	private String flotaId;
 	private String modelo;
 	private String contratacion;
-	private Long idPlanCedente; //TMCODE //**
-	private String planCedente;
-	private Long planCesionario;
-	private String descripPlanCesionario;
-	private String precioPlanCesionario;
-	private String Os;
+	private String os;
 	private String modalidad;
 	private String suscriptor;
 	private String numeroIMEI;
 	private String numeroSimCard;
 	private String numeroSerie;
-	
 	private String codVantiveCesionario;
-	//TODO: -MGR- Este valor se tiene que setear del plan cedente
-	//private Long codigoBSCSPlanCedente;
 	
-	private PlanDto plan;
+	private Long idPlanCedente; //TMCODE //**
+	private String planCedente;
+	
+	private PlanDto planCesionario; //Plan Cesionario
+	
 	private boolean isPinchado = false;
 	private List<ServicioAdicionalIncluidoDto> serviciosAdicionalesInc = new ArrayList<ServicioAdicionalIncluidoDto>();
-	
 	
 	public Long getContrato() {
 		return contrato;
@@ -100,36 +95,12 @@ public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 		this.planCedente = planCedente;
 	}
 
-	public Long getPlanCesionario() {
-		return planCesionario;
-	}
-
-	public void setPlanCesionario(Long planCesionario) {
-		this.planCesionario = planCesionario;
-	}
-
-	public String getDescripPlanCesionario() {
-		return descripPlanCesionario;
-	}
-
-	public void setDescripPlanCesionario(String descripPlanCesionario) {
-		this.descripPlanCesionario = descripPlanCesionario;
-	}
-
-	public String getPrecioPlanCesionario() {
-		return precioPlanCesionario;
-	}
-
-	public void setPrecioPlanCesionario(String precioPlanCesionario) {
-		this.precioPlanCesionario = precioPlanCesionario;
-	}
-
 	public String getOs() {
-		return Os;
+		return os;
 	}
 
 	public void setOs(String os) {
-		Os = os;
+		this.os = os;
 	}
 
 	public String getModalidad() {
@@ -180,22 +151,14 @@ public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 		this.codVantiveCesionario = codVantiveCesionario;
 	}
 
-//	public Long getCodigoBSCSPlanCedente() {
-//		return codigoBSCSPlanCedente;
-//	}
-//
-//	public void setCodigoBSCSPlanCedente(Long codigoBSCSPlanCedente) {
-//		this.codigoBSCSPlanCedente = codigoBSCSPlanCedente;
-//	}
-
-	public PlanDto getPlan() {
-		return plan;
+	public PlanDto getPlanCesionario() {
+		return planCesionario;
 	}
 
-	public void setPlan(PlanDto plan) {
-		this.plan = plan;
+	public void setPlanCesionario(PlanDto planCesionario) {
+		this.planCesionario = planCesionario;
 	}
-
+	
 	public boolean isPinchado() {
 		return isPinchado;
 	}
@@ -235,7 +198,6 @@ public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 		return equals;
 	}
 	
-	//MGR*****
 	public Long getId() {
 		return id;
 	}

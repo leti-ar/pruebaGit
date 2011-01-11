@@ -14,12 +14,14 @@ import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
+import ar.com.nextel.sfa.client.dto.ServicioContratoDto;
 import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
 import ar.com.nextel.sfa.client.initializer.VerazInitializer;
+import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -50,4 +52,5 @@ public interface CuentaRpcServiceAsync {
 	
 	public void searchCuentasDto(CuentaSearchDto cuentaSearchDto, AsyncCallback<List<CuentaDto>> callback);
 	public void searchContratosActivos(CuentaDto ctaDto, AsyncCallback<List<ContratoViewDto>> callback);
+	public void searchServiciosContratados(Long numeroContrato, AsyncCallback<List<ServicioContratoDto>> callback);
 }
