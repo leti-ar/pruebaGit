@@ -56,12 +56,11 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	private Grid busqLayout;
 	private Grid contratosLayout;
 	private Grid grillaTotalServ;
-	private Label labelTotal;
+	private Label textTotalServ;
 	
 	private FlexTable contratosTable;
 	private int selectedContratoRow = 0;
 	private FlexTable facturadosTable;
-	//private InlineHTML totalServEquipos;
 	private BusqClienteCedenteDialog busqClienteCedenteDialog;
 	private Button buscar;
 	private SimpleLink verTodos;
@@ -175,10 +174,11 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	
 	private Widget getContratosLayout(){
 		contratosLayout = new Grid(5, 1);
-		grillaTotalServ = new Grid(1, 2);
-		labelTotal = new Label();
-		
 		contratosLayout.setWidth("100%");
+		
+		grillaTotalServ = new Grid(1, 2);
+		textTotalServ = new Label("Total servicios por equipo:");
+		textTotalServ.addStyleName("mt5 mb5");
 		
 		SimplePanel wrapper = new SimplePanel();
 		wrapper.addStyleName("resultTableWrapper mlr5");
@@ -265,9 +265,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	private void refresContratosLayout(){
 		contratosLayout.setWidget(1, 0, new HTML("<br>"));
 		contratosLayout.setWidget(2, 0, new InlineLabel("Facturados"));
-		//contratosLayout.setWidget(3, 0, facturadosTable);
-		grillaTotalServ.setHTML(0, 0, "Total servicios por equipo:");
-		grillaTotalServ.setWidget(0, 1, labelTotal);
+		grillaTotalServ.setWidget(0, 0, textTotalServ);
 		contratosLayout.setWidget(4, 0, grillaTotalServ);
 	}
 
@@ -307,7 +305,6 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 															"Debe buscar por número de documento o CUIT CUIL los clientes que no son de su cartera.");
 													busqClienteCedenteDialog.hide();
 													//Se vacia la grilla y se elimina el cliente cedente
-													limpiarContratosTable();
 													todosContratosActivos.clear();
 													contratosActivosVisibles.clear();
 													refreshTablaContratos();
@@ -334,7 +331,6 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 																	contratosActivosVisibles.clear();
 																	todosContratosActivos.addAll(result);
 																	contratosActivosVisibles.addAll(result);
-																	limpiarContratosTable();
 																	refreshTablaContratos();
 																}
 															});
@@ -356,8 +352,17 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	 * Muestro los contratos filtrados
 	 */
 	private void refreshTablaContratos(){
+		//Limpio la tabla
+		for (int i = contratosTable.getRowCount()-1; i>0; i--) {
+			contratosTable.removeRow(i);
+		}
+		//Dibujo los datos
 		for (int i = 0; i < contratosActivosVisibles.size(); i++) {
 			drawContrato(i + 1 , contratosActivosVisibles.get(i), true);
+		}
+		//Muestros los servicios contratados para la primera fila
+		if(!contratosActivosVisibles.isEmpty()){
+			onTableContratosClick(contratosTable, 1, 2);
 		}
 	}
 	
@@ -441,7 +446,11 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		DeferredCommand.addCommand(new IncrementalCommand() {
 			public boolean execute() {
 				if(serviciosAMostrar != null){
-					limpiarFacturadosTable();
+					//Limpio la tabla de servicios
+					for (int i = facturadosTable.getRowCount()-1; i>0; i--) {
+						facturadosTable.removeRow(i);
+					}
+					
 					Double total = 0.0;
 					for (int i = 0; i < serviciosAMostrar.size(); i++) {
 						ServicioContratoDto serv = serviciosAMostrar.get(i);
@@ -458,7 +467,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 							total = total + serv.getTarifa();
 						}
 					}
-					labelTotal.setText(currFormatter.format(total));
+					grillaTotalServ.setText(0, 1, currFormatter.format(total));
 					return false;
 				}
 				return true;
@@ -487,7 +496,6 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 					}
 					filaBorrada++;
 				}
-				limpiarContratosTable();
 				refreshTablaContratos();
 			} else if ("2".equals(criterioBusqueda)) {
 				for (Iterator<ContratoViewDto> iterator = contratosActivosVisibles.iterator(); iterator.hasNext();) {
@@ -497,7 +505,6 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 					}
 					filaBorrada++;
 				}
-				limpiarContratosTable();
 				refreshTablaContratos();
 			} else if ("3".equals(criterioBusqueda)) {
 				for (Iterator<ContratoViewDto> iterator = contratosActivosVisibles.iterator(); iterator.hasNext();) {
@@ -507,7 +514,6 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 					}
 					filaBorrada++;
 				}
-				limpiarContratosTable();
 				refreshTablaContratos();
 			} else if ("4".equals(criterioBusqueda)) {
 				for (Iterator<ContratoViewDto> iterator = contratosActivosVisibles.iterator(); iterator.hasNext();) {
@@ -517,18 +523,11 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 					}
 					filaBorrada++;
 				}
-				limpiarContratosTable();				
 				refreshTablaContratos();
 			}
 		}
 	}
 
-	private void limpiarContratosTable() {
-		for (int i = contratosTable.getRowCount()-1; i>0; i--) {
-			contratosTable.removeRow(i);
-		}
-	}
-	
 	public void onTableContratosClick(Widget sender, final int row, int col){
 		if (row == 0 && col == 0) {
 			selectAllContratosRow();
@@ -613,14 +612,6 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 					});
 		}
 		//-MGR- Ver si esto es necesario
-//		limpiarContratosTable();
 //		refreshTablaContratos();
 	}
-	
-	private void limpiarFacturadosTable() {
-		for (int i = facturadosTable.getRowCount()-1; i>0; i--) {
-			facturadosTable.removeRow(i);
-		}
-	}
-		
 }
