@@ -615,4 +615,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return descuentoTotal;
 	}
 
+	public void loginServer(String linea) {
+		AppLogger.info(linea);
+	}
+
 }

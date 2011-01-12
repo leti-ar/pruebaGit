@@ -307,6 +307,20 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 		//MGR - #1152
 		boolean esProspect =RegularExpressionConstants.isVancuc(solicitud.getCuenta().getCodigoVantive());
+		
+		StringBuffer linea = new StringBuffer();
+		linea.append("###- Verificando si deshabilita el campo triptico de la SS.");
+		linea.append("###-El vendedor logeado es: " + ClientContext.getInstance().getVendedor().getId() +
+				" - Apellido y Nombre: " + ClientContext.getInstance().getVendedor().getApellido() + " " +
+				ClientContext.getInstance().getVendedor().getNombre());
+		linea.append("###-El numero de la solicitud es: " + solicitud.getNumero());
+		linea.append("###-El permiso NRO_SS_EDITABLE devolvio: " + ClientContext.getInstance().
+				checkPermiso(PermisosEnum.NRO_SS_EDITABLE.getValue()));
+		linea.append("###-El codigo vantive de la cuenta de la solicitud es: " + 
+				solicitud.getCuenta().getCodigoVantive());
+		linea.append("###-Es prospect devolvio: " + esProspect);
+		SolicitudRpcService.Util.getInstance().loginServer(linea.toString());
+		
 		//MGR - #1026
 		if(!ClientContext.getInstance().
 				checkPermiso(PermisosEnum.NRO_SS_EDITABLE.getValue())){

@@ -96,4 +96,5 @@ public interface SolicitudRpcServiceAsync {
 	public void getDescuentosTotales(Long idLinea,
 			AsyncCallback<DescuentoTotalDto> defaultWaitCallback);
 
+	public void loginServer(String linea, AsyncCallback<Void> callback);
 }

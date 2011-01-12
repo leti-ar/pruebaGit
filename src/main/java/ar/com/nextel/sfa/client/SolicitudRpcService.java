@@ -110,5 +110,6 @@ public interface SolicitudRpcService extends RemoteService {
 	public List<TipoDescuentoDto> getInterseccionTiposDescuento(List<LineaSolicitudServicioDto> lineas) throws RpcExceptionMessages;
 
 	public DescuentoTotalDto getDescuentosTotales(Long idLinea) throws RpcExceptionMessages;
-
+	
+	public void loginServer(String linea);
 }

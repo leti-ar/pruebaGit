@@ -137,6 +137,22 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							
 							//MGR - #1152
 							boolean esProspect =RegularExpressionConstants.isVancuc(solicitud.getCuenta().getCodigoVantive());
+							
+							StringBuffer linea = new StringBuffer();
+							linea.append("###- Verificando si autocompleta el triptico.");
+							linea.append("###-El vendedor logeado es: " + ClientContext.getInstance().getVendedor().getId() +
+									" - Apellido y Nombre: " + ClientContext.getInstance().getVendedor().getApellido() + " " +
+									ClientContext.getInstance().getVendedor().getNombre());
+							linea.append("###-El numero de la solicitud es: " + solicitud.getNumero());
+							linea.append("###-El permiso AUTOCOMPLETAR_TRIPTICO devolvio: " + ClientContext.getInstance().
+									checkPermiso(PermisosEnum.AUTOCOMPLETAR_TRIPTICO.getValue()));
+							linea.append("###-El codigo vantive de la cuenta de la solicitud es: " + 
+									solicitud.getCuenta().getCodigoVantive());
+							linea.append("###-Es prospect devolvio: " + esProspect);
+							linea.append("###-El numero de triptico que trae la solicitud es: " + solicitud.getTripticoNumber());
+							
+							SolicitudRpcService.Util.getInstance().loginServer(linea.toString());
+							
 							if(solicitud.getNumero() == null && ClientContext.getInstance().
 									checkPermiso(PermisosEnum.AUTOCOMPLETAR_TRIPTICO.getValue()) && !esProspect){
 								editarSSUIData.getNss().setText(String.valueOf(solicitud.getTripticoNumber()));
