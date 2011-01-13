@@ -513,6 +513,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			clienteCedente.setText(solicitudServicio.getCuentaCedente().getCodigoVantive());
 		}
 		canalVtas.setText(CANAL_VTA_TRANSFERENCIA);
+		vendedor.setSelectedItem(solicitudServicio.getVendedor());
+		if(solicitudServicio.getIdSucursal() != null){
+			sucursalOrigen.selectByValue(solicitudServicio.getIdSucursal().toString());
+		}
 	}
 
 	private void deferredLoad() {
@@ -1029,11 +1033,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		solicitudServicio.setOrigen((OrigenSolicitudDto) origen.getSelectedItem());
 		solicitudServicio.setObservaciones(observaciones.getText());
 		solicitudServicio.setUsuarioCreacion(ClientContext.getInstance().getVendedor());
-		//-MGR- Esto da error en algunas ocasiones, por que no esta el item seleccionado
 		solicitudServicio.setIdSucursal(Long.valueOf(sucursalOrigen.getSelectedItem().getItemValue()));
-		
-		//TODO: -MGR- INCIDENTE_CEDENTE
-		solicitudServicio.setIncidenteCedente(0l);
 		
 		if(canalVtas.getText().equals(CANAL_VTA_TRANSFERENCIA)){
 			HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
@@ -1225,14 +1225,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			ContratoViewDto cto = solicitudServicio.getContratosCedidos().get(i);
 			
 			//Si no cambio el plan
-			//-MGR- Verificar si este if es correcto para lo que quiere controlar
 			if(cto.getPlanCesionario() == null){
 				boolean encontrado = false;
 				for (int j = 0; !encontrado && j < todosPlanesExistentes.size(); j++) {
 					PlanDto planExistente = todosPlanesExistentes.get(j);
 					if(planExistente.getId().equals(cto.getIdPlanCedente())){
 						encontrado = true;
-						//guardar planExistente como si fuera el cedente para validar que sea valido
+						//Guardo planExistente como si fuera el cedente para validar que sea valido
 						planesCedentes.add(planExistente);
 					}
 				}

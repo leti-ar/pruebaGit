@@ -38,7 +38,6 @@ public class BusqClienteCedenteDialog extends NextelDialog implements ChangeHand
 		cancelar = new SimpleLink("Cancelar");
 		buscar.addClickListener(this);
 		cancelar.addClickListener(this);
-		//buscarCommand = getBuscarCommand();
 		
 		add(busqClienteCedentePanel);
 		addFormButtons(buscar);
@@ -87,6 +86,7 @@ public class BusqClienteCedenteDialog extends NextelDialog implements ChangeHand
 	
 	public void mostrarDialogo(){
 		busqClienteCedenteUIData.getParametroBusqCedente().setText("");
+		busqClienteCedenteUIData.getParametroBusqCedente().setFocus(true);
 		this.showAndCenter();
 	}
 }

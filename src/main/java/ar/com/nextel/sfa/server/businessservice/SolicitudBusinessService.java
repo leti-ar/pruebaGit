@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.server.businessservice;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.validator.GenericValidator;
@@ -43,6 +44,7 @@ import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Plan;
+import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalIncluido;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaTransfSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
@@ -158,7 +160,6 @@ public class SolicitudBusinessService {
 		// if(no tiene permiso de edicion){
 		// solicitudServicio.getCuenta().terminarOperacion();
 		// }
-		//TODO: -MGR- Ver si no hay que controlar aqui tambien
 		checkServiciosAdicionales(solicitud);
 
 		solicitud.consultarCuentaPotencial();
@@ -210,6 +211,37 @@ public class SolicitudBusinessService {
 				}
 			}
 			linea.removeAll(servicioasForDeletion);
+		}
+		
+
+		for (LineaTransfSolicitudServicio lineaTransf : solicitud.getLineasTranf()) {
+			Plan plan = lineaTransf.getPlanNuevo();
+			List<ServicioAdicionalIncluido> serviciosAdicionales = null;
+			if (plan != null) {
+				serviciosAdicionales = solicitudServicioRepository.getServiciosAdicionalesContrato(plan.getId(), sessionContextLoader.getVendedor());
+			} else {
+				AppLogger.warn("No se pudo validar los Servicios Adicionales de la Linea de "
+						+ "Solicitud de Servicio " + lineaTransf.getId() + " ( Contrato: " + lineaTransf.getContrato()
+						+ "). Revisar la integridad de los datos en la base.\nDetalle:"
+						+ "\nidSolicitudServicio = " + (solicitud != null ? solicitud.getId() : "")
+						+ "\nidPlan = " + (plan != null ? plan.getId() : "") + "\nidCuenta = "
+						+ (solicitud.getCuenta() != null ? solicitud.getCuenta().getId() : ""));
+				continue;
+			}
+			Set<ServicioAdicionalLineaTransfSolicitudServicio> servicioasForDeletion = new HashSet<ServicioAdicionalLineaTransfSolicitudServicio>();
+			for (ServicioAdicionalLineaTransfSolicitudServicio saLinea : lineaTransf.getServiciosAdicionales()) {
+				boolean conteinsSA = false;
+				for (ServicioAdicionalIncluido sa : serviciosAdicionales) {
+					if (sa.getServicioAdicional().getId().equals(saLinea.getServicioAdicional().getId())) {
+						conteinsSA = true;
+						break;
+					}
+				}
+				if (!conteinsSA) {
+					servicioasForDeletion.add(saLinea);
+				}
+			}
+			lineaTransf.removeAll(servicioasForDeletion);
 		}
 	}
 

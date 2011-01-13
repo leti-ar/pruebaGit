@@ -212,6 +212,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			editarSSUIData.getOrigen().selectByText("Telemarketing");
 		}
 		
+		
+		
 		//MGR - #1152
 		boolean esProspect =RegularExpressionConstants.isVancuc(solicitud.getCuenta().getCodigoVantive());
 		if(solicitud.getNumero() == null && ClientContext.getInstance().
@@ -225,7 +227,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		tabs.clear();
 		if(solicitud.getGrupoSolicitud().isTransferencia()){
 			tabs.add(datosTranferencia, "Transf.");
-			//datosTranferencia.setContratosActivosVisibles(solicitud.getContratosCedidos());
 			datosTranferencia.setDatosSolicitud(solicitud);
 			datosTranferencia.refresh();
 		}
@@ -348,7 +349,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			ClientContext.getInstance().getVendedor().getIdSucursal().toString(), 
 			ClientContext.getInstance().getVendedor().getIdSucursal().toString());
 			editarSSUIData.getSucursalOrigen().addItem(item);
-			editarSSUIData.getSucursalOrigen().setSelectedItem(item);
+			editarSSUIData.getSucursalOrigen().setSelectedIndex(1);
 		}
 	}
 
@@ -373,7 +374,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		}
 
 		public void execute() {
-			List errors = null;
+			List<String> errors = null;
 			if (save) {
 				if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
 					errors = editarSSUIData.validarTransferenciaParaGuardar(datosTranferencia.getContratosSS());
@@ -407,7 +408,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 	public void onClick(Widget sender) {
 		if (sender == guardarButton) {
-			List errors = null;
+			List<String> errors = null;
 			if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){	
 				errors = editarSSUIData.validarTransferenciaParaGuardar(datosTranferencia.getContratosSS());
 			}
@@ -511,7 +512,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		        //si el campo nombre no está cargado significa que no están cargados los campos obligatorios de la cuenta
 		        if (CuentaClientService.cuentaDto.getPersona().getNombre() != null) {
 		        	
-		        	List errors = null;
+		        	List<String> errors = null;
 		        	if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
 						errors = editarSSUIData.validarTransferenciaParaCerrarGenerar(datosTranferencia.getContratosSS(),false);
 					}else{
@@ -545,7 +546,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 						.getSolicitudServicioGeneracion());
 				// Se comenta por el nuevo cartel de cargando;
 				CerradoSSExitosoDialog.getInstance().showLoading(cerrandoSolicitud);
-				List errors = null;
+				List<String> errors = null;
 
 				if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
 					errors = editarSSUIData.validarTransferenciaParaCerrarGenerar(datosTranferencia.getContratosSS(),true);
@@ -606,7 +607,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 						};
 						
 						editarSSUIData.setSaved(true);
-						//Val-10
 						if(!result.getMessages().isEmpty()){
 							StringBuilder msgString = new StringBuilder();
 							for (MessageDto msg : result.getMessages()) {

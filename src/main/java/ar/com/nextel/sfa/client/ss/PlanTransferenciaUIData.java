@@ -126,13 +126,13 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 			PlanDto planDto = (PlanDto) plan.getSelectedItem();
 			if (planDto != null) {
 				
-				//MGR**** El if y el else hacen lo mismo?
-				if (contrato.getPlanCesionario() == null || (!(contrato.getPlanCesionario().getId().equals(idPlanAnterior))
-						&& contrato.getContrato().equals(idContratoAnterior))) {
+				//TODO: El if y el else hacen lo mismo?
+//				if (contrato.getPlanCesionario() == null || (!(contrato.getPlanCesionario().getId().equals(idPlanAnterior))
+//						&& contrato.getContrato().equals(idContratoAnterior))) {
+//					serviciosAdicionales.setServiciosAdicionalesForContrato(contrato, planDto.getId());
+//				} else {
 					serviciosAdicionales.setServiciosAdicionalesForContrato(contrato, planDto.getId());
-				} else {
-					serviciosAdicionales.setServiciosAdicionalesForContrato(contrato, planDto.getId());
-				}
+//				}
 			}
 		}
 	}
