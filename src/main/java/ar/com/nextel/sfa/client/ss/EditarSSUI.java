@@ -95,11 +95,13 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	
 	private String grupoSS;
 	private HashMap<String, Long> knownInstancias;
+	FlowPanel linksCrearSS;
 
 	public EditarSSUI() {
 		super();
 		addStyleName("Gwt-EditarSSUI");
 		knownInstancias = ClientContext.getInstance().getKnownInstance();
+		linksCrearSS = new FlowPanel();
 	}
 
 	public boolean load() {
@@ -111,6 +113,16 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		String codigoVantive = HistoryUtils.getParam(CODIGO_VANTIVE);
 		mainPanel.setVisible(false);
 //		tabs.selectTab(0);
+		
+		linksCrearSS.clear();
+		if(grupoSS != null && knownInstancias != null && 
+				!grupoSS.equals(knownInstancias.get(GrupoSolicitudDto.ID_TRANSFERENCIA).toString()) &&
+				!ClientContext.getInstance().checkPermiso(PermisosEnum.OCULTA_LINK_GENERAR_SS.getValue())){
+			linksCrearSS.add(wrap(generarSolicitud));
+		}
+		linksCrearSS.add(wrap(cerrarSolicitud));
+		
+		
 		if (cuenta == null && cuentaPotencial == null && codigoVantive == null) {
 			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 			ErrorDialog.getInstance().show(Sfa.constant().ERR_URL_PARAMS_EMPTY(), false);
@@ -286,17 +298,18 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		generarCerrarMenu = new PopupPanel(true);
 		generarCerrarMenu.addStyleName("dropUpStyle");
 
-		FlowPanel linksCrearSS = new FlowPanel();
+//		FlowPanel linksCrearSS = new FlowPanel();
 		generarSolicitud = new SimpleLink("Generar");
 		cerrarSolicitud = new SimpleLink("Cerrar");
 		
 		//MGR - #1122
-		if(grupoSS != null && knownInstancias != null && !grupoSS.equals(knownInstancias.get(GrupoSolicitudDto.ID_TRANSFERENCIA)) &&
-				!ClientContext.getInstance().checkPermiso(PermisosEnum.OCULTA_LINK_GENERAR_SS.getValue())){
-			linksCrearSS.add(wrap(generarSolicitud));
-		}
-		
-		linksCrearSS.add(wrap(cerrarSolicitud));
+//		if(grupoSS != null && knownInstancias != null && 
+//				!grupoSS.equals(knownInstancias.get(GrupoSolicitudDto.ID_TRANSFERENCIA).toString()) &&
+//				!ClientContext.getInstance().checkPermiso(PermisosEnum.OCULTA_LINK_GENERAR_SS.getValue())){
+//			linksCrearSS.add(wrap(generarSolicitud));
+//		}
+//		
+//		linksCrearSS.add(wrap(cerrarSolicitud));
 		generarSolicitud.addClickListener(this);
 		cerrarSolicitud.addClickListener(this);
 		generarCerrarMenu.setWidget(linksCrearSS);
