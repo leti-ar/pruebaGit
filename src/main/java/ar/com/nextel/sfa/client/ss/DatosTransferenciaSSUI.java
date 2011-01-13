@@ -421,7 +421,8 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		contratosTable.setText(newRow, 5, cto.getModelo());
 		contratosTable.setHTML(newRow, 6, cto.getContratacion());
 		contratosTable.setHTML(newRow, 7, cto.getPlanCedente() != null ? cto.getPlanCedente() : Sfa.constant().whiteSpace());
-		contratosTable.setWidget(newRow, 8, new PlanCesionarioConLapiz(""));
+		String descPlanCesionario = cto.getPlanCesionario() != null ? cto.getPlanCesionario().getDescripcion() : "";
+		contratosTable.setWidget(newRow, 8, new PlanCesionarioConLapiz(descPlanCesionario));
 		if(cto.getPlanCesionario() == null){
 			contratosTable.setHTML(newRow, 9, Sfa.constant().whiteSpace());
 		}else{

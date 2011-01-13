@@ -40,4 +40,10 @@ public class CreateSaveSSTransfResultDto implements IsSerializable{
 	public void setError(boolean error) {
 		this.error = error;
 	}
+	
+	public void addMessage(String mensaje){
+		MessageDto mens = new MessageDto();
+		mens.setDescription(mensaje);
+		messages.add(mens);
+	}
 }

@@ -712,6 +712,20 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		MessageList messages = solicitudBusinessService.validarCreateSSTransf(solicitud).getMessages();
 		resultDto.setError(messages.hasErrors());
 		resultDto.setMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
+		
+		Vendedor vendLogeo = sessionContextLoader.getVendedor();
+		if(vendLogeo.isADMCreditos() || vendLogeo.isAP()){
+			
+			if(solicitud.getCuenta().getVendedorLockeo() != null &&
+				!vendLogeo.getId().equals(solicitud.getCuenta().getVendedorLockeo().getId())){
+				String nombSuper = "";
+				if(solicitud.getCuenta().getVendedorLockeo().getSupervisor() != null){
+					nombSuper = solicitud.getCuenta().getVendedorLockeo().getSupervisor().getNombreYApellido();
+				}
+				resultDto.addMessage("La cuenta está lockeada por un ejecutivo, el supervisor es " + 
+						nombSuper + ". Puede proseguir la carga de la SS");
+			}
+		}
 		return resultDto;
 	}
 	
