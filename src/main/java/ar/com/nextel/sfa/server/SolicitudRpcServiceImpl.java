@@ -63,7 +63,9 @@ import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
+import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
@@ -738,25 +740,73 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return initializer;
 	}
 	
-	public List<PlanDto> getTodosPlanesExistentes(){
-		return mapper.convertList(solicitudServicioRepository.getTodosPlanesExistentes(), PlanDto.class);
-	}
-	
-	public HashMap<Long, List<PlanDto>> getTodosPlanesPorTipoPlan(Long idCuenta) throws RpcExceptionMessages {
-		HashMap<Long, List<PlanDto>> aux = new HashMap<Long, List<PlanDto>>();
+	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, Long idCuenta){
+		String V1 = "\\{1\\}";
+		//Guardo los errores que pienso devolver
+		List<String> errores = new ArrayList<String>();
+		//Los planes que existen en SFA y quiero ver si son validos para la cuenta
+		List<Plan> planesCedentes = new ArrayList<Plan>();
+		int cantError = 0; //Para devolver como maximo solo 5 errores
 		
-		HashMap<Long, List<Plan>> planes = solicitudServicioRepository.
-					getTodosPlanesPorTipoPlan(idCuenta,sessionContextLoader.getVendedor());
-		
-		for (Iterator iter = planes.entrySet().iterator(); iter.hasNext();) {
-			Map.Entry entry = (Map.Entry) iter.next();
+		//Valido que los planes existan en SFA
+		boolean error = false;
+		for (int i = 0; !error && i < ctoCedentes.size(); i++) {
+			ContratoViewDto cto = ctoCedentes.get(i);
 			
-			Long idTipoPlan = (Long) entry.getKey();
-			List<Plan> planesValidos = (List<Plan>) entry.getValue();
-			
-			aux.put(idTipoPlan, mapper.convertList(planesValidos, PlanDto.class));
+			//Si no cambio el plan, debo validar que el plan Cedente existe
+			if(cto.getPlanCesionario() == null){
+				boolean encontrado = false;
+				List<Plan> planes = repository.find("from Plan p where p.id = ?", cto.getIdPlanCedente());
+				
+				if(planes.isEmpty()){
+					errores.add(Sfa.constant().ERR_PLAN_INEXISTENTE().replaceAll(V1, cto.getPlanCedente()));
+					cantError++;
+				}else{
+					//Guardo el plan como si fuera el cedente para validar que sea valido
+					planesCedentes.add(planes.get(0));
+				}
+				
+				if(cantError == 5){
+					error = true;
+				}
+			}
 		}
 		
-		return aux;
+		//Si no hubo error (todos los planes existen en SFA), verifico que sean validos para el nuevo cliente
+		if(cantError == 0 && !planesCedentes.isEmpty()){
+			HashMap<Long, List<Plan>> planesPermitidos = new HashMap<Long, List<Plan>>();
+			
+			for (int i = 0; !error && i < planesCedentes.size(); i++) {
+				Plan planCedente = planesCedentes.get(i);
+				Long idTipoPlan = planCedente.getPlanBase().getTipoPlan().getId();
+				List<Plan> planesValidos = planesPermitidos.get(idTipoPlan);
+				
+				if(planesValidos.isEmpty()){
+					planesValidos = solicitudServicioRepository.getPlanesPorTipoPlan(
+							idTipoPlan, idCuenta, sessionContextLoader.getVendedor());
+					planesPermitidos.put(idTipoPlan, planesValidos);
+				}
+				 
+				boolean encontrado = false;
+				for (int j = 0; !encontrado && j < planesValidos.size(); j++) {
+					Plan planValido = planesValidos.get(j);
+					if(planValido.getId().equals(planCedente.getId())){
+						encontrado = true;
+					}
+				}
+				
+				if(!encontrado){
+					//Error, el plan no es valido
+					errores.add(Sfa.constant().ERR_PLAN_NO_VALIDO().replaceAll(V1, planCedente.getDescripcion()));
+					cantError++;
+				}
+				
+				if(cantError == 5){
+					error = true;
+				}
+			}
+		}
+		
+		return errores;
 	}
 }

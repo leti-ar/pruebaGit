@@ -1,8 +1,8 @@
 package ar.com.nextel.sfa.client;
 
-import java.util.HashMap;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
@@ -128,17 +128,11 @@ public interface SolicitudRpcService extends RemoteService {
 	public ContratoViewInitializer getContratoViewInitializer(GrupoSolicitudDto grupoSolicitud) throws RpcExceptionMessages;
 	
 	/**
-	 * Devuelve todos los planes existentes
-	 * @return
+	 * Valida que cada uno de los planes cedentes enviados, primero exista en sfa, y si todos ellos existen, 
+	 * validad que los mismos sean validos para la cuenta enviada
+	 * @param ctoCedentes Todos los contratos de los que quiero validar el plan cedente
+	 * @param idCuenta Cuenta en la que quiero ver si el plan es valido
+	 * @return Lista con los errores posibles. (Max cinco errores a la vez)
 	 */
-	public List<PlanDto> getTodosPlanesExistentes();
-	
-	/**
-	 * Dada una cuenta, devuelve un HashMap que contiene como clave el id del tipo de plan y como valor todos los planes validos 
-	 * para ese tipo de plan
-	 * @param idCuenta
-	 * @return
-	 * @throws RpcExceptionMessages
-	 */
-	public HashMap<Long, List<PlanDto>> getTodosPlanesPorTipoPlan(Long idCuenta) throws RpcExceptionMessages;
+	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, Long idCuenta);
 }

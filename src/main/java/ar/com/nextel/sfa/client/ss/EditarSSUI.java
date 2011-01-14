@@ -391,10 +391,14 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				}else{
 					errors = editarSSUIData.validarParaGuardar();
 				}
-				
 				if (errors.isEmpty()) {
-					guardar();
-					editarSSUIData.setSaved(true);
+					if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
+						editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback());
+					}else{
+						guardar();
+						editarSSUIData.setSaved(true);
+					}
+					
 				} else {
 					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 					ErrorDialog.getInstance().show(errors, false);
@@ -410,7 +414,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			ModalMessageDialog.getInstance().hide();
 		}
 	}
-
+	
 	public void onClick(ClickEvent event) {
 		Widget sender = (Widget) event.getSource();
 		onClick(sender);
@@ -426,7 +430,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				errors = editarSSUIData.validarParaGuardar();
 			}
 			if (errors.isEmpty()) {
-				guardar();
+				if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
+					editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback());
+				}else{
+					guardar();
+				}
 			} else {
 				ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 				ErrorDialog.getInstance().show(errors, false);
@@ -530,6 +538,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					}
 		        	
 		            if (errors.isEmpty()) {
+		            	
+		            	if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
+		            		editarSSUIData.validarPlanesCedentes(abrirCerrarDialogCallback());
+		            	}else{
+		            		abrirDialogCerrar();
+		            	}
 		            	cerrandoSolicitud = cerrandoAux;
 		                getCerrarSSUI().setTitleCerrar(cerrandoAux);
 		                getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
@@ -548,7 +562,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	        }
         });
 	}
-
+	
 	private Command generarCerrarSolicitudCommand() {
 		return new Command() {
 			public void execute() {
@@ -564,21 +578,14 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				}else{
 					errors = editarSSUIData.validarParaCerrarGenerar(true);
 				}
-				
-				String pinMaestro = getCerrarSSUI().getCerrarSSUIData().getPin().getText();
 				if (errors.isEmpty()) {
-					SolicitudServicioDto ssDto = null;
-					
 					if(editarSSUIData.getGrupoSolicitud()!= null &&
 							editarSSUIData.getGrupoSolicitud().isTransferencia()){
-						ssDto = obtenerSolicitudTransferencia(true);
+						
+						editarSSUIData.validarPlanesCedentes(cerrarGenerarSolicitudCallback());
 					}else{
-						ssDto =editarSSUIData.getSolicitudServicio();
+						cerrarGenerarSolicitud();
 					}
-					
-					SolicitudRpcService.Util.getInstance().generarCerrarSolicitud(
-							ssDto, pinMaestro, cerrandoSolicitud,
-							getGeneracionCierreCallback());
 				} else {
 					CerradoSSExitosoDialog.getInstance().hideLoading();
 					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
@@ -587,7 +594,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			}
 		};
 	}
-
+	
 	private DefaultWaitCallback<GeneracionCierreResultDto> getGeneracionCierreCallback() {
 		if (generacionCierreCallback == null) {
 			generacionCierreCallback = new DefaultWaitCallback<GeneracionCierreResultDto>() {
@@ -750,7 +757,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		return builder.toString();
 	}
 
-
 	public void borrarDescuentoSeleccionados() {
 		datos.borrarDescuentoSeleccionados();
 	}
@@ -831,5 +837,85 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		SolicitudRpcService.Util.getInstance().getContratoViewInitializer(
 				editarSSUIData.getGrupoSolicitud(), defaultWaitCallback);
 	}
+	
+	//------------------------------------------
+	
+	//Se llama al querer guardar una SS de Transferencia si todas las validacioens salieron bien
+	private DefaultWaitCallback<List<String>> guardarSolicitudCallback(){
+		
+		DefaultWaitCallback<List<String>> callback = new DefaultWaitCallback<List<String>>() {
+			@Override
+			public void success(List<String> errors) {
+				if (errors.isEmpty()) {
+					guardar();
+					editarSSUIData.setSaved(true);
+				} else {
+					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+					ErrorDialog.getInstance().show(errors, false);
+				}
+			}
+		};
+		return callback;
+	}
+	
+	private DefaultWaitCallback<List<String>> cerrarGenerarSolicitudCallback(){
+		
+		DefaultWaitCallback<List<String>> callback = new DefaultWaitCallback<List<String>>() {
+			@Override
+			public void success(List<String> errors) {
+				if (errors.isEmpty()) {
+					cerrarGenerarSolicitud();
+				} else {
+					CerradoSSExitosoDialog.getInstance().hideLoading();
+					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+					ErrorDialog.getInstance().show(errors, false);
+				}
+			}
+		};
+		return callback;
+	}
+	
+	private void cerrarGenerarSolicitud(){
+		SolicitudServicioDto ssDto = null;
+		String pinMaestro = getCerrarSSUI().getCerrarSSUIData().getPin().getText();
+		if(editarSSUIData.getGrupoSolicitud()!= null &&
+				editarSSUIData.getGrupoSolicitud().isTransferencia()){
+			ssDto = obtenerSolicitudTransferencia(true);
+		}else{
+			ssDto =editarSSUIData.getSolicitudServicio();
+		}
+		
+		SolicitudRpcService.Util.getInstance().generarCerrarSolicitud(
+				ssDto, pinMaestro, cerrandoSolicitud,
+				getGeneracionCierreCallback());
+	}
+
+	private DefaultWaitCallback<List<String>> abrirCerrarDialogCallback(){
+
+		DefaultWaitCallback<List<String>> callback = new DefaultWaitCallback<List<String>>() {
+			@Override
+			public void success(List<String> errors) {
+				if (errors.isEmpty()) {
+					abrirDialogCerrar();
+				} else {
+					CerradoSSExitosoDialog.getInstance().hideLoading();
+					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+					ErrorDialog.getInstance().show(errors, false);
+				}
+			}
+		};
+		return callback;
+	}
+	
+	private void abrirDialogCerrar(){
+		cerrandoSolicitud = cerrandoAux;
+        getCerrarSSUI().setTitleCerrar(cerrandoAux);
+        getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
+        editarSSUIData.getCuenta().isCliente(), editarSSUIData.getSolicitudServicioGeneracion(),
+        editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA());
+	}
+	
+	
+	
 	
 }

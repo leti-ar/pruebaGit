@@ -2,8 +2,6 @@ package ar.com.nextel.sfa.client.ss;
 
 import java.util.List;
 
-import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalIncluido;
-import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
