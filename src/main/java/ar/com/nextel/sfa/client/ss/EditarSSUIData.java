@@ -36,6 +36,8 @@ import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -218,6 +220,29 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 		fields.add(criterioBusqContrato = new ListBox());
 		criterioBusqContrato.setWidth("150px");
+		criterioBusqContrato.addChangeHandler(new ChangeHandler() {
+			
+			public void onChange(ChangeEvent arg0) {
+				parametroBusqContrato.setText("");
+				String critBusq = criterioBusqContrato.getValue(criterioBusqContrato.getSelectedIndex());
+				if(critBusq.equals(VALUE_CONTRATO)){
+					parametroBusqContrato.setPattern(RegularExpressionConstants.numeros);
+					parametroBusqContrato.setMaxLength(25);
+				}
+				else if(critBusq.equals(VALUE_TELEFONO)){
+					parametroBusqContrato.setPattern(RegularExpressionConstants.getNumerosLimitado(10));
+				}
+				else if(critBusq.equals(VALUE_FLOTA_ID)){
+					parametroBusqContrato.setPattern("[0-9\\*]*");
+					parametroBusqContrato.setMaxLength(11);
+				}
+				else if(critBusq.equals(VALUE_SUSCRIPTOR)){
+					parametroBusqContrato.setPattern(RegularExpressionConstants.numerosYPunto);
+					parametroBusqContrato.setMaxLength(25);
+				}
+			}
+		});
+		
 		fields.add(parametroBusqContrato = new RegexTextBox());
 		
 		inicializarBusquedaContratos();
@@ -262,24 +287,6 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				solicitudServicio.setMontoCreditoFidelizacion(0d);
 			}
 			recarcularValores();
-		}
-		else if(sender == criterioBusqContrato){
-//			parametroBusqContrato.setText("");
-			String critBusq = criterioBusqContrato.getValue(criterioBusqContrato.getSelectedIndex());
-			if(critBusq.equals(VALUE_CONTRATO)){
-				parametroBusqContrato.setPattern(RegularExpressionConstants.numeros);
-				parametroBusqContrato.setMaxLength(25);
-			}
-			else if(critBusq.equals(VALUE_TELEFONO)){
-				parametroBusqContrato.setPattern(RegularExpressionConstants.getNumerosLimitado(10));
-			}
-			else if(critBusq.equals(VALUE_FLOTA_ID)){
-				parametroBusqContrato.setPattern("[0-9\\*]*");
-				parametroBusqContrato.setMaxLength(11);
-			}
-			else if(critBusq.equals(VALUE_SUSCRIPTOR)){
-				parametroBusqContrato.setPattern(RegularExpressionConstants.numeros);
-			}
 		}
 	}
 
@@ -384,14 +391,6 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		return refreshCedente;
 	}
 	
-//	public ListBox getCriterioBusqCedente() {
-//		return criterioBusqCedente;
-//	}
-//
-//	public RegexTextBox getParametroBusqCedente() {
-//		return parametroBusqCedente;
-//	}
-
 	public TextBox getCanalVtas() {
 		return canalVtas;
 	}
@@ -1026,6 +1025,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		criterioBusqContrato.addItem(ITEM_SUSCRIPTOR, VALUE_SUSCRIPTOR);
 
 		criterioBusqContrato.setSelectedIndex(0);
+		parametroBusqContrato.setPattern(RegularExpressionConstants.numeros);
+		parametroBusqContrato.setMaxLength(25);
 	}
 
 	public SolicitudServicioDto getSolicitudServicioTranferencia() {
@@ -1055,12 +1056,12 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
 			validator.addTarget(vendedor).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedor()));
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedorReq()));
 		}
 		
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
 			validator.addTarget(sucursalOrigen).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigen()));
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigenReq()));
 		}
 		
 		validator.addTarget(canalVtas).required(
@@ -1130,11 +1131,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
 			validator.addTarget(vendedor).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedor()));
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedorReq()));
 		}
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
 			validator.addTarget(sucursalOrigen).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigen()));
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigenReq()));
 		}
 		
 		validator.addTarget(canalVtas).required(
@@ -1199,12 +1200,12 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
 			validator.addTarget(vendedor).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedor()));
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedorReq()));
 		}
 		
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
 			validator.addTarget(sucursalOrigen).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigen()));
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigenReq()));
 		}
 		
 		validator.addTarget(canalVtas).required(

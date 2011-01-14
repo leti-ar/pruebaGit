@@ -163,7 +163,6 @@ public class DescuentoDialog extends NextelDialog implements ChangeHandler, Clic
 
 	public void onChange(ChangeEvent arg0) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	public void show(LineaSolicitudServicioDto linea, DescuentoDto descuento, List<TipoDescuentoDto> descuentosAplicados, List<TipoDescuentoDto> descuentosAAplicar) {

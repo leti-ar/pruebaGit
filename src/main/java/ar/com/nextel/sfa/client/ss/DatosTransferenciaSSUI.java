@@ -226,12 +226,12 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		nnsLayout.setWidget(0, 3, editarSSUIData.getOrigen());
 
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
-			nnsLayout.setHTML(0, 4, Sfa.constant().vendedor());
+			nnsLayout.setHTML(0, 4, Sfa.constant().vendedorReq());
 			nnsLayout.setWidget(0, 5, editarSSUIData.getVendedor());
 		}
 		
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
-			nnsLayout.setHTML(0, 6, Sfa.constant().sucOrigen());
+			nnsLayout.setHTML(0, 6, Sfa.constant().sucOrigenReq());
 			nnsLayout.setWidget(0, 7, editarSSUIData.getSucursalOrigen());
 		}
 	}
@@ -396,6 +396,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 				for (Iterator<ContratoViewDto> iterator = contratosActivosVisibles.iterator(); iterator.hasNext();) {
 					ContratoViewDto contratoActivo = (ContratoViewDto) iterator.next();
 					if (contratoConChinche.getContrato().equals(contratoActivo.getContrato().toString())) {
+						contratoActivo.setPinchado(false);
 						iterator.remove();
 					}
 				}
@@ -415,13 +416,15 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		}
 		contratosTable.setWidget(newRow, 0, new CheckBox());
 		contratosTable.setWidget(newRow, 1, contratoConChinche);
-		contratosTable.setHTML(newRow, 2, dateTimeFormat.format(cto.getFechaEstado()));
-		contratosTable.setText(newRow, 3, cto.getTelefono());
-		contratosTable.setHTML(newRow, 4, cto.getFlotaId());
-		contratosTable.setText(newRow, 5, cto.getModelo());
-		contratosTable.setHTML(newRow, 6, cto.getContratacion());
+		contratosTable.setHTML(newRow, 2, cto.getFechaEstado() != null ?
+				dateTimeFormat.format(cto.getFechaEstado()) : Sfa.constant().whiteSpace());
+		contratosTable.setText(newRow, 3, cto.getTelefono() != null ? cto.getTelefono() : Sfa.constant().whiteSpace());
+		contratosTable.setHTML(newRow, 4, cto.getFlotaId() != null ? cto.getFlotaId() : Sfa.constant().whiteSpace());
+		contratosTable.setText(newRow, 5, cto.getModelo() != null ? cto.getModelo() : Sfa.constant().whiteSpace());
+		contratosTable.setHTML(newRow, 6, cto.getContratacion() != null ? cto.getContratacion() : Sfa.constant().whiteSpace());
 		contratosTable.setHTML(newRow, 7, cto.getPlanCedente() != null ? cto.getPlanCedente() : Sfa.constant().whiteSpace());
-		String descPlanCesionario = cto.getPlanCesionario() != null ? cto.getPlanCesionario().getDescripcion() : "";
+		String descPlanCesionario = cto.getPlanCesionario() != null ? 
+				cto.getPlanCesionario().getDescripcion() : Sfa.constant().whiteSpace();
 		contratosTable.setWidget(newRow, 8, new PlanCesionarioConLapiz(descPlanCesionario));
 		if(cto.getPlanCesionario() == null){
 			contratosTable.setHTML(newRow, 9, Sfa.constant().whiteSpace());
@@ -430,8 +433,8 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 					cto.getPlanCesionario().getPrecio().toString() : Sfa.constant().whiteSpace());
 		}
 		
-		contratosTable.setHTML(newRow, 10, cto.getOs());
-		contratosTable.setHTML(newRow, 11, cto.getModalidad());
+		contratosTable.setHTML(newRow, 10, cto.getOs() != null ? cto.getOs() : Sfa.constant().whiteSpace());
+		contratosTable.setHTML(newRow, 11, cto.getModalidad() != null ? cto.getModalidad() : Sfa.constant().whiteSpace());
 		contratosTable.setText(newRow, 12, cto.getSuscriptor() != null ? cto.getSuscriptor() : Sfa.constant().whiteSpace());
 	}
 	
@@ -462,11 +465,14 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 						ServicioContratoDto serv = serviciosAMostrar.get(i);
 						facturadosTable.setText(i +1, 0, serv.getServicio());
 						facturadosTable.setHTML(i +1, 1, serv.getMsisdn() != null ? serv.getMsisdn() : Sfa.constant().whiteSpace());
-						facturadosTable.setHTML(i +1, 2, dateTimeFormat.format(serv.getFechaEstado()));
-						facturadosTable.setHTML(i +1, 3, serv.getTarifa().toString());
+						facturadosTable.setHTML(i +1, 2, serv.getFechaEstado() != null ? 
+								dateTimeFormat.format(serv.getFechaEstado()) : Sfa.constant().whiteSpace());
+						facturadosTable.setHTML(i +1, 3, serv.getTarifa() != null ? 
+								serv.getTarifa().toString() : Sfa.constant().whiteSpace());
 						facturadosTable.setHTML(i +1, 4, serv.getAjuste() != null ? serv.getAjuste(): Sfa.constant().whiteSpace());
 						facturadosTable.setHTML(i +1, 5, String.valueOf(serv.getPeriodosPendientes()));
-						facturadosTable.setHTML(i +1, 6, dateTimeFormat.format(serv.getUltimaFactura()));
+						facturadosTable.setHTML(i +1, 6, serv.getUltimaFactura() != null ?
+								dateTimeFormat.format(serv.getUltimaFactura()) : Sfa.constant().whiteSpace());
 						facturadosTable.getCellFormatter().addStyleName(i +1, 0, "alignLeft");
 						
 						if(serv.getTarifa() != null){
@@ -489,45 +495,37 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 				onTableContratosClick(sender, cell.getRowIndex(), cell.getCellIndex());
 			}
 		} else if(sender == buscar) {
-			int filaBorrada=0;
-			String criterioBusqueda = editarSSUIData.getCriterioBusqContrato().getSelectedItemId();
 			String parametro = editarSSUIData.getParametroBusqContrato().getText();
 			if ("".equals(parametro)) {
 				ErrorDialog.getInstance().show("Debe ingresar un parametro de búsqueda", false);
-			} else if ("1".equals(criterioBusqueda)) {
-				for (Iterator<ContratoViewDto> iterator = contratosActivosVisibles.iterator(); iterator.hasNext();) {
+			}else{
+				for (Iterator<ContratoViewDto> iterator = todosContratosActivos.iterator(); iterator.hasNext();) {
 					ContratoViewDto contratoActivo = (ContratoViewDto) iterator.next();
-					if (!contratoActivo.isPinchado() && !parametro.equals(String.valueOf(contratoActivo.getContrato()))) {
-						iterator.remove();
+
+					int criterio = Integer.parseInt(editarSSUIData.getCriterioBusqContrato().getSelectedItemId());
+					String valorCto = "";
+					switch (criterio) {
+					case 1:
+						valorCto = contratoActivo.getContrato().toString();
+						break;
+					case 2:
+						valorCto = contratoActivo.getTelefono();
+						break;
+					case 3:
+						valorCto = contratoActivo.getFlotaId();
+						break;
+					default:
+						valorCto = contratoActivo.getSuscriptor();
+						break;
 					}
-					filaBorrada++;
-				}
-				refreshTablaContratos();
-			} else if ("2".equals(criterioBusqueda)) {
-				for (Iterator<ContratoViewDto> iterator = contratosActivosVisibles.iterator(); iterator.hasNext();) {
-					ContratoViewDto contratoActivo = (ContratoViewDto) iterator.next();
-					if (!contratoActivo.isPinchado() && !parametro.equals(String.valueOf(contratoActivo.getTelefono()))) {
-						iterator.remove();
+					
+					if(parametro.equals(valorCto)){
+						if(!contratosActivosVisibles.contains(contratoActivo)){
+							contratosActivosVisibles.add(contratoActivo);
+						}
+					}else if(!contratoActivo.isPinchado()){
+						contratosActivosVisibles.remove(contratoActivo);
 					}
-					filaBorrada++;
-				}
-				refreshTablaContratos();
-			} else if ("3".equals(criterioBusqueda)) {
-				for (Iterator<ContratoViewDto> iterator = contratosActivosVisibles.iterator(); iterator.hasNext();) {
-					ContratoViewDto contratoActivo = (ContratoViewDto) iterator.next();
-					if (!contratoActivo.isPinchado() && !parametro.equals(String.valueOf(contratoActivo.getFlotaId()))) {
-						iterator.remove();
-					}
-					filaBorrada++;
-				}
-				refreshTablaContratos();
-			} else if ("4".equals(criterioBusqueda)) {
-				for (Iterator<ContratoViewDto> iterator = contratosActivosVisibles.iterator(); iterator.hasNext();) {
-					ContratoViewDto contratoActivo = (ContratoViewDto) iterator.next();
-					if (!contratoActivo.isPinchado() && !parametro.equals(String.valueOf(contratoActivo.getSuscriptor()))) {
-						iterator.remove();
-					}
-					filaBorrada++;
 				}
 				refreshTablaContratos();
 			}

@@ -4,12 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Widget;
-
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
@@ -19,7 +13,11 @@ import ar.com.nextel.sfa.client.widget.ValidationTextBox;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 
-public class BusqClienteCedenteUIData extends UIData implements ClickListener, ChangeHandler{
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.user.client.ui.Widget;
+
+public class BusqClienteCedenteUIData extends UIData implements ChangeHandler{
 	
 	private static final String CODIGO_CLIENTE = "1";
 	private static final String NUM_DOCUMENTO = "2";
@@ -155,7 +153,4 @@ public class BusqClienteCedenteUIData extends UIData implements ClickListener, C
 		return flota.validatePattern(flotaModelo);
 	}
 
-	public void onClick(Widget arg0) {
-		// TODO Auto-generated method stub
-	}
 }

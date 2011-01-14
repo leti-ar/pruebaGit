@@ -67,7 +67,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public static final String ID_CUENTA_POTENCIAL = "idCuentaPotencial";
 	public static final String CODIGO_VANTIVE = "codigoVantive";
 	private static final String validarCompletitudFailStyle = "validarCompletitudFailButton";
-//	private static final String GRUPO_TRANSFERENCIA = "GRUPO5";
 	private static final String VENDEDOR_NO_COMISIONABLE = "VENDEDOR_NO_COMISIONABLE";
 	
 	private TabPanel tabs;
@@ -223,8 +222,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				checkPermiso(PermisosEnum.SELECT_OPC_TELEMARKETING_COMB_ORIGEN.getValue())){
 			editarSSUIData.getOrigen().selectByText("Telemarketing");
 		}
-		
-		
 		
 		//MGR - #1152
 		boolean esProspect =RegularExpressionConstants.isVancuc(solicitud.getCuenta().getCodigoVantive());

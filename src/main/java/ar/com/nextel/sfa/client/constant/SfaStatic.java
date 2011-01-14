@@ -2429,13 +2429,13 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String eliminar();
   
   /**
-   * Translated "Vendedor".
+   * Translated "<span class=\"req\">Vendedor:</span>".
    * 
-   * @return translated "Vendedor"
+   * @return translated "<span class=\"req\">Vendedor:</span>"
    */
-  @DefaultStringValue("Vendedor")
-  @Key("vendedor")
-  String vendedor();
+  @DefaultStringValue("<span class=\"req\">Vendedor:</span>")
+  @Key("vendedorReq")
+  String vendedorReq();
   
   /**
    * Translated "La Solicitud de Servicio debe tener al menos un contrato.".
@@ -2447,13 +2447,13 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ERR_REQUIRED_CONTRATO_TRANSFERENCIA();
   
   /**
-   * Translated "Suc. Origen:".
+   * Translated "<span class=\"req\">Suc. Origen:</span>".
    * 
-   * @return translated "Suc. Origen:"
+   * @return translated "<span class=\"req\">Suc. Origen:</span>"
    */
-  @DefaultStringValue("Suc. Origen:")
-  @Key("sucOrigen")
-  String sucOrigen();
+  @DefaultStringValue("<span class=\"req\">Suc. Origen:</span>")
+  @Key("sucOrigenReq")
+  String sucOrigenReq();
   
   /**
    * Translated "Observaciones:".
