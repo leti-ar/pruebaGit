@@ -63,7 +63,6 @@ import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
-import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
@@ -759,7 +758,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				List<Plan> planes = repository.find("from Plan p where p.id = ?", cto.getIdPlanCedente());
 				
 				if(planes.isEmpty()){
-					errores.add(Sfa.constant().ERR_PLAN_INEXISTENTE().replaceAll(V1, cto.getPlanCedente()));
+					errores.add("No se encontró el plan {1} consulte con Adm Vtas.".replaceAll(V1, cto.getPlanCedente()));
 					cantError++;
 				}else{
 					//Guardo el plan como si fuera el cedente para validar que sea valido
@@ -797,7 +796,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				
 				if(!encontrado){
 					//Error, el plan no es valido
-					errores.add(Sfa.constant().ERR_PLAN_NO_VALIDO().replaceAll(V1, planCedente.getDescripcion()));
+					errores.add("El plan {1} no es valido para el nuevo cliente.".replaceAll(V1, planCedente.getDescripcion()));
 					cantError++;
 				}
 				
