@@ -300,7 +300,7 @@ public class SolicitudBusinessService {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public GeneracionCierreResponse generarCerrarSolicitud(SolicitudServicio solicitudServicio,
 			String pinMaestro, boolean cerrar) {
-		boolean esProspect = solicitudServicio.getCuenta().isEnCarga();
+		boolean esProspectEnCarga = solicitudServicio.getCuenta().isEnCarga();
 		if (!GenericValidator.isBlankOrNull(pinMaestro) && solicitudServicio.getCuenta().isEnCarga()) {
 			solicitudServicio.getCuenta().setPinMaestro(pinMaestro);
 		} else {
@@ -323,7 +323,7 @@ public class SolicitudBusinessService {
 			if (solicitudServicio.getCuenta().getFacturaElectronica() != null
 					&& !solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion()
 					&& !response.getMessages().hasErrors()) {
-				if (!esProspect) {
+				if (!esProspectEnCarga) {
 					facturaElectronicaService.adherirFacturaElectronica(
 							solicitudServicio.getCuenta().getId(), solicitudServicio.getCuenta()
 									.getCodigoVantive(), solicitudServicio.getCuenta()

@@ -101,8 +101,8 @@ public class CuentaDatosForm extends Composite {
 	private TitledPanel formaDePagoPanel = new TitledPanel(Sfa.constant().formaDePagoPanelTitle());;
 	private TitledPanel vendedorPanel = new TitledPanel(Sfa.constant().vendedorPanelTitle());
 
-	private FacturaElectronicaUI facturaElectronicaUI = new FacturaElectronicaUI();
-	private Command aceptarFacturaElectronica;
+//	private FacturaElectronicaUI facturaElectronicaUI = new FacturaElectronicaUI();
+//	private Command aceptarFacturaElectronica;
 	private HTML iconoLupa = IconFactory.vistaPreliminar();
 	private HTML iconoEditarEstdo = IconFactory.lapiz();
 	private CuentaPotencialDto oportunidadDto;
@@ -457,35 +457,35 @@ public class CuentaDatosForm extends Composite {
 		return efectivoTable;
 	}
 
-	public Widget getFacturaElectronicaLink() {
-		Button facturaElectronicaLink = new Button("Factura Electrónica");
-		facturaElectronicaLink.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				facturaElectronicaUI.setOnAceptar(getAceptarFacturaelectronica());
-				facturaElectronicaUI.show();
-				facturaElectronicaUI.center();
-			}
-		});
-		return facturaElectronicaLink;
-	}
+//	public Widget getFacturaElectronicaLink() {
+//		Button facturaElectronicaLink = new Button("Factura Electrónica");
+//		facturaElectronicaLink.addClickHandler(new ClickHandler() {
+//			public void onClick(ClickEvent event) {
+//				facturaElectronicaUI.setOnAceptar(getAceptarFacturaelectronica());
+//				facturaElectronicaUI.show();
+//				facturaElectronicaUI.center();
+//			}
+//		});
+//		return facturaElectronicaLink;
+//	}
 
-	public Command getAceptarFacturaelectronica() {
-		if (aceptarFacturaElectronica == null) {
-			aceptarFacturaElectronica = new Command() {
-				public void execute() {
-					if (facturaElectronicaUI.getFacturaElectronicaHabilitada()) {
-						if (cuentaUIData.getFacturaElectronica() == null) {
-							cuentaUIData.setFacturaElectronica(new FacturaElectronicaDto());
-						}
-						cuentaUIData.getFacturaElectronica().setEmail(facturaElectronicaUI.getEmail());
-					} else {
-						cuentaUIData.setFacturaElectronica(null);
-					}
-				}
-			};
-		}
-		return aceptarFacturaElectronica;
-	}
+//	public Command getAceptarFacturaelectronica() {
+//		if (aceptarFacturaElectronica == null) {
+//			aceptarFacturaElectronica = new Command() {
+//				public void execute() {
+//					if (facturaElectronicaUI.getFacturaElectronicaHabilitada()) {
+//						if (cuentaUIData.getFacturaElectronica() == null) {
+//							cuentaUIData.setFacturaElectronica(new FacturaElectronicaDto());
+//						}
+//						cuentaUIData.getFacturaElectronica().setEmail(facturaElectronicaUI.getEmail());
+//					} else {
+//						cuentaUIData.setFacturaElectronica(null);
+//					}
+//				}
+//			};
+//		}
+//		return aceptarFacturaElectronica;
+//	}
 
 	public FlexTable getCuentaBancariaPanel() {
 		cuentaBancariaTable.setWidth("100%");
@@ -1791,10 +1791,10 @@ public class CuentaDatosForm extends Composite {
 			}
 
 		} else {
-			
-				cuentaUIData.getFacturaElectronicaPanel().setText("");
-				cuentaUIData.getFacturaElectronicaPanel().setEnabled(true);
+			cuentaUIData.getFacturaElectronicaPanel().setText("");
+			cuentaUIData.getFacturaElectronicaPanel().setEnabled(true);
 		}
+		cuentaUIData.getFacturaElectronicaPanel().setFacturaElectronicaHabilitada(true);
 	}
 
 }

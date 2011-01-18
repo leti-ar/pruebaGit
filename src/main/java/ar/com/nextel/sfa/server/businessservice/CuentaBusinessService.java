@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.server.businessservice;
 
 import java.sql.CallableStatement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -380,12 +381,14 @@ public class CuentaBusinessService {
 			repository.delete(cuenta.getFacturaElectronica());
 			cuenta.setFacturaElectronica(null);
 		} else if (cuentaDto.getFacturaElectronica() != null
-				&& !cuentaDto.getFacturaElectronica().isCargadaEnVantive()) {
+//				&& !cuentaDto.getFacturaElectronica().isCargadaEnVantive()
+				) {
 
 			if (cuenta.getFacturaElectronica() == null) {
 				cuenta.setFacturaElectronica(mapper.map(cuentaDto
 						.getFacturaElectronica(), FacturaElectronica.class));
 			} else {
+				cuentaDto.getFacturaElectronica().setId(cuenta.getFacturaElectronica().getId());
 				mapper.map(cuentaDto.getFacturaElectronica(), cuenta
 						.getFacturaElectronica());
 			}
@@ -403,35 +406,46 @@ public class CuentaBusinessService {
 		// }
 	}
 
+	private final long unDiaEnMilis = 1000*60*60*24*4;
+	
+	
+	/**
+	 * Si tiene y no esta vencida carga la factura electronica de sfa<br/>
+	 * si esta adherido carga la de autogestion
+	 *
+	 * 
+	 * @param cuentaDto
+	 * @param cuenta
+	 * @param mapper
+	 * @param isEnCarga
+	 */
 	public void cargarFacturaElectronica(CuentaDto cuentaDto, Cuenta cuenta,
 			MapperExtended mapper, boolean isEnCarga) {
-		// if (!isEnCarga) {
-		// if (cuenta.getFacturaElectronica() != null) {
-		// repository.delete(cuenta.getFacturaElectronica());
-		// cuenta.setFacturaElectronica(null);
-		// }
+		final Date hace4Dias = new Date(System.currentTimeMillis() - 4
+				* unDiaEnMilis);
 
-		if (cuenta.getFacturaElectronica() != null) {
+		if (cuenta.getFacturaElectronica() != null
+				&& hace4Dias.before(cuenta.getFacturaElectronica()
+						.getLastModificationDate())) { // Si en sfa tiene una
+														// factura electronica
+														// que no esta vencida
 			FacturaElectronicaDto fdto = (FacturaElectronicaDto) mapper
 					.map(cuenta.getFacturaElectronica(),
 							FacturaElectronicaDto.class);
 			cuentaDto.setFacturaElectronica(fdto);
-		} else {
-			if (!isEnCarga
-					&& facturaElectronicaService
-							.isAdheridoFacturaElectronica(cuentaDto
-									.getCodigoVantive())) {
-				FacturaElectronicaDto facturaElectronica = new FacturaElectronicaDto();
-				List<String> mails = facturaElectronicaService
-						.obtenerMailFacturaElectronica(cuentaDto
-								.getCodigoVantive());
-				facturaElectronica.setEmail(mails.isEmpty() ? "" : mails
-						.iterator().next());
-				facturaElectronica.setCargadaEnVantive(true);
-				cuentaDto.setFacturaElectronica(facturaElectronica);
-			}
+		} else if (!isEnCarga 
+				&& facturaElectronicaService
+						.isAdheridoFacturaElectronica(cuentaDto
+								.getCodigoVantive())) { // esta adherido
+					FacturaElectronicaDto facturaElectronica = new FacturaElectronicaDto();
+					List<String> mails = facturaElectronicaService
+							.obtenerMailFacturaElectronica(cuentaDto
+									.getCodigoVantive());
+					facturaElectronica.setEmail(mails.isEmpty() ? "" : mails
+							.iterator().next());
+					facturaElectronica.setCargadaEnVantive(true);
+					cuentaDto.setFacturaElectronica(facturaElectronica);
 		}
-		// }
 	}
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Division crearDivision(Cuenta cuenta, Vendedor vendedor) {
