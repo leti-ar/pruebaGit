@@ -1,5 +1,7 @@
 package ar.com.nextel.sfa.client.dto;
 
+import java.sql.Date;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class FacturaElectronicaDto implements IsSerializable {
@@ -8,6 +10,15 @@ public class FacturaElectronicaDto implements IsSerializable {
 	private String email;
 	private boolean cargadaEnVantive;
 	private boolean replicadaAutogestion;
+	private Date lastModificationDate;
+
+	public Date getLastModificationDate() {
+		return lastModificationDate;
+	}
+
+	public void setLastModificationDate(Date lastModificationDate) {
+		this.lastModificationDate = lastModificationDate;
+	}
 
 	public Long getId() {
 		return id;

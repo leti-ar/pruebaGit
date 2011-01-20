@@ -415,10 +415,10 @@ public class CuentaDatosForm extends Composite {
 					if (CuentaClientService.cuentaDto == null){
 						return true;
 					}
-					boolean esProspect =RegularExpressionConstants.isVancuc(CuentaClientService.cuentaDto.getCodigoVantive());
-					if(!esProspect){
-						emailTable.getWidget(0, 4).setVisible(false);
-					}
+//					boolean esProspect =RegularExpressionConstants.isVancuc(CuentaClientService.cuentaDto.getCodigoVantive());
+//					if(!esProspect){
+//						emailTable.getWidget(0, 4).setVisible(false);
+//					}
 					WaitWindow.hide();
 					return false;
 				}

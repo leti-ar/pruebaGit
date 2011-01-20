@@ -388,7 +388,8 @@ public class CuentaBusinessService {
 				cuenta.setFacturaElectronica(mapper.map(cuentaDto
 						.getFacturaElectronica(), FacturaElectronica.class));
 			} else {
-				cuentaDto.getFacturaElectronica().setId(cuenta.getFacturaElectronica().getId());
+				if (cuenta.getFacturaElectronica().getId()!=null)
+					cuentaDto.getFacturaElectronica().setId(cuenta.getFacturaElectronica().getId());
 				mapper.map(cuentaDto.getFacturaElectronica(), cuenta
 						.getFacturaElectronica());
 			}
@@ -438,11 +439,10 @@ public class CuentaBusinessService {
 						.isAdheridoFacturaElectronica(cuentaDto
 								.getCodigoVantive())) { // esta adherido
 					FacturaElectronicaDto facturaElectronica = new FacturaElectronicaDto();
-					List<String> mails = facturaElectronicaService
-							.obtenerMailFacturaElectronica(cuentaDto
+					String mail = facturaElectronicaService
+							.obtenerPrimerMailFacturaElectronica(cuentaDto
 									.getCodigoVantive());
-					facturaElectronica.setEmail(mails.isEmpty() ? "" : mails
-							.iterator().next());
+					facturaElectronica.setEmail(mail==null ? "" : mail);
 					facturaElectronica.setCargadaEnVantive(true);
 					cuentaDto.setFacturaElectronica(facturaElectronica);
 		}
