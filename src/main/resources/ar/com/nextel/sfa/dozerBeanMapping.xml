@@ -833,11 +833,13 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
             <a>plainServiciosAdicionales</a>
             <b>serviciosAdicionalesInc</b>
         </field>
-
-        <field custom-converter-id="identifiableObjectToId">
+<!--este mapeo está mal, ya que son 2 cosas distintas: uno es el id del plan de bscs (tmcode) y el otro el id del plan de SFA-->
+<field-exclude>
+<!--        <field custom-converter-id="identifiableObjectToId">-->
             <a>planCedente</a>
             <b>idPlanCedente</b>
-        </field> 
+<!--        </field> -->
+</field-exclude>
         <field>
             <a>modalidadCobroPlanCedente</a>
             <b>modalidad</b>
