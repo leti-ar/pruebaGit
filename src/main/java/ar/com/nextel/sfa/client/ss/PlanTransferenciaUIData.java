@@ -92,6 +92,7 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 			serviciosAdicionales.setServiciosAdicionalesForContrato(contrato, contrato.getPlanCesionario().getId());
 			tipoPlan.setSelectedItem(contrato.getPlanCesionario().getTipoPlan());
 		} else {
+			//FIXME: esto quedo re hardcode - hay un map del lado del cliente que se nutre de la KnownInstance
 			tipoPlan.setSelectedItem(new TipoPlanDto(Long.valueOf(8), "Plan Directo"));
 		}
 		plan.setSelectedItem(contrato.getPlanCesionario());

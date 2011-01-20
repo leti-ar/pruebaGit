@@ -755,7 +755,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			//Si no cambio el plan, debo validar que el plan Cedente existe
 			if(cto.getPlanCesionario() == null){
 				boolean encontrado = false;
-				List<Plan> planes = repository.find("from Plan p where p.id = ?", cto.getIdPlanCedente());
+				List<Plan> planes = repository.find("from Plan p where p.id = ?", cto.getCodigoBSCSPlanCedente());
 				
 				if(planes.isEmpty()){
 					errores.add("No se encontró el plan {1} consulte con Adm Vtas.".replaceAll(V1, cto.getPlanCedente()));
