@@ -11,6 +11,7 @@ public class TipoContribuyenteDto extends EnumDto implements ListBoxItem, IsSeri
 
 	//MGR - 26-07-2010 - Incidente #0000703
 	private static final String COD_COSUMIDOR_FINAL = "CONSUMIDOR_FINAL"; 
+    private boolean isResponsableInscripto;
 	
 	public TipoContribuyenteDto() {
 	}
@@ -28,7 +29,15 @@ public class TipoContribuyenteDto extends EnumDto implements ListBoxItem, IsSeri
 	public String getItemValue() {
 		return id+"";
 	}
-
+    
+    public boolean isResponsableInscripto() {
+		return isResponsableInscripto;
+	}
+    
+    public void setResponsableInscripto(boolean isResponsableInscripto) {
+		this.isResponsableInscripto = isResponsableInscripto;
+	}
+    
 	//MGR - 26-07-2010 - Incidente #0000703
 	public boolean isConsumidorFinal(){
 		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
