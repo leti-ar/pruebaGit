@@ -295,7 +295,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-b>
 	</mapping>
 
-	<mapping wildcard="false">
+	<mapping wildcard="false" map-null="true" >
 		<class-a>ar.com.nextel.model.solicitudes.beans.Plan</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.PlanDto</class-b>
 		<field>
@@ -796,7 +796,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</field>
 	</mapping>
 	
-    <mapping>
+    <mapping map-null="false">
         <class-a>ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio
         </class-a>
         <class-b>ar.com.nextel.sfa.client.dto.ContratoViewDto
@@ -833,13 +833,11 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
             <a>plainServiciosAdicionales</a>
             <b>serviciosAdicionalesInc</b>
         </field>
-<!--este mapeo está mal, ya que son 2 cosas distintas: uno es el id del plan de bscs (tmcode) y el otro el id del plan de SFA-->
-<field-exclude>
-<!--        <field custom-converter-id="identifiableObjectToId">-->
+
+        <field custom-converter-id="identifiableObjectToId">
             <a>planCedente</a>
             <b>idPlanCedente</b>
-<!--        </field> -->
-</field-exclude>
+        </field> 
         <field>
             <a>modalidadCobroPlanCedente</a>
             <b>modalidad</b>

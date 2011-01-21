@@ -772,39 +772,38 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		}
 		
 		//Si no hubo error (todos los planes existen en SFA), verifico que sean validos para el nuevo cliente
-//		if(cantError == 0 && !planesCedentes.isEmpty()){
-//			HashMap<Long, List<Plan>> planesPermitidos = new HashMap<Long, List<Plan>>();
-//			
-//			for (int i = 0; !error && i < planesCedentes.size(); i++) {
-//				Plan planCedente = planesCedentes.get(i);
-//				Long idTipoPlan = planCedente.getPlanBase().getTipoPlan().getId();
-//				List<Plan> planesValidos = planesPermitidos.get(idTipoPlan);
-//				
-//				if(planesValidos.isEmpty()){
-//					planesValidos = solicitudServicioRepository.getPlanesPorTipoPlan(
-//							idTipoPlan, idCuenta, sessionContextLoader.getVendedor());
-//					planesPermitidos.put(idTipoPlan, planesValidos);
-//				}
-//				 
-//				boolean encontrado = false;
-//				for (int j = 0; !encontrado && j < planesValidos.size(); j++) {
-//					Plan planValido = planesValidos.get(j);
-//					if(planValido.getId().equals(planCedente.getId())){
-//						encontrado = true;
-//					}
-//				}
-//				
-//				if(!encontrado){
-//					//Error, el plan no es valido
-//					errores.add("El plan {1} no es valido para el nuevo cliente.".replaceAll(V1, planCedente.getDescripcion()));
-//					cantError++;
-//				}
-//				
-//				if(cantError == 5){
-//					error = true;
-//				}
-//			}
-//		}
+		if(cantError == 0 && !planesCedentes.isEmpty()){
+			HashMap<Long, List<Plan>> planesPermitidos = new HashMap<Long, List<Plan>>();
+			
+			
+			for (int i = 0; !error && i < planesCedentes.size(); i++) {
+				Plan planCedente = planesCedentes.get(i);
+				Long idTipoPlan = planCedente.getPlanBase().getTipoPlan().getId();
+				List<Plan> planesValidos = null;
+				
+					planesValidos = solicitudServicioRepository.getPlanesPorTipoPlan(
+							idTipoPlan, idCuenta, sessionContextLoader.getVendedor());
+					planesPermitidos.put(idTipoPlan, planesValidos);
+				 
+				boolean encontrado = false;
+				for (int j = 0; !encontrado && j < planesValidos.size(); j++) {
+					Plan planValido = planesValidos.get(j);
+					if(planValido.getId().equals(planCedente.getId())){
+						encontrado = true;
+					}
+				}
+				
+				if(!encontrado){
+					//Error, el plan no es valido
+					errores.add("El plan {1} no es valido para el nuevo cliente.".replaceAll(V1, planCedente.getDescripcion()));
+					cantError++;
+				}
+				
+				if(cantError == 5){
+					error = true;
+				}
+			}
+		}
 		
 		return errores;
 	}
