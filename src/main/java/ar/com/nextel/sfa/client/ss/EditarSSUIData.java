@@ -3,10 +3,8 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
-import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaDomiciliosForm;
@@ -22,9 +20,9 @@ import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioGeneracionDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
-import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudBaseDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
+import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.UIData;
@@ -54,6 +52,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	private RegexTextBox nss;
 	private RegexTextBox nflota;
+	private InfocomInitializer infocom;
+
 	private ListBox origen;
 	private ListBox entrega;
 	private ListBox facturacion;
@@ -164,6 +164,12 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		precioVentaText.addStyleName("normalText");
 	}
 
+	/** Carga los datos de Header de infocom */
+	public void setInfocom(InfocomInitializer infocom) {
+		this.infocom = infocom;  
+		nflota.setText(infocom.getFlota());
+	}
+	
 	private void showMaxLengthTextAreaError(TextArea textArea, int maxLength) {
 		if (textArea.getText().length() > maxLength) {
 			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
@@ -322,7 +328,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 		nflota.setEnabled(solicitud.getCuenta().getIdVantive() == null);
 		nflota.setReadOnly(!nflota.isEnabled());
-		nflota.setText(solicitud.getNumeroFlota());
+		nflota.setText(infocom.getFlota());
+//		nflota.setText(solicitud.getNumeroFlota());
 		//MGR - #1027
 		ordenCompra.setText(solicitud.getOrdenCompra());
 		

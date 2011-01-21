@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.HashMap;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.InfocomRpcService;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -23,6 +24,8 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
+import ar.com.nextel.sfa.client.infocom.InfocomUIData;
+import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
@@ -61,6 +64,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public static final String CODIGO_VANTIVE = "codigoVantive";
 	private static final String validarCompletitudFailStyle = "validarCompletitudFailButton";
 
+	private InfocomUIData infocomUIData;
+	private String idCuenta;
+	private String codigoVantive;
 	private TabPanel tabs;
 	private DatosSSUI datos;
 	private VariosSSUI varios;
@@ -86,8 +92,29 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public EditarSSUI() {
 		super();
 		addStyleName("Gwt-EditarSSUI");
+		infocomUIData = new InfocomUIData();
 	}
 
+	private void getInfocomData(String idCuenta, String responsablePago, String codigoVantive) {
+		InfocomRpcService.Util.getInstance().getInfocomInitializer(idCuenta, codigoVantive, responsablePago, new DefaultWaitCallback<InfocomInitializer>() {
+			public void success(InfocomInitializer result) {
+				if (result != null) {
+					editarSSUIData.setInfocom(result);
+				}
+			}
+		});
+	}
+
+	private boolean loadInfocom(String cuentaID, String codigoVantive) {
+		infocomUIData.setIdCuenta(cuentaID);
+		infocomUIData.setCodigoVantive(codigoVantive);
+		idCuenta = cuentaID;
+		this.codigoVantive = codigoVantive;
+		infocomUIData.getResponsablePago().clear();
+		this.getInfocomData(idCuenta, idCuenta, codigoVantive);
+		return true;
+	}
+	
 	public boolean load() {
 		tokenLoaded = History.getToken();
 		String cuenta = HistoryUtils.getParam(ID_CUENTA);
@@ -149,6 +176,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							validarCompletitud(false);
 							datos.refresh();
 							mainPanel.setVisible(true);
+							loadInfocom(String.valueOf(solicitud.getCuenta().getId()), solicitud.getCuenta().getCodigoVantive());
 						}
 
 						public void failure(Throwable caught) {
