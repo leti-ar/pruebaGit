@@ -615,13 +615,13 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return descuentoTotal;
 	}
 
-	public boolean crearArchivo(SolicitudServicioCerradaResultDto solicitud)
+	public boolean crearArchivo(SolicitudServicioCerradaResultDto solicitud, boolean enviarEmail)
 			throws RpcExceptionMessages {
 		SolicitudServicio solicitudServicio = solicitudServicioRepository
 			.getSolicitudServicioPorId(solicitud.getId());
 		GeneracionCierreResponse response = null;
 		try {
-			response = solicitudBusinessService.crearArchivo(solicitudServicio);
+			response = solicitudBusinessService.crearArchivo(solicitudServicio, enviarEmail);
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);

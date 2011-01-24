@@ -111,6 +111,6 @@ public interface SolicitudRpcService extends RemoteService {
 
 	public DescuentoTotalDto getDescuentosTotales(Long idLinea) throws RpcExceptionMessages;
 
-	public boolean crearArchivo(SolicitudServicioCerradaResultDto solicitud) throws RpcExceptionMessages;
+	public boolean crearArchivo(SolicitudServicioCerradaResultDto solicitud, boolean enviarEmail) throws RpcExceptionMessages;
 
 }

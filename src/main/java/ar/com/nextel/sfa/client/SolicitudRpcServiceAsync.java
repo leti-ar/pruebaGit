@@ -97,6 +97,6 @@ public interface SolicitudRpcServiceAsync {
 			AsyncCallback<DescuentoTotalDto> defaultWaitCallback);
 
 	public void crearArchivo(SolicitudServicioCerradaResultDto solicitud,
-			AsyncCallback<Boolean> defaultWaitCallback);
+			boolean enviarEmail, AsyncCallback<Boolean> defaultWaitCallback);
 
 }
