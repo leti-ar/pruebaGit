@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.server.businessservice;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,6 +41,7 @@ import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
 import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.ParametrosGestion;
 import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
@@ -296,11 +298,14 @@ public class SolicitudBusinessService {
 				.getVendedor());
 
 	}
+	private final long unDiaEnMilis = 1000*60*60*24*4;
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public GeneracionCierreResponse generarCerrarSolicitud(SolicitudServicio solicitudServicio,
 			String pinMaestro, boolean cerrar) {
 		boolean esProspectEnCarga = solicitudServicio.getCuenta().isEnCarga();
+		final Date hace4Dias = new Date(System.currentTimeMillis() - 4
+				* unDiaEnMilis);
 		if (!GenericValidator.isBlankOrNull(pinMaestro) && solicitudServicio.getCuenta().isEnCarga()) {
 			solicitudServicio.getCuenta().setPinMaestro(pinMaestro);
 		} else {
@@ -321,7 +326,8 @@ public class SolicitudBusinessService {
 					+ response.getMessages().hasErrors(), this);
 
 			if (solicitudServicio.getCuenta().getFacturaElectronica() != null
-					&& !solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion()
+//					&& !solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion()
+					&& hace4Dias.before(solicitudServicio.getCuenta().getFacturaElectronica().getLastModificationDate())
 					&& !response.getMessages().hasErrors()) {
 				if (!esProspectEnCarga) {
 					facturaElectronicaService.adherirFacturaElectronica(
@@ -332,6 +338,15 @@ public class SolicitudBusinessService {
 				}
 				solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
 				repository.save(solicitudServicio.getCuenta().getFacturaElectronica());
+				String codigoGestion = "TRANSF_FACT_ELECTRONICA";
+				ParametrosGestion parametrosGestion = repository.retrieve(ParametrosGestion.class, codigoGestion);
+//				generacionCierreBusinessOperator.lanzarGestionCerrarSS(
+//						this.sessionContextLoader.getInstance().getVendedor().getUserName(), 
+//						0L, 
+//						parametrosGestion, 
+//						"", 
+//						solicitudServicio.getCuenta().getId(), 
+//						cerrar);
 			}
 		} else {
 			response = generacionCierreBusinessOperator.generarSolicitudServicio(generacionCierreRequest);

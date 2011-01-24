@@ -26,6 +26,7 @@ public class FacturaElectronicaPanel extends Composite implements ClickHandler {
 
 		layout.setHTML(0, 0, Sfa.constant().habilitarFacturaElectronica());
 		layout.setWidget(0, 1, facturaElectronicaHabilitada);
+		facturaElectronicaHabilitada.setVisible(false);
 		layout.setWidget(0, 2, emailLabel);
 		layout.setWidget(0, 3, email);
 
