@@ -747,29 +747,31 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		List<Plan> planesCedentes = new ArrayList<Plan>();
 		int cantError = 0; //Para devolver como maximo solo 5 errores
 		
-		//Valido que los planes existan en SFA
 		boolean error = false;
-		for (int i = 0; !error && i < ctoCedentes.size(); i++) {
-			ContratoViewDto cto = ctoCedentes.get(i);
-			
-			//Si no cambio el plan, debo validar que el plan Cedente existe
-			if(cto.getPlanCesionario() == null){
-				boolean encontrado = false;
-				List<Plan> planes = repository.find("from Plan p where p.planBase.codigoBSCS = ?", String.valueOf(cto.getCodigoBSCSPlanCedente()));
-				
-				if(planes.isEmpty()){
-					errores.add("No se encontró el plan {1} consulte con Adm Vtas.".replaceAll(V1, cto.getPlanCedente()));
-					cantError++;
-				}else{
-					//Guardo el plan como si fuera el cedente para validar que sea valido
-					planesCedentes.add(planes.get(0));
-				}
-				
-				if(cantError == 5){
-					error = true;
-				}
-			}
-		}
+		
+		//Valido que los planes existan en SFA
+//		ya no valido más!! se cambio el requerimiento
+//		for (int i = 0; !error && i < ctoCedentes.size(); i++) {
+//			ContratoViewDto cto = ctoCedentes.get(i);
+//			
+//			//Si no cambio el plan, debo validar que el plan Cedente existe
+//			if(cto.getPlanCesionario() == null){
+//				boolean encontrado = false;
+//				List<Plan> planes = repository.find("from Plan p where p.planBase.codigoBSCS = ?", String.valueOf(cto.getCodigoBSCSPlanCedente()));
+//				
+//				if(planes.isEmpty()){
+//					errores.add("No se encontró el plan {1} consulte con Adm Vtas.".replaceAll(V1, cto.getPlanCedente()));
+//					cantError++;
+//				}else{
+//					//Guardo el plan como si fuera el cedente para validar que sea valido
+//					planesCedentes.add(planes.get(0));
+//				}
+//				
+//				if(cantError == 5){
+//					error = true;
+//				}
+//			}
+//		}
 		
 		//Si no hubo error (todos los planes existen en SFA), verifico que sean validos para el nuevo cliente
 		if(cantError == 0 && !planesCedentes.isEmpty()){
