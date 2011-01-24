@@ -264,7 +264,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	
 	private void refresContratosLayout(){
 		contratosLayout.setWidget(1, 0, new HTML("<br>"));
-		contratosLayout.setWidget(2, 0, new InlineLabel("Facturados"));
+		contratosLayout.setWidget(2, 0, new InlineLabel("Servicios"));
 		grillaTotalServ.setWidget(0, 0, textTotalServ);
 		contratosLayout.setWidget(4, 0, grillaTotalServ);
 	}
@@ -449,6 +449,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 						@Override
 						public void success(List<ServicioContratoDto> result) {
 							serviciosAMostrar = result;
+							//TODO ORDENAR serviciosAMostrar  
 							serviciosContratados.put(ctoSelected.getContrato(), result);
 						}
 					});
