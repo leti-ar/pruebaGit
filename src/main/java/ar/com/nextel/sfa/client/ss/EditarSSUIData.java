@@ -328,8 +328,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 		nflota.setEnabled(solicitud.getCuenta().getIdVantive() == null);
 		nflota.setReadOnly(!nflota.isEnabled());
-		nflota.setText(infocom.getFlota());
-//		nflota.setText(solicitud.getNumeroFlota());
+		nflota.setText(solicitud.getNumeroFlota());
 		//MGR - #1027
 		ordenCompra.setText(solicitud.getOrdenCompra());
 		

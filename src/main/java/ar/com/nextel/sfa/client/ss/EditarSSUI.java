@@ -92,7 +92,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public EditarSSUI() {
 		super();
 		addStyleName("Gwt-EditarSSUI");
-		infocomUIData = new InfocomUIData();
 	}
 
 	private void getInfocomData(String idCuenta, String responsablePago, String codigoVantive) {
@@ -106,12 +105,15 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	}
 
 	private boolean loadInfocom(String cuentaID, String codigoVantive) {
-		infocomUIData.setIdCuenta(cuentaID);
-		infocomUIData.setCodigoVantive(codigoVantive);
-		idCuenta = cuentaID;
-		this.codigoVantive = codigoVantive;
-		infocomUIData.getResponsablePago().clear();
-		this.getInfocomData(idCuenta, idCuenta, codigoVantive);
+		if (infocomUIData==null) {
+			infocomUIData = new InfocomUIData();
+			infocomUIData.setIdCuenta(cuentaID);
+			infocomUIData.setCodigoVantive(codigoVantive);
+			idCuenta = cuentaID;
+			this.codigoVantive = codigoVantive;
+			infocomUIData.getResponsablePago().clear();
+			this.getInfocomData(idCuenta, idCuenta, codigoVantive);
+		}
 		return true;
 	}
 	
@@ -150,6 +152,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			SolicitudRpcService.Util.getInstance().createSolicitudServicio(solicitudServicioRequestDto,
 					new DefaultWaitCallback<SolicitudServicioDto>() {
 						public void success(SolicitudServicioDto solicitud) {
+							loadInfocom(String.valueOf(solicitud.getCuenta().getId()), solicitud.getCuenta().getCodigoVantive());
 							editarSSUIData.setSaved(true);
 							// varios.setScoringVisible(!solicitud.getGrupoSolicitud().isCDW());
 							razonSocialClienteBar.setCliente(solicitud.getCuenta().getCodigoVantive());
@@ -176,7 +179,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							validarCompletitud(false);
 							datos.refresh();
 							mainPanel.setVisible(true);
-							loadInfocom(String.valueOf(solicitud.getCuenta().getId()), solicitud.getCuenta().getCodigoVantive());
 						}
 
 						public void failure(Throwable caught) {
