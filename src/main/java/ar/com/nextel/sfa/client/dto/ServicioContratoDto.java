@@ -1,11 +1,10 @@
 package ar.com.nextel.sfa.client.dto;
 
-
 import java.util.Date;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ServicioContratoDto implements IsSerializable{
+public class ServicioContratoDto implements IsSerializable, Comparable {
 
 	private Long id;
 	private Long idContrato;
@@ -71,4 +70,14 @@ public class ServicioContratoDto implements IsSerializable{
 	public void setPeriodosPendientes(int periodosPendientes) {
 		this.periodosPendientes = periodosPendientes;
 	}
+
+	public int compareTo(Object o) {
+		ServicioContratoDto servicioContrato = (ServicioContratoDto) o;
+		if (this.tarifa.compareTo(servicioContrato.tarifa) == 0) {
+			return this.servicio.compareToIgnoreCase(servicioContrato.servicio);
+		} else {
+			return servicioContrato.tarifa.compareTo(this.tarifa);
+		}
+	}
+	
 }

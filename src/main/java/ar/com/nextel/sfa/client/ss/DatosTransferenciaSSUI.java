@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.client.ss;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -450,6 +451,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 						public void success(List<ServicioContratoDto> result) {
 							serviciosAMostrar = result;
 							//TODO ORDENAR serviciosAMostrar  
+							Collections.sort(serviciosAMostrar);
 							serviciosContratados.put(ctoSelected.getContrato(), result);
 						}
 					});
