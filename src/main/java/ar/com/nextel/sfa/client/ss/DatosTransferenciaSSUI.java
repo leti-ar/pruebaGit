@@ -136,6 +136,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 			ContratoViewDto contratoViewDto = (ContratoViewDto) iterator.next();
 			if (contratoViewDto.getContrato().equals(Long.valueOf(event.getContrato()))) {
 				contratoViewDto.setPinchado(event.isClicked());
+		
 			}
 		}
 	}
@@ -606,16 +607,22 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		return ctaCedenteDto;
 	}
 
-	public void setDatosSolicitud(SolicitudServicioDto solicitud){
+	public void setDatosSolicitud(final SolicitudServicioDto solicitud){
 		this.ctaCedenteDto = solicitud.getCuentaCedente();
-		this.contratosActivosVisibles = solicitud.getContratosCedidos();
+//		this.contratosActivosVisibles = solicitud.getContratosCedidos();
 		if(this.ctaCedenteDto != null){
 			CuentaRpcService.Util.getInstance().searchContratosActivos(
 					this.ctaCedenteDto, new DefaultWaitCallback<List<ContratoViewDto>>() {
 						
 						public void success(List<ContratoViewDto> result) {
 							todosContratosActivos.clear();
+							contratosActivosVisibles.clear();
 							todosContratosActivos.addAll(result);
+							for (ContratoViewDto contratoViewDto : result) {
+								if(solicitud.getContratosCedidos().contains(contratoViewDto))
+								contratosActivosVisibles.add(contratoViewDto);
+							}
+							refresh();
 						}
 					});
 		}
