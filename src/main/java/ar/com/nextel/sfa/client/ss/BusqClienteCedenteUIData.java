@@ -131,7 +131,12 @@ public class BusqClienteCedenteUIData extends UIData implements ChangeHandler{
 		}
 		else if(parametroBusqCedente.getText() == null || parametroBusqCedente.getText().equals("")){
 			errores.add("Debe ingresar el criterio de busqueda.");
-		}
+		} 
+		//#1343
+		else if (criterioBusqCedente.getValue(criterioBusqCedente.getSelectedIndex()).equals(CUIT_CUIL)) {
+			if (!valdaCuilCuit(parametroBusqCedente.getText()))
+				errores.add("Formato de cuit/cuil incorrecto");
+		} 
 		else if(criterioBusqCedente.getValue(criterioBusqCedente.getSelectedIndex()).equals(CODIGO_CLIENTE) && 
 				this.controller.getEditarSSUIData().getCuenta().getCodigoVantive().startsWith(parametroBusqCedente.getText())){
 			errores.add("La cuenta cedente es la misma que el cesionario. Por favor, elija otra cuenta.");
@@ -145,6 +150,13 @@ public class BusqClienteCedenteUIData extends UIData implements ChangeHandler{
 		return errores;
 	}
 	
+	private static final String cuilCuitFinalPattern = "[0-9]{2,2}-[0-9]{8,8}-[0-9]{1,1}";
+	private boolean valdaCuilCuit(String text) {
+		ValidationTextBox cuitCuil = new ValidationTextBox(RegularExpressionConstants.cuilCuit);
+		cuitCuil.setText(text);
+		return cuitCuil.validatePattern(cuilCuitFinalPattern);
+	}
+
 	private boolean validaFlotaId(String text) {
 		ValidationTextBox flota = new ValidationTextBox("[0-9\\*]*");
 		flota.setText(text);
