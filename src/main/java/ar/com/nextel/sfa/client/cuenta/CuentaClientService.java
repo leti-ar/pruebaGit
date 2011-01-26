@@ -6,6 +6,7 @@ import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
+import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
@@ -211,4 +212,15 @@ public class CuentaClientService {
 			});
 		}
 	}
+	
+	public static boolean tengoCuentaEnNull(){
+		boolean vengoDeOportunidad= HistoryUtils.getParam(EditarCuentaUI.PARAM_OPORTUNIDAD) != null;
+		return (vengoDeOportunidad&&CuentaClientService.cuentaPotencialDto == null)|| (!vengoDeOportunidad&&CuentaClientService.cuentaDto==null);
+	}
+	
+	public static String getCodigoVantive(){
+		boolean vengoDeOportunidad= HistoryUtils.getParam(EditarCuentaUI.PARAM_OPORTUNIDAD) != null;
+		return vengoDeOportunidad?cuentaPotencialDto.getCodigoVantive() : cuentaDto.getCodigoVantive();
+	}
+	
 }

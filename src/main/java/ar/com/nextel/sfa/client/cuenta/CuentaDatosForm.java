@@ -46,6 +46,7 @@ import ar.com.nextel.sfa.client.enums.TipoTarjetaEnum;
 import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.FormUtils;
+import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
@@ -412,10 +413,10 @@ public class CuentaDatosForm extends Composite {
 			WaitWindow.show();
 			DeferredCommand.addCommand(new IncrementalCommand() {
 				public boolean execute() {
-					if (CuentaClientService.cuentaDto == null){
+					if (CuentaClientService.tengoCuentaEnNull()){
 						return true;
 					}
-					boolean esProspect =RegularExpressionConstants.isVancuc(CuentaClientService.cuentaDto.getCodigoVantive());
+					boolean esProspect =RegularExpressionConstants.isVancuc(CuentaClientService.getCodigoVantive());
 					if(!esProspect){
 						emailTable.getWidget(0, 4).setVisible(false);
 					}
