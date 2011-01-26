@@ -609,20 +609,23 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 
 	public void setDatosSolicitud(final SolicitudServicioDto solicitud){
 		this.ctaCedenteDto = solicitud.getCuentaCedente();
-//		this.contratosActivosVisibles = solicitud.getContratosCedidos();
+		this.contratosActivosVisibles = solicitud.getContratosCedidos();
 		if(this.ctaCedenteDto != null){
 			CuentaRpcService.Util.getInstance().searchContratosActivos(
 					this.ctaCedenteDto, new DefaultWaitCallback<List<ContratoViewDto>>() {
 						
 						public void success(List<ContratoViewDto> result) {
 							todosContratosActivos.clear();
-							contratosActivosVisibles.clear();
+//							contratosActivosVisibles.clear();
 							todosContratosActivos.addAll(result);
 							for (ContratoViewDto contratoViewDto : result) {
-								if(solicitud.getContratosCedidos().contains(contratoViewDto))
-								contratosActivosVisibles.add(contratoViewDto);
+								int index = solicitud.getContratosCedidos().indexOf(contratoViewDto);
+								if(index >= 0){
+									ContratoViewDto contratoSolicitud = solicitud.getContratosCedidos().get(index);
+									todosContratosActivos.remove(contratoViewDto);
+									todosContratosActivos.add(contratoSolicitud);
+								}
 							}
-							refresh();
 						}
 					});
 		}
