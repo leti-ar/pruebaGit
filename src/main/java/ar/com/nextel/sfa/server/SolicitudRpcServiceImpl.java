@@ -15,16 +15,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
-import javax.swing.UIDefaults.ProxyLazyValue;
 
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
+import ar.com.nextel.business.legacy.avalon.AvalonSystem;
+import ar.com.nextel.business.legacy.avalon.dto.ServicioContratadoDto;
+import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.vantive.VantiveSystem;
 import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO;
@@ -41,7 +42,6 @@ import ar.com.nextel.components.knownInstances.GlobalParameter;
 import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
 import ar.com.nextel.components.message.MessageList;
-import ar.com.nextel.components.report.Report;
 import ar.com.nextel.components.sequence.DefaultSequenceImpl;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
@@ -53,6 +53,7 @@ import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
 import ar.com.nextel.model.solicitudes.beans.Plan;
+import ar.com.nextel.model.solicitudes.beans.ServicioAdicional;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Sucursal;
@@ -82,6 +83,7 @@ import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
@@ -126,6 +128,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	//MELI
 	private DefaultSequenceImpl tripticoNextValue;
 	
+	private AvalonSystem avalonSystem;
+	
 
 	public void init() throws ServletException {
 		super.init();
@@ -147,6 +151,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		globalParameterRetriever = (DefaultRetriever) context.getBean("globalParameterRetriever");
 		
 		tripticoNextValue = (DefaultSequenceImpl)context.getBean("tripticoNextValue");
+		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
 	}
 
 	public SolicitudServicioDto createSolicitudServicio(
@@ -677,6 +682,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			throws RpcExceptionMessages {
 		CreateSaveSSTransfResultDto resultDto = new CreateSaveSSTransfResultDto();
 //		try {
+			completarServiciosAdicionalesContratosCedidos(solicitudServicioDto);
+		
+		
 			SolicitudServicioDto solicitudDto = this.saveSolicituServicio(solicitudServicioDto);
 			resultDto.setSolicitud(solicitudDto);
 		
@@ -699,6 +707,45 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 //			throw ExceptionUtil.wrap(e);
 //		}
 		return resultDto;
+	}
+	
+	private void completarServiciosAdicionalesContratosCedidos(SolicitudServicioDto solicitudServicioDto){
+
+		for (ContratoViewDto contrato : solicitudServicioDto.getContratosCedidos()) {
+			if(contrato.getServiciosAdicionalesInc().isEmpty())
+			try {
+				List<ServicioContratadoDto> serviciosAvalon = avalonSystem
+						.retriveServiciosContratados(contrato.getContrato());
+				
+				for (ServicioContratadoDto servicioContratadoDto : serviciosAvalon) {
+					
+					if ((contrato.getPlanCesionario() == null && (servicioContratadoDto.getServicio()
+							.startsWith("Garantía")
+							|| servicioContratadoDto.getServicio().equalsIgnoreCase("CDT")
+							|| servicioContratadoDto.getServicio().equalsIgnoreCase("CDI") || servicioContratadoDto
+							.getServicio().startsWith("Cargo Admin.")))
+							|| (contrato.getPlanCesionario() != null && servicioContratadoDto.getServicio()
+									.startsWith("Garantía"))) {
+
+						List<ServicioAdicional> servicios = repository.find(
+								"from ServicioAdicional where codigoBSCS = ?", servicioContratadoDto.getCodigoBSCS());
+						if (!servicios.isEmpty()){
+			
+							ServicioAdicionalIncluidoDto servIncDto = new ServicioAdicionalIncluidoDto();
+							servIncDto.setServicioAdicional(mapper.map(servicios.get(0), ServicioAdicionalDto.class));
+							servIncDto.setPrecioFinal(servicioContratadoDto.getTarifa());
+					
+							contrato.getServiciosAdicionalesInc().add(servIncDto);
+						}
+					}
+
+				}
+			} catch (AvalonSystemException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
 	}
 
 	public CreateSaveSSTransfResultDto createSolicitudServicioTranferencia(
