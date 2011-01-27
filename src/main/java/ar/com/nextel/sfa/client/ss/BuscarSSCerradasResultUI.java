@@ -157,8 +157,12 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 								}
 								resultTable.setHTML(indiceRowTabla, 4, solicitudServicioCerradaResultDto
 										.getCantidadEquiposPorCuenta().toString());
-								resultTable.setHTML(indiceRowTabla, 5, solicitudServicioCerradaResultDto.getPataconex()
-										.toString());
+								if (solicitudServicioCerradaResultDto.getPataconex() == null) {
+									resultTable.setHTML(indiceRowTabla, 5, "");
+								} else {
+									resultTable.setHTML(indiceRowTabla, 5, solicitudServicioCerradaResultDto.getPataconex()
+											.toString());
+								}
 								if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == true) {
 									resultTable.setWidget(indiceRowTabla, 6, IconFactory.tildeVerde());
 								} else {
@@ -168,7 +172,9 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 									cantEqFirmados++;
 								}
 								cantEquipos = cantEquipos + solicitudServicioCerradaResultDto.getCantidadEquipos();
-								cantPataconex = cantPataconex + solicitudServicioCerradaResultDto.getPataconex();
+								if (solicitudServicioCerradaResultDto.getPataconex() != null) {
+									cantPataconex = cantPataconex + solicitudServicioCerradaResultDto.getPataconex();
+								}
 								indiceRowTabla++;
 //							}
 //						});
