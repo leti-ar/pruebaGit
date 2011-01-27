@@ -120,4 +120,6 @@ public interface SolicitudRpcServiceAsync {
 
 	void validarPlanesCedentes(List<ContratoViewDto> ctoCedentes,
 			Long idCuenta, AsyncCallback<List<String>> callback);
+	
+	public void loginServer(String linea, AsyncCallback<Void> callback);
 }

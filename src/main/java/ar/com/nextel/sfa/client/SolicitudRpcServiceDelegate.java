@@ -1,7 +1,7 @@
 package ar.com.nextel.sfa.client;
 
 import java.util.List;
-
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
@@ -189,6 +189,16 @@ public class SolicitudRpcServiceDelegate {
 			DefaultWaitCallback<DescuentoTotalDto> defaultWaitCallback) {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.getDescuentosTotales(idLinea, defaultWaitCallback);
+	}
+	
+	public void loginServer(String linea){
+		AsyncCallback<Void> callback = new AsyncCallback<Void>() {
+			public void onFailure(Throwable caught) {
+			}
+			public void onSuccess(Void result) {
+			}
+		};
+		solicitudRpcServiceAsync.loginServer(linea, callback);
 	}
 
 	public void crearArchivo(SolicitudServicioCerradaResultDto solicitud,

@@ -225,8 +225,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		
 		//MGR - #1152
 		boolean esProspect =RegularExpressionConstants.isVancuc(solicitud.getCuenta().getCodigoVantive());
-		if(solicitud.getNumero() == null && ClientContext.getInstance().
-				checkPermiso(PermisosEnum.AUTOCOMPLETAR_TRIPTICO.getValue()) && !esProspect){
+		
+		if (solicitud.getNumero() == null
+				&& ClientContext.getInstance().getVendedor().isTelemarketing()
+				&& !esProspect) {
 			editarSSUIData.getNss().setText(String.valueOf(solicitud.getTripticoNumber()));
 		} 
 		

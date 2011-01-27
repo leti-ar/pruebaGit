@@ -416,9 +416,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 		//MGR - #1152
 		boolean esProspect =RegularExpressionConstants.isVancuc(solicitud.getCuenta().getCodigoVantive());
+		
 		//MGR - #1026
-		if(!ClientContext.getInstance().
-				checkPermiso(PermisosEnum.NRO_SS_EDITABLE.getValue())){
+		if(ClientContext.getInstance().getVendedor().isTelemarketing()){
 			//MGR - #1167
 			if(esProspect){
 				nss.setEnabled(true);

@@ -856,4 +856,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		
 		return errores;
 	}
+
+	public void loginServer(String linea) {
+		AppLogger.info(linea);
+	}
+
 }

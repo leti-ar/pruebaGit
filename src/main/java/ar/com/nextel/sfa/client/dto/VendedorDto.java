@@ -22,6 +22,42 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
     public static final String TIPO_VENDEDOR_DEALER = "TIPO_VENDEDOR_DEALER";
     public static final String TIPO_VENDEDOR_AP = "TIPO_VENDEDOR_AP";
     public static final String TIPO_VENDEDOR_ADM_CREDITOS = "TIPO_VENDEDOR_CREDITOS";
+    public static final String TIPO_VENDEDOR_TELEMARKETING = "TIPO_VENDEDOR_TELEMARKETING";
+
+
+    
+    public boolean isTelemarketing(){
+    	HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+    	if(instancias != null && this.getTipoVendedor() != null){
+    		return instancias.get(TIPO_VENDEDOR_TELEMARKETING).toString().equals(this.getTipoVendedor().getCodigo());
+    	}
+    	return false;
+    }
+
+    public boolean isDealer(){
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias != null && this.getTipoVendedor() != null){
+			return instancias.get(TIPO_VENDEDOR_DEALER).toString().equals(this.getTipoVendedor().getCodigo());
+		}
+		return false;
+	}
+	
+	public boolean isAP(){
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias != null && this.getTipoVendedor() != null){
+			return instancias.get(TIPO_VENDEDOR_AP).toString().equals(this.getTipoVendedor().getCodigo());
+		}
+		return false;
+	}
+	
+	public boolean isADMCreditos(){
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias != null && this.getTipoVendedor() != null){
+			return instancias.get(TIPO_VENDEDOR_ADM_CREDITOS).toString().equals(this.getTipoVendedor().getCodigo());
+		}
+		return false;
+	}
+    
 
 	public Long getId() {
 		return id; 
@@ -107,27 +143,4 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
 		this.idSucursal = idSucursal;
 	}
 
-	public boolean isDealer(){
-		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
-		if(instancias != null && this.getTipoVendedor() != null){
-			return instancias.get(TIPO_VENDEDOR_DEALER).toString().equals(this.getTipoVendedor().getCodigo());
-		}
-		return false;
-	}
-	
-	public boolean isAP(){
-		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
-		if(instancias != null && this.getTipoVendedor() != null){
-			return instancias.get(TIPO_VENDEDOR_AP).toString().equals(this.getTipoVendedor().getCodigo());
-		}
-		return false;
-	}
-	
-	public boolean isADMCreditos(){
-		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
-		if(instancias != null && this.getTipoVendedor() != null){
-			return instancias.get(TIPO_VENDEDOR_ADM_CREDITOS).toString().equals(this.getTipoVendedor().getCodigo());
-		}
-		return false;
-	}
 }
