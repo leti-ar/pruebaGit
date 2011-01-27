@@ -1,9 +1,7 @@
 package ar.com.nextel.sfa.client.cuenta;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -51,15 +49,12 @@ import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
-import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import ar.com.snoop.gwt.commons.client.window.MessageWindow;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
-import com.google.gwt.dev.js.rhino.ObjToIntMap.Iterator;
-import com.google.gwt.dev.util.collect.HashMap;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -70,7 +65,6 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
@@ -412,10 +406,10 @@ public class CuentaDatosForm extends Composite {
 			WaitWindow.show();
 			DeferredCommand.addCommand(new IncrementalCommand() {
 				public boolean execute() {
-					if (CuentaClientService.cuentaDto == null){
+					if (CuentaClientService.tengoCuentaEnNull()){
 						return true;
 					}
-					boolean esProspect =RegularExpressionConstants.isVancuc(CuentaClientService.cuentaDto.getCodigoVantive());
+					boolean esProspect =RegularExpressionConstants.isVancuc(CuentaClientService.getCodigoVantive());
 					if(!esProspect){
 						emailTable.getWidget(0, 4).setVisible(false);
 					}
