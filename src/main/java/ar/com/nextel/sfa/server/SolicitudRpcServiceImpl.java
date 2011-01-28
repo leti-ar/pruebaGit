@@ -128,7 +128,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	//MELI
 	private DefaultSequenceImpl tripticoNextValue;
 	
-	private AvalonSystem avalonSystem;
+	
 	
 
 	public void init() throws ServletException {
@@ -151,7 +151,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		globalParameterRetriever = (DefaultRetriever) context.getBean("globalParameterRetriever");
 		
 		tripticoNextValue = (DefaultSequenceImpl)context.getBean("tripticoNextValue");
-		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
+//		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
 	}
 
 	public SolicitudServicioDto createSolicitudServicio(
@@ -678,76 +678,35 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return mapper.convertList(serviciosAdicionales, ServicioAdicionalIncluidoDto.class);
 	}
 	
-	public CreateSaveSSTransfResultDto saveSolicituServicioTranferencia(SolicitudServicioDto solicitudServicioDto)
-			throws RpcExceptionMessages {
+	public CreateSaveSSTransfResultDto saveSolicituServicioTranferencia(
+			SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages {
 		CreateSaveSSTransfResultDto resultDto = new CreateSaveSSTransfResultDto();
-//		try {
-			completarServiciosAdicionalesContratosCedidos(solicitudServicioDto);
-		
-		
+		try {
+	
+
 			SolicitudServicioDto solicitudDto = this.saveSolicituServicio(solicitudServicioDto);
 			resultDto.setSolicitud(solicitudDto);
-		
-//			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
-//			solicitudServicioDto = mapper.map(solicitudSaved, SolicitudServicioDto.class);
-//			resultDto.setSolicitud(solicitudServicioDto);
-			
-			HashMap<String, Boolean> mapaPermisosClient = (HashMap<String, Boolean>) sessionContextLoader.getSessionContext().get(SessionContext.PERMISOS);
-	        if((Boolean)mapaPermisosClient.get(PermisosUserCenter.VALIDAR_TRIPTICO_AL_GUARDAR.getValue())){
-				SolicitudServicio solicitud = repository.retrieve(SolicitudServicio.class,solicitudDto.getId());
-				//mapper.map(solicitudDto, solicitud);
+
+			HashMap<String, Boolean> mapaPermisosClient = (HashMap<String, Boolean>) sessionContextLoader
+					.getSessionContext().get(SessionContext.PERMISOS);
+			if ((Boolean) mapaPermisosClient.get(PermisosUserCenter.VALIDAR_TRIPTICO_AL_GUARDAR.getValue())) {
+				SolicitudServicio solicitud = repository.retrieve(SolicitudServicio.class,
+						solicitudDto.getId());
+				// mapper.map(solicitudDto, solicitud);
 				CreateSaveSSTransfResponse ssResponse = solicitudBusinessService.validarTriptico(solicitud);
-				resultDto.setMessages(mapper.convertList(ssResponse.getMessages().getMessages(), MessageDto.class));
-				if(!resultDto.getMessages().isEmpty()){
+				resultDto.setMessages(mapper.convertList(ssResponse.getMessages().getMessages(),
+						MessageDto.class));
+				if (!resultDto.getMessages().isEmpty()) {
 					resultDto.setError(true);
 				}
 			}
-//		} catch (Exception e) {
-//			AppLogger.error(e);
-//			throw ExceptionUtil.wrap(e);
-//		}
+		} catch (Exception e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
 		return resultDto;
 	}
 	
-	private void completarServiciosAdicionalesContratosCedidos(SolicitudServicioDto solicitudServicioDto){
-
-		for (ContratoViewDto contrato : solicitudServicioDto.getContratosCedidos()) {
-			if(contrato.getServiciosAdicionalesInc().isEmpty())
-			try {
-				List<ServicioContratadoDto> serviciosAvalon = avalonSystem
-						.retriveServiciosContratados(contrato.getContrato());
-				
-				for (ServicioContratadoDto servicioContratadoDto : serviciosAvalon) {
-					
-					if ((contrato.getPlanCesionario() == null && (servicioContratadoDto.getServicio()
-							.startsWith("Garantía")
-							|| servicioContratadoDto.getServicio().equalsIgnoreCase("CDT")
-							|| servicioContratadoDto.getServicio().equalsIgnoreCase("CDI") || servicioContratadoDto
-							.getServicio().startsWith("Cargo Admin.")))
-							|| (contrato.getPlanCesionario() != null && servicioContratadoDto.getServicio()
-									.startsWith("Garantía"))) {
-
-						List<ServicioAdicional> servicios = repository.find(
-								"from ServicioAdicional where codigoBSCS = ?", servicioContratadoDto.getCodigoBSCS());
-						if (!servicios.isEmpty()){
-			
-							ServicioAdicionalIncluidoDto servIncDto = new ServicioAdicionalIncluidoDto();
-							servIncDto.setServicioAdicional(mapper.map(servicios.get(0), ServicioAdicionalDto.class));
-							servIncDto.setPrecioFinal(servicioContratadoDto.getTarifa());
-					
-							contrato.getServiciosAdicionalesInc().add(servIncDto);
-						}
-					}
-
-				}
-			} catch (AvalonSystemException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}
-	}
-
 	public CreateSaveSSTransfResultDto createSolicitudServicioTranferencia(
 			SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages {
 		CreateSaveSSTransfResultDto resultDto = new CreateSaveSSTransfResultDto();
