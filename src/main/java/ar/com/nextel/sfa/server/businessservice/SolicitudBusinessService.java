@@ -284,7 +284,7 @@ public class SolicitudBusinessService {
 										servicioAdicional.getCodigoBSCS())
 										&& servicioAdicional.isServicioTransferenciaAutomatico()) {
 									ServicioAdicionalIncluidoDto servIncDto = new ServicioAdicionalIncluidoDto();
-									servIncDto.setServicioAdicional(mapper.map(servicios.get(0),
+									servIncDto.setServicioAdicional(mapper.map(servicioAdicional,
 											ServicioAdicionalDto.class));
 									servIncDto.setPrecioFinal(servicioContratadoDto.getTarifa());
 
