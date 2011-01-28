@@ -3,8 +3,10 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -74,6 +76,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	private CuentaDto ctaCedenteDto;
 	private List<ContratoViewDto> todosContratosActivos = new ArrayList<ContratoViewDto>();
 	private List<ContratoViewDto> contratosActivosVisibles = new ArrayList<ContratoViewDto>();
+	private Set<ContratoViewDto> contratosChequeados = new HashSet<ContratoViewDto>();
 	//Se guardan los servicios contratados para cada contrato
 	private HashMap<Long, List<ServicioContratoDto>> serviciosContratados = new HashMap<Long, List<ServicioContratoDto>>();
 	private List<ServicioContratoDto> serviciosAMostrar = null;
@@ -368,6 +371,9 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		}else{
 			limpiarTablaServFacturados();
 		}
+		
+		// mmm, nopo, no se quiere seleccionar todos, 
+
 		//Limpio el check para seleccionar todos los contratos
 		CheckBox check = (CheckBox)contratosTable.getWidget(0, 0);
 		check.setValue(false);
@@ -416,7 +422,9 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 			cto.setPinchado(false);
 			contratoConChinche = new ContratoConChinche(cto.getContrato().toString(), false);
 		}
-		contratosTable.setWidget(newRow, 0, new CheckBox());
+		CheckBox check = new CheckBox();
+		check.setValue(contratosChequeados.contains(cto));
+		contratosTable.setWidget(newRow, 0, check);
 		contratosTable.setWidget(newRow, 1, contratoConChinche);
 		contratosTable.setHTML(newRow, 2, cto.getFechaEstado() != null ?
 				dateTimeFormat.format(cto.getFechaEstado()) : Sfa.constant().whiteSpace());
@@ -544,6 +552,12 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 				if(col == 8) {
 					modificarPlanCesionario(contratosActivosVisibles.get(row-1), row);
 				} else {
+					if (col==0) {// mmm bueno, si clickeo sobre el checkbox trato de agregar el iesimo elemento al conjunto de checkeados
+						if (((CheckBox)contratosTable.getWidget(row, 0)).getValue())
+							contratosChequeados.add(contratosActivosVisibles.get(row-1));
+						else
+							contratosChequeados.remove(contratosActivosVisibles.get(row-1));
+					}
 					selectContratoRow(row);
 					drawServiciosFacturados(row);
 				}
@@ -588,6 +602,10 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 			CheckBox chek = (CheckBox)contratosTable.getWidget(i, 0);
 			chek.setValue(selectAll);
 		}
+		contratosChequeados.clear();
+		if (selectAll)
+			contratosChequeados.addAll(contratosActivosVisibles);
+		
 	}
 	
 	public List<ContratoViewDto>  getContratosSS() {
@@ -638,5 +656,10 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		}
 		
 		grillaTotalServ.setText(0, 1, currFormatter.format(0));
+	}
+
+	public void actualizarActivosVisibles() {
+		contratosActivosVisibles.clear();
+		contratosActivosVisibles.addAll(contratosChequeados);
 	}
 }

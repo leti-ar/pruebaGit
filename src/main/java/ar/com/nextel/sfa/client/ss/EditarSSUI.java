@@ -828,7 +828,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				}
 			}
 		}
-		
+		datosTranferencia.actualizarActivosVisibles();
 		ssDto.setCuentaCedente(datosTranferencia.getCtaCedenteDto());
 		ssDto.setContratosCedidos(datosTranferencia.getContratosSS());
 		return ssDto;
