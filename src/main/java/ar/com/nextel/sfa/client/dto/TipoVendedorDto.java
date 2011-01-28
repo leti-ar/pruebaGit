@@ -6,10 +6,19 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class TipoVendedorDto implements IsSerializable {
 
-    private String codigo;
+	private Long id;
+
+	private String codigo;
     private String codigoVantive;
     private String descripcion;
     private List<GrupoSolicitudDto> grupos;
+    
+    public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
     
 	public String getCodigo() {
 		return codigo;

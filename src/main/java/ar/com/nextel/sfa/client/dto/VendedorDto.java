@@ -29,7 +29,7 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
     public boolean isTelemarketing(){
     	HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
     	if(instancias != null && this.getTipoVendedor() != null){
-    		return instancias.get(TIPO_VENDEDOR_TELEMARKETING).toString().equals(this.getTipoVendedor().getCodigo());
+    		return instancias.get(TIPO_VENDEDOR_TELEMARKETING).equals(this.getTipoVendedor().getId());
     	}
     	return false;
     }
@@ -37,7 +37,7 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
     public boolean isDealer(){
 		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
 		if(instancias != null && this.getTipoVendedor() != null){
-			return instancias.get(TIPO_VENDEDOR_DEALER).toString().equals(this.getTipoVendedor().getCodigo());
+			return instancias.get(TIPO_VENDEDOR_DEALER).equals(this.getTipoVendedor().getId());
 		}
 		return false;
 	}
@@ -45,7 +45,7 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
 	public boolean isAP(){
 		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
 		if(instancias != null && this.getTipoVendedor() != null){
-			return instancias.get(TIPO_VENDEDOR_AP).toString().equals(this.getTipoVendedor().getCodigo());
+			return instancias.get(TIPO_VENDEDOR_AP).equals(this.getTipoVendedor().getId());
 		}
 		return false;
 	}
@@ -53,11 +53,10 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
 	public boolean isADMCreditos(){
 		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
 		if(instancias != null && this.getTipoVendedor() != null){
-			return instancias.get(TIPO_VENDEDOR_ADM_CREDITOS).toString().equals(this.getTipoVendedor().getCodigo());
+			return instancias.get(TIPO_VENDEDOR_ADM_CREDITOS).equals(this.getTipoVendedor().getId());
 		}
 		return false;
 	}
-    
 
 	public Long getId() {
 		return id; 
