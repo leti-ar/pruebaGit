@@ -194,7 +194,9 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		for (int i = 0; i < titlesContratos.length; i++) {
 			contratosTable.setHTML(0, i, titlesContratos[i]);
 		}
-		contratosTable.setWidget(0, 0, new CheckBox());
+		CheckBox check = new CheckBox();
+		check.setValue(true);
+		contratosTable.setWidget(0, 0, check);
 		contratosTable.setCellPadding(0);
 		contratosTable.setCellSpacing(0);
 		contratosTable.addStyleName("dataTable");
@@ -336,6 +338,8 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 																	contratosActivosVisibles.clear();
 																	todosContratosActivos.addAll(result);
 																	contratosActivosVisibles.addAll(result);
+																	contratosChequeados.clear();
+																	contratosChequeados.addAll(contratosActivosVisibles);
 																	refreshTablaContratos();
 																}
 															});
@@ -661,5 +665,6 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	public void actualizarActivosVisibles() {
 		contratosActivosVisibles.clear();
 		contratosActivosVisibles.addAll(contratosChequeados);
+		contratosChequeados.clear();
 	}
 }
