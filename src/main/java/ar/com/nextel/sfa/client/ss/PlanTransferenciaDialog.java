@@ -3,9 +3,11 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -145,6 +147,7 @@ public class PlanTransferenciaDialog  extends NextelDialog implements ClickListe
 		planTransferenciaUIData.getTipoPlan().clearPreseleccionados();
 		planTransferenciaUIData.setRow(row);
 		planTransferenciaUIData.setContrato(contrato);
+		final VendedorDto vendedorDto = ClientContext.getInstance().getVendedor();
 
 		final TipoPlanDto tipoPlan = contrato != null && contrato.getPlanCesionario() != null ? contrato.getPlanCesionario().getTipoPlan() : null;
 		DeferredCommand.addCommand(new IncrementalCommand() {
@@ -155,7 +158,10 @@ public class PlanTransferenciaDialog  extends NextelDialog implements ClickListe
 				tipoPlanPorDefecto = null;
 				for (TipoPlanDto tipoPlan : tiposPlan) {
 					if (tipoPlan.getCodigoBSCS().equals(TipoPlanDto.TIPO_PLAN_DIRECTO_O_EMPRESA_CODE)) {
-						if (empresa == tipoPlan.isEmpresa()) {
+						if (!vendedorDto.isADMCreditos() && empresa == tipoPlan.isEmpresa()) {
+							planTransferenciaUIData.getTipoPlan().addItem(tipoPlan);
+							tipoPlanPorDefecto = tipoPlan;
+						}else if(vendedorDto.isADMCreditos()){
 							planTransferenciaUIData.getTipoPlan().addItem(tipoPlan);
 							tipoPlanPorDefecto = tipoPlan;
 						}
