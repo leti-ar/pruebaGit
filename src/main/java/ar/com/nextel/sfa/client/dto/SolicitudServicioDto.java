@@ -74,6 +74,8 @@ public class SolicitudServicioDto implements IsSerializable {
     private Long idSucursal;
     private Long tipoCanalVentas;
     
+    private Long idVendedorTriptico;
+    
     public SolicitudServicioDto() {
 		solicitudServicioGeneracion = new SolicitudServicioGeneracionDto();
 	}
@@ -420,5 +422,13 @@ public class SolicitudServicioDto implements IsSerializable {
 
 	public void setTipoCanalVentas(Long tipoCanalVentas) {
 		this.tipoCanalVentas = tipoCanalVentas;
+	}
+	
+	public Long getIdVendedorTriptico() {
+		return idVendedorTriptico;
+	}
+	
+	public void setIdVendedorTriptico(Long idVendedorTriptico) {
+		this.idVendedorTriptico = idVendedorTriptico;
 	}
 }

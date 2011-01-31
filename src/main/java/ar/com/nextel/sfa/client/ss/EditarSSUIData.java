@@ -1017,7 +1017,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			solicitudServicio.setIdSucursal(solicitudServicio.getVendedor().getIdSucursal());
 		}
 		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())) {
-			solicitudServicio.setVendedor((VendedorDto) vendedor.getSelectedItem());
+			VendedorDto vendedorDto = (VendedorDto) vendedor.getSelectedItem();
+			solicitudServicio.setVendedor(vendedorDto);
+			solicitudServicio.setIdVendedorTriptico(vendedorDto.getId());
 		}
 		
 		if(canalVtas.getText().equals(CANAL_VTA_TRANSFERENCIA)){
