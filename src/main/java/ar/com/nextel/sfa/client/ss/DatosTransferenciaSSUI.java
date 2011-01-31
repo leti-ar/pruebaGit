@@ -14,13 +14,16 @@ import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
+import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ServicioContratoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.event.ClickPincheEvent;
 import ar.com.nextel.sfa.client.event.ClickPincheEventHandler;
 import ar.com.nextel.sfa.client.event.EventBusUtil;
 import ar.com.nextel.sfa.client.widget.ContratoConChinche;
+import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.nextel.sfa.client.widget.PlanCesionarioConLapiz;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -585,7 +588,28 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 			planTransferenciaDialog = new PlanTransferenciaDialog("Modificar Plan", controller);
 			Command aceptarCommand = new Command() {
 				public void execute() {
-					drawNuevoPlan(planTransferenciaDialog.getPlanTransferenciaUIData().getContrato());
+					
+					//MGR - #1360
+					Command dibujarNuevoPlan = new Command() {
+						public void execute() {
+							MessageDialog.getInstance().hide();
+							drawNuevoPlan(planTransferenciaDialog.getPlanTransferenciaUIData().getContrato());
+						}
+					};
+					
+					PlanDto planSelected = planTransferenciaDialog.getSelectedPlan();
+					if(ClientContext.getInstance().getVendedor().isADMCreditos() && planSelected != null){
+						if (planSelected.getTipoPlan().getCodigoBSCS().equals(TipoPlanDto.TIPO_PLAN_DIRECTO_O_EMPRESA_CODE)
+								&& editarSSUIData.getCuenta().isEmpresa() != planSelected.getTipoPlan().isEmpresa()) {
+
+							String mensaje = "Advertencia. El Tipo de Plan elegido no coincide con el segmento de la cuenta.";
+							MessageDialog.getInstance().showAceptar("Aviso",mensaje, dibujarNuevoPlan);
+						}else{
+							dibujarNuevoPlan.execute();
+						}
+					}else{
+						dibujarNuevoPlan.execute();
+					}
 				}
 			};
 			planTransferenciaDialog.setAceptarCommand(aceptarCommand);
