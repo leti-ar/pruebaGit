@@ -470,7 +470,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							guardandoSolicitud = false;
 							editarSSUIData.setSolicitud(result.getSolicitud());
 							datosTranferencia.setDatosSolicitud(result.getSolicitud());
-							datosTranferencia.refresh();
+//							datosTranferencia.refresh();
 							editarSSUIData.setSaved(true);
 							
 							if(result.isError()){

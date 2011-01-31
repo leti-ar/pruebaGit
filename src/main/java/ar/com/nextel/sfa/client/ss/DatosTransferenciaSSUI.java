@@ -129,12 +129,14 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	protected void onLoad() {
 		super.onLoad();
 		serviciosContratados.clear();
+		contratosChequeados.clear();
 	}
 	
 	@Override
 	protected void onUnload() {
 		super.onUnload();
 		serviciosContratados.clear();
+		contratosChequeados.clear();
 	}
 	
 	protected void doClickChinche(ClickPincheEvent event) {
@@ -342,7 +344,8 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 																	todosContratosActivos.addAll(result);
 																	contratosActivosVisibles.addAll(result);
 																	contratosChequeados.clear();
-																	contratosChequeados.addAll(contratosActivosVisibles);
+																	
+//																	contratosChequeados.addAll(contratosActivosVisibles);
 																	refreshTablaContratos();
 																}
 															});
@@ -655,23 +658,31 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 
 	public void setDatosSolicitud(final SolicitudServicioDto solicitud){
 		this.ctaCedenteDto = solicitud.getCuentaCedente();
-		this.contratosActivosVisibles = solicitud.getContratosCedidos();
+//		this.contratosActivosVisibles = solicitud.getContratosCedidos();
+//		this.contratosChequeados.addAll(solicitud.getContratosCedidos());
 		if(this.ctaCedenteDto != null){
 			CuentaRpcService.Util.getInstance().searchContratosActivos(
 					this.ctaCedenteDto, new DefaultWaitCallback<List<ContratoViewDto>>() {
 						
 						public void success(List<ContratoViewDto> result) {
 							todosContratosActivos.clear();
-//							contratosActivosVisibles.clear();
-							todosContratosActivos.addAll(result);
+							contratosActivosVisibles.clear();
+							contratosChequeados.clear();
+							// primero seteo los contratos de la solicitud
+							if (!solicitud.getContratosCedidos().isEmpty()) {
+								todosContratosActivos.addAll(solicitud.getContratosCedidos());
+								contratosActivosVisibles.addAll(solicitud.getContratosCedidos());
+								contratosChequeados.addAll(solicitud.getContratosCedidos());
+							}
+							// agrego el resto de los contratos del cliente cedente
 							for (ContratoViewDto contratoViewDto : result) {
 								int index = solicitud.getContratosCedidos().indexOf(contratoViewDto);
-								if(index >= 0){
-									ContratoViewDto contratoSolicitud = solicitud.getContratosCedidos().get(index);
-									todosContratosActivos.remove(contratoViewDto);
-									todosContratosActivos.add(contratoSolicitud);
+								if(index == -1){
+									todosContratosActivos.add(contratoViewDto);
+									contratosActivosVisibles.add(contratoViewDto);
 								}
 							}
+							refresh();
 						}
 					});
 		}
