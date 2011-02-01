@@ -390,7 +390,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			List<String> errors = null;
 			if (save) {
 				if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
-					errors = editarSSUIData.validarTransferenciaParaGuardar(datosTranferencia.getContratosSS());
+					errors = editarSSUIData.validarTransferenciaParaGuardar(datosTranferencia.getContratosSSChequeados());
 				}else{
 					errors = editarSSUIData.validarParaGuardar();
 				}
@@ -427,7 +427,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		if (sender == guardarButton) {
 			List<String> errors = null;
 			if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){	
-				errors = editarSSUIData.validarTransferenciaParaGuardar(datosTranferencia.getContratosSS());
+				errors = editarSSUIData.validarTransferenciaParaGuardar(datosTranferencia.getContratosSSChequeados());
 			}
 			else{
 				errors = editarSSUIData.validarParaGuardar();
@@ -535,7 +535,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		        	
 		        	List<String> errors = null;
 		        	if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
-						errors = editarSSUIData.validarTransferenciaParaCerrarGenerar(datosTranferencia.getContratosSS(),false);
+						errors = editarSSUIData.validarTransferenciaParaCerrarGenerar(datosTranferencia.getContratosSSChequeados(),false);
 					}else{
 						errors = editarSSUIData.validarParaCerrarGenerar(false);
 					}
@@ -576,7 +576,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				List<String> errors = null;
 
 				if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
-					errors = editarSSUIData.validarTransferenciaParaCerrarGenerar(datosTranferencia.getContratosSS(),true);
+					errors = editarSSUIData.validarTransferenciaParaCerrarGenerar(datosTranferencia.getContratosSSChequeados(),true);
 					
 				}else{
 					errors = editarSSUIData.validarParaCerrarGenerar(true);
@@ -829,9 +829,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				}
 			}
 		}
-		datosTranferencia.actualizarActivosVisibles();
+//		datosTranferencia.actualizarActivosVisibles();
 		ssDto.setCuentaCedente(datosTranferencia.getCtaCedenteDto());
-		ssDto.setContratosCedidos(datosTranferencia.getContratosSS());
+		ssDto.setContratosCedidos(datosTranferencia.getContratosSSChequeados());
 		return ssDto;
 	}
 

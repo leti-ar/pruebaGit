@@ -421,6 +421,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 //				contratosTable.removeRow(i);
 			}
 		}
+		contratosChequeados.clear();
 		selectedContratoRow = 0;
 		refreshTablaContratos();
 	}
@@ -639,9 +640,9 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		
 	}
 	
-	public List<ContratoViewDto>  getContratosSS() {
+	public List<ContratoViewDto>  getContratosSSChequeados() {
 		List<ContratoViewDto> contratos = new ArrayList<ContratoViewDto>();
-		for (ContratoViewDto cto : contratosActivosVisibles) {
+		for (ContratoViewDto cto : contratosChequeados) {
 			cto.setCodVantiveCesionario(editarSSUIData.getCuenta().getCodigoVantive());
 			if(cto.getPlanCesionario() != null){
 				//Limpio el plan cedente para que no quiera mapear a un plan que puede no existir
@@ -705,9 +706,5 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		this.limpiarTablaServFacturados();
 	}
 	
-	public void actualizarActivosVisibles() {
-		contratosActivosVisibles.clear();
-		contratosActivosVisibles.addAll(contratosChequeados);
-		contratosChequeados.clear();
-	}
+
 }
