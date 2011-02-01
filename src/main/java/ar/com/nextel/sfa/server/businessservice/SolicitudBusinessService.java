@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaService;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.legacy.avalon.dto.ServicioContratadoDto;
-import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.financial.dto.EncabezadoCreditoDTO;
 import ar.com.nextel.business.legacy.financial.exception.FinancialSystemException;
@@ -79,7 +78,7 @@ public class SolicitudBusinessService {
 	private TransactionConnectionDAO sfaConnectionDAO;
 	private GenerarChangelogConfig generarChangelogConfig;
 	private FacturaElectronicaService facturaElectronicaService;
-	private AvalonSystem avalonSystem;
+
 
 	@Autowired
 	public void setFacturaElectronicaService(FacturaElectronicaService facturaElectronicaService) {
@@ -267,46 +266,13 @@ public class SolicitudBusinessService {
 		return retrieveEncabezadoCreditoFidelizacion;
 	}
 
-	private void completarServiciosAdicionalesContratosCedidos(SolicitudServicioDto solicitudServicioDto,
-			MapperExtended mapper)  {
-		try {
-
-				for (ContratoViewDto contrato : solicitudServicioDto.getContratosCedidos()) {
-					if (contrato.getServiciosAdicionalesInc().isEmpty()) {
-
-						List<ServicioContratadoDto> serviciosAvalon = getAvalonSystem()
-								.retriveServiciosContratados(contrato.getContrato());
-						List<ServicioAdicional> servicios = repository.find("from ServicioAdicional ");
-						for (ServicioContratadoDto servicioContratadoDto : serviciosAvalon) {
-
-							for (ServicioAdicional servicioAdicional : servicios) {
-								if (servicioContratadoDto.getCodigoBSCS().equals(
-										servicioAdicional.getCodigoBSCS())
-										&& servicioAdicional.isServicioTransferenciaAutomatico()) {
-									ServicioAdicionalIncluidoDto servIncDto = new ServicioAdicionalIncluidoDto();
-									servIncDto.setServicioAdicional(mapper.map(servicioAdicional,
-											ServicioAdicionalDto.class));
-									servIncDto.setPrecioFinal(servicioContratadoDto.getTarifa());
-
-									contrato.getServiciosAdicionalesInc().add(servIncDto);
-
-								}
-							}
-						}
-					}
-				}
-
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-
-	}
+	
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public SolicitudServicio saveSolicitudServicio(SolicitudServicioDto solicitudServicioDto,
 			MapperExtended mapper) {
 		
-		completarServiciosAdicionalesContratosCedidos(solicitudServicioDto, mapper);
+		
 		
 		SolicitudServicio solicitudServicio = repository.retrieve(SolicitudServicio.class,
 				solicitudServicioDto.getId());
@@ -457,12 +423,9 @@ public class SolicitudBusinessService {
 				solicitudServicio);
 		GeneracionCierreResponse response = null;
 		if (cerrar) {
+			
 			response = generacionCierreBusinessOperator.cerrarSolicitudServicio(generacionCierreRequest);
 			
-			AppLogger.error("IF replicacion a autogestion, FE: "
-					+ solicitudServicio.getCuenta().getFacturaElectronica() + " tiene errores: "
-					+ response.getMessages().hasErrors(), this);
-
 			if (solicitudServicio.getCuenta().getFacturaElectronica() != null
 					&& !solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion()
 					&& !response.getMessages().hasErrors()) {
@@ -537,12 +500,5 @@ public class SolicitudBusinessService {
 		return solicitudesBusinessOperator.validarCreateSSTransf(solicitud);
 	}
 
-	@Autowired
-	public void setAvalonSystem(@Qualifier("avalonSystemBean") AvalonSystem avalonSystem) {
-		this.avalonSystem = avalonSystem;
-	}
 
-	public AvalonSystem getAvalonSystem() {
-		return avalonSystem;
-	}
 }

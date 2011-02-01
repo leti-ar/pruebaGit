@@ -127,6 +127,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	
 	//MELI
 	private DefaultSequenceImpl tripticoNextValue;
+	private AvalonSystem avalonSystem;
 	
 	
 	
@@ -151,7 +152,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		globalParameterRetriever = (DefaultRetriever) context.getBean("globalParameterRetriever");
 		
 		tripticoNextValue = (DefaultSequenceImpl)context.getBean("tripticoNextValue");
-//		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
+		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
 	}
 
 	public SolicitudServicioDto createSolicitudServicio(
@@ -548,6 +549,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		SolicitudServicio solicitudServicio = null;
 		GeneracionCierreResponse response = null;
 		try {
+			completarServiciosAdicionalesContratosCedidos(solicitudServicioDto, mapper);
 			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
 			response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar);
 			// metodo changelog
@@ -567,6 +569,44 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		}
 		AppLogger.info(accion + " de SS de id=" + solicitudServicioDto.getId() + " finalizado.");
 		return result;
+	}
+	
+	private void completarServiciosAdicionalesContratosCedidos(SolicitudServicioDto solicitudServicioDto,
+			MapperExtended mapper)  {
+		try {
+
+			for (ContratoViewDto contrato : solicitudServicioDto.getContratosCedidos()) {
+
+				List<ServicioContratadoDto> serviciosAvalon = avalonSystem
+						.retriveServiciosContratados(contrato.getContrato());
+				List<ServicioAdicional> servicios = repository.find("from ServicioAdicional ");
+				for (ServicioContratadoDto servicioContratadoDto : serviciosAvalon) {
+
+					for (ServicioAdicional servicioAdicional : servicios) {
+						// si el si el servicio es Garantia se carga siempre, si
+						// es CDI o CDT o Cargos Admin. solo se carga si no se
+						// eligio un plan nuevo (plan cesionario != null )
+						if (servicioContratadoDto.getCodigoBSCS().equals(servicioAdicional.getCodigoBSCS())
+								&& ((servicioAdicional.isServicioTransferenciaAutomatico() && contrato
+										.getPlanCesionario() == null) || servicioAdicional.getEsGarantia())) {
+							ServicioAdicionalIncluidoDto servIncDto = new ServicioAdicionalIncluidoDto();
+							servIncDto.setServicioAdicional(mapper.map(servicioAdicional,
+									ServicioAdicionalDto.class));
+							servIncDto.setPrecioFinal(servicioContratadoDto.getTarifa());
+
+							contrato.getServiciosAdicionalesInc().add(servIncDto);
+							servIncDto.setChecked(true);
+
+						}
+					}
+				}
+
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
 	}
 
 	private String getReporteFileName(SolicitudServicio solicitudServicio) {
