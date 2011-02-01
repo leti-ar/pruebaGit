@@ -256,13 +256,13 @@ public class ServiciosAdicionalesTable extends Composite {
 		}
 	}
 	
-	public void agregarQuitarServicioAdicionalContrato(int rowServicioAdicional, int rowContrato) {
+	public void agregarQuitarServicioAdicionalContrato(int rowServicioAdicional, ContratoViewDto contratoViewDto) {
 		// agrega o quita servicio adicional al contrato
 		CheckBox check = (CheckBox) table.getWidget(rowServicioAdicional, COL_AGREGAR_QUITAR);
 		ServicioAdicionalIncluidoDto servicioSelected;
 		servicioSelected = editarSSUIData.getServiciosAdicionalesContrato().get(rowServicioAdicional - 1);
 		
-		ContratoViewDto contratoViewDto = editarSSUIData.getContratosCedidos().get(rowContrato - 1);
+//		ContratoViewDto contratoViewDto = editarSSUIData.getContratosCedidos().get(rowContrato - 1);
 		
 		List<ServicioAdicionalIncluidoDto> saGuardados = contratoViewDto.getServiciosAdicionalesInc();
 		

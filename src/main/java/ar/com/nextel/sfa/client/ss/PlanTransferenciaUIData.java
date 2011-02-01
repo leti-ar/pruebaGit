@@ -144,7 +144,7 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 			Cell cell = ((HTMLTable) sender).getCellForEvent(clickEvent);
 			if (cell != null) {
 				if (cell.getCellIndex() == 0 && cell.getRowIndex() > 0) {
-					serviciosAdicionales.agregarQuitarServicioAdicionalContrato(cell.getRowIndex(), row);
+					serviciosAdicionales.agregarQuitarServicioAdicionalContrato(cell.getRowIndex(), contrato);
 				}
 			}
 		}
