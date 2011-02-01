@@ -46,11 +46,11 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLTable;
-import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	
@@ -378,8 +378,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 			limpiarTablaServFacturados();
 		}
 	}
-	
-	
+		
 	private void limpiarTablaContratos(){
 		for (int i = contratosTable.getRowCount()-1; i>0; i--) {
 			contratosTable.removeRow(i);
@@ -389,6 +388,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		check.setValue(false);
 		
 	}
+	
 	/**
 	 * Muestros todos los contratos activos
 	 */
@@ -421,6 +421,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 //				contratosTable.removeRow(i);
 			}
 		}
+		selectedContratoRow = 0;
 		refreshTablaContratos();
 	}
 	
@@ -469,7 +470,6 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 						@Override
 						public void success(List<ServicioContratoDto> result) {
 							serviciosAMostrar = result;
-							//TODO ORDENAR serviciosAMostrar  
 							Collections.sort(serviciosAMostrar);
 							serviciosContratados.put(ctoSelected.getContrato(), result);
 						}
@@ -667,7 +667,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 					this.ctaCedenteDto, new DefaultWaitCallback<List<ContratoViewDto>>() {
 						
 						public void success(List<ContratoViewDto> result) {
-							
+
 							// primero seteo los contratos de la solicitud
 							if (!solicitud.getContratosCedidos().isEmpty()) {
 								todosContratosActivos.addAll(solicitud.getContratosCedidos());
