@@ -823,6 +823,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 						VendedorDto vendAuxDto = new VendedorDto();
 						vendAuxDto.setId(knownInstancias.get(VENDEDOR_NO_COMISIONABLE));
 						ssDto.setVendedor(vendAuxDto);
+						
 					}
 				}else{
 					ssDto.setVendedor(ClientContext.getInstance().getVendedor());

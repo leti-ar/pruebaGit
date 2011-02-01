@@ -168,6 +168,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
             <a>sucursal.id</a>
             <b>idSucursal</b>
         </field>
+        <field>
+            <a>vendedor</a>
+            <b>vendedor</b>
+        </field>
 	</mapping>
 
 	<mapping>

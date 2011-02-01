@@ -14,8 +14,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaService;
-import ar.com.nextel.business.legacy.avalon.AvalonSystem;
-import ar.com.nextel.business.legacy.avalon.dto.ServicioContratadoDto;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.financial.dto.EncabezadoCreditoDTO;
 import ar.com.nextel.business.legacy.financial.exception.FinancialSystemException;
@@ -46,7 +44,6 @@ import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Plan;
-import ar.com.nextel.model.solicitudes.beans.ServicioAdicional;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalIncluido;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaTransfSolicitudServicio;
@@ -57,9 +54,9 @@ import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
-import ar.com.nextel.sfa.client.dto.ServicioAdicionalDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
 
@@ -279,38 +276,35 @@ public class SolicitudBusinessService {
 		solicitudServicio.setDomicilioEnvio(null);
 		solicitudServicio.setDomicilioFacturacion(null);
 		
-		
-		if( (solicitudServicio.getVendedor() == null && solicitudServicioDto.getVendedor() != null) ||
-			(solicitudServicio.getVendedor() != null && solicitudServicioDto.getVendedor() != null) &&
-			!solicitudServicio.getVendedor().getId().equals(solicitudServicioDto.getVendedor().getId()) ){
-			
+//		if( (solicitudServicio.getVendedor() == null && solicitudServicioDto.getVendedor() != null) ||
+//				(solicitudServicio.getVendedor() != null && solicitudServicioDto.getVendedor() != null &&
+//				!solicitudServicio.getVendedor().getId().equals(solicitudServicioDto.getVendedor().getId())) ){
 			Vendedor vendedor = repository.retrieve(Vendedor.class, solicitudServicioDto.getVendedor().getId());
 			solicitudServicio.setVendedor(vendedor);
-		}
-		
-		if( (solicitudServicio.getCuentaCedente() == null && solicitudServicioDto.getCuentaCedente() != null) ||
-			(solicitudServicio.getCuentaCedente() != null && solicitudServicioDto.getCuentaCedente() != null &&
-			!solicitudServicio.getCuentaCedente().getId().equals(solicitudServicioDto.getCuentaCedente().getId())) ){
+			solicitudServicioDto.setVendedor(mapper.map(vendedor, VendedorDto.class));
+//		}
 			
+		if( (solicitudServicio.getCuentaCedente() == null && solicitudServicioDto.getCuentaCedente() != null) ||
+				(solicitudServicio.getCuentaCedente() != null && solicitudServicioDto.getCuentaCedente() != null &&
+				!solicitudServicio.getCuentaCedente().getId().equals(solicitudServicioDto.getCuentaCedente().getId())) ){
 			Cuenta ctaCedente = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuentaCedente().getId());
 			solicitudServicio.setCuentaCedente(ctaCedente);
 		}
 		if( (solicitudServicio.getUsuarioCreacion() == null && solicitudServicioDto.getUsuarioCreacion() != null) ||
-			(solicitudServicio.getUsuarioCreacion() != null && solicitudServicioDto.getUsuarioCreacion() != null) &&
-			!solicitudServicio.getUsuarioCreacion().getId().equals(solicitudServicioDto.getUsuarioCreacion().getId()) ){
-			
-			Vendedor vendedor = repository.retrieve(Vendedor.class, solicitudServicioDto.getUsuarioCreacion().getId());
-			solicitudServicio.setUsuarioCreacion(vendedor);
+				(solicitudServicio.getUsuarioCreacion() != null && solicitudServicioDto.getUsuarioCreacion() != null &&
+				!solicitudServicio.getUsuarioCreacion().getId().equals(solicitudServicioDto.getUsuarioCreacion().getId())) ){
+			Vendedor userCreacion = repository.retrieve(Vendedor.class, solicitudServicioDto.getUsuarioCreacion().getId());
+			solicitudServicio.setUsuarioCreacion(userCreacion);
 		}
 		if( (solicitudServicio.getSucursal() == null && solicitudServicioDto.getIdSucursal() != null) ||
-			(solicitudServicio.getSucursal() != null && solicitudServicioDto.getIdSucursal() != null &&
-			!solicitudServicio.getSucursal().getId().equals(solicitudServicioDto.getIdSucursal())) ){
-			
+				(solicitudServicio.getSucursal() != null && solicitudServicioDto.getIdSucursal() != null &&
+				!solicitudServicio.getSucursal().getId().equals(solicitudServicioDto.getIdSucursal())) ){
 			Sucursal sucursal = repository.retrieve(Sucursal.class, solicitudServicioDto.getIdSucursal());
 			solicitudServicio.setSucursal(sucursal);
 		}
 		
 		mapper.map(solicitudServicioDto, solicitudServicio);
+		
 		//PARCHE: Esto es por que dozer mapea los id cuando se le indica que no
 		for (LineaTransfSolicitudServicio lineaTransf : solicitudServicio.getLineasTranf()) {
 			for (ContratoViewDto cto : solicitudServicioDto.getContratosCedidos()) {
@@ -334,10 +328,9 @@ public class SolicitudBusinessService {
 		//Esto es por que debe cambiar el vendedor de la cta cesionario
 		if(!solicitudServicio.getCuenta().getVendedor().getId().equals(
 				solicitudServicioDto.getCuenta().getVendedor().getId())){
-			Vendedor vendedor = repository.retrieve(Vendedor.class, solicitudServicioDto.getCuenta().getVendedor().getId());
-			solicitudServicio.getCuenta().setVendedor(vendedor);
+			Vendedor vendedorCta = repository.retrieve(Vendedor.class, solicitudServicioDto.getCuenta().getVendedor().getId());
+			solicitudServicio.getCuenta().setVendedor(vendedorCta);
 		}
-		
 
 		// Estas lineas son por un problema no identificado, que hace que al querer guardar el tipo de tarjeta
 		// detecte que el objeto no está attachado a la session
