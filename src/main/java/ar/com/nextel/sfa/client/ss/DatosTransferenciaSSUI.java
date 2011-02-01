@@ -46,11 +46,11 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	
@@ -125,19 +125,17 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		});
 	}
 	
-	@Override
-	protected void onLoad() {
-		super.onLoad();
-		serviciosContratados.clear();
-		contratosChequeados.clear();
-	}
-	
-	@Override
-	protected void onUnload() {
-		super.onUnload();
-		serviciosContratados.clear();
-		contratosChequeados.clear();
-	}
+//	@Override
+//	protected void onLoad() {
+//		super.onLoad();
+//
+//	}
+//	
+//	@Override
+//	protected void onUnload() {
+//		super.onUnload();
+//
+//	}
 	
 	protected void doClickChinche(ClickPincheEvent event) {
 		for (Iterator<ContratoViewDto> iterator = contratosActivosVisibles.iterator(); iterator.hasNext();) {
@@ -368,9 +366,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	 */
 	private void refreshTablaContratos(){
 		//Limpio la tabla
-		for (int i = contratosTable.getRowCount()-1; i>0; i--) {
-			contratosTable.removeRow(i);
-		}
+		this.limpiarTablaContratos();
 		//Dibujo los datos
 		for (int i = 0; i < contratosActivosVisibles.size(); i++) {
 			drawContrato(i + 1 , contratosActivosVisibles.get(i), true);
@@ -381,14 +377,18 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		}else{
 			limpiarTablaServFacturados();
 		}
-		
-		// mmm, nopo, no se quiere seleccionar todos, 
-
+	}
+	
+	
+	private void limpiarTablaContratos(){
+		for (int i = contratosTable.getRowCount()-1; i>0; i--) {
+			contratosTable.removeRow(i);
+		}
 		//Limpio el check para seleccionar todos los contratos
 		CheckBox check = (CheckBox)contratosTable.getWidget(0, 0);
 		check.setValue(false);
+		
 	}
-	
 	/**
 	 * Muestros todos los contratos activos
 	 */
@@ -660,14 +660,14 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		this.ctaCedenteDto = solicitud.getCuentaCedente();
 //		this.contratosActivosVisibles = solicitud.getContratosCedidos();
 //		this.contratosChequeados.addAll(solicitud.getContratosCedidos());
+		limpiarCampos();
+		
 		if(this.ctaCedenteDto != null){
 			CuentaRpcService.Util.getInstance().searchContratosActivos(
 					this.ctaCedenteDto, new DefaultWaitCallback<List<ContratoViewDto>>() {
 						
 						public void success(List<ContratoViewDto> result) {
-							todosContratosActivos.clear();
-							contratosActivosVisibles.clear();
-							contratosChequeados.clear();
+							
 							// primero seteo los contratos de la solicitud
 							if (!solicitud.getContratosCedidos().isEmpty()) {
 								todosContratosActivos.addAll(solicitud.getContratosCedidos());
@@ -697,6 +697,14 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		grillaTotalServ.setText(0, 1, currFormatter.format(0));
 	}
 
+	private void limpiarCampos(){
+		this.contratosActivosVisibles.clear();
+		this.contratosChequeados.clear();
+		this.todosContratosActivos.clear();
+		this.limpiarTablaContratos();
+		this.limpiarTablaServFacturados();
+	}
+	
 	public void actualizarActivosVisibles() {
 		contratosActivosVisibles.clear();
 		contratosActivosVisibles.addAll(contratosChequeados);

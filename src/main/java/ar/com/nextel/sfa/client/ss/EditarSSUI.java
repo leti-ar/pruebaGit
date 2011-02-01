@@ -239,7 +239,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		if(solicitud.getGrupoSolicitud().isTransferencia()){
 			tabs.add(datosTranferencia, "Transf.");
 			datosTranferencia.setDatosSolicitud(solicitud);
-			datosTranferencia.refresh();
+		// el refresh se llama desde seDatosSolicitud.
+			//	datosTranferencia.refresh();
 		}
 		else{
 			tabs.add(datos, "Datos");
