@@ -686,6 +686,9 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 							refresh();
 						}
 					});
+		}else{
+			//MGR - #1350
+			refresh();
 		}
 	}
 	
