@@ -1019,7 +1019,6 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())) {
 			VendedorDto vendedorDto = (VendedorDto) vendedor.getSelectedItem();
 			solicitudServicio.setVendedor(vendedorDto);
-			solicitudServicio.setIdVendedorTriptico(vendedorDto.getId());
 		}
 		
 		if(canalVtas.getText().equals(CANAL_VTA_TRANSFERENCIA)){
@@ -1047,7 +1046,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
 			validator.addTarget(sucursalOrigen).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigenReq()));
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigen()));
 		}
 		
 		validator.addTarget(canalVtas).required(
@@ -1093,7 +1092,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
 			validator.addTarget(sucursalOrigen).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigenReq()));
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigen()));
 		}
 		
 		validator.addTarget(canalVtas).required(
@@ -1163,7 +1162,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
 			validator.addTarget(sucursalOrigen).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigenReq()));
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigen()));
 		}
 		
 		validator.addTarget(canalVtas).required(
