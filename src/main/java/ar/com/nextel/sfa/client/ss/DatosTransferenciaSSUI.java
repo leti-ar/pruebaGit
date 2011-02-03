@@ -15,6 +15,8 @@ import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioContratoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
@@ -610,15 +612,22 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 			Command aceptarCommand = new Command() {
 				public void execute() {
 					
+					//CHINO: tengo que eliminar todos los servicios adicionales que no correspondan al plan seleccionado
+					// y más aún si no eligió ningún plan
+					final ContratoViewDto contratoActivo = planTransferenciaDialog.getPlanTransferenciaUIData().getContrato();
+					PlanDto planSelected = planTransferenciaDialog.getSelectedPlan();
+					limpiarServiciosAdicionalesHuerfanos(contratoActivo, planSelected);
+					
+					
+					
 					//MGR - #1360
 					Command dibujarNuevoPlan = new Command() {
 						public void execute() {
 							MessageDialog.getInstance().hide();
-							drawNuevoPlan(planTransferenciaDialog.getPlanTransferenciaUIData().getContrato());
+							drawNuevoPlan(contratoActivo);
 						}
 					};
 					
-					PlanDto planSelected = planTransferenciaDialog.getSelectedPlan();
 					if(ClientContext.getInstance().getVendedor().isADMCreditos() && planSelected != null){
 						if (planSelected.getTipoPlan().getCodigoBSCS().equals(TipoPlanDto.TIPO_PLAN_DIRECTO_O_EMPRESA_CODE)
 								&& editarSSUIData.getCuenta().isEmpresa() != planSelected.getTipoPlan().isEmpresa()) {
@@ -632,6 +641,19 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 						dibujarNuevoPlan.execute();
 					}
 				}
+
+				private void limpiarServiciosAdicionalesHuerfanos(
+						ContratoViewDto contratoActivo, PlanDto planSelected) {
+					List<ServicioAdicionalIncluidoDto> servicioAdicionalDtos = contratoActivo.getServiciosAdicionalesInc();
+					for (Iterator<ServicioAdicionalIncluidoDto> iterator = servicioAdicionalDtos.iterator(); iterator
+							.hasNext();) {
+						ServicioAdicionalIncluidoDto servicioAdicionalIncluidoDto = iterator.next();
+						if(!servicioAdicionalIncluidoDto.getPlan().equals(planSelected)){
+							iterator.remove();
+						}
+					}
+					
+				}
 			};
 			planTransferenciaDialog.setAceptarCommand(aceptarCommand);
 		}
@@ -640,8 +662,9 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	}	
 	
 	private void drawNuevoPlan(ContratoViewDto contrato) {
-		contratosTable.setWidget(filaSeleccionada, 8, new PlanCesionarioConLapiz(contrato.getPlanCesionario().getDescripcion()));
-		contratosTable.setHTML(filaSeleccionada, 9, contrato.getPlanCesionario().getPrecio().toString());
+		PlanDto planCesionario = contrato.getPlanCesionario();
+		contratosTable.setWidget(filaSeleccionada, 8, new PlanCesionarioConLapiz(planCesionario!=null?planCesionario.getDescripcion():Sfa.constant().whiteSpace()));
+		contratosTable.setHTML(filaSeleccionada, 9, planCesionario ==null ? Sfa.constant().whiteSpace(): planCesionario.getPrecio().toString());
 	}
 	
 	private void selectAllContratosRow(){

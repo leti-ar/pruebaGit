@@ -800,7 +800,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</field>
 	</mapping>
 	
-    <mapping map-null="false">
+    <mapping map-null="false" type="one-way">
         <class-a>ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio
         </class-a>
         <class-b>ar.com.nextel.sfa.client.dto.ContratoViewDto
@@ -837,18 +837,57 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
             <a>plainServiciosAdicionales</a>
             <b>serviciosAdicionalesInc</b>
         </field>
+    </mapping>
+            
+     <mapping map-null="true" type="one-way">
+        <class-a>ar.com.nextel.sfa.client.dto.ContratoViewDto
+        </class-a>
+        <class-b>ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio
+        </class-b>
+        <field>
+            <a>fechaEstado</a>
+            <b>fechaEstadoContrato</b>
+        </field>
+        <field>
+            <a>numeroSimCard</a>
+            <b>simCard</b>
+        </field>
+        <field>
+            <a>codVantiveCesionario</a>
+            <b>customerNumber</b>
+        </field>
+        <field>
+            <a>os</a>
+            <b>numeroSolicitudOrigen</b>
+        </field>
+        <field>
+            <a>suscriptor</a>
+            <b>numeroCuenta</b>
+        </field>
+        <field custom-converter-id="enumToDto">
+            <a>planCesionario</a>
+            <b>planNuevo</b>
+        </field>
+        <field>
+            <a>planCesionario.precio</a>
+            <b>precioVtaPlanNuevo</b>
+        </field>
+        <field custom-converter-id="collectionServicioAdicionalTransfConverter">
+            <a>serviciosAdicionalesInc</a>
+            <b>plainServiciosAdicionales</b>
+        </field>
 
         <field custom-converter-id="identifiableObjectToId">
-            <a>planCedente</a>
-            <b>idPlanCedente</b>
+            <a>idPlanCedente</a>
+            <b>planCedente</b>
         </field> 
         <field>
-            <a>modalidadCobroPlanCedente</a>
-            <b>modalidad</b>
+            <a>modalidad</a>
+            <b>modalidadCobroPlanCedente</b>
         </field>  
         <field>
-            <a>descripcionPlanCedente</a>
-            <b>planCedente</b>
+            <a>planCedente</a>
+            <b>descripcionPlanCedente</b>
         </field>     
     </mapping>
     	

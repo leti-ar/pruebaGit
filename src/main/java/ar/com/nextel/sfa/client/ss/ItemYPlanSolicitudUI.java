@@ -60,7 +60,7 @@ public class ItemYPlanSolicitudUI extends Composite {
 		table.getCellFormatter().setWidth(0, 0, "100px");
 		table.setHTML(0, 0, Sfa.constant().tipoPlan());
 		table.setWidget(0, 1, itemSolicitudUIData.getTipoPlan());
-		table.setHTML(1, 0, Sfa.constant().plan());
+		table.setHTML(1, 0, Sfa.constant().planReq());
 		table.setWidget(1, 1, itemSolicitudUIData.getPlan());
 		table.setHTML(2, 0, Sfa.constant().precioLista());
 		table.setWidget(2, 1, itemSolicitudUIData.getPrecioListaPlan());

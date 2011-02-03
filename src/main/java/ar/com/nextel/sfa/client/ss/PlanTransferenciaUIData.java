@@ -17,8 +17,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.HTMLTable;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
+import com.google.gwt.user.client.ui.Widget;
 
 public class PlanTransferenciaUIData extends UIData implements ChangeListener, ClickHandler {
 
@@ -89,7 +89,7 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 		serviciosAdicionales.clear();
 		this.contrato = contrato;
 		if (contrato.getPlanCesionario() != null) {
-			serviciosAdicionales.setServiciosAdicionalesForContrato(contrato, contrato.getPlanCesionario().getId());
+			serviciosAdicionales.setServiciosAdicionalesForContrato(contrato, contrato.getPlanCesionario());
 			tipoPlan.setSelectedItem(contrato.getPlanCesionario().getTipoPlan());
 		} else {
 			//FIXME: esto quedo re hardcode - hay un map del lado del cliente que se nutre de la KnownInstance
@@ -125,16 +125,7 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 			}
 		} else if (sender == plan) {
 			PlanDto planDto = (PlanDto) plan.getSelectedItem();
-			if (planDto != null) {
-				
-				//TODO: El if y el else hacen lo mismo?
-//				if (contrato.getPlanCesionario() == null || (!(contrato.getPlanCesionario().getId().equals(idPlanAnterior))
-//						&& contrato.getContrato().equals(idContratoAnterior))) {
-//					serviciosAdicionales.setServiciosAdicionalesForContrato(contrato, planDto.getId());
-//				} else {
-					serviciosAdicionales.setServiciosAdicionalesForContrato(contrato, planDto.getId());
-//				}
-			}
+				serviciosAdicionales.setServiciosAdicionalesForContrato(contrato, planDto);
 		}
 	}
 	//TODO
@@ -167,7 +158,7 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 	public List<String> validate() {
 		GwtValidator validator = new GwtValidator();
 		validator.addTarget(tipoPlan).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Tipo Plan"));
-		validator.addTarget(plan).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Plan"));
+//		validator.addTarget(plan).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Plan"));
 		return validator.fillResult().getErrors();
 	}
 	

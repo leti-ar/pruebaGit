@@ -6,6 +6,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
@@ -212,24 +213,31 @@ public class ServiciosAdicionalesTable extends Composite {
 		return editing;
 	}
 
-	public void setServiciosAdicionalesForContrato(final ContratoViewDto contrato, Long idPlan) {
+	public void setServiciosAdicionalesForContrato(final ContratoViewDto contrato,final PlanDto planDto) {
 
-		controller.getServiciosAdicionalesContrato(idPlan,
-				new DefaultWaitCallback<List<ServicioAdicionalIncluidoDto>>() {
+		DefaultWaitCallback<List<ServicioAdicionalIncluidoDto>> defaultWaitCallback = new DefaultWaitCallback<List<ServicioAdicionalIncluidoDto>>() {
 			public void success(List<ServicioAdicionalIncluidoDto> list) {
 				editarSSUIData.loadServiciosAdicionalesContrato(list);
 				editing = false;
-				refreshServiciosAdicionalesTableContrato(contrato);
+				refreshServiciosAdicionalesTableContrato(contrato,planDto);
 			}
-			
+
 			public void failure(Throwable caught) {
 				editing = false;
 				super.failure(caught);
 			}
-		});
+		};
+		
+		
+		if(planDto==null){
+			controller.getServiciosAdicionalesContrato(-1L,defaultWaitCallback);
+		}else{
+			controller.getServiciosAdicionalesContrato(planDto.getId(),
+					defaultWaitCallback);
+		}
 	}
 	
-	private void refreshServiciosAdicionalesTableContrato(ContratoViewDto contrato) {
+	private void refreshServiciosAdicionalesTableContrato(ContratoViewDto contrato, PlanDto planDto) {
 		List<ServicioAdicionalIncluidoDto> serviciosAdicionales = editarSSUIData.getServiciosAdicionalesContrato();
 		List<ServicioAdicionalIncluidoDto> serviciosAdicionalesTildados = contrato.getServiciosAdicionalesInc();
 		table.resizeRows(serviciosAdicionales.size() + 1);
@@ -243,6 +251,8 @@ public class ServiciosAdicionalesTable extends Composite {
 				ServicioAdicionalIncluidoDto servicioAdicionalTildado = (ServicioAdicionalIncluidoDto) iterator2.next();
 				if (servicioAdicionalTildado.getServicioAdicional().getDescripcion().equals(servicioAdicional.getServicioAdicional().getDescripcion())) {
 					check.setValue(servicioAdicionalTildado.isChecked());
+					//ademas le cambio el plan porque le quedó el viejo sino
+					servicioAdicionalTildado.setPlan(planDto);
 				}
 			}
 			table.setWidget(row, 0, check);

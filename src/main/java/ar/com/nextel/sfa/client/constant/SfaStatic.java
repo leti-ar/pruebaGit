@@ -1785,6 +1785,10 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
    * @return translated "<span class=\"req\">Plan:</span>"
    */
   @DefaultStringValue("<span class=\"req\">Plan:</span>")
+  @Key("planReq")
+  String planReq();
+  
+  @DefaultStringValue("Plan:")
   @Key("plan")
   String plan();
 
