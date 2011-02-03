@@ -38,9 +38,9 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 	private MapperExtended mapper;
 	private Repository repository;
 	
-	//MGR - #1085 - Se vuelve atras con el incidente #1094
-	//MGR - #1094
-//	private static String oppEnCursoPorTipoVendedor= "OPP_CURSO_TIPO_VENDEDOR";
+	//MGR - #1359
+	private static String oppEnCursoAdmCredito= "OPP_CURSO_ADM_CREDITO";
+	private static String oppEnCursoNoTLMNoDAE= "OPP_CURSO_NO_TLM_NO_DAE";
 
 	@Override
 	public void init() throws ServletException {
@@ -55,23 +55,31 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 	public List<OperacionEnCursoDto> searchOpEnCurso() {
 		Vendedor vendedor = sessionContextLoader.getVendedor();
 		
-		//MGR - #1085 - Se vuelve atras con el incidente #1094
-		//MGR - #1094
-//		if(!vendedor.isTelemarketing()){
+		//MGR - #1359
+		if(!vendedor.isADMCreditos()){
+
 			AppLogger.info("Obteniendo operaciones en curso para vendedor: " + vendedor.getUserName(), this);
+			if(vendedor.isTelemarketing() || vendedor.isDAE()){
+				List<OperacionEnCursoDto> operacionesEnCursoDto = mapper.convertList(
+						vendedor.getOperacionesEnCurso(), OperacionEnCursoDto.class);
+				return operacionesEnCursoDto;
+			
+			}else{
+				List<OperacionEnCurso> oppEnCurso = this.repository.executeCustomQuery
+							(oppEnCursoNoTLMNoDAE,vendedor.getId());
+				List<OperacionEnCursoDto> operacionesEnCursoDto = mapper.convertList(
+						oppEnCurso, OperacionEnCursoDto.class);
+				return operacionesEnCursoDto;
+			}
+		}
+		else{
+			AppLogger.info("Obteniendo operaciones en curso para vendedores del tipo Adm. de creditos.", this);
+			List<OperacionEnCurso> oppEnCurso = this.repository.executeCustomQuery
+						(oppEnCursoAdmCredito,vendedor.getId(), vendedor.getId());
 			List<OperacionEnCursoDto> operacionesEnCursoDto = mapper.convertList(
-					vendedor.getOperacionesEnCurso(), OperacionEnCursoDto.class);
+					oppEnCurso, OperacionEnCursoDto.class);
 			return operacionesEnCursoDto;
-//		}
-//		else{
-//			AppLogger.info("Obteniendo operaciones en curso para vendedores del tipo Telemarketing.", this);
-//			List<OperacionEnCurso> oppEnCurso = this.repository.executeCustomQuery
-//						(oppEnCursoPorTipoVendedor,vendedor.getTipoVendedor().getId());
-//			List<OperacionEnCursoDto> operacionesEnCursoDto = mapper.convertList(
-//					oppEnCurso, OperacionEnCursoDto.class);
-//			return operacionesEnCursoDto;
-//		}
-		
+		}
 	}
 
 	public VentaPotencialVistaResultDto searchReservas() {
