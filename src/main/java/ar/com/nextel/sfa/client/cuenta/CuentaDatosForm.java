@@ -1353,7 +1353,8 @@ public class CuentaDatosForm extends Composite {
 			validator.addTarget(cuentaUIData.getEmailLaboral()).mail(
 					Sfa.constant().ERR_EMAIL_NO_VALIDO().replaceAll("\\{1\\}",
 							cuentaUIData.getEmailLaboral().getName()));
-		if ( cuentaUIData.getFacturaElectronicaPanel().isEnabled() 
+		if (!cuentaUIData.getFacturaElectronicaPanel().getEmail().getText().equals("") 
+				&& cuentaUIData.getFacturaElectronicaPanel().isEnabled() 
 				&& cuentaUIData.getFacturaElectronicaPanel().isFacturaElectronicaChecked())
 			validator.addTarget(cuentaUIData.getFacturaElectronicaPanel().getEmail()).mail(
 					Sfa.constant().ERR_EMAIL_NO_VALIDO().replaceAll(
