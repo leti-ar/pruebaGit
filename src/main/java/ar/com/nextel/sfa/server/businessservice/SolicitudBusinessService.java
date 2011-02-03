@@ -340,13 +340,13 @@ public class SolicitudBusinessService {
 				repository.save(solicitudServicio.getCuenta().getFacturaElectronica());
 				String codigoGestion = "TRANSF_FACT_ELECTRONICA";
 				ParametrosGestion parametrosGestion = repository.retrieve(ParametrosGestion.class, codigoGestion);
-//				generacionCierreBusinessOperator.lanzarGestionCerrarSS(
-//						this.sessionContextLoader.getInstance().getVendedor().getUserName(), 
-//						0L, 
-//						parametrosGestion, 
-//						"", 
-//						solicitudServicio.getCuenta().getId(), 
-//						cerrar);
+				generacionCierreBusinessOperator.lanzarGestionCerrarSS(
+						this.sessionContextLoader.getInstance().getVendedor().getUserName(), 
+						0L, 
+						parametrosGestion, 
+						"", 
+						solicitudServicio.getCuenta().getId(), 
+						cerrar);
 			}
 		} else {
 			response = generacionCierreBusinessOperator.generarSolicitudServicio(generacionCierreRequest);
