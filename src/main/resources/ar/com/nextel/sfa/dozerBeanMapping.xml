@@ -800,48 +800,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</field>
 	</mapping>
 	
-    <mapping map-null="false" type="one-way">
-        <class-a>ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio
-        </class-a>
-        <class-b>ar.com.nextel.sfa.client.dto.ContratoViewDto
-        </class-b>
-        <field>
-            <a>fechaEstadoContrato</a>
-            <b>fechaEstado</b>
-        </field>
-        <field>
-            <a>simCard</a>
-            <b>numeroSimCard</b>
-        </field>
-        <field>
-            <a>customerNumber</a>
-            <b>codVantiveCesionario</b>
-        </field>
-        <field>
-            <a>numeroSolicitudOrigen</a>
-            <b>os</b>
-        </field>
-        <field>
-            <a>numeroCuenta</a>
-            <b>suscriptor</b>
-        </field>
-        <field custom-converter-id="enumToDto">
-            <a>planNuevo</a>
-            <b>planCesionario</b>
-        </field>
-        <field>
-            <a>precioVtaPlanNuevo</a>
-            <b>planCesionario.precio</b>
-        </field>
-        <field custom-converter-id="collectionServicioAdicionalTransfConverter">
-            <a>plainServiciosAdicionales</a>
-            <b>serviciosAdicionalesInc</b>
-        </field>
-    </mapping>
-            
-     <mapping map-null="true" type="one-way">
+    <mapping map-null="true">
         <class-a>ar.com.nextel.sfa.client.dto.ContratoViewDto
         </class-a>
+       
         <class-b>ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio
         </class-b>
         <field>
@@ -868,9 +830,9 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
             <a>planCesionario</a>
             <b>planNuevo</b>
         </field>
-        <field>
-            <a>planCesionario.precio</a>
-            <b>precioVtaPlanNuevo</b>
+        <field  type="one-way" >
+         	<a>planCesionario.precio</a>
+        	<b>precioVtaPlanNuevo</b>
         </field>
         <field custom-converter-id="collectionServicioAdicionalTransfConverter">
             <a>serviciosAdicionalesInc</a>
