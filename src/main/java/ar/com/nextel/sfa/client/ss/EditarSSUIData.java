@@ -1010,7 +1010,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		solicitudServicio.setNumero(nss.getText());
 		solicitudServicio.setOrigen((OrigenSolicitudDto) origen.getSelectedItem());
 		solicitudServicio.setObservaciones(observaciones.getText());
-		solicitudServicio.setUsuarioCreacion(ClientContext.getInstance().getVendedor());
+		//MGR - #1359
+		//solicitudServicio.setUsuarioCreacion(ClientContext.getInstance().getVendedor());
 		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())) {
 			solicitudServicio.setIdSucursal(Long.valueOf(sucursalOrigen.getSelectedItem().getItemValue()));
 		} else {

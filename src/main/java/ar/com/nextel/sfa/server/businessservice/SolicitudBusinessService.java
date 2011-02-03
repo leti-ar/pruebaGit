@@ -290,12 +290,14 @@ public class SolicitudBusinessService {
 			Cuenta ctaCedente = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuentaCedente().getId());
 			solicitudServicio.setCuentaCedente(ctaCedente);
 		}
-		if( (solicitudServicio.getUsuarioCreacion() == null && solicitudServicioDto.getUsuarioCreacion() != null) ||
-				(solicitudServicio.getUsuarioCreacion() != null && solicitudServicioDto.getUsuarioCreacion() != null &&
-				!solicitudServicio.getUsuarioCreacion().getId().equals(solicitudServicioDto.getUsuarioCreacion().getId())) ){
-			Vendedor userCreacion = repository.retrieve(Vendedor.class, solicitudServicioDto.getUsuarioCreacion().getId());
-			solicitudServicio.setUsuarioCreacion(userCreacion);
-		}
+		
+		//MGR - #1359
+//		if( (solicitudServicio.getUsuarioCreacion() == null && solicitudServicioDto.getUsuarioCreacion() != null) ||
+//				(solicitudServicio.getUsuarioCreacion() != null && solicitudServicioDto.getUsuarioCreacion() != null &&
+//				!solicitudServicio.getUsuarioCreacion().getId().equals(solicitudServicioDto.getUsuarioCreacion().getId())) ){
+//			Vendedor userCreacion = repository.retrieve(Vendedor.class, solicitudServicioDto.getUsuarioCreacion().getId());
+//			solicitudServicio.setUsuarioCreacion(userCreacion);
+//		}
 		if( (solicitudServicio.getSucursal() == null && solicitudServicioDto.getIdSucursal() != null) ||
 				(solicitudServicio.getSucursal() != null && solicitudServicioDto.getIdSucursal() != null &&
 				!solicitudServicio.getSucursal().getId().equals(solicitudServicioDto.getIdSucursal())) ){
