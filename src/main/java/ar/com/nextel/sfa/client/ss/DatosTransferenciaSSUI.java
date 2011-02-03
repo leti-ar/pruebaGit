@@ -377,6 +377,13 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		}else{
 			limpiarTablaServFacturados();
 		}
+		//Deshabilito el primer checkBox cuando no hay contratos
+		CheckBox check = (CheckBox)contratosTable.getWidget(0, 0);
+		if (contratosActivosVisibles.size() == 0) {
+			check.setEnabled(false);
+		} else {
+			check.setEnabled(true);
+		}
 	}
 		
 	private void limpiarTablaContratos(){
@@ -568,6 +575,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 							contratosChequeados.add(contratosActivosVisibles.get(row-1));
 						else
 							contratosChequeados.remove(contratosActivosVisibles.get(row-1));
+						chequarPrimero();
 					}
 					selectContratoRow(row);
 					drawServiciosFacturados(row);
@@ -576,6 +584,15 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		}
 	}
 	
+	private void chequarPrimero() {
+		CheckBox check = (CheckBox)contratosTable.getWidget(0, 0);
+		if (contratosChequeados.size() == contratosActivosVisibles.size()) {
+			check.setValue(true);
+		} else {
+			check.setValue(false);
+		}
+	}
+
 	private void selectContratoRow(int row) {
 		if (row > 0) {
 			contratosTable.getRowFormatter().removeStyleName(selectedContratoRow, SELECTED_ROW);
