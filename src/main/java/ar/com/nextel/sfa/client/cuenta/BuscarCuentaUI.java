@@ -61,7 +61,7 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 		formButtonsBar.addStyleName("mt10");
 
 		// Creacion del boton Crear, con su popup y links
-		if (ClientContext.getInstance().checkPermiso(PermisosEnum.CREAR_NUEVA_SS.getValue())) {
+		if (ClientContext.getInstance().getVendedor().isTelemarketing()) {
 			crearSSButton = new SimpleLink(Sfa.constant().crearSS(), "#", true);
 			formButtonsBar.addLink(crearSSButton);
 			crearSSButton.addClickListener(this);
@@ -74,8 +74,7 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 		}
 
 		// Creacion del boton Agregar, con su popup y links
-		if (ClientContext.getInstance().checkPermiso(
-				PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU.getValue())
+		if (ClientContext.getInstance().getVendedor().isTelemarketing()
 				&& ClientContext.getInstance().checkPermiso(
 						PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_AGREGAR_MENU.getValue())) {
 			agregarCuentaButton = new SimpleLink(Sfa.constant().agregarDivSusc(), "#", true);

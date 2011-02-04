@@ -190,7 +190,7 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickHandler {
 		for (int i = 0; i < totalABuscar; i++) {
 			indiceRowTabla = i;
 			if (cuentasActuales.size() != 0) {
-				if (ClientContext.getInstance().checkPermiso(PermisosEnum.VISUALIZAR_CUENTA.getValue())) {
+				if (ClientContext.getInstance().getVendedor().isTelemarketing()) {
 					HTML iconLapiz = IconFactory.lapiz(LAPIZ_TITLE);
 					iconLapiz.addClickHandler(new ClickHandler() {
 						public void onClick(ClickEvent event) {

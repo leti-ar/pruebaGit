@@ -159,47 +159,40 @@ public class UILoader extends SimplePanel implements ValueChangeHandler<String> 
 		boolean authorized;
 		switch (pageCode) {
 		case BUSCAR_CUENTA:
-				authorized = ClientContext.getInstance().checkPermiso(
-						PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU.getValue())
+				authorized = ClientContext.getInstance().getVendedor().isTelemarketing()
 						&& ClientContext.getInstance().checkPermiso(
 								PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUSCAR_MENU.getValue());
 			break;
 		case AGREGAR_CUENTA:
-				authorized = ClientContext.getInstance().checkPermiso(
-						PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU.getValue())
+				authorized = ClientContext.getInstance().getVendedor().isTelemarketing()
 						&& ClientContext.getInstance().checkPermiso(
 								PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_AGREGAR_MENU.getValue());
 			break;
 		
 		//MGR - Integracion
 		case AGREGAR_PROSPECT:
-			authorized = ClientContext.getInstance().checkPermiso(
-					PermisosEnum.ROOTS_MENU_PANEL_AGREGAR_PROSPECT.getValue());
+				authorized = ClientContext.getInstance().getVendedor().isTelemarketing();
 			break;
 		case CREAR_SS:
-			authorized = ClientContext.getInstance().checkPermiso(
-					PermisosEnum.CREAR_NUEVA_SS.getValue());
-			
-			
+			authorized = ClientContext.getInstance().getVendedor().isTelemarketing();
+			break;
 			
 		case BUSCAR_SOLICITUD:
 				authorized = ClientContext.getInstance().checkPermiso(
 						PermisosEnum.ROOTS_MENU_PANEL_SS_BUTTON.getValue());
 			break;
 		case AGREGAR_SOLICITUD:
-				authorized = ClientContext.getInstance().checkPermiso(PermisosEnum.CREAR_NUEVA_SS.getValue());
+				authorized = ClientContext.getInstance().getVendedor().isTelemarketing();
 			break;
 		case VERAZ:
-			authorized = ClientContext.getInstance().checkPermiso(
-					PermisosEnum.ROOTS_MENU_PANEL_VERAZ_BUTTON.getValue());
+			authorized = ClientContext.getInstance().getVendedor().isTelemarketing();
 			break;
 		case BUSCAR_OPP:
 				authorized = ClientContext.getInstance().checkPermiso(
 						PermisosEnum.ROOTS_MENU_PANEL_BUSQUEDA_OPORTUNIDADES_BUTTON.getValue());
 			break;
 		case OP_EN_CURSO:
-			authorized = ClientContext.getInstance().checkPermiso(
-					PermisosEnum.ROOTS_MENU_PANEL_OPERACIONES_EN_CURSO_BUTTON.getValue());
+			authorized = ClientContext.getInstance().getVendedor().isTelemarketing();
 			break;
 		case EDITAR_CUENTA:
 			//MGR - Integracion

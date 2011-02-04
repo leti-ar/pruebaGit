@@ -43,81 +43,15 @@ public enum PermisosEnum {
 	AGREGAR_DIVISION_SUSCRIPTOR("Agregar división/suscriptor",Accion.X,false),
 	NXS_BUSCAR_CLIENTE("NXS_BUSCAR_CLIENTE",Accion.X,false),
 
-	CREAR_NUEVA_SS("crearNuevaSS",Accion.X,true),
-	VISUALIZAR_CUENTA("visualizarCuenta",Accion.X,true),
-	ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU("rootsMenuPanel.cuentasButtonMenu",Accion.X,true),
 	ROOTS_MENU_PANEL_CUENTAS_BUSCAR_MENU("rootsMenuPanel.cuentasBuscarMenu",Accion.X,true),
 	ROOTS_MENU_PANEL_CUENTAS_AGREGAR_MENU("rootsMenuPanel.cuentasAgregarMenu",Accion.X,true),
-	ROOTS_MENU_PANEL_VERAZ_BUTTON("rootsMenuPanel.verazButton",Accion.X,true),
 	ROOTS_MENU_PANEL_SS_BUTTON("rootsMenuPanel.ssButton",Accion.X,true),
-	ROOTS_MENU_PANEL_OPERACIONES_EN_CURSO_BUTTON("rootsMenuPanel.operacionesEnCursoButton",Accion.X,true),
 	ROOTS_MENU_PANEL_BUSQUEDA_OPORTUNIDADES_BUTTON("rootsMenuPanel.busquedaOportunidadesButton",Accion.X,true),
 	SCORING_CHECKED("scoringChecked",Accion.X,true),
-	CERRAR_SS_CON_PIN("cerrarSSConPin",Accion.X,true),
 	
 	//MGR - Integracion
-	//Verificar que los permisos que estoy usando son correctos
-	ROOTS_MENU_PANEL_AGREGAR_PROSPECT("rootsMenuPanel.agregarProspectButton",Accion.X,true),
-	//MGR - #959 - Para quitar la tabla de "Reservas" de la opcion "Op. en Curso"
-	OP_EN_CURSO_SECCION_RESERVAS("opEnCursoSeccionReservas", Accion.X, true),
-	//Al crear SS, en la pestaña "Varios"
-	VARIOS_CREDITO_FIDELIZACION("variosCreditoFidelizacion",Accion.X,true),
-	VARIOS_PATACONEX("variosPataconex",Accion.X,true),
-	VARIOS_FIRMAS("variosFirmas",Accion.X,true),
-	VARIOS_ANTICIPO("variosAnticipos",Accion.X,true),
 	//Para editar cuenta
-	ROOTS_MENU_PANEL_CUENTAS_EDITAR("rootsMenuPanel.cuentasEditar",Accion.X,true),
-	//MGR - #965 - Para ocultar el campo Factura Electronica
-	VER_CAMPO_FACTURA_ELECTRONICA("verCampoFacturaElectronica",Accion.X,true),
-	//MGR - #962
-	SELECT_OPC_TELEMARKETING_COMB_ORIGEN("selectOpcTelemarketingComboOrigen",Accion.X,true),
-	//MGR - #963
-	ENVIAR_MAIL_EJECUTIVO_CTA("enviarMailEjecutivoCta",Accion.X,false),
-	//Para editar domicilio
-	EDITAR_DOMICILIO("editarDomicilio", Accion.X, true),
-	//MGR - #1085 - Se vuelve atras con el incidente #1014
-	//MGR - #1014
-//	COMPARTEN_SS("compartenSS", Accion.X, false),
-	//MGR - #1026
-//	NRO_SS_EDITABLE("nroSSEditable", Accion.X, true),
-	//MGR - #1029
-//	VALIDAR_TRIPTICO("validarTriptico", Accion.X, false),
-	//MGR - #1034
-	DOC_OBLIGATORIO_CONTACTO("docObligatorioContacto", Accion.X, true),
-	//MR
-//	AUTOCOMPLETAR_TRIPTICO("autocompletarTriptico", Accion.X, true),
-	//MGR - #1063
-	TIENE_ACCESO_CTA_GOBIERNO("tieneAccesoCtaGobierno", Accion.X, true),
-	
-	//LM
-	TIENE_ACCESO_CTA_GOBIERNO_BS_AS("tieneAccesoCtaGobiernoBsAs", Accion.X, true),
-	TIENE_ACCESO_CTA_LAP("tieneAccesoCtaLAP", Accion.X, true),
-	TIENE_ACCESO_CTA_LA("tieneAccesoCtaLA", Accion.X, true),
-	//MGR - #1073
-	BUSQUEDA_POR_CATEG_DOC("busquedaPorCategDoc", Accion.X, true),
-	//Para agregar descuentos a las lineas de solicitud de servicio
-	AGREGAR_DESCUENTOS("puedeVerDescuentos", Accion.X, true),
-
-	//LM 
-	OCULTA_CAMPO_VALIDADO_DOMICILIO("ocultaCampoValidadoDomicilio", Accion.X, true),
-	//MGR - #1030
-	EVITA_CONTROL_TERMINO_PAGO("evitaControlTerminoPago", Accion.X, false),
-	//MGR - #1033
-	EVITA_ANEXA_POR_SCORING("evitaAnexaPorScoring", Accion.X, false),
-	//MGR - #1031
-	MONTO_MAX_ACCESORIOS_DIFERENCIAL("montoMaxAccesoriosDiferencial", Accion.X, false),
-	//MGR - #1110
-	EVITA_CONTROL_RANGO_TRIPTICO("evitaControlRangoTriptico", Accion.X, false),
-	//MGR - #1122
-	OCULTA_LINK_GENERAR_SS("ocultaGenerarSS", Accion.X, true),
-	//MGR - #1137
-	EVITA_CONTROL_TRIPTICO_RANGO_GRUPO("evitaControlTripticoDentroRangoDelGrupo", Accion.X, false),
-	//MGR - #1001
-	EVITA_CONTROL_CTA_GOBIERNO("evitaControlCtaGobierno", Accion.X, false),
-	//MGR - #1165
-	EVITA_CONTROL_DESVIOS("evitaControlDesvios", Accion.X, false),
-	//MGR - #1184
-	OCULTA_CRED_FIDEL_PATACONEX("ocultaCredFidelPataconex", Accion.X, true);
+	ROOTS_MENU_PANEL_CUENTAS_EDITAR("rootsMenuPanel.cuentasEditar",Accion.X,true);
 
 	private String value;
     private String accion;

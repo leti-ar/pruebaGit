@@ -40,7 +40,7 @@ public class VerInfocomUI extends ApplicationUI {
 
 	public void firstLoad() {
 		razonSocialClienteBar = new RazonSocialClienteBar();
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VISUALIZAR_CUENTA.getValue())){
+		if(ClientContext.getInstance().getVendedor().isTelemarketing()){
 			razonSocialClienteBar.setEnabledSilvioSoldan();
 		} else {
 			razonSocialClienteBar.setDisabledSilvioSoldan();

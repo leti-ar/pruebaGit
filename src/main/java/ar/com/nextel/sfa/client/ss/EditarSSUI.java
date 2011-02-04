@@ -130,8 +130,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							editarSSUIData.setSolicitud(solicitud);
 							
 							//MGR - #962 - #1017
-							if(ClientContext.getInstance().
-									checkPermiso(PermisosEnum.SELECT_OPC_TELEMARKETING_COMB_ORIGEN.getValue())){
+							if(ClientContext.getInstance().getVendedor().isTelemarketing()){
 								editarSSUIData.getOrigen().selectByText("Telemarketing");
 							}
 							
@@ -207,7 +206,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		cerrarSolicitud = new SimpleLink("Cerrar");
 		
 		//MGR - #1122
-		if(!ClientContext.getInstance().checkPermiso(PermisosEnum.OCULTA_LINK_GENERAR_SS.getValue())){
+		if(!ClientContext.getInstance().getVendedor().isTelemarketing()){
 			linksCrearSS.add(wrap(generarSolicitud));
 		}
 		

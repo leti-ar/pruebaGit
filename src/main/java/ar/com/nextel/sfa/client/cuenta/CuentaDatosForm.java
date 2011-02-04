@@ -396,7 +396,7 @@ public class CuentaDatosForm extends Composite {
 		boolean seOcultoFacElec = false;
 		if(ClientContext.getInstance().vengoDeNexus() && 
 				ClientContext.getInstance().soyClienteNexus() &&
-				!ClientContext.getInstance().checkPermiso(PermisosEnum.VER_CAMPO_FACTURA_ELECTRONICA.getValue())){
+				ClientContext.getInstance().getVendedor().isTelemarketing()){
 			emailTable.getWidget(0, 4).setVisible(false);
 			seOcultoFacElec = true;
 		}
