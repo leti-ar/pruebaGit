@@ -15,7 +15,6 @@ import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
-import ar.com.nextel.sfa.client.dto.ServicioAdicionalDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioContratoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
@@ -236,7 +235,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		nnsLayout.setWidget(0, 1, editarSSUIData.getNss());
 		nnsLayout.setHTML(0, 2, Sfa.constant().origenReq());
 		nnsLayout.setWidget(0, 3, editarSSUIData.getOrigen());
-
+		
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
 			nnsLayout.setHTML(0, 4, Sfa.constant().vendedorReq());
 			nnsLayout.setWidget(0, 5, editarSSUIData.getVendedor());

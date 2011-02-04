@@ -356,6 +356,14 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
 			editarSSUIData.getSucursalOrigen().addAllItems(initializer.getSucursales());
+			
+			//Para que cargue correctamente la opcion del combo
+			if(editarSSUIData.getIdSucursalSolicitud() != null){
+				editarSSUIData.getSucursalOrigen().selectByValue(editarSSUIData.getIdSucursalSolicitud().toString());
+			}else if(editarSSUIData.getVendedor().getSelectedItem() != null){
+				VendedorDto vendAux = (VendedorDto) editarSSUIData.getVendedor().getSelectedItem();
+				editarSSUIData.getSucursalOrigen().selectByValue(vendAux.getIdSucursal().toString());
+			}
 		}
 		else{
 			ListBoxItem item = new ListBoxItemImpl(

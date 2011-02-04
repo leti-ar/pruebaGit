@@ -492,6 +492,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		vendedor.setSelectedItem(solicitudServicio.getVendedor());
 		if(solicitudServicio.getIdSucursal() != null){
 			sucursalOrigen.selectByValue(solicitudServicio.getIdSucursal().toString());
+		} else{ //Para que cargue correctamente la opcion del combo
+			sucursalOrigen.selectByValue(solicitudServicio.getVendedor().getIdSucursal().toString());
 		}
 	}
 
@@ -510,6 +512,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	public Long getCuentaId() {
 		return solicitudServicio.getCuenta().getId();
+	}
+	
+	public Long getIdSucursalSolicitud(){
+		if(solicitudServicio == null){
+			return null;
+		}
+		return solicitudServicio.getIdSucursal();
 	}
 
 	public SolicitudServicioDto getSolicitudServicio() {
