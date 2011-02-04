@@ -814,7 +814,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					editarSSUIData.getVendedor().getSelectedItemId().equals(knownInstancias.get(VENDEDOR_NO_COMISIONABLE).toString())){
 				ssDto.setVendedor(datosTranferencia.getCtaCedenteDto().getVendedor());
 			
-			}else if(verComboVendedor){
+			}else if(verComboVendedor){ //Adm. de creditos
 				VendedorDto vendAux = (VendedorDto) editarSSUIData.getVendedor().getSelectedItem();
 				if(vendAux.isAP()){
 					if(knownInstancias != null){
@@ -822,9 +822,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 						vendAuxDto.setId(knownInstancias.get(VENDEDOR_NO_COMISIONABLE));
 						ssDto.setVendedor(vendAuxDto);
 					}
-				}else{
-					ssDto.setVendedor(ClientContext.getInstance().getVendedor());
 				}
+				//MGR - #1357
+				//Cuando cierra un Adm. de creditos, el vendedor de la ss es el del combo
+//				else{
+//					ssDto.setVendedor(ClientContext.getInstance().getVendedor());
+//				}
 			}else{
 				if(ClientContext.getInstance().getVendedor().isAP()){
 					if(knownInstancias != null){
