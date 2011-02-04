@@ -449,9 +449,9 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		contratosTable.setWidget(newRow, 1, contratoConChinche);
 		contratosTable.setHTML(newRow, 2, cto.getFechaEstado() != null ?
 				dateTimeFormat.format(cto.getFechaEstado()) : Sfa.constant().whiteSpace());
-		contratosTable.setText(newRow, 3, cto.getTelefono() != null ? cto.getTelefono() : Sfa.constant().whiteSpace());
+		contratosTable.setHTML(newRow, 3, cto.getTelefono() != null ? cto.getTelefono() : Sfa.constant().whiteSpace());
 		contratosTable.setHTML(newRow, 4, cto.getFlotaId() != null ? cto.getFlotaId() : Sfa.constant().whiteSpace());
-		contratosTable.setText(newRow, 5, cto.getModelo() != null ? cto.getModelo() : Sfa.constant().whiteSpace());
+		contratosTable.setHTML(newRow, 5, cto.getModelo() != null ? cto.getModelo() : Sfa.constant().whiteSpace());
 		contratosTable.setHTML(newRow, 6, cto.getContratacion() != null ? cto.getContratacion() : Sfa.constant().whiteSpace());
 		contratosTable.setHTML(newRow, 7, cto.getPlanCedente() != null ? cto.getPlanCedente() : Sfa.constant().whiteSpace());
 		String descPlanCesionario = cto.getPlanCesionario() != null ? 
@@ -466,7 +466,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		
 		contratosTable.setHTML(newRow, 10, cto.getOs() != null ? cto.getOs() : Sfa.constant().whiteSpace());
 		contratosTable.setHTML(newRow, 11, cto.getModalidad() != null ? cto.getModalidad() : Sfa.constant().whiteSpace());
-		contratosTable.setText(newRow, 12, cto.getSuscriptor() != null ? cto.getSuscriptor() : Sfa.constant().whiteSpace());
+		contratosTable.setHTML(newRow, 12, cto.getSuscriptor() != null ? cto.getSuscriptor() : Sfa.constant().whiteSpace());
 	}
 	
 	private void drawServiciosFacturados(int selectRow){
