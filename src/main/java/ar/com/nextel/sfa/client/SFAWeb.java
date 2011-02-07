@@ -40,11 +40,12 @@ public class SFAWeb implements EntryPoint {
 		//MGR - #1050
 		cargarInstanciasConocidas();
 		
-		if (usarUserCenter) {
-			cargarMenuConDatosUserCenter();
-		} else {
-			cargarMenuConDevUserData();
-		}
+//		lo moví al callback de cargarIntanciasConocidas
+//		if (usarUserCenter) {
+//			cargarMenuConDatosUserCenter();
+//		} else {
+//			cargarMenuConDevUserData();
+//		}
 	}
 
 	private void addHeaderMenu() {
@@ -176,6 +177,11 @@ public class SFAWeb implements EntryPoint {
 		UserCenterRpcService.Util.getInstance().getKnownInstance(new DefaultWaitCallback<HashMap<String, Long>>() {
 			public void success(HashMap<String, Long> result) {
 				ClientContext.getInstance().setKnownInstance(result);
+						if (usarUserCenter) {
+							cargarMenuConDatosUserCenter();
+						} else {
+							cargarMenuConDevUserData();
+						}
 			}
 		});
 	}
