@@ -156,7 +156,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 											.getRazonSocialCuenta());
 								}
 								resultTable.setHTML(indiceRowTabla, 4, solicitudServicioCerradaResultDto
-										.getCantidadEquiposPorCuenta().toString());
+										.getCantidadEquipos().toString());
 								if (solicitudServicioCerradaResultDto.getPataconex() == null) {
 									resultTable.setHTML(indiceRowTabla, 5, "");
 								} else {
