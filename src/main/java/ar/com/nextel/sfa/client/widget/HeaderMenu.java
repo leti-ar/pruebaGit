@@ -191,7 +191,13 @@ public class HeaderMenu extends Composite {
 			menuItemCrearSS.setVisible((items & MENU_CREAR_SS) != 0);
 		}
 		
-		ssBuscarMenuItem.setVisible((items & MENU_SOLICITUD) != 0);
+		//MGR - #1397
+		if( (vieneDeNexus && customerCode == null) || !vieneDeNexus){
+			ssBuscarMenuItem.setVisible((items & MENU_SOLICITUD) != 0);
+		}else{
+			ssBuscarMenuItem.setVisible(false);
+		}
+		
 		verazMenuItem.setVisible((items & MENU_VERAZ) != 0);
 		oppBuscarMenuItem.setVisible((items & MENU_OPORTUNIDADES) != 0);
 		
