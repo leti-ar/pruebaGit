@@ -4,6 +4,7 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioGeneracionDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
@@ -82,7 +83,8 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 		cerarSSUIData.setEmails(persona.getEmails(), solicitudServicioGeneracion);
 		boolean permisoCierreScoring = ClientContext.getInstance().checkPermiso(
 				PermisosEnum.SCORING_CHECKED.getValue());
-		boolean permisoCierrePin = ClientContext.getInstance().getVendedor().isTelemarketing();
+		VendedorDto vendedor = ClientContext.getInstance().getVendedor();
+		boolean permisoCierrePin = vendedor.isTelemarketing()||vendedor.isDealer()||vendedor.isEECC()||vendedor.isLap();
 
 		if (!isCDW && !isMDS && permisoCierreScoring && !permisoCierrePin && isCliente) {
 			layout.setWidget(3, 0, cerarSSUIData.getScoring());

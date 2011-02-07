@@ -5,6 +5,7 @@ import java.util.HashMap;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.ClienteNexusDto;
 import ar.com.nextel.sfa.client.dto.UserCenterDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.widget.HeaderMenu;
@@ -64,7 +65,8 @@ public class SFAWeb implements EntryPoint {
 		int items = 0;
 		ClientContext cc = ClientContext.getInstance();
 
-		items = cc.getVendedor().isTelemarketing() ? items
+		VendedorDto vendedor = cc.getVendedor();
+		items = vendedor.isTelemarketing()||vendedor.isDealer()||vendedor.isEECC()||vendedor.isLap() ? items
 				+ HeaderMenu.MENU_CUENTA : items;
 		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUSCAR_MENU.getValue()) ? items
 				+ HeaderMenu.MENU_CUENTA_BUSCAR : items;
@@ -72,19 +74,19 @@ public class SFAWeb implements EntryPoint {
 				+ HeaderMenu.MENU_CUENTA_AGREGAR : items;
 		
 		//MGR - Integracion
-		items = cc.getVendedor().isTelemarketing() ? items
+		items = vendedor.isTelemarketing() ? items
 				+ HeaderMenu.MENU_PROSPECT : items;
-		items = cc.getVendedor().isTelemarketing() ? items
+		items = vendedor.isTelemarketing()||vendedor.isDealer()||vendedor.isEECC()||vendedor.isLap() ? items
 				+ HeaderMenu.MENU_CREAR_SS : items;
 		
 
 		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_SS_BUTTON.getValue()) ? items
 				+ HeaderMenu.MENU_SOLICITUD : items;
-		items = cc.getVendedor().isTelemarketing() ? items
+		items = vendedor.isTelemarketing()||vendedor.isDealer()||vendedor.isEECC()||vendedor.isLap() ? items
 				+ HeaderMenu.MENU_VERAZ : items;
 		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_BUSQUEDA_OPORTUNIDADES_BUTTON.getValue()) ? items
 				+ HeaderMenu.MENU_OPORTUNIDADES : items;
-		items = cc.getVendedor().isTelemarketing() ? items
+		items = vendedor.isTelemarketing()||vendedor.isDealer()||vendedor.isEECC()||vendedor.isLap() ? items
 				+ HeaderMenu.MENU_OP_EN_CURSO : items;
 		headerMenu.enableMenuItems(items);
 	}

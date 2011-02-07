@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client.infocom;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
@@ -40,7 +41,8 @@ public class VerInfocomUI extends ApplicationUI {
 
 	public void firstLoad() {
 		razonSocialClienteBar = new RazonSocialClienteBar();
-		if(ClientContext.getInstance().getVendedor().isTelemarketing()){
+		VendedorDto vendedor = ClientContext.getInstance().getVendedor();
+		if(vendedor.isTelemarketing()||vendedor.isDealer()||vendedor.isEECC()||vendedor.isLap()){
 			razonSocialClienteBar.setEnabledSilvioSoldan();
 		} else {
 			razonSocialClienteBar.setDisabledSilvioSoldan();
