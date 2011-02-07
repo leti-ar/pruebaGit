@@ -307,6 +307,7 @@ public class SolicitudBusinessService {
 		
 		mapper.map(solicitudServicioDto, solicitudServicio);
 		
+		
 		//PARCHE: Esto es por que dozer mapea los id cuando se le indica que no
 		for (LineaTransfSolicitudServicio lineaTransf : solicitudServicio.getLineasTranf()) {
 			for (ContratoViewDto cto : solicitudServicioDto.getContratosCedidos()) {
@@ -338,6 +339,13 @@ public class SolicitudBusinessService {
 		// detecte que el objeto no está attachado a la session
 		if (solicitudServicio.getCuenta().getDatosPago() instanceof DatosDebitoTarjetaCredito) {
 			DatosDebitoTarjetaCredito datosPago = (DatosDebitoTarjetaCredito) solicitudServicio.getCuenta()
+					.getDatosPago();
+			datosPago.setTipoTarjeta(repository.retrieve(TipoTarjeta.class, datosPago.getTipoTarjeta()
+					.getId()));
+		}
+		
+		if (solicitudServicio.getCuentaCedente().getDatosPago() instanceof DatosDebitoTarjetaCredito) {
+			DatosDebitoTarjetaCredito datosPago = (DatosDebitoTarjetaCredito) solicitudServicio.getCuentaCedente()
 					.getDatosPago();
 			datosPago.setTipoTarjeta(repository.retrieve(TipoTarjeta.class, datosPago.getTipoTarjeta()
 					.getId()));
