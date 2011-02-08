@@ -345,7 +345,7 @@ public class SolicitudBusinessService {
 		}
 		
 		if (solicitudServicio.getCuentaCedente()!= null && solicitudServicio.getCuentaCedente().getDatosPago() instanceof DatosDebitoTarjetaCredito) {
-			DatosDebitoTarjetaCredito datosPago = (DatosDebitoTarjetaCredito) solicitudServicio.getCuenta()
+			DatosDebitoTarjetaCredito datosPago = (DatosDebitoTarjetaCredito) solicitudServicio.getCuentaCedente()
 					.getDatosPago();
 			datosPago.setTipoTarjeta(repository.retrieve(TipoTarjeta.class, datosPago.getTipoTarjeta()
 					.getId()));
