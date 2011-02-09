@@ -28,6 +28,7 @@ import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.usercenter.SFAUserCenter;
 import ar.com.nextel.services.usercenter.factory.SFAUserCenterFactory;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
+import ar.com.nextel.util.AppLogger;
 import ar.com.nextel.util.ApplicationContextUtil;
 
 /**
@@ -81,6 +82,7 @@ public class ExecutionContextFilter implements Filter {
 					"UCFacade");
 			HashMap permisos = (HashMap) httpRequest.getSession().getAttribute(
 					SessionContext.PERMISOS);
+			AppLogger.infoLog("---el mapa de permisos es: " + permisos, this);
 			if (permisos == null) {
 				permisos = loadPermisos(httpRequest);
 				httpRequest.getSession().setAttribute(SessionContext.PERMISOS, permisos);
@@ -136,9 +138,12 @@ public class ExecutionContextFilter implements Filter {
 																						// todos
 		// usados
 		// en el cliente.
+		AppLogger.infoLog("!!!cargo los permisos:",this);
+		
 		for (PermisosEnum permiso : PermisosEnum.values()) {
 			String tag = permiso.getValue();
 			Boolean result = checkPermiso(tag, permiso.getAccion(),request);
+			AppLogger.infoLog("!!!el check para : " +tag + " me retorna: "+ result,this);
 			mapaPermisosServer.put(tag, result);
 		}
 
