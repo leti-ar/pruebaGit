@@ -327,6 +327,27 @@ public class SolicitudBusinessService {
 			}
 		}
 		
+		Long idTipoTelefoniaCedente = null;
+		for (LineaTransfSolicitudServicio lineaTransf : solicitudServicio.getLineasTranf()) {
+			for (ContratoViewDto cto : solicitudServicioDto.getContratosCedidos()) {
+				if(lineaTransf.getContrato().equals(cto.getContrato())){
+					for (ServicioAdicionalLineaTransfSolicitudServicio servAd : lineaTransf.getServiciosAdicionales()) {
+						if (("1").equals(servAd.getServicioAdicional().getCodigoBSCS())) {
+							idTipoTelefoniaCedente = 2L;
+							break;
+						} else if (("390").equals(servAd.getServicioAdicional().getCodigoBSCS())) {
+							idTipoTelefoniaCedente = 1L;
+							break;
+						} else {
+							idTipoTelefoniaCedente = null;
+							break;
+						}
+					}
+				}
+			}
+			lineaTransf.setIdTipoTelefoniaCedente(idTipoTelefoniaCedente);
+		}
+		
 		//-MGR- Val-punto6 NO esta mapeando directamente los cambios en la cuenta, esta bien que lo haga asi?
 		//Esto es por que debe cambiar el vendedor de la cta cesionario
 		if(!solicitudServicio.getCuenta().getVendedor().getId().equals(
