@@ -25,7 +25,6 @@ import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.legacy.avalon.dto.ServicioContratadoDto;
-import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.vantive.VantiveSystem;
 import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO;
@@ -60,7 +59,6 @@ import ar.com.nextel.model.solicitudes.beans.Sucursal;
 import ar.com.nextel.model.solicitudes.beans.TipoAnticipo;
 import ar.com.nextel.model.solicitudes.beans.TipoPlan;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
-import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
@@ -105,7 +103,6 @@ import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
 import ar.com.nextel.util.DateUtils;
 import ar.com.nextel.util.ExcelBuilder;
-import ar.com.nextel.util.PermisosUserCenter;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.server.RemoteService;
 import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
@@ -727,9 +724,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			SolicitudServicioDto solicitudDto = this.saveSolicituServicio(solicitudServicioDto);
 			resultDto.setSolicitud(solicitudDto);
 
-			HashMap<String, Boolean> mapaPermisosClient = (HashMap<String, Boolean>) sessionContextLoader
-					.getSessionContext().get(SessionContext.PERMISOS);
-			if ((Boolean) mapaPermisosClient.get(PermisosUserCenter.VALIDAR_TRIPTICO_AL_GUARDAR.getValue())) {
+			Vendedor vendedor = sessionContextLoader.getSessionContext().getVendedor();
+			//valida triptico al guardar
+			if (vendedor.isADMCreditos()) {
 				SolicitudServicio solicitud = repository.retrieve(SolicitudServicio.class,
 						solicitudDto.getId());
 				// mapper.map(solicitudDto, solicitud);

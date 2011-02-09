@@ -158,7 +158,7 @@ public class DomicilioUI extends NextelDialog {
 			}
 		});
 
-		if( ClientContext.getInstance().checkPermiso(PermisosEnum.OCULTA_CAMPO_VALIDADO_DOMICILIO.getValue())){
+		if(ClientContext.getInstance().getVendedor().isTelemarketing()){
 			domiciliosUIData.getValidado().setEnabled(false);
 			domiciliosUIData.getValidado().setVisible(false);
 			labelValidado1.setVisible(false);
@@ -176,8 +176,7 @@ public class DomicilioUI extends NextelDialog {
 		
 		
 		if (domicilioAEditar.isEnCarga() || ClientContext
-						.getInstance().checkPermiso(
-								PermisosEnum.EDITAR_DOMICILIO.getValue()))
+						.getInstance().getVendedor().isTelemarketing())
 		linkAceptar.setVisible(true);
 
 		
@@ -192,8 +191,7 @@ public class DomicilioUI extends NextelDialog {
 
 		if (domicilioAEditar.isEnCarga()
 				|| (domiciliosUIData.getCamposModificables().contains(campo) && ClientContext
-						.getInstance().checkPermiso(
-								PermisosEnum.EDITAR_DOMICILIO.getValue()))) {
+						.getInstance().getVendedor().isTelemarketing())) {
 			campo.setEnabled(true);
 			campo.setReadOnly(false);
 		}
@@ -203,8 +201,7 @@ public class DomicilioUI extends NextelDialog {
 
 		if (domicilioAEditar.isEnCarga()
 				|| (domiciliosUIData.getCamposModificables().contains(campo) && ClientContext
-						.getInstance().checkPermiso(
-								PermisosEnum.EDITAR_DOMICILIO.getValue()))) {
+						.getInstance().getVendedor().isTelemarketing())) {
 			campo.setEnabled(true);
 			
 		}

@@ -159,7 +159,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 		add(refresh);
 		
 		//MGR - #959
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.OP_EN_CURSO_SECCION_RESERVAS.getValue())){
+		if(!ClientContext.getInstance().getVendedor().isTelemarketing()){
 			add(reservasLabel);
 			add(reservasNoConsultadas);
 			add(flowPanelReservaT);

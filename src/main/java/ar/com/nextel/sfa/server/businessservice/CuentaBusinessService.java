@@ -574,7 +574,7 @@ public class CuentaBusinessService {
 										((ClaseCuenta) knownInstanceRetriever
 												.getObject(KnownInstanceIdentifier.CLASE_CUENTA_EMPLEADOS))
 												.getDescripcion()));
-			} else if (cuenta.isGobiernoBsAs() && !(Boolean)mapaPermisosClient.get(PermisosUserCenter.TIENE_ACCESO_CTA_GOBIERNO_BS_AS.getValue())) {
+			} else if (cuenta.isGobiernoBsAs() && !SessionContextLoader.getInstance().getVendedor().isTelemarketing()) {
 				String err = ERR_CUENTA_GOBIERNO.replaceAll("\\{1\\}", cuenta
 						.getCodigoVantive());
 				err = err.replaceAll("\\{2\\}", cuenta.getPersona()
@@ -586,7 +586,7 @@ public class CuentaBusinessService {
 										.getObject(KnownInstanceIdentifier.CLASE_CUENTA_GOB_BS_AS))
 										.getDescripcion());
 				throw new RpcExceptionMessages(err);
-			} else if ( cuenta.isGobierno() && !(Boolean)mapaPermisosClient.get(PermisosUserCenter.TIENE_ACCESO_CTA_GOBIERNO.getValue())){
+			} else if ( cuenta.isGobierno() && !SessionContextLoader.getInstance().getVendedor().isTelemarketing()){
 				//MGR - #1063				
 		        	String err = ERR_CUENTA_GOBIERNO.replaceAll("\\{1\\}", cuenta
 							.getCodigoVantive());
@@ -599,7 +599,7 @@ public class CuentaBusinessService {
 											.getObject(KnownInstanceIdentifier.CLASE_CUENTA_GOBIERNO))
 											.getDescripcion());
 					throw new RpcExceptionMessages(err);
-		  } else if (cuenta.isLAP() && !(Boolean)mapaPermisosClient.get(PermisosUserCenter.TIENE_ACCESO_CTA_LAP.getValue())) {
+		  } else if (cuenta.isLAP() && !SessionContextLoader.getInstance().getVendedor().isTelemarketing()) {
 				throw new RpcExceptionMessages(
 						ERR_CUENTA_NO_EDITABLE
 								.replaceAll(
@@ -607,7 +607,7 @@ public class CuentaBusinessService {
 										((ClaseCuenta) knownInstanceRetriever
 												.getObject(KnownInstanceIdentifier.CLASE_CUENTA_LAP))
 												.getDescripcion()));
-			} else if (cuenta.isLA() && !(Boolean)mapaPermisosClient.get(PermisosUserCenter.TIENE_ACCESO_CTA_LA.getValue())) {
+			} else if (cuenta.isLA() && !SessionContextLoader.getInstance().getVendedor().isTelemarketing()) {
 				throw new RpcExceptionMessages(
 						ERR_CUENTA_NO_EDITABLE
 								.replaceAll(

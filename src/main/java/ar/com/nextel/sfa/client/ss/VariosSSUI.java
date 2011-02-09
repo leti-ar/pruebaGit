@@ -5,6 +5,7 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ScoringDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
@@ -43,16 +44,17 @@ public class VariosSSUI extends Composite {
 		this.editarSSUIData = controller.getEditarSSUIData();
 		
 		//MGR - Integracion
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VARIOS_CREDITO_FIDELIZACION.getValue())){
+		VendedorDto vendedor = ClientContext.getInstance().getVendedor();
+		if(vendedor.isDealer()||vendedor.isEECC()||vendedor.isAP()){
 			mainpanel.add(getCreditoFidelizacion());
 		}
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VARIOS_PATACONEX.getValue())){
+		if(vendedor.isDealer()||vendedor.isEECC()||vendedor.isAP()){
 			mainpanel.add(getPataconex());
 		}
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VARIOS_FIRMAS.getValue())){
+		if(vendedor.isDealer()||vendedor.isEECC()||vendedor.isAP()){
 			mainpanel.add(getFirmas());
 		}
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VARIOS_ANTICIPO.getValue())){
+		if(vendedor.isDealer()||vendedor.isEECC()||vendedor.isAP()){
 			mainpanel.add(getAnticipo());
 		}
 		
@@ -120,7 +122,7 @@ public class VariosSSUI extends Composite {
 		totales.setHTML(0, 2, Sfa.constant().desvios());
 		totales.setWidget(0, 3, editarSSUIData.getDesvioText());
 		//MGR - #1184
-		if(!ClientContext.getInstance().checkPermiso(PermisosEnum.OCULTA_CRED_FIDEL_PATACONEX.getValue())){
+		if(!ClientContext.getInstance().getVendedor().isTelemarketing()){
 			totales.setHTML(0, 4, Sfa.constant().creditoFidel());
 			totales.setWidget(0, 5, editarSSUIData.getCredFidelText());
 			totales.setHTML(1, 0, Sfa.constant().pataconex());

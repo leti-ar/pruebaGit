@@ -263,7 +263,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 					flag = false;
 					
 					//MGR - #1073
-					if(ClientContext.getInstance().checkPermiso(PermisosEnum.BUSQUEDA_POR_CATEG_DOC.getValue())){
+					if(!ClientContext.getInstance().getVendedor().isTelemarketing()){
 						this.responsableTextBox.setEnabled(true);
 						this.responsableTextBox.setReadOnly(false);
 						this.razonSocialTextBox.setEnabled(true);
@@ -306,7 +306,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 				}
 				
 				//MGR - #1073
-				if(ClientContext.getInstance().checkPermiso(PermisosEnum.BUSQUEDA_POR_CATEG_DOC.getValue())){
+				if(!ClientContext.getInstance().getVendedor().isTelemarketing()){
 					this.grupoDocumentoCombo.setEnabled(true);
 					this.numeroDocumentoTextBox.setEnabled(true);
 					this.numeroDocumentoTextBox.setReadOnly(false);
@@ -339,7 +339,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 			setLabelVisibility(5, true);
 			
 			//MGR - #1073
-			if(ClientContext.getInstance().checkPermiso(PermisosEnum.BUSQUEDA_POR_CATEG_DOC.getValue())){
+			if(!ClientContext.getInstance().getVendedor().isTelemarketing()){
 				this.grupoDocumentoCombo.setEnabled(true);
 				this.numeroDocumentoTextBox.setEnabled(true);
 				this.numeroDocumentoTextBox.setReadOnly(false);
@@ -358,7 +358,7 @@ public class BuscarCuentaFilterUIData extends UIData {
 			setLabelVisibility(7, true);
 			
 			//MGR - #1073
-			if(ClientContext.getInstance().checkPermiso(PermisosEnum.BUSQUEDA_POR_CATEG_DOC.getValue())){
+			if(!ClientContext.getInstance().getVendedor().isTelemarketing()){
 				this.responsableTextBox.setEnabled(true);
 				this.responsableTextBox.setReadOnly(false);
 				this.razonSocialTextBox.setEnabled(true);

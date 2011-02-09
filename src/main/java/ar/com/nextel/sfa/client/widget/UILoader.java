@@ -4,6 +4,7 @@ import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.AgregarCuentaUI;
 import ar.com.nextel.sfa.client.cuenta.BuscarCuentaUI;
 import ar.com.nextel.sfa.client.cuenta.EditarCuentaUI;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.infocom.VerInfocomUI;
 import ar.com.nextel.sfa.client.operaciones.OperacionEnCursoUI;
@@ -157,49 +158,43 @@ public class UILoader extends SimplePanel implements ValueChangeHandler<String> 
 
 	private boolean checkPermission(int pageCode) {
 		boolean authorized;
+		VendedorDto vendedor = ClientContext.getInstance().getVendedor();
 		switch (pageCode) {
 		case BUSCAR_CUENTA:
-				authorized = ClientContext.getInstance().checkPermiso(
-						PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU.getValue())
+				authorized = (vendedor.isTelemarketing()||vendedor.isDealer()||vendedor.isEECC()||vendedor.isLap()||vendedor.isADMCreditos()||vendedor.isAP())
 						&& ClientContext.getInstance().checkPermiso(
 								PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUSCAR_MENU.getValue());
 			break;
 		case AGREGAR_CUENTA:
-				authorized = ClientContext.getInstance().checkPermiso(
-						PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU.getValue())
+				authorized = (vendedor.isTelemarketing()||vendedor.isDealer()||vendedor.isEECC()||vendedor.isLap()||vendedor.isADMCreditos()||vendedor.isAP())
 						&& ClientContext.getInstance().checkPermiso(
 								PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_AGREGAR_MENU.getValue());
 			break;
 		
 		//MGR - Integracion
 		case AGREGAR_PROSPECT:
-			authorized = ClientContext.getInstance().checkPermiso(
-					PermisosEnum.ROOTS_MENU_PANEL_AGREGAR_PROSPECT.getValue());
+				authorized = vendedor.isTelemarketing()||vendedor.isADMCreditos()||vendedor.isAP();
 			break;
 		case CREAR_SS:
-			authorized = ClientContext.getInstance().checkPermiso(
-					PermisosEnum.CREAR_NUEVA_SS.getValue());
-			
-			
+			authorized = vendedor.isTelemarketing()||vendedor.isDealer()||vendedor.isEECC()||vendedor.isLap()||vendedor.isADMCreditos()||vendedor.isAP();
+			break;
 			
 		case BUSCAR_SOLICITUD:
 				authorized = ClientContext.getInstance().checkPermiso(
 						PermisosEnum.ROOTS_MENU_PANEL_SS_BUTTON.getValue());
 			break;
 		case AGREGAR_SOLICITUD:
-				authorized = ClientContext.getInstance().checkPermiso(PermisosEnum.CREAR_NUEVA_SS.getValue());
+				authorized = vendedor.isTelemarketing()||vendedor.isDealer()||vendedor.isEECC()||vendedor.isLap()||vendedor.isADMCreditos()||vendedor.isAP();
 			break;
 		case VERAZ:
-			authorized = ClientContext.getInstance().checkPermiso(
-					PermisosEnum.ROOTS_MENU_PANEL_VERAZ_BUTTON.getValue());
+			authorized = vendedor.isTelemarketing()||vendedor.isDealer()||vendedor.isEECC()||vendedor.isLap()||vendedor.isADMCreditos()||vendedor.isAP();
 			break;
 		case BUSCAR_OPP:
 				authorized = ClientContext.getInstance().checkPermiso(
 						PermisosEnum.ROOTS_MENU_PANEL_BUSQUEDA_OPORTUNIDADES_BUTTON.getValue());
 			break;
 		case OP_EN_CURSO:
-			authorized = ClientContext.getInstance().checkPermiso(
-					PermisosEnum.ROOTS_MENU_PANEL_OPERACIONES_EN_CURSO_BUTTON.getValue());
+			authorized = vendedor.isTelemarketing()||vendedor.isDealer()||vendedor.isEECC()||vendedor.isLap()||vendedor.isADMCreditos()||vendedor.isAP();
 			break;
 		case EDITAR_CUENTA:
 			//MGR - Integracion

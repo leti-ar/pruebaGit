@@ -7,6 +7,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.ClienteNexusDto;
 import ar.com.nextel.sfa.client.dto.UserCenterDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.widget.HeaderMenu;
@@ -42,11 +43,12 @@ public class SFAWeb implements EntryPoint {
 		//MGR - #1050
 		cargarInstanciasConocidas();
 		
-		if (usarUserCenter) {
-			cargarMenuConDatosUserCenter();
-		} else {
-			cargarMenuConDevUserData();
-		}
+//		lo moví al callback de cargarIntanciasConocidas
+//		if (usarUserCenter) {
+//			cargarMenuConDatosUserCenter();
+//		} else {
+//			cargarMenuConDevUserData();
+//		}
 	}
 
 	private void addHeaderMenu() {
@@ -65,7 +67,8 @@ public class SFAWeb implements EntryPoint {
 		int items = 0;
 		ClientContext cc = ClientContext.getInstance();
 
-		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU.getValue()) ? items
+		VendedorDto vendedor = cc.getVendedor();
+		items = vendedor.isTelemarketing()||vendedor.isDealer()||vendedor.isEECC()||vendedor.isLap()||vendedor.isADMCreditos()||vendedor.isAP() ? items
 				+ HeaderMenu.MENU_CUENTA : items;
 		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUSCAR_MENU.getValue()) ? items
 				+ HeaderMenu.MENU_CUENTA_BUSCAR : items;
@@ -73,19 +76,19 @@ public class SFAWeb implements EntryPoint {
 				+ HeaderMenu.MENU_CUENTA_AGREGAR : items;
 		
 		//MGR - Integracion
-		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_AGREGAR_PROSPECT.getValue()) ? items
+		items = vendedor.isTelemarketing()||vendedor.isADMCreditos()||vendedor.isAP() ? items
 				+ HeaderMenu.MENU_PROSPECT : items;
-		items = cc.checkPermiso(PermisosEnum.CREAR_NUEVA_SS.getValue()) ? items
+		items = vendedor.isTelemarketing()||vendedor.isDealer()||vendedor.isEECC()||vendedor.isLap()||vendedor.isADMCreditos()||vendedor.isAP() ? items
 				+ HeaderMenu.MENU_CREAR_SS : items;
 		
 
 		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_SS_BUTTON.getValue()) ? items
 				+ HeaderMenu.MENU_SOLICITUD : items;
-		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_VERAZ_BUTTON.getValue()) ? items
+		items = vendedor.isTelemarketing()||vendedor.isDealer()||vendedor.isEECC()||vendedor.isLap()||vendedor.isADMCreditos()||vendedor.isAP() ? items
 				+ HeaderMenu.MENU_VERAZ : items;
 		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_BUSQUEDA_OPORTUNIDADES_BUTTON.getValue()) ? items
 				+ HeaderMenu.MENU_OPORTUNIDADES : items;
-		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_OPERACIONES_EN_CURSO_BUTTON.getValue()) ? items
+		items = vendedor.isTelemarketing()||vendedor.isDealer()||vendedor.isEECC()||vendedor.isLap()||vendedor.isADMCreditos()||vendedor.isAP() ? items
 				+ HeaderMenu.MENU_OP_EN_CURSO : items;
 		headerMenu.enableMenuItems(items);
 	}
@@ -178,6 +181,11 @@ public class SFAWeb implements EntryPoint {
 		UserCenterRpcService.Util.getInstance().getKnownInstance(new DefaultWaitCallback<HashMap<String, Long>>() {
 			public void success(HashMap<String, Long> result) {
 				ClientContext.getInstance().setKnownInstance(result);
+						if (usarUserCenter) {
+							cargarMenuConDatosUserCenter();
+						} else {
+							cargarMenuConDevUserData();
+						}
 			}
 		});
 	}
