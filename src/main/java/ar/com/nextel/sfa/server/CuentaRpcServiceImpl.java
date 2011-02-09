@@ -3,9 +3,6 @@ package ar.com.nextel.sfa.server;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,7 +24,6 @@ import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorServ
 import ar.com.nextel.business.describable.GetAllBusinessOperator;
 import ar.com.nextel.business.externalConnection.exception.MerlinException;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
-import ar.com.nextel.business.legacy.avalon.dto.ServicioContratadoDto;
 import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
 import ar.com.nextel.business.personas.normalizarDomicilio.NormalizadorDomicilio;
 import ar.com.nextel.business.personas.normalizarDomicilio.businessUnits.NormalizarDomicilioRequest;

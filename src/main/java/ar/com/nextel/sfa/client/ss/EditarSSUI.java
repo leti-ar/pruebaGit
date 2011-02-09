@@ -787,25 +787,28 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		
 		boolean verComboVendedor = ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue());
 		if(cerrandoSS){
-			if(!ssDto.getCuenta().isCliente()){
-				if(knownInstancias != null &&
-						editarSSUIData.getVendedor().getSelectedItemId().equals(knownInstancias.get(VENDEDOR_NO_COMISIONABLE).toString())){
-					ssDto.getCuenta().setVendedor(datosTranferencia.getCtaCedenteDto().getVendedor());
-				}else if(verComboVendedor){
-					VendedorDto vendAux = (VendedorDto) editarSSUIData.getVendedor().getSelectedItem();
-					if(vendAux.isAP()){
-						ssDto.getCuenta().setVendedor(datosTranferencia.getCtaCedenteDto().getVendedor());
-					}else{
-						ssDto.getCuenta().setVendedor(ClientContext.getInstance().getVendedor());
-					}
-				}else{
-					if(ClientContext.getInstance().getVendedor().isAP()){
-						ssDto.getCuenta().setVendedor(datosTranferencia.getCtaCedenteDto().getVendedor());
-					}else{
-						ssDto.getCuenta().setVendedor(ClientContext.getInstance().getVendedor());
-					}
+			
+			//MGR - #1410 - Modificacion del Vendedor de la cuenta cesionario (Cta de la ss)
+			boolean dealer = false;
+			boolean ap = false;
+			if(ClientContext.getInstance().getVendedor().isADMCreditos()){
+				VendedorDto vendAux = (VendedorDto) editarSSUIData.getVendedor().getSelectedItem();
+				if(vendAux.isAP()){
+					ap = true;
+				}else{ //dealer o eecc que se tratan de la misma manera
+					dealer = true;
 				}
 			}
+			if(dealer || ClientContext.getInstance().getVendedor().isDealer()){
+				ssDto.getCuenta().setVendedor((VendedorDto) editarSSUIData.getVendedor().getSelectedItem());
+			} else if(ap || ClientContext.getInstance().getVendedor().isAP()){
+				if(knownInstancias != null){
+					VendedorDto vendAuxDto = new VendedorDto();
+					vendAuxDto.setId(knownInstancias.get(VENDEDOR_NO_COMISIONABLE));
+					ssDto.getCuenta().setVendedor(vendAuxDto);
+				}
+			}
+			
 
 			if(!ssDto.getCuenta().isCliente() && knownInstancias != null && 
 					editarSSUIData.getVendedor().getSelectedItemId().equals(knownInstancias.get(VENDEDOR_NO_COMISIONABLE).toString())){

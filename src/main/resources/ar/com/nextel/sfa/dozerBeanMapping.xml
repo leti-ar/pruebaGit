@@ -542,6 +542,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>datosPago</a>
 			<b>datosPago</b>
 		</field>
+		<field type="one-way">
+            <a>formaPago</a>
+            <b>formaPago</b>
+        </field>
 		<field custom-converter-id="enumToDto">
 			<a>proveedorInicial</a>
 			<b>proveedorInicial</b>
