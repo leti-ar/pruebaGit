@@ -489,11 +489,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			clienteCedente.setText(solicitudServicio.getCuentaCedente().getCodigoVantive());
 		}
 		canalVtas.setText(CANAL_VTA_TRANSFERENCIA);
-		vendedor.setSelectedItem(solicitudServicio.getVendedor());
-		if(solicitudServicio.getIdSucursal() != null){
-			sucursalOrigen.selectByValue(solicitudServicio.getIdSucursal().toString());
-		} else{ //Para que cargue correctamente la opcion del combo
-			sucursalOrigen.selectByValue(solicitudServicio.getVendedor().getIdSucursal().toString());
+		if (!solicitudServicio.getVendedor().isADMCreditos()) {
+			vendedor.setSelectedItem(solicitudServicio.getVendedor());
+			if(solicitudServicio.getIdSucursal() != null){
+				sucursalOrigen.selectByValue(solicitudServicio.getIdSucursal().toString());
+			} else{ //Para que cargue correctamente la opcion del combo
+				sucursalOrigen.selectByValue(solicitudServicio.getVendedor().getIdSucursal().toString());
+			}
 		}
 	}
 

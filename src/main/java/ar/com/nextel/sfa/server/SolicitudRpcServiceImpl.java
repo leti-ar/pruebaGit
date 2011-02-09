@@ -320,10 +320,13 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		List tiposAnticipo = repository.getAll(TipoAnticipo.class);
 		initializer.setTiposAnticipo(mapper.convertList(tiposAnticipo, TipoAnticipoDto.class));
 		
-		//Se cargan todos los vendedores que no sean del tipo Telemarketer ni Dae
+		//Se cargan todos los vendedores que no sean del tipo Telemarketer, Dae o Administrador de Créditos
 		Long idTipoVendTLM = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_TELEMARKETING);
 		Long idTipoVendDAE = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_DAE);
-		List<Vendedor> vendedores = repository.find("from Vendedor vend where vend.tipoVendedor.id <> ? and vend.tipoVendedor.id <> ?", idTipoVendDAE, idTipoVendTLM);
+		Long idTipoVendADM = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_CREDITOS);
+		List<Vendedor> vendedores = repository.find(
+						"from Vendedor vend where vend.tipoVendedor.id <> ? and vend.tipoVendedor.id <> ? and vend.tipoVendedor.id <> ?",
+						idTipoVendDAE, idTipoVendTLM, idTipoVendADM);
 		Collections.sort(vendedores, new Comparator<Vendedor>() {
 			public int compare(Vendedor vend1, Vendedor vend2) {
 				if(vend1.getApellido() == null && vend2.getApellido() == null)
