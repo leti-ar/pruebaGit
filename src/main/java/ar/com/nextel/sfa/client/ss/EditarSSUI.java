@@ -789,29 +789,30 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		if(cerrandoSS){
 			
 			//MGR - #1410 - Modificacion del Vendedor de la cuenta cesionario (Cta de la ss)
-			boolean dealer = false;
-			boolean ap = false;
 			if(ClientContext.getInstance().getVendedor().isADMCreditos()){
 				VendedorDto vendAux = (VendedorDto) editarSSUIData.getVendedor().getSelectedItem();
 				if(vendAux.isAP()){
-					ap = true;
+					if(knownInstancias != null){
+						VendedorDto vendAuxDto = new VendedorDto();
+						vendAuxDto.setId(knownInstancias.get(VENDEDOR_NO_COMISIONABLE));
+						ssDto.getCuenta().setVendedor(vendAuxDto);
+					}
 				}else{ //dealer o eecc que se tratan de la misma manera
-					dealer = true;
+					ssDto.getCuenta().setVendedor(vendAux);
 				}
-			}
-			if(dealer || ClientContext.getInstance().getVendedor().isDealer()){
-				ssDto.getCuenta().setVendedor((VendedorDto) editarSSUIData.getVendedor().getSelectedItem());
-			} else if(ap || ClientContext.getInstance().getVendedor().isAP()){
+			
+			}else if(ClientContext.getInstance().getVendedor().isAP()){
 				if(knownInstancias != null){
 					VendedorDto vendAuxDto = new VendedorDto();
 					vendAuxDto.setId(knownInstancias.get(VENDEDOR_NO_COMISIONABLE));
 					ssDto.getCuenta().setVendedor(vendAuxDto);
 				}
+			}else if(ClientContext.getInstance().getVendedor().isDealer()){
+				ssDto.getCuenta().setVendedor(ClientContext.getInstance().getVendedor());
 			}
 			
 
-			if(!ssDto.getCuenta().isCliente() && knownInstancias != null && 
-					editarSSUIData.getVendedor().getSelectedItemId().equals(knownInstancias.get(VENDEDOR_NO_COMISIONABLE).toString())){
+			if(!ssDto.getCuenta().isCliente() && ClientContext.getInstance().getVendedor().isAP()){
 				ssDto.setVendedor(datosTranferencia.getCtaCedenteDto().getVendedor());
 			
 			}else if(verComboVendedor){ //Adm. de creditos
