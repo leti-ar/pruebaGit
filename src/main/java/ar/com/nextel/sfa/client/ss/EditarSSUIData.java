@@ -1113,8 +1113,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 
 		validator.fillResult();
+		List<String> errores = validator.getErrors();
+		errores.addAll(validarCompletitud());
 		if(!validator.getErrors().isEmpty()){
-			return validator.getErrors();
+			return errores;
 		}
 		
 //		validator.addErrors(validarPlanesCedentes());
@@ -1155,33 +1157,33 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		return solicitudServicio.getContratosCedidos();
 	}
 	
-	public List<String> validarCompletitudTransferencia() {
-		
-		GwtValidator validator = new GwtValidator();
-		validator.addTarget(nss).required(
-				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nº de Solicitud")).maxLength(10,
-				Sfa.constant().ERR_NSS_LONG());
-
-		validator.addTarget(origen).required(
-				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
-		
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
-			validator.addTarget(vendedor).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedorReq()));
-		}
-		
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
-			validator.addTarget(sucursalOrigen).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigen()));
-		}
-		
-		validator.addTarget(canalVtas).required(
-				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Canal de Ventas"));
-		
-		validator.fillResult();
-		List<String> errores = validator.getErrors();
-		return errores;
-	}
+//	public List<String> validarCompletitudTransferencia() {
+//		
+//		GwtValidator validator = new GwtValidator();
+//		validator.addTarget(nss).required(
+//				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nº de Solicitud")).maxLength(10,
+//				Sfa.constant().ERR_NSS_LONG());
+//
+//		validator.addTarget(origen).required(
+//				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
+//		
+//		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
+//			validator.addTarget(vendedor).required(
+//					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedorReq()));
+//		}
+//		
+//		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
+//			validator.addTarget(sucursalOrigen).required(
+//					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigen()));
+//		}
+//		
+//		validator.addTarget(canalVtas).required(
+//				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Canal de Ventas"));
+//		
+//		validator.fillResult();
+//		List<String> errores = validator.getErrors();
+//		return errores;
+//	}
 	
 	public void validarPlanesCedentes(final DefaultWaitCallback<List<String>> defaultWaitCallback){
 		

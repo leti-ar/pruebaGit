@@ -669,11 +669,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 	private boolean validarCompletitud(boolean showErrorDialog) {
 		List<String> errors = null;
-		if(editarSSUIData.getGrupoSolicitud().isTransferencia()){
-			errors = editarSSUIData.validarCompletitudTransferencia();
-		}else{
-			errors = editarSSUIData.validarCompletitud();
-		}
+
+		errors = editarSSUIData.validarCompletitud();
 		if (!errors.isEmpty()) {
 			validarCompletitud.addStyleName(validarCompletitudFailStyle);
 			if (showErrorDialog) {
