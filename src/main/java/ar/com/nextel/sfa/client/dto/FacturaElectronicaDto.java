@@ -11,6 +11,7 @@ public class FacturaElectronicaDto implements IsSerializable {
 	private boolean cargadaEnVantive;
 	private boolean replicadaAutogestion;
 	private Date lastModificationDate;
+	private Long idGestion;
 
 	public Date getLastModificationDate() {
 		return lastModificationDate;
@@ -50,5 +51,13 @@ public class FacturaElectronicaDto implements IsSerializable {
 
 	public boolean isReplicadaAutogestion() {
 		return replicadaAutogestion;
+	}
+	
+	public Long getIdGestion() {
+		return idGestion;
+	}
+	
+	public void setIdGestion(Long idGestion) {
+		this.idGestion = idGestion;
 	}
 }
