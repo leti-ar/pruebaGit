@@ -69,7 +69,9 @@ import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
+import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -550,6 +552,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		GeneracionCierreResponse response = null;
 		try {
 			completarServiciosAdicionalesContratosCedidos(solicitudServicioDto, mapper);
+			completarDomiciliosSolicitudTransferencia(solicitudServicioDto);
 			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
 			response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar);
 			// metodo changelog
@@ -569,6 +572,20 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		}
 		AppLogger.info(accion + " de SS de id=" + solicitudServicioDto.getId() + " finalizado.");
 		return result;
+	}
+	
+	private void completarDomiciliosSolicitudTransferencia(SolicitudServicioDto solicitudServicioDto) {
+		if (solicitudServicioDto.getGrupoSolicitud().isTransferencia())
+			for (DomiciliosCuentaDto dom : solicitudServicioDto.getCuenta().getPersona().getDomicilios()) {
+
+				if (dom.getIdEntrega().equals(EstadoTipoDomicilioDto.PRINCIPAL.getId())) {
+					solicitudServicioDto.setIdDomicilioEnvio(dom.getId());
+				}
+				if (dom.getIdFacturacion().equals(EstadoTipoDomicilioDto.PRINCIPAL.getId())) {
+					solicitudServicioDto.setIdDomicilioFacturacion(dom.getId());
+
+				}
+			}
 	}
 	
 	private void completarServiciosAdicionalesContratosCedidos(SolicitudServicioDto solicitudServicioDto,
