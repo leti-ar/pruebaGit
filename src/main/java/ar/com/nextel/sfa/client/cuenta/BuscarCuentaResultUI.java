@@ -9,7 +9,6 @@ import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
-import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.infocom.InfocomUI;
@@ -191,8 +190,7 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickHandler {
 		for (int i = 0; i < totalABuscar; i++) {
 			indiceRowTabla = i;
 			if (cuentasActuales.size() != 0) {
-				VendedorDto vendedor = ClientContext.getInstance().getVendedor();
-				if (vendedor.isTelemarketing()||vendedor.isDealer()||vendedor.isEECC()||vendedor.isLap()) {
+				if (ClientContext.getInstance().checkPermiso(PermisosEnum.VISUALIZAR_CUENTA.getValue())) {
 					HTML iconLapiz = IconFactory.lapiz(LAPIZ_TITLE);
 					iconLapiz.addClickHandler(new ClickHandler() {
 						public void onClick(ClickEvent event) {

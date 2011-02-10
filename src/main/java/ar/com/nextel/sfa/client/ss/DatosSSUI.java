@@ -242,7 +242,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		SimplePanel wrapper = new SimplePanel();
 		wrapper.addStyleName("resumenSSTableWrapper mlr5");
 		detalleSS = new FlexTable();
-		if(ClientContext.getInstance().getVendedor().isTelemarketing()) {
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
 			String[] titlesDetalle = { Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), 
 					Sfa.constant().whiteSpace(), "Item", "Pcio Vta.", "Precio con Desc.", "Alias", "Plan", 
 					"Pcio Vta. Plan", "Localidad", "Nº Reserva", "Tipo SS", "Cant.", "DDN", "DDI", "Roaming" };			
@@ -360,7 +360,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	}
 
 	public void onTableClick(Widget sender, final int row, int col) {
-		if(ClientContext.getInstance().getVendedor().isTelemarketing()) {
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
 			if (detalleSS == sender) {
 				if (row > 0) {
 					if (col == 8) {
@@ -614,7 +614,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		detalleSS.setWidget(newRow, 0, IconFactory.lapiz());
 		detalleSS.setWidget(newRow, 1, IconFactory.cancel());
 		int i = 0;
-		if(ClientContext.getInstance().getVendedor().isTelemarketing()) {
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
 			detalleSS.setWidget(newRow, 2-i, IconFactory.bolsaPesos());
 		} else {
 			i = 1;
@@ -625,7 +625,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		if (linea.getPrecioConDescuento() == null) {
 			linea.setPrecioConDescuento(linea.getPrecioLista());
 		}
-		if(ClientContext.getInstance().getVendedor().isTelemarketing()) {
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
 			linea.setPrecioVenta(linea.getPrecioConDescuento());
 			detalleSS.setHTML(newRow, 5-i, currencyFormat.format(linea.getPrecioConDescuento()));
 			detalleSS.getCellFormatter().addStyleName(newRow, 5-i, "alignRight");
@@ -655,7 +655,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				selectedDetalleRow - 1);
 		getPlanPrecioVentaTextBox().setText(
 				NumberFormat.getDecimalFormat().format(lineaSS.getPrecioVentaPlan()));
-		if(ClientContext.getInstance().getVendedor().isTelemarketing()) {
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
 			detalleSS.setWidget(selectedDetalleRow, 8, getPlanPrecioVentaTextBox());
 		} else {
 			detalleSS.setWidget(selectedDetalleRow, 6, getPlanPrecioVentaTextBox());
@@ -700,7 +700,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 					MessageDialog.getCloseCommand());
 			valor = lineaSS.getPrecioVentaPlan();
 		}
-		if(ClientContext.getInstance().getVendedor().isTelemarketing()) {
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
 			detalleSS.setHTML(selectedDetalleRow, 8, NumberFormat.getCurrencyFormat().format(valor));
 		} else {
 			detalleSS.setHTML(selectedDetalleRow, 6, NumberFormat.getCurrencyFormat().format(valor));

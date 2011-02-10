@@ -130,16 +130,16 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							editarSSUIData.setSolicitud(solicitud);
 							
 							//MGR - #962 - #1017
-							if(ClientContext.getInstance().getVendedor().isTelemarketing()){
+							if(ClientContext.getInstance().
+									checkPermiso(PermisosEnum.SELECT_OPC_TELEMARKETING_COMB_ORIGEN.getValue())){
 								editarSSUIData.getOrigen().selectByText("Telemarketing");
 							}
 							
 							//MGR - #1152
 							boolean esProspect =RegularExpressionConstants.isVancuc(solicitud.getCuenta().getCodigoVantive());
 							
-							if (solicitud.getNumero() == null
-									&& ClientContext.getInstance().getVendedor().isTelemarketing()
-									&& !esProspect) {
+							if(solicitud.getNumero() == null && ClientContext.getInstance().
+									checkPermiso(PermisosEnum.AUTOCOMPLETAR_TRIPTICO.getValue()) && !esProspect){
 								editarSSUIData.getNss().setText(String.valueOf(solicitud.getTripticoNumber()));
 							} 
 														
@@ -206,7 +206,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		cerrarSolicitud = new SimpleLink("Cerrar");
 		
 		//MGR - #1122
-		if(!ClientContext.getInstance().getVendedor().isTelemarketing()){
+		if(!ClientContext.getInstance().checkPermiso(PermisosEnum.OCULTA_LINK_GENERAR_SS.getValue())){
 			linksCrearSS.add(wrap(generarSolicitud));
 		}
 		

@@ -176,7 +176,8 @@ public class DomicilioUI extends NextelDialog {
 		
 		
 		if (domicilioAEditar.isEnCarga() || ClientContext
-						.getInstance().getVendedor().isTelemarketing())
+				.getInstance().checkPermiso(
+						PermisosEnum.EDITAR_DOMICILIO.getValue()))
 		linkAceptar.setVisible(true);
 
 		
@@ -191,7 +192,8 @@ public class DomicilioUI extends NextelDialog {
 
 		if (domicilioAEditar.isEnCarga()
 				|| (domiciliosUIData.getCamposModificables().contains(campo) && ClientContext
-						.getInstance().getVendedor().isTelemarketing())) {
+						.getInstance().checkPermiso(
+								PermisosEnum.EDITAR_DOMICILIO.getValue()))) {
 			campo.setEnabled(true);
 			campo.setReadOnly(false);
 		}
@@ -201,7 +203,8 @@ public class DomicilioUI extends NextelDialog {
 
 		if (domicilioAEditar.isEnCarga()
 				|| (domiciliosUIData.getCamposModificables().contains(campo) && ClientContext
-						.getInstance().getVendedor().isTelemarketing())) {
+						.getInstance().checkPermiso(
+								PermisosEnum.EDITAR_DOMICILIO.getValue()))) {
 			campo.setEnabled(true);
 			
 		}

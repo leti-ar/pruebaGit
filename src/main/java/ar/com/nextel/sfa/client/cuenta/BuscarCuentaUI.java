@@ -5,7 +5,6 @@ import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
-import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.ss.EditarSSUI;
 import ar.com.nextel.sfa.client.ss.LinksCrearSS;
@@ -62,8 +61,7 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 		formButtonsBar.addStyleName("mt10");
 
 		// Creacion del boton Crear, con su popup y links
-		VendedorDto vendedor = ClientContext.getInstance().getVendedor();
-		if (vendedor.isTelemarketing()||vendedor.isDealer()||vendedor.isEECC()||vendedor.isLap()) {
+		if (ClientContext.getInstance().checkPermiso(PermisosEnum.CREAR_NUEVA_SS.getValue())) {
 			crearSSButton = new SimpleLink(Sfa.constant().crearSS(), "#", true);
 			formButtonsBar.addLink(crearSSButton);
 			crearSSButton.addClickListener(this);
@@ -71,12 +69,13 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 			popupCrearSS = new PopupPanel(true);
 			popupCrearSS.addStyleName("dropUpStyle");
 			//MGR - #873 - Se indica el Vendedor
-			linksCrearSS = new LinksCrearSS(vendedor);
+			linksCrearSS = new LinksCrearSS(ClientContext.getInstance().getVendedor());
 			popupCrearSS.setWidget(linksCrearSS);
 		}
 
 		// Creacion del boton Agregar, con su popup y links
-		if ((vendedor.isTelemarketing()||vendedor.isDealer()||vendedor.isEECC()||vendedor.isLap())
+		if (ClientContext.getInstance().checkPermiso(
+				PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_BUTTON_MENU.getValue())
 				&& ClientContext.getInstance().checkPermiso(
 						PermisosEnum.ROOTS_MENU_PANEL_CUENTAS_AGREGAR_MENU.getValue())) {
 			agregarCuentaButton = new SimpleLink(Sfa.constant().agregarDivSusc(), "#", true);

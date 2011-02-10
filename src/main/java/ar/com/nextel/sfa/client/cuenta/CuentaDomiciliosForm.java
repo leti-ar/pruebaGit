@@ -230,7 +230,7 @@ public class CuentaDomiciliosForm extends Composite {
 						DomicilioUI.getInstance().setParentContacto(false);
 						DomicilioUI.getInstance().hide();
 						if (domicilio.getVantiveId() == null ||
-								ClientContext.getInstance().getVendedor().isTelemarketing()) {
+								ClientContext.getInstance().checkPermiso(PermisosEnum.EDITAR_DOMICILIO.getValue())) {
 							DomicilioUI.getInstance().setComandoAceptar(new Command() {
 							public void execute() {
 								PersonaDto persona = cuentaDto.getPersona();
