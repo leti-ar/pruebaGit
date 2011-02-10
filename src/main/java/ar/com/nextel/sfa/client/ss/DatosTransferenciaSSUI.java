@@ -460,7 +460,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 			contratosTable.setHTML(newRow, 9, Sfa.constant().whiteSpace());
 		}else{
 			contratosTable.setHTML(newRow, 9, cto.getPlanCesionario().getPrecio() != null ?
-					cto.getPlanCesionario().getPrecio().toString() : Sfa.constant().whiteSpace());
+					currFormatter.format(cto.getPlanCesionario().getPrecio()) : Sfa.constant().whiteSpace());
 		}
 		
 		contratosTable.setHTML(newRow, 10, cto.getOs() != null ? cto.getOs() : Sfa.constant().whiteSpace());
@@ -499,7 +499,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 						facturadosTable.setHTML(i +1, 2, serv.getFechaEstado() != null ? 
 								dateTimeFormat.format(serv.getFechaEstado()) : Sfa.constant().whiteSpace());
 						facturadosTable.setHTML(i +1, 3, serv.getTarifa() != null ? 
-								serv.getTarifa().toString() : Sfa.constant().whiteSpace());
+								currFormatter.format(serv.getTarifa()) : Sfa.constant().whiteSpace());
 						facturadosTable.setHTML(i +1, 4, serv.getAjuste() != null ? serv.getAjuste(): Sfa.constant().whiteSpace());
 						facturadosTable.setHTML(i +1, 5, String.valueOf(serv.getPeriodosPendientes()));
 						facturadosTable.setHTML(i +1, 6, serv.getUltimaFactura() != null ?
