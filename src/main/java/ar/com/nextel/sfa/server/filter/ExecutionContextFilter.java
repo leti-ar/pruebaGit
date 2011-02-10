@@ -41,11 +41,10 @@ public class ExecutionContextFilter implements Filter {
 	private RegistroVendedores registroVendedores;
 	private SessionContextLoader sessionContext;
 	private SFAUserCenterFactory sfaUserCenterFactory;
-	private SFAUserCenter sfaUserCenter;
+
 	//MGR - #873
 	private HibernateRepository hibernateRepository;
-	private boolean usarUserCenter = true;
-	private UCFacade ucFacade;
+	private final boolean usarUserCenter = true;
 
 	public void init(FilterConfig config) throws ServletException {
 		ServletContext sc = config.getServletContext();
@@ -74,11 +73,11 @@ public class ExecutionContextFilter implements Filter {
 	}
 
 	private void prepareExecutionContext(ServletRequest request) {
-
+		SFAUserCenter sfaUserCenter;
+		
 		if (request instanceof HttpServletRequest) {
 			HttpServletRequest httpRequest = (HttpServletRequest) request;
-			ucFacade = (UCFacade) httpRequest.getSession().getAttribute(
-					"UCFacade");
+
 			HashMap permisos = (HashMap) httpRequest.getSession().getAttribute(
 					SessionContext.PERMISOS);
 			if (permisos == null) {
@@ -156,6 +155,7 @@ public class ExecutionContextFilter implements Filter {
 	 */
 	private Boolean checkPermiso(String permiso, String accion, HttpServletRequest request) {
 		Boolean ret = false;
+		UCFacade ucFacade = (UCFacade) request.getSession().getAttribute("UCFacade");
 		try {
 			if (ucFacade != null) {
 				// FIXME PATCH Esto esta porque hay un BUG en User Center
