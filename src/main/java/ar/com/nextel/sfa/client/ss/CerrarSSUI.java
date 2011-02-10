@@ -4,7 +4,6 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioGeneracionDto;
-import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
@@ -83,12 +82,13 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 		cerarSSUIData.setEmails(persona.getEmails(), solicitudServicioGeneracion);
 		boolean permisoCierreScoring = ClientContext.getInstance().checkPermiso(
 				PermisosEnum.SCORING_CHECKED.getValue());
-		VendedorDto vendedor = ClientContext.getInstance().getVendedor();
-		boolean permisoCierrePin = vendedor.isTelemarketing()||vendedor.isDealer()||vendedor.isEECC()||vendedor.isLap()||vendedor.isADMCreditos()||vendedor.isAP();
-		if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierreScoring && !permisoCierrePin && isCliente) {
+		boolean permisoCierrePin = ClientContext.getInstance().checkPermiso(
+				PermisosEnum.CERRAR_SS_CON_PIN.getValue());
+
+		if (!isCDW && !isMDS && permisoCierreScoring && !permisoCierrePin && isCliente) {
 			layout.setWidget(3, 0, cerarSSUIData.getScoring());
 			layout.setHTML(3, 1, Sfa.constant().scoringTitle());
-		} else if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierrePin && !cerrandoConItemBB && isCliente) {
+		} else if (!isCDW && !isMDS && permisoCierrePin && !cerrandoConItemBB && isCliente) {
 			layout.setHTML(3, 0, Sfa.constant().pinMaestro());
 			layout.setWidget(3, 1, cerarSSUIData.getPin());
 		} else {

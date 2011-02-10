@@ -32,7 +32,6 @@ import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoEmailDto;
 import ar.com.nextel.sfa.client.dto.TipoTarjetaDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
-import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.enums.EstadoOportunidadEnum;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
@@ -45,7 +44,6 @@ import ar.com.nextel.sfa.client.enums.TipoTarjetaEnum;
 import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.FormUtils;
-import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
@@ -396,10 +394,9 @@ public class CuentaDatosForm extends Composite {
 		
 		//MGR - #965
 		boolean seOcultoFacElec = false;
-		VendedorDto vendedor = ClientContext.getInstance().getVendedor();
 		if(ClientContext.getInstance().vengoDeNexus() && 
 				ClientContext.getInstance().soyClienteNexus() &&
-				(vendedor.isTelemarketing()||vendedor.isADMCreditos()||vendedor.isAP())){
+				!ClientContext.getInstance().checkPermiso(PermisosEnum.VER_CAMPO_FACTURA_ELECTRONICA.getValue())){
 			emailTable.getWidget(0, 4).setVisible(false);
 			seOcultoFacElec = true;
 		}

@@ -74,7 +74,7 @@ public class ContactoUIData extends UIData implements ChangeListener, ClickListe
 	public List<String> validarNumeroDocumento() {
 		GwtValidator validator = new GwtValidator();
 		//MGR - #1034
-		if(!ClientContext.getInstance().getVendedor().isTelemarketing())
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.DOC_OBLIGATORIO_CONTACTO.getValue()))
 		{
 			if (numeroDocumento.getText().equals("")) {
 				validator.addError(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
