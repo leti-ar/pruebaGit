@@ -202,9 +202,9 @@ public class SolicitudRpcServiceDelegate {
 	}
 
 	public void crearArchivo(SolicitudServicioCerradaResultDto solicitud,
-			DefaultWaitCallback<Boolean> defaultWaitCallback) {
+			boolean enviarEmail, DefaultWaitCallback<Boolean> defaultWaitCallback) {
 		WaitWindow.show();
-		solicitudRpcServiceAsync.crearArchivo(solicitud, defaultWaitCallback);
+		solicitudRpcServiceAsync.crearArchivo(solicitud, enviarEmail, defaultWaitCallback);
 	}
 
 	public void getPlanesPorTipoPlan(Long idTipoPlan, Long idCuenta,

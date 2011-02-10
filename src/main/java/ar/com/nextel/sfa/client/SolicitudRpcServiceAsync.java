@@ -101,7 +101,7 @@ public interface SolicitudRpcServiceAsync {
 			AsyncCallback<DescuentoTotalDto> defaultWaitCallback);
 
 	public void crearArchivo(SolicitudServicioCerradaResultDto solicitud,
-			AsyncCallback<Boolean> defaultWaitCallback);
+			boolean enviarEmail, AsyncCallback<Boolean> defaultWaitCallback);
 
 	public void getPlanesPorTipoPlan(Long idTipoPlan, Long idCuenta,
 			AsyncCallback<List<PlanDto>> defaultWaitCallback);

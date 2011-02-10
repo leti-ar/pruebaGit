@@ -509,10 +509,10 @@ public class SolicitudBusinessService {
 		return generarChangelogConfig;
 	}
 
-	public GeneracionCierreResponse crearArchivo(SolicitudServicio solicitudServicio) {
+	public GeneracionCierreResponse crearArchivo(SolicitudServicio solicitudServicio, boolean enviarEmail) {
 		GeneracionCierreRequest generacionCierreRequest = new GeneracionCierreRequest("", solicitudServicio);
 		GeneracionCierreResponse response = generacionCierreBusinessOperator
-				.crearArchivo(generacionCierreRequest);
+				.crearArchivo(generacionCierreRequest, enviarEmail);
 		return response;
 	}
 	
