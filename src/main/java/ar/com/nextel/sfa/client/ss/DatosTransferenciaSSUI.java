@@ -663,7 +663,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	private void drawNuevoPlan(ContratoViewDto contrato) {
 		PlanDto planCesionario = contrato.getPlanCesionario();
 		contratosTable.setWidget(filaSeleccionada, 8, new PlanCesionarioConLapiz(planCesionario!=null?planCesionario.getDescripcion():Sfa.constant().whiteSpace()));
-		contratosTable.setHTML(filaSeleccionada, 9, planCesionario ==null ? Sfa.constant().whiteSpace(): planCesionario.getPrecio().toString());
+		contratosTable.setHTML(filaSeleccionada, 9, planCesionario ==null ? Sfa.constant().whiteSpace(): currFormatter.format(planCesionario.getPrecio()));
 	}
 	
 	private void selectAllContratosRow(){
