@@ -200,7 +200,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		precioVentaText.addStyleName("normalText");
 		
 		fields.add(clienteCedente = new InlineHTML());
-		refreshCedente = IconFactory.refresh("Cambiar Cedente");
+		//MGR - #1444
+		refreshCedente = IconFactory.lupa("Cambiar Cedente");
 		refreshCedente.addStyleName("floatRight mr10 mt3");
 		fields.add(refreshCedente);
 		fields.add(canalVtas = new TextBox());
