@@ -49,11 +49,13 @@ import ar.com.nextel.model.personas.beans.Localidad;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
 import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicional;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaTransfSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Sucursal;
 import ar.com.nextel.model.solicitudes.beans.TipoAnticipo;
@@ -614,6 +616,16 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 							contrato.getServiciosAdicionalesInc().add(servIncDto);
 							servIncDto.setChecked(true);
 
+						}
+					}
+					// seteo el tipo de telefonia cedente
+					if (contrato.getIdTipoTelefoniaCedente() == null) {
+						if (("1").equals(servicioContratadoDto.getCodigoBSCS())) {
+							contrato.setIdTipoTelefoniaCedente(2L);
+					
+						} else if (("390").equals(servicioContratadoDto.getCodigoBSCS())) {
+							contrato.setIdTipoTelefoniaCedente(1L);
+				
 						}
 					}
 				}

@@ -33,6 +33,9 @@ public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 	private boolean isPinchado = false;
 	private List<ServicioAdicionalIncluidoDto> serviciosAdicionalesInc = new ArrayList<ServicioAdicionalIncluidoDto>();
 	
+	private Long idTipoTelefoniaCedente;
+
+	
 	public Long getContrato() {
 		return contrato;
 	}
@@ -228,5 +231,13 @@ public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 
 	public void setPrecioPlanCedente(Double precioPlanCedente) {
 		this.precioPlanCedente = precioPlanCedente;
+	}
+
+	public void setIdTipoTelefoniaCedente(Long idTipoTelefoniaCedente) {
+		this.idTipoTelefoniaCedente = idTipoTelefoniaCedente;
+	}
+
+	public Long getIdTipoTelefoniaCedente() {
+		return idTipoTelefoniaCedente;
 	}
 }
