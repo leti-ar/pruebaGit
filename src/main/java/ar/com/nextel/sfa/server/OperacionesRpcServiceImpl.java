@@ -75,7 +75,7 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 		else{
 			AppLogger.info("Obteniendo operaciones en curso para vendedores del tipo Adm. de creditos.", this);
 			List<OperacionEnCurso> oppEnCurso = this.repository.executeCustomQuery
-						(oppEnCursoAdmCredito,vendedor.getId(), vendedor.getId());
+						(oppEnCursoAdmCredito,vendedor.getId(), vendedor.getId(), vendedor.getId());
 			List<OperacionEnCursoDto> operacionesEnCursoDto = mapper.convertList(
 					oppEnCurso, OperacionEnCursoDto.class);
 			return operacionesEnCursoDto;
