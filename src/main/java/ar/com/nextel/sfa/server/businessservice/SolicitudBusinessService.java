@@ -329,14 +329,14 @@ public class SolicitudBusinessService {
 //					&& !solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion()
 					&& hace4Dias.before(solicitudServicio.getCuenta().getFacturaElectronica().getLastModificationDate())
 					&& !response.getMessages().hasErrors()) {
+				facturaElectronicaService.adherirFacturaElectronica(
+						solicitudServicio.getCuenta().getId(), solicitudServicio.getCuenta()
+						.getCodigoVantive(), solicitudServicio.getCuenta()
+						.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor()
+						.getUserName());
+				solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
+				repository.save(solicitudServicio.getCuenta().getFacturaElectronica());
 				if (!esProspectEnCarga) {
-					facturaElectronicaService.adherirFacturaElectronica(
-							solicitudServicio.getCuenta().getId(), solicitudServicio.getCuenta()
-									.getCodigoVantive(), solicitudServicio.getCuenta()
-									.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor()
-									.getUserName());
-					solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
-					repository.save(solicitudServicio.getCuenta().getFacturaElectronica());
 					String codigoGestion = "TRANSF_FACT_ELECTRONICA";
 					ParametrosGestion parametrosGestion = repository.retrieve(ParametrosGestion.class, codigoGestion);
 					Long idGestion = generacionCierreBusinessOperator.lanzarGestionCerrarSS(
