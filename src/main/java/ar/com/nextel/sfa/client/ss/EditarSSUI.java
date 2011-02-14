@@ -784,61 +784,56 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private SolicitudServicioDto obtenerSolicitudTransferencia(boolean cerrandoSS){
 		SolicitudServicioDto ssDto = editarSSUIData.getSolicitudServicioTranferencia();
 		
-		boolean verComboVendedor = ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue());
 		if(cerrandoSS){
 			
-			//MGR - #1410 - Modificacion del Vendedor de la cuenta cesionario (Cta de la ss)
-			if(ClientContext.getInstance().getVendedor().isADMCreditos()){
-				VendedorDto vendAux = (VendedorDto) editarSSUIData.getVendedor().getSelectedItem();
-				if(vendAux.isAP()){
-					if(knownInstancias != null){
-						VendedorDto vendAuxDto = new VendedorDto();
-						vendAuxDto.setId(knownInstancias.get(VENDEDOR_NO_COMISIONABLE));
-						ssDto.getCuenta().setVendedor(vendAuxDto);
+			VendedorDto vendLog = ClientContext.getInstance().getVendedor();
+			//MGR - #1453 - Se modifica la logica al cerrar tanto para la cuenta como para la ss
+			//Logica para asignarle vendedor a la cuenta
+			//El vendedor de la cuenta solo se cambia si la cuenta es prospect
+			if(!ssDto.getCuenta().isCliente()){
+				if(vendLog.isAP()){
+					ssDto.getCuenta().setVendedor(datosTranferencia.getCtaCedenteDto().getVendedor());
+				
+				}else if(vendLog.isADMCreditos()){
+					VendedorDto vendCombo = (VendedorDto) editarSSUIData.getVendedor().getSelectedItem();
+					
+					if(vendCombo.isAP() || 
+							vendCombo.getId().equals(knownInstancias.get(VENDEDOR_NO_COMISIONABLE))){
+						ssDto.getCuenta().setVendedor(datosTranferencia.getCtaCedenteDto().getVendedor());
+					
+					}else { //En el combo un dealer o eecc
+						ssDto.getCuenta().setVendedor(vendCombo);
 					}
-				}else{ //dealer o eecc que se tratan de la misma manera
-					ssDto.getCuenta().setVendedor(vendAux);
+					
+				}else { //Es dealer
+					ssDto.getCuenta().setVendedor(vendLog);
 				}
+			}
 			
-			}else if(ClientContext.getInstance().getVendedor().isAP()){
+			//Logica para asignarle vendedor a la solicitud de servicio
+			//En este caso no importa si la cuenta es prospect o no
+			if(vendLog.isAP()){
 				if(knownInstancias != null){
 					VendedorDto vendAuxDto = new VendedorDto();
 					vendAuxDto.setId(knownInstancias.get(VENDEDOR_NO_COMISIONABLE));
-					ssDto.getCuenta().setVendedor(vendAuxDto);
+					ssDto.setVendedor(vendAuxDto);
+				
 				}
-			}else if(ClientContext.getInstance().getVendedor().isDealer()){
-				ssDto.getCuenta().setVendedor(ClientContext.getInstance().getVendedor());
-			}
-			
-
-			if(!ssDto.getCuenta().isCliente() && ClientContext.getInstance().getVendedor().isAP()){
-				ssDto.setVendedor(datosTranferencia.getCtaCedenteDto().getVendedor());
-			
-			}else if(verComboVendedor){ //Adm. de creditos
-				VendedorDto vendAux = (VendedorDto) editarSSUIData.getVendedor().getSelectedItem();
-				if(vendAux.isAP()){
-					if(knownInstancias != null){
-						VendedorDto vendAuxDto = new VendedorDto();
-						vendAuxDto.setId(knownInstancias.get(VENDEDOR_NO_COMISIONABLE));
-						ssDto.setVendedor(vendAuxDto);
-					}
+			}else if(vendLog.isADMCreditos()){
+				VendedorDto vendCombo = (VendedorDto) editarSSUIData.getVendedor().getSelectedItem();
+				
+				if(vendCombo.isAP() || 
+						vendCombo.getId().equals(knownInstancias.get(VENDEDOR_NO_COMISIONABLE))){
+					VendedorDto vendAuxDto = new VendedorDto();
+					vendAuxDto.setId(knownInstancias.get(VENDEDOR_NO_COMISIONABLE));
+					ssDto.setVendedor(vendAuxDto);
+				
+				}else { //En el combo un dealer o eecc
+					ssDto.setVendedor(vendCombo);
 				}
-				//MGR - #1357
-				//Cuando cierra un Adm. de creditos, el vendedor de la ss es el del combo
-//				else{
-//					ssDto.setVendedor(ClientContext.getInstance().getVendedor());
-//				}
-			}else{
-				if(ClientContext.getInstance().getVendedor().isAP()){
-					if(knownInstancias != null){
-						VendedorDto vendAuxDto = new VendedorDto();
-						vendAuxDto.setId(knownInstancias.get(VENDEDOR_NO_COMISIONABLE));
-						ssDto.setVendedor(vendAuxDto);
-						
-					}
-				}else{
-					ssDto.setVendedor(ClientContext.getInstance().getVendedor());
-				}
+				
+			}else{ //Es dealer
+				ssDto.setVendedor(vendLog);
 			}
 		}
 //		datosTranferencia.actualizarActivosVisibles();
