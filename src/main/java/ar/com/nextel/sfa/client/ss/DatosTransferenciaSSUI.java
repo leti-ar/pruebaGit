@@ -329,14 +329,16 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 												if(ctaCedenteDto.getCodigoVantive().equals(editarSSUIData.getCuenta().getCodigoVantive())){
 													ErrorDialog.getInstance().show("La cuenta cedente es la misma que el cesionario. Por favor, elija otra cuenta.");
 												}else{
-													controller.getEditarSSUIData().getClienteCedente().setText(ctaCedenteDto.getCodigoVantive());
 													CuentaRpcService.Util.getInstance().searchContratosActivos(
 															cuenta, new DefaultWaitCallback<List<ContratoViewDto>>() {
 																
 																public void success(List<ContratoViewDto> result) {
 																	if (result.isEmpty()) {
+																		controller.getEditarSSUIData().getClienteCedente().setText("");
 																		ErrorDialog.getInstance().show(
 																				"El cliente no posee contratos en estado activo que coincidan con la búsqueda.", false);
+																	} else {
+																		controller.getEditarSSUIData().getClienteCedente().setText(ctaCedenteDto.getCodigoVantive());
 																	}
 																	todosContratosActivos.clear();
 																	contratosActivosVisibles.clear();
