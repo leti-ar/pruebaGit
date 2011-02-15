@@ -568,7 +568,8 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 			selectAllContratosRow();
 		} else if (row > 0) {
 //			if (col > 1) {
-				if(col == 8) {
+				CheckBox check = (CheckBox)contratosTable.getWidget(row, 0);
+				if(col == 8 && check.getValue()) {
 					modificarPlanCesionario(contratosActivosVisibles.get(row-1), row);
 				} else {
 					if (col==0) {// mmm bueno, si clickeo sobre el checkbox trato de agregar el iesimo elemento al conjunto de checkeados
