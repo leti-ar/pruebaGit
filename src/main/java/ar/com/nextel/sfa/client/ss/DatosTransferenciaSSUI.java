@@ -387,8 +387,10 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		} else {
 			check.setEnabled(true);
 		}
+		//Deshabilito el combo Busqueda y el botón Buscar cuando no hay contratos
+		deshabilitarAcciones();
 	}
-		
+
 	private void limpiarTablaContratos(){
 		for (int i = contratosTable.getRowCount()-1; i>0; i--) {
 			contratosTable.removeRow(i);
@@ -751,5 +753,17 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		this.limpiarTablaServFacturados();
 	}
 	
+	private void deshabilitarAcciones() {
+		if (todosContratosActivos.size() == 0) {
+			editarSSUIData.getParametroBusqContrato().setEnabled(false);
+			editarSSUIData.getCriterioBusqContrato().setEnabled(false);
+			buscar.setEnabled(false);
+		} else {
+			editarSSUIData.getParametroBusqContrato().setEnabled(true);
+			editarSSUIData.getCriterioBusqContrato().setEnabled(true);
+			buscar.setEnabled(true);
+		}
+		
+	}
 
 }
