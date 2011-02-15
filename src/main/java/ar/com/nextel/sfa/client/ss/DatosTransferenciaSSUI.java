@@ -296,7 +296,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 			Command buscarCommmand = new Command(){
 				public void execute() {
 					final CuentaSearchDto ctaSearch = busqClienteCedenteDialog.getBusqClienteCedenteUIData().getCuentaSearch();
-					//MGR - #1446 - Indico que esta busqueda no lockea la cuenta
+					//MGR - #1466 - Indico que esta busqueda no lockea la cuenta
 					CuentaRpcService.Util.getInstance().searchCuentaDto(
 							ctaSearch, false, new DefaultWaitCallback<List<CuentaDto>>() {
 

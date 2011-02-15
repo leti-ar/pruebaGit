@@ -96,7 +96,7 @@ public class HeaderMenu extends Composite {
 		// NOTA: si se establecen debug IDs, setear primero los de los Menues y después lo de los submenues.
 		// rgm
 		
-		//MGR - #1446
+		//MGR - #1466
 		if(ClientContext.getInstance().vengoDeNexus() && ClientContext.getInstance().soyClienteNexus()){
 			cuentasMenuItem = mainMenu.addItem("Cuenta", menuCuentas);
 		}else{

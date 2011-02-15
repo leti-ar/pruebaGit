@@ -355,7 +355,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return cuentaDto;
 	}
 
-	//MGR - #1446
+	//MGR - #1466
 	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive, boolean filtradoPorDni, boolean deberiaLockear)
 			throws RpcExceptionMessages {
 		CuentaDto cuentaDto = null;
@@ -627,7 +627,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	//MGR - Dado un codigo vantive, devuelve el numero de cuenta que le corresponde en SFA
 	public Long selectCuenta(String codigoVantive) throws RpcExceptionMessages{
 		Cuenta cuenta  = null;
-		//MGR - #1446 - Esta llamada sigue funcionando como antes, entonces lockea
+		//MGR - #1466 - Esta llamada sigue funcionando como antes, entonces lockea
 		cuenta = cuentaBusinessService.selectCuenta(null, codigoVantive, getVendedor(),
 				true, mapper, true);
 		if(cuenta != null){
@@ -636,7 +636,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return null;
 	}
 
-	//MGR - #1446
+	//MGR - #1466
 	public List<CuentaDto> searchCuentasDto(CuentaSearchDto cuentaSearchDto, boolean deberiaLockear) throws RpcExceptionMessages{
 		List<CuentaDto> cuentasDto = new ArrayList<CuentaDto>();
 		CuentaDto auxCtaDto;

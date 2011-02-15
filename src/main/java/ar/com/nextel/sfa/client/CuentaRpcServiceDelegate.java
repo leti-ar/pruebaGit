@@ -76,7 +76,7 @@ public class CuentaRpcServiceDelegate {
 	public void selectCuenta(Long cuentaId,String cod_vantive,boolean filtradoPorDni,
 			DefaultWaitCallback<CuentaDto> callback) {
 		WaitWindow.show();
-		//MGR - #1446 - Esta llamada sigue funcionando como antes, entonces lockea
+		//MGR - #1466 - Esta llamada sigue funcionando como antes, entonces lockea
 		cuentaRpcService.selectCuenta(cuentaId, cod_vantive,filtradoPorDni, true,callback);
 	}
 	public void reservaCreacionCuenta(CrearCuentaDto crearCuentaDto,DefaultWaitCallback<CuentaDto>  callback) {
@@ -128,7 +128,7 @@ public class CuentaRpcServiceDelegate {
 		
 	}
 	
-	//MGR - #1446
+	//MGR - #1466
 	public void searchCuentaDto(CuentaSearchDto cuentaSearchDto, boolean deberiaLockear, DefaultWaitCallback<List<CuentaDto>> callback) {
 		WaitWindow.show();
 		cuentaRpcService.searchCuentasDto(cuentaSearchDto, deberiaLockear, callback);

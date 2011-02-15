@@ -480,7 +480,7 @@ public class CuentaBusinessService {
 		return selectCuentaBusinessOperator.getCuentaSinLockear(codVantive);
 	}
 
-	//MGR - #1446
+	//MGR - #1466
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Cuenta selectCuenta(Long cuentaId, String cod_vantive,
 			Vendedor vendedor, boolean filtradoPorDni, DozerBeanMapper mapper, boolean deberiaLockear)
@@ -496,7 +496,7 @@ public class CuentaBusinessService {
 
 			validarAccesoCuenta(cuenta, vendedor, filtradoPorDni);
 
-			//MGR - #1446
+			//MGR - #1466
 			if(deberiaLockear){
 				// Lockea la cuenta
 				if (vendedor.getTipoVendedor().isUsaLockeo() && ( accessCuenta.getAccessAuthorization().hasSamePermissionsAs(
