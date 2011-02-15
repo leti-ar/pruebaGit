@@ -355,11 +355,12 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return cuentaDto;
 	}
 
-	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive, boolean filtradoPorDni)
+	//MGR - #1446
+	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive, boolean filtradoPorDni, boolean deberiaLockear)
 			throws RpcExceptionMessages {
 		CuentaDto cuentaDto = null;
 		Cuenta cuenta = cuentaBusinessService.selectCuenta(cuentaId, cod_vantive, getVendedor(),
-				filtradoPorDni, mapper);
+				filtradoPorDni, mapper, deberiaLockear);
 		String categoriaCuenta = cuenta.getCategoriaCuenta().getDescripcion();
 		if (categoriaCuenta.equals(KnownInstanceIdentifier.GRAN_CUENTA.getKey())) {
 			cuentaDto = (GranCuentaDto) mapper.map((GranCuenta) cuenta, GranCuentaDto.class);
@@ -626,15 +627,17 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	//MGR - Dado un codigo vantive, devuelve el numero de cuenta que le corresponde en SFA
 	public Long selectCuenta(String codigoVantive) throws RpcExceptionMessages{
 		Cuenta cuenta  = null;
+		//MGR - #1446 - Esta llamada sigue funcionando como antes, entonces lockea
 		cuenta = cuentaBusinessService.selectCuenta(null, codigoVantive, getVendedor(),
-				true, mapper);
+				true, mapper, true);
 		if(cuenta != null){
 			return cuenta.getId();
 		}
 		return null;
 	}
 
-	public List<CuentaDto> searchCuentasDto(CuentaSearchDto cuentaSearchDto) throws RpcExceptionMessages{
+	//MGR - #1446
+	public List<CuentaDto> searchCuentasDto(CuentaSearchDto cuentaSearchDto, boolean deberiaLockear) throws RpcExceptionMessages{
 		List<CuentaDto> cuentasDto = new ArrayList<CuentaDto>();
 		CuentaDto auxCtaDto;
 		try {
@@ -644,7 +647,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 				if(cuentaSearchDto.getGrupoDocumentoId() != null){
 					if(!cuentaResult.getNumero().contains("*")){
 						Cuenta cta2 = cuentaBusinessService.selectCuenta(null, cuentaResult.getNumero(), getVendedor(),
-								true, mapper);
+								true, mapper, deberiaLockear);
 						if(cta2.esGranCuenta()){
 							auxCtaDto = mapper.map(cta2, CuentaDto.class);
 							cuentasDto.add(auxCtaDto);
@@ -655,7 +658,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 						auxCtaDto = new CuentaDto();
 						auxCtaDto.setCodigoVantive("***");
 					}else{
-						auxCtaDto = selectCuenta(cuentaResult.getId(), cuentaResult.getNumero(), false);
+						auxCtaDto = selectCuenta(cuentaResult.getId(), cuentaResult.getNumero(), false, deberiaLockear);
 					}
 					cuentasDto.add(auxCtaDto);
 				}

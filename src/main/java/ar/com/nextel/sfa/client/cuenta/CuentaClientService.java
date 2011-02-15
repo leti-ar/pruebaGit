@@ -186,7 +186,7 @@ public class CuentaClientService {
 			final boolean filtradoPorDni, boolean redir, final boolean readOnly) {
 		cuentaDto = null;
 		error = false;
-		CuentaRpcService.Util.getInstance().selectCuenta(cuentaID, codVantive, filtradoPorDni,
+		CuentaRpcService.Util.getInstance().selectCuenta(cuentaID, codVantive, filtradoPorDni, 
 				new DefaultWaitCallback<CuentaDto>() {
 					public void success(CuentaDto ctaDto) {
 						cuentaDto = ctaDto;
