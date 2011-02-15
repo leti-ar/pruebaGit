@@ -332,6 +332,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 	private void loadInitializer(SolicitudInitializer initializer) {
 		editarSSUIData.getOrigen().addAllItems(initializer.getOrigenesSolicitud());
+		//MGR - #1458
+		if(initializer.getOrigenesSolicitud().size() ==1){
+			editarSSUIData.getOrigen().setSelectedIndex(1);
+		}
+		
 		editarSSUIData.getAnticipo().addAllItems(initializer.getTiposAnticipo());
 
 		if(ClientContext.getInstance().getVendedor().isDealer()){
