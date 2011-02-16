@@ -419,11 +419,12 @@ public class CuentaDatosForm extends Composite {
 			});
 		}
 		
-		
 		emailTable.getFlexCellFormatter().setWidth(0, 0, ANCHO_PRIMER_COLUMNA);
-		emailTable.getFlexCellFormatter().setWidth(0, 1, ANCHO_PRIMER_COLUMNA);
-		emailTable.getFlexCellFormatter().setWidth(0, 2, ANCHO_PRIMER_COLUMNA);
-		emailTable.getFlexCellFormatter().setWidth(0, 3, ANCHO_PRIMER_COLUMNA);
+		if (!seOcultoFacElec) {
+			emailTable.getFlexCellFormatter().setWidth(0, 1, ANCHO_PRIMER_COLUMNA);
+			emailTable.getFlexCellFormatter().setWidth(0, 2, ANCHO_PRIMER_COLUMNA);
+			emailTable.getFlexCellFormatter().setWidth(0, 3, ANCHO_PRIMER_COLUMNA);
+		}
 
 		return emailPanel;
 	}
