@@ -787,3 +787,12 @@ margin:8px;
 .gwt-DescuentoDialog td {
 	vertical-align: top;
 }
+
+.resultTableWrapper620 {
+	height: 620px;
+	overflow: auto;
+	background-color: #FFF;
+	border: 1px solid gray;
+	margin-left: 8px;
+	margin-right: 8px;
+}
