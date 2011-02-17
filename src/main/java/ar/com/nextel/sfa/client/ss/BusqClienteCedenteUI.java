@@ -1,12 +1,19 @@
 package ar.com.nextel.sfa.client.ss;
 
+import java.util.List;
+
+import ar.com.nextel.sfa.client.widget.EventWrapper;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
+
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 
 public class BusqClienteCedenteUI extends Composite{
-		private FlowPanel mainPanel;
+	private FlowPanel mainPanel;
 	private Grid busqLayout;
+	private Command buscarCommand;
 	
 	private BusqClienteCedenteUIData busqClienteCedenteUIData;
 
@@ -24,7 +31,28 @@ public class BusqClienteCedenteUI extends Composite{
 		busqLayout.getCellFormatter().setWidth(0, 0, "100px");
 		busqLayout.setWidget(0, 0, busqClienteCedenteUIData.getCriterioBusqCedente());
 		busqLayout.setWidget(0, 1, busqClienteCedenteUIData.getParametroBusqCedente());
-		mainPanel.add(busqLayout);
+		
+		EventWrapper eventWrapper = new EventWrapper() {
+			public void doEnter() {
+				List<String> errores = busqClienteCedenteUIData.validarCriterioBusqueda();
+				if(errores.isEmpty()){
+					buscarCommand.execute();
+				}else{
+					StringBuilder error = new StringBuilder();
+					for (int i = 0; i < errores.size(); i++) {
+						error.append(errores.get(i) + "<br />");
+					}
+					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+					ErrorDialog.getInstance().show(error.toString(), false);
+				}
+			}
+		};
+		eventWrapper.add(busqLayout);
+		mainPanel.add(eventWrapper);
+	}
+	
+	public void setBuscarCommand(Command buscarCommand) {
+		this.buscarCommand = buscarCommand;
 	}
 	
 }
