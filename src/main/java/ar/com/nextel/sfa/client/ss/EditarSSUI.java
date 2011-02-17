@@ -559,11 +559,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		            	}else{
 		            		abrirDialogCerrar();
 		            	}
-		            	cerrandoSolicitud = cerrandoAux;
-		                getCerrarSSUI().setTitleCerrar(cerrandoAux);
-		                getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
-		                editarSSUIData.getCuenta().isCliente(), editarSSUIData.getSolicitudServicioGeneracion(),
-		                editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA());
 		            } else {
 		            	ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 		                ErrorDialog.getInstance().show(errors, false);
@@ -594,13 +589,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					errors = editarSSUIData.validarParaCerrarGenerar(true);
 				}
 				if (errors.isEmpty()) {
-					if(editarSSUIData.getGrupoSolicitud()!= null &&
-							editarSSUIData.getGrupoSolicitud().isTransferencia()){
-						
-						editarSSUIData.validarPlanesCedentes(cerrarGenerarSolicitudCallback());
-					}else{
-						cerrarGenerarSolicitud();
-					}
+					//MGR - #1481 - No vuelvo a validar los planes para que no aparesca el mensaje de
+					//aviso dos veces.
+					cerrarGenerarSolicitud();
 				} else {
 					CerradoSSExitosoDialog.getInstance().hideLoading();
 					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
@@ -864,24 +855,24 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				if (errors.isEmpty()) {
 					guardar();
 					editarSSUIData.setSaved(true);
-				} else {
-					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-					ErrorDialog.getInstance().show(errors, false);
-				}
-			}
-		};
-		return callback;
-	}
-	
-	private DefaultWaitCallback<List<String>> cerrarGenerarSolicitudCallback(){
-		
-		DefaultWaitCallback<List<String>> callback = new DefaultWaitCallback<List<String>>() {
-			@Override
-			public void success(List<String> errors) {
-				if (errors.isEmpty()) {
-					cerrarGenerarSolicitud();
-				} else {
-					CerradoSSExitosoDialog.getInstance().hideLoading();
+				//MGR - #1481
+				}else if(ClientContext.getInstance().getVendedor().isADMCreditos()){
+					
+					Command guardarConAviso = new Command() {
+						
+						public void execute() {
+							MessageDialog.getInstance().hide();
+							guardar();
+							editarSSUIData.setSaved(true);
+						}
+					};
+					
+					StringBuilder msgString = new StringBuilder();
+					for (String error : errors) {
+						msgString.append("<span>" + error + "</span><br>");
+					}
+					MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), guardarConAviso);
+				}else{
 					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 					ErrorDialog.getInstance().show(errors, false);
 				}
@@ -912,7 +903,23 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			public void success(List<String> errors) {
 				if (errors.isEmpty()) {
 					abrirDialogCerrar();
-				} else {
+					//MGR - #1481
+				} else if(ClientContext.getInstance().getVendedor().isADMCreditos()){
+					
+					Command abrirDialogCerrarConAviso = new Command() {
+						
+						public void execute() {
+							MessageDialog.getInstance().hide();
+							abrirDialogCerrar();
+						}
+					};
+					
+					StringBuilder msgString = new StringBuilder();
+					for (String error : errors) {
+						msgString.append("<span>" + error + "</span><br>");
+					}
+					MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), abrirDialogCerrarConAviso);
+				}else{
 					CerradoSSExitosoDialog.getInstance().hideLoading();
 					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 					ErrorDialog.getInstance().show(errors, false);

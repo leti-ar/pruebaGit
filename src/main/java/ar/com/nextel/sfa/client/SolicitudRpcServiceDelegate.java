@@ -238,9 +238,9 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.getContratoViewInitializer(grupoSolicitud, callback);
 	}
 
-	public void validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, Long idCuenta,
+	public void validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa,
 				DefaultWaitCallback<List<String>> callback){
 		WaitWindow.show();
-		solicitudRpcServiceAsync.validarPlanesCedentes(ctoCedentes, idCuenta, callback);
+		solicitudRpcServiceAsync.validarPlanesCedentes(ctoCedentes, isEmpresa, callback);
 	}
 }

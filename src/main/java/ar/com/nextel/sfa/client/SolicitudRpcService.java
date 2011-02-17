@@ -127,13 +127,13 @@ public interface SolicitudRpcService extends RemoteService {
 	public CreateSaveSSTransfResultDto createSolicitudServicioTranferencia(SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages;
 
 	public ContratoViewInitializer getContratoViewInitializer(GrupoSolicitudDto grupoSolicitud) throws RpcExceptionMessages;
-	
+	//MGR - #1481
 	/**
-	 * Valida que cada uno de los planes cedentes enviados, primero exista en sfa, y si todos ellos existen, 
-	 * validad que los mismos sean validos para la cuenta enviada
+	 * Si no se cambio el plan cedente, valida que el plan que se quiere transferir sea del mismo
+	 * segmento que el cliente cesionario
 	 * @param ctoCedentes Todos los contratos de los que quiero validar el plan cedente
-	 * @param idCuenta Cuenta en la que quiero ver si el plan es valido
-	 * @return Lista con los errores posibles. (Max cinco errores a la vez)
+	 * @param isEmpresa Si el cliente cesionario es del tipo empresa
+	 * @return Lista con los errores posibles.
 	 */
-	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, Long idCuenta);
+	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa);
 }

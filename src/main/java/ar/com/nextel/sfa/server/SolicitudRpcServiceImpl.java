@@ -767,70 +767,42 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return initializer;
 	}
 	
-	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, Long idCuenta){
+	//MGR - #1481 - Esto validaba que los planes existieran en SFA, ahora solo que pertenescan al 
+	//segmento de cliente
+	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa){
 		String V1 = "\\{1\\}";
-		//Guardo los errores que pienso devolver
-		List<String> errores = new ArrayList<String>();
-		//Los planes que existen en SFA y quiero ver si son validos para la cuenta
-		List<Plan> planesCedentes = new ArrayList<Plan>();
-		int cantError = 0; //Para devolver como maximo solo 5 errores
+		String V2 = "\\{2\\}";
+		//Validacion 15 del caso de uso.
+		/*Se comprueba que los planes cedentes, de existir en SFA, sean del mismo segmento
+		que el cliente cesionario.
+		(Que un cliente tipo 'Empresa' tenga planes cedentes para empresas y que un cliente
+		tipo 'Personal' tenga planes cedentes de su tipo)
+		*/
 		
+		List<String> errores = new ArrayList<String>(); //Guardo los errores que pienso devolver
 		boolean error = false;
 		
-		//Valido que los planes existan en SFA
-//		ya no valido más!! se cambio el requerimiento
-//		for (int i = 0; !error && i < ctoCedentes.size(); i++) {
-//			ContratoViewDto cto = ctoCedentes.get(i);
-//			
-//			//Si no cambio el plan, debo validar que el plan Cedente existe
-//			if(cto.getPlanCesionario() == null){
-//				boolean encontrado = false;
-//				List<Plan> planes = repository.find("from Plan p where p.planBase.codigoBSCS = ?", String.valueOf(cto.getCodigoBSCSPlanCedente()));
-//				
-//				if(planes.isEmpty()){
-//					errores.add("No se encontró el plan {1} consulte con Adm Vtas.".replaceAll(V1, cto.getPlanCedente()));
-//					cantError++;
-//				}else{
-//					//Guardo el plan como si fuera el cedente para validar que sea valido
-//					planesCedentes.add(planes.get(0));
-//				}
-//				
-//				if(cantError == 5){
-//					error = true;
-//				}
-//			}
-//		}
-		
-		//Si no hubo error (todos los planes existen en SFA), verifico que sean validos para el nuevo cliente
-		if(cantError == 0 && !planesCedentes.isEmpty()){
-			HashMap<Long, List<Plan>> planesPermitidos = new HashMap<Long, List<Plan>>();
-			
-			
-			for (int i = 0; !error && i < planesCedentes.size(); i++) {
-				Plan planCedente = planesCedentes.get(i);
-				Long idTipoPlan = planCedente.getPlanBase().getTipoPlan().getId();
-				List<Plan> planesValidos = null;
-				
-					planesValidos = solicitudServicioRepository.getPlanesPorTipoPlan(
-							idTipoPlan, idCuenta, sessionContextLoader.getVendedor());
-					planesPermitidos.put(idTipoPlan, planesValidos);
-				 
-				boolean encontrado = false;
-				for (int j = 0; !encontrado && j < planesValidos.size(); j++) {
-					Plan planValido = planesValidos.get(j);
-					if(planValido.getId().equals(planCedente.getId())){
-						encontrado = true;
+		for (int i = 0; !error && i < ctoCedentes.size(); i++) {
+			ContratoViewDto cto = ctoCedentes.get(i);
+
+			// Si no cambio el plan, valido que el plan cedente sea de su segmento
+			if (cto.getPlanCesionario() == null) {
+				List<Plan> planes = repository.find("from Plan p where p.planBase.codigoBSCS = ?", 
+									String.valueOf(cto.getCodigoBSCSPlanCedente()));
+
+				// Si no hay planes, no debo validar nada
+				if (!planes.isEmpty()) {
+
+					for (int j=0; !error && j < planes.size(); j++) {
+						Plan plan = planes.get(j);
+						if (plan.getPlanBase().getTipoPlan().isEmpresa() != isEmpresa) {
+							String mens = "El Tipo de Plan {1} no se puede asignar a una Cuenta con Segmento {2}."
+								.replaceAll(V1, isEmpresa ? "Empresa" : "Directo")
+								.replaceAll(V2, isEmpresa ? "Directo" : "Empresa");
+							errores.add(mens);
+							error = true;
+						}
 					}
-				}
-				
-				if(!encontrado){
-					//Error, el plan no es valido
-					errores.add("El plan {1} no es valido para el nuevo cliente.".replaceAll(V1, planCedente.getDescripcion()));
-					cantError++;
-				}
-				
-				if(cantError == 5){
-					error = true;
 				}
 			}
 		}
