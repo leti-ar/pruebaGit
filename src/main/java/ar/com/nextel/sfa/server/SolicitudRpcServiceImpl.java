@@ -23,6 +23,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
+import ar.com.nextel.business.constants.MessageIdentifier;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.legacy.avalon.dto.ServicioContratadoDto;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
@@ -40,6 +41,7 @@ import ar.com.nextel.business.solicitudes.search.dto.SolicitudServicioCerradaSea
 import ar.com.nextel.components.knownInstances.GlobalParameter;
 import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
+import ar.com.nextel.components.message.Message;
 import ar.com.nextel.components.message.MessageList;
 import ar.com.nextel.components.sequence.DefaultSequenceImpl;
 import ar.com.nextel.framework.repository.Repository;
@@ -130,6 +132,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private DefaultSequenceImpl tripticoNextValue;
 //	private AvalonSystem avalonSystem;
 	
+	//MGR - #1481
+	private DefaultRetriever messageRetriever;;
+	
 	
 	
 
@@ -154,6 +159,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		
 		tripticoNextValue = (DefaultSequenceImpl)context.getBean("tripticoNextValue");
 //		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
+		messageRetriever = (DefaultRetriever)context.getBean("messageRetriever");
 	}
 
 	public SolicitudServicioDto createSolicitudServicio(
@@ -770,8 +776,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	//MGR - #1481 - Esto validaba que los planes existieran en SFA, ahora solo que pertenescan al 
 	//segmento de cliente
 	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa){
-		String V1 = "\\{1\\}";
-		String V2 = "\\{2\\}";
 		//Validacion 15 del caso de uso.
 		/*Se comprueba que los planes cedentes, de existir en SFA, sean del mismo segmento
 		que el cliente cesionario.
@@ -796,10 +800,13 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					for (int j=0; !error && j < planes.size(); j++) {
 						Plan plan = planes.get(j);
 						if (plan.getPlanBase().getTipoPlan().isEmpresa() != isEmpresa) {
-							String mens = "El Tipo de Plan {1} no se puede asignar a una Cuenta con Segmento {2}."
-								.replaceAll(V1, isEmpresa ? "Empresa" : "Directo")
-								.replaceAll(V2, isEmpresa ? "Directo" : "Empresa");
-							errores.add(mens);
+							Message message;
+							if(isEmpresa){
+								message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_DIRECTO_SEG_EMPRESA); 
+							}else{
+								message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_EMPRESA_SEG_DIRECTO);
+							}
+							errores.add(message.getDescription());
 							error = true;
 						}
 					}
