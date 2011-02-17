@@ -58,6 +58,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	private FlowPanel mainpanel;
 	private EditarSSUIData editarSSUIData;
 	private Grid nnsLayout;
+	private Grid cedenteObsGrid;
 	private Grid obsLayout;
 	private Grid cedenteLayout;
 	private Grid busqLayout;
@@ -101,8 +102,12 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		this.controller = controller;
 		editarSSUIData = controller.getEditarSSUIData();
 		mainpanel.add(getNssLayout());
-		mainpanel.add(getObsLayout());
-		mainpanel.add(getCedenteLayout());
+		cedenteObsGrid = new Grid(1, 2);
+		cedenteObsGrid.getColumnFormatter().setWidth(0, "50%");
+		cedenteObsGrid.getColumnFormatter().setWidth(1, "50%");
+		cedenteObsGrid.setWidget(0, 0, getCedenteLayout());
+		cedenteObsGrid.setWidget(0, 1, getObsLayout());
+		mainpanel.add(cedenteObsGrid);
 		mainpanel.add(getBusqLayout());
 		mainpanel.add(getContratosLayout());
 		
