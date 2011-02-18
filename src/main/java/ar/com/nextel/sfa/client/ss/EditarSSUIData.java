@@ -8,6 +8,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaDomiciliosForm;
+import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
@@ -16,13 +17,17 @@ import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
+import ar.com.nextel.sfa.client.dto.PlanDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioGeneracionDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudBaseDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
+import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.UIData;
@@ -31,6 +36,8 @@ import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -43,9 +50,11 @@ import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.SourcesChangeEvents;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class EditarSSUIData extends UIData implements ChangeListener, ClickHandler {
@@ -85,7 +94,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	private static final String V1 = "\\{1\\}";
 	private static final String FORMA_CONTRATACION_ALQUILER = "Alquiler";
-	private static final int MAX_LENGHT_OBSERVACIONES = 150;
+	private static final int MAX_LENGHT_OBS_ACLARACION = 150;
+	private static final int MAX_LENGHT_OBSERVACIONES = 1000;
 	private static final int MAX_LENGHT_ACLARACION = 200;
 	//MGR - #1027
 	private static final int MAX_LENGHT_ORDEN_COMPRA = 150;
@@ -95,9 +105,32 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private ListBox descuentoTotal;
 	private Button tildeVerde;
 	
+	private InlineHTML clienteCedente;
+	private HTML refreshCedente; 
+	private TextBox canalVtas;
+	private ListBox sucursalOrigen;
+	private ListBox vendedor;
+	private ListBox criterioBusqContrato;
+	private RegexTextBox parametroBusqContrato;
+	private List<ServicioAdicionalIncluidoDto> serviciosAdicionalesContrato;
+	
+	private static final String ITEM_CONTRATO = "Contrato";
+	private static final String ITEM_TELEFONO = "Teléfono";
+	private static final String ITEM_FLOTA_ID = "Flota*ID";
+	private static final String ITEM_SUSCRIPTOR = "Suscriptor";
+	
+	private static final String VALUE_CONTRATO = "1";
+	private static final String VALUE_TELEFONO = "2";
+	private static final String VALUE_FLOTA_ID = "3";
+	private static final String VALUE_SUSCRIPTOR = "4";
+	private static final String TIPO_CANAL_VTA_TRANSFERENCIA = "TIPO_CANAL_VENTAS_TRANSFERENCIA";
+	private static final String CANAL_VTA_TRANSFERENCIA = "Transferencia";
+	public static final String NO_COMISIONABLE = "No Comisionable";
+	
 	public EditarSSUIData(EditarSSUIController controller) {
 		this.controller = controller;
 		serviciosAdicionales = new ArrayList();
+		serviciosAdicionalesContrato = new ArrayList<ServicioAdicionalIncluidoDto>();
 
 		fields.add(nss = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(10), true));
 		fields.add(nflota = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(5)));
@@ -128,7 +161,12 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 		observaciones.addKeyUpHandler(new KeyUpHandler() {
 			public void onKeyUp(KeyUpEvent arg0) {
-				showMaxLengthTextAreaError(observaciones, MAX_LENGHT_OBSERVACIONES);
+				if(getGrupoSolicitud() != null && getGrupoSolicitud().isTransferencia()){
+					showMaxLengthTextAreaError(observaciones, MAX_LENGHT_OBSERVACIONES);
+				}else{
+					showMaxLengthTextAreaError(observaciones, MAX_LENGHT_OBS_ACLARACION);	
+				}
+				
 			}
 		});
 
@@ -162,6 +200,52 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		credFidelText.addStyleName("normalText");
 		pataconexText.addStyleName("normalText");
 		precioVentaText.addStyleName("normalText");
+		
+		fields.add(clienteCedente = new InlineHTML());
+		//MGR - #1444
+		refreshCedente = IconFactory.lupa("Cambiar Cedente");
+		refreshCedente.addStyleName("floatRight mr10 mt3");
+		fields.add(refreshCedente);
+		fields.add(canalVtas = new TextBox());
+		fields.add(sucursalOrigen = new ListBox(""));
+		fields.add(vendedor = new ListBox(""));
+		vendedor.addChangeListener(new ChangeListener() {
+			public void onChange(Widget arg0) {
+				VendedorDto vendSelected = (VendedorDto)vendedor.getSelectedItem();
+				if( vendSelected != null && vendSelected.getApellido() != null ){
+					sucursalOrigen.selectByValue(((VendedorDto)vendedor.getSelectedItem()).getIdSucursal().toString());
+				}
+			}
+		});
+		
+		fields.add(criterioBusqContrato = new ListBox());
+		criterioBusqContrato.setWidth("150px");
+		criterioBusqContrato.addChangeHandler(new ChangeHandler() {
+			
+			public void onChange(ChangeEvent arg0) {
+				parametroBusqContrato.setText("");
+				String critBusq = criterioBusqContrato.getValue(criterioBusqContrato.getSelectedIndex());
+				if(critBusq.equals(VALUE_CONTRATO)){
+					parametroBusqContrato.setPattern(RegularExpressionConstants.numeros);
+					parametroBusqContrato.setMaxLength(25);
+				}
+				else if(critBusq.equals(VALUE_TELEFONO)){
+					parametroBusqContrato.setPattern(RegularExpressionConstants.getNumerosLimitado(10));
+				}
+				else if(critBusq.equals(VALUE_FLOTA_ID)){
+					parametroBusqContrato.setPattern("[0-9\\*]*");
+					parametroBusqContrato.setMaxLength(11);
+				}
+				else if(critBusq.equals(VALUE_SUSCRIPTOR)){
+					parametroBusqContrato.setPattern(RegularExpressionConstants.numerosYPunto);
+					parametroBusqContrato.setMaxLength(25);
+				}
+			}
+		});
+		
+		fields.add(parametroBusqContrato = new RegexTextBox());
+		
+		inicializarBusquedaContratos();
 	}
 
 	/** Carga los datos de Header de infocom */
@@ -297,6 +381,34 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		return tildeVerde;
 	}
 	
+	public InlineHTML getClienteCedente() {
+		return clienteCedente;
+	}
+
+	public HTML getRefreshCedente() {
+		return refreshCedente;
+	}
+	
+	public TextBox getCanalVtas() {
+		return canalVtas;
+	}
+	
+	public ListBox getSucursalOrigen(){
+		return sucursalOrigen;
+	}
+
+	public ListBox getVendedor() {
+		return vendedor;
+	}
+
+	public ListBox getCriterioBusqContrato() {
+		return criterioBusqContrato;
+	}
+
+	public RegexTextBox getParametroBusqContrato() {
+		return parametroBusqContrato;
+	}
+
 	public void setDescuentoTotal(ListBox descuentoTotal) {
 		this.descuentoTotal = descuentoTotal;
 	}
@@ -313,6 +425,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 		//MGR - #1152
 		boolean esProspect =RegularExpressionConstants.isVancuc(solicitud.getCuenta().getCodigoVantive());
+		
 		//MGR - #1026
 		if(!ClientContext.getInstance().
 				checkPermiso(PermisosEnum.NRO_SS_EDITABLE.getValue())){
@@ -323,7 +436,6 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			else{
 				nss.setEnabled(false);
 			}
-			
 		}
 		
 		nflota.setEnabled(solicitud.getCuenta().getIdVantive() == null);
@@ -376,6 +488,25 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 //		comprobarDescuentoTotal();		
 		recarcularValores();
+		
+		if(solicitud.getGrupoSolicitud().isTransferencia()){
+			cargarDatosTransferencia();
+		}
+	}
+	
+	private void cargarDatosTransferencia(){
+		if(solicitudServicio.getCuentaCedente() != null){
+			clienteCedente.setText(solicitudServicio.getCuentaCedente().getCodigoVantive());
+		}
+		canalVtas.setText(CANAL_VTA_TRANSFERENCIA);
+		if (!solicitudServicio.getVendedor().isADMCreditos()) {
+			vendedor.setSelectedItem(solicitudServicio.getVendedor());
+			if(solicitudServicio.getIdSucursal() != null){
+				sucursalOrigen.selectByValue(solicitudServicio.getIdSucursal().toString());
+			} else{ //Para que cargue correctamente la opcion del combo
+				sucursalOrigen.selectByValue(solicitudServicio.getVendedor().getIdSucursal().toString());
+			}
+		}
 	}
 
 	private void deferredLoad() {
@@ -393,6 +524,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	public Long getCuentaId() {
 		return solicitudServicio.getCuenta().getId();
+	}
+	
+	public Long getIdSucursalSolicitud(){
+		if(solicitudServicio == null){
+			return null;
+		}
+		return solicitudServicio.getIdSucursal();
 	}
 
 	public SolicitudServicioDto getSolicitudServicio() {
@@ -424,6 +562,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		if (solicitudServicio.getGrupoSolicitud().isCDW()) {
 			solicitudServicio.setEmail(email.getText());
 		}
+		
 		return solicitudServicio;
 	}
 
@@ -792,23 +931,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	}
 
 	public boolean isCDW() {
-		//MGR - #1050
-		//return solicitudServicio.getGrupoSolicitud().getId().equals(GrupoSolicitudDto.ID_CDW);
-		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
-		if(instancias != null){
-			return solicitudServicio.getGrupoSolicitud().getId().equals(instancias.get(GrupoSolicitudDto.ID_CDW));
-		}
-		return false;
+		return solicitudServicio.getGrupoSolicitud().isCDW();
 	}
 
 	public boolean isMDS() {
-		//MGR - #1050
-		//return solicitudServicio.getGrupoSolicitud().getId().equals(GrupoSolicitudDto.ID_MDS);
-		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
-		if(instancias != null){
-			return solicitudServicio.getGrupoSolicitud().getId().equals(instancias.get(GrupoSolicitudDto.ID_MDS));
-		}
-		return false;
+		return solicitudServicio.getGrupoSolicitud().isMDS();
+	}
+	
+	public boolean isTRANSFERENCIA() {
+		return solicitudServicio.getGrupoSolicitud().isTransferencia();
 	}
 
 	/** Indica si contiene lineas de solicitud con item BlackBerry */
@@ -884,4 +1015,191 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //		}
 //	}
 	
+	
+	private void inicializarBusquedaContratos() {
+		criterioBusqContrato.addItem(ITEM_CONTRATO, VALUE_CONTRATO);
+		criterioBusqContrato.addItem(ITEM_TELEFONO, VALUE_TELEFONO);
+		criterioBusqContrato.addItem(ITEM_FLOTA_ID, VALUE_FLOTA_ID);
+		criterioBusqContrato.addItem(ITEM_SUSCRIPTOR, VALUE_SUSCRIPTOR);
+
+		criterioBusqContrato.setSelectedIndex(0);
+		parametroBusqContrato.setPattern(RegularExpressionConstants.numeros);
+		parametroBusqContrato.setMaxLength(25);
+	}
+
+	public SolicitudServicioDto getSolicitudServicioTranferencia() {
+		solicitudServicio.setNumero(nss.getText());
+		solicitudServicio.setOrigen((OrigenSolicitudDto) origen.getSelectedItem());
+		solicitudServicio.setObservaciones(observaciones.getText());
+		//MGR - #1359
+		//solicitudServicio.setUsuarioCreacion(ClientContext.getInstance().getVendedor());
+		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())) {
+			solicitudServicio.setIdSucursal(Long.valueOf(sucursalOrigen.getSelectedItem().getItemValue()));
+		} else {
+			solicitudServicio.setIdSucursal(solicitudServicio.getVendedor().getIdSucursal());
+		}
+		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())) {
+			VendedorDto vendedorDto = (VendedorDto) vendedor.getSelectedItem();
+			solicitudServicio.setVendedor(vendedorDto);
+		}
+		
+		if(canalVtas.getText().equals(CANAL_VTA_TRANSFERENCIA)){
+			HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+			if(instancias != null){
+				solicitudServicio.setTipoCanalVentas(instancias.get(TIPO_CANAL_VTA_TRANSFERENCIA));
+			}
+		}
+
+		return solicitudServicio;
+	}
+	
+	public List<String> validarTransferenciaParaGuardar(List<ContratoViewDto> contratos) {
+		setContratosCedidos(contratos);
+
+		GwtValidator validator = new GwtValidator();
+		
+		validator.addTarget(origen).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
+		
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
+			validator.addTarget(vendedor).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedor()));
+		}
+		
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
+			validator.addTarget(sucursalOrigen).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigen()));
+		}
+		
+		validator.addTarget(canalVtas).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Canal de Ventas"));
+		
+		validator.fillResult();
+		return validator.getErrors();
+	}
+	
+	/**
+	 * @param generacionCierreDefinitivo
+	 *            true si debe validar para la generacion o cierre definitiva de la solicitud, que seria el
+	 *            aceptar de la pantalla que pide los mails
+	 * @return Lista de errores
+	 */
+	public List<String> validarTransferenciaParaCerrarGenerar(List<ContratoViewDto> contratos, boolean generacionCierreDefinitivo) {
+		setContratosCedidos(contratos);
+		
+		GwtValidator validator = new GwtValidator();
+		validator.addTarget(nss).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nº de Solicitud")).maxLength(10,
+				Sfa.constant().ERR_NSS_LONG());
+
+		GrupoSolicitudDto grupoSS = solicitudServicio.getGrupoSolicitud();
+		// Validacion rango NSS con y sin PIN
+		Long numeroSS = "".equals(nss.getText()) ? null : Long.valueOf(nss.getText());
+		if (numeroSS != null && grupoSS.getRangoMinimoSinPin() != null
+				&& grupoSS.getRangoMaximoSinPin() != null && grupoSS.getRangoMinimoConPin() != null
+				&& grupoSS.getRangoMaximoConPin() != null) {
+			boolean enRangoSinPin = numeroSS >= grupoSS.getRangoMinimoSinPin()
+					&& numeroSS <= grupoSS.getRangoMaximoSinPin();
+			boolean enRangoConPin = numeroSS >= grupoSS.getRangoMinimoConPin()
+					&& numeroSS <= grupoSS.getRangoMaximoConPin();
+			if (!enRangoSinPin && !enRangoConPin) {
+				validator.addError(Sfa.constant().ERR_NNS_RANGO());
+			}
+		}
+		validator.addTarget(origen).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
+			validator.addTarget(vendedor).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedor()));
+		}
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
+			validator.addTarget(sucursalOrigen).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigen()));
+		}
+		
+		validator.addTarget(canalVtas).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Canal de Ventas"));
+		
+		if (solicitudServicio.getContratosCedidos().isEmpty()) {
+			validator.addError(Sfa.constant().ERR_REQUIRED_CONTRATO_TRANSFERENCIA());
+		}
+
+		validator.fillResult();
+		List<String> errores = validator.getErrors();
+		errores.addAll(validarCompletitud());
+		if(!validator.getErrors().isEmpty()){
+			return errores;
+		}
+		
+//		validator.addErrors(validarPlanesCedentes());
+		
+		// Para el cierre
+		SolicitudServicioGeneracionDto ssg = solicitudServicio.getSolicitudServicioGeneracion();
+		if (generacionCierreDefinitivo == true && ssg != null) {
+			if (ssg.isEmailNuevoChecked()) {
+				validator.addTarget(ssg.getEmailNuevo()).required(
+						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nuevo Email")).regEx(
+						Sfa.constant().ERR_FORMATO().replaceAll(V1, "Nuevo Email"),
+						RegularExpressionConstants.email);
+			}
+		}
+		validator.fillResult();
+		return validator.getErrors();
+	}
+	
+	/**
+	 * Le setea a la solicitud los contratos cedidos
+	 */
+	private void setContratosCedidos(List<ContratoViewDto> contratos){
+		if(solicitudServicio != null){
+			solicitudServicio.setContratosCedidos(contratos);
+		}
+	}
+
+	public void loadServiciosAdicionalesContrato(List<ServicioAdicionalIncluidoDto> list) {
+		serviciosAdicionalesContrato.clear();
+		serviciosAdicionalesContrato.addAll(list);
+	}
+	
+	public List<ServicioAdicionalIncluidoDto> getServiciosAdicionalesContrato() {
+		return serviciosAdicionalesContrato;
+	}
+
+	public List<ContratoViewDto> getContratosCedidos() {
+		return solicitudServicio.getContratosCedidos();
+	}
+	
+//	public List<String> validarCompletitudTransferencia() {
+//		
+//		GwtValidator validator = new GwtValidator();
+//		validator.addTarget(nss).required(
+//				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nº de Solicitud")).maxLength(10,
+//				Sfa.constant().ERR_NSS_LONG());
+//
+//		validator.addTarget(origen).required(
+//				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
+//		
+//		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
+//			validator.addTarget(vendedor).required(
+//					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedorReq()));
+//		}
+//		
+//		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
+//			validator.addTarget(sucursalOrigen).required(
+//					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigen()));
+//		}
+//		
+//		validator.addTarget(canalVtas).required(
+//				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Canal de Ventas"));
+//		
+//		validator.fillResult();
+//		List<String> errores = validator.getErrors();
+//		return errores;
+//	}
+	
+	public void validarPlanesCedentes(final DefaultWaitCallback<List<String>> defaultWaitCallback){
+		
+		SolicitudRpcService.Util.getInstance().validarPlanesCedentes(solicitudServicio.getContratosCedidos(),
+				getCuenta().isEmpresa(), defaultWaitCallback);
+	}
 }

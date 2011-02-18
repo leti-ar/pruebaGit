@@ -41,6 +41,8 @@ public class IconFactory {
 	private static final String ICON_RED_FLAG_STYLE    = "icon-red-flag";
 	private static final String ICON_REFRESH_STYLE = "icon-refresh";
 	private static final String ICON_BOLSA_PESOS_STYLE = "icon-bolsaPesos";
+	private static final String ICON_ART_CHINCHE_STYLE = "icon-art-chinche";
+	private static final String ICON_ART_CHINCHE_ON_STYLE = "icon-art-chinche-on";
 
 	public static HTML lockedOther() {
 		return createDiv(ICON_LOCKED_OTHER_STYLE);
@@ -246,6 +248,22 @@ public class IconFactory {
 		return createDiv(ICON_BOLSA_PESOS_STYLE);
 	}
 
+	public static HTML chinche() {
+		return createDiv(ICON_ART_CHINCHE_STYLE);
+	}
+
+	public static HTML chinche(String title) {
+		return createDiv(ICON_ART_CHINCHE_STYLE, title);
+	}
+	
+	public static HTML chincheOn() {
+		return createDiv(ICON_ART_CHINCHE_ON_STYLE);
+	}
+
+	public static HTML chincheON(String title) {
+		return createDiv(ICON_ART_CHINCHE_ON_STYLE, title);
+	}
+	
 	/**
 	 * Retorna un widget HTML ( DIV ) con el estilo que recibe como parámetro
 	 * 

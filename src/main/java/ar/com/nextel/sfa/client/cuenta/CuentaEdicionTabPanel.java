@@ -161,7 +161,9 @@ public class CuentaEdicionTabPanel {
 		tabPanel.add(cuentaDomiciliosForm, Sfa.constant().domicilios());
 		tabPanel.add(cuentaContactoForm, Sfa.constant().contactos());
 		tabPanel.add(cuentaInfocomForm, Sfa.constant().infocom());
-		tabPanel.add(cuentaNotasForm, Sfa.constant().notas());
+		if (!ClientContext.getInstance().getVendedor().isADMCreditos()) {
+			tabPanel.add(cuentaNotasForm, Sfa.constant().notas());
+		}
 		tabPanel.selectTab(0);
 		tabPanel.addTabListener(new TabListener(){
 			public boolean onBeforeTabSelected(SourcesTabEvents arg0, int arg1) {
@@ -360,7 +362,7 @@ public class CuentaEdicionTabPanel {
 			tabPanel.add(cuentaInfocomForm, Sfa.constant().infocom());
 
 		//si viene de opp agrega notas (Dejar comentado)
-		if (!editorCuenta ) { 
+		if (!editorCuenta && !ClientContext.getInstance().getVendedor().isADMCreditos()) { 
 			tabPanel.add(cuentaNotasForm, Sfa.constant().notas());
 		}
 		

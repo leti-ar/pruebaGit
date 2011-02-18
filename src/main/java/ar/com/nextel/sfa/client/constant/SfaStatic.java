@@ -1785,6 +1785,10 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
    * @return translated "<span class=\"req\">Plan:</span>"
    */
   @DefaultStringValue("<span class=\"req\">Plan:</span>")
+  @Key("planReq")
+  String planReq();
+  
+  @DefaultStringValue("Plan:")
   @Key("plan")
   String plan();
 
@@ -2391,4 +2395,112 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Precio con desc.")
   @Key("precioConDesc")
   String precioConDesc();  
+  
+  /**
+   * Translated "Cliente Cedente:".
+   * 
+   * @return translated "Cliente Cedente:"
+   */
+  @DefaultStringValue("Cliente Cedente:")
+  @Key("clienteCedente")
+  String clienteCedente();
+  
+  /**
+   * Translated "Búsqueda:".
+   * 
+   * @return translated "Búsqueda:"
+   */
+  @DefaultStringValue("Búsqueda:")
+  @Key("busqueda")
+  String busqueda();
+  
+  /**
+   * Translated "Ver todos".
+   * 
+   * @return translated "Ver todos"
+   */
+  @DefaultStringValue("Ver todos")
+  @Key("verTodos")
+  String verTodos();
+  
+  /**
+   * Translated "Eliminar".
+   * 
+   * @return translated "Eliminar"
+   */
+  @DefaultStringValue("Eliminar")
+  @Key("eliminar")
+  String eliminar();
+  
+  /**
+   * Translated "<span class=\"req\">Vendedor:</span>".
+   * 
+   * @return translated "<span class=\"req\">Vendedor:</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Vendedor:</span>")
+  @Key("vendedorReq")
+  String vendedorReq();
+  
+  /**
+   * Translated "Vendedor".
+   * 
+   * @return translated "Vendedor"
+   */
+  @DefaultStringValue("Vendedor")
+  @Key("vendedor")
+  String vendedor();
+  
+  /**
+   * Translated "La Solicitud de Servicio debe tener al menos un contrato.".
+   * 
+   * @return translated "La Solicitud de Servicio debe tener al menos un contrato."
+   */
+  @DefaultStringValue("La Solicitud de Servicio debe tener al menos un contrato.")
+  @Key("ERR_REQUIRED_CONTRATO_TRANSFERENCIA")
+  String ERR_REQUIRED_CONTRATO_TRANSFERENCIA();
+  
+  /**
+   * Translated "<span class=\"req\">Suc. Origen:</span>".
+   * 
+   * @return translated "<span class=\"req\">Suc. Origen:</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Suc. Origen:</span>")
+  @Key("sucOrigenReq")
+  String sucOrigenReq();
+  
+  /**
+   * Translated "Suc. Origen".
+   * 
+   * @return translated "Suc. Origen"
+   */
+  @DefaultStringValue("Suc. Origen")
+  @Key("sucOrigen")
+  String sucOrigen();
+  
+  /**
+   * Translated "Observaciones:".
+   * 
+   * @return translated "Observaciones:"
+   */
+  @DefaultStringValue("Observaciones:")
+  @Key("observ_transf")
+  String observ_transf();
+  
+  /**
+   * Translated "No se encontró el plan {1} consulte con Adm Vtas.".
+   * 
+   * @return translated "No se encontró el plan {1} consulte con Adm Vtas."
+   */
+  @DefaultStringValue("No se encontró el plan {1} consulte con Adm Vtas.")
+  @Key("ERR_PLAN_INEXISTENTE")
+  String ERR_PLAN_INEXISTENTE();
+  
+  /**
+   * Translated "El plan {1} no es valido para el nuevo cliente.".
+   * 
+   * @return translated "El plan {1} no es valido para el nuevo cliente."
+   */
+  @DefaultStringValue("El plan {1} no es valido para el nuevo cliente.")
+  @Key("ERR_PLAN_NO_VALIDO")
+  String ERR_PLAN_NO_VALIDO();
 }

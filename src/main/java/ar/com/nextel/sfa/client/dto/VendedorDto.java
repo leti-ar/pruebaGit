@@ -17,6 +17,64 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
     private String telefono;
     private LocalidadDto localidad;
     private TipoVendedorDto tipoVendedor;
+    private Long idSucursal;
+    
+    public static final String TIPO_VENDEDOR_DEALER = "TIPO_VENDEDOR_DEALER";
+    public static final String TIPO_VENDEDOR_AP = "TIPO_VENDEDOR_AP";
+    public static final String TIPO_VENDEDOR_ADM_CREDITOS = "TIPO_VENDEDOR_CREDITOS";
+    public static final String TIPO_VENDEDOR_TELEMARKETING = "TIPO_VENDEDOR_TELEMARKETING";
+    public static final String TIPO_VENDEDOR_EECC = "TIPO_VENDEDOR_EECC";
+    public static final String TIPO_VENDEDOR_LAP = "TIPO_VENDEDOR_LAP";
+
+
+    
+    public boolean isEECC(){
+    	HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+    	if(instancias != null && this.getTipoVendedor() != null){
+    		return instancias.get(TIPO_VENDEDOR_EECC).equals(this.getTipoVendedor().getId());
+    	}
+    	return false;
+    }
+    
+    public boolean isLap(){
+    	HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+    	if(instancias != null && this.getTipoVendedor() != null){
+    		return instancias.get(TIPO_VENDEDOR_LAP).equals(this.getTipoVendedor().getId());
+    	}
+    	return false;
+    }
+    
+    public boolean isTelemarketing(){
+    	HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+    	if(instancias != null && this.getTipoVendedor() != null){
+    		return instancias.get(TIPO_VENDEDOR_TELEMARKETING).equals(this.getTipoVendedor().getId());
+    	}
+    	return false;
+    }
+
+    public boolean isDealer(){
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias != null && this.getTipoVendedor() != null){
+			return instancias.get(TIPO_VENDEDOR_DEALER).equals(this.getTipoVendedor().getId());
+		}
+		return false;
+	}
+	
+	public boolean isAP(){
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias != null && this.getTipoVendedor() != null){
+			return instancias.get(TIPO_VENDEDOR_AP).equals(this.getTipoVendedor().getId());
+		}
+		return false;
+	}
+	
+	public boolean isADMCreditos(){
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias != null && this.getTipoVendedor() != null){
+			return instancias.get(TIPO_VENDEDOR_ADM_CREDITOS).equals(this.getTipoVendedor().getId());
+		}
+		return false;
+	}
 
 	public Long getId() {
 		return id; 
@@ -87,6 +145,19 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
 	}
 
 	public TipoVendedorDto getTipoVendedor() {
-		return tipoVendedor;
+		return tipoVendedor; 
 	}
+	
+	public String getApellidoYNombre() {
+    	return getApellido() + ", " + getNombre();
+    }
+	
+	public Long getIdSucursal() {
+		return idSucursal;
+	}
+
+	public void setIdSucursal(Long idSucursal) {
+		this.idSucursal = idSucursal;
+	}
+
 }

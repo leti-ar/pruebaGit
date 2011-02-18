@@ -45,7 +45,7 @@ public class ItemSolicitudActivacionUI extends Composite {
 		Grid terceraTabla = new Grid(4, 2);
 		terceraTabla.setWidget(0, 0, new InlineLabel(Sfa.constant().tipoPlan()));
 		terceraTabla.setWidget(0, 1, itemSolicitudUIData.getTipoPlan());
-		terceraTabla.setWidget(1, 0, new InlineLabel(Sfa.constant().plan()));
+		terceraTabla.setWidget(1, 0, new InlineLabel(Sfa.constant().planReq()));
 		terceraTabla.setWidget(1, 1, itemSolicitudUIData.getPlan());
 		terceraTabla.setWidget(2, 0, new InlineLabel(Sfa.constant().precioLista()));
 		terceraTabla.setWidget(2, 1, itemSolicitudUIData.getPrecioListaPlan());

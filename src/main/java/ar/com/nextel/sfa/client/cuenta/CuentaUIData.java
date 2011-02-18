@@ -14,6 +14,7 @@ import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
 import ar.com.nextel.sfa.client.enums.EstadoOportunidadEnum;
 import ar.com.nextel.sfa.client.enums.TipoTarjetaEnum;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
+import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.RadioButtonGroup;
 import ar.com.nextel.sfa.client.widget.RadioButtonWithValue;
@@ -389,7 +390,7 @@ public class CuentaUIData extends UIData {
 						WaitWindow.show();
 						DeferredCommand.addCommand(new IncrementalCommand() {
 							public boolean execute() {
-								if (CuentaClientService.cuentaDto == null){
+								if (CuentaClientService.tengoCuentaEnNull()){
 									return true;
 								}
 								cargarValoresComboClaseCliente();
@@ -398,7 +399,7 @@ public class CuentaUIData extends UIData {
 							}
 
 							private void cargarValoresComboClaseCliente() {
-								boolean esProspect =RegularExpressionConstants.isVancuc(CuentaClientService.cuentaDto.getCodigoVantive());
+								boolean esProspect =RegularExpressionConstants.isVancuc(CuentaClientService.getCodigoVantive());
 //						si es prospect le agrego solo los perfilados, sino agrego todo
 								if(esProspect){
 									claseCliente.addAllItems(listaClaseClientePorVendedor);

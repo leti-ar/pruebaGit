@@ -117,7 +117,12 @@ public enum PermisosEnum {
 	//MGR - #1165
 	EVITA_CONTROL_DESVIOS("evitaControlDesvios", Accion.X, false),
 	//MGR - #1184
-	OCULTA_CRED_FIDEL_PATACONEX("ocultaCredFidelPataconex", Accion.X, true);
+	OCULTA_CRED_FIDEL_PATACONEX("ocultaCredFidelPataconex", Accion.X, true),
+	//MGR - Indica si el combo para SS tranferencia se visualiza o no
+	VER_COMBO_VENDEDOR("verComboVendedor",Accion.X,true),
+	VER_COMBO_SUCURSAL_ORIGEN("verComboSucursalOrigen",Accion.X,true),
+	EVITA_CONTROL_TRIPTICO_RANGO_GRUPO_ADMC("evitaControlTripticoDentroRangoDelGrupoADMC", Accion.X, false),
+	VALIDAR_TRIPTICO_AL_GUARDAR("validarTripticoAlGuardar", Accion.X, false);
 
 	private String value;
     private String accion;

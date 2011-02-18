@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
@@ -13,6 +14,7 @@ import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
+import ar.com.nextel.sfa.client.dto.ServicioContratoDto;
 import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
@@ -50,7 +52,8 @@ public interface CuentaRpcService extends RemoteService {
 	public VerazResponseDto consultarVeraz(PersonaDto personaDto) throws RpcExceptionMessages;
 	//MGR - #960
 	public VerazResponseDto consultarVeraz(String customerId) throws RpcExceptionMessages;
-	public CuentaDto selectCuenta(Long cuentaId, String cod_vantiveu,boolean filtradoPorDni) throws RpcExceptionMessages;
+	//MGR - #1466
+	public CuentaDto selectCuenta(Long cuentaId, String cod_vantiveu,boolean filtradoPorDni, boolean deberiaLockear) throws RpcExceptionMessages;
 	public CuentaDto reservaCreacionCuenta(CrearCuentaDto crearCuentaDto) throws RpcExceptionMessages;
 	public TarjetaCreditoValidatorResultDto validarTarjeta(String numeroTarjeta, Integer mesVto,Integer anoVto) throws RpcExceptionMessages;
 	public NormalizarCPAResultDto getDomicilioPorCPA(String cpa) throws RpcExceptionMessages;
@@ -63,7 +66,8 @@ public interface CuentaRpcService extends RemoteService {
 	public List <CuentaDto> getCuentasAsociadasAVentaPotencial(Long idVentaPotencial) throws RpcExceptionMessages;
 	//MGR - Dado un codigo vantive, devuelve el numero de cuenta que le corresponde en SFA
 	public Long selectCuenta(String codigoVantive) throws RpcExceptionMessages;
-	
-	
-	
+	//MGR - #1466
+	public List<CuentaDto> searchCuentasDto(CuentaSearchDto cuentaSearchDto, boolean deberiaLockear) throws RpcExceptionMessages;
+	public List<ContratoViewDto> searchContratosActivos(CuentaDto ctaDto) throws RpcExceptionMessages;
+	public List<ServicioContratoDto> searchServiciosContratados(Long numeroContrato) throws RpcExceptionMessages;
 }

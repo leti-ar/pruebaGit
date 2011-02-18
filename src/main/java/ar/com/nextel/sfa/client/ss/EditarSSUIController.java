@@ -8,9 +8,11 @@ import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
+import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
@@ -44,4 +46,12 @@ public interface EditarSSUIController {
 	public void verificarNegativeFiles(String numero, DefaultWaitCallback<String> callback);
 
 	public void borrarDescuentoSeleccionados();
+
+	public void getPlanesPorTipoPlan(TipoPlanDto selectedItem,
+			DefaultWaitCallback<List<PlanDto>> actualizarPlanCallback);
+
+	void getServiciosAdicionalesContrato(Long idPlan,
+			DefaultWaitCallback<List<ServicioAdicionalIncluidoDto>> defaultWaitCallback);
+
+	void getContratoViewInitializer(DefaultWaitCallback<ContratoViewInitializer> callback);
 }

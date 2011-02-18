@@ -2,6 +2,8 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.dto.ContratoViewDto;
+import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
@@ -14,6 +16,7 @@ import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
@@ -24,6 +27,7 @@ import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
+import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
@@ -110,7 +114,28 @@ public interface SolicitudRpcService extends RemoteService {
 	public List<TipoDescuentoDto> getInterseccionTiposDescuento(List<LineaSolicitudServicioDto> lineas) throws RpcExceptionMessages;
 
 	public DescuentoTotalDto getDescuentosTotales(Long idLinea) throws RpcExceptionMessages;
+	
+	public void loginServer(String linea);
+	public Boolean crearArchivo(SolicitudServicioCerradaResultDto solicitud, boolean enviarEmail) throws RpcExceptionMessages;
 
 	public boolean crearArchivo(SolicitudServicioCerradaResultDto solicitud, boolean enviarEmail) throws RpcExceptionMessages;
 
+	public List<PlanDto> getPlanesPorTipoPlan(Long idTipoPlan, Long idCuenta) throws RpcExceptionMessages;
+
+	public List<ServicioAdicionalIncluidoDto> getServiciosAdicionalesContrato(Long idPlan) throws RpcExceptionMessages;
+
+	public CreateSaveSSTransfResultDto saveSolicituServicioTranferencia(SolicitudServicioDto solicitudServicioDto)	throws RpcExceptionMessages;
+
+	public CreateSaveSSTransfResultDto createSolicitudServicioTranferencia(SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages;
+	
+	public ContratoViewInitializer getContratoViewInitializer(GrupoSolicitudDto grupoSolicitud) throws RpcExceptionMessages;
+	//MGR - #1481
+	/**
+	 * Si no se cambio el plan cedente, valida que el plan que se quiere transferir sea del mismo
+	 * segmento que el cliente cesionario
+	 * @param ctoCedentes Todos los contratos de los que quiero validar el plan cedente
+	 * @param isEmpresa Si el cliente cesionario es del tipo empresa
+	 * @return Lista con los errores posibles.
+	 */
+	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa);
 }

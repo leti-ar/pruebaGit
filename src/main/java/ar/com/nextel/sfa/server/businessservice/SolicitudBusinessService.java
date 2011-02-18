@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.server.businessservice;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.validator.GenericValidator;
@@ -20,6 +21,7 @@ import ar.com.nextel.business.legacy.financial.exception.FinancialSystemExceptio
 import ar.com.nextel.business.oportunidades.OperacionEnCursoBusinessOperator;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.ReservaNumeroTelefonoBusinessOperator;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
+import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSTransfResponse;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
 import ar.com.nextel.business.solicitudes.generacionCierre.GeneracionCierreBusinessOperator;
@@ -42,14 +44,21 @@ import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ParametrosGestion;
+import ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Plan;
+import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalIncluido;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaTransfSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.Sucursal;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
+import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
 
@@ -68,6 +77,7 @@ public class SolicitudBusinessService {
 	private TransactionConnectionDAO sfaConnectionDAO;
 	private GenerarChangelogConfig generarChangelogConfig;
 	private FacturaElectronicaService facturaElectronicaService;
+
 
 	@Autowired
 	public void setFacturaElectronicaService(FacturaElectronicaService facturaElectronicaService) {
@@ -206,6 +216,37 @@ public class SolicitudBusinessService {
 			}
 			linea.removeAll(servicioasForDeletion);
 		}
+		
+
+		for (LineaTransfSolicitudServicio lineaTransf : solicitud.getLineasTranf()) {
+			Plan plan = lineaTransf.getPlanNuevo();
+			List<ServicioAdicionalIncluido> serviciosAdicionales = null;
+			if (plan != null) {
+				serviciosAdicionales = solicitudServicioRepository.getServiciosAdicionalesContrato(plan.getId(), sessionContextLoader.getVendedor());
+			} else {
+				AppLogger.warn("No se pudo validar los Servicios Adicionales de la Linea de "
+						+ "Solicitud de Servicio " + lineaTransf.getId() + " ( Contrato: " + lineaTransf.getContrato()
+						+ "). Revisar la integridad de los datos en la base.\nDetalle:"
+						+ "\nidSolicitudServicio = " + (solicitud != null ? solicitud.getId() : "")
+						+ "\nidPlan = " + (plan != null ? plan.getId() : "") + "\nidCuenta = "
+						+ (solicitud.getCuenta() != null ? solicitud.getCuenta().getId() : ""));
+				continue;
+			}
+			Set<ServicioAdicionalLineaTransfSolicitudServicio> servicioasForDeletion = new HashSet<ServicioAdicionalLineaTransfSolicitudServicio>();
+			for (ServicioAdicionalLineaTransfSolicitudServicio saLinea : lineaTransf.getServiciosAdicionales()) {
+				boolean conteinsSA = false;
+				for (ServicioAdicionalIncluido sa : serviciosAdicionales) {
+					if (sa.getServicioAdicional().getId().equals(saLinea.getServicioAdicional().getId())) {
+						conteinsSA = true;
+						break;
+					}
+				}
+				if (!conteinsSA) {
+					servicioasForDeletion.add(saLinea);
+				}
+			}
+			lineaTransf.removeAll(servicioasForDeletion);
+		}
 	}
 
 	private void addCreditoFidelizacion(SolicitudServicio solicitudServicio) throws FinancialSystemException {
@@ -224,19 +265,93 @@ public class SolicitudBusinessService {
 		return retrieveEncabezadoCreditoFidelizacion;
 	}
 
+	
+	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public SolicitudServicio saveSolicitudServicio(SolicitudServicioDto solicitudServicioDto,
 			MapperExtended mapper) {
+		
+		
+		
 		SolicitudServicio solicitudServicio = repository.retrieve(SolicitudServicio.class,
 				solicitudServicioDto.getId());
 		solicitudServicio.setDomicilioEnvio(null);
 		solicitudServicio.setDomicilioFacturacion(null);
+		
+//		if( (solicitudServicio.getVendedor() == null && solicitudServicioDto.getVendedor() != null) ||
+//				(solicitudServicio.getVendedor() != null && solicitudServicioDto.getVendedor() != null &&
+//				!solicitudServicio.getVendedor().getId().equals(solicitudServicioDto.getVendedor().getId())) ){
+			Vendedor vendedor = repository.retrieve(Vendedor.class, solicitudServicioDto.getVendedor().getId());
+			solicitudServicio.setVendedor(vendedor);
+			solicitudServicioDto.setVendedor(mapper.map(vendedor, VendedorDto.class));
+//		}
+			
+		if( (solicitudServicio.getCuentaCedente() == null && solicitudServicioDto.getCuentaCedente() != null) ||
+				(solicitudServicio.getCuentaCedente() != null && solicitudServicioDto.getCuentaCedente() != null &&
+				!solicitudServicio.getCuentaCedente().getId().equals(solicitudServicioDto.getCuentaCedente().getId())) ){
+			Cuenta ctaCedente = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuentaCedente().getId());
+			solicitudServicio.setCuentaCedente(ctaCedente);
+		}
+		
+		//MGR - #1359
+//		if( (solicitudServicio.getUsuarioCreacion() == null && solicitudServicioDto.getUsuarioCreacion() != null) ||
+//				(solicitudServicio.getUsuarioCreacion() != null && solicitudServicioDto.getUsuarioCreacion() != null &&
+//				!solicitudServicio.getUsuarioCreacion().getId().equals(solicitudServicioDto.getUsuarioCreacion().getId())) ){
+//			Vendedor userCreacion = repository.retrieve(Vendedor.class, solicitudServicioDto.getUsuarioCreacion().getId());
+//			solicitudServicio.setUsuarioCreacion(userCreacion);
+//		}
+		if( (solicitudServicio.getSucursal() == null && solicitudServicioDto.getIdSucursal() != null) ||
+				(solicitudServicio.getSucursal() != null && solicitudServicioDto.getIdSucursal() != null &&
+				!solicitudServicio.getSucursal().getId().equals(solicitudServicioDto.getIdSucursal())) ){
+			Sucursal sucursal = repository.retrieve(Sucursal.class, solicitudServicioDto.getIdSucursal());
+			solicitudServicio.setSucursal(sucursal);
+		}
+		
 		mapper.map(solicitudServicioDto, solicitudServicio);
+		
+		
+		//PARCHE: Esto es por que dozer mapea los id cuando se le indica que no
+		for (LineaTransfSolicitudServicio lineaTransf : solicitudServicio.getLineasTranf()) {
+			for (ContratoViewDto cto : solicitudServicioDto.getContratosCedidos()) {
+				if(lineaTransf.getContrato().equals(cto.getContrato())){
+					
+					for (ServicioAdicionalLineaTransfSolicitudServicio servAd : lineaTransf.getServiciosAdicionales()) {
+						for (ServicioAdicionalIncluidoDto serAdCto : cto.getServiciosAdicionalesInc()) {
+							
+							if(servAd.getServicioAdicional().getId().equals(serAdCto.getServicioAdicional().getId())){
+								if(serAdCto.getIdSALineaTransf() == null){
+									servAd.setId(serAdCto.getIdSALineaTransf());
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+	
+
+
+		//-MGR- Val-punto6 NO esta mapeando directamente los cambios en la cuenta, esta bien que lo haga asi?
+		//Esto es por que debe cambiar el vendedor de la cta cesionario
+		if(!solicitudServicio.getCuenta().getVendedor().getId().equals(
+				solicitudServicioDto.getCuenta().getVendedor().getId())){
+			Vendedor vendedorCta = repository.retrieve(Vendedor.class, solicitudServicioDto.getCuenta().getVendedor().getId());
+			solicitudServicio.getCuenta().setVendedor(vendedorCta);
+		}
+
 
 		// Estas lineas son por un problema no identificado, que hace que al querer guardar el tipo de tarjeta
 		// detecte que el objeto no está attachado a la session
 		if (solicitudServicio.getCuenta().getDatosPago() instanceof DatosDebitoTarjetaCredito) {
 			DatosDebitoTarjetaCredito datosPago = (DatosDebitoTarjetaCredito) solicitudServicio.getCuenta()
+					.getDatosPago();
+			datosPago.setTipoTarjeta(repository.retrieve(TipoTarjeta.class, datosPago.getTipoTarjeta()
+					.getId()));
+		}
+		
+		if (solicitudServicio.getCuentaCedente()!= null && solicitudServicio.getCuentaCedente().getDatosPago() instanceof DatosDebitoTarjetaCredito) {
+			DatosDebitoTarjetaCredito datosPago = (DatosDebitoTarjetaCredito) solicitudServicio.getCuentaCedente()
 					.getDatosPago();
 			datosPago.setTipoTarjeta(repository.retrieve(TipoTarjeta.class, datosPago.getTipoTarjeta()
 					.getId()));
@@ -268,6 +383,7 @@ public class SolicitudBusinessService {
 				domicilio.setId(null);
 			}
 		}
+		
 		repository.save(solicitudServicio);
 		return solicitudServicio;
 	}
@@ -319,12 +435,9 @@ public class SolicitudBusinessService {
 				solicitudServicio);
 		GeneracionCierreResponse response = null;
 		if (cerrar) {
+			
 			response = generacionCierreBusinessOperator.cerrarSolicitudServicio(generacionCierreRequest);
 			
-			AppLogger.error("IF replicacion a autogestion, FE: "
-					+ solicitudServicio.getCuenta().getFacturaElectronica() + " tiene errores: "
-					+ response.getMessages().hasErrors(), this);
-
 			if (solicitudServicio.getCuenta().getFacturaElectronica() != null
 //					&& !solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion()
 					&& hace4Dias.before(solicitudServicio.getCuenta().getFacturaElectronica().getLastModificationDate())
@@ -401,4 +514,14 @@ public class SolicitudBusinessService {
 				.crearArchivo(generacionCierreRequest, enviarEmail);
 		return response;
 	}
+	
+	public CreateSaveSSTransfResponse validarTriptico(SolicitudServicio solicitud){
+		return generacionCierreBusinessOperator.validarTriptico(solicitud);
+	}
+	
+	public CreateSaveSSTransfResponse validarCreateSSTransf(SolicitudServicio solicitud){
+		return solicitudesBusinessOperator.validarCreateSSTransf(solicitud);
+	}
+
+
 }

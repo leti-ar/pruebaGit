@@ -65,8 +65,16 @@ public class SolicitudServicioDto implements IsSerializable {
     
     //MGR - #1013
     private String validacionPin;
-
-	public SolicitudServicioDto() {
+    
+    private CuentaDto cuentaCedente;
+    private VendedorDto usuarioCreacion;
+    private Long incidenteCedente;
+    private List<ContratoViewDto> contratosCedidos = new ArrayList<ContratoViewDto>();
+    
+    private Long idSucursal;
+    private Long tipoCanalVentas;
+    
+    public SolicitudServicioDto() {
 		solicitudServicioGeneracion = new SolicitudServicioGeneracionDto();
 	}
 
@@ -364,5 +372,53 @@ public class SolicitudServicioDto implements IsSerializable {
 
 	public void setValidacionPin(String validacionPin) {
 		this.validacionPin = validacionPin;
+	}
+	
+	public CuentaDto getCuentaCedente() {
+		return cuentaCedente;
+	}
+
+	public void setCuentaCedente(CuentaDto cuentaCedente) {
+		this.cuentaCedente = cuentaCedente;
+	}
+
+	public VendedorDto getUsuarioCreacion() {
+		return usuarioCreacion;
+	}
+
+	public void setUsuarioCreacion(VendedorDto usuarioCreacion) {
+		this.usuarioCreacion = usuarioCreacion;
+	}
+
+	public Long getIncidenteCedente() {
+		return incidenteCedente;
+	}
+
+	public void setIncidenteCedente(Long incidenteCedente) {
+		this.incidenteCedente = incidenteCedente;
+	}
+
+	public List<ContratoViewDto> getContratosCedidos() {
+		return contratosCedidos;
+	}
+
+	public void setContratosCedidos(List<ContratoViewDto> contratosCedidos) {
+		this.contratosCedidos = contratosCedidos;
+	}
+
+	public Long getIdSucursal() {
+		return idSucursal;
+	}
+
+	public void setIdSucursal(Long idSucursal) {
+		this.idSucursal = idSucursal;
+	}
+	
+	public Long getTipoCanalVentas() {
+		return tipoCanalVentas;
+	}
+
+	public void setTipoCanalVentas(Long tipoCanalVentas) {
+		this.tipoCanalVentas = tipoCanalVentas;
 	}
 }

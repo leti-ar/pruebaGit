@@ -14,6 +14,7 @@ public class GrupoSolicitudDto implements IsSerializable {
 	public static final String ID_FAC_MENSUAL = "GRUPO6";
 	//MGR - #1039
 	public static final String DESPACHO_TEL_ANEXO = "GRUPO7";
+	public static final String ID_TRANSFERENCIA = "GRUPO5";
 
 	private Long id;
 	private String descripcion;
@@ -100,6 +101,14 @@ public class GrupoSolicitudDto implements IsSerializable {
 		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
 		if(instancias != null){
 			return instancias.get(ID_MDS).equals(id);
+		}
+		return false;
+	}
+	
+	public boolean isTransferencia() {
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias != null){
+			return instancias.get(ID_TRANSFERENCIA).equals(id);
 		}
 		return false;
 	}

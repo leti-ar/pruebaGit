@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
@@ -13,12 +14,14 @@ import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
+import ar.com.nextel.sfa.client.dto.ServicioContratoDto;
 import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
 import ar.com.nextel.sfa.client.initializer.VerazInitializer;
+import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
@@ -70,9 +73,11 @@ public class CuentaRpcServiceDelegate {
 		cuentaRpcService.consultarVeraz(customerCode, callback);
 	}
 	
-	public void selectCuenta(Long cuentaId,String cod_vantive,boolean filtradoPorDni,DefaultWaitCallback<CuentaDto> callback) {
+	public void selectCuenta(Long cuentaId,String cod_vantive,boolean filtradoPorDni,
+			DefaultWaitCallback<CuentaDto> callback) {
 		WaitWindow.show();
-		cuentaRpcService.selectCuenta(cuentaId, cod_vantive,filtradoPorDni,callback);
+		//MGR - #1466 - Esta llamada sigue funcionando como antes, entonces lockea
+		cuentaRpcService.selectCuenta(cuentaId, cod_vantive,filtradoPorDni, true,callback);
 	}
 	public void reservaCreacionCuenta(CrearCuentaDto crearCuentaDto,DefaultWaitCallback<CuentaDto>  callback) {
 		WaitWindow.show();
@@ -119,7 +124,24 @@ public class CuentaRpcServiceDelegate {
 	public void selectCuenta(String codigoVantive,
 			DefaultWaitCallback<Long> callback) {
 		WaitWindow.show();
-		cuentaRpcService.selectCuenta(codigoVantive,callback);
+		cuentaRpcService.selectCuenta(codigoVantive, callback);
 		
+	}
+	
+	//MGR - #1466
+	public void searchCuentaDto(CuentaSearchDto cuentaSearchDto, boolean deberiaLockear, DefaultWaitCallback<List<CuentaDto>> callback) {
+		WaitWindow.show();
+		cuentaRpcService.searchCuentasDto(cuentaSearchDto, deberiaLockear, callback);
+	}
+	
+	public void searchContratosActivos(CuentaDto ctaDto, DefaultWaitCallback<List<ContratoViewDto>> callback) {
+		WaitWindow.show();
+		
+		cuentaRpcService.searchContratosActivos(ctaDto, callback);
+	}
+	
+	public void searchServiciosContratados(Long numeroContrato, DefaultWaitCallback<List<ServicioContratoDto>> callback){
+		WaitWindow.show();
+		cuentaRpcService.searchServiciosContratados(numeroContrato, callback);
 	}
 }

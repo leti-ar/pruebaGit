@@ -1,9 +1,13 @@
 package ar.com.nextel.sfa.client.ss;
 
+import java.util.Iterator;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.PlanDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
@@ -207,5 +211,76 @@ public class ServiciosAdicionalesTable extends Composite {
 
 	public boolean isEditing() {
 		return editing;
+	}
+
+	public void setServiciosAdicionalesForContrato(final ContratoViewDto contrato,final PlanDto planDto) {
+
+		DefaultWaitCallback<List<ServicioAdicionalIncluidoDto>> defaultWaitCallback = new DefaultWaitCallback<List<ServicioAdicionalIncluidoDto>>() {
+			public void success(List<ServicioAdicionalIncluidoDto> list) {
+				editarSSUIData.loadServiciosAdicionalesContrato(list);
+				editing = false;
+				refreshServiciosAdicionalesTableContrato(contrato,planDto);
+			}
+
+			public void failure(Throwable caught) {
+				editing = false;
+				super.failure(caught);
+			}
+		};
+		
+		
+		if(planDto==null){
+			controller.getServiciosAdicionalesContrato(-1L,defaultWaitCallback);
+		}else{
+			controller.getServiciosAdicionalesContrato(planDto.getId(),
+					defaultWaitCallback);
+		}
+	}
+	
+	private void refreshServiciosAdicionalesTableContrato(ContratoViewDto contrato, PlanDto planDto) {
+		List<ServicioAdicionalIncluidoDto> serviciosAdicionales = editarSSUIData.getServiciosAdicionalesContrato();
+		List<ServicioAdicionalIncluidoDto> serviciosAdicionalesTildados = contrato.getServiciosAdicionalesInc();
+		table.resizeRows(serviciosAdicionales.size() + 1);
+		int row = 1;
+		for (Iterator<ServicioAdicionalIncluidoDto> iterator = serviciosAdicionales.iterator(); iterator.hasNext();) {
+			ServicioAdicionalIncluidoDto servicioAdicional = (ServicioAdicionalIncluidoDto) iterator.next();
+			CheckBox check = new CheckBox();
+			check.setEnabled(!servicioAdicional.getObligatorio());
+			check.setValue(servicioAdicional.getObligatorio());
+			for (Iterator<ServicioAdicionalIncluidoDto> iterator2 = serviciosAdicionalesTildados.iterator(); iterator2.hasNext();) {
+				ServicioAdicionalIncluidoDto servicioAdicionalTildado = (ServicioAdicionalIncluidoDto) iterator2.next();
+				if (servicioAdicionalTildado.getServicioAdicional().getDescripcion().equals(servicioAdicional.getServicioAdicional().getDescripcion())) {
+					check.setValue(servicioAdicionalTildado.isChecked());
+					//ademas le cambio el plan porque le quedó el viejo sino
+					servicioAdicionalTildado.setPlan(planDto);
+				}
+			}
+			table.setWidget(row, 0, check);
+			table.setHTML(row, 1, servicioAdicional.getServicioAdicional().getDescripcion());
+			table.setHTML(row, 2, currencyFormat.format(servicioAdicional.getPrecioFinal()));
+			table.setHTML(row, 3, currencyFormat.format(servicioAdicional.getPrecioFinal()));
+			table.getCellFormatter().addStyleName(row, 1, "alignLeft");
+			table.getCellFormatter().addStyleName(row, 2, "alignRight");
+			table.getCellFormatter().addStyleName(row, 3, "alignRight");
+			row++;
+		}
+	}
+	
+	public void agregarQuitarServicioAdicionalContrato(int rowServicioAdicional, ContratoViewDto contratoViewDto) {
+		// agrega o quita servicio adicional al contrato
+		CheckBox check = (CheckBox) table.getWidget(rowServicioAdicional, COL_AGREGAR_QUITAR);
+		ServicioAdicionalIncluidoDto servicioSelected;
+		servicioSelected = editarSSUIData.getServiciosAdicionalesContrato().get(rowServicioAdicional - 1);
+		
+//		ContratoViewDto contratoViewDto = editarSSUIData.getContratosCedidos().get(rowContrato - 1);
+		
+		List<ServicioAdicionalIncluidoDto> saGuardados = contratoViewDto.getServiciosAdicionalesInc();
+		
+		if (saGuardados.contains(servicioSelected)) {
+			saGuardados.get(saGuardados.indexOf(servicioSelected)).setChecked(check.getValue());
+		} else {
+			servicioSelected.setChecked(check.getValue());
+			contratoViewDto.agregarServicioAdicional(servicioSelected);
+		}
 	}
 }

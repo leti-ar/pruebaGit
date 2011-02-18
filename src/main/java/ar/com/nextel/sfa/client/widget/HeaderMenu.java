@@ -95,7 +95,13 @@ public class HeaderMenu extends Composite {
 		
 		// NOTA: si se establecen debug IDs, setear primero los de los Menues y después lo de los submenues.
 		// rgm
-		cuentasMenuItem = mainMenu.addItem("Cuentas", menuCuentas);
+		
+		//MGR - #1446
+		if(ClientContext.getInstance().vengoDeNexus() && ClientContext.getInstance().soyClienteNexus()){
+			cuentasMenuItem = mainMenu.addItem("Cuenta", menuCuentas);
+		}else{
+			cuentasMenuItem = mainMenu.addItem("Cuentas", menuCuentas);
+		}
 		cuentasMenuItem.ensureDebugId(DebugConstants.MENU_CUENTAS);
 
 		
@@ -191,7 +197,13 @@ public class HeaderMenu extends Composite {
 			menuItemCrearSS.setVisible((items & MENU_CREAR_SS) != 0);
 		}
 		
-		ssBuscarMenuItem.setVisible((items & MENU_SOLICITUD) != 0);
+		//MGR - #1397
+		if( (vieneDeNexus && customerCode == null) || !vieneDeNexus){
+			ssBuscarMenuItem.setVisible((items & MENU_SOLICITUD) != 0);
+		}else{
+			ssBuscarMenuItem.setVisible(false);
+		}
+		
 		verazMenuItem.setVisible((items & MENU_VERAZ) != 0);
 		oppBuscarMenuItem.setVisible((items & MENU_OPORTUNIDADES) != 0);
 		

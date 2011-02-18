@@ -160,6 +160,18 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>plainLineas</a>
 			<b>lineas</b>
 		</field>
+        <field custom-converter-id="collectionLineaTransfSolicitudServicioConverter">
+            <a>plainLineasTranf</a>
+            <b>contratosCedidos</b>
+        </field>
+        <field type="one-way">
+            <a>sucursal.id</a>
+            <b>idSucursal</b>
+        </field>
+        <field>
+            <a>vendedor</a>
+            <b>vendedor</b>
+        </field>
 	</mapping>
 
 	<mapping>
@@ -287,7 +299,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-b>
 	</mapping>
 
-	<mapping wildcard="false">
+	<mapping wildcard="false" map-null="true" >
 		<class-a>ar.com.nextel.model.solicitudes.beans.Plan</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.PlanDto</class-b>
 		<field>
@@ -307,12 +319,16 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>precio</b>
 		</field>
 		<field type="one-way">
-			<a>planBase.tipoPlan</a>
-			<b>tipoPlan</b>
-		</field>
+            <a>planBase.tipoPlan</a>
+            <b>tipoPlan</b>
+        </field>
 		<field custom-converter-id="enumToDto">
 			<a>tipoTelefonia</a>
 			<b>tipoTelefonia</b>
+		</field>
+		<field type="one-way">
+			<a>planBase.precioLista</a>
+			<b>precioLista</b>
 		</field>
 	</mapping>
 
@@ -325,7 +341,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 
 	<mapping>
 		<class-a>ar.com.nextel.model.solicitudes.beans.ServicioAdicional
-		</class-a>
+		</class-a>		
 		<class-b>ar.com.nextel.sfa.client.dto.ServicioAdicionalDto
 		</class-b>
 	</mapping>
@@ -397,6 +413,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>empresa</a>
 			<b>empresa</b>
 		</field>
+		<field type="one-way">
+            <a>vendedor</a>
+            <b>vendedor</b>
+        </field>
 	</mapping>
 	<mapping map-id="personaSolicitud" wildcard="false">
 		<class-a>ar.com.nextel.model.personas.beans.Persona</class-a>
@@ -522,6 +542,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>datosPago</a>
 			<b>datosPago</b>
 		</field>
+		<field type="one-way">
+            <a>formaPago</a>
+            <b>formaPago</b>
+        </field>
 		<field custom-converter-id="enumToDto">
 			<a>proveedorInicial</a>
 			<b>proveedorInicial</b>
@@ -660,6 +684,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>usuarioActivo</a>
 			<b>usuarioDto</b>
 		</field>
+		<field type="one-way">
+            <a>sucursal.id</a>
+            <b>idSucursal</b>
+        </field>
 	</mapping>
 	<mapping>
 		<class-a>ar.com.nextel.business.oportunidades.search.result.OportunidadNegocioSearchResult
@@ -775,4 +803,101 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>descuentos</b>
 		</field>
 	</mapping>
+	
+    <mapping map-null="true">
+        <class-a>ar.com.nextel.sfa.client.dto.ContratoViewDto
+        </class-a>
+       
+        <class-b>ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio
+        </class-b>
+        <field>
+            <a>fechaEstado</a>
+            <b>fechaEstadoContrato</b>
+        </field>
+        <field>
+            <a>numeroSimCard</a>
+            <b>simCard</b>
+        </field>
+        <field>
+            <a>codVantiveCesionario</a>
+            <b>customerNumber</b>
+        </field>
+        <field>
+            <a>os</a>
+            <b>numeroSolicitudOrigen</b>
+        </field>
+        <field>
+            <a>suscriptor</a>
+            <b>numeroCuenta</b>
+        </field>
+        <field custom-converter-id="enumToDto">
+            <a>planCesionario</a>
+            <b>planNuevo</b>
+        </field>
+        <field  type="one-way" >
+         	<a>planCesionario.precio</a>
+        	<b>precioVtaPlanNuevo</b>
+        </field>
+        <field custom-converter-id="collectionServicioAdicionalTransfConverter">
+            <a>serviciosAdicionalesInc</a>
+            <b>plainServiciosAdicionales</b>
+        </field>
+
+        <field custom-converter-id="identifiableObjectToId">
+            <a>idPlanCedente</a>
+            <b>planCedente</b>
+        </field> 
+        <field>
+            <a>modalidad</a>
+            <b>modalidadCobroPlanCedente</b>
+        </field>  
+        <field>
+            <a>planCedente</a>
+            <b>descripcionPlanCedente</b>
+        </field>     
+    </mapping>
+    	
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.ParametrosGestion
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.ParametrosGestionDto
+		</class-b>
+	</mapping>
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.ServicioAdicionalIncluido
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto
+		</class-b>
+	</mapping>
+
+	<mapping>
+        <class-a>ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaTransfSolicitudServicio
+        </class-a>
+        <class-b>ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto
+        </class-b>
+<!--        <field-exclude>-->
+<!--            <a>id</a>-->
+<!--            <b>id</b>-->
+<!--        </field-exclude>-->
+        <field>
+            <a>id</a>
+            <b>idSALineaTransf</b>
+        </field>
+        <field>
+            <a>precioLista</a>
+            <b>precioFinal</b>
+        </field>
+        <field>
+            <a>precioVenta</a>
+            <b>precioFinal</b>
+        </field>
+        <field custom-converter-id="enumToDto">
+            <a>servicioAdicional</a>
+            <b>servicioAdicional</b>
+        </field>
+        <field>
+            <a>linea.id</a>
+            <b>idContrato</b>
+        </field>
+    </mapping>  
 </mappings>

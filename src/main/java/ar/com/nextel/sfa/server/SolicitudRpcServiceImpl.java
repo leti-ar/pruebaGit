@@ -23,10 +23,14 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
+import ar.com.nextel.business.constants.MessageIdentifier;
+import ar.com.nextel.business.legacy.avalon.AvalonSystem;
+import ar.com.nextel.business.legacy.avalon.dto.ServicioContratadoDto;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.vantive.VantiveSystem;
 import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
+import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSTransfResponse;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
@@ -37,6 +41,8 @@ import ar.com.nextel.business.solicitudes.search.dto.SolicitudServicioCerradaSea
 import ar.com.nextel.components.knownInstances.GlobalParameter;
 import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
+import ar.com.nextel.components.message.Message;
+import ar.com.nextel.components.message.MessageList;
 import ar.com.nextel.components.sequence.DefaultSequenceImpl;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
@@ -45,9 +51,13 @@ import ar.com.nextel.model.personas.beans.Localidad;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
+import ar.com.nextel.model.solicitudes.beans.Plan;
+import ar.com.nextel.model.solicitudes.beans.ServicioAdicional;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaTransfSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Sucursal;
 import ar.com.nextel.model.solicitudes.beans.TipoAnticipo;
@@ -57,11 +67,15 @@ import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.ContratoViewDto;
+import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
+import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -73,17 +87,21 @@ import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
+import ar.com.nextel.sfa.client.dto.SucursalDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
+import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.server.businessservice.SolicitudBusinessService;
@@ -112,6 +130,12 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	
 	//MELI
 	private DefaultSequenceImpl tripticoNextValue;
+//	private AvalonSystem avalonSystem;
+	
+	//MGR - #1481
+	private DefaultRetriever messageRetriever;;
+	
+	
 	
 
 	public void init() throws ServletException {
@@ -134,6 +158,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		globalParameterRetriever = (DefaultRetriever) context.getBean("globalParameterRetriever");
 		
 		tripticoNextValue = (DefaultSequenceImpl)context.getBean("tripticoNextValue");
+//		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
+		messageRetriever = (DefaultRetriever)context.getBean("messageRetriever");
 	}
 
 	public SolicitudServicioDto createSolicitudServicio(
@@ -162,7 +188,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		
 		//calculo los descuentos aplicados a cada línea y se los seteo 
 		List<LineaSolicitudServicioDto> lineas = solicitudServicioDto.getLineas(); 
-		int a = 0;
 		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
 			Double descuentoAplicado = 0.0;
 			Double precioConDescuento = 0.0;
@@ -304,6 +329,29 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		initializer.setOrigenesSolicitud(mapper.convertList(origenes, OrigenSolicitudDto.class));
 		List tiposAnticipo = repository.getAll(TipoAnticipo.class);
 		initializer.setTiposAnticipo(mapper.convertList(tiposAnticipo, TipoAnticipoDto.class));
+		
+		//Se cargan todos los vendedores que no sean del tipo Telemarketer, Dae o Administrador de Créditos
+		Long idTipoVendTLM = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_TELEMARKETING);
+		Long idTipoVendDAE = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_DAE);
+		Long idTipoVendADM = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_CREDITOS);
+		List<Vendedor> vendedores = repository.find(
+						"from Vendedor vend where vend.tipoVendedor.id <> ? and vend.tipoVendedor.id <> ? and vend.tipoVendedor.id <> ?",
+						idTipoVendDAE, idTipoVendTLM, idTipoVendADM);
+		Collections.sort(vendedores, new Comparator<Vendedor>() {
+			public int compare(Vendedor vend1, Vendedor vend2) {
+				if(vend1.getApellido() == null && vend2.getApellido() == null)
+					return 0;
+				if(vend1.getApellido() == null)
+					return -1;
+				if(vend2.getApellido() == null)
+					return -1;
+				return vend1.getApellidoYNombre().compareToIgnoreCase(vend2.getApellidoYNombre());
+			}
+		});
+		initializer.setVendedores(mapper.convertList(vendedores, VendedorDto.class));
+		
+		List<Sucursal> sucursales = repository.getAll(Sucursal.class);
+		initializer.setSucursales(mapper.convertList(sucursales, SucursalDto.class));
 		return initializer;
 	}
 
@@ -511,6 +559,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		SolicitudServicio solicitudServicio = null;
 		GeneracionCierreResponse response = null;
 		try {
+			completarDomiciliosSolicitudTransferencia(solicitudServicioDto);
 			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
 			response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar);
 			// metodo changelog
@@ -531,6 +580,22 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		AppLogger.info(accion + " de SS de id=" + solicitudServicioDto.getId() + " finalizado.");
 		return result;
 	}
+	
+	private void completarDomiciliosSolicitudTransferencia(SolicitudServicioDto solicitudServicioDto) {
+		if (solicitudServicioDto.getGrupoSolicitud().isTransferencia())
+			for (DomiciliosCuentaDto dom : solicitudServicioDto.getCuenta().getPersona().getDomicilios()) {
+
+				if (dom.getIdEntrega().equals(EstadoTipoDomicilioDto.PRINCIPAL.getId())) {
+					solicitudServicioDto.setIdDomicilioEnvio(dom.getId());
+				}
+				if (dom.getIdFacturacion().equals(EstadoTipoDomicilioDto.PRINCIPAL.getId())) {
+					solicitudServicioDto.setIdDomicilioFacturacion(dom.getId());
+
+				}
+			}
+	}
+	
+	
 
 	private String getReporteFileName(SolicitudServicio solicitudServicio) {
 		String filename;
@@ -615,7 +680,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return descuentoTotal;
 	}
 
-	public boolean crearArchivo(SolicitudServicioCerradaResultDto solicitud, boolean enviarEmail)
+	public Boolean crearArchivo(SolicitudServicioCerradaResultDto solicitud, boolean enviarEmail)
 			throws RpcExceptionMessages {
 		SolicitudServicio solicitudServicio = solicitudServicioRepository
 			.getSolicitudServicioPorId(solicitud.getId());
@@ -627,6 +692,133 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			throw ExceptionUtil.wrap(e);
 		}
 		return true;
+	}
+
+	public List<PlanDto> getPlanesPorTipoPlan(Long idTipoPlan, Long idCuenta) throws RpcExceptionMessages {
+		List planes = null;
+		planes = solicitudServicioRepository.getPlanesPorTipoPlan(idTipoPlan, idCuenta, sessionContextLoader.getVendedor());
+		return mapper.convertList(planes, PlanDto.class);
+	}
+
+	public List<ServicioAdicionalIncluidoDto> getServiciosAdicionalesContrato(
+			Long idPlan) throws RpcExceptionMessages {
+		List serviciosAdicionales = solicitudServicioRepository.getServiciosAdicionalesContrato(idPlan, sessionContextLoader.getVendedor());
+		return mapper.convertList(serviciosAdicionales, ServicioAdicionalIncluidoDto.class);
+	}
+	
+	public CreateSaveSSTransfResultDto saveSolicituServicioTranferencia(
+			SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages {
+		CreateSaveSSTransfResultDto resultDto = new CreateSaveSSTransfResultDto();
+		try {
+	
+
+			SolicitudServicioDto solicitudDto = this.saveSolicituServicio(solicitudServicioDto);
+			resultDto.setSolicitud(solicitudDto);
+
+			Vendedor vendedor = sessionContextLoader.getSessionContext().getVendedor();
+			//valida triptico al guardar
+			if (vendedor.isADMCreditos()) {
+				SolicitudServicio solicitud = repository.retrieve(SolicitudServicio.class,
+						solicitudDto.getId());
+				// mapper.map(solicitudDto, solicitud);
+				CreateSaveSSTransfResponse ssResponse = solicitudBusinessService.validarTriptico(solicitud);
+				resultDto.setMessages(mapper.convertList(ssResponse.getMessages().getMessages(),
+						MessageDto.class));
+				if (!resultDto.getMessages().isEmpty()) {
+					resultDto.setError(true);
+				}
+			}
+		} catch (Exception e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+		return resultDto;
+	}
+	
+	public CreateSaveSSTransfResultDto createSolicitudServicioTranferencia(
+			SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages {
+		CreateSaveSSTransfResultDto resultDto = new CreateSaveSSTransfResultDto();
+		
+		SolicitudServicioDto solicitudDto = this.createSolicitudServicio(solicitudServicioRequestDto);
+		resultDto.setSolicitud(solicitudDto);
+		SolicitudServicio solicitud = repository.retrieve(SolicitudServicio.class,
+				solicitudDto.getId());
+		//mapper.map(solicitudDto, solicitud);
+		MessageList messages = solicitudBusinessService.validarCreateSSTransf(solicitud).getMessages();
+		resultDto.setError(messages.hasErrors());
+		resultDto.setMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
+		
+		Vendedor vendLogeo = sessionContextLoader.getVendedor();
+		if(vendLogeo.isADMCreditos() || vendLogeo.isAP()){
+			
+			if(solicitud.getCuenta().getVendedorLockeo() != null &&
+				!vendLogeo.getId().equals(solicitud.getCuenta().getVendedorLockeo().getId())){
+				String nombSuper = "";
+				if(solicitud.getCuenta().getVendedorLockeo().getSupervisor() != null){
+					nombSuper = solicitud.getCuenta().getVendedorLockeo().getSupervisor().getNombreYApellido();
+				}
+				resultDto.addMessage("La cuenta está lockeada por un ejecutivo, el supervisor es " + 
+						nombSuper + ". Puede proseguir la carga de la SS");
+			}
+		}
+		return resultDto;
+	}
+	
+	public ContratoViewInitializer getContratoViewInitializer(
+			GrupoSolicitudDto grupoSolicitudDto) {
+
+		ContratoViewInitializer initializer = new ContratoViewInitializer();
+		initializer.setTiposPlanes(mapper.convertList(repository.getAll(TipoPlan.class), TipoPlanDto.class));
+
+		return initializer;
+	}
+	
+	//MGR - #1481 - Esto validaba que los planes existieran en SFA, ahora solo que pertenescan al 
+	//segmento de cliente
+	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa){
+		//Validacion 15 del caso de uso.
+		/*Se comprueba que los planes cedentes, de existir en SFA, sean del mismo segmento
+		que el cliente cesionario.
+		(Que un cliente tipo 'Empresa' tenga planes cedentes para empresas y que un cliente
+		tipo 'Personal' tenga planes cedentes de su tipo)
+		*/
+		
+		List<String> errores = new ArrayList<String>(); //Guardo los errores que pienso devolver
+		boolean error = false;
+		
+		for (int i = 0; !error && i < ctoCedentes.size(); i++) {
+			ContratoViewDto cto = ctoCedentes.get(i);
+
+			// Si no cambio el plan, valido que el plan cedente sea de su segmento
+			if (cto.getPlanCesionario() == null) {
+				List<Plan> planes = repository.find("from Plan p where p.planBase.codigoBSCS = ?", 
+									String.valueOf(cto.getCodigoBSCSPlanCedente()));
+
+				// Si no hay planes, no debo validar nada
+				if (!planes.isEmpty()) {
+
+					for (int j=0; !error && j < planes.size(); j++) {
+						Plan plan = planes.get(j);
+						if (plan.getPlanBase().getTipoPlan().isEmpresa() != isEmpresa) {
+							Message message;
+							if(isEmpresa){
+								message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_DIRECTO_SEG_EMPRESA); 
+							}else{
+								message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_EMPRESA_SEG_DIRECTO);
+							}
+							errores.add(message.getDescription());
+							error = true;
+						}
+					}
+				}
+			}
+		}
+		
+		return errores;
+	}
+
+	public void loginServer(String linea) {
+		AppLogger.info(linea);
 	}
 
 }

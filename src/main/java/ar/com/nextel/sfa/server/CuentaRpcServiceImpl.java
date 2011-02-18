@@ -23,6 +23,8 @@ import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorServ
 import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorServiceException;
 import ar.com.nextel.business.describable.GetAllBusinessOperator;
 import ar.com.nextel.business.externalConnection.exception.MerlinException;
+import ar.com.nextel.business.legacy.avalon.AvalonSystem;
+import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
 import ar.com.nextel.business.personas.normalizarDomicilio.NormalizadorDomicilio;
 import ar.com.nextel.business.personas.normalizarDomicilio.businessUnits.NormalizarDomicilioRequest;
 import ar.com.nextel.components.filter.Filter;
@@ -65,6 +67,7 @@ import ar.com.nextel.sfa.client.dto.BusquedaPredefinidaDto;
 import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
 import ar.com.nextel.sfa.client.dto.ClaseCuentaDto;
+import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
@@ -74,7 +77,6 @@ import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoOportunidadDto;
-import ar.com.nextel.sfa.client.dto.FacturaElectronicaDto;
 import ar.com.nextel.sfa.client.dto.FormaPagoDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
@@ -88,6 +90,7 @@ import ar.com.nextel.sfa.client.dto.ProveedorDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
 import ar.com.nextel.sfa.client.dto.ReservaDto;
 import ar.com.nextel.sfa.client.dto.RubroDto;
+import ar.com.nextel.sfa.client.dto.ServicioContratoDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
@@ -116,7 +119,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	private SearchCuentaBusinessOperator searchCuentaBusinessOperator;
 	private TarjetaCreditoValidatorServiceAxisImpl tarjetaCreditoValidatorService;
 	private CuentaBusinessService cuentaBusinessService;
-
+	
 	private Transformer transformer;
 	private MapperExtended mapper;
 	private GetAllBusinessOperator getAllBusinessOperator;
@@ -125,6 +128,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	private NormalizadorDomicilio normalizadorDomicilio;
 	private SessionContextLoader sessionContextLoader;
 	private MessageRetriever messageRetriever;
+	private AvalonSystem avalonSystem;
 
 	private static final String ASOCIAR_CUENTA_A_OPP_ERROR = "La cuenta ya existe. No puede asociarse a la Oportunidad.";
 	private static final String ERROR_OPER_OTRO_VENDEDOR = "El prospect/cliente tiene una operación en curso con otro vendedor. No puede ver sus datos. El {1} es {2}";
@@ -149,6 +153,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		repository = (Repository) context.getBean("repository");
 		normalizadorDomicilio = (NormalizadorDomicilio) context.getBean("normalizadorDomicilio");
 		messageRetriever = (MessageRetriever) context.getBean("messageRetriever");
+		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
 
 		setGetAllBusinessOperator((GetAllBusinessOperator) context.getBean("getAllBusinessOperatorBean"));
 	}
@@ -173,8 +178,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
+		
 		return dtoResult;
-
 	}
 
 	/**
@@ -350,11 +355,12 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return cuentaDto;
 	}
 
-	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive, boolean filtradoPorDni)
+	//MGR - #1466
+	public CuentaDto selectCuenta(Long cuentaId, String cod_vantive, boolean filtradoPorDni, boolean deberiaLockear)
 			throws RpcExceptionMessages {
 		CuentaDto cuentaDto = null;
 		Cuenta cuenta = cuentaBusinessService.selectCuenta(cuentaId, cod_vantive, getVendedor(),
-				filtradoPorDni, mapper);
+				filtradoPorDni, mapper, deberiaLockear);
 		String categoriaCuenta = cuenta.getCategoriaCuenta().getDescripcion();
 		if (categoriaCuenta.equals(KnownInstanceIdentifier.GRAN_CUENTA.getKey())) {
 			cuentaDto = (GranCuentaDto) mapper.map((GranCuenta) cuenta, GranCuentaDto.class);
@@ -621,11 +627,76 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	//MGR - Dado un codigo vantive, devuelve el numero de cuenta que le corresponde en SFA
 	public Long selectCuenta(String codigoVantive) throws RpcExceptionMessages{
 		Cuenta cuenta  = null;
+		//MGR - #1466 - Esta llamada sigue funcionando como antes, entonces lockea
 		cuenta = cuentaBusinessService.selectCuenta(null, codigoVantive, getVendedor(),
-				true, mapper);
+				true, mapper, true);
 		if(cuenta != null){
 			return cuenta.getId();
 		}
 		return null;
+	}
+
+	//MGR - #1466
+	public List<CuentaDto> searchCuentasDto(CuentaSearchDto cuentaSearchDto, boolean deberiaLockear) throws RpcExceptionMessages{
+		List<CuentaDto> cuentasDto = new ArrayList<CuentaDto>();
+		CuentaDto auxCtaDto;
+		try {
+			List<CuentaSearchResultDto> cuentas = searchCuenta(cuentaSearchDto);
+			for (CuentaSearchResultDto cuentaResult : cuentas) {
+				
+				if(cuentaSearchDto.getGrupoDocumentoId() != null){
+					if(!cuentaResult.getNumero().contains("*")){
+						Cuenta cta2 = cuentaBusinessService.selectCuenta(null, cuentaResult.getNumero(), getVendedor(),
+								true, mapper, deberiaLockear);
+						if(cta2.esGranCuenta()){
+							auxCtaDto = mapper.map(cta2, CuentaDto.class);
+							cuentasDto.add(auxCtaDto);
+						}
+					}
+				}else{
+					if(cuentaResult.getNumero().contains("*")){
+						auxCtaDto = new CuentaDto();
+						auxCtaDto.setCodigoVantive("***");
+					}else{
+						auxCtaDto = selectCuenta(cuentaResult.getId(), cuentaResult.getNumero(), false, deberiaLockear);
+					}
+					cuentasDto.add(auxCtaDto);
+				}
+			}
+		} catch (RpcExceptionMessages e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+		return cuentasDto;
+	}
+	
+	public List<ContratoViewDto> searchContratosActivos(CuentaDto ctaDto) throws RpcExceptionMessages{
+		List<ContratoViewDto> contratos = new ArrayList<ContratoViewDto>();
+		
+		try {
+			if(ctaDto.getCodigoVantive() != null && !ctaDto.getCodigoVantive().equals("")){
+				contratos = mapper.convertList(
+						avalonSystem.retriveContratosActivosFull(ctaDto.getCodigoVantive()), ContratoViewDto.class);
+			}
+		} catch (AvalonSystemException e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+		return contratos;
+	}
+	
+	public List<ServicioContratoDto> searchServiciosContratados(Long numeroContrato) throws RpcExceptionMessages{
+		List<ServicioContratoDto> servicios = new ArrayList<ServicioContratoDto>();
+		
+		try {
+			if(numeroContrato != null){
+				servicios = mapper.convertList(
+						avalonSystem.retriveServiciosContratados(numeroContrato), ServicioContratoDto.class);
+			}
+		} catch (AvalonSystemException e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+		return servicios;
 	}
 }
