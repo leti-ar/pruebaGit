@@ -28,8 +28,8 @@ import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.infocom.InfocomUIData;
-import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
+import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
@@ -218,36 +218,37 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			}else{
 				SolicitudRpcService.Util.getInstance().createSolicitudServicio(solicitudServicioRequestDto,
 						new DefaultWaitCallback<SolicitudServicioDto>() {
-							public void success(SolicitudServicioDto solicitud) {
-								loadInfocom(String.valueOf(solicitud.getCuenta().getId()), solicitud.getCuenta().getCodigoVantive());
-								editarSSUIData.setSaved(true);
-								// varios.setScoringVisible(!solicitud.getGrupoSolicitud().isCDW());
-								razonSocialClienteBar.setCliente(solicitud.getCuenta().getCodigoVantive());
-								razonSocialClienteBar.setRazonSocial(solicitud.getCuenta().getPersona()
-										.getRazonSocial());
-								razonSocialClienteBar.setIdCuenta(solicitud.getCuenta().getId(), solicitud
-										.getCuenta().getCodigoVantive());
-								codigoVant = solicitud.getCuenta().getCodigoVantive();
-								editarSSUIData.setSolicitud(solicitud);
-								
-								//MGR - #962 - #1017
-								if(ClientContext.getInstance().
-										checkPermiso(PermisosEnum.SELECT_OPC_TELEMARKETING_COMB_ORIGEN.getValue())){
-									editarSSUIData.getOrigen().selectByText("Telemarketing");
-								}
-	
-								public void failure(Throwable caught) {
-									History.back();
-									super.failure(caught);
-								}
-							});
-				}
-				
+
+					public void success(SolicitudServicioDto solicitud) {
+						loadInfocom(String.valueOf(solicitud.getCuenta().getId()), solicitud.getCuenta().getCodigoVantive());
+						editarSSUIData.setSaved(true);
+						// varios.setScoringVisible(!solicitud.getGrupoSolicitud().isCDW());
+						razonSocialClienteBar.setCliente(solicitud.getCuenta().getCodigoVantive());
+						razonSocialClienteBar.setRazonSocial(solicitud.getCuenta().getPersona()
+								.getRazonSocial());
+						razonSocialClienteBar.setIdCuenta(solicitud.getCuenta().getId(), solicitud
+								.getCuenta().getCodigoVantive());
+						codigoVant = solicitud.getCuenta().getCodigoVantive();
+						editarSSUIData.setSolicitud(solicitud);
+						
+						//MGR - #962 - #1017
+						if(ClientContext.getInstance().
+								checkPermiso(PermisosEnum.SELECT_OPC_TELEMARKETING_COMB_ORIGEN.getValue())){
+							editarSSUIData.getOrigen().selectByText("Telemarketing");
+						}
+					}
+
+					public void failure(Throwable caught) {
+						History.back();
+						super.failure(caught);
+					}
+				});
+			}
 				editarSSUIData.clean();
 				varios.cleanScoring();
 			}
 			return true;
-		}
+		
 	}
 	
 	private void ssCreadaSuccess(SolicitudServicioDto solicitud){

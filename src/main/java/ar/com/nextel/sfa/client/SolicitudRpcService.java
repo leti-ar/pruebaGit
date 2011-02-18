@@ -118,8 +118,6 @@ public interface SolicitudRpcService extends RemoteService {
 	public void loginServer(String linea);
 	public Boolean crearArchivo(SolicitudServicioCerradaResultDto solicitud, boolean enviarEmail) throws RpcExceptionMessages;
 
-	public boolean crearArchivo(SolicitudServicioCerradaResultDto solicitud, boolean enviarEmail) throws RpcExceptionMessages;
-
 	public List<PlanDto> getPlanesPorTipoPlan(Long idTipoPlan, Long idCuenta) throws RpcExceptionMessages;
 
 	public List<ServicioAdicionalIncluidoDto> getServiciosAdicionalesContrato(Long idPlan) throws RpcExceptionMessages;
