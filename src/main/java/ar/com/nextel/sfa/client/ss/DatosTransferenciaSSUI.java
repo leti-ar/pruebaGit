@@ -509,7 +509,8 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 								dateTimeFormat.format(serv.getFechaEstado()) : Sfa.constant().whiteSpace());
 						facturadosTable.setHTML(i +1, 3, serv.getTarifa() != null ? 
 								currFormatter.format(serv.getTarifa()) : Sfa.constant().whiteSpace());
-						facturadosTable.setHTML(i +1, 4, serv.getAjuste() != null ? serv.getAjuste(): Sfa.constant().whiteSpace());
+						facturadosTable.setHTML(i +1, 4, serv.getAjuste() != null ? 
+								currFormatter.format(Double.valueOf(serv.getAjuste())) : Sfa.constant().whiteSpace());
 						facturadosTable.setHTML(i +1, 5, String.valueOf(serv.getPeriodosPendientes()));
 						facturadosTable.setHTML(i +1, 6, serv.getUltimaFactura() != null ?
 								dateTimeFormat.format(serv.getUltimaFactura()) : Sfa.constant().whiteSpace());
