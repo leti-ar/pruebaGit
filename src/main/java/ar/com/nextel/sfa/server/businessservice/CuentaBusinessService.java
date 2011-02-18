@@ -480,9 +480,10 @@ public class CuentaBusinessService {
 		return selectCuentaBusinessOperator.getCuentaSinLockear(codVantive);
 	}
 
+	//MGR - #1466
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Cuenta selectCuenta(Long cuentaId, String cod_vantive,
-			Vendedor vendedor, boolean filtradoPorDni, DozerBeanMapper mapper)
+			Vendedor vendedor, boolean filtradoPorDni, DozerBeanMapper mapper, boolean deberiaLockear)
 			throws RpcExceptionMessages {
 		AppLogger.info("Iniciando SelectCuenta...");
 		Cuenta cuenta = null;
@@ -495,14 +496,17 @@ public class CuentaBusinessService {
 
 			validarAccesoCuenta(cuenta, vendedor, filtradoPorDni);
 
-			// Lockea la cuenta
-			if (vendedor.getTipoVendedor().isUsaLockeo() && ( accessCuenta.getAccessAuthorization().hasSamePermissionsAs(
-					AccessAuthorization.editOnly())
-					|| accessCuenta.getAccessAuthorization()
-							.hasSamePermissionsAs(
-									AccessAuthorization.fullAccess()))) {
-				cuenta.editar(vendedor);
-				repository.save(cuenta);
+			//MGR - #1466
+			if(deberiaLockear){
+				// Lockea la cuenta
+				if (vendedor.getTipoVendedor().isUsaLockeo() && ( accessCuenta.getAccessAuthorization().hasSamePermissionsAs(
+						AccessAuthorization.editOnly())
+						|| accessCuenta.getAccessAuthorization()
+								.hasSamePermissionsAs(
+										AccessAuthorization.fullAccess()))) {
+					cuenta.editar(vendedor);
+					repository.save(cuenta);
+				}
 			}
 
 			CuentaDto cuentaDto = null;

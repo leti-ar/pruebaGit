@@ -23,6 +23,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
+import ar.com.nextel.business.constants.MessageIdentifier;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.legacy.avalon.dto.ServicioContratadoDto;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
@@ -40,6 +41,7 @@ import ar.com.nextel.business.solicitudes.search.dto.SolicitudServicioCerradaSea
 import ar.com.nextel.components.knownInstances.GlobalParameter;
 import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
+import ar.com.nextel.components.message.Message;
 import ar.com.nextel.components.message.MessageList;
 import ar.com.nextel.components.sequence.DefaultSequenceImpl;
 import ar.com.nextel.framework.repository.Repository;
@@ -49,11 +51,13 @@ import ar.com.nextel.model.personas.beans.Localidad;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
 import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicional;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaTransfSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Sucursal;
 import ar.com.nextel.model.solicitudes.beans.TipoAnticipo;
@@ -126,7 +130,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	
 	//MELI
 	private DefaultSequenceImpl tripticoNextValue;
-	private AvalonSystem avalonSystem;
+//	private AvalonSystem avalonSystem;
+	
+	//MGR - #1481
+	private DefaultRetriever messageRetriever;;
 	
 	
 	
@@ -151,7 +158,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		globalParameterRetriever = (DefaultRetriever) context.getBean("globalParameterRetriever");
 		
 		tripticoNextValue = (DefaultSequenceImpl)context.getBean("tripticoNextValue");
-		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
+//		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
+		messageRetriever = (DefaultRetriever)context.getBean("messageRetriever");
 	}
 
 	public SolicitudServicioDto createSolicitudServicio(
@@ -551,7 +559,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		SolicitudServicio solicitudServicio = null;
 		GeneracionCierreResponse response = null;
 		try {
-			completarServiciosAdicionalesContratosCedidos(solicitudServicioDto, mapper);
 			completarDomiciliosSolicitudTransferencia(solicitudServicioDto);
 			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
 			response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar);
@@ -588,43 +595,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			}
 	}
 	
-	private void completarServiciosAdicionalesContratosCedidos(SolicitudServicioDto solicitudServicioDto,
-			MapperExtended mapper)  {
-		try {
-
-			for (ContratoViewDto contrato : solicitudServicioDto.getContratosCedidos()) {
-
-				List<ServicioContratadoDto> serviciosAvalon = avalonSystem
-						.retriveServiciosContratados(contrato.getContrato());
-				List<ServicioAdicional> servicios = repository.find("from ServicioAdicional ");
-				for (ServicioContratadoDto servicioContratadoDto : serviciosAvalon) {
-
-					for (ServicioAdicional servicioAdicional : servicios) {
-						// si el si el servicio es Garantia se carga siempre, si
-						// es CDI o CDT o Cargos Admin. solo se carga si no se
-						// eligio un plan nuevo (plan cesionario != null )
-						if (servicioContratadoDto.getCodigoBSCS().equals(servicioAdicional.getCodigoBSCS())
-								&& ((servicioAdicional.isServicioTransferenciaAutomatico() && contrato
-										.getPlanCesionario() == null) || servicioAdicional.getEsGarantia())) {
-							ServicioAdicionalIncluidoDto servIncDto = new ServicioAdicionalIncluidoDto();
-							servIncDto.setServicioAdicional(mapper.map(servicioAdicional,
-									ServicioAdicionalDto.class));
-							servIncDto.setPrecioFinal(servicioContratadoDto.getTarifa());
-
-							contrato.getServiciosAdicionalesInc().add(servIncDto);
-							servIncDto.setChecked(true);
-
-						}
-					}
-				}
-
-			}
-
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-
-	}
+	
 
 	private String getReporteFileName(SolicitudServicio solicitudServicio) {
 		String filename;
@@ -802,70 +773,43 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return initializer;
 	}
 	
-	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, Long idCuenta){
-		String V1 = "\\{1\\}";
-		//Guardo los errores que pienso devolver
-		List<String> errores = new ArrayList<String>();
-		//Los planes que existen en SFA y quiero ver si son validos para la cuenta
-		List<Plan> planesCedentes = new ArrayList<Plan>();
-		int cantError = 0; //Para devolver como maximo solo 5 errores
+	//MGR - #1481 - Esto validaba que los planes existieran en SFA, ahora solo que pertenescan al 
+	//segmento de cliente
+	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa){
+		//Validacion 15 del caso de uso.
+		/*Se comprueba que los planes cedentes, de existir en SFA, sean del mismo segmento
+		que el cliente cesionario.
+		(Que un cliente tipo 'Empresa' tenga planes cedentes para empresas y que un cliente
+		tipo 'Personal' tenga planes cedentes de su tipo)
+		*/
 		
+		List<String> errores = new ArrayList<String>(); //Guardo los errores que pienso devolver
 		boolean error = false;
 		
-		//Valido que los planes existan en SFA
-//		ya no valido más!! se cambio el requerimiento
-//		for (int i = 0; !error && i < ctoCedentes.size(); i++) {
-//			ContratoViewDto cto = ctoCedentes.get(i);
-//			
-//			//Si no cambio el plan, debo validar que el plan Cedente existe
-//			if(cto.getPlanCesionario() == null){
-//				boolean encontrado = false;
-//				List<Plan> planes = repository.find("from Plan p where p.planBase.codigoBSCS = ?", String.valueOf(cto.getCodigoBSCSPlanCedente()));
-//				
-//				if(planes.isEmpty()){
-//					errores.add("No se encontró el plan {1} consulte con Adm Vtas.".replaceAll(V1, cto.getPlanCedente()));
-//					cantError++;
-//				}else{
-//					//Guardo el plan como si fuera el cedente para validar que sea valido
-//					planesCedentes.add(planes.get(0));
-//				}
-//				
-//				if(cantError == 5){
-//					error = true;
-//				}
-//			}
-//		}
-		
-		//Si no hubo error (todos los planes existen en SFA), verifico que sean validos para el nuevo cliente
-		if(cantError == 0 && !planesCedentes.isEmpty()){
-			HashMap<Long, List<Plan>> planesPermitidos = new HashMap<Long, List<Plan>>();
-			
-			
-			for (int i = 0; !error && i < planesCedentes.size(); i++) {
-				Plan planCedente = planesCedentes.get(i);
-				Long idTipoPlan = planCedente.getPlanBase().getTipoPlan().getId();
-				List<Plan> planesValidos = null;
-				
-					planesValidos = solicitudServicioRepository.getPlanesPorTipoPlan(
-							idTipoPlan, idCuenta, sessionContextLoader.getVendedor());
-					planesPermitidos.put(idTipoPlan, planesValidos);
-				 
-				boolean encontrado = false;
-				for (int j = 0; !encontrado && j < planesValidos.size(); j++) {
-					Plan planValido = planesValidos.get(j);
-					if(planValido.getId().equals(planCedente.getId())){
-						encontrado = true;
+		for (int i = 0; !error && i < ctoCedentes.size(); i++) {
+			ContratoViewDto cto = ctoCedentes.get(i);
+
+			// Si no cambio el plan, valido que el plan cedente sea de su segmento
+			if (cto.getPlanCesionario() == null) {
+				List<Plan> planes = repository.find("from Plan p where p.planBase.codigoBSCS = ?", 
+									String.valueOf(cto.getCodigoBSCSPlanCedente()));
+
+				// Si no hay planes, no debo validar nada
+				if (!planes.isEmpty()) {
+
+					for (int j=0; !error && j < planes.size(); j++) {
+						Plan plan = planes.get(j);
+						if (plan.getPlanBase().getTipoPlan().isEmpresa() != isEmpresa) {
+							Message message;
+							if(isEmpresa){
+								message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_DIRECTO_SEG_EMPRESA); 
+							}else{
+								message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_EMPRESA_SEG_DIRECTO);
+							}
+							errores.add(message.getDescription());
+							error = true;
+						}
 					}
-				}
-				
-				if(!encontrado){
-					//Error, el plan no es valido
-					errores.add("El plan {1} no es valido para el nuevo cliente.".replaceAll(V1, planCedente.getDescripcion()));
-					cantError++;
-				}
-				
-				if(cantError == 5){
-					error = true;
 				}
 			}
 		}

@@ -73,9 +73,11 @@ public class CuentaRpcServiceDelegate {
 		cuentaRpcService.consultarVeraz(customerCode, callback);
 	}
 	
-	public void selectCuenta(Long cuentaId,String cod_vantive,boolean filtradoPorDni,DefaultWaitCallback<CuentaDto> callback) {
+	public void selectCuenta(Long cuentaId,String cod_vantive,boolean filtradoPorDni,
+			DefaultWaitCallback<CuentaDto> callback) {
 		WaitWindow.show();
-		cuentaRpcService.selectCuenta(cuentaId, cod_vantive,filtradoPorDni,callback);
+		//MGR - #1466 - Esta llamada sigue funcionando como antes, entonces lockea
+		cuentaRpcService.selectCuenta(cuentaId, cod_vantive,filtradoPorDni, true,callback);
 	}
 	public void reservaCreacionCuenta(CrearCuentaDto crearCuentaDto,DefaultWaitCallback<CuentaDto>  callback) {
 		WaitWindow.show();
@@ -122,13 +124,14 @@ public class CuentaRpcServiceDelegate {
 	public void selectCuenta(String codigoVantive,
 			DefaultWaitCallback<Long> callback) {
 		WaitWindow.show();
-		cuentaRpcService.selectCuenta(codigoVantive,callback);
+		cuentaRpcService.selectCuenta(codigoVantive, callback);
 		
 	}
 	
-	public void searchCuentaDto(CuentaSearchDto cuentaSearchDto, DefaultWaitCallback<List<CuentaDto>> callback) {
+	//MGR - #1466
+	public void searchCuentaDto(CuentaSearchDto cuentaSearchDto, boolean deberiaLockear, DefaultWaitCallback<List<CuentaDto>> callback) {
 		WaitWindow.show();
-		cuentaRpcService.searchCuentasDto(cuentaSearchDto, callback);
+		cuentaRpcService.searchCuentasDto(cuentaSearchDto, deberiaLockear, callback);
 	}
 	
 	public void searchContratosActivos(CuentaDto ctaDto, DefaultWaitCallback<List<ContratoViewDto>> callback) {

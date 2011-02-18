@@ -1192,6 +1192,6 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	public void validarPlanesCedentes(final DefaultWaitCallback<List<String>> defaultWaitCallback){
 		
 		SolicitudRpcService.Util.getInstance().validarPlanesCedentes(solicitudServicio.getContratosCedidos(),
-				getCuentaId(), defaultWaitCallback);
+				getCuenta().isEmpresa(), defaultWaitCallback);
 	}
 }
