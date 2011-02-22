@@ -221,21 +221,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 					public void success(SolicitudServicioDto solicitud) {
 						loadInfocom(String.valueOf(solicitud.getCuenta().getId()), solicitud.getCuenta().getCodigoVantive());
-						editarSSUIData.setSaved(true);
-						// varios.setScoringVisible(!solicitud.getGrupoSolicitud().isCDW());
-						razonSocialClienteBar.setCliente(solicitud.getCuenta().getCodigoVantive());
-						razonSocialClienteBar.setRazonSocial(solicitud.getCuenta().getPersona()
-								.getRazonSocial());
-						razonSocialClienteBar.setIdCuenta(solicitud.getCuenta().getId(), solicitud
-								.getCuenta().getCodigoVantive());
-						codigoVant = solicitud.getCuenta().getCodigoVantive();
-						editarSSUIData.setSolicitud(solicitud);
-						
-						//MGR - #962 - #1017
-						if(ClientContext.getInstance().
-								checkPermiso(PermisosEnum.SELECT_OPC_TELEMARKETING_COMB_ORIGEN.getValue())){
-							editarSSUIData.getOrigen().selectByText("Telemarketing");
-						}
+						ssCreadaSuccess(solicitud);
 					}
 
 					public void failure(Throwable caught) {
