@@ -68,7 +68,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 	private Label oppEnCursoLabel;
 	private Label reservasNoConsultadas;
 	private Label numOperaciones;
-	private static final int cantResultadosPorPagina = 7;
+	private int cantResultadosPorPagina = 24;
 	private String numeroVtasPotNoConsultadas;
 	private OperacionEnCursoUIController controller;
 	private List<OperacionEnCursoDto> opEnCursoActuales;
@@ -103,8 +103,13 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 		resultTableWrapperReserva.addStyleName("resultTableWrapper");
 
 		resultTableWrapperOpCurso = new SimplePanel();
-		resultTableWrapperOpCurso.addStyleName("resultTableWrapper");
-
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.OP_EN_CURSO_SECCION_RESERVAS.getValue())){
+			resultTableWrapperOpCurso.addStyleName("resultTableWrapper");
+			cantResultadosPorPagina = 7;
+		} else {
+			resultTableWrapperOpCurso.addStyleName("resultTableWrapper620");
+		}
+		
 		tablePageBarReserva = new TablePageBar();
 		tablePageBarReserva.addStyleName("mlr8");
 		tablePageBarReserva.setCantResultadosPorPagina(cantResultadosPorPagina);
