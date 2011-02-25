@@ -1,8 +1,10 @@
 package ar.com.nextel.sfa.client.ss;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
+import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -16,6 +18,7 @@ import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.MessageDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
+import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
@@ -331,6 +334,31 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	}
 
 	private void loadInitializer(SolicitudInitializer initializer) {
+		if ("5".equals(EditarSSUI.ID_GRUPO_SS)) {
+			if (ClientContext.getInstance().getVendedor().isAP()) {
+				for (Iterator<OrigenSolicitudDto> iterator = initializer.getOrigenesSolicitud().iterator(); iterator.hasNext();) {
+					OrigenSolicitudDto origen = (OrigenSolicitudDto) iterator.next();
+					if (!"ATP".equals(origen.getDescripcion())) {
+						iterator.remove();
+					}
+				}
+			} else if (ClientContext.getInstance().getVendedor().isDealer()) {
+				for (Iterator<OrigenSolicitudDto> iterator = initializer.getOrigenesSolicitud().iterator(); iterator.hasNext();) {
+					OrigenSolicitudDto origen = (OrigenSolicitudDto) iterator.next();
+					if (!"Vendedor".equals(origen.getDescripcion())) {
+						iterator.remove();
+					}
+				}
+			} else if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
+				for (Iterator<OrigenSolicitudDto> iterator = initializer.getOrigenesSolicitud().iterator(); iterator.hasNext();) {
+					OrigenSolicitudDto origen = (OrigenSolicitudDto) iterator.next();
+					if (!"ATP".equals(origen.getDescripcion()) && !"Vendedor".equals(origen.getDescripcion())) {
+						iterator.remove();
+					}
+				}
+			}
+		}
+		
 		editarSSUIData.getOrigen().addAllItems(initializer.getOrigenesSolicitud());
 		//MGR - #1458
 		if(initializer.getOrigenesSolicitud().size() ==1){
