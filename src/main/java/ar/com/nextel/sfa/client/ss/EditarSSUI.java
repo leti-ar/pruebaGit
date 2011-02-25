@@ -334,35 +334,42 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	}
 
 	private void loadInitializer(SolicitudInitializer initializer) {
-		if ("5".equals(EditarSSUI.ID_GRUPO_SS)) {
-			if (ClientContext.getInstance().getVendedor().isAP()) {
-				for (Iterator<OrigenSolicitudDto> iterator = initializer.getOrigenesSolicitud().iterator(); iterator.hasNext();) {
-					OrigenSolicitudDto origen = (OrigenSolicitudDto) iterator.next();
-					if (!"ATP".equals(origen.getDescripcion())) {
-						iterator.remove();
-					}
+		editarSSUIData.getOrigen().addAllItems(initializer.getOrigenesSolicitud());
+
+		//MGR - #1458
+		if(initializer.getOrigenesSolicitud().size() ==1){
+			editarSSUIData.getOrigen().setSelectedIndex(1);
+		}
+		
+		if (ClientContext.getInstance().getVendedor().isAP()) {
+			for (Iterator<OrigenSolicitudDto> iterator = initializer
+					.getOrigenesSolicitud().iterator(); iterator.hasNext();) {
+				OrigenSolicitudDto origen = (OrigenSolicitudDto) iterator.next();
+				if (!"ATP".equals(origen.getDescripcion())) {
+					iterator.remove();
 				}
-			} else if (ClientContext.getInstance().getVendedor().isDealer()) {
-				for (Iterator<OrigenSolicitudDto> iterator = initializer.getOrigenesSolicitud().iterator(); iterator.hasNext();) {
-					OrigenSolicitudDto origen = (OrigenSolicitudDto) iterator.next();
-					if (!"Vendedor".equals(origen.getDescripcion())) {
-						iterator.remove();
-					}
+			}
+		} else if (ClientContext.getInstance().getVendedor().isDealer()) {
+			for (Iterator<OrigenSolicitudDto> iterator = initializer
+					.getOrigenesSolicitud().iterator(); iterator.hasNext();) {
+				OrigenSolicitudDto origen = (OrigenSolicitudDto) iterator.next();
+				if (!"Vendedor".equals(origen.getDescripcion())) {
+					iterator.remove();
 				}
-			} else if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
-				for (Iterator<OrigenSolicitudDto> iterator = initializer.getOrigenesSolicitud().iterator(); iterator.hasNext();) {
-					OrigenSolicitudDto origen = (OrigenSolicitudDto) iterator.next();
-					if (!"ATP".equals(origen.getDescripcion()) && !"Vendedor".equals(origen.getDescripcion())) {
-						iterator.remove();
-					}
+			}
+		} else if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
+			for (Iterator<OrigenSolicitudDto> iterator = initializer
+					.getOrigenesSolicitud().iterator(); iterator.hasNext();) {
+				OrigenSolicitudDto origen = (OrigenSolicitudDto) iterator.next();
+				if (!"ATP".equals(origen.getDescripcion()) && !"Vendedor".equals(origen.getDescripcion())) {
+					iterator.remove();
 				}
 			}
 		}
 		
-		editarSSUIData.getOrigen().addAllItems(initializer.getOrigenesSolicitud());
-		//MGR - #1458
-		if(initializer.getOrigenesSolicitud().size() ==1){
-			editarSSUIData.getOrigen().setSelectedIndex(1);
+		editarSSUIData.getOrigenTR().addAllItems(initializer.getOrigenesSolicitud());
+		if(initializer.getOrigenesSolicitud().size() == 1){
+			editarSSUIData.getOrigenTR().setSelectedIndex(1);
 		}
 		
 		editarSSUIData.getAnticipo().addAllItems(initializer.getTiposAnticipo());
