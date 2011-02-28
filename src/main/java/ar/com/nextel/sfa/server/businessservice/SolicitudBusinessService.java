@@ -452,8 +452,9 @@ public class SolicitudBusinessService {
 				if (!esProspectEnCarga) {
 					String codigoGestion = "TRANSF_FACT_ELECTRONICA";
 					ParametrosGestion parametrosGestion = repository.retrieve(ParametrosGestion.class, codigoGestion);
+					Vendedor vendedor = repository.retrieve(Vendedor.class, this.sessionContextLoader.getInstance().getVendedor().getId());
 					Long idGestion = generacionCierreBusinessOperator.lanzarGestionCerrarSS(
-							this.sessionContextLoader.getInstance().getVendedor().getUserName(), 
+							vendedor.getUserReal(), 
 							0L, 
 							parametrosGestion, 
 							"", 
