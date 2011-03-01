@@ -18,7 +18,6 @@ import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
-import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
@@ -1205,5 +1204,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 		SolicitudRpcService.Util.getInstance().validarPlanesCedentes(solicitudServicio.getContratosCedidos(),
 				getCuenta().isEmpresa(), defaultWaitCallback);
+	}
+	
+	//MGR - #1415
+	public Long getIdSolicitudServicio(){
+		if(solicitudServicio != null){
+			return solicitudServicio.getId();
+		}
+		return null;
 	}
 }

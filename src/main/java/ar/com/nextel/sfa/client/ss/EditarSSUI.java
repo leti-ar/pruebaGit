@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -660,7 +659,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 									aceptar = CerradoSSExitosoDialog.getCloseCommand();
 								}
 								CerradoSSExitosoDialog.getInstance().setAceptarCommand(aceptar);
-								CerradoSSExitosoDialog.getInstance().showCierreExitoso(rtfFileName);
+								//MGR - #1415
+								CerradoSSExitosoDialog.getInstance().showCierreExitoso(rtfFileName, editarSSUIData.getIdSolicitudServicio());
 							}
 						};
 						
