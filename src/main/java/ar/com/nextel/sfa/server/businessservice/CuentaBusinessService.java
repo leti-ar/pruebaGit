@@ -388,8 +388,10 @@ public class CuentaBusinessService {
 				cuenta.setFacturaElectronica(mapper.map(cuentaDto
 						.getFacturaElectronica(), FacturaElectronica.class));
 			} else {
-				if (cuenta.getFacturaElectronica().getId()!=null)
+				if (cuenta.getFacturaElectronica().getId()!=null) {
 					cuentaDto.getFacturaElectronica().setId(cuenta.getFacturaElectronica().getId());
+					cuentaDto.getFacturaElectronica().setReplicadaAutogestion(Boolean.FALSE);
+				}
 				mapper.map(cuentaDto.getFacturaElectronica(), cuenta
 						.getFacturaElectronica());
 			}
