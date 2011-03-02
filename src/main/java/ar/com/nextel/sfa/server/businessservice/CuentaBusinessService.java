@@ -409,7 +409,7 @@ public class CuentaBusinessService {
 		// }
 	}
 
-	private final long unDiaEnMilis = 1000*60*60*24*4;
+	private final long unDiaEnMilis = 1000*60*60*24;
 	
 	
 	/**
