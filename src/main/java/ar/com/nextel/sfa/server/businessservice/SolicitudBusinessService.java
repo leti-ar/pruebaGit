@@ -443,7 +443,7 @@ public class SolicitudBusinessService {
 					&& hace4Dias.before(solicitudServicio.getCuenta().getFacturaElectronica().getLastModificationDate())
 					&& !response.getMessages().hasErrors()) {
 				facturaElectronicaService.adherirFacturaElectronica(
-						solicitudServicio.getCuenta().getId(), solicitudServicio.getCuenta()
+						new Long(solicitudServicio.getCuenta().getCodigoBSCS()), solicitudServicio.getCuenta()
 						.getCodigoVantive(), solicitudServicio.getCuenta()
 						.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor()
 						.getUserName());
