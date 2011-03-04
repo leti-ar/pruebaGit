@@ -111,8 +111,22 @@ public class ItemYPlanSolicitudUI extends Composite {
 	public void load() {
 		soloItemSolicitudWrapper.setWidget(soloItemSolicitudUI);
 		cppAliasReservaTable.setWidget(0, 3, itemSolicitudUIData.getAlias());
+		
+		cppAliasReservaTable.getCellFormatter().setVisible(0, 0, true);
+		cppAliasReservaTable.getCellFormatter().setVisible(0, 1, true);
+		cppAliasReservaTable.getCellFormatter().setVisible(0, 2, true);
+		cppAliasReservaTable.getCellFormatter().setVisible(0, 3, true);
+		cppAliasReservaTable.getCellFormatter().setVisible(1, 0, true);
+		cppAliasReservaTable.getCellFormatter().setVisible(1, 1, true);
 		cppAliasReservaTable.setVisible(true);
+		
+		aliasTable.getCellFormatter().setVisible(0, 0, false);
+		aliasTable.getCellFormatter().setVisible(0, 1, false);
 		aliasTable.setVisible(false);
+		
+		roamingTable.getCellFormatter().setVisible(0, 0, true);
+		roamingTable.getCellFormatter().setVisible(0, 1, true);
+		roamingTable.getCellFormatter().setVisible(0, 2, true);
 		roamingTable.setVisible(true);
 	}
 
@@ -123,8 +137,22 @@ public class ItemYPlanSolicitudUI extends Composite {
 
 	public ItemYPlanSolicitudUI setCDWVisible() {
 		aliasTable.setWidget(0, 1, itemSolicitudUIData.getAlias());
+		
+		cppAliasReservaTable.getCellFormatter().setVisible(0, 0, false);
+		cppAliasReservaTable.getCellFormatter().setVisible(0, 1, false);
+		cppAliasReservaTable.getCellFormatter().setVisible(0, 2, false);
+		cppAliasReservaTable.getCellFormatter().setVisible(0, 3, false);
+		cppAliasReservaTable.getCellFormatter().setVisible(1, 0, false);
+		cppAliasReservaTable.getCellFormatter().setVisible(1, 1, false);
 		cppAliasReservaTable.setVisible(false);
+		
+		aliasTable.getCellFormatter().setVisible(0, 0, true);
+		aliasTable.getCellFormatter().setVisible(0, 1, true);
 		aliasTable.setVisible(true);
+		
+		roamingTable.getCellFormatter().setVisible(0, 0, false);
+		roamingTable.getCellFormatter().setVisible(0, 1, false);
+		roamingTable.getCellFormatter().setVisible(0, 2, false);
 		roamingTable.setVisible(false);
 		return this;
 	}
