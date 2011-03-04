@@ -458,7 +458,7 @@ public class SolicitudBusinessService {
 							0L, 
 							parametrosGestion, 
 							"", 
-							solicitudServicio.getCuenta().getId(), 
+							new Long(solicitudServicio.getCuenta().getCodigoBSCS()), 
 							cerrar);
 					solicitudServicio.getCuenta().getFacturaElectronica().setIdGestion(idGestion);
 				}
