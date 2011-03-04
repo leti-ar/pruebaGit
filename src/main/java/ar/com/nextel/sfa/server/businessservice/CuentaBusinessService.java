@@ -390,7 +390,10 @@ public class CuentaBusinessService {
 			} else {
 				if (cuenta.getFacturaElectronica().getId()!=null) {
 					cuentaDto.getFacturaElectronica().setId(cuenta.getFacturaElectronica().getId());
-					cuentaDto.getFacturaElectronica().setReplicadaAutogestion(Boolean.FALSE);
+					//si modificó la FE tengo que poner en false el campo replicadaAutogestion
+					if (!cuentaDto.getFacturaElectronica().getEmail().equals(cuenta.getFacturaElectronica().getEmail())) {
+						cuentaDto.getFacturaElectronica().setReplicadaAutogestion(Boolean.FALSE);
+					}
 				}
 				mapper.map(cuentaDto.getFacturaElectronica(), cuenta
 						.getFacturaElectronica());
