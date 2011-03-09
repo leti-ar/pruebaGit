@@ -986,6 +986,7 @@ public class CuentaDatosForm extends Composite {
 		campos.add(cuentaUIData.getTipoCanalVentas());
 
 		if (cuentaUIData.getFacturaElectronicaPanel() != null) {
+			campos.add(cuentaUIData.getFacturaElectronicaPanel().getFacturaElectronicaHabilitada());
 			campos.add(cuentaUIData.getFacturaElectronicaPanel().getEmail());
 		}
 		FormUtils.disableFields(campos);
@@ -1784,16 +1785,27 @@ public class CuentaDatosForm extends Composite {
 		if (facturaElectronica != null) {
 			cuentaUIData.getFacturaElectronicaPanel().setText(facturaElectronica.getEmail());
 			if (facturaElectronica.isCargadaEnVantive() || facturaElectronica.isReplicadaAutogestion()) {
-				cuentaUIData.getFacturaElectronicaPanel().setEnabled(true);
+				if ("true".equals(ClientContext.getInstance().getSecretParams().get("ro"))) {
+					cuentaUIData.getFacturaElectronicaPanel().setEnabled(false);
+					cuentaUIData.getFacturaElectronicaPanel().getEmail().setReadOnly(true);
+				} else {
+					cuentaUIData.getFacturaElectronicaPanel().setEnabled(true);
+					cuentaUIData.getFacturaElectronicaPanel().getEmail().setReadOnly(false);
+				}
 				cuentaUIData.getFacturaElectronicaPanel().setFacturaElectronicaHabilitada(true);
 			}
 
 		} else {
 			cuentaUIData.getFacturaElectronicaPanel().setText("");
-			cuentaUIData.getFacturaElectronicaPanel().setEnabled(true);
-			cuentaUIData.getFacturaElectronicaPanel().getEmail().setReadOnly(false);
+			if ("true".equals(ClientContext.getInstance().getSecretParams().get("ro"))) {
+				cuentaUIData.getFacturaElectronicaPanel().setEnabled(false);
+				cuentaUIData.getFacturaElectronicaPanel().getEmail().setReadOnly(true);
+			} else {
+				cuentaUIData.getFacturaElectronicaPanel().setEnabled(true);
+				cuentaUIData.getFacturaElectronicaPanel().getEmail().setReadOnly(false);
+			}
+			cuentaUIData.getFacturaElectronicaPanel().setFacturaElectronicaHabilitada(false);
 		}
-		cuentaUIData.getFacturaElectronicaPanel().setFacturaElectronicaHabilitada(true);
 	}
 
 }
