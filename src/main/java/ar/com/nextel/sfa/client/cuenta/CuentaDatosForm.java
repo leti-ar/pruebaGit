@@ -985,6 +985,9 @@ public class CuentaDatosForm extends Composite {
 		campos.add(cuentaUIData.getVendedorTelefono());
 		campos.add(cuentaUIData.getTipoCanalVentas());
 
+		if (cuentaUIData.getFacturaElectronicaPanel() != null) {
+			campos.add(cuentaUIData.getFacturaElectronicaPanel().getEmail());
+		}
 		FormUtils.disableFields(campos);
 
 		// issue 20130: ocultar vendedor siempre hasta que esté el perfil adm vta
@@ -1788,6 +1791,7 @@ public class CuentaDatosForm extends Composite {
 		} else {
 			cuentaUIData.getFacturaElectronicaPanel().setText("");
 			cuentaUIData.getFacturaElectronicaPanel().setEnabled(true);
+			cuentaUIData.getFacturaElectronicaPanel().getEmail().setReadOnly(false);
 		}
 		cuentaUIData.getFacturaElectronicaPanel().setFacturaElectronicaHabilitada(true);
 	}
