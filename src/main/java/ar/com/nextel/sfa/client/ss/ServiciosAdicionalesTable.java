@@ -247,6 +247,10 @@ public class ServiciosAdicionalesTable extends Composite {
 			CheckBox check = new CheckBox();
 			check.setEnabled(!servicioAdicional.getObligatorio());
 			check.setValue(servicioAdicional.getObligatorio());
+			if (servicioAdicional.getServicioAdicional().getEsCargoAdministrativo()
+					|| servicioAdicional.getServicioAdicional().getEsCDT()) {
+				check.setValue(true);
+			}
 			for (Iterator<ServicioAdicionalIncluidoDto> iterator2 = serviciosAdicionalesTildados.iterator(); iterator2.hasNext();) {
 				ServicioAdicionalIncluidoDto servicioAdicionalTildado = (ServicioAdicionalIncluidoDto) iterator2.next();
 				if (servicioAdicionalTildado.getServicioAdicional().getDescripcion().equals(servicioAdicional.getServicioAdicional().getDescripcion())) {
