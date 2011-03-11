@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
@@ -145,6 +146,16 @@ public class BusqClienteCedenteUIData extends UIData implements ChangeHandler{
 			//Valido el formato de la flota
 			if (!validaFlotaId(parametroBusqCedente.getText())) {
 				errores.add("Formato incorrecto de Flota*Id.");
+			}
+		}
+		else if (criterioBusqCedente.getValue(criterioBusqCedente.getSelectedIndex()).equals(NUM_DOCUMENTO)) {
+			if (!parametroBusqCedente.getText().matches(RegularExpressionConstants.getNumerosLimitado(10))) {
+				errores.add(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", Sfa.constant().numeroDocumento()));
+			}
+		}
+		else if (criterioBusqCedente.getValue(criterioBusqCedente.getSelectedIndex()).equals(NUM_NEXTEL)) {
+			if (!parametroBusqCedente.getText().matches(RegularExpressionConstants.getNumerosLimitado(10))) {
+				errores.add(Sfa.constant().ERR_FORMATO().replaceAll("\\{1\\}", Sfa.constant().numeroNextel()));
 			}
 		}
 		return errores;
