@@ -116,7 +116,9 @@ public interface SolicitudRpcService extends RemoteService {
 	public DescuentoTotalDto getDescuentosTotales(Long idLinea) throws RpcExceptionMessages;
 	
 	public void loginServer(String linea);
-	public Boolean crearArchivo(SolicitudServicioCerradaResultDto solicitud, boolean enviarEmail) throws RpcExceptionMessages;
+	
+	//MGR - #1415
+	public Boolean crearArchivo(Long idSolicitud, boolean enviarEmail) throws RpcExceptionMessages;
 
 	public List<PlanDto> getPlanesPorTipoPlan(Long idTipoPlan, Long idCuenta) throws RpcExceptionMessages;
 
@@ -125,7 +127,7 @@ public interface SolicitudRpcService extends RemoteService {
 	public CreateSaveSSTransfResultDto saveSolicituServicioTranferencia(SolicitudServicioDto solicitudServicioDto)	throws RpcExceptionMessages;
 
 	public CreateSaveSSTransfResultDto createSolicitudServicioTranferencia(SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages;
-	
+
 	public ContratoViewInitializer getContratoViewInitializer(GrupoSolicitudDto grupoSolicitud) throws RpcExceptionMessages;
 	//MGR - #1481
 	/**

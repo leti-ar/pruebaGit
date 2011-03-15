@@ -366,6 +366,13 @@ public class SolicitudBusinessService {
 			}
 		} else {
 			solicitudServicio.setDomicilioEnvio(null);
+			//MGR - #1525
+			for (Domicilio domicilioE : solicitudServicio.getCuenta().getPersona().getDomicilios()) {
+				if (domicilioE.esPrincipalDeEntrega()) {
+					solicitudServicio.setDomicilioEnvio(domicilioE);
+					break;
+				}
+			}
 		}
 		if (solicitudServicioDto.getIdDomicilioFacturacion() != null) {
 			for (Domicilio domicilioF : solicitudServicio.getCuenta().getPersona().getDomicilios()) {
@@ -376,6 +383,13 @@ public class SolicitudBusinessService {
 			}
 		} else {
 			solicitudServicio.setDomicilioFacturacion(null);
+			//MGR - #1525
+			for (Domicilio domicilioF : solicitudServicio.getCuenta().getPersona().getDomicilios()) {
+				if (domicilioF.esPrincipalDeFacturacion()) {
+					solicitudServicio.setDomicilioFacturacion(domicilioF);
+					break;
+				}
+			}
 		}
 		// esto limpia los ids negativos temporales
 		for (Domicilio domicilio : solicitudServicio.getCuenta().getPersona().getDomicilios()) {

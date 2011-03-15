@@ -72,8 +72,20 @@ public class HistoryUtils {
 		String params = getParamsString(token);
 		if (params != null) {
 			String[] splited = params.split("&|=");
-			for (int i = 0; i < splited.length; i = i + 2) {
+//			for (int i = 0; i < splited.length; i = i + 2) {
+//				if (splited[i].equals(paramName)) {
+//					return splited[i + 1];
+//				}
+//			}
+			for (int i = 0; i < splited.length; i++) {
 				if (splited[i].equals(paramName)) {
+					/*MGR - Cuando las cuestas son del tipo SFA-VANCUC=>1878429 los datos quedan separados
+					 como [...,SFA-VANCUC,>1878429,...] por lo cual en esos casos junto los datos
+					 antes de retornarlos
+					 */
+					if(i + 2 < splited.length && splited[i + 2].startsWith(">")){
+						return (splited[i + 1] + "=" + splited[i + 2]); 
+					}
 					return splited[i + 1];
 				}
 			}

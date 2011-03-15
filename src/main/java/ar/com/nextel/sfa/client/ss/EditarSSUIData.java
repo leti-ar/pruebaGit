@@ -64,6 +64,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private InfocomInitializer infocom;
 
 	private ListBox origen;
+	private ListBox origenTR;
 	private ListBox entrega;
 	private ListBox facturacion;
 	private TextArea aclaracion;
@@ -135,6 +136,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		fields.add(nss = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(10), true));
 		fields.add(nflota = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(5)));
 		fields.add(origen = new ListBox(""));
+		fields.add(origenTR = new ListBox(""));
 		fields.add(entrega = new ListBox());
 		fields.add(descuentoTotal = new ListBox());
 		tildeVerde = new Button();
@@ -302,6 +304,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	public ListBox getOrigen() {
 		return origen;
+	}
+	
+	public ListBox getOrigenTR() {
+		return origenTR;
 	}
 
 	public ListBox getEntrega() {
@@ -482,6 +488,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 		if (anticipo.getItemCount() != 0) {
 			origen.setSelectedItem(solicitud.getOrigen());
+			origenTR.setSelectedItem(solicitud.getOrigen());
 			anticipo.setSelectedItem(solicitud.getTipoAnticipo());
 		} else {
 			deferredLoad();
@@ -516,6 +523,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 					return true;
 				}
 				origen.setSelectedItem(solicitudServicio.getOrigen());
+				origenTR.setSelectedItem(solicitudServicio.getOrigen());
 				anticipo.setSelectedItem(solicitudServicio.getTipoAnticipo());
 				return false;
 			}
@@ -536,7 +544,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	public SolicitudServicioDto getSolicitudServicio() {
 		solicitudServicio.setNumero(nss.getText());
 		solicitudServicio.setNumeroFlota(nflota.getText());
-		solicitudServicio.setOrigen((OrigenSolicitudDto) origen.getSelectedItem());
+		if (origen.getSelectedItem() != null) {
+			solicitudServicio.setOrigen((OrigenSolicitudDto) origen.getSelectedItem());
+		} else if (origenTR.getSelectedItem() != null) {
+			solicitudServicio.setOrigen((OrigenSolicitudDto) origenTR.getSelectedItem());
+		}
 		//MGR - #1027
 		solicitudServicio.setOrdenCompra(ordenCompra.getText());
 		
@@ -1029,7 +1041,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	public SolicitudServicioDto getSolicitudServicioTranferencia() {
 		solicitudServicio.setNumero(nss.getText());
-		solicitudServicio.setOrigen((OrigenSolicitudDto) origen.getSelectedItem());
+		solicitudServicio.setOrigen((OrigenSolicitudDto) origenTR.getSelectedItem());
 		solicitudServicio.setObservaciones(observaciones.getText());
 		//MGR - #1359
 		//solicitudServicio.setUsuarioCreacion(ClientContext.getInstance().getVendedor());
@@ -1058,7 +1070,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 		GwtValidator validator = new GwtValidator();
 		
-		validator.addTarget(origen).required(
+		validator.addTarget(origenTR).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
 		
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
@@ -1106,7 +1118,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				validator.addError(Sfa.constant().ERR_NNS_RANGO());
 			}
 		}
-		validator.addTarget(origen).required(
+		validator.addTarget(origenTR).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
 			validator.addTarget(vendedor).required(
@@ -1201,5 +1213,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 		SolicitudRpcService.Util.getInstance().validarPlanesCedentes(solicitudServicio.getContratosCedidos(),
 				getCuenta().isEmpresa(), defaultWaitCallback);
+	}
+	
+	//MGR - #1415
+	public Long getIdSolicitudServicio(){
+		if(solicitudServicio != null){
+			return solicitudServicio.getId();
+		}
+		return null;
 	}
 }

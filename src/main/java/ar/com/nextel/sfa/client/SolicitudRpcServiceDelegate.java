@@ -1,7 +1,7 @@
 package ar.com.nextel.sfa.client;
 
 import java.util.List;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
@@ -201,10 +201,11 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.loginServer(linea, callback);
 	}
 
-	public void crearArchivo(SolicitudServicioCerradaResultDto solicitud,
+	//MGR - #1415
+	public void crearArchivo(Long idSolicitud,
 			boolean enviarEmail, DefaultWaitCallback<Boolean> defaultWaitCallback) {
 		WaitWindow.show();
-		solicitudRpcServiceAsync.crearArchivo(solicitud, enviarEmail, defaultWaitCallback);
+		solicitudRpcServiceAsync.crearArchivo(idSolicitud, enviarEmail, defaultWaitCallback);
 	}
 
 	public void getPlanesPorTipoPlan(Long idTipoPlan, Long idCuenta,
@@ -243,5 +244,4 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.validarPlanesCedentes(ctoCedentes, isEmpresa, callback);
 	}
-	
 }

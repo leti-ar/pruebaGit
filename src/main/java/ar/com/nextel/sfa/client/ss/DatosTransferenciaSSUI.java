@@ -234,7 +234,11 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		nnsLayout.setHTML(0, 0, Sfa.constant().nssReq());
 		nnsLayout.setWidget(0, 1, editarSSUIData.getNss());
 		nnsLayout.setHTML(0, 2, Sfa.constant().origenReq());
-		nnsLayout.setWidget(0, 3, editarSSUIData.getOrigen());
+		nnsLayout.setWidget(0, 3, editarSSUIData.getOrigenTR());
+		
+		if (editarSSUIData.getOrigenTR().getItemCount() == 2) {
+			editarSSUIData.getOrigenTR().setSelectedIndex(1);
+		}
 
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
 			nnsLayout.setHTML(0, 4, Sfa.constant().vendedorReq());
