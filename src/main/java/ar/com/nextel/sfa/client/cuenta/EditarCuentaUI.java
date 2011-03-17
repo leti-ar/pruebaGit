@@ -247,7 +247,7 @@ public class EditarCuentaUI extends ApplicationUI {
 	}
 
 	private void doAgregarCuenta() {
-		verCrearNuevoDomicilio = false;
+//		verCrearNuevoDomicilio = false;
 		if (CuentaClientService.cuentaDto.getCategoriaCuenta().getDescripcion().equals(
 				TipoCuentaEnum.CTA.getTipo())) {
 			cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.cuentaDto);
