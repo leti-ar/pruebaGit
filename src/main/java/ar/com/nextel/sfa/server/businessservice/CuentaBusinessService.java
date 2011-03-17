@@ -393,6 +393,8 @@ public class CuentaBusinessService {
 					//si modificó la FE tengo que poner en false el campo replicadaAutogestion
 					if (!cuentaDto.getFacturaElectronica().getEmail().equals(cuenta.getFacturaElectronica().getEmail())) {
 						cuentaDto.getFacturaElectronica().setReplicadaAutogestion(Boolean.FALSE);
+					} else {
+						cuentaDto.getFacturaElectronica().setReplicadaAutogestion(cuenta.getFacturaElectronica().getReplicadaAutogestion());
 					}
 				}
 				mapper.map(cuentaDto.getFacturaElectronica(), cuenta
