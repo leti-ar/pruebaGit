@@ -897,15 +897,17 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		for (DomiciliosCuentaDto domicilio : domicilios) {
 			if (domicilio.getIdEntrega().equals(EstadoTipoDomicilioDto.PRINCIPAL.getId())) {
 				entrega.addItem(domicilio);
-				entrega.setSelectedItem(domicilio);
 			} else if (domicilio.getIdEntrega().equals(EstadoTipoDomicilioDto.SI.getId())) {
 				entrega.addItem(domicilio);
 			}
 			if (domicilio.getIdFacturacion().equals(EstadoTipoDomicilioDto.PRINCIPAL.getId())) {
 				facturacion.addItem(domicilio);
-				facturacion.setSelectedItem(domicilio);
 			} else if (domicilio.getIdFacturacion().equals(EstadoTipoDomicilioDto.SI.getId())) {
 				facturacion.addItem(domicilio);
+			}
+			if (domicilio.getId() == -1) { // si lo acaba de crear lo selecciono
+				entrega.setSelectedItem(domicilio);
+				facturacion.setSelectedItem(domicilio);
 			}
 		}
 	}
