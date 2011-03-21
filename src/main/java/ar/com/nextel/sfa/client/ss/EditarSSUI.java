@@ -359,7 +359,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		}
 		
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
-			editarSSUIData.getSucursalOrigen().addAllItems(initializer.getSucursales());
+			if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
+				editarSSUIData.getSucursalOrigen().addAllItems(initializer.getSucursalesOrdenado());
+			} else {
+				editarSSUIData.getSucursalOrigen().addAllItems(initializer.getSucursales());
+			}
 			
 			//Para que cargue correctamente la opcion del combo
 			if(editarSSUIData.getIdSucursalSolicitud() != null){

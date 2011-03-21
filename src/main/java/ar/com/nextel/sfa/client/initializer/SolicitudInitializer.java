@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.initializer;
 
+import java.util.Collections;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
@@ -47,4 +48,12 @@ public class SolicitudInitializer implements IsSerializable {
 	public void setSucursales(List<SucursalDto> sucursales) {
 		this.sucursales = sucursales;
 	}
+	
+	public List<SucursalDto> getSucursalesOrdenado() {
+		if (sucursales != null && !sucursales.isEmpty()) {
+			Collections.sort(sucursales);
+		}
+		return sucursales;
+	}
+	
 }
