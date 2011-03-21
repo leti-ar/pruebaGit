@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.client.cuenta;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
@@ -1806,6 +1807,14 @@ public class CuentaDatosForm extends Composite {
 			}
 			cuentaUIData.getFacturaElectronicaPanel().setFacturaElectronicaHabilitada(false);
 		}
+	}
+
+	public static List<String> validarCompletitud(PersonaDto persona) {
+		List<String> errores = new ArrayList<String>();
+		if (persona.getRazonSocial() == null) {
+			errores.add("Debe completar los campos obligatorios de la cuenta");
+		}
+		return errores;
 	}
 
 }

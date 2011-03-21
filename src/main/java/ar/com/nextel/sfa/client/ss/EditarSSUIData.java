@@ -8,6 +8,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
+import ar.com.nextel.sfa.client.cuenta.CuentaDatosForm;
 import ar.com.nextel.sfa.client.cuenta.CuentaDomiciliosForm;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
@@ -579,8 +580,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	}
 
 	public List<String> validarCompletitud() {
-		return CuentaDomiciliosForm.validarCompletitud(solicitudServicio.getCuenta().getPersona()
+		List<String> errores = CuentaDomiciliosForm.validarCompletitud(solicitudServicio.getCuenta().getPersona()
 				.getDomicilios());
+		errores.addAll(CuentaDatosForm.validarCompletitud(solicitudServicio.getCuenta().getPersona()));
+		return errores;
 	}
 
 	public List<String> validarParaGuardar() {
