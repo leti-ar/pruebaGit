@@ -446,7 +446,7 @@ public class SolicitudBusinessService {
 				.getVendedor());
 
 	}
-	private final long unDiaEnMilis = 1000*60*60*24*4;
+	private final long unDiaEnMilis = 1000*60*60*24;
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public GeneracionCierreResponse generarCerrarSolicitud(SolicitudServicio solicitudServicio,
@@ -474,11 +474,13 @@ public class SolicitudBusinessService {
 //					&& !solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion()
 					&& hace4Dias.before(solicitudServicio.getCuenta().getFacturaElectronica().getLastModificationDate())
 					&& !response.getMessages().hasErrors()) {
-				facturaElectronicaService.adherirFacturaElectronica(
-						new Long(solicitudServicio.getCuenta().getCodigoBSCS()), solicitudServicio.getCuenta()
-						.getCodigoVantive(), solicitudServicio.getCuenta()
-						.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor()
-						.getUserName());
+				if (!esProspectEnCarga) {
+					facturaElectronicaService.adherirFacturaElectronica(
+							new Long(solicitudServicio.getCuenta().getCodigoBSCS()), solicitudServicio.getCuenta()
+							.getCodigoVantive(), solicitudServicio.getCuenta()
+							.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor()
+							.getUserName());
+				}
 				solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
 				repository.save(solicitudServicio.getCuenta().getFacturaElectronica());
 				if (!esProspectEnCarga) {
