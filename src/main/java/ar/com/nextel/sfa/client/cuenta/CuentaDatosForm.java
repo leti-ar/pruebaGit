@@ -1790,12 +1790,12 @@ public class CuentaDatosForm extends Composite {
 					cuentaUIData.getFacturaElectronicaPanel().setEnabled(false);
 					cuentaUIData.getFacturaElectronicaPanel().getEmail().setReadOnly(true);
 				} else {
-					cuentaUIData.getFacturaElectronicaPanel().setEnabled(true);
+					cuentaUIData.getFacturaElectronicaPanel().setEnabled(false);
+					cuentaUIData.getFacturaElectronicaPanel().getEmail().setEnabled(true);
 					cuentaUIData.getFacturaElectronicaPanel().getEmail().setReadOnly(false);
 				}
 				cuentaUIData.getFacturaElectronicaPanel().setFacturaElectronicaHabilitada(true);
 			}
-
 		} else {
 			cuentaUIData.getFacturaElectronicaPanel().setText("");
 			if ("true".equals(ClientContext.getInstance().getSecretParams().get("ro"))) {
