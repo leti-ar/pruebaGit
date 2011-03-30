@@ -1785,7 +1785,7 @@ public class CuentaDatosForm extends Composite {
 		this.facturaElectronicaOriginal = facturaElectronica;
 		if (facturaElectronica != null) {
 			cuentaUIData.getFacturaElectronicaPanel().setText(facturaElectronica.getEmail());
-			if (facturaElectronica.isCargadaEnVantive() || facturaElectronica.isReplicadaAutogestion()) {
+//			if (facturaElectronica.isCargadaEnVantive() || facturaElectronica.isReplicadaAutogestion()) {
 				if ("true".equals(ClientContext.getInstance().getSecretParams().get("ro"))) {
 					cuentaUIData.getFacturaElectronicaPanel().setEnabled(false);
 					cuentaUIData.getFacturaElectronicaPanel().getEmail().setReadOnly(true);
@@ -1795,7 +1795,7 @@ public class CuentaDatosForm extends Composite {
 					cuentaUIData.getFacturaElectronicaPanel().getEmail().setReadOnly(false);
 				}
 				cuentaUIData.getFacturaElectronicaPanel().setFacturaElectronicaHabilitada(true);
-			}
+//			}
 		} else {
 			cuentaUIData.getFacturaElectronicaPanel().setText("");
 			if ("true".equals(ClientContext.getInstance().getSecretParams().get("ro"))) {
