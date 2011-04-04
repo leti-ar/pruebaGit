@@ -50,7 +50,7 @@ public class DomiciliosUIData extends UIData {
 	private ValidationTextBox unidadFuncional = new ValidationTextBox("[0-9a-zA-Z]*");
 	private TextArea observaciones = new TextArea();
 	private ValidationTextBox localidad = new ValidationTextBox("[0-9a-zA-Z\\s]*");
-	private ValidationTextBox partido = new ValidationTextBox("[0-9a-zA-Z\\s]*");
+	private ValidationTextBox partido = new ValidationTextBox("[0-9a-zA-ZñÑ\\s]*");
 	private PersonaDto persona = new PersonaDto();
 	private ListBox facturacion = new ListBox();
 	private ListBox entrega = new ListBox();
