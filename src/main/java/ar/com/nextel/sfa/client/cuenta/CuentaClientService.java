@@ -222,5 +222,38 @@ public class CuentaClientService {
 		boolean vengoDeOportunidad= HistoryUtils.getParam(EditarCuentaUI.PARAM_OPORTUNIDAD) != null;
 		return vengoDeOportunidad?cuentaPotencialDto.getCodigoVantive() : cuentaDto.getCodigoVantive();
 	}
+
+	public static void crearSuscriptor(String codigoVantive) {
+		crearSuscriptor(codigoVantive, true);
+	}
+
+	public static void crearSuscriptor(final String codigoVantive, boolean redir) {
+		cuentaDto = null;
+		error = false;
+		CuentaRpcService.Util.getInstance().crearSuscriptor(codigoVantive,
+				new DefaultWaitCallback<CuentaDto>() {
+					public void success(CuentaDto ctaDto) {
+						cuentaDto = ctaDto;
+					}
+
+					public void failure(Throwable caught) {
+						error = true;
+						super.failure(caught);
+					}
+				});
+		if (redir) {
+			DeferredCommand.addCommand(new IncrementalCommand() {
+				public boolean execute() {
+					if (cuentaDto == null && !error)
+						return true;
+					if (!error) {
+						History.newItem(EditarCuentaUI.getEditarCuentaUrl("" + cuentaDto.getId(), ""
+								+ codigoVantive, null, false, false, true));
+					}
+					return false;
+				}
+			});
+		}
+	}
 	
 }

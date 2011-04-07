@@ -70,4 +70,5 @@ public interface CuentaRpcService extends RemoteService {
 	public List<CuentaDto> searchCuentasDto(CuentaSearchDto cuentaSearchDto, boolean deberiaLockear) throws RpcExceptionMessages;
 	public List<ContratoViewDto> searchContratosActivos(CuentaDto ctaDto) throws RpcExceptionMessages;
 	public List<ServicioContratoDto> searchServiciosContratados(Long numeroContrato) throws RpcExceptionMessages;
+	public CuentaDto crearSuscriptor(String codigoVantive) throws RpcExceptionMessages;
 }

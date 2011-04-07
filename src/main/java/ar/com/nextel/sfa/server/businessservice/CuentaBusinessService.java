@@ -766,4 +766,31 @@ public class CuentaBusinessService {
 		return accessCuenta;
 	}
 
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public Cuenta obtenerCtaPadreSinLockear(String codigoVantive,
+			String categoriaCuenta, Vendedor vendedor) throws RpcExceptionMessages {
+		BaseAccessObject accessCuentaPadre;
+		Cuenta cuenta = null;
+		try {
+			accessCuentaPadre = getAccessCuenta(codigoVantive, vendedor);
+			// AccessAuthorization accessAuthorizationPadre =
+			// accessCuentaPadre.getAccessAuthorization();
+			cuenta = (Cuenta) accessCuentaPadre.getTargetObject();
+
+			if (!accessCuentaPadre.getAccessAuthorization()
+					.hasSamePermissionsAs(AccessAuthorization.editOnly())
+					&& !accessCuentaPadre.getAccessAuthorization()
+							.hasSamePermissionsAs(
+									AccessAuthorization.fullAccess())) {
+
+				accessCuentaPadre.getAccessAuthorization().setReasonPrefix(
+						ERR_CUENTA_NO_ACCESS);
+				throw new RpcExceptionMessages(ERR_CUENTA_NO_ACCESS);
+			}
+		} catch (Exception e) {
+			throw new RpcExceptionMessages(e.getMessage());
+		}
+		return cuenta;
+	}
+
 }

@@ -137,7 +137,11 @@ public class BuscarCuentaUI extends ApplicationUI implements BuscarCuentaControl
 				CuentaClientService.crearDivision(idCuenta);
 			} else if (sender == agregarSuscriptor) {
 				popupAgregarCuenta.hide();
-				CuentaClientService.crearSuscriptor(idCuenta);
+				if (idCuenta == 0) {
+					CuentaClientService.crearSuscriptor(cuentaSearch.getNumero());
+				} else {
+					CuentaClientService.crearSuscriptor(idCuenta);
+				}
 			}
 		} else {
 			MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(),

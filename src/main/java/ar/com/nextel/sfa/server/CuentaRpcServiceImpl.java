@@ -699,4 +699,24 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		}
 		return servicios;
 	}
+
+	public SuscriptorDto crearSuscriptor(String codigoVantive) throws RpcExceptionMessages {
+		AppLogger.info("Creando Suscriptor...");
+		SuscriptorDto suscriptorDto;
+		try {
+			Cuenta cuenta = obtenerCtaPadreSinLockear(codigoVantive, KnownInstanceIdentifier.SUSCRIPTOR
+					.getKey());
+			suscriptorDto = (SuscriptorDto) mapper.map(cuentaBusinessService.crearSuscriptor(cuenta,
+					getVendedor()), SuscriptorDto.class);
+		} catch (Exception e) {
+			throw new RpcExceptionMessages(e.getMessage());
+		}
+		AppLogger.info("Creacion de Suscriptor finalizada.");
+		return suscriptorDto;
+	}
+	
+	public Cuenta obtenerCtaPadreSinLockear(String codigoVantive, String categoriaCuenta)
+		throws RpcExceptionMessages {
+		return cuentaBusinessService.obtenerCtaPadreSinLockear(codigoVantive, categoriaCuenta, getVendedor());
+	}
 }

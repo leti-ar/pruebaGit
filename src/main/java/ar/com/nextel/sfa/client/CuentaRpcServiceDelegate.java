@@ -144,4 +144,9 @@ public class CuentaRpcServiceDelegate {
 		WaitWindow.show();
 		cuentaRpcService.searchServiciosContratados(numeroContrato, callback);
 	}
+
+	public void crearSuscriptor(String codigoVantive, DefaultWaitCallback<CuentaDto> callback) {
+		WaitWindow.show();
+		cuentaRpcService.crearSuscriptor(codigoVantive, callback);
+	}
 }
