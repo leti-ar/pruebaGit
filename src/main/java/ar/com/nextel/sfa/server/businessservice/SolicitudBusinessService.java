@@ -480,8 +480,8 @@ public class SolicitudBusinessService {
 							.getCodigoVantive(), solicitudServicio.getCuenta()
 							.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor()
 							.getUserName());
+					solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
 				}
-				solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
 				repository.save(solicitudServicio.getCuenta().getFacturaElectronica());
 				if (!esProspectEnCarga) {
 					String codigoGestion = "TRANSF_FACT_ELECTRONICA";
