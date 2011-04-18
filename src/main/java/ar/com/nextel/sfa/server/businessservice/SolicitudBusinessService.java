@@ -452,7 +452,7 @@ public class SolicitudBusinessService {
 	public GeneracionCierreResponse generarCerrarSolicitud(SolicitudServicio solicitudServicio,
 			String pinMaestro, boolean cerrar) {
 //		#1636 mrial
-		boolean esProspect = solicitudServicio.getCuenta().isProspectEnCarga();
+		boolean esProspect = solicitudServicio.getCuenta().getCodigoBSCS()==null || solicitudServicio.getCuenta().isProspectEnCarga();
 		final Date hace4Dias = new Date(System.currentTimeMillis() - 4
 				* unDiaEnMilis);
 		if (!GenericValidator.isBlankOrNull(pinMaestro) && solicitudServicio.getCuenta().isEnCarga()) {
