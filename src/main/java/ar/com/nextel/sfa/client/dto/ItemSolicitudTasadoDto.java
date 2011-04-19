@@ -10,12 +10,13 @@ public class ItemSolicitudTasadoDto implements IsSerializable, ListBoxItem {
 	private Double precioLista;
 	private ItemSolicitudDto item;
 	
-	//MGR****
+	//MGR -#ISDM 1785 - Para saber como mostrar el texto
 	private ListaPreciosDto listaPrecios;
 
 	/** Descripcion del ItemSolicitudDto */
 	public String getItemText() {
-		//MGR******
+		//MGR -#ISDM 1785 - Si la lista concatena, como Texto se debe mostrar:
+		//		'Segmento1 - Descripcion'
 		if(listaPrecios != null && listaPrecios.getConcatena() != null &&
 				listaPrecios.getConcatena()){
 			return item.getSegment1() + " - " + item.getDescripcion();

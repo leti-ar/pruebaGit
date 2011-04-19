@@ -19,7 +19,7 @@ public class ListaPreciosDto extends EnumDto implements IsSerializable, ListBoxI
 	//MGR - #998
 	private int ordenAparicion;
 	
-	//MGR**** - #ISDM 1785 - Indica si se contatena Segment1 y Descripcion como descripción
+	//MGR - #ISDM 1785 - Indica si se contatena Segment1 y Descripcion como descripción
 	private Boolean concatena;
 
 	public String getItemText() {
