@@ -76,12 +76,17 @@ import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 public class CuentaBusinessService {
 
 	private final String ERR_CUENTA_PREFIX = "La cuenta no puede abrirse. <BR/>";
-	private final String ERR_CUENTA_NO_ACCESS = "Acceso denegado. No puede operar con esta cuenta.";
+	private final static String ERR_CUENTA_NO_ACCESS = "Acceso denegado. No puede operar con esta cuenta.";
 	private final String ERR_CUENTA_NO_EDITABLE = ERR_CUENTA_PREFIX
 			+ "La Cuenta es de clase {1}";
 	private final String ERR_CUENTA_GOBIERNO = ERR_CUENTA_PREFIX
 			+ "La Cuenta: {1} ({2}) es de clase {3} y pertenece a la cartera de otro vendedor";
 	private final String ERR_CUENTA_NO_PERMISO = "No tiene permiso para ver esa cuenta.";
+	
+	//MGR - ISDM #1794 - Los telemarketing muestran otro mensaje
+	private static final String ERR_CUENTA_LOCKEADA_POR_OTRO_TLM = ERR_CUENTA_NO_ACCESS +
+									"<br/>\n La Cuenta {1} se encuentra lockeada por otro vendedor. " +
+									"<br/>\n El Vendedor de lockeo es {2}";
 
 	@Qualifier("createCuentaBusinessOperator")
 	private CreateCuentaBusinessOperator createCuentaBusinessOperator;
@@ -646,6 +651,18 @@ public class CuentaBusinessService {
 				if ((cuenta.getVendedorLockeo() != null)
 						&& (!vendedor.getId().equals(
 								cuenta.getVendedorLockeo().getId())) && vendedor.getTipoVendedor().isUsaLockeo()) {
+					
+					//Si el que consulta y el que lockea la cuenta son del tipo Telemarketing, 
+					//entonces cambia el mensaje a mostrar
+					if(vendedor.isTelemarketing()){
+						if(cuenta.getVendedorLockeo() != null &&
+								cuenta.getVendedorLockeo().isTelemarketing()){
+							throw new RpcExceptionMessages(ERR_CUENTA_LOCKEADA_POR_OTRO_TLM
+									.replaceAll("\\{1\\}", cuenta.getCodigoVantive())
+									.replaceAll("\\{2\\}", cuenta.getVendedorLockeo().getApellidoYNombre()));
+						}
+					}
+					
 					throw new RpcExceptionMessages(ERR_CUENTA_NO_PERMISO);
 				}
 			}
