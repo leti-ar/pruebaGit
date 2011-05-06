@@ -451,7 +451,12 @@ public class SolicitudBusinessService {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public GeneracionCierreResponse generarCerrarSolicitud(SolicitudServicio solicitudServicio,
 			String pinMaestro, boolean cerrar) {
-		boolean esProspectEnCarga = solicitudServicio.getCuenta().isEnCarga();
+//		#1636 mrial
+		boolean esProspect = false;
+		if (solicitudServicio.getCuenta().isProspectEnCarga()
+				|| solicitudServicio.getCuenta().isProspect()) {
+			esProspect = true;
+		}
 		final Date hace4Dias = new Date(System.currentTimeMillis() - 4
 				* unDiaEnMilis);
 		if (!GenericValidator.isBlankOrNull(pinMaestro) && solicitudServicio.getCuenta().isEnCarga()) {
@@ -474,16 +479,16 @@ public class SolicitudBusinessService {
 //					&& !solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion()
 					&& hace4Dias.before(solicitudServicio.getCuenta().getFacturaElectronica().getLastModificationDate())
 					&& !response.getMessages().hasErrors()) {
-				if (!esProspectEnCarga) {
+				if (!esProspect) {
 					facturaElectronicaService.adherirFacturaElectronica(
 							new Long(solicitudServicio.getCuenta().getCodigoBSCS()), solicitudServicio.getCuenta()
 							.getCodigoVantive(), solicitudServicio.getCuenta()
 							.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor()
 							.getUserName());
+					solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
 				}
-				solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
 				repository.save(solicitudServicio.getCuenta().getFacturaElectronica());
-				if (!esProspectEnCarga) {
+				if (!esProspect) {
 					String codigoGestion = "TRANSF_FACT_ELECTRONICA";
 					ParametrosGestion parametrosGestion = repository.retrieve(ParametrosGestion.class, codigoGestion);
 					Vendedor vendedor = repository.retrieve(Vendedor.class, this.sessionContextLoader.getInstance().getVendedor().getId());
