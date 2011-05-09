@@ -1,7 +1,6 @@
 package ar.com.nextel.sfa.client.cuenta;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
@@ -59,10 +58,8 @@ import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -586,17 +583,17 @@ public class CuentaDatosForm extends Composite {
 		cargarPanelDatos(cuentaSusc);
 		cargarPanelTelefonoFax(cuentaSusc);
 		cargarPanelEmails(cuentaSusc);
-		cargarPanelFormaPago(cuentaSusc);
+		cargarPanelFormaPago(cuentaSusc, false);	//
 		cargarPanelVendedor(cuentaSusc);
 		cargarPanelUsuario(cuentaSusc);
 	}
 
-	public void ponerDatosBusquedaEnFormulario(CuentaDto cuentaDto) {
+	public void ponerDatosBusquedaEnFormulario(CuentaDto cuentaDto, boolean isSaved) {
 		if (showPanelDatosCuenta)
 			cargarPanelDatos(cuentaDto);
 		cargarPanelTelefonoFax(cuentaDto);
 		cargarPanelEmails(cuentaDto);
-		cargarPanelFormaPago(cuentaDto);
+		cargarPanelFormaPago(cuentaDto, isSaved);
 		cargarPanelVendedor(cuentaDto);
 		cargarPanelUsuario(cuentaDto);
 	}
@@ -777,7 +774,7 @@ public class CuentaDatosForm extends Composite {
 		}
 	}
 
-	public void cargarPanelFormaPago(CuentaDto cuentaDto) {
+	public void cargarPanelFormaPago(CuentaDto cuentaDto, boolean isSaved) {
 		String id_formaPago = "";
 		if (cuentaDto.getDatosPago().isEfectivo()) {
 			datosPago = (DatosEfectivoDto) cuentaDto.getDatosPago();
@@ -806,7 +803,7 @@ public class CuentaDatosForm extends Composite {
 		}
 		cuentaUIData.setFacturaElectronica(cuentaDto.getFacturaElectronica());
 		// el param tiene null(pero está bien porque no tenia)
-		this.setFacturaElectronicaOriginal(cuentaUIData.getFacturaElectronica());
+		this.setFacturaElectronicaOriginal(cuentaUIData.getFacturaElectronica(), cuentaDto.isProspectEnCarga(), isSaved);
 		setVisiblePanelFormaPagoYActualizarCamposObligatorios(id_formaPago);
 	}
 
@@ -1308,6 +1305,12 @@ public class CuentaDatosForm extends Composite {
 									((ListBox) campo).getName()));
 				}
 		}
+		
+		if (cuentaUIData.getFacturaElectronicaPanel().isFacturaElectronicaChecked()
+				&& "".equals(cuentaUIData.getFacturaElectronicaPanel().getEmail().getText())) {
+			validator.addError(Sfa.constant().NO_INGRESO_FACTURA_ELECTRONICA());
+		}
+		
 		validator.fillResult();
 		return validator.getErrors();
 	}
@@ -1781,7 +1784,7 @@ public class CuentaDatosForm extends Composite {
 		}
 	}
 
-	public void setFacturaElectronicaOriginal(FacturaElectronicaDto facturaElectronica) {
+	public void setFacturaElectronicaOriginal(FacturaElectronicaDto facturaElectronica, boolean isProspectEnCarga, boolean isSaved) {
 		this.facturaElectronicaOriginal = facturaElectronica;
 		if (facturaElectronica != null) {
 			cuentaUIData.getFacturaElectronicaPanel().setText(facturaElectronica.getEmail());
@@ -1805,7 +1808,11 @@ public class CuentaDatosForm extends Composite {
 				cuentaUIData.getFacturaElectronicaPanel().setEnabled(true);
 				cuentaUIData.getFacturaElectronicaPanel().getEmail().setReadOnly(false);
 			}
-			cuentaUIData.getFacturaElectronicaPanel().setFacturaElectronicaHabilitada(false);
+			if (isProspectEnCarga && !isSaved) {
+				cuentaUIData.getFacturaElectronicaPanel().setFacturaElectronicaHabilitada(true);
+			} else {
+				cuentaUIData.getFacturaElectronicaPanel().setFacturaElectronicaHabilitada(false);
+			}
 		}
 	}
 

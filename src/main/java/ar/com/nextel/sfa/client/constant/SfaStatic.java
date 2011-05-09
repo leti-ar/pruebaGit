@@ -2503,4 +2503,13 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("El plan {1} no es valido para el nuevo cliente.")
   @Key("ERR_PLAN_NO_VALIDO")
   String ERR_PLAN_NO_VALIDO();
+
+  /**
+   * Translated "Debe ingresar un mail de Factura Electrónica o deshabilitar la opción".
+   * 
+   * @return translated "Debe ingresar un mail de Factura Electrónica o deshabilitar la opción"
+   */
+  @DefaultStringValue("Debe ingresar un mail de Factura Electrónica o deshabilitar la opción")
+  @Key("NO_INGRESO_FACTURA_ELECTRONICA")
+  String NO_INGRESO_FACTURA_ELECTRONICA();
 }

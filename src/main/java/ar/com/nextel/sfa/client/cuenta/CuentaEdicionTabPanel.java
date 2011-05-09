@@ -411,7 +411,7 @@ public class CuentaEdicionTabPanel {
 			public void success(CuentaDto cuentaDto) {
 				CuentaEdicionTabPanel.getInstance().setCuenta2editDto(cuentaDto);
 				//actualiza pestaña datos
-				cuentaDatosForm.ponerDatosBusquedaEnFormulario(cuentaDto);
+				cuentaDatosForm.ponerDatosBusquedaEnFormulario(cuentaDto, true);
 				razonSocial.setText(cuentaDto.getPersona().getRazonSocial());
 				//actualiza pestaña domicilios
 				cuentaDomiciliosForm.cargaTablaDomicilios(cuentaDto);
