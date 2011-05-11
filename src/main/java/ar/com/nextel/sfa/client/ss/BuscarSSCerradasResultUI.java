@@ -3,8 +3,6 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.Iterator;
 import java.util.List;
 
-import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreRequest;
-import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
@@ -14,11 +12,9 @@ import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
-import ar.com.nextel.sfa.server.businessservice.SolicitudBusinessService;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.WindowUtils;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
-import ar.com.snoop.gwt.commons.client.widget.table.RowListener;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -249,7 +245,8 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 								+ "?module=solicitudes&service=rtf&name=" + filenameFinal);
 					} else {
 						
-						SolicitudRpcService.Util.getInstance().crearArchivo(solicitud, false, new DefaultWaitCallback<Boolean>() {
+						//MGR - #1415 - Solo se envia el id de la solcitud
+						SolicitudRpcService.Util.getInstance().crearArchivo(solicitud.getId(), false, new DefaultWaitCallback<Boolean>() {
 
 							@Override
 							public void success(Boolean result) {

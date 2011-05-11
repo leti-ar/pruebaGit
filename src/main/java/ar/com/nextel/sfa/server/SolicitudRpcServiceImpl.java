@@ -596,7 +596,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	}
 	
 	
-
 	private String getReporteFileName(SolicitudServicio solicitudServicio) {
 		String filename;
 		if (solicitudServicio.getCuenta().isCliente()) {
@@ -680,10 +679,11 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return descuentoTotal;
 	}
 
-	public Boolean crearArchivo(SolicitudServicioCerradaResultDto solicitud, boolean enviarEmail)
+	//MGR - #1415
+	public Boolean crearArchivo(Long idSolicitud, boolean enviarEmail)
 			throws RpcExceptionMessages {
 		SolicitudServicio solicitudServicio = solicitudServicioRepository
-			.getSolicitudServicioPorId(solicitud.getId());
+			.getSolicitudServicioPorId(idSolicitud);
 		GeneracionCierreResponse response = null;
 		try {
 			response = solicitudBusinessService.crearArchivo(solicitudServicio, enviarEmail);

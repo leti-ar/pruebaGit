@@ -23,6 +23,7 @@ public class EditarCuentaUI extends ApplicationUI {
 
 	public static boolean esEdicionCuenta = true;
 	public static boolean edicionReadOnly = false;
+	public static boolean verCrearNuevoDomicilio = true;
 
 	public static final String PARAM_CUENTA_ID = "cuenta_id";
 	public static final String PARAM_COD_VANTIVE = "cod_vantive";
@@ -160,6 +161,7 @@ public class EditarCuentaUI extends ApplicationUI {
 	 */
 	private void resetEditor() {
 		esEdicionCuenta = true;
+		verCrearNuevoDomicilio = true;
 		String paramReadOnly = ClientContext.getInstance().getSecretParams().get(PARAM_READ_ONLY);
 		edicionReadOnly = paramReadOnly != null && "true".equals(paramReadOnly);
 		cuentaTab.clean();
@@ -220,7 +222,7 @@ public class EditarCuentaUI extends ApplicationUI {
 			cuentaTab.getCuentaDatosForm().ponerDatosBusquedaEnFormulario(cuenta);
 
 		// carga info pestaña Domicilio
-		cuentaTab.getCuentaDomicilioForm().getCrearDomicilio().setVisible(esEdicionCuenta);
+		cuentaTab.getCuentaDomicilioForm().getCrearDomicilio().setVisible(verCrearNuevoDomicilio);
 		if (cuenta.getPersona() != null) {
 			cuentaTab.getCuentaDomicilioForm().cargaTablaDomicilios(cuenta);
 		}
@@ -245,6 +247,7 @@ public class EditarCuentaUI extends ApplicationUI {
 	}
 
 	private void doAgregarCuenta() {
+//		verCrearNuevoDomicilio = false;
 		if (CuentaClientService.cuentaDto.getCategoriaCuenta().getDescripcion().equals(
 				TipoCuentaEnum.CTA.getTipo())) {
 			cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.cuentaDto);
@@ -276,6 +279,7 @@ public class EditarCuentaUI extends ApplicationUI {
 
 	private void doBusquedaOPP() {
 		esEdicionCuenta = false;
+		verCrearNuevoDomicilio = false;
 		edicionReadOnly = true;
 		cuentaTab.setCuenta2editDto(CuentaClientService.cuentaPotencialDto.getCuentaOrigen());
 		if (!CuentaClientService.cuentaPotencialDto.isEsReserva()) {
@@ -305,7 +309,7 @@ public class EditarCuentaUI extends ApplicationUI {
 			cuentaTab.getCuentaDatosForm().setAtributosCamposAlMostrarResuladoBusqueda(
 					CuentaClientService.cuentaDto);
 		}
-		if (HistoryUtils.getParam(PARAM_READ_ONLY) != null) {
+		if ("true".equals(ClientContext.getInstance().getSecretParams().get(PARAM_READ_ONLY))) {
 			cuentaTab.getCuentaDatosForm().setAtributosCamposSoloLectura();
 		}
 		completarVisualizacionDatos(CuentaClientService.cuentaDto);

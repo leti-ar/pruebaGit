@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.server.businessservice;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,6 +43,7 @@ import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
 import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.ParametrosGestion;
 import ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalIncluido;
@@ -338,6 +340,7 @@ public class SolicitudBusinessService {
 			solicitudServicio.getCuenta().setVendedor(vendedorCta);
 		}
 
+
 		// Estas lineas son por un problema no identificado, que hace que al querer guardar el tipo de tarjeta
 		// detecte que el objeto no está attachado a la session
 		if (solicitudServicio.getCuenta().getDatosPago() instanceof DatosDebitoTarjetaCredito) {
@@ -356,23 +359,55 @@ public class SolicitudBusinessService {
 
 		if (solicitudServicioDto.getIdDomicilioEnvio() != null) {
 			for (Domicilio domicilioE : solicitudServicio.getCuenta().getPersona().getDomicilios()) {
-				if (solicitudServicioDto.getIdDomicilioEnvio().equals(domicilioE.getId())) {
+				if (solicitudServicioDto.getIdDomicilioEnvio().equals(domicilioE.getId())
+						&& !domicilioE.isTransferido()) {
 					solicitudServicio.setDomicilioEnvio(domicilioE);
 					break;
 				}
 			}
+			if (solicitudServicio.getDomicilioEnvio() == null) {
+				for (Domicilio domicilioE : solicitudServicio.getCuenta().getPersona().getDomicilios()) {
+					if (domicilioE.esPrincipalDeEntrega()) {
+						solicitudServicio.setDomicilioEnvio(domicilioE);
+						break;
+					}
+				}
+			}
 		} else {
 			solicitudServicio.setDomicilioEnvio(null);
+			//MGR - #1525
+			for (Domicilio domicilioE : solicitudServicio.getCuenta().getPersona().getDomicilios()) {
+				if (domicilioE.esPrincipalDeEntrega()) {
+					solicitudServicio.setDomicilioEnvio(domicilioE);
+					break;
+				}
+			}
 		}
 		if (solicitudServicioDto.getIdDomicilioFacturacion() != null) {
 			for (Domicilio domicilioF : solicitudServicio.getCuenta().getPersona().getDomicilios()) {
-				if (solicitudServicioDto.getIdDomicilioFacturacion().equals(domicilioF.getId())) {
+				if (solicitudServicioDto.getIdDomicilioFacturacion().equals(domicilioF.getId())
+						&& !domicilioF.isTransferido()) {
 					solicitudServicio.setDomicilioFacturacion(domicilioF);
 					break;
 				}
 			}
+			if (solicitudServicio.getDomicilioFacturacion() == null) {
+				for (Domicilio domicilioF : solicitudServicio.getCuenta().getPersona().getDomicilios()) {
+					if (domicilioF.esPrincipalDeFacturacion()) {
+						solicitudServicio.setDomicilioFacturacion(domicilioF);
+						break;
+					}
+				}				
+			}
 		} else {
 			solicitudServicio.setDomicilioFacturacion(null);
+			//MGR - #1525
+			for (Domicilio domicilioF : solicitudServicio.getCuenta().getPersona().getDomicilios()) {
+				if (domicilioF.esPrincipalDeFacturacion()) {
+					solicitudServicio.setDomicilioFacturacion(domicilioF);
+					break;
+				}
+			}
 		}
 		// esto limpia los ids negativos temporales
 		for (Domicilio domicilio : solicitudServicio.getCuenta().getPersona().getDomicilios()) {
@@ -411,11 +446,19 @@ public class SolicitudBusinessService {
 				.getVendedor());
 
 	}
+	private final long unDiaEnMilis = 1000*60*60*24;
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public GeneracionCierreResponse generarCerrarSolicitud(SolicitudServicio solicitudServicio,
 			String pinMaestro, boolean cerrar) {
-		boolean esProspect = solicitudServicio.getCuenta().isEnCarga();
+//		#1636 mrial
+		boolean esProspect = false;
+		if (solicitudServicio.getCuenta().isProspectEnCarga()
+				|| solicitudServicio.getCuenta().isProspect()) {
+			esProspect = true;
+		}
+		final Date hace4Dias = new Date(System.currentTimeMillis() - 4
+				* unDiaEnMilis);
 		if (!GenericValidator.isBlankOrNull(pinMaestro) && solicitudServicio.getCuenta().isEnCarga()) {
 			solicitudServicio.getCuenta().setPinMaestro(pinMaestro);
 		} else {
@@ -433,17 +476,31 @@ public class SolicitudBusinessService {
 			response = generacionCierreBusinessOperator.cerrarSolicitudServicio(generacionCierreRequest);
 			
 			if (solicitudServicio.getCuenta().getFacturaElectronica() != null
-					&& !solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion()
+//					&& !solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion()
+					&& hace4Dias.before(solicitudServicio.getCuenta().getFacturaElectronica().getLastModificationDate())
 					&& !response.getMessages().hasErrors()) {
 				if (!esProspect) {
 					facturaElectronicaService.adherirFacturaElectronica(
-							solicitudServicio.getCuenta().getId(), solicitudServicio.getCuenta()
-									.getCodigoVantive(), solicitudServicio.getCuenta()
-									.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor()
-									.getUserName());
+							new Long(solicitudServicio.getCuenta().getCodigoBSCS()), solicitudServicio.getCuenta()
+							.getCodigoVantive(), solicitudServicio.getCuenta()
+							.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor()
+							.getUserName());
+					solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
 				}
-				solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
 				repository.save(solicitudServicio.getCuenta().getFacturaElectronica());
+				if (!esProspect) {
+					String codigoGestion = "TRANSF_FACT_ELECTRONICA";
+					ParametrosGestion parametrosGestion = repository.retrieve(ParametrosGestion.class, codigoGestion);
+					Vendedor vendedor = repository.retrieve(Vendedor.class, this.sessionContextLoader.getInstance().getVendedor().getId());
+					Long idGestion = generacionCierreBusinessOperator.lanzarGestionCerrarSS(
+							vendedor.getUserReal(), 
+							0L, 
+							parametrosGestion, 
+							"", 
+							new Long(solicitudServicio.getCuenta().getCodigoBSCS()), 
+							cerrar);
+					solicitudServicio.getCuenta().getFacturaElectronica().setIdGestion(idGestion);
+				}
 			}
 		} else {
 			response = generacionCierreBusinessOperator.generarSolicitudServicio(generacionCierreRequest);

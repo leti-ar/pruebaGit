@@ -1,10 +1,7 @@
 package ar.com.nextel.sfa.client.cuenta;
 
-import java.util.List;
-
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
-import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -13,7 +10,6 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.InlineHTML;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class FacturaElectronicaPanel extends Composite implements ClickHandler {
 
@@ -30,7 +26,7 @@ public class FacturaElectronicaPanel extends Composite implements ClickHandler {
 
 		layout.setHTML(0, 0, Sfa.constant().habilitarFacturaElectronica());
 		layout.setWidget(0, 1, facturaElectronicaHabilitada);
-		layout.setWidget(0, 2, emailLabel);
+//		layout.setWidget(0, 2, emailLabel);
 		layout.setWidget(0, 3, email);
 
 		this.initWidget(layout);
@@ -107,6 +103,10 @@ public class FacturaElectronicaPanel extends Composite implements ClickHandler {
 	public boolean isEnabled(){
 		return facturaElectronicaHabilitada.isEnabled() && email.isEnabled(); 
 
+	}
+	
+	public CheckBox getFacturaElectronicaHabilitada() {
+		return facturaElectronicaHabilitada;
 	}
 	
 }
