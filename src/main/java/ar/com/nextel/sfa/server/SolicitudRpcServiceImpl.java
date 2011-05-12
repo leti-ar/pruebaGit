@@ -24,8 +24,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.constants.MessageIdentifier;
-import ar.com.nextel.business.legacy.avalon.AvalonSystem;
-import ar.com.nextel.business.legacy.avalon.dto.ServicioContratadoDto;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.vantive.VantiveSystem;
 import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO;
@@ -51,13 +49,10 @@ import ar.com.nextel.model.personas.beans.Localidad;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
-import ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
 import ar.com.nextel.model.solicitudes.beans.Plan;
-import ar.com.nextel.model.solicitudes.beans.ServicioAdicional;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
-import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaTransfSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Sucursal;
 import ar.com.nextel.model.solicitudes.beans.TipoAnticipo;
@@ -87,7 +82,6 @@ import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
-import ar.com.nextel.sfa.client.dto.ServicioAdicionalDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
@@ -596,6 +590,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	}
 	
 	
+
 	private String getReporteFileName(SolicitudServicio solicitudServicio) {
 		String filename;
 		if (solicitudServicio.getCuenta().isCliente()) {

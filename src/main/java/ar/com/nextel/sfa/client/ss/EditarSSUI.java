@@ -1,8 +1,10 @@
 package ar.com.nextel.sfa.client.ss;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.InfocomRpcService;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -16,6 +18,7 @@ import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.MessageDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
+import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
@@ -26,7 +29,9 @@ import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
+import ar.com.nextel.sfa.client.infocom.InfocomUIData;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
+import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
@@ -69,6 +74,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private static final String validarCompletitudFailStyle = "validarCompletitudFailButton";
 	private static final String VENDEDOR_NO_COMISIONABLE = "VENDEDOR_NO_COMISIONABLE";
 	
+	private InfocomUIData infocomUIData;
+	private String idCuenta;
+	private String codigoVantive;
 	private TabPanel tabs;
 	private DatosSSUI datos;
 	private DatosTransferenciaSSUI datosTranferencia;
@@ -103,6 +111,29 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		linksCrearSS = new FlowPanel();
 	}
 
+	private void getInfocomData(String idCuenta, String responsablePago, String codigoVantive) {
+		InfocomRpcService.Util.getInstance().getInfocomInitializer(idCuenta, codigoVantive, responsablePago, new DefaultWaitCallback<InfocomInitializer>() {
+			public void success(InfocomInitializer result) {
+				if (result != null) {
+					editarSSUIData.setInfocom(result);
+				}
+			}
+		});
+	}
+
+	private boolean loadInfocom(String cuentaID, String codigoVantive) {
+		if (infocomUIData==null) {
+			infocomUIData = new InfocomUIData();
+			infocomUIData.setIdCuenta(cuentaID);
+			infocomUIData.setCodigoVantive(codigoVantive);
+			idCuenta = cuentaID;
+			this.codigoVantive = codigoVantive;
+			infocomUIData.getResponsablePago().clear();
+			this.getInfocomData(idCuenta, idCuenta, codigoVantive);
+		}
+		return true;
+	}
+	
 	public boolean load() {
 		tokenLoaded = History.getToken();
 		String cuenta = HistoryUtils.getParam(ID_CUENTA);
@@ -189,21 +220,23 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			}else{
 				SolicitudRpcService.Util.getInstance().createSolicitudServicio(solicitudServicioRequestDto,
 						new DefaultWaitCallback<SolicitudServicioDto>() {
-							public void success(SolicitudServicioDto solicitud) {
-								ssCreadaSuccess(solicitud);
-							}
 
-							public void failure(Throwable caught) {
-								History.back();
-								super.failure(caught);
-							}
-						});
+					public void success(SolicitudServicioDto solicitud) {
+						loadInfocom(String.valueOf(solicitud.getCuenta().getId()), solicitud.getCuenta().getCodigoVantive());
+						ssCreadaSuccess(solicitud);
+					}
+
+					public void failure(Throwable caught) {
+						History.back();
+						super.failure(caught);
+					}
+				});
 			}
-			
-			editarSSUIData.clean();
-			varios.cleanScoring();
-		}
-		return true;
+				editarSSUIData.clean();
+				varios.cleanScoring();
+			}
+			return true;
+		
 	}
 	
 	private void ssCreadaSuccess(SolicitudServicioDto solicitud){
@@ -332,9 +365,41 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 	private void loadInitializer(SolicitudInitializer initializer) {
 		editarSSUIData.getOrigen().addAllItems(initializer.getOrigenesSolicitud());
+
 		//MGR - #1458
 		if(initializer.getOrigenesSolicitud().size() ==1){
 			editarSSUIData.getOrigen().setSelectedIndex(1);
+		}
+		
+		if (ClientContext.getInstance().getVendedor().isAP()) {
+			for (Iterator<OrigenSolicitudDto> iterator = initializer
+					.getOrigenesSolicitud().iterator(); iterator.hasNext();) {
+				OrigenSolicitudDto origen = (OrigenSolicitudDto) iterator.next();
+				if (!"ATP".equals(origen.getDescripcion())) {
+					iterator.remove();
+				}
+			}
+		} else if (ClientContext.getInstance().getVendedor().isDealer()) {
+			for (Iterator<OrigenSolicitudDto> iterator = initializer
+					.getOrigenesSolicitud().iterator(); iterator.hasNext();) {
+				OrigenSolicitudDto origen = (OrigenSolicitudDto) iterator.next();
+				if (!"Vendedor".equals(origen.getDescripcion())) {
+					iterator.remove();
+				}
+			}
+		} else if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
+			for (Iterator<OrigenSolicitudDto> iterator = initializer
+					.getOrigenesSolicitud().iterator(); iterator.hasNext();) {
+				OrigenSolicitudDto origen = (OrigenSolicitudDto) iterator.next();
+				if (!"ATP".equals(origen.getDescripcion()) && !"Vendedor".equals(origen.getDescripcion())) {
+					iterator.remove();
+				}
+			}
+		}
+		
+		editarSSUIData.getOrigenTR().addAllItems(initializer.getOrigenesSolicitud());
+		if(initializer.getOrigenesSolicitud().size() == 1){
+			editarSSUIData.getOrigenTR().setSelectedIndex(1);
 		}
 		
 		editarSSUIData.getAnticipo().addAllItems(initializer.getTiposAnticipo());
@@ -359,11 +424,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		}
 		
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
-			if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
-				editarSSUIData.getSucursalOrigen().addAllItems(initializer.getSucursalesOrdenado());
-			} else {
-				editarSSUIData.getSucursalOrigen().addAllItems(initializer.getSucursales());
-			}
+			editarSSUIData.getSucursalOrigen().addAllItems(initializer.getSucursales());
 			
 			//Para que cargue correctamente la opcion del combo
 			if(editarSSUIData.getIdSucursalSolicitud() != null){
@@ -493,7 +554,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							if(result.isError()){
 								StringBuilder msgString = new StringBuilder();
 								for (MessageDto msg : result.getMessages()) {
-									msgString.append("<span>- " + msg.getDescription()
+									msgString.append("<span class=\"warn\">- " + msg.getDescription()
 											+ "</span><br>");
 								}
 								MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), MessageDialog.getCloseCommand());
@@ -629,7 +690,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 									aceptar = CerradoSSExitosoDialog.getCloseCommand();
 								}
 								CerradoSSExitosoDialog.getInstance().setAceptarCommand(aceptar);
-								CerradoSSExitosoDialog.getInstance().showCierreExitoso(rtfFileName);
+								//MGR - #1415
+								CerradoSSExitosoDialog.getInstance().showCierreExitoso(rtfFileName, editarSSUIData.getIdSolicitudServicio());
 							}
 						};
 						

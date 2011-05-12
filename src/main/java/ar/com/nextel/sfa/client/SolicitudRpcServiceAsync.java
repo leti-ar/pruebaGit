@@ -100,7 +100,8 @@ public interface SolicitudRpcServiceAsync {
 	public void getDescuentosTotales(Long idLinea,
 			AsyncCallback<DescuentoTotalDto> defaultWaitCallback);
 
-	public void crearArchivo(SolicitudServicioCerradaResultDto solicitud,
+	//MGR - #1415
+	public void crearArchivo(Long idSolicitud,
 			boolean enviarEmail, AsyncCallback<Boolean> defaultWaitCallback);
 
 	public void getPlanesPorTipoPlan(Long idTipoPlan, Long idCuenta,

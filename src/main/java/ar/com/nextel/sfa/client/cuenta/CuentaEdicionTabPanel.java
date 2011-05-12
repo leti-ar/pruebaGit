@@ -161,7 +161,7 @@ public class CuentaEdicionTabPanel {
 		tabPanel.add(cuentaDomiciliosForm, Sfa.constant().domicilios());
 		tabPanel.add(cuentaContactoForm, Sfa.constant().contactos());
 		tabPanel.add(cuentaInfocomForm, Sfa.constant().infocom());
-		if (ClientContext.getInstance().getVendedor().isTelemarketing()) {
+		if (!ClientContext.getInstance().getVendedor().isADMCreditos()) {
 			tabPanel.add(cuentaNotasForm, Sfa.constant().notas());
 		}
 		tabPanel.selectTab(0);
@@ -362,7 +362,7 @@ public class CuentaEdicionTabPanel {
 			tabPanel.add(cuentaInfocomForm, Sfa.constant().infocom());
 
 		//si viene de opp agrega notas (Dejar comentado)
-		if (!editorCuenta && ClientContext.getInstance().getVendedor().isTelemarketing()) { 
+		if (!editorCuenta && !ClientContext.getInstance().getVendedor().isADMCreditos()) { 
 			tabPanel.add(cuentaNotasForm, Sfa.constant().notas());
 		}
 		
