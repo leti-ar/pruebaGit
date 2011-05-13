@@ -2512,4 +2512,14 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Debe ingresar un mail de Factura Electrónica o deshabilitar la opción")
   @Key("NO_INGRESO_FACTURA_ELECTRONICA")
   String NO_INGRESO_FACTURA_ELECTRONICA();
+
+  /**
+   * Translated "Acceso denegado. No puede operar con esta cuenta. <br>La Cuenta {1} se encuentra lockeada por otro vendedor. <br>El Vendedor de lockeo es {2}"
+   * 
+   * @return translated "Acceso denegado. No puede operar con esta cuenta. <br>La Cuenta {1} se encuentra lockeada por otro vendedor. <br>El Vendedor de lockeo es {2}"
+   */
+  @DefaultStringValue("Acceso denegado. No puede operar con esta cuenta. <br>La Cuenta {1} se encuentra lockeada por otro vendedor. <br>El Vendedor de lockeo es {2}")
+  @Key("ERR_CUENTA_LOCKEADA_POR_OTRO_TLM")
+  String ERR_CUENTA_LOCKEADA_POR_OTRO_TLM();
+  
 }
