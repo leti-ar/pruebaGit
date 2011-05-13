@@ -278,6 +278,11 @@ public class SolicitudBusinessService {
 		solicitudServicio.setDomicilioEnvio(null);
 		solicitudServicio.setDomicilioFacturacion(null);
 		
+		//si está cerrando la solicitud y es vancuc, guardo el número de flota en Cuenta
+		if (solicitudServicioDto.isClosing()) {
+			solicitudServicio.getCuenta().setFlota(solicitudServicioDto.getNumeroFlota());
+		}
+		
 //		if( (solicitudServicio.getVendedor() == null && solicitudServicioDto.getVendedor() != null) ||
 //				(solicitudServicio.getVendedor() != null && solicitudServicioDto.getVendedor() != null &&
 //				!solicitudServicio.getVendedor().getId().equals(solicitudServicioDto.getVendedor().getId())) ){

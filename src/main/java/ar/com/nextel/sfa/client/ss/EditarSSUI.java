@@ -568,7 +568,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					});
 		}
 		else{
-			SolicitudRpcService.Util.getInstance().saveSolicituServicio(editarSSUIData.getSolicitudServicio(),
+			SolicitudRpcService.Util.getInstance().saveSolicituServicio(editarSSUIData.getSolicitudServicio(false),
 					new DefaultWaitCallback<SolicitudServicioDto>() {
 						public void success(SolicitudServicioDto result) {
 							guardandoSolicitud = false;
@@ -614,7 +614,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		        	if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
 						errors = editarSSUIData.validarTransferenciaParaCerrarGenerar(datosTranferencia.getContratosSSChequeados(),false);
 					}else{
-						errors = editarSSUIData.validarParaCerrarGenerar(false);
+						errors = editarSSUIData.validarParaCerrarGenerar(false, CuentaClientService.cuentaDto.getFlota());
 					}
 		        	
 		            if (errors.isEmpty()) {
@@ -651,7 +651,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					errors = editarSSUIData.validarTransferenciaParaCerrarGenerar(datosTranferencia.getContratosSSChequeados(),true);
 					
 				}else{
-					errors = editarSSUIData.validarParaCerrarGenerar(true);
+					errors = editarSSUIData.validarParaCerrarGenerar(true, null);
 				}
 				if (errors.isEmpty()) {
 					//MGR - #1481 - No vuelvo a validar los planes para que no aparesca el mensaje de
@@ -954,7 +954,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				editarSSUIData.getGrupoSolicitud().isTransferencia()){
 			ssDto = obtenerSolicitudTransferencia(true);
 		}else{
-			ssDto =editarSSUIData.getSolicitudServicio();
+			ssDto =editarSSUIData.getSolicitudServicio(true);
 		}
 		
 		SolicitudRpcService.Util.getInstance().generarCerrarSolicitud(

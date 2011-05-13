@@ -74,6 +74,8 @@ public class SolicitudServicioDto implements IsSerializable {
     private Long idSucursal;
     private Long tipoCanalVentas;
     
+    private boolean isClosing = false;
+        
     public SolicitudServicioDto() {
 		solicitudServicioGeneracion = new SolicitudServicioGeneracionDto();
 	}
@@ -421,4 +423,12 @@ public class SolicitudServicioDto implements IsSerializable {
 	public void setTipoCanalVentas(Long tipoCanalVentas) {
 		this.tipoCanalVentas = tipoCanalVentas;
 	}
+
+	public void setClosing(boolean isClosing) {
+		this.isClosing = isClosing;
+	}
+
+	public boolean isClosing() {
+		return isClosing;
+	}	
 }

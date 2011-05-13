@@ -2503,4 +2503,13 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("El plan {1} no es valido para el nuevo cliente.")
   @Key("ERR_PLAN_NO_VALIDO")
   String ERR_PLAN_NO_VALIDO();
+
+  /**
+   * Translated "La flota difiere de la ingresada en una solicitud cerrada previamente, debe seleccionar la flota {1}".
+   * 
+   * @return translated "La flota difiere de la ingresada en una solicitud cerrada previamente, debe seleccionar la flota {1}"
+   */
+  @DefaultStringValue("La flota difiere de la ingresada en una solicitud cerrada previamente, debe seleccionar la flota {1}")
+  @Key("FLOTA_NO_VALIDA")
+  String FLOTA_NO_VALIDA();  
 }

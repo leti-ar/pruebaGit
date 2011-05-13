@@ -36,7 +36,8 @@ public class CuentaDto implements IsSerializable {
 	private String nombreUsuarioCreacion;
 	private Date fechaCreacion;
 	private FacturaElectronicaDto facturaElectronica;
-
+	private String flota;
+	
 	public Long getId() {
 		return id;
 	}
@@ -314,5 +315,13 @@ public class CuentaDto implements IsSerializable {
 	public void setFacturaElectronica(FacturaElectronicaDto facturaElectronica) {
 		this.facturaElectronica = facturaElectronica;
 	}
+
+	public String getFlota() {
+		return flota;
+	}
+	
+	public void setFlota(String flota) {
+		this.flota = flota;
+	}	
 
 }

@@ -444,9 +444,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				nss.setEnabled(false);
 			}
 		}
-		
-		nflota.setEnabled(solicitud.getCuenta().getIdVantive() == null);
-		nflota.setReadOnly(!nflota.isEnabled());
+		if (esProspect) {
+			nflota.setEnabled(true);
+			nflota.setReadOnly(false);
+		} else {
+			nflota.setEnabled(solicitud.getCuenta().getIdVantive() == null);
+			nflota.setReadOnly(!nflota.isEnabled());
+		}
 		nflota.setText(solicitud.getNumeroFlota());
 		//MGR - #1027
 		ordenCompra.setText(solicitud.getOrdenCompra());
@@ -541,10 +545,21 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 		return solicitudServicio.getIdSucursal();
 	}
-
-	public SolicitudServicioDto getSolicitudServicio() {
+	
+	/**
+	 * @param estaCerrandoSS
+	 * 				true si está cerrando la solicitud
+	 * 				false si la está guardando
+	 * @return
+	 */
+	public SolicitudServicioDto getSolicitudServicio(boolean estaCerrandoSS) {
 		solicitudServicio.setNumero(nss.getText());
 		solicitudServicio.setNumeroFlota(nflota.getText());
+
+		if (RegularExpressionConstants.isVancuc(solicitudServicio.getCuenta().getCodigoVantive())) {
+			solicitudServicio.setClosing(estaCerrandoSS);
+		}
+		
 		if (origen.getSelectedItem() != null) {
 			solicitudServicio.setOrigen((OrigenSolicitudDto) origen.getSelectedItem());
 		} else if (origenTR.getSelectedItem() != null) {
@@ -628,9 +643,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	 * @param generacionCierreDefinitivo
 	 *            true si debe validar para la generacion o cierre definitiva de la solicitud, que seria el
 	 *            aceptar de la pantalla que pide los mails
+	 * @param flota            
 	 * @return Lista de errores
 	 */
-	public List<String> validarParaCerrarGenerar(boolean generacionCierreDefinitivo) {
+	public List<String> validarParaCerrarGenerar(boolean generacionCierreDefinitivo, String flota) {
 		recarcularValores();
 		GwtValidator validator = new GwtValidator();
 		validator.addTarget(nss).required(
@@ -694,6 +710,21 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 						RegularExpressionConstants.email);
 			}
 		}
+		
+		//validación de números de flota para los prospects
+		if (!generacionCierreDefinitivo &&
+				solicitudServicio.getCuenta().getCodigoVantive().startsWith("VANCUC")) {
+			if (flota != null) {
+				if (!nflota.getText().equals(flota)) {
+					validator.addError(Sfa.constant().FLOTA_NO_VALIDA().replaceAll("\\{1\\}", flota));
+				}
+			} else {
+				if (!"".equals(nflota.getText())) {
+					validator.addError("Existe una solicitud cerrada sin numero de flota, no puede ingresarlo");
+				}
+			}
+		}
+		
 		validator.fillResult();
 		List<String> errores = validator.getErrors();
 		errores.addAll(validarCompletitud());
