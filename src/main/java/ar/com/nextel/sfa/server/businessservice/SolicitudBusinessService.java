@@ -35,8 +35,10 @@ import ar.com.nextel.framework.connectionDAO.ConnectionDAOException;
 import ar.com.nextel.framework.connectionDAO.TransactionConnectionDAO;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
+import ar.com.nextel.model.cuentas.beans.DatosDebitoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoTarjetaCredito;
 import ar.com.nextel.model.cuentas.beans.EstadoCreditoFidelizacion;
+import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
@@ -354,6 +356,22 @@ public class SolicitudBusinessService {
 			DatosDebitoTarjetaCredito datosPago = (DatosDebitoTarjetaCredito) solicitudServicio.getCuentaCedente()
 					.getDatosPago();
 			datosPago.setTipoTarjeta(repository.retrieve(TipoTarjeta.class, datosPago.getTipoTarjeta()
+					.getId()));
+		}
+		
+		//MGR - #1708 - Estas lineas son por un problema no identificado, que hace que al querer
+		//guardar el tipo de cuenta bancaria detecte que el objeto no está attachado a la session
+		if (solicitudServicio.getCuenta().getDatosPago() instanceof DatosDebitoCuentaBancaria) {
+			DatosDebitoCuentaBancaria datosPago = (DatosDebitoCuentaBancaria) solicitudServicio.getCuenta()
+					.getDatosPago();
+			datosPago.setTipoCuentaBancaria(repository.retrieve(TipoCuentaBancaria.class, datosPago.getTipoCuentaBancaria()
+					.getId()));
+		}
+		
+		if (solicitudServicio.getCuentaCedente()!= null && solicitudServicio.getCuentaCedente().getDatosPago() instanceof DatosDebitoCuentaBancaria) {
+			DatosDebitoCuentaBancaria datosPago = (DatosDebitoCuentaBancaria) solicitudServicio.getCuentaCedente()
+					.getDatosPago();
+			datosPago.setTipoCuentaBancaria(repository.retrieve(TipoCuentaBancaria.class, datosPago.getTipoCuentaBancaria()
 					.getId()));
 		}
 
