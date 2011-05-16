@@ -63,8 +63,6 @@ import ar.com.nextel.services.nextelServices.NextelServices;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazRequestDTO;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.sfa.client.CuentaRpcService;
-import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.constant.SfaStatic;
 import ar.com.nextel.sfa.client.dto.BusquedaPredefinidaDto;
 import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
@@ -406,12 +404,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 				String nombre = cuenta.getVendedor().getResponsable().getNombre() + " "
 						+ cuenta.getVendedor().getResponsable().getApellido();
 				String cargo = cuenta.getVendedor().getResponsable().getCargo();
-				String errMsg = Sfa.constant()
-						.ERR_CUENTA_LOCKEADA_POR_OTRO_TLM().replaceAll(
-								"\\{1\\}", cuenta.getCodigoVantive())
-						.replaceAll("\\{2\\}",
-								cuenta.getVendedor().getApellidoYNombre()); 
-				
+				String errMsg = ERROR_OPER_OTRO_VENDEDOR.replaceAll("\\{1\\}", cargo);
+				errMsg = errMsg.replaceAll("\\{2\\}", nombre);
 				throw new RpcExceptionMessages(errMsg);
 			}
 			cuenta = repository.retrieve(Cuenta.class, cuenta.getId());
