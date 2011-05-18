@@ -530,8 +530,11 @@ public class CuentaBusinessService {
 						|| accessCuenta.getAccessAuthorization()
 								.hasSamePermissionsAs(
 										AccessAuthorization.fullAccess()))) {
+					if (cuenta.getVendedorLockeo() == null) {
+						cuenta.editar(vendedor);
+					} 
 					//1709 - Si el vendedor de lockeo es dealer no debe pisar el id_vendedor_lockeo
-					if (!cuenta.getVendedorLockeo().isDealer()) {
+					if (cuenta.getVendedorLockeo() != null && !cuenta.getVendedorLockeo().isDealer()) {
 						cuenta.editar(vendedor);
 					}
 					repository.save(cuenta);
