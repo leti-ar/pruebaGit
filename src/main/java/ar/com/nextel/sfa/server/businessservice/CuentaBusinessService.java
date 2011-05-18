@@ -530,7 +530,10 @@ public class CuentaBusinessService {
 						|| accessCuenta.getAccessAuthorization()
 								.hasSamePermissionsAs(
 										AccessAuthorization.fullAccess()))) {
-					cuenta.editar(vendedor);
+					//1709 - Si el vendedor de lockeo es dealer no debe pisar el id_vendedor_lockeo
+					if (!cuenta.getVendedorLockeo().isDealer()) {
+						cuenta.editar(vendedor);
+					}
 					repository.save(cuenta);
 				}
 			}
@@ -663,7 +666,9 @@ public class CuentaBusinessService {
 						}
 					}
 					
-					throw new RpcExceptionMessages(ERR_CUENTA_NO_PERMISO);
+					throw new RpcExceptionMessages(ERR_CUENTA_LOCKEADA_POR_OTRO_TLM
+							.replaceAll("\\{1\\}", cuenta.getCodigoVantive())
+							.replaceAll("\\{2\\}", cuenta.getVendedorLockeo().getApellidoYNombre()));
 				}
 			}
 		}
