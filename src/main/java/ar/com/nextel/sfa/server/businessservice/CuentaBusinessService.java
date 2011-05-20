@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
+import ar.com.nextel.business.constants.MessageIdentifier;
 import ar.com.nextel.business.cuentas.create.CreateCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
 import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaService;
@@ -56,6 +57,7 @@ import ar.com.nextel.model.personas.beans.Telefono;
 import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
+import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
@@ -88,6 +90,8 @@ public class CuentaBusinessService {
 									"<br/>\n La Cuenta {1} se encuentra lockeada por otro vendedor. " +
 									"<br/>\n El Vendedor de lockeo es {2}";
 
+	private static final String ERROR_OPER_OTRO_VENDEDOR = "El prospect/cliente tiene una operación en curso con otro vendedor. No puede ver sus datos. El {1} es {2}";
+	
 	@Qualifier("createCuentaBusinessOperator")
 	private CreateCuentaBusinessOperator createCuentaBusinessOperator;
 
@@ -596,7 +600,7 @@ public class CuentaBusinessService {
 	}
 
 	public void validarAccesoCuenta(Cuenta cuenta, Vendedor vendedor,
-			boolean filtradoPorDni) throws RpcExceptionMessages {
+			boolean filtradoPorDni) throws RpcExceptionMessages, BusinessException {
 		// logueado no es el de la cuenta
 		if ( !vendedor.getId().equals(cuenta.getVendedor().getId())) {
 			HashMap<String, Boolean> mapaPermisosClient = (HashMap<String, Boolean>) 
@@ -660,18 +664,18 @@ public class CuentaBusinessService {
 					
 					//Si el que consulta y el que lockea la cuenta son del tipo Telemarketing, 
 					//entonces cambia el mensaje a mostrar
-					if(vendedor.isTelemarketing()){
-						if(cuenta.getVendedorLockeo() != null &&
+					if(vendedor.isTelemarketing() && cuenta.getVendedorLockeo() != null &&
 								cuenta.getVendedorLockeo().isTelemarketing()){
-							throw new RpcExceptionMessages(ERR_CUENTA_LOCKEADA_POR_OTRO_TLM
-									.replaceAll("\\{1\\}", cuenta.getCodigoVantive())
+						throw new RpcExceptionMessages(ERR_CUENTA_LOCKEADA_POR_OTRO_TLM
+								.replaceAll("\\{1\\}", cuenta.getCodigoVantive())
 									.replaceAll("\\{2\\}", cuenta.getVendedorLockeo().getApellidoYNombre()));
-						}
+					} else {
+						//#1718
+						String nombre = cuenta.getVendedorLockeo().getResponsable().getNombre()
+								+ " " + cuenta.getVendedorLockeo().getResponsable().getApellido();
+						String cargo = cuenta.getVendedorLockeo().getResponsable().getCargo();
+						throw new RpcExceptionMessages(ERROR_OPER_OTRO_VENDEDOR.replaceAll("\\{1\\}", cargo).replaceAll("\\{2\\}", nombre));
 					}
-					
-					throw new RpcExceptionMessages(ERR_CUENTA_LOCKEADA_POR_OTRO_TLM
-							.replaceAll("\\{1\\}", cuenta.getCodigoVantive())
-							.replaceAll("\\{2\\}", cuenta.getVendedorLockeo().getApellidoYNombre()));
 				}
 			}
 		}
