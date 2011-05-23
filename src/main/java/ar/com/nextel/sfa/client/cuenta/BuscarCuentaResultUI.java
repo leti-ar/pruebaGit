@@ -12,6 +12,7 @@ import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.infocom.InfocomUI;
+import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
@@ -332,13 +333,20 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickHandler {
 
 	public void onClick(ClickEvent arg0) {
 		CuentaSearchResultDto cuentaSearch = cuentas.get(indiceRowTabla);
-		if (cuentaSearch.isPuedeVerInfocom()) {
-			History.newItem(UILoader.VER_INFOCOM + "?cuenta_id=" + cuentaSearch.getId());
+		//#1721 - Ejecutivo de cuentas y Dealer deben migrar las cuentas que no están en SFA al presionar Ver Infocom.
+		if (ClientContext.getInstance().getVendedor().isEECC() || ClientContext.getInstance().getVendedor().isDealer()
+				&& cuentaSearch.getId() == 0) {
+			CuentaClientService.cargarDatosCuentaInfocom(cuentaSearch.getId(), cuentaSearch.getNumero(),
+					getCondicionBusquedaPorDni(), UILoader.VER_INFOCOM + "?cuenta_id=");
 		} else {
-			ModalMessageDialog.getInstance().setDialogTitle("Ver Infocom");
-			ModalMessageDialog.getInstance().setSize("300px", "100px");
-			ModalMessageDialog.getInstance().showAceptar("No tiene permisos para ver infocom",
-					ModalMessageDialog.getCloseCommand());
+			if (cuentaSearch.isPuedeVerInfocom()){
+				History.newItem(UILoader.VER_INFOCOM + "?cuenta_id=" + cuentaSearch.getId());
+			} else {
+				ModalMessageDialog.getInstance().setDialogTitle("Ver Infocom");
+				ModalMessageDialog.getInstance().setSize("300px", "100px");
+				ModalMessageDialog.getInstance().showAceptar("No tiene permisos para ver infocom",
+						ModalMessageDialog.getCloseCommand());
+			}
 		}
 	}
 }
