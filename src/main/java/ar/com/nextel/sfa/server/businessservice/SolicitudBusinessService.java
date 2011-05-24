@@ -377,18 +377,9 @@ public class SolicitudBusinessService {
 
 		if (solicitudServicioDto.getIdDomicilioEnvio() != null) {
 			for (Domicilio domicilioE : solicitudServicio.getCuenta().getPersona().getDomicilios()) {
-				if (solicitudServicioDto.getIdDomicilioEnvio().equals(domicilioE.getId())
-						&& !domicilioE.isTransferido()) {
+				if (solicitudServicioDto.getIdDomicilioEnvio().equals(domicilioE.getId())) {
 					solicitudServicio.setDomicilioEnvio(domicilioE);
 					break;
-				}
-			}
-			if (solicitudServicio.getDomicilioEnvio() == null) {
-				for (Domicilio domicilioE : solicitudServicio.getCuenta().getPersona().getDomicilios()) {
-					if (domicilioE.esPrincipalDeEntrega()) {
-						solicitudServicio.setDomicilioEnvio(domicilioE);
-						break;
-					}
 				}
 			}
 		} else {
@@ -403,19 +394,10 @@ public class SolicitudBusinessService {
 		}
 		if (solicitudServicioDto.getIdDomicilioFacturacion() != null) {
 			for (Domicilio domicilioF : solicitudServicio.getCuenta().getPersona().getDomicilios()) {
-				if (solicitudServicioDto.getIdDomicilioFacturacion().equals(domicilioF.getId())
-						&& !domicilioF.isTransferido()) {
+				if (solicitudServicioDto.getIdDomicilioFacturacion().equals(domicilioF.getId())) {
 					solicitudServicio.setDomicilioFacturacion(domicilioF);
 					break;
 				}
-			}
-			if (solicitudServicio.getDomicilioFacturacion() == null) {
-				for (Domicilio domicilioF : solicitudServicio.getCuenta().getPersona().getDomicilios()) {
-					if (domicilioF.esPrincipalDeFacturacion()) {
-						solicitudServicio.setDomicilioFacturacion(domicilioF);
-						break;
-					}
-				}				
 			}
 		} else {
 			solicitudServicio.setDomicilioFacturacion(null);
