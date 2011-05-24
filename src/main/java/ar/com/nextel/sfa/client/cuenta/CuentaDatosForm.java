@@ -1256,7 +1256,7 @@ public class CuentaDatosForm extends Composite {
 			if (!cuentaUIData.getFacturaElectronicaPanel().getText().equals(""))
 				retorno = true;
 		}
-
+		
 		return retorno;
 	}
 
@@ -1822,6 +1822,14 @@ public class CuentaDatosForm extends Composite {
 			errores.add("Debe completar los campos obligatorios de la cuenta");
 		}
 		return errores;
+	}
+
+	public boolean evaluarFacturaElectronicaPanel() {
+		if (cuentaUIData.getFacturaElectronicaPanel().isFacturaElectronicaChecked()
+				&& "".equals(cuentaUIData.getFacturaElectronicaPanel().getEmail().getText())) {
+			return true;
+		}
+		return false;
 	}
 
 }

@@ -262,7 +262,11 @@ public class CuentaEdicionTabPanel {
 		guardar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				if (!editorDirty()) {
-					MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), Sfa.constant().MSG_NO_HAY_DATOS_NUEVOS(), cancelarCommand);
+					if (cuentaDatosForm.evaluarFacturaElectronicaPanel()) {
+						MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), Sfa.constant().NO_INGRESO_FACTURA_ELECTRONICA(), cancelarCommand);
+					} else {
+						MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), Sfa.constant().MSG_NO_HAY_DATOS_NUEVOS(), cancelarCommand);
+					}
 				} else if (validarCamposTabDatos()) {
 					guardar();
 				} 
