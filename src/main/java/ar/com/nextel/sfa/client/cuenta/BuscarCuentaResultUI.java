@@ -333,14 +333,13 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickHandler {
 
 	public void onClick(ClickEvent arg0) {
 		CuentaSearchResultDto cuentaSearch = cuentas.get(indiceRowTabla);
-		//#1721 - Ejecutivo de cuentas y Dealer deben migrar las cuentas que no están en SFA al presionar Ver Infocom.
-		if (ClientContext.getInstance().getVendedor().isEECC() || ClientContext.getInstance().getVendedor().isDealer()
-				&& cuentaSearch.getId() == 0) {
-			CuentaClientService.cargarDatosCuentaInfocom(cuentaSearch.getId(), cuentaSearch.getNumero(),
-					getCondicionBusquedaPorDni(), UILoader.VER_INFOCOM + "?cuenta_id=");
+		if (cuentaSearch.isPuedeVerInfocom()){
+			History.newItem(UILoader.VER_INFOCOM + "?cuenta_id=" + cuentaSearch.getId());
 		} else {
-			if (cuentaSearch.isPuedeVerInfocom()){
-				History.newItem(UILoader.VER_INFOCOM + "?cuenta_id=" + cuentaSearch.getId());
+			//#1721
+			if (cuentaSearch.getId() == 0 && !"***".equals(cuentaSearch.getNumero())) {
+				CuentaClientService.cargarDatosCuentaInfocom(cuentaSearch.getId(), cuentaSearch.getNumero(),
+						getCondicionBusquedaPorDni(), UILoader.VER_INFOCOM + "?cuenta_id=");
 			} else {
 				ModalMessageDialog.getInstance().setDialogTitle("Ver Infocom");
 				ModalMessageDialog.getInstance().setSize("300px", "100px");
