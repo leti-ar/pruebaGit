@@ -229,7 +229,7 @@ public class CuentaClientService {
 			final boolean filtradoPorDni, final String url) {
 		cuentaDto = null;
 		error = false;
-		CuentaRpcService.Util.getInstance().selectCuenta(cuentaID, codVantive, filtradoPorDni, 
+		CuentaRpcService.Util.getInstance().selectCuentaParaInfocom(cuentaID, codVantive, filtradoPorDni, 
 				new DefaultWaitCallback<CuentaDto>() {
 					public void success(CuentaDto ctaDto) {
 						cuentaDto = ctaDto;
