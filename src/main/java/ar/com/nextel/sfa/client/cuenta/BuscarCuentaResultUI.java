@@ -337,7 +337,9 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickHandler {
 			History.newItem(UILoader.VER_INFOCOM + "?cuenta_id=" + cuentaSearch.getId());
 		} else {
 			//#1721
-			if (cuentaSearch.getId() == 0 && !"***".equals(cuentaSearch.getNumero())) {
+			if (cuentaSearch.getId() == 0 && !"***".equals(cuentaSearch.getNumero())
+					&& (cuentaSearch.getEjecutivo() == null
+						|| ClientContext.getInstance().getVendedor().getId().toString().equals(cuentaSearch.getEjecutivo()))) {
 				CuentaClientService.cargarDatosCuentaInfocom(cuentaSearch.getId(), cuentaSearch.getNumero(),
 						getCondicionBusquedaPorDni(), UILoader.VER_INFOCOM + "?cuenta_id=");
 			} else {
