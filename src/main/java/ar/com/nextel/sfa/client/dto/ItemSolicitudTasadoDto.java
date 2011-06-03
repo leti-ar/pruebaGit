@@ -19,7 +19,7 @@ public class ItemSolicitudTasadoDto implements IsSerializable, ListBoxItem {
 		//		'Segmento1 - Descripcion'
 		if(listaPrecios != null && listaPrecios.getConcatena() != null &&
 				listaPrecios.getConcatena()){
-			return item.getSegment1() + " - " + item.getDescripcion();
+			return item.getSegment1().substring(8) + " - " + item.getDescripcion();
 		}
 		return item.getDescripcion();
 	}
