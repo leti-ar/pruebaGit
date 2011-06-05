@@ -144,4 +144,11 @@ public class CuentaRpcServiceDelegate {
 		WaitWindow.show();
 		cuentaRpcService.searchServiciosContratados(numeroContrato, callback);
 	}
+
+	public void selectCuentaParaInfocom(Long cuentaId, String codVantive, boolean filtradoPorDni,
+			DefaultWaitCallback<CuentaDto> callback) {
+		WaitWindow.show();
+		//Al abrir Infocom no debe lockear la cuenta
+		cuentaRpcService.selectCuenta(cuentaId, codVantive,filtradoPorDni, false, callback);
+	}
 }

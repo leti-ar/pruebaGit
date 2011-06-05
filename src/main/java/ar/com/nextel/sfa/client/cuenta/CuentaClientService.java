@@ -4,8 +4,10 @@ import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
+import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -221,6 +223,34 @@ public class CuentaClientService {
 	public static String getCodigoVantive(){
 		boolean vengoDeOportunidad= HistoryUtils.getParam(EditarCuentaUI.PARAM_OPORTUNIDAD) != null;
 		return vengoDeOportunidad?cuentaPotencialDto.getCodigoVantive() : cuentaDto.getCodigoVantive();
+	}
+
+	public static void cargarDatosCuentaInfocom(final Long cuentaID, final String codVantive,
+			final boolean filtradoPorDni, final String url) {
+		cuentaDto = null;
+		error = false;
+		CuentaRpcService.Util.getInstance().selectCuentaParaInfocom(cuentaID, codVantive, filtradoPorDni, 
+				new DefaultWaitCallback<CuentaDto>() {
+					public void success(CuentaDto ctaDto) {
+						cuentaDto = ctaDto;
+					}
+
+					public void failure(Throwable caught) {
+						error = true;
+						ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+						super.failure(caught);
+					}
+				});
+		DeferredCommand.addCommand(new IncrementalCommand() {
+			public boolean execute() {
+				if (cuentaDto == null && !error)
+					return true;
+				if (!error) {
+					History.newItem(url + cuentaDto.getId());
+				}
+				return false;
+			}
+		});
 	}
 	
 }
