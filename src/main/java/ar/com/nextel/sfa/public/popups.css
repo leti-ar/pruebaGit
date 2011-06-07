@@ -7,7 +7,7 @@
 .gwt-CustomDialogBox .popHeader {
 	height: 25px;
 	background-image: url('images/pop_superior.gif');
-	background-color: #A53953;
+	background-color: #E05206;
 	background-position: top left;
 	background-repeat: repeat-x;
 	padding-top: 5px;
@@ -21,7 +21,7 @@
 div.popFooter {
 	height: 25px;
 	background-image: url('images/pop_inferior.gif');
-	background-color: #A53953;
+	background-color: #E05206;
 	background-position: top left;
 	background-repeat: repeat-x;
 	text-align: center;

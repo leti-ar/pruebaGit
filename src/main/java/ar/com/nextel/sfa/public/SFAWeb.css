@@ -51,7 +51,7 @@ A {
 }
 
 .TableHeader {
-	background-color: #A53953;
+	background-color: #E05206;
 	text-align: center;
 	color: white;
 	font-weight: bold;
@@ -214,7 +214,7 @@ A {
 }
 
 .header td {
-	background-color: #A53953;
+	background-color: #E05206;
 	color: #FFFFFF;
 	font-weight: bold;
 	text-align: center;
@@ -329,7 +329,7 @@ A {
 
 .gwt-TabBarItem-selected {
 	background-image: url(images/tabs/tab-on.gif) ! IMPORTANT;
-	color: #A83C56 ! IMPORTANT;
+	color: #E05206 ! IMPORTANT;
 }
 
 .gwt-TabBarItem {
@@ -649,7 +649,7 @@ SPAN.info {
 }
 
 .oppEnCursoTitulosLabel {
-	color: #A83C56;
+	color: #E05206;
 	font-weight: bold;
 	margin: 4px 0;
 	width: 100%;
@@ -665,7 +665,7 @@ SPAN.info {
 }
 
 .infocomTituloLabel {
-	color: #A83C56;
+	color: #E05206;
 }
 
 .infocomDescripcionTable {
@@ -700,7 +700,7 @@ input[disabled],input[readonly],select[disabled],select[readonly],checkbox[disab
 }
 
 .msgNoNormalizado {
-	color: #A83C56;
+	color: #E05206;
 }
 
 .fontNormal {
