@@ -28,7 +28,7 @@ import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.vantive.VantiveSystem;
 import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
-import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSTransfResponse;
+import ar.com.nextel.business.solicitudes.crearGuardar.request.GuardarResponse;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
@@ -82,6 +82,7 @@ import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
+import ar.com.nextel.sfa.client.dto.SaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
@@ -349,17 +350,30 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return initializer;
 	}
 
-	public SolicitudServicioDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
+	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un SaveSolicitudServicioResultDto 
+	//que permite realizar el manejo de mensajes
+	public SaveSolicitudServicioResultDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
 			throws RpcExceptionMessages {
+
+		SaveSolicitudServicioResultDto resultDto = new SaveSolicitudServicioResultDto();
 		try {
 			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(
 					solicitudServicioDto, mapper);
 			solicitudServicioDto = mapper.map(solicitudSaved, SolicitudServicioDto.class);
+			
+			Vendedor vendedor = sessionContextLoader.getSessionContext().getVendedor();
+			if (vendedor.isADMCreditos()) {
+				//Valida los predicados y el triptico
+				GuardarResponse response = solicitudBusinessService.validarPredicadosGuardarSS(solicitudSaved);
+				resultDto.setError(response.getMessages().hasErrors());
+				resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
+			}
+			resultDto.setSolicitud(solicitudServicioDto);
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
-		return solicitudServicioDto;
+		return resultDto;
 	}
 
 	public String buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto) {
@@ -706,22 +720,19 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		CreateSaveSSTransfResultDto resultDto = new CreateSaveSSTransfResultDto();
 		try {
 	
-
-			SolicitudServicioDto solicitudDto = this.saveSolicituServicio(solicitudServicioDto);
+			//MGR - ISDN 1824 - Cambio la forma en la que se valida el triptico, para que se ejecuten 
+			//el resto de las validaciones
+			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(
+					solicitudServicioDto, mapper);
+			SolicitudServicioDto solicitudDto = mapper.map(solicitudSaved, SolicitudServicioDto.class);
 			resultDto.setSolicitud(solicitudDto);
 
 			Vendedor vendedor = sessionContextLoader.getSessionContext().getVendedor();
-			//valida triptico al guardar
 			if (vendedor.isADMCreditos()) {
-				SolicitudServicio solicitud = repository.retrieve(SolicitudServicio.class,
-						solicitudDto.getId());
-				// mapper.map(solicitudDto, solicitud);
-				CreateSaveSSTransfResponse ssResponse = solicitudBusinessService.validarTriptico(solicitud);
-				resultDto.setMessages(mapper.convertList(ssResponse.getMessages().getMessages(),
-						MessageDto.class));
-				if (!resultDto.getMessages().isEmpty()) {
-					resultDto.setError(true);
-				}
+				//Valida los predicados y el triptico
+				GuardarResponse response = solicitudBusinessService.validarPredicadosGuardarSS(solicitudSaved);
+				resultDto.setError(response.getMessages().hasErrors());
+				resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
 			}
 		} catch (Exception e) {
 			AppLogger.error(e);

@@ -16,6 +16,7 @@ import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
+import ar.com.nextel.sfa.client.dto.SaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
@@ -45,8 +46,10 @@ public interface SolicitudRpcServiceAsync {
 
 	public void getSolicitudInitializer(AsyncCallback<SolicitudInitializer> callback);
 
+	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un SaveSolicitudServicioResultDto
+	//que permite realizar el manejo de mensajes
 	public void saveSolicituServicio(SolicitudServicioDto solicitudServicioDto,
-			AsyncCallback<SolicitudServicioDto> callback);
+			AsyncCallback<SaveSolicitudServicioResultDto> callback);
 
 	public void getDetalleSolicitudServicio(Long idSolicitudServicio,
 			AsyncCallback<DetalleSolicitudServicioDto> callback);

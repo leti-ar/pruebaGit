@@ -21,7 +21,10 @@ import ar.com.nextel.business.legacy.financial.exception.FinancialSystemExceptio
 import ar.com.nextel.business.oportunidades.OperacionEnCursoBusinessOperator;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.ReservaNumeroTelefonoBusinessOperator;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
+import ar.com.nextel.business.solicitudes.crearGuardar.GuardarBusinessOperator;
 import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSTransfResponse;
+import ar.com.nextel.business.solicitudes.crearGuardar.request.GuardarRequest;
+import ar.com.nextel.business.solicitudes.crearGuardar.request.GuardarResponse;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
 import ar.com.nextel.business.solicitudes.generacionCierre.GeneracionCierreBusinessOperator;
@@ -45,8 +48,8 @@ import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
 import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
-import ar.com.nextel.model.solicitudes.beans.ParametrosGestion;
 import ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.ParametrosGestion;
 import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalIncluido;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
@@ -70,6 +73,8 @@ public class SolicitudBusinessService {
 	private SolicitudServicioBusinessOperator solicitudesBusinessOperator;
 	private ReservaNumeroTelefonoBusinessOperator reservaNumeroTelefonoBusinessOperator;
 	private GeneracionCierreBusinessOperator generacionCierreBusinessOperator;
+	//MGR - ISDN 1824
+	private GuardarBusinessOperator guardarBusinessOperator;
 	private OperacionEnCursoBusinessOperator operacionEnCursoBusinessOperator;
 	private FinancialSystem financialSystem;
 	private SessionContextLoader sessionContextLoader;
@@ -112,6 +117,13 @@ public class SolicitudBusinessService {
 	public void setGeneracionCierreBusinessOperator(
 			@Qualifier("generacionCierreBusinessOperatorBean") GeneracionCierreBusinessOperator generacionCierreBusinessOperator) {
 		this.generacionCierreBusinessOperator = generacionCierreBusinessOperator;
+	}
+	
+	//MGR - ISDN 1824
+	@Autowired
+	public void setGuardarBusinessOperator(
+			@Qualifier("guardarBusinessOperatorBean") GuardarBusinessOperator guardarBusinessOperator) {
+		this.guardarBusinessOperator = guardarBusinessOperator;
 	}
 
 	@Autowired
@@ -555,13 +567,14 @@ public class SolicitudBusinessService {
 		return response;
 	}
 	
-	public CreateSaveSSTransfResponse validarTriptico(SolicitudServicio solicitud){
-		return generacionCierreBusinessOperator.validarTriptico(solicitud);
-	}
-	
 	public CreateSaveSSTransfResponse validarCreateSSTransf(SolicitudServicio solicitud){
 		return solicitudesBusinessOperator.validarCreateSSTransf(solicitud);
 	}
-
-
+	
+	//MGR - ISDN 1824
+	public GuardarResponse validarPredicadosGuardarSS(SolicitudServicio solicitudServicio) {
+		GuardarRequest guardarRequest = new GuardarRequest(solicitudServicio);
+		GuardarResponse response = guardarBusinessOperator.validarPredicadosGuardarSS(guardarRequest);
+		return response;
+	}
 }

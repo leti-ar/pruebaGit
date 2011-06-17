@@ -21,6 +21,7 @@ import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
+import ar.com.nextel.sfa.client.dto.SaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
@@ -568,16 +569,29 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					});
 		}
 		else{
+			//MGR - ISDN 1824 - Como se realizan validaciones, ya no recibe una SolicitudServicioDto
+			//sino una SaveSolicitudServicioResultDto que permite realizar el manejo de mensajes
 			SolicitudRpcService.Util.getInstance().saveSolicituServicio(editarSSUIData.getSolicitudServicio(),
-					new DefaultWaitCallback<SolicitudServicioDto>() {
-						public void success(SolicitudServicioDto result) {
+					new DefaultWaitCallback<SaveSolicitudServicioResultDto>() {
+						
+						public void success(SaveSolicitudServicioResultDto result) {
 							guardandoSolicitud = false;
-							editarSSUIData.setSolicitud(result);
+							editarSSUIData.setSolicitud(result.getSolicitud());
 							datos.refresh();
 							
 							// MessageDialog.getInstance().showAceptar("Guardado Exitoso",
 							// Sfa.constant().MSG_SOLICITUD_GUARDADA_OK(), MessageDialog.getCloseCommand());
 							editarSSUIData.setSaved(true);
+							
+							//MGR - ISDN 1824
+							if(result.isError()){
+								StringBuilder msgString = new StringBuilder();
+								for (MessageDto msg : result.getMessages()) {
+									msgString.append("<span class=\"warn\">- " + msg.getDescription()
+											+ "</span><br>");
+								}
+								MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), MessageDialog.getCloseCommand());
+							}
 						}
 
 						public void failure(Throwable caught) {
