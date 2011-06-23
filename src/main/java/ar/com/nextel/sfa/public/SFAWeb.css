@@ -86,7 +86,7 @@ A {
 
 /** Fin Estilos tablas */
 .gwt-HeaderMenu .menu {
-	background-color: #981836;
+	background-color: #E05206;
 	background-image: url(images/toolbar/back-menu-bar.gif);
 	height: 30px;
 	text-align: left;
@@ -99,7 +99,7 @@ A {
 
 .gwt-HeaderMenu .gwt-MenuItem {
 	/**	background-image: url(images/toolbar/back-menu-bar.gif);*/
-	border-right: 1px solid #981836;
+	border-right: 1px solid #E05206;
 	color: #EEEEEE;
 	display: block;
 	font-size: 12px;
@@ -187,7 +187,7 @@ A {
 }
 
 .gwt-TitledPanel {
-	border: 1px solid #981836;
+	border: 1px solid #E05206;
 	margin-top: 5px;
 	margin-left: 5px;
 	margin-right: 5px;
@@ -201,7 +201,7 @@ A {
 	margin-left: 0px !IMPORTANT;
 	margin-right: 0px !IMPORTANT;
 	vertical-align: middle;
-	background-color: #981836;
+	background-color: #E05206;
 	background-image: url(images/h1_bkg_desplegable.jpg);
 	background-repeat: repeat-x;
 	text-indent: 5px;
@@ -403,7 +403,7 @@ A {
 }
 
 .abmPanel {
-	border: 1px solid #981836;
+	border: 1px solid #E05206;
 	margin-bottom: 8px;
 	width: 100%;
 }
@@ -482,10 +482,10 @@ A {
 .abmPanelVeraz {
 	text-align: left;
 	text-indent: 4px;
-	border: 1px solid #981836;
+	border: 1px solid #E05206;
 	background-color: #FFFFFF;
 	margin-top: 8px;
-	border: 1px solid #981836;
+	border: 1px solid #E05206;
 	margin-bottom: 8px;
 	width: 100%;
 }
