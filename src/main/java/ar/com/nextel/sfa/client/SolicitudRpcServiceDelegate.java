@@ -240,8 +240,8 @@ public class SolicitudRpcServiceDelegate {
 	}
 
 	public void validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa,
-				DefaultWaitCallback<List<String>> callback){
+			boolean isSaving, DefaultWaitCallback<List<String>> callback){
 		WaitWindow.show();
-		solicitudRpcServiceAsync.validarPlanesCedentes(ctoCedentes, isEmpresa, callback);
+		solicitudRpcServiceAsync.validarPlanesCedentes(ctoCedentes, isEmpresa, isSaving, callback);
 	}
 }
