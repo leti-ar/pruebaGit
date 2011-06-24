@@ -46,4 +46,15 @@ public class CreateSaveSSTransfResultDto implements IsSerializable{
 		mens.setDescription(mensaje);
 		messages.add(mens);
 	}
+	
+	public void addMessages(List<MessageDto> messages) {
+		if(this.messages.isEmpty()){
+			setMessages(messages);
+		}else{
+			for (MessageDto messageDto : messages) {
+				this.messages.add(messageDto);
+			}
+		}
+		
+	}
 }

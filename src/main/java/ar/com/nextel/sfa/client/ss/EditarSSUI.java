@@ -11,6 +11,7 @@ import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
+import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -21,7 +22,6 @@ import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
-import ar.com.nextel.sfa.client.dto.SaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
@@ -219,12 +219,45 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							}
 						});
 			}else{
+				//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
+				//que permite realizar el manejo de mensajes
 				SolicitudRpcService.Util.getInstance().createSolicitudServicio(solicitudServicioRequestDto,
-						new DefaultWaitCallback<SolicitudServicioDto>() {
+						new DefaultWaitCallback<CreateSaveSolicitudServicioResultDto>() {
 
-					public void success(SolicitudServicioDto solicitud) {
-						loadInfocom(String.valueOf(solicitud.getCuenta().getId()), solicitud.getCuenta().getCodigoVantive());
-						ssCreadaSuccess(solicitud);
+					//MGR - ISDN 1824
+					@Override
+					public void success(final CreateSaveSolicitudServicioResultDto result) {
+						
+						if(result.isError()){
+							ErrorDialog.getInstance().setDialogTitle("Aviso");
+							StringBuilder msgString = new StringBuilder();
+							for (MessageDto msg : result.getMessages()) {
+								msgString.append("<span class=\"error\">- " + msg.getDescription()
+										+ "</span><br>");
+							}
+							ErrorDialog.getInstance().show(msgString.toString(), false);
+						
+						}else{
+							Command abrirSSCreada = new Command() {
+								public void execute() {
+									MessageDialog.getInstance().hide();
+									SolicitudServicioDto solicitud = result.getSolicitud();
+									loadInfocom(String.valueOf(solicitud.getCuenta().getId()), solicitud.getCuenta().getCodigoVantive());
+									ssCreadaSuccess(solicitud);
+								}
+							};
+							
+							if(!result.getMessages().isEmpty()){
+								StringBuilder msgString = new StringBuilder();
+								for (MessageDto msg : result.getMessages()) {
+									msgString.append("<span class=\"error\">- " + msg.getDescription()
+											+ "</span><br>");
+								}
+								MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), abrirSSCreada);
+							}else{
+								abrirSSCreada.execute();
+							}
+						}
 					}
 
 					public void failure(Throwable caught) {
@@ -572,9 +605,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			//MGR - ISDN 1824 - Como se realizan validaciones, ya no recibe una SolicitudServicioDto
 			//sino una SaveSolicitudServicioResultDto que permite realizar el manejo de mensajes
 			SolicitudRpcService.Util.getInstance().saveSolicituServicio(editarSSUIData.getSolicitudServicio(),
-					new DefaultWaitCallback<SaveSolicitudServicioResultDto>() {
+					new DefaultWaitCallback<CreateSaveSolicitudServicioResultDto>() {
 						
-						public void success(SaveSolicitudServicioResultDto result) {
+						public void success(CreateSaveSolicitudServicioResultDto result) {
 							guardandoSolicitud = false;
 							editarSSUIData.setSolicitud(result.getSolicitud());
 							datos.refresh();

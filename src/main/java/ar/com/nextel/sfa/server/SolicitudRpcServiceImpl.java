@@ -28,7 +28,7 @@ import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.vantive.VantiveSystem;
 import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
-import ar.com.nextel.business.solicitudes.crearGuardar.request.GuardarResponse;
+import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSResponse;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
@@ -64,6 +64,7 @@ import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
+import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
@@ -82,7 +83,6 @@ import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
-import ar.com.nextel.sfa.client.dto.SaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
@@ -157,8 +157,13 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		messageRetriever = (DefaultRetriever)context.getBean("messageRetriever");
 	}
 
-	public SolicitudServicioDto createSolicitudServicio(
+	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
+	//que permite realizar el manejo de mensajes
+	public CreateSaveSolicitudServicioResultDto createSolicitudServicio(
 			SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages {
+		//MGR - ISDN 1824
+		CreateSaveSolicitudServicioResultDto resultDto = new CreateSaveSolicitudServicioResultDto();
+
 		SolicitudServicioRequest request = mapper.map(solicitudServicioRequestDto,
 				SolicitudServicioRequest.class);
 		AppLogger.info("Creando Solicitud de Servicio con Request -> " + request.toString());
@@ -198,8 +203,14 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			linea.setPrecioConDescuento(precioConDescuento);
 		}
 
+		//MGR - ISDN 1824 - Predicados al crear una ss
+		MessageList messages = solicitudBusinessService.validarCreateSS(solicitud).getMessages();
+		resultDto.setError(messages.hasErrors());
+		resultDto.setMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
+		
 		AppLogger.info("Creacion de Solicitud de Servicio finalizada");
-		return solicitudServicioDto;
+		resultDto.setSolicitud(solicitudServicioDto);
+		return resultDto;
 	}
 
 	public List<SolicitudServicioCerradaResultDto> searchSSCerrada(
@@ -325,13 +336,19 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		List tiposAnticipo = repository.getAll(TipoAnticipo.class);
 		initializer.setTiposAnticipo(mapper.convertList(tiposAnticipo, TipoAnticipoDto.class));
 		
-		//Se cargan todos los vendedores que no sean del tipo Telemarketer, Dae o Administrador de Créditos
+		//Se cargan todos los vendedores que no sean del tipo Telemarketer, Dae o Administrador de Créditos,
 		Long idTipoVendTLM = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_TELEMARKETING);
 		Long idTipoVendDAE = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_DAE);
 		Long idTipoVendADM = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_CREDITOS);
-		List<Vendedor> vendedores = repository.find(
-						"from Vendedor vend where vend.tipoVendedor.id <> ? and vend.tipoVendedor.id <> ? and vend.tipoVendedor.id <> ?",
-						idTipoVendDAE, idTipoVendTLM, idTipoVendADM);
+		//MGR - ISDN 1824 - Si el vendedor logeado es Adm. de creditos, los TLM si se cargan al combo
+		String query = "from Vendedor vend where vend.tipoVendedor.id not in(" + idTipoVendDAE.toString() + 
+							", " + idTipoVendADM.toString();
+		if(!SessionContextLoader.getInstance().getVendedor().isADMCreditos()){
+			query += ", " + idTipoVendTLM.toString();
+		}
+		query += ")";
+		List<Vendedor> vendedores = repository.find(query);
+		
 		Collections.sort(vendedores, new Comparator<Vendedor>() {
 			public int compare(Vendedor vend1, Vendedor vend2) {
 				if(vend1.getApellido() == null && vend2.getApellido() == null)
@@ -352,10 +369,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un SaveSolicitudServicioResultDto 
 	//que permite realizar el manejo de mensajes
-	public SaveSolicitudServicioResultDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
+	public CreateSaveSolicitudServicioResultDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
 			throws RpcExceptionMessages {
 
-		SaveSolicitudServicioResultDto resultDto = new SaveSolicitudServicioResultDto();
+		CreateSaveSolicitudServicioResultDto resultDto = new CreateSaveSolicitudServicioResultDto();
 		try {
 			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(
 					solicitudServicioDto, mapper);
@@ -364,7 +381,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			Vendedor vendedor = sessionContextLoader.getSessionContext().getVendedor();
 			if (vendedor.isADMCreditos()) {
 				//Valida los predicados y el triptico
-				GuardarResponse response = solicitudBusinessService.validarPredicadosGuardarSS(solicitudSaved);
+				CreateSaveSSResponse response = solicitudBusinessService.validarPredicadosGuardarSS(solicitudSaved);
 				resultDto.setError(response.getMessages().hasErrors());
 				resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
 			}
@@ -603,8 +620,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			}
 	}
 	
-	
-
 	private String getReporteFileName(SolicitudServicio solicitudServicio) {
 		String filename;
 		if (solicitudServicio.getCuenta().isCliente()) {
@@ -634,7 +649,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 	private static String[] months = { "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT",
 			"NOV", "DEC" };
-	
 	
     public List<VendedorDto> getVendedoresDae() {
         AppLogger.info("Iniciando busqueda de vendedores Dae activos...");
@@ -730,7 +744,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			Vendedor vendedor = sessionContextLoader.getSessionContext().getVendedor();
 			if (vendedor.isADMCreditos()) {
 				//Valida los predicados y el triptico
-				GuardarResponse response = solicitudBusinessService.validarPredicadosGuardarSS(solicitudSaved);
+				CreateSaveSSResponse response = solicitudBusinessService.validarPredicadosGuardarSS(solicitudSaved);
 				resultDto.setError(response.getMessages().hasErrors());
 				resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
 			}
@@ -745,14 +759,18 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages {
 		CreateSaveSSTransfResultDto resultDto = new CreateSaveSSTransfResultDto();
 		
-		SolicitudServicioDto solicitudDto = this.createSolicitudServicio(solicitudServicioRequestDto);
+		//MGR - ISDN 1824
+		CreateSaveSolicitudServicioResultDto resultSSAux = this.createSolicitudServicio(solicitudServicioRequestDto);
+		SolicitudServicioDto solicitudDto = resultSSAux.getSolicitud();
+		resultDto.addMessages(resultSSAux.getMessages());
+		
 		resultDto.setSolicitud(solicitudDto);
 		SolicitudServicio solicitud = repository.retrieve(SolicitudServicio.class,
 				solicitudDto.getId());
 		//mapper.map(solicitudDto, solicitud);
 		MessageList messages = solicitudBusinessService.validarCreateSSTransf(solicitud).getMessages();
 		resultDto.setError(messages.hasErrors());
-		resultDto.setMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
+		resultDto.addMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
 		
 		Vendedor vendLogeo = sessionContextLoader.getVendedor();
 		if(vendLogeo.isADMCreditos() || vendLogeo.isAP()){

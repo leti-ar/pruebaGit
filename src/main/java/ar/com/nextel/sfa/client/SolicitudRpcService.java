@@ -4,6 +4,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
+import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
@@ -16,7 +17,6 @@ import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
-import ar.com.nextel.sfa.client.dto.SaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
@@ -59,14 +59,16 @@ public interface SolicitudRpcService extends RemoteService {
 	public List<SolicitudServicioCerradaResultDto> searchSSCerrada(
 			SolicitudServicioCerradaDto solicitudServicioCerradaDto) throws RpcExceptionMessages;
 
-	public SolicitudServicioDto createSolicitudServicio(
+	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
+	//que permite realizar el manejo de mensajes
+	public CreateSaveSolicitudServicioResultDto createSolicitudServicio(
 			SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages;
 
 	public SolicitudInitializer getSolicitudInitializer() throws RpcExceptionMessages;
 
 	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un SaveSolicitudServicioResultDto 
 	//que permite realizar el manejo de mensajes
-	public SaveSolicitudServicioResultDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
+	public CreateSaveSolicitudServicioResultDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
 			throws RpcExceptionMessages;
 
 	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(

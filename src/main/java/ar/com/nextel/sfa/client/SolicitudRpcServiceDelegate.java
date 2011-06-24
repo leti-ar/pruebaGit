@@ -4,6 +4,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
+import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
@@ -16,7 +17,6 @@ import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
-import ar.com.nextel.sfa.client.dto.SaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
@@ -47,8 +47,10 @@ public class SolicitudRpcServiceDelegate {
 		this.solicitudRpcServiceAsync = solicitudRpcServiceAsync;
 	}
 
+	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
+	//que permite realizar el manejo de mensajes
 	public void createSolicitudServicio(SolicitudServicioRequestDto solicitudServicioRequestDto,
-			DefaultWaitCallback<SolicitudServicioDto> callback) {
+			DefaultWaitCallback<CreateSaveSolicitudServicioResultDto> callback) {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.createSolicitudServicio(solicitudServicioRequestDto, callback);
 
@@ -62,7 +64,7 @@ public class SolicitudRpcServiceDelegate {
 	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un SaveSolicitudServicioResultDto
 	//que permite realizar el manejo de mensajes
 	public void saveSolicituServicio(SolicitudServicioDto solicitudServicioDto,
-			DefaultWaitCallback<SaveSolicitudServicioResultDto> callback) {
+			DefaultWaitCallback<CreateSaveSolicitudServicioResultDto> callback) {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.saveSolicituServicio(solicitudServicioDto, callback);
 	}

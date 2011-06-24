@@ -22,9 +22,9 @@ import ar.com.nextel.business.oportunidades.OperacionEnCursoBusinessOperator;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.ReservaNumeroTelefonoBusinessOperator;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
 import ar.com.nextel.business.solicitudes.crearGuardar.GuardarBusinessOperator;
+import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSResponse;
 import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSTransfResponse;
 import ar.com.nextel.business.solicitudes.crearGuardar.request.GuardarRequest;
-import ar.com.nextel.business.solicitudes.crearGuardar.request.GuardarResponse;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
 import ar.com.nextel.business.solicitudes.generacionCierre.GeneracionCierreBusinessOperator;
@@ -572,9 +572,14 @@ public class SolicitudBusinessService {
 	}
 	
 	//MGR - ISDN 1824
-	public GuardarResponse validarPredicadosGuardarSS(SolicitudServicio solicitudServicio) {
+	public CreateSaveSSResponse validarPredicadosGuardarSS(SolicitudServicio solicitudServicio) {
 		GuardarRequest guardarRequest = new GuardarRequest(solicitudServicio);
-		GuardarResponse response = guardarBusinessOperator.validarPredicadosGuardarSS(guardarRequest);
+		CreateSaveSSResponse response = guardarBusinessOperator.validarPredicadosGuardarSS(guardarRequest);
 		return response;
+	}
+	
+	//MGR - ISDN 1824
+	public CreateSaveSSResponse validarCreateSS(SolicitudServicio solicitud){
+		return solicitudesBusinessOperator.validarCreateSS(solicitud);
 	}
 }

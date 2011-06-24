@@ -6,13 +6,13 @@ import java.util.List;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 //MGR - ISDN 1824 - Creada para poder manejar mensajes
-public class SaveSolicitudServicioResultDto  implements IsSerializable{
+public class CreateSaveSolicitudServicioResultDto  implements IsSerializable{
 
 	private SolicitudServicioDto solicitud;
 	private List<MessageDto> messages;
 	private boolean error;
 	
-	public SaveSolicitudServicioResultDto(){
+	public CreateSaveSolicitudServicioResultDto(){
 		messages = new ArrayList<MessageDto>();
 		solicitud = null;
 		error = false;
