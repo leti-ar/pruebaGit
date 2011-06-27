@@ -12,6 +12,7 @@ import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
+import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -1002,6 +1003,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			ssDto = obtenerSolicitudTransferencia(true);
 		}else{
 			ssDto =editarSSUIData.getSolicitudServicio();
+			//El vendedor de la cuenta solo se cambia si la cuenta es prospect y el usuario logueado es Administrador de creditos
+			if(isProspectAndADMCreditos(ssDto.getCuenta())) {
+				ssDto.getCuenta().setVendedor((VendedorDto) editarSSUIData.getVendedor().getSelectedItem());						
+			}		
 		}
 		
 		SolicitudRpcService.Util.getInstance().generarCerrarSolicitud(
@@ -1050,7 +1055,13 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
         editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA());
 	}
 	
-	
+
+	//Evaluacion si la cuenta es prospect , el usuario logueado es Administrador de creditos y fue elegido un vendedor
+	private boolean isProspectAndADMCreditos(CuentaSSDto cuentaDto) {
+		return !cuentaDto.isCliente() &&
+		       ClientContext.getInstance().getVendedor().isADMCreditos() &&
+		       editarSSUIData.getVendedor().getSelectedItem() != null;
+	}	
 	
 	
 }
