@@ -491,25 +491,47 @@ public class SolicitudBusinessService {
 //					&& !solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion()
 					&& hace4Dias.before(solicitudServicio.getCuenta().getFacturaElectronica().getLastModificationDate())
 					&& !response.getMessages().hasErrors()) {
-				if (!esProspect) {
+				
+				//MGR - ISDN 1824 - El adm. de creditos adhiere el cliente a factura electronica y genera la gestion
+				//tanto para prospect como para clientes
+				Vendedor vendedor = repository.retrieve(Vendedor.class, this.sessionContextLoader.getInstance().getVendedor().getId());
+				boolean isADMCreditos = vendedor.isADMCreditos();
+				
+				Long codigoBSCS = null;
+				if(solicitudServicio.getCuenta().getCodigoBSCS() != null){
+					codigoBSCS = new Long(solicitudServicio.getCuenta().getCodigoBSCS());
+				}
+				
+				//MGR - ISDN 1824
+				if (isADMCreditos || !esProspect) {
 					facturaElectronicaService.adherirFacturaElectronica(
-							new Long(solicitudServicio.getCuenta().getCodigoBSCS()), solicitudServicio.getCuenta()
+							codigoBSCS, solicitudServicio.getCuenta()
 							.getCodigoVantive(), solicitudServicio.getCuenta()
 							.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor()
 							.getUserName());
 					solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
 				}
 				repository.save(solicitudServicio.getCuenta().getFacturaElectronica());
-				if (!esProspect) {
+				
+				//MGR - ISDN 1824
+				if (isADMCreditos || !esProspect) {
 					String codigoGestion = "TRANSF_FACT_ELECTRONICA";
 					ParametrosGestion parametrosGestion = repository.retrieve(ParametrosGestion.class, codigoGestion);
-					Vendedor vendedor = repository.retrieve(Vendedor.class, this.sessionContextLoader.getInstance().getVendedor().getId());
+					
+					//MGR - ISDN 1824
+					String vendReal = "";
+					if(isADMCreditos){
+						vendReal = solicitudServicio.getVendedor().getUserReal();
+					}else{
+						vendReal = vendedor.getUserReal();
+					}
+					
 					Long idGestion = generacionCierreBusinessOperator.lanzarGestionCerrarSS(
-							vendedor.getUserReal(), 
+							vendReal,
 							0L, 
 							parametrosGestion, 
 							"", 
-							new Long(solicitudServicio.getCuenta().getCodigoBSCS()), 
+							codigoBSCS, 
 							cerrar);
 					solicitudServicio.getCuenta().getFacturaElectronica().setIdGestion(idGestion);
 				}
