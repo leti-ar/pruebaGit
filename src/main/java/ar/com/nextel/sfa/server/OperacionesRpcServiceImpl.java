@@ -17,6 +17,7 @@ import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.sfa.client.OperacionesRpcService;
 import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaResultDto;
 import ar.com.nextel.sfa.server.businessservice.SolicitudBusinessService;
@@ -74,8 +75,10 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 		}
 		else{
 			AppLogger.info("Obteniendo operaciones en curso para vendedores del tipo Adm. de creditos.", this);
+			//MGR - ISDN 1824 - Se modifico la consulta de las operaciones en curso para los administradores
 			List<OperacionEnCurso> oppEnCurso = this.repository.executeCustomQuery
-						(oppEnCursoAdmCredito,vendedor.getId(), vendedor.getId(), vendedor.getId());
+					(oppEnCursoAdmCredito, VendedorDto.TIPO_VENDEDOR_ADM_CREDITOS, vendedor.getId());
+			
 			List<OperacionEnCursoDto> operacionesEnCursoDto = mapper.convertList(
 					oppEnCurso, OperacionEnCursoDto.class);
 			return operacionesEnCursoDto;
