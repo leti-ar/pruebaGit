@@ -204,7 +204,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 									if(!result.getMessages().isEmpty()){
 										StringBuilder msgString = new StringBuilder();
 										for (MessageDto msg : result.getMessages()) {
-											msgString.append("<span class=\"error\">- " + msg.getDescription()
+											msgString.append("<span class=\"info\">- " + msg.getDescription()
 													+ "</span><br>");
 										}
 										MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), abrirSSCreada);
@@ -251,7 +251,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							if(!result.getMessages().isEmpty()){
 								StringBuilder msgString = new StringBuilder();
 								for (MessageDto msg : result.getMessages()) {
-									msgString.append("<span class=\"error\">- " + msg.getDescription()
+									msgString.append("<span class=\"info\">- " + msg.getDescription()
 											+ "</span><br>");
 								}
 								MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), abrirSSCreada);
@@ -585,11 +585,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							datosTranferencia.setDatosSolicitud(result.getSolicitud());
 //							datosTranferencia.refresh();
 							editarSSUIData.setSaved(true);
-							
-							if(result.isError()){
+							//MGR - #1759
+							if(!result.getMessages().isEmpty()){
 								StringBuilder msgString = new StringBuilder();
 								for (MessageDto msg : result.getMessages()) {
-									msgString.append("<span class=\"warn\">- " + msg.getDescription()
+									msgString.append("<span class=\"info\">- " + msg.getDescription()
 											+ "</span><br>");
 								}
 								MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), MessageDialog.getCloseCommand());
@@ -617,11 +617,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							// Sfa.constant().MSG_SOLICITUD_GUARDADA_OK(), MessageDialog.getCloseCommand());
 							editarSSUIData.setSaved(true);
 							
-							//MGR - ISDN 1824
-							if(result.isError()){
+							//MGR - ISDN 1824 - MGR - #1759
+							if(!result.getMessages().isEmpty()){
 								StringBuilder msgString = new StringBuilder();
 								for (MessageDto msg : result.getMessages()) {
-									msgString.append("<span class=\"warn\">- " + msg.getDescription()
+									msgString.append("<span class=\"info\">- " + msg.getDescription()
 											+ "</span><br>");
 								}
 								MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), MessageDialog.getCloseCommand());
@@ -747,7 +747,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 						if(!result.getMessages().isEmpty()){
 							StringBuilder msgString = new StringBuilder();
 							for (MessageDto msg : result.getMessages()) {
-								msgString.append("<span class=\"error\">- " + msg.getDescription()
+								msgString.append("<span class=\"info\">- " + msg.getDescription()
 										+ "</span><br>");
 							}
 							MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), mostrarDialogCerrado);
