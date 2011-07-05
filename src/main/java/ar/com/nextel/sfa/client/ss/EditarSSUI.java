@@ -564,7 +564,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					acionesSS.getAbsoluteTop() - generarCerrarMenu.getOffsetHeight());
 		} else if (sender == generarSolicitud || sender == cerrarSolicitud) {
 			generarCerrarMenu.hide();
-			openGenerarCerrarSolicitdDialog(sender == cerrarSolicitud);
+			if (ClientContext.getInstance().getVendedor().isADMCreditos() && !editarSSUIData.isSaved()) {
+				ErrorDialog.getInstance().setDialogTitle("Aviso");
+				ErrorDialog.getInstance().show("Debe guardar la solicitud antes de cerrar", false);
+			} else {
+				openGenerarCerrarSolicitdDialog(sender == cerrarSolicitud);
+			}
 		}
 	}
 
