@@ -5,10 +5,12 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
+import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.EventWrapper;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
+import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
@@ -18,6 +20,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -52,6 +55,8 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 			public void onClick(ClickEvent arg0) {
 				hide();
 				cleanForm();
+				//#1723 - Cambio la url para que al volver a presionar Cuentas -> Agregar se abra el popup
+				History.newItem(UILoader.SOLO_MENU + "");
 			}
 		});
 		tipoDocumento.addChangeHandler(new ChangeHandler() {
@@ -147,7 +152,9 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 		if (validarNumeroDocumento()) {
 			CuentaClientService.reservaCreacionCuenta(new Long(tipoDocumento.getSelectedItemId()), numeroDocTextBox.getText(), fromMenu?null:idOpp);
 			hide();
-			cleanForm();	
+			cleanForm();
+			//#1723 - Cambio la url para que al volver a presionar Cuentas -> Agregar se abra el popup
+			History.newItem(UILoader.SOLO_MENU + "");
 		}
 	}
 	

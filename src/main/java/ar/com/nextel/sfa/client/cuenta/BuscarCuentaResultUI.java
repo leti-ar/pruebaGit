@@ -244,10 +244,17 @@ public class BuscarCuentaResultUI extends FlowPanel implements ClickHandler {
 			this.dialogCuentaId = cuentaSearch.getId();
 			this.dialogCodVantive = cuentaSearch.getCodigoVantive();
 			this.dialogBusquedaPorDoc = getCondicionBusquedaPorDni();
-			String msg = Sfa.constant().ERR_CUENTA_LOCKEADA_POR_OTRO().replaceAll("\\{1\\}",
-					cuentaSearch.getNumero()).replaceAll("\\{2\\}", cuentaSearch.getSupervisor());
-			ModalMessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_DIALOG_TITLE(), msg,
-					getAceptarConsultarCtaLockeada(), ModalMessageDialog.getCloseCommand());
+			
+			if (cuentaSearch.getEjecutivo() != null &&
+					cuentaSearch.isEjecutivoOwner(ClientContext.getInstance().getUsuario().getUserName())) {
+				String msg = Sfa.constant().ERR_CUENTA_LOCKEADA_POR_OTRO().replaceAll("\\{1\\}",
+						cuentaSearch.getNumero()).replaceAll("\\{2\\}", cuentaSearch.getSupervisor());
+				ModalMessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_DIALOG_TITLE(), msg,
+						getAceptarConsultarCtaLockeada(), ModalMessageDialog.getCloseCommand());
+			} else {
+				CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(), cuentaSearch.getNumero(),
+						getCondicionBusquedaPorDni(), true, true);
+			}
 		} else {
 			// CuentaClientService.cargarDatosCuenta(cuentaSearch.getId(),
 			// cuentaSearch.getCodigoVantive(),getCondicionBusquedaPorDni());

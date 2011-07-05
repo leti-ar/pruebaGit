@@ -45,6 +45,7 @@ public class CuentaRpcServiceDelegate {
 	public void getAgregarCuentaInitializer(DefaultWaitCallback<AgregarCuentaInitializer> callback) {
 		WaitWindow.show();
 		cuentaRpcService.getAgregarCuentaInitializer(callback);
+		WaitWindow.hide();
 	}
 	public void saveCuenta(CuentaDto cuentaDto,DefaultWaitCallback<CuentaDto> callback) {
 		WaitWindow.show();
@@ -78,6 +79,7 @@ public class CuentaRpcServiceDelegate {
 		WaitWindow.show();
 		//MGR - #1466 - Esta llamada sigue funcionando como antes, entonces lockea
 		cuentaRpcService.selectCuenta(cuentaId, cod_vantive,filtradoPorDni, true,callback);
+		WaitWindow.hide();
 	}
 	public void reservaCreacionCuenta(CrearCuentaDto crearCuentaDto,DefaultWaitCallback<CuentaDto>  callback) {
 		WaitWindow.show();

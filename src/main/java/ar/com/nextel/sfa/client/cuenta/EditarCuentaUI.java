@@ -219,7 +219,7 @@ public class EditarCuentaUI extends ApplicationUI {
 					TipoContribuyenteEnum.CONS_FINAL.getDescripcion()));
 		}
 		if (esEdicionCuenta)
-			cuentaTab.getCuentaDatosForm().ponerDatosBusquedaEnFormulario(cuenta);
+			cuentaTab.getCuentaDatosForm().ponerDatosBusquedaEnFormulario(cuenta, false);
 
 		// carga info pestaña Domicilio
 		cuentaTab.getCuentaDomicilioForm().getCrearDomicilio().setVisible(verCrearNuevoDomicilio);

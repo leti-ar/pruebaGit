@@ -315,4 +315,8 @@ public class CuentaDto implements IsSerializable {
 		this.facturaElectronica = facturaElectronica;
 	}
 
+	public boolean isProspectEnCarga() {
+		return getCondicionCuenta().getId() == CondicionCuentaEnum.PROSPECT_EN_CARGA.getId();
+	}
+	
 }
