@@ -503,18 +503,18 @@ public class SolicitudBusinessService {
 				}
 				
 				//MGR - ISDN 1824
-				if (isADMCreditos || !esProspect) {
+				if (!esProspect) {
 					facturaElectronicaService.adherirFacturaElectronica(
 							codigoBSCS, solicitudServicio.getCuenta()
 							.getCodigoVantive(), solicitudServicio.getCuenta()
 							.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor()
-							.getUserName());
+							.getUserReal());
 					solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
 				}
 				repository.save(solicitudServicio.getCuenta().getFacturaElectronica());
 				
 				//MGR - ISDN 1824
-				if (isADMCreditos || !esProspect) {
+				if (!esProspect) {
 					String codigoGestion = "TRANSF_FACT_ELECTRONICA";
 					ParametrosGestion parametrosGestion = repository.retrieve(ParametrosGestion.class, codigoGestion);
 					
