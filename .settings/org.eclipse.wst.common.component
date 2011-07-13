@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="1.5.0">
+  <wb-module deploy-name="sfa-web">
+    <property name="context-root" value="sfa-web"/>
+    <wb-resource deploy-path="/" source-path="war"/>
+    <property name="java-output-path" value="/war/WEB-INF/classes"/>
+    <dependent-module archiveName="crmWS-Client-2.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/var/M2_REPO/ar/com/nextel/nexus/crmWS-Client/2.1/crmWS-Client-2.1.jar">
+      <dependency-type>uses</dependency-type>
+    </dependent-module>
+    <dependent-module archiveName="gwt-servlet-2.0.3.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/var/M2_REPO/com/google/gwt/gwt-servlet/2.0.3/gwt-servlet-2.0.3.jar">
+      <dependency-type>uses</dependency-type>
+    </dependent-module>
+    <dependent-module archiveName="GwtCommons-1.1-sfa.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/var/M2_REPO/ar/com/snoop/gwt/GwtCommons/1.1-sfa/GwtCommons-1.1-sfa.jar">
+      <dependency-type>uses</dependency-type>
+    </dependent-module>
+    <dependent-module archiveName="pinWSClient-1.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/var/M2_REPO/ar/com/nextel/sfa/pin/pinWSClient/1.0/pinWSClient-1.0.jar">
+      <dependency-type>uses</dependency-type>
+    </dependent-module>
+    <dependent-module archiveName="sfa-srv.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/sfa-srv/sfa-srv">
+      <dependency-type>uses</dependency-type>
+    </dependent-module>
+    <dependent-module archiveName="wsdl4j-1.5.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/var/M2_REPO/wsdl4j/wsdl4j/1.5.1/wsdl4j-1.5.1.jar">
+      <dependency-type>uses</dependency-type>
+    </dependent-module>
+    <wb-resource deploy-path="/WEB-INF/classes" source-path="src/main/java"/>
+    <wb-resource deploy-path="/WEB-INF/classes" source-path="src/main/resources"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
+  </wb-module>
+</project-modules>

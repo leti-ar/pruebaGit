@@ -61,6 +61,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private CheckBox ddn;
 	private CheckBox ddi;
 	private CheckBox roaming;
+	private CheckBox portabilidad;
+	private PortabilidadUIData portabilidadPanel = new PortabilidadUIData();
+	
+
+
 	private TextBox imei;
 	private ListBox modeloEq;
 	private ListBox item;
@@ -127,6 +132,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		fields.add(ddn = new CheckBox());
 		fields.add(ddi = new CheckBox());
 		fields.add(roaming = new CheckBox());
+		fields.add(portabilidad = new CheckBox());
+		
 		totalLabel = new InlineHTML(currencyFormat.format(0d));
 		confirmarReserva = new Button("Ok");
 		desreservar = new Button();
@@ -163,6 +170,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		ddn.setText(Sfa.constant().ddn());
 		ddi.setText(Sfa.constant().ddi());
 		roaming.setText(Sfa.constant().roaming());
+		portabilidad.setText(Sfa.constant().portabilidad());
 		resetIMEICheck();
 		verificarSimWrapper.addStyleName("pl10");
 
@@ -189,6 +197,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		verificarSimWrapper.addClickHandler(this);
 		roaming.addClickHandler(this);
 		imei.addChangeListener(this);
+		portabilidad.addClickHandler(this);
 
 		initIdsTipoSolicitudBase();
 	}
@@ -233,6 +242,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			} else {
 				ddi.setEnabled(true);
 			}
+		}else if (sender == portabilidad) {
+			
+				portabilidadPanel.setVisible(portabilidad.getValue());
+			
 		}
 	}
 
@@ -390,6 +403,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			});
 		}
 	}
+	
+	
+
 
 	public void onChange(Widget sender) {
 		if (sender == listaPrecio) {
@@ -658,6 +674,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 	public CheckBox getRoaming() {
 		return roaming;
+	}
+
+	
+	public CheckBox getPortabilidad() {
+		return portabilidad;
 	}
 
 	public TextBox getImei() {
@@ -1043,5 +1064,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 		}
 		return null;
+	}
+
+
+
+	public PortabilidadUIData getPortabilidadPanel() {
+		return portabilidadPanel;
 	}
 }

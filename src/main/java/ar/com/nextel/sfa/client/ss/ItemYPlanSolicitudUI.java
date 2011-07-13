@@ -89,14 +89,16 @@ public class ItemYPlanSolicitudUI extends Composite {
 		cppAliasReservaTable.setWidget(1, 1, getReservaPanel());
 		mainPanel.add(cppAliasReservaTable);
 		
-		roamingTable = new Grid(1, 6);
+		roamingTable = new Grid(1, 7);
 		roamingTable.addStyleName("layout ml10");
 		roamingTable.getCellFormatter().setWidth(0, 0, "100px");
 		roamingTable.getCellFormatter().setWidth(0, 1, "100px");
 		roamingTable.setWidget(0, 0, itemSolicitudUIData.getDdn());
 		roamingTable.setWidget(0, 1, itemSolicitudUIData.getDdi());
 		roamingTable.setWidget(0, 2, itemSolicitudUIData.getRoaming());
+		roamingTable.setWidget(0, 3, itemSolicitudUIData.getPortabilidad());
 		mainPanel.add(roamingTable);
+		mainPanel.add(itemSolicitudUIData.getPortabilidadPanel());
 	}
 
 	private Widget getReservaPanel() {
