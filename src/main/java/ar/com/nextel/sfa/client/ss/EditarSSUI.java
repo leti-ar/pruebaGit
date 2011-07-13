@@ -759,12 +759,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public void getLineasSolicitudServicioInitializer(
 			DefaultWaitCallback<LineasSolicitudServicioInitializer> defaultWaitCallback) {
 		SolicitudRpcService.Util.getInstance().getLineasSolicitudServicioInitializer(
-				editarSSUIData.getGrupoSolicitud(), defaultWaitCallback);
+				editarSSUIData.getGrupoSolicitud(), editarSSUIData.getCuenta().isEmpresa(), defaultWaitCallback);
 	}
 
-	public void getListaPrecios(TipoSolicitudDto tipoSolicitudDto,
+	public void getListaPrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa,
 			DefaultWaitCallback<List<ListaPreciosDto>> defaultWaitCallback) {
-		SolicitudRpcService.Util.getInstance().getListasDePrecios(tipoSolicitudDto, defaultWaitCallback);
+		SolicitudRpcService.Util.getInstance().getListasDePrecios(tipoSolicitudDto, isEmpresa, defaultWaitCallback);
 	}
 
 	public void getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,
@@ -776,7 +776,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public void getServiciosAdicionales(LineaSolicitudServicioDto linea,
 			DefaultWaitCallback<List<ServicioAdicionalLineaSolicitudServicioDto>> defaultWaitCallback) {
 		SolicitudRpcService.Util.getInstance().getServiciosAdicionales(linea, editarSSUIData.getCuentaId(),
-				defaultWaitCallback);
+				editarSSUIData.getCuenta().isEmpresa(), defaultWaitCallback);
 	}
 
 	public String getNombreProximoMovil() {

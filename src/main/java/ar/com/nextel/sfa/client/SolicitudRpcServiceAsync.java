@@ -52,9 +52,9 @@ public interface SolicitudRpcServiceAsync {
 			AsyncCallback<DetalleSolicitudServicioDto> callback);
 
 	public void getLineasSolicitudServicioInitializer(GrupoSolicitudDto grupoSolicitudDto,
-			AsyncCallback<LineasSolicitudServicioInitializer> callback);
+			boolean isEmpresa, AsyncCallback<LineasSolicitudServicioInitializer> callback);
 
-	public void getListasDePrecios(TipoSolicitudDto tipoSolicitudDto,
+	public void getListasDePrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa, 
 			AsyncCallback<List<ListaPreciosDto>> callback);
 
 	public void buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto,
@@ -64,7 +64,7 @@ public interface SolicitudRpcServiceAsync {
 			Long idCuenta, AsyncCallback<List<PlanDto>> callback);
 
 	public void getServiciosAdicionales(LineaSolicitudServicioDto linea, Long idCuenta,
-			AsyncCallback<List<ServicioAdicionalLineaSolicitudServicioDto>> defaultWaitCallback);
+			boolean isEmpresa, AsyncCallback<List<ServicioAdicionalLineaSolicitudServicioDto>> defaultWaitCallback);
 
 	public void reservarNumeroTelefonico(long numero, long idTipoTelefonia, long idModalidadCobro,
 			long idLocalidad, AsyncCallback<ResultadoReservaNumeroTelefonoDto> callback);

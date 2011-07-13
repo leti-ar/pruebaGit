@@ -67,12 +67,12 @@ public interface SolicitudRpcService extends RemoteService {
 			throws RpcExceptionMessages;
 
 	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(
-			GrupoSolicitudDto grupoSolicitudDto) throws RpcExceptionMessages;
+			GrupoSolicitudDto grupoSolicitudDto, boolean isEmpresa) throws RpcExceptionMessages;
 
 	public DetalleSolicitudServicioDto getDetalleSolicitudServicio(Long idSolicitudServicio)
 			throws RpcExceptionMessages;
 
-	public List<ListaPreciosDto> getListasDePrecios(TipoSolicitudDto tipoSolicitudDto)
+	public List<ListaPreciosDto> getListasDePrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa)
 			throws RpcExceptionMessages;
 
 	public String buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto)
@@ -82,7 +82,7 @@ public interface SolicitudRpcService extends RemoteService {
 			TipoPlanDto tipoPlan, Long idCuenta);
 
 	public List<ServicioAdicionalLineaSolicitudServicioDto> getServiciosAdicionales(
-			LineaSolicitudServicioDto linea, Long idCuenta) throws RpcExceptionMessages;
+			LineaSolicitudServicioDto linea, Long idCuenta, boolean isEmpresa) throws RpcExceptionMessages;
 
 	public ResultadoReservaNumeroTelefonoDto reservarNumeroTelefonico(long numero, long idTipoTelefonia,
 			long idModalidadCobro, long idLocalidad) throws RpcExceptionMessages;
@@ -138,4 +138,5 @@ public interface SolicitudRpcService extends RemoteService {
 	 * @return Lista con los errores posibles.
 	 */
 	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa);
+
 }

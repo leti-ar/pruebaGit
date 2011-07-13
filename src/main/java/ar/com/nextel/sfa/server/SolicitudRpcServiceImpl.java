@@ -18,6 +18,8 @@ import java.util.Set;
 
 import javax.servlet.ServletException;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -388,7 +390,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	}
 
 	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(
-			GrupoSolicitudDto grupoSolicitudDto) {
+			GrupoSolicitudDto grupoSolicitudDto, boolean isEmpresa) {
 
 		LineasSolicitudServicioInitializer initializer = new LineasSolicitudServicioInitializer();
 		List<GrupoSolicitud> grupos = 
@@ -416,6 +418,17 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			List<ListaPrecios> listasPrecios = new ArrayList<ListaPrecios>(firstTipoSolicitud
 					.getListasPrecios());
 			
+			// #1757 -  solo tengo que mostrar la lista de precios asociados al segmento del cliente
+			List<Long> ids = (List<Long>) CollectionUtils.collect(listasPrecios,  
+		                new BeanToPropertyValueTransformer("id"));
+			List<ListaPrecios> listasPreciosSegmentada = null;
+			if (isEmpresa) {
+				listasPreciosSegmentada = solicitudServicioRepository.getListaPreciosPorSegmento(ids, 2);
+			} else {
+				listasPreciosSegmentada = solicitudServicioRepository.getListaPreciosPorSegmento(ids, 1);
+			}
+			listasPrecios.retainAll(listasPreciosSegmentada);
+			
 			firstTipoSolicitudDto.setListasPrecios(new ArrayList<ListaPreciosDto>());
 			for (ListaPrecios listaPrecios : listasPrecios) {
 				ListaPreciosDto lista = mapper.map(listaPrecios, ListaPreciosDto.class);
@@ -434,13 +447,13 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return initializer;
 	}
 
-	public List<ListaPreciosDto> getListasDePrecios(TipoSolicitudDto tipoSolicitudDto) {
+	public List<ListaPreciosDto> getListasDePrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa) {
 		TipoSolicitud tipoSolicitud = repository.retrieve(TipoSolicitud.class, tipoSolicitudDto.getId());
 		Set<ListaPrecios> listasPrecios = tipoSolicitud.getListasPrecios();
 		List<ListaPreciosDto> listasPreciosDto = new ArrayList<ListaPreciosDto>();
-
 		boolean activacion = isTipoSolicitudActivacion(tipoSolicitud);
 		boolean accesorios = isTipoSolicitudAccesorios(tipoSolicitud);
+
 		// Se realiza el mapeo de la colecci�n a mano para poder filtrar los items por warehouse
 		for (ListaPrecios listaPrecios : listasPrecios) {
 			ListaPreciosDto lista = mapper.map(listaPrecios, ListaPreciosDto.class);
@@ -458,7 +471,19 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			}
 			listasPreciosDto.add(lista);
 		}
-
+		
+		// #1757 -  solo tengo que mostrar la lista de precios asociados al segmento del cliente
+		List<Long> ids = (List<Long>) CollectionUtils.collect(listasPreciosDto,  
+				new BeanToPropertyValueTransformer("id"));
+		List<ListaPrecios> listasPreciosSegmentada = null;
+		if (isEmpresa) {
+			listasPreciosSegmentada = solicitudServicioRepository.getListaPreciosPorSegmento(ids, 2);
+		} else {
+			listasPreciosSegmentada = solicitudServicioRepository.getListaPreciosPorSegmento(ids, 1);
+		}
+		List<ListaPreciosDto> listasPreciosSegmentadaDto = mapper.convertList(listasPreciosSegmentada, ListaPreciosDto.class);
+		listasPreciosDto.retainAll(listasPreciosSegmentadaDto);
+		
 		return listasPreciosDto;
 	}
 
@@ -487,11 +512,11 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	}
 
 	public List<ServicioAdicionalLineaSolicitudServicioDto> getServiciosAdicionales(
-			LineaSolicitudServicioDto linea, Long idCuenta) {
+			LineaSolicitudServicioDto linea, Long idCuenta, boolean isEmpresa) {
 		//MGR - #873 - Se agrega el Vendedor
 		Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales = solicitudServicioRepository
 				.getServiciosAdicionales(linea.getTipoSolicitud().getId(), linea.getPlan().getId(), linea
-						.getItem().getId(), idCuenta, sessionContextLoader.getVendedor());
+						.getItem().getId(), idCuenta, sessionContextLoader.getVendedor(), isEmpresa);
 		return mapper.convertList(serviciosAdicionales, ServicioAdicionalLineaSolicitudServicioDto.class);
 	}
 
