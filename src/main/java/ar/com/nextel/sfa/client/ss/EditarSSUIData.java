@@ -1214,10 +1214,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //		return errores;
 //	}
 	
-	public void validarPlanesCedentes(final DefaultWaitCallback<List<String>> defaultWaitCallback){
+	public void validarPlanesCedentes(final DefaultWaitCallback<List<String>> defaultWaitCallback, boolean isSaving){
 		
 		SolicitudRpcService.Util.getInstance().validarPlanesCedentes(solicitudServicio.getContratosCedidos(),
-				getCuenta().isEmpresa(), defaultWaitCallback);
+				getCuenta().isEmpresa(), isSaving, defaultWaitCallback);
 	}
 	
 	//MGR - #1415

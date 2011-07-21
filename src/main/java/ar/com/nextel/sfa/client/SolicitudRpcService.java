@@ -137,6 +137,5 @@ public interface SolicitudRpcService extends RemoteService {
 	 * @param isEmpresa Si el cliente cesionario es del tipo empresa
 	 * @return Lista con los errores posibles.
 	 */
-	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa);
-
+	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa, boolean isSaving);
 }

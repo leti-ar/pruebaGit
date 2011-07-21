@@ -473,7 +473,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				}
 				if (errors.isEmpty()) {
 					if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
-						editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback());
+						editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback(), true);
 					}else{
 						guardar();
 						editarSSUIData.setSaved(true);
@@ -511,7 +511,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			}
 			if (errors.isEmpty()) {
 				if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
-					editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback());
+					editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback(), true);
 				}else{
 					guardar();
 				}
@@ -620,7 +620,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		            if (errors.isEmpty()) {
 		            	
 		            	if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
-		            		editarSSUIData.validarPlanesCedentes(abrirCerrarDialogCallback());
+		            		editarSSUIData.validarPlanesCedentes(abrirCerrarDialogCallback(), false);
 		            	}else{
 		            		abrirDialogCerrar();
 		            	}

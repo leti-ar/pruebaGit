@@ -795,7 +795,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	
 	//MGR - #1481 - Esto validaba que los planes existieran en SFA, ahora solo que pertenescan al 
 	//segmento de cliente
-	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa){
+	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa, boolean isSaving) {
 		//Validacion 15 del caso de uso.
 		/*Se comprueba que los planes cedentes, de existir en SFA, sean del mismo segmento
 		que el cliente cesionario.
@@ -805,6 +805,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		
 		List<String> errores = new ArrayList<String>(); //Guardo los errores que pienso devolver
 		boolean error = false;
+		final Vendedor vendedor = sessionContextLoader.getVendedor();
 		
 		for (int i = 0; !error && i < ctoCedentes.size(); i++) {
 			ContratoViewDto cto = ctoCedentes.get(i);
@@ -819,15 +820,36 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 					for (int j=0; !error && j < planes.size(); j++) {
 						Plan plan = planes.get(j);
-						if (plan.getPlanBase().getTipoPlan().isEmpresa() != isEmpresa) {
-							Message message;
-							if(isEmpresa){
-								message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_DIRECTO_SEG_EMPRESA); 
-							}else{
-								message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_EMPRESA_SEG_DIRECTO);
+						if (vendedor.isDealer() || vendedor.isAP() || vendedor.isADMCreditos()) {
+							if (vendedor.isDealer() || (vendedor.isAP() && isSaving) 
+									|| (vendedor.isADMCreditos() && isSaving)) {
+								if (isEmpresa && !plan.getPlanBase().getTipoPlan().isEmpresa()) {
+									if (vendedor.isDealer()) {
+										errores.add("Debe seleccionar Planes Vigentes");
+									} else {
+										errores.add("Está seleccionando Planes No Vigentes");
+									}
+									error = true;
+								} else if (!isEmpresa && !plan.getPlanBase().getTipoPlan().isDirecto()) {
+									if (vendedor.isDealer()) {
+										errores.add("Debe seleccionar Planes Vigentes");
+									} else {
+										errores.add("Está seleccionando Planes No Vigentes");
+									}
+									error = true;
+								}
 							}
-							errores.add(message.getDescription());
-							error = true;
+						} else {
+							if (plan.getPlanBase().getTipoPlan().isEmpresa() != isEmpresa) {
+								Message message;
+								if (isEmpresa) {
+									message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_DIRECTO_SEG_EMPRESA); 
+								} else {
+									message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_EMPRESA_SEG_DIRECTO);
+								}
+								errores.add(message.getDescription());
+								error = true;
+							}
 						}
 					}
 				}
