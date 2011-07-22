@@ -18,6 +18,8 @@ import java.util.Set;
 
 import javax.servlet.ServletException;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -388,7 +390,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	}
 
 	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(
-			GrupoSolicitudDto grupoSolicitudDto) {
+			GrupoSolicitudDto grupoSolicitudDto, boolean isEmpresa) {
 
 		LineasSolicitudServicioInitializer initializer = new LineasSolicitudServicioInitializer();
 		List<GrupoSolicitud> grupos = 
@@ -416,6 +418,17 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			List<ListaPrecios> listasPrecios = new ArrayList<ListaPrecios>(firstTipoSolicitud
 					.getListasPrecios());
 			
+			// #1757 -  solo tengo que mostrar la lista de precios asociados al segmento del cliente
+			List<Long> ids = (List<Long>) CollectionUtils.collect(listasPrecios,  
+		                new BeanToPropertyValueTransformer("id"));
+			List<ListaPrecios> listasPreciosSegmentada = null;
+			if (isEmpresa) {
+				listasPreciosSegmentada = solicitudServicioRepository.getListaPreciosPorSegmento(ids, 2);
+			} else {
+				listasPreciosSegmentada = solicitudServicioRepository.getListaPreciosPorSegmento(ids, 1);
+			}
+			listasPrecios.retainAll(listasPreciosSegmentada);
+			
 			firstTipoSolicitudDto.setListasPrecios(new ArrayList<ListaPreciosDto>());
 			for (ListaPrecios listaPrecios : listasPrecios) {
 				ListaPreciosDto lista = mapper.map(listaPrecios, ListaPreciosDto.class);
@@ -434,13 +447,13 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return initializer;
 	}
 
-	public List<ListaPreciosDto> getListasDePrecios(TipoSolicitudDto tipoSolicitudDto) {
+	public List<ListaPreciosDto> getListasDePrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa) {
 		TipoSolicitud tipoSolicitud = repository.retrieve(TipoSolicitud.class, tipoSolicitudDto.getId());
 		Set<ListaPrecios> listasPrecios = tipoSolicitud.getListasPrecios();
 		List<ListaPreciosDto> listasPreciosDto = new ArrayList<ListaPreciosDto>();
-
 		boolean activacion = isTipoSolicitudActivacion(tipoSolicitud);
 		boolean accesorios = isTipoSolicitudAccesorios(tipoSolicitud);
+
 		// Se realiza el mapeo de la colecci�n a mano para poder filtrar los items por warehouse
 		for (ListaPrecios listaPrecios : listasPrecios) {
 			ListaPreciosDto lista = mapper.map(listaPrecios, ListaPreciosDto.class);
@@ -458,7 +471,19 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			}
 			listasPreciosDto.add(lista);
 		}
-
+		
+		// #1757 -  solo tengo que mostrar la lista de precios asociados al segmento del cliente
+		List<Long> ids = (List<Long>) CollectionUtils.collect(listasPreciosDto,  
+				new BeanToPropertyValueTransformer("id"));
+		List<ListaPrecios> listasPreciosSegmentada = null;
+		if (isEmpresa) {
+			listasPreciosSegmentada = solicitudServicioRepository.getListaPreciosPorSegmento(ids, 2);
+		} else {
+			listasPreciosSegmentada = solicitudServicioRepository.getListaPreciosPorSegmento(ids, 1);
+		}
+		List<ListaPreciosDto> listasPreciosSegmentadaDto = mapper.convertList(listasPreciosSegmentada, ListaPreciosDto.class);
+		listasPreciosDto.retainAll(listasPreciosSegmentadaDto);
+		
 		return listasPreciosDto;
 	}
 
@@ -487,11 +512,11 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	}
 
 	public List<ServicioAdicionalLineaSolicitudServicioDto> getServiciosAdicionales(
-			LineaSolicitudServicioDto linea, Long idCuenta) {
+			LineaSolicitudServicioDto linea, Long idCuenta, boolean isEmpresa) {
 		//MGR - #873 - Se agrega el Vendedor
 		Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales = solicitudServicioRepository
 				.getServiciosAdicionales(linea.getTipoSolicitud().getId(), linea.getPlan().getId(), linea
-						.getItem().getId(), idCuenta, sessionContextLoader.getVendedor());
+						.getItem().getId(), idCuenta, sessionContextLoader.getVendedor(), isEmpresa);
 		return mapper.convertList(serviciosAdicionales, ServicioAdicionalLineaSolicitudServicioDto.class);
 	}
 
@@ -770,7 +795,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	
 	//MGR - #1481 - Esto validaba que los planes existieran en SFA, ahora solo que pertenescan al 
 	//segmento de cliente
-	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa){
+	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa, boolean isSaving) {
 		//Validacion 15 del caso de uso.
 		/*Se comprueba que los planes cedentes, de existir en SFA, sean del mismo segmento
 		que el cliente cesionario.
@@ -780,6 +805,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		
 		List<String> errores = new ArrayList<String>(); //Guardo los errores que pienso devolver
 		boolean error = false;
+		final Vendedor vendedor = sessionContextLoader.getVendedor();
 		
 		for (int i = 0; !error && i < ctoCedentes.size(); i++) {
 			ContratoViewDto cto = ctoCedentes.get(i);
@@ -794,15 +820,36 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 					for (int j=0; !error && j < planes.size(); j++) {
 						Plan plan = planes.get(j);
-						if (plan.getPlanBase().getTipoPlan().isEmpresa() != isEmpresa) {
-							Message message;
-							if(isEmpresa){
-								message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_DIRECTO_SEG_EMPRESA); 
-							}else{
-								message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_EMPRESA_SEG_DIRECTO);
+						if (vendedor.isDealer() || vendedor.isAP() || vendedor.isADMCreditos()) {
+							if (vendedor.isDealer() || (vendedor.isAP() && isSaving) 
+									|| (vendedor.isADMCreditos() && isSaving)) {
+								if (isEmpresa && !plan.getPlanBase().getTipoPlan().isEmpresa()) {
+									if (vendedor.isDealer()) {
+										errores.add("Debe seleccionar Planes Vigentes");
+									} else {
+										errores.add("Está seleccionando Planes No Vigentes");
+									}
+									error = true;
+								} else if (!isEmpresa && !plan.getPlanBase().getTipoPlan().isDirecto()) {
+									if (vendedor.isDealer()) {
+										errores.add("Debe seleccionar Planes Vigentes");
+									} else {
+										errores.add("Está seleccionando Planes No Vigentes");
+									}
+									error = true;
+								}
 							}
-							errores.add(message.getDescription());
-							error = true;
+						} else {
+							if (plan.getPlanBase().getTipoPlan().isEmpresa() != isEmpresa) {
+								Message message;
+								if (isEmpresa) {
+									message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_DIRECTO_SEG_EMPRESA); 
+								} else {
+									message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_EMPRESA_SEG_DIRECTO);
+								}
+								errores.add(message.getDescription());
+								error = true;
+							}
 						}
 					}
 				}
