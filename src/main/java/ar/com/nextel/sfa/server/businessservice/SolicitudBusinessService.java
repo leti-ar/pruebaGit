@@ -483,8 +483,7 @@ public class SolicitudBusinessService {
 					facturaElectronicaService.adherirFacturaElectronica(
 							new Long(solicitudServicio.getCuenta().getCodigoBSCS()), solicitudServicio.getCuenta()
 							.getCodigoVantive(), solicitudServicio.getCuenta()
-							.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor()
-							.getUserName());
+							.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor());
 					solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
 				}
 				repository.save(solicitudServicio.getCuenta().getFacturaElectronica());
