@@ -170,7 +170,7 @@ public class PlanTransferenciaDialog  extends NextelDialog implements ClickListe
 							if (!vendedorDto.isADMCreditos() && empresa == tipoPlan.isEmpresa()) {
 								planTransferenciaUIData.getTipoPlan().addItem(tipoPlan);
 								tipoPlanPorDefecto = tipoPlan;
-							}else if(vendedorDto.isADMCreditos()){
+							} else if (vendedorDto.isADMCreditos() && empresa == tipoPlan.isEmpresa()) {
 								planTransferenciaUIData.getTipoPlan().addItem(tipoPlan);
 								tipoPlanPorDefecto = tipoPlan;
 							}

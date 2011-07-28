@@ -54,6 +54,7 @@ import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
 import ar.com.nextel.model.solicitudes.beans.Plan;
+import ar.com.nextel.model.solicitudes.beans.PlanBase;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Sucursal;
@@ -812,25 +813,25 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 			// Si no cambio el plan, valido que el plan cedente sea de su segmento
 			if (cto.getPlanCesionario() == null) {
-				List<Plan> planes = repository.find("from Plan p where p.planBase.codigoBSCS = ?", 
+				List<PlanBase> planes = repository.find("from PlanBase p where p.codigoBSCS = ?", 
 									String.valueOf(cto.getCodigoBSCSPlanCedente()));
 
 				// Si no hay planes, no debo validar nada
 				if (!planes.isEmpty()) {
 
 					for (int j=0; !error && j < planes.size(); j++) {
-						Plan plan = planes.get(j);
+						PlanBase planBase = planes.get(j);
 						if (vendedor.isDealer() || vendedor.isAP() || vendedor.isADMCreditos()) {
-							if (vendedor.isDealer() || (vendedor.isAP() && isSaving) 
-									|| (vendedor.isADMCreditos() && isSaving)) {
-								if (isEmpresa && !plan.getPlanBase().getTipoPlan().isEmpresa()) {
+							if (vendedor.isDealer() || (vendedor.isAP() && !isSaving) 
+									|| (vendedor.isADMCreditos() && !isSaving)) {
+								if (isEmpresa && !planBase.getTipoPlan().isEmpresa()) {
 									if (vendedor.isDealer()) {
 										errores.add("Debe seleccionar Planes Vigentes");
 									} else {
 										errores.add("Está seleccionando Planes No Vigentes");
 									}
 									error = true;
-								} else if (!isEmpresa && !plan.getPlanBase().getTipoPlan().isDirecto()) {
+								} else if (!isEmpresa && !planBase.getTipoPlan().isDirecto()) {
 									if (vendedor.isDealer()) {
 										errores.add("Debe seleccionar Planes Vigentes");
 									} else {
@@ -840,7 +841,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 								}
 							}
 						} else {
-							if (plan.getPlanBase().getTipoPlan().isEmpresa() != isEmpresa) {
+							if (planBase.getTipoPlan().isEmpresa() != isEmpresa) {
 								Message message;
 								if (isEmpresa) {
 									message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_DIRECTO_SEG_EMPRESA); 
@@ -855,7 +856,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				}
 			}
 		}
-		
 		return errores;
 	}
 

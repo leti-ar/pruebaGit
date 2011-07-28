@@ -970,7 +970,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				if (errors.isEmpty()) {
 					abrirDialogCerrar();
 					//MGR - #1481
-				} else if(ClientContext.getInstance().getVendedor().isADMCreditos()){
+				} else if(ClientContext.getInstance().getVendedor().isADMCreditos() 
+						|| ClientContext.getInstance().getVendedor().isAP()){
 					
 					Command abrirDialogCerrarConAviso = new Command() {
 						
