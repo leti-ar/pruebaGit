@@ -818,20 +818,24 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 				// Si no hay planes, no debo validar nada
 				if (!planes.isEmpty()) {
-
 					for (int j=0; !error && j < planes.size(); j++) {
 						PlanBase planBase = planes.get(j);
-						if (vendedor.isDealer() || vendedor.isAP() || vendedor.isADMCreditos()) {
+						if ((planBase.getTipoPlan().isEmpresa() && !isEmpresa)
+								|| (planBase.getTipoPlan().isDirecto() && isEmpresa)) {
+							Message message;
+							if (isEmpresa) {
+								message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_DIRECTO_SEG_EMPRESA); 
+							} else {
+								message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_EMPRESA_SEG_DIRECTO);
+							}
+							errores.add(message.getDescription());
+							error = true;
+						}
+						//#1748						
+						if (!error) {
 							if (vendedor.isDealer() || (vendedor.isAP() && !isSaving) 
 									|| (vendedor.isADMCreditos() && !isSaving)) {
-								if (isEmpresa && !planBase.getTipoPlan().isEmpresa()) {
-									if (vendedor.isDealer()) {
-										errores.add("Debe seleccionar Planes Vigentes");
-									} else {
-										errores.add("Está seleccionando Planes No Vigentes");
-									}
-									error = true;
-								} else if (!isEmpresa && !planBase.getTipoPlan().isDirecto()) {
+								if (planBase.getTipoPlan().getId().equals(9L)) {
 									if (vendedor.isDealer()) {
 										errores.add("Debe seleccionar Planes Vigentes");
 									} else {
@@ -839,17 +843,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 									}
 									error = true;
 								}
-							}
-						} else {
-							if (planBase.getTipoPlan().isEmpresa() != isEmpresa) {
-								Message message;
-								if (isEmpresa) {
-									message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_DIRECTO_SEG_EMPRESA); 
-								} else {
-									message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_EMPRESA_SEG_DIRECTO);
-								}
-								errores.add(message.getDescription());
-								error = true;
 							}
 						}
 					}
