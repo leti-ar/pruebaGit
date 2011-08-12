@@ -507,8 +507,7 @@ public class SolicitudBusinessService {
 					facturaElectronicaService.adherirFacturaElectronica(
 							codigoBSCS, solicitudServicio.getCuenta()
 							.getCodigoVantive(), solicitudServicio.getCuenta()
-							.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor()
-							.getUserReal());
+							.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor());
 					solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
 				}
 				repository.save(solicitudServicio.getCuenta().getFacturaElectronica());
