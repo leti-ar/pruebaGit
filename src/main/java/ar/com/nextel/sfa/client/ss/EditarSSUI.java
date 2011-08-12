@@ -508,7 +508,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				}
 				if (errors.isEmpty()) {
 					if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
-						editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback());
+						editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback(), true);
 					}else{
 						guardar();
 						editarSSUIData.setSaved(true);
@@ -546,7 +546,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			}
 			if (errors.isEmpty()) {
 				if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
-					editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback());
+					editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback(), true);
 				}else{
 					guardar();
 				}
@@ -673,7 +673,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		            if (errors.isEmpty()) {
 		            	
 		            	if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
-		            		editarSSUIData.validarPlanesCedentes(abrirCerrarDialogCallback());
+		            		editarSSUIData.validarPlanesCedentes(abrirCerrarDialogCallback(), false);
 		            	}else{
 		            		abrirDialogCerrar();
 		            	}
@@ -812,12 +812,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public void getLineasSolicitudServicioInitializer(
 			DefaultWaitCallback<LineasSolicitudServicioInitializer> defaultWaitCallback) {
 		SolicitudRpcService.Util.getInstance().getLineasSolicitudServicioInitializer(
-				editarSSUIData.getGrupoSolicitud(), defaultWaitCallback);
+				editarSSUIData.getGrupoSolicitud(), editarSSUIData.getCuenta().isEmpresa(), defaultWaitCallback);
 	}
 
-	public void getListaPrecios(TipoSolicitudDto tipoSolicitudDto,
+	public void getListaPrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa,
 			DefaultWaitCallback<List<ListaPreciosDto>> defaultWaitCallback) {
-		SolicitudRpcService.Util.getInstance().getListasDePrecios(tipoSolicitudDto, defaultWaitCallback);
+		SolicitudRpcService.Util.getInstance().getListasDePrecios(tipoSolicitudDto, isEmpresa, defaultWaitCallback);
 	}
 
 	public void getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,
@@ -829,7 +829,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public void getServiciosAdicionales(LineaSolicitudServicioDto linea,
 			DefaultWaitCallback<List<ServicioAdicionalLineaSolicitudServicioDto>> defaultWaitCallback) {
 		SolicitudRpcService.Util.getInstance().getServiciosAdicionales(linea, editarSSUIData.getCuentaId(),
-				defaultWaitCallback);
+				editarSSUIData.getCuenta().isEmpresa(), defaultWaitCallback);
 	}
 
 	public String getNombreProximoMovil() {
@@ -1027,7 +1027,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				if (errors.isEmpty()) {
 					abrirDialogCerrar();
 					//MGR - #1481
-				} else if(ClientContext.getInstance().getVendedor().isADMCreditos()){
+				} else if(ClientContext.getInstance().getVendedor().isADMCreditos() 
+						|| ClientContext.getInstance().getVendedor().isAP()){
 					
 					Command abrirDialogCerrarConAviso = new Command() {
 						

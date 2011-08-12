@@ -204,7 +204,7 @@ public class SolicitudBusinessService {
 			if (tipoSolicitud != null && plan != null && item != null && cuenta != null) {
 				//MGR - #873 - Se agrega el Vendedor
 				serviciosAdicionales = solicitudServicioRepository.getServiciosAdicionales(tipoSolicitud
-						.getId(), plan.getId(), item.getId(), cuenta.getId(),sessionContextLoader.getVendedor());
+						.getId(), plan.getId(), item.getId(), cuenta.getId(),sessionContextLoader.getVendedor(), cuenta.isEmpresa());
 			} else {
 				AppLogger.warn("No se pudo validar los Servicios Adicionales de la Linea de "
 						+ "Solicitud de Servicio " + linea.getId() + " (" + linea.getAlias()

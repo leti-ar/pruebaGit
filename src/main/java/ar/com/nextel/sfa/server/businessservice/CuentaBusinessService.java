@@ -601,7 +601,6 @@ public class CuentaBusinessService {
 
 	public void validarAccesoCuenta(Cuenta cuenta, Vendedor vendedor,
 			boolean filtradoPorDni) throws RpcExceptionMessages, BusinessException {
-		
 		// logueado no es el de la cuenta
 		if ( !vendedor.getId().equals(cuenta.getVendedor().getId())) {
 			HashMap<String, Boolean> mapaPermisosClient = (HashMap<String, Boolean>) 
