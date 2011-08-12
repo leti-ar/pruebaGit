@@ -334,14 +334,18 @@ public class CuentaDomiciliosForm extends Composite {
 			validator.addError(Sfa.constant().ERR_DOMICILIO_ENTREGA());
 			validator.addError(Sfa.constant().ERR_DOMICILIO_FACTURACION());
 		} else {
+			int domiciliosEntrega = 0;
+			int domiciliosFacturacion = 0;
 			for (DomiciliosCuentaDto domi : domicilios) {
 				if ((domi.getIdEntrega() != null) && (domi.getIdFacturacion() != null)) {
 					if (domi.getIdEntrega().equals(EstadoTipoDomicilioDto.PRINCIPAL.getId())) {
 						hayDomicilioEntrega = new Boolean(true);
+						domiciliosEntrega++;
 					}
 					;
 					if (domi.getIdFacturacion().equals(EstadoTipoDomicilioDto.PRINCIPAL.getId())) {
 						hayDomicilioFacturacion = new Boolean(true);
+						domiciliosFacturacion++;
 					}
 					;
 				}
@@ -350,6 +354,13 @@ public class CuentaDomiciliosForm extends Composite {
 				validator.addError(Sfa.constant().ERR_DOMICILIO_ENTREGA());
 			if (!hayDomicilioFacturacion)
 				validator.addError(Sfa.constant().ERR_DOMICILIO_FACTURACION());
+			//# 1850: Domicilio: mas de un domicilio principal de entrega y facturación
+			if (domiciliosEntrega > 1) {
+				validator.addError("La cuenta posee más de un domicilio de Entrega. Comuníquese con Administración de Ventas");
+			}
+			if (domiciliosFacturacion > 1) {
+				validator.addError("La cuenta posee más de un domicilio de Facturación. Comuníquese con Administración de Ventas");
+			}
 		}
 		validator.fillResult();
 		return validator.getErrors();
