@@ -9,9 +9,18 @@ public class ItemSolicitudTasadoDto implements IsSerializable, ListBoxItem {
 	private Long id;
 	private Double precioLista;
 	private ItemSolicitudDto item;
+	
+	//MGR -#ISDM 1785 - Para saber como mostrar el texto
+	private ListaPreciosDto listaPrecios;
 
 	/** Descripcion del ItemSolicitudDto */
 	public String getItemText() {
+		//MGR -#ISDM 1785 - Si la lista concatena, como Texto se debe mostrar:
+		//		'Segmento1 - Descripcion'
+		if(listaPrecios != null && listaPrecios.getConcatena() != null &&
+				listaPrecios.getConcatena()){
+			return item.getSegment1().substring(8) + " - " + item.getDescripcion();
+		}
 		return item.getDescripcion();
 	}
 
@@ -44,4 +53,11 @@ public class ItemSolicitudTasadoDto implements IsSerializable, ListBoxItem {
 		this.item = item;
 	}
 
+	public ListaPreciosDto getListaPrecios() {
+		return listaPrecios;
+	}
+
+	public void setListaPrecios(ListaPreciosDto listaPrecios) {
+		this.listaPrecios = listaPrecios;
+	}
 }

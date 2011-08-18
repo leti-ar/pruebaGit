@@ -262,7 +262,11 @@ public class CuentaEdicionTabPanel {
 		guardar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 				if (!editorDirty()) {
-					MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), Sfa.constant().MSG_NO_HAY_DATOS_NUEVOS(), cancelarCommand);
+					if (cuentaDatosForm.evaluarFacturaElectronicaPanel()) {
+						MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), Sfa.constant().NO_INGRESO_FACTURA_ELECTRONICA(), cancelarCommand);
+					} else {
+						MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), Sfa.constant().MSG_NO_HAY_DATOS_NUEVOS(), cancelarCommand);
+					}
 				} else if (validarCamposTabDatos()) {
 					guardar();
 				} 
@@ -411,7 +415,7 @@ public class CuentaEdicionTabPanel {
 			public void success(CuentaDto cuentaDto) {
 				CuentaEdicionTabPanel.getInstance().setCuenta2editDto(cuentaDto);
 				//actualiza pestaña datos
-				cuentaDatosForm.ponerDatosBusquedaEnFormulario(cuentaDto);
+				cuentaDatosForm.ponerDatosBusquedaEnFormulario(cuentaDto, true);
 				razonSocial.setText(cuentaDto.getPersona().getRazonSocial());
 				//actualiza pestaña domicilios
 				cuentaDomiciliosForm.cargaTablaDomicilios(cuentaDto);
