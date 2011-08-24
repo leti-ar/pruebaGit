@@ -497,6 +497,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //		comprobarDescuentoTotal();		
 		recarcularValores();
 		
+		vendedor.setSelectedItem(solicitudServicio.getVendedor());
+		if(solicitudServicio.getIdSucursal() != null){
+			sucursalOrigen.selectByValue(solicitudServicio.getIdSucursal().toString());
+		} else{ //Para que cargue correctamente la opcion del combo
+			sucursalOrigen.selectByValue(solicitudServicio.getVendedor().getIdSucursal().toString());
+		}
+		
 		if(solicitud.getGrupoSolicitud().isTransferencia()){
 			cargarDatosTransferencia();
 		}
@@ -507,14 +514,14 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			clienteCedente.setText(solicitudServicio.getCuentaCedente().getCodigoVantive());
 		}
 		canalVtas.setText(CANAL_VTA_TRANSFERENCIA);
-		if (!solicitudServicio.getVendedor().isADMCreditos()) {
-			vendedor.setSelectedItem(solicitudServicio.getVendedor());
-			if(solicitudServicio.getIdSucursal() != null){
-				sucursalOrigen.selectByValue(solicitudServicio.getIdSucursal().toString());
-			} else{ //Para que cargue correctamente la opcion del combo
-				sucursalOrigen.selectByValue(solicitudServicio.getVendedor().getIdSucursal().toString());
-			}
-		}
+//		if (!solicitudServicio.getVendedor().isADMCreditos()) {
+//			vendedor.setSelectedItem(solicitudServicio.getVendedor());
+//			if(solicitudServicio.getIdSucursal() != null){
+//				sucursalOrigen.selectByValue(solicitudServicio.getIdSucursal().toString());
+//			} else{ //Para que cargue correctamente la opcion del combo
+//				sucursalOrigen.selectByValue(solicitudServicio.getVendedor().getIdSucursal().toString());
+//			}
+//		}
 	}
 
 	private void deferredLoad() {
@@ -550,6 +557,16 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		} else if (origenTR.getSelectedItem() != null) {
 			solicitudServicio.setOrigen((OrigenSolicitudDto) origenTR.getSelectedItem());
 		}
+		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())) {
+			solicitudServicio.setIdSucursal(Long.valueOf(sucursalOrigen.getSelectedItem().getItemValue()));
+		} else {
+			solicitudServicio.setIdSucursal(solicitudServicio.getVendedor().getIdSucursal());
+		}
+		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())) {
+			VendedorDto vendedorDto = (VendedorDto) vendedor.getSelectedItem();
+			solicitudServicio.setVendedor(vendedorDto);
+		}
+		
 		//MGR - #1027
 		solicitudServicio.setOrdenCompra(ordenCompra.getText());
 		
@@ -596,6 +613,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		solicitudServicio.refreshPreciosTotales();
 		validator.addTarget(origen).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
+			validator.addTarget(vendedor).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedor()));
+		}
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
+			validator.addTarget(sucursalOrigen).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigen()));
+		}
+		
 		String pataconexConPunto = "0";
 		try {
 			pataconexConPunto = "" + decFormatter.parse(pataconex.getText());
@@ -653,6 +679,14 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 		validator.addTarget(origen).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
+			validator.addTarget(vendedor).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedor()));
+		}
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
+			validator.addTarget(sucursalOrigen).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().sucOrigen()));
+		}
 		validator.addTarget(facturacion).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Facturación"));
 		if (!solicitudServicio.getGrupoSolicitud().isCDW()) {
