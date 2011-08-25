@@ -221,7 +221,7 @@ A {
 	line-height: 14px;
 }
 
-.gwt-BuscarCuentaResultTable td,.gwt-VerazResultTable td,.dataTable td {
+.gwt-BuscarCuentaResultTable td,.gwt-VerazResultTable td,.gwt-CaratulaResultTable td,.dataTable td {
 	border-right: 1px solid #EBEBEB;
 	border-bottom: 1px solid #EBEBEB;
 	height: 24px;
@@ -424,7 +424,7 @@ A {
 	background-color: #dddddd;
 }
 
-.crearDomicilioButton,.crearLineaButton,.validarCompletitudButton {
+.crearDomicilioButton,.crearLineaButton,.validarCompletitudButton,.crearCaratulaButton {
 	background-repeat: no-repeat;
 	background-color: transparent;
 	height: 17px;
@@ -441,7 +441,7 @@ A {
 	text-align: right;
 }
 
-.crearDomicilioButton,.crearLineaButton {
+.crearDomicilioButton,.crearLineaButton,.crearCaratulaButton {
 	background-image: url(images/btn-table-nuevo.gif);
 	width: 115px;
 }

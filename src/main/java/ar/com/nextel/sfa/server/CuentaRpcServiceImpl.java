@@ -31,20 +31,29 @@ import ar.com.nextel.components.filter.Filter;
 import ar.com.nextel.components.knownInstances.retrievers.message.MessageRetriever;
 import ar.com.nextel.components.message.Message;
 import ar.com.nextel.framework.repository.Repository;
+import ar.com.nextel.model.cuentas.beans.Banco;
+import ar.com.nextel.model.cuentas.beans.CalifCrediticia;
+import ar.com.nextel.model.cuentas.beans.Calificacion;
 import ar.com.nextel.model.cuentas.beans.Cargo;
 import ar.com.nextel.model.cuentas.beans.CategoriaCuenta;
 import ar.com.nextel.model.cuentas.beans.ClaseCuenta;
+import ar.com.nextel.model.cuentas.beans.Com;
+import ar.com.nextel.model.cuentas.beans.CompPago;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.Division;
+import ar.com.nextel.model.cuentas.beans.EstadoCreditBancoCentral;
 import ar.com.nextel.model.cuentas.beans.FormaPago;
 import ar.com.nextel.model.cuentas.beans.GranCuenta;
 import ar.com.nextel.model.cuentas.beans.Proveedor;
+import ar.com.nextel.model.cuentas.beans.RiskCode;
 import ar.com.nextel.model.cuentas.beans.Suscriptor;
 import ar.com.nextel.model.cuentas.beans.TipoCanalVentas;
 import ar.com.nextel.model.cuentas.beans.TipoContribuyente;
 import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
+import ar.com.nextel.model.cuentas.beans.ValidacionDomicilio;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
+import ar.com.nextel.model.cuentas.beans.VerazNosis;
 import ar.com.nextel.model.oportunidades.beans.CuentaPotencial;
 import ar.com.nextel.model.oportunidades.beans.EstadoOportunidad;
 import ar.com.nextel.model.oportunidades.beans.MotivoNoCierre;
@@ -63,10 +72,15 @@ import ar.com.nextel.services.nextelServices.NextelServices;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazRequestDTO;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.sfa.client.CuentaRpcService;
+import ar.com.nextel.sfa.client.dto.BancoDto;
 import ar.com.nextel.sfa.client.dto.BusquedaPredefinidaDto;
+import ar.com.nextel.sfa.client.dto.CalifCrediticiaDto;
+import ar.com.nextel.sfa.client.dto.CalificacionDto;
 import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
 import ar.com.nextel.sfa.client.dto.ClaseCuentaDto;
+import ar.com.nextel.sfa.client.dto.ComDto;
+import ar.com.nextel.sfa.client.dto.CompPagoDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
@@ -76,6 +90,7 @@ import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
+import ar.com.nextel.sfa.client.dto.EstadoCreditBancoCentralDto;
 import ar.com.nextel.sfa.client.dto.EstadoOportunidadDto;
 import ar.com.nextel.sfa.client.dto.FormaPagoDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
@@ -89,6 +104,7 @@ import ar.com.nextel.sfa.client.dto.PrioridadDto;
 import ar.com.nextel.sfa.client.dto.ProveedorDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
 import ar.com.nextel.sfa.client.dto.ReservaDto;
+import ar.com.nextel.sfa.client.dto.RiskCodeDto;
 import ar.com.nextel.sfa.client.dto.RubroDto;
 import ar.com.nextel.sfa.client.dto.ServicioContratoDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
@@ -99,9 +115,12 @@ import ar.com.nextel.sfa.client.dto.TipoContribuyenteDto;
 import ar.com.nextel.sfa.client.dto.TipoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoTarjetaDto;
+import ar.com.nextel.sfa.client.dto.ValidacionDomicilioDto;
+import ar.com.nextel.sfa.client.dto.VerazNosisDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
+import ar.com.nextel.sfa.client.initializer.CaratulaInitializer;
 import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
 import ar.com.nextel.sfa.client.initializer.VerazInitializer;
 import ar.com.nextel.sfa.server.businessservice.CuentaBusinessService;
@@ -698,5 +717,48 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 			throw ExceptionUtil.wrap(e);
 		}
 		return servicios;
+	}
+	
+	public CaratulaInitializer getCaratulaInicializarte(){
+		CaratulaInitializer initializer = new CaratulaInitializer();
+		
+		initializer.setValidDomicilio(mapper.convertList(repository.getAll(ValidacionDomicilio.class),
+				ValidacionDomicilioDto.class));
+		
+		initializer.setBancos(mapper.convertList(repository.getAll(Banco.class),
+				BancoDto.class));
+		
+		initializer.setTipoCtaBancaria(mapper.convertList(repository.getAll(TipoCuentaBancaria.class),
+				TipoCuentaBancariaDto.class));
+		
+		initializer.setTipoTarjCred(mapper.convertList(repository.getAll(TipoTarjeta.class),
+				TipoTarjetaDto.class));
+		
+		initializer.setCalifCrediticia(mapper.convertList(repository.getAll(CalifCrediticia.class),
+				CalifCrediticiaDto.class));
+		
+		initializer.setCom(mapper.convertList(repository.getAll(Com.class),
+				ComDto.class));
+		
+		initializer.setCalificacion(mapper.convertList(repository.getAll(Calificacion.class),
+				CalificacionDto.class));
+		
+		initializer.setRiskCode(mapper.convertList(repository.getAll(RiskCode.class),
+				RiskCodeDto.class));
+		
+		initializer.setCompPago(mapper.convertList(repository.getAll(CompPago.class),
+				CompPagoDto.class));
+		
+		initializer.setCargo(mapper.convertList(repository.getAll(Cargo.class),
+				CargoDto.class));
+		
+		initializer.setVerazNosis(mapper.convertList(repository.getAll(VerazNosis.class),
+				VerazNosisDto.class));
+		
+		initializer.setEstadoCredBC(mapper.convertList(repository.getAll(EstadoCreditBancoCentral.class),
+				EstadoCreditBancoCentralDto.class));
+		
+		
+		return initializer;
 	}
 }

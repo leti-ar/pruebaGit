@@ -899,5 +899,69 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
             <a>linea.id</a>
             <b>idContrato</b>
         </field>
-    </mapping>  
+    </mapping>
+    
+    <!--MGR *********-->
+    <mapping>
+		<class-a>ar.com.nextel.model.cuentas.beans.ValidacionDomicilio
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.ValidacionDomicilioDto
+		</class-b>
+	</mapping>
+	
+	<mapping>
+		<class-a>ar.com.nextel.model.cuentas.beans.Banco
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.BancoDto
+		</class-b>
+	</mapping>
+    
+    <mapping>
+		<class-a>ar.com.nextel.model.cuentas.beans.CalifCrediticia
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.CalifCrediticiaDto
+		</class-b>
+	</mapping>
+	
+	<mapping>
+		<class-a>ar.com.nextel.model.cuentas.beans.Com
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.ComDto
+		</class-b>
+	</mapping>
+	
+	<mapping>
+		<class-a>ar.com.nextel.model.cuentas.beans.Calificacion
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.CalificacionDto
+		</class-b>
+	</mapping>
+	
+	<mapping>
+		<class-a>ar.com.nextel.model.cuentas.beans.RiskCode
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.RiskCodeDto
+		</class-b>
+	</mapping>  
+	
+	<mapping>
+		<class-a>ar.com.nextel.model.cuentas.beans.CompPago
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.CompPagoDto
+		</class-b>
+	</mapping>
+	
+	<mapping>
+		<class-a>ar.com.nextel.model.cuentas.beans.VerazNosis
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.VerazNosisDto
+		</class-b>
+	</mapping>
+	
+	<mapping>
+		<class-a>ar.com.nextel.model.cuentas.beans.EstadoCreditBancoCentral
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.EstadoCreditBancoCentralDto
+		</class-b>
+	</mapping>
 </mappings>

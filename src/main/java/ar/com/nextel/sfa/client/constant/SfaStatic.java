@@ -2521,5 +2521,76 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Acceso denegado. No puede operar con esta cuenta. <br>La Cuenta {1} se encuentra lockeada por otro vendedor. <br>El Vendedor de lockeo es {2}")
   @Key("ERR_CUENTA_LOCKEADA_POR_OTRO_TLM")
   String ERR_CUENTA_LOCKEADA_POR_OTRO_TLM();
+
+  /**
+   * Translated "Caratula".
+   * 
+   * @return translated "Caratula"
+   */
+  @DefaultStringValue("Caratula")
+  @Key("caratula")
+  String caratula();
   
+  /**
+   * Translated "Documento".
+   * 
+   * @return translated "Documento"
+   */
+  @DefaultStringValue("Documento")
+  @Key("Documento")
+  String documento();
+  
+  /**
+   * Translated "Usuario de Creación".
+   * 
+   * @return translated "Usuario de Creación"
+   */
+  @DefaultStringValue("Usuario de Creación")
+  @Key("UsuarioCreacion")
+  String usuarioCreacion();
+  
+  /**
+   * Translated "Crear Caratula".
+   * 
+   * @return translated "Crear Caratula"
+   */
+  @DefaultStringValue("Crear Caratula")
+  @Key("Crear Caratula")
+  String crearCaratula();
+
+  /**
+   * Translated "Editar Caratula".
+   * 
+   * @return translated "Editar Caratula"
+   */
+  @DefaultStringValue("Editar Caratula")
+  @Key("Editar Caratula")
+  String editarCaratula();
+  
+  /**
+   * Translated "Fecha Inicio".
+   * 
+   * @return translated "Fecha Inicio"
+   */
+  @DefaultStringValue("Fecha Inicio")
+  @Key("Fecha Inicio")
+  String fechaInicio();
+  
+  /**
+   * Translated "Actividad".
+   * 
+   * @return translated "Actividad"
+   */
+  @DefaultStringValue("Actividad")
+  @Key("Actividad")
+  String actividad();
+  
+  /**
+   * Translated "Validación domicilio".
+   * 
+   * @return translated "Validación domicilio"
+   */
+  @DefaultStringValue("Validación domicilio")
+  @Key("Validación domicilio")
+  String validacionDomicilio();
 }

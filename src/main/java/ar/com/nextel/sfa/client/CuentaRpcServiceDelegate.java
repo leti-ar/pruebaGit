@@ -19,6 +19,7 @@ import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
+import ar.com.nextel.sfa.client.initializer.CaratulaInitializer;
 import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
 import ar.com.nextel.sfa.client.initializer.VerazInitializer;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
@@ -152,5 +153,10 @@ public class CuentaRpcServiceDelegate {
 		WaitWindow.show();
 		//Al abrir Infocom no debe lockear la cuenta
 		cuentaRpcService.selectCuenta(cuentaId, codVantive,filtradoPorDni, false, callback);
+	}
+	
+	public void getCaratulaInicializarte(DefaultWaitCallback<CaratulaInitializer> callback) {
+		WaitWindow.show();
+		cuentaRpcService.getCaratulaInicializarte(callback);
 	}
 }

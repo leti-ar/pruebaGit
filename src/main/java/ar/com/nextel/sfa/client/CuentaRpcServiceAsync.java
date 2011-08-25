@@ -19,6 +19,7 @@ import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.initializer.AgregarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
+import ar.com.nextel.sfa.client.initializer.CaratulaInitializer;
 import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
 import ar.com.nextel.sfa.client.initializer.VerazInitializer;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
@@ -55,4 +56,6 @@ public interface CuentaRpcServiceAsync {
 	public void searchCuentasDto(CuentaSearchDto cuentaSearchDto, boolean deberiaLockear, AsyncCallback<List<CuentaDto>> callback);
 	public void searchContratosActivos(CuentaDto ctaDto, AsyncCallback<List<ContratoViewDto>> callback);
 	public void searchServiciosContratados(Long numeroContrato, AsyncCallback<List<ServicioContratoDto>> callback);
+	
+	public void getCaratulaInicializarte(AsyncCallback<CaratulaInitializer> callback);
 }

@@ -3,25 +3,21 @@ package ar.com.nextel.sfa.client.cuenta;
 import java.util.ArrayList;
 import java.util.List;
 
-import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
-import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.enums.PrioridadEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
-import ar.com.nextel.sfa.client.ss.EditarSSUI;
 import ar.com.nextel.sfa.client.ss.LinksCrearSS;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
-import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -69,13 +65,16 @@ public class CuentaEdicionTabPanel {
 	private CuentaContactoForm   cuentaContactoForm   = CuentaContactoForm.getInstance();
 	private CuentaInfocomForm    cuentaInfocomForm    = CuentaInfocomForm.getInstance();
 	private CuentaNotasForm      cuentaNotasForm      = CuentaNotasForm.getInstance();
+	private CuentaCaratulaForm   cuentaCaratulaForm   = CuentaCaratulaForm.getInstance();
 	private TabPanel tabPanel;
 	private FormButtonsBar footerBar;
 	
 	public Button validarCompletitudButton;
 	public static final String VALIDAR_COMPLETITUD_FAIL_STYLE = "validarCompletitudFailButton";
 	public static final String ID_CUENTA = "idCuenta";
-	public static final int CANT_PESTANIAS_FIJAS = 3;
+	//MGR**** Adm_Vtas R2 Verificar que se ven las pestañas que corresponden a cada caso
+	//public static final int CANT_PESTANIAS_FIJAS = 3;
+	public static final int CANT_PESTANIAS_FIJAS = 4;
 	public static final Long DEFAULT_OPP_PRIORITY = 2L;
 	private GwtValidator validator = new GwtValidator();
 	
@@ -160,6 +159,11 @@ public class CuentaEdicionTabPanel {
 		tabPanel.add(cuentaDatosForm, Sfa.constant().datos());
 		tabPanel.add(cuentaDomiciliosForm, Sfa.constant().domicilios());
 		tabPanel.add(cuentaContactoForm, Sfa.constant().contactos());
+		
+		if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
+			tabPanel.add(cuentaCaratulaForm, Sfa.constant().caratula());
+		}
+		
 		tabPanel.add(cuentaInfocomForm, Sfa.constant().infocom());
 		if (!ClientContext.getInstance().getVendedor().isADMCreditos()) {
 			tabPanel.add(cuentaNotasForm, Sfa.constant().notas());
@@ -552,6 +556,13 @@ public class CuentaEdicionTabPanel {
 	public void setCuentaNotasForm(CuentaNotasForm cuentaNotasForm) {
 		this.cuentaNotasForm = cuentaNotasForm;
 	}
+	public CuentaCaratulaForm getCuentaCaratulaForm() {
+		return cuentaCaratulaForm;
+	}
+	public void setCuentaCaratulaForm(CuentaCaratulaForm cuentaCaratulaForm) {
+		this.cuentaCaratulaForm = cuentaCaratulaForm;
+	}
+
 	public GwtValidator getValidator() {
 		return validator;
 	}

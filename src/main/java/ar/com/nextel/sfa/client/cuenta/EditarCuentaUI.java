@@ -231,6 +231,9 @@ public class EditarCuentaUI extends ApplicationUI {
 		cuentaTab.getCuentaContactoForm().getCrearButton().setVisible(esEdicionCuenta);
 		cuentaTab.getCuentaContactoForm().cargarTablaContactos(cuentaTab.getCuenta2editDto());
 
+		//Carga info pestaña Caratua
+		cuentaTab.getCuentaCaratulaForm().cargaTablaCaratula(cuentaTab.getCuenta2editDto());
+		
 		// prepara UI para edicion cuenta o visualizacion opp
 		cuentaTab.setTabsTipoEditorCuenta(esEdicionCuenta);
 		cuentaTab.getCuentaDatosForm().setUItipoEditorCuenta(esEdicionCuenta);
