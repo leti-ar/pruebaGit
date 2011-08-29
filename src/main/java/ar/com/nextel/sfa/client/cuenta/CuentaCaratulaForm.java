@@ -4,31 +4,25 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.caratula.CaratulaUI;
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.context.ClientContext;
-import ar.com.nextel.sfa.client.domicilio.DomicilioUI;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
-import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
-import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
-import ar.com.nextel.sfa.client.dto.PersonaDto;
-import ar.com.nextel.sfa.client.dto.SuscriptorDto;
-import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
-import ar.com.nextel.sfa.client.widget.MessageDialog;
+import ar.com.snoop.gwt.commons.client.util.DateUtil;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 public class CuentaCaratulaForm extends Composite{
 	
@@ -41,6 +35,7 @@ public class CuentaCaratulaForm extends Composite{
 	private SimplePanel crearCaratulaWrapper;
 	
 	private CuentaDto cuentaDto;
+	private CaratulaDto caratulaAEditar;
 	
 	public static CuentaCaratulaForm getInstance(){
 		if(instance == null){
@@ -61,8 +56,19 @@ public class CuentaCaratulaForm extends Composite{
 		
 		crearCaratula = new Button("Crear nueva");
 		crearCaratula.addClickHandler(new ClickHandler() {
-			
+			//MGR**** TODO:Setear el comenado aceptar
 			public void onClick(ClickEvent event) {
+				CaratulaUI.getInstance().setAceptarCommand(new Command() {
+					
+					public void execute() {
+						System.out.println("Obtengo la NUEVA caratula ya validada");
+						System.out.println("La sumo a la lista de caratulas");
+						CaratulaDto nuevaCaratula = CaratulaUI.getInstance().getCaraturaAEditar();
+						cuentaDto.addCaratula(nuevaCaratula);
+						refrescaTablaCaratula();
+					}
+				});
+				
 				CaratulaUI.getInstance().cargarPopupNuevaCaratula(new CaratulaDto());
 				
 			}
@@ -108,22 +114,29 @@ public class CuentaCaratulaForm extends Composite{
 	/**
 	 *Refresca la grilla de caratulas
 	 **/
-	public void refrescaTablaConNuevoCaratula() {
+	//refrescaTablaConNuevoCaratula
+	public void refrescaTablaCaratula() {
+		limpiarTablaCaratulas();
 		cargaTablaCaratula(cuentaDto);
 	}
 	
+	private static boolean ff = true;
 	public void cargaTablaCaratula(CuentaDto cuentaDto) {
 		this.cuentaDto = cuentaDto;
         int col;
 		List<CaratulaDto> caratulas = cuentaDto.getCaratulas();
-		limpiarTablaCaratulas();
+//		limpiarTablaCaratulas();
 		initTableCompleta(datosTabla);
 		
 		//MGR**** Adm_Vtas R2 Prueba
-		CaratulaDto caratulaPrueba = new CaratulaDto();
-		caratulaPrueba.setNroSS("45688");
-		cuentaDto.addCaratula(caratulaPrueba);
-		caratulas = cuentaDto.getCaratulas();
+		if(ff){
+			CaratulaDto caratulaPrueba = new CaratulaDto();
+			caratulaPrueba.setNroSS("45688");
+			caratulaPrueba.setFechaCreacion(DateUtil.today());
+			cuentaDto.addCaratula(caratulaPrueba);
+			caratulas = cuentaDto.getCaratulas();
+			ff= false;
+		}
 		//***********
 		
 		for (int i = 0; i < caratulas.size(); i++) {
@@ -131,37 +144,52 @@ public class CuentaCaratulaForm extends Composite{
 			if (caratulaDto != null) {
 				// Carga los iconos:
 				col = 0;
+				
+				//MGR**** Adm_Vtas R2 Prueba
+				//TODO: Si esta confirmada que icono mostramos para ver?
 				if(!caratulaDto.isConfirmada()){
 					datosTabla.setWidget(i + 1, col, IconFactory.lapiz());
 					datosTabla.getCellFormatter().setAlignment(i+1, col, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
 					
 					datosTabla.setWidget(i + 1, ++col, IconFactory.comprobarVerde());
 					datosTabla.getCellFormatter().setAlignment(i+1, col, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
-					
-					if(caratulaDto.getCuenta().getPersona() != null && caratulaDto.getCuenta().getPersona().getDocumento() != null){
-						datosTabla.setHTML(i+1, ++col, caratulaDto.getCuenta().getPersona().getDocumento().getNumero());
-					}
-					else{
-						datosTabla.setHTML(i+1, ++col, "");
-					}
-					datosTabla.getCellFormatter().addStyleName(i + 1, col, "alignCenter");
-					
-					if(caratulaDto.getNroSS() != null){
-						datosTabla.setHTML(i+1, ++col, caratulaDto.getNroSS());
-					}
-					else{
-						datosTabla.setHTML(i+1, ++col, "");
-					}
-					datosTabla.getCellFormatter().addStyleName(i + 1, col, "alignCenter");
-					
-					datosTabla.setHTML(i+1, ++col, caratulaDto.getUsuarioCreacion().getApellidoYNombre());
-					datosTabla.getCellFormatter().addStyleName(i + 1, col, "alignCenter");
-					
-					//MGR**** Adm_Vtas R2
-					//TODO Ver bien como formatear la fecha para mostrar
-					datosTabla.setHTML(i+1, ++col, caratulaDto.getFechaCreacion().toLocaleString());
-					datosTabla.getCellFormatter().addStyleName(i + 1, col, "alignCenter");
+				}else{
+					col++;
 				}
+				
+				if(caratulaDto.getCuenta() != null &&
+						caratulaDto.getCuenta().getPersona() != null && caratulaDto.getCuenta().getPersona().getDocumento() != null){
+					datosTabla.setText(i+1, ++col, caratulaDto.getCuenta().getPersona().getDocumento().getNumero());
+				}
+				else{
+					datosTabla.setHTML(i+1, ++col, "");
+				}
+				datosTabla.getCellFormatter().addStyleName(i + 1, col, "alignCenter");
+				
+				if(caratulaDto.getNroSS() != null){
+					datosTabla.setText(i+1, ++col, caratulaDto.getNroSS());
+				}
+				else{
+					datosTabla.setHTML(i+1, ++col, "");
+				}
+				datosTabla.getCellFormatter().addStyleName(i + 1, col, "alignCenter");
+				
+				if(caratulaDto.getUsuarioCreacion() != null){
+					datosTabla.setText(i+1, ++col, caratulaDto.getUsuarioCreacion().getApellidoYNombre());
+				}
+				else{
+					datosTabla.setHTML(i+1, ++col, "");
+				}
+				datosTabla.getCellFormatter().addStyleName(i + 1, col, "alignCenter");
+				
+				if(caratulaDto.getFechaCreacion() != null){
+					datosTabla.setText(i+1, ++col, DateTimeFormat.getMediumDateFormat().format(caratulaDto.getFechaCreacion()));
+				}
+				else{
+					datosTabla.setHTML(i+1, ++col, "");
+				}
+				datosTabla.getCellFormatter().addStyleName(i + 1, col, "alignCenter");
+				
 			}
 		}
 	}
@@ -189,9 +217,22 @@ public class CuentaCaratulaForm extends Composite{
 //					} else {
 //						domicilio = cuentaDto.getPersona().getDomicilios().get(row - 1);
 //					}
-					CaratulaDto caratulaAEditar = cuentaDto.getCaratulas().get(row - 1);
+					caratulaAEditar = cuentaDto.getCaratulas().get(row - 1);
 					//Toco el lapiz
 					if (col == 0) {
+						
+						CaratulaUI.getInstance().setAceptarCommand(new Command() {
+							public void execute() {
+								//CaratulaDto CaratulaUI.getInstance().getCaraturaAEditar();
+								System.out.println("Obtengo la caratula EDITADA ya validada");
+								System.out.println("La sumo a la lista de caratulas");
+								
+								int index = cuentaDto.getCaratulas().indexOf(caratulaAEditar);
+								cuentaDto.getCaratulas().remove(index);
+								cuentaDto.getCaratulas().add(index, CaratulaUI.getInstance().getCaraturaAEditar());
+								refrescaTablaCaratula();
+							}
+						});
 						CaratulaUI.getInstance().cargarPopupEditarCaratula(caratulaAEditar);
 						
 					}

@@ -743,6 +743,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Cargo")
   @Key("cargo")
   String cargo();
+  
+  /**
+   * Translated "<span class=\"req\">Cargo</span>".
+   * 
+   * @return translated "<span class=\"req\">Cargo</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Cargo</span>")
+  @Key("cargoReq")
+  String cargoReq();
 
   /**
    * Translated "Categoría".
@@ -2593,4 +2602,276 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Validación domicilio")
   @Key("Validación domicilio")
   String validacionDomicilio();
+  
+  /**
+   * Translated "Banco".
+   * 
+   * @return translated "Banco"
+   */
+  @DefaultStringValue("Banco")
+  @Key("Banco")
+  String banco();
+  
+  /**
+   * Translated "Ref. Bancaria".
+   * 
+   * @return translated "Ref. Bancaria"
+   */
+  @DefaultStringValue("Ref. Bancaria")
+  @Key("Ref. Bancaria")
+  String refBancaria();
+  
+  /**
+   * Translated "Mayor Saldo".
+   * 
+   * @return translated "Mayor Saldo"
+   */
+  @DefaultStringValue("Mayor Saldo")
+  @Key("Mayor Saldo")
+  String mayorSaldo();
+  
+  /**
+   * Translated "Ingreso Prom.".
+   * 
+   * @return translated "Ingreso Prom."
+   */
+  @DefaultStringValue("Ingreso Prom.")
+  @Key("Ingreso Prom.")
+  String ingresoProm();
+  
+  /**
+   * Translated "Tarj. Credito".
+   * 
+   * @return translated "Tarj. Credito"
+   */
+  @DefaultStringValue("Tarj. Credito")
+  @Key("Tarj. Credito.")
+  String tarjCredito();
+  
+  /**
+   * Translated "Limite Tarj.".
+   * 
+   * @return translated "Limite Tarj."
+   */
+  @DefaultStringValue("Limite Tarj.")
+  @Key("Limite Tarj.")
+  String limiteTarj();
+  
+  /**
+   * Translated "Ingreso Demostrado".
+   * 
+   * @return translated "Ingreso Demostrado."
+   */
+  @DefaultStringValue("Ingreso Demostrado")
+  @Key("Ingreso Demostrado")
+  String ingresoDemostrado();
+  
+  /**
+   * Translated "IVA".
+   * 
+   * @return translated "IVA"
+   */
+  @DefaultStringValue("IVA")
+  @Key("IVA")
+  String IVA();
+  
+  /**
+   * Translated "Ganancia".
+   * 
+   * @return translated "Ganancia"
+   */
+  @DefaultStringValue("Ganancia")
+  @Key("Ganancia")
+  String ganancia();
+  
+  /**
+   * Translated "Balance".
+   * 
+   * @return translated "Balance"
+   */
+  @DefaultStringValue("Balance")
+  @Key("Balance")
+  String balance();
+  
+  /**
+   * Translated "Recibo Haberes".
+   * 
+   * @return translated "Recibo Haberes"
+   */
+  @DefaultStringValue("Recibo Haberes")
+  @Key("Recibo Haberes")
+  String reciboHaberes();
+  
+  /**
+   * Translated "PYP".
+   * 
+   * @return translated "PYP"
+   */
+  @DefaultStringValue("PYP")
+  @Key("PYP")
+  String PYP();
+  
+  /**
+   * Translated "Fact. Celular".
+   * 
+   * @return translated "Fact. Celular"
+   */
+  @DefaultStringValue("Fact. Celular")
+  @Key("Fact. Celular")
+  String factCelular();
+  
+  /**
+   * Translated "OK EECC/Agente".
+   * 
+   * @return translated "OK EECC/Agente"
+   */
+  @DefaultStringValue("OK EECC/Agente")
+  @Key("OK EECC/Agente")
+  String oKEECCAgente();
+  
+  /**
+   * Translated "COM".
+   * 
+   * @return translated "COM"
+   */
+  @DefaultStringValue("COM")
+  @Key("COM")
+  String COM();
+  
+  /**
+   * Translated "Antigüedad".
+   * 
+   * @return translated "Antigüedad"
+   */
+  @DefaultStringValue("Antigüedad")
+  @Key("Antigüedad")
+  String antiguedad();
+  
+  /**
+   * Translated "<span class=\"req\">Lim. Crédito</span>".
+   * 
+   * @return translated "<span class=\"req\">Lim. Crédito</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Lim. Crédito</span>")
+  @Key("LimCréditoReq")
+  String limCreditoReq();
+  
+  /**
+   * Translated "<span class=\"req\">Calificación</span>".
+   * 
+   * @return translated "<span class=\"req\">Calificación</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Calificación</span>")
+  @Key("CalificacionReq")
+  String calificacionReq();
+  
+  /**
+   * Translated "<span class=\"req\">Risk Code</span>".
+   * 
+   * @return translated "<span class=\"req\">Risk Code</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Risk Code</span>")
+  @Key("RiskCodeReq")
+  String riskCodeReq();
+  
+  /**
+   * Translated "<span class=\"req\">Comp. Pago</span>".
+   * 
+   * @return translated "<span class=\"req\">Comp. Pago</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Comp. Pago</span>")
+  @Key("CompPagoReq")
+  String compPagoReq();
+  
+  
+  /**
+   * Translated "Consumo prom.".
+   * 
+   * @return translated "Consumo prom."
+   */
+  @DefaultStringValue("Consumo prom.")
+  @Key("Consumo prom.")
+  String consumoProm();
+  
+  /**
+   * Translated "Equipos activos".
+   * 
+   * @return translated "Equipos activos"
+   */
+  @DefaultStringValue("Equipos activos")
+  @Key("Equipos activos")
+  String equiposActivos();
+  
+  /**
+   * Translated "Nosis".
+   * 
+   * @return translated "Nosis"
+   */
+  @DefaultStringValue("Nosis")
+  @Key("Nosis")
+  String nosis();
+  
+  
+  /**
+   * Translated "BCRA".
+   * 
+   * @return translated "BCRA"
+   */
+  @DefaultStringValue("BCRA")
+  @Key("BCRA")
+  String BCRA();
+  
+  /**
+   * Translated "Otras".
+   * 
+   * @return translated "Otras"
+   */
+  @DefaultStringValue("Otras")
+  @Key("Otras")
+  String otras();
+  
+  /**
+   * Translated "Valid. Firma".
+   * 
+   * @return translated "Valid. Firma"
+   */
+  @DefaultStringValue("Valid. Firma")
+  @Key("Valid. Firma")
+  String validFirma();
+  
+  /**
+   * Translated "Depos. Garantía".
+   * 
+   * @return translated "Depos. Garantía"
+   */
+  @DefaultStringValue("Depos. Garantía")
+  @Key("Depos. Garantía")
+  String deposGarantia();
+  
+  /**
+   * Translated "Solo Híbridos".
+   * 
+   * @return translated "Solo Híbridos"
+   */
+  @DefaultStringValue("Solo Híbridos")
+  @Key("Solo Híbridos")
+  String soloHibridos();
+  
+  /**
+   * Translated "Find IMEI".
+   * 
+   * @return translated "Find IMEI"
+   */
+  @DefaultStringValue("Find IMEI")
+  @Key("Find IMEI")
+  String findIMEI();
+  
+  /**
+   * Translated "Coment. Analista".
+   * 
+   * @return translated "Coment. Analista"
+   */
+  @DefaultStringValue("Coment. Analista")
+  @Key("Coment. Analista")
+  String comentAnalista();
 }
