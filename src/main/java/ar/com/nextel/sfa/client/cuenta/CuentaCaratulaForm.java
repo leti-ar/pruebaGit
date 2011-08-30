@@ -4,6 +4,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.caratula.CaratulaUI;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
@@ -56,7 +57,6 @@ public class CuentaCaratulaForm extends Composite{
 		
 		crearCaratula = new Button("Crear nueva");
 		crearCaratula.addClickHandler(new ClickHandler() {
-			//MGR**** TODO:Setear el comenado aceptar
 			public void onClick(ClickEvent event) {
 				CaratulaUI.getInstance().setAceptarCommand(new Command() {
 					
@@ -69,7 +69,7 @@ public class CuentaCaratulaForm extends Composite{
 					}
 				});
 				
-				CaratulaUI.getInstance().cargarPopupNuevaCaratula(new CaratulaDto());
+				CaratulaUI.getInstance().cargarPopupNuevaCaratula(new CaratulaDto(), cuentaDto.getCaratulas().size());
 				
 			}
 		});
@@ -157,20 +157,21 @@ public class CuentaCaratulaForm extends Composite{
 					col++;
 				}
 				
-				if(caratulaDto.getCuenta() != null &&
-						caratulaDto.getCuenta().getPersona() != null && caratulaDto.getCuenta().getPersona().getDocumento() != null){
-					datosTabla.setText(i+1, ++col, caratulaDto.getCuenta().getPersona().getDocumento().getNumero());
-				}
-				else{
-					datosTabla.setHTML(i+1, ++col, "");
-				}
+				cargarDatosFaltantes(i, caratulaDto);
+//				if(i==0){
+//					caratulaDto.setDocumento(Sfa.constant().credito());
+//				}else{
+//					caratulaDto.setDocumento(Sfa.constant().anexo());
+//				}
+				
+				datosTabla.setText(i+1, ++col, caratulaDto.getDocumento());
 				datosTabla.getCellFormatter().addStyleName(i + 1, col, "alignCenter");
 				
 				if(caratulaDto.getNroSS() != null){
 					datosTabla.setText(i+1, ++col, caratulaDto.getNroSS());
 				}
 				else{
-					datosTabla.setHTML(i+1, ++col, "");
+					datosTabla.setHTML(i+1, ++col, " ");
 				}
 				datosTabla.getCellFormatter().addStyleName(i + 1, col, "alignCenter");
 				
@@ -178,7 +179,7 @@ public class CuentaCaratulaForm extends Composite{
 					datosTabla.setText(i+1, ++col, caratulaDto.getUsuarioCreacion().getApellidoYNombre());
 				}
 				else{
-					datosTabla.setHTML(i+1, ++col, "");
+					datosTabla.setHTML(i+1, ++col, " ");
 				}
 				datosTabla.getCellFormatter().addStyleName(i + 1, col, "alignCenter");
 				
@@ -186,7 +187,7 @@ public class CuentaCaratulaForm extends Composite{
 					datosTabla.setText(i+1, ++col, DateTimeFormat.getMediumDateFormat().format(caratulaDto.getFechaCreacion()));
 				}
 				else{
-					datosTabla.setHTML(i+1, ++col, "");
+					datosTabla.setHTML(i+1, ++col, " ");
 				}
 				datosTabla.getCellFormatter().addStyleName(i + 1, col, "alignCenter");
 				
@@ -194,6 +195,18 @@ public class CuentaCaratulaForm extends Composite{
 		}
 	}
 
+	private void cargarDatosFaltantes(int nroCaratula, CaratulaDto caratula){
+		if(caratula.getDocumento() == null){
+			if(nroCaratula == 0){
+				caratula.setDocumento(Sfa.constant().credito());
+			}else{
+				caratula.setDocumento(Sfa.constant().anexo());
+			}
+		}
+		caratula.setUsuarioCreacion(ClientContext.getInstance().getVendedor());
+		caratula.setFechaCreacion(DateUtil.today());
+	}
+	
 	private void limpiarTablaCaratulas() {
 		while (datosTabla.getRowCount() > 1) {
 			datosTabla.removeRow(1);
@@ -210,13 +223,6 @@ public class CuentaCaratulaForm extends Composite{
 				int row = cell.getRowIndex();
 				int col = cell.getCellIndex();
 				if (row != 0) {
-//					DomiciliosCuentaDto domicilio = null;
-//					if (isSuscriptor(cuentaDto)) {
-//						domicilio = ((SuscriptorDto) cuentaDto).getGranCuenta().getPersona().getDomicilios()
-//								.get(row - 1);
-//					} else {
-//						domicilio = cuentaDto.getPersona().getDomicilios().get(row - 1);
-//					}
 					caratulaAEditar = cuentaDto.getCaratulas().get(row - 1);
 					//Toco el lapiz
 					if (col == 0) {
@@ -233,7 +239,7 @@ public class CuentaCaratulaForm extends Composite{
 								refrescaTablaCaratula();
 							}
 						});
-						CaratulaUI.getInstance().cargarPopupEditarCaratula(caratulaAEditar);
+						CaratulaUI.getInstance().cargarPopupEditarCaratula(caratulaAEditar, cuentaDto.getCaratulas().size());
 						
 					}
 					//Toco el confirmar

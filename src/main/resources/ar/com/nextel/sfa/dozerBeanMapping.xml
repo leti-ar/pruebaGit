@@ -588,6 +588,11 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>facturaElectronica</a>
 			<b>facturaElectronica</b>
 		</field-exclude>
+		<!-- MGR***** -->
+		<field>
+			<a>caratulas</a>
+			<b>caratulas</b>
+		</field>
 	</mapping>
 
 	<mapping>
@@ -962,6 +967,14 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<class-a>ar.com.nextel.model.cuentas.beans.EstadoCreditBancoCentral
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.EstadoCreditBancoCentralDto
+		</class-b>
+	</mapping>
+	
+	<!-- MGR***** -->
+	<mapping>
+		<class-a>ar.com.nextel.model.cuentas.beans.Caratula
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.CaratulaDto
 		</class-b>
 	</mapping>
 </mappings>

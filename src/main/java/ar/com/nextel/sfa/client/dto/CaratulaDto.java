@@ -8,6 +8,7 @@ public class CaratulaDto implements IsSerializable {
 
 	private Long id;
 	private CuentaDto cuenta;
+	private String documento; /* Caratula o Anexo */
 	private String nroSS;
 	private VendedorDto usuarioCreacion;
 	private Date fechaCreacion;
@@ -70,6 +71,14 @@ public class CaratulaDto implements IsSerializable {
 		this.cuenta = cuenta;
 	}
 
+	public String getDocumento() {
+		return documento;
+	}
+
+	public void setDocumento(String documento) {
+		this.documento = documento;
+	}
+	
 	public String getNroSS() {
 		return nroSS;
 	}

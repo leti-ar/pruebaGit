@@ -2757,6 +2757,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String limCreditoReq();
   
   /**
+   * Translated "Lim. Crédito".
+   * 
+   * @return translated "Lim. Crédito"
+   */
+  @DefaultStringValue("Lim. Crédito")
+  @Key("LimCredito")
+  String limCredito();
+  
+  /**
    * Translated "<span class=\"req\">Calificación</span>".
    * 
    * @return translated "<span class=\"req\">Calificación</span>"
@@ -2766,6 +2775,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String calificacionReq();
   
   /**
+   * Translated "Calificación".
+   * 
+   * @return translated "Calificación"
+   */
+  @DefaultStringValue("Calificación")
+  @Key("Calificacion")
+  String calificacion();
+  
+  /**
    * Translated "<span class=\"req\">Risk Code</span>".
    * 
    * @return translated "<span class=\"req\">Risk Code</span>"
@@ -2773,6 +2791,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("<span class=\"req\">Risk Code</span>")
   @Key("RiskCodeReq")
   String riskCodeReq();
+
+  /**
+   * Translated "Risk Code".
+   * 
+   * @return translated "Risk Code"
+   */
+  @DefaultStringValue("Risk Code")
+  @Key("RiskCode")
+  String riskCode();
   
   /**
    * Translated "<span class=\"req\">Comp. Pago</span>".
@@ -2782,6 +2809,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("<span class=\"req\">Comp. Pago</span>")
   @Key("CompPagoReq")
   String compPagoReq();
+
+  /**
+   * Translated "Comp. Pago".
+   * 
+   * @return translated "Comp. Pago"
+   */
+  @DefaultStringValue("Comp. Pago")
+  @Key("CompPago")
+  String compPago();
   
   
   /**
@@ -2874,4 +2910,40 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Coment. Analista")
   @Key("Coment. Analista")
   String comentAnalista();
+  
+  /**
+   * Translated "Crédito".
+   * 
+   * @return translated "Crédito"
+   */
+  @DefaultStringValue("Crédito")
+  @Key("Credito")
+  String credito();
+  
+  /**
+   * Translated "Anexo".
+   * 
+   * @return translated "Anexo"
+   */
+  @DefaultStringValue("Anexo")
+  @Key("Anexo")
+  String anexo();
+  
+  /**
+   * Translated "El campo Risk Code debe tener el valor EECC/Agente".
+   * 
+   * @return translated "El campo Risk Code debe tener el valor EECC/Agente"
+   */
+  @DefaultStringValue("El campo Risk Code debe tener el valor EECC/Agente")
+  @Key("ERR_RISK_CODE_NO_EECC_AGENTE")
+  String ERR_RISK_CODE_NO_EECC_AGENTE();
+
+  /**
+   * Translated "EECC/Agente debe estar seleccionado".
+   * 
+   * @return translated "EECC/Agente debe estar seleccionado"
+   */
+  @DefaultStringValue("EECC/Agente debe estar seleccionado")
+  @Key("ERR_EECC_AGENTE_DEBE_SELECCIONARSE")
+  String ERR_EECC_AGENTE_DEBE_SELECCIONARSE();
 }

@@ -1,7 +1,11 @@
 package ar.com.nextel.sfa.client.caratula;
 
+import java.util.HashMap;
+import java.util.List;
+
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.BancoDto;
 import ar.com.nextel.sfa.client.dto.CalifCrediticiaDto;
 import ar.com.nextel.sfa.client.dto.CalificacionDto;
@@ -17,6 +21,7 @@ import ar.com.nextel.sfa.client.dto.ValidacionDomicilioDto;
 import ar.com.nextel.sfa.client.dto.VerazNosisDto;
 import ar.com.nextel.sfa.client.initializer.CaratulaInitializer;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
+import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.DateUtil;
@@ -47,6 +52,8 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 	private static final int MAX_LENGHT_100 = 100;
 	private static final int MAX_LENGHT_200 = 200;
 	private static final int MAX_LENGHT_240 = 240;
+	private static final String v1 = "\\{1\\}";
+	public static final String RISK_CODE_EECC_AGENTE = "RISK_CODE_EECC_AGENTE";
 	private DateTimeFormat dateFormatter = DateTimeFormat.getFormat("dd/MM/yyyy");
 	
 	private TextBox nroSS;
@@ -284,49 +291,143 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 	public void setDatosCaratula(CaratulaDto caratulaDto){
 		nroSS.setText(caratulaDto.getNroSS());
 		//fechaInicio.setText(DateTimeFormat.getMediumDateFormat().format(caratulaDto.getFechaCreacion()));
-		fechaInicio.setSelectedDate(caratulaDto.getFechaCreacion());
+		fechaInicio.setSelectedDate(caratulaDto.getFechaInicio());
 		actividad.setText(caratulaDto.getActividad());
-		validDomicilio.setSelectedItem(caratulaDto.getValidDomicilio());
-		banco.setSelectedItem(caratulaDto.getBanco());
+		
+		if(caratulaDto.getValidDomicilio() != null){
+			validDomicilio.setSelectedItem(caratulaDto.getValidDomicilio());
+		}else{
+			validDomicilio.setSelectedIndex(0);
+		}
+		
+		if(caratulaDto.getBanco() != null){
+			banco.setSelectedItem(caratulaDto.getBanco());
+		}else{
+			banco.setSelectedIndex(0);
+		}
+			
 		refBancaria.setText(caratulaDto.getRefBancarias());
-		tipoCuenta.setSelectedItem(caratulaDto.getTipoCtaBancaria());
+		
+		if(caratulaDto.getTipoCtaBancaria() != null){
+			tipoCuenta.setSelectedItem(caratulaDto.getTipoCtaBancaria());
+		}else{
+			tipoCuenta.setSelectedIndex(0);
+		}
+		
 		if(caratulaDto.getMayorSaldoFavor() != null){
 			mayorSaldoFavor.setText(NumberFormat.getDecimalFormat().format(caratulaDto.getMayorSaldoFavor()));
 		}
+		else{
+			mayorSaldoFavor.setText(null);
+		}
+		
 		if(caratulaDto.getIngPromedio() != null){
 			ingPromedio.setText(NumberFormat.getDecimalFormat().format(caratulaDto.getIngPromedio()));
+		}else{
+			ingPromedio.setText(null);
 		}
-		tarjCredito.setSelectedItem(caratulaDto.getTipoTarjCred());
+		
+		if(caratulaDto.getTipoTarjCred() != null){
+			tarjCredito.setSelectedItem(caratulaDto.getTipoTarjCred());
+		}else{
+			tarjCredito.setSelectedIndex(0);
+		}
+		
 		if(caratulaDto.getLimiteCredito() != null){
 			limiteCred.setText(NumberFormat.getDecimalFormat().format(caratulaDto.getLimiteCredito()));
+		}else{
+			limiteCred.setText(null);
 		}
+		
 		ingDemostrado.setValue(caratulaDto.isIngresoDemostrado());
 		iva.setText(caratulaDto.getIva());
 		ganancias.setText(caratulaDto.getGanancia());
 		balance.setText(caratulaDto.getBalance());
 		ingBrutos.setText(caratulaDto.getIngBrutos());
 		reciboHaberes.setText(caratulaDto.getReciboHaberes());
-		pyp.setSelectedItem(caratulaDto.getCalifCred());
+		
+		if(caratulaDto.getCalifCred() != null){
+			pyp.setSelectedItem(caratulaDto.getCalifCred());
+		}else{
+			pyp.setSelectedIndex(0);
+		}
+		
 		factCelular.setText(caratulaDto.getFactCelular());
 		okEECCAgente.setValue(caratulaDto.isOkEECCAgente());
-		com.setSelectedItem(caratulaDto.getCom());
+		
+		if(caratulaDto.getCom() != null){
+			com.setSelectedItem(caratulaDto.getCom());
+		}else{
+			com.setSelectedIndex(0);
+		}
+		
 		if(caratulaDto.getAntiguedad() != null){
 			antiguedad.setText(DateTimeFormat.getMediumDateFormat().format(caratulaDto.getAntiguedad()));
+		}else{
+			antiguedad.setText(null);
 		}
+		
 		if(caratulaDto.getLimiteCredito() != null){
 			limiteCred.setText(NumberFormat.getDecimalFormat().format(caratulaDto.getLimiteCredito()));
+		}else{
+			limiteCred.setText(null);
 		}
-		calificacion.setSelectedItem(caratulaDto.getCalificacion());
-		riskCode.setSelectedItem(caratulaDto.getRiskCode());
-		comprPago.setSelectedItem(caratulaDto.getCompPago());
-		cargo.setSelectedItem(caratulaDto.getCargo());
+			
+		if(caratulaDto.getCalificacion() != null){
+			calificacion.setSelectedItem(caratulaDto.getCalificacion());
+		}else{
+			calificacion.setSelectedIndex(0);
+		}
+		
+		if(caratulaDto.getRiskCode() != null){
+			riskCode.setSelectedItem(caratulaDto.getRiskCode());
+		}else{
+			riskCode.setSelectedIndex(0);
+		}
+		
+		if(caratulaDto.getCompPago() != null){
+			comprPago.setSelectedItem(caratulaDto.getCompPago());
+		}else{
+			comprPago.setSelectedIndex(0);
+		}
+		
+		if(caratulaDto.getCargo() != null){
+			cargo.setSelectedItem(caratulaDto.getCargo());
+		}else{
+			cargo.setSelectedIndex(0);
+		}
+		
 		if(caratulaDto.getConsumoProm() != null){
 			consumoProm.setText(NumberFormat.getDecimalFormat().format(caratulaDto.getConsumoProm()));
+		}else{
+			consumoProm.setText(null);
 		}
-		equiposActivos.setText(String.valueOf(caratulaDto.getEquiposActivos()));
-		veraz.setSelectedItem(caratulaDto.getVeraz());
-		nosis.setSelectedItem(caratulaDto.getNosis());
-		bcra.setSelectedItem(caratulaDto.getEstadoCredBC());
+		
+		//MGR******
+//		if(caratulaDto.getEquiposActivos() != null){
+			equiposActivos.setText(String.valueOf(caratulaDto.getEquiposActivos()));
+//		}else{
+//			equiposActivos.setText(0);
+//		}
+//		
+		if(caratulaDto.getVeraz() != null){
+			veraz.setSelectedItem(caratulaDto.getVeraz());
+		}else{
+			veraz.setSelectedIndex(0);
+		}
+		
+		if(caratulaDto.getNosis() != null){
+			nosis.setSelectedItem(caratulaDto.getNosis());
+		}else{
+			nosis.setSelectedIndex(0);
+		}
+		
+		if(caratulaDto.getEstadoCredBC() != null){
+			bcra.setSelectedItem(caratulaDto.getEstadoCredBC());
+		}else{
+			bcra.setSelectedIndex(0);
+		}
+		
 		otras.setText(caratulaDto.getOtras());
 		validFirma.setText(caratulaDto.getValidFirma());
 		depGarantia.setText(caratulaDto.getDepositoGarantia());
@@ -346,31 +447,78 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		caratula.setFechaInicio(fechaInicio.getSelectedDate());
 		caratula.setActividad(actividad.getText());
 		caratula.setValidDomicilio((ValidacionDomicilioDto) validDomicilio.getSelectedItem());
-		caratula.setBanco((BancoDto) banco.getSelectedItem());
-		caratula.setRefBancarias(refBancaria.getText());
-		caratula.setTipoCtaBancaria((TipoCuentaBancariaDto) tipoCuenta.getSelectedItem());
-		caratula.setMayorSaldoFavor(NumberFormat.getDecimalFormat().parse(mayorSaldoFavor.getText()));
-		caratula.setIngPromedio(NumberFormat.getDecimalFormat().parse(ingPromedio.getText()));
+		
+		BancoDto bancoSelected = (BancoDto) banco.getSelectedItem();
+		caratula.setBanco(bancoSelected);
+		if(bancoSelected != null){
+			caratula.setRefBancarias(refBancaria.getText());
+			caratula.setTipoCtaBancaria((TipoCuentaBancariaDto) tipoCuenta.getSelectedItem());
+			
+			if(mayorSaldoFavor.getText() != null && !mayorSaldoFavor.getText().equals("")){
+				caratula.setMayorSaldoFavor(NumberFormat.getDecimalFormat().parse(mayorSaldoFavor.getText()));
+			}else{
+				caratula.setMayorSaldoFavor(null);
+			}
+			
+			if(ingPromedio.getText() != null && !ingPromedio.getText().equals("")){
+				caratula.setIngPromedio(NumberFormat.getDecimalFormat().parse(ingPromedio.getText()));
+			}else{
+				caratula.setIngPromedio(null);
+			}
+			
+		}else{
+			caratula.setRefBancarias(null);
+			caratula.setTipoCtaBancaria(null);
+			caratula.setMayorSaldoFavor(null);
+			caratula.setIngPromedio(null);
+		}
+		
 		caratula.setTipoTarjCred((TipoTarjetaDto) tarjCredito.getSelectedItem());
-		caratula.setLimiteTarjCred(NumberFormat.getDecimalFormat().parse(limiteTarj.getText()));
-		caratula.setIngresoDemostrado(ingDemostrado.getValue());
-		caratula.setIva(iva.getText());
-		caratula.setGanancia(ganancias.getText());
-		caratula.setBalance(balance.getText());
-		caratula.setIngBrutos(ingBrutos.getText());
-		caratula.setReciboHaberes(reciboHaberes.getText());
-		caratula.setCalifCred((CalifCrediticiaDto) pyp.getSelectedItem());
-		caratula.setFactCelular(factCelular.getText());
+		
+		if(limiteTarj.getText() != null && !limiteTarj.getText().equals("")){
+			caratula.setLimiteTarjCred(NumberFormat.getDecimalFormat().parse(limiteTarj.getText()));
+		}else{
+			caratula.setLimiteTarjCred(null);
+		}
+		
+		boolean ingDemostrados = ingDemostrado.getValue();
+		caratula.setIngresoDemostrado(ingDemostrados);
+		if(ingDemostrados){
+			caratula.setIva(iva.getText());
+			caratula.setGanancia(ganancias.getText());
+			caratula.setBalance(balance.getText());
+			caratula.setIngBrutos(ingBrutos.getText());
+			caratula.setReciboHaberes(reciboHaberes.getText());
+			caratula.setCalifCred((CalifCrediticiaDto) pyp.getSelectedItem());
+			caratula.setFactCelular(factCelular.getText());
+		}else{
+			caratula.setIva(null);
+			caratula.setGanancia(null);
+			caratula.setBalance(null);
+			caratula.setIngBrutos(null);
+			caratula.setReciboHaberes(null);
+			caratula.setCalifCred(null);
+			caratula.setFactCelular(null);
+		}
+		
 		caratula.setOkEECCAgente(okEECCAgente.getValue());
 		caratula.setCom((ComDto) com.getSelectedItem());
 		//MGR**** Adm_Vtas R2 Falta antiguedad
-		caratula.setLimiteCredito(NumberFormat.getDecimalFormat().parse(limiteCred.getText()));
+		if(limiteCred.getText() != null && !limiteCred.getText().equals("")){
+			caratula.setLimiteCredito(NumberFormat.getDecimalFormat().parse(limiteCred.getText()));
+		}else{
+			caratula.setLimiteCredito(null);
+		}
 		caratula.setCalificacion((CalificacionDto) calificacion.getSelectedItem());
 		caratula.setRiskCode((RiskCodeDto) riskCode.getSelectedItem());
 		caratula.setCompPago((CompPagoDto) comprPago.getSelectedItem());
 		caratula.setCargo((CargoDto) cargo.getSelectedItem());
 		//MGR**** Adm_Vtas R2 Falta Consumo Promedio
-		caratula.setEquiposActivos(Long.parseLong(equiposActivos.getSelectedText()));
+		if(equiposActivos.getText() != null && !equiposActivos.getText().equals("")){
+			caratula.setEquiposActivos(Long.parseLong(equiposActivos.getText()));
+		}else{
+			caratula.setEquiposActivos(0);
+		}
 		caratula.setVeraz((VerazNosisDto) veraz.getSelectedItem());
 		caratula.setNosis((VerazNosisDto) nosis.getSelectedItem());
 		caratula.setEstadoCredBC((EstadoCreditBancoCentralDto) bcra.getSelectedItem());
@@ -439,17 +587,50 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 //	}
 	
 	private static boolean val = false;
-	public boolean validarCamposObligatorios(){
-		System.out.println("Validando los campos obligatorios");
-		if(!val){
-			System.out.println("Validacion fallo!");
-			val = true;
-			return false;
-		}else{
-			System.out.println("Validacion OK!");
-			val = false;
-			return true;
+	public List<String> validarCamposObligatorios(int nroCaratula){
+		
+		GwtValidator validator = new GwtValidator();
+		validator.addTarget(limiteCred).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().limCredito()));
+		validator.addTarget(calificacion).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().calificacion()));
+		validator.addTarget(riskCode).required(
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().riskCode()));
+		
+		if(nroCaratula > 0){
+			validator.addTarget(comprPago).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().compPago()));
+			validator.addTarget(cargo).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().cargo()));
+			validator.addTarget(equiposActivos).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().equiposActivos()));
 		}
+		
+		if(banco.getSelectedItem() != null){
+			validator.addTarget(refBancaria).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().refBancaria()));
+			validator.addTarget(tipoCuenta).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().tipoCuenta()));
+			validator.addTarget(mayorSaldoFavor).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().mayorSaldo()));
+			validator.addTarget(ingPromedio).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().ingresoProm()));
+		}
+		
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		boolean okEECCChecked = okEECCAgente.getValue();
+		RiskCodeDto riskCodeSelected = (RiskCodeDto) riskCode.getSelectedItem();
+				
+		if(okEECCChecked && (riskCodeSelected == null || 
+				!instancias.get(RISK_CODE_EECC_AGENTE).equals(riskCodeSelected.getId()))){
+			validator.addError(Sfa.constant().ERR_RISK_CODE_NO_EECC_AGENTE());
+		
+		}else if(riskCodeSelected != null && instancias.get(RISK_CODE_EECC_AGENTE).equals(riskCodeSelected.getId())
+				&& !okEECCChecked){
+			validator.addError(Sfa.constant().ERR_EECC_AGENTE_DEBE_SELECCIONARSE());
+		}
+		
+		return validator.fillResult().getErrors();
 	}
 	//*************************//
 	public TextBox getNroSS() {

@@ -1,9 +1,12 @@
 package ar.com.nextel.sfa.client.caratula;
 
+import java.util.List;
+
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -23,6 +26,7 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 
 	private static CaratulaUI instance = null;
 	private CaratulaDto caratulaAEditar;
+	private int nroCaratula = 0; //Para saber si es la primer caratula o no (requerido validacion)
 	
 	private Grid gridCabecera;
 	
@@ -201,20 +205,15 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 
 				System.out.println("Click en aceptar del popup de caratula");
 				System.out.println("Puedo hacer la validacion");
-				if(caratulaData.validarCamposObligatorios()){
-
+				List<String> errores = caratulaData.validarCamposObligatorios(nroCaratula);
+				if(errores.isEmpty()){
+					hide();
 					if(aceptarCommand != null){
-						System.out.println("Cierro popuup");
-						hide();
-						System.out.println("Ejecuto comando");
 						aceptarCommand.execute();
-					}else{
-						System.out.println("no hay comando");
-						System.out.println("Cierro popuup");
 					}
-					
 				}else{
-					System.out.println("No paso validacion, muestro error");
+					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+					ErrorDialog.getInstance().show(errores, false);
 				}
 				
 			}
@@ -239,18 +238,21 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 	}
 	
 	//El pop-up se muestra con el título "Crear Caratula"
-	public void cargarPopupNuevaCaratula(CaratulaDto caratulaDto){
-		cargarPopupCaratula(caratulaDto, Sfa.constant().crearCaratula());
+	public void cargarPopupNuevaCaratula(CaratulaDto caratulaDto, int nroCaratula){
+		cargarPopupCaratula(caratulaDto, Sfa.constant().crearCaratula(), nroCaratula);
 	}
 	
 	//El pop-up se muestra con el título "Editar Caratula"
-	public void cargarPopupEditarCaratula(CaratulaDto caratulaDto){
-		cargarPopupCaratula(caratulaDto, Sfa.constant().editarCaratula());
+	public void cargarPopupEditarCaratula(CaratulaDto caratulaDto, int nroCaratula){
+		cargarPopupCaratula(caratulaDto, Sfa.constant().editarCaratula(), nroCaratula);
 	}
 	
-	private void cargarPopupCaratula(CaratulaDto caratula, String titulo){
+	private void cargarPopupCaratula(CaratulaDto caratula, String titulo, int nroCaratula){
 		this.caratulaAEditar = caratula;
+		this.nroCaratula = nroCaratula;
 		caratulaData.setDatosCaratula(caratulaAEditar);
+		onChange(caratulaData.getBanco());
+		onClick(caratulaData.getIngDemostrado());
 		setDialogTitle(titulo);
 		showAndCenter();
 	}
