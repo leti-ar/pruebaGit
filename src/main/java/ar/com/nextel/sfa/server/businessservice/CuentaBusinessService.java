@@ -35,6 +35,7 @@ import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRet
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.repository.hibernate.HibernateRepository;
 import ar.com.nextel.model.cuentas.beans.AbstractDatosPago;
+import ar.com.nextel.model.cuentas.beans.Caratula;
 import ar.com.nextel.model.cuentas.beans.ClaseCuenta;
 import ar.com.nextel.model.cuentas.beans.ContactoCuenta;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
@@ -58,6 +59,7 @@ import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
@@ -348,6 +350,14 @@ public class CuentaBusinessService {
 		cuenta.getPlainContactos().addAll(listaContactos);
 		// *************************************************************************************************
 
+		// FIXME: Necesario para refrescar el vendedor de las caratulas
+		for (Caratula caratula : cuenta.getCaratulas()) {
+			if(caratula.getId() == null){
+				Vendedor vend = repository.retrieve(Vendedor.class, caratula.getUsuarioCreacion().getId());
+				caratula.setUsuarioCreacion(vend);
+			}
+		}
+		
 		// FIXME: revisar mapeo de Persona/Telefono/Mail en dozer para no tener
 		// que hacer esto
 		// ***********************
@@ -815,6 +825,13 @@ public class CuentaBusinessService {
 		BaseAccessObject accessCuenta = new BaseAccessObject(
 				accessAuthorization, cuenta);
 		return accessCuenta;
+	}
+
+	public Caratula confirmarCaratula(CaratulaDto caratulaDto) {
+		Caratula caratula = repository.retrieve(Caratula.class, caratulaDto.getId());
+		caratula.setConfirmada(true);
+		repository.save(caratula);
+		return caratula;
 	}
 
 }

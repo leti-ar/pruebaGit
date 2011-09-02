@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
@@ -158,5 +159,10 @@ public class CuentaRpcServiceDelegate {
 	public void getCaratulaInicializarte(DefaultWaitCallback<CaratulaInitializer> callback) {
 		WaitWindow.show();
 		cuentaRpcService.getCaratulaInicializarte(callback);
+	}
+	
+	public void confirmarCaratula(CaratulaDto caratulaDto, DefaultWaitCallback<CaratulaDto> callback){
+		WaitWindow.show();
+		cuentaRpcService.confirmarCaratula(caratulaDto, callback);
 	}
 }

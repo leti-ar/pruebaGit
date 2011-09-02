@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client.cuenta;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.caratula.CaratulaUI;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -9,6 +10,8 @@ import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
+import ar.com.nextel.sfa.client.widget.MessageDialog;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.DateUtil;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -28,6 +31,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 public class CuentaCaratulaForm extends Composite{
 	
 	private static CuentaCaratulaForm instance;
+	
 	private FlowPanel mainPanel;
 	private FormButtonsBar footerBar;
 	private FlexTable datosTabla;
@@ -37,6 +41,9 @@ public class CuentaCaratulaForm extends Composite{
 	
 	private CuentaDto cuentaDto;
 	private CaratulaDto caratulaAEditar;
+	private boolean huboCambios = false;
+	
+	private Command cancelarCommand;
 	
 	public static CuentaCaratulaForm getInstance(){
 		if(instance == null){
@@ -64,12 +71,18 @@ public class CuentaCaratulaForm extends Composite{
 						System.out.println("Obtengo la NUEVA caratula ya validada");
 						System.out.println("La sumo a la lista de caratulas");
 						CaratulaDto nuevaCaratula = CaratulaUI.getInstance().getCaraturaAEditar();
-						cuentaDto.addCaratula(nuevaCaratula);
+						cuentaDto.getCaratulas().add(nuevaCaratula);
 						refrescaTablaCaratula();
+						huboCambios = true;
 					}
 				});
-				
-				CaratulaUI.getInstance().cargarPopupNuevaCaratula(new CaratulaDto(), cuentaDto.getCaratulas().size());
+				int nroCaratula = 0;
+				if(cuentaDto.getCaratulas()!= null){
+					nroCaratula = cuentaDto.getCaratulas().size();
+				}
+				CaratulaDto caratula = new CaratulaDto();
+				caratula.setAntiguedad(cuentaDto.getFechaCreacion());
+				CaratulaUI.getInstance().cargarPopupNuevaCaratula(caratula, nroCaratula);
 				
 			}
 		});
@@ -82,6 +95,12 @@ public class CuentaCaratulaForm extends Composite{
 		
 		mainPanel.add(datosTabla);
 		mainPanel.add(footerBar);
+		
+		cancelarCommand = new Command() {
+			public void execute() {
+				MessageDialog.getInstance().hide();
+			}
+		};
 	}
 
 	private void initTableCompleta(FlexTable table) {
@@ -120,26 +139,15 @@ public class CuentaCaratulaForm extends Composite{
 		cargaTablaCaratula(cuentaDto);
 	}
 	
-	private static boolean ff = true;
 	public void cargaTablaCaratula(CuentaDto cuentaDto) {
 		this.cuentaDto = cuentaDto;
         int col;
 		List<CaratulaDto> caratulas = cuentaDto.getCaratulas();
+		//MGR*****
 //		limpiarTablaCaratulas();
 		initTableCompleta(datosTabla);
 		
-		//MGR**** Adm_Vtas R2 Prueba
-		if(ff){
-			CaratulaDto caratulaPrueba = new CaratulaDto();
-			caratulaPrueba.setNroSS("45688");
-			caratulaPrueba.setFechaCreacion(DateUtil.today());
-			cuentaDto.addCaratula(caratulaPrueba);
-			caratulas = cuentaDto.getCaratulas();
-			ff= false;
-		}
-		//***********
-		
-		for (int i = 0; i < caratulas.size(); i++) {
+		for (int i = 0; caratulas != null && i < caratulas.size(); i++) {
 			CaratulaDto caratulaDto = caratulas.get(i);
 			if (caratulaDto != null) {
 				// Carga los iconos:
@@ -205,6 +213,9 @@ public class CuentaCaratulaForm extends Composite{
 		}
 		caratula.setUsuarioCreacion(ClientContext.getInstance().getVendedor());
 		caratula.setFechaCreacion(DateUtil.today());
+		if(caratula.getAntiguedad() == null){
+			caratula.setAntiguedad(cuentaDto.getFechaCreacion());
+		}
 	}
 	
 	private void limpiarTablaCaratulas() {
@@ -237,17 +248,53 @@ public class CuentaCaratulaForm extends Composite{
 								cuentaDto.getCaratulas().remove(index);
 								cuentaDto.getCaratulas().add(index, CaratulaUI.getInstance().getCaraturaAEditar());
 								refrescaTablaCaratula();
+								huboCambios = true;
 							}
 						});
-						CaratulaUI.getInstance().cargarPopupEditarCaratula(caratulaAEditar, cuentaDto.getCaratulas().size());
+						int nroCaratula = 0;
+						if(cuentaDto.getCaratulas()!= null){
+							nroCaratula = cuentaDto.getCaratulas().size();
+						}
+						CaratulaUI.getInstance().cargarPopupEditarCaratula(caratulaAEditar, nroCaratula);
 						
 					}
 					//Toco el confirmar
 					if (col == 1) {
 						
+						if(huboCambios){
+							MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), 
+									Sfa.constant().CONFIRMAR_CAMBIOS(), cancelarCommand);
+						}else{
+							CuentaRpcService.Util.getInstance().confirmarCaratula(caratulaAEditar,
+									new DefaultWaitCallback<CaratulaDto>() {
+										
+										@Override
+										public void success(CaratulaDto result) {
+											int index = cuentaDto.getCaratulas().indexOf(caratulaAEditar);
+											cuentaDto.getCaratulas().remove(index);
+											cuentaDto.getCaratulas().add(index, CaratulaUI.getInstance().getCaraturaAEditar());
+											refrescaTablaCaratula();
+										}
+									});
+							System.out.println("Confirmar caratula");
+							System.out.println("Guardar");
+						}
 					}
 				}
 			}
 		});
 	}
+	
+	public boolean formularioCaratulaDirty() {
+		return true;
+	}
+	
+	public void setHuboCambios(boolean huboCambios) {
+		this.huboCambios = huboCambios;
+	}
+	
+	public List<CaratulaDto> getCaratulas(){
+		return cuentaDto.getCaratulas();
+	}
+	
 }

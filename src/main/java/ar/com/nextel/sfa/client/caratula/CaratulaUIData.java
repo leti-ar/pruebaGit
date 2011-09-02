@@ -503,7 +503,6 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		
 		caratula.setOkEECCAgente(okEECCAgente.getValue());
 		caratula.setCom((ComDto) com.getSelectedItem());
-		//MGR**** Adm_Vtas R2 Falta antiguedad
 		if(limiteCred.getText() != null && !limiteCred.getText().equals("")){
 			caratula.setLimiteCredito(NumberFormat.getDecimalFormat().parse(limiteCred.getText()));
 		}else{

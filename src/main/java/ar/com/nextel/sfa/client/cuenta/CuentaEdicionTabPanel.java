@@ -412,6 +412,10 @@ public class CuentaEdicionTabPanel {
 		ctaDto.getPersona().setDomicilios(CuentaDomiciliosForm.getInstance().getCuenta().getPersona().getDomicilios());
 		//asegura que los contatos esten cargados en la granCuenta (para divisiones y suscriptores)
 		agregarContactos(ctaDto);
+		
+		//Agrego Caratulas
+		ctaDto.setCaratulas(cuentaCaratulaForm.getCaratulas());
+		
 		//solo para actualizar imagen (sin mensaje de error).
 		validarCompletitud(false);
 		
@@ -427,6 +431,9 @@ public class CuentaEdicionTabPanel {
 				//actualiza pestaña contactos
 				cuentaContactoForm.cargarTablaContactos(cuentaDto);
 				CuentaContactoForm.getInstance().setFormDirty(false);
+				//actualiza pestaña caratula
+				cuentaCaratulaForm.cargaTablaCaratula(cuentaDto);
+				cuentaCaratulaForm.setHuboCambios(false);
 //				MessageDialog.getInstance().showAceptar("", Sfa.constant().MSG_CUENTA_GUARDADA_OK(), MessageDialog.getCloseCommand());
 			}
 		});	
@@ -484,7 +491,8 @@ public class CuentaEdicionTabPanel {
 	private boolean editorDirty() {
 		return cuentaDatosForm.formularioDatosDirty() 
 		    || cuentaDomiciliosForm.formularioDatosDirty() 
-		    || cuentaContactoForm.formContactosDirty();
+		    || cuentaContactoForm.formContactosDirty()
+		    || cuentaCaratulaForm.formularioCaratulaDirty();
 	}
 	
 	private void agregarContactos(CuentaDto ctaDto) {

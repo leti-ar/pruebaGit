@@ -4,10 +4,12 @@ import java.util.Date;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class CaratulaDto implements IsSerializable {
+public class CaratulaDto implements IsSerializable, IdentifiableDto, Cloneable {
 
 	private Long id;
-	private CuentaDto cuenta;
+//	private CuentaDto cuenta;
+	private Long idCuenta;
+	
 	private String documento; /* Caratula o Anexo */
 	private String nroSS;
 	private VendedorDto usuarioCreacion;
@@ -52,8 +54,9 @@ public class CaratulaDto implements IsSerializable {
 	private String comentarioAnalista;
 	private String scoring;
 	private boolean confirmada;
-
-	// TODO Terminar
+	
+	public CaratulaDto(){
+	}
 
 	public Long getId() {
 		return id;
@@ -63,12 +66,20 @@ public class CaratulaDto implements IsSerializable {
 		this.id = id;
 	}
 
-	public CuentaDto getCuenta() {
-		return cuenta;
+//	public CuentaDto getCuenta() {
+//		return cuenta;
+//	}
+//
+//	public void setCuenta(CuentaDto cuenta) {
+//		this.cuenta = cuenta;
+//	}
+	
+	public Long getIdCuenta() {
+		return idCuenta;
 	}
 
-	public void setCuenta(CuentaDto cuenta) {
-		this.cuenta = cuenta;
+	public void setIdCuenta(Long idCuenta) {
+		this.idCuenta = idCuenta;
 	}
 
 	public String getDocumento() {

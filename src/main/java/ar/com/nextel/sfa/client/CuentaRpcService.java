@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
@@ -73,4 +74,5 @@ public interface CuentaRpcService extends RemoteService {
 	public List<ServicioContratoDto> searchServiciosContratados(Long numeroContrato) throws RpcExceptionMessages;
 	
 	public CaratulaInitializer getCaratulaInicializarte() throws RpcExceptionMessages;
+	public CaratulaDto confirmarCaratula(CaratulaDto caratulaDto) throws RpcExceptionMessages;
 }

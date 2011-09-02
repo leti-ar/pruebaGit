@@ -4,7 +4,7 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class EstadoCreditBancoCentralDto implements IsSerializable, ListBoxItem{
+public class EstadoCreditBancoCentralDto extends EnumDto implements IsSerializable, ListBoxItem{
 
 	private Long id;
 	private String descripcion;

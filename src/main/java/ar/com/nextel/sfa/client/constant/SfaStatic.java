@@ -2946,4 +2946,13 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("EECC/Agente debe estar seleccionado")
   @Key("ERR_EECC_AGENTE_DEBE_SELECCIONARSE")
   String ERR_EECC_AGENTE_DEBE_SELECCIONARSE();
+  
+  /**
+   * Translated "Antes de confirmar debe guardar los datos.".
+   * 
+   * @return translated "Antes de confirmar debe guardar los datos."
+   */
+  @DefaultStringValue("Antes de confirmar debe guardar los datos.")
+  @Key("CONFIRMAR_CAMBIOS")
+  String CONFIRMAR_CAMBIOS();
 }

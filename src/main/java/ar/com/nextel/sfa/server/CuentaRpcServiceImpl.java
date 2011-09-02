@@ -34,6 +34,7 @@ import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Banco;
 import ar.com.nextel.model.cuentas.beans.CalifCrediticia;
 import ar.com.nextel.model.cuentas.beans.Calificacion;
+import ar.com.nextel.model.cuentas.beans.Caratula;
 import ar.com.nextel.model.cuentas.beans.Cargo;
 import ar.com.nextel.model.cuentas.beans.CategoriaCuenta;
 import ar.com.nextel.model.cuentas.beans.ClaseCuenta;
@@ -76,6 +77,7 @@ import ar.com.nextel.sfa.client.dto.BancoDto;
 import ar.com.nextel.sfa.client.dto.BusquedaPredefinidaDto;
 import ar.com.nextel.sfa.client.dto.CalifCrediticiaDto;
 import ar.com.nextel.sfa.client.dto.CalificacionDto;
+import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
 import ar.com.nextel.sfa.client.dto.ClaseCuentaDto;
@@ -760,5 +762,22 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		
 		
 		return initializer;
+	}
+	
+	public CaratulaDto confirmarCaratula(CaratulaDto caratulaDto){
+		
+		Caratula caratula = cuentaBusinessService.confirmarCaratula(caratulaDto);
+		
+//		Caratula caratula = repository.retrieve(Caratula.class, caratulaDto.getId());
+//		mapper.map(caratulaDto, caratula);
+//		caratula.setConfirmada(true);
+//		caratula.setConsumoProm(29.0);
+//		
+//		repository.save(caratula);
+		
+		mapper.map(caratula, caratulaDto);
+		
+		return caratulaDto;
+		
 	}
 }

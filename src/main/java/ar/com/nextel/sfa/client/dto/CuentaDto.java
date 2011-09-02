@@ -41,7 +41,7 @@ public class CuentaDto implements IsSerializable {
 	private FacturaElectronicaDto facturaElectronica;
 	
 	//MGR**** Adm_Vtas R2
-	private List<CaratulaDto> caratulas;
+	private List<CaratulaDto> caratulas = new ArrayList<CaratulaDto>();
 
 	public Long getId() {
 		return id;
@@ -331,15 +331,5 @@ public class CuentaDto implements IsSerializable {
 
 	public void setCaratulas(List<CaratulaDto> caratulas) {
 		this.caratulas = caratulas;
-	}
-	
-	public void addCaratula(CaratulaDto caratula){
-		if (caratula == null) {
-			return;
-		}
-		if (this.caratulas == null) {
-			this.caratulas = new ArrayList<CaratulaDto>();
-		}
-		this.caratulas.add(caratula);
 	}
 }

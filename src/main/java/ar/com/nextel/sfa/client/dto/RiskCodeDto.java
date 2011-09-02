@@ -4,7 +4,7 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class RiskCodeDto implements IsSerializable, ListBoxItem{
+public class RiskCodeDto extends EnumDto implements IsSerializable, ListBoxItem{
 
 	private Long id;
 	private String descripcion;

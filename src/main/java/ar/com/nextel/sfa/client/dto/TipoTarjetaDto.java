@@ -4,8 +4,8 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class TipoTarjetaDto implements ListBoxItem, IsSerializable {
-    private long id;
+public class TipoTarjetaDto extends EnumDto implements ListBoxItem, IsSerializable {
+    private Long id;
 	private String codigoVantive;
     private String descripcion;
     private Integer cantidadDigitos;
@@ -23,10 +23,10 @@ public class TipoTarjetaDto implements ListBoxItem, IsSerializable {
 	public String getItemValue() {
 		return id + "";
 	}
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getCodigoVantive() {

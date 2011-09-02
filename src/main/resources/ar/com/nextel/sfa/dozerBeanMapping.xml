@@ -588,9 +588,12 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>facturaElectronica</a>
 			<b>facturaElectronica</b>
 		</field-exclude>
-		<!-- MGR***** -->
-		<field>
+		<field-exclude>
 			<a>caratulas</a>
+			<b>caratulas</b>
+		</field-exclude>
+		<field custom-converter-id="collectionCaratulaConverter">
+			<a>plainCaratulas</a>
 			<b>caratulas</b>
 		</field>
 	</mapping>
@@ -970,11 +973,70 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-b>
 	</mapping>
 	
-	<!-- MGR***** -->
 	<mapping>
 		<class-a>ar.com.nextel.model.cuentas.beans.Caratula
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.CaratulaDto
 		</class-b>
+		<field custom-converter-id="identifiableObjectToId">
+			<a>cuenta</a>
+			<b>idCuenta</b>
+		</field>
+		<field>
+            <a>usuarioCreacion</a>
+            <b>usuarioCreacion</b>
+        </field>
+        <field custom-converter-id="enumToDto">
+			<a>validDomicilio</a>
+			<b>validDomicilio</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>banco</a>
+			<b>banco</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>tipoCtaBancaria</a>
+			<b>tipoCtaBancaria</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>tipoTarjCred</a>
+			<b>tipoTarjCred</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>califCred</a>
+			<b>califCred</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>com</a>
+			<b>com</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>calificacion</a>
+			<b>calificacion</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>riskCode</a>
+			<b>riskCode</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>compPago</a>
+			<b>compPago</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>cargo</a>
+			<b>cargo</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>veraz</a>
+			<b>veraz</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>nosis</a>
+			<b>nosis</b>
+		</field>
+		<field custom-converter-id="enumToDto">
+			<a>estadoCredBC</a>
+			<b>estadoCredBC</b>
+		</field>
 	</mapping>
 </mappings>

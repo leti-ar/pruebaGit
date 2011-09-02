@@ -4,7 +4,7 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class CompPagoDto implements IsSerializable, ListBoxItem{
+public class CompPagoDto extends EnumDto implements IsSerializable, ListBoxItem{
 
 	private Long id;
 	private String descripcion;
