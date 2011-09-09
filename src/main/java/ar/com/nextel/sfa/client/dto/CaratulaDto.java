@@ -4,7 +4,8 @@ import java.util.Date;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class CaratulaDto implements IsSerializable, IdentifiableDto, Cloneable {
+//MGR******
+public class CaratulaDto implements IsSerializable, IdentifiableDto, Cloneable, Comparable {
 
 	private Long id;
 //	private CuentaDto cuenta;
@@ -432,5 +433,21 @@ public class CaratulaDto implements IsSerializable, IdentifiableDto, Cloneable {
 
 	public void setConfirmada(boolean confirmada) {
 		this.confirmada = confirmada;
+	}
+	
+	public int compareTo(Object o) {
+		CaratulaDto caratula1 = (CaratulaDto)o;
+		
+		if(this.fechaCreacion == null && caratula1.fechaCreacion == null){
+			return 0;
+		}
+		if(caratula1.fechaCreacion == null){
+			return -1;
+		}
+		if(this.fechaCreacion == null){
+			return 1;
+		}
+		
+		return this.fechaCreacion.compareTo(caratula1.fechaCreacion);
 	}
 }

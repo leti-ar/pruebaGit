@@ -23,7 +23,6 @@ import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.CaratulaInitializer;
 import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
 import ar.com.nextel.sfa.client.initializer.VerazInitializer;
-import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -59,6 +58,7 @@ public interface CuentaRpcServiceAsync {
 	public void searchServiciosContratados(Long numeroContrato, AsyncCallback<List<ServicioContratoDto>> callback);
 	
 	public void getCaratulaInicializarte(AsyncCallback<CaratulaInitializer> callback);
-	
+	public void crearCaratula(CuentaDto cuentaDto, AsyncCallback<CaratulaDto> callback);	
 	public void confirmarCaratula(CaratulaDto caratulaDto, AsyncCallback<CaratulaDto> callback);
+	public void validarExistenciaTriptico(String nro, AsyncCallback<Boolean> callback);
 }

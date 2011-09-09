@@ -23,7 +23,6 @@ import ar.com.nextel.sfa.client.initializer.BuscarCuentaInitializer;
 import ar.com.nextel.sfa.client.initializer.CaratulaInitializer;
 import ar.com.nextel.sfa.client.initializer.CrearContactoInitializer;
 import ar.com.nextel.sfa.client.initializer.VerazInitializer;
-import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
@@ -164,5 +163,15 @@ public class CuentaRpcServiceDelegate {
 	public void confirmarCaratula(CaratulaDto caratulaDto, DefaultWaitCallback<CaratulaDto> callback){
 		WaitWindow.show();
 		cuentaRpcService.confirmarCaratula(caratulaDto, callback);
+	}
+	
+	public void crearCaratula(CuentaDto cuentaDto, DefaultWaitCallback<CaratulaDto> callback){
+		WaitWindow.show();
+		cuentaRpcService.crearCaratula(cuentaDto, callback);
+	}
+	
+	public void validarExistenciaTriptico(String nro, DefaultWaitCallback<Boolean> callback){
+		WaitWindow.show();
+		cuentaRpcService.validarExistenciaTriptico(nro, callback);
 	}
 }

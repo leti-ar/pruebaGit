@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.server;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
+import ar.com.nextel.business.cuentas.caratula.exception.ArpuServiceException;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
 import ar.com.nextel.business.cuentas.search.SearchCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.search.businessUnits.CuentaSearchData;
@@ -24,12 +26,15 @@ import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorServ
 import ar.com.nextel.business.describable.GetAllBusinessOperator;
 import ar.com.nextel.business.externalConnection.exception.MerlinException;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
+import ar.com.nextel.business.legacy.avalon.dto.CantidadEquiposDTO;
 import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
 import ar.com.nextel.business.personas.normalizarDomicilio.NormalizadorDomicilio;
 import ar.com.nextel.business.personas.normalizarDomicilio.businessUnits.NormalizarDomicilioRequest;
 import ar.com.nextel.components.filter.Filter;
 import ar.com.nextel.components.knownInstances.retrievers.message.MessageRetriever;
+import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
 import ar.com.nextel.components.message.Message;
+import ar.com.nextel.exception.LegacyDAOException;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Banco;
 import ar.com.nextel.model.cuentas.beans.CalifCrediticia;
@@ -67,6 +72,7 @@ import ar.com.nextel.model.personas.beans.GrupoDocumento;
 import ar.com.nextel.model.personas.beans.Provincia;
 import ar.com.nextel.model.personas.beans.Sexo;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
+import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.services.nextelServices.NextelServices;
@@ -157,6 +163,9 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 
 	private static final String queryNameSexoSinIndefinido = "SEXO_SIN_INDEFINIDO";
 	private static final String QUERY_NAME_CLASE_CUENTA_POR_VENDEDOR = "CLASE_CUENTAS_POR_VENDEDOR";
+	
+	private KnownInstanceRetriever knownInstanceRetriever;
+	private static final String VALID_EXIST_TRIPTICO = "VALID_EXIST_TRIPTICO";
 
 	@Override
 	public void init() throws ServletException {
@@ -176,6 +185,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		messageRetriever = (MessageRetriever) context.getBean("messageRetriever");
 		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
 
+		knownInstanceRetriever = (KnownInstanceRetriever) context.getBean("knownInstancesRetriever");
+		
 		setGetAllBusinessOperator((GetAllBusinessOperator) context.getBean("getAllBusinessOperatorBean"));
 	}
 
@@ -764,20 +775,84 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return initializer;
 	}
 	
-	public CaratulaDto confirmarCaratula(CaratulaDto caratulaDto){
+	public CaratulaDto crearCaratula(CuentaDto cuentaDto) throws RpcExceptionMessages{
 		
-		Caratula caratula = cuentaBusinessService.confirmarCaratula(caratulaDto);
+		AppLogger.info("Creando Caratula para la cuenta: " + cuentaDto.getId());
+		Caratula newCaratula = new Caratula();
 		
-//		Caratula caratula = repository.retrieve(Caratula.class, caratulaDto.getId());
-//		mapper.map(caratulaDto, caratula);
-//		caratula.setConfirmada(true);
-//		caratula.setConsumoProm(29.0);
-//		
-//		repository.save(caratula);
+		Cuenta cta = repository.retrieve(Cuenta.class, cuentaDto.getId());
+		newCaratula.setCuenta(cta);
+		
+		if(cuentaDto.getCaratulas().isEmpty()){
+			newCaratula.setDocumento("Crédito");
+		}else{
+			newCaratula.setDocumento("Anexo");
+		}
+		
+		newCaratula.setUsuarioCreacion(getVendedor());
+		newCaratula.setAntiguedad(cta.getFechaCreacion());
+		newCaratula.setFechaCreacion(new Date());
+		
+		SolicitudServicio ultSSModificada = cuentaBusinessService.getUltimaSSModificada(cta.getId());
+		newCaratula.setNroSS(ultSSModificada.getNumero());
+
+		if(ultSSModificada.getFirmar()){
+			newCaratula.setOkEECCAgente(Boolean.TRUE);
+			newCaratula.setRiskCode((RiskCode)
+					knownInstanceRetriever.getObject(KnownInstanceIdentifier.RISK_CODE_EECC_AGENTE));
+		}
+		
+		//Equipos Activos
+		CantidadEquiposDTO resultDTO = new CantidadEquiposDTO();
+		try {
+			resultDTO = this.avalonSystem.retreiveEquiposPorEstado(cta.getCodigoVantive());
+			newCaratula.setEquiposActivos(Long.parseLong(resultDTO.getCantidadActivos()));
+        } catch (LegacyDAOException e) {
+            newCaratula.setEquiposActivos(0L);
+        }
+		
+		
+		if(cuentaBusinessService.isUltimoDomicilioValidado(cta.getId())){
+			newCaratula.setValidDomicilio((ValidacionDomicilio) 
+					knownInstanceRetriever.getObject(KnownInstanceIdentifier.DOMICILIO_VALIDADO_X_EECC));
+		}
+		
+		CaratulaDto caratulaDto = mapper.map(newCaratula, CaratulaDto.class);
+		return caratulaDto;
+	}
+	
+	public CaratulaDto confirmarCaratula(CaratulaDto caratulaDto) throws RpcExceptionMessages{
+		Caratula caratula;
+		try {
+			caratula = cuentaBusinessService.confirmarCaratula(caratulaDto);
+		} catch (ArpuServiceException e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}catch (AvalonSystemException e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
 		
 		mapper.map(caratula, caratulaDto);
 		
 		return caratulaDto;
-		
+	}
+	
+	public boolean validarExistenciaTriptico(String nro) throws RpcExceptionMessages{
+		List result = null;
+		try{
+			AppLogger.info("Validando la existencia del número de solicitud: " + nro);
+			result = repository.executeCustomQuery(VALID_EXIST_TRIPTICO, nro);
+			AppLogger.info("Número de solicitud " + nro + " validado correctamente.");
+		}catch (Exception e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+
+		if(result == null || result.isEmpty()){
+			return false;
+		}else{
+			return true;
+		}
 	}
 }

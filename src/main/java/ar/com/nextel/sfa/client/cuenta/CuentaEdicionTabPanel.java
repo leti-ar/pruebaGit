@@ -174,7 +174,9 @@ public class CuentaEdicionTabPanel {
 				return true;
 			}
 			public void onTabSelected(SourcesTabEvents arg0, int arg1) {
-				if(arg1 == 3){
+				//MGR**** La 3 ahora es la pasteña de caratulas
+				//if(arg1 == 3){
+				if(arg1 == 4){
 					//cuentaInfocomForm.setIdCuenta(cliente.getText());
 					cuentaInfocomForm.load();					
 				}

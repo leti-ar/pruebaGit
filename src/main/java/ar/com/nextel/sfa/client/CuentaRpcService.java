@@ -74,5 +74,7 @@ public interface CuentaRpcService extends RemoteService {
 	public List<ServicioContratoDto> searchServiciosContratados(Long numeroContrato) throws RpcExceptionMessages;
 	
 	public CaratulaInitializer getCaratulaInicializarte() throws RpcExceptionMessages;
+	public CaratulaDto crearCaratula(CuentaDto cuentaDto) throws RpcExceptionMessages;
 	public CaratulaDto confirmarCaratula(CaratulaDto caratulaDto) throws RpcExceptionMessages;
+	public boolean validarExistenciaTriptico(String nro) throws RpcExceptionMessages;
 }

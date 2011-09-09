@@ -17,11 +17,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
-import ar.com.nextel.business.constants.MessageIdentifier;
+import ar.com.nextel.business.cuentas.caratula.ArpuService;
+import ar.com.nextel.business.cuentas.caratula.exception.ArpuServiceException;
 import ar.com.nextel.business.cuentas.create.CreateCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
 import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaService;
+import ar.com.nextel.business.cuentas.scoring.legacy.dto.ScoringCuentaLegacyDTO;
 import ar.com.nextel.business.cuentas.select.SelectCuentaBusinessOperator;
+import ar.com.nextel.business.legacy.avalon.AvalonSystem;
+import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
 import ar.com.nextel.business.oportunidades.CuentaPotencialBusinessOperator;
 import ar.com.nextel.business.oportunidades.ReservaCreacionCuentaBusinessOperator;
 import ar.com.nextel.business.oportunidades.ReservaCreacionCuentaBusinessOperatorResult;
@@ -52,13 +56,14 @@ import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.EstadoOportunidad;
 import ar.com.nextel.model.oportunidades.beans.MotivoNoCierre;
 import ar.com.nextel.model.oportunidades.beans.OportunidadNegocio;
+import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.personas.beans.Email;
 import ar.com.nextel.model.personas.beans.Persona;
 import ar.com.nextel.model.personas.beans.Telefono;
+import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
-import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
@@ -94,6 +99,9 @@ public class CuentaBusinessService {
 
 	private static final String ERROR_OPER_OTRO_VENDEDOR = "El prospect/cliente tiene una operación en curso con otro vendedor. No puede ver sus datos. El {1} es {2}";
 	
+	private static final String ULT_NRO_SS = "ULT_NRO_SS";
+	private static final String ULT_DOMICILIO_CTA = "ULT_DOMICILIO_CTA";
+	
 	@Qualifier("createCuentaBusinessOperator")
 	private CreateCuentaBusinessOperator createCuentaBusinessOperator;
 
@@ -117,7 +125,10 @@ public class CuentaBusinessService {
 	private Repository repository;
 
 	private DefaultRetriever globalParameterRetriever;
-
+	
+	private ArpuService arpuService;
+	private AvalonSystem avalonSystem;
+	
 	@Autowired
 	public void setReservaCreacionCuentaBusinessOperator(
 			@Qualifier("reservaCreacionCuentaBusinessOperatorBean") ReservaCreacionCuentaBusinessOperator reservaCreacionCuentaBusinessOperatorBean) {
@@ -169,6 +180,17 @@ public class CuentaBusinessService {
 	public void setGlobalParameterRetriever(
 			@Qualifier("globalParameterRetriever") DefaultRetriever globalParameterRetriever) {
 		this.globalParameterRetriever = globalParameterRetriever;
+	}
+	
+	@Autowired
+	public void setArpuService(ArpuService arpuService) {
+		this.arpuService = arpuService;
+	}
+
+	@Autowired
+	public void setAvalonSystem(
+			@Qualifier("avalonSystemBean")AvalonSystem avalonSystem) {
+		this.avalonSystem = avalonSystem;
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
@@ -827,8 +849,44 @@ public class CuentaBusinessService {
 		return accessCuenta;
 	}
 
-	public Caratula confirmarCaratula(CaratulaDto caratulaDto) {
+	public SolicitudServicio getUltimaSSModificada(Long idCuenta){
+		List result = repository.executeCustomQuery(ULT_NRO_SS, idCuenta);
+		return (SolicitudServicio) result.get(0);
+	}
+	
+	public boolean isUltimoDomicilioValidado(Long idCuenta){
+		List result = repository.executeCustomQuery(ULT_DOMICILIO_CTA, idCuenta);
+		Domicilio domicilio = (Domicilio) result.get(0);
+		return domicilio.getValidado();
+	}
+	
+	public Double getARPU(String customerCode) throws ArpuServiceException{
+		AppLogger.info("Iniciando llamada para averiguar ARPU.....");
+		Double arpu = null;
+		arpu = arpuService.getArpu(customerCode);
+		AppLogger.info("ARPU averiguado correctamente.....");
+		return arpu;
+	}
+	
+	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public Caratula confirmarCaratula(CaratulaDto caratulaDto) throws ArpuServiceException, AvalonSystemException{
 		Caratula caratula = repository.retrieve(Caratula.class, caratulaDto.getId());
+		String codVantive = caratula.getCuenta().getCodigoVantive();
+		
+		if(codVantive != null && !codVantive.equals("")){
+			AppLogger.info("Iniciando llamada para averiguar ARPU.....");
+			Double arpu = arpuService.getArpu(codVantive);
+			caratula.setConsumoProm(arpu);
+			AppLogger.info("ARPU averiguado correctamente.....");
+			
+			AppLogger.info("Iniciando llamada para averiguar Scoting.....");
+			ScoringCuentaLegacyDTO scoring = avalonSystem.retrieveScoringCuenta(codVantive);
+			String mensScoring = scoring.getMensajeAdicional();
+			caratula.setScoring(mensScoring);
+			AppLogger.info("Scoring averiguado correctamente.....");
+		
+		}
 		caratula.setConfirmada(true);
 		repository.save(caratula);
 		return caratula;

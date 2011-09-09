@@ -2765,6 +2765,16 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("LimCredito")
   String limCredito();
   
+  
+  /**
+   * Translated "El valor del campo Lim. Crédito debe encontrarse entre 75 y 99999".
+   * 
+   * @return translated "El valor del campo Lim. Crédito debe encontrarse entre 75 y 99999"
+   */
+  @DefaultStringValue("El valor del campo Lim. Crédito debe encontrarse entre 75 y 99999")
+  @Key("ERR_RANGO_LIM_CREDITO")
+  String ERR_RANGO_LIM_CREDITO();
+  
   /**
    * Translated "<span class=\"req\">Calificación</span>".
    * 
@@ -2955,4 +2965,13 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Antes de confirmar debe guardar los datos.")
   @Key("CONFIRMAR_CAMBIOS")
   String CONFIRMAR_CAMBIOS();
+  
+  /**
+   * Translated "El número de solicitud no existe.".
+   * 
+   * @return translated "El número de solicitud no existe."
+   */
+  @DefaultStringValue("El número de solicitud no existe.")
+  @Key("ERR_NRO_SOLICITUD_NO_EXISTE")
+  String ERR_NRO_SOLICITUD_NO_EXISTE();
 }

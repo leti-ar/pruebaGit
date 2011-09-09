@@ -2,9 +2,11 @@ package ar.com.nextel.sfa.client.caratula;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
@@ -40,7 +42,6 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 	
 	private CaratulaUIData caratulaData;
 	private SimpleLink aceptar;
-//	private FormButtonsBar footerBar;
 	private SimpleLink cancelar;
 	private Command aceptarCommand;
 	
@@ -205,11 +206,34 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 
 				System.out.println("Click en aceptar del popup de caratula");
 				System.out.println("Puedo hacer la validacion");
+				
 				List<String> errores = caratulaData.validarCamposObligatorios(nroCaratula);
 				if(errores.isEmpty()){
-					hide();
-					if(aceptarCommand != null){
-						aceptarCommand.execute();
+					String nroSolicitud = caratulaData.getNroSS().getText();
+					
+					if(nroSolicitud != null && !nroSolicitud.equals("")){
+						CuentaRpcService.Util.getInstance().validarExistenciaTriptico(nroSolicitud, 
+								new DefaultWaitCallback<Boolean>() {
+
+									@Override
+									public void success(Boolean result) {
+										if(result){
+											hide();
+											if(aceptarCommand != null){
+												aceptarCommand.execute();
+											}
+										}else{
+											ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+											ErrorDialog.getInstance().show(Sfa.constant().ERR_NRO_SOLICITUD_NO_EXISTE(), false);
+										}
+									}
+								});
+					
+					}else{
+						hide();
+						if(aceptarCommand != null){
+							aceptarCommand.execute();
+						}
 					}
 				}else{
 					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
@@ -239,18 +263,25 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 	
 	//El pop-up se muestra con el título "Crear Caratula"
 	public void cargarPopupNuevaCaratula(CaratulaDto caratulaDto, int nroCaratula){
-		cargarPopupCaratula(caratulaDto, Sfa.constant().crearCaratula(), nroCaratula);
+		cargarPopupCaratula(caratulaDto, Sfa.constant().crearCaratula(), nroCaratula, true);
 	}
 	
 	//El pop-up se muestra con el título "Editar Caratula"
 	public void cargarPopupEditarCaratula(CaratulaDto caratulaDto, int nroCaratula){
-		cargarPopupCaratula(caratulaDto, Sfa.constant().editarCaratula(), nroCaratula);
+		cargarPopupCaratula(caratulaDto, Sfa.constant().editarCaratula(), nroCaratula, true);
 	}
 	
-	private void cargarPopupCaratula(CaratulaDto caratula, String titulo, int nroCaratula){
+	//El pop-up se muestra con el título "Caratula Confirmada"
+	public void cargarPopupCaratulaConfirmada(CaratulaDto caratulaDto){
+		cargarPopupCaratula(caratulaDto, "Caratula Confirmada", -1, false);
+	}
+	
+	private void cargarPopupCaratula(CaratulaDto caratula, String titulo, int nroCaratula, boolean habilitar){
 		this.caratulaAEditar = caratula;
 		this.nroCaratula = nroCaratula;
 		caratulaData.setDatosCaratula(caratulaAEditar);
+		caratulaData.habilitarCampos(habilitar);
+		aceptar.setVisible(habilitar);
 		onChange(caratulaData.getBanco());
 		onClick(caratulaData.getIngDemostrado());
 		setDialogTitle(titulo);
@@ -282,4 +313,14 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 				gridDatosIngDem.setVisible(false);
 		}
 	}
+
+	public List<String> validarCaratulaAConfirmar(CaratulaDto caratulaAConfirmar, int nroCaratula) {
+
+		this.caratulaAEditar = caratulaAConfirmar;
+		this.nroCaratula = nroCaratula;
+		caratulaData.setDatosCaratula(caratulaAConfirmar);
+		
+		return caratulaData.validarCamposObligatorios(nroCaratula);
+	}
+	
 }
