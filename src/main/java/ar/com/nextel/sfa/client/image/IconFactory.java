@@ -43,6 +43,8 @@ public class IconFactory {
 	private static final String ICON_BOLSA_PESOS_STYLE = "icon-bolsaPesos";
 	private static final String ICON_ART_CHINCHE_STYLE = "icon-art-chinche";
 	private static final String ICON_ART_CHINCHE_ON_STYLE = "icon-art-chinche-on";
+	private static final String ICON_CONFIRMAR_STYLE = "icon-confirmar";
+	private static final String ICON_COPIAR_SOLICITUD_STYLE = "icon-copiar-solicitud";
 
 	public static HTML lockedOther() {
 		return createDiv(ICON_LOCKED_OTHER_STYLE);
@@ -262,6 +264,14 @@ public class IconFactory {
 
 	public static HTML chincheON(String title) {
 		return createDiv(ICON_ART_CHINCHE_ON_STYLE, title);
+	}
+	
+	public static HTML confirmarCaratula() {
+		return createDiv(ICON_CONFIRMAR_STYLE);
+	}
+	
+	public static HTML copiarSolicitud() {
+		return createDiv(ICON_COPIAR_SOLICITUD_STYLE);
 	}
 	
 	/**
