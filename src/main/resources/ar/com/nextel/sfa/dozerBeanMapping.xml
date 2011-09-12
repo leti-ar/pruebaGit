@@ -588,13 +588,11 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>facturaElectronica</a>
 			<b>facturaElectronica</b>
 		</field-exclude>
-		<field-exclude>
-			<a>caratulas</a>
-			<b>caratulas</b>
-		</field-exclude>
 		<field custom-converter-id="collectionCaratulaConverter">
 			<a>plainCaratulas</a>
 			<b>caratulas</b>
+			<a-hint>ar.com.nextel.model.cuentas.beans.Caratula</a-hint>
+			<b-hint>ar.com.nextel.sfa.client.dto.CaratulaDto</b-hint>
 		</field>
 	</mapping>
 
@@ -909,7 +907,6 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
         </field>
     </mapping>
     
-    <!--MGR *********-->
     <mapping>
 		<class-a>ar.com.nextel.model.cuentas.beans.ValidacionDomicilio
 		</class-a>

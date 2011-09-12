@@ -97,8 +97,6 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 	private TextBox scoring;
 	
 	private CaratulaDto caratula = null;
-	//MGR**** Adm_Vtas R2
-	//TODO Poner los validadores
 
 	public CaratulaUIData(){
 		setPropiedadesCampos();

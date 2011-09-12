@@ -327,6 +327,9 @@ public class CuentaDto implements IsSerializable {
 		if(this.caratulas != null && !this.caratulas.isEmpty()){
 			Collections.sort(this.caratulas);
 		}
+		if(caratulas == null){
+			caratulas = new ArrayList<CaratulaDto>();
+		}
 		return caratulas;
 	}
 	

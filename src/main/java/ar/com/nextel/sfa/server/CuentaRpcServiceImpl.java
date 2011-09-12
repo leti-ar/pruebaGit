@@ -794,12 +794,15 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		newCaratula.setFechaCreacion(new Date());
 		
 		SolicitudServicio ultSSModificada = cuentaBusinessService.getUltimaSSModificada(cta.getId());
-		newCaratula.setNroSS(ultSSModificada.getNumero());
+		
+		if(ultSSModificada != null){
+			newCaratula.setNroSS(ultSSModificada.getNumero());
 
-		if(ultSSModificada.getFirmar()){
-			newCaratula.setOkEECCAgente(Boolean.TRUE);
-			newCaratula.setRiskCode((RiskCode)
-					knownInstanceRetriever.getObject(KnownInstanceIdentifier.RISK_CODE_EECC_AGENTE));
+			if(ultSSModificada.getFirmar()){
+				newCaratula.setOkEECCAgente(Boolean.TRUE);
+				newCaratula.setRiskCode((RiskCode)
+						knownInstanceRetriever.getObject(KnownInstanceIdentifier.RISK_CODE_EECC_AGENTE));
+			}
 		}
 		
 		//Equipos Activos

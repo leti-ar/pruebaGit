@@ -4,11 +4,9 @@ import java.util.Date;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-//MGR******
 public class CaratulaDto implements IsSerializable, IdentifiableDto, Cloneable, Comparable {
 
 	private Long id;
-//	private CuentaDto cuenta;
 	private Long idCuenta;
 	
 	private String documento; /* Caratula o Anexo */
@@ -67,14 +65,6 @@ public class CaratulaDto implements IsSerializable, IdentifiableDto, Cloneable, 
 		this.id = id;
 	}
 
-//	public CuentaDto getCuenta() {
-//		return cuenta;
-//	}
-//
-//	public void setCuenta(CuentaDto cuenta) {
-//		this.cuenta = cuenta;
-//	}
-	
 	public Long getIdCuenta() {
 		return idCuenta;
 	}

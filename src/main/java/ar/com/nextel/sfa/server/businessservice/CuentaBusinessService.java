@@ -851,13 +851,20 @@ public class CuentaBusinessService {
 
 	public SolicitudServicio getUltimaSSModificada(Long idCuenta){
 		List result = repository.executeCustomQuery(ULT_NRO_SS, idCuenta);
-		return (SolicitudServicio) result.get(0);
+		if(result != null && !result.isEmpty()){
+			return (SolicitudServicio) result.get(0);
+		}else{
+			return null;
+		}
 	}
 	
 	public boolean isUltimoDomicilioValidado(Long idCuenta){
 		List result = repository.executeCustomQuery(ULT_DOMICILIO_CTA, idCuenta);
-		Domicilio domicilio = (Domicilio) result.get(0);
-		return domicilio.getValidado();
+		if(result != null && !result.isEmpty()){
+			Domicilio domicilio = (Domicilio) result.get(0);
+			return domicilio.getValidado();	
+		}
+		return false;
 	}
 	
 	public Double getARPU(String customerCode) throws ArpuServiceException{
