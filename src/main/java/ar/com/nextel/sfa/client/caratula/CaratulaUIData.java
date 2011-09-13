@@ -94,7 +94,7 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 	private CheckBox soloHibridos = new CheckBox();
 	private CheckBox findImei = new CheckBox();
 	private TextArea comentAnalista = new TextArea();
-	private TextBox scoring;
+	private TextArea scoring = new TextArea();
 	
 	private CaratulaDto caratula = null;
 
@@ -268,7 +268,6 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 			}
 		});
 		
-		scoring = new RegexTextBox(RegularExpressionConstants.getNumerosYLetrasLimitado(1000));
 		scoring.setEnabled(false);
 	}
 	
@@ -939,11 +938,11 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		this.comentAnalista = comentAnalista;
 	}
 
-	public TextBox getScoring() {
+	public TextArea getScoring() {
 		return scoring;
 	}
 
-	public void setScoring(TextBox scoring) {
+	public void setScoring(TextArea scoring) {
 		this.scoring = scoring;
 	}
 }
