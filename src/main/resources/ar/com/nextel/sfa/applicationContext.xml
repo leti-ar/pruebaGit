@@ -146,7 +146,7 @@
         </property>
     </bean>	
 	
-	<bean id="collectionCaratulaConverter" class="ar.com.nextel.sfa.server.converter.CollectionOwnedConverter">
+	<bean id="collectionCaratulaConverter" class="ar.com.nextel.sfa.server.converter.CollectionCaratulaConverter">
 		<property name="dozerMapper" ref="dozerMapper" />
 		<property name="repository" ref="repository" />
 		<property name="modelClass">

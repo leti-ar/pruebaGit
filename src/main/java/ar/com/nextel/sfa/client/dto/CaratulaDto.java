@@ -437,7 +437,6 @@ public class CaratulaDto implements IsSerializable, IdentifiableDto, Cloneable, 
 		if(this.fechaCreacion == null){
 			return 1;
 		}
-		
 		return this.fechaCreacion.compareTo(caratula1.fechaCreacion);
 	}
 }

@@ -41,6 +41,7 @@ public class CuentaCaratulaForm extends Composite{
 	private CuentaDto cuentaDto;
 	private CaratulaDto caratulaAEditar;
 	private boolean huboCambios = false;
+	private boolean confirmandoCaratula= false;
 	
 	private Command cancelarCommand;
 	
@@ -168,7 +169,7 @@ public class CuentaCaratulaForm extends Composite{
 				datosTabla.setText(row+1, ++col, caratulaDto.getDocumento());
 				datosTabla.getCellFormatter().addStyleName(row + 1, col, "alignCenter");
 				
-				if(caratulaDto.getNroSS() != null){
+				if(caratulaDto.getNroSS() != null && !caratulaDto.getNroSS().equals("")){
 					datosTabla.setText(row+1, ++col, caratulaDto.getNroSS());
 				}
 				else{
@@ -176,12 +177,11 @@ public class CuentaCaratulaForm extends Composite{
 				}
 				datosTabla.getCellFormatter().addStyleName(row + 1, col, "alignCenter");
 				
-				if(caratulaDto.getUsuarioCreacion() != null){
+				if(caratulaDto.getUsuarioCreacion() != null && !caratulaDto.getUsuarioCreacion().equals("")){
 					datosTabla.setText(row+1, ++col, caratulaDto.getUsuarioCreacion().getApellidoYNombre());
 				}
 				else{
-//					datosTabla.setHTML(row+1, ++col, Sfa.constant().whiteSpace());
-					datosTabla.setHTML(row+1, ++col, "Falta esto!!!");
+					datosTabla.setHTML(row+1, ++col, Sfa.constant().whiteSpace());
 				}
 				datosTabla.getCellFormatter().addStyleName(row + 1, col, "alignCenter");
 				
@@ -251,45 +251,56 @@ public class CuentaCaratulaForm extends Composite{
 							MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), 
 									Sfa.constant().CONFIRMAR_CAMBIOS(), cancelarCommand);
 						}else{
-							//Valida que esten cargados todos los datos antes de confirmar la caratula
-							List<String> errores = CaratulaUI.getInstance().validarCaratulaAConfirmar(caratulaAEditar, row);
-							
-							if(errores == null || errores.isEmpty()){
-								String nroSolicitud = caratulaAEditar.getNroSS();
+							//Si se esta confirmandoo una caratula, espero a que se termine esa
+							if(!confirmandoCaratula){
+								caratulaAEditar = cuentaDto.getCaratulas().get(row - 1);
+								confirmandoCaratula = true;
 								
-								if(nroSolicitud != null && !nroSolicitud.equals("")){
-									CuentaRpcService.Util.getInstance().validarExistenciaTriptico(nroSolicitud, 
-											new DefaultWaitCallback<Boolean>() {
+								//Valida que esten cargados todos los datos antes de confirmar la caratula
+								List<String> errores = CaratulaUI.getInstance().validarCaratulaAConfirmar(caratulaAEditar, row);
+								
+								if(errores == null || errores.isEmpty()){
+									String nroSolicitud = caratulaAEditar.getNroSS();
+									
+									if(nroSolicitud != null && !nroSolicitud.equals("")){
+										CuentaRpcService.Util.getInstance().validarExistenciaTriptico(nroSolicitud, 
+												new DefaultWaitCallback<Boolean>() {
 
-												@Override
-												public void success(Boolean result) {
-													
-													if(result){
-														CuentaRpcService.Util.getInstance().confirmarCaratula(caratulaAEditar,
-																new DefaultWaitCallback<CaratulaDto>() {
-																	
-																	@Override
-																	public void success(CaratulaDto result) {
-																		int index = cuentaDto.getCaratulas().indexOf(caratulaAEditar);
-																		cuentaDto.getCaratulas().remove(index);
-																		cuentaDto.getCaratulas().add(index, result);
-																		refrescaTablaCaratula();
-																	}
-																});
-													}else{
-														ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-														ErrorDialog.getInstance().show(Sfa.constant().ERR_NRO_SOLICITUD_NO_EXISTE(), false);
+													@Override
+													public void success(Boolean result) {
+														
+														if(result){
+															CuentaRpcService.Util.getInstance().confirmarCaratula(caratulaAEditar,
+																	new DefaultWaitCallback<CaratulaDto>() {
+																		
+																		@Override
+																		public void success(CaratulaDto result) {
+																			int index = cuentaDto.getCaratulas().indexOf(caratulaAEditar);
+																			cuentaDto.getCaratulas().remove(index);
+																			cuentaDto.getCaratulas().add(index, result);
+																			refrescaTablaCaratula();
+																			confirmandoCaratula = false;
+																		}
+																	});
+														}else{
+															ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+															ErrorDialog.getInstance().show(Sfa.constant().ERR_NRO_SOLICITUD_NO_EXISTE(), false);
+															confirmandoCaratula = false;
+														}
 													}
-												}
-											});
+												});
+									}else{
+										ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+										ErrorDialog.getInstance().show(Sfa.constant().ERR_NRO_SOLICITUD_NO_EXISTE(), false);
+										confirmandoCaratula = false;
+									}
 								}else{
 									ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-									ErrorDialog.getInstance().show(Sfa.constant().ERR_NRO_SOLICITUD_NO_EXISTE(), false);
+									ErrorDialog.getInstance().show(errores, false);
+									confirmandoCaratula = false;
 								}
-							}else{
-								ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-								ErrorDialog.getInstance().show(errores, false);
 							}
+							
 						}
 					}
 				}

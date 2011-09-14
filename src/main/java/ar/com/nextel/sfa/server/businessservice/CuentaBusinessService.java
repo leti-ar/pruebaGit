@@ -73,6 +73,7 @@ import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.EmailDto;
 import ar.com.nextel.sfa.client.dto.FacturaElectronicaDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
+import ar.com.nextel.sfa.client.dto.LocalidadDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
@@ -372,10 +373,11 @@ public class CuentaBusinessService {
 		cuenta.getPlainContactos().addAll(listaContactos);
 		// *************************************************************************************************
 
-		// FIXME: Necesario para refrescar el vendedor de las caratulas
+		// FIXME: Necesario para refrescar el vendedor en las nuevas caratulas
 		for (Caratula caratula : cuenta.getCaratulas()) {
 			if(caratula.getId() == null){
-				Vendedor vend = repository.retrieve(Vendedor.class, caratula.getUsuarioCreacion().getId());
+//				Vendedor vend = repository.retrieve(Vendedor.class, caratula.getUsuarioCreacion().getId());
+				Vendedor vend = repository.retrieve(Vendedor.class, SessionContextLoader.getInstance().getVendedor().getId());
 				caratula.setUsuarioCreacion(vend);
 			}
 		}
@@ -882,10 +884,8 @@ public class CuentaBusinessService {
 		String codVantive = caratula.getCuenta().getCodigoVantive();
 		
 		if(codVantive != null && !codVantive.equals("")){
-			AppLogger.info("Iniciando llamada para averiguar ARPU.....");
 			Double arpu = arpuService.getArpu(codVantive);
 			caratula.setConsumoProm(arpu);
-			AppLogger.info("ARPU averiguado correctamente.....");
 			
 			AppLogger.info("Iniciando llamada para averiguar Scoting.....");
 			ScoringCuentaLegacyDTO scoring = avalonSystem.retrieveScoringCuenta(codVantive);
