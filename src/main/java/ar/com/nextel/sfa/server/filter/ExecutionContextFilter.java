@@ -116,7 +116,6 @@ public class ExecutionContextFilter implements Filter {
 		}
 		//MGR - #873 - Se agrega el filtro
 		hibernateRepository.enableTipoVendedorFilter();
-		hibernateRepository.enablePrepagoFullFilter();
 	}
 
 	/**
