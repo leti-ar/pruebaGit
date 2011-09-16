@@ -11,7 +11,7 @@ import ar.com.nextel.web.download.config.ServiceConfig;
  * 
  * @author cacciaresi
  */
-public class SolicitudRichTextFormatService extends ServiceConfig {
+public class DownloadRichTextFormatService extends ServiceConfig {
 
     private ReportPathBuilder reportPathBuilder;
     

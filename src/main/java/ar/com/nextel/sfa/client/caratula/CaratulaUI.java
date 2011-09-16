@@ -4,6 +4,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.cuenta.CaratulaVerazModalDialog;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -15,7 +16,6 @@ import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -194,7 +194,8 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		gridVeraz.setWidget(0, 1, caratulaData.getVeraz());
 		gridVeraz.setText(0, 2, Sfa.constant().nosis());
 		gridVeraz.setWidget(0, 3, caratulaData.getNosis());
-		gridVeraz.setText(1, 1, "Cons. Veraz");
+
+		gridVeraz.setWidget(1, 1, crearLinkVerVeraz());
 		gridVeraz.setText(1, 3, "Cons. Nosis");
 		
 		add(gridVeraz);
@@ -301,6 +302,20 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 			}
 		});
 		
+	}
+
+	private SimpleLink crearLinkVerVeraz() {
+		SimpleLink verVeraz = new SimpleLink("Ver Veraz");
+		verVeraz.setStyleName("link");
+		verVeraz.addClickListener(new ClickListener() {
+
+			public void onClick(Widget sender) {
+				// proximamente CaratulaVerazModalDialog.getInstance().showAndCenter(this.caratulaAEditar.getVerazFileName());
+				CaratulaVerazModalDialog.getInstance().showAndCenter("VERAZ_53.rtf");
+			}
+			
+		});
+		return verVeraz;
 	}
 
 	/**

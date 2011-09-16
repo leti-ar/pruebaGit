@@ -8,6 +8,7 @@
 		<property name="moduleConfigs">
 			<list>
 				<ref bean="solicitudesModuleConfig"/>
+				<ref bean="cuentasModuleConfig"/>
 			</list>
 		</property>
 	</bean>
@@ -32,7 +33,7 @@
     
 <!--    <bean name="lineas2TableTransformerBean" class="ar.com.nextel.web.download.config.impl.Lineas2TableTransformer"/>-->
 	
-	<bean name="solicitudesDownloadRichTextFormatService" class="ar.com.nextel.web.download.config.impl.SolicitudRichTextFormatService">
+	<bean name="solicitudesDownloadRichTextFormatService" class="ar.com.nextel.web.download.config.impl.DownloadRichTextFormatService">
 		<property name="fileTypeConfig" ref="richTextFormatFileTypeConfig"/>
 		<property name="fileNameConfig" ref="fileNameConfig"/>
 		<property name="serviceName" value="rtf"/>
@@ -58,4 +59,36 @@
 	<bean name="richTextFormatFileTypeConfig" class="ar.com.nextel.web.download.config.impl.RichTextFormatFileTypeConfig"/>
 	<bean name="fileNameConfig" class="ar.com.nextel.web.download.config.FileNameConfig"/>
 	
+	<bean name="cuentasModuleConfig" class="ar.com.nextel.web.download.config.ModuleConfig">
+		<property name="moduleName" value="cuentas"/>
+		<property name="serviceConfigs">
+			<list>
+				<ref bean="consultaVerazDownloadRichTextFormatService"/>
+			</list>
+		</property>
+	</bean>
+	
+	<bean name="consultaVerazDownloadRichTextFormatService" class="ar.com.nextel.web.download.config.impl.DownloadRichTextFormatService">
+		<property name="fileTypeConfig" ref="richTextFormatFileTypeConfig"/>
+		<property name="fileNameConfig" ref="fileNameConfig"/>
+		<property name="serviceName" value="veraz-rtf"/>
+		<property name="moduleName" value="cuentas"/>
+		<property name="reportPathBuilder" ref="consultaVerazReportFileSystemPathBuilder"/>		
+	</bean>
+	
+	<bean name="consultaVerazReportFileSystemPathBuilder" class="ar.com.nextel.components.report.CustomReportFileSystemPathBuilder">
+		<property name="globalParameterRetriever" ref="globalParameterRetriever"/>
+		<property name="customPath" value="cuentas,veraz_html"/>		
+	</bean>
+
+	<bean name="downloadService" class="ar.com.nextel.web.download.DownloadServiceImpl">
+		<property name="serviceConfigs">
+			<list>
+				<ref bean="consultaVerazDownloadRichTextFormatService"/>
+				<ref bean="solicitudesDownloadExcelService"/>
+				<ref bean="solicitudesDownloadRichTextFormatService"/>
+			</list>
+		</property>
+	</bean>
+
 </beans>

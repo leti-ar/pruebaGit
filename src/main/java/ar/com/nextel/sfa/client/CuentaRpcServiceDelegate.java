@@ -75,6 +75,11 @@ public class CuentaRpcServiceDelegate {
 		cuentaRpcService.consultarVeraz(customerCode, callback);
 	}
 	
+	public void leerConsultaDetalleVeraz(String verazFileName, DefaultWaitCallback<String> callback) {
+		WaitWindow.show();
+		cuentaRpcService.leerConsultaDetalleVeraz(verazFileName, callback);
+	}
+
 	public void selectCuenta(Long cuentaId,String cod_vantive,boolean filtradoPorDni,
 			DefaultWaitCallback<CuentaDto> callback) {
 		WaitWindow.show();

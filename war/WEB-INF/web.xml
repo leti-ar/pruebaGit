@@ -165,6 +165,10 @@
 		<servlet-name>download</servlet-name>
 		<url-pattern>/download/*</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>download</servlet-name>
+		<url-pattern>/ar.com.nextel.sfa.SFAWeb/download/*</url-pattern>
+	</servlet-mapping>
 
 	<session-config>
 		<session-timeout>120</session-timeout>

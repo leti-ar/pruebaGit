@@ -11,6 +11,7 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.collections.Transformer;
 import org.dozer.MappingException;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -135,6 +136,7 @@ import ar.com.nextel.sfa.server.businessservice.CuentaBusinessService;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
 import ar.com.nextel.util.StringUtil;
+import ar.com.nextel.web.download.DownloadService;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.server.RemoteService;
 import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
@@ -142,6 +144,7 @@ import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
 public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcService {
 
 	private static final long serialVersionUID = 1L;
+	private static final String CONSULTA_VERAZ_SERVICE="veraz-rtf";
 	private WebApplicationContext context;
 	private SearchCuentaBusinessOperator searchCuentaBusinessOperator;
 	private TarjetaCreditoValidatorServiceAxisImpl tarjetaCreditoValidatorService;
@@ -151,6 +154,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	private MapperExtended mapper;
 	private GetAllBusinessOperator getAllBusinessOperator;
 	private NextelServices veraz;
+	private DownloadService	download;
 	private Repository repository;
 	private NormalizadorDomicilio normalizadorDomicilio;
 	private SessionContextLoader sessionContextLoader;
@@ -180,6 +184,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		transformer = (Transformer) context.getBean("cuentaToSearchResultTransformer");
 		mapper = (MapperExtended) context.getBean("dozerMapper");
 		veraz = (NextelServices) context.getBean("nextelServices");
+		download = (DownloadService) context.getBean("downloadService");
 		repository = (Repository) context.getBean("repository");
 		normalizadorDomicilio = (NormalizadorDomicilio) context.getBean("normalizadorDomicilio");
 		messageRetriever = (MessageRetriever) context.getBean("messageRetriever");
@@ -345,6 +350,17 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return responseDto;
 	}
 	
+	public String leerConsultaDetalleVeraz(String verazFileName) throws RpcExceptionMessages {
+		AppLogger.info("Iniciando leer la consulta del detalle a Veraz...");
+		try {
+			return new String(FileCopyUtils.copyToByteArray(this.download.downloadFile(CONSULTA_VERAZ_SERVICE,verazFileName)));
+		} catch (Exception e) {
+			AppLogger.error(e);
+			AppLogger.error("Error leyendo detalle Veraz \n");
+			throw ExceptionUtil.wrap(e);
+		}
+	}
+
 	//MGR - #960
 	public VerazResponseDto consultarVeraz(String codVantive) throws RpcExceptionMessages {
 		ArrayList<Object> list = (ArrayList<Object>) this.repository.find("from Cuenta c where c.codigoVantive = ?", codVantive);
