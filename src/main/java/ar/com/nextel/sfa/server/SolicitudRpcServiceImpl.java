@@ -69,6 +69,7 @@ import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
@@ -636,6 +637,20 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		String fullFilename = buildSolicitudReportPath() + File.separatorChar + report;
 		AppLogger.info("Searching file " + fullFilename);
 		return new File(fullFilename).exists();
+	}
+	
+
+	public Boolean existDocDigitalizado(String pahtAndNameFile) {
+		//Llega algo como '\\arpalfls02\imaging\imagenes_general\orden_servicio\2002_06\5.66559-1-0300110.tif'
+		//Tengo que salvar las barral
+		pahtAndNameFile = pahtAndNameFile.replace('\\', File.separatorChar);
+		pahtAndNameFile = pahtAndNameFile.replace('/', File.separatorChar);
+		
+		//MGR***** Solo prueba
+		pahtAndNameFile = pahtAndNameFile.replace('*', File.separatorChar);
+		
+		AppLogger.info("Searching file " + pahtAndNameFile);
+		return new File(pahtAndNameFile).exists();
 	}
 
 	private String buildSolicitudReportPath() {

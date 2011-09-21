@@ -18,6 +18,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.cuentas.caratula.exception.ArpuServiceException;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
+import ar.com.nextel.business.cuentas.migrator.legacy.dto.DocDigitalizadoLegacyDto;
 import ar.com.nextel.business.cuentas.search.SearchCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.search.businessUnits.CuentaSearchData;
 import ar.com.nextel.business.cuentas.search.result.CuentaSearchResult;
@@ -29,6 +30,7 @@ import ar.com.nextel.business.externalConnection.exception.MerlinException;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.legacy.avalon.dto.CantidadEquiposDTO;
 import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
+import ar.com.nextel.business.legacy.vantive.VantiveSystem;
 import ar.com.nextel.business.personas.normalizarDomicilio.NormalizadorDomicilio;
 import ar.com.nextel.business.personas.normalizarDomicilio.businessUnits.NormalizarDomicilioRequest;
 import ar.com.nextel.components.filter.Filter;
@@ -97,6 +99,7 @@ import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
 import ar.com.nextel.sfa.client.dto.DivisionDto;
+import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoCreditBancoCentralDto;
@@ -170,6 +173,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	
 	private KnownInstanceRetriever knownInstanceRetriever;
 	private static final String VALID_EXIST_TRIPTICO = "VALID_EXIST_TRIPTICO";
+	private VantiveSystem vantiveSystem;
 
 	@Override
 	public void init() throws ServletException {
@@ -191,6 +195,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
 
 		knownInstanceRetriever = (KnownInstanceRetriever) context.getBean("knownInstancesRetriever");
+		vantiveSystem = (VantiveSystem) context.getBean("vantiveSystemBean");
 		
 		setGetAllBusinessOperator((GetAllBusinessOperator) context.getBean("getAllBusinessOperatorBean"));
 	}
@@ -872,6 +877,16 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 			return false;
 		}else{
 			return true;
+		}
+	}
+	
+	public List<DocDigitalizadosDto> getDocDigitalizados(String customerCode) throws RpcExceptionMessages{
+		try{
+			List<DocDigitalizadoLegacyDto> documentos = vantiveSystem.retriveDocDigitalizados(customerCode);
+			return mapper.convertList(documentos, DocDigitalizadosDto.class);
+		}catch (Exception e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
 		}
 	}
 }

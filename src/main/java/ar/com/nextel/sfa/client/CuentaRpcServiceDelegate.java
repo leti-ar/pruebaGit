@@ -9,6 +9,7 @@ import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
+import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
 import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
@@ -178,5 +179,10 @@ public class CuentaRpcServiceDelegate {
 	public void validarExistenciaTriptico(String nro, DefaultWaitCallback<Boolean> callback){
 		WaitWindow.show();
 		cuentaRpcService.validarExistenciaTriptico(nro, callback);
+	}
+	
+	public void getDocDigitalizados(String customerCode, DefaultWaitCallback<List<DocDigitalizadosDto>> callback){
+		WaitWindow.show();
+		cuentaRpcService.getDocDigitalizados(customerCode, callback);
 	}
 }

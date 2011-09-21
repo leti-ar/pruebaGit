@@ -2974,4 +2974,51 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("El número de solicitud no existe.")
   @Key("ERR_NRO_SOLICITUD_NO_EXISTE")
   String ERR_NRO_SOLICITUD_NO_EXISTE();
+  
+  /**
+   * Translated "Documentos Digitalizados".
+   * 
+   * @return translated "Documentos Digitalizados"
+   */
+  @DefaultStringValue("Documentos Digitalizados")
+  @Key("docDigitalizados")
+  String docDigitalizados();
+    
+  /**
+   * Translated "Búsqueda Documentos Digitalizados".
+   * 
+   * @return translated "Búsqueda Documentos Digitalizados"
+   */
+  @DefaultStringValue("Búsqueda Documentos Digitalizados")
+  @Key("busquedaDocDigitalizados")
+  String busquedaDocDigitalizados();
+  
+  /**
+   * Translated "No se encontraron documentos digitalizados para esta cuenta".
+   * 
+   * @return translated "No se encontraron documentos digitalizados para esta cuenta"
+   */
+  @DefaultStringValue("No se encontraron documentos digitalizados para esta cuenta")
+  @Key("ERR_DOC_DIGITALIZADOS_NO_ENCONTRADOS")
+  String ERR_DOC_DIGITALIZADOS_NO_ENCONTRADOS();
+  
+  
+  /**
+   * Translated "N° documentos digitalizados: ".
+   * 
+   * @return translated "N° documentos digitalizados: "
+   */
+  @DefaultStringValue("N° documentos digitalizados: ")
+  @Key("nroDocDigitalizados")
+  String nroDocDigitalizados();
+  
+  /**
+   * Translated "Debe seleccionar un Documento".
+   * 
+   * @return translated "Debe seleccionar un Documento"
+   */
+  @DefaultStringValue("Debe seleccionar un Documento")
+  @Key("ERR_NO_DOCUMENTO_SELECTED")
+  String ERR_NO_DOCUMENTO_SELECTED();
+
 }

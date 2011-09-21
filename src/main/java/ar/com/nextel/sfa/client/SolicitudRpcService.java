@@ -9,6 +9,7 @@ import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -103,6 +104,8 @@ public interface SolicitudRpcService extends RemoteService {
 			String pinMaestro, boolean cerrar) throws RpcExceptionMessages;
 
 	public Boolean existReport(String report) throws RpcExceptionMessages;
+	
+	public Boolean existDocDigitalizado(String pahtAndNameFile) throws RpcExceptionMessages;
 	
 	public List<VendedorDto> getVendedoresDae() throws RpcExceptionMessages;
 

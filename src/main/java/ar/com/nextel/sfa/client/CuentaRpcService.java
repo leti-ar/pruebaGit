@@ -9,6 +9,7 @@ import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
+import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
 import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
@@ -78,4 +79,5 @@ public interface CuentaRpcService extends RemoteService {
 	public CaratulaDto crearCaratula(CuentaDto cuentaDto) throws RpcExceptionMessages;
 	public CaratulaDto confirmarCaratula(CaratulaDto caratulaDto) throws RpcExceptionMessages;
 	public boolean validarExistenciaTriptico(String nro) throws RpcExceptionMessages;
+	public List<DocDigitalizadosDto> getDocDigitalizados(String customerCode) throws RpcExceptionMessages;
 }

@@ -9,6 +9,7 @@ import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaPotencialDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchDto;
 import ar.com.nextel.sfa.client.dto.CuentaSearchResultDto;
+import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.NormalizarCPAResultDto;
 import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
@@ -62,4 +63,5 @@ public interface CuentaRpcServiceAsync {
 	public void crearCaratula(CuentaDto cuentaDto, AsyncCallback<CaratulaDto> callback);	
 	public void confirmarCaratula(CaratulaDto caratulaDto, AsyncCallback<CaratulaDto> callback);
 	public void validarExistenciaTriptico(String nro, AsyncCallback<Boolean> callback);
+	public void getDocDigitalizados(String customerCode, AsyncCallback<List<DocDigitalizadosDto>> callback);
 }

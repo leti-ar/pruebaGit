@@ -9,6 +9,7 @@ import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -148,6 +149,11 @@ public class SolicitudRpcServiceDelegate {
 	public void existReport(String report, DefaultWaitCallback<Boolean> callback) {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.existReport(report, callback);
+	}
+	
+	public void existDocDigitalizado(String pahtAndNameFile, DefaultWaitCallback<Boolean> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.existDocDigitalizado(pahtAndNameFile, callback);
 	}
 	
 	public void getVendedoresDae(DefaultWaitCallback<List<VendedorDto>> callback) {

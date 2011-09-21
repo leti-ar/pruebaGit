@@ -4,6 +4,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.caratula.CaratulaUI;
+import ar.com.nextel.sfa.client.caratula.DocDigitalizadosUI;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
@@ -11,6 +12,7 @@ import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -37,6 +39,8 @@ public class CuentaCaratulaForm extends Composite{
 	
 	private Button crearCaratula;
 	private SimplePanel crearCaratulaWrapper;
+	private Button docDigitalizados;
+	private SimplePanel consultaDocDigitalizados;
 	
 	private CuentaDto cuentaDto;
 	private CaratulaDto caratulaAEditar;
@@ -54,11 +58,6 @@ public class CuentaCaratulaForm extends Composite{
 
 	private CuentaCaratulaForm(){
 		mainPanel = new FlowPanel();
-		footerBar = new FormButtonsBar();
-		datosTabla = new FlexTable();
-		datosTabla.setWidth("100%");
-		agregaTableListeners();
-		initWidget(mainPanel);
 		mainPanel.setWidth("100%");
 		mainPanel.addStyleName("gwt-CaratulaResultTable");
 		
@@ -99,8 +98,28 @@ public class CuentaCaratulaForm extends Composite{
 		crearCaratulaWrapper.addStyleName("h20");
 		mainPanel.add(crearCaratulaWrapper);
 		
+		datosTabla = new FlexTable();
+		datosTabla.setWidth("100%");
+		agregaTableListeners();
 		mainPanel.add(datosTabla);
+		
+		//MGR***** cambiar las propiedades del css
+		docDigitalizados = new Button(Sfa.constant().docDigitalizados());
+		docDigitalizados.addStyleName("btn-bkg");
+		docDigitalizados.addClickHandler(new ClickHandler() {
+			
+			public void onClick(ClickEvent event) {
+				DocDigitalizadosUI.getInstance().cargarDocDigitalizados(cuentaDto.getCodigoVantive());
+			}
+		});
+		
+		consultaDocDigitalizados = new SimplePanel();
+		consultaDocDigitalizados.add(docDigitalizados);
+		mainPanel.add(consultaDocDigitalizados);
+		
+		footerBar = new FormButtonsBar();
 		mainPanel.add(footerBar);
+		initWidget(mainPanel);
 		
 		cancelarCommand = new Command() {
 			public void execute() {
