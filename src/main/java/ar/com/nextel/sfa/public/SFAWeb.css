@@ -221,7 +221,7 @@ A {
 	line-height: 14px;
 }
 
-.gwt-BuscarCuentaResultTable td,.gwt-VerazResultTable td,.gwt-CaratulaResultTable td,.dataTable td {
+.gwt-BuscarCuentaResultTable td,.gwt-VerazResultTable td,.gwt-CaratulaResultTable td,.dataTable td,.gwt-BuscarDocDigResultTable td {
 	border-right: 1px solid #EBEBEB;
 	border-bottom: 1px solid #EBEBEB;
 	height: 24px;
@@ -656,6 +656,11 @@ SPAN.info {
 }
 
 .oppEnCursoCantLabel {
+	color: gray;
+	font-weight: normal;
+}
+
+.docDigitalizadosLabel {
 	color: gray;
 	font-weight: normal;
 }

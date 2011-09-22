@@ -38,7 +38,7 @@ rgm
 .icon-tildeVerde, .icon-vistaPreliminar, .icon-word, .icon-nuevo, .icon-comprobar-negro, .icon-comprobar-verde,
 .icon-comprobar-rojo, .icon-locked-other, .icon-scoring, .icon-oportunidad, .icon-prospect, .icon-led-verde,
 .icon-led-amarillo, .icon-led-rojo,  .icon-green-flag, .icon-yellow-flag, .icon-red-flag, .icon-refresh, .icon-bolsaPesos,
-.icon-art-chinche, .icon-art-chinche-on, .icon-confirmar, .icon-copiar-solicitud {
+.icon-art-chinche, .icon-art-chinche-on, .icon-confirmar, .icon-copiar-solicitud, .icon-imagenTIF {
 	width: 16px;
 	height: 16px;
 	background-image: url("images/icons.gif");
@@ -81,4 +81,5 @@ rgm
 .icon-art-chinche-on { background-position: -432 0; cursor: pointer;}
 .icon-confirmar { background-position: -448 0; cursor: pointer;}
 .icon-copiar-solicitud { background-position: -464 0; cursor: pointer;}
+.icon-imagenTIF { background-position: -480 0; cursor: pointer;}
 

@@ -103,9 +103,8 @@ public class CuentaCaratulaForm extends Composite{
 		agregaTableListeners();
 		mainPanel.add(datosTabla);
 		
-		//MGR***** cambiar las propiedades del css
 		docDigitalizados = new Button(Sfa.constant().docDigitalizados());
-		docDigitalizados.addStyleName("btn-bkg");
+		docDigitalizados.addStyleName("btn-bkg-big");
 		docDigitalizados.addClickHandler(new ClickHandler() {
 			
 			public void onClick(ClickEvent event) {

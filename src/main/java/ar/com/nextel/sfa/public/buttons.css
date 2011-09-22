@@ -32,6 +32,17 @@
 	font-size: 11px;
 }
 
+.btn-bkg-big {
+	width: 156px;
+	height: 22px;
+	background: transparent url("images/btn-bkg-big.gif") no-repeat scroll 0 0;
+	border: none;
+	margin-right: 10px;
+	color: #E05206;
+	font-weight: 600;
+	font-size: 11px;
+}
+
 .btn-menu {
 	position: absolute;
 	top: 0px;

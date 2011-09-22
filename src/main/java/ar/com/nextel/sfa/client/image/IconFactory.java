@@ -45,6 +45,7 @@ public class IconFactory {
 	private static final String ICON_ART_CHINCHE_ON_STYLE = "icon-art-chinche-on";
 	private static final String ICON_CONFIRMAR_STYLE = "icon-confirmar";
 	private static final String ICON_COPIAR_SOLICITUD_STYLE = "icon-copiar-solicitud";
+	private static final String ICON_TIF_STYLE = "icon-imagenTIF";
 
 	public static HTML lockedOther() {
 		return createDiv(ICON_LOCKED_OTHER_STYLE);
@@ -272,6 +273,14 @@ public class IconFactory {
 	
 	public static HTML copiarSolicitud() {
 		return createDiv(ICON_COPIAR_SOLICITUD_STYLE);
+	}
+	
+	public static HTML imagenTIF() {
+		return createDiv(ICON_TIF_STYLE);
+	}
+
+	public static HTML imagenTIF(String title) {
+		return createDiv(ICON_TIF_STYLE, title);
 	}
 	
 	/**

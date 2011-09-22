@@ -41,14 +41,11 @@
 		<property name="reportPathBuilder" ref="onSessionReportFileSystemPathBuilder"/>		
 	</bean>
 	
-	<!-- MGR****** -->
 	<bean name="cuentaDownloadTaggedImageFileFormatService" class="ar.com.nextel.web.download.config.impl.DownloadTaggedImageFileFormatService">
 		<property name="fileTypeConfig" ref="taggedImageFileFileTypeConfig"/>
 		<property name="fileNameConfig" ref="fileNameConfig"/>
 		<property name="serviceName" value="tif"/>
 		<property name="moduleName" value="cuentas"/>
-		<!-- MGR****** -->
-<!-- 		<property name="reportBuilder" ref="onSessionDocDigitalizadoCuentaFileSystemPathBuilder"/>		 -->
 	</bean>
 	
 	<bean name="onSessionReportFileSystemPathBuilder" class="ar.com.nextel.components.report.OnSessionReportFileSystemPathBuilder">
@@ -56,18 +53,9 @@
 		<property name="simpleReportFileSystemPathBuilder" ref="simpleReportFileSystemPathBuilder"/>		
 	</bean>
 	
-	<!-- MGR****** -->
-<!-- 	<bean name="onSessionDocDigitalizadoCuentaFileSystemPathBuilder" class="ar.com.nextel.components.report.OnSessionDocDigitalizadoCuentaFileSystemPathBuilder"> -->
-<!-- 		<property name="sessionAwareProxyFactory" ref="sessionAwareProxyFactory"/> -->
-<!-- 		<property name="tifReportFileSystemPathBuilder" ref="tifReportFileSystemPathBuilder"/>		 -->
-<!-- 	</bean> -->
-	
 	<bean name="simpleReportFileSystemPathBuilder" class="ar.com.nextel.components.report.SimpleReportFileSystemPathBuilder">
 		<property name="globalParameterRetriever" ref="globalParameterRetriever"/>		
 	</bean>
-	
-	<!-- MGR****** -->
-<!-- 	<bean name="tifReportFileSystemPathBuilder" class="ar.com.nextel.components.report.TIFReportFileSystemPathBuilder"/> -->
 	
 	<bean name="sessionAwareProxyFactory" class="ar.com.nextel.framework.repository.SessionAwareProxyFactoryImpl">
 		<property name="sessionFactory" ref="sessionFactory"/>		
@@ -77,7 +65,6 @@
 	
 	<bean name="richTextFormatFileTypeConfig" class="ar.com.nextel.web.download.config.impl.RichTextFormatFileTypeConfig"/>
 	
-	<!-- MGR****** -->
 	<bean name="taggedImageFileFileTypeConfig" class="ar.com.nextel.web.download.config.impl.TaggedImageFileFormatFileTypeConfig"/>
 	
 	<bean name="fileNameConfig" class="ar.com.nextel.web.download.config.FileNameConfig"/>
@@ -87,7 +74,6 @@
 		<property name="serviceConfigs">
 			<list>
 				<ref bean="consultaVerazDownloadRichTextFormatService"/>
-				<!-- MGR******* -->
 				<ref bean="cuentaDownloadTaggedImageFileFormatService"/>
 			</list>
 		</property>

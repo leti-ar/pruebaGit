@@ -64,8 +64,7 @@ public class DocDigitalizadosUI extends NextelDialog implements ClickHandler{
 		setHeight("400px");
 
 		nroCaratulasDig = new Label();
-		//MGR**** cambiar el nombre
-		nroCaratulasDig.addStyleName("oppEnCursoCantLabel");
+		nroCaratulasDig.addStyleName("docDigitalizadosLabel");
 		
 		resultTableWrapperDocDig = new SimplePanel();
 		resultTableWrapperDocDig.addStyleName("resultTableWrapper");
@@ -125,7 +124,7 @@ public class DocDigitalizadosUI extends NextelDialog implements ClickHandler{
 		resultTableWrapperDocDig.setWidget(resultTableDocumentos);
 		int rowIndex = 1;
 		for (DocDigitalizadosDto docDigDto : docDigActuales) {
-			resultTableDocumentos.setWidget(rowIndex, 0, IconFactory.word());
+			resultTableDocumentos.setWidget(rowIndex, 0, IconFactory.imagenTIF());
 			resultTableDocumentos.setHTML(rowIndex, 1, docDigDto.getDescripcion());
 			resultTableDocumentos.setHTML(rowIndex, 2, DateTimeFormat.getShortDateFormat().format(docDigDto.getFecha()));
 			rowIndex++;
@@ -146,8 +145,7 @@ public class DocDigitalizadosUI extends NextelDialog implements ClickHandler{
 		table.getColumnFormatter().addStyleName(2, "alignCenter");
 		table.setCellPadding(0);
 		table.setCellSpacing(0);
-		//MGR**** cambiar el nombre
-		table.addStyleName("gwt-BuscarCuentaResultTable");
+		table.addStyleName("gwt-BuscarDocDigResultTable");
 		table.getRowFormatter().addStyleName(0, "header");
 		table.setHTML(0, 0, Sfa.constant().whiteSpace());
 		table.setHTML(0, 1, Sfa.constant().descripcion());
