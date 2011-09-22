@@ -38,7 +38,7 @@ public class CaratulaDto implements IsSerializable, IdentifiableDto, Cloneable, 
 	private CalificacionDto calificacion;
 	private RiskCodeDto riskCode;
 	private CompPagoDto compPago;
-	private CargoDto cargo;
+	private FirmanteDto firmante;
 	private Double consumoProm;
 	private long equiposActivos;
 	private VerazNosisDto veraz;
@@ -305,12 +305,12 @@ public class CaratulaDto implements IsSerializable, IdentifiableDto, Cloneable, 
 		this.compPago = compPago;
 	}
 
-	public CargoDto getCargo() {
-		return cargo;
+	public FirmanteDto getFirmante() {
+		return firmante;
 	}
 
-	public void setCargo(CargoDto cargo) {
-		this.cargo = cargo;
+	public void setFirmante(FirmanteDto firmante) {
+		this.firmante = firmante;
 	}
 
 	public Double getConsumoProm() {

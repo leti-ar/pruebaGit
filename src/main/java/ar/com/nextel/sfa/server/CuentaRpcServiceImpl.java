@@ -51,6 +51,7 @@ import ar.com.nextel.model.cuentas.beans.CompPago;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.Division;
 import ar.com.nextel.model.cuentas.beans.EstadoCreditBancoCentral;
+import ar.com.nextel.model.cuentas.beans.Firmante;
 import ar.com.nextel.model.cuentas.beans.FormaPago;
 import ar.com.nextel.model.cuentas.beans.GranCuenta;
 import ar.com.nextel.model.cuentas.beans.Proveedor;
@@ -104,6 +105,7 @@ import ar.com.nextel.sfa.client.dto.DocumentoDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoCreditBancoCentralDto;
 import ar.com.nextel.sfa.client.dto.EstadoOportunidadDto;
+import ar.com.nextel.sfa.client.dto.FirmanteDto;
 import ar.com.nextel.sfa.client.dto.FormaPagoDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
@@ -783,8 +785,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		initializer.setCompPago(mapper.convertList(repository.getAll(CompPago.class),
 				CompPagoDto.class));
 		
-		initializer.setCargo(mapper.convertList(repository.getAll(Cargo.class),
-				CargoDto.class));
+		initializer.setFirmante(mapper.convertList(repository.getAll(Firmante.class),
+				FirmanteDto.class));
 		
 		initializer.setVerazNosis(mapper.convertList(repository.getAll(VerazNosis.class),
 				VerazNosisDto.class));

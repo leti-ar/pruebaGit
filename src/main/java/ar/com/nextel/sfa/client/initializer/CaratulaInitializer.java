@@ -12,6 +12,7 @@ import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.ComDto;
 import ar.com.nextel.sfa.client.dto.CompPagoDto;
 import ar.com.nextel.sfa.client.dto.EstadoCreditBancoCentralDto;
+import ar.com.nextel.sfa.client.dto.FirmanteDto;
 import ar.com.nextel.sfa.client.dto.RiskCodeDto;
 import ar.com.nextel.sfa.client.dto.TipoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.TipoTarjetaDto;
@@ -31,7 +32,7 @@ public class CaratulaInitializer implements IsSerializable{
 	private List<CalificacionDto> calificacion;
 	private List<RiskCodeDto> riskCode;
 	private List<CompPagoDto> compPago;
-	private List<CargoDto> cargo;
+	private List<FirmanteDto> firmante;
 	private List<VerazNosisDto> verazNosis;
 	private List<EstadoCreditBancoCentralDto> estadoCredBC;
 	
@@ -107,12 +108,12 @@ public class CaratulaInitializer implements IsSerializable{
 		this.compPago = compPago;
 	}
 
-	public List<CargoDto> getCargo() {
-		return cargo;
+	public List<FirmanteDto> getFirmante() {
+		return firmante;
 	}
 
-	public void setCargo(List<CargoDto> cargo) {
-		this.cargo = cargo;
+	public void setFirmante(List<FirmanteDto> firmante) {
+		this.firmante = firmante;
 	}
 
 	public List<VerazNosisDto> getVerazNosis() {

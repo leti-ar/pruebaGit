@@ -3021,4 +3021,12 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("ERR_NO_DOCUMENTO_SELECTED")
   String ERR_NO_DOCUMENTO_SELECTED();
 
+  /**
+   * Translated "Firmante".
+   * 
+   * @return translated "Firmante"
+   */
+  @DefaultStringValue("Firmante")
+  @Key("firmante")
+  String firmante();
 }

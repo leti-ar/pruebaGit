@@ -57,17 +57,17 @@
 	</bean>
 	
 	<!-- MGR****** -->
-	<bean name="onSessionDocDigitalizadoCuentaFileSystemPathBuilder" class="ar.com.nextel.components.report.OnSessionDocDigitalizadoCuentaFileSystemPathBuilder">
-		<property name="sessionAwareProxyFactory" ref="sessionAwareProxyFactory"/>
-		<property name="tifReportFileSystemPathBuilder" ref="tifReportFileSystemPathBuilder"/>		
-	</bean>
+<!-- 	<bean name="onSessionDocDigitalizadoCuentaFileSystemPathBuilder" class="ar.com.nextel.components.report.OnSessionDocDigitalizadoCuentaFileSystemPathBuilder"> -->
+<!-- 		<property name="sessionAwareProxyFactory" ref="sessionAwareProxyFactory"/> -->
+<!-- 		<property name="tifReportFileSystemPathBuilder" ref="tifReportFileSystemPathBuilder"/>		 -->
+<!-- 	</bean> -->
 	
 	<bean name="simpleReportFileSystemPathBuilder" class="ar.com.nextel.components.report.SimpleReportFileSystemPathBuilder">
 		<property name="globalParameterRetriever" ref="globalParameterRetriever"/>		
 	</bean>
 	
 	<!-- MGR****** -->
-	<bean name="tifReportFileSystemPathBuilder" class="ar.com.nextel.components.report.TIFReportFileSystemPathBuilder"/>
+<!-- 	<bean name="tifReportFileSystemPathBuilder" class="ar.com.nextel.components.report.TIFReportFileSystemPathBuilder"/> -->
 	
 	<bean name="sessionAwareProxyFactory" class="ar.com.nextel.framework.repository.SessionAwareProxyFactoryImpl">
 		<property name="sessionFactory" ref="sessionFactory"/>		

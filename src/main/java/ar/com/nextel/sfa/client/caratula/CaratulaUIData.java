@@ -14,6 +14,7 @@ import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.ComDto;
 import ar.com.nextel.sfa.client.dto.CompPagoDto;
 import ar.com.nextel.sfa.client.dto.EstadoCreditBancoCentralDto;
+import ar.com.nextel.sfa.client.dto.FirmanteDto;
 import ar.com.nextel.sfa.client.dto.RiskCodeDto;
 import ar.com.nextel.sfa.client.dto.TipoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.TipoTarjetaDto;
@@ -81,7 +82,7 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 	private ListBox calificacion = new ListBox("");
 	private ListBox riskCode = new ListBox("");
 	private ListBox comprPago  = new ListBox("");
-	private ListBox cargo = new ListBox("");
+	private ListBox firmante = new ListBox("");
 	private TextBox consumoProm;
 	private TextBox equiposActivos;
 	private ListBox veraz = new ListBox("");
@@ -118,7 +119,7 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 				calificacion.addAllItems(initializer.getCalificacion());
 				riskCode.addAllItems(initializer.getRiskCode());
 				comprPago.addAllItems(initializer.getCompPago());
-				cargo.addAllItems(initializer.getCargo());
+				firmante.addAllItems(initializer.getFirmante());
 				veraz.addAllItems(initializer.getVerazNosis());
 				nosis.addAllItems(initializer.getVerazNosis());
 				bcra.addAllItems(initializer.getEstadoCredBC());
@@ -379,10 +380,10 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 				comprPago.setSelectedIndex(0);
 			}
 			
-			if(caratulaDto.getCargo() != null){
-				cargo.setSelectedItem(caratulaDto.getCargo());
+			if(caratulaDto.getFirmante() != null){
+				firmante.setSelectedItem(caratulaDto.getFirmante());
 			}else{
-				cargo.setSelectedIndex(0);
+				firmante.setSelectedIndex(0);
 			}
 			
 			if(caratulaDto.getConsumoProm() != null){
@@ -495,7 +496,7 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		caratula.setCalificacion((CalificacionDto) calificacion.getSelectedItem());
 		caratula.setRiskCode((RiskCodeDto) riskCode.getSelectedItem());
 		caratula.setCompPago((CompPagoDto) comprPago.getSelectedItem());
-		caratula.setCargo((CargoDto) cargo.getSelectedItem());
+		caratula.setFirmante((FirmanteDto) firmante.getSelectedItem());
 		if(equiposActivos.getText() != null && !equiposActivos.getText().equals("")){
 			caratula.setEquiposActivos(Long.parseLong(equiposActivos.getText()));
 		}else{
@@ -537,8 +538,8 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		if(row > 1){
 			validator.addTarget(comprPago).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().compPago()));
-			validator.addTarget(cargo).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().cargo()));
+			validator.addTarget(firmante).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().firmante()));
 			validator.addTarget(equiposActivos).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().equiposActivos()));
 		}
@@ -573,7 +574,7 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 	public void habilitarCampos(boolean habilitar) {
 		banco.setEnabled(habilitar);
 		limiteCred.setEnabled(habilitar);
-		cargo.setEnabled(habilitar);
+		firmante.setEnabled(habilitar);
 		nroSS.setEnabled(habilitar);
 		
 		
@@ -602,7 +603,7 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		calificacion.setEnabled(habilitar);
 		riskCode.setEnabled(habilitar);
 		comprPago.setEnabled(habilitar);
-		cargo.setEnabled(habilitar);
+		firmante.setEnabled(habilitar);
 		equiposActivos.setEnabled(habilitar);
 		veraz.setEnabled(habilitar);
 		nosis.setEnabled(habilitar);
@@ -834,12 +835,12 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		this.comprPago = comprPago;
 	}
 
-	public ListBox getCargo() {
-		return cargo;
+	public ListBox getFirmante() {
+		return firmante;
 	}
 
-	public void setCargo(ListBox cargo) {
-		this.cargo = cargo;
+	public void setFirmante(ListBox firmante) {
+		this.firmante = firmante;
 	}
 
 	public TextBox getConsumoProm() {

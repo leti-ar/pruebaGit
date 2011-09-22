@@ -178,8 +178,8 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		
 		gridCOM.setText(0, 0, Sfa.constant().COM());
 		gridCOM.setWidget(0, 1, caratulaData.getCom());
-		gridCOM.setText(0, 2, Sfa.constant().cargo());
-		gridCOM.setWidget(0, 3, caratulaData.getCargo());
+		gridCOM.setText(0, 2, Sfa.constant().firmante());
+		gridCOM.setWidget(0, 3, caratulaData.getFirmante());
 		gridCOM.setText(1, 0, Sfa.constant().BCRA());
 		gridCOM.setWidget(1, 1, caratulaData.getBcra());
 		gridCOM.setText(1, 2, Sfa.constant().compPago());
