@@ -126,7 +126,12 @@ public class DocDigitalizadosUI extends NextelDialog implements ClickHandler{
 		for (DocDigitalizadosDto docDigDto : docDigActuales) {
 			resultTableDocumentos.setWidget(rowIndex, 0, IconFactory.imagenTIF());
 			resultTableDocumentos.setHTML(rowIndex, 1, docDigDto.getDescripcion());
-			resultTableDocumentos.setHTML(rowIndex, 2, DateTimeFormat.getShortDateFormat().format(docDigDto.getFecha()));
+			
+			if(docDigDto.getFecha() != null){
+				resultTableDocumentos.setHTML(rowIndex, 2, DateTimeFormat.getShortDateFormat().format(docDigDto.getFecha()));
+			}else{
+				resultTableDocumentos.setHTML(rowIndex, 2, Sfa.constant().whiteSpace());
+			}
 			rowIndex++;
 		}
 		nroCaratulasDig.setText(Sfa.constant().nroDocDigitalizados() + documentos.size());

@@ -72,8 +72,7 @@ public class CuentaEdicionTabPanel {
 	public Button validarCompletitudButton;
 	public static final String VALIDAR_COMPLETITUD_FAIL_STYLE = "validarCompletitudFailButton";
 	public static final String ID_CUENTA = "idCuenta";
-	//MGR**** Adm_Vtas R2 Verificar que se ven las pestañas que corresponden a cada caso
-	//public static final int CANT_PESTANIAS_FIJAS = 3;
+	//MGR - Adm. Vtas. R2 -  Se agrego la pestaña "Caratulas" que es fija
 	public static final int CANT_PESTANIAS_FIJAS = 4;
 	public static final Long DEFAULT_OPP_PRIORITY = 2L;
 	private GwtValidator validator = new GwtValidator();
@@ -174,8 +173,7 @@ public class CuentaEdicionTabPanel {
 				return true;
 			}
 			public void onTabSelected(SourcesTabEvents arg0, int arg1) {
-				//MGR**** La 3 ahora es la pasteña de caratulas
-				//if(arg1 == 3){
+				//MGR - Adm. Vtas. R2 - La 3 ahora es la pasteña de caratulas
 				if(arg1 == 4){
 					//cuentaInfocomForm.setIdCuenta(cliente.getText());
 					cuentaInfocomForm.load();					
