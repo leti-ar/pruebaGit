@@ -21,7 +21,10 @@ import ar.com.nextel.business.legacy.financial.exception.FinancialSystemExceptio
 import ar.com.nextel.business.oportunidades.OperacionEnCursoBusinessOperator;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.ReservaNumeroTelefonoBusinessOperator;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
+import ar.com.nextel.business.solicitudes.crearGuardar.GuardarBusinessOperator;
+import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSResponse;
 import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSTransfResponse;
+import ar.com.nextel.business.solicitudes.crearGuardar.request.GuardarRequest;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
 import ar.com.nextel.business.solicitudes.generacionCierre.GeneracionCierreBusinessOperator;
@@ -77,6 +80,8 @@ public class SolicitudBusinessService {
 	private SolicitudServicioBusinessOperator solicitudesBusinessOperator;
 	private ReservaNumeroTelefonoBusinessOperator reservaNumeroTelefonoBusinessOperator;
 	private GeneracionCierreBusinessOperator generacionCierreBusinessOperator;
+	//MGR - ISDN 1824
+	private GuardarBusinessOperator guardarBusinessOperator;
 	private OperacionEnCursoBusinessOperator operacionEnCursoBusinessOperator;
 	private FinancialSystem financialSystem;
 	private SessionContextLoader sessionContextLoader;
@@ -119,6 +124,13 @@ public class SolicitudBusinessService {
 	public void setGeneracionCierreBusinessOperator(
 			@Qualifier("generacionCierreBusinessOperatorBean") GeneracionCierreBusinessOperator generacionCierreBusinessOperator) {
 		this.generacionCierreBusinessOperator = generacionCierreBusinessOperator;
+	}
+	
+	//MGR - ISDN 1824
+	@Autowired
+	public void setGuardarBusinessOperator(
+			@Qualifier("guardarBusinessOperatorBean") GuardarBusinessOperator guardarBusinessOperator) {
+		this.guardarBusinessOperator = guardarBusinessOperator;
 	}
 
 	@Autowired
@@ -199,7 +211,7 @@ public class SolicitudBusinessService {
 			if (tipoSolicitud != null && plan != null && item != null && cuenta != null) {
 				//MGR - #873 - Se agrega el Vendedor
 				serviciosAdicionales = solicitudServicioRepository.getServiciosAdicionales(tipoSolicitud
-						.getId(), plan.getId(), item.getId(), cuenta.getId(),sessionContextLoader.getVendedor());
+						.getId(), plan.getId(), item.getId(), cuenta.getId(),sessionContextLoader.getVendedor(), cuenta.isEmpresa());
 			} else {
 				AppLogger.warn("No se pudo validar los Servicios Adicionales de la Linea de "
 						+ "Solicitud de Servicio " + linea.getId() + " (" + linea.getAlias()
@@ -491,25 +503,46 @@ public class SolicitudBusinessService {
 //					&& !solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion()
 					&& hace4Dias.before(solicitudServicio.getCuenta().getFacturaElectronica().getLastModificationDate())
 					&& !response.getMessages().hasErrors()) {
+				
+				//MGR - ISDN 1824 - El adm. de creditos adhiere el cliente a factura electronica y genera la gestion
+				//tanto para prospect como para clientes
+				Vendedor vendedor = repository.retrieve(Vendedor.class, this.sessionContextLoader.getInstance().getVendedor().getId());
+				boolean isADMCreditos = vendedor.isADMCreditos();
+				
+				Long codigoBSCS = null;
+				if(solicitudServicio.getCuenta().getCodigoBSCS() != null){
+					codigoBSCS = new Long(solicitudServicio.getCuenta().getCodigoBSCS());
+				}
+				
+				//MGR - ISDN 1824
 				if (!esProspect) {
 					facturaElectronicaService.adherirFacturaElectronica(
-							new Long(solicitudServicio.getCuenta().getCodigoBSCS()), solicitudServicio.getCuenta()
+							codigoBSCS, solicitudServicio.getCuenta()
 							.getCodigoVantive(), solicitudServicio.getCuenta()
-							.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor()
-							.getUserName());
+							.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor());
 					solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
 				}
 				repository.save(solicitudServicio.getCuenta().getFacturaElectronica());
+				
+				//MGR - ISDN 1824
 				if (!esProspect) {
 					String codigoGestion = "TRANSF_FACT_ELECTRONICA";
 					ParametrosGestion parametrosGestion = repository.retrieve(ParametrosGestion.class, codigoGestion);
-					Vendedor vendedor = repository.retrieve(Vendedor.class, this.sessionContextLoader.getInstance().getVendedor().getId());
+					
+					//MGR - ISDN 1824
+					String vendReal = "";
+					if(isADMCreditos){
+						vendReal = solicitudServicio.getVendedor().getUserReal();
+					}else{
+						vendReal = vendedor.getUserReal();
+					}
+					
 					Long idGestion = generacionCierreBusinessOperator.lanzarGestionCerrarSS(
-							vendedor.getUserReal(), 
+							vendReal,
 							0L, 
 							parametrosGestion, 
 							"", 
-							new Long(solicitudServicio.getCuenta().getCodigoBSCS()), 
+							codigoBSCS, 
 							cerrar);
 					solicitudServicio.getCuenta().getFacturaElectronica().setIdGestion(idGestion);
 				}
@@ -567,13 +600,19 @@ public class SolicitudBusinessService {
 		return response;
 	}
 	
-	public CreateSaveSSTransfResponse validarTriptico(SolicitudServicio solicitud){
-		return generacionCierreBusinessOperator.validarTriptico(solicitud);
-	}
-	
 	public CreateSaveSSTransfResponse validarCreateSSTransf(SolicitudServicio solicitud){
 		return solicitudesBusinessOperator.validarCreateSSTransf(solicitud);
 	}
-
-
+	
+	//MGR - ISDN 1824
+	public CreateSaveSSResponse validarPredicadosGuardarSS(SolicitudServicio solicitudServicio) {
+		GuardarRequest guardarRequest = new GuardarRequest(solicitudServicio);
+		CreateSaveSSResponse response = guardarBusinessOperator.validarPredicadosGuardarSS(guardarRequest);
+		return response;
+	}
+	
+	//MGR - ISDN 1824
+	public CreateSaveSSResponse validarCreateSS(SolicitudServicio solicitud){
+		return solicitudesBusinessOperator.validarCreateSS(solicitud);
+	}
 }

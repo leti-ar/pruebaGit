@@ -4,6 +4,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
+import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
@@ -50,8 +51,10 @@ public class SolicitudRpcServiceDelegate {
 		this.solicitudRpcServiceAsync = solicitudRpcServiceAsync;
 	}
 
+	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
+	//que permite realizar el manejo de mensajes
 	public void createSolicitudServicio(SolicitudServicioRequestDto solicitudServicioRequestDto,
-			DefaultWaitCallback<SolicitudServicioDto> callback) {
+			DefaultWaitCallback<CreateSaveSolicitudServicioResultDto> callback) {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.createSolicitudServicio(solicitudServicioRequestDto, callback);
 
@@ -62,8 +65,10 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.getSolicitudInitializer(callback);
 	}
 
+	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un SaveSolicitudServicioResultDto
+	//que permite realizar el manejo de mensajes
 	public void saveSolicituServicio(SolicitudServicioDto solicitudServicioDto,
-			DefaultWaitCallback<SolicitudServicioDto> callback) {
+			DefaultWaitCallback<CreateSaveSolicitudServicioResultDto> callback) {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.saveSolicituServicio(solicitudServicioDto, callback);
 	}
@@ -86,9 +91,9 @@ public class SolicitudRpcServiceDelegate {
 	}
 
 	public void getLineasSolicitudServicioInitializer(GrupoSolicitudDto grupoSolicitudDto,
-			DefaultWaitCallback<LineasSolicitudServicioInitializer> callback) {
+			boolean isEmpresa, DefaultWaitCallback<LineasSolicitudServicioInitializer> callback) {
 		WaitWindow.show();
-		solicitudRpcServiceAsync.getLineasSolicitudServicioInitializer(grupoSolicitudDto, callback);
+		solicitudRpcServiceAsync.getLineasSolicitudServicioInitializer(grupoSolicitudDto, isEmpresa, callback);
 	}
 
 	public void buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto,
@@ -97,10 +102,10 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.buildExcel(solicitudServicioCerradaDto, callback);
 	}
 
-	public void getListasDePrecios(TipoSolicitudDto tipoSolicitudDto,
+	public void getListasDePrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa,
 			DefaultWaitCallback<List<ListaPreciosDto>> callback) {
 		WaitWindow.show();
-		solicitudRpcServiceAsync.getListasDePrecios(tipoSolicitudDto, callback);
+		solicitudRpcServiceAsync.getListasDePrecios(tipoSolicitudDto, isEmpresa, callback);
 	}
 
 	public void getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,
@@ -110,9 +115,9 @@ public class SolicitudRpcServiceDelegate {
 	}
 
 	public void getServiciosAdicionales(LineaSolicitudServicioDto linea, Long idCuenta,
-			DefaultWaitCallback<List<ServicioAdicionalLineaSolicitudServicioDto>> defaultWaitCallback) {
+			boolean isEmpresa, DefaultWaitCallback<List<ServicioAdicionalLineaSolicitudServicioDto>> defaultWaitCallback) {
 		WaitWindow.show();
-		solicitudRpcServiceAsync.getServiciosAdicionales(linea, idCuenta, defaultWaitCallback);
+		solicitudRpcServiceAsync.getServiciosAdicionales(linea, idCuenta, isEmpresa, defaultWaitCallback);
 	}
 
 	public void reservarNumeroTelefonico(long numero, long idTipoTelefonia, long idModalidadCobro,
@@ -244,9 +249,9 @@ public class SolicitudRpcServiceDelegate {
 	}
 
 	public void validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa,
-				DefaultWaitCallback<List<String>> callback){
+			boolean isSaving, DefaultWaitCallback<List<String>> callback){
 		WaitWindow.show();
-		solicitudRpcServiceAsync.validarPlanesCedentes(ctoCedentes, isEmpresa, callback);
+		solicitudRpcServiceAsync.validarPlanesCedentes(ctoCedentes, isEmpresa, isSaving, callback);
 	}
 	
 	/**

@@ -4,6 +4,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
+import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
@@ -43,21 +44,25 @@ public interface SolicitudRpcServiceAsync {
 	public void searchSSCerrada(SolicitudServicioCerradaDto solicitudServicioCerradaDto,
 			AsyncCallback<List<SolicitudServicioCerradaResultDto>> callback);
 
+	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
+	//que permite realizar el manejo de mensajes
 	public void createSolicitudServicio(SolicitudServicioRequestDto solicitudServicioRequestDto,
-			AsyncCallback<SolicitudServicioDto> callback);
+			AsyncCallback<CreateSaveSolicitudServicioResultDto> callback);
 
 	public void getSolicitudInitializer(AsyncCallback<SolicitudInitializer> callback);
 
+	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un SaveSolicitudServicioResultDto
+	//que permite realizar el manejo de mensajes
 	public void saveSolicituServicio(SolicitudServicioDto solicitudServicioDto,
-			AsyncCallback<SolicitudServicioDto> callback);
+			AsyncCallback<CreateSaveSolicitudServicioResultDto> callback);
 
 	public void getDetalleSolicitudServicio(Long idSolicitudServicio,
 			AsyncCallback<DetalleSolicitudServicioDto> callback);
 
 	public void getLineasSolicitudServicioInitializer(GrupoSolicitudDto grupoSolicitudDto,
-			AsyncCallback<LineasSolicitudServicioInitializer> callback);
+			boolean isEmpresa, AsyncCallback<LineasSolicitudServicioInitializer> callback);
 
-	public void getListasDePrecios(TipoSolicitudDto tipoSolicitudDto,
+	public void getListasDePrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa, 
 			AsyncCallback<List<ListaPreciosDto>> callback);
 
 	public void buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto,
@@ -67,7 +72,7 @@ public interface SolicitudRpcServiceAsync {
 			Long idCuenta, AsyncCallback<List<PlanDto>> callback);
 
 	public void getServiciosAdicionales(LineaSolicitudServicioDto linea, Long idCuenta,
-			AsyncCallback<List<ServicioAdicionalLineaSolicitudServicioDto>> defaultWaitCallback);
+			boolean isEmpresa, AsyncCallback<List<ServicioAdicionalLineaSolicitudServicioDto>> defaultWaitCallback);
 
 	public void reservarNumeroTelefonico(long numero, long idTipoTelefonia, long idModalidadCobro,
 			long idLocalidad, AsyncCallback<ResultadoReservaNumeroTelefonoDto> callback);
@@ -123,7 +128,7 @@ public interface SolicitudRpcServiceAsync {
 			AsyncCallback<ContratoViewInitializer> callback);
 
 	void validarPlanesCedentes(List<ContratoViewDto> ctoCedentes,
-			boolean isEmpresa, AsyncCallback<List<String>> callback);
+			boolean isEmpresa, boolean isSaving, AsyncCallback<List<String>> callback);
 	
 	public void loginServer(String linea, AsyncCallback<Void> callback);
 	

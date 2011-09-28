@@ -4,6 +4,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
+import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
@@ -61,21 +62,25 @@ public interface SolicitudRpcService extends RemoteService {
 	public List<SolicitudServicioCerradaResultDto> searchSSCerrada(
 			SolicitudServicioCerradaDto solicitudServicioCerradaDto) throws RpcExceptionMessages;
 
-	public SolicitudServicioDto createSolicitudServicio(
+	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
+	//que permite realizar el manejo de mensajes
+	public CreateSaveSolicitudServicioResultDto createSolicitudServicio(
 			SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages;
 
 	public SolicitudInitializer getSolicitudInitializer() throws RpcExceptionMessages;
 
-	public SolicitudServicioDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
+	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un SaveSolicitudServicioResultDto 
+	//que permite realizar el manejo de mensajes
+	public CreateSaveSolicitudServicioResultDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
 			throws RpcExceptionMessages;
 
 	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(
-			GrupoSolicitudDto grupoSolicitudDto) throws RpcExceptionMessages;
+			GrupoSolicitudDto grupoSolicitudDto, boolean isEmpresa) throws RpcExceptionMessages;
 
 	public DetalleSolicitudServicioDto getDetalleSolicitudServicio(Long idSolicitudServicio)
 			throws RpcExceptionMessages;
 
-	public List<ListaPreciosDto> getListasDePrecios(TipoSolicitudDto tipoSolicitudDto)
+	public List<ListaPreciosDto> getListasDePrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa)
 			throws RpcExceptionMessages;
 
 	public String buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto)
@@ -85,7 +90,7 @@ public interface SolicitudRpcService extends RemoteService {
 			TipoPlanDto tipoPlan, Long idCuenta);
 
 	public List<ServicioAdicionalLineaSolicitudServicioDto> getServiciosAdicionales(
-			LineaSolicitudServicioDto linea, Long idCuenta) throws RpcExceptionMessages;
+			LineaSolicitudServicioDto linea, Long idCuenta, boolean isEmpresa) throws RpcExceptionMessages;
 
 	public ResultadoReservaNumeroTelefonoDto reservarNumeroTelefonico(long numero, long idTipoTelefonia,
 			long idModalidadCobro, long idLocalidad) throws RpcExceptionMessages;
@@ -140,7 +145,7 @@ public interface SolicitudRpcService extends RemoteService {
 	 * @param isEmpresa Si el cliente cesionario es del tipo empresa
 	 * @return Lista con los errores posibles.
 	 */
-	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa);
+	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa, boolean isSaving);
 		
 	/**
 	 * Portabilidad
@@ -162,25 +167,4 @@ public interface SolicitudRpcService extends RemoteService {
 	PortabilidadResult validarPortabilidad(SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages;
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

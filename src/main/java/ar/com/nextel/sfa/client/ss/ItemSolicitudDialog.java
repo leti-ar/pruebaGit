@@ -110,7 +110,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	public void resetearPanelPortabilidad(){
 		itemSolicitudUIData.getPortabilidadPanel().resetearPortabilidad();
 	}
-
+	
 	/**
 	 * TODO: Portabilidad
 	 */
@@ -209,6 +209,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		};
 	}
 
+
 	public void onChange(ChangeEvent event) {
 		TipoSolicitudDto tipoSolicitud = (TipoSolicitudDto) tipoOrden.getSelectedItem();
 		if (tipoSolicitud != null) {
@@ -234,18 +235,19 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 			loadUIData(tipoSolicitud);
 		}
 	}
-
+	
 	private void loadUIData(final TipoSolicitudDto tiposSolicitud) {
-		if (tiposSolicitudes.get(tiposSolicitud.getId()).getListasPrecios() == null) {
-			controller.getListaPrecios(tiposSolicitud, new DefaultWaitCallback<List<ListaPreciosDto>>() {
+		//#1757 - La ListaPrecios se carga según el segmento del cliente
+//		if (tiposSolicitudes.get(tiposSolicitud.getId()).getListasPrecios() == null) {
+			controller.getListaPrecios(tiposSolicitud, empresa, new DefaultWaitCallback<List<ListaPreciosDto>>() {
 				public void success(List<ListaPreciosDto> listasPrecios) {
 					tiposSolicitudes.get(tiposSolicitud.getId()).setListasPrecios(listasPrecios);
 					itemSolicitudUIData.load(tiposSolicitud.getListasPrecios());
 				};
 			});
-		} else {
-			itemSolicitudUIData.load(tiposSolicitudes.get(tiposSolicitud.getId()).getListasPrecios());
-		}
+//		} else {
+//			itemSolicitudUIData.load(tiposSolicitudes.get(tiposSolicitud.getId()).getListasPrecios());
+//		}
 	}
 
 	private SoloItemSolicitudUI getSoloItemSolicitudUI() {
@@ -307,6 +309,10 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 						if (empresa == tipoPlan.isEmpresa()) {
 							itemSolicitudUIData.getTipoPlan().addItem(tipoPlan);
 							tipoPlanPorDefecto = tipoPlan;
+						}
+						//MGR - #1759
+						else if(ClientContext.getInstance().getVendedor().isADMCreditos()){
+							itemSolicitudUIData.getTipoPlan().addItem(tipoPlan);
 						}
 					} else {
 						itemSolicitudUIData.getTipoPlan().addItem(tipoPlan);

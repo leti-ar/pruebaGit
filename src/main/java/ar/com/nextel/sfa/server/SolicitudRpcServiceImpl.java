@@ -23,6 +23,8 @@ import java.util.Set;
 
 import javax.servlet.ServletException;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -33,7 +35,7 @@ import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.vantive.VantiveSystem;
 import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
-import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSTransfResponse;
+import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSResponse;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
@@ -65,6 +67,7 @@ import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
 import ar.com.nextel.model.solicitudes.beans.ModalidadCobro;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
 import ar.com.nextel.model.solicitudes.beans.Plan;
+import ar.com.nextel.model.solicitudes.beans.PlanBase;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudPortabilidad;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
@@ -79,6 +82,7 @@ import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
+import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
@@ -187,8 +191,13 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");
 	}
 
-	public SolicitudServicioDto createSolicitudServicio(
+	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
+	//que permite realizar el manejo de mensajes
+	public CreateSaveSolicitudServicioResultDto createSolicitudServicio(
 			SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages {
+		//MGR - ISDN 1824
+		CreateSaveSolicitudServicioResultDto resultDto = new CreateSaveSolicitudServicioResultDto();
+
 		SolicitudServicioRequest request = mapper.map(solicitudServicioRequestDto,
 				SolicitudServicioRequest.class);
 		AppLogger.info("Creando Solicitud de Servicio con Request -> " + request.toString());
@@ -228,8 +237,14 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			linea.setPrecioConDescuento(precioConDescuento);
 		}
 
+		//MGR - ISDN 1824 - Predicados al crear una ss
+		MessageList messages = solicitudBusinessService.validarCreateSS(solicitud).getMessages();
+		resultDto.setError(messages.hasErrors());
+		resultDto.setMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
+		
 		AppLogger.info("Creacion de Solicitud de Servicio finalizada");
-		return solicitudServicioDto;
+		resultDto.setSolicitud(solicitudServicioDto);
+		return resultDto;
 	}
 
 	public List<SolicitudServicioCerradaResultDto> searchSSCerrada(
@@ -355,13 +370,19 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		List tiposAnticipo = repository.getAll(TipoAnticipo.class);
 		initializer.setTiposAnticipo(mapper.convertList(tiposAnticipo, TipoAnticipoDto.class));
 		
-		//Se cargan todos los vendedores que no sean del tipo Telemarketer, Dae o Administrador de Créditos
+		//Se cargan todos los vendedores que no sean del tipo Telemarketer, Dae o Administrador de Créditos,
 		Long idTipoVendTLM = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_TELEMARKETING);
 		Long idTipoVendDAE = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_DAE);
 		Long idTipoVendADM = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_CREDITOS);
-		List<Vendedor> vendedores = repository.find(
-						"from Vendedor vend where vend.tipoVendedor.id <> ? and vend.tipoVendedor.id <> ? and vend.tipoVendedor.id <> ?",
-						idTipoVendDAE, idTipoVendTLM, idTipoVendADM);
+		//MGR - ISDN 1824 - Si el vendedor logeado es Adm. de creditos, los TLM si se cargan al combo
+		String query = "from Vendedor vend where vend.tipoVendedor.id not in(" + idTipoVendDAE.toString() + 
+							", " + idTipoVendADM.toString();
+		if(!SessionContextLoader.getInstance().getVendedor().isADMCreditos()){
+			query += ", " + idTipoVendTLM.toString();
+		}
+		query += ")";
+		List<Vendedor> vendedores = repository.find(query);
+		
 		Collections.sort(vendedores, new Comparator<Vendedor>() {
 			public int compare(Vendedor vend1, Vendedor vend2) {
 				if(vend1.getApellido() == null && vend2.getApellido() == null)
@@ -380,16 +401,29 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return initializer;
 	}
 
-	public SolicitudServicioDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
+	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un SaveSolicitudServicioResultDto 
+	//que permite realizar el manejo de mensajes
+	public CreateSaveSolicitudServicioResultDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
 			throws RpcExceptionMessages {
+
+		CreateSaveSolicitudServicioResultDto resultDto = new CreateSaveSolicitudServicioResultDto();
 		try {
 			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
 			solicitudServicioDto = mapper.map(solicitudSaved, SolicitudServicioDto.class);
+			
+			Vendedor vendedor = sessionContextLoader.getSessionContext().getVendedor();
+			if (vendedor.isADMCreditos()) {
+				//Valida los predicados y el triptico
+				CreateSaveSSResponse response = solicitudBusinessService.validarPredicadosGuardarSS(solicitudSaved);
+				resultDto.setError(response.getMessages().hasErrors());
+				resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
+			}
+			resultDto.setSolicitud(solicitudServicioDto);
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
-		return solicitudServicioDto;
+		return resultDto;
 	}
 
 	public String buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto) {
@@ -418,7 +452,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	}
 
 	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(
-			GrupoSolicitudDto grupoSolicitudDto) {
+			GrupoSolicitudDto grupoSolicitudDto, boolean isEmpresa) {
 
 		LineasSolicitudServicioInitializer initializer = new LineasSolicitudServicioInitializer();
 		List<GrupoSolicitud> grupos = 
@@ -446,6 +480,17 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			List<ListaPrecios> listasPrecios = new ArrayList<ListaPrecios>(firstTipoSolicitud
 					.getListasPrecios());
 			
+			// #1757 -  solo tengo que mostrar la lista de precios asociados al segmento del cliente
+			List<Long> ids = (List<Long>) CollectionUtils.collect(listasPrecios,  
+		                new BeanToPropertyValueTransformer("id"));
+			List<ListaPrecios> listasPreciosSegmentada = null;
+			if (isEmpresa) {
+				listasPreciosSegmentada = solicitudServicioRepository.getListaPreciosPorSegmento(ids, 2);
+			} else {
+				listasPreciosSegmentada = solicitudServicioRepository.getListaPreciosPorSegmento(ids, 1);
+			}
+			listasPrecios.retainAll(listasPreciosSegmentada);
+			
 			firstTipoSolicitudDto.setListasPrecios(new ArrayList<ListaPreciosDto>());
 			for (ListaPrecios listaPrecios : listasPrecios) {
 				ListaPreciosDto lista = mapper.map(listaPrecios, ListaPreciosDto.class);
@@ -464,13 +509,13 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return initializer;
 	}
 
-	public List<ListaPreciosDto> getListasDePrecios(TipoSolicitudDto tipoSolicitudDto) {
+	public List<ListaPreciosDto> getListasDePrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa) {
 		TipoSolicitud tipoSolicitud = repository.retrieve(TipoSolicitud.class, tipoSolicitudDto.getId());
 		Set<ListaPrecios> listasPrecios = tipoSolicitud.getListasPrecios();
 		List<ListaPreciosDto> listasPreciosDto = new ArrayList<ListaPreciosDto>();
-
 		boolean activacion = isTipoSolicitudActivacion(tipoSolicitud);
 		boolean accesorios = isTipoSolicitudAccesorios(tipoSolicitud);
+
 		// Se realiza el mapeo de la colecci�n a mano para poder filtrar los items por warehouse
 		for (ListaPrecios listaPrecios : listasPrecios) {
 			ListaPreciosDto lista = mapper.map(listaPrecios, ListaPreciosDto.class);
@@ -488,7 +533,19 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			}
 			listasPreciosDto.add(lista);
 		}
-
+		
+		// #1757 -  solo tengo que mostrar la lista de precios asociados al segmento del cliente
+		List<Long> ids = (List<Long>) CollectionUtils.collect(listasPreciosDto,  
+				new BeanToPropertyValueTransformer("id"));
+		List<ListaPrecios> listasPreciosSegmentada = null;
+		if (isEmpresa) {
+			listasPreciosSegmentada = solicitudServicioRepository.getListaPreciosPorSegmento(ids, 2);
+		} else {
+			listasPreciosSegmentada = solicitudServicioRepository.getListaPreciosPorSegmento(ids, 1);
+		}
+		List<ListaPreciosDto> listasPreciosSegmentadaDto = mapper.convertList(listasPreciosSegmentada, ListaPreciosDto.class);
+		listasPreciosDto.retainAll(listasPreciosSegmentadaDto);
+		
 		return listasPreciosDto;
 	}
 
@@ -517,11 +574,11 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	}
 
 	public List<ServicioAdicionalLineaSolicitudServicioDto> getServiciosAdicionales(
-			LineaSolicitudServicioDto linea, Long idCuenta) {
+			LineaSolicitudServicioDto linea, Long idCuenta, boolean isEmpresa) {
 		//MGR - #873 - Se agrega el Vendedor
 		Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales = solicitudServicioRepository
 				.getServiciosAdicionales(linea.getTipoSolicitud().getId(), linea.getPlan().getId(), linea
-						.getItem().getId(), idCuenta, sessionContextLoader.getVendedor());
+						.getItem().getId(), idCuenta, sessionContextLoader.getVendedor(), isEmpresa);
 		return mapper.convertList(serviciosAdicionales, ServicioAdicionalLineaSolicitudServicioDto.class);
 	}
 
@@ -619,8 +676,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			}
 	}
 	
-	
-
 	private String getReporteFileName(SolicitudServicio solicitudServicio) {
 		String filename;
 		if (solicitudServicio.getCuenta().isCliente()) {
@@ -650,7 +705,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 	private static String[] months = { "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT",
 			"NOV", "DEC" };
-	
 	
     public List<VendedorDto> getVendedoresDae() {
         AppLogger.info("Iniciando busqueda de vendedores Dae activos...");
@@ -736,22 +790,19 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		CreateSaveSSTransfResultDto resultDto = new CreateSaveSSTransfResultDto();
 		try {
 	
-
-			SolicitudServicioDto solicitudDto = this.saveSolicituServicio(solicitudServicioDto);
+			//MGR - ISDN 1824 - Cambio la forma en la que se valida el triptico, para que se ejecuten 
+			//el resto de las validaciones
+			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(
+					solicitudServicioDto, mapper);
+			SolicitudServicioDto solicitudDto = mapper.map(solicitudSaved, SolicitudServicioDto.class);
 			resultDto.setSolicitud(solicitudDto);
 
 			Vendedor vendedor = sessionContextLoader.getSessionContext().getVendedor();
-			//valida triptico al guardar
 			if (vendedor.isADMCreditos()) {
-				SolicitudServicio solicitud = repository.retrieve(SolicitudServicio.class,
-						solicitudDto.getId());
-				// mapper.map(solicitudDto, solicitud);
-				CreateSaveSSTransfResponse ssResponse = solicitudBusinessService.validarTriptico(solicitud);
-				resultDto.setMessages(mapper.convertList(ssResponse.getMessages().getMessages(),
-						MessageDto.class));
-				if (!resultDto.getMessages().isEmpty()) {
-					resultDto.setError(true);
-				}
+				//Valida los predicados y el triptico
+				CreateSaveSSResponse response = solicitudBusinessService.validarPredicadosGuardarSS(solicitudSaved);
+				resultDto.setError(response.getMessages().hasErrors());
+				resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
 			}
 		} catch (Exception e) {
 			AppLogger.error(e);
@@ -764,14 +815,18 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages {
 		CreateSaveSSTransfResultDto resultDto = new CreateSaveSSTransfResultDto();
 		
-		SolicitudServicioDto solicitudDto = this.createSolicitudServicio(solicitudServicioRequestDto);
+		//MGR - ISDN 1824
+		CreateSaveSolicitudServicioResultDto resultSSAux = this.createSolicitudServicio(solicitudServicioRequestDto);
+		SolicitudServicioDto solicitudDto = resultSSAux.getSolicitud();
+		resultDto.addMessages(resultSSAux.getMessages());
+		
 		resultDto.setSolicitud(solicitudDto);
 		SolicitudServicio solicitud = repository.retrieve(SolicitudServicio.class,
 				solicitudDto.getId());
 		//mapper.map(solicitudDto, solicitud);
 		MessageList messages = solicitudBusinessService.validarCreateSSTransf(solicitud).getMessages();
 		resultDto.setError(messages.hasErrors());
-		resultDto.setMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
+		resultDto.addMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
 		
 		Vendedor vendLogeo = sessionContextLoader.getVendedor();
 		if(vendLogeo.isADMCreditos() || vendLogeo.isAP()){
@@ -800,7 +855,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	
 	//MGR - #1481 - Esto validaba que los planes existieran en SFA, ahora solo que pertenescan al 
 	//segmento de cliente
-	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa){
+	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa, boolean isSaving) {
 		//Validacion 15 del caso de uso.
 		/*Se comprueba que los planes cedentes, de existir en SFA, sean del mismo segmento
 		que el cliente cesionario.
@@ -810,35 +865,49 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		
 		List<String> errores = new ArrayList<String>(); //Guardo los errores que pienso devolver
 		boolean error = false;
+		final Vendedor vendedor = sessionContextLoader.getVendedor();
 		
 		for (int i = 0; !error && i < ctoCedentes.size(); i++) {
 			ContratoViewDto cto = ctoCedentes.get(i);
 
 			// Si no cambio el plan, valido que el plan cedente sea de su segmento
 			if (cto.getPlanCesionario() == null) {
-				List<Plan> planes = repository.find("from Plan p where p.planBase.codigoBSCS = ?", 
+				List<PlanBase> planes = repository.find("from PlanBase p where p.codigoBSCS = ?", 
 									String.valueOf(cto.getCodigoBSCSPlanCedente()));
 
 				// Si no hay planes, no debo validar nada
 				if (!planes.isEmpty()) {
-
 					for (int j=0; !error && j < planes.size(); j++) {
-						Plan plan = planes.get(j);
-						if (plan.getPlanBase().getTipoPlan().isEmpresa() != isEmpresa) {
+						PlanBase planBase = planes.get(j);
+						if ((planBase.getTipoPlan().isEmpresa() && !isEmpresa)
+								|| (planBase.getTipoPlan().isDirecto() && isEmpresa)) {
 							Message message;
-							if(isEmpresa){
+							if (isEmpresa) {
 								message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_DIRECTO_SEG_EMPRESA); 
-							}else{
+							} else {
 								message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_EMPRESA_SEG_DIRECTO);
 							}
 							errores.add(message.getDescription());
 							error = true;
 						}
+						//#1748						
+						if (!error) {
+							if (vendedor.isDealer() || (vendedor.isAP() && !isSaving) 
+									|| (vendedor.isADMCreditos() && !isSaving)) {
+								if (planBase.getTipoPlan().getId().equals(9L)) {
+									if (vendedor.isDealer()) {
+										errores.add("Debe seleccionar Planes Vigentes");
+									} else {
+										errores.add("Está seleccionando Planes No Vigentes");
+									}
+									error = true;
+								}
+							}
+						}
 					}
 				}
 			}
 		}
-		
 		return errores;
 	}
 

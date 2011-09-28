@@ -216,7 +216,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 									if(!result.getMessages().isEmpty()){
 										StringBuilder msgString = new StringBuilder();
 										for (MessageDto msg : result.getMessages()) {
-											msgString.append("<span class=\"error\">- " + msg.getDescription()
+											msgString.append("<span class=\"info\">- " + msg.getDescription()
 													+ "</span><br>");
 										}
 										MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), abrirSSCreada);
@@ -232,12 +232,45 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							}
 						});
 			}else{
+				//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
+				//que permite realizar el manejo de mensajes
 				SolicitudRpcService.Util.getInstance().createSolicitudServicio(solicitudServicioRequestDto,
-						new DefaultWaitCallback<SolicitudServicioDto>() {
+						new DefaultWaitCallback<CreateSaveSolicitudServicioResultDto>() {
 
-					public void success(SolicitudServicioDto solicitud) {
-						loadInfocom(String.valueOf(solicitud.getCuenta().getId()), solicitud.getCuenta().getCodigoVantive());
-						ssCreadaSuccess(solicitud);
+					//MGR - ISDN 1824
+					@Override
+					public void success(final CreateSaveSolicitudServicioResultDto result) {
+						
+						if(result.isError()){
+							ErrorDialog.getInstance().setDialogTitle("Aviso");
+							StringBuilder msgString = new StringBuilder();
+							for (MessageDto msg : result.getMessages()) {
+								msgString.append("<span class=\"error\">- " + msg.getDescription()
+										+ "</span><br>");
+							}
+							ErrorDialog.getInstance().show(msgString.toString(), false);
+						
+						}else{
+							Command abrirSSCreada = new Command() {
+								public void execute() {
+									MessageDialog.getInstance().hide();
+									SolicitudServicioDto solicitud = result.getSolicitud();
+									loadInfocom(String.valueOf(solicitud.getCuenta().getId()), solicitud.getCuenta().getCodigoVantive());
+									ssCreadaSuccess(solicitud);
+								}
+							};
+							
+							if(!result.getMessages().isEmpty()){
+								StringBuilder msgString = new StringBuilder();
+								for (MessageDto msg : result.getMessages()) {
+									msgString.append("<span class=\"info\">- " + msg.getDescription()
+											+ "</span><br>");
+								}
+								MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), abrirSSCreada);
+							}else{
+								abrirSSCreada.execute();
+							}
+						}
 					}
 
 					public void failure(Throwable caught) {
@@ -490,7 +523,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				}
 				if (errors.isEmpty()) {
 					if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
-						editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback());
+						editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback(), true);
 					}else{
 						guardar();
 						editarSSUIData.setSaved(true);
@@ -528,7 +561,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			}
 			if (errors.isEmpty()) {
 				if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
-					editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback());
+					editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback(), true);
 				}else{
 					guardar();
 				}
@@ -546,7 +579,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					acionesSS.getAbsoluteTop() - generarCerrarMenu.getOffsetHeight());
 		} else if (sender == generarSolicitud || sender == cerrarSolicitud) {
 			generarCerrarMenu.hide();
-			openGenerarCerrarSolicitdDialog(sender == cerrarSolicitud);
+			if (ClientContext.getInstance().getVendedor().isADMCreditos() && !editarSSUIData.isSaved()) {
+				ErrorDialog.getInstance().setDialogTitle("Aviso");
+				ErrorDialog.getInstance().show("Debe guardar la solicitud antes de cerrar", false);
+			} else {
+				openGenerarCerrarSolicitdDialog(sender == cerrarSolicitud);
+			}
 		}
 	}
 
@@ -567,11 +605,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							datosTranferencia.setDatosSolicitud(result.getSolicitud());
 //							datosTranferencia.refresh();
 							editarSSUIData.setSaved(true);
-							
-							if(result.isError()){
+							//MGR - #1759
+							if(!result.getMessages().isEmpty()){
 								StringBuilder msgString = new StringBuilder();
 								for (MessageDto msg : result.getMessages()) {
-									msgString.append("<span class=\"warn\">- " + msg.getDescription()
+									msgString.append("<span class=\"info\">- " + msg.getDescription()
 											+ "</span><br>");
 								}
 								MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), MessageDialog.getCloseCommand());
@@ -585,6 +623,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					});
 		}
 		else{
+			//MGR - ISDN 1824 - Como se realizan validaciones, ya no recibe una SolicitudServicioDto
+			//sino una SaveSolicitudServicioResultDto que permite realizar el manejo de mensajes
+			//MGR - ISDN 1824 - Como se realizan validaciones, ya no recibe una SolicitudServicioDto
+			//sino una SaveSolicitudServicioResultDto que permite realizar el manejo de mensajes
+			//MGR - ISDN 1824 - Como se realizan validaciones, ya no recibe una SolicitudServicioDto
+			//sino una SaveSolicitudServicioResultDto que permite realizar el manejo de mensajes
 			// TODO: Portabilidad
 			long contadorPortabilidad = 0;
 			for (LineaSolicitudServicioDto linea : editarSSUIData.getSolicitudServicio().getLineas()) {
@@ -648,7 +692,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		            if (errors.isEmpty()) {
 		            	
 		            	if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
-		            		editarSSUIData.validarPlanesCedentes(abrirCerrarDialogCallback());
+		            		editarSSUIData.validarPlanesCedentes(abrirCerrarDialogCallback(), false);
 		            	}else{
 		            		abrirDialogCerrar();
 		            	}
@@ -748,7 +792,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 						if(!result.getMessages().isEmpty()){
 							StringBuilder msgString = new StringBuilder();
 							for (MessageDto msg : result.getMessages()) {
-								msgString.append("<span class=\"error\">- " + msg.getDescription()
+								msgString.append("<span class=\"info\">- " + msg.getDescription()
 										+ "</span><br>");
 							}
 							MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), mostrarDialogCerrado);
@@ -808,12 +852,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public void getLineasSolicitudServicioInitializer(
 			DefaultWaitCallback<LineasSolicitudServicioInitializer> defaultWaitCallback) {
 		SolicitudRpcService.Util.getInstance().getLineasSolicitudServicioInitializer(
-				editarSSUIData.getGrupoSolicitud(), defaultWaitCallback);
+				editarSSUIData.getGrupoSolicitud(), editarSSUIData.getCuenta().isEmpresa(), defaultWaitCallback);
 	}
 
-	public void getListaPrecios(TipoSolicitudDto tipoSolicitudDto,
+	public void getListaPrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa,
 			DefaultWaitCallback<List<ListaPreciosDto>> defaultWaitCallback) {
-		SolicitudRpcService.Util.getInstance().getListasDePrecios(tipoSolicitudDto, defaultWaitCallback);
+		SolicitudRpcService.Util.getInstance().getListasDePrecios(tipoSolicitudDto, isEmpresa, defaultWaitCallback);
 	}
 
 	public void getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,
@@ -825,7 +869,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public void getServiciosAdicionales(LineaSolicitudServicioDto linea,
 			DefaultWaitCallback<List<ServicioAdicionalLineaSolicitudServicioDto>> defaultWaitCallback) {
 		SolicitudRpcService.Util.getInstance().getServiciosAdicionales(linea, editarSSUIData.getCuentaId(),
-				defaultWaitCallback);
+				editarSSUIData.getCuenta().isEmpresa(), defaultWaitCallback);
 	}
 
 	public String getNombreProximoMovil() {
@@ -1004,6 +1048,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			ssDto = obtenerSolicitudTransferencia(true);
 		}else{
 			ssDto =editarSSUIData.getSolicitudServicio();
+			//El vendedor de la cuenta solo se cambia si la cuenta es prospect y el usuario logueado es Administrador de creditos
+			if(isProspectAndADMCreditos(ssDto.getCuenta())) {
+				ssDto.getCuenta().setVendedor((VendedorDto) editarSSUIData.getVendedor().getSelectedItem());						
+			}		
 		}
 
 		SolicitudRpcService.Util.getInstance().generarCerrarSolicitud(
@@ -1019,7 +1067,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				if (errors.isEmpty()) {
 					abrirDialogCerrar();
 					//MGR - #1481
-				} else if(ClientContext.getInstance().getVendedor().isADMCreditos()){
+				} else if(ClientContext.getInstance().getVendedor().isADMCreditos() 
+						|| ClientContext.getInstance().getVendedor().isAP()){
 					
 					Command abrirDialogCerrarConAviso = new Command() {
 						
@@ -1060,6 +1109,14 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
         editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA());
 	}
 	
+
+	//Evaluacion si la cuenta es prospect , el usuario logueado es Administrador de creditos y fue elegido un vendedor
+	private boolean isProspectAndADMCreditos(CuentaSSDto cuentaDto) {
+		return !cuentaDto.isCliente() &&
+		       ClientContext.getInstance().getVendedor().isADMCreditos() &&
+		       editarSSUIData.getVendedor().getSelectedItem() != null;
+	}	
+
 	/**
 	 * Portabilidad
 	 */

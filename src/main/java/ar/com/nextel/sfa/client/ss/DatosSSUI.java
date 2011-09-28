@@ -112,7 +112,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private Widget getNssLayout() {
 		//nnsLayout = new Grid(1, 6);
 		//MGR - #1027
-		nnsLayout = new Grid(1, 11);
+		nnsLayout = new Grid(1, 12);
 		nnsLayout.addStyleName("layout");
 		refreshNssLayout();
 		return nnsLayout;
@@ -140,6 +140,16 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			nnsLayout.clearCell(0, 4);
 			nnsLayout.clearCell(0, 5);
 		}
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
+			nnsLayout.setHTML(0, 6, Sfa.constant().vendedorReq());
+			nnsLayout.setWidget(0, 7, editarSSUIData.getVendedor());
+		}
+		
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
+			nnsLayout.setHTML(0, 8, Sfa.constant().sucOrigenReq());
+			nnsLayout.setWidget(0, 9, editarSSUIData.getSucursalOrigen());
+		}
+		
 //		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
 //			nnsLayout.setHTML(0, 6, "Descuento Total:");
 //			nnsLayout.setWidget(0, 7, editarSSUIData.getDescuentoTotal());
@@ -172,11 +182,11 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			
 		if(editarSSUIData.getGrupoSolicitud() != null &&
 				instancias.get(GrupoSolicitudDto.ID_FAC_MENSUAL).equals(editarSSUIData.getGrupoSolicitud().getId())){
-			nnsLayout.setHTML(0, 9, Sfa.constant().ordenCompraReq());
-			nnsLayout.setWidget(0, 10, editarSSUIData.getOrdenCompra());
+			nnsLayout.setHTML(0, 10, Sfa.constant().ordenCompraReq());
+			nnsLayout.setWidget(0, 11, editarSSUIData.getOrdenCompra());
 		} else {
-			nnsLayout.clearCell(0, 9);
 			nnsLayout.clearCell(0, 10);
+			nnsLayout.clearCell(0, 11);
 		}
 
 	}
