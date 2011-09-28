@@ -1,9 +1,11 @@
 package ar.com.nextel.sfa.client.ss;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.InfocomRpcService;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -11,6 +13,7 @@ import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -19,6 +22,7 @@ import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.MessageDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
+import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
@@ -33,8 +37,10 @@ import ar.com.nextel.sfa.client.infocom.InfocomUIData;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
+import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
+import ar.com.nextel.sfa.client.util.PortabilidadResult;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
@@ -57,6 +63,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.IncrementalCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -104,6 +111,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private HashMap<String, Long> knownInstancias;
 	FlowPanel linksCrearSS;
 
+	// Portabilidad
+	private long idCuentaPort;
+	
+	
 	public EditarSSUI() {
 		super();
 		addStyleName("Gwt-EditarSSUI");
@@ -143,6 +154,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		String codigoVantive = HistoryUtils.getParam(CODIGO_VANTIVE);
 		mainPanel.setVisible(false);
 //		tabs.selectTab(0);
+
+		// Portabilidad
+		idCuentaPort = Long.valueOf(cuenta);
 		
 		linksCrearSS.clear();
 		if(grupoSS != null && knownInstancias != null && 
@@ -232,10 +246,13 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					}
 				});
 			}
-				editarSSUIData.clean();
-				varios.cleanScoring();
-			}
-			return true;
+			editarSSUIData.clean();
+			varios.cleanScoring();
+			
+			
+			cargarDatosPortabilidad();
+		}
+		return true;
 		
 	}
 	
@@ -568,26 +585,37 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					});
 		}
 		else{
-			SolicitudRpcService.Util.getInstance().saveSolicituServicio(editarSSUIData.getSolicitudServicio(),
-					new DefaultWaitCallback<SolicitudServicioDto>() {
-						public void success(SolicitudServicioDto result) {
-							guardandoSolicitud = false;
-							editarSSUIData.setSolicitud(result);
-							datos.refresh();
-							
-							// MessageDialog.getInstance().showAceptar("Guardado Exitoso",
-							// Sfa.constant().MSG_SOLICITUD_GUARDADA_OK(), MessageDialog.getCloseCommand());
-							editarSSUIData.setSaved(true);
-						}
+			// TODO: Portabilidad
+			long contadorPortabilidad = 0;
+			for (LineaSolicitudServicioDto linea : editarSSUIData.getSolicitudServicio().getLineas()) {
+				if(linea.getPortabilidad() != null) contadorPortabilidad++;
+			}
+			editarSSUIData.getSolicitudServicio().setCantLineasPortabilidad(contadorPortabilidad);
 
-						public void failure(Throwable caught) {
-							guardandoSolicitud = false;
-							super.failure(caught);
-						}
-					});
+			saveSolicitudServicio();
 		}
 	}
 
+	private void saveSolicitudServicio(){
+		SolicitudRpcService.Util.getInstance().saveSolicituServicio(editarSSUIData.getSolicitudServicio(),
+				new DefaultWaitCallback<SolicitudServicioDto>() {
+					public void success(SolicitudServicioDto result) {
+						guardandoSolicitud = false;
+						editarSSUIData.setSolicitud(result);
+						datos.refresh();
+						
+						// MessageDialog.getInstance().showAceptar("Guardado Exitoso",
+						// Sfa.constant().MSG_SOLICITUD_GUARDADA_OK(), MessageDialog.getCloseCommand());
+						editarSSUIData.setSaved(true);
+					}
+
+					public void failure(Throwable caught) {
+						guardandoSolicitud = false;
+						super.failure(caught);
+					}
+		});
+	}
+	
 	private void openGenerarCerrarSolicitdDialog(boolean cerrando) {
 		cerrandoAux = cerrando;
 		cuenta = CuentaEdicionTabPanel.getInstance();
@@ -656,7 +684,28 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				if (errors.isEmpty()) {
 					//MGR - #1481 - No vuelvo a validar los planes para que no aparesca el mensaje de
 					//aviso dos veces.
-					cerrarGenerarSolicitud();
+					
+					// TODO: Portabilidad
+					SolicitudRpcService.Util.getInstance().validarPortabilidad(editarSSUIData.getSolicitudServicio(), 
+							new DefaultWaitCallback<PortabilidadResult>() {
+						@Override
+						public void success(PortabilidadResult portabilidadResult) {
+							// Si arrastra un error en la validacion muestra un mensaje
+							if(portabilidadResult.isConError()){
+								if(portabilidadResult.getPermiteGrabar()){
+									ModalMessageDialog.getInstance().showAceptar("Error en la Validacion de Portabilidades",portabilidadResult.getDescripcionError(), 
+											new Command() {
+												public void execute() {
+													cerrarGenerarSolicitud();
+													ModalMessageDialog.getInstance().hide();
+												}
+											});
+								}else ModalMessageDialog.getInstance().showAceptar(portabilidadResult.getDescripcionError(), ModalMessageDialog.getCloseCommand());
+							}else cerrarGenerarSolicitud();
+						}
+					});
+
+//					cerrarGenerarSolicitud();
 				} else {
 					CerradoSSExitosoDialog.getInstance().hideLoading();
 					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
@@ -956,7 +1005,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		}else{
 			ssDto =editarSSUIData.getSolicitudServicio();
 		}
-		
+
 		SolicitudRpcService.Util.getInstance().generarCerrarSolicitud(
 				ssDto, pinMaestro, cerrandoSolicitud,
 				getGeneracionCierreCallback());
@@ -998,12 +1047,29 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private void abrirDialogCerrar(){
 		cerrandoSolicitud = cerrandoAux;
         getCerrarSSUI().setTitleCerrar(cerrandoAux);
+        
+        //TODO: Portabilidad
+        boolean permitePortabilidad = false;
+        for (LineaSolicitudServicioDto linea : editarSSUIData.getSolicitudServicio().getLineas()) {
+			if(linea.getPortabilidad() != null) permitePortabilidad = true;
+		}
+        
+        getCerrarSSUI().setTienePortabilidad(permitePortabilidad);
         getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
         editarSSUIData.getCuenta().isCliente(), editarSSUIData.getSolicitudServicioGeneracion(),
         editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA());
 	}
 	
-	
-	
-	
+	/**
+	 * Portabilidad
+	 */
+	private void cargarDatosPortabilidad(){
+		SolicitudRpcService.Util.getInstance().getPortabilidadInitializer(idCuentaPort, new DefaultWaitCallback<PortabilidadInitializer>(){
+			@Override
+			public void success(PortabilidadInitializer result) {
+				datos.setPortabilidadInitializer(result);
+			}
+		});
+	}
+
 }

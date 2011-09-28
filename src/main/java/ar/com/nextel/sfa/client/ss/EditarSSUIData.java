@@ -48,6 +48,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -590,6 +591,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		GwtValidator validator = new GwtValidator();
 		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
 			validarAlquileresDeLineaSS(validator, linea);
+			validarPortabilidadAdicional(validator, linea);
 			validarServicioMDS(validator, linea);
 			validarCargoActivacion(validator, linea);
 		}
@@ -681,6 +683,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
 			validarAlquileresDeLineaSS(validator, linea);
+			validarPortabilidadAdicional(validator,linea);
 			validarCargoActivacion(validator, linea);
 		}
 
@@ -700,6 +703,21 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		return errores;
 	}
 
+	/**
+	 * TODO: Portabilidad
+	 * @param validator
+	 * @param linea
+	 */
+	private void validarPortabilidadAdicional(GwtValidator validator,LineaSolicitudServicioDto linea){
+		if(linea.getPortabilidad() != null){
+			boolean portabilidadAdicional = false;
+			for(ServicioAdicionalLineaSolicitudServicioDto servicioAdicional : linea.getServiciosAdicionales()){
+				if(servicioAdicional.getServicioAdicional().getEsPortabilidad() && servicioAdicional.isChecked()) portabilidadAdicional = true;
+			}
+			if(!portabilidadAdicional) validator.addError(Sfa.constant().ERR_FALTA_PORTABILIDAD().replaceAll(V1, linea.getAlias()));
+		}
+	}
+	
 	private void validarAlquileresDeLineaSS(GwtValidator validator, LineaSolicitudServicioDto linea) {
 		// Pregunta si es de alquiler y busca si tiene uno seleccionado
 		if (linea.getTipoSolicitud().getTipoSolicitudBase().getFormaContratacion().equals(
@@ -797,6 +815,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				serviciosAdicionales.get(index.intValue()).clear();
 			}
 		}
+		
 		return linea.getNumeradorLinea().intValue();
 	}
 

@@ -74,6 +74,8 @@ public class SolicitudServicioDto implements IsSerializable {
     private Long idSucursal;
     private Long tipoCanalVentas;
     
+	private Long cantLineasPortabilidad;
+
     public SolicitudServicioDto() {
 		solicitudServicioGeneracion = new SolicitudServicioGeneracionDto();
 	}
@@ -420,5 +422,13 @@ public class SolicitudServicioDto implements IsSerializable {
 
 	public void setTipoCanalVentas(Long tipoCanalVentas) {
 		this.tipoCanalVentas = tipoCanalVentas;
+	}
+	
+	public void setCantLineasPortabilidad(Long cantLineasPortabilidad){
+		this.cantLineasPortabilidad = cantLineasPortabilidad;
+	}
+	
+	public Long getCantLineasPortabilidad(){
+		return cantLineasPortabilidad;
 	}
 }

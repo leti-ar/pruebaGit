@@ -20,6 +20,15 @@ public class ServicioAdicionalLineaSolicitudServicioDto implements IsSerializabl
 	private boolean requiereDAE = false;
 	private boolean checked = false;
 	private boolean obligatorio = false;
+//	private boolean esPortabilidad = false;
+
+//	public boolean isEsPortabilidad() {
+//		return esPortabilidad;
+//	}
+//
+//	public void setEsPortabilidad(boolean esPortabilidad) {
+//		this.esPortabilidad = esPortabilidad;
+//	}
 
 	public Long getId() {
 		return id;
@@ -180,6 +189,7 @@ public class ServicioAdicionalLineaSolicitudServicioDto implements IsSerializabl
 		servicio.requiereDAE = requiereDAE;
 		servicio.checked = checked;
 		servicio.obligatorio = obligatorio;
+//		servicio.esPortabilidad = esPortabilidad;
 		return servicio;
 	}
 

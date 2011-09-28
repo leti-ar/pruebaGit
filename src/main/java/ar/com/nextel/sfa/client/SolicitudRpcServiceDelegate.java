@@ -18,6 +18,7 @@ import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
@@ -29,7 +30,10 @@ import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
+import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
+import ar.com.nextel.sfa.client.util.PortabilidadResult;
+import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
@@ -244,4 +248,44 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.validarPlanesCedentes(ctoCedentes, isEmpresa, callback);
 	}
+	
+	/**
+	 * TODO: Portabilidad
+	 * @param callback
+	 */
+	public void getPortabilidadInitializer(long cuentaID, AsyncCallback<PortabilidadInitializer> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getPortabilidadInitializer(cuentaID, callback);
+	}
+
+	/**
+	 * TODO: Portabilidad
+	 * @param lineaID
+	 * @param callback
+	 */
+	public void getSolicitudPortabilidadDto(String lineaID, AsyncCallback<SolicitudPortabilidadDto> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getSolicitudPortabilidadDto(lineaID, callback);
+	}
+
+	/**
+	 * TODO: Portabilidad
+	 * @param codArea
+	 * @param callback
+	 */
+	public void getExisteEnAreaCobertura(int codArea,AsyncCallback<Boolean> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getExisteEnAreaCobertura(codArea, callback);
+	}
+
+	/**
+	 * TODO: Portabilidad
+	 * @param codArea
+	 * @param callback
+	 */
+	public void validarPortabilidad(SolicitudServicioDto solicitudServicioDto,AsyncCallback<PortabilidadResult> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.validarPortabilidad(solicitudServicioDto, callback);
+	}
+
 }

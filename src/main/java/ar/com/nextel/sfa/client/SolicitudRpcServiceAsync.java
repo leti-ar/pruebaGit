@@ -18,6 +18,7 @@ import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
@@ -29,7 +30,9 @@ import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
+import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
+import ar.com.nextel.sfa.client.util.PortabilidadResult;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -123,4 +126,20 @@ public interface SolicitudRpcServiceAsync {
 			boolean isEmpresa, AsyncCallback<List<String>> callback);
 	
 	public void loginServer(String linea, AsyncCallback<Void> callback);
+	
+	/**
+	 * Portabilidad
+	 * @param callback
+	 */
+	public void getPortabilidadInitializer(long cuentaID, 
+			AsyncCallback<PortabilidadInitializer> callback);
+
+	void getExisteEnAreaCobertura(int codArea, 
+			AsyncCallback<Boolean> callback);
+
+	void getSolicitudPortabilidadDto(String lineaID,
+			AsyncCallback<SolicitudPortabilidadDto> callback);
+
+	void validarPortabilidad(SolicitudServicioDto solicitudServicioDto,
+			AsyncCallback<PortabilidadResult> callback);
 }

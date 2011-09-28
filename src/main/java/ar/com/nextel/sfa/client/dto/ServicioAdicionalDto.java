@@ -6,6 +6,15 @@ public class ServicioAdicionalDto extends EnumDto implements IsSerializable {
 
 	private Boolean esCargoAdministrativo;
 	private Boolean esCDT;
+	private Boolean esPortabilidad;
+
+	public Boolean getEsPortabilidad() {
+		return esPortabilidad;
+	}
+
+	public void setEsPortabilidad(Boolean esPortabilidad) {
+		this.esPortabilidad = esPortabilidad;
+	}
 
 	public Boolean getEsCargoAdministrativo() {
 		return esCargoAdministrativo;

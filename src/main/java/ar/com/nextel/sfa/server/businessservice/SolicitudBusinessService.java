@@ -38,27 +38,34 @@ import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoTarjetaCredito;
 import ar.com.nextel.model.cuentas.beans.EstadoCreditoFidelizacion;
+import ar.com.nextel.model.cuentas.beans.Proveedor;
 import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
 import ar.com.nextel.model.personas.beans.Domicilio;
+import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
-import ar.com.nextel.model.solicitudes.beans.ParametrosGestion;
 import ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.ModalidadCobro;
+import ar.com.nextel.model.solicitudes.beans.ParametrosGestion;
 import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalIncluido;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaTransfSolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.SolicitudPortabilidad;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Sucursal;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
+import ar.com.nextel.model.solicitudes.beans.TipoTelefonia;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
+import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
+import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.server.util.MapperExtended;
@@ -311,7 +318,6 @@ public class SolicitudBusinessService {
 		
 		mapper.map(solicitudServicioDto, solicitudServicio);
 		
-		
 		//PARCHE: Esto es por que dozer mapea los id cuando se le indica que no
 		for (LineaTransfSolicitudServicio lineaTransf : solicitudServicio.getLineasTranf()) {
 			for (ContratoViewDto cto : solicitudServicioDto.getContratosCedidos()) {
@@ -330,8 +336,6 @@ public class SolicitudBusinessService {
 				}
 			}
 		}
-		
-	
 
 
 		//-MGR- Val-punto6 NO esta mapeando directamente los cambios en la cuenta, esta bien que lo haga asi?
@@ -415,8 +419,9 @@ public class SolicitudBusinessService {
 				domicilio.setId(null);
 			}
 		}
-		
+
 		repository.save(solicitudServicio);
+		
 		return solicitudServicio;
 	}
 
@@ -457,8 +462,15 @@ public class SolicitudBusinessService {
 				|| solicitudServicio.getCuenta().isProspect()) {
 			esProspect = true;
 		}
-		final Date hace4Dias = new Date(System.currentTimeMillis() - 4
-				* unDiaEnMilis);
+		final Date hace4Dias = new Date(System.currentTimeMillis() - 4 * unDiaEnMilis);
+		
+//		//TODO: Portabilidad
+//		for (LineaSolicitudServicio linea : solicitudServicio.getLineas()) {
+//			for (SolicitudPortabilidad portabilidad : linea.getSolicitudPortabilidad()) {
+//				if(portabilidad != null) pinMaestro = null;
+//			}
+//		}
+
 		if (!GenericValidator.isBlankOrNull(pinMaestro) && solicitudServicio.getCuenta().isEnCarga()) {
 			solicitudServicio.getCuenta().setPinMaestro(pinMaestro);
 		} else {

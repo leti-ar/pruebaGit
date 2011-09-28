@@ -1,23 +1,143 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
 	xmlns:g='urn:import:com.google.gwt.user.client.ui'
-	 xmlns:s='urn:import:ar.com.snoop.gwt.commons.client.widget'
+	xmlns:s='urn:import:ar.com.snoop.gwt.commons.client.widget'
 	xmlns:sfa='urn:import:ar.com.nextel.sfa.client.widget'>
 
-	<g:HTMLPanel>
-		<s:RegexTextBox ui:field='nroSS'></s:RegexTextBox>
-		<s:RegexTextBox ui:field='nroUltimaFactura'></s:RegexTextBox>
-		<s:ListBox ui:field='tipoDocumento'></s:ListBox>
-		<s:RegexTextBox ui:field='numeroDocumento'></s:RegexTextBox>
-		<s:RegexTextBox ui:field='razonSocial'></s:RegexTextBox>
-		<s:RegexTextBox ui:field='nombre'></s:RegexTextBox>
-		<s:RegexTextBox ui:field='apellido'></s:RegexTextBox>
-		<s:RegexTextBox ui:field='email'></s:RegexTextBox>
-		<sfa:TelefonoTextBox ui:field='telPrincipalTextBox'></sfa:TelefonoTextBox>
-		<s:ListBox ui:field='proveedorAnterior'></s:ListBox>
-		<s:ListBox ui:field='tipoTelefonia'></s:ListBox>
-		<sfa:TelefonoTextBox ui:field='telPortar'></sfa:TelefonoTextBox>
-		<s:ListBox ui:field='modalidadCobro'></s:ListBox>
-		<g:CheckBox ui:field='recibeSMS'></g:CheckBox>
-
+	<ui:style>
+		.frm{
+			border-top-width: 1; 
+			border-top-style: solid;
+		}
+	</ui:style>
+    
+    <g:HTMLPanel height="240px" width="530px" styleName="{style.frm}">
+		
+		<g:HorizontalPanel horizontalAlignment="ALIGN_RIGHT" width="515px" spacing="5">
+			<g:HTML ui:field="lnkCopiarCuenta" width="15px" height="15px"></g:HTML>
+		</g:HorizontalPanel>
+		
+		<g:HTMLPanel>
+			<table>
+				<tr>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<g:Label ui:field='lblNroSS' text="N° SS: " width="50"></g:Label> 						   
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<s:RegexTextBox  ui:field='txtNroSS' width="120" maxLength="50"></s:RegexTextBox> 		   
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<g:Label ui:field='lblNroUltimaFacura' text="N° Última Factura: " width="130"></g:Label>   
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<s:RegexTextBox ui:field='txtNroUltimaFacura' width="150" maxLength="10"></s:RegexTextBox> 
+					</td>
+				</tr>
+				<tr>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<g:Label ui:field='lblTipoDocumento' text="Tipo Doc.: " width="72"></g:Label> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<s:ListBox ui:field='lstTipoDocumento' width="70"></s:ListBox> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<g:Label ui:field='lblNroDocumento' text="Número: " width="130"></g:Label> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<s:RegexTextBox ui:field='txtNroDocumento' width="150" maxLength="20" ></s:RegexTextBox> 
+					</td>
+				</tr>
+			</table>
+		</g:HTMLPanel>
+		
+		<g:HTMLPanel>
+			<table>
+				<tr>
+					<td style="padding-bottom:2px; padding-top:2px;"> 
+						<g:Label ui:field='lblRazonSocial' text="Razón Social: " width="95"></g:Label> 
+					</td>
+					<td style="padding-bottom:2px; padding-top:2px;"> 
+						<s:RegexTextBox ui:field='txtRazonSocial' width="382" maxLength="50"></s:RegexTextBox> 
+					</td>
+				</tr>
+			</table>
+		</g:HTMLPanel>
+		
+		<g:HTMLPanel>
+			<table>
+				<tr>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<g:Label ui:field='lblNombre' text="Nombre: " width="65" ></g:Label> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<s:RegexTextBox ui:field='txtNombre' width="165" maxLength="50"></s:RegexTextBox> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<g:Label ui:field='lblApellido' text="Apellido: " width="70" ></g:Label> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<s:RegexTextBox ui:field='txtApellido' width="165" maxLength="50"></s:RegexTextBox> 
+					</td>
+				</tr>
+				<tr>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<g:Label ui:field='lblTelefono' text="Teléfono: " width="68"></g:Label> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<sfa:TelefonoTextBox ui:field='txtTelefono' width="170"></sfa:TelefonoTextBox> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<g:Label ui:field='lblEmail' text="E-Mail: " width="70"></g:Label> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<s:RegexTextBox ui:field='txtEmail' width="165" maxLength="110"></s:RegexTextBox> 
+					</td>
+				</tr>
+			</table>
+		</g:HTMLPanel>
+		
+		<g:HTMLPanel>
+			<table>
+				<tr>
+					<td style="padding-bottom:3px; padding-top:2px;"> 
+						<g:Label ui:field='lblProveedorAnterior' text="Operador Origen: " width="122"></g:Label> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:2px;"> 
+						<s:ListBox ui:field='lstProveedorAnterior' width="110" ></s:ListBox> 
+					</td>
+				</tr>
+				<tr>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<g:Label ui:field='lblTipoTelefonia' text="Tipo Telefonia: " width="103"></g:Label> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<s:ListBox ui:field='lstTipoTelefonia' width="110"></s:ListBox> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px; padding-left:50px;"> 
+						<g:Label ui:field='lblModalidadCobro' text="CPP/MPP: " width="70"></g:Label> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<s:ListBox ui:field='lstModalidadCobro' width="55"></s:ListBox> 
+					</td>
+				</tr>
+			</table>
+		</g:HTMLPanel>
+		
+		<g:HTMLPanel>
+			<table>
+				<tr>
+					<td style="padding-bottom:3px; padding-top:2px;"> 
+						<g:Label ui:field='lblTelefonoPortar' text="N° a Portar: " width="95"></g:Label> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:2px;"> 
+						<sfa:TelefonoTextBox ui:field='txtTelefonoPortar' width="170"></sfa:TelefonoTextBox> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:2px; padding-left:20px;"> 
+						<g:CheckBox ui:field='chkRecibeSMS' text="Recibe SMS" width="100"></g:CheckBox> 
+					</td>
+				</tr>
+			</table>
+		</g:HTMLPanel>
+		
 	</g:HTMLPanel>
+
 </ui:UiBinder>

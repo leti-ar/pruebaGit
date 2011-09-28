@@ -1,6 +1,10 @@
 package ar.com.nextel.sfa.server;
 
 import java.io.File;
+import java.io.Serializable;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -14,6 +18,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -43,63 +48,87 @@ import ar.com.nextel.components.message.Message;
 import ar.com.nextel.components.message.MessageList;
 import ar.com.nextel.components.sequence.DefaultSequenceImpl;
 import ar.com.nextel.framework.repository.Repository;
+import ar.com.nextel.framework.repository.hibernate.HibernateRepository;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
+import ar.com.nextel.model.cuentas.beans.Division;
+import ar.com.nextel.model.cuentas.beans.GranCuenta;
+import ar.com.nextel.model.cuentas.beans.Proveedor;
+import ar.com.nextel.model.cuentas.beans.Suscriptor;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.personas.beans.Localidad;
+import ar.com.nextel.model.personas.beans.Persona;
+import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
+import ar.com.nextel.model.solicitudes.beans.ModalidadCobro;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
 import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.SolicitudPortabilidad;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Sucursal;
 import ar.com.nextel.model.solicitudes.beans.TipoAnticipo;
 import ar.com.nextel.model.solicitudes.beans.TipoPlan;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
+import ar.com.nextel.model.solicitudes.beans.TipoTelefonia;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
+import ar.com.nextel.sfa.client.dto.GranCuentaDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.LocalidadDto;
 import ar.com.nextel.sfa.client.dto.MessageDto;
+import ar.com.nextel.sfa.client.dto.ModalidadCobroDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
+import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
+import ar.com.nextel.sfa.client.dto.ProveedorDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
 import ar.com.nextel.sfa.client.dto.SucursalDto;
+import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
+import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
+import ar.com.nextel.sfa.client.dto.TipoTelefoniaDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
+import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
+import ar.com.nextel.sfa.client.util.PortabilidadResult;
+import ar.com.nextel.sfa.server.businessservice.CuentaBusinessService;
 import ar.com.nextel.sfa.server.businessservice.SolicitudBusinessService;
 import ar.com.nextel.sfa.server.util.MapperExtended;
+import ar.com.nextel.sfa.server.util.PortabilidadPropertiesRTFGenerator;
 import ar.com.nextel.util.AppLogger;
 import ar.com.nextel.util.DateUtils;
 import ar.com.nextel.util.ExcelBuilder;
@@ -121,7 +150,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private SolicitudServicioRepository solicitudServicioRepository;
 	private NegativeFilesBusinessOperator negativeFilesBusinessOperator;
 	private DefaultRetriever globalParameterRetriever;
-	
+	private CuentaBusinessService cuentaBusinessService;
+
 	//MELI
 	private DefaultSequenceImpl tripticoNextValue;
 //	private AvalonSystem avalonSystem;
@@ -154,6 +184,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		tripticoNextValue = (DefaultSequenceImpl)context.getBean("tripticoNextValue");
 //		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
 		messageRetriever = (DefaultRetriever)context.getBean("messageRetriever");
+		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");
 	}
 
 	public SolicitudServicioDto createSolicitudServicio(
@@ -305,7 +336,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		String opcionesPataconex = "Si;No";
 		listaPataconex = Arrays.asList(opcionesPataconex.split(";"));
 		buscarSSCerradasInitializer.setOpcionesPatacones(listaPataconex);
-
+		
 		buscarSSCerradasInitializer.setOpcionesEstado(mapper.convertList(repository
 				.getAll(EstadoSolicitud.class), EstadoSolicitudDto.class));
 
@@ -352,8 +383,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	public SolicitudServicioDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
 			throws RpcExceptionMessages {
 		try {
-			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(
-					solicitudServicioDto, mapper);
+			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
 			solicitudServicioDto = mapper.map(solicitudSaved, SolicitudServicioDto.class);
 		} catch (Exception e) {
 			AppLogger.error(e);
@@ -816,4 +846,245 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		AppLogger.info(linea);
 	}
 
+	/**
+	 * TODO: Portabilidad
+	 * @return
+	 */
+	public PortabilidadInitializer getPortabilidadInitializer(long cuentaID) throws RpcExceptionMessages {
+		PortabilidadInitializer initializer = new PortabilidadInitializer();
+		
+		initializer.setLstTipoDocumento(mapper.convertList(
+						repository.find("FROM TipoDocumento tdoc WHERE tdoc.portabilidad = TRUE"), TipoDocumentoDto.class));
+		initializer.setLstProveedorAnterior(mapper.convertList(
+						repository.find("FROM Proveedor pro WHERE pro.portabilidad = TRUE"), ProveedorDto.class));
+		initializer.setLstTipoTelefonia(mapper.convertList(
+						repository.find("FROM TipoTelefonia ttel WHERE ttel.codigoBSCS IN('1','2')"), TipoTelefoniaDto.class));
+		initializer.setLstModalidadCobro(mapper.convertList(
+						repository.find("FROM ModalidadCobro mcob WHERE mcob.codigoBSCS IN('CPP','MPP')"), ModalidadCobroDto.class));
+
+		// Carga la cuenta para poder extraer los datos de la persona
+		Cuenta persona_aux = (Cuenta) repository.retrieve(Cuenta.class, cuentaID);
+		initializer.setPersona(mapper.map(persona_aux.getPersona(), PersonaDto.class));
+
+		return initializer;
+	}
+
+	/**
+	 * TODO: Portabilidad
+	 */
+	public SolicitudPortabilidadDto getSolicitudPortabilidadDto(String lineaID) throws RpcExceptionMessages {
+		String query = "FROM SolicitudPortabilidad port WHERE port.lineaSolicitud.id IN(" + lineaID + ")"; 
+		return mapper.map(repository.find(query).get(0), SolicitudPortabilidadDto.class);
+	}
+
+	/**
+	 * TODO: Portabilidad
+	 */
+	public boolean getExisteEnAreaCobertura(int codArea) throws RpcExceptionMessages {
+		String query = "FROM Localidad local WHERE local.codigoArea = ? AND local.cobertura = ?";
+		return repository.find(query, String.valueOf(codArea),true).size() > 0 ? true : false;
+	}
+
+	/**
+	 * 
+	 * @param nroSS_portabilidad
+	 * @param nroSS
+	 * @return
+	 */
+	private boolean verificarNroSS(String nroSS_portabilidad,String nroSS){
+		String nroSS_portabilidad_aux;
+		int nroSS_portabilidad_aux_int;
+		final int MAX_PORTABILIDADES = 20;
+		
+		// Valida que el numero SS sea valido
+		if(nroSS_portabilidad.contains("N")){ // Contiene la letra N
+			if(nroSS_portabilidad.contains(".")){ // Contiene un punto
+				nroSS_portabilidad_aux = nroSS_portabilidad.substring(nroSS_portabilidad.indexOf("N") + 1, nroSS_portabilidad.lastIndexOf("."));
+				if(nroSS_portabilidad_aux.equals(nroSS)){ // Numero igual al de solicitud de servicio
+					nroSS_portabilidad_aux = nroSS_portabilidad.substring(nroSS_portabilidad.lastIndexOf("."));
+					try{
+						nroSS_portabilidad_aux_int = Integer.parseInt(nroSS_portabilidad_aux);
+						if(nroSS_portabilidad_aux_int > MAX_PORTABILIDADES) return false; // El conteo de solicitudes supera el maximo
+					}catch(NumberFormatException e){
+						return false; // El conteo de solicitudes no es un numero
+					}
+				}else return false; // El numero sin la N ni el punto es diferente al de la solicitud de servicio
+			}else{ // No contiene un punto
+				nroSS_portabilidad_aux = nroSS_portabilidad.substring(nroSS_portabilidad.indexOf("N") + 1);
+				if(!nroSS_portabilidad_aux.equals(nroSS)) return false; // El numero sin la N es diferente al de la solicitud de servicio
+			}
+		}else return false; // No contiene la letra N
+
+		return true;
+	}
+	
+	/**
+	 * TODO: Portabilidad
+	 */
+	public PortabilidadResult validarPortabilidad(SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages {
+		// Mensajes
+		final String MSG_ERR_01 = "El numero a portar _NUMERO_ se encuentra cargado en mas de una Linea de la Solicitud";
+		final String MSG_ERR_02 = "Solamente una Linea de Solicitud de Portabilidad puede recibir SMS para el Nro. de SS: _NUMERO_";
+		final String MSG_ERR_02_BIS = "Debe seleccionar al menos una Linea de Solicitud de Servicio para recibir SMS para el Nro. de SS: _NUMERO_";
+		final String MSG_ERR_03 = "Todas la Lineas de Solicitud con Portabilidad que correspondan a la telefonia prepaga deben recibir SMS";
+		final String MSG_ERR_04 = "Excede la maxima cantidad de equipos Prepagos con Portabilidad por Solicitud de Servicio";
+		final String MSG_ERR_05 = "Existen Lineas con tipo de Telefonia Prepago que contienen el mismo numero de Solicitud de Portabilidad";
+		final String MSG_ERR_06 = "Existen Lineas con diferentes Operadores que contienen el mismo numero de Solicitud de Portabilidad";
+		final String MSG_ERR_07 = "Existen Lineas con igual numero de Solicitud de Portabilidad para distintas Razon Social, " +
+				"Nombre y Apellido, tipo y numero Documento";
+		final String MSG_ERR_08 = "Existen Lineas que tienen un numero de Solicitud de Portabilidad incorrecto";
+		final String MSG_ERR_09 = "La Cuenta posee Solicitudes de Portabilidad pendientes";
+		
+		int contLineasPrepagas = 0;
+		int cantRecibeSMS;
+		
+		Boolean permite;
+		
+		String nroSS;
+		String telefono;
+		String telefonoAUX;
+		String apoderado;
+		String apoderadoAUX;
+		
+		SolicitudPortabilidadDto portabilidad;
+		SolicitudPortabilidadDto portabilidadAUX;
+		
+		List<LineaSolicitudServicioDto> lineas = solicitudServicioDto.getLineas();
+		List<List<Integer>> x_nroSS = new ArrayList<List<Integer>>();
+		boolean encontro;
+		String nroSS_1;
+		String nroSS_2;
+		
+		for(int i = 0; i < lineas.size(); i++){
+			if(lineas.get(i).getPortabilidad() != null){
+				encontro = false;
+				for(int j = 0; j < x_nroSS.size() && !encontro; j++){
+					nroSS_1 = lineas.get(i).getPortabilidad().getNroSS();
+					nroSS_2 = lineas.get(x_nroSS.get(j).get(0)).getPortabilidad().getNroSS();
+					
+					if(nroSS_1.equals(nroSS_2)){
+						x_nroSS.get(j).add(i);
+						encontro = true;
+					}
+				}
+				
+				if(!encontro){
+					x_nroSS.add(new ArrayList<Integer>());
+					x_nroSS.get(x_nroSS.size() - 1).add(i);
+				}
+			}
+		}
+
+		if(x_nroSS.size() > 0){
+			for(int i = 0; i < x_nroSS.size(); i++){
+				cantRecibeSMS = 0;
+				
+				for(int j = 0; j < x_nroSS.get(i).size(); j++){
+					portabilidad = lineas.get(i).getPortabilidad();
+					telefono = portabilidad.getAreaTelefono() + portabilidad.getTelefonoPortar();
+					nroSS = portabilidad.getNroSS();
+					apoderado = portabilidad.getRazonSocial() + portabilidad.getNombre() + portabilidad.getApellido() + 
+								portabilidad.getNumeroDocumento() + portabilidad.getTipoDocumento().getId();
+					
+					if(!verificarNroSS(nroSS, solicitudServicioDto.getNumero())) return new PortabilidadResult(true,false,MSG_ERR_08);
+					
+					if(portabilidad.getTipoTelefonia().getId() == 1){ // Tipo de la telefonia de portabilidad es Prepaga
+						// Debe recibir SMS si el tipo de telefonia es prepaga
+						if(!portabilidad.isRecibeSMS()) return new PortabilidadResult(true, false, MSG_ERR_03);
+						contLineasPrepagas++; // Cuenta la cantidad de lineas prepagas
+					}
+					
+					if(portabilidad.isRecibeSMS()) cantRecibeSMS++;
+					
+					// Empieza un bucle para lograr comparaciones
+					for(int n = 0; n < x_nroSS.get(i).size(); n++){
+						if(j != n){ // Solo compara si las lineas son de diferentes indice en la lista (no son la misma)
+							if(solicitudServicioDto.getLineas().get(n).getPortabilidad() != null){
+								portabilidadAUX = solicitudServicioDto.getLineas().get(n).getPortabilidad();
+								telefonoAUX = portabilidadAUX.getAreaTelefono() + portabilidadAUX.getTelefonoPortar();
+								apoderadoAUX = portabilidadAUX.getRazonSocial() + portabilidadAUX.getNombre() + portabilidadAUX.getApellido() + 
+												portabilidadAUX.getNumeroDocumento() + portabilidadAUX.getTipoDocumento().getId();
+								
+								// Los telefonos a portar no pueden ser iguales entre lineas
+								if(telefono.equals(telefonoAUX)) return new PortabilidadResult(true,false,MSG_ERR_01.replaceAll("_NUMERO_", telefono));
+								
+								// Los numeros de solicitud de portabilidad no deben repetirse
+								if(portabilidad.getNroSS().equals(portabilidadAUX.getNroSS())){
+									if(portabilidad.getProveedorAnterior().getId() != portabilidadAUX.getProveedorAnterior().getId()) 
+										return new PortabilidadResult(true, false, MSG_ERR_06);
+									
+									// El tipo de telefonia entre las portabilidades comparadas es prepaga
+									if(portabilidad.getTipoTelefonia().getId() == 1 && portabilidadAUX.getTipoTelefonia().getId() == 1) 
+										return new PortabilidadResult(true, false, MSG_ERR_05);
+									// No debe repetirse la razon social, el apellido, el nombre, y el numero y tipo de documento 
+									if(!apoderado.toUpperCase().equals(apoderadoAUX.toUpperCase())) return new PortabilidadResult(true, false, MSG_ERR_07);
+								} // End control de numero de portabilidad repetido
+							}
+						}
+					} // End n
+					
+					// Solo permite una linea que reciba SMS
+					if(cantRecibeSMS > 1) return new PortabilidadResult(true, false, MSG_ERR_02.replaceAll("_NUMERO_", nroSS));
+					// Debe haber una linea que reciba SMS
+					if(cantRecibeSMS < 1) return new PortabilidadResult(true, false, MSG_ERR_02_BIS.replaceAll("_NUMERO_", nroSS)); 
+				}
+			}
+			
+			// El tipo de contribuyente de la cuenta de la solicitud de servicio es consumidor final
+			if(repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId()).getTipoContribuyente().getId() == 10){
+				if(contLineasPrepagas > 6){
+					// No pueden haber mas de 6 lineas del tipo prepaga con portabilidad si es consumidor final. 
+					// Al analista de Creditos le muestra un mensaje y guarda
+					if(sessionContextLoader.getVendedor().getTipoVendedor().getId() == 21) return new PortabilidadResult(true, true, MSG_ERR_04);// Tipo vendedor analista creditos = 21
+					else return new PortabilidadResult(true, false, MSG_ERR_04);
+				}
+			}
+			
+			// Valida si existen solicitudes Pendientes de Portabilidad
+//			permite = false;
+//			try{
+//				Long idVantive = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId()).getIdVantive();
+//				permite = vantiveSystem.getPermitePortabilidad(idVantive);
+//			}catch(Exception e){
+//				throw ExceptionUtil.wrap(e);
+//			}
+//			if(!permite){
+//				// Al analista de Creditos le muestra un mensaje y guarda
+//				if(sessionContextLoader.getVendedor().getTipoVendedor().getId() == 21) return new PortabilidadResult(true, true, MSG_ERR_09);// Tipo vendedor analista creditos = 21
+//				else return new PortabilidadResult(true, false, MSG_ERR_09);
+//			}
+
+			generarRTFportabilidad(solicitudServicioDto);
+		}
+		
+		// Puede guardar
+		//return new PortabilidadResult(false,true,"");
+		return new PortabilidadResult(true,false,"PRUEBAS RTF");
+	}
+	
+	/**
+	 * TODO: Portabilidad
+	 * @param solcitudServicioDto
+	 * @return
+	 * @throws RpcExceptionMessages
+	 */
+	public void generarRTFportabilidad(SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages {
+		PortabilidadPropertiesRTFGenerator portabilidadPropGen = 
+			new PortabilidadPropertiesRTFGenerator(repository.retrieve(CuentaDto.class, solicitudServicioDto.getCuenta().getId()),solicitudServicioDto);
+		
+		List<Map<String, String>> reportes_parametros = portabilidadPropGen.getReportes_parametros();
+		List<Map<String, String>> reportes_parametros_adjunto = portabilidadPropGen.getReportes_parametros_adjunto();
+		
+		AppLogger.info("//////////////////////////////////////////////////////////////////////////////");
+		for (Map<String, String> map : reportes_parametros) {
+			Iterator<Entry<String, String>> it = map.entrySet().iterator();
+			
+			while(it.hasNext()){
+				Map.Entry<String,String> e = it.next();
+				AppLogger.info(e.getKey() + " [ " + e.getValue() + " ]");
+			}
+			AppLogger.info("같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같");
+		}
+		AppLogger.info("//////////////////////////////////////////////////////////////////////////////");
+	}
 }

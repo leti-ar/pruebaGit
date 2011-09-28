@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.tools.ant.taskdefs.Delete;
+
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -16,9 +18,12 @@ import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.PersonaDto;
+import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
@@ -36,6 +41,7 @@ import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -81,6 +87,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private List<TipoDescuentoSeleccionado> descuentoSeleccionados = new ArrayList<TipoDescuentoSeleccionado>();
 	private boolean sacarTipoDescuento;
 	private boolean descuentoTotalAplicado = false;
+	private PortabilidadInitializer portabilidadInitializer;
 	
 	private static final String SELECTED_ROW = "selectedRow";
 
@@ -94,6 +101,14 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		mainpanel.add(getDetallePanel());
 	}
 
+	/**
+	 * portabilidad
+	 * TODO
+	 */
+	public void setPortabilidadInitializer(PortabilidadInitializer unaPortabilidadInitializer){
+		portabilidadInitializer = unaPortabilidadInitializer;
+	}
+	
 	private Widget getNssLayout() {
 		//nnsLayout = new Grid(1, 6);
 		//MGR - #1027
@@ -243,14 +258,14 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		wrapper.addStyleName("resumenSSTableWrapper mlr5");
 		detalleSS = new FlexTable();
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
-			String[] titlesDetalle = { Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), 
+			String[] titlesDetalle = { Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(),
 					Sfa.constant().whiteSpace(), "Item", "Pcio Vta.", "Precio con Desc.", "Alias", "Plan", 
 					"Pcio Vta. Plan", "Localidad", "Nº Reserva", "Tipo SS", "Cant.", "DDN", "DDI", "Roaming" };			
 			for (int i = 0; i < titlesDetalle.length; i++) {
 				detalleSS.setHTML(0, i, titlesDetalle[i]);
 			}
 		} else {
-			String[] titlesDetalle = { Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), "Item",
+			String[] titlesDetalle = { Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(),"Item",
 					"Pcio Vta.", "Alias", "Plan", "Pcio Vta. Plan", "Localidad", "Nº Reserva", "Tipo SS",
 					"Cant.", "DDN", "DDI", "Roaming" };
 			for (int i = 0; i < titlesDetalle.length; i++) {
@@ -363,11 +378,11 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
 			if (detalleSS == sender) {
 				if (row > 0) {
-					if (col == 8) {
+					if (col == 9) {
 						if (!serviciosAdicionales.isEditing()) {
 							editarPrecioDeVentaPlan();
 						}
-					} else if (col > 2) {
+					} else if (col > 3) {
 						// Carga servicios adicionales en la tabla
 						if (!serviciosAdicionales.isEditing()) {
 							selectDetalleLineaSSRow(row);
@@ -384,7 +399,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 								removeDetalleLineaSSRow(row);
 							};
 						}, ModalMessageDialog.getCloseCommand());
-					} else if (col == 2) {
+					} else if (col == 3) {
 						if (descuentoTotalAplicado) {
 							noSePuedeAplicarDescuento(false);
 						} else {
@@ -397,18 +412,18 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			} else if (serviciosAdicionales.getTable() == sender) {
 				if (col == 0 && row > 0) {
 					serviciosAdicionales.agregarQuitarServicioAdicional(row);
-				} else if (col == 4 && row > 0) {
+				} else if (col == 5 && row > 0) {
 					serviciosAdicionales.editarPrecioDeVentaServicioAdicional(row);
 				}
 			}
 		} else {
 			if (detalleSS == sender) {
 				if (row > 0) {
-					if (col == 6) {
+					if (col == 7) {
 						if (!serviciosAdicionales.isEditing()) {
 							editarPrecioDeVentaPlan();
 						}
-					} else if (col > 1) {
+					} else if (col > 2) {
 						// Carga servicios adicionales en la tabla
 						if (!serviciosAdicionales.isEditing()) {
 							selectDetalleLineaSSRow(row);
@@ -429,13 +444,44 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			} else if (serviciosAdicionales.getTable() == sender) {
 				if (col == 0 && row > 0) {
 					serviciosAdicionales.agregarQuitarServicioAdicional(row);
-				} else if (col == 3 && row > 0) {
+				} else if (col == 4 && row > 0) {
 					serviciosAdicionales.editarPrecioDeVentaServicioAdicional(row);
 				}
 			}
 		}
+		// TODO: Portabilidad
+		if(detalleSS == sender){
+			if(row > 0 && col == 2){
+				openPortabilidadReplicarDialog(row);
+			}
+		}
 	}
 
+	/**
+	 * TODO: Portabilidad
+	 * @param row
+	 */
+	private void openPortabilidadReplicarDialog(int row){
+		SolicitudPortabilidadDto portabilidad = editarSSUIData.getLineasSolicitudServicio().get(row - 1).getPortabilidad();
+		
+		if(portabilidad != null){
+			if(portabilidad.getTipoDocumento() != null && !portabilidad.getNumeroDocumento().isEmpty() && 
+					!portabilidad.getRazonSocial().isEmpty() && !portabilidad.getNombre().isEmpty() && !portabilidad.getApellido().isEmpty()){
+
+				PortabilidadReplicarDialog replicarDialog = new PortabilidadReplicarDialog();
+				replicarDialog.show(editarSSUIData.getLineasSolicitudServicio(),row - 1);
+			}else{
+				ModalMessageDialog.getInstance().showAceptar(
+						"Para portar los datos de Portabilidad deben estar completos Tipo y Numero de Documento, Razon Social, Nombre y Apellido", 
+						ModalMessageDialog.getCloseCommand());
+			}
+		}else{
+			ModalMessageDialog.getInstance().showAceptar(
+					"El Item seleccionado no posee una Solicitud de Portabilidad para replicar", 
+					ModalMessageDialog.getCloseCommand());
+		}
+	}
+	
 	private void selectDetalleLineaSSRow(int row) {
 		if (row > 0) {
 			detalleSS.getRowFormatter().removeStyleName(selectedDetalleRow, SELECTED_ROW);
@@ -462,15 +508,23 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			itemSolicitudDialog = new ItemSolicitudDialog("Agregar Item", controller);
 			Command aceptarCommand = new Command() {
 				public void execute() {
-					LineaSolicitudServicioDto lineaSolicitudServicio = itemSolicitudDialog.getItemSolicitudUIData()
-							.getLineaSolicitudServicio();
+					LineaSolicitudServicioDto lineaSolicitudServicio = itemSolicitudDialog.getItemSolicitudUIData().getLineaSolicitudServicio();
 					addLineaSolicitudServicio(lineaSolicitudServicio);
+					
+					itemSolicitudDialog.getItemSolicitudUIData().getPortabilidadPanel().generarNroSS(controller.getEditarSSUIData().getSolicitudServicio());
+					
 					lineaModificada = lineaSolicitudServicio.getId();
 				}
 			};
 			itemSolicitudDialog.setAceptarCommand(aceptarCommand);
+
+			// TODO: Carga los datos de inizializacion del componente de portabilidad
+			itemSolicitudDialog.cargarPortabilidadInitializer(portabilidadInitializer);
 		}
+		itemSolicitudDialog.cargarPersona(portabilidadInitializer.getPersona());
+		itemSolicitudDialog.resetearPanelPortabilidad();
 		itemSolicitudDialog.setCuentaEmpresa(editarSSUIData.getCuenta().isEmpresa());
+
 		itemSolicitudDialog.show(linea);
 	}
 
@@ -591,7 +645,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			drawDetalleSSRow(nueva, newRow);
 		}
 
-		onTableClick(detalleSS, firstNewRow, 3);
+		onTableClick(detalleSS, firstNewRow, 4);
 	}
 
 	/** Limpia y recarga la tabla de Detalle de Solicitud de Servicio completamente */
@@ -613,40 +667,42 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private void drawDetalleSSRow(LineaSolicitudServicioDto linea, int newRow) {
 		detalleSS.setWidget(newRow, 0, IconFactory.lapiz());
 		detalleSS.setWidget(newRow, 1, IconFactory.cancel());
+		detalleSS.setWidget(newRow, 2, IconFactory.copiar());
+		
 		int i = 0;
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
-			detalleSS.setWidget(newRow, 2-i, IconFactory.bolsaPesos());
+			detalleSS.setWidget(newRow, 3-i, IconFactory.bolsaPesos());
 		} else {
 			i = 1;
 		}
-		detalleSS.setHTML(newRow, 3-i, linea.getItem().getDescripcion());
-		detalleSS.setHTML(newRow, 4-i, currencyFormat.format(linea.getPrecioLista()));
-		detalleSS.getCellFormatter().addStyleName(newRow, 4-i, "alignRight");
+		detalleSS.setHTML(newRow, 4-i, linea.getItem().getDescripcion());
+		detalleSS.setHTML(newRow, 5-i, currencyFormat.format(linea.getPrecioLista()));
+		detalleSS.getCellFormatter().addStyleName(newRow, 5-i, "alignRight");
 		if (linea.getPrecioConDescuento() == null) {
 			linea.setPrecioConDescuento(linea.getPrecioLista());
 		}
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
 			linea.setPrecioVenta(linea.getPrecioConDescuento());
-			detalleSS.setHTML(newRow, 5-i, currencyFormat.format(linea.getPrecioConDescuento()));
-			detalleSS.getCellFormatter().addStyleName(newRow, 5-i, "alignRight");
+			detalleSS.setHTML(newRow, 6-i, currencyFormat.format(linea.getPrecioConDescuento()));
+			detalleSS.getCellFormatter().addStyleName(newRow, 6-i, "alignRight");
 		} else {
 			i = 2;
 		}
-		detalleSS.setHTML(newRow, 6-i, linea.getAlias() != null ? linea.getAlias() : "");
-		detalleSS.setHTML(newRow, 7-i, linea.getPlan() != null ? linea.getPlan().getDescripcion() : "");
-		detalleSS.setHTML(newRow, 8-i, linea.getPlan() != null ? currencyFormat.format(linea
+		detalleSS.setHTML(newRow, 7-i, linea.getAlias() != null ? linea.getAlias() : "");
+		detalleSS.setHTML(newRow, 8-i, linea.getPlan() != null ? linea.getPlan().getDescripcion() : "");
+		detalleSS.setHTML(newRow, 9-i, linea.getPlan() != null ? currencyFormat.format(linea
 				.getPrecioVentaPlan()) : "");
-		detalleSS.getCellFormatter().addStyleName(newRow, 8-i, "alignRight");
-		detalleSS.setHTML(newRow, 9-i, linea.getLocalidad() != null ? linea.getLocalidad().getDescripcion()
+		detalleSS.getCellFormatter().addStyleName(newRow, 9-i, "alignRight");
+		detalleSS.setHTML(newRow, 10-i, linea.getLocalidad() != null ? linea.getLocalidad().getDescripcion()
 				: "");
-		detalleSS.setHTML(newRow, 10-i, linea.getNumeroReserva());
-		detalleSS.setHTML(newRow, 11-i, linea.getTipoSolicitud().getDescripcion());
-		detalleSS.setHTML(newRow, 12-i, "" + linea.getCantidad());
-		detalleSS.setHTML(newRow, 13-i, linea.getDdn() ? IconFactory.tildeVerde().toString() : Sfa.constant()
+		detalleSS.setHTML(newRow, 11-i, linea.getNumeroReserva());
+		detalleSS.setHTML(newRow, 12-i, linea.getTipoSolicitud().getDescripcion());
+		detalleSS.setHTML(newRow, 13-i, "" + linea.getCantidad());
+		detalleSS.setHTML(newRow, 14-i, linea.getDdn() ? IconFactory.tildeVerde().toString() : Sfa.constant()
 				.whiteSpace());
-		detalleSS.setHTML(newRow, 14-i, linea.getDdi() ? IconFactory.tildeVerde().toString() : Sfa.constant()
+		detalleSS.setHTML(newRow, 15-i, linea.getDdi() ? IconFactory.tildeVerde().toString() : Sfa.constant()
 				.whiteSpace());
-		detalleSS.setHTML(newRow, 15-i, linea.getRoaming() ? IconFactory.tildeVerde().toString() : Sfa
+		detalleSS.setHTML(newRow, 16-i, linea.getRoaming() ? IconFactory.tildeVerde().toString() : Sfa
 				.constant().whiteSpace());
 	}
 
@@ -656,9 +712,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		getPlanPrecioVentaTextBox().setText(
 				NumberFormat.getDecimalFormat().format(lineaSS.getPrecioVentaPlan()));
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
-			detalleSS.setWidget(selectedDetalleRow, 8, getPlanPrecioVentaTextBox());
+			detalleSS.setWidget(selectedDetalleRow, 9, getPlanPrecioVentaTextBox());
 		} else {
-			detalleSS.setWidget(selectedDetalleRow, 6, getPlanPrecioVentaTextBox());
+			detalleSS.setWidget(selectedDetalleRow, 7, getPlanPrecioVentaTextBox());
 		}
 		getPlanPrecioVentaTextBox().setFocus(true);
 	}
@@ -701,9 +757,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			valor = lineaSS.getPrecioVentaPlan();
 		}
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
-			detalleSS.setHTML(selectedDetalleRow, 8, NumberFormat.getCurrencyFormat().format(valor));
+			detalleSS.setHTML(selectedDetalleRow, 9, NumberFormat.getCurrencyFormat().format(valor));
 		} else {
-			detalleSS.setHTML(selectedDetalleRow, 6, NumberFormat.getCurrencyFormat().format(valor));
+			detalleSS.setHTML(selectedDetalleRow, 7, NumberFormat.getCurrencyFormat().format(valor));
 		}
 		editarSSUIData.modificarValorPlan(selectedDetalleRow - 1, valor);
 	}
