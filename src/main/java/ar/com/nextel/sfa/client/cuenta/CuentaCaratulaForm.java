@@ -269,7 +269,7 @@ public class CuentaCaratulaForm extends Composite{
 							MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), 
 									Sfa.constant().CONFIRMAR_CAMBIOS(), cancelarCommand);
 						}else{
-							//Si se esta confirmandoo una caratula, espero a que se termine esa
+							//Si se esta confirmando una caratula, espero a que se termine esa
 							if(!confirmandoCaratula){
 								caratulaAEditar = cuentaDto.getCaratulas().get(row - 1);
 								confirmandoCaratula = true;
