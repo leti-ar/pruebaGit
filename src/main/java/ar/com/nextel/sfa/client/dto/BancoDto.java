@@ -6,30 +6,19 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class BancoDto extends EnumDto implements IsSerializable, ListBoxItem{
 
-	private Long id;
-	private String descripcion;
-
-	public Long getId() {
-		return id;
+	public BancoDto(){}
+	
+	public BancoDto(long id, String descripcion) {
+		super();
+		this.id=id;
+		this.descripcion=descripcion;
 	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getDescripcion() {
+	
+	public String getItemText() {
 		return descripcion;
 	}
-
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
-	}
-
-	public String getItemText() {
-		return getDescripcion();
-	}
-
+	
 	public String getItemValue() {
-		return getId().toString();
+		return id + "";
 	}
 }
