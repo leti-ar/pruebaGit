@@ -187,7 +187,7 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		
 		add(gridCOM);
 		
-		gridVeraz = new Grid(2,4);
+		gridVeraz = new Grid(2,5);
 		gridVeraz.addStyleName("layout");
 		
 		gridVeraz.setText(0, 0, Sfa.constant().veraz());
@@ -196,7 +196,9 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		gridVeraz.setWidget(0, 3, caratulaData.getNosis());
 
 		gridVeraz.setWidget(1, 1, crearLinkVerVeraz());
-		gridVeraz.setText(1, 3, "Cons. Nosis");
+		gridVeraz.setHTML(1, 2, Sfa.constant().imei());
+		gridVeraz.setWidget(1, 3, caratulaData.getImei());
+		gridVeraz.setWidget(1, 4, caratulaData.getVerificarImeiWrapper());
 		
 		add(gridVeraz);
 		

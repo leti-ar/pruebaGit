@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
+import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.BancoDto;
@@ -20,6 +21,7 @@ import ar.com.nextel.sfa.client.dto.TipoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.TipoTarjetaDto;
 import ar.com.nextel.sfa.client.dto.ValidacionDomicilioDto;
 import ar.com.nextel.sfa.client.dto.VerazNosisDto;
+import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.initializer.CaratulaInitializer;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
@@ -31,12 +33,15 @@ import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -52,6 +57,7 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 	private static final int MAX_LENGHT_200 = 200;
 	private static final int MAX_LENGHT_240 = 240;
 	private static final String v1 = "\\{1\\}";
+	private static final String v2 = "\\{2\\}";
 	public static final String RISK_CODE_EECC_AGENTE = "RISK_CODE_EECC_AGENTE";
 	private DateTimeFormat dateFormatter = DateTimeFormat.getFormat("dd/MM/yyyy");
 	
@@ -96,6 +102,8 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 	private CheckBox findImei = new CheckBox();
 	private TextArea comentAnalista = new TextArea();
 	private TextArea scoring = new TextArea();
+	private HTML verificarImeiWrapper;
+	private TextBox imei;
 	
 	private CaratulaDto caratula = null;
 
@@ -219,6 +227,35 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		equiposActivos = new RegexTextBox(RegularExpressionConstants.numeros);
 		equiposActivos.setMaxLength(8);
 		
+		imei = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(15));
+//		imei.setWidth("370px");
+		imei.setMaxLength(15);
+		verificarImeiWrapper = new HTML();
+		verificarImeiWrapper.addClickHandler(new ClickHandler() {
+			
+			public void onClick(ClickEvent event) {
+				if (imei.getText().length() != 15) {
+					ErrorDialog.getInstance().show(
+							Sfa.constant().ERR_LENGHT().replaceAll(v1, "IMEI").replaceAll(v2, "15"), false);
+				} else {
+					
+					SolicitudRpcService.Util.getInstance().verificarNegativeFiles(imei.getText(), new DefaultWaitCallback<String>() {
+						public void success(String result) {
+							if (result != null) {
+								ErrorDialog.getInstance().show(result, false);
+								verificarImeiWrapper.setHTML(IconFactory
+										.comprobarRojo(Sfa.constant().verificarImei()).toString());
+							} else {
+								verificarImeiWrapper.setHTML(IconFactory.comprobarVerde(
+										Sfa.constant().verificarImei()).toString());
+							}
+						}
+					});
+				}
+				
+			}
+		});
+				
 		otras.addKeyUpHandler(new KeyUpHandler() {
 			public void onKeyUp(KeyUpEvent arg0) {
 				if (otras.getText().length() > MAX_LENGHT_100) {
@@ -577,8 +614,6 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		firmante.setEnabled(habilitar);
 		nroSS.setEnabled(habilitar);
 		
-		
-		nroSS.setEnabled(habilitar);
 		fechaInicio.setEnabled(habilitar);
 		actividad.setEnabled(habilitar);
 		validDomicilio.setEnabled(habilitar);
@@ -605,6 +640,8 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		comprPago.setEnabled(habilitar);
 		firmante.setEnabled(habilitar);
 		equiposActivos.setEnabled(habilitar);
+		imei.setEnabled(habilitar);
+		verificarImeiWrapper.setVisible(habilitar);
 		veraz.setEnabled(habilitar);
 		nosis.setEnabled(habilitar);
 		bcra.setEnabled(habilitar);
@@ -945,5 +982,13 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 
 	public void setScoring(TextArea scoring) {
 		this.scoring = scoring;
+	}
+	
+	public TextBox getImei() {
+		return imei;
+	}
+	
+	public HTML getVerificarImeiWrapper() {
+		return verificarImeiWrapper;
 	}
 }

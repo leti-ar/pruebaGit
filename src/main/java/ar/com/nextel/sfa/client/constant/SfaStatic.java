@@ -1362,9 +1362,18 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
    * @return translated "<span class=\"req\">IMEI:</span>"
    */
   @DefaultStringValue("<span class=\"req\">IMEI:</span>")
+  @Key("imeiReq")
+  String imeiReq();
+
+  /**
+   * Translated "IMEI:".
+   * 
+   * @return translated "IMEI:"
+   */
+  @DefaultStringValue("IMEI:")
   @Key("imei")
   String imei();
-
+  
   /**
    * Translated "Importe".
    * 
