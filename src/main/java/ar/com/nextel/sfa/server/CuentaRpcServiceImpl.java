@@ -11,6 +11,8 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.collections.Transformer;
 import org.dozer.MappingException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -38,6 +40,7 @@ import ar.com.nextel.components.knownInstances.retrievers.message.MessageRetriev
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
 import ar.com.nextel.components.message.Message;
 import ar.com.nextel.exception.LegacyDAOException;
+import ar.com.nextel.framework.connectionDAO.ConnectionDAOException;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Banco;
 import ar.com.nextel.model.cuentas.beans.CalifCrediticia;
@@ -847,17 +850,28 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return caratulaDto;
 	}
 	
+	//MGR****
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public CaratulaDto confirmarCaratula(CaratulaDto caratulaDto) throws RpcExceptionMessages{
 		Caratula caratula;
-		try {
+//		try {
 			caratula = cuentaBusinessService.confirmarCaratula(caratulaDto);
-		} catch (ArpuServiceException e) {
-			AppLogger.error(e);
-			throw ExceptionUtil.wrap(e);
-		}catch (AvalonSystemException e) {
-			AppLogger.error(e);
-			throw ExceptionUtil.wrap(e);
-		}
+//			boolean transferida = cuentaBusinessService.transferirCaratulaVantive(caratula.getId());
+//			int a = 0;
+//			if(!transferida){
+//				throw ExceptionUtil.wrap("ERROR AL TRASFERIR A VANTIVE. NO CONFIRMA", null);
+//			}
+//			
+//		} catch (ArpuServiceException e) {
+//			AppLogger.error(e);
+//			throw ExceptionUtil.wrap(e);
+//		} catch (AvalonSystemException e) {
+//			AppLogger.error(e);
+//			throw ExceptionUtil.wrap(e);
+//		} catch (ConnectionDAOException e) {
+//			AppLogger.error(e);
+//			throw ExceptionUtil.wrap(e);
+//		}
 		
 		mapper.map(caratula, caratulaDto);
 		

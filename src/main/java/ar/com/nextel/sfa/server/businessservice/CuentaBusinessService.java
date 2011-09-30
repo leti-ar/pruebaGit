@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.cuentas.caratula.ArpuService;
+import ar.com.nextel.business.cuentas.caratula.CaratulaConfirmadaResultDto;
+import ar.com.nextel.business.cuentas.caratula.dao.config.CaratulaConfirmadaConfig;
 import ar.com.nextel.business.cuentas.caratula.exception.ArpuServiceException;
 import ar.com.nextel.business.cuentas.create.CreateCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
@@ -36,6 +38,8 @@ import ar.com.nextel.components.accessMode.controller.AccessAuthorizationControl
 import ar.com.nextel.components.knownInstances.GlobalParameter;
 import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
+import ar.com.nextel.framework.connectionDAO.ConnectionDAOException;
+import ar.com.nextel.framework.connectionDAO.TransactionConnectionDAO;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.repository.hibernate.HibernateRepository;
 import ar.com.nextel.model.cuentas.beans.AbstractDatosPago;
@@ -81,6 +85,7 @@ import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
 import ar.com.nextel.util.PermisosUserCenter;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
+import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
 
 @Service
 public class CuentaBusinessService {
@@ -130,6 +135,24 @@ public class CuentaBusinessService {
 	private ArpuService arpuService;
 	private AvalonSystem avalonSystem;
 	
+	
+	//MGR****
+	CaratulaConfirmadaConfig caratulaConfirmadaConfig;
+	private TransactionConnectionDAO sfaConnectionDAO;
+	
+	//MGR******
+	@Autowired
+	public void setCaratulaConfirmadaConfig(CaratulaConfirmadaConfig caratulaConfirmadaConfig) {
+		this.caratulaConfirmadaConfig = caratulaConfirmadaConfig;
+	}
+	
+	//MGR*********
+	@Autowired
+	public void setSfaConnectionDAO(
+			@Qualifier("sfaConnectionDAOBean") TransactionConnectionDAO sfaConnectionDAOBean) {
+		this.sfaConnectionDAO = sfaConnectionDAOBean;
+	}
+
 	@Autowired
 	public void setReservaCreacionCuentaBusinessOperator(
 			@Qualifier("reservaCreacionCuentaBusinessOperatorBean") ReservaCreacionCuentaBusinessOperator reservaCreacionCuentaBusinessOperatorBean) {
@@ -878,25 +901,84 @@ public class CuentaBusinessService {
 	}
 	
 	
+	//MGR***************
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public Caratula confirmarCaratula(CaratulaDto caratulaDto) throws ArpuServiceException, AvalonSystemException{
+	public Caratula confirmarCaratula(CaratulaDto caratulaDto) throws RpcExceptionMessages{
 		Caratula caratula = repository.retrieve(Caratula.class, caratulaDto.getId());
 		String codVantive = caratula.getCuenta().getCodigoVantive();
 		
 		if(codVantive != null && !codVantive.equals("")){
-			Double arpu = arpuService.getArpu(codVantive);
-			caratula.setConsumoProm(arpu);
-			
-			AppLogger.info("Iniciando llamada para averiguar Scoting.....");
-			ScoringCuentaLegacyDTO scoring = avalonSystem.retrieveScoringCuenta(codVantive);
-			String mensScoring = scoring.getMensajeAdicional();
-			caratula.setScoring(mensScoring);
-			AppLogger.info("Scoring averiguado correctamente.....");
+			try{
+				
+				Double arpu = arpuService.getArpu(codVantive);
+				caratula.setConsumoProm(arpu);
+				
+				AppLogger.info("Iniciando llamada para averiguar Scoting.....");
+				ScoringCuentaLegacyDTO scoring = avalonSystem.retrieveScoringCuenta(codVantive);
+				String mensScoring = scoring.getMensajeAdicional();
+				caratula.setScoring(mensScoring);
+				AppLogger.info("Scoring averiguado correctamente.....");
 		
-		}
+				String error = this.transferirCaratulaVantive(caratula.getId());
+				if(error != null){
+					throw new ConnectionDAOException(error);
+				}
+				
+			} catch (ConnectionDAOException e) {
+				AppLogger.error(e);
+				throw ExceptionUtil.wrap("Se produjo un error al querer transferir la caratula a Vantive. No se realizara la confirmación.", e);
+			} 
+			catch (Exception e) {
+				AppLogger.error(e);
+				throw ExceptionUtil.wrap("Se produjo un error al calcular el scoring. No se realizara la confirmación.", e);
+			} 
+			
+ 		}
+	
+		
+		
+		
 		caratula.setConfirmada(true);
 		repository.save(caratula);
 		return caratula;
+	}
+	
+	//MGR*********
+//	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+//	public Caratula confirmarCaratula(CaratulaDto caratulaDto) throws ArpuServiceException, AvalonSystemException{
+//		Caratula caratula = repository.retrieve(Caratula.class, caratulaDto.getId());
+//		String codVantive = caratula.getCuenta().getCodigoVantive();
+//		
+//		if(codVantive != null && !codVantive.equals("")){
+//			Double arpu = arpuService.getArpu(codVantive);
+//			caratula.setConsumoProm(arpu);
+//			
+//			AppLogger.info("Iniciando llamada para averiguar Scoting.....");
+//			ScoringCuentaLegacyDTO scoring = avalonSystem.retrieveScoringCuenta(codVantive);
+//			String mensScoring = scoring.getMensajeAdicional();
+//			caratula.setScoring(mensScoring);
+//			AppLogger.info("Scoring averiguado correctamente.....");
+//		
+//		}
+//		caratula.setConfirmada(true);
+//		repository.save(caratula);
+//		return caratula;
+//	}
+	
+	//MGR***
+	public String transferirCaratulaVantive(Long idCaratula) throws ConnectionDAOException{
+		CaratulaConfirmadaConfig caratulaConfirmadaConfig = getCaratulaConfirmadaConfig();
+		caratulaConfirmadaConfig.setIdCaratula(idCaratula);
+		CaratulaConfirmadaResultDto result = (CaratulaConfirmadaResultDto) sfaConnectionDAO.execute(caratulaConfirmadaConfig);
+		
+		if(result.getDescripcion() == null || result.getDescripcion().equals("")){
+			return null;
+		}
+		return result.getCodError() + ". " + result.getDescripcion();
+	}
+
+	public CaratulaConfirmadaConfig getCaratulaConfirmadaConfig() {
+		return caratulaConfirmadaConfig;
 	}
 
 }
