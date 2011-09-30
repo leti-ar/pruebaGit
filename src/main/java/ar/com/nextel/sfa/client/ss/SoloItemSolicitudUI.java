@@ -46,7 +46,7 @@ public class SoloItemSolicitudUI extends Composite {
 		activacionModeloImei.addStyleName("layout");
 		activacionModeloImei.getCellFormatter().setWidth(0, 0, "100px");
 		activacionModeloImei.setVisible(false);
-		activacionModeloImei.setHTML(0, 0, Sfa.constant().imei());
+		activacionModeloImei.setHTML(0, 0, Sfa.constant().imeiReq());
 		activacionModeloImei.setWidget(0, 1, itemSolicitudData.getImei());
 		activacionModeloImei.setWidget(0, 2, itemSolicitudData.getVerificarImeiWrapper());
 		activacionModeloImei.setHTML(1, 0, Sfa.constant().modeloEq());
