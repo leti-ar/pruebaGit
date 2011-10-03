@@ -41,6 +41,7 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 	private Grid gridIngDem;
 	private Grid gridCOM;
 	private Grid gridVeraz;
+	private Grid gridIMEI;
 	private Grid gridValidFirma;
 	private Grid gridInferior;
 	
@@ -187,7 +188,7 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		
 		add(gridCOM);
 		
-		gridVeraz = new Grid(2,5);
+		gridVeraz = new Grid(2,4);
 		gridVeraz.addStyleName("layout");
 		
 		gridVeraz.setText(0, 0, Sfa.constant().veraz());
@@ -197,9 +198,14 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 
 		gridVeraz.setWidget(1, 1, crearLinkVerVeraz());
 		gridVeraz.setHTML(1, 2, Sfa.constant().imei());
-		gridVeraz.setWidget(1, 3, caratulaData.getImei());
-		gridVeraz.setWidget(1, 4, caratulaData.getVerificarImeiWrapper());
 		
+		gridIMEI = new Grid(1,5);
+		gridIMEI.setWidget(0, 0, caratulaData.getImei());
+		gridIMEI.setWidget(0, 1, caratulaData.getVerificarImeiWrapper());
+		gridIMEI.setWidget(0, 3, caratulaData.getFindImei());
+		gridIMEI.setText(0, 4, Sfa.constant().findIMEI());
+		
+		gridVeraz.setWidget(1, 3, gridIMEI);
 		add(gridVeraz);
 		
 		gridValidFirma = new Grid(2,6);
@@ -223,8 +229,6 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		gridValidFirma.setWidget(1, 1, caratulaData.getAnticipo());
 		gridValidFirma.setText(1, 2, Sfa.constant().otras());
 		gridValidFirma.setWidget(1, 3, caratulaData.getOtras());
-		gridValidFirma.setWidget(1, 4, caratulaData.getFindImei());
-		gridValidFirma.setText(1, 5, Sfa.constant().findIMEI());
 		
 		add(gridValidFirma);
 		

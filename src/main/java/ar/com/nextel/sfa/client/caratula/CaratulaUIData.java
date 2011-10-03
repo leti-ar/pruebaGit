@@ -228,9 +228,9 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		equiposActivos.setMaxLength(8);
 		
 		imei = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(15));
-//		imei.setWidth("370px");
 		imei.setMaxLength(15);
 		verificarImeiWrapper = new HTML();
+		verificarImeiWrapper.setHTML(IconFactory.comprobarNegro(Sfa.constant().verificarImei()).toString());
 		verificarImeiWrapper.addClickHandler(new ClickHandler() {
 			
 			public void onClick(ClickEvent event) {
@@ -246,6 +246,7 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 								verificarImeiWrapper.setHTML(IconFactory
 										.comprobarRojo(Sfa.constant().verificarImei()).toString());
 							} else {
+								findImei.setValue(true);
 								verificarImeiWrapper.setHTML(IconFactory.comprobarVerde(
 										Sfa.constant().verificarImei()).toString());
 							}
@@ -454,6 +455,7 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 			depGarantia.setText(caratulaDto.getDepositoGarantia());
 			anticipo.setText(caratulaDto.getAnticipo());
 			soloHibridos.setValue(caratulaDto.isSoloHibridos());
+			imei.setText(caratulaDto.getNumeroIMEI());
 			findImei.setValue(caratulaDto.isFindIMEI());
 			comentAnalista.setText(caratulaDto.getComentarioAnalista());
 			scoring.setText(caratulaDto.getScoring());
@@ -547,6 +549,7 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		caratula.setDepositoGarantia(depGarantia.getText());
 		caratula.setAnticipo(anticipo.getText());
 		caratula.setSoloHibridos(soloHibridos.getValue());
+		caratula.setNumeroIMEI(imei.getText());
 		caratula.setFindIMEI(findImei.getValue());
 		caratula.setComentarioAnalista(comentAnalista.getText());
 
@@ -988,6 +991,10 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		return imei;
 	}
 	
+	public void setImei(TextBox imei) {
+		this.imei = imei;
+	}
+
 	public HTML getVerificarImeiWrapper() {
 		return verificarImeiWrapper;
 	}

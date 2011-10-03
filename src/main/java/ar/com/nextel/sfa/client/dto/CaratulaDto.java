@@ -54,6 +54,8 @@ public class CaratulaDto implements IsSerializable, IdentifiableDto, Cloneable, 
 	private String scoring;
 	private boolean confirmada;
 	
+	private String numeroIMEI;
+	
 	public CaratulaDto(){
 	}
 
@@ -425,6 +427,14 @@ public class CaratulaDto implements IsSerializable, IdentifiableDto, Cloneable, 
 		this.confirmada = confirmada;
 	}
 	
+	public String getNumeroIMEI() {
+		return numeroIMEI;
+	}
+
+	public void setNumeroIMEI(String numeroIMEI) {
+		this.numeroIMEI = numeroIMEI;
+	}
+
 	public int compareTo(Object o) {
 		CaratulaDto caratula1 = (CaratulaDto)o;
 		
