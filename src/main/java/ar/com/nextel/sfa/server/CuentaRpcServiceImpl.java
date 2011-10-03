@@ -850,31 +850,11 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return caratulaDto;
 	}
 	
-	//MGR****
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public CaratulaDto confirmarCaratula(CaratulaDto caratulaDto) throws RpcExceptionMessages{
 		Caratula caratula;
-//		try {
-			caratula = cuentaBusinessService.confirmarCaratula(caratulaDto);
-//			boolean transferida = cuentaBusinessService.transferirCaratulaVantive(caratula.getId());
-//			int a = 0;
-//			if(!transferida){
-//				throw ExceptionUtil.wrap("ERROR AL TRASFERIR A VANTIVE. NO CONFIRMA", null);
-//			}
-//			
-//		} catch (ArpuServiceException e) {
-//			AppLogger.error(e);
-//			throw ExceptionUtil.wrap(e);
-//		} catch (AvalonSystemException e) {
-//			AppLogger.error(e);
-//			throw ExceptionUtil.wrap(e);
-//		} catch (ConnectionDAOException e) {
-//			AppLogger.error(e);
-//			throw ExceptionUtil.wrap(e);
-//		}
-		
+		caratula = cuentaBusinessService.confirmarCaratula(caratulaDto);
 		mapper.map(caratula, caratulaDto);
-		
 		return caratulaDto;
 	}
 	

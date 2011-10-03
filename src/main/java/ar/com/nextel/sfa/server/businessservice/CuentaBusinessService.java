@@ -18,8 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.cuentas.caratula.ArpuService;
-import ar.com.nextel.business.cuentas.caratula.CaratulaConfirmadaResultDto;
-import ar.com.nextel.business.cuentas.caratula.dao.config.CaratulaConfirmadaConfig;
+import ar.com.nextel.business.cuentas.caratula.CaratulaTransferidaResultDto;
+import ar.com.nextel.business.cuentas.caratula.dao.config.CaratulaTransferidaConfig;
 import ar.com.nextel.business.cuentas.caratula.exception.ArpuServiceException;
 import ar.com.nextel.business.cuentas.create.CreateCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
@@ -27,7 +27,6 @@ import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaServi
 import ar.com.nextel.business.cuentas.scoring.legacy.dto.ScoringCuentaLegacyDTO;
 import ar.com.nextel.business.cuentas.select.SelectCuentaBusinessOperator;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
-import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
 import ar.com.nextel.business.oportunidades.CuentaPotencialBusinessOperator;
 import ar.com.nextel.business.oportunidades.ReservaCreacionCuentaBusinessOperator;
 import ar.com.nextel.business.oportunidades.ReservaCreacionCuentaBusinessOperatorResult;
@@ -77,7 +76,6 @@ import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.EmailDto;
 import ar.com.nextel.sfa.client.dto.FacturaElectronicaDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
-import ar.com.nextel.sfa.client.dto.LocalidadDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.dto.TelefonoDto;
@@ -134,19 +132,14 @@ public class CuentaBusinessService {
 	
 	private ArpuService arpuService;
 	private AvalonSystem avalonSystem;
-	
-	
-	//MGR****
-	CaratulaConfirmadaConfig caratulaConfirmadaConfig;
+	private CaratulaTransferidaConfig caratulaTransferidaConfig;
 	private TransactionConnectionDAO sfaConnectionDAO;
 	
-	//MGR******
 	@Autowired
-	public void setCaratulaConfirmadaConfig(CaratulaConfirmadaConfig caratulaConfirmadaConfig) {
-		this.caratulaConfirmadaConfig = caratulaConfirmadaConfig;
+	public void setCaratulaTransferidaConfig(CaratulaTransferidaConfig caratulaTransferidaConfig) {
+		this.caratulaTransferidaConfig = caratulaTransferidaConfig;
 	}
-	
-	//MGR*********
+
 	@Autowired
 	public void setSfaConnectionDAO(
 			@Qualifier("sfaConnectionDAOBean") TransactionConnectionDAO sfaConnectionDAOBean) {
@@ -901,25 +894,24 @@ public class CuentaBusinessService {
 	}
 	
 	
-	//MGR***************
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Caratula confirmarCaratula(CaratulaDto caratulaDto) throws RpcExceptionMessages{
-		Caratula caratula = repository.retrieve(Caratula.class, caratulaDto.getId());
-		String codVantive = caratula.getCuenta().getCodigoVantive();
+		Cuenta cuenta = repository.retrieve(Cuenta.class, caratulaDto.getIdCuenta());
+		String codVantive = cuenta.getCodigoVantive();
+		Double arpu = null;
+		String mensScoring = null;
 		
 		if(codVantive != null && !codVantive.equals("")){
 			try{
 				
-				Double arpu = arpuService.getArpu(codVantive);
-				caratula.setConsumoProm(arpu);
+				arpu = arpuService.getArpu(codVantive);
 				
-				AppLogger.info("Iniciando llamada para averiguar Scoting.....");
+				AppLogger.info("Iniciando llamada para averiguar Scoring.....");
 				ScoringCuentaLegacyDTO scoring = avalonSystem.retrieveScoringCuenta(codVantive);
-				String mensScoring = scoring.getMensajeAdicional();
-				caratula.setScoring(mensScoring);
+				mensScoring = scoring.getMensajeAdicional();
 				AppLogger.info("Scoring averiguado correctamente.....");
 		
-				String error = this.transferirCaratulaVantive(caratula.getId());
+				String error = this.transferirCaratulaVantive(caratulaDto.getId());
 				if(error != null){
 					throw new ConnectionDAOException(error);
 				}
@@ -934,42 +926,20 @@ public class CuentaBusinessService {
 			} 
 			
  		}
-	
 		
-		
-		
+		Caratula caratula = repository.retrieve(Caratula.class, caratulaDto.getId());
+		caratula.setConsumoProm(arpu);
+		caratula.setScoring(mensScoring);
 		caratula.setConfirmada(true);
 		repository.save(caratula);
 		return caratula;
 	}
 	
-	//MGR*********
-//	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-//	public Caratula confirmarCaratula(CaratulaDto caratulaDto) throws ArpuServiceException, AvalonSystemException{
-//		Caratula caratula = repository.retrieve(Caratula.class, caratulaDto.getId());
-//		String codVantive = caratula.getCuenta().getCodigoVantive();
-//		
-//		if(codVantive != null && !codVantive.equals("")){
-//			Double arpu = arpuService.getArpu(codVantive);
-//			caratula.setConsumoProm(arpu);
-//			
-//			AppLogger.info("Iniciando llamada para averiguar Scoting.....");
-//			ScoringCuentaLegacyDTO scoring = avalonSystem.retrieveScoringCuenta(codVantive);
-//			String mensScoring = scoring.getMensajeAdicional();
-//			caratula.setScoring(mensScoring);
-//			AppLogger.info("Scoring averiguado correctamente.....");
-//		
-//		}
-//		caratula.setConfirmada(true);
-//		repository.save(caratula);
-//		return caratula;
-//	}
-	
-	//MGR***
+
 	public String transferirCaratulaVantive(Long idCaratula) throws ConnectionDAOException{
-		CaratulaConfirmadaConfig caratulaConfirmadaConfig = getCaratulaConfirmadaConfig();
-		caratulaConfirmadaConfig.setIdCaratula(idCaratula);
-		CaratulaConfirmadaResultDto result = (CaratulaConfirmadaResultDto) sfaConnectionDAO.execute(caratulaConfirmadaConfig);
+		CaratulaTransferidaConfig caratulaTransferidaConfig = getCaratulaTransferidaConfig();
+		caratulaTransferidaConfig.setIdCaratula(idCaratula);
+		CaratulaTransferidaResultDto result = (CaratulaTransferidaResultDto) sfaConnectionDAO.execute(caratulaTransferidaConfig);
 		
 		if(result.getDescripcion() == null || result.getDescripcion().equals("")){
 			return null;
@@ -977,8 +947,8 @@ public class CuentaBusinessService {
 		return result.getCodError() + ". " + result.getDescripcion();
 	}
 
-	public CaratulaConfirmadaConfig getCaratulaConfirmadaConfig() {
-		return caratulaConfirmadaConfig;
+	public CaratulaTransferidaConfig getCaratulaTransferidaConfig() {
+		return caratulaTransferidaConfig;
 	}
 
 }

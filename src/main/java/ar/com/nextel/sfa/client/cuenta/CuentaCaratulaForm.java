@@ -250,17 +250,11 @@ public class CuentaCaratulaForm extends Composite{
 									huboCambios = true;
 								}
 							});
-//							int nroCaratula = 0;
-//							if(cuentaDto.getCaratulas()!= null){
-//								nroCaratula = cuentaDto.getCaratulas().size();
-//							}
 							CaratulaUI.getInstance().cargarPopupEditarCaratula(caratulaAEditar, row);
 						
 						}else{
 							CaratulaUI.getInstance().cargarPopupCaratulaConfirmada(caratulaAEditar);
 						}
-						
-						
 					}
 					//Toco el confirmar
 					if (col == 1) {
@@ -318,7 +312,6 @@ public class CuentaCaratulaForm extends Composite{
 									confirmandoCaratula = false;
 								}
 							}
-							
 						}
 					}
 				}
