@@ -1,11 +1,9 @@
 package ar.com.nextel.sfa.client.ss;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.InfocomRpcService;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -13,7 +11,8 @@ import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
-import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
+import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -22,7 +21,6 @@ import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.MessageDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
-import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
@@ -603,6 +601,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							guardandoSolicitud = false;
 							editarSSUIData.setSolicitud(result.getSolicitud());
 							datosTranferencia.setDatosSolicitud(result.getSolicitud());
+							
 //							datosTranferencia.refresh();
 							editarSSUIData.setSaved(true);
 							//MGR - #1759
@@ -642,10 +641,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 	private void saveSolicitudServicio(){
 		SolicitudRpcService.Util.getInstance().saveSolicituServicio(editarSSUIData.getSolicitudServicio(),
-				new DefaultWaitCallback<SolicitudServicioDto>() {
-					public void success(SolicitudServicioDto result) {
+				new DefaultWaitCallback<CreateSaveSolicitudServicioResultDto>() {
+					public void success(CreateSaveSolicitudServicioResultDto result) {
 						guardandoSolicitud = false;
-						editarSSUIData.setSolicitud(result);
+						editarSSUIData.setSolicitud(result.getSolicitud());
 						datos.refresh();
 						
 						// MessageDialog.getInstance().showAceptar("Guardado Exitoso",
@@ -737,15 +736,23 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							// Si arrastra un error en la validacion muestra un mensaje
 							if(portabilidadResult.isConError()){
 								if(portabilidadResult.getPermiteGrabar()){
+									CerradoSSExitosoDialog.getInstance().hideLoading();
 									ModalMessageDialog.getInstance().showAceptar("Error en la Validacion de Portabilidades",portabilidadResult.getDescripcionError(), 
 											new Command() {
 												public void execute() {
 													cerrarGenerarSolicitud();
+													CerradoSSExitosoDialog.getInstance().hideLoading();
 													ModalMessageDialog.getInstance().hide();
 												}
 											});
-								}else ModalMessageDialog.getInstance().showAceptar(portabilidadResult.getDescripcionError(), ModalMessageDialog.getCloseCommand());
-							}else cerrarGenerarSolicitud();
+								}else{
+									CerradoSSExitosoDialog.getInstance().hideLoading();
+									ModalMessageDialog.getInstance().showAceptar(portabilidadResult.getDescripcionError(), ModalMessageDialog.getCloseCommand());
+								}
+							}else{
+								cerrarGenerarSolicitud();
+								CerradoSSExitosoDialog.getInstance().hideLoading();
+							}
 						}
 					});
 
@@ -762,10 +769,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private DefaultWaitCallback<GeneracionCierreResultDto> getGeneracionCierreCallback() {
 		if (generacionCierreCallback == null) {
 			generacionCierreCallback = new DefaultWaitCallback<GeneracionCierreResultDto>() {
-				public void success(GeneracionCierreResultDto result) {
+				public void success(final GeneracionCierreResultDto result) {
 					CerradoSSExitosoDialog.getInstance().hideLoading();
 					if (!result.isError()) {
-						final String rtfFileName = result.getRtfFileName();
+						//final String rtfFileName = result.getRtfFileName();
 						
 						Command mostrarDialogCerrado = new Command() {
 							
@@ -784,7 +791,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 								}
 								CerradoSSExitosoDialog.getInstance().setAceptarCommand(aceptar);
 								//MGR - #1415
-								CerradoSSExitosoDialog.getInstance().showCierreExitoso(rtfFileName, editarSSUIData.getIdSolicitudServicio());
+								CerradoSSExitosoDialog.getInstance().showCierreExitoso(result, editarSSUIData.getIdSolicitudServicio());
 							}
 						};
 						

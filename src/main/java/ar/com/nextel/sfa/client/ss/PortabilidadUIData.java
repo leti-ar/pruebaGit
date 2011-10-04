@@ -23,7 +23,6 @@ import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 
-import com.gargoylesoftware.htmlunit.AlertHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -32,7 +31,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
@@ -301,8 +299,6 @@ public class PortabilidadUIData extends Composite {
 	public void loadSolicitudPortabilidad(SolicitudPortabilidadDto solPortDto){
 		solicitudPortabilidad = solPortDto;
 	
-		chkRecibeSMS.setValue(solicitudPortabilidad.isRecibeSMS());
-
 		txtEmail.setText(solicitudPortabilidad.getEmail());
 		txtNroSS.setText(solicitudPortabilidad.getNroSS());
 		txtNombre.setText(solicitudPortabilidad.getNombre());
@@ -322,6 +318,8 @@ public class PortabilidadUIData extends Composite {
 		setVisible(true);
 		comprobarTipoTelefonia();
 		
+		chkRecibeSMS.setValue(solicitudPortabilidad.isRecibeSMS());
+
 		chkPortabilidad.setValue(true);
 		btnReserva.setEnabled(false);
 		txtReserva.setEnabled(false);

@@ -1100,7 +1100,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 		// TODO:Portabilidad
 		lineaSolicitudServicio.setPortabilidad(portabilidadPanel.getSolicitudPortabilidad(lineaSolicitudServicio));
-		
+
 		return lineaSolicitudServicio;
 	}
 

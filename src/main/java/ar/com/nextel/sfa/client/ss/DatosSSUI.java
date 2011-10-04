@@ -399,8 +399,8 @@ public class DatosSSUI extends Composite implements ClickHandler {
 						}
 					} else if (col == 0) {
 						// Abre panel de edicion de la LineaSolicitudServicio
-						openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
 						lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1);
+						openItemSolicitudDialog(lineaSeleccionada);
 					} else if (col == 1) {
 						// Elimina la LineaSolicitudServicio
 						ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
@@ -524,6 +524,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 					itemSolicitudDialog.getItemSolicitudUIData().getPortabilidadPanel().generarNroSS(controller.getEditarSSUIData().getSolicitudServicio());
 					
 					lineaModificada = lineaSolicitudServicio.getId();
+
 				}
 			};
 			itemSolicitudDialog.setAceptarCommand(aceptarCommand);

@@ -20,17 +20,15 @@ public class PortabilidadPropertiesRTFGenerator {
 	private List<LineaSolicitudServicioDto> lineas;
 	private List<Map<String,String>> reportes_parametros = new ArrayList<Map<String,String>>();
 	private List<Map<String, String>> reportes_parametros_adjunto = new ArrayList<Map<String, String>>();
-	private SolicitudServicioDto solicitudServicio;
 	private CuentaDto cuenta;
 	
 	/**
 	 * 
 	 * @param lineas
 	 */
-	public PortabilidadPropertiesRTFGenerator(CuentaDto cuenta,SolicitudServicioDto solicitudServicio){
+	public PortabilidadPropertiesRTFGenerator(CuentaDto cuenta,List<LineaSolicitudServicioDto> lineas){
 		this.cuenta = cuenta;
-		this.solicitudServicio = solicitudServicio;
-		this.lineas = solicitudServicio.getLineas();
+		this.lineas = lineas;
 		generar();
 	}
 	
@@ -63,23 +61,7 @@ public class PortabilidadPropertiesRTFGenerator {
 			}
 		}
 		
-		for(int i = 0; i < x_nroSS.size(); i++){
-			AppLogger.info("REPORTE Nro: " + (i + 1));
-			for(int j = 0; j < x_nroSS.get(i).size(); j++){
-				AppLogger.info("\tALIAS > " + lineas.get(x_nroSS.get(i).get(j)).getAlias() + " | Nro SS > " + lineas.get(x_nroSS.get(i).get(j)).getPortabilidad().getNroSS());
-			}
-		}
-		
 		ordernar_recibeSMS(x_nroSS);
-		AppLogger.info("**************************************************************************");
-
-		for(int i = 0; i < x_nroSS.size(); i++){
-			AppLogger.info("REPORTE Nro: " + (i + 1));
-			for(int j = 0; j < x_nroSS.get(i).size(); j++){
-				AppLogger.info("\tALIAS > " + lineas.get(x_nroSS.get(i).get(j)).getAlias() + " | Nro SS > " + lineas.get(x_nroSS.get(i).get(j)).getPortabilidad().getNroSS());
-			}
-		}
-		
 		crearParametros(x_nroSS);
 	}
 	
@@ -121,37 +103,38 @@ public class PortabilidadPropertiesRTFGenerator {
 				
 				// El primero siempre se adhiere al reporte(recibe SMS)
 				if(j == 0){
-					reportes_parametros.get(i).put("NRO_SOLICITUD_SS", linea.getPortabilidad().getId().toString());
-					reportes_parametros.get(i).put("APELLIDO_NOMBRE_SS", 
-							solicitudServicio.getCuenta().getPersona().getApellido() + ", " + solicitudServicio.getCuenta().getPersona().getNombre());
-					reportes_parametros.get(i).put("RAZON_SOCIAL_SS", solicitudServicio.getCuenta().getPersona().getRazonSocial());
-					reportes_parametros.get(i).put("TIPO_DOC_SS", solicitudServicio.getCuenta().getPersona().getDocumento().getTipoDocumento().getDescripcion());
-					reportes_parametros.get(i).put("NRO_DOC_SS", solicitudServicio.getCuenta().getPersona().getDocumento().getNumero());
-					reportes_parametros.get(i).put("APELLIDO_NOMBRE_PRTB", linea.getPortabilidad().getApellido() + ", " + linea.getPortabilidad().getNombre());
-					reportes_parametros.get(i).put("TIPO_DOC_PRTB", linea.getPortabilidad().getTipoDocumento().getDescripcion());
-					reportes_parametros.get(i).put("NRO_DOC_PRTB", linea.getPortabilidad().getNumeroDocumento());
-					reportes_parametros.get(i).put("TEL_CONTACTO_PRTB", linea.getPortabilidad().getTelefono());
-					reportes_parametros.get(i).put("EMAIL_CONTACTO_PRTB", linea.getPortabilidad().getEmail());
-					reportes_parametros.get(i).put("OPERADOR_DONADOR_PRTB", linea.getPortabilidad().getProveedorAnterior().getDescripcion());
-					reportes_parametros.get(i).put("MODALIDAD_CONTRATACION_PRTB", linea.getPortabilidad().getTipoTelefonia().getId().toString());
-					reportes_parametros.get(i).put("OPERADOR_RECEPTOR", "NEXTEL");
-					
 					if(cuenta.getClaseCuenta().getEsGobierno()) tipo_persona = "3";
 					else{
 						if(cuenta.isEmpresa()) tipo_persona = "2";
 						else tipo_persona = "1";
 					}
-					reportes_parametros.get(i).put("TIPO_PERSONA_PRTB", tipo_persona);
+
+					reportes_parametros.get(i).put("NRO_DOC_SS", cuenta.getPersona().getDocumento().getNumero());
+					reportes_parametros.get(i).put("TIPO_DOC_SS", cuenta.getPersona().getDocumento().getTipoDocumento().getDescripcion());
+					reportes_parametros.get(i).put("TIPO_PERSONA_SS", tipo_persona);
+					reportes_parametros.get(i).put("RAZON_SOCIAL_SS", cuenta.getPersona().getRazonSocial());
+					reportes_parametros.get(i).put("APELLIDO_NOMBRE_SS",cuenta.getPersona().getApellido() + ", " + cuenta.getPersona().getNombre());
+					
+					reportes_parametros.get(i).put("NRO_DOC_PRTB", linea.getPortabilidad().getNumeroDocumento());
+					reportes_parametros.get(i).put("TIPO_DOC_PRTB", linea.getPortabilidad().getTipoDocumento().getDescripcion());
+					reportes_parametros.get(i).put("TEL_CONTACTO_PRTB", linea.getPortabilidad().getTelefono());
+					reportes_parametros.get(i).put("NRO_SOLICITUD_PRTB", linea.getPortabilidad().getId().toString());
+					reportes_parametros.get(i).put("EMAIL_CONTACTO_PRTB", linea.getPortabilidad().getEmail());
+					reportes_parametros.get(i).put("APELLIDO_NOMBRE_PRTB", linea.getPortabilidad().getApellido() + ", " + linea.getPortabilidad().getNombre());
+
+					reportes_parametros.get(i).put("OPERADOR_DONADOR", linea.getPortabilidad().getProveedorAnterior().getDescripcion());
+					reportes_parametros.get(i).put("OPERADOR_RECEPTOR", "NEXTEL");
+					reportes_parametros.get(i).put("MODALIDAD_CONTRATACION", linea.getPortabilidad().getTipoTelefonia().getId().toString());
 					
 					reportes_parametros.get(i).put(
-							"NUMERO_LINEA_" + indice,linea.getPortabilidad().getAreaTelefono() + " " + linea.getPortabilidad().getTelefonoPortar());
-					reportes_parametros.get(i).put("NUMERO_FACTURA_" + indice,linea.getPortabilidad().getNroUltimaFacura());
+							"LINEA_" + indice,linea.getPortabilidad().getAreaTelefono() + " " + linea.getPortabilidad().getTelefonoPortar());
+					reportes_parametros.get(i).put("FACTURA_" + indice,linea.getPortabilidad().getNroUltimaFacura());
 				}else{
 					// Si no es el primero verifica que la cantidad de portabilidades sean hasta 5 maximo
 					if(postagos_divididos.get(i).size() <= 5){
 						reportes_parametros.get(i).put(
-								"NUMERO_LINEA_" + indice,linea.getPortabilidad().getAreaTelefono() + " " + linea.getPortabilidad().getTelefonoPortar());
-						reportes_parametros.get(i).put("NUMERO_FACTURA_" + indice,linea.getPortabilidad().getNroUltimaFacura());
+								"LINEA_" + indice,linea.getPortabilidad().getAreaTelefono() + " " + linea.getPortabilidad().getTelefonoPortar());
+						reportes_parametros.get(i).put("FACTURA_" + indice,linea.getPortabilidad().getNroUltimaFacura());
 					}else makeArch = true; // Al ser mas de 5 genera un reporte con el primero que recibe SMS y un reporte adicional con todos
 				}
 			}
@@ -165,9 +148,9 @@ public class PortabilidadPropertiesRTFGenerator {
 					indice = String.valueOf(j + 1);
 
 					reportes_parametros_adjunto.get(reportes_parametros_adjunto.size() - 1).put(
-							"NUMERO_LINEA_" + indice,linea.getPortabilidad().getAreaTelefono() + " " + linea.getPortabilidad().getTelefonoPortar());
+							"LINEA_" + indice,linea.getPortabilidad().getAreaTelefono() + " " + linea.getPortabilidad().getTelefonoPortar());
 					reportes_parametros_adjunto.get(reportes_parametros_adjunto.size() - 1).put(
-							"NUMERO_FACTURA_" + indice,linea.getPortabilidad().getNroUltimaFacura());
+							"FACTURA_" + indice,linea.getPortabilidad().getNroUltimaFacura());
 
 				}
 			}
