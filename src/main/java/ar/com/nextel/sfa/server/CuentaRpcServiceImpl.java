@@ -831,9 +831,12 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		initializer.setCalificacion(mapper.convertList(repository.getAll(Calificacion.class),
 				CalificacionDto.class));
 		
-		initializer.setRiskCode(mapper.convertList(repository.getAll(RiskCode.class),
-				RiskCodeDto.class));
-		
+		//No cargo el Risk Code vacio
+		Long idRiskCodeVacio = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.RISK_CODE_VACIO);
+		String query = "from RiskCode risk where risk.id not in(" + idRiskCodeVacio.toString() + ")";
+		List<RiskCode> riskcodes = repository.find(query);
+		initializer.setRiskCode(mapper.convertList(riskcodes,RiskCodeDto.class));
+
 		initializer.setCompPago(mapper.convertList(repository.getAll(CompPago.class),
 				CompPagoDto.class));
 		
