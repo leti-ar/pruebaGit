@@ -628,6 +628,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			//sino una SaveSolicitudServicioResultDto que permite realizar el manejo de mensajes
 			//MGR - ISDN 1824 - Como se realizan validaciones, ya no recibe una SolicitudServicioDto
 			//sino una SaveSolicitudServicioResultDto que permite realizar el manejo de mensajes
+			//MGR - ISDN 1824 - Como se realizan validaciones, ya no recibe una SolicitudServicioDto
+			//sino una SaveSolicitudServicioResultDto que permite realizar el manejo de mensajes
 			// TODO: Portabilidad
 			long contadorPortabilidad = 0;
 			for (LineaSolicitudServicioDto linea : editarSSUIData.getSolicitudServicio().getLineas()) {
@@ -1116,7 +1118,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
         editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA());
 	}
 	
-
 	//Evaluacion si la cuenta es prospect , el usuario logueado es Administrador de creditos y fue elegido un vendedor
 	private boolean isProspectAndADMCreditos(CuentaSSDto cuentaDto) {
 		return !cuentaDto.isCliente() &&
