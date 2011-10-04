@@ -153,6 +153,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 
 	private static final long serialVersionUID = 1L;
 	private static final String CONSULTA_VERAZ_SERVICE="veraz-rtf";
+	private static final String CHARSET = "UTF-8";
 	private WebApplicationContext context;
 	private SearchCuentaBusinessOperator searchCuentaBusinessOperator;
 	private TarjetaCreditoValidatorServiceAxisImpl tarjetaCreditoValidatorService;
@@ -332,20 +333,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	public VerazResponseDto consultarVeraz(PersonaDto personaDto) throws RpcExceptionMessages {
 		AppLogger.info("Iniciando consulta a Veraz...");
 		VerazResponseDTO responseDTO = null;
-		Sexo sexo = (Sexo) this.repository.retrieve(Sexo.class, personaDto.getSexo().getId());
-		TipoDocumento tipoDocumento = (TipoDocumento) this.repository.retrieve(TipoDocumento.class,
-				personaDto.getDocumento().getTipoDocumento().getId());
-		long numeroDocumento = Long.parseLong(StringUtil.removeOcurrences(personaDto.getDocumento()
-				.getNumero(), '-'));
-		AppLogger.debug("Parametros consulta a Veraz: " + tipoDocumento.getCodigoVeraz() + " / "
-				+ numeroDocumento + " / " + sexo.getCodigoVeraz() + "...");
-
-		VerazRequestDTO verazRequestDTO = new VerazRequestDTO();
-		verazRequestDTO.setNroDoc(numeroDocumento);
-		verazRequestDTO.setSexo(sexo.getCodigoVeraz());
-		verazRequestDTO.setTipoDoc(tipoDocumento.getCodigoVeraz());
-		// verazRequestDTO.setVerazVersion(vendedor.getVerazVersion());
-
+		VerazRequestDTO verazRequestDTO = createVerazRequestDTO(personaDto);
 		try {
 			responseDTO = this.veraz.searchPerson(verazRequestDTO);
 		} catch (Exception e) {
@@ -359,11 +347,47 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		AppLogger.info("Consulta a Veraz finalizada.");
 		return responseDto;
 	}
+
+	public VerazResponseDto consultarDetalleVeraz(PersonaDto personaDto) throws RpcExceptionMessages {
+		AppLogger.info("Iniciando consulta a Veraz...");
+		VerazResponseDTO responseDTO = null;
+		VerazRequestDTO verazRequestDTO = createVerazRequestDTO(personaDto);
+		try {
+			responseDTO = this.veraz.generateDetail(verazRequestDTO);
+		} catch (Exception e) {
+			AppLogger.error(e);
+			AppLogger.error("Error consultando Veraz para la siguiente persona: \n" + personaDto.toString());
+			throw ExceptionUtil.wrap(e);
+		}
+
+		VerazResponseDto responseDto = mapper.map(responseDTO, VerazResponseDto.class);
+		responseDto.setMensaje(responseDTO.getMensaje());
+		AppLogger.info("Consulta a Veraz finalizada.");
+		return responseDto;
+	}
+
+	
+	private VerazRequestDTO createVerazRequestDTO(PersonaDto personaDto) {
+		Sexo sexo = (Sexo) this.repository.retrieve(Sexo.class, personaDto.getSexo().getId());
+		TipoDocumento tipoDocumento = (TipoDocumento) this.repository.retrieve(TipoDocumento.class,
+				personaDto.getDocumento().getTipoDocumento().getId());
+		long numeroDocumento = Long.parseLong(StringUtil.removeOcurrences(personaDto.getDocumento()
+				.getNumero(), '-'));
+		AppLogger.debug("Parametros consulta a Veraz: " + tipoDocumento.getCodigoVeraz() + " / "
+				+ numeroDocumento + " / " + sexo.getCodigoVeraz() + "...");
+
+		VerazRequestDTO verazRequestDTO = new VerazRequestDTO();
+		verazRequestDTO.setNroDoc(numeroDocumento);
+		verazRequestDTO.setSexo(sexo.getCodigoVeraz());
+		verazRequestDTO.setTipoDoc(tipoDocumento.getCodigoVeraz());
+		// verazRequestDTO.setVerazVersion(vendedor.getVerazVersion());
+		return verazRequestDTO;
+	}
 	
 	public String leerConsultaDetalleVeraz(String verazFileName) throws RpcExceptionMessages {
 		AppLogger.info("Iniciando leer la consulta del detalle a Veraz...");
 		try {
-			return new String(FileCopyUtils.copyToByteArray(this.download.downloadFile(CONSULTA_VERAZ_SERVICE,verazFileName)));
+			return new String(FileCopyUtils.copyToByteArray(this.download.downloadFile(CONSULTA_VERAZ_SERVICE,verazFileName)),CHARSET);
 		} catch (Exception e) {
 			AppLogger.error(e);
 			AppLogger.error("Error leyendo detalle Veraz \n");
@@ -384,6 +408,31 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		}
 	}
 
+	public VerazResponseDto consultarVeraz(Long cuentaId) throws RpcExceptionMessages {
+		ArrayList<Object> list = (ArrayList<Object>) this.repository.find("from Cuenta c where c.id = ?", cuentaId);
+		if(!list.isEmpty()){
+			Cuenta cta = (Cuenta) list.get(0);
+			PersonaDto personaDto = mapper.map(cta.getPersona(), PersonaDto.class);
+			return consultarVeraz(personaDto);
+		}
+		else{
+			return new VerazResponseDto();
+		}
+	}
+
+	public VerazResponseDto consultarDetalleVeraz(Long cuentaId) throws RpcExceptionMessages {
+		ArrayList<Object> list = (ArrayList<Object>) this.repository.find("from Cuenta c where c.id = ?", cuentaId);
+		if(!list.isEmpty()){
+			Cuenta cta = (Cuenta) list.get(0);
+			PersonaDto personaDto = mapper.map(cta.getPersona(), PersonaDto.class);
+			return consultarDetalleVeraz(personaDto);
+		}
+		else{
+			return new VerazResponseDto();
+		}
+	}
+
+	
 	public CuentaDto saveCuenta(CuentaDto cuentaDto) throws RpcExceptionMessages {
 		try {
 			Long idCuenta = cuentaBusinessService.saveCuenta(cuentaDto, mapper, sessionContextLoader

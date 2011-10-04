@@ -6,12 +6,16 @@ import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.cuenta.CaratulaVerazModalDialog;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
+import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Grid;
@@ -49,6 +53,8 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 	private SimpleLink aceptar;
 	private SimpleLink cancelar;
 	private Command aceptarCommand;
+	private Button generarVeraz;
+	private Button verVeraz;
 	
 	public static CaratulaUI getInstance(){
 		if(instance == null){
@@ -196,7 +202,7 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		gridVeraz.setText(0, 2, Sfa.constant().nosis());
 		gridVeraz.setWidget(0, 3, caratulaData.getNosis());
 
-		gridVeraz.setWidget(1, 1, crearLinkVerVeraz());
+		gridVeraz.setWidget(1, 1, crearBotonesVeraz());
 		gridVeraz.setHTML(1, 2, Sfa.constant().imei());
 		
 		gridIMEI = new Grid(1,5);
@@ -310,16 +316,51 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		
 	}
 
-	private SimpleLink crearLinkVerVeraz() {
-		SimpleLink verVeraz = new SimpleLink("Ver Veraz");
-		verVeraz.setStyleName("link");
-		verVeraz.addClickListener(new ClickListener() {
+	private HorizontalPanel crearBotonesVeraz() {
+		this.generarVeraz = crearBotonGenerarVeraz();
+		this.verVeraz = crearBotonVerVeraz();
+		HorizontalPanel verazBotones = new HorizontalPanel();
+		verazBotones.add(this.generarVeraz);
+		verazBotones.add(this.verVeraz);
+		return verazBotones;
+	}
+	
+	private void habilitarBotonesVeraz() {
+		boolean isVerazNoGenerado = this.caratulaAEditar.getArchivoVeraz() == null || 
+			this.caratulaAEditar.getArchivoVeraz().length() == 0;
+		this.generarVeraz.setEnabled(isVerazNoGenerado);
+		this.verVeraz.setEnabled(!isVerazNoGenerado);
+	}
 
-			public void onClick(Widget sender) {
-				// proximamente CaratulaVerazModalDialog.getInstance().showAndCenter(this.caratulaAEditar.getVerazFileName());
-				CaratulaVerazModalDialog.getInstance().showAndCenter("VERAZ_53.rtf");
-			}
+	private Button crearBotonGenerarVeraz() {
+		Button generarVeraz = new Button(Sfa.constant().generarVeraz());
+		generarVeraz.setStyleName("btn-bkg-big");
+		generarVeraz.addClickHandler(new ClickHandler() {
 			
+			public void onClick(ClickEvent event) {
+			    CuentaRpcService.Util.getInstance().consultarDetalleVeraz(caratulaAEditar.getIdCuenta(), 
+			    		new DefaultWaitCallback<VerazResponseDto>() {
+
+							@Override
+							public void success(VerazResponseDto result) {
+								caratulaAEditar.setArchivoVeraz(result.getFileName());
+								habilitarBotonesVeraz();
+							}
+				    			
+					});
+			}
+		});
+		return generarVeraz;
+	}
+	
+	private Button crearBotonVerVeraz() {
+		Button verVeraz = new Button(Sfa.constant().verVeraz());
+		verVeraz.setStyleName("btn-bkg");
+		verVeraz.addClickHandler(new ClickHandler() {
+			
+			public void onClick(ClickEvent event) {
+				CaratulaVerazModalDialog.getInstance().showAndCenter(caratulaAEditar.getArchivoVeraz());
+			}
 		});
 		return verVeraz;
 	}
@@ -355,6 +396,7 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		this.nroCaratula = nroCaratula;
 		caratulaData.setDatosCaratula(caratulaAEditar);
 		caratulaData.habilitarCampos(habilitar);
+		habilitarBotonesVeraz();
 		aceptar.setVisible(habilitar);
 		onChange(caratulaData.getBanco());
 		onClick(caratulaData.getIngDemostrado());

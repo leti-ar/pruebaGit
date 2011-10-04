@@ -53,6 +53,7 @@ public class CaratulaDto implements IsSerializable, IdentifiableDto, Cloneable, 
 	private String comentarioAnalista;
 	private String scoring;
 	private boolean confirmada;
+	private String archivoVeraz;
 	
 	private String numeroIMEI;
 	
@@ -417,6 +418,14 @@ public class CaratulaDto implements IsSerializable, IdentifiableDto, Cloneable, 
 
 	public void setScoring(String scoring) {
 		this.scoring = scoring;
+	}
+
+	public String getArchivoVeraz() {
+		return archivoVeraz;
+	}
+
+	public void setArchivoVeraz(String archivoVeraz) {
+		this.archivoVeraz = archivoVeraz;
 	}
 
 	public boolean isConfirmada() {

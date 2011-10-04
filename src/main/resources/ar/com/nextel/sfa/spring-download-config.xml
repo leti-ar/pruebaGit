@@ -102,4 +102,7 @@
 		</property>
 	</bean>
 
+	<bean name="downloadServiceDelegate" class="ar.com.nextel.web.download.DownloadServiceDelegateImpl">
+		<property name="downloadService" ref="downloadService"/>
+	</bean>
 </beans>

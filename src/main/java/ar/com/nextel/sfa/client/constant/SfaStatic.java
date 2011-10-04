@@ -2976,6 +2976,24 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String CONFIRMAR_CAMBIOS();
   
   /**
+   * Translated "Generar Veraz".
+   * 
+   * @return translated "Generar Veraz"
+   */
+  @DefaultStringValue("Generar Veraz")
+  @Key("generarVeraz")
+  String generarVeraz();
+
+  /**
+   * Translated "Ver Veraz".
+   * 
+   * @return translated "Ver Veraz"
+   */
+  @DefaultStringValue("Ver Veraz")
+  @Key("verVeraz")
+  String verVeraz();
+
+  /**
    * Translated "El número de solicitud no existe.".
    * 
    * @return translated "El número de solicitud no existe."
