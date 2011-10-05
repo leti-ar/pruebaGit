@@ -157,16 +157,26 @@ public class PlanTransferenciaDialog  extends NextelDialog implements ClickListe
 				}
 				tipoPlanPorDefecto = null;
 				for (TipoPlanDto tipoPlan : tiposPlan) {
-					if (tipoPlan.getCodigoBSCS().equals(TipoPlanDto.TIPO_PLAN_DIRECTO_O_EMPRESA_CODE)) {
-						if (!vendedorDto.isADMCreditos() && empresa == tipoPlan.isEmpresa()) {
+					if (vendedorDto.isDealer()) {
+						if (tipoPlan.isEmpresa() && empresa) {
+							planTransferenciaUIData.getTipoPlan().addItem(tipoPlan);							
+						} else if (tipoPlan.isDirecto() && !empresa) {
 							planTransferenciaUIData.getTipoPlan().addItem(tipoPlan);
-							tipoPlanPorDefecto = tipoPlan;
-						}else if(vendedorDto.isADMCreditos()){
-							planTransferenciaUIData.getTipoPlan().addItem(tipoPlan);
-							tipoPlanPorDefecto = tipoPlan;
 						}
-					} else {
-						planTransferenciaUIData.getTipoPlan().addItem(tipoPlan);
+						tipoPlanPorDefecto = tipoPlan;
+					}
+					else {
+						if (tipoPlan.getCodigoBSCS().equals(TipoPlanDto.TIPO_PLAN_DIRECTO_O_EMPRESA_CODE)) {
+							if (!vendedorDto.isADMCreditos() && empresa == tipoPlan.isEmpresa()) {
+								planTransferenciaUIData.getTipoPlan().addItem(tipoPlan);
+								tipoPlanPorDefecto = tipoPlan;
+							} else if (vendedorDto.isADMCreditos() && empresa == tipoPlan.isEmpresa()) {
+								planTransferenciaUIData.getTipoPlan().addItem(tipoPlan);
+								tipoPlanPorDefecto = tipoPlan;
+							}
+						} else {
+							planTransferenciaUIData.getTipoPlan().addItem(tipoPlan);
+						}
 					}
 				}
 				planTransferenciaUIData.getTipoPlan().setSelectedItem(tipoPlan != null ? tipoPlan : tipoPlanPorDefecto);

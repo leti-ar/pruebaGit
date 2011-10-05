@@ -23,7 +23,7 @@ public interface EditarSSUIController {
 	public void getLineasSolicitudServicioInitializer(
 			DefaultWaitCallback<LineasSolicitudServicioInitializer> defaultWaitCallback);
 
-	public void getListaPrecios(TipoSolicitudDto tipoSolicitudDto,
+	public void getListaPrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa,
 			DefaultWaitCallback<List<ListaPreciosDto>> defaultWaitCallback);
 
 	public void getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,

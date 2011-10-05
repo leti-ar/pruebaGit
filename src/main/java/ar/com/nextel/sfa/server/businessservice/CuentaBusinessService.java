@@ -21,6 +21,7 @@ import ar.com.nextel.business.cuentas.caratula.ArpuService;
 import ar.com.nextel.business.cuentas.caratula.CaratulaTransferidaResultDto;
 import ar.com.nextel.business.cuentas.caratula.dao.config.CaratulaTransferidaConfig;
 import ar.com.nextel.business.cuentas.caratula.exception.ArpuServiceException;
+import ar.com.nextel.business.constants.MessageIdentifier;
 import ar.com.nextel.business.cuentas.create.CreateCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
 import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaService;
@@ -68,6 +69,7 @@ import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
+import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
@@ -651,7 +653,6 @@ public class CuentaBusinessService {
 
 	public void validarAccesoCuenta(Cuenta cuenta, Vendedor vendedor,
 			boolean filtradoPorDni) throws RpcExceptionMessages, BusinessException {
-		
 		// logueado no es el de la cuenta
 		if ( !vendedor.getId().equals(cuenta.getVendedor().getId())) {
 			HashMap<String, Boolean> mapaPermisosClient = (HashMap<String, Boolean>) 
