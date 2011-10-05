@@ -262,6 +262,10 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 							itemSolicitudUIData.getTipoPlan().addItem(tipoPlan);
 							tipoPlanPorDefecto = tipoPlan;
 						}
+						//MGR - #1759
+						else if(ClientContext.getInstance().getVendedor().isADMCreditos()){
+							itemSolicitudUIData.getTipoPlan().addItem(tipoPlan);
+						}
 					} else {
 						itemSolicitudUIData.getTipoPlan().addItem(tipoPlan);
 					}

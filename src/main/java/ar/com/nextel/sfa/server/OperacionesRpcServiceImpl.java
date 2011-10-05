@@ -10,13 +10,12 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
-import ar.com.nextel.model.oportunidades.beans.CuentaPotencial;
 import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
-import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.sfa.client.OperacionesRpcService;
 import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaResultDto;
 import ar.com.nextel.sfa.server.businessservice.SolicitudBusinessService;
@@ -41,6 +40,7 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 	//MGR - #1359
 	private static String oppEnCursoAdmCredito= "OPP_CURSO_ADM_CREDITO";
 	private static String oppEnCursoNoTLMNoDAE= "OPP_CURSO_NO_TLM_NO_DAE";
+	private static String oppEnCursoACancelarAdmCredito = "OPP_CURSO_A_CANCELAR_ADM_CREDITO";
 
 	@Override
 	public void init() throws ServletException {
@@ -74,8 +74,10 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 		}
 		else{
 			AppLogger.info("Obteniendo operaciones en curso para vendedores del tipo Adm. de creditos.", this);
+			//MGR - ISDN 1824 - Se modifico la consulta de las operaciones en curso para los administradores
 			List<OperacionEnCurso> oppEnCurso = this.repository.executeCustomQuery
-						(oppEnCursoAdmCredito,vendedor.getId(), vendedor.getId(), vendedor.getId());
+					(oppEnCursoAdmCredito, VendedorDto.TIPO_VENDEDOR_ADM_CREDITOS, vendedor.getId());
+			
 			List<OperacionEnCursoDto> operacionesEnCursoDto = mapper.convertList(
 					oppEnCurso, OperacionEnCursoDto.class);
 			return operacionesEnCursoDto;
@@ -92,7 +94,25 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 
 	public void cancelarOperacionEnCurso(String idOperacionEnCurso) throws RpcExceptionMessages {
 		try {
-			OperacionEnCurso operacionEnCurso = repository.retrieve(OperacionEnCurso.class,	idOperacionEnCurso);
+			//MGR - #1761
+			Vendedor vendedor = sessionContextLoader.getVendedor();
+			
+			OperacionEnCurso operacionEnCurso = null;
+			if(vendedor.isADMCreditos()){
+				List<OperacionEnCurso> oppEnCurso =  this.repository.executeCustomQuery
+						(oppEnCursoACancelarAdmCredito, idOperacionEnCurso, vendedor.getId());
+				
+				if(oppEnCurso.isEmpty() || oppEnCurso.size() > 1){
+					String error = "No se pudo identificar una operación en curso con id: " + idOperacionEnCurso;
+					AppLogger.error(error);
+					throw ExceptionUtil.wrap(new Exception(error));
+				}else{
+					operacionEnCurso = oppEnCurso.get(0);
+				}
+			}else{
+				operacionEnCurso = repository.retrieve(OperacionEnCurso.class,	idOperacionEnCurso);
+			}
+			
 			solicitudBusinessService.cancelarOperacionEnCurso(operacionEnCurso);
 		} catch (Exception e) {
 			AppLogger.error(e);

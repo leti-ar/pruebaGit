@@ -4,6 +4,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
+import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
@@ -46,8 +47,10 @@ public class SolicitudRpcServiceDelegate {
 		this.solicitudRpcServiceAsync = solicitudRpcServiceAsync;
 	}
 
+	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
+	//que permite realizar el manejo de mensajes
 	public void createSolicitudServicio(SolicitudServicioRequestDto solicitudServicioRequestDto,
-			DefaultWaitCallback<SolicitudServicioDto> callback) {
+			DefaultWaitCallback<CreateSaveSolicitudServicioResultDto> callback) {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.createSolicitudServicio(solicitudServicioRequestDto, callback);
 
@@ -58,8 +61,10 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.getSolicitudInitializer(callback);
 	}
 
+	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un SaveSolicitudServicioResultDto
+	//que permite realizar el manejo de mensajes
 	public void saveSolicituServicio(SolicitudServicioDto solicitudServicioDto,
-			DefaultWaitCallback<SolicitudServicioDto> callback) {
+			DefaultWaitCallback<CreateSaveSolicitudServicioResultDto> callback) {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.saveSolicituServicio(solicitudServicioDto, callback);
 	}
