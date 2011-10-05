@@ -11,7 +11,6 @@ import ar.com.nextel.sfa.client.dto.BancoDto;
 import ar.com.nextel.sfa.client.dto.CalifCrediticiaDto;
 import ar.com.nextel.sfa.client.dto.CalificacionDto;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
-import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.ComDto;
 import ar.com.nextel.sfa.client.dto.CompPagoDto;
 import ar.com.nextel.sfa.client.dto.EstadoCreditBancoCentralDto;
