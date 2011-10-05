@@ -494,7 +494,7 @@ public class SolicitudBusinessService {
 				
 				//MGR - ISDN 1824 - El adm. de creditos adhiere el cliente a factura electronica y genera la gestion
 				//tanto para prospect como para clientes
-				Vendedor vendedor = repository.retrieve(Vendedor.class, this.sessionContextLoader.getInstance().getVendedor().getId());
+				Vendedor vendedor = repository.retrieve(Vendedor.class, SessionContextLoader.getInstance().getVendedor().getId());
 				boolean isADMCreditos = vendedor.isADMCreditos();
 				
 				Long codigoBSCS = null;
@@ -507,8 +507,7 @@ public class SolicitudBusinessService {
 					facturaElectronicaService.adherirFacturaElectronica(
 							codigoBSCS, solicitudServicio.getCuenta()
 							.getCodigoVantive(), solicitudServicio.getCuenta()
-							.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor()
-							.getUserReal());
+							.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor());
 					solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
 				}
 				repository.save(solicitudServicio.getCuenta().getFacturaElectronica());

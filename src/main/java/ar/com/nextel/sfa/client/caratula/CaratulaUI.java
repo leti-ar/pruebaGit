@@ -328,8 +328,20 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 	private void habilitarBotonesVeraz() {
 		boolean isVerazNoGenerado = this.caratulaAEditar.getArchivoVeraz() == null || 
 			this.caratulaAEditar.getArchivoVeraz().length() == 0;
-		this.generarVeraz.setEnabled(isVerazNoGenerado);
-		this.verVeraz.setEnabled(!isVerazNoGenerado);
+		setEnabledButton(isVerazNoGenerado,this.generarVeraz,"btn-disabled");
+		setEnabledButton(!isVerazNoGenerado,this.verVeraz,"btn-disabled");
+	}
+	
+	private void setEnabledButton(boolean enabled, Button btn, String styleDisable) {
+		btn.setEnabled(enabled);
+		if (enabled) {
+			btn.removeStyleName(styleDisable);
+		} else {
+			if (!btn.getStyleName().contains(styleDisable)) {
+				btn.addStyleName(styleDisable);
+			}
+			
+		}
 	}
 
 	private Button crearBotonGenerarVeraz() {
@@ -338,7 +350,7 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		generarVeraz.addClickHandler(new ClickHandler() {
 			
 			public void onClick(ClickEvent event) {
-			    CuentaRpcService.Util.getInstance().consultarDetalleVeraz(caratulaAEditar.getIdCuenta(), 
+			    CuentaRpcService.Util.getInstance().consultarDetalleVeraz(caratulaAEditar.getIdCuenta(),caratulaAEditar.getId(), 
 			    		new DefaultWaitCallback<VerazResponseDto>() {
 
 							@Override

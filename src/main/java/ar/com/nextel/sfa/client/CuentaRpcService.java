@@ -56,6 +56,7 @@ public interface CuentaRpcService extends RemoteService {
 	//MGR - #960
 	public VerazResponseDto consultarVeraz(String customerId) throws RpcExceptionMessages;
 	public VerazResponseDto consultarDetalleVeraz(Long cuentaId) throws RpcExceptionMessages;
+	public VerazResponseDto consultarDetalleVeraz(Long cuentaId,Long caratulaId) throws RpcExceptionMessages;
 	public String leerConsultaDetalleVeraz(String verazFileName) throws RpcExceptionMessages;
 	//MGR - #1466
 	public CuentaDto selectCuenta(Long cuentaId, String cod_vantiveu,boolean filtradoPorDni, boolean deberiaLockear) throws RpcExceptionMessages;

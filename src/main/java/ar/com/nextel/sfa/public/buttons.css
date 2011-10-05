@@ -43,6 +43,10 @@
 	font-size: 11px;
 }
 
+.btn-disabled {
+	color: #969696;
+}
+
 .btn-menu {
 	position: absolute;
 	top: 0px;

@@ -18,7 +18,6 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
-import ar.com.nextel.business.cuentas.caratula.exception.ArpuServiceException;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
 import ar.com.nextel.business.cuentas.migrator.legacy.dto.DocDigitalizadoLegacyDto;
 import ar.com.nextel.business.cuentas.search.SearchCuentaBusinessOperator;
@@ -40,7 +39,6 @@ import ar.com.nextel.components.knownInstances.retrievers.message.MessageRetriev
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
 import ar.com.nextel.components.message.Message;
 import ar.com.nextel.exception.LegacyDAOException;
-import ar.com.nextel.framework.connectionDAO.ConnectionDAOException;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Banco;
 import ar.com.nextel.model.cuentas.beans.CalifCrediticia;
@@ -432,6 +430,13 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		}
 	}
 
+	public VerazResponseDto consultarDetalleVeraz(Long cuentaId,Long caratulaId) throws RpcExceptionMessages {
+		VerazResponseDto verazResponseDto = consultarDetalleVeraz(cuentaId);
+		if (caratulaId != null) {
+			this.cuentaBusinessService.saveArchivoVeraz(caratulaId, verazResponseDto.getFileName());
+		}
+		return verazResponseDto;
+	}
 	
 	public CuentaDto saveCuenta(CuentaDto cuentaDto) throws RpcExceptionMessages {
 		try {
