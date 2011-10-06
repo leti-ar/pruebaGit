@@ -455,6 +455,7 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 			anticipo.setText(caratulaDto.getAnticipo());
 			soloHibridos.setValue(caratulaDto.isSoloHibridos());
 			imei.setText(caratulaDto.getNumeroIMEI());
+			verificarImeiWrapper.setHTML(IconFactory.comprobarNegro(Sfa.constant().verificarImei()).toString());
 			findImei.setValue(caratulaDto.isFindIMEI());
 			comentAnalista.setText(caratulaDto.getComentarioAnalista());
 			scoring.setText(caratulaDto.getScoring());
