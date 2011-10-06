@@ -171,14 +171,7 @@ public class DocDigitalizadosUI extends NextelDialog implements ClickHandler{
 				final DocDigitalizadosDto docDig = documentos.get(listPosition);
 				
 				final String contextRoot = WindowUtils.getContextRoot();
-				
-				//MGR***** Queda asi para las pruebas, eliminar antes del deploy
-//				final String pahtAndNameFile = docDig.getServer() + docDig.getPaht() + docDig.getNombre();
-				
-				String trucho = docDig.getServer() + docDig.getPaht() + docDig.getNombre();
-				System.out.println("El archivo a abrir es: " + trucho);
-				final String pahtAndNameFile = "**arpaldcx02.nextelx.com.ar*Applications*SFA*docDigital*pruebaMary.tif";
-				final String prueba = "\\\\arpaldcx02.nextelx.com.ar\\Applications\\SFA\\docDigital\\pruebaMary.tif";
+				final String pahtAndNameFile = docDig.getServer() + docDig.getPaht() + docDig.getNombre();
 				
 				SolicitudRpcService.Util.getInstance().existDocDigitalizado(pahtAndNameFile, new DefaultWaitCallback<Boolean>() {
 					
@@ -186,12 +179,8 @@ public class DocDigitalizadosUI extends NextelDialog implements ClickHandler{
 						LoadingModalDialog.getInstance().hide();
 						if(result){
 							
-							//MGR******
-							WindowUtils.redirect("/" + contextRoot + "/download/" + prueba
-									+ "?module=cuentas&service=tif&name=" + prueba);
-							
-//								WindowUtils.redirect("/" + contextRoot + "/download/" + pahtAndNameFile
-//										+ "?module=cuentas&service=tif&name=" + pahtAndNameFile);
+								WindowUtils.redirect("/" + contextRoot + "/download/" + pahtAndNameFile
+										+ "?module=cuentas&service=tif&name=" + pahtAndNameFile);
 						}else {
 							MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),
 									MessageDialog.getCloseCommand());

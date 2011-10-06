@@ -668,13 +668,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 	public Boolean existDocDigitalizado(String pahtAndNameFile) {
 		//Llega algo como '\\arpalfls02\imaging\imagenes_general\orden_servicio\2002_06\5.66559-1-0300110.tif'
-		//Tengo que salvar las barral
+		//Tengo que salvar las barras
 		pahtAndNameFile = pahtAndNameFile.replace('\\', File.separatorChar);
 		pahtAndNameFile = pahtAndNameFile.replace('/', File.separatorChar);
-		
-		//MGR***** Solo prueba
-		pahtAndNameFile = pahtAndNameFile.replace('*', File.separatorChar);
-		
 		AppLogger.info("Searching file " + pahtAndNameFile);
 		return new File(pahtAndNameFile).exists();
 	}
