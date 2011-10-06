@@ -67,8 +67,6 @@ public class CuentaCaratulaForm extends Composite{
 				CaratulaUI.getInstance().setAceptarCommand(new Command() {
 					
 					public void execute() {
-						System.out.println("Obtengo la NUEVA caratula ya validada");
-						System.out.println("La sumo a la lista de caratulas");
 						CaratulaDto nuevaCaratula = CaratulaUI.getInstance().getCaraturaAEditar();
 						cuentaDto.getCaratulas().add(nuevaCaratula);
 						refrescaTablaCaratula();
@@ -239,10 +237,6 @@ public class CuentaCaratulaForm extends Composite{
 							
 							CaratulaUI.getInstance().setAceptarCommand(new Command() {
 								public void execute() {
-									//CaratulaDto CaratulaUI.getInstance().getCaraturaAEditar();
-									System.out.println("Obtengo la caratula EDITADA ya validada");
-									System.out.println("La sumo a la lista de caratulas");
-									
 									int index = cuentaDto.getCaratulas().indexOf(caratulaAEditar);
 									cuentaDto.getCaratulas().remove(index);
 									cuentaDto.getCaratulas().add(index, CaratulaUI.getInstance().getCaraturaAEditar());

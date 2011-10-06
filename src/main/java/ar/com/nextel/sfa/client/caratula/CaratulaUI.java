@@ -270,9 +270,6 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		aceptar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 
-				System.out.println("Click en aceptar del popup de caratula");
-				System.out.println("Puedo hacer la validacion");
-				
 				List<String> errores = caratulaData.validarCamposObligatorios(nroCaratula);
 				if(errores.isEmpty()){
 					String nroSolicitud = caratulaData.getNroSS().getText();
