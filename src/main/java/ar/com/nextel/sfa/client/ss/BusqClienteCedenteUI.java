@@ -49,7 +49,7 @@ public class BusqClienteCedenteUI extends Composite{
 			}
 		};
 		eventWrapper.add(busqLayout);
-		mainPanel.add(busqLayout);
+		mainPanel.add(eventWrapper);
 	}
 	
 	public void setBuscarCommand(Command buscarCommand) {
