@@ -476,13 +476,6 @@ public class SolicitudBusinessService {
 		}
 		final Date hace4Dias = new Date(System.currentTimeMillis() - 4 * unDiaEnMilis);
 		
-//		//TODO: Portabilidad
-//		for (LineaSolicitudServicio linea : solicitudServicio.getLineas()) {
-//			for (SolicitudPortabilidad portabilidad : linea.getSolicitudPortabilidad()) {
-//				if(portabilidad != null) pinMaestro = null;
-//			}
-//		}
-
 		if (!GenericValidator.isBlankOrNull(pinMaestro) && solicitudServicio.getCuenta().isEnCarga()) {
 			solicitudServicio.getCuenta().setPinMaestro(pinMaestro);
 		} else {

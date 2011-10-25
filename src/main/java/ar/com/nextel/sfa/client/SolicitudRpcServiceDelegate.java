@@ -1,7 +1,9 @@
 package ar.com.nextel.sfa.client;
 
 import java.util.List;
+import java.util.Map;
 
+import ar.com.nextel.business.solicitudes.report.SolicitudPortabilidadPropertiesReport;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
@@ -253,44 +255,33 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.validarPlanesCedentes(ctoCedentes, isEmpresa, isSaving, callback);
 	}
-	
-	/**
-	 * TODO: Portabilidad
-	 * @param callback
-	 */
+
+	// Portabilidad ------------------------------
 	public void getPortabilidadInitializer(long cuentaID, AsyncCallback<PortabilidadInitializer> callback){
 		WaitWindow.show();
 		solicitudRpcServiceAsync.getPortabilidadInitializer(cuentaID, callback);
 	}
 
-	/**
-	 * TODO: Portabilidad
-	 * @param lineaID
-	 * @param callback
-	 */
 	public void getSolicitudPortabilidadDto(String lineaID, AsyncCallback<SolicitudPortabilidadDto> callback){
 		WaitWindow.show();
 		solicitudRpcServiceAsync.getSolicitudPortabilidadDto(lineaID, callback);
 	}
 
-	/**
-	 * TODO: Portabilidad
-	 * @param codArea
-	 * @param callback
-	 */
 	public void getExisteEnAreaCobertura(int codArea,AsyncCallback<Boolean> callback){
 		WaitWindow.show();
 		solicitudRpcServiceAsync.getExisteEnAreaCobertura(codArea, callback);
 	}
 
-	/**
-	 * TODO: Portabilidad
-	 * @param codArea
-	 * @param callback
-	 */
 	public void validarPortabilidad(SolicitudServicioDto solicitudServicioDto,AsyncCallback<PortabilidadResult> callback){
 		WaitWindow.show();
 		solicitudRpcServiceAsync.validarPortabilidad(solicitudServicioDto, callback);
 	}
+
+	public void generarParametrosPortabilidadRTF(Long idSolicitudServicio,AsyncCallback<List<String>> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.generarParametrosPortabilidadRTF(idSolicitudServicio, callback);
+	}
+	// -------------------------------------------
+
 
 }

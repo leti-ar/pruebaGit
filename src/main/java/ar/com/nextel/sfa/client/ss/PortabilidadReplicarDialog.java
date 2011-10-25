@@ -20,6 +20,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 @SuppressWarnings("deprecation")
 public class PortabilidadReplicarDialog extends NextelDialog{
+
 	private static final String TITULO = "Replicar Datos de Portabilidad"; 
 	
 	private SimpleLink lnkAceptar;

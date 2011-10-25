@@ -1,7 +1,9 @@
 package ar.com.nextel.sfa.client;
 
 import java.util.List;
+import java.util.Map;
 
+import ar.com.nextel.business.solicitudes.report.SolicitudPortabilidadPropertiesReport;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
@@ -147,24 +149,17 @@ public interface SolicitudRpcService extends RemoteService {
 	 */
 	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa, boolean isSaving);
 		
-	/**
-	 * Portabilidad
-	 * @return
-	 * @throws RpcExceptionMessages
-	 */
+	// Portabilidad ------------------------------
 	PortabilidadInitializer getPortabilidadInitializer(long cuentaID) throws RpcExceptionMessages;
 	
-	/**
-	 * 
-	 * @param lineaID
-	 * @return
-	 * @throws RpcExceptionMessages
-	 */
 	SolicitudPortabilidadDto getSolicitudPortabilidadDto(String lineaID) throws RpcExceptionMessages;
 	
 	boolean getExisteEnAreaCobertura(int codArea) throws RpcExceptionMessages;
-
+	
 	PortabilidadResult validarPortabilidad(SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages;
+	
+	List<String> generarParametrosPortabilidadRTF(Long idSolicitudServicio) throws RpcExceptionMessages;
+	// -------------------------------------------
 
 }
 

@@ -10,12 +10,14 @@ public class GeneracionCierreResultDto implements IsSerializable {
 	private List<MessageDto> messages;
 	private boolean error;
 	private String rtfFileName;
-	private List<String> rtfFileNamePortabilidad = new ArrayList<String>();
-	private List<String> rtfFileNamePortabilidad_adj = new ArrayList<String>();
+	private List<String> rtfFileNamePortabilidad;
+	private List<String> rtfFileNamePortabilidad_adj;
 	
 	public GeneracionCierreResultDto() {
-		messages = new ArrayList<MessageDto>();
 		error = false;
+		messages = new ArrayList<MessageDto>();
+		rtfFileNamePortabilidad = new ArrayList<String>();
+		rtfFileNamePortabilidad_adj = new ArrayList<String>();
 	}
 
 	public List<MessageDto> getMessages() {
@@ -54,10 +56,7 @@ public class GeneracionCierreResultDto implements IsSerializable {
 		return rtfFileNamePortabilidad_adj;
 	}
 
-	public void setRtfFileNamePortabilidad_adj(
-			List<String> rtfFileNamePortabilidad_adj) {
+	public void setRtfFileNamePortabilidad_adj(List<String> rtfFileNamePortabilidad_adj) {
 		this.rtfFileNamePortabilidad_adj = rtfFileNamePortabilidad_adj;
 	}
-
-
 }

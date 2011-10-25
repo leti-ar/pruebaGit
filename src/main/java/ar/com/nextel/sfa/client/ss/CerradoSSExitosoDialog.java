@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.bcel.generic.LSTORE;
-
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
@@ -64,13 +62,11 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 	private CerradoSSExitosoDialog(String title) {
 		super(title);
 		loadThings();
-//		init();
 	}
 
 	private CerradoSSExitosoDialog(String title, boolean autoHide, boolean modal) {
 		super(title, autoHide, modal);
 		loadThings();
-//		init();
 	}
 
 	private void loadThings(){
@@ -83,8 +79,6 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 	private void init(List<String> rtfFileNamePorta) {
 		addStyleName("gwt-CerrarSSDialog");
 		mainPanel.setWidth("350px");
-//		successText = new InlineHTML();
-//		cierreExitoso = new FlowPanel();
 		Grid layout = new Grid(1, 2);
 		layout.setWidth("290px");
 		Image check = new Image("images/ss-check.gif");
@@ -94,7 +88,6 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 		layout.addStyleName("m30 cierreExitosoTable");
 		layout.getRowFormatter().setVerticalAlign(0, HasAlignment.ALIGN_MIDDLE);
 		cierreExitoso.add(layout);
-//		solicitudLink = new SimpleLink("Solicitud link", "#" + History.getToken(), true);
 		solicitudLink.addClickListener(this);
 		
 		solicitudRtf = new Grid(1 + rtfFileNamePorta.size(), 2);
@@ -104,8 +97,8 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 		for (int i = 0; i < rtfFileNamePorta.size(); i++) {
 			solicitudRtf.setWidget(i + 1, 0, IconFactory.word());
 			solicitudRtf.setWidget(i + 1, 1, new SimpleLink(rtfFileNamePorta.get(i),"#" + History.getToken(),true));
-			((SimpleLink)solicitudRtf.getWidget(i + 1, 0)).addClickListener(this);
-			((SimpleLink)solicitudRtf.getWidget(i + 1, 0)).setTitle(rtfFileNamePorta.get(i));
+			((SimpleLink)solicitudRtf.getWidget(i + 1, 1)).addClickListener(this);
+			((SimpleLink)solicitudRtf.getWidget(i + 1, 1)).setTitle(rtfFileNamePorta.get(i));
 		}
 		
 		cierreExitoso.add(solicitudRtf);
@@ -113,7 +106,6 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 		add(cierreExitoso);
 		cierreExitoso.setVisible(false);
 
-//		aceptar = new SimpleLink(Sfa.constant().aceptar());
 		aceptar.addClickListener(this);
 		addFormButtons(aceptar);
 	}
@@ -156,6 +148,7 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 						public void success(Boolean result) {
 							
 							RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getUrlReporte(file));
+							
 							requestBuilder.setCallback(new RequestCallback() {
 								public void onResponseReceived(Request request, Response response) {
 									WaitWindow.hide();
@@ -229,18 +222,17 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 
 	public void showCierreExitoso(GeneracionCierreResultDto cierreResult, Long idSolicitud) {
 		List<String> rtfFileNamePorta = new ArrayList<String>();
-		
-		for (String str : cierreResult.getRtfFileNamePortabilidad()) {
-			rtfFileNamePorta.add(str);
-		}
 
-		for (String str : cierreResult.getRtfFileNamePortabilidad_adj()) {
-			rtfFileNamePorta.add(str);
-		}
-		
+		for (String str : cierreResult.getRtfFileNamePortabilidad()) 
+			rtfFileNamePorta.add(str.substring(str.lastIndexOf("\\") + 1));
+
+		for (String str : cierreResult.getRtfFileNamePortabilidad_adj()) 
+			rtfFileNamePorta.add(str.substring(str.lastIndexOf("\\") + 1));
+
 		Collections.sort(rtfFileNamePorta);
-		init(rtfFileNamePorta);
 
+		init(rtfFileNamePorta);
+		
 		cierreExitoso.setVisible(true);
 		formButtons.setVisible(true);
 		this.fileName = cierreResult.getRtfFileName();

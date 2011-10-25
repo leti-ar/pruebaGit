@@ -226,81 +226,12 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 						}
 					});
 		} else if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() == 0)) {
-			
-			final String contextRoot = WindowUtils.getContextRoot();
-			fileName = null;
-			if (solicitud.isNumeroCuentaAlCierreSSIdVantive()) {
-				// Si es cliente usamos el codigo Vantive, sino el Id (ya que no podemos
-				// guardar archivos con los caracteres de VANCUC
-				fileName = solicitud.getIdCuenta().toString() + "-5-" + numeroSS + ".rtf";
-			} else {
-				fileName = solicitud.getIdCuenta().toString() + "-5-" + numeroSS + ".rtf";
-			}
-			final String filenameFinal = fileName;
-			SolicitudRpcService.Util.getInstance().existReport(fileName, new DefaultWaitCallback<Boolean>() {
-				public void success(Boolean result) {
-					LoadingModalDialog.getInstance().hide();
-					if (result) {
-						WindowUtils.redirect("/" + contextRoot + "/download/" + filenameFinal
-								+ "?module=solicitudes&service=rtf&name=" + filenameFinal);
-					} else {
-						
-						//MGR - #1415 - Solo se envia el id de la solcitud
-						SolicitudRpcService.Util.getInstance().crearArchivo(solicitud.getId(), false, new DefaultWaitCallback<Boolean>() {
-
-							@Override
-							public void success(Boolean result) {
-								
-								RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getUrlReporte(fileName));
-								requestBuilder.setCallback(new RequestCallback() {
-									public void onResponseReceived(Request request, Response response) {
-										WaitWindow.hide();
-										LoadingModalDialog.getInstance().hide();
-										if (response.getStatusCode() == Response.SC_OK) {
-											WindowUtils.redirect(getUrlReporte(fileName));
-										} else {
-											MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),
-													MessageDialog.getCloseCommand());
-										}
-									}
-
-									public void onError(Request request, Throwable exception) {
-										WaitWindow.hide();
-										LoadingModalDialog.getInstance().hide();
-										MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),
-												MessageDialog.getCloseCommand());
-									}
-								});
-								try {
-									requestBuilder.setTimeoutMillis(10 * 1000);
-									requestBuilder.send();
-									WaitWindow.show();
-									LoadingModalDialog.getInstance().showAndCenter("Solicitud",
-											"Esperando Solicitud de Servicio ...");
-								} catch (RequestException e) {
-									MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),
-											MessageDialog.getCloseCommand());
-									LoadingModalDialog.getInstance().hide();
-								}
-							}
-						});
-					}
-				}
-				
-				public void failure(Throwable caught) {
-					LoadingModalDialog.getInstance().hide();
-					super.failure(caught);
-				}
-			});
-
+			BuscarSSCerradasReportsDialog reportsDialog = new BuscarSSCerradasReportsDialog();
+			reportsDialog.show(solicitud);
 		}
 
 	}
 	
-	public String getUrlReporte(String fileName) {
-		return "/" + WindowUtils.getContextRoot() + "/download/" + fileName
-		+ "?module=solicitudes&service=rtf&name=" + fileName;
-	}
 
 	private SolicitudServicioCerradaResultDto buscarSS(String numeroSS) {
 		for (Iterator iterator = solicitudesServicioCerradaResultDto.iterator(); iterator.hasNext();) {

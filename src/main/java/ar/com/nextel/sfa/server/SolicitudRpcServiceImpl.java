@@ -1,6 +1,10 @@
 package ar.com.nextel.sfa.server;
 
 import java.io.File;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -14,7 +18,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -27,6 +30,11 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.constants.MessageIdentifier;
+import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorResult;
+import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorServiceAxisImpl;
+import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorServiceException;
+import ar.com.nextel.business.legacy.bps.BPSSystem;
+import ar.com.nextel.business.legacy.bps.exception.BPSSystemException;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.vantive.VantiveSystem;
 import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO;
@@ -37,6 +45,7 @@ import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequ
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
 import ar.com.nextel.business.solicitudes.negativeFiles.NegativeFilesBusinessOperator;
 import ar.com.nextel.business.solicitudes.negativeFiles.result.NegativeFilesBusinessResult;
+import ar.com.nextel.business.solicitudes.report.SolicitudPortabilidadPropertiesReport;
 import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepository;
 import ar.com.nextel.business.solicitudes.search.dto.SolicitudServicioCerradaSearchCriteria;
 import ar.com.nextel.components.knownInstances.GlobalParameter;
@@ -54,7 +63,6 @@ import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
-import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.PlanBase;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
@@ -62,14 +70,17 @@ import ar.com.nextel.model.solicitudes.beans.Sucursal;
 import ar.com.nextel.model.solicitudes.beans.TipoAnticipo;
 import ar.com.nextel.model.solicitudes.beans.TipoPlan;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
+import ar.com.nextel.port.in.endPoint.PortInEndPointImplServiceSoapBindingStub;
+import ar.com.nextel.port.in.endPoint.Responsible;
+import ar.com.nextel.port.in.endPoint.ServiceOrder;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
+import ar.com.nextel.services.portabilidad.SolicitudPortabilidadWSImpl;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
-import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
@@ -99,6 +110,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
 import ar.com.nextel.sfa.client.dto.SucursalDto;
+import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
@@ -115,7 +127,6 @@ import ar.com.nextel.sfa.client.util.PortabilidadResult;
 import ar.com.nextel.sfa.server.businessservice.CuentaBusinessService;
 import ar.com.nextel.sfa.server.businessservice.SolicitudBusinessService;
 import ar.com.nextel.sfa.server.util.MapperExtended;
-import ar.com.nextel.sfa.server.util.PortabilidadPropertiesRTFGenerator;
 import ar.com.nextel.util.AppLogger;
 import ar.com.nextel.util.DateUtils;
 import ar.com.nextel.util.ExcelBuilder;
@@ -131,6 +142,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private Repository repository;
 	private SolicitudServicioBusinessOperator solicitudesBusinessOperator;
 	private VantiveSystem vantiveSystem;
+	private BPSSystem bpsSystem;
 	private FinancialSystem financialSystem;
 	private KnownInstanceRetriever knownInstanceRetriever;
 	private SessionContextLoader sessionContextLoader;
@@ -147,7 +159,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private DefaultRetriever messageRetriever;;
 	
 	
-	
 
 	public void init() throws ServletException {
 		super.init();
@@ -161,6 +172,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		solicitudServicioRepository = (SolicitudServicioRepository) context
 				.getBean("solicitudServicioRepositoryBean");
 		vantiveSystem = (VantiveSystem) context.getBean("vantiveSystemBean");
+		bpsSystem = (BPSSystem) context.getBean("bpsSystemBean");
 		financialSystem = (FinancialSystem) context.getBean("financialSystemBean");
 		knownInstanceRetriever = (KnownInstanceRetriever) context.getBean("knownInstancesRetriever");
 		sessionContextLoader = (SessionContextLoader) context.getBean("sessionContextLoader");
@@ -172,6 +184,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 //		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
 		messageRetriever = (DefaultRetriever)context.getBean("messageRetriever");
 		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");
+		
 	}
 
 	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
@@ -638,7 +651,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			result.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
 			result.setRtfFileName(getReporteFileName(solicitudServicio));
 			
-			//Setea los nombres de los rtf Generados
+			//TODO: Portabilidad - Setea los nombres de los rtf Generados
 			if(response.getRtfFileNamePortabilidad().size() > 0){
 				for (String rtfFileNamePorta : response.getRtfFileNamePortabilidad().get("PORTABILIDAD")) {
 					result.getRtfFileNamePortabilidad().add(rtfFileNamePorta);
@@ -684,6 +697,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 	public Boolean existReport(String report) {
 		String fullFilename = buildSolicitudReportPath() + File.separatorChar + report;
+		
 		AppLogger.info("Searching file " + fullFilename);
 		return new File(fullFilename).exists();
 	}
@@ -940,10 +954,13 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return mapper.map(repository.find(query).get(0), SolicitudPortabilidadDto.class);
 	}
 
+
 	/**
 	 * TODO: Portabilidad
 	 */
 	public boolean getExisteEnAreaCobertura(int codArea) throws RpcExceptionMessages {
+//		SolicitudPortabilidadWSImpl ws = new SolicitudPortabilidadWSImpl();
+		
 		String query = "FROM Localidad local WHERE local.codigoArea = ? AND local.cobertura = ?";
 		return repository.find(query, String.valueOf(codArea),true).size() > 0 ? true : false;
 	}
@@ -1001,7 +1018,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		int contLineasPrepagas = 0;
 		int cantRecibeSMS;
 		
-		Boolean permite;
+		Boolean permiteBPS;
+		Boolean permiteVantive;
 		
 		String nroSS = "";
 		String telefono;
@@ -1057,10 +1075,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 						contLineasPrepagas++; // Cuenta la cantidad de lineas prepagas
 					}
 					
-					if(portabilidad.isRecibeSMS()) {
-						AppLogger.info("cantRecibeSMS++");
-						cantRecibeSMS++;
-					}
+					if(portabilidad.isRecibeSMS()) cantRecibeSMS++;
+					
 					
 					// Empieza un bucle para lograr comparaciones
 					for(int n = 0; n < x_nroSS.get(i).size(); n++){
@@ -1090,16 +1106,12 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					} // End n
 				}
 
-				AppLogger.info("cantRecibeSMS > " + cantRecibeSMS);
-
 				if(!nroSS.isEmpty()){
 					// Solo permite una linea que reciba SMS
 					if(cantRecibeSMS > 1) return new PortabilidadResult(true, false, MSG_ERR_02.replaceAll("_NUMERO_", nroSS));
 					// Debe haber una linea que reciba SMS
 					if(cantRecibeSMS < 1) return new PortabilidadResult(true, false, MSG_ERR_02_BIS.replaceAll("_NUMERO_", nroSS)); 
 				}
-
-				AppLogger.info("....................................................");
 			}
 			
 			// El tipo de contribuyente de la cuenta de la solicitud de servicio es consumidor final
@@ -1113,20 +1125,22 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			}
 			
 			// Valida si existen solicitudes Pendientes de Portabilidad
-//			permite = false;
+//			permiteBPS = false;
+//			permiteVantive = false;
 //			try{
 //				Long idVantive = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId()).getIdVantive();
-//				permite = vantiveSystem.getPermitePortabilidad(idVantive);
+//				String codVantive = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId()).getCodigoVantive();
+//				
+//				permiteVantive = vantiveSystem.getPermitePortabilidad(idVantive);
+//				permiteBPS = bpsSystem.resolverValidacionesPendientes(codVantive);
 //			}catch(Exception e){
 //				throw ExceptionUtil.wrap(e);
 //			}
-//			if(!permite){
+//			if(!permiteVantive || !permiteBPS){
 //				// Al analista de Creditos le muestra un mensaje y guarda
 //				if(sessionContextLoader.getVendedor().getTipoVendedor().getId() == 21) return new PortabilidadResult(true, true, MSG_ERR_09);// Tipo vendedor analista creditos = 21
 //				else return new PortabilidadResult(true, false, MSG_ERR_09);
 //			}
-
-			generarRTFportabilidad(solicitudServicioDto);
 		}
 		
 		// Puede guardar
@@ -1134,29 +1148,15 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return new PortabilidadResult(true,true,"PRUEBAS RTF");
 	}
 	
+
 	/**
 	 * TODO: Portabilidad
-	 * @param solcitudServicioDto
-	 * @return
+	 * @param idSolicitudServicio
 	 * @throws RpcExceptionMessages
 	 */
-	public void generarRTFportabilidad(SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages {
-		CuentaDto cuenta = mapper.map(repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId()), CuentaDto.class);
-		PortabilidadPropertiesRTFGenerator portabilidadPropGen = new PortabilidadPropertiesRTFGenerator(cuenta,solicitudServicioDto.getLineas());
-		
-		List<Map<String, String>> reportes_parametros = portabilidadPropGen.getReportes_parametros();
-		List<Map<String, String>> reportes_parametros_adjunto = portabilidadPropGen.getReportes_parametros_adjunto();
-		
-		AppLogger.info("//////////////////////////////////////////////////////////////////////////////");
-		for (Map<String, String> map : reportes_parametros) {
-			Iterator<Entry<String, String>> it = map.entrySet().iterator();
-			
-			while(it.hasNext()){
-				Map.Entry<String,String> e = it.next();
-				AppLogger.info(e.getKey() + " [ " + e.getValue() + " ]");
-			}
-			AppLogger.info("같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같같");
-		}
-		AppLogger.info("//////////////////////////////////////////////////////////////////////////////");
+	public List<String> generarParametrosPortabilidadRTF(Long idSolicitudServicio) throws RpcExceptionMessages {
+		SolicitudServicio solicitudServicio = solicitudServicioRepository.getSolicitudServicioPorId(idSolicitudServicio);
+		SolicitudPortabilidadPropertiesReport portabilidadPropRtp = new SolicitudPortabilidadPropertiesReport(solicitudServicio); 
+		return portabilidadPropRtp.getReportFileNames();
 	}
 }

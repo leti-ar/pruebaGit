@@ -1,7 +1,9 @@
 package ar.com.nextel.sfa.client;
 
 import java.util.List;
+import java.util.Map;
 
+import ar.com.nextel.business.solicitudes.report.SolicitudPortabilidadPropertiesReport;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
@@ -132,10 +134,7 @@ public interface SolicitudRpcServiceAsync {
 	
 	public void loginServer(String linea, AsyncCallback<Void> callback);
 	
-	/**
-	 * Portabilidad
-	 * @param callback
-	 */
+	// Portabilidad ------------------------------
 	public void getPortabilidadInitializer(long cuentaID, 
 			AsyncCallback<PortabilidadInitializer> callback);
 
@@ -147,4 +146,8 @@ public interface SolicitudRpcServiceAsync {
 
 	void validarPortabilidad(SolicitudServicioDto solicitudServicioDto,
 			AsyncCallback<PortabilidadResult> callback);
+
+	void generarParametrosPortabilidadRTF(Long idSolicitudServicio,
+			AsyncCallback<List<String>> callback);
+	// -------------------------------------------
 }
