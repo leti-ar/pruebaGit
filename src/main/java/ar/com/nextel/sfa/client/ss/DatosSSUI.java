@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.tools.ant.taskdefs.Delete;
-
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -18,7 +16,6 @@ import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
-import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
@@ -28,6 +25,7 @@ import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
+import ar.com.nextel.util.StringUtil;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -41,7 +39,6 @@ import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -49,11 +46,11 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 public class DatosSSUI extends Composite implements ClickHandler {
 
@@ -475,8 +472,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		SolicitudPortabilidadDto portabilidad = editarSSUIData.getLineasSolicitudServicio().get(row - 1).getPortabilidad();
 		
 		if(portabilidad != null){
-			if(portabilidad.getTipoDocumento() != null && !portabilidad.getNumeroDocumento().isEmpty() && 
-					!portabilidad.getRazonSocial().isEmpty() && !portabilidad.getNombre().isEmpty() && !portabilidad.getApellido().isEmpty()){
+			if(portabilidad.getTipoDocumento() != null && 
+					notEmpty(portabilidad.getNumeroDocumento()) && notEmpty(portabilidad.getRazonSocial()) && 
+					notEmpty(portabilidad.getNombre()) && notEmpty(portabilidad.getApellido())){
 
 				PortabilidadReplicarDialog replicarDialog = new PortabilidadReplicarDialog();
 				replicarDialog.show(editarSSUIData.getLineasSolicitudServicio(),row - 1);
@@ -492,7 +490,15 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		}
 	}
 	
-	private void selectDetalleLineaSSRow(int row) {
+    private boolean empty(String s) {
+        return s == null || s.length() == 0;
+    }
+
+    private boolean notEmpty(String s) {
+        return !empty(s);
+    }
+
+    private void selectDetalleLineaSSRow(int row) {
 		if (row > 0) {
 			detalleSS.getRowFormatter().removeStyleName(selectedDetalleRow, SELECTED_ROW);
 			detalleSS.getRowFormatter().addStyleName(row, SELECTED_ROW);

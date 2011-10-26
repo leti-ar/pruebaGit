@@ -130,6 +130,7 @@ import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
 import ar.com.nextel.util.DateUtils;
 import ar.com.nextel.util.ExcelBuilder;
+import ar.com.nextel.util.StringUtil;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.server.RemoteService;
 import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
@@ -959,7 +960,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	 * TODO: Portabilidad
 	 */
 	public boolean getExisteEnAreaCobertura(int codArea) throws RpcExceptionMessages {
-//		SolicitudPortabilidadWSImpl ws = new SolicitudPortabilidadWSImpl();
+		SolicitudPortabilidadWSImpl ws = new SolicitudPortabilidadWSImpl();
 		
 		String query = "FROM Localidad local WHERE local.codigoArea = ? AND local.cobertura = ?";
 		return repository.find(query, String.valueOf(codArea),true).size() > 0 ? true : false;
@@ -1106,7 +1107,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					} // End n
 				}
 
-				if(!nroSS.isEmpty()){
+				if(StringUtil.notEmpty(nroSS)){
 					// Solo permite una linea que reciba SMS
 					if(cantRecibeSMS > 1) return new PortabilidadResult(true, false, MSG_ERR_02.replaceAll("_NUMERO_", nroSS));
 					// Debe haber una linea que reciba SMS
