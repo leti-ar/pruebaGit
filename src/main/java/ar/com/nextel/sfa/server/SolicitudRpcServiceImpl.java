@@ -960,7 +960,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	 * TODO: Portabilidad
 	 */
 	public boolean getExisteEnAreaCobertura(int codArea) throws RpcExceptionMessages {
-		SolicitudPortabilidadWSImpl ws = new SolicitudPortabilidadWSImpl();
+		//SolicitudPortabilidadWSImpl ws = new SolicitudPortabilidadWSImpl();
 		
 		String query = "FROM Localidad local WHERE local.codigoArea = ? AND local.cobertura = ?";
 		return repository.find(query, String.valueOf(codArea),true).size() > 0 ? true : false;
@@ -1126,27 +1126,27 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			}
 			
 			// Valida si existen solicitudes Pendientes de Portabilidad
-//			permiteBPS = false;
-//			permiteVantive = false;
-//			try{
-//				Long idVantive = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId()).getIdVantive();
-//				String codVantive = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId()).getCodigoVantive();
-//				
-//				permiteVantive = vantiveSystem.getPermitePortabilidad(idVantive);
-//				permiteBPS = bpsSystem.resolverValidacionesPendientes(codVantive);
-//			}catch(Exception e){
-//				throw ExceptionUtil.wrap(e);
-//			}
-//			if(!permiteVantive || !permiteBPS){
-//				// Al analista de Creditos le muestra un mensaje y guarda
-//				if(sessionContextLoader.getVendedor().getTipoVendedor().getId() == 21) return new PortabilidadResult(true, true, MSG_ERR_09);// Tipo vendedor analista creditos = 21
-//				else return new PortabilidadResult(true, false, MSG_ERR_09);
-//			}
+			permiteBPS = false;
+			permiteVantive = false;
+			try{
+				Long idVantive = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId()).getIdVantive();
+				String codVantive = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId()).getCodigoVantive();
+				
+				permiteVantive = vantiveSystem.getPermitePortabilidad(idVantive);
+				permiteBPS = bpsSystem.resolverValidacionesPendientes(codVantive);
+			}catch(Exception e){
+				throw ExceptionUtil.wrap(e);
+			}
+			if(!permiteVantive || !permiteBPS){
+				// Al analista de Creditos le muestra un mensaje y guarda
+				if(sessionContextLoader.getVendedor().getTipoVendedor().getId() == 21) return new PortabilidadResult(true, true, MSG_ERR_09);// Tipo vendedor analista creditos = 21
+				else return new PortabilidadResult(true, false, MSG_ERR_09);
+			}
 		}
 		
 		// Puede guardar
-		//return new PortabilidadResult(false,true,"");
-		return new PortabilidadResult(true,true,"PRUEBAS RTF");
+		return new PortabilidadResult(false,true,"");
+//		return new PortabilidadResult(true,true,"PRUEBAS RTF");
 	}
 	
 
