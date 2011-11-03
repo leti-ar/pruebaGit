@@ -48,6 +48,7 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 	private Grid gridIMEI;
 	private Grid gridValidFirma;
 	private Grid gridInferior;
+	private Grid gridBotonesVeraz;
 	
 	private CaratulaUIData caratulaData;
 	private SimpleLink aceptar;
@@ -96,30 +97,6 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		
 		add(gridCabecera);
 		
-		gridBanco = new Grid(1,2);
-		gridBanco.addStyleName("layout");
-		gridBanco.getColumnFormatter().setWidth(1, "250px");
-		caratulaData.getBanco().setWidth("95%");
-		
-		gridBanco.setText(0, 0, Sfa.constant().banco());
-		gridBanco.setWidget(0, 1, caratulaData.getBanco());
-		
-		gridDatosBanco = new Grid(2, 4);
-		gridDatosBanco.addStyleName("layout");
-		gridDatosBanco.setText(0, 0, Sfa.constant().refBancaria());
-		gridDatosBanco.setWidget(0, 1, caratulaData.getRefBancaria());
-		gridDatosBanco.setText(0, 2, Sfa.constant().tipoCuenta());
-		gridDatosBanco.setWidget(0, 3, caratulaData.getTipoCuenta());
-		gridDatosBanco.setText(1, 0, Sfa.constant().mayorSaldo());
-		gridDatosBanco.setWidget(1, 1, caratulaData.getMayorSaldoFavor());
-		gridDatosBanco.setText(1, 2, Sfa.constant().ingresoProm());
-		gridDatosBanco.setWidget(1, 3, caratulaData.getIngPromedio());
-		
-		panelBanco = new HorizontalPanel();
-		panelBanco.add(gridBanco);
-		panelBanco.add(gridDatosBanco);
-		add(panelBanco);
-		
 		gridActividad = new Grid(2,6);
 		gridActividad.addStyleName("layout");
 		
@@ -134,6 +111,10 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		gridActividad.setWidget(0, 5, caratulaData.getEquiposActivos());
 		
 		add(gridActividad);
+		
+		gridBotonesVeraz = new Grid(1,2);
+		gridBotonesVeraz.setWidget(0, 1, crearBotonesVeraz());
+		add(gridBotonesVeraz);
 		
 		gridTarj = new Grid(1,8);
 		gridTarj.getColumnFormatter().setWidth(7, "80px");
@@ -154,7 +135,7 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		gridTarj.setText(0, 6, Sfa.constant().consumoProm());
 		gridTarj.setWidget(0, 7, caratulaData.getConsumoProm());
 		
-		add(gridTarj);
+		add(gridTarj);		
 		
 		gridIngDem = new Grid(3,6);
 		gridIngDem.addStyleName("layout");
@@ -177,7 +158,32 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		gridIngDem.setText(2, 4, Sfa.constant().factCelular());
 		gridIngDem.setWidget(2, 5, caratulaData.getFactCelular());
 		
-		add(gridIngDem);
+		add(gridIngDem);		
+		
+		gridBanco = new Grid(1,2);
+		gridBanco.addStyleName("layout");
+		gridBanco.getColumnFormatter().setWidth(1, "250px");
+		caratulaData.getBanco().setWidth("95%");
+		
+		gridBanco.setText(0, 0, Sfa.constant().banco());
+		gridBanco.setWidget(0, 1, caratulaData.getBanco());
+		
+		gridDatosBanco = new Grid(2, 4);
+		gridDatosBanco.addStyleName("layout");
+		gridDatosBanco.setText(0, 0, Sfa.constant().refBancaria());
+		gridDatosBanco.setWidget(0, 1, caratulaData.getRefBancaria());
+		gridDatosBanco.setText(0, 2, Sfa.constant().tipoCuenta());
+		gridDatosBanco.setWidget(0, 3, caratulaData.getTipoCuenta());
+		gridDatosBanco.setText(1, 0, Sfa.constant().mayorSaldo());
+		gridDatosBanco.setWidget(1, 1, caratulaData.getMayorSaldoFavor());
+		gridDatosBanco.setText(1, 2, Sfa.constant().ingresoProm());
+		gridDatosBanco.setWidget(1, 3, caratulaData.getIngPromedio());
+		
+		panelBanco = new HorizontalPanel();
+		panelBanco.add(gridBanco);
+		panelBanco.add(gridDatosBanco);
+		
+		add(panelBanco);
 
 		gridCOM = new Grid(2,4);
 		gridCOM.addStyleName("layout");
@@ -202,7 +208,7 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		gridVeraz.setText(0, 2, Sfa.constant().nosis());
 		gridVeraz.setWidget(0, 3, caratulaData.getNosis());
 
-		gridVeraz.setWidget(1, 1, crearBotonesVeraz());
+//		gridVeraz.setWidget(1, 1, crearBotonesVeraz());
 		gridVeraz.setHTML(1, 2, Sfa.constant().imei());
 		
 		gridIMEI = new Grid(1,5);
@@ -323,8 +329,13 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 	}
 	
 	private void habilitarBotonesVeraz() {
-		boolean isVerazNoGenerado = this.caratulaAEditar.getArchivoVeraz() == null || 
-			this.caratulaAEditar.getArchivoVeraz().length() == 0;
+		/*  
+		 * Si la caratula está confirmada, el botón "Generar Veraz", debe estar deshabilitado, 
+		 * independientemente de que si el archivo no fue generado.
+		 */
+		boolean isVerazNoGenerado = !this.caratulaAEditar.isConfirmada() && (this.caratulaAEditar.getArchivoVeraz() == null || 
+			this.caratulaAEditar.getArchivoVeraz().length() == 0);
+
 		setEnabledButton(isVerazNoGenerado,this.generarVeraz,"btn-disabled");
 		setEnabledButton(!isVerazNoGenerado,this.verVeraz,"btn-disabled");
 	}

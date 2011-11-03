@@ -65,7 +65,8 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 	private TextArea actividad = new TextArea();
 	private ListBox validDomicilio = new ListBox("");
 	private ListBox banco = new ListBox("");
-	private TextBox refBancaria;
+//	private TextBox refBancaria;
+	private TextArea refBancaria = new TextArea();
 	private ListBox tipoCuenta = new ListBox("");
 	private TextBox mayorSaldoFavor;
 	private TextBox ingPromedio;
@@ -151,7 +152,17 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 			}
 		});
 		
-		refBancaria = new RegexTextBox(RegularExpressionConstants.getNumerosYLetrasLimitado(100));
+//		refBancaria = new RegexTextBox(RegularExpressionConstants.getNumerosYLetrasLimitado(100));
+		refBancaria.addKeyUpHandler(new KeyUpHandler() {			
+			public void onKeyUp(KeyUpEvent event) {
+				if(refBancaria.getText().length() > MAX_LENGHT_200) {
+					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+					ErrorDialog.getInstance().show(Sfa.constant().ERR_MAX_LARGO_CAMPO(), false);
+					refBancaria.setText(refBancaria.getText().substring(0, MAX_LENGHT_200));					
+				}
+			}
+		});
+		
 		mayorSaldoFavor = new RegexTextBox(RegularExpressionConstants.importe);
 		ingPromedio = new RegexTextBox(RegularExpressionConstants.importe);
 		limiteTarj = new RegexTextBox(RegularExpressionConstants.importe);
@@ -363,6 +374,12 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 				limiteCred.setText(NumberFormat.getDecimalFormat().format(caratulaDto.getLimiteCredito()));
 			}else{
 				limiteCred.setText(null);
+			}
+			
+			if(caratulaDto.getLimiteTarjCred() != null) {
+				limiteTarj.setText(NumberFormat.getDecimalFormat().format(caratulaDto.getLimiteTarjCred()));
+			}else{
+				limiteTarj.setText(null);
 			}
 			
 			ingDemostrado.setValue(caratulaDto.isIngresoDemostrado());
@@ -707,14 +724,22 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		this.banco = banco;
 	}
 
-	public TextBox getRefBancaria() {
+//	public TextBox getRefBancaria() {
+//		return refBancaria;
+//	}
+//
+//	public void setRefBancaria(TextBox refBancaria) {
+//		this.refBancaria = refBancaria;
+//	}
+
+	public TextArea getRefBancaria() {
 		return refBancaria;
 	}
 
-	public void setRefBancaria(TextBox refBancaria) {
+	public void setRefBancaria(TextArea refBancaria) {
 		this.refBancaria = refBancaria;
 	}
-
+	
 	public ListBox getTipoCuenta() {
 		return tipoCuenta;
 	}
