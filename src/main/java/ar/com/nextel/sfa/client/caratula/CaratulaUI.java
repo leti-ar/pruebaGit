@@ -5,6 +5,8 @@ import java.util.List;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.cuenta.CaratulaVerazModalDialog;
+import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
+import ar.com.nextel.sfa.client.dto.BancoDto;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
@@ -107,7 +109,17 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		gridActividad.setWidget(0, 1, caratulaData.getActividad());
 		gridActividad.setText(0, 2, Sfa.constant().validacionDomicilio());
 		gridActividad.setWidget(0, 3, caratulaData.getValidDomicilio());
-		gridActividad.setText(0, 4, Sfa.constant().equiposActivos());
+
+//		Al llamar a este metodo obtengo la lista de caratulas, con lo cual si es una lista vacia, se que el documento es un Crédito, 
+//		de lo contrario es un anexo. 
+		List<CaratulaDto> listaDocumentosCaratula = obtenerListaCaratulas();
+		boolean isDocCredito = listaDocumentosCaratula.isEmpty()? true:false;
+
+		if(isDocCredito){
+			gridActividad.setText(0, 4, Sfa.constant().equiposActivos());
+		}else{
+			gridActividad.setHTML(0, 4, Sfa.constant().equiposActivosReq());
+		}		
 		gridActividad.setWidget(0, 5, caratulaData.getEquiposActivos());
 		
 		add(gridActividad);
@@ -191,11 +203,19 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		
 		gridCOM.setText(0, 0, Sfa.constant().COM());
 		gridCOM.setWidget(0, 1, caratulaData.getCom());
-		gridCOM.setText(0, 2, Sfa.constant().firmante());
+		if(isDocCredito){
+			gridCOM.setText(0, 2, Sfa.constant().firmante());
+		}else{
+			gridCOM.setHTML(0, 2, Sfa.constant().firmanteReq());
+		}
 		gridCOM.setWidget(0, 3, caratulaData.getFirmante());
 		gridCOM.setText(1, 0, Sfa.constant().BCRA());
 		gridCOM.setWidget(1, 1, caratulaData.getBcra());
-		gridCOM.setText(1, 2, Sfa.constant().compPago());
+		if(isDocCredito){
+			gridCOM.setText(1, 2, Sfa.constant().compPago());
+		}else {
+			gridCOM.setHTML(1, 2, Sfa.constant().compPagoReq());	
+		}
 		gridCOM.setWidget(1, 3, caratulaData.getComprPago());
 		
 		add(gridCOM);
@@ -328,6 +348,14 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		return verazBotones;
 	}
 	
+	/*
+	 * Obtiene la lista de las caratulas
+	 */
+	private List<CaratulaDto> obtenerListaCaratulas(){
+		CuentaEdicionTabPanel cuentaTab = CuentaEdicionTabPanel.getInstance();		
+		return cuentaTab.getCuenta2editDto().getCaratulas();
+	}
+	
 	private void habilitarBotonesVeraz() {
 		/*  
 		 * Si la caratula está confirmada, el botón "Generar Veraz", debe estar deshabilitado, 
@@ -418,7 +446,8 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		caratulaData.habilitarCampos(habilitar);
 		habilitarBotonesVeraz();
 		aceptar.setVisible(habilitar);
-		onChange(caratulaData.getBanco());
+//		onChange(caratulaData.getBanco());
+		mostrarDatosBanco(caratulaAEditar.getBanco());
 		onClick(caratulaData.getIngDemostrado());
 		setDialogTitle(titulo);
 		showAndCenter();
@@ -426,6 +455,19 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 	
 	public CaratulaDto getCaraturaAEditar(){
 		return caratulaData.getDatosCaratula();
+	}
+	
+	/*
+	 * Si el banco no es nulo, muestra los datos de la grilla del banco (Ref Bancaria, Tipo Cuenta, Mayo saldo, Ingreso prom). De lo
+	 * contrario no los muestra.
+	 *
+	 */
+	public void mostrarDatosBanco(BancoDto banco){
+		if(banco != null){
+			gridDatosBanco.setVisible(true);
+		}else{
+			gridDatosBanco.setVisible(false);
+		} 
 	}
 	
 	public void onChange(Widget sender) {

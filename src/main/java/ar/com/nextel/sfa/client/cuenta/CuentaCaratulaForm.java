@@ -127,7 +127,7 @@ public class CuentaCaratulaForm extends Composite{
 
 	private void initTableCompleta(FlexTable table) {
         limpiarPrimeraFilaTabla();
-		String[] widths = { "24px", "24px", "100px", "50px", "150px", "150px", "45%" };
+		String[] widths = { "24px", "24px", "100px", "50px", "150px", "150px", "25px", "45%" };
 		for (int col = 0; col < widths.length; col++) {
 			table.getColumnFormatter().setWidth(col, widths[col]);
 		}
@@ -143,7 +143,9 @@ public class CuentaCaratulaForm extends Composite{
 		table.setHTML(0, 3, Sfa.constant().numSS());
 		table.setHTML(0, 4, Sfa.constant().usuarioCreacion());
 		table.setHTML(0, 5, Sfa.constant().fechaCreacion());
-		table.setHTML(0, 6, Sfa.constant().whiteSpace());
+//		table.setHTML(0, 6, Sfa.constant().whiteSpace());
+		table.setHTML(0, 6, Sfa.constant().confirmada());
+		table.setHTML(0, 7, Sfa.constant().whiteSpace());
 	}
 	
 	private void limpiarPrimeraFilaTabla() {
@@ -209,6 +211,14 @@ public class CuentaCaratulaForm extends Composite{
 				}
 				datosTabla.getCellFormatter().addStyleName(row + 1, col, "alignCenter");
 				
+				//Confirmada
+				if(caratulaDto.isConfirmada()) {
+					datosTabla.setText(row+1, ++col, "SI");
+				}
+				else{
+					datosTabla.setText(row+1, ++col, "NO");
+				}
+				datosTabla.getCellFormatter().addStyleName(row + 1, col, "alignCenter");
 			}
 		}
 	}

@@ -2858,6 +2858,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String equiposActivos();
   
   /**
+   * Translated "Equipos activos".
+   * 
+   * @return translated "Equipos activos"
+   */
+  @DefaultStringValue("<span class=\"req\">Equipos activos</span>")
+  @Key("EquiposActivosReq")
+  String equiposActivosReq();
+  
+  /**
    * Translated "Nosis".
    * 
    * @return translated "Nosis"
@@ -3056,4 +3065,22 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Firmante")
   @Key("firmante")
   String firmante();
+  
+  /**
+   * Translated "<span class=\"req\">Firmante:</span>".
+   * 
+   * @return translated "<span class=\"req\">Firmante:</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Firmante:</span>")
+  @Key("firmanteReq")
+  String firmanteReq();
+  
+  /**
+   * Translated "Confirmada".
+   * 
+   * @return translated "Confirmada"
+   */
+  @DefaultStringValue("Confirmada")
+  @Key("confirmada")
+  String confirmada();
 }

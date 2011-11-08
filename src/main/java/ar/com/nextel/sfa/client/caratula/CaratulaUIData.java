@@ -369,13 +369,7 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 			}else{
 				tarjCredito.setSelectedIndex(0);
 			}
-			
-			if(caratulaDto.getLimiteCredito() != null){
-				limiteCred.setText(NumberFormat.getDecimalFormat().format(caratulaDto.getLimiteCredito()));
-			}else{
-				limiteCred.setText(null);
-			}
-			
+						
 			if(caratulaDto.getLimiteTarjCred() != null) {
 				limiteTarj.setText(NumberFormat.getDecimalFormat().format(caratulaDto.getLimiteTarjCred()));
 			}else{
@@ -636,9 +630,12 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		
 		fechaInicio.setEnabled(habilitar);
 		actividad.setEnabled(habilitar);
+		//(TextArea).setVisible(true), para que se pueda scrollear.
+		actividad.setVisible(true);
 		validDomicilio.setEnabled(habilitar);
 		banco.setEnabled(habilitar);
 		refBancaria.setEnabled(habilitar);
+		refBancaria.setVisible(true);
 		tipoCuenta.setEnabled(habilitar);
 		mayorSaldoFavor.setEnabled(habilitar);
 		ingPromedio.setEnabled(habilitar);
@@ -646,12 +643,18 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		limiteTarj.setEnabled(habilitar);
 		ingDemostrado.setEnabled(habilitar);
 		iva.setEnabled(habilitar);
+		iva.setVisible(true);
 		ganancias.setEnabled(habilitar);
+		ganancias.setVisible(true);
 		balance.setEnabled(habilitar);
+		balance.setVisible(true);
 		ingBrutos.setEnabled(habilitar);
+		ingBrutos.setVisible(true);
 		reciboHaberes.setEnabled(habilitar);
+		reciboHaberes.setVisible(true);
 		pyp.setEnabled(habilitar);
 		factCelular.setEnabled(habilitar);
+		factCelular.setVisible(true);
 		okEECCAgente.setEnabled(habilitar);
 		com.setEnabled(habilitar);
 		limiteCred.setEnabled(habilitar);
@@ -666,12 +669,18 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		nosis.setEnabled(habilitar);
 		bcra.setEnabled(habilitar);
 		otras.setEnabled(habilitar);
+		otras.setVisible(true);
 		validFirma.setEnabled(habilitar);
+		validFirma.setVisible(true);
 		depGarantia.setEnabled(habilitar);
+		depGarantia.setVisible(true);
 		anticipo.setEnabled(habilitar);
+		anticipo.setVisible(true);
 		soloHibridos.setEnabled(habilitar);
 		findImei.setEnabled(habilitar);
 		comentAnalista.setEnabled(habilitar);
+		comentAnalista.setVisible(true);
+		scoring.setVisible(true);
 	}
 	//*************************//
 	public TextBox getNroSS() {
