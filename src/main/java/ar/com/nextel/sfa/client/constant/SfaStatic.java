@@ -3007,7 +3007,7 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
    * 
    * @return translated "El número de solicitud no existe."
    */
-  @DefaultStringValue("El número de solicitud no existe.")
+  @DefaultStringValue("Se debe ingresar un número de solicitud.")
   @Key("ERR_NRO_SOLICITUD_NO_EXISTE")
   String ERR_NRO_SOLICITUD_NO_EXISTE();
   
