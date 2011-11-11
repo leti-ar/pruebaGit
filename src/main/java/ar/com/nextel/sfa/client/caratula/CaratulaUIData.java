@@ -596,14 +596,18 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		}
 		
 		if(banco.getSelectedItem() != null){
-			validator.addTarget(refBancaria).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().refBancaria()));
-			validator.addTarget(tipoCuenta).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().tipoCuenta()));
-			validator.addTarget(mayorSaldoFavor).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().mayorSaldo()));
-			validator.addTarget(ingPromedio).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().ingresoProm()));
+			
+			if(isComplete(refBancaria) || isComplete(tipoCuenta) || isComplete(mayorSaldoFavor) || isComplete(ingPromedio)){				
+				validator.addTarget(refBancaria).required(
+						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().refBancaria()));
+				validator.addTarget(tipoCuenta).required(
+						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().tipoCuenta()));
+				validator.addTarget(mayorSaldoFavor).required(
+						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().mayorSaldo()));
+				validator.addTarget(ingPromedio).required(
+						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().ingresoProm()));
+			}
+			
 		}
 		
 		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
@@ -621,6 +625,39 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		
 		return validator.fillResult().getErrors();
 	}
+	
+	private boolean isComplete(Object obj){
+		
+	    if (obj == null) {
+		      return false;
+		}
+	    if (obj instanceof TextArea) {
+			TextArea area = (TextArea) obj;
+			if(!area.getText().equals("") && area.getText() != null){
+				return true;
+			}else{
+				return false;
+			}	
+	    }
+		if (obj instanceof TextBox) {
+			TextBox text = (TextBox) obj;
+				if(!text.getText().equals("") && text.getText() != null){
+					return true;
+				}else{
+					return false;
+				}			
+		}
+		if (obj instanceof ListBox) {
+			ListBox list = (ListBox) obj;
+			if(list.getSelectedItem() != null){
+				return true;
+			}else{
+				return false;
+			}	
+		}
+		return false;	
+	}
+	
 	
 	public void habilitarCampos(boolean habilitar) {
 		banco.setEnabled(habilitar);
