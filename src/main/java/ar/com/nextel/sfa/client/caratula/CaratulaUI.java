@@ -296,7 +296,7 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		aceptar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 
-				List<String> errores = caratulaData.validarCamposObligatorios(nroCaratula);
+				List<String> errores = caratulaData.validarCamposObligatorios(nroCaratula, caratulaAEditar);
 				if(errores.isEmpty()){
 					String nroSolicitud = caratulaData.getNroSS().getText();
 					
@@ -500,7 +500,7 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		this.nroCaratula = nroCaratula;
 		caratulaData.setDatosCaratula(caratulaAConfirmar);
 		
-		return caratulaData.validarCamposObligatorios(nroCaratula);
+		return caratulaData.validarCamposObligatorios(nroCaratula, this.caratulaAEditar);
 	}
 	
 }

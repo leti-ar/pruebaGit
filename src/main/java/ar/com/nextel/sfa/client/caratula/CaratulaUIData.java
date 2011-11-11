@@ -568,7 +568,7 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		return caratula;
 	}
 	
-	public List<String> validarCamposObligatorios(int row){
+	public List<String> validarCamposObligatorios(int row, CaratulaDto caratulaDto){
 		
 		GwtValidator validator = new GwtValidator();
 		validator.addTarget(limiteCred).required(
@@ -582,16 +582,23 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 			auxLimCred.setText(null);
 		}
 
-		validator.addTarget(calificacion).required(
+		if(caratulaDto.getCalificacion() == null && caratulaDto.getDocumento().equals("Anexo")){
+			validator.addTarget(calificacion).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().calificacion()));
-		validator.addTarget(riskCode).required(
+		}
+		if(caratulaDto.getRiskCode() == null && caratulaDto.getDocumento().equals("Anexo")){
+			validator.addTarget(riskCode).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().riskCode()));
-		
+		}
 		if(row > 1){
-			validator.addTarget(comprPago).required(
+			if(caratulaDto.getCompPago() == null && caratulaDto.getDocumento().equals("Anexo")){
+				validator.addTarget(comprPago).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().compPago()));
-			validator.addTarget(firmante).required(
+			}
+			if(caratulaDto.getFirmante() == null && caratulaDto.getDocumento().equals("Anexo")){
+				validator.addTarget(firmante).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().firmante()));
+			}
 			validator.addTarget(equiposActivos).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().equiposActivos()));
 		}

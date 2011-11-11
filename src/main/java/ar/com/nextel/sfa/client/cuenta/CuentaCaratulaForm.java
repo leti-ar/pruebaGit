@@ -12,7 +12,6 @@ import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
-import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -324,7 +323,7 @@ public class CuentaCaratulaForm extends Composite{
 	}
 	
 	public boolean formularioCaratulaDirty() {
-		return true;
+		return this.huboCambios;
 	}
 	
 	public void setHuboCambios(boolean huboCambios) {
