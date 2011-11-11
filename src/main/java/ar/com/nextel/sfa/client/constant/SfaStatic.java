@@ -3003,9 +3003,9 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String verVeraz();
 
   /**
-   * Translated "El número de solicitud no existe.".
+   * Translated "Se debe ingresar un número de solicitud.".
    * 
-   * @return translated "El número de solicitud no existe."
+   * @return translated "Se debe ingresar un número de solicitud."
    */
   @DefaultStringValue("Se debe ingresar un número de solicitud.")
   @Key("ERR_NRO_SOLICITUD_NO_EXISTE")

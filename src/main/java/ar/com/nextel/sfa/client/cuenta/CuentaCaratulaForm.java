@@ -180,7 +180,8 @@ public class CuentaCaratulaForm extends Composite{
 					datosTabla.setWidget(row + 1, ++col, IconFactory.confirmarCaratula());
 					datosTabla.getCellFormatter().setAlignment(row+1, col, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
 				}else{
-					datosTabla.setHTML(row + 1, ++col, Sfa.constant().whiteSpace());
+					datosTabla.setHTML(row+1, ++col, Sfa.constant().whiteSpace());
+				
 				}
 				
 				datosTabla.setText(row+1, ++col, caratulaDto.getDocumento());
@@ -213,6 +214,7 @@ public class CuentaCaratulaForm extends Composite{
 				//Confirmada
 				if(caratulaDto.isConfirmada()) {
 					datosTabla.setText(row+1, ++col, "SI");
+					
 				}
 				else{
 					datosTabla.setText(row+1, ++col, "NO");
@@ -238,6 +240,7 @@ public class CuentaCaratulaForm extends Composite{
 				int row = cell.getRowIndex();
 				int col = cell.getCellIndex();
 				if (row != 0) {
+					
 					caratulaAEditar = cuentaDto.getCaratulas().get(row - 1);
 					//Toco el lapiz
 					if (col == 0) {
@@ -261,6 +264,10 @@ public class CuentaCaratulaForm extends Composite{
 					}
 					//Toco el confirmar
 					if (col == 1) {
+						
+						if (datosTabla.getHTML(row, col).equalsIgnoreCase(Sfa.constant().whiteSpace()))
+							return;
+						
 						
 						if(huboCambios){
 							MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), 
