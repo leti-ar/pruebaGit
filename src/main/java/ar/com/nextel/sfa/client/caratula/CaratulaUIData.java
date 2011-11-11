@@ -255,6 +255,7 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 								ErrorDialog.getInstance().show(result, false);
 								verificarImeiWrapper.setHTML(IconFactory
 										.comprobarRojo(Sfa.constant().verificarImei()).toString());
+								findImei.setValue(false);
 							} else {
 								findImei.setValue(true);
 								verificarImeiWrapper.setHTML(IconFactory.comprobarVerde(
