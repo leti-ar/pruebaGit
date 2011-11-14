@@ -223,7 +223,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 		portabilidadPanel.setCHKportabilidad(portabilidad);
 		portabilidadPanel.setBTNreserva(confirmarReserva);
-		portabilidadPanel.setTXTreserva(reservar);
 
 		cmndAceptar = new Command() {
 			public void execute() {
@@ -234,14 +233,12 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 					}
 					portabilidadPanel.setSolicitudPortabilidad(null);
 					portabilidadPanel.resetearPortabilidad();
-					reservar.setEnabled(true);
 					confirmarReserva.setEnabled(true);
 					portabilidadPanel.setVisible(false);
 					dialog.center();
 				}else{
 					// Elimina la Reserva
 					desreservar();
-					reservar.setEnabled(false);
 					confirmarReserva.setEnabled(false);
 					portabilidadPanel.setVisible(true);
 					portabilidadPanel.loadSolicitudPortabilidad(new SolicitudPortabilidadDto());
@@ -295,28 +292,14 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 					ModalMessageDialog.getInstance().showAceptarCancelar(
 							WARNING,"Se eliminaran los datos correspondientes a Portabilidad",cmndAceptar, cmndCancelar);
 				}else{ 
-					if(lineaSolicitudServicio.getNumeroReserva() != null){
+					if(lineaSolicitudServicio.getNumeroReserva() != null && lineaSolicitudServicio.getNumeroReserva().length() > 0 ){
 						ModalMessageDialog.getInstance().showAceptarCancelar(
 								WARNING,"Se eliminara la reserva de numero, desea continuar",cmndAceptar, cmndCancelar);
 					}else{
-						reservar.setEnabled(false);
 						confirmarReserva.setEnabled(false);
 						portabilidadPanel.setVisible(true);
 						portabilidadPanel.loadSolicitudPortabilidad(new SolicitudPortabilidadDto());
 					}
-						
-					
-//					if(controller.getEditarSSUIData().getSolicitudServicio().getNumero() != null 
-//							&& !controller.getEditarSSUIData().getSolicitudServicio().getNumero().isEmpty()){
-//						portabilidadPanel.getTxtNroSS().setText("N" + controller.getEditarSSUIData().getSolicitudServicio().getNumero());
-//						long contadorPortabilidad = 0;
-//						for (LineaSolicitudServicioDto linea : controller.getEditarSSUIData().getSolicitudServicio().getLineas()) {
-//							if(linea.getPortabilidad() != null) contadorPortabilidad++;
-//						}
-//						if(contadorPortabilidad > 0) 
-//							portabilidadPanel.getTxtNroSS().setText(portabilidadPanel.getTxtNroSS().getText() + "." + String.valueOf(contadorPortabilidad));
-//					}
-
 				}
 			}
 			dialog.center();
@@ -412,6 +395,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 							desreservar.setVisible(true);
 							confirmarReserva.setVisible(false);
 							setFieldsFromNumeroTelefonicoCompleto("" + result.getReservedNumber());
+							lineaSolicitudServicio.setNumeroReserva(String.valueOf(result.getReservedNumber()));
 							MessageDialog.getInstance().showAceptar("Reserva Exitosa",
 									Sfa.constant().MSG_NUMERO_RESERVADO(), MessageDialog.getCloseCommand());
 						}
@@ -446,6 +430,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 						desreservar.setVisible(false);
 						confirmarReserva.setVisible(true);
 						reservarHidden.setText("");
+						lineaSolicitudServicio.setNumeroReserva(null);
 					}
 
 					public void failure(Throwable caught) {
@@ -465,7 +450,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		plan.setEnabled(enable);
 		localidad.setEnabled(enable);
 		modalidadCobro.setEnabled(enable);
-		reservar.setEnabled(enable);
+		//reservar.setEnabled(enable);
 		reservar.setReadOnly(!enable);
 	}
 
@@ -988,6 +973,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		
 		// TODO: Portabilidad
 		if(linea.getPortabilidad() != null) portabilidadPanel.loadSolicitudPortabilidad(linea.getPortabilidad());
+
 	}
 
 	/** Limpia las selecciones de los combos */
@@ -1100,7 +1086,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 		// TODO:Portabilidad
 		lineaSolicitudServicio.setPortabilidad(portabilidadPanel.getSolicitudPortabilidad(lineaSolicitudServicio));
-
+		portabilidadPanel.setSolicitudPortabilidad(null);
+		
 		return lineaSolicitudServicio;
 	}
 

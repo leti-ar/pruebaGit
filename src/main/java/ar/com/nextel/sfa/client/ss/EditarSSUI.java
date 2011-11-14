@@ -737,28 +737,14 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 						public void success(PortabilidadResult portabilidadResult) {
 							// Si arrastra un error en la validacion muestra un mensaje
 							if(portabilidadResult.isConError()){
-								if(portabilidadResult.getPermiteGrabar()){
-									CerradoSSExitosoDialog.getInstance().hideLoading();
-									ModalMessageDialog.getInstance().showAceptar("Error en la Validacion de Portabilidades",portabilidadResult.getDescripcionError(), 
-											new Command() {
-												public void execute() {
-													cerrarGenerarSolicitud();
-													CerradoSSExitosoDialog.getInstance().hideLoading();
-													ModalMessageDialog.getInstance().hide();
-												}
-											});
-								}else{
-									CerradoSSExitosoDialog.getInstance().hideLoading();
-									ModalMessageDialog.getInstance().showAceptar(portabilidadResult.getDescripcionError(), ModalMessageDialog.getCloseCommand());
-								}
-							}else{
-								cerrarGenerarSolicitud();
-								CerradoSSExitosoDialog.getInstance().hideLoading();
-							}
+								ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+								ErrorDialog.getInstance().show(portabilidadResult.getErroresDesc());
+
+								if(portabilidadResult.getPermiteGrabar()) cerrarGenerarSolicitud();
+								else CerradoSSExitosoDialog.getInstance().hideLoading();
+							}else cerrarGenerarSolicitud();
 						}
 					});
-
-//					cerrarGenerarSolicitud();
 				} else {
 					CerradoSSExitosoDialog.getInstance().hideLoading();
 					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);

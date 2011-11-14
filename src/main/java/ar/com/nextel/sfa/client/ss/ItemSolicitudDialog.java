@@ -131,6 +131,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 			executeItemCreation(sender);
 		} else if (sender == cerrar) {
 			itemSolicitudUIData.desreservarSiNoFueGrabado();
+			itemSolicitudUIData.getConfirmarReserva().setEnabled(true);
 			hide();
 		}
 	}

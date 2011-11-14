@@ -58,14 +58,18 @@ public class PortabilidadUIData extends Composite {
 	@UiField TelefonoTextBox txtTelefonoPortar;
 	
 	@UiField Label lblNroSS;
-	@UiField Label lblEmail;
-	@UiField Label lblNombre;
-	@UiField Label lblTelefono;
-	@UiField Label lblApellido;
-	@UiField Label lblRazonSocial;
-	@UiField Label lblNroDocumento;
-	@UiField Label lblTelefonoPortar;
 	@UiField Label lblNroUltimaFacura;
+	@UiField Label lblTipoDocumento;	
+	@UiField Label lblNroDocumento;
+	@UiField Label lblRazonSocial;
+	@UiField Label lblNombre;
+	@UiField Label lblApellido;
+	@UiField Label lblTelefono;
+	@UiField Label lblEmail;
+	@UiField Label lblProveedorAnterior;
+	@UiField Label lblTipoTelefonia;
+	@UiField Label lblModalidadCobro;
+	@UiField Label lblTelefonoPortar;
 	
 	@UiField ListBox lstTipoDocumento;
 	@UiField ListBox lstTipoTelefonia;
@@ -83,7 +87,6 @@ public class PortabilidadUIData extends Composite {
 	private Command cmndAceptar;
 	private CheckBox chkPortabilidad;
 	private Button btnReserva;
-	private TextBox txtReserva;
 	
 	private static final String V1 = "\\{1\\}";
 	private static final String OBLIGATORIO = "req";
@@ -99,9 +102,14 @@ public class PortabilidadUIData extends Composite {
 		initWidget(uiBinder.createAndBindUi(this));
 		
 		lblNroSS.addStyleName(OBLIGATORIO);
+		lblTipoDocumento.addStyleName(OBLIGATORIO);	
 		lblNroDocumento.addStyleName(OBLIGATORIO);
 		lblTelefonoPortar.addStyleName(OBLIGATORIO);
 		lblTelefono.addStyleName(OBLIGATORIO);
+		lblTelefono.addStyleName(OBLIGATORIO);
+		lblProveedorAnterior.addStyleName(OBLIGATORIO);
+		lblTipoTelefonia.addStyleName(OBLIGATORIO);
+		lblModalidadCobro.addStyleName(OBLIGATORIO);
 		
 		lblApellido.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 		lblEmail.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
@@ -189,29 +197,21 @@ public class PortabilidadUIData extends Composite {
 	
 	/**
 	 * 
-	 * @param unTxtReserva
-	 */
-	public void setTXTreserva(TextBox unTxtReserva){
-		txtReserva = unTxtReserva;
-	}
-	
-	/**
-	 * 
 	 */
 	private void comprobarTipoTelefonia(){
 		if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")){
+			lblNroUltimaFacura.addStyleName(OBLIGATORIO);
+			lblRazonSocial.addStyleName(OBLIGATORIO);
 			lblNombre.addStyleName(OBLIGATORIO);
 			lblApellido.addStyleName(OBLIGATORIO);
-			lblRazonSocial.addStyleName(OBLIGATORIO);
-			lblNroUltimaFacura.addStyleName(OBLIGATORIO);
 
 			chkRecibeSMS.setValue(false);
 			chkRecibeSMS.setEnabled(true);
 		}else{
+			lblNroUltimaFacura.removeStyleName(OBLIGATORIO);
+			lblRazonSocial.removeStyleName(OBLIGATORIO);
 			lblNombre.removeStyleName(OBLIGATORIO);
 			lblApellido.removeStyleName(OBLIGATORIO);
-			lblRazonSocial.removeStyleName(OBLIGATORIO);
-			lblNroUltimaFacura.removeStyleName(OBLIGATORIO);
 
 			chkRecibeSMS.setValue(true);
 			chkRecibeSMS.setEnabled(false);
@@ -318,11 +318,10 @@ public class PortabilidadUIData extends Composite {
 		setVisible(true);
 		comprobarTipoTelefonia();
 		
-		chkRecibeSMS.setValue(solicitudPortabilidad.isRecibeSMS());
+		if(solicitudPortabilidad.getNroSS() != null)chkRecibeSMS.setValue(solicitudPortabilidad.isRecibeSMS());
 
 		chkPortabilidad.setValue(true);
 		btnReserva.setEnabled(false);
-		txtReserva.setEnabled(false);
 	}
 	
 	/* GETTERS & SETTERS ================================================================== */
