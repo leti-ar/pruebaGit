@@ -178,6 +178,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	private KnownInstanceRetriever knownInstanceRetriever;
 	private static final String VALID_EXIST_TRIPTICO = "VALID_EXIST_TRIPTICO";
 	private VantiveSystem vantiveSystem;
+	//#LF
+	private static final String QUERY_VALID_EECC = "VALID_EECC";
 
 	@Override
 	public void init() throws ServletException {
@@ -941,5 +943,32 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
+	}
+	
+
+	/**
+	 * Este metodo realiza una query para verificar si el domicilio deenvio y de facturacion asociado al nro de SS, esta validado
+	 * por un EECC.
+	 * @author fernaluc
+	 * @return true si esta validado por EECC, de lo contrario false.
+	 */
+	public Boolean isDomicilioValidadoPorEECC(String nro_ss) throws RpcExceptionMessages{
+		List result = null;
+		try {
+			String[] valores = {nro_ss,nro_ss,nro_ss};
+			AppLogger.info("Verificando que el domicilio de facturacion y de entrega asociados al nro de solicitud: " + nro_ss + " ,haya sido validado por un EECC");
+			result = repository.executeCustomQuery(QUERY_VALID_EECC, valores);
+		}catch (Exception e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+		
+		
+		if((result == null || result.isEmpty()) || !result.get(0).equals("T")){
+			return false;
+		} else {
+			return true;
+		}
+	  
 	}
 }

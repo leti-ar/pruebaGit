@@ -458,4 +458,13 @@ public class CaratulaDto implements IsSerializable, IdentifiableDto, Cloneable, 
 		}
 		return this.fechaCreacion.compareTo(caratula1.fechaCreacion);
 	}
+		
+	/**
+	 * Este metodo devuelve un booleano que indica si el tipo de documento es un credito
+	 * @return true si es Credito, false si es Anexo.
+	 * @author fernaluc
+	 */
+	public boolean isDocumentoCredito(){
+		return documento.equals("Credito")?true:false;
+	}
 }

@@ -195,4 +195,9 @@ public class CuentaRpcServiceDelegate {
 		WaitWindow.show();
 		cuentaRpcService.getDocDigitalizados(customerCode, callback);
 	}
+	
+	public void isDomicilioValidadoPorEECC(String nro_ss, DefaultWaitCallback<Boolean> callback){
+		WaitWindow.show();
+		cuentaRpcService.isDomicilioValidadoPorEECC(nro_ss, callback);
+	}
 }

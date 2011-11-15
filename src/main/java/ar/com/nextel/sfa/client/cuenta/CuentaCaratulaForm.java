@@ -18,6 +18,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -42,11 +44,16 @@ public class CuentaCaratulaForm extends Composite{
 	private SimplePanel consultaDocDigitalizados;
 	
 	private CuentaDto cuentaDto;
-	private CaratulaDto caratulaAEditar;
+	//#LF
+	//private CaratulaDto caratulaAEditar;
 	private boolean huboCambios = false;
 	private boolean confirmandoCaratula= false;
+	private int nroFila;
+	private CaratulaDto caratulaSeleccionada = null;
 	
 	private Command cancelarCommand;
+	
+	CaratulaUI caratulaUI;
 	
 	public static CuentaCaratulaForm getInstance(){
 		if(instance == null){
@@ -239,27 +246,56 @@ public class CuentaCaratulaForm extends Composite{
 				}
 				int row = cell.getRowIndex();
 				int col = cell.getCellIndex();
-				if (row != 0) {
+				nroFila = row;
+				
+				if(caratulaSeleccionada != null){
+					//#LF 
+					//Comparo la caratula seleccionada anteriormente con la seleccionada recientemente, si los documentos son distintos
+					//debo hacer una nueva instancia de CaratulaUI porque hay campos que son requeridos dependiendo el tipo de documento.
+					// Si la caratula anterior fue un credito, y esta nueva es un anexo, hago una nueva instancia
+					if(caratulaSeleccionada.isDocumentoCredito() && !cuentaDto.getCaratulas().get(row - 1).isDocumentoCredito()){
+						caratulaUI = new CaratulaUI();	
+					}
+					// Si la caratula anterior fue un anezo, y esta nueva es un credito, hago una nueva instancia
+					else if (!caratulaSeleccionada.isDocumentoCredito() && cuentaDto.getCaratulas().get(row - 1).isDocumentoCredito()){
+						caratulaUI = new CaratulaUI();	
+					} else {
+						caratulaUI = CaratulaUI.getInstance();
+					}
+				} else {
+					caratulaUI = CaratulaUI.getInstance();
+				}
+
+				if (row != 0) {					
+					//#LF
+					// Seteo la nueva caratula seleccionada (La anterior ya no existe referencia).
+					setCaratulaSeleccionada(cuentaDto.getCaratulas().get(row - 1));
+					//caratulaAEditar = cuentaDto.getCaratulas().get(row - 1);
 					
-					caratulaAEditar = cuentaDto.getCaratulas().get(row - 1);
 					//Toco el lapiz
 					if (col == 0) {
 						
-						if(!caratulaAEditar.isConfirmada()){
+						//if(!caratulaAEditar.isConfirmada()){
+						if(!caratulaSeleccionada.isConfirmada()){
 							
-							CaratulaUI.getInstance().setAceptarCommand(new Command() {
+//							CaratulaUI.getInstance().setAceptarCommand(new Command() {
+							caratulaUI.setAceptarCommand(new Command() {
 								public void execute() {
-									int index = cuentaDto.getCaratulas().indexOf(caratulaAEditar);
+//									int index = cuentaDto.getCaratulas().indexOf(caratulaAEditar);
+									int index = cuentaDto.getCaratulas().indexOf(caratulaSeleccionada);
 									cuentaDto.getCaratulas().remove(index);
-									cuentaDto.getCaratulas().add(index, CaratulaUI.getInstance().getCaraturaAEditar());
+//									cuentaDto.getCaratulas().add(index, CaratulaUI.getInstance().getCaraturaAEditar());
+									cuentaDto.getCaratulas().add(index, caratulaUI.getCaraturaAEditar());
 									refrescaTablaCaratula();
 									huboCambios = true;
 								}
 							});
-							CaratulaUI.getInstance().cargarPopupEditarCaratula(caratulaAEditar, row);
+//							CaratulaUI.getInstance().cargarPopupEditarCaratula(caratulaAEditar, row);
+							caratulaUI.cargarPopupEditarCaratula(caratulaSeleccionada, row);
 						
 						}else{
-							CaratulaUI.getInstance().cargarPopupCaratulaConfirmada(caratulaAEditar);
+//							CaratulaUI.getInstance().cargarPopupCaratulaConfirmada(caratulaAEditar);
+							caratulaUI.cargarPopupCaratulaConfirmada(caratulaSeleccionada);
 						}
 					}
 					//Toco el confirmar
@@ -275,52 +311,73 @@ public class CuentaCaratulaForm extends Composite{
 						}else{
 							//Si se esta confirmando una caratula, espero a que se termine esa
 							if(!confirmandoCaratula){
-								caratulaAEditar = cuentaDto.getCaratulas().get(row - 1);
+								caratulaSeleccionada = cuentaDto.getCaratulas().get(row - 1);
+								//#LF
+								//caratulaAEditar = cuentaDto.getCaratulas().get(row - 1);
 								confirmandoCaratula = true;
 								
-								//Valida que esten cargados todos los datos antes de confirmar la caratula
-								List<String> errores = CaratulaUI.getInstance().validarCaratulaAConfirmar(caratulaAEditar, row);
-								
-								if(errores == null || errores.isEmpty()){
-									String nroSolicitud = caratulaAEditar.getNroSS();
-									
-									if(nroSolicitud != null && !nroSolicitud.equals("")){
-										CuentaRpcService.Util.getInstance().validarExistenciaTriptico(nroSolicitud, 
-												new DefaultWaitCallback<Boolean>() {
+								//#LF
+								//Se realiza el DeferredCommand para "esperar" a que los combos se puedan inicializar y cargar sus items correspondientes.
+								//Luego de que esto suceda sigue ejecutandose codigo en el else..
+								DeferredCommand.addCommand(new IncrementalCommand() {
+									public boolean execute() {
+										if (!caratulaUI.getCaratulaUIData().isCombosCargados()){
+											return true;
+										} else {
+											//#LF
+											//List<String> errores = caratulaUI.validarCaratulaAConfirmar(caratulaAEditar, nroFila);
+											//Valida que esten cargados todos los datos antes de confirmar la caratula
+											List<String> errores = caratulaUI.validarCaratulaAConfirmar(caratulaSeleccionada, nroFila);
+											if(errores == null || errores.isEmpty()){
+												//#LF
+												//String nroSolicitud = caratulaAEditar.getNroSS();
+												String nroSolicitud = caratulaSeleccionada.getNroSS();
+												if(nroSolicitud != null && !nroSolicitud.equals("")){
+													CuentaRpcService.Util.getInstance().validarExistenciaTriptico(nroSolicitud, 
+															new DefaultWaitCallback<Boolean>() {
 
-													@Override
-													public void success(Boolean result) {
-														
-														if(result){
-															CuentaRpcService.Util.getInstance().confirmarCaratula(caratulaAEditar,
-																	new DefaultWaitCallback<CaratulaDto>() {
-																		
-																		@Override
-																		public void success(CaratulaDto result) {
-																			int index = cuentaDto.getCaratulas().indexOf(caratulaAEditar);
-																			cuentaDto.getCaratulas().remove(index);
-																			cuentaDto.getCaratulas().add(index, result);
-																			refrescaTablaCaratula();
-																			confirmandoCaratula = false;
-																		}
-																	});
-														}else{
-															ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-															ErrorDialog.getInstance().show(Sfa.constant().ERR_NRO_SOLICITUD_NO_EXISTE(), false);
-															confirmandoCaratula = false;
-														}
-													}
-												});
-									}else{
-										ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-										ErrorDialog.getInstance().show(Sfa.constant().ERR_NRO_SOLICITUD_NO_EXISTE(), false);
-										confirmandoCaratula = false;
+																@Override
+																public void success(Boolean result) {
+																	
+																	if(result){
+																		//#LF
+																		//CuentaRpcService.Util.getInstance().confirmarCaratula(caratulaAEditar,
+																		//		new DefaultWaitCallback<CaratulaDto>() {
+																			CuentaRpcService.Util.getInstance().confirmarCaratula(caratulaSeleccionada,
+																				new DefaultWaitCallback<CaratulaDto>() {
+																					
+																					@Override
+																					public void success(CaratulaDto result) {
+																						//#LF
+																						//int index = cuentaDto.getCaratulas().indexOf(caratulaAEditar);
+																						int index = cuentaDto.getCaratulas().indexOf(caratulaSeleccionada);
+																						cuentaDto.getCaratulas().remove(index);
+																						cuentaDto.getCaratulas().add(index, result);
+																						refrescaTablaCaratula();
+																						confirmandoCaratula = false;
+																					}
+																				});
+																	}else{
+																		ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+																		ErrorDialog.getInstance().show(Sfa.constant().ERR_NRO_SOLICITUD_NO_EXISTE(), false);
+																		confirmandoCaratula = false;
+																	}
+																}
+															});
+												}else{
+													ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+													ErrorDialog.getInstance().show(Sfa.constant().ERR_NRO_SOLICITUD_NO_EXISTE(), false);
+													confirmandoCaratula = false;
+												}
+											}else{
+												ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+												ErrorDialog.getInstance().show(errores, false);
+												confirmandoCaratula = false;
+											}
+											return false;
+										}
 									}
-								}else{
-									ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-									ErrorDialog.getInstance().show(errores, false);
-									confirmandoCaratula = false;
-								}
+								});			
 							}
 						}
 					}
@@ -340,5 +397,39 @@ public class CuentaCaratulaForm extends Composite{
 	public List<CaratulaDto> getCaratulas(){
 		return cuentaDto.getCaratulas();
 	}
+
+	public int getNroFila() {
+		return nroFila;
+	}
+
+	public void setNroFila(int nroFila) {
+		this.nroFila = nroFila;
+	}
+	
+	/**
+	 *  Este método obtiene la caratula que ha sido asignada para editar o confirmar.
+	 */
+	public CaratulaDto getCaratulaSeleccionada(){
+		return caratulaSeleccionada;
+//		cuentaDto.getCaratulas().get(this.getNroFila() - 1);
+	}
+
+	public void setCaratulaSeleccionada(CaratulaDto caratulaSeleccionada) {
+		this.caratulaSeleccionada = caratulaSeleccionada;
+	}
+
+	/**
+	 *  Retorna la caratula actual con la que se esta editando o modificando.
+	 *  Si la caratula es nueva, retorna null
+	 *  @return CaratulaDto
+	 */
+	public CaratulaDto getCaratulaActual(){
+		if(nroFila != 0){
+			return cuentaDto.getCaratulas().get(nroFila - 1);
+		} else {
+			return null;
+		}
+	}
+	
 	
 }

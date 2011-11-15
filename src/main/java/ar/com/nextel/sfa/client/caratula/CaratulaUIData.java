@@ -52,6 +52,9 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class CaratulaUIData extends UIData{// implements ChangeListener, ClickListener {
 
+	//#LF
+	private static CaratulaUIData instance = null;
+	
 	private static final int MAX_LENGHT_100 = 100;
 	private static final int MAX_LENGHT_200 = 200;
 	private static final int MAX_LENGHT_240 = 240;
@@ -104,19 +107,32 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 	private TextArea scoring = new TextArea();
 	private HTML verificarImeiWrapper;
 	private TextBox imei;
+	//#LF
+	private boolean isCombosCargados;
 	
 	private CaratulaDto caratula = null;
 
-	public CaratulaUIData(){
+	//#LF
+	public static CaratulaUIData getInstance(){
+		if(instance == null){
+			instance = new CaratulaUIData();
+		}
+		return instance;
+	}
+	
+	//#LF
+	//public CaratulaUIData(){
+	private CaratulaUIData(){
 		setPropiedadesCampos();
 		cargarCombos();
 	}
 	
 	private void cargarCombos() {
+		//#LF
+		setCombosCargados(false);
 		CuentaRpcService.Util.getInstance().getCaratulaInicializarte(
 				new DefaultWaitCallback<CaratulaInitializer>() {
-			
-			@Override
+		      
 			public void success(CaratulaInitializer initializer) {
 				validDomicilio.addAllItems(initializer.getValidDomicilio());
 				banco.addAllItems(initializer.getBancos());
@@ -131,7 +147,8 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 				veraz.addAllItems(initializer.getVerazNosis());
 				nosis.addAllItems(initializer.getVerazNosis());
 				bcra.addAllItems(initializer.getEstadoCredBC());
-				
+				//#LF
+				setCombosCargados(true);
 			}
 		});
 		
@@ -568,7 +585,7 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		return caratula;
 	}
 	
-	public List<String> validarCamposObligatorios(int row, CaratulaDto caratulaDto){
+	public List<String> validarCamposObligatorios(int row){
 		
 		GwtValidator validator = new GwtValidator();
 		validator.addTarget(limiteCred).required(
@@ -582,23 +599,16 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 			auxLimCred.setText(null);
 		}
 
-		if(caratulaDto.getCalificacion() == null && caratulaDto.getDocumento().equals("Anexo")){
 			validator.addTarget(calificacion).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().calificacion()));
-		}
-		if(caratulaDto.getRiskCode() == null && caratulaDto.getDocumento().equals("Anexo")){
 			validator.addTarget(riskCode).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().riskCode()));
-		}
+			
 		if(row > 1){
-			if(caratulaDto.getCompPago() == null && caratulaDto.getDocumento().equals("Anexo")){
-				validator.addTarget(comprPago).required(
+			validator.addTarget(comprPago).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().compPago()));
-			}
-			if(caratulaDto.getFirmante() == null && caratulaDto.getDocumento().equals("Anexo")){
-				validator.addTarget(firmante).required(
+			validator.addTarget(firmante).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().firmante()));
-			}
 			validator.addTarget(equiposActivos).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, Sfa.constant().equiposActivos()));
 		}
@@ -744,6 +754,28 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		datePickerFull.setWidget(0, 0, fechaInicio.getTextBox());
 		datePickerFull.setWidget(0, 1, fechaInicio);
 		return datePickerFull;
+	}
+	
+	
+	/**
+	 * Si el domicilio de facturacion y el domicilio de entrega asociado con el numero de solicitud de servicio es validado, 
+	 * en el combo Validacion domicilio se selecciona "Validado por EECC”. 
+	 * @param nro_ss (Numero de solicitud de servicio).
+	 * @author fernaluc
+	 */
+	public void validarDomicilio(String nro_ss) {
+		CuentaRpcService.Util.getInstance().isDomicilioValidadoPorEECC(nro_ss, new DefaultWaitCallback<Boolean>() {
+			
+			@Override
+			public void success(Boolean result) {
+				if(result.booleanValue()){
+					validDomicilio.setSelectedIndex(2);
+				} else {
+					validDomicilio.setSelectedIndex(0);
+				}
+			}
+		});
+		
 	}
 	
 	public SimpleDatePicker getFechaInicio() {
@@ -1077,4 +1109,14 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 	public HTML getVerificarImeiWrapper() {
 		return verificarImeiWrapper;
 	}
+
+	public boolean isCombosCargados() {
+		return isCombosCargados;
+	}
+
+	public void setCombosCargados(boolean isCombosCargados) {
+		this.isCombosCargados = isCombosCargados;
+	}
+	
+	
 }

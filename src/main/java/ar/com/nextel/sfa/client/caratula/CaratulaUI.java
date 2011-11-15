@@ -5,6 +5,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.cuenta.CaratulaVerazModalDialog;
+import ar.com.nextel.sfa.client.cuenta.CuentaCaratulaForm;
 import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
 import ar.com.nextel.sfa.client.dto.BancoDto;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
@@ -16,6 +17,8 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -66,14 +69,19 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		return instance;
 	}
 	
-	private CaratulaUI(){
+    // #LF  Este constructor se paso a public porque al editar o confirmar una nueva caratulaUI si el tipo de documento es Anexo,
+    //      hay campos que deben ser obligatorios (eq activos, firmante y comp.pago). 
+    //	private CaratulaUI(){
+	public CaratulaUI(){
 		super(Sfa.constant().crearCaratula(), false, true);
 		init();
 	}
 	
 	private void init(){
 		setWidth("840px");
-		caratulaData = new CaratulaUIData();
+		//#LF
+		//caratulaData = new CaratulaUIData();
+		caratulaData = CaratulaUIData.getInstance();
 		
 		gridCabecera = new Grid(2,8);
 		gridCabecera.addStyleName("layout");
@@ -82,6 +90,13 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		caratulaData.getWidgetFechaInicio().setWidth("100%");
 		
 		gridCabecera.setHTML(0, 0, Sfa.constant().numSS());
+		//#LF
+		caratulaData.getNroSS().addValueChangeHandler(new ValueChangeHandler<String>() {			
+			public void onValueChange(ValueChangeEvent<String> event) {
+				caratulaData.validarDomicilio(event.getValue());
+			}
+		});
+		
 		gridCabecera.setWidget(0, 1, caratulaData.getNroSS());
 		gridCabecera.setText(0, 2, Sfa.constant().fechaInicio());
 		gridCabecera.setWidget(0, 3, caratulaData.getWidgetFechaInicio());
@@ -110,11 +125,8 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		gridActividad.setText(0, 2, Sfa.constant().validacionDomicilio());
 		gridActividad.setWidget(0, 3, caratulaData.getValidDomicilio());
 
-//		Al llamar a este metodo obtengo la lista de caratulas, con lo cual si es una lista vacia, se que el documento es un Crédito, 
-//		de lo contrario es un anexo. 
-		List<CaratulaDto> listaDocumentosCaratula = obtenerListaCaratulas();
-		boolean isDocCredito = listaDocumentosCaratula.isEmpty()? true:false;
-
+		// Obtengo el tipo de documento dependiendo la caratula seleccionada.
+		boolean isDocCredito = isDocumentoCreditoCaratulaActual();
 		if(isDocCredito){
 			gridActividad.setText(0, 4, Sfa.constant().equiposActivos());
 		}else{
@@ -125,6 +137,7 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		add(gridActividad);
 		
 		gridBotonesVeraz = new Grid(1,2);
+		gridBotonesVeraz.addStyleName("layout");
 		gridBotonesVeraz.setWidget(0, 1, crearBotonesVeraz());
 		add(gridBotonesVeraz);
 		
@@ -296,7 +309,7 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		aceptar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
 
-				List<String> errores = caratulaData.validarCamposObligatorios(nroCaratula, caratulaAEditar);
+				List<String> errores = caratulaData.validarCamposObligatorios(nroCaratula);
 				if(errores.isEmpty()){
 					String nroSolicitud = caratulaData.getNroSS().getText();
 					
@@ -457,10 +470,9 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		return caratulaData.getDatosCaratula();
 	}
 	
-	/*
+	/**
 	 * Si el banco no es nulo, muestra los datos de la grilla del banco (Ref Bancaria, Tipo Cuenta, Mayo saldo, Ingreso prom). De lo
 	 * contrario no los muestra.
-	 *
 	 */
 	public void mostrarDatosBanco(BancoDto banco){
 		if(banco != null){
@@ -500,7 +512,24 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		this.nroCaratula = nroCaratula;
 		caratulaData.setDatosCaratula(caratulaAConfirmar);
 		
-		return caratulaData.validarCamposObligatorios(nroCaratula, this.caratulaAEditar);
+		return caratulaData.validarCamposObligatorios(nroCaratula);
 	}
-	
+
+	public CaratulaUIData getCaratulaUIData(){
+		return this.caratulaData;
+	}
+
+	/**
+	 * Este metodo retorna un booleano que indica el tipo de documento de la caratula actual 
+	 * @return true si es Credito, false si es Anexo.
+	 * @author fernaluc
+	 */
+	public boolean isDocumentoCreditoCaratulaActual(){
+		CaratulaDto caratulaDto = CuentaCaratulaForm.getInstance().getCaratulaActual();
+		if(caratulaDto != null) {
+			return caratulaDto.getDocumento().equals("Credito");
+		} else {
+			return CuentaCaratulaForm.getInstance().getCaratulas().isEmpty();
+		}
+	}
 }

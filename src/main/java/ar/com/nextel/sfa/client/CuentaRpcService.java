@@ -82,4 +82,5 @@ public interface CuentaRpcService extends RemoteService {
 	public CaratulaDto confirmarCaratula(CaratulaDto caratulaDto) throws RpcExceptionMessages;
 	public boolean validarExistenciaTriptico(String nro) throws RpcExceptionMessages;
 	public List<DocDigitalizadosDto> getDocDigitalizados(String customerCode) throws RpcExceptionMessages;
+	public Boolean isDomicilioValidadoPorEECC(String nro_ss) throws RpcExceptionMessages;
 }

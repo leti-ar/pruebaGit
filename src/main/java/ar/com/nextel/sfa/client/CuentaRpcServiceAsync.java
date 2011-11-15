@@ -66,4 +66,5 @@ public interface CuentaRpcServiceAsync {
 	public void confirmarCaratula(CaratulaDto caratulaDto, AsyncCallback<CaratulaDto> callback);
 	public void validarExistenciaTriptico(String nro, AsyncCallback<Boolean> callback);
 	public void getDocDigitalizados(String customerCode, AsyncCallback<List<DocDigitalizadosDto>> callback);
+	public void isDomicilioValidadoPorEECC(String nro_ss, AsyncCallback<Boolean> callback);
 }
