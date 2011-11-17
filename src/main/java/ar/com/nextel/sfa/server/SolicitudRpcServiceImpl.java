@@ -1115,29 +1115,28 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				}
 			}
 			
-//			Cuenta cuenta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
-//			
-//			// Si la cuenta es un PROSPECT no realiza la validacion de solicitudes pendientes
-//			if(!cuenta.getUse().contains("SFA") && !cuenta.getUse().contains("VANCUC")){
-//				// Valida si existen solicitudes Pendientes de Portabilidad
-//				permiteBPS = false;
-//				permiteVantive = false;
-//				try{
-//					Long idVantive = cuenta.getIdVantive();
-//					String codVantive = cuenta.getCodigoVantive();
-//					
-//					permiteVantive = vantiveSystem.getPermitePortabilidad(idVantive);
-//					permiteBPS = bpsSystem.resolverValidacionesPendientes(codVantive);
-//				}catch(Exception e){
-//					throw ExceptionUtil.wrap(e);
-//				}
-//				if(!permiteVantive || !permiteBPS){
-//					// Al analista de Creditos le muestra un mensaje y guarda
-//					if(sessionContextLoader.getVendedor().getTipoVendedor().getId() == 21) result.addError(ERROR_ENUM.WARNING,MSG_ERR_09);// Tipo vendedor analista creditos = 21
-//					else result.addError(ERROR_ENUM.ERROR,MSG_ERR_09);
-//				}
-//			}
-		}
+			Cuenta cuenta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
+			
+			// Si la cuenta es un PROSPECT no realiza la validacion de solicitudes pendientes
+			if(!cuenta.getUse().contains("SFA") && !cuenta.getUse().contains("VANCUC")){
+				// Valida si existen solicitudes Pendientes de Portabilidad
+				permiteBPS = false;
+				permiteVantive = false;
+				try{
+					String codVantive = cuenta.getCodigoVantive();
+					
+					permiteVantive = vantiveSystem.getPermitePortabilidad(codVantive);
+					permiteBPS = bpsSystem.resolverValidacionesPendientes(codVantive);
+				}catch(Exception e){
+					throw ExceptionUtil.wrap(e);
+				}
+				if(!permiteVantive || !permiteBPS){
+					// Al analista de Creditos le muestra un mensaje y guarda
+					if(sessionContextLoader.getVendedor().getTipoVendedor().getId() == 21) result.addError(ERROR_ENUM.WARNING,MSG_ERR_09);// Tipo vendedor analista creditos = 21
+					else result.addError(ERROR_ENUM.ERROR,MSG_ERR_09);
+				}
+			}
+		}	
 		
 		// Puede guardar
 		return result.generar();

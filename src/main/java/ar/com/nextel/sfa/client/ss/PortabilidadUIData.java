@@ -117,8 +117,7 @@ public class PortabilidadUIData extends Composite {
 		lblNroDocumento.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 
 		chkRecibeSMS.addStyleName("portabilidadCheck");
-		
-		txtEmail.setPattern(RegularExpressionConstants.email);
+		txtTelefonoPortar.getInterno().setEnabled(false);
 		lnkCopiarCuenta.addStyleName("floatRight");
 		
 		comprobarTipoTelefonia();
@@ -305,7 +304,6 @@ public class PortabilidadUIData extends Composite {
 		txtApellido.setText(solicitudPortabilidad.getApellido());
 		txtRazonSocial.setText(solicitudPortabilidad.getRazonSocial());
 		txtNroDocumento.setText(solicitudPortabilidad.getNumeroDocumento());
-		txtTelefono.getNumero().setText(solicitudPortabilidad.getTelefono());
 		txtNroUltimaFacura.setText(solicitudPortabilidad.getNroUltimaFacura());
 		txtTelefonoPortar.getArea().setText(solicitudPortabilidad.getAreaTelefono());
 		txtTelefonoPortar.getNumero().setText(solicitudPortabilidad.getTelefonoPortar());
@@ -318,12 +316,38 @@ public class PortabilidadUIData extends Composite {
 		setVisible(true);
 		comprobarTipoTelefonia();
 		
+		if(solicitudPortabilidad.getTelefono() != null){
+			String[] telefono = solicitudPortabilidad.getTelefono().split("-");
+			if(telefono.length == 1) txtTelefono.getNumero().setText(telefono[0]);
+			else if(telefono.length == 3){
+				txtTelefono.getArea().setText(telefono[0]);
+				txtTelefono.getNumero().setText(telefono[1]);
+				txtTelefono.getInterno().setText(telefono[2]);
+			}else if(telefono.length == 2){
+				if(telefono[0].length() < telefono[1].length()){
+					txtTelefono.getArea().setText(telefono[0]);
+					txtTelefono.getNumero().setText(telefono[1]);
+				}else{
+					txtTelefono.getNumero().setText(telefono[0]);
+					txtTelefono.getInterno().setText(telefono[1]);
+				}
+			}
+		}
+		
+		txtTelefono.getNumero().setText(solicitudPortabilidad.getTelefono());
+
 		if(solicitudPortabilidad.getNroSS() != null)chkRecibeSMS.setValue(solicitudPortabilidad.isRecibeSMS());
 
 		chkPortabilidad.setValue(true);
 		btnReserva.setEnabled(false);
 	}
 	
+    public boolean isEmpty(String s) {
+    	if(s == null) return false;
+    	if(s.length() == 0) return false;
+        return true;
+    }
+
 	/* GETTERS & SETTERS ================================================================== */
 
 	public void generarNroSS(SolicitudServicioDto solicitudServicio){
@@ -434,7 +458,6 @@ public class PortabilidadUIData extends Composite {
 			solicitudPortabilidad.setNroSS(txtNroSS.getText());
 			solicitudPortabilidad.setNombre(txtNombre.getText());
 			solicitudPortabilidad.setApellido(txtApellido.getText());
-			solicitudPortabilidad.setTelefono(txtTelefono.getNumero().getText());
 			solicitudPortabilidad.setRazonSocial(txtRazonSocial.getText());
 			solicitudPortabilidad.setNumeroDocumento(txtNroDocumento.getText());
 			solicitudPortabilidad.setAreaTelefono(txtTelefonoPortar.getArea().getText());
@@ -445,6 +468,11 @@ public class PortabilidadUIData extends Composite {
 			solicitudPortabilidad.setTipoDocumento((TipoDocumentoDto)lstTipoDocumento.getSelectedItem());
 			solicitudPortabilidad.setTipoTelefonia((TipoTelefoniaDto)lstTipoTelefonia.getSelectedItem());
 			solicitudPortabilidad.setModalidadCobro((ModalidadCobroDto)lstModalidadCobro.getSelectedItem());
+
+			String telefono = txtTelefono.getNumero().getText();
+			if(!isEmpty(txtTelefono.getArea().getText())) telefono = txtTelefono.getArea().getText() + "-" + telefono; 
+			if(!isEmpty(txtTelefono.getInterno().getText())) telefono =  telefono + "-" + txtTelefono.getInterno().getText(); 
+			solicitudPortabilidad.setTelefono(telefono);
 		}
 		return solicitudPortabilidad;
 	}

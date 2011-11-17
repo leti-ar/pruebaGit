@@ -292,6 +292,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 					ModalMessageDialog.getInstance().showAceptarCancelar(
 							WARNING,"Se eliminaran los datos correspondientes a Portabilidad",cmndAceptar, cmndCancelar);
 				}else{ 
+					if(cantidad.getText().length() < 1 || Integer.valueOf(cantidad.getText()) < 1) cantidad.setText("1");
+
 					if(lineaSolicitudServicio.getNumeroReserva() != null && lineaSolicitudServicio.getNumeroReserva().length() > 0 ){
 						ModalMessageDialog.getInstance().showAceptarCancelar(
 								WARNING,"Se eliminara la reserva de numero, desea continuar",cmndAceptar, cmndCancelar);

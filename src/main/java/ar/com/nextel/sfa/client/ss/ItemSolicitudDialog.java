@@ -288,6 +288,8 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		itemSolicitudUIData.getTipoPlan().clearPreseleccionados();
 		itemSolicitudUIData.setNombreMovil(controller.getNombreProximoMovil());
 		itemSolicitudUIData.setLineaSolicitudServicio(linea);
+		itemSolicitudUIData.getPortabilidad().setEnabled(true);
+		
 		final TipoPlanDto tipoPlan = linea != null && linea.getPlan() != null ? linea.getPlan().getTipoPlan()
 				: null;
 		if (linea.getTipoSolicitud() != null) {
