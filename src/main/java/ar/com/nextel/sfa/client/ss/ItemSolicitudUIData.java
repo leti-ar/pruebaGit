@@ -222,7 +222,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		portabilidad.addValueChangeHandler(valueChangeHandler_boolean);
 
 		portabilidadPanel.setCHKportabilidad(portabilidad);
-		portabilidadPanel.setBTNreserva(confirmarReserva);
+		portabilidadPanel.setReserva(confirmarReserva,reservar);
 
 		cmndAceptar = new Command() {
 			public void execute() {
@@ -233,12 +233,15 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 					}
 					portabilidadPanel.setSolicitudPortabilidad(null);
 					portabilidadPanel.resetearPortabilidad();
+					reservar.setEnabled(true);
 					confirmarReserva.setEnabled(true);
 					portabilidadPanel.setVisible(false);
 					dialog.center();
 				}else{
 					// Elimina la Reserva
 					desreservar();
+					reservar.setEnabled(false);
+					reservar.setText("");
 					confirmarReserva.setEnabled(false);
 					portabilidadPanel.setVisible(true);
 					portabilidadPanel.loadSolicitudPortabilidad(new SolicitudPortabilidadDto());
@@ -298,6 +301,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 						ModalMessageDialog.getInstance().showAceptarCancelar(
 								WARNING,"Se eliminara la reserva de numero, desea continuar",cmndAceptar, cmndCancelar);
 					}else{
+						reservar.setEnabled(false);
 						confirmarReserva.setEnabled(false);
 						portabilidadPanel.setVisible(true);
 						portabilidadPanel.loadSolicitudPortabilidad(new SolicitudPortabilidadDto());

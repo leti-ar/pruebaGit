@@ -91,7 +91,6 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 			tblDetalle.getRowFormatter().addStyleName(0, "header");
 
 			int newRow = 1;
-			int indice = 0;
 			for (LineaSolicitudServicioDto linea : lineas) {
 				if(linea.getPortabilidad() != null && linea.getPortabilidad() != lineas.get(indexLinea).getPortabilidad()){
 					tblDetalle.setWidget(newRow, 0, new CheckBox());
@@ -99,10 +98,9 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 					tblDetalle.setHTML(newRow, 2, linea.getAlias() != null ? linea.getAlias() : Sfa.constant().whiteSpace());
 					tblDetalle.setHTML(newRow, 3, linea.getPlan() != null ? linea.getPlan().getDescripcion() : Sfa.constant().whiteSpace());
 					tblDetalle.setHTML(newRow, 4, linea.getTipoSolicitud() != null ? linea.getTipoSolicitud().getDescripcion() : Sfa.constant().whiteSpace());
-					indices.add(indice);
+					indices.add(newRow);
 					newRow++;
-				}
-				indice++;
+				}else indices.add(0);
 			}
 
 			//Click Listener
@@ -111,11 +109,11 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 					if(sender == lnkAceptar){
 						for(int i = 1; i < tblDetalle.getRowCount(); i++){
 							if(((CheckBox)tblDetalle.getWidget(i, 0)).getValue()){
-								lineas.get(i - 1).getPortabilidad().setRazonSocial(strRazonSocial);
-								lineas.get(i - 1).getPortabilidad().setNombre(strNombre);
-								lineas.get(i - 1).getPortabilidad().setApellido(strApellido);
-								lineas.get(i - 1).getPortabilidad().setTipoDocumento(tipoDocumento);
-								lineas.get(i - 1).getPortabilidad().setNumeroDocumento(strNroDocumento);
+								lineas.get(indices.get(i)).getPortabilidad().setRazonSocial(strRazonSocial);
+								lineas.get(indices.get(i)).getPortabilidad().setNombre(strNombre);
+								lineas.get(indices.get(i)).getPortabilidad().setApellido(strApellido);
+								lineas.get(indices.get(i)).getPortabilidad().setTipoDocumento(tipoDocumento);
+								lineas.get(indices.get(i)).getPortabilidad().setNumeroDocumento(strNroDocumento);
 							}
 						}
 						hide();

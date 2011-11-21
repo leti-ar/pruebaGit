@@ -24,6 +24,7 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
@@ -74,9 +75,12 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 		cierreExitoso = new FlowPanel();
 		solicitudLink = new SimpleLink("Solicitud link", "#" + History.getToken(), true);
 		aceptar = new SimpleLink(Sfa.constant().aceptar());
+		aceptar.addClickListener(this);
 	}
 	
 	private void init(List<String> rtfFileNamePorta) {
+		cierreExitoso.clear();
+		
 		addStyleName("gwt-CerrarSSDialog");
 		mainPanel.setWidth("350px");
 		Grid layout = new Grid(1, 2);
@@ -106,7 +110,6 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 		add(cierreExitoso);
 		cierreExitoso.setVisible(false);
 
-		aceptar.addClickListener(this);
 		addFormButtons(aceptar);
 	}
 

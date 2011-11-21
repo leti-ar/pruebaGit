@@ -21,6 +21,7 @@ import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
+import ar.com.nextel.sfa.client.util.PortabilidadUtil;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
@@ -32,6 +33,8 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -85,9 +88,12 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private boolean sacarTipoDescuento;
 	private boolean descuentoTotalAplicado = false;
 	private PortabilidadInitializer portabilidadInitializer;
+	private PortabilidadUtil portabilidadUtil;
 	
 	private static final String SELECTED_ROW = "selectedRow";
 
+	private ChangeHandler handlerNroSS;
+	
 	public DatosSSUI(EditarSSUIController controller) {
 		mainpanel = new FlowPanel();
 		initWidget(mainpanel);
@@ -96,6 +102,22 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		mainpanel.add(getNssLayout());
 		mainpanel.add(getDomicilioPanel());
 		mainpanel.add(getDetallePanel());
+		
+		ChangeHandler handlerNroSS = new ChangeHandler() {
+			public void onChange(ChangeEvent event) {
+				asignarNroSSPortabilidad();
+			}
+		}; 
+		
+		editarSSUIData.getNss().addChangeHandler(handlerNroSS);
+	}
+
+	/**
+	 * Portabilidad
+	 */
+	private void asignarNroSSPortabilidad(){
+		if(portabilidadUtil == null) portabilidadUtil = new PortabilidadUtil();
+		portabilidadUtil.generarNroSS(controller.getEditarSSUIData().getSolicitudServicio());
 	}
 
 	/**
@@ -527,10 +549,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 					LineaSolicitudServicioDto lineaSolicitudServicio = itemSolicitudDialog.getItemSolicitudUIData().getLineaSolicitudServicio();
 					addLineaSolicitudServicio(lineaSolicitudServicio);
 					
-					itemSolicitudDialog.getItemSolicitudUIData().getPortabilidadPanel().generarNroSS(controller.getEditarSSUIData().getSolicitudServicio());
-					
+					// Genera los numeros de solicitudes de portabilidad
+					asignarNroSSPortabilidad();
 					lineaModificada = lineaSolicitudServicio.getId();
-
 				}
 			};
 			itemSolicitudDialog.setAceptarCommand(aceptarCommand);
