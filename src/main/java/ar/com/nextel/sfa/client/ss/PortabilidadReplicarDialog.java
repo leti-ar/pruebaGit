@@ -11,6 +11,7 @@ import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -37,7 +38,6 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 	private String strApellido;
 	private TipoDocumentoDto tipoDocumento;
 	private String strNroDocumento;
-	private List<Integer> indices = new ArrayList<Integer>();
 	
 	public PortabilidadReplicarDialog(){
 		super(TITULO,false,true);
@@ -98,9 +98,8 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 					tblDetalle.setHTML(newRow, 2, linea.getAlias() != null ? linea.getAlias() : Sfa.constant().whiteSpace());
 					tblDetalle.setHTML(newRow, 3, linea.getPlan() != null ? linea.getPlan().getDescripcion() : Sfa.constant().whiteSpace());
 					tblDetalle.setHTML(newRow, 4, linea.getTipoSolicitud() != null ? linea.getTipoSolicitud().getDescripcion() : Sfa.constant().whiteSpace());
-					indices.add(newRow);
 					newRow++;
-				}else indices.add(0);
+				}
 			}
 
 			//Click Listener
@@ -109,11 +108,15 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 					if(sender == lnkAceptar){
 						for(int i = 1; i < tblDetalle.getRowCount(); i++){
 							if(((CheckBox)tblDetalle.getWidget(i, 0)).getValue()){
-								lineas.get(indices.get(i)).getPortabilidad().setRazonSocial(strRazonSocial);
-								lineas.get(indices.get(i)).getPortabilidad().setNombre(strNombre);
-								lineas.get(indices.get(i)).getPortabilidad().setApellido(strApellido);
-								lineas.get(indices.get(i)).getPortabilidad().setTipoDocumento(tipoDocumento);
-								lineas.get(indices.get(i)).getPortabilidad().setNumeroDocumento(strNroDocumento);
+								for (LineaSolicitudServicioDto linea : lineas) {
+									if(tblDetalle.getHTML(i, 2).equals(linea.getAlias())){
+										linea.getPortabilidad().setRazonSocial(strRazonSocial);
+										linea.getPortabilidad().setNombre(strNombre);
+										linea.getPortabilidad().setApellido(strApellido);
+										linea.getPortabilidad().setTipoDocumento(tipoDocumento);
+										linea.getPortabilidad().setNumeroDocumento(strNroDocumento);
+									}
+								}
 							}
 						}
 						hide();
