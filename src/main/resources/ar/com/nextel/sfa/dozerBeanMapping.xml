@@ -393,11 +393,11 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>servicioAdicional.unicaVez</a>
 			<b>unicaVez</b>
 		</field>
-<!-- 		<field type="one-way">
+<!--  		<field type="one-way">
 			<a>servicioAdicional.esPortabilidad</a>
 			<b>esPortabilidad</b>
 		</field>
- -->	
+ --> 	
  	</mapping>
 
 	<mapping map-id="cuentaSolicitud" wildcard="false">

@@ -391,6 +391,16 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	public CreateSaveSolicitudServicioResultDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
 			throws RpcExceptionMessages {
 
+		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
+			for (ServicioAdicionalLineaSolicitudServicioDto	seradi : linea.getServiciosAdicionales()) {
+				AppLogger.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+				AppLogger.info("SERVIOCIO ADICIONAL >>> " + seradi.getServicioAdicional().getDescripcion());
+				AppLogger.info("SERVIOCIO ADICIONAL LINEA >>> " + seradi.getDescripcionServicioAdicional());
+				AppLogger.info("CHECHED >>> " + seradi.isChecked());
+				AppLogger.info("OBLIGATORIO >>> " + seradi.isObligatorio());
+			}
+			AppLogger.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		}
 		CreateSaveSolicitudServicioResultDto resultDto = new CreateSaveSolicitudServicioResultDto();
 		try {
 			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
@@ -1153,4 +1163,11 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		SolicitudPortabilidadPropertiesReport portabilidadPropRtp = new SolicitudPortabilidadPropertiesReport(solicitudServicio); 
 		return portabilidadPropRtp.getReportFileNames();
 	}
+
+	public Integer getCantidadLineasPortabilidad(Long idSolicitudServicio,Integer fila) throws RpcExceptionMessages {
+		SolicitudServicio solicitudServicio = solicitudServicioRepository.getSolicitudServicioPorId(idSolicitudServicio);
+		if(solicitudServicio.getCantLineasPortabilidad() > 0) return fila;
+		return 0;
+	}
+	
 }

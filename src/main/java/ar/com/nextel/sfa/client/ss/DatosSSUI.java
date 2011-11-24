@@ -289,14 +289,14 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
 			String[] titlesDetalle = { Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(),
 					Sfa.constant().whiteSpace(), "Item", "Pcio Vta.", "Precio con Desc.", "Alias", "Plan", 
-					"Pcio Vta. Plan", "Localidad", "Nº Reserva", "Tipo SS", "Cant.", "DDN", "DDI", "Roaming" };			
+					"Pcio Vta. Plan", "Localidad", "Nº Reserva", "Tipo SS", "Cant.", "DDN", "DDI", "Roaming",Sfa.constant().portabilidad() };			
 			for (int i = 0; i < titlesDetalle.length; i++) {
 				detalleSS.setHTML(0, i, titlesDetalle[i]);
 			}
 		} else {
 			String[] titlesDetalle = { Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(),"Item",
 					"Pcio Vta.", "Alias", "Plan", "Pcio Vta. Plan", "Localidad", "Nº Reserva", "Tipo SS",
-					"Cant.", "DDN", "DDI", "Roaming" };
+					"Cant.", "DDN", "DDI", "Roaming",Sfa.constant().portabilidad() };
 			for (int i = 0; i < titlesDetalle.length; i++) {
 				detalleSS.setHTML(0, i, titlesDetalle[i]);
 			}
@@ -740,8 +740,10 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				.whiteSpace());
 		detalleSS.setHTML(newRow, 15-i, linea.getDdi() ? IconFactory.tildeVerde().toString() : Sfa.constant()
 				.whiteSpace());
-		detalleSS.setHTML(newRow, 16-i, linea.getRoaming() ? IconFactory.tildeVerde().toString() : Sfa
-				.constant().whiteSpace());
+		detalleSS.setHTML(newRow, 16-i, linea.getRoaming() ? IconFactory.tildeVerde().toString() : Sfa.constant().whiteSpace());
+		
+		if(linea.getPortabilidad() != null) detalleSS.setWidget(newRow,17-i,IconFactory.tildeVerde());
+		else detalleSS.setHTML(newRow,17-i,Sfa.constant().whiteSpace());
 	}
 
 	public void editarPrecioDeVentaPlan() {

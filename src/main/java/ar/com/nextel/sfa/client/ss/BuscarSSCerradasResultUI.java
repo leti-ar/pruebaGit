@@ -12,6 +12,7 @@ import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
+import ar.com.nextel.sfa.server.SolicitudRpcServiceImpl;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.WindowUtils;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -164,6 +165,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 								} else {
 									resultTable.setText(indiceRowTabla, 6, "");
 								}
+								
 								if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == Boolean.TRUE) {
 									cantEqFirmados++;
 								}
@@ -171,6 +173,16 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 								if (solicitudServicioCerradaResultDto.getPataconex() != null) {
 									cantPataconex = cantPataconex + solicitudServicioCerradaResultDto.getPataconex();
 								}
+								
+								SolicitudRpcService.Util.getInstance().getCantidadLineasPortabilidad(
+										solicitudServicioCerradaResultDto.getId(), indiceRowTabla,new DefaultWaitCallback<Integer>() {
+											@Override
+											public void success(Integer result) {
+												if(result > 0)resultTable.setWidget(result, 7, IconFactory.tildeVerde());
+												else resultTable.setHTML(result, 7, Sfa.constant().whiteSpace());
+											}
+										});
+								
 								indiceRowTabla++;
 //							}
 //						});
@@ -184,7 +196,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 	}
 
 	private void initTable(FlexTable table) {
-		String[] widths = { "24px", "150px", "200px", "320px", "100px", "100px", "100px", };
+		String[] widths = { "24px", "150px", "200px", "320px", "100px", "100px", "100px","120px" };
 		for (int col = 0; col < widths.length; col++) {
 			table.getColumnFormatter().setWidth(col, widths[col]);
 		}
@@ -200,6 +212,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 		table.setHTML(0, 4, Sfa.constant().equipos());
 		table.setHTML(0, 5, Sfa.constant().pataconexTabla());
 		table.setHTML(0, 6, Sfa.constant().firmasTabla());
+		table.setHTML(0, 7, Sfa.constant().portabilidad());
 	}
 
 	public void setBuscarSSTotalesResultUI(BuscarSSTotalesResultUI buscarSSTotalesResultUI) {

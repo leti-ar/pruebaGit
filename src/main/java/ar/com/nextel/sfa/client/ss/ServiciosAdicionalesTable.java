@@ -21,6 +21,7 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
@@ -188,8 +189,16 @@ public class ServiciosAdicionalesTable extends Composite {
 				servicioAdicional = linea.getServiciosAdicionales().get(saIndex);
 			}
 			CheckBox check = new CheckBox();
+			
+			if(servicioAdicional.getServicioAdicional().getEsPortabilidad()){
+				servicioAdicional.setChecked(true);
+				servicioAdicional.setObligatorio(true);
+				linea.getServiciosAdicionales().add(servicioAdicional);
+			}
+
 			check.setEnabled(!servicioAdicional.isObligatorio());
 			check.setValue(servicioAdicional.isObligatorio() || servicioAdicional.isChecked());
+			
 			table.setWidget(row, 0, check);
 			table.setHTML(row, 1, servicioAdicional.getDescripcionServicioAdicional());
 			table.setHTML(row, 2, currencyFormat.format(servicioAdicional.getPrecioLista()));

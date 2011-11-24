@@ -281,6 +281,12 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.generarParametrosPortabilidadRTF(idSolicitudServicio, callback);
 	}
+	
+	public void getCantidadLineasPortabilidad(Long idSolicitudServicio,Integer fila,AsyncCallback<Integer> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getCantidadLineasPortabilidad(idSolicitudServicio, fila, callback);
+	}
+
 	// -------------------------------------------
 
 

@@ -159,6 +159,8 @@ public interface SolicitudRpcService extends RemoteService {
 	PortabilidadResult validarPortabilidad(SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages;
 	
 	List<String> generarParametrosPortabilidadRTF(Long idSolicitudServicio) throws RpcExceptionMessages;
+	
+	Integer getCantidadLineasPortabilidad(Long idSolicitudServicio,Integer fila) throws RpcExceptionMessages;
 	// -------------------------------------------
 
 }

@@ -1,5 +1,7 @@
 package ar.com.nextel.sfa.client.ss;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
@@ -67,10 +69,15 @@ public class BuscarSSCerradasReportsDialog extends NextelDialog{
 				new DefaultWaitCallback<List<String>>() {
 					@Override
 					public void success(List<String> result) {
-						portabilidadFileNames = result;
-						
 						// Verifica si existe archivos
-						if(portabilidadFileNames.size() > 0){
+						if(result.size() > 0){
+							portabilidadFileNames = new ArrayList<String>();
+							for (String fname : result) {
+								portabilidadFileNames.add(fname.substring(0,fname.lastIndexOf(".")));
+							}
+							Collections.sort(portabilidadFileNames);
+
+							
 							// inicializa el escuchador
 							clickListener = new ClickListener() {
 								public void onClick(Widget sender) {

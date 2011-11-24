@@ -745,11 +745,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	 */
 	private void validarPortabilidadAdicional(GwtValidator validator,LineaSolicitudServicioDto linea){
 		if(linea.getPortabilidad() != null){
-			boolean portabilidadAdicional = false;
+//			boolean portabilidadAdicional = false;
 			for(ServicioAdicionalLineaSolicitudServicioDto servicioAdicional : linea.getServiciosAdicionales()){
-				if(servicioAdicional.getServicioAdicional().getEsPortabilidad() && servicioAdicional.isChecked()) portabilidadAdicional = true;
+				if(servicioAdicional.getServicioAdicional().getEsPortabilidad()){
+					servicioAdicional.setChecked(true);
+					servicioAdicional.setObligatorio(true);
+				}
+//				if(servicioAdicional.getServicioAdicional().getEsPortabilidad() && servicioAdicional.isChecked()) portabilidadAdicional = true;
 			}
-			if(!portabilidadAdicional) validator.addError(Sfa.constant().ERR_FALTA_PORTABILIDAD().replaceAll(V1, linea.getAlias()));
+//			if(!portabilidadAdicional) validator.addError(Sfa.constant().ERR_FALTA_PORTABILIDAD().replaceAll(V1, linea.getAlias()));
 		}
 	}
 	

@@ -1,8 +1,11 @@
 package ar.com.nextel.sfa.client.ss;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import org.apache.commons.lang.ArrayUtils;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -98,11 +101,17 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 		solicitudRtf.setWidget(0, 0, IconFactory.word());
 		solicitudRtf.setWidget(0, 1, solicitudLink);
 		
+		List<String> aux = new ArrayList<String>();
+		for (String fname : rtfFileNamePorta) {
+			aux.add(fname.substring(0,fname.lastIndexOf(".")));
+		}
+		Collections.sort(aux);
+		
 		for (int i = 0; i < rtfFileNamePorta.size(); i++) {
 			solicitudRtf.setWidget(i + 1, 0, IconFactory.word());
-			solicitudRtf.setWidget(i + 1, 1, new SimpleLink(rtfFileNamePorta.get(i),"#" + History.getToken(),true));
+			solicitudRtf.setWidget(i + 1, 1, new SimpleLink(aux.get(i) + ".rtf","#" + History.getToken(),true));
 			((SimpleLink)solicitudRtf.getWidget(i + 1, 1)).addClickListener(this);
-			((SimpleLink)solicitudRtf.getWidget(i + 1, 1)).setTitle(rtfFileNamePorta.get(i));
+			((SimpleLink)solicitudRtf.getWidget(i + 1, 1)).setTitle(aux.get(i) + ".rtf");
 		}
 		
 		cierreExitoso.add(solicitudRtf);
@@ -245,8 +254,11 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 	}
 
 	public String getUrlReporte(String fileName) {
-		return "/" + WindowUtils.getContextRoot() + "/download/" + fileName
-				+ "?module=solicitudes&service=rtf&name=" + fileName;
+//		return "/" + WindowUtils.getContextRoot() + "/download/" + fileName
+//				+ "?module=solicitudes&service=rtf&name=" + fileName;
+		
+		return "C:\\Users\\diazho\\Desktop\\rtf";
+			    
 	}
 
 	/** Este comando cierra la ventana sin realizar ninguna accion */

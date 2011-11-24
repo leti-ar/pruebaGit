@@ -270,6 +270,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 			resultTableOpEnCurso.setHTML(rowIndex, 3, opCursoDto.getNumeroCliente());
 			resultTableOpEnCurso.setHTML(rowIndex, 4, opCursoDto.getRazonSocial());
 			resultTableOpEnCurso.setHTML(rowIndex, 5, opCursoDto.getDescripcionGrupo());
+			resultTableOpEnCurso.setWidget(rowIndex, 6, IconFactory.tildeVerde());
 			rowIndex++;
 		}
 		numOperaciones.setText("N° Operaciones: " + opEnCurso.size());
@@ -362,7 +363,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 	}
 
 	private void initTableOpenCurso(FlexTable table) {
-		String[] widths = { "24px", "24px", "24px", "214px", "470px", "230px", };
+		String[] widths = { "24px", "24px", "24px", "214px", "470px", "230px","120px"};
 		for (int col = 0; col < widths.length; col++) {
 			table.getColumnFormatter().setWidth(col, widths[col]);
 		}
@@ -379,6 +380,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 		table.setHTML(0, 3, Sfa.constant().numeroClienteCompleto());
 		table.setHTML(0, 4, Sfa.constant().razonSocial());
 		table.setHTML(0, 5, Sfa.constant().grupoSS());
+		table.setHTML(0, 6, Sfa.constant().portabilidad());
 	}
 
 	private void cancelarOperacionEnCurso(OperacionEnCursoDto op) {
