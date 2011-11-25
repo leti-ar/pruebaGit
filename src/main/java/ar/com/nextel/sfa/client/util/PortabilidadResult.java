@@ -20,8 +20,15 @@ public class PortabilidadResult  implements IsSerializable{
 	}
 
 	public void addError(ERROR_ENUM err,String desc){
-		erroresComp.add(err);
-		erroresDesc.add(desc);
+		if(erroresComp.contains(err)){
+			if(!erroresDesc.contains(desc)){
+				erroresComp.add(err);
+				erroresDesc.add(desc);
+			}
+		}else{
+			erroresComp.add(err);
+			erroresDesc.add(desc);
+		}
 	}
 	
 	public PortabilidadResult generar(){

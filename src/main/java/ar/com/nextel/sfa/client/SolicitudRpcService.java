@@ -160,7 +160,7 @@ public interface SolicitudRpcService extends RemoteService {
 	
 	List<String> generarParametrosPortabilidadRTF(Long idSolicitudServicio) throws RpcExceptionMessages;
 	
-	Integer getCantidadLineasPortabilidad(Long idSolicitudServicio,Integer fila) throws RpcExceptionMessages;
+	List<Long> getCantidadLineasPortabilidad(List<Long> listIdSS) throws RpcExceptionMessages;
 	// -------------------------------------------
 
 }

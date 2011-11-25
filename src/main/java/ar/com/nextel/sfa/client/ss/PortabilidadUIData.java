@@ -117,6 +117,7 @@ public class PortabilidadUIData extends Composite {
 
 		chkRecibeSMS.addStyleName("portabilidadCheck");
 		txtTelefonoPortar.getInterno().setEnabled(false);
+		txtTelefonoPortar.getInterno().removeFromParent();
 		lnkCopiarCuenta.addStyleName("floatRight");
 		
 		comprobarTipoTelefonia();

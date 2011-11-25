@@ -191,13 +191,20 @@ public class ServiciosAdicionalesTable extends Composite {
 			CheckBox check = new CheckBox();
 			
 			if(servicioAdicional.getServicioAdicional().getEsPortabilidad()){
-				servicioAdicional.setChecked(true);
 				servicioAdicional.setObligatorio(true);
-				linea.getServiciosAdicionales().add(servicioAdicional);
+
+				if(linea.getPortabilidad() != null){
+					servicioAdicional.setChecked(true);
+					linea.getServiciosAdicionales().add(servicioAdicional);
+				}else servicioAdicional.setChecked(false); 
+
+				check.setValue(servicioAdicional.isChecked());
+				check.setEnabled(!servicioAdicional.isObligatorio());
+			}else{
+				check.setEnabled(!servicioAdicional.isObligatorio());
+				check.setValue(servicioAdicional.isObligatorio() || servicioAdicional.isChecked());
 			}
 
-			check.setEnabled(!servicioAdicional.isObligatorio());
-			check.setValue(servicioAdicional.isObligatorio() || servicioAdicional.isChecked());
 			
 			table.setWidget(row, 0, check);
 			table.setHTML(row, 1, servicioAdicional.getDescripcionServicioAdicional());

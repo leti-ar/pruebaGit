@@ -804,3 +804,7 @@ margin:8px;
 .portabilidadCheck{
 	font-weight: bold;
 }
+
+.portabilidadAlignCenter{
+	text-align: center;	
+}

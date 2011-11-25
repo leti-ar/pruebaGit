@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.ss;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -25,6 +26,7 @@ import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -100,20 +102,17 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 							exportarExcelSSResultUI.setVisible(true);
 							loadExcel();
 							setSolicitudServicioDto(result);
-							buscarSSTotalesResultUI.setValues(cantEquipos.toString(), cantPataconex, String
-									.valueOf(cantEqFirmados));
+							buscarSSTotalesResultUI.setValues(cantEquipos.toString(), cantPataconex, String.valueOf(cantEqFirmados));
 							buscarSSTotalesResultUI.setVisible(true);
 						}
 					}
 				});
 	}
 
-	public void setSolicitudServicioDto(
-			List<SolicitudServicioCerradaResultDto> solicitudServicioCerradaResultDto) {
+	public void setSolicitudServicioDto(List<SolicitudServicioCerradaResultDto> solicitudServicioCerradaResultDto) {
 		this.solicitudesServicioCerradaResultDto = solicitudServicioCerradaResultDto;
 		add(loadTable());
-		exportarExcelSSResultUI.setNumResultados("Número de Resultados: "
-				+ String.valueOf(solicitudServicioCerradaResultDto.size()));
+		exportarExcelSSResultUI.setNumResultados("Número de Resultados: " + String.valueOf(solicitudServicioCerradaResultDto.size()));
 		setVisible(true);
 	}
 
@@ -134,62 +133,67 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 		});
 	}
 
+	private List<Long> generarListIdSS(){
+		List<Long> listIdSS = new ArrayList<Long>();
+		
+		for(int i = 0; i < solicitudesServicioCerradaResultDto.size(); i++){
+			listIdSS.add(solicitudesServicioCerradaResultDto.get(i).getId());
+		}
+		
+		return listIdSS;
+	}
+	
 	private Widget loadTable() {
 		resultTable.clearContent();
 
 		indiceRowTabla = 1;
-
+		
 		if (solicitudesServicioCerradaResultDto != null) {
-			for (Iterator iter = solicitudesServicioCerradaResultDto.iterator(); iter.hasNext();) {
-				SolicitudServicioCerradaResultDto solicitudServicioCerradaResultDto = (SolicitudServicioCerradaResultDto) iter
-						.next();
-								resultTable.setWidget(indiceRowTabla, 0, IconFactory.word());
-								resultTable.setHTML(indiceRowTabla, 1, solicitudServicioCerradaResultDto.getNumeroSS());
-								resultTable.setHTML(indiceRowTabla, 2, solicitudServicioCerradaResultDto.getNumeroCuenta());
-								if (solicitudServicioCerradaResultDto.getRazonSocialCuenta() != null) {
-									 resultTable.setHTML(indiceRowTabla, 3, solicitudServicioCerradaResultDto.getRazonSocial());
-								} else {
-									resultTable.setHTML(indiceRowTabla, 3, solicitudServicioCerradaResultDto
-											.getRazonSocialCuenta());
-								}
-								resultTable.setHTML(indiceRowTabla, 4, solicitudServicioCerradaResultDto
-										.getCantidadEquipos().toString());
-								if (solicitudServicioCerradaResultDto.getPataconex() == null) {
-									resultTable.setHTML(indiceRowTabla, 5, "");
-								} else {
-									resultTable.setHTML(indiceRowTabla, 5, solicitudServicioCerradaResultDto.getPataconex()
-											.toString());
-								}
-								if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == true) {
-									resultTable.setWidget(indiceRowTabla, 6, IconFactory.tildeVerde());
-								} else {
-									resultTable.setText(indiceRowTabla, 6, "");
-								}
-								
-								if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == Boolean.TRUE) {
-									cantEqFirmados++;
-								}
-								cantEquipos = cantEquipos + solicitudServicioCerradaResultDto.getCantidadEquipos();
-								if (solicitudServicioCerradaResultDto.getPataconex() != null) {
-									cantPataconex = cantPataconex + solicitudServicioCerradaResultDto.getPataconex();
-								}
-								
-								SolicitudRpcService.Util.getInstance().getCantidadLineasPortabilidad(
-										solicitudServicioCerradaResultDto.getId(), indiceRowTabla,new DefaultWaitCallback<Integer>() {
-											@Override
-											public void success(Integer result) {
-												if(result > 0)resultTable.setWidget(result, 7, IconFactory.tildeVerde());
-												else resultTable.setHTML(result, 7, Sfa.constant().whiteSpace());
-											}
-										});
-								
-								indiceRowTabla++;
-//							}
-//						});
-				
+			SolicitudRpcService.Util.getInstance().getCantidadLineasPortabilidad(generarListIdSS(),new DefaultWaitCallback<List<Long>>() {
+				@Override
+				public void success(List<Long> result) {
+					for(int i = 0; i < solicitudesServicioCerradaResultDto.size(); i++){
+						SolicitudServicioCerradaResultDto solicitudServicioCerradaResultDto = solicitudesServicioCerradaResultDto.get(i); 
 
-			}
-			setVisible(true);
+						resultTable.setWidget(indiceRowTabla, 0, IconFactory.word());
+						resultTable.setHTML(indiceRowTabla, 1, solicitudServicioCerradaResultDto.getNumeroSS());
+						resultTable.setHTML(indiceRowTabla, 2, solicitudServicioCerradaResultDto.getNumeroCuenta());
+						if (solicitudServicioCerradaResultDto.getRazonSocialCuenta() != null) {
+							 resultTable.setHTML(indiceRowTabla, 3, solicitudServicioCerradaResultDto.getRazonSocial());
+						} else {
+							resultTable.setHTML(indiceRowTabla, 3, solicitudServicioCerradaResultDto
+									.getRazonSocialCuenta());
+						}
+						resultTable.setHTML(indiceRowTabla, 4, solicitudServicioCerradaResultDto
+								.getCantidadEquipos().toString());
+						if (solicitudServicioCerradaResultDto.getPataconex() == null) {
+							resultTable.setHTML(indiceRowTabla, 5, "");
+						} else {
+							resultTable.setHTML(indiceRowTabla, 5, solicitudServicioCerradaResultDto.getPataconex()
+									.toString());
+						}
+						if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == true) {
+							resultTable.setWidget(indiceRowTabla, 6, IconFactory.tildeVerde());
+						} else {
+							resultTable.setText(indiceRowTabla, 6, "");
+						}
+						
+						if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == Boolean.TRUE) {
+							cantEqFirmados++;
+						}
+						cantEquipos = cantEquipos + solicitudServicioCerradaResultDto.getCantidadEquipos();
+						if (solicitudServicioCerradaResultDto.getPataconex() != null) {
+							cantPataconex = cantPataconex + solicitudServicioCerradaResultDto.getPataconex();
+						}
+						
+						if(result.get(i) > 0)resultTable.setWidget(indiceRowTabla, 7, IconFactory.tildeVerde());
+						else resultTable.setHTML(indiceRowTabla, 7, Sfa.constant().whiteSpace());
+
+						indiceRowTabla++;
+					}
+					setVisible(true);
+				}
+			});
 		}
 
 		return resultTotalTableWrapper;

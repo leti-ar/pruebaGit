@@ -149,6 +149,6 @@ public interface SolicitudRpcServiceAsync {
 			AsyncCallback<List<String>> callback);
 	// -------------------------------------------
 
-	void getCantidadLineasPortabilidad(Long idSolicitudServicio, Integer fila,
-			AsyncCallback<Integer> callback);
+	void getCantidadLineasPortabilidad(List<Long> listIdSS,
+			AsyncCallback<List<Long>> callback);
 }

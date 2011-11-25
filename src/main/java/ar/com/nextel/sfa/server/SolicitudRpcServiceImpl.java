@@ -1068,7 +1068,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					apoderado = portabilidad.getRazonSocial() + portabilidad.getNombre() + portabilidad.getApellido() + 
 								portabilidad.getNumeroDocumento() + portabilidad.getTipoDocumento().getId();
 					
-					if(!verificarNroSS(nroSS, solicitudServicioDto.getNumero())) result.addError(ERROR_ENUM.ERROR,MSG_ERR_08);
+					if(!verificarNroSS(nroSS, solicitudServicioDto.getNumero()))result.addError(ERROR_ENUM.ERROR,MSG_ERR_08);
 					
 					if(portabilidad.getTipoTelefonia().getId() == 1){ // Tipo de la telefonia de portabilidad es Prepaga
 						// Debe recibir SMS si el tipo de telefonia es prepaga
@@ -1164,10 +1164,20 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return portabilidadPropRtp.getReportFileNames();
 	}
 
-	public Integer getCantidadLineasPortabilidad(Long idSolicitudServicio,Integer fila) throws RpcExceptionMessages {
-		SolicitudServicio solicitudServicio = solicitudServicioRepository.getSolicitudServicioPorId(idSolicitudServicio);
-		if(solicitudServicio.getCantLineasPortabilidad() > 0) return fila;
-		return 0;
+	/**
+	 * TODO: Portabilidad
+	 */
+	public List<Long> getCantidadLineasPortabilidad(List<Long> listIdSS) throws RpcExceptionMessages {
+		List<Long> listCantPort = new ArrayList<Long>();
+		
+		for (Long id : listIdSS) {
+			if(id != null){ 
+				SolicitudServicio solicitudServicio = solicitudServicioRepository.getSolicitudServicioPorId(id);
+				listCantPort.add(solicitudServicio.getCantLineasPortabilidad());
+			}else listCantPort.add(0L);
+		}
+		
+		return listCantPort;
 	}
 	
 }
