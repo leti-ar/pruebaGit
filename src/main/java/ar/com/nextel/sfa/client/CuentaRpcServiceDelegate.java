@@ -16,6 +16,7 @@ import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
+import ar.com.nextel.sfa.client.dto.ScoreVerazDto;
 import ar.com.nextel.sfa.client.dto.ServicioContratoDto;
 import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
@@ -199,5 +200,10 @@ public class CuentaRpcServiceDelegate {
 	public void isDomicilioValidadoPorEECC(String nro_ss, DefaultWaitCallback<Boolean> callback){
 		WaitWindow.show();
 		cuentaRpcService.isDomicilioValidadoPorEECC(nro_ss, callback);
+	}
+	// LF
+	public void autocompletarValoresVeraz(String score, int cantEquipos, DefaultWaitCallback<ScoreVerazDto> callback) {
+		WaitWindow.show();
+		cuentaRpcService.autocompletarValoresVeraz(score, cantEquipos, callback);		
 	}
 }

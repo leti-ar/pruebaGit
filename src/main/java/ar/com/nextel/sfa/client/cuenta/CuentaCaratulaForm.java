@@ -53,7 +53,7 @@ public class CuentaCaratulaForm extends Composite{
 	
 	private Command cancelarCommand;
 	
-	CaratulaUI caratulaUI;
+//	private CaratulaUI caratulaUI;
 	
 	public static CuentaCaratulaForm getInstance(){
 		if(instance == null){
@@ -248,25 +248,12 @@ public class CuentaCaratulaForm extends Composite{
 				int col = cell.getCellIndex();
 				nroFila = row;
 				
-				if(caratulaSeleccionada != null){
-					//#LF 
-					//Comparo la caratula seleccionada anteriormente con la seleccionada recientemente, si los documentos son distintos
-					//debo hacer una nueva instancia de CaratulaUI porque hay campos que son requeridos dependiendo el tipo de documento.
-					// Si la caratula anterior fue un credito, y esta nueva es un anexo, hago una nueva instancia
-					if(caratulaSeleccionada.isDocumentoCredito() && !cuentaDto.getCaratulas().get(row - 1).isDocumentoCredito()){
-						caratulaUI = new CaratulaUI();	
-					}
-					// Si la caratula anterior fue un anezo, y esta nueva es un credito, hago una nueva instancia
-					else if (!caratulaSeleccionada.isDocumentoCredito() && cuentaDto.getCaratulas().get(row - 1).isDocumentoCredito()){
-						caratulaUI = new CaratulaUI();	
-					} else {
-						caratulaUI = CaratulaUI.getInstance();
-					}
-				} else {
-					caratulaUI = CaratulaUI.getInstance();
+//				caratulaUI = getInstanciaCaratulaUI(caratulaSeleccionada, row);
+				if(!isMismaInstancia(caratulaSeleccionada, row)) {
+					CaratulaUI.deleteInstance();
 				}
 
-				if (row != 0) {					
+				if (row != 0) {				
 					//#LF
 					// Seteo la nueva caratula seleccionada (La anterior ya no existe referencia).
 					setCaratulaSeleccionada(cuentaDto.getCaratulas().get(row - 1));
@@ -278,24 +265,22 @@ public class CuentaCaratulaForm extends Composite{
 						//if(!caratulaAEditar.isConfirmada()){
 						if(!caratulaSeleccionada.isConfirmada()){
 							
-//							CaratulaUI.getInstance().setAceptarCommand(new Command() {
-							caratulaUI.setAceptarCommand(new Command() {
+							CaratulaUI.getInstance().setAceptarCommand(new Command() {
 								public void execute() {
 //									int index = cuentaDto.getCaratulas().indexOf(caratulaAEditar);
 									int index = cuentaDto.getCaratulas().indexOf(caratulaSeleccionada);
 									cuentaDto.getCaratulas().remove(index);
-//									cuentaDto.getCaratulas().add(index, CaratulaUI.getInstance().getCaraturaAEditar());
-									cuentaDto.getCaratulas().add(index, caratulaUI.getCaraturaAEditar());
+									cuentaDto.getCaratulas().add(index, CaratulaUI.getInstance().getCaraturaAEditar());
 									refrescaTablaCaratula();
 									huboCambios = true;
 								}
 							});
 //							CaratulaUI.getInstance().cargarPopupEditarCaratula(caratulaAEditar, row);
-							caratulaUI.cargarPopupEditarCaratula(caratulaSeleccionada, row);
+							CaratulaUI.getInstance().cargarPopupEditarCaratula(caratulaSeleccionada, row);
 						
 						}else{
 //							CaratulaUI.getInstance().cargarPopupCaratulaConfirmada(caratulaAEditar);
-							caratulaUI.cargarPopupCaratulaConfirmada(caratulaSeleccionada);
+							CaratulaUI.getInstance().cargarPopupCaratulaConfirmada(caratulaSeleccionada);
 						}
 					}
 					//Toco el confirmar
@@ -321,13 +306,13 @@ public class CuentaCaratulaForm extends Composite{
 								//Luego de que esto suceda sigue ejecutandose codigo en el else..
 								DeferredCommand.addCommand(new IncrementalCommand() {
 									public boolean execute() {
-										if (!caratulaUI.getCaratulaUIData().isCombosCargados()){
+										if (!CaratulaUI.getInstance().getCaratulaUIData().isCombosCargados()){
 											return true;
 										} else {
 											//#LF
 											//List<String> errores = caratulaUI.validarCaratulaAConfirmar(caratulaAEditar, nroFila);
 											//Valida que esten cargados todos los datos antes de confirmar la caratula
-											List<String> errores = caratulaUI.validarCaratulaAConfirmar(caratulaSeleccionada, nroFila);
+											List<String> errores = CaratulaUI.getInstance().validarCaratulaAConfirmar(caratulaSeleccionada, nroFila);
 											if(errores == null || errores.isEmpty()){
 												//#LF
 												//String nroSolicitud = caratulaAEditar.getNroSS();
@@ -386,6 +371,32 @@ public class CuentaCaratulaForm extends Composite{
 		});
 	}
 	
+	/**
+	 * Este método retorna una buleano que indica si se debe hacer una nueva instancia de CaratulaUI. 
+	 * Compara la caratula seleccionada anteriormente con la reciente.
+	 * Si los documentos o el estado de la consulta al veraz son distintos retorna true, porque hay campos 
+	 * que son requeridos dependiendo el tipo de documento, y en el caso del veraz hace lo mismo porque pueden ser distintos
+	 * estados. De lo contrario retorna false.
+	 * @author fernaluc
+	 * @param caratulaAnterior
+	 * @param row
+	 * @return boolean
+	 */
+	public boolean isMismaInstancia(CaratulaDto caratulaAnterior, int row){
+		CaratulaDto caratulaActual = cuentaDto.getCaratulas().get(row - 1);
+		if(caratulaAnterior != null){
+			if(caratulaAnterior.isDocumentoCredito() != caratulaActual.isDocumentoCredito() ||
+				caratulaAnterior.getEstadoVeraz() != caratulaActual.getEstadoVeraz()) {
+					return false;
+			} else {
+				return true;
+			}			
+		} 
+		
+		return true;
+	}
+	
+	
 	public boolean formularioCaratulaDirty() {
 		return this.huboCambios;
 	}
@@ -411,7 +422,6 @@ public class CuentaCaratulaForm extends Composite{
 	 */
 	public CaratulaDto getCaratulaSeleccionada(){
 		return caratulaSeleccionada;
-//		cuentaDto.getCaratulas().get(this.getNroFila() - 1);
 	}
 
 	public void setCaratulaSeleccionada(CaratulaDto caratulaSeleccionada) {

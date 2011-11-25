@@ -16,6 +16,7 @@ import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
+import ar.com.nextel.sfa.client.dto.ScoreVerazDto;
 import ar.com.nextel.sfa.client.dto.ServicioContratoDto;
 import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
@@ -83,4 +84,6 @@ public interface CuentaRpcService extends RemoteService {
 	public boolean validarExistenciaTriptico(String nro) throws RpcExceptionMessages;
 	public List<DocDigitalizadosDto> getDocDigitalizados(String customerCode) throws RpcExceptionMessages;
 	public Boolean isDomicilioValidadoPorEECC(String nro_ss) throws RpcExceptionMessages;
+	// #LF
+	public ScoreVerazDto autocompletarValoresVeraz(String score, int cantEquipos) throws RpcExceptionMessages;
 }

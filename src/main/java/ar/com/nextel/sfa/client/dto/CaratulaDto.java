@@ -57,6 +57,9 @@ public class CaratulaDto implements IsSerializable, IdentifiableDto, Cloneable, 
 	
 	private String numeroIMEI;
 	
+	//#LF 
+	private String estadoVeraz;
+	
 	public CaratulaDto(){
 	}
 
@@ -442,6 +445,14 @@ public class CaratulaDto implements IsSerializable, IdentifiableDto, Cloneable, 
 
 	public void setNumeroIMEI(String numeroIMEI) {
 		this.numeroIMEI = numeroIMEI;
+	}
+	
+	public String getEstadoVeraz() {
+		return estadoVeraz;
+	}
+
+	public void setEstadoVeraz(String estadoVeraz) {
+		this.estadoVeraz = estadoVeraz;
 	}
 
 	public int compareTo(Object o) {

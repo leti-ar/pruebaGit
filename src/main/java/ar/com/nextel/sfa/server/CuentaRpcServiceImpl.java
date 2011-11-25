@@ -57,6 +57,7 @@ import ar.com.nextel.model.cuentas.beans.FormaPago;
 import ar.com.nextel.model.cuentas.beans.GranCuenta;
 import ar.com.nextel.model.cuentas.beans.Proveedor;
 import ar.com.nextel.model.cuentas.beans.RiskCode;
+import ar.com.nextel.model.cuentas.beans.ScoreVeraz;
 import ar.com.nextel.model.cuentas.beans.Suscriptor;
 import ar.com.nextel.model.cuentas.beans.TipoCanalVentas;
 import ar.com.nextel.model.cuentas.beans.TipoContribuyente;
@@ -121,6 +122,7 @@ import ar.com.nextel.sfa.client.dto.ProvinciaDto;
 import ar.com.nextel.sfa.client.dto.ReservaDto;
 import ar.com.nextel.sfa.client.dto.RiskCodeDto;
 import ar.com.nextel.sfa.client.dto.RubroDto;
+import ar.com.nextel.sfa.client.dto.ScoreVerazDto;
 import ar.com.nextel.sfa.client.dto.ServicioContratoDto;
 import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.SuscriptorDto;
@@ -180,6 +182,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	private VantiveSystem vantiveSystem;
 	//#LF
 	private static final String QUERY_VALID_EECC = "VALID_EECC";
+	private static final String QUERY_AUTOCOMP_VERAZ = "QUERY_AUTOCOMP_VERAZ";
 
 	@Override
 	public void init() throws ServletException {
@@ -971,4 +974,33 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		}
 	  
 	}
+	
+	/**
+	 * Autocompleta los valores que requiere el veraz (limCredito, Clasificacion, RiskCode).
+	 * @author fernaluc
+	 * @return ScoreVerazDto
+	 */
+	public ScoreVerazDto autocompletarValoresVeraz(String score, int cantEquipos) throws RpcExceptionMessages{
+		List<ScoreVeraz> result = null;
+		try {
+			Object[] valores = {score,cantEquipos};		
+			AppLogger.info("Obteniendo los valores para autocompletar la consulta al veraz con el score: " + score + " y la cantidad de equipos: " + cantEquipos);
+			result = repository.executeCustomQuery(QUERY_AUTOCOMP_VERAZ, valores);
+		}catch (Exception e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+		
+		if(result != null && !result.isEmpty()){
+			List<ScoreVerazDto> listVeraz = mapper.convertList(result, ScoreVerazDto.class);
+			ScoreVerazDto scoreVeraz = new ScoreVerazDto();
+			scoreVeraz.setLimCredito(listVeraz.get(0).getLimCredito());
+			scoreVeraz.setClasificacion(listVeraz.get(0).getClasificacion());
+			scoreVeraz.setRiskCode(listVeraz.get(0).getRiskCode());	
+			return scoreVeraz;
+		} else {
+			return null;
+		}
+	}
+	
 }

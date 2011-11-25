@@ -603,6 +603,18 @@ A {
 	width: 90px;
 }
 
+.verazRechazarLabel {
+	color: #FE003E;
+}
+
+.verazRevisarLabel {
+	color: #FFC000;
+}
+
+.verazAceptarLabel {
+	color: #189D21;
+}
+
 .gwt-ItemSolicitudDialog .topBar {
 	border-bottom: 1px #CCC solid;
 	padding: 5px;

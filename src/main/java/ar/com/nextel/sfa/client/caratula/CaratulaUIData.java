@@ -1,7 +1,9 @@
 package ar.com.nextel.sfa.client.caratula;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
@@ -41,6 +43,7 @@ import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -109,6 +112,7 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 	private TextBox imei;
 	//#LF
 	private boolean isCombosCargados;
+	private Label estadoVeraz = new Label("");
 	
 	private CaratulaDto caratula = null;
 
@@ -488,7 +492,8 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 			findImei.setValue(caratulaDto.isFindIMEI());
 			comentAnalista.setText(caratulaDto.getComentarioAnalista());
 			scoring.setText(caratulaDto.getScoring());
-			
+			//LF
+			CaratulaUI.getInstance().setEstadoVeraz(caratulaDto.getEstadoVeraz());
 	//		mostrarOcultarCampos();
 		}
 	}
@@ -581,6 +586,9 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		caratula.setNumeroIMEI(imei.getText());
 		caratula.setFindIMEI(findImei.getValue());
 		caratula.setComentarioAnalista(comentAnalista.getText());
+		
+		//LF
+		caratula.setEstadoVeraz(estadoVeraz.getText());
 
 		return caratula;
 	}
@@ -644,6 +652,42 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		return validator.fillResult().getErrors();
 	}
 	
+	/**
+	 * Este metodo se utiliza para recorrer los elementos del riskCode y compararlo 
+	 * con el valor pasado por parametro, si es igual devuelve el id para luego seleccionarlo.
+	 * @param valor
+	 * @return Long, id del item
+	 */
+	public Long getKeyRiskCode(String valor) {
+		Iterator it = riskCode.getItems().entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry entry = (Map.Entry)it.next();
+			RiskCodeDto listBox = (RiskCodeDto)entry.getValue();
+			if(listBox.getDescripcion().equals(valor)) {
+				return listBox.getId();
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Este metodo se utiliza para recorrer los elementos de calificacion y compararlo 
+	 * con el valor pasado por parametro, si es igual devuelve el id para luego seleccionarlo.
+	 * @param valor
+	 * @return Long, id del item
+	 */
+	public Long getKeyCalificacion(String valor) {
+		Iterator it = calificacion.getItems().entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry entry = (Map.Entry)it.next();
+			CalificacionDto listBox = (CalificacionDto)entry.getValue();
+			if(listBox.getDescripcion().equals(valor)) {
+				return listBox.getId();
+			}
+		}
+		return null;
+	}
+		
 	private boolean isComplete(Object obj){
 		
 	    if (obj == null) {
@@ -1116,6 +1160,14 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 
 	public void setCombosCargados(boolean isCombosCargados) {
 		this.isCombosCargados = isCombosCargados;
+	}
+
+	public Label getEstadoVeraz() {
+		return estadoVeraz;
+	}
+
+	public void setEstadoVeraz(String estado) {
+		this.estadoVeraz = new Label(estado);
 	}
 	
 	

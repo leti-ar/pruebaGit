@@ -50,10 +50,10 @@ import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.personas.beans.Localidad;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
+import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
-import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.PlanBase;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
@@ -72,12 +72,12 @@ import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
-import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
+import ar.com.nextel.sfa.client.dto.ItemSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
@@ -133,6 +133,11 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	
 	//MGR - #1481
 	private DefaultRetriever messageRetriever;;
+	
+	//LF 
+	private static final String QUERY_OBTENER_SS = "QUERY_OBTENER_SS";
+	private static final String QUERY_OBTENER_ITEMS = "QUERY_OBTENER_ITEMS";
+
 	
 	
 	
@@ -892,6 +897,44 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return errores;
 	}
 
+	//LF
+	/**
+	 * Realiza una consulta a la tabla SFA_SS_CABECERA con los datos pasados por parametros y retorna una 
+	 * lista de Solicitudes de servicio que posee. 
+	 * @param cuenta El id de la cuenta
+	 * @param numeroSS El numero de la solicitud de servicio 
+	 * @return Lista de SolicitudServicioDto
+	 */
+	public List<SolicitudServicioDto> getSSPorIdCuentaYNumeroSS(Integer cuenta, String numeroSS) {
+		List<SolicitudServicio> listSolicitudServicio = repository.executeCustomQuery(QUERY_OBTENER_SS,cuenta,numeroSS);
+		return mapper.convertList(listSolicitudServicio, SolicitudServicioDto.class);		
+	}
+	
+	//LF
+	/**
+	 * Carga en una lista de ItemSolicitudDto, cada item que corresponde a cada linea 
+	 * de la SolicitudServicioDto pasado por parametro.
+	 * Realiza una query para obtener el item de cada linea de SS.
+	 * 
+	 * @param SolicitudServicioDto 
+	 * @return Lista de ItemSolicitudDto
+	 */
+	public List<ItemSolicitudDto> getItemsPorLineaSS(SolicitudServicioDto ss){
+		List<ItemSolicitudDto> items = new ArrayList<ItemSolicitudDto>();
+		
+		for (Iterator itLineas = ss.getLineas().iterator(); itLineas.hasNext();) {
+			LineaSolicitudServicioDto lineaSS = (LineaSolicitudServicioDto) itLineas.next();
+			List<Item> item = repository.executeCustomQuery(QUERY_OBTENER_ITEMS,lineaSS.getItem().getId());
+			if(!item.isEmpty()) {
+				ItemSolicitudDto itemDto = mapper.map(item.get(0), ItemSolicitudDto.class);
+				items.add(itemDto);
+			}
+		}			
+		
+		return items;
+		
+	}
+	
 	public void loginServer(String linea) {
 		AppLogger.info(linea);
 	}

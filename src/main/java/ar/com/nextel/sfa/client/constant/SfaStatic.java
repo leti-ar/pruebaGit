@@ -3083,4 +3083,13 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Confirmada")
   @Key("confirmada")
   String confirmada();
+  
+  /**
+   * Translated "Hay mas de una solicitud de servicio con el número de solicitud de servicio ingresado".
+   * 
+   * @return translated "Hay mas de una solicitud de servicio con el número de solicitud de servicio ingresado"
+   */
+  @DefaultStringValue("Existen mas de una solicitud de servicio con el N°SS ingresado")
+  @Key("MAS_DE_UNA_SS")
+  String MAS_DE_UNA_SS();
 }

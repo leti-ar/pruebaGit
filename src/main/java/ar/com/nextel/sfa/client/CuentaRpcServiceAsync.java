@@ -16,6 +16,7 @@ import ar.com.nextel.sfa.client.dto.NormalizarDomicilioResultDto;
 import ar.com.nextel.sfa.client.dto.OportunidadNegocioDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProvinciaDto;
+import ar.com.nextel.sfa.client.dto.ScoreVerazDto;
 import ar.com.nextel.sfa.client.dto.ServicioContratoDto;
 import ar.com.nextel.sfa.client.dto.TarjetaCreditoValidatorResultDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
@@ -67,4 +68,6 @@ public interface CuentaRpcServiceAsync {
 	public void validarExistenciaTriptico(String nro, AsyncCallback<Boolean> callback);
 	public void getDocDigitalizados(String customerCode, AsyncCallback<List<DocDigitalizadosDto>> callback);
 	public void isDomicilioValidadoPorEECC(String nro_ss, AsyncCallback<Boolean> callback);
+	//LF
+	public void autocompletarValoresVeraz(String score, int cantEquipos, AsyncCallback<ScoreVerazDto> callback);
 }
