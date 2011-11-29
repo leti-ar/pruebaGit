@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.cuenta;
 
+import java.util.Iterator;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
@@ -52,6 +53,7 @@ public class CuentaCaratulaForm extends Composite{
 	private CaratulaDto caratulaSeleccionada = null;
 	
 	private Command cancelarCommand;
+	public boolean caratulaNueva;
 	
 //	private CaratulaUI caratulaUI;
 	
@@ -70,6 +72,9 @@ public class CuentaCaratulaForm extends Composite{
 		crearCaratula = new Button("Crear nueva");
 		crearCaratula.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
+				setCaratulaNueva(true);
+				if(isNuevaInstanciaCrearNueva())
+					CaratulaUI.deleteInstance();
 				CaratulaUI.getInstance().setAceptarCommand(new Command() {
 					
 					public void execute() {
@@ -90,7 +95,7 @@ public class CuentaCaratulaForm extends Composite{
 									nroCaratula = cuentaDto.getCaratulas().size();
 								}
 								CaratulaUI.getInstance().cargarPopupNuevaCaratula(result, ++nroCaratula);
-								
+								setCaratulaSeleccionada(result);
 							}
 				});
 			}
@@ -240,6 +245,7 @@ public class CuentaCaratulaForm extends Composite{
 	private void agregaTableListeners() {
 		datosTabla.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent clickEvent) {
+				setCaratulaNueva(false);
 				Cell cell = ((HTMLTable) clickEvent.getSource()).getCellForEvent(clickEvent);
 				if (cell == null) {
 					return;
@@ -393,7 +399,32 @@ public class CuentaCaratulaForm extends Composite{
 			}			
 		} 
 		
-		return true;
+		return false;
+	}
+	
+	/**
+	 * Este metodo se utiliza cuando se quiere crear una nueva caratula.
+	 * Recorre las caratula existentes, si existe sólo una quiere decir que la caratula es credito y retorna true
+	 * indicando que CaratulaUI debe ser una nueva instancia, si ya existe una caratula con el documento Anexo retorna
+	 * false.
+	 * @return boolean
+	 * @author fernaluc
+	 */
+	public boolean isNuevaInstanciaCrearNueva(){
+		if(caratulaSeleccionada != null) {
+			return !caratulaSeleccionada.getDocumento().equals("Anexo");
+		}
+		boolean nuevaInstancia = false;
+		if(cuentaDto.getCaratulas().size() != 0) {
+			nuevaInstancia = true;
+			for (Iterator iterator = cuentaDto.getCaratulas().iterator(); iterator.hasNext();) {
+				CaratulaDto car = (CaratulaDto) iterator.next();
+				if(car.getDocumento().equals("Anexo")){
+					nuevaInstancia = false;
+				}
+			}
+		}		
+		return nuevaInstancia;
 	}
 	
 	
@@ -440,6 +471,16 @@ public class CuentaCaratulaForm extends Composite{
 			return null;
 		}
 	}
+
+	public boolean isCaratulaNueva() {
+		return caratulaNueva;
+	}
+
+	public void setCaratulaNueva(boolean caratulaNueva) {
+		this.caratulaNueva = caratulaNueva;
+	}
+	
+	
 	
 	
 }

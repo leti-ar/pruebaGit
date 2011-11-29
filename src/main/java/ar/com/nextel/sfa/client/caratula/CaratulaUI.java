@@ -622,11 +622,19 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 	 * @author fernaluc
 	 */
 	public boolean isDocumentoCreditoCaratulaActual(){
-		CaratulaDto caratulaDto = CuentaCaratulaForm.getInstance().getCaratulaActual();
-		if(caratulaDto != null) {
-			return caratulaDto.getDocumento().equals("Credito");
+		if(CuentaCaratulaForm.getInstance().isCaratulaNueva()) {
+		  if(CuentaCaratulaForm.getInstance().getCaratulas().size() >= 1) {
+				return false;
+			} else {
+				return true;
+			}
 		} else {
-			return CuentaCaratulaForm.getInstance().getCaratulas().isEmpty();
+			CaratulaDto caratulaDto = CuentaCaratulaForm.getInstance().getCaratulaActual();
+			if(caratulaDto != null) {
+				return !caratulaDto.getDocumento().equals("Anexo");
+			} else {
+				return CuentaCaratulaForm.getInstance().getCaratulas().isEmpty();
+			}
 		}
 	}
 }

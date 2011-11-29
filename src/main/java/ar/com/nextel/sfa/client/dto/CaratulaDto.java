@@ -476,6 +476,6 @@ public class CaratulaDto implements IsSerializable, IdentifiableDto, Cloneable, 
 	 * @author fernaluc
 	 */
 	public boolean isDocumentoCredito(){
-		return documento.equals("Credito")?true:false;
+		return !documento.equals("Anexo")?true:false;
 	}
 }
