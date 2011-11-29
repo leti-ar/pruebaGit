@@ -426,6 +426,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 								new Command() {
 							public void execute() {
 								removeDetalleLineaSSRow(row);
+								asignarNroSSPortabilidad();
 							};
 						}, ModalMessageDialog.getCloseCommand());
 					} else if (col == 3) {
@@ -466,6 +467,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 								new Command() {
 									public void execute() {
 										removeDetalleLineaSSRow(row);
+										asignarNroSSPortabilidad();
 									};
 								}, ModalMessageDialog.getCloseCommand());
 					}
@@ -499,7 +501,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 					notEmpty(portabilidad.getNombre()) && notEmpty(portabilidad.getApellido())){
 
 				PortabilidadReplicarDialog replicarDialog = new PortabilidadReplicarDialog();
-				replicarDialog.show(editarSSUIData.getLineasSolicitudServicio(),row - 1);
+				replicarDialog.show(editarSSUIData.getSolicitudServicio(),row - 1);
 			}else{
 				ModalMessageDialog.getInstance().showAceptar(
 						"Para portar los datos de Portabilidad deben estar completos Tipo y Numero de Documento, Razon Social, Nombre y Apellido", 

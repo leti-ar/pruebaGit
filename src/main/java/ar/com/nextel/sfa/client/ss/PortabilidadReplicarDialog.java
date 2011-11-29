@@ -1,17 +1,17 @@
 package ar.com.nextel.sfa.client.ss;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
+import ar.com.nextel.sfa.client.util.PortabilidadUtil;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -38,6 +38,8 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 	private String strApellido;
 	private TipoDocumentoDto tipoDocumento;
 	private String strNroDocumento;
+	private SolicitudServicioDto solicitudServicio;
+	private PortabilidadUtil portabilidadUtil;
 	
 	public PortabilidadReplicarDialog(){
 		super(TITULO,false,true);
@@ -45,8 +47,10 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 		
 }
 	
-	public void show(List<LineaSolicitudServicioDto> unasLineas,int indexLinea) {
-		lineas = unasLineas;
+	public void show(SolicitudServicioDto unaSolicitudServicio,int indexLinea) {
+		solicitudServicio = unaSolicitudServicio;
+		lineas = solicitudServicio.getLineas();
+		
 		boolean existenPortabilidades = false;
 		
 		for (LineaSolicitudServicioDto linea : lineas) {
@@ -117,6 +121,7 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 										linea.getPortabilidad().setNumeroDocumento(strNroDocumento);
 									}
 								}
+								asignarNroSSPortabilidad();
 							}
 						}
 						hide();
@@ -156,5 +161,13 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 					"No existen otras Solicitudes de Portabilidad para replicar los datos", ModalMessageDialog.getCloseCommand());
 		}
 	}
-	
+
+	/**
+	 * Portabilidad
+	 */
+	private void asignarNroSSPortabilidad(){
+		if(portabilidadUtil == null) portabilidadUtil = new PortabilidadUtil();
+		portabilidadUtil.generarNroSS(solicitudServicio);
+	}
+
 }

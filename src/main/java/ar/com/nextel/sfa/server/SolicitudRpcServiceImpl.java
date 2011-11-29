@@ -1054,6 +1054,18 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					x_nroSS.add(new ArrayList<Integer>());
 					x_nroSS.get(x_nroSS.size() - 1).add(i);
 				}
+				
+				// Verifica que no se repita el telefono a portar en la misma solicitud de servicio
+				telefono = lineas.get(i).getPortabilidad().getAreaTelefono() + lineas.get(i).getPortabilidad().getTelefonoPortar();
+				for(int n = 0; n < lineas.size(); n++){
+					if(n != i){
+						if(lineas.get(i).getPortabilidad() != null){
+							telefonoAUX = lineas.get(n).getPortabilidad().getAreaTelefono() + lineas.get(n).getPortabilidad().getTelefonoPortar();
+							// Los telefonos a portar no pueden ser iguales entre lineas
+							if(telefono.equals(telefonoAUX)) result.addError(ERROR_ENUM.ERROR,MSG_ERR_01.replaceAll("_NUMERO_", telefono));
+						}
+					}
+				}
 			}
 		}
 
@@ -1084,12 +1096,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 						if(j != n){ // Solo compara si las lineas son de diferentes indice en la lista (no son la misma)
 							if(solicitudServicioDto.getLineas().get(x_nroSS.get(i).get(n)).getPortabilidad() != null){
 								portabilidadAUX = solicitudServicioDto.getLineas().get(x_nroSS.get(i).get(n)).getPortabilidad();
-								telefonoAUX = portabilidadAUX.getAreaTelefono() + portabilidadAUX.getTelefonoPortar();
 								apoderadoAUX = portabilidadAUX.getRazonSocial() + portabilidadAUX.getNombre() + portabilidadAUX.getApellido() + 
 												portabilidadAUX.getNumeroDocumento() + portabilidadAUX.getTipoDocumento().getId();
-								
-								// Los telefonos a portar no pueden ser iguales entre lineas
-								if(telefono.equals(telefonoAUX)) result.addError(ERROR_ENUM.ERROR,MSG_ERR_01.replaceAll("_NUMERO_", telefono));
 								
 								// Los numeros de solicitud de portabilidad no deben repetirse
 								if(portabilidad.getNroSS().equals(portabilidadAUX.getNroSS())){
@@ -1120,7 +1128,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				if(contLineasPrepagas > 6){
 					// No pueden haber mas de 6 lineas del tipo prepaga con portabilidad si es consumidor final. 
 					// Al analista de Creditos le muestra un mensaje y guarda
-					if(sessionContextLoader.getVendedor().getTipoVendedor().getId() == 21) result.addError(ERROR_ENUM.WARNING,MSG_ERR_04);// Tipo vendedor analista creditos = 21
+					Long idTipoVendADM = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_CREDITOS);
+					if(sessionContextLoader.getVendedor().getTipoVendedor().getId() == idTipoVendADM) result.addError(ERROR_ENUM.WARNING,MSG_ERR_04);// Tipo vendedor analista creditos = 21
 					else result.addError(ERROR_ENUM.ERROR,MSG_ERR_04);
 				}
 			}
@@ -1135,19 +1144,20 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				try{
 					String codVantive = cuenta.getCodigoVantive();
 					
-					permiteVantive = vantiveSystem.getPermitePortabilidad(codVantive);
+					//permiteVantive = vantiveSystem.getPermitePortabilidad(codVantive);
 					permiteBPS = bpsSystem.resolverValidacionesPendientes(codVantive);
 				}catch(Exception e){
 					throw ExceptionUtil.wrap(e);
 				}
-				if(!permiteVantive || !permiteBPS){
+				if(/*!permiteVantive ||*/ !permiteBPS){
 					// Al analista de Creditos le muestra un mensaje y guarda
-					if(sessionContextLoader.getVendedor().getTipoVendedor().getId() == 21) result.addError(ERROR_ENUM.WARNING,MSG_ERR_09);// Tipo vendedor analista creditos = 21
+					Long idTipoVendADM = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_CREDITOS);
+					if(sessionContextLoader.getVendedor().getTipoVendedor().getId() == idTipoVendADM) result.addError(ERROR_ENUM.WARNING,MSG_ERR_09);// Tipo vendedor analista creditos = 21
 					else result.addError(ERROR_ENUM.ERROR,MSG_ERR_09);
 				}
 			}
 		}	
-		
+		result.generar();
 		// Puede guardar
 		return result.generar();
 	}

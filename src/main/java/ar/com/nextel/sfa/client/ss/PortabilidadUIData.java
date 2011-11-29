@@ -53,7 +53,7 @@ public class PortabilidadUIData extends Composite {
 	@UiField(provided = true) HTML lnkCopiarCuenta = IconFactory.copiar();
 	
 	@UiField TelefonoTextBox txtTelefono;
-	@UiField TelefonoTextBox txtTelefonoPortar;
+	@UiField(provided = true) TelefonoTextBox txtTelefonoPortar = new TelefonoTextBox(false);
 	
 	@UiField Label lblNroSS;
 	@UiField Label lblNroUltimaFacura;
@@ -116,8 +116,6 @@ public class PortabilidadUIData extends Composite {
 		lblNroDocumento.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 
 		chkRecibeSMS.addStyleName("portabilidadCheck");
-		txtTelefonoPortar.getInterno().setEnabled(false);
-		txtTelefonoPortar.getInterno().removeFromParent();
 		lnkCopiarCuenta.addStyleName("floatRight");
 		
 		comprobarTipoTelefonia();
