@@ -9,9 +9,9 @@ import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
-import ar.com.nextel.sfa.client.dto.ItemSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
@@ -65,6 +65,9 @@ public interface SolicitudRpcService extends RemoteService {
 	public CreateSaveSolicitudServicioResultDto createSolicitudServicio(
 			SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages;
 
+	public CreateSaveSolicitudServicioResultDto copySolicitudServicio(
+			SolicitudServicioRequestDto solicitudServicioRequestDto , SolicitudServicioDto solicitudToCopy) throws RpcExceptionMessages;
+	
 	public SolicitudInitializer getSolicitudInitializer() throws RpcExceptionMessages;
 
 	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un SaveSolicitudServicioResultDto 
@@ -146,25 +149,8 @@ public interface SolicitudRpcService extends RemoteService {
 	 * @return Lista con los errores posibles.
 	 */
 	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa, boolean isSaving);
-	
-	//LF
-	/**
-	 * Realiza una consulta a la tabla SFA_SS_CABECERA con los datos pasados por parametros y retorna una 
-	 * lista de Solicitudes de servicio que posee. 
-	 * @param cuenta El id de la cuenta
-	 * @param numeroSS El numero de la solicitud de servicio 
-	 * @return Lista de SolicitudServicioDto
-	 */
-	public List<SolicitudServicioDto> getSSPorIdCuentaYNumeroSS(Integer cuenta, String numeroSS);
-	
-	//LF
-	/**
-	 * Carga en una lista de ItemSolicitudDto, cada item que corresponde a cada linea 
-	 * de la SolicitudServicioDto pasado por parametro.
-	 * Realiza una query para obtener el item de cada linea de SS.
-	 * 
-	 * @param SolicitudServicioDto 
-	 * @return Lista de ItemSolicitudDto
-	 */
-	public List<ItemSolicitudDto> getItemsPorLineaSS(SolicitudServicioDto ss);
+
+	public CreateSaveSSTransfResultDto createCopySolicitudServicioTranferencia(
+			SolicitudServicioRequestDto solicitudServicioRequestDto,
+			SolicitudServicioDto solicitudSS) throws RpcExceptionMessages;
 }

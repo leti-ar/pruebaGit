@@ -9,9 +9,9 @@ import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
-import ar.com.nextel.sfa.client.dto.ItemSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
@@ -132,7 +132,12 @@ public interface SolicitudRpcServiceAsync {
 	
 	public void loginServer(String linea, AsyncCallback<Void> callback);
 
-	public void getSSPorIdCuentaYNumeroSS(Integer cuenta, String numeroSS, AsyncCallback<List<SolicitudServicioDto>> defaultWaitCallback);
+	public void copySolicitudServicio(
+			SolicitudServicioRequestDto solicitudServicioRequestDto , SolicitudServicioDto solicitudToCopy,
+			AsyncCallback<CreateSaveSolicitudServicioResultDto> callback);
 
-	public void getItemsPorLineaSS(SolicitudServicioDto ss,	AsyncCallback<List<ItemSolicitudDto>> callback);
+	public void createCopySolicitudServicioTranferencia(
+			SolicitudServicioRequestDto solicitudServicioRequestDto,
+			SolicitudServicioDto solicitudSS,
+			AsyncCallback<CreateSaveSSTransfResultDto> callback);
 }

@@ -9,9 +9,9 @@ import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
-import ar.com.nextel.sfa.client.dto.ItemSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
@@ -54,6 +54,13 @@ public class SolicitudRpcServiceDelegate {
 			DefaultWaitCallback<CreateSaveSolicitudServicioResultDto> callback) {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.createSolicitudServicio(solicitudServicioRequestDto, callback);
+
+	}
+	
+	public void copySolicitudServicio(SolicitudServicioRequestDto solicitudServicioRequestDto,SolicitudServicioDto solicitudToCopy,
+			DefaultWaitCallback<CreateSaveSolicitudServicioResultDto> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.copySolicitudServicio(solicitudServicioRequestDto , solicitudToCopy , callback);
 
 	}
 
@@ -255,15 +262,12 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.validarPlanesCedentes(ctoCedentes, isEmpresa, isSaving, callback);
 	}
-	
-	public void getSSPorIdCuentaYNumeroSS(Integer cuenta, String numeroSS,
-			AsyncCallback<List<SolicitudServicioDto>> defaultWaitCallback){
+
+	public void createCopySolicitudServicioTranferencia(SolicitudServicioRequestDto solicitudServicioRequestDto,
+			SolicitudServicioDto solicitudSS, DefaultWaitCallback<CreateSaveSSTransfResultDto> callback) {
 		WaitWindow.show();
-		solicitudRpcServiceAsync.getSSPorIdCuentaYNumeroSS(cuenta, numeroSS, defaultWaitCallback);		
-	}
-	
-	public void getItemsPorLineaSS(SolicitudServicioDto ss, AsyncCallback<List<ItemSolicitudDto>> defaultWaitCallback){
-		WaitWindow.show();
-		solicitudRpcServiceAsync.getItemsPorLineaSS(ss, defaultWaitCallback);		
+		solicitudRpcServiceAsync.createCopySolicitudServicioTranferencia(
+				solicitudServicioRequestDto, solicitudSS, callback);
+		
 	}
 }

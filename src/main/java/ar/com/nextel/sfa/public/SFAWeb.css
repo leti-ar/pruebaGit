@@ -603,18 +603,6 @@ A {
 	width: 90px;
 }
 
-.verazRechazarLabel {
-	color: #FE003E;
-}
-
-.verazRevisarLabel {
-	color: #FFC000;
-}
-
-.verazAceptarLabel {
-	color: #189D21;
-}
-
 .gwt-ItemSolicitudDialog .topBar {
 	border-bottom: 1px #CCC solid;
 	padding: 5px;
@@ -803,4 +791,26 @@ margin:8px;
 
 .gwt-DescuentoDialog td {
 	vertical-align: top;
+}
+
+.copiarSS {
+	background-image: url(images/btn-table-nuevo.gif);
+	width: 115px;
+	margin-top: 5px;
+	position: absolute;
+	right: 180;
+	background-repeat: no-repeat;
+	background-color: transparent;
+	height: 17px;
+	font-size: 11px;
+	font-style: italic;
+	font-weight: bold;
+	color: #333;
+	line-height: 15px;
+	float: right;
+	padding-left: 5px;
+	margin-right: 8px;
+	border: none 0px;
+	color: gray;
+	text-align: center;
 }

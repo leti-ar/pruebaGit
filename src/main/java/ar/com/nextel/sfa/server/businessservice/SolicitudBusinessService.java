@@ -192,6 +192,44 @@ public class SolicitudBusinessService {
 		return solicitud;
 	}
 
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public SolicitudServicio copySolicitudServicio(SolicitudServicioRequest solicitudServicioRequest,
+			DozerBeanMapper mapper) throws BusinessException, FinancialSystemException {
+
+		SolicitudServicioProviderResult providerResult = null;
+		providerResult = this.solicitudesBusinessOperator.provideEmptySolicitudServicio(solicitudServicioRequest);
+
+		SolicitudServicio solicitud = providerResult.getSolicitudServicio();
+
+		addCreditoFidelizacion(solicitud);
+
+		AccessAuthorization accessAuthorization = this.solicitudesBusinessOperator
+				.calculateAccessAuthorization(providerResult.getSolicitudServicio());
+
+		if (!accessAuthorization.hasSamePermissionsAs(AccessAuthorization.fullAccess())) {
+			accessAuthorization.setReasonPrefix(CUENTA_FILTRADA);
+			throw new BusinessException(null, accessAuthorization.getReason());
+		}
+
+		Vendedor vendedor = sessionContextLoader.getVendedor();
+
+		// if(no tiene permiso de edicion){
+		// solicitudServicio.getCuenta().terminarOperacion();
+		// }
+		checkServiciosAdicionales(solicitud);
+
+		solicitud.consultarCuentaPotencial();
+		if (providerResult.wasCreationNeeded()) {
+			if (!solicitud.getCuenta().isLockedByAnyone(vendedor) || solicitud.getCuenta().isUnlockedFor(vendedor)) {
+				solicitud.getCuenta().iniciarOperacion(vendedor);
+			}
+			repository.save(solicitud);
+		}
+
+		mapper.map(solicitud.getCuenta(), CuentaSSDto.class, "cuentaSolicitud");
+		return solicitud;
+	}
+	
 	/** Controla que los servicios adicionales que poseen las lineas de la solicitud aun sean validos */
 	private void checkServiciosAdicionales(SolicitudServicio solicitud) {
 		// Controlo la consistencia de los servicios adicionales existentes

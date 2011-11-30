@@ -50,10 +50,10 @@ import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.personas.beans.Localidad;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
-import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
+import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.PlanBase;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
@@ -72,12 +72,12 @@ import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
-import ar.com.nextel.sfa.client.dto.ItemSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
@@ -133,11 +133,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	
 	//MGR - #1481
 	private DefaultRetriever messageRetriever;;
-	
-	//LF 
-	private static final String QUERY_OBTENER_SS = "QUERY_OBTENER_SS";
-	private static final String QUERY_OBTENER_ITEMS = "QUERY_OBTENER_ITEMS";
-
 	
 	
 	
@@ -222,6 +217,68 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return resultDto;
 	}
 
+	public CreateSaveSolicitudServicioResultDto copySolicitudServicio(SolicitudServicioRequestDto solicitudServicioRequestDto , SolicitudServicioDto solicitudToCopy) 
+		throws RpcExceptionMessages {
+
+		CreateSaveSolicitudServicioResultDto resultDto = new CreateSaveSolicitudServicioResultDto();
+
+		SolicitudServicioRequest request = mapper.map(solicitudServicioRequestDto,
+				SolicitudServicioRequest.class);
+		AppLogger.info("Creando Solicitud de Servicio con Request -> " + request.toString());
+		SolicitudServicio solicitud = null;
+		try {
+			solicitud = solicitudBusinessService.copySolicitudServicio(request, mapper);
+		} catch (BusinessException e) {
+			throw new RpcExceptionMessages((String) e.getParameters().get(0));
+		} catch (Exception e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+		// Se pide la cuenta nuevamente para renovar el proxy de hibernate. Fix para cuentas que vienen de
+		// Vantive
+		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitud.getCuenta().getId());
+		solicitud.setCuenta(cuenta);
+		SolicitudServicioDto solicitudServicioDto = mapper.map(solicitud, SolicitudServicioDto.class);
+		
+		//MR - le agrego el triptico
+		if(solicitudServicioDto.getNumero() == null)
+			solicitudServicioDto.setTripticoNumber(tripticoNextValue.nextNumber());
+		
+		//calculo los descuentos aplicados a cada línea y se los seteo 
+		List<LineaSolicitudServicioDto> lineas = solicitudServicioDto.getLineas(); 
+		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
+			Double descuentoAplicado = 0.0;
+			Double precioConDescuento = 0.0;
+			LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
+			Long idLinea = linea.getId();
+			List descuentosAplicados = solicitudServicioRepository.getDescuentosAplicados(idLinea);
+			List<DescuentoLineaDto> descuentos = mapper.convertList(descuentosAplicados, DescuentoLineaDto.class);
+			for (Iterator<DescuentoLineaDto> it = descuentos.iterator(); it.hasNext();) {
+				DescuentoLineaDto descuentoLineaDto = (DescuentoLineaDto) it.next();
+				descuentoAplicado += descuentoLineaDto.getMonto();
+			}
+			precioConDescuento = linea.getPrecioLista() - descuentoAplicado;
+			linea.setPrecioConDescuento(precioConDescuento);
+		}
+
+		//MGR - ISDN 1824 - Predicados al crear una ss
+		MessageList messages = solicitudBusinessService.validarCreateSS(solicitud).getMessages();
+		resultDto.setError(messages.hasErrors());
+		resultDto.setMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
+		
+		AppLogger.info("Creacion de Solicitud de Servicio finalizada");
+		
+		solicitudToCopy.setId(solicitudServicioDto.getId());
+		solicitudToCopy.setNumero(null);
+		solicitudToCopy.setPataconex(0d);
+		solicitudToCopy.setFirmar(false);
+		solicitudToCopy.setAclaracionEntrega(null);
+		
+		resultDto.setSolicitud(solicitudToCopy);
+//		resultDto.setSolicitud(solicitudServicioDto);
+		return resultDto;
+	}
+	
 	public List<SolicitudServicioCerradaResultDto> searchSSCerrada(
 			SolicitudServicioCerradaDto solicitudServicioCerradaDto) throws RpcExceptionMessages {
 		AppLogger.info("Iniciando busqueda de SS cerradas...");
@@ -830,6 +887,39 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return resultDto;
 	}
 	
+	public CreateSaveSSTransfResultDto createCopySolicitudServicioTranferencia(
+			SolicitudServicioRequestDto solicitudServicioRequestDto , SolicitudServicioDto solicitudToCopy) throws RpcExceptionMessages {
+		CreateSaveSSTransfResultDto resultDto = new CreateSaveSSTransfResultDto();
+		
+		//MGR - ISDN 1824
+		CreateSaveSolicitudServicioResultDto resultSSAux = this.copySolicitudServicio(solicitudServicioRequestDto, solicitudToCopy);
+		SolicitudServicioDto solicitudDto = resultSSAux.getSolicitud();
+		resultDto.addMessages(resultSSAux.getMessages());
+		
+		resultDto.setSolicitud(solicitudDto);
+		SolicitudServicio solicitud = repository.retrieve(SolicitudServicio.class,
+				solicitudDto.getId());
+		//mapper.map(solicitudDto, solicitud);
+		MessageList messages = solicitudBusinessService.validarCreateSSTransf(solicitud).getMessages();
+		resultDto.setError(messages.hasErrors());
+		resultDto.addMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
+		
+		Vendedor vendLogeo = sessionContextLoader.getVendedor();
+		if(vendLogeo.isADMCreditos() || vendLogeo.isAP()){
+			
+			if(solicitud.getCuenta().getVendedorLockeo() != null &&
+				!vendLogeo.getId().equals(solicitud.getCuenta().getVendedorLockeo().getId())){
+				String nombSuper = "";
+				if(solicitud.getCuenta().getVendedorLockeo().getSupervisor() != null){
+					nombSuper = solicitud.getCuenta().getVendedorLockeo().getSupervisor().getNombreYApellido();
+				}
+				resultDto.addMessage("La cuenta está lockeada por un ejecutivo, el supervisor es " + 
+						nombSuper + ". Puede proseguir la carga de la SS");
+			}
+		}
+		return resultDto;
+	}
+	
 	public ContratoViewInitializer getContratoViewInitializer(
 			GrupoSolicitudDto grupoSolicitudDto) {
 
@@ -897,44 +987,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return errores;
 	}
 
-	//LF
-	/**
-	 * Realiza una consulta a la tabla SFA_SS_CABECERA con los datos pasados por parametros y retorna una 
-	 * lista de Solicitudes de servicio que posee. 
-	 * @param cuenta El id de la cuenta
-	 * @param numeroSS El numero de la solicitud de servicio 
-	 * @return Lista de SolicitudServicioDto
-	 */
-	public List<SolicitudServicioDto> getSSPorIdCuentaYNumeroSS(Integer cuenta, String numeroSS) {
-		List<SolicitudServicio> listSolicitudServicio = repository.executeCustomQuery(QUERY_OBTENER_SS,cuenta,numeroSS);
-		return mapper.convertList(listSolicitudServicio, SolicitudServicioDto.class);		
-	}
-	
-	//LF
-	/**
-	 * Carga en una lista de ItemSolicitudDto, cada item que corresponde a cada linea 
-	 * de la SolicitudServicioDto pasado por parametro.
-	 * Realiza una query para obtener el item de cada linea de SS.
-	 * 
-	 * @param SolicitudServicioDto 
-	 * @return Lista de ItemSolicitudDto
-	 */
-	public List<ItemSolicitudDto> getItemsPorLineaSS(SolicitudServicioDto ss){
-		List<ItemSolicitudDto> items = new ArrayList<ItemSolicitudDto>();
-		
-		for (Iterator itLineas = ss.getLineas().iterator(); itLineas.hasNext();) {
-			LineaSolicitudServicioDto lineaSS = (LineaSolicitudServicioDto) itLineas.next();
-			List<Item> item = repository.executeCustomQuery(QUERY_OBTENER_ITEMS,lineaSS.getItem().getId());
-			if(!item.isEmpty()) {
-				ItemSolicitudDto itemDto = mapper.map(item.get(0), ItemSolicitudDto.class);
-				items.add(itemDto);
-			}
-		}			
-		
-		return items;
-		
-	}
-	
 	public void loginServer(String linea) {
 		AppLogger.info(linea);
 	}

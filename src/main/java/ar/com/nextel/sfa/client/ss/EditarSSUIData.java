@@ -295,6 +295,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		saved = false;
 	}
 
+	public void copiarSS(){
+		
+		if(solicitudServicio != null){
+			EditarSSUI edicion = (EditarSSUI) this.controller;
+			SolicitudServicioDto ssDto = solicitudServicio;
+			edicion.loadCopiarSS(ssDto);
+		}
+	}
+	
 	public RegexTextBox getNss() {
 		return nss;
 	}

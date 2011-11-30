@@ -59,6 +59,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.IncrementalCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -102,6 +103,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private boolean cerrandoAux;
 	private CuentaEdicionTabPanel cuenta;
 	
+	private Button copiarSS;
+	
 	private String grupoSS;
 	private HashMap<String, Long> knownInstancias;
 	FlowPanel linksCrearSS;
@@ -123,7 +126,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		});
 	}
 
-	private boolean loadInfocom(String cuentaID, String codigoVantive) {
+	public boolean loadInfocom(String cuentaID, String codigoVantive) {
 		if (infocomUIData==null) {
 			infocomUIData = new InfocomUIData();
 			infocomUIData.setIdCuenta(cuentaID);
@@ -197,6 +200,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 									Command abrirSSCreada = new Command() {
 										public void execute() {
 											MessageDialog.getInstance().hide();
+											if(result.getSolicitud().getEnCarga()){
+												getCopiarSS().setVisible(false);
+											}
 											ssCreadaSuccess(result.getSolicitud());
 										}
 									};
@@ -243,6 +249,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 								public void execute() {
 									MessageDialog.getInstance().hide();
 									SolicitudServicioDto solicitud = result.getSolicitud();
+									if(solicitud.getEnCarga()){
+										getCopiarSS().setVisible(false);
+									}
 									loadInfocom(String.valueOf(solicitud.getCuenta().getId()), solicitud.getCuenta().getCodigoVantive());
 									ssCreadaSuccess(solicitud);
 								}
@@ -274,6 +283,162 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		
 	}
 	
+	
+	public boolean loadCopiarSS(SolicitudServicioDto solicitudSS) {
+
+		final SolicitudServicioDto solicitudSS2 = solicitudSS;
+		
+		String cuenta = HistoryUtils.getParam(ID_CUENTA);
+		cuenta = cuenta != null && !"".equals(cuenta) ? cuenta : null;
+		grupoSS = HistoryUtils.getParam(ID_GRUPO_SS);
+		String cuentaPotencial = HistoryUtils.getParam(ID_CUENTA_POTENCIAL);
+		String codigoVantive = HistoryUtils.getParam(CODIGO_VANTIVE);
+		mainPanel.setVisible(false);
+		
+		if (cuenta == null && cuentaPotencial == null && codigoVantive == null) {
+			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+			ErrorDialog.getInstance().show(Sfa.constant().ERR_URL_PARAMS_EMPTY(), false);
+		} else if (codigoVantive != null && codigoVantive.length() > 9 && codigoVantive.endsWith(".100000")) {
+			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+			ErrorDialog.getInstance().show(Sfa.constant().ERR_NO_ACCESO_CREAR_SS(), false);
+		} else {
+			SolicitudServicioRequestDto solicitudServicioRequestDto = new SolicitudServicioRequestDto();
+			solicitudServicioRequestDto.setIdCuenta(cuenta != null ? Long.parseLong(cuenta) : null);
+			solicitudServicioRequestDto.setIdCuentaPotencial(cuentaPotencial != null ? Long
+					.parseLong(cuentaPotencial) : null);
+			solicitudServicioRequestDto.setNumeroCuenta(codigoVantive);
+			
+			if (grupoSS != null) {
+				solicitudServicioRequestDto.setIdGrupoSolicitud(Long.parseLong(grupoSS));
+			} else {
+				//MGR - #1050
+				if(knownInstancias != null){
+					solicitudServicioRequestDto.setIdGrupoSolicitud(
+							knownInstancias.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS));
+				}
+				
+			}
+
+			if(knownInstancias != null && solicitudServicioRequestDto.getIdGrupoSolicitud().equals(
+					knownInstancias.get(GrupoSolicitudDto.ID_TRANSFERENCIA))){
+				SolicitudRpcService.Util.getInstance().createCopySolicitudServicioTranferencia(solicitudServicioRequestDto,solicitudSS2, 
+						new DefaultWaitCallback<CreateSaveSSTransfResultDto>() {
+							public void success(final CreateSaveSSTransfResultDto result) {
+								if(result.isError()){
+									ErrorDialog.getInstance().setDialogTitle("Aviso");
+									StringBuilder msgString = new StringBuilder();
+									for (MessageDto msg : result.getMessages()) {
+										msgString.append("<span class=\"error\">- " + msg.getDescription()
+												+ "</span><br>");
+									}
+									ErrorDialog.getInstance().show(msgString.toString(), false);
+								
+								}else{
+									Command abrirSSCreada = new Command() {
+										public void execute() {
+											MessageDialog.getInstance().hide();
+											ssCreadaSuccess(result.getSolicitud());
+										}
+									};
+									
+									if(!result.getMessages().isEmpty()){
+										StringBuilder msgString = new StringBuilder();
+										for (MessageDto msg : result.getMessages()) {
+											msgString.append("<span class=\"info\">- " + msg.getDescription()
+													+ "</span><br>");
+										}
+										MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), abrirSSCreada);
+									}else{
+										abrirSSCreada.execute();
+									}
+								}
+							}
+					
+							public void failure(Throwable caught) {
+								History.back();
+								super.failure(caught);
+							}
+						});
+			}else{
+				//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
+				//que permite realizar el manejo de mensajes
+				SolicitudRpcService.Util.getInstance().copySolicitudServicio(solicitudServicioRequestDto,solicitudSS2,
+						new DefaultWaitCallback<CreateSaveSolicitudServicioResultDto>() {
+
+					//MGR - ISDN 1824
+					@Override
+					public void success(final CreateSaveSolicitudServicioResultDto result) {
+						
+						if(result.isError()){
+							ErrorDialog.getInstance().setDialogTitle("Aviso");
+							StringBuilder msgString = new StringBuilder();
+							for (MessageDto msg : result.getMessages()) {
+								msgString.append("<span class=\"error\">- " + msg.getDescription()
+										+ "</span><br>");
+							}
+							ErrorDialog.getInstance().show(msgString.toString(), false);
+						
+						}else{
+							Command abrirSSCreada = new Command() {
+								public void execute() {
+									
+									MessageDialog.getInstance().hide();
+
+									SolicitudServicioDto solicitud = result.getSolicitud();
+									
+									LineaSolicitudServicioDto linea = null;
+									
+									List<LineaSolicitudServicioDto> lineas = solicitud.getLineas(); 
+ 									for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
+										
+										linea = (LineaSolicitudServicioDto) iterator.next();
+										double precioLista = linea.getPrecioLista();
+										double precioFinal = linea.getPrecioVenta();
+
+										if(linea.getPlan() != null){
+											if(linea.getPrecioListaPlan() != linea.getPrecioVentaPlan()){											
+												linea.setPrecioVentaPlan(linea.getPrecioListaPlan());
+											}
+										}else{											
+											if(precioLista != precioFinal){											
+												linea.setPrecioVenta(precioLista);
+											}
+										}
+									}
+									
+									solicitud.setLineas(lineas);	
+									
+									loadInfocom(String.valueOf(solicitud.getCuenta().getId()), solicitud.getCuenta().getCodigoVantive());
+									ssCreadaSuccess(solicitud);
+								}
+							};
+							
+							if(!result.getMessages().isEmpty()){
+								StringBuilder msgString = new StringBuilder();
+								for (MessageDto msg : result.getMessages()) {
+									msgString.append("<span class=\"info\">- " + msg.getDescription()
+											+ "</span><br>");
+								}
+								MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), abrirSSCreada);
+							}else{
+								abrirSSCreada.execute();
+							}
+						}
+					}
+
+					public void failure(Throwable caught) {
+						History.back();
+						super.failure(caught);
+					}
+				});
+			
+			}
+				editarSSUIData.clean();
+				varios.cleanScoring();
+			}
+			return true;	
+	}
+
 	private void ssCreadaSuccess(SolicitudServicioDto solicitud){
 		editarSSUIData.setSaved(true);
 		// varios.setScoringVisible(!solicitud.getGrupoSolicitud().isCDW());
@@ -318,7 +483,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		mainPanel.setVisible(true);
 	}
 	
-
 	public void firstLoad() {
 		razonSocialClienteBar = new RazonSocialClienteBar();
 		
@@ -329,7 +493,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		}
 		
 		razonSocialClienteBar.setEnabledSilvioSoldan();
-
+		
+		copiarSS = new Button("Copiar SS");
+		copiarSS.addStyleName("copiarSS");
+		copiarSS.addClickHandler(this);
+		mainPanel.add(copiarSS);
+		
 		validarCompletitud = new Button("Validar Completitud");
 		validarCompletitud.addStyleName("validarCompletitudButton");
 		validarCompletitud.addClickHandler(this);
@@ -339,6 +508,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		tabs.addStyleName("mlr5 mb10 mt5");
 		mainPanel.add(tabs);
 		editarSSUIData = new EditarSSUIData(this);
+		
 //		tabs.add(datos = new DatosSSUI(this), "Datos");
 //		tabs.add(varios = new VariosSSUI(this), "Varios");
 //		tabs.selectTab(0);
@@ -571,8 +741,18 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				openGenerarCerrarSolicitdDialog(sender == cerrarSolicitud);
 			}
 		}
+		else if (sender == copiarSS) {
+			
+			 if(Window.confirm("Desea copiar la solicitud actual?")){
+				 editarSSUIData.copiarSS();
+             }
+		}
 	}
 
+	public Button getCopiarSS(){
+		return copiarSS;
+	}
+	
 	private void guardar() {
 		if (guardandoSolicitud) {
 			return;
@@ -1068,6 +1248,4 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		       ClientContext.getInstance().getVendedor().isADMCreditos() &&
 		       editarSSUIData.getVendedor().getSelectedItem() != null;
 	}	
-	
-	
 }
