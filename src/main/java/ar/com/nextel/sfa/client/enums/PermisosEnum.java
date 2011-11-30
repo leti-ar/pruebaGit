@@ -122,8 +122,9 @@ public enum PermisosEnum {
 	VER_COMBO_VENDEDOR("verComboVendedor",Accion.X,true),
 	VER_COMBO_SUCURSAL_ORIGEN("verComboSucursalOrigen",Accion.X,true),
 	EVITA_CONTROL_TRIPTICO_RANGO_GRUPO_ADMC("evitaControlTripticoDentroRangoDelGrupoADMC", Accion.X, false),
-	VALIDAR_TRIPTICO_AL_GUARDAR("validarTripticoAlGuardar", Accion.X, false);
-
+	VALIDAR_TRIPTICO_AL_GUARDAR("validarTripticoAlGuardar", Accion.X, false),
+    VER_COMBO_ESTADO("verComboControl", Accion.X,true);
+    
 	private String value;
     private String accion;
 	private boolean forBrowser;

@@ -19,7 +19,7 @@ public class SolicitudServicioDto implements IsSerializable {
 	private String numero;
 	private String numeroFlota;
 	private Long nroTriptico;
-
+    private String estado;
 
 	// private CuentaPotencial cuentaPotencial;
 	private OrigenSolicitudDto origen;
@@ -55,7 +55,7 @@ public class SolicitudServicioDto implements IsSerializable {
 	private double precioListaTotal = 0;
 	private double precioVentaTotal = 0;
 	private double precioItemTotal = 0;
-
+    private String control;
 	private long tripticoNumber;
 	
 	private SolicitudServicioGeneracionDto solicitudServicioGeneracion;
@@ -421,4 +421,22 @@ public class SolicitudServicioDto implements IsSerializable {
 	public void setTipoCanalVentas(Long tipoCanalVentas) {
 		this.tipoCanalVentas = tipoCanalVentas;
 	}
+
+	public String getControl() {
+		return control;
+	}
+
+	public void setControl(String control) {
+		this.control = control;
+	}
+
+	public String getEstado() {
+		return estado;
+	}
+
+	public void setEstado(String estado) {
+		this.estado = estado;
+	}
+
+
 }

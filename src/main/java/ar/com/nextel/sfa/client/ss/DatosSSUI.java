@@ -5,6 +5,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.xml.utils.res.IntArrayWrapper;
+
+import ar.com.nextel.business.constants.KnownInstanceIdentifier;
+import ar.com.nextel.model.cuentas.beans.Proveedor;
+import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -81,7 +86,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private List<TipoDescuentoSeleccionado> descuentoSeleccionados = new ArrayList<TipoDescuentoSeleccionado>();
 	private boolean sacarTipoDescuento;
 	private boolean descuentoTotalAplicado = false;
-	
+	private static final String ESTADO_ENCARGA_SS= "ESTADO_ENCARGA_SS";
 	private static final String SELECTED_ROW = "selectedRow";
 
 	public DatosSSUI(EditarSSUIController controller) {
@@ -97,7 +102,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private Widget getNssLayout() {
 		//nnsLayout = new Grid(1, 6);
 		//MGR - #1027
-		nnsLayout = new Grid(1, 12);
+		nnsLayout = new Grid(2, 12);
 		nnsLayout.addStyleName("layout");
 		refreshNssLayout();
 		return nnsLayout;
@@ -173,7 +178,15 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			nnsLayout.clearCell(0, 10);
 			nnsLayout.clearCell(0, 11);
 		}
-
+	
+		nnsLayout.setHTML(1,0, Sfa.constant().estado());
+		nnsLayout.setWidget(1,1, editarSSUIData.getEstado());
+		
+	//	if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_ESTADO.getValue())){
+		nnsLayout.setHTML(1,2, Sfa.constant().control());
+		nnsLayout.setWidget(1,3, editarSSUIData.getControl());
+	//	}
+	
 	}
 
 	private Widget getDomicilioPanel() {

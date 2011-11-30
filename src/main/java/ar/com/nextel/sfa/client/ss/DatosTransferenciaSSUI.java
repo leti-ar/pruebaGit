@@ -149,7 +149,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	}
 
 	private Widget getNssLayout() {
-		nnsLayout = new Grid(1, 8);
+		nnsLayout = new Grid(2, 8);
 		nnsLayout.addStyleName("layout");
 		refreshNssLayout();
 		return nnsLayout;
@@ -235,7 +235,12 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		nnsLayout.setWidget(0, 1, editarSSUIData.getNss());
 		nnsLayout.setHTML(0, 2, Sfa.constant().origenReq());
 		nnsLayout.setWidget(0, 3, editarSSUIData.getOrigenTR());
-		
+		nnsLayout.setHTML(1, 0, Sfa.constant().estado());
+		nnsLayout.setWidget(1, 1, editarSSUIData.getEstado());
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_ESTADO.getValue())){
+		nnsLayout.setHTML(1, 2, Sfa.constant().control());
+		nnsLayout.setWidget(1, 3, editarSSUIData.getControl());
+		}
 		if (editarSSUIData.getOrigenTR().getItemCount() == 2) {
 			editarSSUIData.getOrigenTR().setSelectedIndex(1);
 		}
