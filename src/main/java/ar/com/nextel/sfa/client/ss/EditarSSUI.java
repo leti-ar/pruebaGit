@@ -63,6 +63,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TabPanel;
@@ -570,7 +571,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 	private void loadInitializer(SolicitudInitializer initializer) {
 		editarSSUIData.getOrigen().addAllItems(initializer.getOrigenesSolicitud());
-
+        editarSSUIData.getControl().addAllItems(initializer.getControl());
+    	Label label = new Label(initializer.getEstado().toString());
+        editarSSUIData.setEstado(label);
 		//MGR - #1458
 		if(initializer.getOrigenesSolicitud().size() ==1){
 			editarSSUIData.getOrigen().setSelectedIndex(1);

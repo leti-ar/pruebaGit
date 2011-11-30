@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
+import javax.sound.sampled.Control;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -28,7 +29,9 @@ import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.constants.MessageIdentifier;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.vantive.VantiveSystem;
+import ar.com.nextel.business.legacy.vantive.dto.ControlDto;
 import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO;
+import ar.com.nextel.business.legacy.vantive.exception.VantiveSystemException;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
 import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSResponse;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
@@ -66,6 +69,7 @@ import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
+import ar.com.nextel.sfa.client.dto.ControlesDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
@@ -401,7 +405,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		initializer.setOrigenesSolicitud(mapper.convertList(origenes, OrigenSolicitudDto.class));
 		List tiposAnticipo = repository.getAll(TipoAnticipo.class);
 		initializer.setTiposAnticipo(mapper.convertList(tiposAnticipo, TipoAnticipoDto.class));
-		
+
 		//Se cargan todos los vendedores que no sean del tipo Telemarketer, Dae o Administrador de Créditos,
 		Long idTipoVendTLM = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_TELEMARKETING);
 		Long idTipoVendDAE = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_DAE);
@@ -427,9 +431,19 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			}
 		});
 		initializer.setVendedores(mapper.convertList(vendedores, VendedorDto.class));
-		
+		List<ControlDto> result = null;
+		try {
+			result = this.vantiveSystem.controlDatoSolicitud();
+			initializer.setControl(mapper.convertList(result, ControlesDto.class));
+		} catch (VantiveSystemException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 EstadoSolicitud estado=(EstadoSolicitud) knownInstanceRetriever
+			.getObject(KnownInstanceIdentifier.ESTADO_ENCARGA_SS);
 		List<Sucursal> sucursales = repository.getAll(Sucursal.class);
 		initializer.setSucursales(mapper.convertList(sucursales, SucursalDto.class));
+		initializer.setEstado(estado.getDescripcion());
 		return initializer;
 	}
 

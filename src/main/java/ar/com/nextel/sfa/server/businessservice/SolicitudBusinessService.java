@@ -366,7 +366,7 @@ public class SolicitudBusinessService {
 		}
 		
 		mapper.map(solicitudServicioDto, solicitudServicio);
-		
+		solicitudServicio.setControl(solicitudServicioDto.getControl());
 		
 		//PARCHE: Esto es por que dozer mapea los id cuando se le indica que no
 		for (LineaTransfSolicitudServicio lineaTransf : solicitudServicio.getLineasTranf()) {

@@ -11,6 +11,7 @@ import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaDatosForm;
 import ar.com.nextel.sfa.client.cuenta.CuentaDomiciliosForm;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
+import ar.com.nextel.sfa.client.dto.ControlesDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
@@ -53,6 +54,7 @@ import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineHTML;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SourcesChangeEvents;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -63,7 +65,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private RegexTextBox nss;
 	private RegexTextBox nflota;
 	private InfocomInitializer infocom;
-
+    private ListBox control;
+    private Label estado;
 	private ListBox origen;
 	private ListBox origenTR;
 	private ListBox entrega;
@@ -137,6 +140,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		fields.add(nss = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(10), true));
 		fields.add(nflota = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(5)));
 		fields.add(origen = new ListBox(""));
+		fields.add(control = new ListBox(""));
 		fields.add(origenTR = new ListBox(""));
 		fields.add(entrega = new ListBox());
 		fields.add(descuentoTotal = new ListBox());
@@ -459,7 +463,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		nflota.setText(solicitud.getNumeroFlota());
 		//MGR - #1027
 		ordenCompra.setText(solicitud.getOrdenCompra());
-		
+		ControlesDto newControl= new ControlesDto();
+	    newControl.setDescripcion(solicitud.getControl());
+	    newControl.setId(new Long(1));
+		control.setSelectedItem(newControl);
 		entrega.clear();
 		facturacion.clear();
 		refreshDomiciliosListBox();
@@ -561,6 +568,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	public SolicitudServicioDto getSolicitudServicio() {
 		solicitudServicio.setNumero(nss.getText());
 		solicitudServicio.setNumeroFlota(nflota.getText());
+		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_ESTADO.getValue())) {
+		
+		solicitudServicio.setControl(control.getSelectedItemText());// .getSelectedItem().getItemText());
+		}
 		if (origen.getSelectedItem() != null) {
 			solicitudServicio.setOrigen((OrigenSolicitudDto) origen.getSelectedItem());
 		} else if (origenTR.getSelectedItem() != null) {
@@ -1091,6 +1102,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		solicitudServicio.setNumero(nss.getText());
 		solicitudServicio.setOrigen((OrigenSolicitudDto) origenTR.getSelectedItem());
 		solicitudServicio.setObservaciones(observaciones.getText());
+		solicitudServicio.setControl(control.getSelectedItemText());
+	
+		
 		//MGR - #1359
 		//solicitudServicio.setUsuarioCreacion(ClientContext.getInstance().getVendedor());
 		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())) {
@@ -1269,5 +1283,21 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			return solicitudServicio.getId();
 		}
 		return null;
+	}
+
+	public ListBox getControl() {
+		return control;
+	}
+
+	public void setControl(ListBox control) {
+		this.control = control;
+	}
+
+	public Label getEstado() {
+		return estado;
+	}
+
+	public void setEstado(Label estado) {
+		this.estado = estado;
 	}
 }
