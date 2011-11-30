@@ -622,14 +622,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					});
 		}
 		else{
-			//MGR - ISDN 1824 - Como se realizan validaciones, ya no recibe una SolicitudServicioDto
-			//sino una SaveSolicitudServicioResultDto que permite realizar el manejo de mensajes
-			//MGR - ISDN 1824 - Como se realizan validaciones, ya no recibe una SolicitudServicioDto
-			//sino una SaveSolicitudServicioResultDto que permite realizar el manejo de mensajes
-			//MGR - ISDN 1824 - Como se realizan validaciones, ya no recibe una SolicitudServicioDto
-			//sino una SaveSolicitudServicioResultDto que permite realizar el manejo de mensajes
-			//MGR - ISDN 1824 - Como se realizan validaciones, ya no recibe una SolicitudServicioDto
-			//sino una SaveSolicitudServicioResultDto que permite realizar el manejo de mensajes
+			
 			// TODO: Portabilidad
 			long contadorPortabilidad = 0;
 			for (LineaSolicitudServicioDto linea : editarSSUIData.getSolicitudServicio().getLineas()) {
@@ -642,6 +635,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	}
 
 	private void saveSolicitudServicio(){
+		//MGR - ISDN 1824 - Como se realizan validaciones, ya no recibe una SolicitudServicioDto
+		//sino una SaveSolicitudServicioResultDto que permite realizar el manejo de mensajes
 		SolicitudRpcService.Util.getInstance().saveSolicituServicio(editarSSUIData.getSolicitudServicio(),
 				new DefaultWaitCallback<CreateSaveSolicitudServicioResultDto>() {
 					public void success(CreateSaveSolicitudServicioResultDto result) {
@@ -652,6 +647,16 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 						// MessageDialog.getInstance().showAceptar("Guardado Exitoso",
 						// Sfa.constant().MSG_SOLICITUD_GUARDADA_OK(), MessageDialog.getCloseCommand());
 						editarSSUIData.setSaved(true);
+						
+						//MGR - ISDN 1824 - MGR - #1759
+						if(!result.getMessages().isEmpty()){
+							StringBuilder msgString = new StringBuilder();
+							for (MessageDto msg : result.getMessages()) {
+								msgString.append("<span class=\"info\">- " + msg.getDescription()
+										+ "</span><br>");
+							}
+							MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), MessageDialog.getCloseCommand());
+						}
 					}
 
 					public void failure(Throwable caught) {

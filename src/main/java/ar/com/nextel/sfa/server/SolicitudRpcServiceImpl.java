@@ -391,16 +391,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	public CreateSaveSolicitudServicioResultDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
 			throws RpcExceptionMessages {
 
-		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
-			for (ServicioAdicionalLineaSolicitudServicioDto	seradi : linea.getServiciosAdicionales()) {
-				AppLogger.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-				AppLogger.info("SERVIOCIO ADICIONAL >>> " + seradi.getServicioAdicional().getDescripcion());
-				AppLogger.info("SERVIOCIO ADICIONAL LINEA >>> " + seradi.getDescripcionServicioAdicional());
-				AppLogger.info("CHECHED >>> " + seradi.isChecked());
-				AppLogger.info("OBLIGATORIO >>> " + seradi.isObligatorio());
-			}
-			AppLogger.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-		}
 		CreateSaveSolicitudServicioResultDto resultDto = new CreateSaveSolicitudServicioResultDto();
 		try {
 			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
@@ -1059,7 +1049,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				telefono = lineas.get(i).getPortabilidad().getAreaTelefono() + lineas.get(i).getPortabilidad().getTelefonoPortar();
 				for(int n = 0; n < lineas.size(); n++){
 					if(n != i){
-						if(lineas.get(i).getPortabilidad() != null){
+						if(lineas.get(n).getPortabilidad() != null){
 							telefonoAUX = lineas.get(n).getPortabilidad().getAreaTelefono() + lineas.get(n).getPortabilidad().getTelefonoPortar();
 							// Los telefonos a portar no pueden ser iguales entre lineas
 							if(telefono.equals(telefonoAUX)) result.addError(ERROR_ENUM.ERROR,MSG_ERR_01.replaceAll("_NUMERO_", telefono));
@@ -1123,7 +1113,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				}
 			}
 			
-			// El tipo de contribuyente de la cuenta de la solicitud de servicio es consumidor final
+/*			// El tipo de contribuyente de la cuenta de la solicitud de servicio es consumidor final
 			if(repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId()).getTipoContribuyente().getId() == 1){
 				if(contLineasPrepagas > 6){
 					// No pueden haber mas de 6 lineas del tipo prepaga con portabilidad si es consumidor final. 
@@ -1133,7 +1123,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					else result.addError(ERROR_ENUM.ERROR,MSG_ERR_04);
 				}
 			}
-			
+*/			
 			Cuenta cuenta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
 			
 			// Si la cuenta es un PROSPECT no realiza la validacion de solicitudes pendientes
@@ -1144,12 +1134,12 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				try{
 					String codVantive = cuenta.getCodigoVantive();
 					
-					//permiteVantive = vantiveSystem.getPermitePortabilidad(codVantive);
+					permiteVantive = vantiveSystem.getPermitePortabilidad(codVantive);
 					permiteBPS = bpsSystem.resolverValidacionesPendientes(codVantive);
 				}catch(Exception e){
 					throw ExceptionUtil.wrap(e);
 				}
-				if(/*!permiteVantive ||*/ !permiteBPS){
+				if(!permiteVantive || !permiteBPS){
 					// Al analista de Creditos le muestra un mensaje y guarda
 					Long idTipoVendADM = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_CREDITOS);
 					if(sessionContextLoader.getVendedor().getTipoVendedor().getId() == idTipoVendADM) result.addError(ERROR_ENUM.WARNING,MSG_ERR_09);// Tipo vendedor analista creditos = 21
@@ -1157,7 +1147,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				}
 			}
 		}	
-		result.generar();
 		// Puede guardar
 		return result.generar();
 	}

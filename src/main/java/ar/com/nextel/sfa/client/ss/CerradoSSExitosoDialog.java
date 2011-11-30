@@ -150,45 +150,40 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 				WaitWindow.hide();
 				LoadingModalDialog.getInstance().hide();
 				if (response.getStatusCode() == Response.SC_OK) {
+					WaitWindow.hide();
+					LoadingModalDialog.getInstance().hide();
 					WindowUtils.redirect(getUrlReporte(file));
 				} else {
 //					showFileNotFoundError();
 					//MGR - #1415 - Si por alguna razon no se genero el archivo, trato de generarlo nuevamente
 					SolicitudRpcService.Util.getInstance().crearArchivo(idSolicitudCerrada, false, new DefaultWaitCallback<Boolean>() {
-
 						@Override
 						public void success(Boolean result) {
-							
 							RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getUrlReporte(file));
 							
 							requestBuilder.setCallback(new RequestCallback() {
 								public void onResponseReceived(Request request, Response response) {
 									WaitWindow.hide();
 									LoadingModalDialog.getInstance().hide();
-									if (response.getStatusCode() == Response.SC_OK) {
-										WindowUtils.redirect(getUrlReporte(file));
-									} else {
-										MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),
-												MessageDialog.getCloseCommand());
-									}
+									
+									if (response.getStatusCode() == Response.SC_OK) WindowUtils.redirect(getUrlReporte(file));
+									else MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),MessageDialog.getCloseCommand());
 								}
 
 								public void onError(Request request, Throwable exception) {
 									WaitWindow.hide();
 									LoadingModalDialog.getInstance().hide();
-									MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),
-											MessageDialog.getCloseCommand());
+									MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),MessageDialog.getCloseCommand());
 								}
 							});
+
 							try {
 								requestBuilder.setTimeoutMillis(10 * 1000);
 								requestBuilder.send();
 								WaitWindow.show();
-								LoadingModalDialog.getInstance().showAndCenter("Solicitud",
-										"Esperando Solicitud de Servicio ...");
+								LoadingModalDialog.getInstance().showAndCenter("Solicitud","Esperando Solicitud de Servicio ...");
 							} catch (RequestException e) {
-								MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),
-										MessageDialog.getCloseCommand());
+								MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),MessageDialog.getCloseCommand());
 								LoadingModalDialog.getInstance().hide();
 							}
 						}
@@ -202,14 +197,15 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 				showFileNotFoundError();
 			}
 		});
+
 		try {
 			requestBuilder.setTimeoutMillis(10 * 1000);
 			requestBuilder.send();
 			WaitWindow.show();
-			LoadingModalDialog.getInstance().showAndCenter("Solicitud",
-					"Esperando Solicitud de Servicio ...");
+			LoadingModalDialog.getInstance().showAndCenter("Solicitud","Esperando Solicitud de Servicio ...");
 		} catch (RequestException e) {
 			showFileNotFoundError();
+			WaitWindow.hide();
 			LoadingModalDialog.getInstance().hide();
 		}
 	}
@@ -254,11 +250,8 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 	}
 
 	public String getUrlReporte(String fileName) {
-//		return "/" + WindowUtils.getContextRoot() + "/download/" + fileName
-//				+ "?module=solicitudes&service=rtf&name=" + fileName;
-		
-		return "C:\\Users\\diazho\\Desktop\\rtf";
-			    
+		return "/" + WindowUtils.getContextRoot() + "/download/" + fileName
+				+ "?module=solicitudes&service=rtf&name=" + fileName;
 	}
 
 	/** Este comando cierra la ventana sin realizar ninguna accion */

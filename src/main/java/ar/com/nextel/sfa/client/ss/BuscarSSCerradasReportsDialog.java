@@ -144,6 +144,7 @@ public class BuscarSSCerradasReportsDialog extends NextelDialog{
 						@Override
 						public void success(Boolean result) {
 							RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getUrlReporte(fileName));
+							
 							requestBuilder.setCallback(new RequestCallback() {
 								public void onResponseReceived(Request request, Response response) {
 									WaitWindow.hide();
@@ -177,6 +178,7 @@ public class BuscarSSCerradasReportsDialog extends NextelDialog{
 			
 			@Override
 			public void failure(Throwable caught) {
+				WaitWindow.hide();
 				LoadingModalDialog.getInstance().hide();
 				super.failure(caught);
 			}
