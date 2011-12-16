@@ -575,6 +575,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private void loadInitializer(SolicitudInitializer initializer) {
 		editarSSUIData.getOrigen().addAllItems(initializer.getOrigenesSolicitud());
         editarSSUIData.getControl().addAllItems(initializer.getControl());
+        editarSSUIData.getNuevoEstado().addAllItems(initializer.getOpcionesEstado());
     	Label label = new Label(initializer.getEstado().toString());
         editarSSUIData.setEstado(label);
 		//MGR - #1458
