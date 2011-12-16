@@ -165,7 +165,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		notaAdicional.setHeight("100px");
 		fields.add(nuevoEstado = new ListBox(""));
 		fields.add(comentarioAnalista = new ListBox(""));
-		fields.add(titulo = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(20), true));
+		titulo = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(50), true);
+		titulo.setWidth("350px");
+		fields.add(titulo);
 		fields.add(enviarA = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(20), true));
 		
 		
@@ -278,6 +280,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	public void setInfocom(InfocomInitializer infocom) {
 		this.infocom = infocom;  
 		nflota.setText(infocom.getFlota());
+		
+	
 	}
 	
 	private void showMaxLengthTextAreaError(TextArea textArea, int maxLength) {
@@ -532,7 +536,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 //		comprobarDescuentoTotal();		
 		recarcularValores();
+		 String ss="";
+		 if (solicitudServicio.getNumero()==null){
+			 ss="";
+		 }else{
+			ss=solicitudServicio.getNumero(); 
+		 }
+		 
 		
+		titulo.setText("Nro de SS:" + ss + "  Razon Social:" +solicitudServicio.getCuenta().getPersona().getRazonSocial()  );
 		vendedor.setSelectedItem(solicitudServicio.getVendedor());
 		if(solicitudServicio.getIdSucursal() != null){
 			sucursalOrigen.selectByValue(solicitudServicio.getIdSucursal().toString());
@@ -629,6 +641,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		solicitudServicio.setAclaracionEntrega(aclaracion.getText());
 		solicitudServicio.setFirmar(firmarss.getValue());
 		solicitudServicio.setObservaciones(observaciones.getText());
+		
 		if (solicitudServicio.getGrupoSolicitud().isCDW()) {
 			solicitudServicio.setEmail(email.getText());
 		}
