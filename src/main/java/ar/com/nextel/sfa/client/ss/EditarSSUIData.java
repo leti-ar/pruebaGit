@@ -132,6 +132,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private static final String CANAL_VTA_TRANSFERENCIA = "Transferencia";
 	public static final String NO_COMISIONABLE = "No Comisionable";
 	
+	
+	//analisis
+	private RegexTextBox titulo;
+	private RegexTextBox enviarA;
+    private ListBox nuevoEstado;
+	private ListBox comentarioAnalista;
+	private TextArea notaAdicional;
+	
+	
 	public EditarSSUIData(EditarSSUIController controller) {
 		this.controller = controller;
 		serviciosAdicionales = new ArrayList();
@@ -150,6 +159,16 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		//MGR - #1027
 		fields.add(ordenCompra = new RegexTextBox(RegularExpressionConstants.getCantCaracteres(150)));
 
+		//solapa analisis
+		fields.add(notaAdicional = new TextArea());
+		notaAdicional.setWidth("250px");
+		notaAdicional.setHeight("100px");
+		fields.add(nuevoEstado = new ListBox(""));
+		fields.add(comentarioAnalista = new ListBox(""));
+		fields.add(titulo = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(20), true));
+		fields.add(enviarA = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(20), true));
+		
+		
 		entrega.setWidth("480px");
 		fields.add(facturacion = new ListBox());
 		facturacion.setWidth("480px");
@@ -467,6 +486,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	    newControl.setDescripcion(solicitud.getControl());
 	    newControl.setId(new Long(1));
 		control.setSelectedItem(newControl);
+		nuevoEstado.setSelectedItem(solicitud.getEstados());
 		entrega.clear();
 		facturacion.clear();
 		refreshDomiciliosListBox();
@@ -1299,5 +1319,45 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	public void setEstado(Label estado) {
 		this.estado = estado;
+	}
+
+	public RegexTextBox getTitulo() {
+		return titulo;
+	}
+
+	public void setTitulo(RegexTextBox titulo) {
+		this.titulo = titulo;
+	}
+
+	public RegexTextBox getEnviarA() {
+		return enviarA;
+	}
+
+	public void setEnviarA(RegexTextBox enviarA) {
+		this.enviarA = enviarA;
+	}
+
+	public ListBox getNuevoEstado() {
+		return nuevoEstado;
+	}
+
+	public void setNuevoEstado(ListBox nuevoEstado) {
+		this.nuevoEstado = nuevoEstado;
+	}
+
+	public ListBox getComentarioAnalista() {
+		return comentarioAnalista;
+	}
+
+	public void setComentarioAnalista(ListBox comentarioAnalista) {
+		this.comentarioAnalista = comentarioAnalista;
+	}
+
+	public TextArea getNotaAdicional() {
+		return notaAdicional;
+	}
+
+	public void setNotaAdicional(TextArea notaAdicional) {
+		this.notaAdicional = notaAdicional;
 	}
 }

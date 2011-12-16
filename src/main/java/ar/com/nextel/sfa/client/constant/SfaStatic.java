@@ -3094,7 +3094,64 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("control")
   String control();
   
+  /**
+   * Translated "Cambiar Estado".
+   * 
+   * @return translated "Cambiar Estado"
+   */
+  @DefaultStringValue("Cambiar Estado")
+  @Key("Cambiar Estado")
+  String cambiarEstado();
+  
+  /**
+   * Translated "Comentario Analista".
+   * 
+   * @return translated "Comentario Analista"
+   */
+  @DefaultStringValue("Comentario Analista:")
+  @Key("Comentario Analista")
+  String comentarioAnalista();
+  
+  
+  
+  
+  /**
+   * Translated "Nota Adicional".
+   * 
+   * @return translated "Nota Adicional"
+   */
+  @DefaultStringValue("Nota Adicional:")
+  @Key("notaAdicional")
+  String notaAdicional();
+  
   
 
+  /**
+   * Translated "Enviar a".
+   * 
+   * @return translated "Enviar a"
+   */
+  @DefaultStringValue("Enviar a:")
+  @Key("enviarA")
+  String enviarA();
+  
+  
+  /**
+   * Translated "Mail".
+   * 
+   * @return translated "Mail"
+   */
+  @DefaultStringValue("MAIL")
+  @Key("mail")
+  String mail();
+  
+  /**
+   * Translated "nuevoEstado".
+   * 
+   * @return translated "nuevoEstado"
+   */
+  @DefaultStringValue("Nuevo Estado")
+  @Key("nuevoEstado")
+  String nuevoEstado();
   
 }

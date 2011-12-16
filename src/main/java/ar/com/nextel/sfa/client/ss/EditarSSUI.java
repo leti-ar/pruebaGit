@@ -85,6 +85,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private DatosSSUI datos;
 	private DatosTransferenciaSSUI datosTranferencia;
 	private VariosSSUI varios;
+	private AnalisisSSUI analisis;
 	private EditarSSUIData editarSSUIData;
 	private FormButtonsBar formButtonsBar;
 	private RazonSocialClienteBar razonSocialClienteBar;
@@ -478,6 +479,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		else{
 			tabs.add(datos, "Datos");
 			tabs.add(varios, "Varios");
+			tabs.add(analisis, "Analisis");
 			datos.refresh();
 		}
 		tabs.selectTab(0);
@@ -515,6 +517,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 //		tabs.selectTab(0);
 		datos = new DatosSSUI(this);
 		varios = new VariosSSUI(this);
+		analisis = new AnalisisSSUI(this);
 		datosTranferencia = new DatosTransferenciaSSUI(this);
 		grupoSS = HistoryUtils.getParam(ID_GRUPO_SS);
 

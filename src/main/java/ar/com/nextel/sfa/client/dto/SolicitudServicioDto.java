@@ -20,7 +20,7 @@ public class SolicitudServicioDto implements IsSerializable {
 	private String numeroFlota;
 	private Long nroTriptico;
     private String estado;
-
+    private EstadoSolicitudDto estados;
 	// private CuentaPotencial cuentaPotencial;
 	private OrigenSolicitudDto origen;
 	// private Vendedor vendedorDae;
@@ -436,6 +436,14 @@ public class SolicitudServicioDto implements IsSerializable {
 
 	public void setEstado(String estado) {
 		this.estado = estado;
+	}
+
+	public EstadoSolicitudDto getEstados() {
+		return estados;
+	}
+
+	public void setEstados(EstadoSolicitudDto estados) {
+		this.estados = estados;
 	}
 
 

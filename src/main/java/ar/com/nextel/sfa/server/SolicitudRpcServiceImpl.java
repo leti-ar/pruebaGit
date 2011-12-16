@@ -444,6 +444,11 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		List<Sucursal> sucursales = repository.getAll(Sucursal.class);
 		initializer.setSucursales(mapper.convertList(sucursales, SucursalDto.class));
 		initializer.setEstado(estado.getDescripcion());
+		
+		initializer.setOpcionesEstado(mapper.convertList(repository
+				.getAll(EstadoSolicitud.class), EstadoSolicitudDto.class));
+		
+		
 		return initializer;
 	}
 

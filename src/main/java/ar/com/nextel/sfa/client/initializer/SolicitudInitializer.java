@@ -1,9 +1,11 @@
 package ar.com.nextel.sfa.client.initializer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 import ar.com.nextel.sfa.client.dto.ControlesDto;
+import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.SucursalDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
@@ -20,7 +22,7 @@ public class SolicitudInitializer implements IsSerializable {
 	private List<SucursalDto> sucursales;
 	private List<ControlesDto>control;
     private String estado;
-	
+    private List<EstadoSolicitudDto> opcionesEstado = new ArrayList<EstadoSolicitudDto>();
 
 	public void setOrigenesSolicitud(List<OrigenSolicitudDto> origenesSolicitud) {
 		this.origenesSolicitud = origenesSolicitud;
@@ -68,5 +70,13 @@ public class SolicitudInitializer implements IsSerializable {
 
 	public void setEstado(String estado) {
 		this.estado = estado;
+	}
+
+	public List<EstadoSolicitudDto> getOpcionesEstado() {
+		return opcionesEstado;
+	}
+
+	public void setOpcionesEstado(List<EstadoSolicitudDto> opcionesEstado) {
+		this.opcionesEstado = opcionesEstado;
 	}
 }
