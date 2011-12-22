@@ -46,6 +46,7 @@ import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
 import ar.com.nextel.model.personas.beans.Domicilio;
+import ar.com.nextel.model.solicitudes.beans.EstadoPorSolicitud;
 import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio;
@@ -317,7 +318,13 @@ public class SolicitudBusinessService {
 		return retrieveEncabezadoCreditoFidelizacion;
 	}
 
-	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public EstadoPorSolicitud saveEstadoPorSolicitudDto(EstadoPorSolicitud estadoPorSolicitud) {
+		
+		repository.save(estadoPorSolicitud);
+		
+		return estadoPorSolicitud;
+	}
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public SolicitudServicio saveSolicitudServicio(SolicitudServicioDto solicitudServicioDto,

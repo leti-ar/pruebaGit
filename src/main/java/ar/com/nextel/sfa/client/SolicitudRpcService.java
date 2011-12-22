@@ -10,6 +10,7 @@ import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
+import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -74,6 +75,8 @@ public interface SolicitudRpcService extends RemoteService {
 	//que permite realizar el manejo de mensajes
 	public CreateSaveSolicitudServicioResultDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
 			throws RpcExceptionMessages;
+	
+	public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto) throws RpcExceptionMessages;
 
 	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(
 			GrupoSolicitudDto grupoSolicitudDto, boolean isEmpresa) throws RpcExceptionMessages;

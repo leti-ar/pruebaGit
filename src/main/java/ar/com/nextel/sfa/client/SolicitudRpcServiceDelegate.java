@@ -10,6 +10,7 @@ import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
+import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -32,6 +33,7 @@ import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
+import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
@@ -268,6 +270,11 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.createCopySolicitudServicioTranferencia(
 				solicitudServicioRequestDto, solicitudSS, callback);
-		
+	}
+	
+	public void saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto,
+			AsyncCallback<Boolean> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.saveEstadoPorSolicitudDto(estadoPorSolicitudDto, callback);
 	}
 }

@@ -44,6 +44,8 @@ public class SolicitudServicioDto implements IsSerializable {
 	private TipoAnticipoDto tipoAnticipo;
 
 	private List<LineaSolicitudServicioDto> lineas = new ArrayList<LineaSolicitudServicioDto>();
+	
+	private List<EstadoPorSolicitudDto> historialEstados = new ArrayList<EstadoPorSolicitudDto>();
 
 	private Boolean pinValidationSuccess;
 	private Boolean scoringValidationSuccess;
@@ -446,5 +448,15 @@ public class SolicitudServicioDto implements IsSerializable {
 		this.estados = estados;
 	}
 
+	public void addHistorialEstados(EstadoPorSolicitudDto nuevoEstado) {
+		this.historialEstados.add(nuevoEstado);
+	}
 
+	public List<EstadoPorSolicitudDto> getHistorialEstados() {
+		return historialEstados;
+	}
+
+	public void setHistorialEstados(List<EstadoPorSolicitudDto> historialEstados) {
+		this.historialEstados = historialEstados;
+	}
 }

@@ -452,6 +452,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		codigoVant = solicitud.getCuenta().getCodigoVantive();
 		editarSSUIData.setSolicitud(solicitud);
 		
+		if(solicitud != null){
+			analisis.refresh();
+		}
+		
 		//MGR - #962 - #1017
 		if(ClientContext.getInstance().
 				checkPermiso(PermisosEnum.SELECT_OPC_TELEMARKETING_COMB_ORIGEN.getValue())){

@@ -1,18 +1,32 @@
 package ar.com.nextel.sfa.client.ss;
 
+import java.util.Date;
 
-
+import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
+import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
+import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
+import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
+import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
-
 import com.google.gwt.dev.asm.Label;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -32,12 +46,7 @@ public class AnalisisSSUI extends Composite {
 		editarSSUIData = controller.getEditarSSUIData();
 	
 		mainpanel.add(getCambiarEstadoSS());
-	
-
 	}
-
-
-
 
 	private Widget getCambiarEstadoSS() {
 		TitledPanel cambiarEstadoPanel = new TitledPanel(Sfa.constant().whiteSpace());
@@ -51,6 +60,7 @@ public class AnalisisSSUI extends Composite {
 		nuevoEstado.setHTML(0,0,Sfa.constant().nuevoEstado());
 		nuevoEstado.setWidget(0, 1,editarSSUIData.getNuevoEstado());
         cambiarEstadoPanel.add(nuevoEstado);
+        
 		Grid mail = new Grid(7,2);
 		mail.addStyleName("layout");
 		mail.setHTML(0, 0, Sfa.constant().mail());
@@ -65,7 +75,17 @@ public class AnalisisSSUI extends Composite {
 		mail.setWidget(4, 1,editarSSUIData.getEnviarA());
 	    mail.setWidget(5, 0, new CheckBox("Enviar"));
 	    mail.setHTML(5, 1, Sfa.constant().whiteSpace());
-	    mail.setHTML(6, 0, Sfa.constant().whiteSpace());
+	    
+	    Button ingresarCambio = new Button("Cambiar Estado");
+	    ingresarCambio.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+//			  	  refresh();
+				addEstado();
+			}
+	    });
+	    
+//	    mail.setHTML(6, 0, Sfa.constant().whiteSpace());
+	    mail.setWidget(6, 0,ingresarCambio);
 	    mail.setWidget(6, 1, new Button("Cancelar Cambio"));
 	    cambiarEstadoPanel.add(mail);
 		return cambiarEstadoPanel;
@@ -88,9 +108,50 @@ public class AnalisisSSUI extends Composite {
 		return wrapper;
 	}
 
-	
+//	/** Realiza la actualizacion visual necesaria para mostrar los datos correctos */
+	public void refresh() {
+		int row = 1;
+		SolicitudServicioDto solicitud = editarSSUIData.getSolicitudServicio();
+		double[] totales = { 0, 0, 0 };
+		cambiarEstadoSS.resizeRows(row);
+		
+		for (int i = 0; i < solicitud.getHistorialEstados().size() ; i++) {
+			cambiarEstadoSS.resizeRows(row + 1);
+			//solicitud.getCuenta().getPersona().getRazonSocial()
+			if(solicitud.getHistorialEstados().get(i).getEstado() != null){
+				cambiarEstadoSS.setHTML(row, 0, solicitud.getHistorialEstados().get(i).getEstado().getItemText());				
+			}
+			cambiarEstadoSS.setHTML(row, 1, solicitud.getHistorialEstados().get(i).getFecha().toString());
+			cambiarEstadoSS.setHTML(row, 2, solicitud.getHistorialEstados().get(i).getUsuario());
+			row++;
+		}
+	}
 
+	private void addEstado(){
+		EstadoSolicitudDto nuevoEstado = new EstadoSolicitudDto(new Long(editarSSUIData.getNuevoEstado().getSelectedIndex()+1),editarSSUIData.getNuevoEstado().getSelectedItemText());
+		
+		EstadoPorSolicitudDto estadoPorSolicitudDto = new EstadoPorSolicitudDto();
+
+		estadoPorSolicitudDto.setEstado(nuevoEstado);
+		estadoPorSolicitudDto.setFecha(new Date());
+		estadoPorSolicitudDto.setNumeroSolicitud(new Long(editarSSUIData.getSolicitudServicio().getNumero()));
+		String usuario = editarSSUIData.getSolicitudServicio().getUsuarioCreacion().getApellidoYNombre();
+		estadoPorSolicitudDto.setUsuario(usuario);
+		
+		editarSSUIData.getSolicitudServicio().addHistorialEstados(estadoPorSolicitudDto);
+
+		SolicitudRpcService.Util.getInstance().saveEstadoPorSolicitudDto(estadoPorSolicitudDto, new DefaultWaitCallback<Boolean>() {
+
+			@Override
+			public void success(Boolean result) {
+				refresh();
+			}
+		});
+	}
 	
+	private void cancelarCambio(){
+		
+	}
 
 //	/** Realiza la actualizacion visual necesaria para mostrar los datos correctos */
 //	public void refresh() {

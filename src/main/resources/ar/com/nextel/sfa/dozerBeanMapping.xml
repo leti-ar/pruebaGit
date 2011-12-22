@@ -597,6 +597,40 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 	</mapping>
 
 	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.EstadoPorSolicitud</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto</class-b>
+		<field>
+			<a>estado</a>
+			<b>estado</b>
+		</field>
+		<field>
+            <a>numeroSolicitud</a>
+            <b>numeroSolicitud</b>
+        </field>
+		<field>
+			<a>usuario</a>
+			<b>usuario</b>
+		</field>
+		<field>
+			<a>fecha</a>
+			<b>fecha</b>
+		</field>
+	</mapping>
+
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.EstadoSolicitud</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.EstadoSolicitudDto</class-b>
+		<field>
+			<a>id</a>
+			<b>code</b>
+		</field>
+		<field>
+            <a>descripcion</a>
+            <b>descripcion</b>
+        </field>          
+	</mapping>
+	
+	<mapping>
 		<class-a>ar.com.nextel.model.cuentas.beans.GranCuenta</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.GranCuentaDto</class-b>
 		<field-exclude>

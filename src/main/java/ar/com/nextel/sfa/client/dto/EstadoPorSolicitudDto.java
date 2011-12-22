@@ -11,21 +11,19 @@ public class EstadoPorSolicitudDto implements ListBoxItem, IsSerializable {
 
 	private long id;
 	private String usuario;
-    private EstadoSolicitud estado;
+    private EstadoSolicitudDto estado;
     private Date fecha;
-	
-	
+	private long numeroSolicitud;
 	
 	public EstadoPorSolicitudDto() {
 	}
 
-	public EstadoPorSolicitudDto(String usuario, Date fecha, EstadoSolicitud estado) {
+	public EstadoPorSolicitudDto(String usuario, Date fecha, EstadoSolicitudDto estado) {
 		super();
 		
 		this.usuario = usuario;
 		this.fecha = fecha;
 		this.estado= estado;
-		
 	}
 
 	public long getId() {
@@ -44,11 +42,11 @@ public class EstadoPorSolicitudDto implements ListBoxItem, IsSerializable {
 		this.usuario = usuario;
 	}
 
-	public EstadoSolicitud getEstado() {
+	public EstadoSolicitudDto getEstado() {
 		return estado;
 	}
 
-	public void setEstado(EstadoSolicitud estado) {
+	public void setEstado(EstadoSolicitudDto estado) {
 		this.estado = estado;
 	}
 
@@ -70,6 +68,11 @@ public class EstadoPorSolicitudDto implements ListBoxItem, IsSerializable {
 		return null;
 	}
 
-	
+	public long getNumeroSolicitud() {
+		return numeroSolicitud;
+	}
 
+	public void setNumeroSolicitud(long numeroSolicitud) {
+		this.numeroSolicitud = numeroSolicitud;
+	}
 }

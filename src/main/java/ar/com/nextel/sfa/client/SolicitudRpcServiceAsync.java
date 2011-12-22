@@ -10,6 +10,7 @@ import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
+import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -140,4 +141,7 @@ public interface SolicitudRpcServiceAsync {
 			SolicitudServicioRequestDto solicitudServicioRequestDto,
 			SolicitudServicioDto solicitudSS,
 			AsyncCallback<CreateSaveSSTransfResultDto> callback);
+
+	public void saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto,
+			AsyncCallback<Boolean> callback);
 }
