@@ -450,7 +450,29 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		razonSocialClienteBar.setIdCuenta(solicitud.getCuenta().getId(), solicitud
 				.getCuenta().getCodigoVantive());
 		codigoVant = solicitud.getCuenta().getCodigoVantive();
+		
+		//MGR - #1152
+		final boolean esProspect =RegularExpressionConstants.isVancuc(solicitud.getCuenta().getCodigoVantive());
+
 		editarSSUIData.setSolicitud(solicitud);
+
+		//larce - Si los datos del histórico están vacíos, los traigo de vantive
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
+			if (!"".equals(editarSSUIData.getNss().getText()) || editarSSUIData.getNss().getText() != null) {
+				if (solicitud.getCantidadEquiposH() == null) {
+					SolicitudRpcService.Util.getInstance().buscarHistoricoVentas(editarSSUIData.getNss().getText(), 
+							new DefaultWaitCallback<List<SolicitudServicioDto>>() {
+						@Override
+						public void success(List<SolicitudServicioDto> result) {
+							if (result.size() > 0) {
+								SolicitudServicioDto ss = result.get(0);
+								editarSSUIData.completarCamposHistorico(ss);
+							}	
+						}
+					});
+				}
+			}
+		}
 		
 		if(solicitud != null){
 			analisis.refresh();
@@ -462,13 +484,15 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			editarSSUIData.getOrigen().selectByText("Telemarketing");
 		}
 		
-		//MGR - #1152
-		boolean esProspect =RegularExpressionConstants.isVancuc(solicitud.getCuenta().getCodigoVantive());
-		
 		if(solicitud.getNumero() == null && ClientContext.getInstance().
 				checkPermiso(PermisosEnum.AUTOCOMPLETAR_TRIPTICO.getValue()) && !esProspect){
 			editarSSUIData.getNss().setText(String.valueOf(solicitud.getTripticoNumber()));
 		} 
+		
+		if (esProspect) {
+			editarSSUIData.getEstadoH().setVisibleItemCount(0);
+			editarSSUIData.getEstadoTr().setVisibleItemCount(0);
+		}
 		
 		validarCompletitud(false);
 		//datos.refresh();
@@ -657,6 +681,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			editarSSUIData.getSucursalOrigen().addItem(item);
 			editarSSUIData.getSucursalOrigen().setSelectedIndex(1);
 		}
+		
+		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
+	        editarSSUIData.getEstadoH().addAllItems(initializer.getEstadosHistorico());
+	        editarSSUIData.getEstadoTr().addAllItems(initializer.getEstadosHistorico());
+		}
+
 	}
 
 	public boolean unload(String token) {

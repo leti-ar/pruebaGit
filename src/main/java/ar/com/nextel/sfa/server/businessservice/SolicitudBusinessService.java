@@ -30,6 +30,9 @@ import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequ
 import ar.com.nextel.business.solicitudes.generacionCierre.GeneracionCierreBusinessOperator;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreRequest;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
+import ar.com.nextel.business.solicitudes.historico.TransferirCuentaHistoricoConfig;
+import ar.com.nextel.business.solicitudes.historico.VantiveHistoricoClienteConfig;
+import ar.com.nextel.business.solicitudes.historico.VantiveHistoricoVentaRetrieveConfig;
 import ar.com.nextel.business.solicitudes.provider.SolicitudServicioProviderResult;
 import ar.com.nextel.business.solicitudes.repository.GenerarChangelogConfig;
 import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepository;
@@ -67,6 +70,8 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
+import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
+import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
 
 @Service
 public class SolicitudBusinessService {
@@ -85,7 +90,9 @@ public class SolicitudBusinessService {
 	private TransactionConnectionDAO sfaConnectionDAO;
 	private GenerarChangelogConfig generarChangelogConfig;
 	private FacturaElectronicaService facturaElectronicaService;
-
+	private VantiveHistoricoVentaRetrieveConfig vantiveHistoricoVentaRetrieveConfig;
+	private VantiveHistoricoClienteConfig vantiveHistoricoClienteConfig;
+	private TransferirCuentaHistoricoConfig transferirCuentaHistoricoConfig;
 
 	@Autowired
 	public void setFacturaElectronicaService(FacturaElectronicaService facturaElectronicaService) {
@@ -155,6 +162,24 @@ public class SolicitudBusinessService {
 		this.generarChangelogConfig = generarChangelogConfig;
 	}
 
+	@Autowired
+	public void setVantiveHistoricoVentaRetrieveConfig(
+			VantiveHistoricoVentaRetrieveConfig vantiveHistoricoVentaRetrieveConfig) {
+		this.vantiveHistoricoVentaRetrieveConfig = vantiveHistoricoVentaRetrieveConfig;
+	}
+	
+	@Autowired
+	public void setVantiveHistoricoClienteConfig(
+			VantiveHistoricoClienteConfig vantiveHistoricoClienteConfig) {
+		this.vantiveHistoricoClienteConfig = vantiveHistoricoClienteConfig;
+	}
+	
+	@Autowired
+	public void setTransferirCuentaHistoricoConfig(
+			TransferirCuentaHistoricoConfig transferirCuentaHistoricoConfig) {
+		this.transferirCuentaHistoricoConfig = transferirCuentaHistoricoConfig;
+	}
+	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public SolicitudServicio createSolicitudServicio(SolicitudServicioRequest solicitudServicioRequest,
 			DozerBeanMapper mapper) throws BusinessException, FinancialSystemException {
@@ -478,7 +503,7 @@ public class SolicitudBusinessService {
 				domicilio.setId(null);
 			}
 		}
-		
+
 		repository.save(solicitudServicio);
 		return solicitudServicio;
 	}
@@ -654,4 +679,64 @@ public class SolicitudBusinessService {
 	public CreateSaveSSResponse validarCreateSS(SolicitudServicio solicitud){
 		return solicitudesBusinessOperator.validarCreateSS(solicitud);
 	}
+	
+	/**
+	 * Traigo los datos del histórico de ventas de Vantive asociados al número de SS
+	 * @param nss - Número de SS
+	 * @return Histórico de ventas
+	 * @throws ConnectionDAOException
+	 */
+    public List<SolicitudServicio> buscarHistoricoVentas(String nss) throws ConnectionDAOException {
+    	VantiveHistoricoVentaRetrieveConfig config = this.getVantiveHistoricoVentaRetrieveConfig();
+		config.setNss(nss);
+		List result = (List) this.sfaConnectionDAO.execute(config);
+		return result;
+    }
+
+	public VantiveHistoricoVentaRetrieveConfig getVantiveHistoricoVentaRetrieveConfig() {
+        return vantiveHistoricoVentaRetrieveConfig;
+	}
+	
+	/**
+	 * Si el codigoVantive es null, lo busco en nxa_ra_customers
+	 * @param nss - Número de SS
+	 * @return Código vantive
+	 * @throws ConnectionDAOException
+	 */
+	public String buscarClienteByNss(String nss) throws ConnectionDAOException {
+		VantiveHistoricoClienteConfig config = this.getVantiveHistoricoClienteConfig();
+		config.setNss(nss);
+		String result = (String) this.sfaConnectionDAO.execute(config);
+		return result;
+	}
+	
+	public VantiveHistoricoClienteConfig getVantiveHistoricoClienteConfig() {
+		return vantiveHistoricoClienteConfig;
+	}
+	
+	public TransferirCuentaHistoricoConfig getTransferirCuentaHistoricoConfig() {
+		return transferirCuentaHistoricoConfig;
+	}
+
+	/**
+	 * Transfiere la cuenta y el historico a vantive
+	 * @param solicitudServicio
+	 * @throws RpcExceptionMessages
+	 */
+	public void transferirCuentaEHistorico(SolicitudServicioDto solicitudServicio) throws RpcExceptionMessages {
+		TransferirCuentaHistoricoConfig config = this.getTransferirCuentaHistoricoConfig();
+		config.setIdCuenta(solicitudServicio.getCuenta().getId());
+		config.setNss(solicitudServicio.getNumero());
+		config.setCantidadEquipos(solicitudServicio.getCantidadEquiposH());
+		config.setFechaFirma(new java.sql.Date(solicitudServicio.getFechaFirma().getTime()));
+		config.setEstado(solicitudServicio.getEstadoH().getDescripcion());
+		config.setFechaEstado(new java.sql.Date(solicitudServicio.getFechaEstado().getTime()));
+		try {
+			String result = (String) this.sfaConnectionDAO.execute(config);
+		} catch (ConnectionDAOException e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+	}
+	
 }

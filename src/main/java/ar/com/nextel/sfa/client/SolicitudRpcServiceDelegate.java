@@ -9,6 +9,7 @@ import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.EstadoHistoricoDto;
 import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
 import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
@@ -264,12 +265,22 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.validarPlanesCedentes(ctoCedentes, isEmpresa, isSaving, callback);
 	}
-
+	
 	public void createCopySolicitudServicioTranferencia(SolicitudServicioRequestDto solicitudServicioRequestDto,
 			SolicitudServicioDto solicitudSS, DefaultWaitCallback<CreateSaveSSTransfResultDto> callback) {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.createCopySolicitudServicioTranferencia(
 				solicitudServicioRequestDto, solicitudSS, callback);
+	}
+
+	public void buscarHistoricoVentas(String nss, DefaultWaitCallback<List<SolicitudServicioDto>> defaultWaitCallback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.buscarHistoricoVentas(nss, defaultWaitCallback);
+	}
+
+	public void getAllEstadoHistorico(boolean esProspect, DefaultWaitCallback<List<EstadoHistoricoDto>> defaultWaitCallback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getAllEstadoHistorico(esProspect, defaultWaitCallback);
 	}
 	
 	public void saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto,

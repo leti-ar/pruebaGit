@@ -9,6 +9,7 @@ import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.EstadoHistoricoDto;
 import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
 import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
@@ -153,6 +154,10 @@ public interface SolicitudRpcService extends RemoteService {
 	 */
 	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa, boolean isSaving);
 
+	public List<SolicitudServicioDto> buscarHistoricoVentas(String nss) throws RpcExceptionMessages;
+
+	public List<EstadoHistoricoDto> getAllEstadoHistorico(boolean esProspect) throws RpcExceptionMessages; 
+	
 	public CreateSaveSSTransfResultDto createCopySolicitudServicioTranferencia(
 			SolicitudServicioRequestDto solicitudServicioRequestDto,
 			SolicitudServicioDto solicitudSS) throws RpcExceptionMessages;

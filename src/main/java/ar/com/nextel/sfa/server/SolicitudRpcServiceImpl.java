@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
-import javax.sound.sampled.Control;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -51,14 +50,13 @@ import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.personas.beans.Localidad;
-//import ar.com.nextel.model.solicitudes.beans.CambioEstadoSolicitud;
+import ar.com.nextel.model.solicitudes.beans.EstadoHistorico;
 import ar.com.nextel.model.solicitudes.beans.EstadoPorSolicitud;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
-import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.PlanBase;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
@@ -78,8 +76,8 @@ import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
-import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
+import ar.com.nextel.sfa.client.dto.EstadoHistoricoDto;
 import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
@@ -119,8 +117,7 @@ import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.server.RemoteService;
 import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
 
-public class SolicitudRpcServiceImpl extends RemoteService implements
-		SolicitudRpcService {
+public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudRpcService {
 
 	private MapperExtended mapper;
 	private WebApplicationContext context;
@@ -134,211 +131,164 @@ public class SolicitudRpcServiceImpl extends RemoteService implements
 	private SolicitudServicioRepository solicitudServicioRepository;
 	private NegativeFilesBusinessOperator negativeFilesBusinessOperator;
 	private DefaultRetriever globalParameterRetriever;
-
-	// MELI
+	
+	//MELI
 	private DefaultSequenceImpl tripticoNextValue;
-	// private AvalonSystem avalonSystem;
-
-	// MGR - #1481
+//	private AvalonSystem avalonSystem;
+	
+	//MGR - #1481
 	private DefaultRetriever messageRetriever;;
+	
+	
+	
 
 	public void init() throws ServletException {
 		super.init();
-		context = WebApplicationContextUtils
-				.getWebApplicationContext(getServletContext());
+		context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		mapper = (MapperExtended) context.getBean("dozerMapper");
 		solicitudesBusinessOperator = (SolicitudServicioBusinessOperator) context
 				.getBean("solicitudServicioBusinessOperatorBean");
-		solicitudBusinessService = (SolicitudBusinessService) context
-				.getBean("solicitudBusinessService");
+		solicitudBusinessService = (SolicitudBusinessService) context.getBean("solicitudBusinessService");
 		repository = (Repository) context.getBean("repository");
 
 		solicitudServicioRepository = (SolicitudServicioRepository) context
 				.getBean("solicitudServicioRepositoryBean");
 		vantiveSystem = (VantiveSystem) context.getBean("vantiveSystemBean");
-		financialSystem = (FinancialSystem) context
-				.getBean("financialSystemBean");
-		knownInstanceRetriever = (KnownInstanceRetriever) context
-				.getBean("knownInstancesRetriever");
-		sessionContextLoader = (SessionContextLoader) context
-				.getBean("sessionContextLoader");
+		financialSystem = (FinancialSystem) context.getBean("financialSystemBean");
+		knownInstanceRetriever = (KnownInstanceRetriever) context.getBean("knownInstancesRetriever");
+		sessionContextLoader = (SessionContextLoader) context.getBean("sessionContextLoader");
 		negativeFilesBusinessOperator = (NegativeFilesBusinessOperator) context
 				.getBean("negativeFilesBusinessOperator");
-		globalParameterRetriever = (DefaultRetriever) context
-				.getBean("globalParameterRetriever");
-
-		tripticoNextValue = (DefaultSequenceImpl) context
-				.getBean("tripticoNextValue");
-		// avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
-		messageRetriever = (DefaultRetriever) context
-				.getBean("messageRetriever");
+		globalParameterRetriever = (DefaultRetriever) context.getBean("globalParameterRetriever");
+		
+		tripticoNextValue = (DefaultSequenceImpl)context.getBean("tripticoNextValue");
+//		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
+		messageRetriever = (DefaultRetriever)context.getBean("messageRetriever");
 	}
 
-	// MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un
-	// CreateSaveSolicitudServicioResultDto
-	// que permite realizar el manejo de mensajes
+	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
+	//que permite realizar el manejo de mensajes
 	public CreateSaveSolicitudServicioResultDto createSolicitudServicio(
-			SolicitudServicioRequestDto solicitudServicioRequestDto)
-			throws RpcExceptionMessages {
-		// MGR - ISDN 1824
+			SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages {
+		//MGR - ISDN 1824
 		CreateSaveSolicitudServicioResultDto resultDto = new CreateSaveSolicitudServicioResultDto();
 
-		SolicitudServicioRequest request = mapper.map(
-				solicitudServicioRequestDto, SolicitudServicioRequest.class);
-		AppLogger.info("Creando Solicitud de Servicio con Request -> "
-				+ request.toString());
+		SolicitudServicioRequest request = mapper.map(solicitudServicioRequestDto,
+				SolicitudServicioRequest.class);
+		AppLogger.info("Creando Solicitud de Servicio con Request -> " + request.toString());
 		SolicitudServicio solicitud = null;
 		try {
-			solicitud = solicitudBusinessService.createSolicitudServicio(
-					request, mapper);
+			solicitud = solicitudBusinessService.createSolicitudServicio(request, mapper);
 		} catch (BusinessException e) {
 			throw new RpcExceptionMessages((String) e.getParameters().get(0));
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
-		// Se pide la cuenta nuevamente para renovar el proxy de hibernate. Fix
-		// para cuentas que vienen de
+		// Se pide la cuenta nuevamente para renovar el proxy de hibernate. Fix para cuentas que vienen de
 		// Vantive
-		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitud.getCuenta()
-				.getId());
+		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitud.getCuenta().getId());
 		solicitud.setCuenta(cuenta);
-		SolicitudServicioDto solicitudServicioDto = mapper.map(solicitud,
-				SolicitudServicioDto.class);
-
-		// MR - le agrego el triptico
-		if (solicitudServicioDto.getNumero() == null)
-			solicitudServicioDto.setTripticoNumber(tripticoNextValue
-					.nextNumber());
-
-		// calculo los descuentos aplicados a cada línea y se los seteo
-		List<LineaSolicitudServicioDto> lineas = solicitudServicioDto
-				.getLineas();
-		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator
-				.hasNext();) {
+		SolicitudServicioDto solicitudServicioDto = mapper.map(solicitud, SolicitudServicioDto.class);
+		
+		//MR - le agrego el triptico
+		if(solicitudServicioDto.getNumero() == null)
+			solicitudServicioDto.setTripticoNumber(tripticoNextValue.nextNumber());
+		
+		//calculo los descuentos aplicados a cada línea y se los seteo 
+		List<LineaSolicitudServicioDto> lineas = solicitudServicioDto.getLineas(); 
+		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
 			Double descuentoAplicado = 0.0;
 			Double precioConDescuento = 0.0;
-			LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator
-					.next();
+			LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
 			Long idLinea = linea.getId();
-			List descuentosAplicados = solicitudServicioRepository
-					.getDescuentosAplicados(idLinea);
-			List<DescuentoLineaDto> descuentos = mapper.convertList(
-					descuentosAplicados, DescuentoLineaDto.class);
-			for (Iterator<DescuentoLineaDto> it = descuentos.iterator(); it
-					.hasNext();) {
-				DescuentoLineaDto descuentoLineaDto = (DescuentoLineaDto) it
-						.next();
+			List descuentosAplicados = solicitudServicioRepository.getDescuentosAplicados(idLinea);
+			List<DescuentoLineaDto> descuentos = mapper.convertList(descuentosAplicados, DescuentoLineaDto.class);
+			for (Iterator<DescuentoLineaDto> it = descuentos.iterator(); it.hasNext();) {
+				DescuentoLineaDto descuentoLineaDto = (DescuentoLineaDto) it.next();
 				descuentoAplicado += descuentoLineaDto.getMonto();
 			}
 			precioConDescuento = linea.getPrecioLista() - descuentoAplicado;
 			linea.setPrecioConDescuento(precioConDescuento);
 		}
 
-		// MGR - ISDN 1824 - Predicados al crear una ss
-		MessageList messages = solicitudBusinessService.validarCreateSS(
-				solicitud).getMessages();
+		//MGR - ISDN 1824 - Predicados al crear una ss
+		MessageList messages = solicitudBusinessService.validarCreateSS(solicitud).getMessages();
 		resultDto.setError(messages.hasErrors());
-		resultDto.setMessages(mapper.convertList(messages.getMessages(),
-				MessageDto.class));
-
+		resultDto.setMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
+		
 		AppLogger.info("Creacion de Solicitud de Servicio finalizada");
-
-		if (solicitudServicioDto.getNumero() != null) {
-			solicitudServicioDto
-					.setHistorialEstados(getEstadosPorSolicitud(new Long(
-							solicitudServicioDto.getNumero())));
-		}
-
 		resultDto.setSolicitud(solicitudServicioDto);
 		return resultDto;
 	}
 
-	public CreateSaveSolicitudServicioResultDto copySolicitudServicio(
-			SolicitudServicioRequestDto solicitudServicioRequestDto,
-			SolicitudServicioDto solicitudToCopy) throws RpcExceptionMessages {
+	public CreateSaveSolicitudServicioResultDto copySolicitudServicio(SolicitudServicioRequestDto solicitudServicioRequestDto , SolicitudServicioDto solicitudToCopy) 
+		throws RpcExceptionMessages {
 
 		CreateSaveSolicitudServicioResultDto resultDto = new CreateSaveSolicitudServicioResultDto();
 
-		SolicitudServicioRequest request = mapper.map(
-				solicitudServicioRequestDto, SolicitudServicioRequest.class);
-		AppLogger.info("Creando Solicitud de Servicio con Request -> "
-				+ request.toString());
+		SolicitudServicioRequest request = mapper.map(solicitudServicioRequestDto,
+				SolicitudServicioRequest.class);
+		AppLogger.info("Creando Solicitud de Servicio con Request -> " + request.toString());
 		SolicitudServicio solicitud = null;
 		try {
-			solicitud = solicitudBusinessService.copySolicitudServicio(request,
-					mapper);
+			solicitud = solicitudBusinessService.copySolicitudServicio(request, mapper);
 		} catch (BusinessException e) {
 			throw new RpcExceptionMessages((String) e.getParameters().get(0));
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
-		// Se pide la cuenta nuevamente para renovar el proxy de hibernate. Fix
-		// para cuentas que vienen de
+		// Se pide la cuenta nuevamente para renovar el proxy de hibernate. Fix para cuentas que vienen de
 		// Vantive
-		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitud.getCuenta()
-				.getId());
+		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitud.getCuenta().getId());
 		solicitud.setCuenta(cuenta);
-		SolicitudServicioDto solicitudServicioDto = mapper.map(solicitud,
-				SolicitudServicioDto.class);
-
-		// MR - le agrego el triptico
-		if (solicitudServicioDto.getNumero() == null)
-			solicitudServicioDto.setTripticoNumber(tripticoNextValue
-					.nextNumber());
-
-		// calculo los descuentos aplicados a cada línea y se los seteo
-		List<LineaSolicitudServicioDto> lineas = solicitudServicioDto
-				.getLineas();
-		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator
-				.hasNext();) {
+		SolicitudServicioDto solicitudServicioDto = mapper.map(solicitud, SolicitudServicioDto.class);
+		
+		//MR - le agrego el triptico
+		if(solicitudServicioDto.getNumero() == null)
+			solicitudServicioDto.setTripticoNumber(tripticoNextValue.nextNumber());
+		
+		//calculo los descuentos aplicados a cada línea y se los seteo 
+		List<LineaSolicitudServicioDto> lineas = solicitudServicioDto.getLineas(); 
+		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
 			Double descuentoAplicado = 0.0;
 			Double precioConDescuento = 0.0;
-			LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator
-					.next();
+			LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
 			Long idLinea = linea.getId();
-			List descuentosAplicados = solicitudServicioRepository
-					.getDescuentosAplicados(idLinea);
-			List<DescuentoLineaDto> descuentos = mapper.convertList(
-					descuentosAplicados, DescuentoLineaDto.class);
-			for (Iterator<DescuentoLineaDto> it = descuentos.iterator(); it
-					.hasNext();) {
-				DescuentoLineaDto descuentoLineaDto = (DescuentoLineaDto) it
-						.next();
+			List descuentosAplicados = solicitudServicioRepository.getDescuentosAplicados(idLinea);
+			List<DescuentoLineaDto> descuentos = mapper.convertList(descuentosAplicados, DescuentoLineaDto.class);
+			for (Iterator<DescuentoLineaDto> it = descuentos.iterator(); it.hasNext();) {
+				DescuentoLineaDto descuentoLineaDto = (DescuentoLineaDto) it.next();
 				descuentoAplicado += descuentoLineaDto.getMonto();
 			}
 			precioConDescuento = linea.getPrecioLista() - descuentoAplicado;
 			linea.setPrecioConDescuento(precioConDescuento);
 		}
 
-		// MGR - ISDN 1824 - Predicados al crear una ss
-		MessageList messages = solicitudBusinessService.validarCreateSS(
-				solicitud).getMessages();
+		//MGR - ISDN 1824 - Predicados al crear una ss
+		MessageList messages = solicitudBusinessService.validarCreateSS(solicitud).getMessages();
 		resultDto.setError(messages.hasErrors());
-		resultDto.setMessages(mapper.convertList(messages.getMessages(),
-				MessageDto.class));
-
+		resultDto.setMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
+		
 		AppLogger.info("Creacion de Solicitud de Servicio finalizada");
-
+		
 		solicitudToCopy.setId(solicitudServicioDto.getId());
 		solicitudToCopy.setNumero(null);
 		solicitudToCopy.setPataconex(0d);
 		solicitudToCopy.setFirmar(false);
 		solicitudToCopy.setAclaracionEntrega(null);
-
+		
 		resultDto.setSolicitud(solicitudToCopy);
-		// resultDto.setSolicitud(solicitudServicioDto);
+//		resultDto.setSolicitud(solicitudServicioDto);
 		return resultDto;
 	}
-
+	
 	public List<SolicitudServicioCerradaResultDto> searchSSCerrada(
-			SolicitudServicioCerradaDto solicitudServicioCerradaDto)
-			throws RpcExceptionMessages {
+			SolicitudServicioCerradaDto solicitudServicioCerradaDto) throws RpcExceptionMessages {
 		AppLogger.info("Iniciando busqueda de SS cerradas...");
-		SolicitudServicioCerradaSearchCriteria solicitudServicioCerradaSearchCriteria = mapper
-				.map(solicitudServicioCerradaDto,
-						SolicitudServicioCerradaSearchCriteria.class);
+		SolicitudServicioCerradaSearchCriteria solicitudServicioCerradaSearchCriteria = mapper.map(
+				solicitudServicioCerradaDto, SolicitudServicioCerradaSearchCriteria.class);
 		Vendedor vendedor = sessionContextLoader.getVendedor();
 
 		solicitudServicioCerradaSearchCriteria.setVendedor(vendedor);
@@ -347,21 +297,17 @@ public class SolicitudRpcServiceImpl extends RemoteService implements
 			list = this.solicitudesBusinessOperator
 					.searchSolicitudesServicioHistoricas(solicitudServicioCerradaSearchCriteria);
 		} catch (Exception e) {
-			AppLogger.info("Error buscando Solicitudes de Servicio cerradas: "
-					+ e.getMessage(), e);
+			AppLogger.info("Error buscando Solicitudes de Servicio cerradas: " + e.getMessage(), e);
 			throw ExceptionUtil.wrap(e);
 		}
-		List result = mapper.convertList(list,
-				SolicitudServicioCerradaResultDto.class, "ssCerradaResult");
+		List result = mapper.convertList(list, SolicitudServicioCerradaResultDto.class, "ssCerradaResult");
 		AppLogger.info("Busqueda de SS cerradas finalizada...");
 		return result;
 	}
 
-	public DetalleSolicitudServicioDto getDetalleSolicitudServicio(
-			Long idSolicitudServicio) throws RpcExceptionMessages {
-		AppLogger
-				.info("Iniciando consulta de estados de SS cerradas para idSS "
-						+ idSolicitudServicio);
+	public DetalleSolicitudServicioDto getDetalleSolicitudServicio(Long idSolicitudServicio)
+			throws RpcExceptionMessages {
+		AppLogger.info("Iniciando consulta de estados de SS cerradas para idSS " + idSolicitudServicio);
 		SolicitudServicio solicitudServicio = solicitudServicioRepository
 				.getSolicitudServicioPorId(idSolicitudServicio);
 		DetalleSolicitudServicioDto detalleSolicitudServicioDto = mapearSolicitud(solicitudServicio);
@@ -374,30 +320,26 @@ public class SolicitudRpcServiceImpl extends RemoteService implements
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
-		AppLogger.info("Consulta de estados de SS cerradas para idSS "
-				+ idSolicitudServicio + " finalizada.");
+		AppLogger
+				.info("Consulta de estados de SS cerradas para idSS " + idSolicitudServicio + " finalizada.");
 		return detalleSolicitudServicioDto;
 	}
 
-	private DetalleSolicitudServicioDto mapearSolicitud(
-			SolicitudServicio solicitudServicio) {
+	private DetalleSolicitudServicioDto mapearSolicitud(SolicitudServicio solicitudServicio) {
 		DetalleSolicitudServicioDto detalleSolicitudServicioDto = new DetalleSolicitudServicioDto();
 		detalleSolicitudServicioDto.setNumero(solicitudServicio.getNumero());
-		detalleSolicitudServicioDto.setNumeroCuenta(solicitudServicio
-				.getCuenta().getCodigoVantive());
-		detalleSolicitudServicioDto.setRazonSocialCuenta(solicitudServicio
-				.getCuenta().getPersona().getRazonSocial());
+		detalleSolicitudServicioDto.setNumeroCuenta(solicitudServicio.getCuenta().getCodigoVantive());
+		detalleSolicitudServicioDto.setRazonSocialCuenta(solicitudServicio.getCuenta().getPersona()
+				.getRazonSocial());
 		return detalleSolicitudServicioDto;
 	}
 
-	private List<CambiosSolicitudServicioDto> getEstadoSolicitudServicioCerrada(
-			Long idVantiveSS) throws RpcExceptionMessages {
+	private List<CambiosSolicitudServicioDto> getEstadoSolicitudServicioCerrada(Long idVantiveSS)
+			throws RpcExceptionMessages {
 		try {
 			List<EstadoSolicitudServicioCerradaDTO> resultDTO = null;
-			resultDTO = this.vantiveSystem
-					.retrieveEstadosSolicitudServicioCerrada(idVantiveSS);
-			resultDTO.addAll(this.financialSystem
-					.retrieveEstadosSolicitudServicioCerrada(idVantiveSS));
+			resultDTO = this.vantiveSystem.retrieveEstadosSolicitudServicioCerrada(idVantiveSS);
+			resultDTO.addAll(this.financialSystem.retrieveEstadosSolicitudServicioCerrada(idVantiveSS));
 
 			Comparator<? super EstadoSolicitudServicioCerradaDTO> estadoComparator = new Comparator<EstadoSolicitudServicioCerradaDTO>() {
 
@@ -405,19 +347,14 @@ public class SolicitudRpcServiceImpl extends RemoteService implements
 						EstadoSolicitudServicioCerradaDTO estado2) {
 					int ret = 0;
 					try {
-						Date date1 = (estado1.getFechaCambioEstado() != null) ? DateUtils
-								.getInstance().getDate(
-										estado1.getFechaCambioEstado(),
-										"dd/MM/yyyy") : null;
-						Date date2 = (estado2.getFechaCambioEstado() != null) ? DateUtils
-								.getInstance().getDate(
-										estado2.getFechaCambioEstado(),
-										"dd/MM/yyyy") : null;
+						Date date1 = (estado1.getFechaCambioEstado() != null) ? DateUtils.getInstance()
+								.getDate(estado1.getFechaCambioEstado(), "dd/MM/yyyy") : null;
+						Date date2 = (estado2.getFechaCambioEstado() != null) ? DateUtils.getInstance()
+								.getDate(estado2.getFechaCambioEstado(), "dd/MM/yyyy") : null;
 						if (date1 == null || date2 == null) {
 							return 1;
 						} else {
-							return DateUtils.getInstance().compareDatesByDay(
-									date1, date2);
+							return DateUtils.getInstance().compareDatesByDay(date1, date2);
 						}
 					} catch (ParseException e) {
 						AppLogger.error(e);
@@ -427,8 +364,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements
 			};
 
 			Collections.sort(resultDTO, estadoComparator);
-			return mapper.convertList(resultDTO,
-					CambiosSolicitudServicioDto.class);
+			return mapper.convertList(resultDTO, CambiosSolicitudServicioDto.class);
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
@@ -453,13 +389,12 @@ public class SolicitudRpcServiceImpl extends RemoteService implements
 		listaPataconex = Arrays.asList(opcionesPataconex.split(";"));
 		buscarSSCerradasInitializer.setOpcionesPatacones(listaPataconex);
 
-		buscarSSCerradasInitializer.setOpcionesEstado(mapper.convertList(
-				repository.getAll(EstadoSolicitud.class),
-				EstadoSolicitudDto.class));
+		buscarSSCerradasInitializer.setOpcionesEstado(mapper.convertList(repository
+				.getAll(EstadoSolicitud.class), EstadoSolicitudDto.class));
 
 		mapper.convertList(repository.getAll(EstadoPorSolicitud.class),
 				EstadoPorSolicitudDto.class);
-
+				
 		return buscarSSCerradasInitializer;
 	}
 
@@ -475,100 +410,83 @@ public class SolicitudRpcServiceImpl extends RemoteService implements
 		}
 		return listaFinal;
 	}
-
+	
 	public SolicitudInitializer getSolicitudInitializer() {
 		SolicitudInitializer initializer = new SolicitudInitializer();
-		List<OrigenSolicitud> origenes = repository
-				.getAll(OrigenSolicitud.class);
+		List<OrigenSolicitud> origenes = repository.getAll(OrigenSolicitud.class);
 		Collections.sort(origenes, new Comparator<OrigenSolicitud>() {
 			public int compare(OrigenSolicitud o1, OrigenSolicitud o2) {
 				return o1.getIndice() - o2.getIndice();
 			}
 		});
-		initializer.setOrigenesSolicitud(mapper.convertList(origenes,
-				OrigenSolicitudDto.class));
+		initializer.setOrigenesSolicitud(mapper.convertList(origenes, OrigenSolicitudDto.class));
 		List tiposAnticipo = repository.getAll(TipoAnticipo.class);
-		initializer.setTiposAnticipo(mapper.convertList(tiposAnticipo,
-				TipoAnticipoDto.class));
-
-		// Se cargan todos los vendedores que no sean del tipo Telemarketer, Dae
-		// o Administrador de Créditos,
-		Long idTipoVendTLM = knownInstanceRetriever
-				.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_TELEMARKETING);
-		Long idTipoVendDAE = knownInstanceRetriever
-				.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_DAE);
-		Long idTipoVendADM = knownInstanceRetriever
-				.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_CREDITOS);
-		// MGR - ISDN 1824 - Si el vendedor logeado es Adm. de creditos, los TLM
-		// si se cargan al combo
-		String query = "from Vendedor vend where vend.tipoVendedor.id not in("
-				+ idTipoVendDAE.toString() + ", " + idTipoVendADM.toString();
-		if (!SessionContextLoader.getInstance().getVendedor().isADMCreditos()) {
+		initializer.setTiposAnticipo(mapper.convertList(tiposAnticipo, TipoAnticipoDto.class));
+		
+		//Se cargan todos los vendedores que no sean del tipo Telemarketer, Dae o Administrador de Créditos,
+		Long idTipoVendTLM = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_TELEMARKETING);
+		Long idTipoVendDAE = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_DAE);
+		Long idTipoVendADM = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_CREDITOS);
+		//MGR - ISDN 1824 - Si el vendedor logeado es Adm. de creditos, los TLM si se cargan al combo
+		String query = "from Vendedor vend where vend.tipoVendedor.id not in(" + idTipoVendDAE.toString() + 
+							", " + idTipoVendADM.toString();
+		if(!SessionContextLoader.getInstance().getVendedor().isADMCreditos()){
 			query += ", " + idTipoVendTLM.toString();
 		}
 		query += ")";
 		List<Vendedor> vendedores = repository.find(query);
-
+		
 		Collections.sort(vendedores, new Comparator<Vendedor>() {
 			public int compare(Vendedor vend1, Vendedor vend2) {
-				if (vend1.getApellido() == null && vend2.getApellido() == null)
+				if(vend1.getApellido() == null && vend2.getApellido() == null)
 					return 0;
-				if (vend1.getApellido() == null)
+				if(vend1.getApellido() == null)
 					return -1;
-				if (vend2.getApellido() == null)
+				if(vend2.getApellido() == null)
 					return -1;
-				return vend1.getApellidoYNombre().compareToIgnoreCase(
-						vend2.getApellidoYNombre());
+				return vend1.getApellidoYNombre().compareToIgnoreCase(vend2.getApellidoYNombre());
 			}
 		});
-		initializer.setVendedores(mapper.convertList(vendedores,
-				VendedorDto.class));
+		initializer.setVendedores(mapper.convertList(vendedores, VendedorDto.class));
 		List<ControlDto> result = null;
 		try {
 			result = this.vantiveSystem.controlDatoSolicitud();
-			initializer.setControl(mapper.convertList(result,
-					ControlesDto.class));
+			initializer.setControl(mapper.convertList(result, ControlesDto.class));
 		} catch (VantiveSystemException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		EstadoSolicitud estado = (EstadoSolicitud) knownInstanceRetriever
-				.getObject(KnownInstanceIdentifier.ESTADO_ENCARGA_SS);
+		 EstadoSolicitud estado=(EstadoSolicitud) knownInstanceRetriever
+			.getObject(KnownInstanceIdentifier.ESTADO_ENCARGA_SS);
 		List<Sucursal> sucursales = repository.getAll(Sucursal.class);
-		initializer.setSucursales(mapper.convertList(sucursales,
-				SucursalDto.class));
+		initializer.setSucursales(mapper.convertList(sucursales, SucursalDto.class));
 		initializer.setEstado(estado.getDescripcion());
-
-		initializer.setOpcionesEstado(mapper.convertList(
-				repository.getAll(EstadoSolicitud.class),
-				EstadoSolicitudDto.class));
-
+		
+		List<EstadoHistorico> estadosHistorico = repository.getAll(EstadoHistorico.class);
+		initializer.setEstadosHistorico(mapper.convertList(estadosHistorico, EstadoHistoricoDto.class));
+		
 		return initializer;
 	}
 
-	// MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un
-	// SaveSolicitudServicioResultDto
-	// que permite realizar el manejo de mensajes
-	public CreateSaveSolicitudServicioResultDto saveSolicituServicio(
-			SolicitudServicioDto solicitudServicioDto)
+	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un SaveSolicitudServicioResultDto 
+	//que permite realizar el manejo de mensajes
+	public CreateSaveSolicitudServicioResultDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
 			throws RpcExceptionMessages {
 
 		CreateSaveSolicitudServicioResultDto resultDto = new CreateSaveSolicitudServicioResultDto();
 		try {
-			SolicitudServicio solicitudSaved = solicitudBusinessService
-					.saveSolicitudServicio(solicitudServicioDto, mapper);
-			solicitudServicioDto = mapper.map(solicitudSaved,
-					SolicitudServicioDto.class);
-
-			Vendedor vendedor = sessionContextLoader.getSessionContext()
-					.getVendedor();
+			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(
+					solicitudServicioDto, mapper);
+			solicitudServicioDto = mapper.map(solicitudSaved, SolicitudServicioDto.class);
+			
+			Vendedor vendedor = sessionContextLoader.getSessionContext().getVendedor();
 			if (vendedor.isADMCreditos()) {
-				// Valida los predicados y el triptico
-				CreateSaveSSResponse response = solicitudBusinessService
-						.validarPredicadosGuardarSS(solicitudSaved);
+				//Valida los predicados y el triptico
+				CreateSaveSSResponse response = solicitudBusinessService.validarPredicadosGuardarSS(solicitudSaved);
 				resultDto.setError(response.getMessages().hasErrors());
-				resultDto.setMessages(mapper.convertList(response.getMessages()
-						.getMessages(), MessageDto.class));
+				resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
+				//larce
+				solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto);
 			}
 			resultDto.setSolicitud(solicitudServicioDto);
 		} catch (Exception e) {
@@ -595,12 +513,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements
 		}
 	}
 
-	public String buildExcel(
-			SolicitudServicioCerradaDto solicitudServicioCerradaDto) {
+	public String buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto) {
 		AppLogger.info("Iniciando busqueda de SS cerradas para crear excel...");
-		SolicitudServicioCerradaSearchCriteria solicitudServicioCerradaSearchCriteria = mapper
-				.map(solicitudServicioCerradaDto,
-						SolicitudServicioCerradaSearchCriteria.class);
+		SolicitudServicioCerradaSearchCriteria solicitudServicioCerradaSearchCriteria = mapper.map(
+				solicitudServicioCerradaDto, SolicitudServicioCerradaSearchCriteria.class);
 		Vendedor vendedor = sessionContextLoader.getVendedor();
 		solicitudServicioCerradaSearchCriteria.setVendedor(vendedor);
 		List<SolicitudServicio> list = null;
@@ -608,13 +524,11 @@ public class SolicitudRpcServiceImpl extends RemoteService implements
 			list = this.solicitudesBusinessOperator
 					.searchSolicitudesServicioHistoricas(solicitudServicioCerradaSearchCriteria);
 		} catch (Exception e) {
-			AppLogger
-					.info("Error buscando Solicitudes de Servicio cerradas para crear excel: "
-							+ e.getMessage());
+			AppLogger.info("Error buscando Solicitudes de Servicio cerradas para crear excel: "
+					+ e.getMessage());
 		}
 		AppLogger.info("Creando archivo Excel...");
-		ExcelBuilder excel = new ExcelBuilder(vendedor.getUserName(),
-				"SFA Revolution");
+		ExcelBuilder excel = new ExcelBuilder(vendedor.getUserName(), "SFA Revolution");
 		try {
 			excel.crearExcel(list);
 		} catch (Exception e) {
@@ -628,176 +542,139 @@ public class SolicitudRpcServiceImpl extends RemoteService implements
 			GrupoSolicitudDto grupoSolicitudDto, boolean isEmpresa) {
 
 		LineasSolicitudServicioInitializer initializer = new LineasSolicitudServicioInitializer();
-		List<GrupoSolicitud> grupos = solicitudServicioRepository
-				.getGruposSolicitudesServicio();
-
+		List<GrupoSolicitud> grupos = 
+				solicitudServicioRepository.getGruposSolicitudesServicio();
+		
 		Sucursal sucursal = sessionContextLoader.getVendedor().getSucursal();
 
-		// Obtengo los tipos de solicitud de cada Grupo para la sucursal en
-		// particular
+		// Obtengo los tipos de solicitud de cada Grupo para la sucursal en particular
 		Map<Long, List<TipoSolicitudDto>> tiposSolicitudPorGrupo = new HashMap();
 		for (GrupoSolicitud gp : grupos) {
-			tiposSolicitudPorGrupo.put(gp.getId(), mapper.convertList(
-					gp.calculateTiposSolicitud(sucursal,
-							sessionContextLoader.getVendedor()),
-					TipoSolicitudDto.class));
+			tiposSolicitudPorGrupo.put(gp.getId(), 
+					mapper.convertList(gp.calculateTiposSolicitud(sucursal, sessionContextLoader.getVendedor()),
+							TipoSolicitudDto.class));
 		}
 		initializer.setTiposSolicitudPorGrupo(tiposSolicitudPorGrupo);
 
-		List<TipoSolicitudDto> tiposSolicitudDeGrupoSelected = tiposSolicitudPorGrupo
-				.get(grupoSolicitudDto.getId());
-		// Si no es vaci� (no deber�a serlo) carga la lista de precios del
-		// primer tipoSolicitud que se muestra
+		List<TipoSolicitudDto> tiposSolicitudDeGrupoSelected = tiposSolicitudPorGrupo.get(grupoSolicitudDto
+				.getId());
+		// Si no es vaci� (no deber�a serlo) carga la lista de precios del primer tipoSolicitud que se muestra
 		if (!tiposSolicitudDeGrupoSelected.isEmpty()) {
-			TipoSolicitudDto firstTipoSolicitudDto = tiposSolicitudDeGrupoSelected
-					.get(0);
-			TipoSolicitud firstTipoSolicitud = repository.retrieve(
-					TipoSolicitud.class, firstTipoSolicitudDto.getId());
-
-			List<ListaPrecios> listasPrecios = new ArrayList<ListaPrecios>(
-					firstTipoSolicitud.getListasPrecios());
-
-			// #1757 - solo tengo que mostrar la lista de precios asociados al
-			// segmento del cliente
-			List<Long> ids = (List<Long>) CollectionUtils.collect(
-					listasPrecios, new BeanToPropertyValueTransformer("id"));
+			TipoSolicitudDto firstTipoSolicitudDto = tiposSolicitudDeGrupoSelected.get(0);
+			TipoSolicitud firstTipoSolicitud = repository.retrieve(TipoSolicitud.class, firstTipoSolicitudDto
+					.getId());
+			
+			List<ListaPrecios> listasPrecios = new ArrayList<ListaPrecios>(firstTipoSolicitud
+					.getListasPrecios());
+			
+			// #1757 -  solo tengo que mostrar la lista de precios asociados al segmento del cliente
+			List<Long> ids = (List<Long>) CollectionUtils.collect(listasPrecios,  
+		                new BeanToPropertyValueTransformer("id"));
 			List<ListaPrecios> listasPreciosSegmentada = null;
 			if (isEmpresa) {
-				listasPreciosSegmentada = solicitudServicioRepository
-						.getListaPreciosPorSegmento(ids, 2);
+				listasPreciosSegmentada = solicitudServicioRepository.getListaPreciosPorSegmento(ids, 2);
 			} else {
-				listasPreciosSegmentada = solicitudServicioRepository
-						.getListaPreciosPorSegmento(ids, 1);
+				listasPreciosSegmentada = solicitudServicioRepository.getListaPreciosPorSegmento(ids, 1);
 			}
 			listasPrecios.retainAll(listasPreciosSegmentada);
-
-			firstTipoSolicitudDto
-					.setListasPrecios(new ArrayList<ListaPreciosDto>());
+			
+			firstTipoSolicitudDto.setListasPrecios(new ArrayList<ListaPreciosDto>());
 			for (ListaPrecios listaPrecios : listasPrecios) {
-				ListaPreciosDto lista = mapper.map(listaPrecios,
-						ListaPreciosDto.class);
-				// MGR - #873 - Se agrega el Vendedor
-				lista.setItemsListaPrecioVisibles(mapper.convertList(
-						listaPrecios.getItemsTasados(firstTipoSolicitud,
-								sessionContextLoader.getVendedor()),
-						ItemSolicitudTasadoDto.class));
+				ListaPreciosDto lista = mapper.map(listaPrecios, ListaPreciosDto.class);
+				//MGR - #873 - Se agrega el Vendedor
+				lista.setItemsListaPrecioVisibles(mapper.convertList(listaPrecios
+						.getItemsTasados(firstTipoSolicitud, sessionContextLoader.getVendedor()),
+								ItemSolicitudTasadoDto.class));
 				firstTipoSolicitudDto.getListasPrecios().add(lista);
 			}
 		}
-		initializer.setTiposPlanes(mapper.convertList(
-				repository.getAll(TipoPlan.class), TipoPlanDto.class));
-		initializer.setLocalidades(mapper.convertList(
-				repository.getAll(Localidad.class), LocalidadDto.class));
+		initializer.setTiposPlanes(mapper.convertList(repository.getAll(TipoPlan.class), TipoPlanDto.class));
+		initializer
+				.setLocalidades(mapper.convertList(repository.getAll(Localidad.class), LocalidadDto.class));
 
-		// System.out.println(new Date());
+		//System.out.println(new Date());
 		return initializer;
 	}
 
-	public List<ListaPreciosDto> getListasDePrecios(
-			TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa) {
-		TipoSolicitud tipoSolicitud = repository.retrieve(TipoSolicitud.class,
-				tipoSolicitudDto.getId());
+	public List<ListaPreciosDto> getListasDePrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa) {
+		TipoSolicitud tipoSolicitud = repository.retrieve(TipoSolicitud.class, tipoSolicitudDto.getId());
 		Set<ListaPrecios> listasPrecios = tipoSolicitud.getListasPrecios();
 		List<ListaPreciosDto> listasPreciosDto = new ArrayList<ListaPreciosDto>();
 		boolean activacion = isTipoSolicitudActivacion(tipoSolicitud);
 		boolean accesorios = isTipoSolicitudAccesorios(tipoSolicitud);
 
-		// Se realiza el mapeo de la colecci�n a mano para poder filtrar los
-		// items por warehouse
+		// Se realiza el mapeo de la colecci�n a mano para poder filtrar los items por warehouse
 		for (ListaPrecios listaPrecios : listasPrecios) {
-			ListaPreciosDto lista = mapper.map(listaPrecios,
-					ListaPreciosDto.class);
+			ListaPreciosDto lista = mapper.map(listaPrecios, ListaPreciosDto.class);
 			if (!activacion) {
-				// MGR - #873 - Se agrega el Vendedor
-				lista.setItemsListaPrecioVisibles(mapper.convertList(
-						listaPrecios.getItemsTasados(tipoSolicitud,
-								sessionContextLoader.getVendedor()),
-						ItemSolicitudTasadoDto.class));
+				//MGR - #873 - Se agrega el Vendedor
+				lista.setItemsListaPrecioVisibles(mapper.convertList(listaPrecios
+						.getItemsTasados(tipoSolicitud, sessionContextLoader.getVendedor()), ItemSolicitudTasadoDto.class));
 			}
-			if (accesorios) {
-				Collections.sort(lista.getItemsListaPrecioVisibles(),
-						new Comparator<ItemSolicitudTasadoDto>() {
-							public int compare(ItemSolicitudTasadoDto o1,
-									ItemSolicitudTasadoDto o2) {
-								return o1.getItemText().compareTo(
-										o2.getItemText());
-							}
-						});
+			if(accesorios){
+				Collections.sort(lista.getItemsListaPrecioVisibles(), new Comparator<ItemSolicitudTasadoDto>() {
+					public int compare(ItemSolicitudTasadoDto o1, ItemSolicitudTasadoDto o2) {
+						return o1.getItemText().compareTo(o2.getItemText());
+					}
+				});
 			}
 			listasPreciosDto.add(lista);
 		}
-
-		// #1757 - solo tengo que mostrar la lista de precios asociados al
-		// segmento del cliente
-		List<Long> ids = (List<Long>) CollectionUtils.collect(listasPreciosDto,
+		
+		// #1757 -  solo tengo que mostrar la lista de precios asociados al segmento del cliente
+		List<Long> ids = (List<Long>) CollectionUtils.collect(listasPreciosDto,  
 				new BeanToPropertyValueTransformer("id"));
 		List<ListaPrecios> listasPreciosSegmentada = null;
 		if (isEmpresa) {
-			listasPreciosSegmentada = solicitudServicioRepository
-					.getListaPreciosPorSegmento(ids, 2);
+			listasPreciosSegmentada = solicitudServicioRepository.getListaPreciosPorSegmento(ids, 2);
 		} else {
-			listasPreciosSegmentada = solicitudServicioRepository
-					.getListaPreciosPorSegmento(ids, 1);
+			listasPreciosSegmentada = solicitudServicioRepository.getListaPreciosPorSegmento(ids, 1);
 		}
-		List<ListaPreciosDto> listasPreciosSegmentadaDto = mapper.convertList(
-				listasPreciosSegmentada, ListaPreciosDto.class);
+		List<ListaPreciosDto> listasPreciosSegmentadaDto = mapper.convertList(listasPreciosSegmentada, ListaPreciosDto.class);
 		listasPreciosDto.retainAll(listasPreciosSegmentadaDto);
-
+		
 		return listasPreciosDto;
 	}
 
 	private boolean isTipoSolicitudActivacion(TipoSolicitud tipoSolicitud) {
-		return tipoSolicitud
-				.getTipoSolicitudBase()
-				.equals(knownInstanceRetriever
-						.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION))
-				|| tipoSolicitud
-						.getTipoSolicitudBase()
-						.equals(knownInstanceRetriever
-								.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION_G4));
+		return tipoSolicitud.getTipoSolicitudBase().equals(knownInstanceRetriever
+				.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION))
+				|| tipoSolicitud.getTipoSolicitudBase().equals(knownInstanceRetriever
+						.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION_G4));
 
 	}
-
+	
 	private boolean isTipoSolicitudAccesorios(TipoSolicitud tipoSolicitud) {
-		return tipoSolicitud
-				.getTipoSolicitudBase()
-				.equals(knownInstanceRetriever
-						.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_VENTA_ACCESORIOS))
-				|| tipoSolicitud
-						.getTipoSolicitudBase()
-						.equals(knownInstanceRetriever
-								.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_VENTA_ACCESORIOS_G4));
+		return tipoSolicitud.getTipoSolicitudBase().equals(knownInstanceRetriever
+				.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_VENTA_ACCESORIOS))
+				|| tipoSolicitud.getTipoSolicitudBase().equals(knownInstanceRetriever
+						.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_VENTA_ACCESORIOS_G4));
 
 	}
 
-	public List<PlanDto> getPlanesPorItemYTipoPlan(
-			ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,
-			Long idCuenta) {
+	public List<PlanDto> getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado,
+			TipoPlanDto tipoPlan, Long idCuenta) {
 		List planes = null;
-		planes = solicitudServicioRepository.getPlanes(tipoPlan.getId(),
-				itemSolicitudTasado.getItem().getId(), idCuenta,
-				sessionContextLoader.getVendedor());
+		planes = solicitudServicioRepository.getPlanes(tipoPlan.getId(), itemSolicitudTasado.getItem()
+				.getId(), idCuenta, sessionContextLoader.getVendedor());
 		return mapper.convertList(planes, PlanDto.class);
 	}
 
 	public List<ServicioAdicionalLineaSolicitudServicioDto> getServiciosAdicionales(
 			LineaSolicitudServicioDto linea, Long idCuenta, boolean isEmpresa) {
-		// MGR - #873 - Se agrega el Vendedor
+		//MGR - #873 - Se agrega el Vendedor
 		Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales = solicitudServicioRepository
-				.getServiciosAdicionales(linea.getTipoSolicitud().getId(),
-						linea.getPlan().getId(), linea.getItem().getId(),
-						idCuenta, sessionContextLoader.getVendedor(), isEmpresa);
-		return mapper.convertList(serviciosAdicionales,
-				ServicioAdicionalLineaSolicitudServicioDto.class);
+				.getServiciosAdicionales(linea.getTipoSolicitud().getId(), linea.getPlan().getId(), linea
+						.getItem().getId(), idCuenta, sessionContextLoader.getVendedor(), isEmpresa);
+		return mapper.convertList(serviciosAdicionales, ServicioAdicionalLineaSolicitudServicioDto.class);
 	}
 
-	public ResultadoReservaNumeroTelefonoDto reservarNumeroTelefonico(
-			long numero, long idTipoTelefonia, long idModalidadCobro,
-			long idLocalidad) throws RpcExceptionMessages {
+	public ResultadoReservaNumeroTelefonoDto reservarNumeroTelefonico(long numero, long idTipoTelefonia,
+			long idModalidadCobro, long idLocalidad) throws RpcExceptionMessages {
 		ReservaNumeroTelefonoBusinessResult result = null;
 		try {
-			result = solicitudBusinessService.reservarNumeroTelefonico(numero,
-					idTipoTelefonia, idModalidadCobro, idLocalidad);
+			result = solicitudBusinessService.reservarNumeroTelefonico(numero, idTipoTelefonia,
+					idModalidadCobro, idLocalidad);
 		} catch (BusinessException e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
@@ -805,41 +682,33 @@ public class SolicitudRpcServiceImpl extends RemoteService implements
 		return mapper.map(result, ResultadoReservaNumeroTelefonoDto.class);
 	}
 
-	public void desreservarNumeroTelefono(long numero,
-			Long idLineaSolicitudServicio) throws RpcExceptionMessages {
+	public void desreservarNumeroTelefono(long numero, Long idLineaSolicitudServicio)
+			throws RpcExceptionMessages {
 		try {
-			solicitudBusinessService.desreservarNumeroTelefono(numero,
-					idLineaSolicitudServicio);
+			solicitudBusinessService.desreservarNumeroTelefono(numero, idLineaSolicitudServicio);
 		} catch (BusinessException e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
 	}
 
-	public List<ModeloDto> getModelos(String imei, Long idTipoSolicitud,
-			Long idListaPrecios) throws RpcExceptionMessages {
-		List<ModeloDto> modelos = mapper.convertList(
-				solicitudServicioRepository.getModelos(imei), ModeloDto.class);
+	public List<ModeloDto> getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios)
+			throws RpcExceptionMessages {
+		List<ModeloDto> modelos = mapper.convertList(solicitudServicioRepository.getModelos(imei),
+				ModeloDto.class);
 		for (ModeloDto modelo : modelos) {
-			// MGR - #873 - Se agrega el Vendedor
-			modelo.setItems(mapper.convertList(solicitudServicioRepository
-					.getItems(idTipoSolicitud, idListaPrecios, modelo.getId(),
-							sessionContextLoader.getVendedor()),
-					ItemSolicitudTasadoDto.class));
+			//MGR - #873 - Se agrega el Vendedor
+			modelo.setItems(mapper.convertList(solicitudServicioRepository.getItems(idTipoSolicitud,
+					idListaPrecios, modelo.getId(), sessionContextLoader.getVendedor() ), ItemSolicitudTasadoDto.class));
 		}
 		return modelos;
 	}
 
-	/**
-	 * Retorna null si la SIM es correcta. De lo contrario retorna el mensaje de
-	 * error
-	 */
-	public String verificarNegativeFiles(String numero)
-			throws RpcExceptionMessages {
+	/** Retorna null si la SIM es correcta. De lo contrario retorna el mensaje de error */
+	public String verificarNegativeFiles(String numero) throws RpcExceptionMessages {
 		NegativeFilesBusinessResult negativeFilesResult = null;
 		try {
-			negativeFilesResult = negativeFilesBusinessOperator
-					.verificarNegativeFiles(numero);
+			negativeFilesResult = negativeFilesBusinessOperator.verificarNegativeFiles(numero);
 		} catch (BusinessException e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
@@ -850,64 +719,50 @@ public class SolicitudRpcServiceImpl extends RemoteService implements
 		return null;
 	}
 
-	public GeneracionCierreResultDto generarCerrarSolicitud(
-			SolicitudServicioDto solicitudServicioDto, String pinMaestro,
-			boolean cerrar) throws RpcExceptionMessages {
+	public GeneracionCierreResultDto generarCerrarSolicitud(SolicitudServicioDto solicitudServicioDto,
+			String pinMaestro, boolean cerrar) throws RpcExceptionMessages {
 		String accion = cerrar ? "cierre" : "generación";
-		AppLogger.info("Iniciando " + accion + " de SS de id="
-				+ solicitudServicioDto.getId() + " ...");
+		AppLogger.info("Iniciando " + accion + " de SS de id=" + solicitudServicioDto.getId() + " ...");
 		GeneracionCierreResultDto result = new GeneracionCierreResultDto();
 		SolicitudServicio solicitudServicio = null;
 		GeneracionCierreResponse response = null;
 		try {
 			completarDomiciliosSolicitudTransferencia(solicitudServicioDto);
-			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(
-					solicitudServicioDto, mapper);
-			response = solicitudBusinessService.generarCerrarSolicitud(
-					solicitudServicio, pinMaestro, cerrar);
+			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
+			response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar);
 			// metodo changelog
 			result.setError(response.getMessages().hasErrors());
 			if (cerrar == true
 					&& response.getMessages().hasErrors() == false
-					&& sessionContextLoader
-							.getVendedor()
-							.getTipoVendedor()
-							.getCodigoVantive()
-							.equals(KnownInstanceIdentifier.TIPO_VENDEDOR_EECC
-									.getKey())) {
-				solicitudBusinessService.generarChangeLog(solicitudServicioDto
-						.getId(), solicitudServicio.getVendedor().getId());
+					&& sessionContextLoader.getVendedor().getTipoVendedor().getCodigoVantive().equals(
+							KnownInstanceIdentifier.TIPO_VENDEDOR_EECC.getKey())) {
+				solicitudBusinessService.generarChangeLog(solicitudServicioDto.getId(), solicitudServicio
+						.getVendedor().getId());
 			}
-			result.setMessages(mapper.convertList(response.getMessages()
-					.getMessages(), MessageDto.class));
+			result.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
 			result.setRtfFileName(getReporteFileName(solicitudServicio));
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
-		AppLogger.info(accion + " de SS de id=" + solicitudServicioDto.getId()
-				+ " finalizado.");
+		AppLogger.info(accion + " de SS de id=" + solicitudServicioDto.getId() + " finalizado.");
 		return result;
 	}
-
-	private void completarDomiciliosSolicitudTransferencia(
-			SolicitudServicioDto solicitudServicioDto) {
+	
+	private void completarDomiciliosSolicitudTransferencia(SolicitudServicioDto solicitudServicioDto) {
 		if (solicitudServicioDto.getGrupoSolicitud().isTransferencia())
-			for (DomiciliosCuentaDto dom : solicitudServicioDto.getCuenta()
-					.getPersona().getDomicilios()) {
+			for (DomiciliosCuentaDto dom : solicitudServicioDto.getCuenta().getPersona().getDomicilios()) {
 
-				if (dom.getIdEntrega().equals(
-						EstadoTipoDomicilioDto.PRINCIPAL.getId())) {
+				if (dom.getIdEntrega().equals(EstadoTipoDomicilioDto.PRINCIPAL.getId())) {
 					solicitudServicioDto.setIdDomicilioEnvio(dom.getId());
 				}
-				if (dom.getIdFacturacion().equals(
-						EstadoTipoDomicilioDto.PRINCIPAL.getId())) {
+				if (dom.getIdFacturacion().equals(EstadoTipoDomicilioDto.PRINCIPAL.getId())) {
 					solicitudServicioDto.setIdDomicilioFacturacion(dom.getId());
 
 				}
 			}
 	}
-
+	
 	private String getReporteFileName(SolicitudServicio solicitudServicio) {
 		String filename;
 		if (solicitudServicio.getCuenta().isCliente()) {
@@ -921,16 +776,15 @@ public class SolicitudRpcServiceImpl extends RemoteService implements
 	}
 
 	public Boolean existReport(String report) {
-		String fullFilename = buildSolicitudReportPath() + File.separatorChar
-				+ report;
+		String fullFilename = buildSolicitudReportPath() + File.separatorChar + report;
 		AppLogger.info("Searching file " + fullFilename);
 		return new File(fullFilename).exists();
 	}
+	
 
 	public Boolean existDocDigitalizado(String pahtAndNameFile) {
-		// Llega algo como
-		// '\\arpalfls02\imaging\imagenes_general\orden_servicio\2002_06\5.66559-1-0300110.tif'
-		// Tengo que salvar las barras
+		//Llega algo como '\\arpalfls02\imaging\imagenes_general\orden_servicio\2002_06\5.66559-1-0300110.tif'
+		//Tengo que salvar las barras
 		pahtAndNameFile = pahtAndNameFile.replace('\\', File.separatorChar);
 		pahtAndNameFile = pahtAndNameFile.replace('/', File.separatorChar);
 		AppLogger.info("Searching file " + pahtAndNameFile);
@@ -942,64 +796,51 @@ public class SolicitudRpcServiceImpl extends RemoteService implements
 				.getObject(GlobalParameterIdentifier.SAMBA_PATH_RTF);
 		Calendar calendar = Calendar.getInstance();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy");
-		return pathGlobalParameter.getValue()
-				+ String.valueOf(File.separatorChar)
-				+ dateFormat.format(calendar.getTime())
-				+ months[calendar.get(Calendar.MONTH)];
+		return pathGlobalParameter.getValue() + String.valueOf(File.separatorChar)
+				+ dateFormat.format(calendar.getTime()) + months[calendar.get(Calendar.MONTH)];
 	}
 
-	private static String[] months = { "JAN", "FEB", "MAR", "APR", "MAY",
-			"JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC" };
+	private static String[] months = { "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT",
+			"NOV", "DEC" };
+	
+    public List<VendedorDto> getVendedoresDae() {
+        AppLogger.info("Iniciando busqueda de vendedores Dae activos...");
+        List<VendedorDto> vendedoresDae = mapper.convertList(solicitudServicioRepository.getVendedoresDae(), VendedorDto.class);
+        AppLogger.info("Retrieve VENDEDORES DAE finalizado...");
+        return vendedoresDae;
+    }
 
-	public List<VendedorDto> getVendedoresDae() {
-		AppLogger.info("Iniciando busqueda de vendedores Dae activos...");
-		List<VendedorDto> vendedoresDae = mapper.convertList(
-				solicitudServicioRepository.getVendedoresDae(),
-				VendedorDto.class);
-		AppLogger.info("Retrieve VENDEDORES DAE finalizado...");
-		return vendedoresDae;
-	}
-
-	public List<DescuentoDto> getDescuentos(Long idLinea)
-			throws RpcExceptionMessages {
+	public List<DescuentoDto> getDescuentos(Long idLinea) throws RpcExceptionMessages {
 		List descuentos = solicitudServicioRepository.getDescuentos(idLinea);
-		return mapper.convertList(descuentos, DescuentoDto.class);
+    	return mapper.convertList(descuentos, DescuentoDto.class);
 	}
 
-	public List<DescuentoLineaDto> getDescuentosAplicados(Long idLinea)
-			throws RpcExceptionMessages {
-		List descuentosAplicados = solicitudServicioRepository
-				.getDescuentosAplicados(idLinea);
+	public List<DescuentoLineaDto> getDescuentosAplicados(Long idLinea) throws RpcExceptionMessages {
+		List descuentosAplicados = solicitudServicioRepository.getDescuentosAplicados(idLinea);
 		return mapper.convertList(descuentosAplicados, DescuentoLineaDto.class);
 	}
 
 	public List<TipoDescuentoDto> getTiposDescuento(Long idLinea)
 			throws RpcExceptionMessages {
-		List tiposDescuento = solicitudServicioRepository
-				.getTiposDescuento(idLinea);
+		List tiposDescuento = solicitudServicioRepository.getTiposDescuento(idLinea);
 		return mapper.convertList(tiposDescuento, TipoDescuentoDto.class);
 	}
 
 	public List<TipoDescuentoDto> getTiposDescuentoAplicados(Long idLinea)
 			throws RpcExceptionMessages {
-		List tiposDescuentoAplicados = solicitudServicioRepository
-				.getTiposDescuentoAplicados(idLinea);
-		return mapper.convertList(tiposDescuentoAplicados,
-				TipoDescuentoDto.class);
+		List tiposDescuentoAplicados = solicitudServicioRepository.getTiposDescuentoAplicados(idLinea);
+		return mapper.convertList(tiposDescuentoAplicados, TipoDescuentoDto.class);
 	}
 
 	public boolean puedeAplicarDescuento(List<LineaSolicitudServicioDto> lineas)
-			throws RpcExceptionMessages {
-		List<LineaSolicitudServicio> convertList = mapper.convertList(lineas,
-				LineaSolicitudServicio.class);
+		throws RpcExceptionMessages {
+		List<LineaSolicitudServicio> convertList = mapper.convertList(lineas, LineaSolicitudServicio.class);
 		return solicitudServicioRepository.puedeAplicarDescuento(convertList);
 	}
-
-	public List<TipoDescuentoDto> getInterseccionTiposDescuento(
-			List<LineaSolicitudServicioDto> lineas) throws RpcExceptionMessages {
-		List tiposDescuento = solicitudServicioRepository
-				.getInterseccionTiposDescuento(mapper.convertList(lineas,
-						LineaSolicitudServicio.class));
+	
+	public List<TipoDescuentoDto> getInterseccionTiposDescuento(List<LineaSolicitudServicioDto> lineas) 
+			throws RpcExceptionMessages {
+		List tiposDescuento = solicitudServicioRepository.getInterseccionTiposDescuento(mapper.convertList(lineas, LineaSolicitudServicio.class));
 		return mapper.convertList(tiposDescuento, TipoDescuentoDto.class);
 	}
 
@@ -1007,25 +848,21 @@ public class SolicitudRpcServiceImpl extends RemoteService implements
 			throws RpcExceptionMessages {
 		DescuentoTotalDto descuentoTotal = new DescuentoTotalDto();
 		List descuentos = solicitudServicioRepository.getDescuentos(idLinea);
-		descuentoTotal.setDescuentos(mapper.convertList(descuentos,
-				DescuentoDto.class));
-		List tiposDescuento = solicitudServicioRepository
-				.getTiposDescuento(idLinea);
-		descuentoTotal.setTiposDescuento(mapper.convertList(tiposDescuento,
-				TipoDescuentoDto.class));
+		descuentoTotal.setDescuentos(mapper.convertList(descuentos, DescuentoDto.class));
+		List tiposDescuento = solicitudServicioRepository.getTiposDescuento(idLinea);
+		descuentoTotal.setTiposDescuento(mapper.convertList(tiposDescuento, TipoDescuentoDto.class));
 		descuentoTotal.setIdLinea(idLinea);
 		return descuentoTotal;
 	}
 
-	// MGR - #1415
+	//MGR - #1415
 	public Boolean crearArchivo(Long idSolicitud, boolean enviarEmail)
 			throws RpcExceptionMessages {
 		SolicitudServicio solicitudServicio = solicitudServicioRepository
-				.getSolicitudServicioPorId(idSolicitud);
+			.getSolicitudServicioPorId(idSolicitud);
 		GeneracionCierreResponse response = null;
 		try {
-			response = solicitudBusinessService.crearArchivo(solicitudServicio,
-					enviarEmail);
+			response = solicitudBusinessService.crearArchivo(solicitudServicio, enviarEmail);
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
@@ -1033,47 +870,38 @@ public class SolicitudRpcServiceImpl extends RemoteService implements
 		return true;
 	}
 
-	public List<PlanDto> getPlanesPorTipoPlan(Long idTipoPlan, Long idCuenta)
-			throws RpcExceptionMessages {
+	public List<PlanDto> getPlanesPorTipoPlan(Long idTipoPlan, Long idCuenta) throws RpcExceptionMessages {
 		List planes = null;
-		planes = solicitudServicioRepository.getPlanesPorTipoPlan(idTipoPlan,
-				idCuenta, sessionContextLoader.getVendedor());
+		planes = solicitudServicioRepository.getPlanesPorTipoPlan(idTipoPlan, idCuenta, sessionContextLoader.getVendedor());
 		return mapper.convertList(planes, PlanDto.class);
 	}
 
 	public List<ServicioAdicionalIncluidoDto> getServiciosAdicionalesContrato(
 			Long idPlan) throws RpcExceptionMessages {
-		List serviciosAdicionales = solicitudServicioRepository
-				.getServiciosAdicionalesContrato(idPlan,
-						sessionContextLoader.getVendedor());
-		return mapper.convertList(serviciosAdicionales,
-				ServicioAdicionalIncluidoDto.class);
+		List serviciosAdicionales = solicitudServicioRepository.getServiciosAdicionalesContrato(idPlan, sessionContextLoader.getVendedor());
+		return mapper.convertList(serviciosAdicionales, ServicioAdicionalIncluidoDto.class);
 	}
-
+	
 	public CreateSaveSSTransfResultDto saveSolicituServicioTranferencia(
-			SolicitudServicioDto solicitudServicioDto)
-			throws RpcExceptionMessages {
+			SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages {
 		CreateSaveSSTransfResultDto resultDto = new CreateSaveSSTransfResultDto();
 		try {
-
-			// MGR - ISDN 1824 - Cambio la forma en la que se valida el
-			// triptico, para que se ejecuten
-			// el resto de las validaciones
-			SolicitudServicio solicitudSaved = solicitudBusinessService
-					.saveSolicitudServicio(solicitudServicioDto, mapper);
-			SolicitudServicioDto solicitudDto = mapper.map(solicitudSaved,
-					SolicitudServicioDto.class);
+	
+			//MGR - ISDN 1824 - Cambio la forma en la que se valida el triptico, para que se ejecuten 
+			//el resto de las validaciones
+			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(
+					solicitudServicioDto, mapper);
+			SolicitudServicioDto solicitudDto = mapper.map(solicitudSaved, SolicitudServicioDto.class);
 			resultDto.setSolicitud(solicitudDto);
 
-			Vendedor vendedor = sessionContextLoader.getSessionContext()
-					.getVendedor();
+			Vendedor vendedor = sessionContextLoader.getSessionContext().getVendedor();
 			if (vendedor.isADMCreditos()) {
-				// Valida los predicados y el triptico
-				CreateSaveSSResponse response = solicitudBusinessService
-						.validarPredicadosGuardarSS(solicitudSaved);
+				//Valida los predicados y el triptico
+				CreateSaveSSResponse response = solicitudBusinessService.validarPredicadosGuardarSS(solicitudSaved);
 				resultDto.setError(response.getMessages().hasErrors());
-				resultDto.setMessages(mapper.convertList(response.getMessages()
-						.getMessages(), MessageDto.class));
+				resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
+				//larce
+				solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto);
 			}
 		} catch (Exception e) {
 			AppLogger.error(e);
@@ -1083,148 +911,120 @@ public class SolicitudRpcServiceImpl extends RemoteService implements
 	}
 
 	public CreateSaveSSTransfResultDto createSolicitudServicioTranferencia(
-			SolicitudServicioRequestDto solicitudServicioRequestDto)
-			throws RpcExceptionMessages {
+			SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages {
 		CreateSaveSSTransfResultDto resultDto = new CreateSaveSSTransfResultDto();
-
-		// MGR - ISDN 1824
-		CreateSaveSolicitudServicioResultDto resultSSAux = this
-				.createSolicitudServicio(solicitudServicioRequestDto);
+		
+		//MGR - ISDN 1824
+		CreateSaveSolicitudServicioResultDto resultSSAux = this.createSolicitudServicio(solicitudServicioRequestDto);
 		SolicitudServicioDto solicitudDto = resultSSAux.getSolicitud();
 		resultDto.addMessages(resultSSAux.getMessages());
-
+		
 		resultDto.setSolicitud(solicitudDto);
-		SolicitudServicio solicitud = repository.retrieve(
-				SolicitudServicio.class, solicitudDto.getId());
-		// mapper.map(solicitudDto, solicitud);
-		MessageList messages = solicitudBusinessService.validarCreateSSTransf(
-				solicitud).getMessages();
+		SolicitudServicio solicitud = repository.retrieve(SolicitudServicio.class,
+				solicitudDto.getId());
+		//mapper.map(solicitudDto, solicitud);
+		MessageList messages = solicitudBusinessService.validarCreateSSTransf(solicitud).getMessages();
 		resultDto.setError(messages.hasErrors());
-		resultDto.addMessages(mapper.convertList(messages.getMessages(),
-				MessageDto.class));
-
+		resultDto.addMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
+		
 		Vendedor vendLogeo = sessionContextLoader.getVendedor();
-		if (vendLogeo.isADMCreditos() || vendLogeo.isAP()) {
-
-			if (solicitud.getCuenta().getVendedorLockeo() != null
-					&& !vendLogeo.getId().equals(
-							solicitud.getCuenta().getVendedorLockeo().getId())) {
+		if(vendLogeo.isADMCreditos() || vendLogeo.isAP()){
+			
+			if(solicitud.getCuenta().getVendedorLockeo() != null &&
+				!vendLogeo.getId().equals(solicitud.getCuenta().getVendedorLockeo().getId())){
 				String nombSuper = "";
-				if (solicitud.getCuenta().getVendedorLockeo().getSupervisor() != null) {
-					nombSuper = solicitud.getCuenta().getVendedorLockeo()
-							.getSupervisor().getNombreYApellido();
+				if(solicitud.getCuenta().getVendedorLockeo().getSupervisor() != null){
+					nombSuper = solicitud.getCuenta().getVendedorLockeo().getSupervisor().getNombreYApellido();
 				}
-				resultDto
-						.addMessage("La cuenta está lockeada por un ejecutivo, el supervisor es "
-								+ nombSuper
-								+ ". Puede proseguir la carga de la SS");
+				resultDto.addMessage("La cuenta está lockeada por un ejecutivo, el supervisor es " + 
+						nombSuper + ". Puede proseguir la carga de la SS");
 			}
 		}
 		return resultDto;
 	}
-
+	
 	public CreateSaveSSTransfResultDto createCopySolicitudServicioTranferencia(
-			SolicitudServicioRequestDto solicitudServicioRequestDto,
-			SolicitudServicioDto solicitudToCopy) throws RpcExceptionMessages {
+			SolicitudServicioRequestDto solicitudServicioRequestDto , SolicitudServicioDto solicitudToCopy) throws RpcExceptionMessages {
 		CreateSaveSSTransfResultDto resultDto = new CreateSaveSSTransfResultDto();
-
-		// MGR - ISDN 1824
-		CreateSaveSolicitudServicioResultDto resultSSAux = this
-				.copySolicitudServicio(solicitudServicioRequestDto,
-						solicitudToCopy);
+		
+		//MGR - ISDN 1824
+		CreateSaveSolicitudServicioResultDto resultSSAux = this.copySolicitudServicio(solicitudServicioRequestDto, solicitudToCopy);
 		SolicitudServicioDto solicitudDto = resultSSAux.getSolicitud();
 		resultDto.addMessages(resultSSAux.getMessages());
-
+		
 		resultDto.setSolicitud(solicitudDto);
-		SolicitudServicio solicitud = repository.retrieve(
-				SolicitudServicio.class, solicitudDto.getId());
-		// mapper.map(solicitudDto, solicitud);
-		MessageList messages = solicitudBusinessService.validarCreateSSTransf(
-				solicitud).getMessages();
+		SolicitudServicio solicitud = repository.retrieve(SolicitudServicio.class,
+				solicitudDto.getId());
+		//mapper.map(solicitudDto, solicitud);
+		MessageList messages = solicitudBusinessService.validarCreateSSTransf(solicitud).getMessages();
 		resultDto.setError(messages.hasErrors());
-		resultDto.addMessages(mapper.convertList(messages.getMessages(),
-				MessageDto.class));
-
+		resultDto.addMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
+		
 		Vendedor vendLogeo = sessionContextLoader.getVendedor();
-		if (vendLogeo.isADMCreditos() || vendLogeo.isAP()) {
-
-			if (solicitud.getCuenta().getVendedorLockeo() != null
-					&& !vendLogeo.getId().equals(
-							solicitud.getCuenta().getVendedorLockeo().getId())) {
+		if(vendLogeo.isADMCreditos() || vendLogeo.isAP()){
+			
+			if(solicitud.getCuenta().getVendedorLockeo() != null &&
+				!vendLogeo.getId().equals(solicitud.getCuenta().getVendedorLockeo().getId())){
 				String nombSuper = "";
-				if (solicitud.getCuenta().getVendedorLockeo().getSupervisor() != null) {
-					nombSuper = solicitud.getCuenta().getVendedorLockeo()
-							.getSupervisor().getNombreYApellido();
+				if(solicitud.getCuenta().getVendedorLockeo().getSupervisor() != null){
+					nombSuper = solicitud.getCuenta().getVendedorLockeo().getSupervisor().getNombreYApellido();
 				}
-				resultDto
-						.addMessage("La cuenta está lockeada por un ejecutivo, el supervisor es "
-								+ nombSuper
-								+ ". Puede proseguir la carga de la SS");
+				resultDto.addMessage("La cuenta está lockeada por un ejecutivo, el supervisor es " + 
+						nombSuper + ". Puede proseguir la carga de la SS");
 			}
 		}
 		return resultDto;
 	}
-
+	
 	public ContratoViewInitializer getContratoViewInitializer(
 			GrupoSolicitudDto grupoSolicitudDto) {
 
 		ContratoViewInitializer initializer = new ContratoViewInitializer();
-		initializer.setTiposPlanes(mapper.convertList(
-				repository.getAll(TipoPlan.class), TipoPlanDto.class));
+		initializer.setTiposPlanes(mapper.convertList(repository.getAll(TipoPlan.class), TipoPlanDto.class));
 
 		return initializer;
 	}
-
-	// MGR - #1481 - Esto validaba que los planes existieran en SFA, ahora solo
-	// que pertenescan al
-	// segmento de cliente
-	public List<String> validarPlanesCedentes(
-			List<ContratoViewDto> ctoCedentes, boolean isEmpresa,
-			boolean isSaving) {
-		// Validacion 15 del caso de uso.
-		/*
-		 * Se comprueba que los planes cedentes, de existir en SFA, sean del
-		 * mismo segmento que el cliente cesionario. (Que un cliente tipo
-		 * 'Empresa' tenga planes cedentes para empresas y que un cliente tipo
-		 * 'Personal' tenga planes cedentes de su tipo)
-		 */
-
-		List<String> errores = new ArrayList<String>(); // Guardo los errores
-														// que pienso devolver
+	
+	//MGR - #1481 - Esto validaba que los planes existieran en SFA, ahora solo que pertenescan al 
+	//segmento de cliente
+	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa, boolean isSaving) {
+		//Validacion 15 del caso de uso.
+		/*Se comprueba que los planes cedentes, de existir en SFA, sean del mismo segmento
+		que el cliente cesionario.
+		(Que un cliente tipo 'Empresa' tenga planes cedentes para empresas y que un cliente
+		tipo 'Personal' tenga planes cedentes de su tipo)
+		*/
+		
+		List<String> errores = new ArrayList<String>(); //Guardo los errores que pienso devolver
 		boolean error = false;
 		final Vendedor vendedor = sessionContextLoader.getVendedor();
-
+		
 		for (int i = 0; !error && i < ctoCedentes.size(); i++) {
 			ContratoViewDto cto = ctoCedentes.get(i);
 
-			// Si no cambio el plan, valido que el plan cedente sea de su
-			// segmento
+			// Si no cambio el plan, valido que el plan cedente sea de su segmento
 			if (cto.getPlanCesionario() == null) {
-				List<PlanBase> planes = repository.find(
-						"from PlanBase p where p.codigoBSCS = ?",
-						String.valueOf(cto.getCodigoBSCSPlanCedente()));
+				List<PlanBase> planes = repository.find("from PlanBase p where p.codigoBSCS = ?", 
+									String.valueOf(cto.getCodigoBSCSPlanCedente()));
 
 				// Si no hay planes, no debo validar nada
 				if (!planes.isEmpty()) {
-					for (int j = 0; !error && j < planes.size(); j++) {
+					for (int j=0; !error && j < planes.size(); j++) {
 						PlanBase planBase = planes.get(j);
 						if ((planBase.getTipoPlan().isEmpresa() && !isEmpresa)
 								|| (planBase.getTipoPlan().isDirecto() && isEmpresa)) {
 							Message message;
 							if (isEmpresa) {
-								message = (Message) this.messageRetriever
-										.getObject(MessageIdentifier.PLAN_DIRECTO_SEG_EMPRESA);
+								message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_DIRECTO_SEG_EMPRESA); 
 							} else {
-								message = (Message) this.messageRetriever
-										.getObject(MessageIdentifier.PLAN_EMPRESA_SEG_DIRECTO);
+								message = (Message)this.messageRetriever.getObject(MessageIdentifier.PLAN_EMPRESA_SEG_DIRECTO);
 							}
 							errores.add(message.getDescription());
 							error = true;
 						}
-						// #1748
+						//#1748						
 						if (!error) {
-							if (vendedor.isDealer()
-									|| (vendedor.isAP() && !isSaving)
+							if (vendedor.isDealer() || (vendedor.isAP() && !isSaving) 
 									|| (vendedor.isADMCreditos() && !isSaving)) {
 								if (planBase.getTipoPlan().getId().equals(9L)) {
 									if (vendedor.isDealer()) {
@@ -1247,4 +1047,46 @@ public class SolicitudRpcServiceImpl extends RemoteService implements
 		AppLogger.info(linea);
 	}
 
+	public List<SolicitudServicioDto> buscarHistoricoVentas(String nss) throws RpcExceptionMessages {
+		List<SolicitudServicio> servicios = null;
+		String codigoVantive;
+		try {
+			servicios = solicitudBusinessService.buscarHistoricoVentas(nss);
+			if (servicios.size() > 0) {
+				SolicitudServicio solicitudServicio = servicios.get(0);
+				if (solicitudServicio.getClienteHistorico() == null) {
+					codigoVantive = solicitudBusinessService.buscarClienteByNss(nss);
+					solicitudServicio.setClienteHistorico(codigoVantive);
+				}
+				List<EstadoHistorico> estadosHistorico = repository.getAll(EstadoHistorico.class);
+				for (Iterator<EstadoHistorico> iterator = estadosHistorico.iterator(); iterator
+						.hasNext();) {
+					EstadoHistorico estadoHistorico = (EstadoHistorico) iterator.next();
+					if (solicitudServicio.getEstadoH().getDescripcion().equals(estadoHistorico.getDescripcion())) {
+						solicitudServicio.setEstadoH(estadoHistorico);
+						break;
+					}
+				}
+			}
+		} catch (Exception e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+		return mapper.convertList(servicios, SolicitudServicioDto.class);
+	}
+	
+	public List<EstadoHistoricoDto> getAllEstadoHistorico(boolean esProspect) {
+		List<EstadoHistorico> estadosHistorico = repository.getAll(EstadoHistorico.class);
+		if (esProspect) {
+			for (Iterator<EstadoHistorico> iterator = estadosHistorico.iterator(); 
+				iterator.hasNext();) {
+				EstadoHistorico estadoHistorico = (EstadoHistorico) iterator.next();
+				if ("Pass".equals(estadoHistorico.getDescripcion())) {
+					iterator.remove();
+				}
+			}
+		}
+		return (mapper.convertList(estadosHistorico, EstadoHistoricoDto.class));
+	}
+	
 }

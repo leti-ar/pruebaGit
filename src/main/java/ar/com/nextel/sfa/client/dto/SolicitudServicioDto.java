@@ -76,6 +76,13 @@ public class SolicitudServicioDto implements IsSerializable {
     private Long idSucursal;
     private Long tipoCanalVentas;
     
+    //larce - Datos del histórico
+    private Long cantidadEquiposH;
+	private Date fechaFirma;
+	private EstadoHistoricoDto estadoH;
+	private Date fechaEstado;
+	private String clienteHistorico;
+    
     public SolicitudServicioDto() {
 		solicitudServicioGeneracion = new SolicitudServicioGeneracionDto();
 	}
@@ -423,6 +430,47 @@ public class SolicitudServicioDto implements IsSerializable {
 	public void setTipoCanalVentas(Long tipoCanalVentas) {
 		this.tipoCanalVentas = tipoCanalVentas;
 	}
+
+	public Long getCantidadEquiposH() {
+		return cantidadEquiposH;
+	}
+
+	public void setCantidadEquiposH(Long cantidadEquiposH) {
+		this.cantidadEquiposH = cantidadEquiposH;
+	}
+
+	public Date getFechaFirma() {
+		return fechaFirma;
+	}
+
+	public void setFechaFirma(Date fechaFirma) {
+		this.fechaFirma = fechaFirma;
+	}
+
+	public EstadoHistoricoDto getEstadoH() {
+		return estadoH;
+	}
+
+	public void setEstadoH(EstadoHistoricoDto estadoH) {
+		this.estadoH = estadoH;
+	}
+
+	public Date getFechaEstado() {
+		return fechaEstado;
+	}
+
+	public void setFechaEstado(Date fechaEstado) {
+		this.fechaEstado = fechaEstado;
+	}
+    
+	public String getClienteHistorico() {
+		return clienteHistorico;
+	}
+	
+	public void setClienteHistorico(String clienteHistorico) {
+		this.clienteHistorico = clienteHistorico;
+	}
+	
 
 	public String getControl() {
 		return control;

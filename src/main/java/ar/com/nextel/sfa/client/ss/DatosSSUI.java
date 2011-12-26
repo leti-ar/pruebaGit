@@ -59,6 +59,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private FlowPanel mainpanel;
 	private EditarSSUIData editarSSUIData;
 	private Grid nnsLayout;
+	private Grid historicoLayout;
 	private Grid domicilioLayout;
 	private FlexTable detalleSS;
 	private ServiciosAdicionalesTable serviciosAdicionales;
@@ -95,6 +96,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		this.controller = controller;
 		editarSSUIData = controller.getEditarSSUIData();
 		mainpanel.add(getNssLayout());
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
+			mainpanel.add(getHistoricoVentasPanel());
+		}
 		mainpanel.add(getDomicilioPanel());
 		mainpanel.add(getDetallePanel());
 	}
@@ -188,7 +192,23 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	//	}
 	
 	}
-
+	
+	private Widget getHistoricoVentasPanel() {
+		TitledPanel historico = new TitledPanel("Histórico de Ventas");
+		historicoLayout = new Grid(1, 8);
+		historicoLayout.addStyleName("layout");
+		historicoLayout.setHTML(0, 0, Sfa.constant().cantidadEquipos());
+		historicoLayout.setWidget(0, 1, editarSSUIData.getCantidadEquipos());
+		historicoLayout.setHTML(0, 2, Sfa.constant().fechaFirma());
+		historicoLayout.setWidget(0, 3, editarSSUIData.getFechaFirma());
+		historicoLayout.setHTML(0, 4, Sfa.constant().estadoReq());
+		historicoLayout.setWidget(0, 5, editarSSUIData.getEstadoH());
+		historicoLayout.setHTML(0, 6, Sfa.constant().fechaEstado());
+		historicoLayout.setWidget(0, 7, editarSSUIData.getFechaEstado());
+		historico.add(historicoLayout);
+		return historico;
+	}
+	
 	private Widget getDomicilioPanel() {
 		TitledPanel domicilio = new TitledPanel("Domicilio");
 

@@ -27,6 +27,7 @@ import ar.com.nextel.sfa.client.widget.ContratoConChinche;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.nextel.sfa.client.widget.PlanCesionarioConLapiz;
+import ar.com.nextel.sfa.client.widget.TitledPanel;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -58,6 +59,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	private FlowPanel mainpanel;
 	private EditarSSUIData editarSSUIData;
 	private Grid nnsLayout;
+	private Grid historicoLayout;
 	private Grid obsLayout;
 	private Grid cedenteLayout;
 	private Grid busqLayout;
@@ -101,6 +103,9 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		this.controller = controller;
 		editarSSUIData = controller.getEditarSSUIData();
 		mainpanel.add(getNssLayout());
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
+			mainpanel.add(getHistoricoVentasPanel());
+		}
 		mainpanel.add(getObsLayout());
 		mainpanel.add(getCedenteLayout());
 		mainpanel.add(getBusqLayout());
@@ -153,6 +158,22 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		nnsLayout.addStyleName("layout");
 		refreshNssLayout();
 		return nnsLayout;
+	}
+	
+	private Widget getHistoricoVentasPanel() {
+		TitledPanel historico = new TitledPanel("Histórico de Ventas");
+		historicoLayout = new Grid(1, 8);
+		historicoLayout.addStyleName("layout");
+		historicoLayout.setHTML(0, 0, Sfa.constant().cantidadEquipos());
+		historicoLayout.setWidget(0, 1, editarSSUIData.getCantidadEquiposTr());
+		historicoLayout.setHTML(0, 2, Sfa.constant().fechaFirma());
+		historicoLayout.setWidget(0, 3, editarSSUIData.getFechaFirmaTr());
+		historicoLayout.setHTML(0, 4, Sfa.constant().estadoReq());
+		historicoLayout.setWidget(0, 5, editarSSUIData.getEstadoTr());
+		historicoLayout.setHTML(0, 6, Sfa.constant().fechaEstado());
+		historicoLayout.setWidget(0, 7, editarSSUIData.getFechaEstadoTr());
+		historico.add(historicoLayout);
+		return historico;
 	}
 	
 	private Widget getObsLayout(){

@@ -9,6 +9,7 @@ import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.EstadoHistoricoDto;
 import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
 import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
@@ -132,15 +133,19 @@ public interface SolicitudRpcServiceAsync {
 			boolean isEmpresa, boolean isSaving, AsyncCallback<List<String>> callback);
 	
 	public void loginServer(String linea, AsyncCallback<Void> callback);
-
+	
 	public void copySolicitudServicio(
 			SolicitudServicioRequestDto solicitudServicioRequestDto , SolicitudServicioDto solicitudToCopy,
 			AsyncCallback<CreateSaveSolicitudServicioResultDto> callback);
-
+	
 	public void createCopySolicitudServicioTranferencia(
 			SolicitudServicioRequestDto solicitudServicioRequestDto,
 			SolicitudServicioDto solicitudSS,
 			AsyncCallback<CreateSaveSSTransfResultDto> callback);
+
+	public void buscarHistoricoVentas(String nss, AsyncCallback<List<SolicitudServicioDto>> callback);
+
+	public void getAllEstadoHistorico(boolean esProspect, AsyncCallback<List<EstadoHistoricoDto>> callback);
 
 	public void saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto,
 			AsyncCallback<Boolean> callback);

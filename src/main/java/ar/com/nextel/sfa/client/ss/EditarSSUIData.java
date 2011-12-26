@@ -14,6 +14,7 @@ import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.ControlesDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
+import ar.com.nextel.sfa.client.dto.EstadoHistoricoDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
@@ -34,10 +35,14 @@ import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.util.DateUtil;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
+import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -52,6 +57,7 @@ import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.Label;
@@ -132,6 +138,17 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private static final String CANAL_VTA_TRANSFERENCIA = "Transferencia";
 	public static final String NO_COMISIONABLE = "No Comisionable";
 	
+	private RegexTextBox cantidadEquipos;
+	private SimpleDatePicker fechaFirma;
+	private ListBox estadoH;
+	private SimpleDatePicker fechaEstado;
+	private RegexTextBox cantidadEquiposTr;
+	private SimpleDatePicker fechaFirmaTr;
+	private ListBox estadoTr;
+	private SimpleDatePicker fechaEstadoTr;
+	private static final String ITEM_PENDIENTE = "Pendiente";
+	private static final String ITEM_PASS = "Pass";
+	private String clienteHistorico = "";
 	
 	//analisis
 	private RegexTextBox titulo;
@@ -273,15 +290,65 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 		fields.add(parametroBusqContrato = new RegexTextBox());
 		
+		fields.add(cantidadEquipos = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(3), true));
+		fields.add(fechaFirma = new SimpleDatePicker(false, true));
+		fields.add(estadoH = new ListBox(""));
+		fields.add(fechaEstado = new SimpleDatePicker(false, true));
+		fields.add(cantidadEquiposTr = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(3), true));
+		fields.add(fechaFirmaTr = new SimpleDatePicker(false, true));
+		fields.add(estadoTr = new ListBox(""));
+		fields.add(fechaEstadoTr = new SimpleDatePicker(false, true));
+		
+		//larce - Busco en vantive y completo los campos si están en blanco
+		nss.addBlurHandler(new BlurHandler() {
+			public void onBlur(BlurEvent event) {
+				SolicitudRpcService.Util.getInstance().buscarHistoricoVentas(nss.getText(), 
+						new DefaultWaitCallback<List<SolicitudServicioDto>>() {
+					public void success(List<SolicitudServicioDto> result) {
+						if (result.size() > 0) {
+							SolicitudServicioDto ss = result.get(0);
+							completarCamposHistorico(ss);
+						}
+					}
+				});
+			}
+		});
+		
 		inicializarBusquedaContratos();
+	}
+
+	public void completarCamposHistorico(SolicitudServicioDto ss) {
+		if ("".equals(cantidadEquipos.getText())) {
+			cantidadEquipos.setText(ss.getCantidadEquiposH().toString());
+		}
+		if ("".equals(fechaFirma.getTextBox().getText())) {
+			fechaFirma.getTextBox().setText(dateTimeFormat.format(ss.getFechaFirma()));
+		}
+		if (!ss.getEstadoH().getDescripcion().equals(estadoH.getSelectedItemText())) {
+			estadoH.setSelectedItem(ss.getEstadoH());
+		}
+		if ("".equals(fechaEstado.getTextBox().getText())) {
+			fechaEstado.getTextBox().setText(dateTimeFormat.format(ss.getFechaEstado()));
+		}
+		if ("".equals(cantidadEquiposTr.getText())) {
+			cantidadEquiposTr.setText(ss.getCantidadEquiposH().toString());
+		}
+		if ("".equals(fechaFirmaTr.getTextBox().getText())) {
+			fechaFirmaTr.getTextBox().setText(dateTimeFormat.format(ss.getFechaFirma()));
+		}
+		if (!ss.getEstadoH().getDescripcion().equals(estadoTr.getSelectedItemText())) {
+			estadoTr.setSelectedItem(ss.getEstadoH());
+		}
+		if ("".equals(fechaEstadoTr.getTextBox().getText())) {
+			fechaEstadoTr.getTextBox().setText(dateTimeFormat.format(ss.getFechaEstado()));
+		}
+		clienteHistorico = ss.getClienteHistorico();
 	}
 
 	/** Carga los datos de Header de infocom */
 	public void setInfocom(InfocomInitializer infocom) {
 		this.infocom = infocom;  
 		nflota.setText(infocom.getFlota());
-		
-	
 	}
 	
 	private void showMaxLengthTextAreaError(TextArea textArea, int maxLength) {
@@ -531,6 +598,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			origen.setSelectedItem(solicitud.getOrigen());
 			origenTR.setSelectedItem(solicitud.getOrigen());
 			anticipo.setSelectedItem(solicitud.getTipoAnticipo());
+			estadoH.setSelectedItem(solicitudServicio.getEstadoH());
+			estadoTr.setSelectedItem(solicitudServicio.getEstadoH());
 		} else {
 			deferredLoad();
 		}
@@ -554,7 +623,22 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 		if(solicitud.getGrupoSolicitud().isTransferencia()){
 			cargarDatosTransferencia();
+			//larce
+			cantidadEquiposTr.setText(solicitudServicio.getCantidadEquiposH() != null ? solicitudServicio
+					.getCantidadEquiposH().toString() : "");
+			fechaFirmaTr.getTextBox().setText(solicitudServicio.getFechaFirma() != null ? dateTimeFormat.
+					format(solicitudServicio.getFechaFirma()) : "");
+			fechaEstadoTr.getTextBox().setText(solicitudServicio.getFechaEstado() != null ? dateTimeFormat.
+					format(solicitudServicio.getFechaEstado()) : "");
+		} else {
+			cantidadEquipos.setText(solicitudServicio.getCantidadEquiposH() != null ? solicitudServicio.
+					getCantidadEquiposH().toString() : "");
+			fechaFirma.getTextBox().setText(solicitudServicio.getFechaFirma() != null ? dateTimeFormat.
+					format(solicitudServicio.getFechaFirma()) : "");
+			fechaEstado.getTextBox().setText(solicitudServicio.getFechaEstado() != null ? dateTimeFormat.
+					format(solicitudServicio.getFechaEstado()) : "");
 		}
+		
 	}
 	
 	private void cargarDatosTransferencia(){
@@ -581,6 +665,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				origen.setSelectedItem(solicitudServicio.getOrigen());
 				origenTR.setSelectedItem(solicitudServicio.getOrigen());
 				anticipo.setSelectedItem(solicitudServicio.getTipoAnticipo());
+				estadoH.setSelectedItem(solicitudServicio.getEstadoH());
+				estadoTr.setSelectedItem(solicitudServicio.getEstadoH());
 				return false;
 			}
 		});
@@ -641,11 +727,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		solicitudServicio.setAclaracionEntrega(aclaracion.getText());
 		solicitudServicio.setFirmar(firmarss.getValue());
 		solicitudServicio.setObservaciones(observaciones.getText());
-		
 		if (solicitudServicio.getGrupoSolicitud().isCDW()) {
 			solicitudServicio.setEmail(email.getText());
 		}
-		
+		//larce
+		solicitudServicio.setCantidadEquiposH(new Long(cantidadEquipos.getText()));
+		solicitudServicio.setFechaFirma(dateTimeFormat.parse(fechaFirma.getTextBox().getText()));
+		solicitudServicio.setEstadoH((EstadoHistoricoDto) estadoH.getSelectedItem());
+		solicitudServicio.setFechaEstado(dateTimeFormat.parse(fechaEstado.getTextBox().getText()));
+		solicitudServicio.setClienteHistorico(clienteHistorico);
 		return solicitudServicio;
 	}
 
@@ -698,7 +788,22 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			validator.addTarget(ordenCompra).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().ordenCompra()));
 		}
-		
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
+			validator.addTarget(nss).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().nssReq()));
+			validator.addTarget(cantidadEquipos).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().cantidadEquipos()));
+			validator.addTarget(fechaFirma.getTextBox()).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().fechaFirma()));
+			if (estadoH.getSelectedIndex() == 0) {
+				validator.addError(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().estado()));
+			} else if (RegularExpressionConstants.isVancuc(solicitudServicio.getCuenta().getCodigoVantive())
+						&& "Pass".equals(estadoH.getSelectedItemText())) {
+					validator.addError("No puede elegir el estado Pass para este tipo de clientes.");
+				}
+			if ("".equals(fechaEstado.getTextBox().getText())) {
+				fechaEstado.getTextBox().setText(dateTimeFormat.format(new Date()));
+			}
+		}
 		validator.fillResult();
 		return validator.getErrors();
 	}
@@ -781,6 +886,27 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 						RegularExpressionConstants.email);
 			}
 		}
+		//larce - Se valida que la fecha estado no sea menor a 2 meses y mayor a 1 mes de la fecha del día.
+		final long unDiaEnMilis = 1000*60*60*24;
+		final Date hace2Meses = new Date(System.currentTimeMillis() - 60*unDiaEnMilis);
+		final Date dentroDe1mes = new Date(System.currentTimeMillis() + 30*unDiaEnMilis);
+		final Date fechaEstadoTB = new Date(fechaEstado.getTextBox().getText());
+		
+		if (fechaEstadoTB.before(hace2Meses) || fechaEstadoTB.after(dentroDe1mes)) {
+			validator.addError("La fecha de estado no debe ser menor a 2 meses o mayor a 1 mes con respecto a la fecha de hoy.");
+		}
+		solicitudServicio.setClienteHistorico(clienteHistorico);
+		if ("".equals(solicitudServicio.getClienteHistorico()) || solicitudServicio.getClienteHistorico() == null) {
+			validator.addError("El cliente no se encuentra asociado al historico para el numero de solicitud ingresado.");
+		} else if (!solicitudServicio.getCuenta().getCodigoVantive().equals(solicitudServicio.getClienteHistorico())) {
+				validator.addError("El cliente difiere entre el de la SS y el ingresado en el Histórico de Ventas.");
+		}
+		
+		if (RegularExpressionConstants.isVancuc(solicitudServicio.getCuenta().getCodigoVantive())
+				&& "Pass".equals(estadoH.getSelectedItemText())) {
+			validator.addError("No puede elegir el estado Pass para este tipo de clientes.");
+		}
+		
 		validator.fillResult();
 		List<String> errores = validator.getErrors();
 		errores.addAll(validarCompletitud());
@@ -1137,7 +1263,6 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		solicitudServicio.setObservaciones(observaciones.getText());
 		solicitudServicio.setControl(control.getSelectedItemText());
 	
-		
 		//MGR - #1359
 		//solicitudServicio.setUsuarioCreacion(ClientContext.getInstance().getVendedor());
 		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())) {
@@ -1156,7 +1281,12 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				solicitudServicio.setTipoCanalVentas(instancias.get(TIPO_CANAL_VTA_TRANSFERENCIA));
 			}
 		}
-
+		//larce
+		solicitudServicio.setCantidadEquiposH(new Long(cantidadEquiposTr.getText()));
+		solicitudServicio.setFechaFirma(dateTimeFormat.parse(fechaFirmaTr.getTextBox().getText()));
+		solicitudServicio.setEstadoH((EstadoHistoricoDto) estadoTr.getSelectedItem());
+		solicitudServicio.setFechaEstado(dateTimeFormat.parse(fechaEstadoTr.getTextBox().getText()));
+		solicitudServicio.setClienteHistorico(clienteHistorico);
 		return solicitudServicio;
 	}
 	
@@ -1180,7 +1310,22 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 		validator.addTarget(canalVtas).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Canal de Ventas"));
-		
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
+			validator.addTarget(nss).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().nssReq()));
+			validator.addTarget(cantidadEquiposTr).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().cantidadEquipos()));
+			validator.addTarget(fechaFirmaTr.getTextBox()).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().fechaFirma()));
+			if (estadoTr.getSelectedIndex() == 0) {
+				validator.addError(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().estado()));
+			} else if (RegularExpressionConstants.isVancuc(solicitudServicio.getCuenta().getCodigoVantive())
+					&& "Pass".equals(estadoTr.getSelectedItemText())) {
+				validator.addError("No puede elegir el estado Pass para este tipo de clientes.");
+			}
+			if ("".equals(fechaEstado.getTextBox().getText())) {
+				fechaEstado.getTextBox().setText(dateTimeFormat.format(new Date()));
+			}
+		}
 		validator.fillResult();
 		return validator.getErrors();
 	}
@@ -1333,7 +1478,68 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	public void setEstado(Label estado) {
 		this.estado = estado;
 	}
+	
+	public RegexTextBox getCantidadEquipos() {
+		return cantidadEquipos;
+	}
 
+	public Widget getFechaFirma() {
+		Grid datePickerFull = new Grid(1, 2);
+		fechaFirma.setWeekendSelectable(true);
+		fechaFirma.setSelectedDate(DateUtil.getStartDayOfMonth(DateUtil.today()));
+		datePickerFull.setWidget(0, 0, fechaFirma.getTextBox());
+		datePickerFull.setWidget(0, 1, fechaFirma);
+		return datePickerFull;
+	}
+
+	public ListBox getEstadoH() {
+		return estadoH;
+	}
+
+	public Widget getFechaEstado() {
+		Grid datePickerFull = new Grid(1, 2);
+		fechaEstado.setWeekendSelectable(true);
+		fechaEstado.setSelectedDate(DateUtil.getStartDayOfMonth(DateUtil.today()));
+		datePickerFull.setWidget(0, 0, fechaEstado.getTextBox());
+		datePickerFull.setWidget(0, 1, fechaEstado);
+		return datePickerFull;
+	}
+	
+	public RegexTextBox getCantidadEquiposTr() {
+		return cantidadEquiposTr;
+	}
+
+	public Widget getFechaFirmaTr() {
+		Grid datePickerFull = new Grid(1, 2);
+		fechaFirmaTr.setWeekendSelectable(true);
+		fechaFirmaTr.setSelectedDate(DateUtil.getStartDayOfMonth(DateUtil.today()));
+		datePickerFull.setWidget(0, 0, fechaFirmaTr.getTextBox());
+		datePickerFull.setWidget(0, 1, fechaFirmaTr);
+		return datePickerFull;
+	}
+
+	public ListBox getEstadoTr() {
+		return estadoTr;
+	}
+
+	public Widget getFechaEstadoTr() {
+		Grid datePickerFull = new Grid(1, 2);
+		fechaEstadoTr.setWeekendSelectable(true);
+		fechaEstadoTr.setSelectedDate(DateUtil.getStartDayOfMonth(DateUtil.today()));
+		datePickerFull.setWidget(0, 0, fechaEstadoTr.getTextBox());
+		datePickerFull.setWidget(0, 1, fechaEstadoTr);
+		return datePickerFull;
+	}
+
+	public void inicializarEstado(ListBox listBoxEstado, boolean esProspect) {
+		listBoxEstado.clear();
+		listBoxEstado.addItem(ITEM_PENDIENTE);
+		if (!esProspect) {
+			listBoxEstado.addItem(ITEM_PASS);
+		}
+		listBoxEstado.setSelectedIndex(0);
+	}
+	
 	public RegexTextBox getTitulo() {
 		return titulo;
 	}

@@ -172,6 +172,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
             <a>vendedor</a>
             <b>vendedor</b>
         </field>
+        <field custom-converter-id="enumToDto">
+			<a>estadoH</a>
+			<b>estadoH</b>
+		</field>
 	</mapping>
 
 	<mapping>

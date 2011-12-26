@@ -3084,7 +3084,42 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("confirmada")
   String confirmada();
   
+  /**
+   * Translated "<span class=\"req\">Cantidad de Equipos:</span>".
+   * 
+   * @return translated "<span class=\"req\">Cantidad de Equipos:</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Cantidad de Equipos:</span>")
+  @Key("cantidadEquipos")  
+  String cantidadEquipos();
   
+  /**
+   * Translated "<span class=\"req\">Fecha firma:</span>".
+   * 
+   * @return translated "<span class=\"req\">Fecha firma:</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Fecha firma:</span>")
+  @Key("fechaFirma")  
+  String fechaFirma();
+  
+  /**
+   * Translated "<span class=\"req\">Estado:</span>".
+   * 
+   * @return translated "<span class=\"req\">Estado:</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Estado:</span>")
+  @Key("estadoReq")  
+  String estadoReq();
+  
+  /**
+   * Translated "<span class=\"req\">Fecha estado::</span>".
+   * 
+   * @return translated "<span class=\"req\">Fecha estado:</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Fecha estado:</span>")
+  @Key("fechaEstado")  
+  String fechaEstado();
+		  
   /**
    * Translated "Control".
    * 

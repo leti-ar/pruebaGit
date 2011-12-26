@@ -123,8 +123,10 @@ public enum PermisosEnum {
 	VER_COMBO_SUCURSAL_ORIGEN("verComboSucursalOrigen",Accion.X,true),
 	EVITA_CONTROL_TRIPTICO_RANGO_GRUPO_ADMC("evitaControlTripticoDentroRangoDelGrupoADMC", Accion.X, false),
 	VALIDAR_TRIPTICO_AL_GUARDAR("validarTripticoAlGuardar", Accion.X, false),
-    VER_COMBO_ESTADO("verComboControl", Accion.X,true);
-    
+	VER_COMBO_ESTADO("verComboControl", Accion.X,true),
+	//@larce - Indica si en las pantallas de SS se puede ver el panel con los datos del histórico
+	VER_HISTORICO("verHistorico",Accion.X,true);
+
 	private String value;
     private String accion;
 	private boolean forBrowser;
