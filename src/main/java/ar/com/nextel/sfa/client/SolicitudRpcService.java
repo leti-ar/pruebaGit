@@ -156,8 +156,6 @@ public interface SolicitudRpcService extends RemoteService {
 
 	public List<SolicitudServicioDto> buscarHistoricoVentas(String nss) throws RpcExceptionMessages;
 
-	public List<EstadoHistoricoDto> getAllEstadoHistorico(boolean esProspect) throws RpcExceptionMessages; 
-	
 	public CreateSaveSSTransfResultDto createCopySolicitudServicioTranferencia(
 			SolicitudServicioRequestDto solicitudServicioRequestDto,
 			SolicitudServicioDto solicitudSS) throws RpcExceptionMessages;

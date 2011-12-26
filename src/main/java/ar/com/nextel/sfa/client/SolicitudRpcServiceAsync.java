@@ -145,8 +145,6 @@ public interface SolicitudRpcServiceAsync {
 
 	public void buscarHistoricoVentas(String nss, AsyncCallback<List<SolicitudServicioDto>> callback);
 
-	public void getAllEstadoHistorico(boolean esProspect, AsyncCallback<List<EstadoHistoricoDto>> callback);
-
 	public void saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto,
 			AsyncCallback<Boolean> callback);
 }

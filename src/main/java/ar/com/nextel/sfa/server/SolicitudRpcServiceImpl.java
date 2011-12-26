@@ -1075,18 +1075,4 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return mapper.convertList(servicios, SolicitudServicioDto.class);
 	}
 	
-	public List<EstadoHistoricoDto> getAllEstadoHistorico(boolean esProspect) {
-		List<EstadoHistorico> estadosHistorico = repository.getAll(EstadoHistorico.class);
-		if (esProspect) {
-			for (Iterator<EstadoHistorico> iterator = estadosHistorico.iterator(); 
-				iterator.hasNext();) {
-				EstadoHistorico estadoHistorico = (EstadoHistorico) iterator.next();
-				if ("Pass".equals(estadoHistorico.getDescripcion())) {
-					iterator.remove();
-				}
-			}
-		}
-		return (mapper.convertList(estadosHistorico, EstadoHistoricoDto.class));
-	}
-	
 }

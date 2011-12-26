@@ -277,11 +277,6 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.buscarHistoricoVentas(nss, defaultWaitCallback);
 	}
-
-	public void getAllEstadoHistorico(boolean esProspect, DefaultWaitCallback<List<EstadoHistoricoDto>> defaultWaitCallback) {
-		WaitWindow.show();
-		solicitudRpcServiceAsync.getAllEstadoHistorico(esProspect, defaultWaitCallback);
-	}
 	
 	public void saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto,
 			AsyncCallback<Boolean> callback){
