@@ -60,6 +60,16 @@ public class AnalisisSSUI extends Composite {
 		nuevoEstado.setHTML(0,0,Sfa.constant().nuevoEstado());
 		nuevoEstado.setWidget(0, 1,editarSSUIData.getNuevoEstado());
         cambiarEstadoPanel.add(nuevoEstado);
+
+       if(editarSSUIData.getComentarioAnalista() != null){
+        	editarSSUIData.getComentarioAnalista().addItem("Aprobación de Crédito – Pass");
+        	//Usar desp el query del CU
+        	editarSSUIData.getComentarioAnalista().addItem("Aprobación de Crédito - Fail");
+        	//Ver que hay que poner como mensaje
+        	editarSSUIData.getComentarioAnalista().addItem("Aprobación de Crédito - En carga");
+        	editarSSUIData.getComentarioAnalista().addItem("Aprobación de Crédito - A Confirmar");
+        	editarSSUIData.getComentarioAnalista().addItem("Aprobación de Crédito - Carpeta Incompleta");
+        }
         
 		Grid mail = new Grid(7,2);
 		mail.addStyleName("layout");
@@ -83,6 +93,45 @@ public class AnalisisSSUI extends Composite {
 				addEstado();
 			}
 	    });
+	    
+		
+	    editarSSUIData.getNuevoEstado().addChangeHandler(new ChangeHandler() {
+			
+			public void onChange(ChangeEvent event) {
+
+				int selectedChoice = editarSSUIData.getNuevoEstado().getSelectedIndex();
+				
+				switch (selectedChoice) {
+				case 0:
+					editarSSUIData.getComentarioAnalista().setSelectedIndex(0);
+
+					break;
+				case 1:
+					editarSSUIData.getComentarioAnalista().setSelectedIndex(1);
+
+					break;
+				case 2:
+					editarSSUIData.getComentarioAnalista().setSelectedIndex(2);
+					
+					break;
+				case 3:
+					editarSSUIData.getComentarioAnalista().setSelectedIndex(3);
+					break;
+				case 4:
+					
+					editarSSUIData.getComentarioAnalista().setSelectedIndex(4);
+					break;
+				case 5:
+					
+					editarSSUIData.getComentarioAnalista().setSelectedIndex(5);
+					break;
+
+				default:
+					break;
+				}
+			}
+		});
+	    
 	    
 //	    mail.setHTML(6, 0, Sfa.constant().whiteSpace());
 	    mail.setWidget(6, 0,ingresarCambio);

@@ -217,6 +217,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		resultDto.setError(messages.hasErrors());
 		resultDto.setMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
 		
+		if (solicitudServicioDto.getNumero() != null) {
+			solicitudServicioDto.setHistorialEstados(getEstadosPorSolicitud(new Long(solicitudServicioDto.getNumero())));
+		}
+		
 		AppLogger.info("Creacion de Solicitud de Servicio finalizada");
 		resultDto.setSolicitud(solicitudServicioDto);
 		return resultDto;
@@ -464,7 +468,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		
 		List<EstadoHistorico> estadosHistorico = repository.getAll(EstadoHistorico.class);
 		initializer.setEstadosHistorico(mapper.convertList(estadosHistorico, EstadoHistoricoDto.class));
-		
+		initializer.setOpcionesEstado(mapper.convertList(repository.getAll(EstadoSolicitud.class),EstadoSolicitudDto.class));
 		return initializer;
 	}
 
