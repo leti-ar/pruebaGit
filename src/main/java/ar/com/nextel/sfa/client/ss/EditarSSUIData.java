@@ -598,8 +598,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			origen.setSelectedItem(solicitud.getOrigen());
 			origenTR.setSelectedItem(solicitud.getOrigen());
 			anticipo.setSelectedItem(solicitud.getTipoAnticipo());
-			estadoH.setSelectedItem(solicitudServicio.getEstadoH());
-			estadoTr.setSelectedItem(solicitudServicio.getEstadoH());
+			if (solicitudServicio.getEstadoH() != null) {
+				estadoH.setSelectedItem(solicitudServicio.getEstadoH());
+				estadoTr.setSelectedItem(solicitudServicio.getEstadoH());
+			}
 		} else {
 			deferredLoad();
 		}
@@ -665,8 +667,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				origen.setSelectedItem(solicitudServicio.getOrigen());
 				origenTR.setSelectedItem(solicitudServicio.getOrigen());
 				anticipo.setSelectedItem(solicitudServicio.getTipoAnticipo());
-				estadoH.setSelectedItem(solicitudServicio.getEstadoH());
-				estadoTr.setSelectedItem(solicitudServicio.getEstadoH());
+				if (solicitudServicio.getEstadoH() != null) {
+					estadoH.setSelectedItem(solicitudServicio.getEstadoH());
+					estadoTr.setSelectedItem(solicitudServicio.getEstadoH());
+				}
 				return false;
 			}
 		});
