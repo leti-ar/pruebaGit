@@ -300,19 +300,21 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		fields.add(fechaEstadoTr = new SimpleDatePicker(false, true));
 		
 		//larce - Busco en vantive y completo los campos si están en blanco
-		nss.addBlurHandler(new BlurHandler() {
-			public void onBlur(BlurEvent event) {
-				SolicitudRpcService.Util.getInstance().buscarHistoricoVentas(nss.getText(), 
-						new DefaultWaitCallback<List<SolicitudServicioDto>>() {
-					public void success(List<SolicitudServicioDto> result) {
-						if (result.size() > 0) {
-							SolicitudServicioDto ss = result.get(0);
-							completarCamposHistorico(ss);
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
+			nss.addBlurHandler(new BlurHandler() {
+				public void onBlur(BlurEvent event) {
+					SolicitudRpcService.Util.getInstance().buscarHistoricoVentas(nss.getText(), 
+							new DefaultWaitCallback<List<SolicitudServicioDto>>() {
+						public void success(List<SolicitudServicioDto> result) {
+							if (result.size() > 0) {
+								SolicitudServicioDto ss = result.get(0);
+								completarCamposHistorico(ss);
+							}
 						}
-					}
-				});
-			}
-		});
+					});
+				}
+			});
+		}
 		
 		inicializarBusquedaContratos();
 	}
@@ -735,11 +737,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			solicitudServicio.setEmail(email.getText());
 		}
 		//larce
-		solicitudServicio.setCantidadEquiposH(new Long(cantidadEquipos.getText()));
-		solicitudServicio.setFechaFirma(dateTimeFormat.parse(fechaFirma.getTextBox().getText()));
-		solicitudServicio.setEstadoH((EstadoHistoricoDto) estadoH.getSelectedItem());
-		solicitudServicio.setFechaEstado(dateTimeFormat.parse(fechaEstado.getTextBox().getText()));
-		solicitudServicio.setClienteHistorico(clienteHistorico);
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
+			solicitudServicio.setCantidadEquiposH(new Long(cantidadEquipos.getText()));
+			solicitudServicio.setFechaFirma(dateTimeFormat.parse(fechaFirma.getTextBox().getText()));
+			solicitudServicio.setEstadoH((EstadoHistoricoDto) estadoH.getSelectedItem());
+			solicitudServicio.setFechaEstado(dateTimeFormat.parse(fechaEstado.getTextBox().getText()));
+			solicitudServicio.setClienteHistorico(clienteHistorico);
+		}
 		return solicitudServicio;
 	}
 
@@ -1286,11 +1290,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			}
 		}
 		//larce
-		solicitudServicio.setCantidadEquiposH(new Long(cantidadEquiposTr.getText()));
-		solicitudServicio.setFechaFirma(dateTimeFormat.parse(fechaFirmaTr.getTextBox().getText()));
-		solicitudServicio.setEstadoH((EstadoHistoricoDto) estadoTr.getSelectedItem());
-		solicitudServicio.setFechaEstado(dateTimeFormat.parse(fechaEstadoTr.getTextBox().getText()));
-		solicitudServicio.setClienteHistorico(clienteHistorico);
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
+			solicitudServicio.setCantidadEquiposH(new Long(cantidadEquiposTr.getText()));
+			solicitudServicio.setFechaFirma(dateTimeFormat.parse(fechaFirmaTr.getTextBox().getText()));
+			solicitudServicio.setEstadoH((EstadoHistoricoDto) estadoTr.getSelectedItem());
+			solicitudServicio.setFechaEstado(dateTimeFormat.parse(fechaEstadoTr.getTextBox().getText()));
+			solicitudServicio.setClienteHistorico(clienteHistorico);
+		}
 		return solicitudServicio;
 	}
 	
