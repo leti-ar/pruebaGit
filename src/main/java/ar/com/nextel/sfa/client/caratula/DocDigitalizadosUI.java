@@ -14,6 +14,7 @@ import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
+import ar.com.nextel.util.AppLogger;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.WindowUtils;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
@@ -169,13 +170,23 @@ public class DocDigitalizadosUI extends NextelDialog implements ClickHandler{
 			if (cell.getCellIndex() == 0) {
 				int listPosition = tablePageBarDocDigitalizados.getCantRegistrosParcI() + cell.getRowIndex() - 2;
 				final DocDigitalizadosDto docDig = documentos.get(listPosition);
+				//MGR - Prueba para apertura de archivo
+				AppLogger.info("MGR - El custcode del documento es " + docDig.getCustCode(), this);
 				
 				final String contextRoot = WindowUtils.getContextRoot();
+				//MGR - Prueba para apertura de archivo
+				AppLogger.info("MGR - El contextRoot es " + contextRoot, this);
+				
 				final String pahtAndNameFile = docDig.getServer() + docDig.getPaht() + docDig.getNombre();
+				//MGR - Prueba para apertura de archivo
+				AppLogger.info("MGR - El pahtAndNameFile es " + pahtAndNameFile, this);
 				
 				SolicitudRpcService.Util.getInstance().existDocDigitalizado(pahtAndNameFile, new DefaultWaitCallback<Boolean>() {
 					
 					public void success(Boolean result) {
+						//MGR - Prueba para apertura de archivo
+						AppLogger.info("MGR - Volvio y el resultado es " + result, this);
+						
 						LoadingModalDialog.getInstance().hide();
 						if(result){
 							
