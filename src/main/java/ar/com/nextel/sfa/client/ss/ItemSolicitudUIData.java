@@ -590,6 +590,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				}
 				// if(is.getItem().) // alcanza con isEquipo, isAccesorio?
 				ddn.setValue(true);
+				
 				if (tipoEdicion == ACTIVACION) {
 					if (is.getItem().getSinModelo()) {
 						sim.setEnabled(false);

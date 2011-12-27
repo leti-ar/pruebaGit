@@ -288,8 +288,16 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		itemSolicitudUIData.getTipoPlan().clearPreseleccionados();
 		itemSolicitudUIData.setNombreMovil(controller.getNombreProximoMovil());
 		itemSolicitudUIData.setLineaSolicitudServicio(linea);
-		itemSolicitudUIData.getPortabilidad().setEnabled(true);
-		
+
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(!instancias.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS).equals(controller.getEditarSSUIData().getGrupoSolicitud().getId())){
+			itemSolicitudUIData.getPortabilidad().setEnabled(false);
+			itemSolicitudUIData.getPortabilidad().setVisible(false);
+		}else{
+			itemSolicitudUIData.getPortabilidad().setEnabled(true);
+			itemSolicitudUIData.getPortabilidad().setVisible(true);
+		}
+
 		final TipoPlanDto tipoPlan = linea != null && linea.getPlan() != null ? linea.getPlan().getTipoPlan()
 				: null;
 		if (linea.getTipoSolicitud() != null) {
