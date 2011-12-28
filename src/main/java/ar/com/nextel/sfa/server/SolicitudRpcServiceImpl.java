@@ -687,7 +687,12 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		//MGR - Prueba para apertura de archivo
 		AppLogger.info("MGR - La ruta a buscar es " + pahtAndNameFile, this);
 		//AppLogger.info("Searching file " + pahtAndNameFile);
-		return new File(pahtAndNameFile).exists();
+		
+		boolean result = new File(pahtAndNameFile).exists();
+		//MGR - Prueba para apertura de archivo
+		AppLogger.info("MGR - El resultado es " + result, this);
+		//return new File(pahtAndNameFile).exists();
+		return result;
 	}
 
 	private String buildSolicitudReportPath() {
