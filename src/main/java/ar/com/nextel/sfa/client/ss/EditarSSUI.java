@@ -59,7 +59,6 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.IncrementalCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -110,9 +109,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private String grupoSS;
 	private HashMap<String, Long> knownInstancias;
 	FlowPanel linksCrearSS;
+	
+	private boolean editable;
 
-	public EditarSSUI() {
+	public EditarSSUI(boolean isEditable) {
 		super();
+		this.editable = isEditable;
 		addStyleName("Gwt-EditarSSUI");
 		knownInstancias = ClientContext.getInstance().getKnownInstance();
 		linksCrearSS = new FlowPanel();
@@ -522,18 +524,24 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				|| !ClientContext.getInstance().vengoDeNexus()){
 			mainPanel.add(razonSocialClienteBar);
 		}
-		
+		if(isEditable()) 
 		razonSocialClienteBar.setEnabledSilvioSoldan();
+		else razonSocialClienteBar.setDisabledSilvioSoldan();
 		
+
 		copiarSS = new Button("Copiar SS");
 		copiarSS.addStyleName("copiarSS");
 		copiarSS.addClickHandler(this);
-		mainPanel.add(copiarSS);
+		mainPanel.add(copiarSS);	
 		
 		validarCompletitud = new Button("Validar Completitud");
 		validarCompletitud.addStyleName("validarCompletitudButton");
 		validarCompletitud.addClickHandler(this);
 		mainPanel.add(validarCompletitud);
+		
+		copiarSS.setVisible(isEditable());
+		validarCompletitud.setVisible(isEditable());
+		
 		tabs = new TabPanel();
 		tabs.setWidth("98%");
 		tabs.addStyleName("mlr5 mb10 mt5");
@@ -586,12 +594,15 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		formButtonsBar = new FormButtonsBar();
 		mainPanel.add(formButtonsBar);
 		formButtonsBar.addStyleName("mt10");
-		formButtonsBar.addLink(guardarButton = new SimpleLink("Guardar"));
-		formButtonsBar.addLink(acionesSS = new SimpleLink("^SS"));
-		formButtonsBar.addLink(cancelarButton = new SimpleLink("Cancelar"));
-		guardarButton.addClickListener(this);
-		acionesSS.addClickListener(this);
-		cancelarButton.addClickListener(this);
+		//LF
+		if(isEditable()) {
+			formButtonsBar.addLink(guardarButton = new SimpleLink("Guardar"));
+			formButtonsBar.addLink(acionesSS = new SimpleLink("^SS"));
+			formButtonsBar.addLink(cancelarButton = new SimpleLink("Cancelar"));
+			guardarButton.addClickListener(this);
+			acionesSS.addClickListener(this);
+			cancelarButton.addClickListener(this);
+		}
 	}
 
 	private Widget wrap(Widget w) {
@@ -602,6 +613,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 	private void loadInitializer(SolicitudInitializer initializer) {
 		editarSSUIData.getOrigen().addAllItems(initializer.getOrigenesSolicitud());
+		editarSSUIData.getOrigen().setEnabled(isEditable());
         editarSSUIData.getControl().addAllItems(initializer.getControl());
         editarSSUIData.getNuevoEstado().addAllItems(initializer.getOpcionesEstado());
     	Label label = new Label(initializer.getEstado().toString());
@@ -681,7 +693,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			editarSSUIData.getSucursalOrigen().addItem(item);
 			editarSSUIData.getSucursalOrigen().setSelectedIndex(1);
 		}
-		
 		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
 	        editarSSUIData.getEstadoH().addAllItems(initializer.getEstadosHistorico());
 	        editarSSUIData.getEstadoTr().addAllItems(initializer.getEstadosHistorico());
@@ -782,11 +793,20 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				openGenerarCerrarSolicitdDialog(sender == cerrarSolicitud);
 			}
 		}
-		else if (sender == copiarSS) {
-			
-			 if(Window.confirm("Desea copiar la solicitud actual?")){
-				 editarSSUIData.copiarSS();
-             }
+		else if (sender == copiarSS) {			
+			//LF
+			MessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_COPIAR_SS_ACTUAL(),	
+			new Command() {
+			    public void execute() {
+			    	if(editarSSUIData.getSolicitudServicio()!=null)
+			    		loadCopiarSS(editarSSUIData.getSolicitudServicio());
+				};
+			}, 
+			new Command() {
+			    public void execute() {
+			    	MessageDialog.getInstance().hide();
+				};
+			});
 		}
 	}
 
@@ -1288,5 +1308,27 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		return !cuentaDto.isCliente() &&
 		       ClientContext.getInstance().getVendedor().isADMCreditos() &&
 		       editarSSUIData.getVendedor().getSelectedItem() != null;
+	}
+
+	public boolean isEditable() {
+		return editable;
+	}
+
+	public void setEditable(boolean editable) {
+		this.editable = editable;
 	}	
+	
+//	public void protegerCampos(EditarSSUIData editarSSUIdata){
+//		editarSSUIdata.getNss().setEnabled(false);
+//		editarSSUIdata.getNflota().setEnabled(false);
+//		editarSSUIdata.getOrigen().setEnabled(false);
+//		editarSSUIdata.getVendedor().setEnabled(false);
+//		editarSSUIdata.getSucursalOrigen().setEnabled(false);
+//		editarSSUIdata.getEntrega().setEnabled(false);
+//		editarSSUIdata.getFacturacion().setEnabled(false);
+//		editarSSUIdata.getAclaracion().setEnabled(false);
+//		editarSSUIdata.getSucursalOrigen().setEnabled(false);
+//		editarSSUIdata.getCriterioBusqContrato().setEnabled(false);
+//	}
+	
 }

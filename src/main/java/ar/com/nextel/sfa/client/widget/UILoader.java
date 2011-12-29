@@ -9,6 +9,7 @@ import ar.com.nextel.sfa.client.infocom.VerInfocomUI;
 import ar.com.nextel.sfa.client.operaciones.OperacionEnCursoUI;
 import ar.com.nextel.sfa.client.oportunidad.BuscarOportunidadUI;
 import ar.com.nextel.sfa.client.ss.BuscarSSCerradaUI;
+import ar.com.nextel.sfa.client.ss.BuscarSSAnalistaCreditosUI;
 import ar.com.nextel.sfa.client.ss.EditarSSUI;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.veraz.VerazUI;
@@ -48,6 +49,7 @@ public class UILoader extends SimplePanel implements ValueChangeHandler<String> 
 	public final static int OP_EN_CURSO = 5;
 	public final static int EDITAR_CUENTA = 7;
 	public final static int VER_INFOCOM = 8;
+	public final static int VER_SOLICITUD = 10;
 
 	private String lastToken = "";
 
@@ -124,7 +126,12 @@ public class UILoader extends SimplePanel implements ValueChangeHandler<String> 
 			pages[AGREGAR_CUENTA] = AgregarCuentaUI.getInstance();
 			break;
 		case BUSCAR_SOLICITUD:
-			pages[BUSCAR_SOLICITUD] = new BuscarSSCerradaUI();
+//			if(ClientContext.getInstance().getVendedor().getTipoVendedor().getCodigo().equals("ADM")) {
+		if(ClientContext.getInstance().getVendedor().isADMCreditos()) {
+				pages[BUSCAR_SOLICITUD] = new BuscarSSAnalistaCreditosUI();
+			} else {
+				pages[BUSCAR_SOLICITUD] = new BuscarSSCerradaUI();	
+			}
 			break;
 		//MGR - Integracion
 		case AGREGAR_PROSPECT:
@@ -132,7 +139,7 @@ public class UILoader extends SimplePanel implements ValueChangeHandler<String> 
 			break;
 			
 		case AGREGAR_SOLICITUD:
-			pages[AGREGAR_SOLICITUD] = new EditarSSUI();
+			pages[AGREGAR_SOLICITUD] = new EditarSSUI(true);
 			break;
 		case VERAZ:
 			pages[VERAZ] = new VerazUI();
@@ -149,6 +156,9 @@ public class UILoader extends SimplePanel implements ValueChangeHandler<String> 
 		case VER_INFOCOM:
 			pages[VER_INFOCOM] = new VerInfocomUI();
 			break;
+		case VER_SOLICITUD:
+			pages[VER_SOLICITUD] = new EditarSSUI(false);
+			break;			
 		default:
 			GWT.log("Page not found. Check PageLoader.createPageWidget()", null);
 			break;

@@ -3,17 +3,13 @@ package ar.com.nextel.sfa.client.caratula;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
-import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.cuenta.CaratulaVerazModalDialog;
 import ar.com.nextel.sfa.client.cuenta.CuentaCaratulaForm;
+import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
 import ar.com.nextel.sfa.client.dto.BancoDto;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
-import ar.com.nextel.sfa.client.dto.ItemSolicitudDto;
-import ar.com.nextel.sfa.client.dto.ScoreVerazDto;
-import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
-import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
@@ -24,14 +20,11 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -68,12 +61,6 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 	private Command aceptarCommand;
 	private Button generarVeraz;
 	private Button verVeraz;
-	//LF
-	private Label estadoVeraz;
-	private String cantEquipos = null;
-	private boolean isCantEquiposObtenidos = false;
-	
-	private Command cancelarCommand;
 	
 	public static CaratulaUI getInstance(){
 		if(instance == null){
@@ -88,10 +75,6 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 	public CaratulaUI(){
 		super(Sfa.constant().crearCaratula(), false, true);
 		init();
-	}
-	
-	public static void deleteInstance(){
-		instance = null;
 	}
 	
 	private void init(){
@@ -153,12 +136,9 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		
 		add(gridActividad);
 		
-		gridBotonesVeraz = new Grid(1,3);
+		gridBotonesVeraz = new Grid(1,2);
 		gridBotonesVeraz.addStyleName("layout");
 		gridBotonesVeraz.setWidget(0, 1, crearBotonesVeraz());
-		this.estadoVeraz = caratulaData.getEstadoVeraz();
-		gridBotonesVeraz.setWidget(0, 2, estadoVeraz);
-		
 		add(gridBotonesVeraz);
 		
 		gridTarj = new Grid(1,8);
@@ -381,6 +361,14 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		return verazBotones;
 	}
 	
+	/*
+	 * Obtiene la lista de las caratulas
+	 */
+	private List<CaratulaDto> obtenerListaCaratulas(){
+		CuentaEdicionTabPanel cuentaTab = CuentaEdicionTabPanel.getInstance();		
+		return cuentaTab.getCuenta2editDto().getCaratulas();
+	}
+	
 	private void habilitarBotonesVeraz() {
 		/*  
 		 * Si la caratula está confirmada, el botón "Generar Veraz", debe estar deshabilitado, 
@@ -418,45 +406,11 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 							public void success(VerazResponseDto result) {
 								caratulaAEditar.setArchivoVeraz(result.getFileName());
 								habilitarBotonesVeraz();
-								// LF								
-								setEstadoVeraz(result.getEstado());
-								obtenerCantidadEquipos();
-								// Utilizo el DeferredCommand para "esperar" a que se complete la llamada asincronica en el metodo obtenerCantidadEquipos().
-								DeferredCommand.addCommand(new IncrementalCommand() {
-									public boolean execute() {
-										if (!isCantEquiposObtenidos){
-											return true;
-										} else {
-											if(cantEquipos != null) {
-												CuentaRpcService.Util.getInstance().autocompletarValoresVeraz(estadoVeraz.getText().toUpperCase()/*result.getEstado().toUpperCase()*/, Integer.valueOf(cantEquipos), new DefaultWaitCallback<ScoreVerazDto>() {
-													@Override
-													public void success(ScoreVerazDto result) {
-														if(result != null) {
-															Long riskCode = caratulaData.getKeyRiskCode(result.getRiskCode());
-															caratulaData.getRiskCode().setSelectedIndex(riskCode.intValue());
-															Long calificacion = caratulaData.getKeyCalificacion(result.getClasificacion());
-															caratulaData.getCalificacion().setSelectedIndex(calificacion.intValue());
-															caratulaData.getLimiteCred().setValue(result.getLimCredito().toString());
-														}										
-													}
-												});
-											}
-											return false;
-										}
-									}
-				    			
-								});
 							}
-			    });
+				    			
+					});
 			}
 		});
-		
-		cancelarCommand = new Command() {
-			public void execute() {
-				MessageDialog.getInstance().hide();
-			}
-		};
-		
 		return generarVeraz;
 	}
 	
@@ -471,58 +425,7 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		});
 		return verVeraz;
 	}
-	
-	
-	/**
-	 * Setea el estado del veraz en el Label y lo colorea según el mismo
-	 * @param estado
-	 */
-	public void setEstadoVeraz(String estado){
-		estadoVeraz.setText(estado);
-		if ("ACEPTAR".equals(estado)) {
-			estadoVeraz.setStyleName("verazAceptarLabel");
-		} else if ("REVISAR".equals(estado)) {
-			estadoVeraz.setStyleName("verazRevisarLabel");
-		} else {
-			estadoVeraz.setStyleName("verazRechazarLabel");
-		}
-	}
-	//LF
-	/**
-	 * Obtengo una lista de SolicitudServicioDto segun el idCuenta y el nroSS ingresado en la caratula. Si la lista devuelve 
-	 * mas de un valor, lanza un mensaje y no debe seguir, si no devuelve valores tampoco debe seguir.
-	 * Realizo una llamada al servidor que recorre las lineas de la SolicitudServicioDto obtenida anteriormente, obteniendo para
-	 * cada una de ellas la cantidad de items, que terminan siendo la cantidad de equipos de la SS.
-	 * 
-	 */
-	private void obtenerCantidadEquipos(){
-		SolicitudRpcService.Util.getInstance().getSSPorIdCuentaYNumeroSS(caratulaAEditar.getIdCuenta().intValue(), caratulaData.getNroSS().getText(), new DefaultWaitCallback<List<SolicitudServicioDto>>() {
-	
-			@Override
-			public void success(List<SolicitudServicioDto> result) {
-				if(!result.isEmpty()){
-					if(result.size() > 1){
-						MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), Sfa.constant().MAS_DE_UNA_SS(), cancelarCommand);
-					} else {
-						SolicitudRpcService.Util.getInstance().getItemsPorLineaSS(result.get(0), new DefaultWaitCallback<List<ItemSolicitudDto>>() {
-							@Override
-							public void success(List<ItemSolicitudDto> result) {
-								if(!result.isEmpty()) {
-									cantEquipos = String.valueOf(result.size());
-								}
-									isCantEquiposObtenidos = true;
-							}
-						});
-					}		
-				} else {
-					isCantEquiposObtenidos = true;
-				}
-					
-		
-			}
-		 });
-	}
-	
+
 	/**
 	 * Metodo que setea la accion a tomar por el botÃ³n Aceptar del popup CaratulaUI.
 	 **/
@@ -561,6 +464,9 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		onClick(caratulaData.getIngDemostrado());
 		setDialogTitle(titulo);
 		showAndCenter();
+		if(caratula.getNroSS() != null) {
+			caratulaData.validarDomicilio(caratula.getNroSS());
+		}
 	}
 	
 	public CaratulaDto getCaraturaAEditar(){
@@ -622,19 +528,11 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 	 * @author fernaluc
 	 */
 	public boolean isDocumentoCreditoCaratulaActual(){
-		if(CuentaCaratulaForm.getInstance().isCaratulaNueva()) {
-		  if(CuentaCaratulaForm.getInstance().getCaratulas().size() >= 1) {
-				return false;
-			} else {
-				return true;
-			}
+		CaratulaDto caratulaDto = CuentaCaratulaForm.getInstance().getCaratulaActual();
+		if(caratulaDto != null) {
+			return caratulaDto.getDocumento().equals("Credito");
 		} else {
-			CaratulaDto caratulaDto = CuentaCaratulaForm.getInstance().getCaratulaActual();
-			if(caratulaDto != null) {
-				return !caratulaDto.getDocumento().equals("Anexo");
-			} else {
-				return CuentaCaratulaForm.getInstance().getCaratulas().isEmpty();
-			}
+			return CuentaCaratulaForm.getInstance().getCaratulas().isEmpty();
 		}
 	}
 }

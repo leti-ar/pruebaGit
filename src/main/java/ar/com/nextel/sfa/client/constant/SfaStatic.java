@@ -3161,6 +3161,7 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
   
 
+    
   /**
    * Translated "Enviar a".
    * 
@@ -3189,4 +3190,102 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("nuevoEstado")
   String nuevoEstado();
   
+  /**
+   * Translated "Desea copiar la solicitud actual".
+   * 
+   * @return translated "Desea copiar la solicitud actual"
+   */
+  @DefaultStringValue("Desea copiar la solicitud actual?")
+  @Key("MSG_COPIAR_SS_ACTUAL")
+  String MSG_COPIAR_SS_ACTUAL();
+  
+  /**
+   * Translated "PIN/SCORING:".
+   * 
+   * @return translated "PIN/SCORING:"
+   */
+  @DefaultStringValue("Pin/Scoring")
+  @Key("pinScoring")
+  String pinScoring();
+  
+  /**
+   * Translated "PIN/SCORING:".
+   * 
+   * @return translated "PIN/SCORING:"
+   */
+  @DefaultStringValue("Últ. estado")
+  @Key("ultimoEstado")
+  String ultimoEstado();
+  
+  /**
+   * Translated "Fecha Cierre".
+   * 
+   * @return translated "Fecha Cierre"
+   */
+  @DefaultStringValue("Fecha Cierre")
+  @Key("fechaCierre")
+  String fechaCierre();
+  
+  /**
+   * Translated "Desvíos".
+   * 
+   * @return translated "Desvíos"
+   */
+  @DefaultStringValue("Desvíos")
+  @Key("desv")
+  String desv();
+  
+  /**
+   * Translated "Búsqueda SS".
+   * 
+   * @return translated "Búsqueda SS"
+   */
+  @DefaultStringValue("Búsqueda SS")
+  @Key("busquedaSS")
+  String busquedaSS();
+  
+  /**
+   * Translated "Tipo y Nro Doc.".
+   * 
+   * @return translated "Tipo y Nro Doc."
+   */
+  @DefaultStringValue("Tipo y Nro Doc. :")
+  @Key("tipoYNumeroDoc")
+  String tipoYNumeroDoc();
+  
+  /**
+   * Translated "Creacion Desde:".
+   * 
+   * @return translated "Creacion Desde:"
+   */
+  @DefaultStringValue("Creacion Desde:")
+  @Key("creacionDesde")
+  String creacionDesde();
+  
+  /**
+   * Translated "SS".
+   * 
+   * @return translated "SS"
+   */
+  @DefaultStringValue("SS")
+  @Key("ssTitle")
+  String ssTitle();
+  
+  /**
+   * Translated "SS Cliente".
+   * 
+   * @return translated "SS Cliente"
+   */
+  @DefaultStringValue("SS Cliente")
+  @Key("ssClienteTitle")
+  String ssClienteTitle();
+  
+  /**
+   * Translated "Buscar SS".
+   * 
+   * @return translated "Buscar SS"
+   */
+  @DefaultStringValue("Buscar SS")
+  @Key("buscarSSTitle")
+  String buscarSSTitle();  
 }

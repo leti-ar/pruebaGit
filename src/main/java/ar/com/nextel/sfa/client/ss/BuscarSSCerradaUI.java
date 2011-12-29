@@ -1,6 +1,5 @@
 package ar.com.nextel.sfa.client.ss;
 
-import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.snoop.gwt.commons.client.util.DateUtil;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -12,41 +11,25 @@ import com.google.gwt.i18n.client.DateTimeFormat;
  * @author juliovesco
  * 
  */
-public class BuscarSSCerradaUI extends ApplicationUI {
+public class BuscarSSCerradaUI extends BuscarSSGenericoUI {//ApplicationUI {
 
 	private BuscarSSCerradasFilterUI buscadorSSCerradasFilterForm;
-	private ExportarExcelSSResultUI exportarExcelSSResultUI;
-	private BuscarSSCerradasResultUI buscarSSCerradasResultPanel;
-	private BuscarSSTotalesResultUI buscarSSTotalesResultUI;
-	private CambiosSSCerradasResultUI cambiosSSCerradasResultUI;
 	private DateTimeFormat dateFormatter = DateTimeFormat.getFormat("dd/MM/yyyy");
 	public BuscarSSCerradaUI() {
 		super();
 	}
 
+	@Override
 	public void firstLoad() {
 		buscadorSSCerradasFilterForm = new BuscarSSCerradasFilterUI();
-		exportarExcelSSResultUI = new ExportarExcelSSResultUI();
-		buscarSSCerradasResultPanel = new BuscarSSCerradasResultUI();
-		buscarSSTotalesResultUI = new BuscarSSTotalesResultUI();
-		cambiosSSCerradasResultUI = new CambiosSSCerradasResultUI();
-		exportarExcelSSResultUI.setVisible(false);
-		buscarSSTotalesResultUI.setVisible(false);
+		buscarSSCerradasResultPanel = new BuscarSSCerradasResultUI(this);
 		buscadorSSCerradasFilterForm.setBuscarCuentaResultPanel(buscarSSCerradasResultPanel);
-		buscarSSCerradasResultPanel.setExportarExcelSSResultUI(exportarExcelSSResultUI);
-		buscarSSCerradasResultPanel.setBuscarSSTotalesResultUI(buscarSSTotalesResultUI);
-		cambiosSSCerradasResultUI.setVisible(false);
-		buscarSSCerradasResultPanel.setCambiosSSCerradasResultUI(cambiosSSCerradasResultUI);
-		
 		mainPanel.add(buscadorSSCerradasFilterForm);
-		mainPanel.add(exportarExcelSSResultUI);
-		mainPanel.add(buscarSSCerradasResultPanel);
-		mainPanel.add(buscarSSTotalesResultUI);
-		mainPanel.add(cambiosSSCerradasResultUI);
-		mainPanel.addStyleName("gwt-central-panel");
+		super.firstLoad();
 	}
 	
-	public boolean load() {
+	@Override
+	public boolean load() {		
 		buscadorSSCerradasFilterForm.getBuscadorSSCerradasFilterEditor().cleanAndEnableFields();
 		buscadorSSCerradasFilterForm.getBuscadorSSCerradasFilterEditor().getDesdeDatePicker().setSelectedDate(DateUtil.getStartDayOfMonth(DateUtil.today()));
 		buscadorSSCerradasFilterForm.getBuscadorSSCerradasFilterEditor().getDesdeDatePicker().getTextBox().setText(dateFormatter.format(DateUtil.getStartDayOfMonth(DateUtil.today())));
@@ -59,7 +42,14 @@ public class BuscarSSCerradaUI extends ApplicationUI {
 		return true;
 	}
 
-	public boolean unload(String token) {
-		return true;
+	@Override
+	public boolean esAnalistaCreditos() {
+		return false;
 	}
+	
+//	public boolean esClienteDeNexus() {
+//		return ClientContext.getInstance().vengoDeNexus() && ClientContext.getInstance().soyClienteNexus();
+//	}
+	
+	
 }

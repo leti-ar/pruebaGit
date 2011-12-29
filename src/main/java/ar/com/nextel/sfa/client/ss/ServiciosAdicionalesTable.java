@@ -39,9 +39,11 @@ public class ServiciosAdicionalesTable extends Composite {
 	public static final int COL_AGREGAR_QUITAR = 0;
 	public static final int COL_PRECIO_VENTA = 3;
 	private final NumberFormat currencyFormat = NumberFormat.getCurrencyFormat();
+	private boolean isEditable;
 
 	public ServiciosAdicionalesTable(EditarSSUIController controller) {
 		this.controller = controller;
+		this.setEditable(controller.isEditable());
 		this.editarSSUIData = controller.getEditarSSUIData();
 		SimplePanel wrapper = new SimplePanel();
 		initWidget(wrapper);
@@ -188,7 +190,11 @@ public class ServiciosAdicionalesTable extends Composite {
 				servicioAdicional = linea.getServiciosAdicionales().get(saIndex);
 			}
 			CheckBox check = new CheckBox();
-			check.setEnabled(!servicioAdicional.isObligatorio());
+			if(isEditable()) {
+				check.setEnabled(!servicioAdicional.isObligatorio());
+			} else {
+				check.setEnabled(false);
+			}
 			check.setValue(servicioAdicional.isObligatorio() || servicioAdicional.isChecked());
 			table.setWidget(row, 0, check);
 			table.setHTML(row, 1, servicioAdicional.getDescripcionServicioAdicional());
@@ -245,7 +251,12 @@ public class ServiciosAdicionalesTable extends Composite {
 		for (Iterator<ServicioAdicionalIncluidoDto> iterator = serviciosAdicionales.iterator(); iterator.hasNext();) {
 			ServicioAdicionalIncluidoDto servicioAdicional = (ServicioAdicionalIncluidoDto) iterator.next();
 			CheckBox check = new CheckBox();
-			check.setEnabled(!servicioAdicional.getObligatorio());
+			if(isEditable()) {
+				check.setEnabled(!servicioAdicional.getObligatorio());
+			} else {
+				check.setEnabled(false);
+			}
+			
 			check.setValue(servicioAdicional.getObligatorio());
 			if (servicioAdicional.getServicioAdicional().getEsCargoAdministrativo()
 					|| servicioAdicional.getServicioAdicional().getEsCDT()) {
@@ -291,4 +302,14 @@ public class ServiciosAdicionalesTable extends Composite {
 			contratoViewDto.agregarServicioAdicional(servicioSelected);
 		}
 	}
+
+	public boolean isEditable() {
+		return isEditable;
+	}
+
+	public void setEditable(boolean isEditable) {
+		this.isEditable = isEditable;
+	}
+	
+	
 }

@@ -391,14 +391,14 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		saved = false;
 	}
 
-	public void copiarSS(){
-		
-		if(solicitudServicio != null){
-			EditarSSUI edicion = (EditarSSUI) this.controller;
-			SolicitudServicioDto ssDto = solicitudServicio;
-			edicion.loadCopiarSS(ssDto);
-		}
-	}
+//	public void copiarSS(){
+//		
+//		if(solicitudServicio != null){
+//			EditarSSUI edicion = (EditarSSUI) this.controller;
+////			SolicitudServicioDto ssDto = solicitudServicio;
+//			edicion.loadCopiarSS(solicitudServicio);
+//		}
+//	}
 	
 	public RegexTextBox getNss() {
 		return nss;
@@ -1488,6 +1488,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	public void setEstado(Label estado) {
 		this.estado = estado;
 	}
+	
 	
 	public RegexTextBox getCantidadEquipos() {
 		return cantidadEquipos;

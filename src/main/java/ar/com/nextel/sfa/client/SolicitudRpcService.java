@@ -57,11 +57,13 @@ public interface SolicitudRpcService extends RemoteService {
 		}
 	}
 
-	public BuscarSSCerradasInitializer getBuscarSSCerradasInitializer() throws RpcExceptionMessages;
+	public BuscarSSCerradasInitializer getBuscarSSInitializer(boolean analistaCredito) throws RpcExceptionMessages;
 
-	public List<SolicitudServicioCerradaResultDto> searchSSCerrada(
-			SolicitudServicioCerradaDto solicitudServicioCerradaDto) throws RpcExceptionMessages;
-
+	//LF
+	//public List<SolicitudServicioCerradaResultDto> searchSSCerrada(
+	public List<SolicitudServicioCerradaResultDto> searchSolicitudesServicio(
+			SolicitudServicioCerradaDto solicitudServicioCerradaDto, boolean analistaCreditos) throws RpcExceptionMessages;
+	
 	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
 	//que permite realizar el manejo de mensajes
 	public CreateSaveSolicitudServicioResultDto createSolicitudServicio(
@@ -88,7 +90,7 @@ public interface SolicitudRpcService extends RemoteService {
 	public List<ListaPreciosDto> getListasDePrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa)
 			throws RpcExceptionMessages;
 
-	public String buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto)
+	public String buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto, boolean analistaCreditos)
 			throws RpcExceptionMessages;
 
 	public List<PlanDto> getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado,
@@ -159,4 +161,7 @@ public interface SolicitudRpcService extends RemoteService {
 	public CreateSaveSSTransfResultDto createCopySolicitudServicioTranferencia(
 			SolicitudServicioRequestDto solicitudServicioRequestDto,
 			SolicitudServicioDto solicitudSS) throws RpcExceptionMessages;
+	
+	public Integer calcularCantEquipos(List<LineaSolicitudServicioDto> lineaSS);
+
 }

@@ -76,14 +76,18 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto
 		</class-b>
+<!--		<field>-->
+<!--			<a>idVantive</a>-->
+<!--			<b>idSolicitudServicio</b>-->
+<!--		</field>-->
 		<field>
-			<a>idVantive</a>
+			<a>id</a>
 			<b>idSolicitudServicio</b>
 		</field>
-		<field>
-			<a>cuenta.cliente</a>
-			<b>cliente</b>
-		</field>
+<!--		<field>-->
+<!--			<a>cuenta.cliente</a>-->
+<!--			<b>cliente</b>-->
+<!--		</field>-->
 		<field>
 			<a>cuenta.id</a>
 			<b>idCuenta</b>
@@ -107,7 +111,48 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<field>
 			<a>numero</a>
 			<b>numeroSS</b>
+		</field>	
+		
+		<field>
+			<a>usuarioCreacion.nombre</a>
+			<b>nombreUsuarioCreacion</b>
+		</field>		
+		<field>
+			<a>usuarioCreacion.apellido</a>
+			<b>apellidoUsuarioCreacion</b>
+		</field>	
+		<field>
+			<a>vendedor.apellidoNombre</a>
+			<b>apellidoNombreVendedor</b>
+		</field>		
+		<field>
+			<a>pinValidationSuccess</a>
+			<b>pin</b>
+		</field>	
+		<field>
+			<a>scoringValidationSuccess</a>
+			<b>scoring</b>
+		</field>			
+		<field>
+			<a>scoringValidationSuccess</a>
+			<b>scoring</b>
 		</field>
+		<field>
+			<a>tipoAnticipo.descripcion</a>
+			<b>anticipo</b>
+		</field>
+<!--        <field>-->
+<!--            <a>lineas</a>-->
+<!--            <b>lineas</b>-->
+<!--        </field>   -->
+        <field custom-converter-id="identifiableObjectToId">
+			<a>grupoSolicitud</a>
+			<b>idGrupoSolicitud</b>
+        </field>     	
+        <field>
+            <a>enCarga</a>
+            <b>enCarga</b>
+        </field>   
 	</mapping>
 
 	<mapping>
@@ -171,7 +216,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
         <field>
             <a>vendedor</a>
             <b>vendedor</b>
-        </field>
+        </field> 
         <field custom-converter-id="enumToDto">
 			<a>estadoH</a>
 			<b>estadoH</b>

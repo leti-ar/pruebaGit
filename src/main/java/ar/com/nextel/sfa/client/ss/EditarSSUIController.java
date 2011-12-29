@@ -54,4 +54,6 @@ public interface EditarSSUIController {
 			DefaultWaitCallback<List<ServicioAdicionalIncluidoDto>> defaultWaitCallback);
 
 	void getContratoViewInitializer(DefaultWaitCallback<ContratoViewInitializer> callback);
+	
+	boolean isEditable();
 }

@@ -39,9 +39,15 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface SolicitudRpcServiceAsync {
 
-	public void getBuscarSSCerradasInitializer(AsyncCallback<BuscarSSCerradasInitializer> callback);
+	//LF
+	//public void getBuscarSSCerradasInitializer(AsyncCallback<BuscarSSCerradasInitializer> callback);
+	public void getBuscarSSInitializer(boolean analistaCreditos, AsyncCallback<BuscarSSCerradasInitializer> callback);
 
-	public void searchSSCerrada(SolicitudServicioCerradaDto solicitudServicioCerradaDto,
+	//LF
+	//void searchSSCerrada(
+	public void searchSolicitudesServicio(
+	SolicitudServicioCerradaDto solicitudServicioCerradaDto,
+			boolean analistaCreditos,
 			AsyncCallback<List<SolicitudServicioCerradaResultDto>> callback);
 
 	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
@@ -65,7 +71,7 @@ public interface SolicitudRpcServiceAsync {
 	public void getListasDePrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa, 
 			AsyncCallback<List<ListaPreciosDto>> callback);
 
-	public void buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto,
+	public void buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto, boolean analistaCreditos,
 			AsyncCallback<String> callback);
 
 	public void getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,
@@ -142,6 +148,9 @@ public interface SolicitudRpcServiceAsync {
 			SolicitudServicioRequestDto solicitudServicioRequestDto,
 			SolicitudServicioDto solicitudSS,
 			AsyncCallback<CreateSaveSSTransfResultDto> callback);
+
+	public void calcularCantEquipos(List<LineaSolicitudServicioDto> lineaSS,
+			AsyncCallback<Integer> callback);
 
 	public void buscarHistoricoVentas(String nss, AsyncCallback<List<SolicitudServicioDto>> callback);
 

@@ -105,9 +105,11 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		mainpanel.add(getNssLayout());
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
 			mainpanel.add(getHistoricoVentasPanel());
-		}
+		}			
 		mainpanel.add(getObsLayout());
-		mainpanel.add(getCedenteLayout());
+		if(controller.isEditable()) {
+			mainpanel.add(getCedenteLayout());
+		}	
 		mainpanel.add(getBusqLayout());
 		mainpanel.add(getContratosLayout());
 		
@@ -198,7 +200,9 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		buscar = new Button(Sfa.constant().buscar());
 		buscar.addStyleName("btn-bkg");
 		buscar.addClickHandler(this);
-		refresBusqLayout();		
+		if(controller.isEditable()) {
+			refresBusqLayout();
+		}
 		return busqLayout;
 	}
 	
@@ -274,12 +278,19 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
 			nnsLayout.setHTML(0, 6, Sfa.constant().sucOrigenReq());
 			nnsLayout.setWidget(0, 7, editarSSUIData.getSucursalOrigen());
+			editarSSUIData.getSucursalOrigen().setEnabled(controller.isEditable());
 		}
+		
+		editarSSUIData.getNss().setEnabled(controller.isEditable());
+		editarSSUIData.getOrigenTR().setEnabled(controller.isEditable());
+		editarSSUIData.getVendedor().setEnabled(controller.isEditable());
+		editarSSUIData.getSucursalOrigen().setEnabled(controller.isEditable());
 	}
 	
 	private void refresObsLayout(){
 		obsLayout.setHTML(0, 0, Sfa.constant().observ_transf());
 		obsLayout.setWidget(0, 1, editarSSUIData.getObservaciones());	
+		editarSSUIData.getObservaciones().setEnabled(controller.isEditable());
 		editarSSUIData.getObservaciones().setHeight("50px");
 	}
 	
@@ -313,8 +324,11 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	public void refresh() {
 		refreshNssLayout();
 		refresObsLayout();
-		refresCedenteLayout();
-		refresBusqLayout();
+		//LF
+		if(controller.isEditable()) {
+			refresCedenteLayout();
+			refresBusqLayout();
+		}		
 		refresContratosLayout();
 		refreshTablaContratos();
 	}
@@ -475,6 +489,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		}
 		CheckBox check = new CheckBox();
 		check.setValue(contratosChequeados.contains(cto));
+		check.setEnabled(controller.isEditable());
 		contratosTable.setWidget(newRow, 0, check);
 		contratosTable.setWidget(newRow, 1, contratoConChinche);
 		contratosTable.setHTML(newRow, 2, cto.getFechaEstado() != null ?

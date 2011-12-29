@@ -50,6 +50,7 @@ import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.personas.beans.Localidad;
+import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.model.solicitudes.beans.EstadoHistorico;
 import ar.com.nextel.model.solicitudes.beans.EstadoPorSolicitud;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
@@ -101,6 +102,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
 import ar.com.nextel.sfa.client.dto.SucursalDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
+import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
@@ -138,6 +140,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	
 	//MGR - #1481
 	private DefaultRetriever messageRetriever;;
+	//#LF
+	private static final String SS_SUCURSAL = "SS_SUCURSAL";
+	private static final String CANTIDAD_EQUIPOS = "CANTIDAD_EQUIPOS";
 	
 	
 	
@@ -288,14 +293,22 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return resultDto;
 	}
 	
-	public List<SolicitudServicioCerradaResultDto> searchSSCerrada(
-			SolicitudServicioCerradaDto solicitudServicioCerradaDto) throws RpcExceptionMessages {
+//LF
+//	public List<SolicitudServicioCerradaResultDto> searchSSCerrada(
+	public List<SolicitudServicioCerradaResultDto> searchSolicitudesServicio(
+			SolicitudServicioCerradaDto solicitudServicioCerradaDto, boolean analistaCreditos) throws RpcExceptionMessages {
+		List<Long> idPerfiles = new ArrayList<Long>();
 		AppLogger.info("Iniciando busqueda de SS cerradas...");
 		SolicitudServicioCerradaSearchCriteria solicitudServicioCerradaSearchCriteria = mapper.map(
 				solicitudServicioCerradaDto, SolicitudServicioCerradaSearchCriteria.class);
-		Vendedor vendedor = sessionContextLoader.getVendedor();
 
-		solicitudServicioCerradaSearchCriteria.setVendedor(vendedor);
+		if(analistaCreditos) {
+			solicitudServicioCerradaSearchCriteria.setBusquedaAnalistaCreditos(true);
+			if(solicitudServicioCerradaDto.getNroDoc() != null && !solicitudServicioCerradaDto.getNroDoc().equals("")) {
+				solicitudServicioCerradaSearchCriteria.setIdCuentas(obtenerIdCuentasPorTipoyNroDocumento(solicitudServicioCerradaDto.getTipoDoc(), solicitudServicioCerradaDto.getNroDoc()));
+			}
+		}
+		
 		List<SolicitudServicio> list = null;
 		try {
 			list = this.solicitudesBusinessOperator
@@ -309,6 +322,20 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return result;
 	}
 
+	public List<Long> obtenerIdCuentasPorTipoyNroDocumento(Integer tipoDoc, String nroDoc) {
+		List<Long> personas = repository.executeCustomQuery("getPersonaPorTipoYNroDoc", tipoDoc, nroDoc);
+		List<Long> cuentas = new ArrayList<Long>();
+		if(!personas.isEmpty()) {
+			for (Iterator iterator = personas.iterator(); iterator
+					.hasNext();) {
+				Long idPersona = (Long) iterator.next();
+				Long idCuenta = Long.valueOf(repository.executeCustomQuery("idCuentaPorPersona", idPersona).get(0).toString());
+				cuentas.add(idCuenta);
+			}
+		} 
+		return cuentas;
+	}
+	
 	public DetalleSolicitudServicioDto getDetalleSolicitudServicio(Long idSolicitudServicio)
 			throws RpcExceptionMessages {
 		AppLogger.info("Iniciando consulta de estados de SS cerradas para idSS " + idSolicitudServicio);
@@ -375,11 +402,16 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		}
 	}
 
-	public BuscarSSCerradasInitializer getBuscarSSCerradasInitializer() {
+	public BuscarSSCerradasInitializer getBuscarSSInitializer(boolean analistaCredito) {
 		BuscarSSCerradasInitializer buscarSSCerradasInitializer = new BuscarSSCerradasInitializer();
 
 		List<String> listaResult = new ArrayList<String>();
-		String cantResult = "10;25;50;75;100;500";
+		String cantResult;		
+		if(analistaCredito) {
+			cantResult = "50;100;500;5000";
+		} else {
+			cantResult = "10;25;50;75;100;500";
+		}		
 		listaResult = Arrays.asList(cantResult.split(";"));
 		buscarSSCerradasInitializer.setCantidadesResultados(listaResult);
 
@@ -395,13 +427,19 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 		buscarSSCerradasInitializer.setOpcionesEstado(mapper.convertList(repository
 				.getAll(EstadoSolicitud.class), EstadoSolicitudDto.class));
+		
+		if(analistaCredito) {
+			buscarSSCerradasInitializer.setDocumentos(mapper.convertList(
+					repository.getAll(TipoDocumento.class),
+					TipoDocumentoDto.class));
+		}
 
 		mapper.convertList(repository.getAll(EstadoPorSolicitud.class),
 				EstadoPorSolicitudDto.class);
 				
 		return buscarSSCerradasInitializer;
 	}
-
+	
 	public List<EstadoPorSolicitudDto> getEstadosPorSolicitud(long numeroSS) {
 		List<EstadoPorSolicitudDto> lista = mapper.convertList(
 				repository.getAll(EstadoPorSolicitud.class),
@@ -517,29 +555,42 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		}
 	}
 
-	public String buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto) {
-		AppLogger.info("Iniciando busqueda de SS cerradas para crear excel...");
+	public String buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto, boolean analistaCreditos) throws RpcExceptionMessages {
+		AppLogger.info("Creando archivo Excel...");
 		SolicitudServicioCerradaSearchCriteria solicitudServicioCerradaSearchCriteria = mapper.map(
 				solicitudServicioCerradaDto, SolicitudServicioCerradaSearchCriteria.class);
-		Vendedor vendedor = sessionContextLoader.getVendedor();
-		solicitudServicioCerradaSearchCriteria.setVendedor(vendedor);
+
+		
+		if(analistaCreditos) {
+			solicitudServicioCerradaSearchCriteria.setBusquedaAnalistaCreditos(true);
+			if(solicitudServicioCerradaDto.getNroDoc() != null && !solicitudServicioCerradaDto.getNroDoc().equals("")) {
+				solicitudServicioCerradaSearchCriteria.setIdCuentas(obtenerIdCuentasPorTipoyNroDocumento(solicitudServicioCerradaDto.getTipoDoc(), solicitudServicioCerradaDto.getNroDoc()));
+			}
+		}
+		
 		List<SolicitudServicio> list = null;
 		try {
 			list = this.solicitudesBusinessOperator
 					.searchSolicitudesServicioHistoricas(solicitudServicioCerradaSearchCriteria);
 		} catch (Exception e) {
-			AppLogger.info("Error buscando Solicitudes de Servicio cerradas para crear excel: "
-					+ e.getMessage());
+			AppLogger.info("Error buscando Solicitudes de Servicio cerradas: " + e.getMessage(), e);
+			throw ExceptionUtil.wrap(e);
 		}
-		AppLogger.info("Creando archivo Excel...");
-		ExcelBuilder excel = new ExcelBuilder(vendedor.getUserName(), "SFA Revolution");
+		String nameExcel;
+		if(sessionContextLoader.getVendedor() != null) {
+			nameExcel = sessionContextLoader.getVendedor().getUserName();
+		} else {
+			nameExcel = "SFA Revolution";
+		}
+		
+		ExcelBuilder excel = new ExcelBuilder(nameExcel, "SFA Revolution");
 		try {
-			excel.crearExcel(list);
+			excel.crearExcel(list, analistaCreditos);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		AppLogger.info("Archivo Excel creado.");
-		return vendedor.getUserName();
+		return nameExcel;
 	}
 
 	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(
@@ -1050,7 +1101,18 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	public void loginServer(String linea) {
 		AppLogger.info(linea);
 	}
-
+	
+	public Integer calcularCantEquipos(List<LineaSolicitudServicioDto> lineaSS){
+		int cantEquipos = 0;
+		for (Iterator iterator = lineaSS.iterator(); iterator.hasNext();) {
+			LineaSolicitudServicioDto lineaSolicitudServicioDto = (LineaSolicitudServicioDto) iterator
+					.next();
+			cantEquipos = cantEquipos + Integer.parseInt(repository.executeCustomQuery(CANTIDAD_EQUIPOS, lineaSolicitudServicioDto.getItem().getId()).get(0).toString());
+		}
+		
+		return cantEquipos;
+	}
+	
 	public List<SolicitudServicioDto> buscarHistoricoVentas(String nss) throws RpcExceptionMessages {
 		List<SolicitudServicio> servicios = null;
 		String codigoVantive;
@@ -1078,5 +1140,5 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		}
 		return mapper.convertList(servicios, SolicitudServicioDto.class);
 	}
-	
+		
 }

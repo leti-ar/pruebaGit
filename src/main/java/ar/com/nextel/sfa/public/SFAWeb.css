@@ -238,6 +238,15 @@ A {
 	background-color: #FFF;
 	border: 1px solid gray;
 	margin-left: 8px;
+	margin-right: 8px;S
+}
+
+.resultTableWrapperLarge {
+	height: 420px;
+	overflow: auto;
+	background-color: #FFF;
+	border: 1px solid gray;
+	margin-left: 8px;
 	margin-right: 8px;
 }
 
@@ -794,7 +803,7 @@ margin:8px;
 }
 
 .copiarSS {
-	background-image: url(images/btn-copiar-ss.png);
+	background-image: url(images/btn-table-nuevo.gif);
 	width: 115px;
 	margin-top: 5px;
 	position: absolute;
