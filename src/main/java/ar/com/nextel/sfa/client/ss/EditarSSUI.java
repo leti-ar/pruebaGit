@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.ss;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -10,9 +11,11 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
+import ar.com.nextel.sfa.client.dto.ComentarioAnalistaDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
+import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -105,6 +108,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private CuentaEdicionTabPanel cuenta;
 	
 	private Button copiarSS;
+	private final long pass = 2l;
+	private final long fail = 3l;
+	private final long aConfirmar = 5l;
+	private final long carpetIncompleta = 6l;
 	
 	private String grupoSS;
 	private HashMap<String, Long> knownInstancias;
@@ -475,11 +482,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				}
 			}
 		}
-		
-		if(solicitud != null){
-			analisis.refresh();
-		}
-		
+			
 		//MGR - #962 - #1017
 		if(ClientContext.getInstance().
 				checkPermiso(PermisosEnum.SELECT_OPC_TELEMARKETING_COMB_ORIGEN.getValue())){
@@ -514,6 +517,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		}
 		tabs.selectTab(0);
 		mainPanel.setVisible(true);
+		
+//		analisis.cleanGrid();
+		if(solicitud != null){
+			analisis.refresh();
+		}
 	}
 	
 	public void firstLoad() {
@@ -615,7 +623,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		editarSSUIData.getOrigen().addAllItems(initializer.getOrigenesSolicitud());
 		editarSSUIData.getOrigen().setEnabled(isEditable());
         editarSSUIData.getControl().addAllItems(initializer.getControl());
-        editarSSUIData.getNuevoEstado().addAllItems(initializer.getOpcionesEstado());
+//        editarSSUIData.getNuevoEstado().addAllItems(initializer.getOpcionesEstado());
     	Label label = new Label(initializer.getEstado().toString());
         editarSSUIData.setEstado(label);
 		//MGR - #1458
@@ -693,11 +701,27 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			editarSSUIData.getSucursalOrigen().addItem(item);
 			editarSSUIData.getSucursalOrigen().setSelectedIndex(1);
 		}
+		
 		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
 	        editarSSUIData.getEstadoH().addAllItems(initializer.getEstadosHistorico());
 	        editarSSUIData.getEstadoTr().addAllItems(initializer.getEstadosHistorico());
 		}
-
+		
+		if(initializer.getComentarioAnalistaMensaje() != null){
+			editarSSUIData.getComentarioAnalistaMensaje().addAll(initializer.getComentarioAnalistaMensaje());
+//			editarSSUIData.getComentarioAnalista().addAllItems(initializer.getComentarioAnalistaMensaje());
+		}
+		
+		if(initializer.getOpcionesEstado() != null){
+		    List<EstadoSolicitudDto> opcionesEstados = initializer.getOpcionesEstado();
+			editarSSUIData.getOpcionesEstado().addAll(opcionesEstados);
+		    List<Long> opciones = new ArrayList<Long>();
+		    opciones.add(pass);
+		    opciones.add(fail);
+		    opciones.add(aConfirmar);
+		    opciones.add(carpetIncompleta);
+	        editarSSUIData.getNuevoEstado().addAllItems(editarSSUIData.getOpcionesEstadoPorEstadoIds(opcionesEstados, opciones));
+		}
 	}
 
 	public boolean unload(String token) {

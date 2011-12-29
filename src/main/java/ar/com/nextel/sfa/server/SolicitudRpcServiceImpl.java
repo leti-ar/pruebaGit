@@ -51,6 +51,7 @@ import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.personas.beans.Localidad;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
+import ar.com.nextel.model.solicitudes.beans.ComentarioAnalista;
 import ar.com.nextel.model.solicitudes.beans.EstadoHistorico;
 import ar.com.nextel.model.solicitudes.beans.EstadoPorSolicitud;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
@@ -69,6 +70,7 @@ import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.ComentarioAnalistaDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.ControlesDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
@@ -439,7 +441,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				
 		return buscarSSCerradasInitializer;
 	}
-	
+
 	public List<EstadoPorSolicitudDto> getEstadosPorSolicitud(long numeroSS) {
 		List<EstadoPorSolicitudDto> lista = mapper.convertList(
 				repository.getAll(EstadoPorSolicitud.class),
@@ -507,6 +509,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		List<EstadoHistorico> estadosHistorico = repository.getAll(EstadoHistorico.class);
 		initializer.setEstadosHistorico(mapper.convertList(estadosHistorico, EstadoHistoricoDto.class));
 		initializer.setOpcionesEstado(mapper.convertList(repository.getAll(EstadoSolicitud.class),EstadoSolicitudDto.class));
+		
+		initializer.setComentarioAnalistaMensaje(mapper.convertList(repository.getAll(ComentarioAnalista.class),ComentarioAnalistaDto.class));
+
 		return initializer;
 	}
 
@@ -542,6 +547,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 		try {
 			EstadoPorSolicitud estadoPorSolicitud = mapper.map(estadoPorSolicitudDto, EstadoPorSolicitud.class);
+//			estadoPorSolicitud.getEstado().setLastModificationDate(new Date());
+//			estadoPorSolicitud.getEstado().setVisible(true);
 			EstadoPorSolicitud estadoSaved = solicitudBusinessService.saveEstadoPorSolicitudDto(estadoPorSolicitud);
 			
 			if(estadoSaved != null){
@@ -1140,5 +1147,5 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		}
 		return mapper.convertList(servicios, SolicitudServicioDto.class);
 	}
-		
+	
 }

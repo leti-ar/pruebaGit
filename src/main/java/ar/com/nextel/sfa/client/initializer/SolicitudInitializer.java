@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import ar.com.nextel.sfa.client.dto.ComentarioAnalistaDto;
 import ar.com.nextel.sfa.client.dto.ControlesDto;
 import ar.com.nextel.sfa.client.dto.EstadoHistoricoDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
@@ -25,6 +26,7 @@ public class SolicitudInitializer implements IsSerializable {
     private String estado;
     private List<EstadoHistoricoDto> estadosHistorico;
     private List<EstadoSolicitudDto> opcionesEstado = new ArrayList<EstadoSolicitudDto>();
+    private List<ComentarioAnalistaDto> comentarioAnalistaMensaje = new ArrayList<ComentarioAnalistaDto>();
 
 	public void setOrigenesSolicitud(List<OrigenSolicitudDto> origenesSolicitud) {
 		this.origenesSolicitud = origenesSolicitud;
@@ -88,5 +90,14 @@ public class SolicitudInitializer implements IsSerializable {
 
 	public void setOpcionesEstado(List<EstadoSolicitudDto> opcionesEstado) {
 		this.opcionesEstado = opcionesEstado;
+	}
+
+	public List<ComentarioAnalistaDto> getComentarioAnalistaMensaje() {
+		return comentarioAnalistaMensaje;
+	}
+
+	public void setComentarioAnalistaMensaje(
+			List<ComentarioAnalistaDto> comentarioAnalistaMensaje) {
+		this.comentarioAnalistaMensaje = comentarioAnalistaMensaje;
 	}
 }

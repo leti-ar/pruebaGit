@@ -1,6 +1,10 @@
 package ar.com.nextel.sfa.client.ss;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import org.hibernate.mapping.Array;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -37,6 +41,11 @@ public class AnalisisSSUI extends Composite {
 	private EditarSSUIData editarSSUIData;
 	private Grid cambiarEstadoSS;
 	private NumberFormat currencyFormat = NumberFormat.getCurrencyFormat();
+	private final long pass = 2l;
+	private final long fail = 3l;
+	private final long aConfirmar = 5l;
+	private final long carpetIncompleta = 6l;
+	List<Long> opciones = new ArrayList<Long>();
 
 	public AnalisisSSUI(EditarSSUIController controller) {
 		mainpanel = new FlowPanel();
@@ -50,27 +59,22 @@ public class AnalisisSSUI extends Composite {
 
 	private Widget getCambiarEstadoSS() {
 		TitledPanel cambiarEstadoPanel = new TitledPanel(Sfa.constant().whiteSpace());
-		final SimpleLink cambio = new SimpleLink("Cambiar Estado");
+		final SimpleLink cambio = new SimpleLink("Cargar Estados");
 		cambio.addStyleName("ml5");
 		cambio.addStyleName("infocomSimpleLink");
+		
+		cambio.addClickListener(new ClickListener() {
+			public void onClick(Widget arg0) {
+				refresh();
+			}
+		});
+		
 		cambiarEstadoPanel.add(cambio);
 		cambiarEstadoPanel.add(getEstadoTable());
 		Grid nuevoEstado= new Grid(1,2);
-		
 		nuevoEstado.setHTML(0,0,Sfa.constant().nuevoEstado());
 		nuevoEstado.setWidget(0, 1,editarSSUIData.getNuevoEstado());
         cambiarEstadoPanel.add(nuevoEstado);
-
-       if(editarSSUIData.getComentarioAnalista() != null){
-        	editarSSUIData.getComentarioAnalista().addItem("Aprobación de Crédito – Pass");
-        	//Usar desp el query del CU
-        	editarSSUIData.getComentarioAnalista().addItem("Aprobación de Crédito - Fail");
-        	//Ver que hay que poner como mensaje
-        	editarSSUIData.getComentarioAnalista().addItem("Aprobación de Crédito - En carga");
-        	editarSSUIData.getComentarioAnalista().addItem("Aprobación de Crédito - A Confirmar");
-        	editarSSUIData.getComentarioAnalista().addItem("Aprobación de Crédito - Carpeta Incompleta");
-        }
-        
 		Grid mail = new Grid(7,2);
 		mail.addStyleName("layout");
 		mail.setHTML(0, 0, Sfa.constant().mail());
@@ -89,50 +93,19 @@ public class AnalisisSSUI extends Composite {
 	    Button ingresarCambio = new Button("Cambiar Estado");
 	    ingresarCambio.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-//			  	  refresh();
 				addEstado();
 			}
 	    });
 	    
-		
 	    editarSSUIData.getNuevoEstado().addChangeHandler(new ChangeHandler() {
-			
 			public void onChange(ChangeEvent event) {
-
-				int selectedChoice = editarSSUIData.getNuevoEstado().getSelectedIndex();
 				
-				switch (selectedChoice) {
-				case 0:
-					editarSSUIData.getComentarioAnalista().setSelectedIndex(0);
-
-					break;
-				case 1:
-					editarSSUIData.getComentarioAnalista().setSelectedIndex(1);
-
-					break;
-				case 2:
-					editarSSUIData.getComentarioAnalista().setSelectedIndex(2);
-					
-					break;
-				case 3:
-					editarSSUIData.getComentarioAnalista().setSelectedIndex(3);
-					break;
-				case 4:
-					
-					editarSSUIData.getComentarioAnalista().setSelectedIndex(4);
-					break;
-				case 5:
-					
-					editarSSUIData.getComentarioAnalista().setSelectedIndex(5);
-					break;
-
-				default:
-					break;
+				editarSSUIData.getComentarioAnalista().clear();
+				if(editarSSUIData.getComentarioAnalistaMensajePorEstado(editarSSUIData.getComentarioAnalistaMensaje(), new Long(editarSSUIData.getNuevoEstado().getSelectedItemId())) != null){						
+					editarSSUIData.getComentarioAnalista().addAllItems(editarSSUIData.getComentarioAnalistaMensajePorEstado(editarSSUIData.getComentarioAnalistaMensaje(), new Long(editarSSUIData.getNuevoEstado().getSelectedItemId())));
 				}
 			}
 		});
-	    
-	    
 //	    mail.setHTML(6, 0, Sfa.constant().whiteSpace());
 	    mail.setWidget(6, 0,ingresarCambio);
 	    mail.setWidget(6, 1, new Button("Cancelar Cambio"));
@@ -160,22 +133,62 @@ public class AnalisisSSUI extends Composite {
 //	/** Realiza la actualizacion visual necesaria para mostrar los datos correctos */
 	public void refresh() {
 		int row = 1;
-		SolicitudServicioDto solicitud = editarSSUIData.getSolicitudServicio();
-		double[] totales = { 0, 0, 0 };
-		cambiarEstadoSS.resizeRows(row);
 		
-		for (int i = 0; i < solicitud.getHistorialEstados().size() ; i++) {
-			cambiarEstadoSS.resizeRows(row + 1);
-			//solicitud.getCuenta().getPersona().getRazonSocial()
-			if(solicitud.getHistorialEstados().get(i).getEstado() != null){
-				cambiarEstadoSS.setHTML(row, 0, solicitud.getHistorialEstados().get(i).getEstado().getItemText());				
+		if(editarSSUIData.getSolicitudServicio() != null){
+		SolicitudServicioDto solicitud = editarSSUIData.getSolicitudServicio();
+		cambiarEstadoSS.resizeRows(row);
+		if(solicitud.getHistorialEstados().size() == 0){
+			cleanGrid();
+			opciones.clear();
+			opciones.add(pass);
+			opciones.add(fail);
+			opciones.add(aConfirmar);
+			opciones.add(carpetIncompleta);
+		}else{
+				for (int i = 0; i < solicitud.getHistorialEstados().size() ; i++) {
+					cambiarEstadoSS.resizeRows(row + 1);
+					//solicitud.getCuenta().getPersona().getRazonSocial()
+					if(solicitud.getHistorialEstados().get(i).getEstado() != null){
+						cambiarEstadoSS.setHTML(row, 0, solicitud.getHistorialEstados().get(i).getEstado().getItemText());				
+					}
+					cambiarEstadoSS.setHTML(row, 1, solicitud.getHistorialEstados().get(i).getFecha().toString());
+					cambiarEstadoSS.setHTML(row, 2, solicitud.getHistorialEstados().get(i).getUsuario());
+					row++;
+					if(i == solicitud.getHistorialEstados().size()-1){
+						if(solicitud.getHistorialEstados().get(i).getEstado() != null){
+							long code = solicitud.getHistorialEstados().get(i).getEstado().getCode();	
+							if(code == pass){
+								opciones.clear();
+								opciones.add(fail);
+							}
+							else if(code == fail){
+								opciones.clear();
+								opciones.add(pass);
+							}
+							else if((code == carpetIncompleta)||(code == aConfirmar)){
+								opciones.clear();
+								opciones.add(pass);
+								opciones.add(fail);
+							}
+						}
+					}				
+				}
 			}
-			cambiarEstadoSS.setHTML(row, 1, solicitud.getHistorialEstados().get(i).getFecha().toString());
-			cambiarEstadoSS.setHTML(row, 2, solicitud.getHistorialEstados().get(i).getUsuario());
-			row++;
+		
+			if(editarSSUIData.getNuevoEstado() != null){
+				editarSSUIData.getNuevoEstado().clear();							
+				editarSSUIData.getNuevoEstado().addAllItems(editarSSUIData.getOpcionesEstadoPorEstadoIds(editarSSUIData.getOpcionesEstado(), opciones));
+			}
 		}
 	}
 
+	public void cleanGrid(){
+		cambiarEstadoSS.resizeRows(2);
+		cambiarEstadoSS.setHTML(1, 0, " ");
+		cambiarEstadoSS.setHTML(1, 1, " ");
+		cambiarEstadoSS.setHTML(1, 2, " ");
+	}
+	
 	private void addEstado(){
 		EstadoSolicitudDto nuevoEstado = new EstadoSolicitudDto(new Long(editarSSUIData.getNuevoEstado().getSelectedIndex()+1),editarSSUIData.getNuevoEstado().getSelectedItemText());
 		
@@ -183,7 +196,9 @@ public class AnalisisSSUI extends Composite {
 
 		estadoPorSolicitudDto.setEstado(nuevoEstado);
 		estadoPorSolicitudDto.setFecha(new Date());
-		estadoPorSolicitudDto.setNumeroSolicitud(new Long(editarSSUIData.getSolicitudServicio().getNumero()));
+		if(!editarSSUIData.getSolicitudServicio().getNumero().equals("")){
+			estadoPorSolicitudDto.setNumeroSolicitud(new Long(editarSSUIData.getSolicitudServicio().getNumero()));			
+		}
 		String usuario = editarSSUIData.getSolicitudServicio().getUsuarioCreacion().getApellidoYNombre();
 		estadoPorSolicitudDto.setUsuario(usuario);
 		
@@ -201,7 +216,6 @@ public class AnalisisSSUI extends Composite {
 	private void cancelarCambio(){
 		
 	}
-
 //	/** Realiza la actualizacion visual necesaria para mostrar los datos correctos */
 //	public void refresh() {
 //		int row = 1;
@@ -239,5 +253,4 @@ public class AnalisisSSUI extends Composite {
 //
 //		editarSSUIData.recarcularValores();
 //	}
-
 }

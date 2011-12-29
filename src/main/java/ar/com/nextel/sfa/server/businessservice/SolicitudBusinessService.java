@@ -345,8 +345,9 @@ public class SolicitudBusinessService {
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public EstadoPorSolicitud saveEstadoPorSolicitudDto(EstadoPorSolicitud estadoPorSolicitud) {
-		
-		repository.save(estadoPorSolicitud);
+//		if(estadoPorSolicitud.getNumeroSolicitud()){
+//			repository.save(estadoPorSolicitud);			
+//		}
 		
 		return estadoPorSolicitud;
 	}

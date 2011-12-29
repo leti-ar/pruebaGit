@@ -10,11 +10,13 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaDatosForm;
 import ar.com.nextel.sfa.client.cuenta.CuentaDomiciliosForm;
+import ar.com.nextel.sfa.client.dto.ComentarioAnalistaDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.ControlesDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoHistoricoDto;
+import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
@@ -157,6 +159,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private ListBox comentarioAnalista;
 	private TextArea notaAdicional;
 	
+    private List<ComentarioAnalistaDto> comentarioAnalistaMensaje = new ArrayList<ComentarioAnalistaDto>();
+    private List<EstadoSolicitudDto> opcionesEstado = new ArrayList<EstadoSolicitudDto>();
 	
 	public EditarSSUIData(EditarSSUIController controller) {
 		this.controller = controller;
@@ -1589,5 +1593,51 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	public void setNotaAdicional(TextArea notaAdicional) {
 		this.notaAdicional = notaAdicional;
+	}
+	
+	public List<ComentarioAnalistaDto> getComentarioAnalistaMensaje() {
+		return comentarioAnalistaMensaje;
+	}
+
+	public void setComentarioAnalistaMensaje(
+			List<ComentarioAnalistaDto> comentarioAnalistaMensaje) {
+		this.comentarioAnalistaMensaje = comentarioAnalistaMensaje;
+	}
+
+	public List<EstadoSolicitudDto> getOpcionesEstado() {
+		return opcionesEstado;
+	}
+
+	public void setOpcionesEstado(List<EstadoSolicitudDto> opcionesEstado) {
+		this.opcionesEstado = opcionesEstado;
+	}
+	
+	public List<EstadoSolicitudDto> getOpcionesEstadoPorEstadoIds(List<EstadoSolicitudDto> lista, List<Long> opciones) {
+		List<EstadoSolicitudDto> estado = new ArrayList<EstadoSolicitudDto>();
+		for (int i = 0; i < lista.size(); i++) {
+			if(lista.get(i) != null){
+				for (int j = 0; j < opciones.size(); j++) {
+					
+					if(lista.get(i).getCode() == opciones.get(j)){
+						estado.add(lista.get(i));
+					}
+				}
+			}
+		}
+		return estado;
+	}
+
+	public List<ComentarioAnalistaDto> getComentarioAnalistaMensajePorEstado(List<ComentarioAnalistaDto> comentarioAnalistaMensaje, Long idEstado) {
+		
+		List<ComentarioAnalistaDto> comentario = new ArrayList<ComentarioAnalistaDto>();
+		
+		for (int i = 0; i < comentarioAnalistaMensaje.size(); i++) {
+			if(comentarioAnalistaMensaje.get(i) != null){
+				if(comentarioAnalistaMensaje.get(i).getEstadoSolicitud() == idEstado){
+					comentario.add(comentarioAnalistaMensaje.get(i));
+				}
+			}
+		}
+		return comentario;
 	}
 }
