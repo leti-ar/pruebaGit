@@ -23,6 +23,8 @@ public class SolicitudServicioCerradaDto implements IsSerializable {
 	private Date fechaCreacionDesde;
 	private Date fechaCreacionHasta;
 	private Long idCuenta;
+	private List<Long> perfiles;
+	private Long perfilAC;
 
 	public String getNumeroSS() {
 		return numeroSS;
@@ -150,6 +152,24 @@ public class SolicitudServicioCerradaDto implements IsSerializable {
 
 	public void setIdCuenta(Long idCuenta) {
 		this.idCuenta = idCuenta;
+	}
+
+	public List<Long> getPerfiles() {
+		return perfiles;
+	}
+
+	public void setPerfiles(List<Long> perfiles) {
+		this.perfiles = perfiles;
+	}
+
+	public Long getPerfilAC() {
+		return perfilAC;
+	}
+
+	public void setPerfilAC(Long perfilAC) {
+		this.perfilAC = perfilAC;
 	}	
+	
+	
 	
 }

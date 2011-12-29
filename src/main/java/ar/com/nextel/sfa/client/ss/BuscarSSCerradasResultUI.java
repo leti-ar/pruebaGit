@@ -593,19 +593,5 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler,
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
-	// public Widget getExportarExcel() {
-	// exportarExcel = new FlowPanel();
-	// exportarExcel.setHeight("30px");
-	// icon = IconFactory.excel();
-	// icon.addStyleName("exportarExcelSS mr10");
-	// numResultados.setWidth("170px");
-	// numResultados.addStyleName("floatLeft");
-	// numResultados.addStyleName("mt5");
-	// exportarExcel.add(numResultados);
-	// exportarExcel.add(icon);
-	// return exportarExcel;
-	// }
-
 	
 }

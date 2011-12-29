@@ -10,6 +10,7 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.util.FormUtils;
 import ar.com.nextel.sfa.client.widget.UIData;
@@ -378,6 +379,9 @@ public class BuscarSSAnalistaCreditosFilterUIData extends UIData {
 		solicitudServicioCerradaDto.setIdEstadoAprobacionSS(obtenerLong(estadoCombo.getSelectedItemText()));
 		solicitudServicioCerradaDto.setCantidadResultados(Long.valueOf(resultadosCombo.getSelectedItem().getItemValue()));
 		solicitudServicioCerradaDto.setIdSucursal(ClientContext.getInstance().getVendedor().getIdSucursal());
+		solicitudServicioCerradaDto.setPerfiles(BuscarSSAnalistaCreditosUI.obtenerPerfiles());
+		solicitudServicioCerradaDto.setPerfilAC(ClientContext.getInstance().getKnownInstance().get(VendedorDto.TIPO_VENDEDOR_ADM_CREDITOS));
+		
 		if(nroDoc.getText() != null) {
 			Integer tipoDoc = tipoDocumento.getSelectedIndex() + 1;
 			solicitudServicioCerradaDto.setTipoDoc(tipoDoc);
@@ -448,6 +452,12 @@ public class BuscarSSAnalistaCreditosFilterUIData extends UIData {
 			return Long.valueOf("2");
 		}else if ("Fail".equals(string)) {
 			return Long.valueOf("3");
+		} else if("En carga".equals(string)) {
+			return Long.valueOf("4");
+		} else if("A Confirmar".equals(string)) {
+			return Long.valueOf("5");
+		} else if("Carpeta Incompleta".equals(string)) {
+			return Long.valueOf("6");
 		}
 		return null;
 	}
@@ -467,6 +477,8 @@ public class BuscarSSAnalistaCreditosFilterUIData extends UIData {
 	public ListBox getTipoDocumento() {
 		return tipoDocumento;
 	}
+	
+
 	
 	
 }

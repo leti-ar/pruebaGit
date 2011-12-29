@@ -25,6 +25,9 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
     public static final String TIPO_VENDEDOR_TELEMARKETING = "TIPO_VENDEDOR_TELEMARKETING";
     public static final String TIPO_VENDEDOR_EECC = "TIPO_VENDEDOR_EECC";
     public static final String TIPO_VENDEDOR_LAP = "TIPO_VENDEDOR_LAP";
+    public static final String TIPO_VENDEDOR_MINORISTA = "TIPO_VENDEDOR_MINORISTA";
+    public static final String TIPO_VENDEDOR_MAYORISTA = "TIPO_VENDEDOR_MAYORISTA";
+    public static final String TIPO_VENDEDOR_SALON = "TIPO_VENDEDOR_SALON";    
 
 
     

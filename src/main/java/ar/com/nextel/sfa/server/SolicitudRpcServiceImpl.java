@@ -299,7 +299,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 //	public List<SolicitudServicioCerradaResultDto> searchSSCerrada(
 	public List<SolicitudServicioCerradaResultDto> searchSolicitudesServicio(
 			SolicitudServicioCerradaDto solicitudServicioCerradaDto, boolean analistaCreditos) throws RpcExceptionMessages {
-		List<Long> idPerfiles = new ArrayList<Long>();
 		AppLogger.info("Iniciando busqueda de SS cerradas...");
 		SolicitudServicioCerradaSearchCriteria solicitudServicioCerradaSearchCriteria = mapper.map(
 				solicitudServicioCerradaDto, SolicitudServicioCerradaSearchCriteria.class);
@@ -309,7 +308,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			if(solicitudServicioCerradaDto.getNroDoc() != null && !solicitudServicioCerradaDto.getNroDoc().equals("")) {
 				solicitudServicioCerradaSearchCriteria.setIdCuentas(obtenerIdCuentasPorTipoyNroDocumento(solicitudServicioCerradaDto.getTipoDoc(), solicitudServicioCerradaDto.getNroDoc()));
 			}
+		} else {
+			solicitudServicioCerradaSearchCriteria.setBusquedaAnalistaCreditos(false);
 		}
+
 		
 		List<SolicitudServicio> list = null;
 		try {
