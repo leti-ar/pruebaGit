@@ -101,8 +101,10 @@ public class AnalisisSSUI extends Composite {
 			public void onChange(ChangeEvent event) {
 				
 				editarSSUIData.getComentarioAnalista().clear();
-				if(editarSSUIData.getComentarioAnalistaMensajePorEstado(editarSSUIData.getComentarioAnalistaMensaje(), new Long(editarSSUIData.getNuevoEstado().getSelectedItemId())) != null){						
-					editarSSUIData.getComentarioAnalista().addAllItems(editarSSUIData.getComentarioAnalistaMensajePorEstado(editarSSUIData.getComentarioAnalistaMensaje(), new Long(editarSSUIData.getNuevoEstado().getSelectedItemId())));
+				if(editarSSUIData.getNuevoEstado().getSelectedItemId() != null){
+					if(editarSSUIData.getComentarioAnalistaMensajePorEstado(editarSSUIData.getComentarioAnalistaMensaje(), new Long(editarSSUIData.getNuevoEstado().getSelectedItemId())) != null){						
+						editarSSUIData.getComentarioAnalista().addAllItems(editarSSUIData.getComentarioAnalistaMensajePorEstado(editarSSUIData.getComentarioAnalistaMensaje(), new Long(editarSSUIData.getNuevoEstado().getSelectedItemId())));
+					}					
 				}
 			}
 		});
@@ -204,13 +206,13 @@ public class AnalisisSSUI extends Composite {
 		
 		editarSSUIData.getSolicitudServicio().addHistorialEstados(estadoPorSolicitudDto);
 
-		SolicitudRpcService.Util.getInstance().saveEstadoPorSolicitudDto(estadoPorSolicitudDto, new DefaultWaitCallback<Boolean>() {
-
-			@Override
-			public void success(Boolean result) {
-				refresh();
-			}
-		});
+//		SolicitudRpcService.Util.getInstance().saveEstadoPorSolicitudDto(estadoPorSolicitudDto, new DefaultWaitCallback<Boolean>() {
+//
+//			@Override
+//			public void success(Boolean result) {
+//				refresh();
+//			}
+//		});
 	}
 	
 	private void cancelarCambio(){
