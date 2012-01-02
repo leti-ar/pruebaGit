@@ -492,16 +492,21 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	 * TODO: Portabilidad
 	 * @param row
 	 */
-	private void openPortabilidadReplicarDialog(int row){
+	private void openPortabilidadReplicarDialog(final int row){
 		SolicitudPortabilidadDto portabilidad = editarSSUIData.getLineasSolicitudServicio().get(row - 1).getPortabilidad();
 		
 		if(portabilidad != null){
-			if(portabilidad.getTipoDocumento() != null && 
-					notEmpty(portabilidad.getNumeroDocumento()) && notEmpty(portabilidad.getRazonSocial()) && 
-					notEmpty(portabilidad.getNombre()) && notEmpty(portabilidad.getApellido())){
+			if(portabilidad.getTipoDocumento() != null && notEmpty(portabilidad.getNumeroDocumento()) && 
+					notEmpty(portabilidad.getRazonSocial()) && notEmpty(portabilidad.getNombre()) && notEmpty(portabilidad.getApellido())){
 
-				PortabilidadReplicarDialog replicarDialog = new PortabilidadReplicarDialog();
-				replicarDialog.show(editarSSUIData.getSolicitudServicio(),row - 1);
+				
+				SolicitudRpcService.Util.getInstance().getPortabilidadInitializer(editarSSUIData.getCuentaId(),new DefaultWaitCallback<PortabilidadInitializer>() {
+					@Override
+					public void success(PortabilidadInitializer result) {
+						PortabilidadReplicarDialog replicarDialog = new PortabilidadReplicarDialog();
+						replicarDialog.show(editarSSUIData.getSolicitudServicio(),row - 1,result);
+					}
+				});
 			}else{
 				ModalMessageDialog.getInstance().showAceptar(
 						"Para portar los datos de Portabilidad deben estar completos Tipo y Numero de Documento, Razon Social, Nombre y Apellido", 

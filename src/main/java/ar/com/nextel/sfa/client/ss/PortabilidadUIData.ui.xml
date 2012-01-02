@@ -10,7 +10,7 @@
 		}
 	</ui:style>
     
-    <g:HTMLPanel height="240px" width="530px" styleName="{style.frm}">
+    <g:HTMLPanel height="260px" width="530px" styleName="{style.frm}">
 		
 		<g:HorizontalPanel horizontalAlignment="ALIGN_RIGHT" width="515px" spacing="5">
 			<g:HTML ui:field="lnkCopiarCuenta" width="15px" height="15px"></g:HTML>
@@ -75,7 +75,7 @@
 						<g:Label ui:field='lblApellido' text="Apellido: " width="70" ></g:Label> 
 					</td>
 					<td style="padding-bottom:3px; padding-top:3px;"> 
-						<s:RegexTextBox ui:field='txtApellido' width="165" maxLength="50"></s:RegexTextBox> 
+						<s:RegexTextBox ui:field='txtApellido' width="160" maxLength="50"></s:RegexTextBox> 
 					</td>
 				</tr>
 				<tr>
@@ -85,11 +85,20 @@
 					<td style="padding-bottom:3px; padding-top:3px;"> 
 						<sfa:TelefonoTextBox ui:field='txtTelefono' width="170"></sfa:TelefonoTextBox> 
 					</td>
+					<td style="padding-bottom:3px; padding-top:2px;"> 
+						<g:CheckBox ui:field='chkNoPoseeTel' text="No posee" width="100"></g:CheckBox> 
+					</td>
+					
+				</tr>
+				<tr>
 					<td style="padding-bottom:3px; padding-top:3px;"> 
 						<g:Label ui:field='lblEmail' text="E-Mail: " width="70"></g:Label> 
 					</td>
 					<td style="padding-bottom:3px; padding-top:3px;"> 
 						<s:RegexTextBox ui:field='txtEmail' width="165" maxLength="110"></s:RegexTextBox> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:2px;"> 
+						<g:CheckBox ui:field='chkNoPoseeEmail' text="No posee" width="100"></g:CheckBox> 
 					</td>
 				</tr>
 			</table>

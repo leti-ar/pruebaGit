@@ -29,6 +29,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
@@ -49,6 +50,8 @@ public class PortabilidadUIData extends Composite {
     private static PortabilidadUiBinder uiBinder = GWT.create(PortabilidadUiBinder.class);
 
 	@UiField CheckBox chkRecibeSMS;
+	@UiField CheckBox chkNoPoseeTel;
+	@UiField CheckBox chkNoPoseeEmail;
 	
 	@UiField(provided = true) HTML lnkCopiarCuenta = IconFactory.copiar();
 	
@@ -111,11 +114,12 @@ public class PortabilidadUIData extends Composite {
 		lblModalidadCobro.addStyleName(OBLIGATORIO);
 		
 		lblApellido.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-		lblEmail.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 		lblNroUltimaFacura.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 		lblNroDocumento.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 
 		chkRecibeSMS.addStyleName("portabilidadCheck");
+		chkNoPoseeTel.addStyleName("portabilidadCheck");
+		chkNoPoseeEmail.addStyleName("portabilidadCheck");
 		lnkCopiarCuenta.addStyleName("floatRight");
 		
 		comprobarTipoTelefonia();
@@ -127,7 +131,7 @@ public class PortabilidadUIData extends Composite {
 				ModalMessageDialog.getInstance().hide();
 			}
 		};
-
+		
 		txtTelefonoPortar.getArea().addChangeHandler(new ChangeHandler() {
 			public void onChange(ChangeEvent event) {
 				SolicitudRpcService.Util.getInstance().getExisteEnAreaCobertura(Integer.valueOf(txtTelefonoPortar.getArea().getText()), 
@@ -149,14 +153,36 @@ public class PortabilidadUIData extends Composite {
 	 * 
 	 * @param evt
 	 */
-	@UiHandler(value={"lnkCopiarCuenta"})
+	@UiHandler(value={"lnkCopiarCuenta","chkNoPoseeTel","chkNoPoseeEmail"})
 	void onCLick(ClickEvent evt){
-		if(persona != null){
-			txtNombre.setText(persona.getNombre());
-			txtApellido.setText(persona.getApellido());
-			txtRazonSocial.setText(persona.getRazonSocial());
-			txtNroDocumento.setText(persona.getDocumento().getNumero());
-			lstTipoDocumento.selectByText(persona.getDocumento().getTipoDocumento().getDescripcion());
+		if(evt.getSource() == lnkCopiarCuenta){
+			if(persona != null){
+				txtNombre.setText(persona.getNombre());
+				txtApellido.setText(persona.getApellido());
+				txtRazonSocial.setText(persona.getRazonSocial());
+				txtNroDocumento.setText(persona.getDocumento().getNumero());
+				lstTipoDocumento.selectByText(persona.getDocumento().getTipoDocumento().getDescripcion());
+			}
+		}
+		else if(evt.getSource() == chkNoPoseeTel){
+			if(chkNoPoseeTel.getValue()){
+				txtTelefono.getArea().setText("");
+				txtTelefono.getNumero().setText("");
+				txtTelefono.getInterno().setText("");
+
+				txtTelefono.getArea().setEnabled(false);
+				txtTelefono.getNumero().setEnabled(false);
+				txtTelefono.getInterno().setEnabled(false);
+			}else{
+				txtTelefono.getArea().setEnabled(true);
+				txtTelefono.getNumero().setEnabled(true);
+				txtTelefono.getInterno().setEnabled(true);
+			}
+		}else if(evt.getSource() == chkNoPoseeEmail){
+			if(chkNoPoseeEmail.getValue()){
+				txtEmail.setText("");
+				txtEmail.setEnabled(false);
+			}else txtEmail.setEnabled(true);
 		}
 	}
 	
@@ -275,7 +301,9 @@ public class PortabilidadUIData extends Composite {
 	public List<String> ejecutarValidacion(){
 		GwtValidator validador = new GwtValidator();
 		
-		validador.addTarget(txtTelefono.getNumero()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Telefono"));
+		if(!chkNoPoseeTel.getValue())
+			validador.addTarget(txtTelefono.getNumero()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Telefono"));
+		
 		validador.addTarget(txtTelefonoPortar.getNumero()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Telefono a Portar"));
 		validador.addTarget(txtNroDocumento).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nro. de Documento"));
 		
@@ -333,6 +361,46 @@ public class PortabilidadUIData extends Composite {
 			}
 		}else txtTelefono.getNumero().setText(solicitudPortabilidad.getTelefono());
 
+		if(solicitudPortabilidad.getTelefono() == null){
+			chkNoPoseeTel.setValue(true);
+			txtTelefono.getArea().setText("");
+			txtTelefono.getNumero().setText("");
+			txtTelefono.getInterno().setText("");
+			txtTelefono.getArea().setEnabled(false);
+			txtTelefono.getNumero().setEnabled(false);
+			txtTelefono.getInterno().setEnabled(false);
+		}else{
+			if(solicitudPortabilidad.getTelefono().length() > 0){
+				chkNoPoseeTel.setValue(false);
+				txtTelefono.getArea().setEnabled(true);
+				txtTelefono.getNumero().setEnabled(true);
+				txtTelefono.getInterno().setEnabled(true);
+			}else{
+				chkNoPoseeTel.setValue(true);
+				txtTelefono.getArea().setText("");
+				txtTelefono.getNumero().setText("");
+				txtTelefono.getInterno().setText("");
+				txtTelefono.getArea().setEnabled(false);
+				txtTelefono.getNumero().setEnabled(false);
+				txtTelefono.getInterno().setEnabled(false);
+			}
+		}
+
+		if(solicitudPortabilidad.getEmail() == null){
+			chkNoPoseeEmail.setValue(true);
+			txtEmail.setText("");
+			txtEmail.setEnabled(false);
+		}else{
+			if(solicitudPortabilidad.getEmail().length() > 0){
+				chkNoPoseeEmail.setValue(false);
+				txtEmail.setEnabled(true);
+			}else{
+				chkNoPoseeEmail.setValue(true);
+				txtEmail.setText("");
+				txtEmail.setEnabled(false);
+			}
+		}
+				
 		if(solicitudPortabilidad.getNroSS() != null)chkRecibeSMS.setValue(solicitudPortabilidad.isRecibeSMS());
 
 		chkPortabilidad.setValue(true);

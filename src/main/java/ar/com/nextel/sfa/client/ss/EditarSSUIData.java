@@ -649,6 +649,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().ordenCompra()));
 		}
 		
+		//Portabilidad
+		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
+			if(linea.getPortabilidad() != null){
+				if(linea.getPortabilidad().getTelefonoPortar() == null){
+					validator.addError("Falta validar el numero de telefono a portar del " + linea.getAlias());
+				}
+			}
+		}
+		
 		validator.fillResult();
 		return validator.getErrors();
 	}

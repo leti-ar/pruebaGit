@@ -4,14 +4,19 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.ProveedorDto;
+import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
+import ar.com.nextel.sfa.client.dto.TipoTelefoniaDto;
+import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.util.PortabilidadUtil;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -40,6 +45,8 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 	private String strNroDocumento;
 	private SolicitudServicioDto solicitudServicio;
 	private PortabilidadUtil portabilidadUtil;
+	private TipoTelefoniaDto tipoTelefonia;
+	private ProveedorDto proveedorAnterior;
 	
 	public PortabilidadReplicarDialog(){
 		super(TITULO,false,true);
@@ -47,10 +54,12 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 		
 }
 	
-	public void show(SolicitudServicioDto unaSolicitudServicio,int indexLinea) {
+	public void show(SolicitudServicioDto unaSolicitudServicio,int indexLinea,final PortabilidadInitializer initializer) {
 		solicitudServicio = unaSolicitudServicio;
 		lineas = solicitudServicio.getLineas();
-		
+		tipoTelefonia = initializer.getLstTipoTelefonia().get(0);
+		proveedorAnterior = initializer.getLstProveedorAnterior().get(0);
+			
 		boolean existenPortabilidades = false;
 		
 		for (LineaSolicitudServicioDto linea : lineas) {
@@ -96,7 +105,7 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 
 			int newRow = 1;
 			for (LineaSolicitudServicioDto linea : lineas) {
-				if(linea.getPortabilidad() != null && linea.getPortabilidad() != lineas.get(indexLinea).getPortabilidad()){
+				if(/*linea.getPortabilidad() != null && */linea.getPortabilidad() != lineas.get(indexLinea).getPortabilidad()){
 					tblDetalle.setWidget(newRow, 0, new CheckBox());
 					tblDetalle.setHTML(newRow, 1, linea.getItem() != null ? linea.getItem().getDescripcion() : Sfa.constant().whiteSpace());
 					tblDetalle.setHTML(newRow, 2, linea.getAlias() != null ? linea.getAlias() : Sfa.constant().whiteSpace());
@@ -114,6 +123,12 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 							if(((CheckBox)tblDetalle.getWidget(i, 0)).getValue()){
 								for (LineaSolicitudServicioDto linea : lineas) {
 									if(tblDetalle.getHTML(i, 2).equals(linea.getAlias())){
+										if(linea.getPortabilidad() == null){
+											linea.setPortabilidad(new SolicitudPortabilidadDto());
+ 											linea.getPortabilidad().setTipoTelefonia(tipoTelefonia);
+ 											linea.getPortabilidad().setProveedorAnterior(proveedorAnterior);
+										}
+										
 										linea.getPortabilidad().setRazonSocial(strRazonSocial);
 										linea.getPortabilidad().setNombre(strNombre);
 										linea.getPortabilidad().setApellido(strApellido);

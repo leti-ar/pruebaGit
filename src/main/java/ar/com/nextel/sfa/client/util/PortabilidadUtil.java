@@ -3,6 +3,8 @@ package ar.com.nextel.sfa.client.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.user.client.Window;
+
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
@@ -86,29 +88,35 @@ public class PortabilidadUtil {
 			}
 		}
 		
-		// Asigna los Nro de solicitud de servicio
+		// Asigna los Nro de solicitud de servicio	
 		String nroSS;
 		int cont = 0;
-
-		for(int i = 0; i < prepagos.size(); i++){
-			if(cont == 0) nroSS = "N" + solicitudServicio.getNumero();
-			else nroSS = "N" + solicitudServicio.getNumero() + "." + String.valueOf(cont);
-			cont++;
-
-			lineas.get(prepagos.get(i)).getPortabilidad().setNroSS(nroSS);
-		}
-
-		//Recorre los postpagos divididos por apoderados
-		for(int i= 0; i < postpagos_apod_op.size(); i++){
-			if(cont == 0)nroSS = "N" + solicitudServicio.getNumero();
-			else nroSS = "N" + solicitudServicio.getNumero() + "." + String.valueOf(cont);
-			cont++;
+		
+		for(int i = 0; i < lineas.size(); i++){
+			for(int j = 0; j < prepagos.size()/* && !encontroPre*/; j++){
+				if(lineas.get(i).getAlias().equals(lineas.get(prepagos.get(j)).getAlias())){
+					if(cont == 0) nroSS = "N" + solicitudServicio.getNumero();
+					else nroSS = "N" + solicitudServicio.getNumero() + "." + String.valueOf(cont);
+					lineas.get(i).getPortabilidad().setNroSS(nroSS);
+					cont++;
+				}
+			}
 			
-			//Recorre los postagos divididos en apoderados, divididos por operadores 
-			for(int j = 0; j < postpagos_apod_op.get(i).size(); j++){
-				lineas.get(postpagos_apod_op.get(i).get(j)).getPortabilidad().setNroSS(nroSS);
+			for(int j = 0; j < postpagos_apod_op.size(); j++){
+				for(int n = 0; n < postpagos_apod_op.get(j).size(); n++){
+					if(lineas.get(i).getAlias().equals(lineas.get(postpagos_apod_op.get(j).get(n)).getAlias())){
+						if(lineas.get(postpagos_apod_op.get(j).get(n)).getPortabilidad().getNroSS().length() == 0){
+							if(cont == 0) nroSS = "N" + solicitudServicio.getNumero();
+							else nroSS = "N" + solicitudServicio.getNumero() + "." + String.valueOf(cont);
+							cont++;
+							
+							for(int k = 0; k < postpagos_apod_op.get(j).size(); k++){
+								lineas.get(postpagos_apod_op.get(j).get(k)).getPortabilidad().setNroSS(nroSS);
+							}
+						}
+					}
+				}
 			}
 		}
-		
 	}
 }
