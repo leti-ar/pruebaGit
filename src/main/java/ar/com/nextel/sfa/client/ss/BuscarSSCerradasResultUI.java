@@ -11,6 +11,7 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
@@ -180,7 +181,12 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler,
 				int pos = 0;
 				if(isAnalistaCreditos()) {
 					resultTable.setWidget(indiceRowTabla, pos, IconFactory.lapiz());
-					resultTable.setWidget(indiceRowTabla, ++pos, IconFactory.word());
+					//LF Si la ss esta cerrada(en carga false) muestro el rtf en la tabla, si no no muestro nada.
+					if(solicitudServicioCerradaResultDto.getEnCarga()) {
+						resultTable.setText(indiceRowTabla, ++pos, "");
+					} else {
+						resultTable.setWidget(indiceRowTabla, ++pos, IconFactory.word());
+					}
 				} else {
 					resultTable.setWidget(indiceRowTabla, pos, IconFactory.word());
 				}
@@ -192,10 +198,6 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler,
 					resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto
 							.getRazonSocialCuenta());
 				}
-				if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == Boolean.TRUE) {
-					cantEqFirmados++;
-				}
-				
 				if(isAnalistaCreditos()) {
 					Integer cantidadEquipos = calcularCantEquipos(solicitudServicioCerradaResultDto.getLineas());
 					resultTable.setHTML(indiceRowTabla, ++pos, cantidadEquipos.toString());
@@ -203,6 +205,10 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler,
 				}else {
 					resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getCantidadEquipos().toString());
 					cantEquipos = cantEquipos + solicitudServicioCerradaResultDto.getCantidadEquipos();
+				}
+				
+				if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == Boolean.TRUE) {
+					cantEqFirmados++;
 				}
 
 				if(isAnalistaCreditos()) {
@@ -231,7 +237,9 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler,
 					} else {
 						resultTable.setText(indiceRowTabla, ++pos, "");
 					}
-						resultTable.setText(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getIdGrupoSolicitud().toString());
+						
+			    	resultTable.setText(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getUltimoEstado());
+			    	
 			    	if (solicitudServicioCerradaResultDto.getFechaCreacion() != null) {
 						resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getFechaCreacion().toLocaleString());
 					} else {
@@ -248,8 +256,6 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler,
 					} else {
 						resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getPataconex()
 							.toString());
-					}
-					if (solicitudServicioCerradaResultDto.getPataconex() != null) {
 						cantPataconex = cantPataconex + solicitudServicioCerradaResultDto.getPataconex();
 					}
 					if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == true) {
@@ -561,21 +567,34 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler,
 	}
 	
 	public String calcularDesvio(List<LineaSolicitudServicioDto> lineas) {
-		double precioListaTotal = 0;
-		double precioVentaTotal = 0;
+		double precioListaPlan = 0;
+		double precioVentaPlan = 0;
+		double precioListaServicio = 0;
+		double precioVentaServicio = 0;
 		double precioItemTotal = 0;
 		for (LineaSolicitudServicioDto linea : lineas) {
-			linea.refreshPrecioServiciosAdicionales();
-			precioListaTotal = precioListaTotal + linea.getPrecioListaTotal();
-			precioVentaTotal = precioVentaTotal + linea.getPrecioVentaTotal();
-			precioItemTotal = precioItemTotal + linea.getPrecioVenta() + linea.getPrecioAlquilerVenta();
+			precioListaPlan = linea.getPrecioListaPlan();
+			precioVentaPlan = linea.getPrecioVentaPlan();
+			for (ServicioAdicionalLineaSolicitudServicioDto servicioAd : linea.getServiciosAdicionales()) {
+				if (servicioAd.isChecked()) {
+					precioListaPlan = precioListaPlan + servicioAd.getPrecioLista();
+					precioVentaPlan = precioVentaPlan + servicioAd.getPrecioVenta();
+				}
+			}	
 		}
+		precioItemTotal = precioListaPlan - precioVentaPlan + (precioListaServicio - precioVentaServicio);
+		
 		if(precioItemTotal == 0) 
 			return "$ 0.00";
 		return String.valueOf("$ " + precioItemTotal);
 	}
 	
-	
+	/**
+	 * Metodo que calcula a travez de las lineas de SS, la cantidad de equipos que posee.
+	 * Esto se calcula si el classIndicator es EQUIPO o SERVICIO y si el sim es 'T'.
+	 * @param lineaSS
+	 * @return int 
+	 */
 	public int calcularCantEquipos(List<LineaSolicitudServicioDto> lineaSS){
 		int cantEquipos = 0;
 		for (Iterator iterator = lineaSS.iterator(); iterator.hasNext();) {

@@ -374,8 +374,8 @@ public class BuscarSSAnalistaCreditosFilterUIData extends UIData {
 		solicitudServicioCerradaDto.setNumeroSS(nroSS.getText());
 		solicitudServicioCerradaDto.setFechaCierreDesde(cierreDesde.getSelectedDate());
 		solicitudServicioCerradaDto.setFechaCierreHasta(cierreHasta.getSelectedDate());
-		solicitudServicioCerradaDto.setFechaCreacionDesde(cierreDesde.getSelectedDate());
-		solicitudServicioCerradaDto.setFechaCreacionHasta(cierreHasta.getSelectedDate());		
+		solicitudServicioCerradaDto.setFechaCreacionDesde(creacionDesde.getSelectedDate());
+		solicitudServicioCerradaDto.setFechaCreacionHasta(creacionHasta.getSelectedDate());		
 		solicitudServicioCerradaDto.setIdEstadoAprobacionSS(obtenerLong(estadoCombo.getSelectedItemText()));
 		solicitudServicioCerradaDto.setCantidadResultados(Long.valueOf(resultadosCombo.getSelectedItem().getItemValue()));
 		solicitudServicioCerradaDto.setIdSucursal(ClientContext.getInstance().getVendedor().getIdSucursal());

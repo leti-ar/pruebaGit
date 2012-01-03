@@ -11,7 +11,6 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
-import ar.com.nextel.sfa.client.dto.ComentarioAnalistaDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
@@ -532,9 +531,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				|| !ClientContext.getInstance().vengoDeNexus()){
 			mainPanel.add(razonSocialClienteBar);
 		}
-		if(isEditable()) 
+//		if(isEditable()) 
 		razonSocialClienteBar.setEnabledSilvioSoldan();
-		else razonSocialClienteBar.setDisabledSilvioSoldan();
+//		else razonSocialClienteBar.setDisabledSilvioSoldan();
 		
 
 		copiarSS = new Button("Copiar SS");
@@ -547,8 +546,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		validarCompletitud.addClickHandler(this);
 		mainPanel.add(validarCompletitud);
 		
-		copiarSS.setVisible(isEditable());
+		//LF
 		validarCompletitud.setVisible(isEditable());
+		copiarSS.setVisible(!isEditable());
 		
 		tabs = new TabPanel();
 		tabs.setWidth("98%");
@@ -1341,18 +1341,5 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public void setEditable(boolean editable) {
 		this.editable = editable;
 	}	
-	
-//	public void protegerCampos(EditarSSUIData editarSSUIdata){
-//		editarSSUIdata.getNss().setEnabled(false);
-//		editarSSUIdata.getNflota().setEnabled(false);
-//		editarSSUIdata.getOrigen().setEnabled(false);
-//		editarSSUIdata.getVendedor().setEnabled(false);
-//		editarSSUIdata.getSucursalOrigen().setEnabled(false);
-//		editarSSUIdata.getEntrega().setEnabled(false);
-//		editarSSUIdata.getFacturacion().setEnabled(false);
-//		editarSSUIdata.getAclaracion().setEnabled(false);
-//		editarSSUIdata.getSucursalOrigen().setEnabled(false);
-//		editarSSUIdata.getCriterioBusqContrato().setEnabled(false);
-//	}
 	
 }

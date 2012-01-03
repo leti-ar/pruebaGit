@@ -321,6 +321,11 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			AppLogger.info("Error buscando Solicitudes de Servicio cerradas: " + e.getMessage(), e);
 			throw ExceptionUtil.wrap(e);
 		}
+		
+		if(analistaCreditos) {
+			list = calcularUltimoEstado(list);
+		}
+		
 		List result = mapper.convertList(list, SolicitudServicioCerradaResultDto.class, "ssCerradaResult");
 		AppLogger.info("Busqueda de SS cerradas finalizada...");
 		return result;
@@ -1148,6 +1153,30 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			throw ExceptionUtil.wrap(e);
 		}
 		return mapper.convertList(servicios, SolicitudServicioDto.class);
+	}
+	
+	/**
+	 * Obtengo el ultimo estado en el que se encuentra la solicitud. 
+	 * @param resultados
+	 * @return
+	 */
+	public List<SolicitudServicio> calcularUltimoEstado(List<SolicitudServicio> resultados) {
+		for (Iterator iterator = resultados.iterator(); iterator.hasNext();) {
+			SolicitudServicio solicitudServicio = (SolicitudServicio) iterator
+					.next();
+			if(solicitudServicio.getNumero() != null) {
+				List <String> ultimoEstado = repository.executeCustomQuery("ULTIMO_ESTADO", solicitudServicio.getNumero());
+				if(!ultimoEstado.isEmpty()) {
+					solicitudServicio.setUltimoEstado(ultimoEstado.get(0));
+				} else {
+					solicitudServicio.setUltimoEstado("En carga");
+				}
+			} else {
+				solicitudServicio.setUltimoEstado("En carga");
+			}
+			
+		}
+		return resultados;
 	}
 	
 }

@@ -40,6 +40,7 @@ public class SolicitudServicioCerradaResultDto implements IsSerializable {
 	private String item;
 	private Boolean enCarga;
 	private String apellidoNombreVendedor;
+	private String ultimoEstado;
 
 	/** 
 	 * 
@@ -297,5 +298,11 @@ public class SolicitudServicioCerradaResultDto implements IsSerializable {
 		this.apellidoNombreVendedor = apellidoNombreVendedor;
 	}
 
-	
+	public String getUltimoEstado() {
+		return ultimoEstado;
+	}
+
+	public void setUltimoEstado(String ultimoEstado) {
+		this.ultimoEstado = ultimoEstado;
+	}
 }

@@ -33,6 +33,7 @@ import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
+import ar.com.nextel.sfa.client.util.FormUtils;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.UIData;
@@ -302,6 +303,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		fields.add(fechaFirmaTr = new SimpleDatePicker(false, true));
 		fields.add(estadoTr = new ListBox(""));
 		fields.add(fechaEstadoTr = new SimpleDatePicker(false, true));
+		
+		//LF
+		if(controller.isEditable()) {
+			FormUtils.disableFields(fields);
+		}
 		
 		//larce - Busco en vantive y completo los campos si están en blanco
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
@@ -706,7 +712,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			solicitudServicio.setOrigen((OrigenSolicitudDto) origenTR.getSelectedItem());
 		}
 		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())) {
-			solicitudServicio.setIdSucursal(Long.valueOf(sucursalOrigen.getSelectedItem().getItemValue()));
+			if(sucursalOrigen.getSelectedItem() != null) {
+				solicitudServicio.setIdSucursal(Long.valueOf(sucursalOrigen.getSelectedItem().getItemValue()));
+			}
 		} else {
 			solicitudServicio.setIdSucursal(solicitudServicio.getVendedor().getIdSucursal());
 		}
@@ -742,10 +750,16 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 		//larce
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
-			solicitudServicio.setCantidadEquiposH(new Long(cantidadEquipos.getText()));
-			solicitudServicio.setFechaFirma(dateTimeFormat.parse(fechaFirma.getTextBox().getText()));
+			if(!cantidadEquipos.getText().equals("")) {
+				solicitudServicio.setCantidadEquiposH(new Long(cantidadEquipos.getText()));
+			}
+			if(!fechaFirma.getTextBox().getText().equals("")) {
+				solicitudServicio.setFechaFirma(dateTimeFormat.parse(fechaFirma.getTextBox().getText()));
+			}
 			solicitudServicio.setEstadoH((EstadoHistoricoDto) estadoH.getSelectedItem());
-			solicitudServicio.setFechaEstado(dateTimeFormat.parse(fechaEstado.getTextBox().getText()));
+			if(!fechaEstado.getTextBox().getText().equals("")) {
+				solicitudServicio.setFechaEstado(dateTimeFormat.parse(fechaEstado.getTextBox().getText()));
+			}
 			solicitudServicio.setClienteHistorico(clienteHistorico);
 		}
 		return solicitudServicio;
