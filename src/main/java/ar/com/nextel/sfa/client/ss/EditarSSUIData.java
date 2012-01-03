@@ -159,6 +159,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
     private ListBox nuevoEstado;
 	private ListBox comentarioAnalista;
 	private TextArea notaAdicional;
+	Label cantEquipos;
 	
     private List<ComentarioAnalistaDto> comentarioAnalistaMensaje = new ArrayList<ComentarioAnalistaDto>();
     private List<EstadoSolicitudDto> opcionesEstado = new ArrayList<EstadoSolicitudDto>();
@@ -192,6 +193,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		fields.add(titulo);
 		fields.add(enviarA = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(20), true));
 		
+		fields.add(cantEquipos = new Label());
 		
 		entrega.setWidth("480px");
 		fields.add(facturacion = new ListBox());
@@ -1626,6 +1628,17 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		this.opcionesEstado = opcionesEstado;
 	}
 	
+	public EstadoSolicitudDto getEstadoPorEstadoText(List<EstadoSolicitudDto> lista, String text) {
+		for (int i = 0; i < lista.size(); i++) {
+			if(lista.get(i) != null){
+				if(lista.get(i).getItemText().equals(text)){
+						return lista.get(i);
+				}
+			}
+		}
+		return null;
+	}
+	
 	public List<EstadoSolicitudDto> getOpcionesEstadoPorEstadoIds(List<EstadoSolicitudDto> lista, List<Long> opciones) {
 		List<EstadoSolicitudDto> estado = new ArrayList<EstadoSolicitudDto>();
 		for (int i = 0; i < lista.size(); i++) {
@@ -1653,5 +1666,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			}
 		}
 		return comentario;
+	}
+
+	public Label getCantEquipos() {
+		return cantEquipos;
+	}
+
+	public void setCantEquipos(Label cantEquipos) {
+		this.cantEquipos = cantEquipos;
 	}
 }

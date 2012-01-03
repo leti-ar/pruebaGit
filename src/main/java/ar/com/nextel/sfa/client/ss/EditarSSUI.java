@@ -107,10 +107,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private CuentaEdicionTabPanel cuenta;
 	
 	private Button copiarSS;
-	private final long pass = 2l;
-	private final long fail = 3l;
-	private final long aConfirmar = 5l;
-	private final long carpetIncompleta = 6l;
 	
 	private String grupoSS;
 	private HashMap<String, Long> knownInstancias;
@@ -716,14 +712,21 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		    List<EstadoSolicitudDto> opcionesEstados = initializer.getOpcionesEstado();
 			editarSSUIData.getOpcionesEstado().addAll(opcionesEstados);
 		    List<Long> opciones = new ArrayList<Long>();
-		    opciones.add(pass);
-		    opciones.add(fail);
-		    opciones.add(aConfirmar);
-		    opciones.add(carpetIncompleta);
+		    
+		    addOpcionesIgnorandoEnCarga(opciones,editarSSUIData.getOpcionesEstado());
+		    
 	        editarSSUIData.getNuevoEstado().addAllItems(editarSSUIData.getOpcionesEstadoPorEstadoIds(opcionesEstados, opciones));
 		}
 	}
 
+	public void addOpcionesIgnorandoEnCarga(List<Long> opcionesACargar,List<EstadoSolicitudDto> opcionesTotal){
+		for (int i = 0; i < opcionesTotal.size() ; i++) {
+			if((!opcionesTotal.get(i).getDescripcion().equals("en carga"))&&(!opcionesTotal.get(i).getDescripcion().equals("En carga"))&&(!opcionesTotal.get(i).getDescripcion().equals("En Carga"))){
+				opcionesACargar.add(opcionesTotal.get(i).getCode());
+			}
+		}
+	}
+	
 	public boolean unload(String token) {
 		if (!editarSSUIData.isSaved() && !tokenLoaded.equals(token)) {
 			ModalMessageDialog.getInstance().showSiNoCancelar(Sfa.constant().guardar(),
@@ -1341,5 +1344,18 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public void setEditable(boolean editable) {
 		this.editable = editable;
 	}	
+	
+//	public void protegerCampos(EditarSSUIData editarSSUIdata){
+//		editarSSUIdata.getNss().setEnabled(false);
+//		editarSSUIdata.getNflota().setEnabled(false);
+//		editarSSUIdata.getOrigen().setEnabled(false);
+//		editarSSUIdata.getVendedor().setEnabled(false);
+//		editarSSUIdata.getSucursalOrigen().setEnabled(false);
+//		editarSSUIdata.getEntrega().setEnabled(false);
+//		editarSSUIdata.getFacturacion().setEnabled(false);
+//		editarSSUIdata.getAclaracion().setEnabled(false);
+//		editarSSUIdata.getSucursalOrigen().setEnabled(false);
+//		editarSSUIdata.getCriterioBusqContrato().setEnabled(false);
+//	}
 	
 }
