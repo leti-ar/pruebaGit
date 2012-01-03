@@ -880,6 +880,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 						}
 					});
 		}
+		solicitudServicio.getLineas().get(index).setPortabilidad(null);
 		solicitudServicio.getLineas().remove(index);
 		serviciosAdicionales.remove(index);
 		for (; index < solicitudServicio.getLineas().size(); index++) {

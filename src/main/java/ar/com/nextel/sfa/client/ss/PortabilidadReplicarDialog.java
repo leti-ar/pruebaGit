@@ -14,6 +14,7 @@ import ar.com.nextel.sfa.client.util.PortabilidadUtil;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
 import com.google.gwt.user.client.Window;
@@ -54,7 +55,8 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 		
 }
 	
-	public void show(SolicitudServicioDto unaSolicitudServicio,int indexLinea,final PortabilidadInitializer initializer) {
+	public void show(SolicitudServicioDto unaSolicitudServicio,int indexLinea,
+			final PortabilidadInitializer initializer,final DatosSSUI datos,final EditarSSUIController controller) {
 		solicitudServicio = unaSolicitudServicio;
 		lineas = solicitudServicio.getLineas();
 		tipoTelefonia = initializer.getLstTipoTelefonia().get(0);
@@ -134,6 +136,16 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 										linea.getPortabilidad().setApellido(strApellido);
 										linea.getPortabilidad().setTipoDocumento(tipoDocumento);
 										linea.getPortabilidad().setNumeroDocumento(strNroDocumento);
+
+										String numeroReservado = linea.getNumeroReserva();
+										boolean tieneNReserva = numeroReservado != null && numeroReservado.length() > 0;
+										if (tieneNReserva) {
+											controller.desreservarNumeroTelefonico(Long.parseLong(numeroReservado), linea.getId(),
+													new DefaultWaitCallback() {
+														public void success(Object result) {
+														}
+													});
+										}
 									}
 								}
 								asignarNroSSPortabilidad();
@@ -141,10 +153,13 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 						}
 						hide();
 						tblDetalle.removeAllRows();
+						datos.refresh();
+						
 					}
 					if (sender == lnkCancelar) {
 						hide();
 						tblDetalle.removeAllRows();
+						datos.refresh();
 					}
 				}
 			};

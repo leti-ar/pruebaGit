@@ -266,6 +266,14 @@ public class PortabilidadUIData extends Composite {
 		txtNroUltimaFacura.setText(null);;
 
 		comprobarTipoTelefonia();
+		
+		txtTelefono.getArea().setEnabled(false);
+		txtTelefono.getNumero().setEnabled(false);
+		txtTelefono.getInterno().setEnabled(false);
+		txtEmail.setEnabled(false);
+		
+		chkNoPoseeTel.setValue(true);
+		chkNoPoseeEmail.setValue(true);
 
 		this.setVisible(false);
 	}
@@ -322,7 +330,7 @@ public class PortabilidadUIData extends Composite {
 	 * 
 	 * @param idLinea
 	 */
-	public void loadSolicitudPortabilidad(SolicitudPortabilidadDto solPortDto){
+	public void loadSolicitudPortabilidad(SolicitudPortabilidadDto solPortDto,boolean comoNuevo){
 		solicitudPortabilidad = solPortDto;
 	
 		txtEmail.setText(solicitudPortabilidad.getEmail());
@@ -400,8 +408,20 @@ public class PortabilidadUIData extends Composite {
 				txtEmail.setEnabled(false);
 			}
 		}
-				
-		if(solicitudPortabilidad.getNroSS() != null)chkRecibeSMS.setValue(solicitudPortabilidad.isRecibeSMS());
+			
+		if(comoNuevo){
+			chkNoPoseeTel.setValue(false);
+			txtTelefono.getArea().setEnabled(true);
+			txtTelefono.getNumero().setEnabled(true);
+			txtTelefono.getInterno().setEnabled(true);
+
+			chkNoPoseeEmail.setValue(false);
+			txtEmail.setEnabled(true);
+		}
+		
+		if(solicitudPortabilidad.getNroSS() != null){
+			if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")) chkRecibeSMS.setValue(solicitudPortabilidad.isRecibeSMS());
+		}
 
 		chkPortabilidad.setValue(true);
 		txtReserva.setText("");

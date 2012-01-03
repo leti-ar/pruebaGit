@@ -244,7 +244,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 					reservar.setText("");
 					confirmarReserva.setEnabled(false);
 					portabilidadPanel.setVisible(true);
-					portabilidadPanel.loadSolicitudPortabilidad(new SolicitudPortabilidadDto());
+					portabilidadPanel.loadSolicitudPortabilidad(new SolicitudPortabilidadDto(),true);
 					dialog.center();
 				}
 				
@@ -304,7 +304,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 						reservar.setEnabled(false);
 						confirmarReserva.setEnabled(false);
 						portabilidadPanel.setVisible(true);
-						portabilidadPanel.loadSolicitudPortabilidad(new SolicitudPortabilidadDto());
+						portabilidadPanel.loadSolicitudPortabilidad(new SolicitudPortabilidadDto(),true);
 					}
 				}
 			}
@@ -979,7 +979,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		}
 		
 		// TODO: Portabilidad
-		if(linea.getPortabilidad() != null) portabilidadPanel.loadSolicitudPortabilidad(linea.getPortabilidad());
+		portabilidadPanel.resetearPortabilidad();
+		if(linea.getPortabilidad() != null) portabilidadPanel.loadSolicitudPortabilidad(linea.getPortabilidad(),false);
 
 	}
 

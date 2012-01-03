@@ -42,6 +42,7 @@ import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -499,12 +500,12 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			if(portabilidad.getTipoDocumento() != null && notEmpty(portabilidad.getNumeroDocumento()) && 
 					notEmpty(portabilidad.getRazonSocial()) && notEmpty(portabilidad.getNombre()) && notEmpty(portabilidad.getApellido())){
 
-				
+				final DatosSSUI datos = this;
 				SolicitudRpcService.Util.getInstance().getPortabilidadInitializer(editarSSUIData.getCuentaId(),new DefaultWaitCallback<PortabilidadInitializer>() {
 					@Override
 					public void success(PortabilidadInitializer result) {
 						PortabilidadReplicarDialog replicarDialog = new PortabilidadReplicarDialog();
-						replicarDialog.show(editarSSUIData.getSolicitudServicio(),row - 1,result);
+						replicarDialog.show(editarSSUIData.getSolicitudServicio(),row - 1,result,datos,controller);
 					}
 				});
 			}else{
@@ -671,6 +672,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			if (catLineas > 1) {
 				linea.setCantidad(1);
 				for (int i = 0; i < catLineas - 1; i++) {
+					linea.setPortabilidad(null);
 					LineaSolicitudServicioDto lineaCloned = linea.clone();
 					lineaCloned.setNumeradorLinea(null);
 					nuevasLineas.add(lineaCloned);
