@@ -1179,4 +1179,15 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return resultados;
 	}
 	
+	/**
+	 * Obtengo la SolicitudServicio por id.
+	 * @param ssDto
+	 * @return
+	 */
+	public SolicitudServicioDto buscarSSPorId(Long id) {
+		SolicitudServicioDto ssDto = new SolicitudServicioDto();
+		ssDto.setId(id);
+		SolicitudServicio ss = solicitudBusinessService.obtenerSSPorId(ssDto);
+		return mapper.map(ss, SolicitudServicioDto.class);
+	}
 }

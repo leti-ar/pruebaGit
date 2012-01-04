@@ -9,8 +9,6 @@ import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
-import ar.com.nextel.sfa.client.dto.EstadoHistoricoDto;
-import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
 import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
@@ -163,5 +161,7 @@ public interface SolicitudRpcService extends RemoteService {
 			SolicitudServicioDto solicitudSS) throws RpcExceptionMessages;
 	
 	public Integer calcularCantEquipos(List<LineaSolicitudServicioDto> lineaSS);
+	
+	public SolicitudServicioDto buscarSSPorId(Long id);	
 
 }

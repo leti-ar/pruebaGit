@@ -400,7 +400,8 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler,
 				} else if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() == 1)) {
 					abrirArchivoRTF();
 				} else if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() == 0)) {
-					String url =  this.obtenerUrlSS(solicitud.getIdGrupoSolicitud(), solicitud.getIdVantive(), solicitud.getIdCuenta());
+					String url =  this.obtenerUrlSS(solicitud.getIdGrupoSolicitud(), solicitud.getNumeroCuenta(), solicitud.getIdCuenta());
+					url = "idss="+Long.parseLong(resultTable.getHTML(cell.getRowIndex(), 18))+"&" + url;
 					if(solicitud.getEnCarga()) {
 						new OpenPageCommand(UILoader.AGREGAR_SOLICITUD,url).execute();
 					} else {
@@ -510,7 +511,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler,
 	 * @param idCuenta
 	 * @return
 	 */
-	private String obtenerUrlSS(Long idGrupo, Long codigoVantive,Long idCuenta) {
+	private String obtenerUrlSS(Long idGrupo, String codigoVantive,Long idCuenta) {
 		StringBuilder builder = new StringBuilder();
 		if (codigoVantive != null)
 			builder.append(EditarSSUI.CODIGO_VANTIVE + "=" + codigoVantive + "&");

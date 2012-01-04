@@ -156,4 +156,6 @@ public interface SolicitudRpcServiceAsync {
 
 	public void saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto,
 			AsyncCallback<Boolean> callback);
+	
+	public void buscarSSPorId(Long id, AsyncCallback<SolicitudServicioDto> callback);	
 }

@@ -76,6 +76,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public static final String ID_GRUPO_SS = "idGrupoSS";
 	public static final String ID_CUENTA_POTENCIAL = "idCuentaPotencial";
 	public static final String CODIGO_VANTIVE = "codigoVantive";
+	public static final String ID_SS = "idss";
 	private static final String validarCompletitudFailStyle = "validarCompletitudFailButton";
 	private static final String VENDEDOR_NO_COMISIONABLE = "VENDEDOR_NO_COMISIONABLE";
 	
@@ -188,7 +189,23 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				
 			}
 
-			if(knownInstancias != null && solicitudServicioRequestDto.getIdGrupoSolicitud().equals(
+			// LF 
+			if(HistoryUtils.getParam(ID_SS) != null) {
+				Long idSS = Long.parseLong(HistoryUtils.getParam(ID_SS));
+				SolicitudRpcService.Util.getInstance().buscarSSPorId(idSS, new DefaultWaitCallback<SolicitudServicioDto>() {
+
+					@Override
+					public void success(final SolicitudServicioDto result) {
+						if(result != null) {
+							if(result.getEnCarga()){
+								getCopiarSS().setVisible(false);
+							}
+								ssCreadaSuccess(result);
+						}
+					};
+				});
+			
+			} else if(knownInstancias != null && solicitudServicioRequestDto.getIdGrupoSolicitud().equals(
 					knownInstancias.get(GrupoSolicitudDto.ID_TRANSFERENCIA))){
 				SolicitudRpcService.Util.getInstance().createSolicitudServicioTranferencia(solicitudServicioRequestDto, 
 						new DefaultWaitCallback<CreateSaveSSTransfResultDto>() {
@@ -1344,18 +1361,5 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public void setEditable(boolean editable) {
 		this.editable = editable;
 	}	
-	
-//	public void protegerCampos(EditarSSUIData editarSSUIdata){
-//		editarSSUIdata.getNss().setEnabled(false);
-//		editarSSUIdata.getNflota().setEnabled(false);
-//		editarSSUIdata.getOrigen().setEnabled(false);
-//		editarSSUIdata.getVendedor().setEnabled(false);
-//		editarSSUIdata.getSucursalOrigen().setEnabled(false);
-//		editarSSUIdata.getEntrega().setEnabled(false);
-//		editarSSUIdata.getFacturacion().setEnabled(false);
-//		editarSSUIdata.getAclaracion().setEnabled(false);
-//		editarSSUIdata.getSucursalOrigen().setEnabled(false);
-//		editarSSUIdata.getCriterioBusqContrato().setEnabled(false);
-//	}
 	
 }

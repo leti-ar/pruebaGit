@@ -307,7 +307,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		fields.add(fechaEstadoTr = new SimpleDatePicker(false, true));
 		
 		//LF
-		if(controller.isEditable()) {
+		if(!controller.isEditable()) {
 			FormUtils.disableFields(fields);
 		}
 		
@@ -1668,8 +1668,6 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		return comentario;
 	}
 
-	//Metodos que no aparecion
-	
 	public Label getCantEquipos() {
 		return cantEquipos;
 	}

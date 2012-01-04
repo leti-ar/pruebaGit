@@ -740,4 +740,14 @@ public class SolicitudBusinessService {
 		}
 	}
 	
+	/**
+	 * Obtengo la SolicitudServicio por id.
+	 * @param ssDto
+	 * @return
+	 */
+	public SolicitudServicio obtenerSSPorId(SolicitudServicioDto ssDto){
+		SolicitudServicio solicitudServicio = repository.retrieve(SolicitudServicio.class, ssDto.getId());
+		return solicitudServicio;
+	}
+	
 }
