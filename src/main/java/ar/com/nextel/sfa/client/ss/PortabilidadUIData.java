@@ -462,6 +462,7 @@ public class PortabilidadUIData extends Composite {
 			if(!isEmpty(txtTelefono.getInterno().getText())) telefono =  telefono + "-" + txtTelefono.getInterno().getText();
 			solicitudPortabilidad.setTelefono(telefono);
 		}
+		resetearPortabilidad();
 		return solicitudPortabilidad;
 	}
 
@@ -579,5 +580,13 @@ public class PortabilidadUIData extends Composite {
 
 	public void setLstProveedorAnterior(ListBox lstProveedorAnterior) {
 		this.lstProveedorAnterior = lstProveedorAnterior;
+	}
+
+	public CheckBox getChkPortabilidad() {
+		return chkPortabilidad;
+	}
+
+	public void setChkPortabilidad(CheckBox chkPortabilidad) {
+		this.chkPortabilidad = chkPortabilidad;
 	}
 }

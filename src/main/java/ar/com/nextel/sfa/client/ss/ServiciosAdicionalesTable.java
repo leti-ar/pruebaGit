@@ -143,8 +143,7 @@ public class ServiciosAdicionalesTable extends Composite {
 	 */
 	public void setServiciosAdicionalesFor(int selectedLineaSS) {
 		this.selectedLineaSSRow = selectedLineaSS;
-		if (selectedLineaSSRow < 1
-				|| editarSSUIData.getLineasSolicitudServicio().get(selectedLineaSSRow - 1).getPlan() == null) {
+		if (selectedLineaSSRow < 1 || editarSSUIData.getLineasSolicitudServicio().get(selectedLineaSSRow - 1).getPlan() == null) {
 			table.resizeRows(1);
 			return;
 		}

@@ -538,13 +538,20 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	}
 
 	private void removeDetalleLineaSSRow(int row) {
+//		if (selectedDetalleRow == row) {
+//			selectDetalleLineaSSRow(detalleSS.getRowCount() <= 1 ? 0 : 1);
+//		} else if (selectedDetalleRow > row) {
+//			selectDetalleLineaSSRow(--selectedDetalleRow);
+//		}
+
+		if(detalleSS.getRowCount() > 1) selectDetalleLineaSSRow(1);
+		else selectDetalleLineaSSRow(0);
+
 		editarSSUIData.removeLineaSolicitudServicio(row - 1);
 		detalleSS.removeRow(row);
-		if (selectedDetalleRow == row) {
-			selectDetalleLineaSSRow(detalleSS.getRowCount() <= 1 ? 0 : 1);
-		} else if (selectedDetalleRow > row) {
-			selectDetalleLineaSSRow(--selectedDetalleRow);
-		}
+		
+		if(detalleSS.getRowCount() == 1) serviciosAdicionales.setServiciosAdicionalesFor(0);
+		
 		ModalMessageDialog.getInstance().hide();
 	}
 
@@ -555,6 +562,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			Command aceptarCommand = new Command() {
 				public void execute() {
 					LineaSolicitudServicioDto lineaSolicitudServicio = itemSolicitudDialog.getItemSolicitudUIData().getLineaSolicitudServicio();
+					if(!itemSolicitudDialog.getItemSolicitudUIData().getPortabilidadPanel().getChkPortabilidad().getValue())lineaSolicitudServicio.setPortabilidad(null);
 					addLineaSolicitudServicio(lineaSolicitudServicio);
 					
 					// Genera los numeros de solicitudes de portabilidad
