@@ -1668,6 +1668,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		return comentario;
 	}
 
+	//Metodos que no aparecion
+	
 	public Label getCantEquipos() {
 		return cantEquipos;
 	}
