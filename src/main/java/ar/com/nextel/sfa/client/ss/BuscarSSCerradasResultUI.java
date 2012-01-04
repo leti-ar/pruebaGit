@@ -1,7 +1,6 @@
 package ar.com.nextel.sfa.client.ss;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -43,7 +42,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author juliovesco
  * 
  */
-public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler, Comparator {
+public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler{
 
 	private NextelTable resultTable;
 	private FlowPanel resultTotalTableWrapper;
@@ -199,9 +198,9 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler,
 							.getRazonSocialCuenta());
 				}
 				if(isAnalistaCreditos()) {
-					Integer cantidadEquipos = calcularCantEquipos(solicitudServicioCerradaResultDto.getLineas());
-					resultTable.setHTML(indiceRowTabla, ++pos, cantidadEquipos.toString());
-					cantEquipos = cantEquipos + cantidadEquipos;
+					solicitudServicioCerradaResultDto.setCantidadEquipos(calcularCantEquipos(solicitudServicioCerradaResultDto.getLineas()));
+					resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getCantidadEquipos().toString());
+					cantEquipos = cantEquipos + solicitudServicioCerradaResultDto.getCantidadEquipos();
 				}else {
 					resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getCantidadEquipos().toString());
 					cantEquipos = cantEquipos + solicitudServicioCerradaResultDto.getCantidadEquipos();
@@ -596,8 +595,8 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler,
 	 * @param lineaSS
 	 * @return int 
 	 */
-	public int calcularCantEquipos(List<LineaSolicitudServicioDto> lineaSS){
-		int cantEquipos = 0;
+	public Long calcularCantEquipos(List<LineaSolicitudServicioDto> lineaSS){
+		Long cantEquipos = new Long(0);
 		for (Iterator iterator = lineaSS.iterator(); iterator.hasNext();) {
 			LineaSolicitudServicioDto lineaSolicitudServicioDto = (LineaSolicitudServicioDto) iterator.next();
 			String sim = lineaSolicitudServicioDto.getItem().getEsSim();
@@ -607,11 +606,6 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler,
 			}
 		}
 		return cantEquipos;
-	}
-
-	public int compare(Object arg0, Object arg1) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 	
 }

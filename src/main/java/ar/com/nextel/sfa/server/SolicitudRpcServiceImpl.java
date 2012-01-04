@@ -69,6 +69,7 @@ import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ComentarioAnalistaDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
@@ -310,6 +311,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			}
 		} else {
 			solicitudServicioCerradaSearchCriteria.setBusquedaAnalistaCreditos(false);
+			Vendedor vendedor = sessionContextLoader.getVendedor();
+			solicitudServicioCerradaSearchCriteria.setVendedor(vendedor);
 		}
 
 		
@@ -353,9 +356,12 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		DetalleSolicitudServicioDto detalleSolicitudServicioDto = mapearSolicitud(solicitudServicio);
 
 		try {
-			detalleSolicitudServicioDto
-					.setCambiosEstadoSolicitud(getEstadoSolicitudServicioCerrada(solicitudServicio
-							.getIdVantive()));
+			//LF
+			if(solicitudServicio.getIdVantive() != null) {
+				detalleSolicitudServicioDto
+						.setCambiosEstadoSolicitud(getEstadoSolicitudServicioCerrada(solicitudServicio
+								.getIdVantive()));
+			}
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
@@ -1159,8 +1165,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	 * Obtengo el ultimo estado en el que se encuentra la solicitud. 
 	 * @param resultados
 	 * @return
+	 * @throws RpcExceptionMessages 
 	 */
-	public List<SolicitudServicio> calcularUltimoEstado(List<SolicitudServicio> resultados) {
+	public List<SolicitudServicio> calcularUltimoEstado(List<SolicitudServicio> resultados) throws RpcExceptionMessages {
 		for (Iterator iterator = resultados.iterator(); iterator.hasNext();) {
 			SolicitudServicio solicitudServicio = (SolicitudServicio) iterator
 					.next();
@@ -1169,7 +1176,22 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				if(!ultimoEstado.isEmpty()) {
 					solicitudServicio.setUltimoEstado(ultimoEstado.get(0));
 				} else {
-					solicitudServicio.setUltimoEstado("En carga");
+					DetalleSolicitudServicioDto detalleSolicitudServicioDto = getDetalleSolicitudServicio(solicitudServicio.getId());
+					int i = 0;
+					if (detalleSolicitudServicioDto.getCambiosEstadoSolicitud() != null) {
+						if(detalleSolicitudServicioDto.getCambiosEstadoSolicitud().size() > 1) {
+							for (int j = 0; j < detalleSolicitudServicioDto.getCambiosEstadoSolicitud().size(); j++) {
+								String estado = detalleSolicitudServicioDto.getCambiosEstadoSolicitud().get(j).getEstadoAprobacionSolicitud();
+								if(estado.equals("Eligible")) {
+									i = j - 1;
+								}
+							}
+						}
+						String ultEstado = detalleSolicitudServicioDto.getCambiosEstadoSolicitud().get(i).getEstadoAprobacionSolicitud();
+						solicitudServicio.setUltimoEstado(ultEstado);
+					} else {
+						solicitudServicio.setUltimoEstado("En carga");
+					}			
 				}
 			} else {
 				solicitudServicio.setUltimoEstado("En carga");

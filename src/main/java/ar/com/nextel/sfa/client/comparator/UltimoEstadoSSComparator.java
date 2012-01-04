@@ -15,9 +15,9 @@ public class UltimoEstadoSSComparator implements Comparator<SolicitudServicioCer
 	public int compare(SolicitudServicioCerradaResultDto arg0,
 			SolicitudServicioCerradaResultDto arg1) {
 		if(isOrdenDesc()) {
-			return arg0.getRazonSocial().compareTo(arg1.getRazonSocial()); // cambiar a ultimo estado
+			return arg0.getUltimoEstado().compareTo(arg1.getUltimoEstado());
 		} else {
-			return arg1.getRazonSocial().compareTo(arg0.getRazonSocial()); // cambiar a ultimo estado
+			return arg1.getUltimoEstado().compareTo(arg0.getUltimoEstado()); 
 		}
 	}
 	

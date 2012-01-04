@@ -10,7 +10,6 @@ import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
-import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
@@ -105,7 +104,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private boolean cerrandoSolicitud = false;
 	private String codigoVant;
 	private boolean cerrandoAux;
-	private CuentaEdicionTabPanel cuenta;
 	
 	private Button copiarSS;
 	
@@ -928,7 +926,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 	private void openGenerarCerrarSolicitdDialog(boolean cerrando) {
 		cerrandoAux = cerrando;
-		cuenta = CuentaEdicionTabPanel.getInstance();
 		
 		//obtengo la cuenta que acaba de seleccionar
 		Long idCuenta = null;

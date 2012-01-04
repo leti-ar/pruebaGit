@@ -14,10 +14,22 @@ public class AnticipoSSComparator implements Comparator<SolicitudServicioCerrada
 	
 	public int compare(SolicitudServicioCerradaResultDto arg0,
 			SolicitudServicioCerradaResultDto arg1) {
-		if(isOrdenDesc()) {
-			return arg0.getAnticipo().compareTo(arg1.getAnticipo());
+		String anticipo;
+		String anticipo2;
+		if(arg0.getAnticipo() == null) {
+			anticipo = "";
 		} else {
-			return arg1.getAnticipo().compareTo(arg0.getAnticipo());
+			anticipo = arg0.getAnticipo();
+		}
+		if(arg1.getAnticipo() == null) {
+			anticipo2 = "";
+		} else {
+			anticipo2 = arg1.getAnticipo();
+		}
+		if(isOrdenDesc()) {
+			return anticipo.compareTo(anticipo2);
+		} else {
+			return anticipo2.compareTo(anticipo);
 		}
 	}
 	
