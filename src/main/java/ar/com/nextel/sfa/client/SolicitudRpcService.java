@@ -166,4 +166,6 @@ public interface SolicitudRpcService extends RemoteService {
 
 	
 	public String getEstadoSolicitud(long numeroSS)throws RpcExceptionMessages;
+	
+	public VendedorDto buscarVendedorPorId(Long id);	
 }

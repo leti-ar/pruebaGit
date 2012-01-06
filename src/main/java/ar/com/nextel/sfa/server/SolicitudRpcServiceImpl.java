@@ -1273,4 +1273,16 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		SolicitudServicio ss = solicitudBusinessService.obtenerSSPorId(ssDto);
 		return mapper.map(ss, SolicitudServicioDto.class);
 	}
+	
+	/**
+	 * Obtengo la Vendedor por id.
+	 * @param vendedorDto
+	 * @return
+	 */
+	public VendedorDto buscarVendedorPorId(Long id) {
+		
+		Vendedor vendedor = repository.retrieve(Vendedor.class, id);
+		VendedorDto vendedorDto = mapper.map(vendedor, VendedorDto.class);
+		return vendedorDto;
+	}
 }

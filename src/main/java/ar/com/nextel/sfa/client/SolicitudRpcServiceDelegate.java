@@ -305,4 +305,10 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.buscarSSPorId(id, callback);
 	}
+	
+	public void buscarVendedorPorId(Long id,
+			DefaultWaitCallback<VendedorDto> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.buscarVendedorPorId(id, callback);
+	}
 }

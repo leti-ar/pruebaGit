@@ -163,4 +163,6 @@ public interface SolicitudRpcServiceAsync {
 	
 	
 	public void buscarSSPorId(Long id, AsyncCallback<SolicitudServicioDto> callback);	
+
+	public void buscarVendedorPorId(Long id, AsyncCallback<VendedorDto> callback);
 }
