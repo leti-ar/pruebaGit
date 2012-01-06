@@ -57,7 +57,7 @@ public class SolicitudServicioDto implements IsSerializable {
 	private double precioListaTotal = 0;
 	private double precioVentaTotal = 0;
 	private double precioItemTotal = 0;
-    private String control;
+    private ControlDto control;
 	private long tripticoNumber;
 	
 	private SolicitudServicioGeneracionDto solicitudServicioGeneracion;
@@ -472,14 +472,7 @@ public class SolicitudServicioDto implements IsSerializable {
 	}
 	
 
-	public String getControl() {
-		return control;
-	}
-
-	public void setControl(String control) {
-		this.control = control;
-	}
-
+	
 	public String getEstado() {
 		return estado;
 	}
@@ -506,5 +499,13 @@ public class SolicitudServicioDto implements IsSerializable {
 
 	public void setHistorialEstados(List<EstadoPorSolicitudDto> historialEstados) {
 		this.historialEstados = historialEstados;
+	}
+
+	public ControlDto getControl() {
+		return control;
+	}
+
+	public void setControl(ControlDto control) {
+		this.control = control;
 	}
 }

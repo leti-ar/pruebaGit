@@ -4,7 +4,7 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ControlesDto extends EnumDto implements ListBoxItem, IsSerializable {
+public class ControlDto extends EnumDto implements ListBoxItem, IsSerializable {
 
 	
 	public String getItemText() {

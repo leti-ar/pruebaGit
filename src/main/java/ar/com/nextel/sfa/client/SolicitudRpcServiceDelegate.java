@@ -295,10 +295,14 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.saveEstadoPorSolicitudDto(estadoPorSolicitudDto, callback);
 	}
 	
+	public void getEstadoSolicitud(long solicitud,
+			AsyncCallback<String> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getEstadoSolicitud(solicitud, callback);
+	}
 	public void buscarSSPorId(Long id,
 			DefaultWaitCallback<SolicitudServicioDto> callback) {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.buscarSSPorId(id, callback);
 	}
-	
 }

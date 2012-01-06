@@ -49,7 +49,9 @@ import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
 import ar.com.nextel.model.personas.beans.Domicilio;
+import ar.com.nextel.model.solicitudes.beans.Control;
 import ar.com.nextel.model.solicitudes.beans.EstadoPorSolicitud;
+import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio;
@@ -64,6 +66,7 @@ import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
+import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
@@ -345,12 +348,15 @@ public class SolicitudBusinessService {
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public EstadoPorSolicitud saveEstadoPorSolicitudDto(EstadoPorSolicitud estadoPorSolicitud) {
-//		if(estadoPorSolicitud.getNumeroSolicitud()){
-//			repository.save(estadoPorSolicitud);			
-//		}
+		if(estadoPorSolicitud.getNumeroSolicitud()>0){
+			repository.save(estadoPorSolicitud);			
+	}
 		
 		return estadoPorSolicitud;
 	}
+	
+	
+	 
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public SolicitudServicio saveSolicitudServicio(SolicitudServicioDto solicitudServicioDto,
@@ -399,8 +405,8 @@ public class SolicitudBusinessService {
 		}
 		
 		mapper.map(solicitudServicioDto, solicitudServicio);
-		solicitudServicio.setControl(solicitudServicioDto.getControl());
-		
+    	Control control =  repository.retrieve(Control.class, solicitudServicioDto.getControl().getId());
+		solicitudServicio.setControl(control);
 		//PARCHE: Esto es por que dozer mapea los id cuando se le indica que no
 		for (LineaTransfSolicitudServicio lineaTransf : solicitudServicio.getLineasTranf()) {
 			for (ContratoViewDto cto : solicitudServicioDto.getContratosCedidos()) {

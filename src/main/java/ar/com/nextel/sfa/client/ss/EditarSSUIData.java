@@ -12,7 +12,7 @@ import ar.com.nextel.sfa.client.cuenta.CuentaDatosForm;
 import ar.com.nextel.sfa.client.cuenta.CuentaDomiciliosForm;
 import ar.com.nextel.sfa.client.dto.ComentarioAnalistaDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
-import ar.com.nextel.sfa.client.dto.ControlesDto;
+import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.EstadoHistoricoDto;
@@ -192,9 +192,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		titulo.setWidth("350px");
 		fields.add(titulo);
 		fields.add(enviarA = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(20), true));
-		
+		//-------------------------------------------------------------
 		fields.add(cantEquipos = new Label());
-		
 		entrega.setWidth("480px");
 		fields.add(facturacion = new ListBox());
 		facturacion.setWidth("480px");
@@ -537,6 +536,12 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		this.descuentoTotal = descuentoTotal;
 	}
 	
+	
+	public void setEstado(String estado){
+		if (this.estado == null) this.estado = new Label(estado);
+		this.estado.setText(estado);
+	}
+	
 	public void setSolicitud(SolicitudServicioDto solicitud) {
 		saved = true;
 		lastFakeId = -1;
@@ -547,6 +552,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		solicitudServicio = solicitud;
 		nss.setText(solicitud.getNumero());
 		
+	
 		//MGR - #1152
 		boolean esProspect =RegularExpressionConstants.isVancuc(solicitud.getCuenta().getCodigoVantive());
 		
@@ -567,10 +573,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		nflota.setText(solicitud.getNumeroFlota());
 		//MGR - #1027
 		ordenCompra.setText(solicitud.getOrdenCompra());
-		ControlesDto newControl= new ControlesDto();
-	    newControl.setDescripcion(solicitud.getControl());
-	    newControl.setId(new Long(1));
-		control.setSelectedItem(newControl);
+//		ControlesDto newControl= new ControlDto();
+//	    newControl.setDescripcion(solicitud.getControl());
+//	    newControl.setId(new Long(1));
+		control.setSelectedItem(solicitud.getControl());
 		nuevoEstado.setSelectedItem(solicitud.getEstados());
 		entrega.clear();
 		facturacion.clear();
@@ -706,7 +712,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		solicitudServicio.setNumeroFlota(nflota.getText());
 		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_ESTADO.getValue())) {
 		
-		solicitudServicio.setControl(control.getSelectedItemText());// .getSelectedItem().getItemText());
+		solicitudServicio.setControl((ControlDto) control.getSelectedItem());// .getSelectedItem().getItemText());
 		}
 		if (origen.getSelectedItem() != null) {
 			solicitudServicio.setOrigen((OrigenSolicitudDto) origen.getSelectedItem());
@@ -1289,7 +1295,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		solicitudServicio.setNumero(nss.getText());
 		solicitudServicio.setOrigen((OrigenSolicitudDto) origenTR.getSelectedItem());
 		solicitudServicio.setObservaciones(observaciones.getText());
-		solicitudServicio.setControl(control.getSelectedItemText());
+		solicitudServicio.setControl((ControlDto) control.getSelectedItem());
 	
 		//MGR - #1359
 		//solicitudServicio.setUsuarioCreacion(ClientContext.getInstance().getVendedor());

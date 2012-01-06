@@ -34,6 +34,7 @@ import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
+import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -156,6 +157,10 @@ public interface SolicitudRpcServiceAsync {
 
 	public void saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto,
 			AsyncCallback<Boolean> callback);
+	
+	
+	public void getEstadoSolicitud(long numeroSS,AsyncCallback<String> callback);
+	
 	
 	public void buscarSSPorId(Long id, AsyncCallback<SolicitudServicioDto> callback);	
 }

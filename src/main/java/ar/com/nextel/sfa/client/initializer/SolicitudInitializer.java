@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.ComentarioAnalistaDto;
-import ar.com.nextel.sfa.client.dto.ControlesDto;
 import ar.com.nextel.sfa.client.dto.EstadoHistoricoDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
@@ -22,7 +22,7 @@ public class SolicitudInitializer implements IsSerializable {
 	private List<TipoAnticipoDto> tiposAnticipo;
 	private List<VendedorDto> vendedores;
 	private List<SucursalDto> sucursales;
-	private List<ControlesDto>control;
+	private List<ControlDto>control;
     private String estado;
     private List<EstadoHistoricoDto> estadosHistorico;
     private List<EstadoSolicitudDto> opcionesEstado = new ArrayList<EstadoSolicitudDto>();
@@ -60,11 +60,11 @@ public class SolicitudInitializer implements IsSerializable {
 		this.sucursales = sucursales;
 	}
 
-	public List<ControlesDto> getControl() {
+	public List<ControlDto> getControl() {
 		return control;
 	}
 
-	public void setControl(List<ControlesDto> control) {
+	public void setControl(List<ControlDto> control) {
 		this.control = control;
 	}
 

@@ -1,6 +1,9 @@
 package ar.com.nextel.sfa.server;
 
 import java.io.File;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,6 +23,7 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.HibernateException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -28,7 +32,6 @@ import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.constants.MessageIdentifier;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.vantive.VantiveSystem;
-import ar.com.nextel.business.legacy.vantive.dto.ControlDto;
 import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO;
 import ar.com.nextel.business.legacy.vantive.exception.VantiveSystemException;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
@@ -47,11 +50,13 @@ import ar.com.nextel.components.message.Message;
 import ar.com.nextel.components.message.MessageList;
 import ar.com.nextel.components.sequence.DefaultSequenceImpl;
 import ar.com.nextel.framework.repository.Repository;
+import ar.com.nextel.framework.repository.hibernate.HibernateRepository;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.personas.beans.Localidad;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.model.solicitudes.beans.ComentarioAnalista;
+import ar.com.nextel.model.solicitudes.beans.Control;
 import ar.com.nextel.model.solicitudes.beans.EstadoHistorico;
 import ar.com.nextel.model.solicitudes.beans.EstadoPorSolicitud;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
@@ -73,7 +78,7 @@ import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ComentarioAnalistaDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
-import ar.com.nextel.sfa.client.dto.ControlesDto;
+import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
@@ -218,6 +223,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			}
 			precioConDescuento = linea.getPrecioLista() - descuentoAplicado;
 			linea.setPrecioConDescuento(precioConDescuento);
+			
 		}
 
 		//MGR - ISDN 1824 - Predicados al crear una ss
@@ -231,6 +237,36 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		
 		AppLogger.info("Creacion de Solicitud de Servicio finalizada");
 		resultDto.setSolicitud(solicitudServicioDto);
+		//crea registro estado de la ss
+
+       if (solicitud.getNumero()== null){
+	    EstadoPorSolicitudDto estadoPorSolicitudDto = new EstadoPorSolicitudDto();
+	  
+	    List<EstadoSolicitudDto> estados=mapper.convertList(repository.getAll(EstadoSolicitud.class),EstadoSolicitudDto.class);
+	    EstadoSolicitudDto encarga = new EstadoSolicitudDto();
+	    for (Iterator iterator = estados.iterator(); iterator.hasNext();) {
+			
+	    	EstadoSolicitudDto estadoSolicitudDto = (EstadoSolicitudDto) iterator
+					.next();
+			if (estadoSolicitudDto.getDescripcion().equals("En carga")) {
+				encarga = estadoSolicitudDto;
+			}
+		}
+	   
+	    estadoPorSolicitudDto.setEstado(encarga);
+		estadoPorSolicitudDto.setFecha(new Date());
+		estadoPorSolicitudDto.setNumeroSolicitud(solicitudServicioDto.getId());
+		VendedorDto v = (VendedorDto) mapper.map(sessionContextLoader.getVendedor(),
+				VendedorDto.class);
+		
+		estadoPorSolicitudDto.setUsuario(v);
+		EstadoPorSolicitud e= mapper.map(estadoPorSolicitudDto,EstadoPorSolicitud.class);
+		
+		String totalRegistros=  this.getEstadoSolicitud(solicitudServicioDto.getId());
+		if (totalRegistros.equals("")){
+		EstadoPorSolicitud estadoPersistido= solicitudBusinessService.saveEstadoPorSolicitudDto(e);
+		}
+		}
 		return resultDto;
 	}
 
@@ -315,7 +351,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			solicitudServicioCerradaSearchCriteria.setVendedor(vendedor);
 		}
 
-		
 		List<SolicitudServicio> list = null;
 		try {
 			list = this.solicitudesBusinessOperator
@@ -467,6 +502,37 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		}
 		return listaFinal;
 	}
+	 
+public String getEstadoSolicitud(long solicitud) {
+		
+		PreparedStatement stmt;
+		String resul ="";
+		String s=String.valueOf(solicitud);
+		String sql = String.format("select e.descripcion from sfa_estado_solicitud e "+
+				"where e.id_estado_solicitud=(select * from (select id_estado_solicitud "+
+				"from sfa_estado_por_solicitud s where s.numero_solicitud="+ s +"order by s.fecha_creacion desc)where rownum <=1)");
+		try {
+			stmt = ((HibernateRepository) repository)
+					.getHibernateDaoSupport().getSessionFactory()
+					.getCurrentSession().connection().prepareStatement(sql);
+		
+			
+			ResultSet resultSet = stmt.executeQuery();
+			while (resultSet.next()) {
+				
+				resul=resultSet.getString(1);
+				
+			}
+		} catch (HibernateException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return resul;
+	}
+	
+
 	
 	public SolicitudInitializer getSolicitudInitializer() {
 		SolicitudInitializer initializer = new SolicitudInitializer();
@@ -505,19 +571,17 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			}
 		});
 		initializer.setVendedores(mapper.convertList(vendedores, VendedorDto.class));
-		List<ControlDto> result = null;
-		try {
-			result = this.vantiveSystem.controlDatoSolicitud();
-			initializer.setControl(mapper.convertList(result, ControlesDto.class));
-		} catch (VantiveSystemException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		 EstadoSolicitud estado=(EstadoSolicitud) knownInstanceRetriever
-			.getObject(KnownInstanceIdentifier.ESTADO_ENCARGA_SS);
+		
+		
+			List<Control> controles = repository.getAll(Control.class);
+			initializer.setControl(mapper.convertList(controles, ControlDto.class));
+		
+//		 EstadoSolicitud estado=(EstadoSolicitud) knownInstanceRetriever
+//			.getObject(KnownInstanceIdentifier.ESTADO_ENCARGA_SS);
 		List<Sucursal> sucursales = repository.getAll(Sucursal.class);
 		initializer.setSucursales(mapper.convertList(sucursales, SucursalDto.class));
-		initializer.setEstado(estado.getDescripcion());
+		
+	//	initializer.setEstado(estado.getDescripcion());
 		
 		List<EstadoHistorico> estadosHistorico = repository.getAll(EstadoHistorico.class);
 		initializer.setEstadosHistorico(mapper.convertList(estadosHistorico, EstadoHistoricoDto.class));
@@ -547,7 +611,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
 				//larce
 				solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto);
-			}
+			}		
 			resultDto.setSolicitud(solicitudServicioDto);
 		} catch (Exception e) {
 			AppLogger.error(e);
@@ -556,12 +620,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return resultDto;
 	}
 
-	public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto) throws RpcExceptionMessages {
+public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto) throws RpcExceptionMessages {
 
 		try {
 			EstadoPorSolicitud estadoPorSolicitud = mapper.map(estadoPorSolicitudDto, EstadoPorSolicitud.class);
-//			estadoPorSolicitud.getEstado().setLastModificationDate(new Date());
-//			estadoPorSolicitud.getEstado().setVisible(true);
 			EstadoPorSolicitud estadoSaved = solicitudBusinessService.saveEstadoPorSolicitudDto(estadoPorSolicitud);
 			
 			if(estadoSaved != null){
@@ -993,7 +1055,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		CreateSaveSolicitudServicioResultDto resultSSAux = this.createSolicitudServicio(solicitudServicioRequestDto);
 		SolicitudServicioDto solicitudDto = resultSSAux.getSolicitud();
 		resultDto.addMessages(resultSSAux.getMessages());
-		
 		resultDto.setSolicitud(solicitudDto);
 		SolicitudServicio solicitud = repository.retrieve(SolicitudServicio.class,
 				solicitudDto.getId());
@@ -1014,7 +1075,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				resultDto.addMessage("La cuenta está lockeada por un ejecutivo, el supervisor es " + 
 						nombSuper + ". Puede proseguir la carga de la SS");
 			}
-		}
+		}	
 		return resultDto;
 	}
 	
@@ -1161,7 +1222,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return mapper.convertList(servicios, SolicitudServicioDto.class);
 	}
 	
-	/**
+/**
 	 * Obtengo el ultimo estado en el que se encuentra la solicitud. 
 	 * @param resultados
 	 * @return

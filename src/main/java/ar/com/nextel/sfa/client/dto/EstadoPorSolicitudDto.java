@@ -1,8 +1,6 @@
 package ar.com.nextel.sfa.client.dto;
 
 import java.util.Date;
-
-import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -10,7 +8,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class EstadoPorSolicitudDto implements ListBoxItem, IsSerializable {
 
 	private long id;
-	private String usuario;
+	private VendedorDto usuario;
     private EstadoSolicitudDto estado;
     private Date fecha;
 	private long numeroSolicitud;
@@ -18,7 +16,7 @@ public class EstadoPorSolicitudDto implements ListBoxItem, IsSerializable {
 	public EstadoPorSolicitudDto() {
 	}
 
-	public EstadoPorSolicitudDto(String usuario, Date fecha, EstadoSolicitudDto estado) {
+	public EstadoPorSolicitudDto(VendedorDto usuario, Date fecha, EstadoSolicitudDto estado) {
 		super();
 		
 		this.usuario = usuario;
@@ -34,21 +32,9 @@ public class EstadoPorSolicitudDto implements ListBoxItem, IsSerializable {
 		this.id = id;
 	}
 
-	public String getUsuario() {
-		return usuario;
-	}
+	
 
-	public void setUsuario(String usuario) {
-		this.usuario = usuario;
-	}
-
-	public EstadoSolicitudDto getEstado() {
-		return estado;
-	}
-
-	public void setEstado(EstadoSolicitudDto estado) {
-		this.estado = estado;
-	}
+	
 
 	public Date getFecha() {
 		return fecha;
@@ -75,4 +61,25 @@ public class EstadoPorSolicitudDto implements ListBoxItem, IsSerializable {
 	public void setNumeroSolicitud(long numeroSolicitud) {
 		this.numeroSolicitud = numeroSolicitud;
 	}
+
+
+
+	public VendedorDto getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(VendedorDto usuario) {
+		this.usuario = usuario;
+	}
+
+	public EstadoSolicitudDto getEstado() {
+		return estado;
+	}
+
+	public void setEstado(EstadoSolicitudDto estado) {
+		this.estado = estado;
+	}
+
+
+	
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
@@ -36,7 +37,6 @@ public class AnalisisSSUI extends Composite {
 	private NumberFormat currencyFormat = NumberFormat.getCurrencyFormat();
 	private long pass;
 	private long fail;
-
 	List<Long> opciones = new ArrayList<Long>();
 
 	public AnalisisSSUI(EditarSSUIController controller) {
@@ -45,6 +45,7 @@ public class AnalisisSSUI extends Composite {
 		initWidget(mainpanel);
 		this.controller = controller;
 		editarSSUIData = controller.getEditarSSUIData();
+	
 		mainpanel.add(getCambiarEstadoSS());
 	}
 
@@ -66,7 +67,8 @@ public class AnalisisSSUI extends Composite {
 		nuevoEstado.setHTML(0,0,Sfa.constant().nuevoEstado());
 		nuevoEstado.setWidget(0, 1,editarSSUIData.getNuevoEstado());
         cambiarEstadoPanel.add(nuevoEstado);
-		Grid mail = new Grid(8,2);
+    	Grid mail = new Grid(8,2);
+	
 		mail.addStyleName("layout");
 		mail.setHTML(0, 0, Sfa.constant().mail());
 		mail.setHTML(0, 1, Sfa.constant().whiteSpace());
@@ -76,7 +78,7 @@ public class AnalisisSSUI extends Composite {
 		mail.setWidget(2, 1, editarSSUIData.getComentarioAnalista());
 		mail.setHTML(3, 0, Sfa.constant().notaAdicional());
      	mail.setWidget(3, 1,editarSSUIData.getNotaAdicional());
-     	
+    	
      	mail.setHTML(4, 0, "Cant. Equipos");
 	    mail.setWidget(4, 1, editarSSUIData.getCantEquipos());
 	    
@@ -105,7 +107,7 @@ public class AnalisisSSUI extends Composite {
 				editarSSUIData.getComentarioAnalista().setSelectedIndex(0);
 			}
 		});
-	    mail.setWidget(7, 0,ingresarCambio);
+ mail.setWidget(7, 0,ingresarCambio);
 	    
 	    Button cancelarCambio = new Button("Cancelar Cambio");
 	    cancelarCambio.addClickHandler(new ClickHandler() {
@@ -136,8 +138,8 @@ public class AnalisisSSUI extends Composite {
 		return wrapper;
 	}
 
-/** Realiza la actualizacion visual necesaria para mostrar los datos correctos */
-	public void refresh() {
+//	/** Realiza la actualizacion visual necesaria para mostrar los datos correctos */
+public void refresh() {
 		int row = 1;
 		
 		if(editarSSUIData.getSolicitudServicio() != null){
@@ -159,7 +161,8 @@ public class AnalisisSSUI extends Composite {
 						cambiarEstadoSS.setHTML(row, 0, solicitud.getHistorialEstados().get(i).getEstado().getItemText());				
 					}
 					cambiarEstadoSS.setHTML(row, 1, solicitud.getHistorialEstados().get(i).getFecha().toString());
-					cambiarEstadoSS.setHTML(row, 2, solicitud.getHistorialEstados().get(i).getUsuario());
+					//esto lo tuve q cambiar ver si es correcto  estefania iguacel
+					cambiarEstadoSS.setHTML(row, 2, solicitud.getHistorialEstados().get(i).getUsuario().getApellidoYNombre());
 					row++;
 					if(i == solicitud.getHistorialEstados().size()-1){
 						if(solicitud.getHistorialEstados().get(i).getEstado() != null){
@@ -221,8 +224,9 @@ public class AnalisisSSUI extends Composite {
 				estadoPorSolicitudDto.setNumeroSolicitud(new Long(editarSSUIData.getSolicitudServicio().getNumero()));			
 			}
 			
-			String usuario = editarSSUIData.getSolicitudServicio().getUsuarioCreacion().getApellidoYNombre();
-			estadoPorSolicitudDto.setUsuario(usuario);
+		//	String usuario = editarSSUIData.getSolicitudServicio().getUsuarioCreacion().getApellidoYNombre();
+			//ver esta persistencia
+			estadoPorSolicitudDto.setUsuario(editarSSUIData.getSolicitudServicio().getUsuarioCreacion());
 			
 			editarSSUIData.getSolicitudServicio().addHistorialEstados(estadoPorSolicitudDto);
 			
