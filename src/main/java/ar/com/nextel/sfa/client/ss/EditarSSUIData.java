@@ -1666,7 +1666,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 		for (int i = 0; i < comentarioAnalistaMensaje.size(); i++) {
 			if(comentarioAnalistaMensaje.get(i) != null){
-				if(comentarioAnalistaMensaje.get(i).getEstadoSolicitud() == idEstado){
+				if(comentarioAnalistaMensaje.get(i).getEstadoSolicitud().getCode() == idEstado){
 					comentario.add(comentarioAnalistaMensaje.get(i));
 				}
 			}

@@ -256,10 +256,11 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	    estadoPorSolicitudDto.setEstado(encarga);
 		estadoPorSolicitudDto.setFecha(new Date());
 		estadoPorSolicitudDto.setNumeroSolicitud(solicitudServicioDto.getId());
-		VendedorDto v = (VendedorDto) mapper.map(sessionContextLoader.getVendedor(),
-				VendedorDto.class);
-		
-		estadoPorSolicitudDto.setUsuario(v);
+//			VendedorDto v = (VendedorDto) mapper.map(sessionContextLoader.getVendedor(),
+//				VendedorDto.class);
+//		
+//		estadoPorSolicitudDto.setUsuario(v);
+		estadoPorSolicitudDto.setUsuario(sessionContextLoader.getVendedor().getId());
 		EstadoPorSolicitud e= mapper.map(estadoPorSolicitudDto,EstadoPorSolicitud.class);
 		
 		String totalRegistros=  this.getEstadoSolicitud(solicitudServicioDto.getId());
@@ -1274,7 +1275,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		return mapper.map(ss, SolicitudServicioDto.class);
 	}
 	
-	/**
+		/**
 	 * Obtengo la Vendedor por id.
 	 * @param vendedorDto
 	 * @return
@@ -1285,4 +1286,5 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		VendedorDto vendedorDto = mapper.map(vendedor, VendedorDto.class);
 		return vendedorDto;
 	}
+	
 }

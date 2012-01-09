@@ -162,7 +162,7 @@ public void refresh() {
 					}
 					cambiarEstadoSS.setHTML(row, 1, solicitud.getHistorialEstados().get(i).getFecha().toString());
 					//esto lo tuve q cambiar ver si es correcto  estefania iguacel
-					cambiarEstadoSS.setHTML(row, 2, solicitud.getHistorialEstados().get(i).getUsuario().getApellidoYNombre());
+					cambiarEstadoSS.setHTML(row, 2,"");
 					row++;
 					if(i == solicitud.getHistorialEstados().size()-1){
 						if(solicitud.getHistorialEstados().get(i).getEstado() != null){
@@ -226,7 +226,7 @@ public void refresh() {
 			
 		//	String usuario = editarSSUIData.getSolicitudServicio().getUsuarioCreacion().getApellidoYNombre();
 			//ver esta persistencia
-			estadoPorSolicitudDto.setUsuario(editarSSUIData.getSolicitudServicio().getUsuarioCreacion());
+			estadoPorSolicitudDto.setUsuario(editarSSUIData.getSolicitudServicio().getUsuarioCreacion().getId());
 			
 			editarSSUIData.getSolicitudServicio().addHistorialEstados(estadoPorSolicitudDto);
 			
