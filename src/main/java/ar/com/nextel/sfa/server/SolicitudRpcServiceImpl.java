@@ -240,33 +240,33 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		//crea registro estado de la ss
 
        if (solicitud.getNumero()== null){
-	    EstadoPorSolicitudDto estadoPorSolicitudDto = new EstadoPorSolicitudDto();
-	  
-	    List<EstadoSolicitudDto> estados=mapper.convertList(repository.getAll(EstadoSolicitud.class),EstadoSolicitudDto.class);
-	    EstadoSolicitudDto encarga = new EstadoSolicitudDto();
-	    for (Iterator iterator = estados.iterator(); iterator.hasNext();) {
+		    EstadoPorSolicitudDto estadoPorSolicitudDto = new EstadoPorSolicitudDto();
+		  
+			estadoPorSolicitudDto.setFecha(new Date());
+			estadoPorSolicitudDto.setNumeroSolicitud(solicitudServicioDto.getId());
+	//			VendedorDto v = (VendedorDto) mapper.map(sessionContextLoader.getVendedor(),
+	//				VendedorDto.class);
+	//		
+	//		estadoPorSolicitudDto.setUsuario(v);
+			estadoPorSolicitudDto.setUsuario(sessionContextLoader.getVendedor().getId());
+			EstadoPorSolicitud e= mapper.map(estadoPorSolicitudDto,EstadoPorSolicitud.class);
 			
-	    	EstadoSolicitudDto estadoSolicitudDto = (EstadoSolicitudDto) iterator
-					.next();
-			if (estadoSolicitudDto.getDescripcion().equals("En carga")) {
-				encarga = estadoSolicitudDto;
+		    List<EstadoSolicitud> estados = repository.getAll(EstadoSolicitud.class);
+		    EstadoSolicitud encarga = new EstadoSolicitud();
+		    for (Iterator iterator = estados.iterator(); iterator.hasNext();) {
+				
+		    	EstadoSolicitud estadoSolicitud = (EstadoSolicitud) iterator
+						.next();
+				if (estadoSolicitud.getDescripcion().equals("En carga")) {
+					encarga = estadoSolicitud;
+				}
 			}
-		}
-	   
-	    estadoPorSolicitudDto.setEstado(encarga);
-		estadoPorSolicitudDto.setFecha(new Date());
-		estadoPorSolicitudDto.setNumeroSolicitud(solicitudServicioDto.getId());
-//			VendedorDto v = (VendedorDto) mapper.map(sessionContextLoader.getVendedor(),
-//				VendedorDto.class);
-//		
-//		estadoPorSolicitudDto.setUsuario(v);
-		estadoPorSolicitudDto.setUsuario(sessionContextLoader.getVendedor().getId());
-		EstadoPorSolicitud e= mapper.map(estadoPorSolicitudDto,EstadoPorSolicitud.class);
-		
-		String totalRegistros=  this.getEstadoSolicitud(solicitudServicioDto.getId());
-		if (totalRegistros.equals("")){
-		EstadoPorSolicitud estadoPersistido= solicitudBusinessService.saveEstadoPorSolicitudDto(e);
-		}
+			e.setEstado(encarga);
+			
+			String totalRegistros=  this.getEstadoSolicitud(solicitudServicioDto.getId());
+			if (totalRegistros.equals("")){
+				EstadoPorSolicitud estadoPersistido= solicitudBusinessService.saveEstadoPorSolicitudDto(e);
+			}
 		}
 		return resultDto;
 	}
