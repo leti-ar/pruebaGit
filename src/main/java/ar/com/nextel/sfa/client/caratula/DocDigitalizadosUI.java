@@ -1,10 +1,12 @@
 package ar.com.nextel.sfa.client.caratula;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
+import ar.com.nextel.sfa.client.comparator.DocDigitalizadosComparator;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
@@ -14,7 +16,6 @@ import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
-import ar.com.nextel.util.AppLogger;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.WindowUtils;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
@@ -216,6 +217,7 @@ public class DocDigitalizadosUI extends NextelDialog implements ClickHandler{
 									Sfa.constant().ERR_DOC_DIGITALIZADOS_NO_ENCONTRADOS(),
 									MessageDialog.getCloseCommand());
 						}else{
+							Collections.sort(result, new DocDigitalizadosComparator());
 							documentos = result;
 							tablePageBarDocDigitalizados.setPagina(1);
 							setDocDigitalizados();	
