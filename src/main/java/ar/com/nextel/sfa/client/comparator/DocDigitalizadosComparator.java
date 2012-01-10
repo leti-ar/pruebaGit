@@ -11,15 +11,18 @@ public class DocDigitalizadosComparator implements Comparator<DocDigitalizadosDt
 	}
 	
 	public int compare(DocDigitalizadosDto o1, DocDigitalizadosDto o2) {
-		String fecha1 = "z";
-		String fecha2 = "z";
-		if(o1.getFecha() != null) {
-			fecha1 = o1.getFecha().toString();
+		if(o1.getFecha() != null && o2.getFecha() != null) {
+			return o1.getFecha().compareTo(o2.getFecha());
+		} else  if(o1.getFecha() == null && o2.getFecha() == null) {
+			return 0;
 		} 
-		if(o2.getFecha() != null) {
-			fecha2 = o2.getFecha().toString();
+		else  if(o1.getFecha() != null) {
+			return -1;
 		}
-		return fecha1.compareTo(fecha2);
+		else  if(o2.getFecha() != null) {
+			return 1;
+		}
+		return o1.getFecha().compareTo(o2.getFecha());
 	}
 
 }
