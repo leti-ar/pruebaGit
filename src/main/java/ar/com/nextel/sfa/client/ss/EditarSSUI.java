@@ -504,9 +504,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			}
 		}
 		
-//		if(solicitud != null){
-//			analisis.refresh();
-//		}
+	if(solicitud != null){
+			analisis.refresh();
+	}
 		
 		//MGR - #962 - #1017
 		if(ClientContext.getInstance().
@@ -530,6 +530,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		tabs.clear();
 		if(solicitud.getGrupoSolicitud().isTransferencia()){
 			tabs.add(datosTranferencia, "Transf.");
+			tabs.add(analisis, "Analisis");
 			datosTranferencia.setDatosSolicitud(solicitud);
 		// el refresh se llama desde seDatosSolicitud.
 			//	datosTranferencia.refresh();
@@ -670,8 +671,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		editarSSUIData.getOrigen().addAllItems(initializer.getOrigenesSolicitud());
 		editarSSUIData.getOrigen().setEnabled(isEditable());
         editarSSUIData.getControl().addAllItems(initializer.getControl());
-
-    	Label label = new Label(initializer.getEstado().toString());
+        Label label;
+        if (initializer.getEstado()!=null){
+    	  label = new Label(initializer.getEstado().toString());}
+        else{
+        	label= new Label("");
+        }
         editarSSUIData.setEstado(label);
 		//MGR - #1458
 		if(initializer.getOrigenesSolicitud().size() ==1){

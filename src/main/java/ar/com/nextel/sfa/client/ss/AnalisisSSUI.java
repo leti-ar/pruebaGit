@@ -38,7 +38,10 @@ public class AnalisisSSUI extends Composite {
 	private long pass;
 	private long fail;
 	List<Long> opciones = new ArrayList<Long>();
-
+	CheckBox enviar = new CheckBox(" Enviar");
+	Button cancelarCambio = new Button("Cancelar Cambio");
+	Button ingresarCambio = new Button("Cambiar Estado");
+	 
 	public AnalisisSSUI(EditarSSUIController controller) {
 		mainpanel = new FlowPanel();
 		this.controller = controller;
@@ -57,6 +60,13 @@ public class AnalisisSSUI extends Composite {
 		
 		cambio.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
+				editarSSUIData.getComentarioAnalista().setEnabled(true);
+				editarSSUIData.getEnviarA().setEnabled(true);
+				editarSSUIData.getNuevoEstado().setEnabled(true);
+				editarSSUIData.getTitulo().setEnabled(true);
+				editarSSUIData.getNotaAdicional().setEnabled(true);
+				enviar.setEnabled(true);
+				cancelarCambio.setEnabled(true);
 				refresh();
 			}
 		});
@@ -85,13 +95,14 @@ public class AnalisisSSUI extends Composite {
 		mail.setHTML(5, 0,  Sfa.constant().enviarA());
 		mail.setWidget(5, 1,editarSSUIData.getEnviarA());
 		
-		mail.setWidget(6, 0, new CheckBox(" Enviar"));
+		mail.setWidget(6, 0, enviar );
 		mail.setHTML(6, 1, Sfa.constant().whiteSpace());
 	    
-	    Button ingresarCambio = new Button("Cambiar Estado");
+	   
 	    ingresarCambio.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				addEstado();
+				
 			}
 	    });
 	    
@@ -107,12 +118,13 @@ public class AnalisisSSUI extends Composite {
 				editarSSUIData.getComentarioAnalista().setSelectedIndex(0);
 			}
 		});
- mail.setWidget(7, 0,ingresarCambio);
+    mail.setWidget(7, 0,ingresarCambio);
 	    
-	    Button cancelarCambio = new Button("Cancelar Cambio");
+	   
 	    cancelarCambio.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				cancelarCambio();
+				
 			}
 	    });
 	    
@@ -129,6 +141,7 @@ public class AnalisisSSUI extends Composite {
 		for (int i = 0; i < titles.length; i++) {
 			cambiarEstadoSS.setHTML(0, i, titles[i]);
 		}
+		desHabilitarCampos();
 		cambiarEstadoSS.setCellPadding(0);
 		cambiarEstadoSS.setCellSpacing(0);
 		cambiarEstadoSS.addStyleName("dataTable");
@@ -140,7 +153,10 @@ public class AnalisisSSUI extends Composite {
 
 //	/** Realiza la actualizacion visual necesaria para mostrar los datos correctos */
 public void refresh() {
-		int row = 1;
+	
+	
+	
+	   int row = 1;
 		
 		if(editarSSUIData.getSolicitudServicio() != null){
 			
@@ -211,7 +227,7 @@ public void refresh() {
 	}
 	
 	private void addEstado(){
-		
+		ingresarCambio.setEnabled(false);
 		if(editarSSUIData.getNuevoEstado().getSelectedItemText() != null){
 			String descripcionEstado = editarSSUIData.getNuevoEstado().getSelectedItemText();
 			
@@ -221,7 +237,7 @@ public void refresh() {
 			estadoPorSolicitudDto.setFecha(new Date());
 			
 			if(!editarSSUIData.getSolicitudServicio().getNumero().equals("")){
-				estadoPorSolicitudDto.setNumeroSolicitud(new Long(editarSSUIData.getSolicitudServicio().getNumero()));			
+				estadoPorSolicitudDto.setNumeroSolicitud(new Long(editarSSUIData.getSolicitudServicio().getId()));			
 			}
 			
 		//	String usuario = editarSSUIData.getSolicitudServicio().getUsuarioCreacion().getApellidoYNombre();
@@ -242,6 +258,7 @@ public void refresh() {
 	}
 	
 	private void cancelarCambio(){
+		desHabilitarCampos();
 	}
 	
 	public void addOpcionesIgnorandoEnCarga(List<Long> opcionesACargar,List<EstadoSolicitudDto> opcionesTotal){
@@ -269,4 +286,16 @@ public void refresh() {
 		}
 		return 0l;
 	}
+	
+	public void  desHabilitarCampos() {
+		editarSSUIData.getEnviarA().setEnabled(false);
+		editarSSUIData.getNuevoEstado().setEnabled(false);
+		editarSSUIData.getTitulo().setEnabled(false);
+		editarSSUIData.getComentarioAnalista().setEnabled(false);
+		editarSSUIData.getNotaAdicional().setEnabled(false);
+		enviar.setEnabled(false);
+		cancelarCambio.setEnabled(false);
+	}
+	
+	
 }

@@ -188,10 +188,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		notaAdicional.setHeight("100px");
 		fields.add(nuevoEstado = new ListBox(""));
 		fields.add(comentarioAnalista = new ListBox(""));
-		titulo = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(50), true);
-		titulo.setWidth("350px");
+		titulo = new RegexTextBox();
+		titulo.setWidth("450px");
 		fields.add(titulo);
-		fields.add(enviarA = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(20), true));
+		enviarA = new RegexTextBox();
+		enviarA.setWidth("450px");
+		fields.add(enviarA);
+		
 		//-------------------------------------------------------------
 		fields.add(cantEquipos = new Label());
 		entrega.setWidth("480px");
@@ -633,8 +636,18 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		 }else{
 			ss=solicitudServicio.getNumero(); 
 		 }
-		 
-		
+		  String textoDeEnvio= "";
+		if (solicitudServicio.getUsuarioCreacion().isEECC()){
+			
+			textoDeEnvio= solicitudServicio.getUsuarioCreacion().getEmail() +"-"+ solicitudServicio.getUsuarioCreacion().getTelefono();
+		}else{
+			if (solicitudServicio.getUsuarioCreacion().isDealer()){
+				textoDeEnvio= solicitudServicio.getUsuarioCreacion().getEmail();
+			}
+			
+		}
+	  
+		enviarA.setText(textoDeEnvio);
 		titulo.setText("Nro de SS:" + ss + "  Razon Social:" +solicitudServicio.getCuenta().getPersona().getRazonSocial()  );
 		vendedor.setSelectedItem(solicitudServicio.getVendedor());
 		if(solicitudServicio.getIdSucursal() != null){
