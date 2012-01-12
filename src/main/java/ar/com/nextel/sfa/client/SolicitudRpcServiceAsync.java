@@ -165,4 +165,8 @@ public interface SolicitudRpcServiceAsync {
 	public void buscarSSPorId(Long id, AsyncCallback<SolicitudServicioDto> callback);	
 
 	public void buscarVendedorPorId(Long id, AsyncCallback<VendedorDto> callback);
+	
+	public void enviarMail(String subject, String to, AsyncCallback<Void> callback);
+	
+	public void enviarSMS(String to,String mensaje ,AsyncCallback<Void> callback);
 }

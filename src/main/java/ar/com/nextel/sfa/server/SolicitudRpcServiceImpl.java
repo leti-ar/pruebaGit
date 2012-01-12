@@ -46,9 +46,13 @@ import ar.com.nextel.business.solicitudes.search.dto.SolicitudServicioCerradaSea
 import ar.com.nextel.components.knownInstances.GlobalParameter;
 import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
+import ar.com.nextel.components.mail.MailSender;
 import ar.com.nextel.components.message.Message;
 import ar.com.nextel.components.message.MessageList;
 import ar.com.nextel.components.sequence.DefaultSequenceImpl;
+import ar.com.nextel.components.sms.EnvioSMSService;
+import ar.com.nextel.components.sms.SMSSender;
+import ar.com.nextel.exception.SFAServerException;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.repository.hibernate.HibernateRepository;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
@@ -141,6 +145,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private SolicitudServicioRepository solicitudServicioRepository;
 	private NegativeFilesBusinessOperator negativeFilesBusinessOperator;
 	private DefaultRetriever globalParameterRetriever;
+	private MailSender mailSender;
+ 
 	
 	//MELI
 	private DefaultSequenceImpl tripticoNextValue;
@@ -177,6 +183,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		tripticoNextValue = (DefaultSequenceImpl)context.getBean("tripticoNextValue");
 //		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
 		messageRetriever = (DefaultRetriever)context.getBean("messageRetriever");
+		
+		mailSender= (MailSender)context.getBean("mailSender");
 	}
 
 	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
@@ -1286,5 +1294,34 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		VendedorDto vendedorDto = mapper.map(vendedor, VendedorDto.class);
 		return vendedorDto;
 	}
+	
+	/**
+	 * realiza el envio de mail
+	 */
+	public void enviarMail(String subject, String to){
+		
+		mailSender.sendMailBasico("esto es el mail", "estefania.iguacel@snoopconsulting.com");
+		
+		
+	}
+	
+	
+	/**
+	 * realiza el envio de sms
+	 * @throws SFAServerException 
+	 */
+	public void enviarSMS(String to, String mensaje){
+		EnvioSMSService envioSMSService= new EnvioSMSService();
+		try {
+			//sms de prueba de eva 1149918150
+			envioSMSService.enviarMensajeComun(to,mensaje);
+		} catch (SFAServerException e) {
+			
+			e.printStackTrace();
+		}
+	
+	}
+	
+	
 	
 }

@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-
+import ar.com.nextel.components.mail.MailSender;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.sfa.client.InfocomRpcService;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
@@ -904,7 +904,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			return;
 		}
 		guardandoSolicitud = true;
-		
+		if (editarSSUIData.getEnviar().isChecked()){
+			
+			  mandarMailySMS();	
+				
+			}
 		if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
 			
 			SolicitudRpcService.Util.getInstance().saveSolicituServicioTranferencia(obtenerSolicitudTransferencia(false),
@@ -934,6 +938,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					});
 		}
 		else{
+			
+		
 			//MGR - ISDN 1824 - Como se realizan validaciones, ya no recibe una SolicitudServicioDto
 			//sino una SaveSolicitudServicioResultDto que permite realizar el manejo de mensajes
 			SolicitudRpcService.Util.getInstance().saveSolicituServicio(editarSSUIData.getSolicitudServicio(),
@@ -1402,6 +1408,69 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		this.editable = editable;
 	}	
 	
+	
+	/**
+	 * se manda mail y mensaje de texto a los EECC y Delear correspondientes
+	 */
+     public void mandarMailySMS(){
+			String destinatario=editarSSUIData.getEnviarA().getText();
+			String[] tokens = destinatario.split("-");
+				
+	//			if (editarSSUIData.getSolicitudServicio().getUsuarioCreacion().isEECC()){
+
+					String mail=tokens[0];
+					String telefono=tokens[1];
+					
+					//				SolicitudRpcService.Util.getInstance().enviarMail(armarMensajeAEnviar(),mail,
+		//						new DefaultWaitCallback<Void>() {
+		//
+		//							@Override
+		//							public void success(Void result) {
+		//								// TODO Auto-generated method stub
+		//								
+		//							}});
+						SolicitudRpcService.Util.getInstance().enviarSMS(telefono,armarMensajeAEnviar(),
+								new DefaultWaitCallback<Void>() {
+		
+									@Override
+									public void success(Void result) {
+										// TODO Auto-generated method stub
+										
+									}});
+							
+//				}else{
+//					
+//					if(editarSSUIData.getSolicitudServicio().getUsuarioCreacion().isDealer()){
+//					//				SolicitudRpcService.Util.getInstance().enviarMail(armarMensajeAEnviar(),mail,
+//					//						new DefaultWaitCallback<Void>() {
+//					//
+//					//							@Override
+//					//							public void success(Void result) {
+//					//								// TODO Auto-generated method stub
+//					//								
+//					//							}});
+//					
+//				
+//			}
+//    	 
+//       } 
+    	 
+     }	
+     
+     
+  public String armarMensajeAEnviar(){
+	 String mensaje="";
+	 String titulo=editarSSUIData.getTitulo().getText();
+	 String nuevoEstado= "Estado: "+ editarSSUIData.getNuevoEstado().getSelectedItemText();
+	 String comentarioAnalista="Comentario Analista: "+ editarSSUIData.getComentarioAnalista().getSelectedItemText();
+	 String notaAdicional= "Nota Adicional: " + editarSSUIData.getNotaAdicional().getSelectedText(); 
+	 String cantidadEquipos="Cantididad de Equipos: "+ editarSSUIData.getCantidadEquipos().getText();
+	 
+	 mensaje= titulo +"\n\n"+ nuevoEstado + "\n"+ comentarioAnalista + "\n" + notaAdicional + "\n" + cantidadEquipos;
+	 
+	 return mensaje; 
+  }   
+	
 //	public void protegerCampos(EditarSSUIData editarSSUIdata){
 //		editarSSUIdata.getNss().setEnabled(false);
 //		editarSSUIdata.getNflota().setEnabled(false);
@@ -1414,5 +1483,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 //		editarSSUIdata.getSucursalOrigen().setEnabled(false);
 //		editarSSUIdata.getCriterioBusqContrato().setEnabled(false);
 //	}
+	
+
+	
 	
 }

@@ -311,4 +311,17 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.buscarVendedorPorId(id, callback);
 	}
+	
+	public void enviarMail(String subject, String to,
+			DefaultWaitCallback<Void> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.enviarMail(subject, to, callback);
+	}
+	
+	public void enviarSMS(String to,String mensaje,
+			DefaultWaitCallback<Void> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.enviarSMS(to, mensaje,callback);
+	}
+	
 }

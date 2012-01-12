@@ -38,7 +38,7 @@ public class AnalisisSSUI extends Composite {
 	private long pass;
 	private long fail;
 	List<Long> opciones = new ArrayList<Long>();
-	CheckBox enviar = new CheckBox(" Enviar");
+	
 	Button cancelarCambio = new Button("Cancelar Cambio");
 	Button ingresarCambio = new Button("Cambiar Estado");
 	 
@@ -65,7 +65,7 @@ public class AnalisisSSUI extends Composite {
 				editarSSUIData.getNuevoEstado().setEnabled(true);
 				editarSSUIData.getTitulo().setEnabled(true);
 				editarSSUIData.getNotaAdicional().setEnabled(true);
-				enviar.setEnabled(true);
+				editarSSUIData.getEnviar().setEnabled(true);
 				cancelarCambio.setEnabled(true);
 				refresh();
 			}
@@ -95,7 +95,7 @@ public class AnalisisSSUI extends Composite {
 		mail.setHTML(5, 0,  Sfa.constant().enviarA());
 		mail.setWidget(5, 1,editarSSUIData.getEnviarA());
 		
-		mail.setWidget(6, 0, enviar );
+		mail.setWidget(6, 0,editarSSUIData.getEnviar() );
 		mail.setHTML(6, 1, Sfa.constant().whiteSpace());
 	    
 	   
@@ -293,7 +293,7 @@ public void refresh() {
 		editarSSUIData.getTitulo().setEnabled(false);
 		editarSSUIData.getComentarioAnalista().setEnabled(false);
 		editarSSUIData.getNotaAdicional().setEnabled(false);
-		enviar.setEnabled(false);
+		editarSSUIData.getEnviar().setEnabled(false);
 		cancelarCambio.setEnabled(false);
 	}
 	

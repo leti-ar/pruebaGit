@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import ar.com.nextel.exception.SFAServerException;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
@@ -167,5 +168,9 @@ public interface SolicitudRpcService extends RemoteService {
 	
 	public String getEstadoSolicitud(long numeroSS)throws RpcExceptionMessages;
 	
-	public VendedorDto buscarVendedorPorId(Long id);	
+	public VendedorDto buscarVendedorPorId(Long id);
+	
+	public void enviarMail(String subject, String to);
+	
+	public void enviarSMS(String to, String mensaje);
 }

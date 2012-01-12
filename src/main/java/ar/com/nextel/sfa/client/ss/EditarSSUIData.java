@@ -96,6 +96,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private InlineHTML credFidelText;
 	private InlineHTML pataconexText;
 	private InlineHTML precioVentaText;
+	private CheckBox enviar = new CheckBox(" Enviar");
 	private NumberFormat decFormatter = NumberFormat.getDecimalFormat();
 	private NumberFormat currFormatter = NumberFormat.getCurrencyFormat();
 	private DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateFormat();
@@ -1693,5 +1694,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	public void setCantEquipos(Label cantEquipos) {
 		this.cantEquipos = cantEquipos;
+	}
+
+	public CheckBox getEnviar() {
+		return enviar;
+	}
+
+	public void setEnviar(CheckBox enviar) {
+		this.enviar = enviar;
 	}
 }
