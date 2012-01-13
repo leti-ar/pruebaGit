@@ -7,6 +7,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.constant.SfaStatic;
 import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
@@ -40,7 +41,7 @@ public class AnalisisSSUI extends Composite {
 	List<Long> opciones = new ArrayList<Long>();
 	
 	Button cancelarCambio = new Button("Cancelar Cambio");
-	Button ingresarCambio = new Button("Cambiar Estado");
+	//Button ingresarCambio = new Button("Cambiar Estado");
 	 
 	public AnalisisSSUI(EditarSSUIController controller) {
 		mainpanel = new FlowPanel();
@@ -99,12 +100,12 @@ public class AnalisisSSUI extends Composite {
 		mail.setHTML(6, 1, Sfa.constant().whiteSpace());
 	    
 	   
-	    ingresarCambio.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				addEstado();
-				
-			}
-	    });
+//	    ingresarCambio.addClickHandler(new ClickHandler() {
+//			public void onClick(ClickEvent event) {
+//				addEstado();
+//				
+//			}
+//	    });
 	    
 	    editarSSUIData.getNuevoEstado().addChangeHandler(new ChangeHandler() {
 			public void onChange(ChangeEvent event) {
@@ -118,7 +119,7 @@ public class AnalisisSSUI extends Composite {
 				editarSSUIData.getComentarioAnalista().setSelectedIndex(0);
 			}
 		});
-    mail.setWidget(7, 0,ingresarCambio);
+       mail.setHTML(7, 0,Sfa.constant().whiteSpace());
 	    
 	   
 	    cancelarCambio.addClickHandler(new ClickHandler() {
@@ -226,36 +227,36 @@ public void refresh() {
 		cambiarEstadoSS.setHTML(1, 2, " ");
 	}
 	
-	private void addEstado(){
-		ingresarCambio.setEnabled(false);
-		if(editarSSUIData.getNuevoEstado().getSelectedItemText() != null){
-			String descripcionEstado = editarSSUIData.getNuevoEstado().getSelectedItemText();
-			
-			EstadoSolicitudDto nuevoEstado = editarSSUIData.getEstadoPorEstadoText(editarSSUIData.getOpcionesEstado(), descripcionEstado);
-			EstadoPorSolicitudDto estadoPorSolicitudDto = new EstadoPorSolicitudDto();
-			estadoPorSolicitudDto.setEstado(nuevoEstado);
-			estadoPorSolicitudDto.setFecha(new Date());
-			
-			if(!editarSSUIData.getSolicitudServicio().getNumero().equals("")){
-				estadoPorSolicitudDto.setNumeroSolicitud(new Long(editarSSUIData.getSolicitudServicio().getId()));			
-			}
-			
-		//	String usuario = editarSSUIData.getSolicitudServicio().getUsuarioCreacion().getApellidoYNombre();
-			//ver esta persistencia
-			estadoPorSolicitudDto.setUsuario(editarSSUIData.getSolicitudServicio().getUsuarioCreacion().getId());
-			
-			editarSSUIData.getSolicitudServicio().addHistorialEstados(estadoPorSolicitudDto);
-			
-//		SolicitudRpcService.Util.getInstance().saveEstadoPorSolicitudDto(estadoPorSolicitudDto, new DefaultWaitCallback<Boolean>() {
-//
-//			@Override
-//			public void success(Boolean result) {
-			refresh();
-			editarSSUIData.getComentarioAnalista().clear();
+//	private void addEstado(){
+//		ingresarCambio.setEnabled(false);
+//		if(editarSSUIData.getNuevoEstado().getSelectedItemText() != null){
+//			String descripcionEstado = editarSSUIData.getNuevoEstado().getSelectedItemText();
+//			
+//			EstadoSolicitudDto nuevoEstado = editarSSUIData.getEstadoPorEstadoText(editarSSUIData.getOpcionesEstado(), descripcionEstado);
+//			EstadoPorSolicitudDto estadoPorSolicitudDto = new EstadoPorSolicitudDto();
+//			estadoPorSolicitudDto.setEstado(nuevoEstado);
+//			estadoPorSolicitudDto.setFecha(new Date());
+//			
+//			if(!editarSSUIData.getSolicitudServicio().getNumero().equals("")){
+//				estadoPorSolicitudDto.setNumeroSolicitud(new Long(editarSSUIData.getSolicitudServicio().getId()));			
 //			}
-//		});
-		}
-	}
+//			
+//		//	String usuario = editarSSUIData.getSolicitudServicio().getUsuarioCreacion().getApellidoYNombre();
+//			//ver esta persistencia
+//			estadoPorSolicitudDto.setUsuario(editarSSUIData.getSolicitudServicio().getUsuarioCreacion().getId());
+//			
+//			editarSSUIData.getSolicitudServicio().addHistorialEstados(estadoPorSolicitudDto);
+//			
+////		SolicitudRpcService.Util.getInstance().saveEstadoPorSolicitudDto(estadoPorSolicitudDto, new DefaultWaitCallback<Boolean>() {
+////
+////			@Override
+////			public void success(Boolean result) {
+//			refresh();
+//			editarSSUIData.getComentarioAnalista().clear();
+////			}
+////		});
+//		}
+//	}
 	
 	private void cancelarCambio(){
 		desHabilitarCampos();

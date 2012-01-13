@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client.ss;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -907,8 +908,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		if (editarSSUIData.getEnviar().isChecked()){
 			
 			  mandarMailySMS();	
+			
 				
 			}
+		  addEstado();
 		if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
 			
 			SolicitudRpcService.Util.getInstance().saveSolicituServicioTranferencia(obtenerSolicitudTransferencia(false),
@@ -1415,29 +1418,35 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
      public void mandarMailySMS(){
 			String destinatario=editarSSUIData.getEnviarA().getText();
 			String[] tokens = destinatario.split("-");
-				
+			//	esto hay q descomentar solo esta asi para poder probar con mbermude q tiene muchos clientes
 	//			if (editarSSUIData.getSolicitudServicio().getUsuarioCreacion().isEECC()){
 
 					String mail=tokens[0];
 					String telefono=tokens[1];
 					
-					//				SolicitudRpcService.Util.getInstance().enviarMail(armarMensajeAEnviar(),mail,
-		//						new DefaultWaitCallback<Void>() {
-		//
-		//							@Override
-		//							public void success(Void result) {
-		//								// TODO Auto-generated method stub
-		//								
-		//							}});
-						SolicitudRpcService.Util.getInstance().enviarSMS(telefono,armarMensajeAEnviar(),
-								new DefaultWaitCallback<Void>() {
+					
+				     	if (mail!=null){
+									SolicitudRpcService.Util.getInstance().enviarMail(armarMensajeAEnviar(),mail,
+						        	new DefaultWaitCallback<Void>() {
 		
 									@Override
 									public void success(Void result) {
-										// TODO Auto-generated method stub
-										
-									}});
-							
+									// TODO Auto-generated method stub
+									
+								}});
+					     }
+				     	if (telefono!= null){
+				     		 SolicitudRpcService.Util.getInstance().enviarSMS(telefono,armarMensajeAEnviar(),
+								    	new DefaultWaitCallback<Void>() {
+			
+										@Override
+										public void success(Void result) {
+											// TODO Auto-generated method stub
+											
+										}});
+									
+				     	}
+						          
 //				}else{
 //					
 //					if(editarSSUIData.getSolicitudServicio().getUsuarioCreacion().isDealer()){
@@ -1470,6 +1479,41 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	 
 	 return mensaje; 
   }   
+  
+  
+	private void addEstado(){
+		//ver esto!! no persite el nuevo estado hay q hacerlo como esta en SolicitudRpcServiceImpl en la linea 251 q persiste
+		// un estadoporsolicitud 
+		if(editarSSUIData.getNuevoEstado().getSelectedItemText() != null){
+			String descripcionEstado = editarSSUIData.getNuevoEstado().getSelectedItemText();
+			
+			EstadoSolicitudDto nuevoEstado = editarSSUIData.getEstadoPorEstadoText(editarSSUIData.getOpcionesEstado(), descripcionEstado);
+			EstadoPorSolicitudDto estadoPorSolicitudDto = new EstadoPorSolicitudDto();
+			estadoPorSolicitudDto.setEstado(nuevoEstado);
+			estadoPorSolicitudDto.setFecha(new Date());
+			
+			if(!editarSSUIData.getSolicitudServicio().getNumero().equals("")){
+				estadoPorSolicitudDto.setNumeroSolicitud(new Long(editarSSUIData.getSolicitudServicio().getId()));			
+			}
+			
+		//	String usuario = editarSSUIData.getSolicitudServicio().getUsuarioCreacion().getApellidoYNombre();
+			//ver esta persistencia
+			estadoPorSolicitudDto.setUsuario(editarSSUIData.getSolicitudServicio().getUsuarioCreacion().getId());
+			
+			editarSSUIData.getSolicitudServicio().addHistorialEstados(estadoPorSolicitudDto);
+			
+//		  SolicitudRpcService.Util.getInstance().saveEstadoPorSolicitudDto(estadoPorSolicitudDto, new DefaultWaitCallback<Boolean>() {
+//
+//		@Override
+//			public void success(Boolean result) {
+//		//	refresh();
+//			editarSSUIData.getComentarioAnalista().clear();
+//	}});
+		
+	}
+	
+	}
+  
 	
 //	public void protegerCampos(EditarSSUIData editarSSUIdata){
 //		editarSSUIdata.getNss().setEnabled(false);
