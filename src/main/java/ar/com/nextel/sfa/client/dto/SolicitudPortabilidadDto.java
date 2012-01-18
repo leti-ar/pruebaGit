@@ -19,17 +19,28 @@ public class SolicitudPortabilidadDto implements IsSerializable, IdentifiableDto
 	private String telefonoPortar;
 	private String nroUltimaFacura;
 
+	private Integer tipoPersona;
+	
 	private ProveedorDto proveedorAnterior;
 	private TipoDocumentoDto tipoDocumento;
 	private TipoTelefoniaDto tipoTelefonia;
 	private ModalidadCobroDto modalidadCobro;
-	
-//	private LineaSolicitudServicioDto lineaSolicitudServicio;
+
 	private Long lineaSolicitudServicio;
+//	private LineaSolicitudServicioDto lineaSolicitudServicio;
+	
+	public Integer getTipoPersona() {
+		return tipoPersona;
+	}
+	
+	public void setTipoPersona(Integer tipoPersona) {
+		this.tipoPersona = tipoPersona;
+	}
 	
 	public Long getLineaSolicitudServicio() {
 		return lineaSolicitudServicio;
 	}
+	
 	public void setLineaSolicitudServicio(Long lineaSolicitudServicio) {
 		this.lineaSolicitudServicio = lineaSolicitudServicio;
 	}

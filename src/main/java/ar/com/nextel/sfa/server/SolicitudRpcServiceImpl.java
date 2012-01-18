@@ -391,6 +391,19 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	public CreateSaveSolicitudServicioResultDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
 			throws RpcExceptionMessages {
 
+		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
+		
+		int tipoPersona;
+		if(cuenta.getClaseCuenta().getEsGobierno()) tipoPersona = 3;
+		else{
+			if(cuenta.isEmpresa()) tipoPersona = 2;
+			else tipoPersona = 1;
+		}
+
+		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
+			linea.getPortabilidad().setTipoPersona(tipoPersona);
+		}
+
 		CreateSaveSolicitudServicioResultDto resultDto = new CreateSaveSolicitudServicioResultDto();
 		try {
 			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
@@ -965,24 +978,40 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		int nroSS_portabilidad_aux_int;
 		final int MAX_PORTABILIDADES = 20;
 		
+//		// Valida que el numero SS sea valido
+//		if(nroSS_portabilidad.contains("N")){ // Contiene la letra N
+//			if(nroSS_portabilidad.contains(".")){ // Contiene un punto
+//				nroSS_portabilidad_aux = nroSS_portabilidad.substring(nroSS_portabilidad.indexOf("N") + 1, nroSS_portabilidad.lastIndexOf("."));
+//				if(nroSS_portabilidad_aux.equals(nroSS)){ // Numero igual al de solicitud de servicio
+//					nroSS_portabilidad_aux = nroSS_portabilidad.substring(nroSS_portabilidad.lastIndexOf(".") + 1);
+//					try{
+//						nroSS_portabilidad_aux_int = Integer.parseInt(nroSS_portabilidad_aux);
+//						if(nroSS_portabilidad_aux_int > MAX_PORTABILIDADES) return false; // El conteo de solicitudes supera el maximo
+//					}catch(NumberFormatException e){
+//						return false; // El conteo de solicitudes no es un numero
+//					}
+//				}else return false; // El numero sin la N ni el punto es diferente al de la solicitud de servicio
+//			}else{ // No contiene un punto
+//				nroSS_portabilidad_aux = nroSS_portabilidad.substring(nroSS_portabilidad.indexOf("N") + 1);
+//				if(!nroSS_portabilidad_aux.equals(nroSS)) return false; // El numero sin la N es diferente al de la solicitud de servicio
+//			}
+//		}else return false; // No contiene la letra N
+
 		// Valida que el numero SS sea valido
-		if(nroSS_portabilidad.contains("N")){ // Contiene la letra N
-			if(nroSS_portabilidad.contains(".")){ // Contiene un punto
-				nroSS_portabilidad_aux = nroSS_portabilidad.substring(nroSS_portabilidad.indexOf("N") + 1, nroSS_portabilidad.lastIndexOf("."));
-				if(nroSS_portabilidad_aux.equals(nroSS)){ // Numero igual al de solicitud de servicio
-					nroSS_portabilidad_aux = nroSS_portabilidad.substring(nroSS_portabilidad.lastIndexOf(".") + 1);
-					try{
-						nroSS_portabilidad_aux_int = Integer.parseInt(nroSS_portabilidad_aux);
-						if(nroSS_portabilidad_aux_int > MAX_PORTABILIDADES) return false; // El conteo de solicitudes supera el maximo
-					}catch(NumberFormatException e){
-						return false; // El conteo de solicitudes no es un numero
-					}
-				}else return false; // El numero sin la N ni el punto es diferente al de la solicitud de servicio
-			}else{ // No contiene un punto
-				nroSS_portabilidad_aux = nroSS_portabilidad.substring(nroSS_portabilidad.indexOf("N") + 1);
-				if(!nroSS_portabilidad_aux.equals(nroSS)) return false; // El numero sin la N es diferente al de la solicitud de servicio
-			}
-		}else return false; // No contiene la letra N
+		if(nroSS_portabilidad.contains(".")){ // Contiene un punto
+			nroSS_portabilidad_aux = nroSS_portabilidad.substring(0, nroSS_portabilidad.lastIndexOf("."));
+			if(nroSS_portabilidad_aux.equals(nroSS)){ // Numero igual al de solicitud de servicio
+				nroSS_portabilidad_aux = nroSS_portabilidad.substring(nroSS_portabilidad.lastIndexOf(".") + 1);
+				try{
+					nroSS_portabilidad_aux_int = Integer.parseInt(nroSS_portabilidad_aux);
+					if(nroSS_portabilidad_aux_int > MAX_PORTABILIDADES) return false; // El conteo de solicitudes supera el maximo
+				}catch(NumberFormatException e){
+					return false; // El conteo de solicitudes no es un numero
+				}
+			}else return false; // El numero sin la N ni el punto es diferente al de la solicitud de servicio
+		}else{ // No contiene un punto
+			if(!nroSS_portabilidad.equals(nroSS)) return false; // El numero sin la N es diferente al de la solicitud de servicio
+		}
 
 		return true;
 	}

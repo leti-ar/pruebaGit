@@ -95,8 +95,10 @@ public class PortabilidadUtil {
 		for(int i = 0; i < lineas.size(); i++){
 			for(int j = 0; j < prepagos.size()/* && !encontroPre*/; j++){
 				if(lineas.get(i).getAlias().equals(lineas.get(prepagos.get(j)).getAlias())){
-					if(cont == 0) nroSS = "N" + solicitudServicio.getNumero();
-					else nroSS = "N" + solicitudServicio.getNumero() + "." + String.valueOf(cont);
+					//if(cont == 0) nroSS = "N" + solicitudServicio.getNumero();
+					//else nroSS = "N" + solicitudServicio.getNumero() + "." + String.valueOf(cont);
+					if(cont == 0) nroSS = solicitudServicio.getNumero();
+					else nroSS = solicitudServicio.getNumero() + "." + String.valueOf(cont);
 					lineas.get(i).getPortabilidad().setNroSS(nroSS);
 					cont++;
 				}
@@ -106,8 +108,10 @@ public class PortabilidadUtil {
 				for(int n = 0; n < postpagos_apod_op.get(j).size(); n++){
 					if(lineas.get(i).getAlias().equals(lineas.get(postpagos_apod_op.get(j).get(n)).getAlias())){
 						if(lineas.get(postpagos_apod_op.get(j).get(n)).getPortabilidad().getNroSS().length() == 0){
-							if(cont == 0) nroSS = "N" + solicitudServicio.getNumero();
-							else nroSS = "N" + solicitudServicio.getNumero() + "." + String.valueOf(cont);
+							//if(cont == 0) nroSS = "N" + solicitudServicio.getNumero();
+							//else nroSS = "N" + solicitudServicio.getNumero() + "." + String.valueOf(cont);
+							if(cont == 0) nroSS = solicitudServicio.getNumero();
+							else nroSS = solicitudServicio.getNumero() + "." + String.valueOf(cont);
 							cont++;
 							
 							for(int k = 0; k < postpagos_apod_op.get(j).size(); k++){
