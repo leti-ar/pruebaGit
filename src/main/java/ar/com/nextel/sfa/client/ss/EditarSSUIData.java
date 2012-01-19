@@ -935,24 +935,26 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			}
 		}
 		//larce - Se valida que la fecha estado no sea menor a 2 meses y mayor a 1 mes de la fecha del día.
-		final long unDiaEnMilis = 1000*60*60*24;
-		final Date hace2Meses = new Date(System.currentTimeMillis() - 60*unDiaEnMilis);
-		final Date dentroDe1mes = new Date(System.currentTimeMillis() + 30*unDiaEnMilis);
-		final Date fechaEstadoTB = new Date(fechaEstado.getTextBox().getText());
-		
-		if (fechaEstadoTB.before(hace2Meses) || fechaEstadoTB.after(dentroDe1mes)) {
-			validator.addError("La fecha de estado no debe ser menor a 2 meses o mayor a 1 mes con respecto a la fecha de hoy.");
-		}
-		solicitudServicio.setClienteHistorico(clienteHistorico);
-		if ("".equals(solicitudServicio.getClienteHistorico()) || solicitudServicio.getClienteHistorico() == null) {
-			validator.addError("El cliente no se encuentra asociado al historico para el numero de solicitud ingresado.");
-		} else if (!solicitudServicio.getCuenta().getCodigoVantive().equals(solicitudServicio.getClienteHistorico())) {
+		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
+			final long unDiaEnMilis = 1000*60*60*24;
+			final Date hace2Meses = new Date(System.currentTimeMillis() - 60*unDiaEnMilis);
+			final Date dentroDe1mes = new Date(System.currentTimeMillis() + 30*unDiaEnMilis);
+			final Date fechaEstadoTB = new Date(fechaEstado.getTextBox().getText());
+			
+			if (fechaEstadoTB.before(hace2Meses) || fechaEstadoTB.after(dentroDe1mes)) {
+				validator.addError("La fecha de estado no debe ser menor a 2 meses o mayor a 1 mes con respecto a la fecha de hoy.");
+			}
+			solicitudServicio.setClienteHistorico(clienteHistorico);
+			if ("".equals(solicitudServicio.getClienteHistorico()) || solicitudServicio.getClienteHistorico() == null) {
+				validator.addError("El cliente no se encuentra asociado al historico para el numero de solicitud ingresado.");
+			} else if (!solicitudServicio.getCuenta().getCodigoVantive().equals(solicitudServicio.getClienteHistorico())) {
 				validator.addError("El cliente difiere entre el de la SS y el ingresado en el Histórico de Ventas.");
-		}
-		
-		if (RegularExpressionConstants.isVancuc(solicitudServicio.getCuenta().getCodigoVantive())
-				&& "Pass".equals(estadoH.getSelectedItemText())) {
-			validator.addError("No puede elegir el estado Pass para este tipo de clientes.");
+			}
+			
+			if (RegularExpressionConstants.isVancuc(solicitudServicio.getCuenta().getCodigoVantive())
+					&& "Pass".equals(estadoH.getSelectedItemText())) {
+				validator.addError("No puede elegir el estado Pass para este tipo de clientes.");
+			}
 		}
 		
 		validator.fillResult();
