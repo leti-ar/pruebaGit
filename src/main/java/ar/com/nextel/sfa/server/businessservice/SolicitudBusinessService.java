@@ -405,8 +405,12 @@ public class SolicitudBusinessService {
 		}
 		
 		mapper.map(solicitudServicioDto, solicitudServicio);
-    	Control control =  repository.retrieve(Control.class, solicitudServicioDto.getControl().getId());
-		solicitudServicio.setControl(control);
+		
+		if(solicitudServicioDto.getControl() != null){
+			Control control =  repository.retrieve(Control.class, solicitudServicioDto.getControl().getId());
+			solicitudServicio.setControl(control);			
+		}
+		
 		//PARCHE: Esto es por que dozer mapea los id cuando se le indica que no
 		for (LineaTransfSolicitudServicio lineaTransf : solicitudServicio.getLineasTranf()) {
 			for (ContratoViewDto cto : solicitudServicioDto.getContratosCedidos()) {
@@ -749,11 +753,29 @@ public class SolicitudBusinessService {
 	/**
 	 * Obtengo la SolicitudServicio por id.
 	 * @param ssDto
-	 * @return
+	 * @return SolicitudServicio
 	 */
 	public SolicitudServicio obtenerSSPorId(SolicitudServicioDto ssDto){
 		SolicitudServicio solicitudServicio = repository.retrieve(SolicitudServicio.class, ssDto.getId());
 		return solicitudServicio;
+	}
+	
+	/**
+	 * Obtengo la SolicitudServicio por id.
+	 * @param idSS
+	 * @return SolicitudServicio
+	 */
+	public SolicitudServicio getSSById(long idSS){
+		SolicitudServicio solicitudServicio = repository.retrieve(SolicitudServicio.class, idSS);
+		return solicitudServicio;
+	}
+	
+	/**
+	 * Actualizo la SolicitudServicio.
+	 */
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void updateSolicitudServicio(SolicitudServicio solicitudServicio){
+		repository.update(solicitudServicio);
 	}
 	
 }

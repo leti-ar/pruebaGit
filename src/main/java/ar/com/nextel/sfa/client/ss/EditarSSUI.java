@@ -18,6 +18,7 @@ import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
 import ar.com.nextel.sfa.client.dto.ComentarioAnalistaDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
@@ -57,6 +58,7 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItemImpl;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
+import ar.com.snoop.gwt.commons.client.window.MessageWindow;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -67,6 +69,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.IncrementalCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -505,7 +508,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			}
 		}
 		
-	if(solicitud != null){
+	if(solicitud != null && analisis != null){
 			analisis.refresh();
 	}
 		
@@ -531,7 +534,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		tabs.clear();
 		if(solicitud.getGrupoSolicitud().isTransferencia()){
 			tabs.add(datosTranferencia, "Transf.");
-			tabs.add(analisis, "Analisis");
+			if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
+				tabs.add(analisis, "Analisis");
+			}
 			datosTranferencia.setDatosSolicitud(solicitud);
 		// el refresh se llama desde seDatosSolicitud.
 			//	datosTranferencia.refresh();
@@ -539,16 +544,13 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		else{
 			tabs.add(datos, "Datos");
 			tabs.add(varios, "Varios");
-			tabs.add(analisis, "Analisis");
+			if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
+				tabs.add(analisis, "Analisis");
+			}
 			datos.refresh();
 		}
 		tabs.selectTab(0);
 		mainPanel.setVisible(true);
-		
-//		analisis.cleanGrid();
-//		if(solicitud != null){
-//			analisis.refresh();
-//		}
 		
 		long numeross= editarSSUIData.getIdSolicitudServicio();
 		SolicitudRpcService.Util.getInstance().getEstadoSolicitud(numeross, 
@@ -563,15 +565,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			}
 			
 		});
-		 
-			
-						
-							
-					
-			
-				
-		
-	     
 	}
 	public void firstLoad() {
 		razonSocialClienteBar = new RazonSocialClienteBar();
@@ -844,6 +837,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	}
 
 	public void onClick(Widget sender) {
+		
 		if (sender == guardarButton) {
 			List<String> errors = null;
 			if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){	
@@ -856,7 +850,17 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
 					editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback(), true);
 				}else{
-					guardar();
+					if(editarSSUIData.getSolicitudServicio().getId() != null){		
+						
+						if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
+							aprobarCredito();	
+						}else{
+							guardar();							
+						}
+						
+					}else{
+						MessageWindow.alert("La solicitud de servicio no posee un id");
+					}
 				}
 			} else {
 				ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
@@ -1528,7 +1532,57 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 //		editarSSUIdata.getCriterioBusqContrato().setEnabled(false);
 //	}
 	
+	//	GB
+	public void aprobarCredito(){
+		
+		SolicitudRpcService.Util.getInstance().validarCuentaPorId(editarSSUIData.getSolicitudServicio(), new DefaultWaitCallback<Integer>() {
+			@Override
+			public void success(Integer result) {
+				
+				//Mensajes
+				switch (result) {
+				case 0:
+				//No hubo ninguno de los errores contemplados
+					guardar();
+					break;
+				case 1:
+					MessageWindow.alert("Los datos de la cuenta deben ser transferidos a Vantive, Financials y BSCS");
+					break;
+				case 2:
+					MessageWindow.alert("La Gran Cuenta y la División no tienen un suscriptor 100000 transferido a Vantive, Financials y BSCS");
+					break;
+				case 3:
+					//Cambia el estado del historico a "Pass"
+					 if(Window.confirm("El histórico de ventas no se encuentra con estado Pass. Desea dar el pass de Histórico?")){
+						 SolicitudRpcService.Util.getInstance().changeToPass(editarSSUIData.getSolicitudServicio().getId() , new DefaultWaitCallback<Void>() {
+							@Override
+							public void success(Void result) {
+								guardar();
+							}
+						});
+		             }
+					break;
+				case 4:
+//					d. VAL4: Se valida que la Carátula de Crédito esta completa y confirmada.
+//					− Res4.1: Si la Carátula de Crédito no esta completa y confirmada el sistema
+//					muestra el siguiente mensaje “La caratula debe estar completa y confirmada” y
+//					no se permite guardar, por lo tanto no se cambia el estado de la solicitud.
+					break;
+				case 5:
+//					e. Si el valor del campo Risk Code de la Carátula de Créditos es “EECC/Agente” se
+//					actualiza automáticamente el campo Control de la solicitud de servicio con el valor
+//					“Aprobado por EECC/Agente”.
+					break;
+				case 6:
+//					f. Si el valor del campo Risk Code de la Carátula de Créditos es distinto de “EECC/Agente”
+//					se actualiza automáticamente el campo Control de la solicitud de servicio con el valor
+//					“Analizado por Créditos”.
+					break;
 
-	
-	
+				default:
+					break;
+				}
+			}
+		}); 
+	}
 }

@@ -42,6 +42,7 @@ public class AnalisisSSUI extends Composite {
 	
 	Button cancelarCambio = new Button("Cancelar Cambio");
 	//Button ingresarCambio = new Button("Cambiar Estado");
+	Button cambio = new Button("Cambiar Estado");
 	 
 	public AnalisisSSUI(EditarSSUIController controller) {
 		mainpanel = new FlowPanel();
@@ -55,12 +56,26 @@ public class AnalisisSSUI extends Composite {
 
 	private Widget getCambiarEstadoSS() {
 		TitledPanel cambiarEstadoPanel = new TitledPanel(Sfa.constant().whiteSpace());
-		final SimpleLink cambio = new SimpleLink("Cargar Estados");
-		cambio.addStyleName("ml5");
-		cambio.addStyleName("infocomSimpleLink");
+//		final SimpleLink cambio = new SimpleLink("Cargar Estados");
+//		cambio.addStyleName("ml5");
+//		cambio.addStyleName("infocomSimpleLink");
+//		
+//		cambio.addClickListener(new ClickListener() {
+//			public void onClick(Widget arg0) {
+//				editarSSUIData.getComentarioAnalista().setEnabled(true);
+//				editarSSUIData.getEnviarA().setEnabled(true);
+//				editarSSUIData.getNuevoEstado().setEnabled(true);
+//				editarSSUIData.getTitulo().setEnabled(true);
+//				editarSSUIData.getNotaAdicional().setEnabled(true);
+//				editarSSUIData.getEnviar().setEnabled(true);
+//				cancelarCambio.setEnabled(true);
+//				refresh();
+//			}
+//		});
 		
-		cambio.addClickListener(new ClickListener() {
-			public void onClick(Widget arg0) {
+		cambio.addStyleName("ml5");
+		cambio.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
 				editarSSUIData.getComentarioAnalista().setEnabled(true);
 				editarSSUIData.getEnviarA().setEnabled(true);
 				editarSSUIData.getNuevoEstado().setEnabled(true);
@@ -68,7 +83,9 @@ public class AnalisisSSUI extends Composite {
 				editarSSUIData.getNotaAdicional().setEnabled(true);
 				editarSSUIData.getEnviar().setEnabled(true);
 				cancelarCambio.setEnabled(true);
-				refresh();
+				cambio.setEnabled(false);
+				clean();
+				refresh();	
 			}
 		});
 		
@@ -153,10 +170,8 @@ public class AnalisisSSUI extends Composite {
 	}
 
 //	/** Realiza la actualizacion visual necesaria para mostrar los datos correctos */
-public void refresh() {
-	
-	
-	
+	public void refresh() {
+
 	   int row = 1;
 		
 		if(editarSSUIData.getSolicitudServicio() != null){
@@ -179,7 +194,7 @@ public void refresh() {
 					}
 					cambiarEstadoSS.setHTML(row, 1, solicitud.getHistorialEstados().get(i).getFecha().toString());
 					//esto lo tuve q cambiar ver si es correcto  estefania iguacel
-					cambiarEstadoSS.setHTML(row, 2,"");
+					cambiarEstadoSS.setHTML(row, 2, solicitud.getUsuarioCreacion().getApellidoYNombre());
 					row++;
 					if(i == solicitud.getHistorialEstados().size()-1){
 						if(solicitud.getHistorialEstados().get(i).getEstado() != null){
@@ -296,7 +311,15 @@ public void refresh() {
 		editarSSUIData.getNotaAdicional().setEnabled(false);
 		editarSSUIData.getEnviar().setEnabled(false);
 		cancelarCambio.setEnabled(false);
+		cambio.setEnabled(true);
+		clean();
 	}
 	
-	
+	public void clean(){
+		editarSSUIData.getEnviarA().setText("");
+		editarSSUIData.getNuevoEstado().setSelectedIndex(0);
+		editarSSUIData.getComentarioAnalista().setSelectedIndex(0);
+		editarSSUIData.getNotaAdicional().setText("");
+		editarSSUIData.getEnviar().setValue(false);
+	}
 }

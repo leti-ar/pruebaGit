@@ -27,6 +27,8 @@ import org.hibernate.HibernateException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.gargoylesoftware.htmlunit.javascript.host.Window;
+
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.constants.MessageIdentifier;
@@ -85,6 +87,7 @@ import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
@@ -1322,6 +1325,75 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	
 	}
 	
+	//GB
+	/**
+	 * Metodo generico para obtener la Cuenta utilizando su id.
+	 * Fue creado porque el SolicitudServicioDto en lugar de CuentaDto
+	 * posee un CuentaSSDto que es una version reducida.
+	 */
+	public CuentaDto obtenerCuentaPorId(long idCuenta) {
+	List<Cuenta> cuentas = repository.executeCustomQuery("getCuentaById", idCuenta);
+		if(cuentas != null && cuentas.size() > 0){
+			return mapper.map(cuentas.get(0), CuentaDto.class);
+		}else{
+			return null;
+		}
+	}
 	
-	
-}
+	//GB
+	/**
+	 * Valida que la solicitud de servicio cumpla con los requerimientos.
+	 */
+	public Integer validarCuentaPorId(SolicitudServicioDto solicitud) {
+		
+		long idCuenta = solicitud.getCuenta().getId();
+		List<Cuenta> cuentas = repository.executeCustomQuery("getCuentaById", idCuenta);
+		
+		if(cuentas != null && cuentas.size() > 0){
+			
+			//Validacion 1
+			if(cuentas.get(0).getCodigoBSCS() != null && cuentas.get(0).getCodigoFNCL() != null  && cuentas.get(0).getIdVantive() != null){
+			//	List<Cuenta> suscriptorCuenta = repository.executeCustomQuery("getGCuentaSuscriptorId", cuentas.get(0).getCodigoVantive()+".00.00.1%");
+				List<Cuenta> suscriptorCuenta = repository.executeCustomQuery("getGCuentaSuscriptorId", cuentas.get(0).getCodigoVantive()+".00.00.100000");
+
+				//Validacion 2
+				if(suscriptorCuenta.size() > 0){
+					//Sigue...
+					if(suscriptorCuenta.get(0).getCodigoBSCS() != null && suscriptorCuenta.get(0).getCodigoFNCL() != null  && suscriptorCuenta.get(0).getIdVantive() != null){
+						//Validacion 3
+						if(solicitud.getEstadoH() != null){
+							if(solicitud.getEstadoH().getItemText().equalsIgnoreCase("Pass")){
+								//Sigue...ver que mas agregar
+								return 0;
+							}else{
+								 return 3;
+							}
+						}else{
+							 return 3;
+						}
+					}else{
+						return 2;
+					}
+				}else{
+					return 2;
+				}
+			}else{
+				return 1;
+			}		
+		}else{
+			return 1;
+		}
+	}
+
+	/**
+	 * Cambia el estado del historico a "Pass".
+	 */
+	//Se busca la SS usando el id en lugar de directamente pasar la ss
+	//debido a que se producen errores en el mapeo debido a cuenta
+	public void changeToPass(long idSS){
+		SolicitudServicio ss = solicitudBusinessService.getSSById(idSS);
+		EstadoHistorico estadoPass = repository.retrieve(EstadoHistorico.class, 2l);
+		ss.setEstadoH(estadoPass);
+		solicitudBusinessService.updateSolicitudServicio(ss);
+	}
+}	

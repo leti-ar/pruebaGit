@@ -5,6 +5,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
@@ -324,4 +325,19 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.enviarSMS(to, mensaje,callback);
 	}
 	
+	public void obtenerCuentaPorId(long idCuenta , AsyncCallback<CuentaDto> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.obtenerCuentaPorId(idCuenta , callback);
+	}
+	
+	public void validarCuentaPorId(SolicitudServicioDto solicitud, AsyncCallback<Integer> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.validarCuentaPorId(solicitud, callback);
+	}
+	
+	public void changeToPass(long idSS,
+			DefaultWaitCallback<Void> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.changeToPass(idSS ,callback);
+	}
 }
