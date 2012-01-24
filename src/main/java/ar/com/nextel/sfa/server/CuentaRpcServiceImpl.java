@@ -364,6 +364,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		}
 
 		VerazResponseDto responseDto = mapper.map(responseDTO, VerazResponseDto.class);
+		AppLogger.info("Mensaje obtenido por el veraz: "+ responseDTO.getMensaje());
 		responseDto.setMensaje(responseDTO.getMensaje());
 		AppLogger.info("Consulta a Veraz finalizada.");
 		return responseDto;
@@ -950,8 +951,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	
 
 	/**
-	 * Este metodo realiza una query para verificar si el domicilio deenvio y de facturacion asociado al nro de SS, esta validado
-	 * por un EECC.
+	 * Este metodo realiza una query para verificar si el domicilio de envío y de facturacion asociado al nro de SS, esta validado
+	 * por EECC.
 	 * @author fernaluc
 	 * @return true si esta validado por EECC, de lo contrario false.
 	 */
@@ -959,7 +960,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		List result = null;
 		try {
 			String[] valores = {nro_ss,nro_ss,nro_ss};
-			AppLogger.info("Verificando que el domicilio de facturacion y de entrega asociados al nro de solicitud: " + nro_ss + " ,haya sido validado por un EECC");
+			AppLogger.info("Verificando que el domicilio de facturacion y de entrega asociados al nro de solicitud: " + nro_ss + " ,haya sido validado por EECC");
 			result = repository.executeCustomQuery(QUERY_VALID_EECC, valores);
 		}catch (Exception e) {
 			AppLogger.error(e);
