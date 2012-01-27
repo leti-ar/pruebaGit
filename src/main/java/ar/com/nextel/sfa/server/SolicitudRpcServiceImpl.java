@@ -82,6 +82,7 @@ import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.ComentarioAnalistaDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.ControlDto;
@@ -1351,11 +1352,12 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		
 		if(cuentas != null && cuentas.size() > 0){
 			
+			Cuenta cuenta = cuentas.get(0);
+			
 			//Validacion 1
-			if(cuentas.get(0).getCodigoBSCS() != null && cuentas.get(0).getCodigoFNCL() != null  && cuentas.get(0).getIdVantive() != null){
+			if(cuenta.getCodigoBSCS() != null && cuenta.getCodigoFNCL() != null  && cuenta.getIdVantive() != null){
 			//	List<Cuenta> suscriptorCuenta = repository.executeCustomQuery("getGCuentaSuscriptorId", cuentas.get(0).getCodigoVantive()+".00.00.1%");
-				List<Cuenta> suscriptorCuenta = repository.executeCustomQuery("getGCuentaSuscriptorId", cuentas.get(0).getCodigoVantive()+".00.00.100000");
-
+				List<Cuenta> suscriptorCuenta = repository.executeCustomQuery("getGCuentaSuscriptorId", cuenta.getCodigoVantive()+".00.00.100000");
 				//Validacion 2
 				if(suscriptorCuenta.size() > 0){
 					//Sigue...
@@ -1363,7 +1365,42 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 						//Validacion 3
 						if(solicitud.getEstadoH() != null){
 							if(solicitud.getEstadoH().getItemText().equalsIgnoreCase("Pass")){
-								//Sigue...ver que mas agregar
+
+								CuentaDto cuentaDto = mapper.map(cuenta, CuentaDto.class);
+								
+								CaratulaDto caratula = getCaratulaPorNroSS(cuentaDto.getCaratulas() , solicitud.getNumero());
+								
+								if(caratula != null){
+									//Validacion 4
+									if(caratula.isConfirmada()){
+										
+										String riskCodeText = caratula.getRiskCode().getDescripcion();
+										List<ControlDto> controles = getControles();
+										
+										ControlDto aprobadoPorAgente = null;
+										ControlDto analizadoPorCreditos = null;
+										
+										for (int i = 0; i < controles.size(); i++) {
+											ControlDto control = controles.get(i);
+											if(control.getDescripcion().equalsIgnoreCase("Analizado por Creditos")){
+												analizadoPorCreditos = control;
+											}
+											if(control.getDescripcion().equalsIgnoreCase("Aprobado por Ejecutivo")){
+												aprobadoPorAgente = control;
+											}
+										}
+										
+										if(riskCodeText.equalsIgnoreCase("EECC/Agente")){
+											solicitud.setControl(aprobadoPorAgente);
+										}else{
+											solicitud.setControl(analizadoPorCreditos);
+										}
+									}
+									
+								}else{
+									
+									return 4;
+								}
 								return 0;
 							}else{
 								 return 3;
@@ -1396,4 +1433,23 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		ss.setEstadoH(estadoPass);
 		solicitudBusinessService.updateSolicitudServicio(ss);
 	}
+
+	public List<ControlDto> getControles(){
+		List<Control> controles = repository.getAll(Control.class);
+		return mapper.convertList(controles, ControlDto.class);
+	}
+	
+	public CaratulaDto getCaratulaPorNroSS(List<CaratulaDto> caratulas, String nroSS){
+		
+		if(caratulas != null){			
+			for (int i = 0; i < caratulas.size(); i++) {
+				if(caratulas.get(i).getNroSS().equals(nroSS)){
+					return caratulas.get(0);
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 }	

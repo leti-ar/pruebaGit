@@ -4,6 +4,7 @@ import java.util.List;
 
 import ar.com.nextel.exception.SFAServerException;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
+import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
@@ -180,4 +181,6 @@ public interface SolicitudRpcService extends RemoteService {
 	public Integer validarCuentaPorId(SolicitudServicioDto solicitud) throws RpcExceptionMessages;
 	
 	public void changeToPass(long idSS) throws RpcExceptionMessages;
+	
+	public List<ControlDto> getControles() throws RpcExceptionMessages;
 }

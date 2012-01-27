@@ -3,6 +3,7 @@ package ar.com.nextel.sfa.client;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
+import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
@@ -339,5 +340,10 @@ public class SolicitudRpcServiceDelegate {
 			DefaultWaitCallback<Void> callback) {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.changeToPass(idSS ,callback);
+	}
+	
+	public void getControles(DefaultWaitCallback<List<ControlDto>> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getControles(callback);
 	}
 }

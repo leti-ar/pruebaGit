@@ -16,6 +16,7 @@ import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
 import ar.com.nextel.sfa.client.dto.ComentarioAnalistaDto;
+import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
@@ -836,6 +837,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		onClick(sender);
 	}
 
+	String riskCodeText = null;
+	
 	public void onClick(Widget sender) {
 		
 		if (sender == guardarButton) {
@@ -1563,22 +1566,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		             }
 					break;
 				case 4:
-//					d. VAL4: Se valida que la Carátula de Crédito esta completa y confirmada.
-//					− Res4.1: Si la Carátula de Crédito no esta completa y confirmada el sistema
-//					muestra el siguiente mensaje “La caratula debe estar completa y confirmada” y
-//					no se permite guardar, por lo tanto no se cambia el estado de la solicitud.
+					MessageWindow.alert("La caratula debe estar completa y confirmada");
+					
 					break;
-				case 5:
-//					e. Si el valor del campo Risk Code de la Carátula de Créditos es “EECC/Agente” se
-//					actualiza automáticamente el campo Control de la solicitud de servicio con el valor
-//					“Aprobado por EECC/Agente”.
-					break;
-				case 6:
-//					f. Si el valor del campo Risk Code de la Carátula de Créditos es distinto de “EECC/Agente”
-//					se actualiza automáticamente el campo Control de la solicitud de servicio con el valor
-//					“Analizado por Créditos”.
-					break;
-
+					
 				default:
 					break;
 				}
