@@ -535,9 +535,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		tabs.clear();
 		if(solicitud.getGrupoSolicitud().isTransferencia()){
 			tabs.add(datosTranferencia, "Transf.");
-			if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
+		//	if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
 				tabs.add(analisis, "Analisis");
-			}
+			//}
 			datosTranferencia.setDatosSolicitud(solicitud);
 		// el refresh se llama desde seDatosSolicitud.
 			//	datosTranferencia.refresh();
@@ -545,9 +545,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		else{
 			tabs.add(datos, "Datos");
 			tabs.add(varios, "Varios");
-			if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
+		//	if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
 				tabs.add(analisis, "Analisis");
-			}
+		//	}
 			datos.refresh();
 		}
 		tabs.selectTab(0);
@@ -855,11 +855,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				}else{
 					if(editarSSUIData.getSolicitudServicio().getId() != null){		
 						
-						if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
-							aprobarCredito();	
-						}else{
+//						if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
+//							//aprobarCredito();	
+//						}else{
 							guardar();							
-						}
+//						}
 						
 					}else{
 						MessageWindow.alert("La solicitud de servicio no posee un id");
@@ -929,6 +929,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							editarSSUIData.setSolicitud(result.getSolicitud());
 							datosTranferencia.setDatosSolicitud(result.getSolicitud());
 //							datosTranferencia.refresh();
+							analisis.desHabilitarCampos();
 							editarSSUIData.setSaved(true);
 							//MGR - #1759
 							if(!result.getMessages().isEmpty()){
@@ -959,7 +960,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							guardandoSolicitud = false;
 							editarSSUIData.setSolicitud(result.getSolicitud());
 							datos.refresh();
-							
+							analisis.desHabilitarCampos();
 							// MessageDialog.getInstance().showAceptar("Guardado Exitoso",
 							// Sfa.constant().MSG_SOLICITUD_GUARDADA_OK(), MessageDialog.getCloseCommand());
 							editarSSUIData.setSaved(true);
@@ -1427,10 +1428,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			String[] tokens = destinatario.split("-");
 			//	esto hay q descomentar solo esta asi para poder probar con mbermude q tiene muchos clientes
 	//			if (editarSSUIData.getSolicitudServicio().getUsuarioCreacion().isEECC()){
-
+			       String telefono="";
 					String mail=tokens[0];
-					String telefono=tokens[1];
-					
+					if (tokens.length>1){
+						telefono=tokens[1];
+                     }
 					
 				     	if (mail!=null){
 									SolicitudRpcService.Util.getInstance().enviarMail(armarMensajeAEnviar(),mail,
@@ -1442,7 +1444,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 									
 								}});
 					     }
-				     	if (telefono!= null){
+				     	if (telefono!= ""){
 				     		 SolicitudRpcService.Util.getInstance().enviarSMS(telefono,armarMensajeAEnviar(),
 								    	new DefaultWaitCallback<Void>() {
 			
@@ -1489,8 +1491,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
   
   
 	private void addEstado(){
-		//ver esto!! no persite el nuevo estado hay q hacerlo como esta en SolicitudRpcServiceImpl en la linea 251 q persiste
-		// un estadoporsolicitud 
+	
 		if(editarSSUIData.getNuevoEstado().getSelectedItemText() != null){
 			String descripcionEstado = editarSSUIData.getNuevoEstado().getSelectedItemText();
 			
@@ -1502,20 +1503,17 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			if(!editarSSUIData.getSolicitudServicio().getNumero().equals("")){
 				estadoPorSolicitudDto.setNumeroSolicitud(new Long(editarSSUIData.getSolicitudServicio().getId()));			
 			}
-			
-		//	String usuario = editarSSUIData.getSolicitudServicio().getUsuarioCreacion().getApellidoYNombre();
-			//ver esta persistencia
 			estadoPorSolicitudDto.setUsuario(editarSSUIData.getSolicitudServicio().getUsuarioCreacion().getId());
 			
 			editarSSUIData.getSolicitudServicio().addHistorialEstados(estadoPorSolicitudDto);
 			
-//		  SolicitudRpcService.Util.getInstance().saveEstadoPorSolicitudDto(estadoPorSolicitudDto, new DefaultWaitCallback<Boolean>() {
-//
-//		@Override
-//			public void success(Boolean result) {
-//		//	refresh();
-//			editarSSUIData.getComentarioAnalista().clear();
-//	}});
+	  SolicitudRpcService.Util.getInstance().saveEstadoPorSolicitudDto(estadoPorSolicitudDto, new DefaultWaitCallback<Boolean>() {
+
+		@Override
+			public void success(Boolean result) {
+			  analisis.refresh();
+			editarSSUIData.getComentarioAnalista().clear();
+	}});
 		
 	}
 	

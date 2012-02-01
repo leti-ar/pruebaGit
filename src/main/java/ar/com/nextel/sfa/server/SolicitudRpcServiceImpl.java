@@ -637,6 +637,17 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 
 		try {
 			EstadoPorSolicitud estadoPorSolicitud = mapper.map(estadoPorSolicitudDto, EstadoPorSolicitud.class);
+			   List<EstadoSolicitud> estados = repository.getAll(EstadoSolicitud.class);
+			    EstadoSolicitud estado = new EstadoSolicitud();
+			    for (Iterator iterator = estados.iterator(); iterator.hasNext();) {
+					
+			    	EstadoSolicitud estadoSolicitud = (EstadoSolicitud) iterator
+							.next();
+					if (estadoSolicitud.getDescripcion().equals(estadoPorSolicitudDto.getEstado().getDescripcion())) {
+						estado = estadoSolicitud;
+					}
+				}
+			    estadoPorSolicitud.setEstado(estado);
 			EstadoPorSolicitud estadoSaved = solicitudBusinessService.saveEstadoPorSolicitudDto(estadoPorSolicitud);
 			
 			if(estadoSaved != null){
