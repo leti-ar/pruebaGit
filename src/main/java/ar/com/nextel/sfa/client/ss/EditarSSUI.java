@@ -749,8 +749,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			editarSSUIData.getSucursalOrigen().setSelectedIndex(1);
 		}
 //		 if(editarSSUIData.getSolicitudServicio() != null){
-//             analisis.refresh();
-     //}   	
+//            analisis.refresh();
+    //}   	
 		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
 	        editarSSUIData.getEstadoH().addAllItems(initializer.getEstadosHistorico());
 	        editarSSUIData.getEstadoTr().addAllItems(initializer.getEstadosHistorico());
@@ -850,21 +850,17 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				errors = editarSSUIData.validarParaGuardar();
 			}
 			if (errors.isEmpty()) {
-				if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
-					editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback(), true);
-				}else{
-					if(editarSSUIData.getSolicitudServicio().getId() != null){		
-						
-//						if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
-//							//aprobarCredito();	
-//						}else{
-							guardar();							
-//						}
-						
+
+//				if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
+//					aprobarCredito();	
+//				}else{
+					if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
+						editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback(), true);
 					}else{
-						MessageWindow.alert("La solicitud de servicio no posee un id");
-					}
-				}
+						guardar();							
+					}						
+//				}
+
 			} else {
 				ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 				ErrorDialog.getInstance().show(errors, false);
@@ -1544,7 +1540,13 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				switch (result) {
 				case 0:
 				//No hubo ninguno de los errores contemplados
-					guardar();
+					
+					if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
+						editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback(), true);
+					}else{
+						guardar();							
+					}
+					
 					break;
 				case 1:
 					MessageWindow.alert("Los datos de la cuenta deben ser transferidos a Vantive, Financials y BSCS");
@@ -1558,7 +1560,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 						 SolicitudRpcService.Util.getInstance().changeToPass(editarSSUIData.getSolicitudServicio().getId() , new DefaultWaitCallback<Void>() {
 							@Override
 							public void success(Void result) {
-								guardar();
+								if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
+									editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback(), true);
+								}else{
+									guardar();							
+								}
 							}
 						});
 		             }
