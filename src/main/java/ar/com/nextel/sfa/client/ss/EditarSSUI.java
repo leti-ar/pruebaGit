@@ -1508,19 +1508,17 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			
 			editarSSUIData.getSolicitudServicio().addHistorialEstados(estadoPorSolicitudDto);
 			
-	  SolicitudRpcService.Util.getInstance().saveEstadoPorSolicitudDto(estadoPorSolicitudDto, new DefaultWaitCallback<Boolean>() {
-
-		@Override
-			public void success(Boolean result) {
-			  analisis.refresh();
-			editarSSUIData.getComentarioAnalista().clear();
-	}});
+			SolicitudRpcService.Util.getInstance().saveEstadoPorSolicitudDto(estadoPorSolicitudDto, new DefaultWaitCallback<Boolean>() {
 		
+				@Override
+					public void success(Boolean result) {
+					  analisis.refresh();
+					  editarSSUIData.getComentarioAnalista().clear();
+					}
+			});
+		}
 	}
-	
-	}
-  
-	
+
 //	public void protegerCampos(EditarSSUIData editarSSUIdata){
 //		editarSSUIdata.getNss().setEnabled(false);
 //		editarSSUIdata.getNflota().setEnabled(false);

@@ -43,14 +43,14 @@ public class AnalisisSSUI extends Composite {
 	Button cancelarCambio = new Button("Cancelar Cambio");
 	//Button ingresarCambio = new Button("Cambiar Estado");
 	Button cambio = new Button("Cambiar Estado");
-	
+	 
 	public AnalisisSSUI(EditarSSUIController controller) {
 		mainpanel = new FlowPanel();
 		this.controller = controller;
 		initWidget(mainpanel);
 		this.controller = controller;
 		editarSSUIData = controller.getEditarSSUIData();
-	
+		
 		mainpanel.add(getCambiarEstadoSS());
 	}
 
@@ -73,7 +73,7 @@ public class AnalisisSSUI extends Composite {
 //				refresh();
 //			}
 //		});
-		cambio.setEnabled(true);
+		
 		cambio.addStyleName("ml5");
 		cambio.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
@@ -314,6 +314,10 @@ public class AnalisisSSUI extends Composite {
 		cancelarCambio.setEnabled(false);
 		cambio.setEnabled(true);
 		clean();
+	}
+	
+	public void desHabilitarCambiarEstado() {
+		cambio.setEnabled(false);
 	}
 	
 	public void clean(){

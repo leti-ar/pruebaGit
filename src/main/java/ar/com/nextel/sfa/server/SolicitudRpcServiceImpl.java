@@ -243,7 +243,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		resultDto.setError(messages.hasErrors());
 		resultDto.setMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
 		
-		if (solicitudServicioDto.getNumero() != null) {
+		if (solicitudServicioDto.getId() != null) {
 			solicitudServicioDto.setHistorialEstados(getEstadosPorSolicitud(new Long(solicitudServicioDto.getId())));//solicitudServicioDto.getNumero())));
 		}
 		
@@ -609,9 +609,9 @@ public String getEstadoSolicitud(long solicitud) {
 	//que permite realizar el manejo de mensajes
 	public CreateSaveSolicitudServicioResultDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
 			throws RpcExceptionMessages {
-
 		CreateSaveSolicitudServicioResultDto resultDto = new CreateSaveSolicitudServicioResultDto();
 		try {
+
 			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(
 					solicitudServicioDto, mapper);
 			solicitudServicioDto = mapper.map(solicitudSaved, SolicitudServicioDto.class);
@@ -624,7 +624,18 @@ public String getEstadoSolicitud(long solicitud) {
 				resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
 				//larce
 				solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto);
-			}		
+			}
+
+			if (solicitudServicioDto.getId() != null) {
+				if (solicitudServicioDto.getHistorialEstados() != null) {
+					if(solicitudServicioDto.getHistorialEstados().size() > 0){
+						solicitudServicioDto.setHistorialEstados(getEstadosPorSolicitud(new Long(solicitudServicioDto.getId())));					
+					}
+				}else{
+					solicitudServicioDto.setHistorialEstados(getEstadosPorSolicitud(new Long(solicitudServicioDto.getId())));									
+				}
+			}
+			
 			resultDto.setSolicitud(solicitudServicioDto);
 		} catch (Exception e) {
 			AppLogger.error(e);
@@ -1053,6 +1064,17 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(
 					solicitudServicioDto, mapper);
 			SolicitudServicioDto solicitudDto = mapper.map(solicitudSaved, SolicitudServicioDto.class);
+
+			if (solicitudServicioDto.getId() != null) {
+				if (solicitudServicioDto.getHistorialEstados() != null) {
+					if(solicitudServicioDto.getHistorialEstados().size() > 0){
+						solicitudServicioDto.setHistorialEstados(getEstadosPorSolicitud(new Long(solicitudServicioDto.getId())));					
+					}
+				}else{
+					solicitudServicioDto.setHistorialEstados(getEstadosPorSolicitud(new Long(solicitudServicioDto.getId())));									
+				}
+			}
+			
 			resultDto.setSolicitud(solicitudDto);
 
 			Vendedor vendedor = sessionContextLoader.getSessionContext().getVendedor();
