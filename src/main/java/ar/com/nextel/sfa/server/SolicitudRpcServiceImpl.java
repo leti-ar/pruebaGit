@@ -244,7 +244,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		resultDto.setMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
 		
 		if (solicitudServicioDto.getNumero() != null) {
-			solicitudServicioDto.setHistorialEstados(getEstadosPorSolicitud(new Long(solicitudServicioDto.getNumero())));
+			solicitudServicioDto.setHistorialEstados(getEstadosPorSolicitud(new Long(solicitudServicioDto.getId())));//solicitudServicioDto.getNumero())));
 		}
 		
 		AppLogger.info("Creacion de Solicitud de Servicio finalizada");
