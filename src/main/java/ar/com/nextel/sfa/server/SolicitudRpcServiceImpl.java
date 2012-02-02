@@ -401,7 +401,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		}
 
 		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
-			linea.getPortabilidad().setTipoPersona(tipoPersona);
+			if(linea.getPortabilidad() != null) linea.getPortabilidad().setTipoPersona(tipoPersona);
 		}
 
 		CreateSaveSolicitudServicioResultDto resultDto = new CreateSaveSolicitudServicioResultDto();
@@ -1014,6 +1014,28 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		}
 
 		return true;
+	}
+	
+	/**
+	 * Portabilidad
+	 * @param contratos
+	 * @return
+	 * @throws RpcExceptionMessages
+	 */
+	public PortabilidadResult validarPortabilidadTransferencia(List<ContratoViewDto> contratos) throws RpcExceptionMessages {
+		PortabilidadResult result = new PortabilidadResult();
+		
+		for (ContratoViewDto contrato : contratos) {
+			try{
+				int res = bpsSystem.resolverPortabilidadTransferencia(contrato.getContrato());
+				if(res == 1) 
+					result.addError(ERROR_ENUM.ERROR, "El contrato "+ contrato.getContrato() +" posee un trámite de portabilidad en curso. Por favor verificar.");
+			}catch(Exception e){
+				throw ExceptionUtil.wrap(e);
+			}
+
+		}
+		return result.generar();
 	}
 	
 	/**

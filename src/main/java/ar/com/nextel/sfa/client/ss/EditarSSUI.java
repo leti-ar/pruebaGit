@@ -10,6 +10,7 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
+import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
@@ -620,9 +621,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							super.failure(caught);
 						}
 					});
-		}
-		else{
-			
+		}else{
 			// TODO: Portabilidad
 			long contadorPortabilidad = 0;
 			for (LineaSolicitudServicioDto linea : editarSSUIData.getSolicitudServicio().getLineas()) {
@@ -727,29 +726,25 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 				if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
 					errors = editarSSUIData.validarTransferenciaParaCerrarGenerar(datosTranferencia.getContratosSSChequeados(),true);
-					
 				}else{
 					errors = editarSSUIData.validarParaCerrarGenerar(true);
 				}
 				if (errors.isEmpty()) {
-					//MGR - #1481 - No vuelvo a validar los planes para que no aparesca el mensaje de
-					//aviso dos veces.
+					//MGR - #1481 - No vuelvo a validar los planes para que no aparesca el mensaje de aviso dos veces.
 					
-					// TODO: Portabilidad
-					SolicitudRpcService.Util.getInstance().validarPortabilidad(editarSSUIData.getSolicitudServicio(), 
-							new DefaultWaitCallback<PortabilidadResult>() {
-						@Override
-						public void success(PortabilidadResult portabilidadResult) {
-							// Si arrastra un error en la validacion muestra un mensaje
-							if(portabilidadResult.isConError()){
-								ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-								ErrorDialog.getInstance().show(portabilidadResult.getErroresDesc());
-
-								if(portabilidadResult.getPermiteGrabar()) cerrarGenerarSolicitud();
-								else CerradoSSExitosoDialog.getInstance().hideLoading();
-							}else cerrarGenerarSolicitud();
-						}
-					});
+					if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
+						SolicitudRpcService.Util.getInstance().validarPortabilidadTransferencia(datosTranferencia.getContratosSSChequeados(), 
+								new DefaultWaitCallback<PortabilidadResult>() {
+									@Override
+									public void success(PortabilidadResult result) {
+										if(result.isConError()){
+											ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+											ErrorDialog.getInstance().show(result.getErroresDesc());
+											CerradoSSExitosoDialog.getInstance().hideLoading();
+										}else validarPortabilidad(); 
+									}
+								});
+					}else validarPortabilidad();
 				} else {
 					CerradoSSExitosoDialog.getInstance().hideLoading();
 					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
@@ -757,6 +752,24 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				}
 			}
 		};
+	}
+	
+	// TODO: Portabilidad
+	private void validarPortabilidad(){
+		SolicitudRpcService.Util.getInstance().validarPortabilidad(editarSSUIData.getSolicitudServicio(), 
+				new DefaultWaitCallback<PortabilidadResult>() {
+			@Override
+			public void success(PortabilidadResult portabilidadResult) {
+				// Si arrastra un error en la validacion muestra un mensaje
+				if(portabilidadResult.isConError()){
+					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+					ErrorDialog.getInstance().show(portabilidadResult.getErroresDesc());
+
+					if(portabilidadResult.getPermiteGrabar()) cerrarGenerarSolicitud();
+					else CerradoSSExitosoDialog.getInstance().hideLoading();
+				}else cerrarGenerarSolicitud();
+			}
+		});
 	}
 	
 	private DefaultWaitCallback<GeneracionCierreResultDto> getGeneracionCierreCallback() {

@@ -156,6 +156,8 @@ public interface SolicitudRpcService extends RemoteService {
 	
 	boolean getExisteEnAreaCobertura(int codArea) throws RpcExceptionMessages;
 	
+	PortabilidadResult validarPortabilidadTransferencia(List<ContratoViewDto> contratos) throws RpcExceptionMessages;
+
 	PortabilidadResult validarPortabilidad(SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages;
 	
 	List<String> generarParametrosPortabilidadRTF(Long idSolicitudServicio) throws RpcExceptionMessages;

@@ -16,6 +16,7 @@ import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
@@ -449,6 +450,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			}
 		} else {
 			if (detalleSS == sender) {
+
 				if (row > 0) {
 					if (col == 7) {
 						if (!serviciosAdicionales.isEditing()) {

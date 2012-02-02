@@ -147,11 +147,10 @@ public class ServiciosAdicionalesTable extends Composite {
 			table.resizeRows(1);
 			return;
 		}
-		List serviciosAdicionalesOriginales = editarSSUIData.getServiciosAdicionales().get(
-				selectedLineaSSRow - 1);
+		List serviciosAdicionalesOriginales = editarSSUIData.getServiciosAdicionales().get(selectedLineaSSRow - 1);
+		
 		if (!serviciosAdicionalesOriginales.isEmpty()) {
-			editarSSUIData.mergeServiciosAdicionalesConLineaSolicitudServicio(selectedLineaSSRow - 1,
-					serviciosAdicionalesOriginales);
+			editarSSUIData.mergeServiciosAdicionalesConLineaSolicitudServicio(selectedLineaSSRow - 1,serviciosAdicionalesOriginales);
 			refreshServiciosAdicionalesTable(selectedLineaSSRow - 1);
 		} else {
 			controller.getServiciosAdicionales(editarSSUIData.getLineasSolicitudServicio().get(

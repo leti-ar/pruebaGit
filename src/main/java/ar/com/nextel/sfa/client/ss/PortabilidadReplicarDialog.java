@@ -1,10 +1,12 @@
 package ar.com.nextel.sfa.client.ss;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ProveedorDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
@@ -151,10 +153,26 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 								asignarNroSSPortabilidad();
 							}
 						}
+
 						hide();
 						tblDetalle.removeAllRows();
-						datos.refresh();
+						datos.refresh();	
 						
+						List<Integer> idRepetidos = new ArrayList<Integer>();
+						
+						for (LineaSolicitudServicioDto linea : lineas) {
+							for(int i = 0; i < linea.getServiciosAdicionales().size(); i++){
+								for(int j = 0; j < linea.getServiciosAdicionales().size(); j++){
+									if(i != j){
+										Long idA = linea.getServiciosAdicionales().get(i).getServicioAdicional().getId();
+										Long idB = linea.getServiciosAdicionales().get(j).getServicioAdicional().getId();
+
+										if(idA == idB) linea.getServiciosAdicionales().remove(j);
+									}
+								}
+							}
+							idRepetidos.clear();
+						}
 					}
 					if (sender == lnkCancelar) {
 						hide();

@@ -151,4 +151,7 @@ public interface SolicitudRpcServiceAsync {
 
 	void getCantidadLineasPortabilidad(List<Long> listIdSS,
 			AsyncCallback<List<Long>> callback);
+
+	void validarPortabilidadTransferencia(List<ContratoViewDto> contratos,
+			AsyncCallback<PortabilidadResult> callback);
 }

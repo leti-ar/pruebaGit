@@ -231,6 +231,8 @@ public class PortabilidadUIData extends Composite {
 
 			chkRecibeSMS.setValue(false);
 			chkRecibeSMS.setEnabled(true);
+
+			txtNroUltimaFacura.setEnabled(true);
 		}else{
 			lblNroUltimaFacura.removeStyleName(OBLIGATORIO);
 			lblRazonSocial.removeStyleName(OBLIGATORIO);
@@ -239,6 +241,9 @@ public class PortabilidadUIData extends Composite {
 
 			chkRecibeSMS.setValue(true);
 			chkRecibeSMS.setEnabled(false);
+			
+			txtNroUltimaFacura.setText("");
+			txtNroUltimaFacura.setEnabled(false);
 		}
 	}
 	

@@ -909,9 +909,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	}
 
 	/** Agrega a la LineaSolicitudServicio los servicios adicionales que vienen por defecto */
-	public void mergeServiciosAdicionalesConLineaSolicitudServicio(int indexLinea,
-			List<ServicioAdicionalLineaSolicitudServicioDto> list) {
-		List serviciosAGuardar = getLineasSolicitudServicio().get(indexLinea).getServiciosAdicionales();
+	public void mergeServiciosAdicionalesConLineaSolicitudServicio(int indexLinea,List<ServicioAdicionalLineaSolicitudServicioDto> list) {
+		List<ServicioAdicionalLineaSolicitudServicioDto> serviciosAGuardar = getLineasSolicitudServicio().get(indexLinea).getServiciosAdicionales();
+		
 		for (ServicioAdicionalLineaSolicitudServicioDto servicioAd : list) {
 			if (servicioAd.isChecked() && !serviciosAGuardar.contains(servicioAd)) {
 				serviciosAGuardar.add(servicioAd);

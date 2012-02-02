@@ -287,6 +287,11 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.getCantidadLineasPortabilidad(listIdSS, callback);
 	}
 
+	public void validarPortabilidadTransferencia(List<ContratoViewDto> contratos, AsyncCallback<PortabilidadResult> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.validarPortabilidadTransferencia(contratos, callback);
+	}
+
 	// -------------------------------------------
 
 
