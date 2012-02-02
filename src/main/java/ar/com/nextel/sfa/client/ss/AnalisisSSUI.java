@@ -43,7 +43,7 @@ public class AnalisisSSUI extends Composite {
 	Button cancelarCambio = new Button("Cancelar Cambio");
 	//Button ingresarCambio = new Button("Cambiar Estado");
 	Button cambio = new Button("Cambiar Estado");
-	 
+	
 	public AnalisisSSUI(EditarSSUIController controller) {
 		mainpanel = new FlowPanel();
 		this.controller = controller;
@@ -56,6 +56,7 @@ public class AnalisisSSUI extends Composite {
 
 	private Widget getCambiarEstadoSS() {
 		TitledPanel cambiarEstadoPanel = new TitledPanel(Sfa.constant().whiteSpace());
+		
 //		final SimpleLink cambio = new SimpleLink("Cargar Estados");
 //		cambio.addStyleName("ml5");
 //		cambio.addStyleName("infocomSimpleLink");
@@ -72,7 +73,7 @@ public class AnalisisSSUI extends Composite {
 //				refresh();
 //			}
 //		});
-		
+		cambio.setEnabled(true);
 		cambio.addStyleName("ml5");
 		cambio.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
