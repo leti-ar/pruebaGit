@@ -509,9 +509,14 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			}
 		}
 		
-	if(solicitud != null && analisis != null){
+		if(solicitud != null && analisis != null){
 			analisis.refresh();
-	}
+			
+			//Descomentarlo cuando se puedan cargar ss cerradas
+//			if(solicitud.getEnCarga()){
+//				analisis.desHabilitarCambiarEstado();					
+//			}
+		}
 		
 		//MGR - #962 - #1017
 		if(ClientContext.getInstance().
