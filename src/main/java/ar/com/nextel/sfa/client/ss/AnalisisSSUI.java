@@ -41,7 +41,6 @@ public class AnalisisSSUI extends Composite {
 	List<Long> opciones = new ArrayList<Long>();
 	
 	Button cancelarCambio = new Button("Cancelar Cambio");
-	//Button ingresarCambio = new Button("Cambiar Estado");
 	Button cambio = new Button("Cambiar Estado");
 	 
 	public AnalisisSSUI(EditarSSUIController controller) {
@@ -56,23 +55,6 @@ public class AnalisisSSUI extends Composite {
 
 	private Widget getCambiarEstadoSS() {
 		TitledPanel cambiarEstadoPanel = new TitledPanel(Sfa.constant().whiteSpace());
-		
-//		final SimpleLink cambio = new SimpleLink("Cargar Estados");
-//		cambio.addStyleName("ml5");
-//		cambio.addStyleName("infocomSimpleLink");
-//		
-//		cambio.addClickListener(new ClickListener() {
-//			public void onClick(Widget arg0) {
-//				editarSSUIData.getComentarioAnalista().setEnabled(true);
-//				editarSSUIData.getEnviarA().setEnabled(true);
-//				editarSSUIData.getNuevoEstado().setEnabled(true);
-//				editarSSUIData.getTitulo().setEnabled(true);
-//				editarSSUIData.getNotaAdicional().setEnabled(true);
-//				editarSSUIData.getEnviar().setEnabled(true);
-//				cancelarCambio.setEnabled(true);
-//				refresh();
-//			}
-//		});
 		
 		cambio.addStyleName("ml5");
 		cambio.addClickHandler(new ClickHandler() {
@@ -116,15 +98,7 @@ public class AnalisisSSUI extends Composite {
 		
 		mail.setWidget(6, 0,editarSSUIData.getEnviar() );
 		mail.setHTML(6, 1, Sfa.constant().whiteSpace());
-	    
-	   
-//	    ingresarCambio.addClickHandler(new ClickHandler() {
-//			public void onClick(ClickEvent event) {
-//				addEstado();
-//				
-//			}
-//	    });
-	    
+
 	    editarSSUIData.getNuevoEstado().addChangeHandler(new ChangeHandler() {
 			public void onChange(ChangeEvent event) {
 				
@@ -170,7 +144,8 @@ public class AnalisisSSUI extends Composite {
 		return wrapper;
 	}
 
-//	/** Realiza la actualizacion visual necesaria para mostrar los datos correctos */
+	/** Realiza la actualizacion visual necesaria para mostrar los datos correctos */
+	
 	public void refresh() {
 
 	   int row = 1;
@@ -242,38 +217,7 @@ public class AnalisisSSUI extends Composite {
 		cambiarEstadoSS.setHTML(1, 1, " ");
 		cambiarEstadoSS.setHTML(1, 2, " ");
 	}
-	
-//	private void addEstado(){
-//		ingresarCambio.setEnabled(false);
-//		if(editarSSUIData.getNuevoEstado().getSelectedItemText() != null){
-//			String descripcionEstado = editarSSUIData.getNuevoEstado().getSelectedItemText();
-//			
-//			EstadoSolicitudDto nuevoEstado = editarSSUIData.getEstadoPorEstadoText(editarSSUIData.getOpcionesEstado(), descripcionEstado);
-//			EstadoPorSolicitudDto estadoPorSolicitudDto = new EstadoPorSolicitudDto();
-//			estadoPorSolicitudDto.setEstado(nuevoEstado);
-//			estadoPorSolicitudDto.setFecha(new Date());
-//			
-//			if(!editarSSUIData.getSolicitudServicio().getNumero().equals("")){
-//				estadoPorSolicitudDto.setNumeroSolicitud(new Long(editarSSUIData.getSolicitudServicio().getId()));			
-//			}
-//			
-//		//	String usuario = editarSSUIData.getSolicitudServicio().getUsuarioCreacion().getApellidoYNombre();
-//			//ver esta persistencia
-//			estadoPorSolicitudDto.setUsuario(editarSSUIData.getSolicitudServicio().getUsuarioCreacion().getId());
-//			
-//			editarSSUIData.getSolicitudServicio().addHistorialEstados(estadoPorSolicitudDto);
-//			
-////		SolicitudRpcService.Util.getInstance().saveEstadoPorSolicitudDto(estadoPorSolicitudDto, new DefaultWaitCallback<Boolean>() {
-////
-////			@Override
-////			public void success(Boolean result) {
-//			refresh();
-//			editarSSUIData.getComentarioAnalista().clear();
-////			}
-////		});
-//		}
-//	}
-	
+
 	private void cancelarCambio(){
 		desHabilitarCampos();
 	}
@@ -318,6 +262,10 @@ public class AnalisisSSUI extends Composite {
 	
 	public void desHabilitarCambiarEstado() {
 		cambio.setEnabled(false);
+	}
+	
+	public void habilitarCambiarEstado() {
+		cambio.setEnabled(true);
 	}
 	
 	public void clean(){

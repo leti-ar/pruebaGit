@@ -83,7 +83,10 @@ public class SolicitudServicioDto implements IsSerializable {
 	private Date fechaEstado;
 	private String clienteHistorico;
     
-    public SolicitudServicioDto() {
+	//GB - si es customer o no
+	private boolean customer;
+	
+	public SolicitudServicioDto() {
 		solicitudServicioGeneracion = new SolicitudServicioGeneracionDto();
 	}
 
@@ -507,5 +510,13 @@ public class SolicitudServicioDto implements IsSerializable {
 
 	public void setControl(ControlDto control) {
 		this.control = control;
+	}
+
+	public boolean isCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(boolean customer) {
+		this.customer = customer;
 	}
 }

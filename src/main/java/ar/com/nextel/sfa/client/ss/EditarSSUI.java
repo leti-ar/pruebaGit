@@ -7,6 +7,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
+import org.springframework.stereotype.Controller;
+
 import ar.com.nextel.components.mail.MailSender;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.sfa.client.InfocomRpcService;
@@ -210,6 +213,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					@Override
 					public void success(final SolicitudServicioDto result) {
 						if(result != null) {
+							visibilidadConsultarScoring(result.isCustomer());
 							if(result.getEnCarga()){
 								getCopiarSS().setVisible(false);
 							}
@@ -233,6 +237,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 									ErrorDialog.getInstance().show(msgString.toString(), false);
 								
 								}else{
+									visibilidadConsultarScoring(result.getSolicitud().isCustomer());
 //									Window.alert("id: " + result.getSolicitud().getId());
 									Command abrirSSCreada = new Command() {
 										public void execute() {
@@ -282,6 +287,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							ErrorDialog.getInstance().show(msgString.toString(), false);
 						
 						}else{
+							visibilidadConsultarScoring(result.getSolicitud().isCustomer());
 							Command abrirSSCreada = new Command() {
 								public void execute() {
 									MessageDialog.getInstance().hide();
@@ -317,7 +323,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				varios.cleanScoring();
 			}
 			return true;
-		
 	}
 	
 	
@@ -515,7 +520,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			//Descomentarlo cuando se puedan cargar ss cerradas
 //			if(solicitud.getEnCarga()){
 //				analisis.desHabilitarCambiarEstado();					
-//			}
+//			}else{
+//				analisis.habilitarCambiarEstado();	
+//			}	
 		}
 		
 		//MGR - #962 - #1017
@@ -573,7 +580,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		});
 	}
 	public void firstLoad() {
-		razonSocialClienteBar = new RazonSocialClienteBar();
+		razonSocialClienteBar = new RazonSocialClienteBar(this);//();
 		
 		//MGR - #1015
 		if( (ClientContext.getInstance().vengoDeNexus() && !ClientContext.getInstance().soyClienteNexus())
@@ -1582,5 +1589,15 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				}
 			}
 		}); 
+	}
+	
+	public void visibilidadConsultarScoring(boolean show){
+		if(razonSocialClienteBar != null){
+			if(show){
+				razonSocialClienteBar.showConsultarScoring();
+			}else{
+				razonSocialClienteBar.hideConsultarScoring();
+			}
+		}
 	}
 }

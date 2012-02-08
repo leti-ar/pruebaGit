@@ -46,6 +46,7 @@ public class IconFactory {
 	private static final String ICON_CONFIRMAR_STYLE = "icon-confirmar";
 	private static final String ICON_COPIAR_SOLICITUD_STYLE = "icon-copiar-solicitud";
 	private static final String ICON_TIF_STYLE = "icon-imagenTIF";
+	private static final String ICON_CONSULTAR_SCORING_STYLE = "icon-consultar-scoring";
 
 	public static HTML lockedOther() {
 		return createDiv(ICON_LOCKED_OTHER_STYLE);
@@ -281,6 +282,14 @@ public class IconFactory {
 
 	public static HTML imagenTIF(String title) {
 		return createDiv(ICON_TIF_STYLE, title);
+	}
+	
+	public static HTML consultarScoring() {
+		return createDiv(ICON_CONSULTAR_SCORING_STYLE);
+	}
+
+	public static HTML consultarScoring(String title) {
+		return createDiv(ICON_CONSULTAR_SCORING_STYLE, title);
 	}
 	
 	/**

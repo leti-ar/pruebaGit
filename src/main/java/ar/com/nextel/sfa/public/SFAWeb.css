@@ -823,3 +823,10 @@ margin:8px;
 	color: gray;
 	text-align: center;
 }
+
+.gwt-ConsultarScoringBar {
+	font-family: Verdana, Arial, sans-serif;
+	color: #E05206;
+	width: 100%;
+	font-weight: bold;
+}

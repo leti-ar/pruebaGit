@@ -216,6 +216,14 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		solicitud.setCuenta(cuenta);
 		SolicitudServicioDto solicitudServicioDto = mapper.map(solicitud, SolicitudServicioDto.class);
 		
+		if(solicitudServicioDto.getCuenta() != null){
+			CuentaDto cuentaDto = obtenerCuentaPorId(solicitudServicioDto.getCuenta().getId());
+			
+			if(cuenta != null){
+				solicitudServicioDto.setCustomer(cuentaDto.isCustomer());
+			}			
+		}
+		
 		//MR - le agrego el triptico
 		if(solicitudServicioDto.getNumero() == null)
 			solicitudServicioDto.setTripticoNumber(tripticoNextValue.nextNumber());
@@ -1100,6 +1108,15 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		//MGR - ISDN 1824
 		CreateSaveSolicitudServicioResultDto resultSSAux = this.createSolicitudServicio(solicitudServicioRequestDto);
 		SolicitudServicioDto solicitudDto = resultSSAux.getSolicitud();
+		
+		if(solicitudDto.getCuenta() != null){
+			CuentaDto cuenta = obtenerCuentaPorId(solicitudDto.getCuenta().getId());
+			
+			if(cuenta != null){
+				solicitudDto.setCustomer(cuenta.isCustomer());
+			}			
+		}
+		
 		resultDto.addMessages(resultSSAux.getMessages());
 		resultDto.setSolicitud(solicitudDto);
 		SolicitudServicio solicitud = repository.retrieve(SolicitudServicio.class,
@@ -1132,6 +1149,15 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		//MGR - ISDN 1824
 		CreateSaveSolicitudServicioResultDto resultSSAux = this.copySolicitudServicio(solicitudServicioRequestDto, solicitudToCopy);
 		SolicitudServicioDto solicitudDto = resultSSAux.getSolicitud();
+		
+		if(solicitudDto.getCuenta() != null){
+			CuentaDto cuenta = obtenerCuentaPorId(solicitudDto.getCuenta().getId());
+			
+			if(cuenta != null){
+				solicitudDto.setCustomer(cuenta.isCustomer());
+			}			
+		}
+		
 		resultDto.addMessages(resultSSAux.getMessages());
 		
 		resultDto.setSolicitud(solicitudDto);
@@ -1317,7 +1343,16 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		SolicitudServicioDto ssDto = new SolicitudServicioDto();
 		ssDto.setId(id);
 		SolicitudServicio ss = solicitudBusinessService.obtenerSSPorId(ssDto);
-		return mapper.map(ss, SolicitudServicioDto.class);
+		SolicitudServicioDto ssDto2 = mapper.map(ss, SolicitudServicioDto.class);
+		
+		if(ssDto2.getCuenta() != null){
+			CuentaDto cuenta = obtenerCuentaPorId(ssDto2.getCuenta().getId());
+			
+			if(cuenta != null){
+				ssDto2.setCustomer(cuenta.isCustomer());
+			}			
+		}
+		return ssDto2;
 	}
 	
 		/**
