@@ -705,7 +705,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		pruebaUno = new File("//ARPALDCX02.nextelx/Applications/SFA/2012JAN/1392470-5-1800999.rtf").exists();
 		AppLogger.info("MGR - Con ruta : //ARPALDCX02.nextelx/Applications/SFA/2012JAN/1392470-5-1800999.rtf el resultado es " + pruebaUno, this);
 		 
-
+		pruebaUno = new File("/tmp/sfa_arpalfls02_shared/SFA/2012JAN/1392470-5-1800999.rtf").exists();
+		AppLogger.info("MGR - Con ruta : /tmp/sfa_arpalfls02_shared/SFA/2012JAN/1392470-5-1800999.rtf el resultado es " + pruebaUno, this);
+		
 		return result;
 	}
 
