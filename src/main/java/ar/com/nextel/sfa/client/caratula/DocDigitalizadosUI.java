@@ -173,16 +173,16 @@ public class DocDigitalizadosUI extends NextelDialog implements ClickHandler{
 				final DocDigitalizadosDto docDig = documentos.get(listPosition);
 				final String contextRoot = WindowUtils.getContextRoot();
 //				final String pahtAndNameFile = docDig.getServer() + ".com.ar" + docDig.getPaht() + docDig.getNombre();
-				final String pahtAndNameFile = docDig.getServer() + docDig.getPaht() + docDig.getNombre();
+				final String pathAndNameFile = docDig.getPaht() + docDig.getNombre();
 
-				SolicitudRpcService.Util.getInstance().existDocDigitalizado(pahtAndNameFile, new DefaultWaitCallback<Boolean>() {
+				SolicitudRpcService.Util.getInstance().existDocDigitalizado(docDig.getServer(), pathAndNameFile, new DefaultWaitCallback<Boolean>() {
 					
 					public void success(Boolean result) {
 						LoadingModalDialog.getInstance().hide();
 						if(result){
 							
-								WindowUtils.redirect("/" + contextRoot + "/download/" + pahtAndNameFile
-										+ "?module=cuentas&service=tif&name=" + pahtAndNameFile);
+								WindowUtils.redirect("/" + contextRoot + "/download/" + pathAndNameFile
+										+ "?module=cuentas&service=tif&name=" + pathAndNameFile);
 						}else {
 							MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),
 									MessageDialog.getCloseCommand());

@@ -151,9 +151,9 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.existReport(report, callback);
 	}
 	
-	public void existDocDigitalizado(String pahtAndNameFile, DefaultWaitCallback<Boolean> callback) {
+	public void existDocDigitalizado(String server, String pathAndNameFile, DefaultWaitCallback<Boolean> callback) {
 		WaitWindow.show();
-		solicitudRpcServiceAsync.existDocDigitalizado(pahtAndNameFile, callback);
+		solicitudRpcServiceAsync.existDocDigitalizado(server, pathAndNameFile, callback);
 	}
 	
 	public void getVendedoresDae(DefaultWaitCallback<List<VendedorDto>> callback) {

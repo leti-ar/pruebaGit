@@ -105,7 +105,7 @@ public interface SolicitudRpcService extends RemoteService {
 
 	public Boolean existReport(String report) throws RpcExceptionMessages;
 	
-	public Boolean existDocDigitalizado(String pahtAndNameFile) throws RpcExceptionMessages;
+	public Boolean existDocDigitalizado(String server, String pathAndNameFile) throws RpcExceptionMessages;
 	
 	public List<VendedorDto> getVendedoresDae() throws RpcExceptionMessages;
 

@@ -138,10 +138,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private static final String QUERY_OBTENER_SS = "QUERY_OBTENER_SS";
 	private static final String QUERY_OBTENER_ITEMS = "QUERY_OBTENER_ITEMS";
 
+	//MGR - Para buscar el path que corresponda para cada documento digitalizado
+	private static final String GET_PATH_LINUX = "GET_PATH_LINUX";
 	
-	
-	
-
 	public void init() throws ServletException {
 		super.init();
 		context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
@@ -671,44 +670,69 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	}
 	
 
-	public Boolean existDocDigitalizado(String pahtAndNameFile) {
-		//MGR - Prueba para apertura de archivo
-		AppLogger.info("MGR - La ruta que llega es " + pahtAndNameFile, this);
-
+	public Boolean existDocDigitalizado(String server, String pathAndNameFile) throws RpcExceptionMessages{
+		if(server == null || pathAndNameFile ==  null){
+			return false;
+		}
 		
+		List result = null;
+		String path = "";
+		try {
+			if(!server.contains(".com.ar")){
+				server = server + ".com.ar";
+			}
+			path = server + pathAndNameFile;
+			//Primero busco el servidor que corresponda para Linux
+			AppLogger.info("Buscando path Linux para el servidor: " + path);
+			result = repository.executeCustomQuery(GET_PATH_LINUX, path);
+		} catch (Exception e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+		
+		if(result == null || result.isEmpty()){
+			return false;
+		}else{
+			path = (String) result.get(0);
+		}
+		
+		//MGR - Prueba para apertura de archivo
+		AppLogger.info("MGR - Server que llega " + path, this);
+
 		//Llega algo como '\\arpalfls02\imaging\imagenes_general\orden_servicio\2002_06\5.66559-1-0300110.tif'
 		//Tengo que salvar las barras
-//		pahtAndNameFile = pahtAndNameFile.replace('\\', File.separatorChar);
-		//MGR - Prueba para apertura de archivo
-		AppLogger.info("MGR - La ruta en medio es " + pahtAndNameFile, this);
-		
-//		pahtAndNameFile = pahtAndNameFile.replace('/', File.separatorChar);
+		path = path.replace('\\', File.separatorChar);
 		
 		//MGR - Prueba para apertura de archivo
-		AppLogger.info("MGR - La ruta a buscar es " + pahtAndNameFile, this);
+		AppLogger.info("MGR - La ruta en medio es " + path, this);
+		
+		path = path.replace('/', File.separatorChar);
+		
+		//MGR - Prueba para apertura de archivo
+		AppLogger.info("MGR - La ruta a buscar es " + path, this);
 		//AppLogger.info("Searching file " + pahtAndNameFile);
 		
-		boolean result = new File(pahtAndNameFile).exists();
+		boolean existe = new File(path).exists();
 		//MGR - Prueba para apertura de archivo
-		AppLogger.info("MGR - El resultado es " + result, this);
+		AppLogger.info("MGR - El resultado es " + existe, this);
 		//return new File(pahtAndNameFile).exists();
 		
-		boolean pruebaUno = new File("\\\\ARPALDCX02.nextelx.com.ar\\Applications\\SFA\\2012JAN\\1392470-5-1800999.rtf").exists();
-		AppLogger.info("MGR - Con ruta : \\\\ARPALDCX02.nextelx.com.ar\\Applications\\SFA\\2012JAN\\1392470-5-1800999.rtf el resultado es " + pruebaUno, this);
+//		boolean pruebaUno = new File("\\\\ARPALDCX02.nextelx.com.ar\\Applications\\SFA\\2012JAN\\1392470-5-1800999.rtf").exists();
+//		AppLogger.info("MGR - Con ruta : \\\\ARPALDCX02.nextelx.com.ar\\Applications\\SFA\\2012JAN\\1392470-5-1800999.rtf el resultado es " + pruebaUno, this);
+//		
+//		pruebaUno = new File("\\\\ARPALDCX02.nextelx\\Applications\\SFA\\2012JAN\\1392470-5-1800999.rtf").exists();
+//		AppLogger.info("MGR - Con ruta : \\\\ARPALDCX02.nextelx\\Applications\\SFA\\2012JAN\\1392470-5-1800999.rtf el resultado es " + pruebaUno, this);
+//		
+//		pruebaUno = new File("//ARPALDCX02.nextelx.com.ar/Applications/SFA/2012JAN/1392470-5-1800999.rtf").exists();
+//		AppLogger.info("MGR - Con ruta : //ARPALDCX02.nextelx.com.ar/Applications/SFA/2012JAN/1392470-5-1800999.rtf el resultado es " + pruebaUno, this);
+//		
+//		pruebaUno = new File("//ARPALDCX02.nextelx/Applications/SFA/2012JAN/1392470-5-1800999.rtf").exists();
+//		AppLogger.info("MGR - Con ruta : //ARPALDCX02.nextelx/Applications/SFA/2012JAN/1392470-5-1800999.rtf el resultado es " + pruebaUno, this);
+//		 
+//		pruebaUno = new File("/tmp/sfa_arpalfls02_shared/SFA/2012JAN/1392470-5-1800999.rtf").exists();
+//		AppLogger.info("MGR - Con ruta : /tmp/sfa_arpalfls02_shared/SFA/2012JAN/1392470-5-1800999.rtf el resultado es " + pruebaUno, this);
 		
-		pruebaUno = new File("\\\\ARPALDCX02.nextelx\\Applications\\SFA\\2012JAN\\1392470-5-1800999.rtf").exists();
-		AppLogger.info("MGR - Con ruta : \\\\ARPALDCX02.nextelx\\Applications\\SFA\\2012JAN\\1392470-5-1800999.rtf el resultado es " + pruebaUno, this);
-		
-		pruebaUno = new File("//ARPALDCX02.nextelx.com.ar/Applications/SFA/2012JAN/1392470-5-1800999.rtf").exists();
-		AppLogger.info("MGR - Con ruta : //ARPALDCX02.nextelx.com.ar/Applications/SFA/2012JAN/1392470-5-1800999.rtf el resultado es " + pruebaUno, this);
-		
-		pruebaUno = new File("//ARPALDCX02.nextelx/Applications/SFA/2012JAN/1392470-5-1800999.rtf").exists();
-		AppLogger.info("MGR - Con ruta : //ARPALDCX02.nextelx/Applications/SFA/2012JAN/1392470-5-1800999.rtf el resultado es " + pruebaUno, this);
-		 
-		pruebaUno = new File("/tmp/sfa_arpalfls02_shared/SFA/2012JAN/1392470-5-1800999.rtf").exists();
-		AppLogger.info("MGR - Con ruta : /tmp/sfa_arpalfls02_shared/SFA/2012JAN/1392470-5-1800999.rtf el resultado es " + pruebaUno, this);
-		
-		return result;
+		return existe;
 	}
 
 	private String buildSolicitudReportPath() {

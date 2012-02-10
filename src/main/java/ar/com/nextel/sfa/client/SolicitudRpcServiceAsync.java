@@ -87,7 +87,7 @@ public interface SolicitudRpcServiceAsync {
 
 	public void existReport(String report, AsyncCallback<Boolean> callback);
 	
-	public void existDocDigitalizado(String pahtAndNameFile, AsyncCallback<Boolean> callback);
+	public void existDocDigitalizado(String server, String pathAndNameFile, AsyncCallback<Boolean> callback);
 	
 	public void getVendedoresDae(AsyncCallback<List<VendedorDto>> callback);
 	
