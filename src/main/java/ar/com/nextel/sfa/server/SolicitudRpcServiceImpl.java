@@ -669,11 +669,15 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return new File(fullFilename).exists();
 	}
 	
-
-	public Boolean existDocDigitalizado(String server, String pathAndNameFile) throws RpcExceptionMessages{
+	public String obtenerPathLinux(String server, String pathAndNameFile) throws RpcExceptionMessages{
 		if(server == null || pathAndNameFile ==  null){
-			return false;
+			return null;
 		}
+		
+		//MGR - Prueba para apertura de archivo
+		AppLogger.info("MGR - Server que llega " + server + ".", this);
+		AppLogger.info("MGR - Path que llega " + pathAndNameFile + ".", this);
+		
 		
 		List result = null;
 		String path = "";
@@ -682,6 +686,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				server = server + ".com.ar";
 			}
 			path = server + pathAndNameFile;
+			
 			//Primero busco el servidor que corresponda para Linux
 			AppLogger.info("Buscando path Linux para el servidor: " + path);
 			result = repository.executeCustomQuery(GET_PATH_LINUX, path);
@@ -691,15 +696,17 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		}
 		
 		if(result == null || result.isEmpty()){
-			return false;
+			return null;
 		}else{
 			path = (String) result.get(0);
+			if(path == null || path.equals("")){
+				return null;
+			}
 		}
 		
 		//MGR - Prueba para apertura de archivo
-		AppLogger.info("MGR - Server que llega " + path, this);
+		AppLogger.info("MGR - Server que hay que buscar " + path, this);
 
-		//Llega algo como '\\arpalfls02\imaging\imagenes_general\orden_servicio\2002_06\5.66559-1-0300110.tif'
 		//Tengo que salvar las barras
 		path = path.replace('\\', File.separatorChar);
 		
@@ -710,29 +717,28 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		
 		//MGR - Prueba para apertura de archivo
 		AppLogger.info("MGR - La ruta a buscar es " + path, this);
-		//AppLogger.info("Searching file " + pahtAndNameFile);
 		
-		boolean existe = new File(path).exists();
-		//MGR - Prueba para apertura de archivo
-		AppLogger.info("MGR - El resultado es " + existe, this);
-		//return new File(pahtAndNameFile).exists();
+		return path;
+	}
+	
+
+	public Boolean existDocDigitalizado(String server, String pathAndNameFile) throws RpcExceptionMessages{
 		
-//		boolean pruebaUno = new File("\\\\ARPALDCX02.nextelx.com.ar\\Applications\\SFA\\2012JAN\\1392470-5-1800999.rtf").exists();
-//		AppLogger.info("MGR - Con ruta : \\\\ARPALDCX02.nextelx.com.ar\\Applications\\SFA\\2012JAN\\1392470-5-1800999.rtf el resultado es " + pruebaUno, this);
-//		
-//		pruebaUno = new File("\\\\ARPALDCX02.nextelx\\Applications\\SFA\\2012JAN\\1392470-5-1800999.rtf").exists();
-//		AppLogger.info("MGR - Con ruta : \\\\ARPALDCX02.nextelx\\Applications\\SFA\\2012JAN\\1392470-5-1800999.rtf el resultado es " + pruebaUno, this);
-//		
-//		pruebaUno = new File("//ARPALDCX02.nextelx.com.ar/Applications/SFA/2012JAN/1392470-5-1800999.rtf").exists();
-//		AppLogger.info("MGR - Con ruta : //ARPALDCX02.nextelx.com.ar/Applications/SFA/2012JAN/1392470-5-1800999.rtf el resultado es " + pruebaUno, this);
-//		
-//		pruebaUno = new File("//ARPALDCX02.nextelx/Applications/SFA/2012JAN/1392470-5-1800999.rtf").exists();
-//		AppLogger.info("MGR - Con ruta : //ARPALDCX02.nextelx/Applications/SFA/2012JAN/1392470-5-1800999.rtf el resultado es " + pruebaUno, this);
-//		 
-//		pruebaUno = new File("/tmp/sfa_arpalfls02_shared/SFA/2012JAN/1392470-5-1800999.rtf").exists();
-//		AppLogger.info("MGR - Con ruta : /tmp/sfa_arpalfls02_shared/SFA/2012JAN/1392470-5-1800999.rtf el resultado es " + pruebaUno, this);
+		String path = obtenerPathLinux(server, pathAndNameFile);
 		
-		return existe;
+		if(path == null){
+			return false;
+		}
+		else{
+			//MGR - Prueba para apertura de archivo
+			AppLogger.info("MGR - Verificando si existe archivo " + path, this);
+			
+			boolean existe = new File(path).exists();
+			//MGR - Prueba para apertura de archivo
+			AppLogger.info("MGR - El resultado es " + existe, this);
+			
+			return existe;
+		}
 	}
 
 	private String buildSolicitudReportPath() {

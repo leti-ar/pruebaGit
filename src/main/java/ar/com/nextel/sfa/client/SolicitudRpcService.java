@@ -107,6 +107,8 @@ public interface SolicitudRpcService extends RemoteService {
 	
 	public Boolean existDocDigitalizado(String server, String pathAndNameFile) throws RpcExceptionMessages;
 	
+	public String obtenerPathLinux(String server, String pathAndNameFile) throws RpcExceptionMessages;
+	
 	public List<VendedorDto> getVendedoresDae() throws RpcExceptionMessages;
 
 	public List<DescuentoDto> getDescuentos(Long idLinea) throws RpcExceptionMessages;

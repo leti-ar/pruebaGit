@@ -180,9 +180,16 @@ public class DocDigitalizadosUI extends NextelDialog implements ClickHandler{
 					public void success(Boolean result) {
 						LoadingModalDialog.getInstance().hide();
 						if(result){
-							
-								WindowUtils.redirect("/" + contextRoot + "/download/" + pathAndNameFile
-										+ "?module=cuentas&service=tif&name=" + pathAndNameFile);
+								SolicitudRpcService.Util.getInstance()
+									.obtenerPathLinux(docDig.getServer(),pathAndNameFile,new DefaultWaitCallback<String>() {
+
+										@Override
+										public void success(String result) {
+											WindowUtils.redirect("/"+ contextRoot+ "/download/"
+															+ result+ "?module=cuentas&service=tif&name="+ result);
+										}
+									});
+								
 						}else {
 							MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),
 									MessageDialog.getCloseCommand());

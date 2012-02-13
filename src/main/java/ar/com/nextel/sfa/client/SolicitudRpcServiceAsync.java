@@ -32,6 +32,7 @@ import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
+import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -88,6 +89,8 @@ public interface SolicitudRpcServiceAsync {
 	public void existReport(String report, AsyncCallback<Boolean> callback);
 	
 	public void existDocDigitalizado(String server, String pathAndNameFile, AsyncCallback<Boolean> callback);
+	
+	public void obtenerPathLinux(String server, String pathAndNameFile, AsyncCallback<String> callback);
 	
 	public void getVendedoresDae(AsyncCallback<List<VendedorDto>> callback);
 	

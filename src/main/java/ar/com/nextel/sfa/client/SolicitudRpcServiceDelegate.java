@@ -32,6 +32,7 @@ import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
+import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
@@ -154,6 +155,11 @@ public class SolicitudRpcServiceDelegate {
 	public void existDocDigitalizado(String server, String pathAndNameFile, DefaultWaitCallback<Boolean> callback) {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.existDocDigitalizado(server, pathAndNameFile, callback);
+	}
+	
+	public void obtenerPathLinux(String server, String pathAndNameFile, DefaultWaitCallback<String> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.obtenerPathLinux(server, pathAndNameFile, callback);
 	}
 	
 	public void getVendedoresDae(DefaultWaitCallback<List<VendedorDto>> callback) {
