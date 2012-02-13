@@ -122,8 +122,11 @@ public class PortabilidadUIData extends Composite {
 		chkNoPoseeEmail.addStyleName("portabilidadCheck");
 		lnkCopiarCuenta.addStyleName("floatRight");
 		
+		lstProveedorAnterior.setSelectedIndex(-1);
+		
 		comprobarTipoTelefonia();
-
+		validarTipoDocumento();
+		
 		cmndAceptar = new Command() {
 			public void execute() {
 				txtTelefonoPortar.getArea().setFocus(true);
@@ -192,15 +195,20 @@ public class PortabilidadUIData extends Composite {
 	 */
 	@UiHandler(value={"lstTipoDocumento","lstTipoTelefonia"})
 	void onChange(ChangeEvent evt){
-		if(evt.getSource() == lstTipoDocumento){
-			if(lstTipoDocumento.getSelectedItemText().equals("CUIL") || lstTipoDocumento.getSelectedItemText().equals("CUIT"))
-				txtNroDocumento.setPattern(RegularExpressionConstants.cuilCuit);
-			else if(lstTipoDocumento.getSelectedItemText().equals("DNI")) 
-				txtNroDocumento.setPattern(RegularExpressionConstants.dni);
-			else txtNroDocumento.setPattern(RegularExpressionConstants.documentoOtros);
-		}else if(evt.getSource() == lstTipoTelefonia) comprobarTipoTelefonia();
+		if(evt.getSource() == lstTipoDocumento) validarTipoDocumento();
+		else if(evt.getSource() == lstTipoTelefonia) comprobarTipoTelefonia();
 	}
 
+	/**
+	 * 
+	 */
+	private void validarTipoDocumento(){
+		if(lstTipoDocumento.getSelectedItemText().equals("CUIL") || lstTipoDocumento.getSelectedItemText().equals("CUIT"))
+			txtNroDocumento.setPattern(RegularExpressionConstants.cuilCuit);
+		else if(lstTipoDocumento.getSelectedItemText().equals("DNI")) 
+			txtNroDocumento.setPattern(RegularExpressionConstants.dni);
+		else txtNroDocumento.setPattern(RegularExpressionConstants.documentoOtros);
+	}
 	
 	/**
 	 * 
@@ -260,7 +268,7 @@ public class PortabilidadUIData extends Composite {
 		lstTipoDocumento.setSelectedIndex(0);
 		lstTipoTelefonia.setSelectedIndex(0);
 		lstModalidadCobro.setSelectedIndex(0);
-		lstProveedorAnterior.setSelectedIndex(0);
+		lstProveedorAnterior.setSelectedIndex(-1);
 			
 		txtEmail.setText(null);
 		txtNroSS.setText(null);;
@@ -271,7 +279,8 @@ public class PortabilidadUIData extends Composite {
 		txtNroUltimaFacura.setText(null);;
 
 		comprobarTipoTelefonia();
-		
+		validarTipoDocumento();
+
 		txtTelefono.getArea().setEnabled(false);
 		txtTelefono.getNumero().setEnabled(false);
 		txtTelefono.getInterno().setEnabled(false);
@@ -314,6 +323,9 @@ public class PortabilidadUIData extends Composite {
 	public List<String> ejecutarValidacion(){
 		GwtValidator validador = new GwtValidator();
 		
+		if(lstProveedorAnterior.getSelectedIndex() < 0)
+			validador.addTarget(lstProveedorAnterior).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Proveedor anterior"));
+		
 		if(!chkNoPoseeTel.getValue())
 			validador.addTarget(txtTelefono.getNumero()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Telefono"));
 		
@@ -355,7 +367,8 @@ public class PortabilidadUIData extends Composite {
 
 		setVisible(true);
 		comprobarTipoTelefonia();
-		
+		validarTipoDocumento();
+
 		if(solicitudPortabilidad.getTelefono() != null){
 			String[] telefono = solicitudPortabilidad.getTelefono().split("-");
 			if(telefono.length == 1) txtTelefono.getNumero().setText(telefono[0]);
@@ -428,6 +441,11 @@ public class PortabilidadUIData extends Composite {
 			if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")) chkRecibeSMS.setValue(solicitudPortabilidad.isRecibeSMS());
 		}
 
+		if(solicitudPortabilidad.getProveedorAnterior() == null) {
+			lstProveedorAnterior.setSelectedIndex(-1);
+			lstProveedorAnterior.setSelectedItem(null);
+		}
+		
 		chkPortabilidad.setValue(true);
 		txtReserva.setText("");
 		txtReserva.setEnabled(false);

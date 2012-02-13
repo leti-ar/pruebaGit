@@ -50,6 +50,8 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 	private PortabilidadUtil portabilidadUtil;
 	private TipoTelefoniaDto tipoTelefonia;
 	private ProveedorDto proveedorAnterior;
+	private String strTelefonoContacto;
+	private String strEmailContacto;
 	
 	public PortabilidadReplicarDialog(){
 		super(TITULO,false,true);
@@ -76,6 +78,8 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 			strApellido = lineas.get(indexLinea).getPortabilidad().getApellido();
 			tipoDocumento = lineas.get(indexLinea).getPortabilidad().getTipoDocumento();
 			strNroDocumento = lineas.get(indexLinea).getPortabilidad().getNumeroDocumento();
+			strTelefonoContacto = lineas.get(indexLinea).getPortabilidad().getTelefono();
+			strEmailContacto = lineas.get(indexLinea).getPortabilidad().getEmail();
 			
 			// Datos a Replicar
 			pnlDescripcionReplica = new TitledPanel("Datos a Replicar");
@@ -123,56 +127,69 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 			clickListener = new ClickListener() {
 				public void onClick(Widget sender) {
 					if(sender == lnkAceptar){
-						for(int i = 1; i < tblDetalle.getRowCount(); i++){
-							if(((CheckBox)tblDetalle.getWidget(i, 0)).getValue()){
-								for (LineaSolicitudServicioDto linea : lineas) {
-									if(tblDetalle.getHTML(i, 2).equals(linea.getAlias())){
-										if(linea.getPortabilidad() == null){
-											linea.setPortabilidad(new SolicitudPortabilidadDto());
- 											linea.getPortabilidad().setTipoTelefonia(tipoTelefonia);
- 											linea.getPortabilidad().setProveedorAnterior(proveedorAnterior);
-										}
-										
-										linea.getPortabilidad().setRazonSocial(strRazonSocial);
-										linea.getPortabilidad().setNombre(strNombre);
-										linea.getPortabilidad().setApellido(strApellido);
-										linea.getPortabilidad().setTipoDocumento(tipoDocumento);
-										linea.getPortabilidad().setNumeroDocumento(strNroDocumento);
+						boolean check = false;
+						for(int i = 1; i < tblDetalle.getRowCount() && !check; i++){
+							if(((CheckBox)tblDetalle.getWidget(i, 0)).getValue()) check = true;
+						}
+						
+						if(!check){
+							hide();
+							tblDetalle.removeAllRows();
+							datos.refresh();	
+						}else{
+							for(int i = 1; i < tblDetalle.getRowCount(); i++){
+								if(((CheckBox)tblDetalle.getWidget(i, 0)).getValue()){
+									for (LineaSolicitudServicioDto linea : lineas) {
+										if(tblDetalle.getHTML(i, 2).equals(linea.getAlias())){
+											if(linea.getPortabilidad() == null){
+												linea.setPortabilidad(new SolicitudPortabilidadDto());
+	 											linea.getPortabilidad().setTipoTelefonia(tipoTelefonia);
+	 											linea.getPortabilidad().setProveedorAnterior(proveedorAnterior);
+											}
+											
+											linea.getPortabilidad().setRazonSocial(strRazonSocial);
+											linea.getPortabilidad().setNombre(strNombre);
+											linea.getPortabilidad().setApellido(strApellido);
+											linea.getPortabilidad().setTipoDocumento(tipoDocumento);
+											linea.getPortabilidad().setNumeroDocumento(strNroDocumento);
+											linea.getPortabilidad().setEmail(strEmailContacto);
+											linea.getPortabilidad().setTelefono(strTelefonoContacto);
 
-										String numeroReservado = linea.getNumeroReserva();
-										boolean tieneNReserva = numeroReservado != null && numeroReservado.length() > 0;
-										if (tieneNReserva) {
-											controller.desreservarNumeroTelefonico(Long.parseLong(numeroReservado), linea.getId(),
-													new DefaultWaitCallback() {
-														public void success(Object result) {
-														}
-													});
+											String numeroReservado = linea.getNumeroReserva();
+											boolean tieneNReserva = numeroReservado != null && numeroReservado.length() > 0;
+											if (tieneNReserva) {
+												controller.desreservarNumeroTelefonico(Long.parseLong(numeroReservado), linea.getId(),
+														new DefaultWaitCallback() {
+															public void success(Object result) {
+															}
+														});
+											}
+										}
+									}
+									asignarNroSSPortabilidad();
+								}
+							}
+
+							hide();
+							tblDetalle.removeAllRows();
+							datos.refresh();	
+							
+							List<Integer> idRepetidos = new ArrayList<Integer>();
+							
+							for (LineaSolicitudServicioDto linea : lineas) {
+								for(int i = 0; i < linea.getServiciosAdicionales().size(); i++){
+									for(int j = 0; j < linea.getServiciosAdicionales().size(); j++){
+										if(i != j){
+											Long idA = linea.getServiciosAdicionales().get(i).getServicioAdicional().getId();
+											Long idB = linea.getServiciosAdicionales().get(j).getServicioAdicional().getId();
+
+											if(idA == idB) linea.getServiciosAdicionales().remove(j);
 										}
 									}
 								}
-								asignarNroSSPortabilidad();
+								idRepetidos.clear();
 							}
-						}
-
-						hide();
-						tblDetalle.removeAllRows();
-						datos.refresh();	
-						
-						List<Integer> idRepetidos = new ArrayList<Integer>();
-						
-						for (LineaSolicitudServicioDto linea : lineas) {
-							for(int i = 0; i < linea.getServiciosAdicionales().size(); i++){
-								for(int j = 0; j < linea.getServiciosAdicionales().size(); j++){
-									if(i != j){
-										Long idA = linea.getServiciosAdicionales().get(i).getServicioAdicional().getId();
-										Long idB = linea.getServiciosAdicionales().get(j).getServicioAdicional().getId();
-
-										if(idA == idB) linea.getServiciosAdicionales().remove(j);
-									}
-								}
-							}
-							idRepetidos.clear();
-						}
+						}// end check
 					}
 					if (sender == lnkCancelar) {
 						hide();

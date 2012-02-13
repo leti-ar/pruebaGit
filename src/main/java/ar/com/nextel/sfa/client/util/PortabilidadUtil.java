@@ -16,6 +16,8 @@ public class PortabilidadUtil {
 	}
 	
 	public void generarNroSS(SolicitudServicioDto solicitudServicio){
+		if(solicitudServicio.getNumero() == null || solicitudServicio.getNumero().length() < 1) return;
+			
 		boolean carga;
 		boolean agrega;
 		long idOperador;
