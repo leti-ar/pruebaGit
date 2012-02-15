@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -27,15 +28,12 @@ import org.hibernate.HibernateException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.gargoylesoftware.htmlunit.javascript.host.Window;
-
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.constants.MessageIdentifier;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.vantive.VantiveSystem;
 import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO;
-import ar.com.nextel.business.legacy.vantive.exception.VantiveSystemException;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
 import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSResponse;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
@@ -53,23 +51,26 @@ import ar.com.nextel.components.message.Message;
 import ar.com.nextel.components.message.MessageList;
 import ar.com.nextel.components.sequence.DefaultSequenceImpl;
 import ar.com.nextel.components.sms.EnvioSMSService;
-import ar.com.nextel.components.sms.SMSSender;
 import ar.com.nextel.exception.SFAServerException;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.repository.hibernate.HibernateRepository;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
+import ar.com.nextel.model.cuentas.beans.TipoVendedor;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.personas.beans.Localidad;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.model.solicitudes.beans.ComentarioAnalista;
+import ar.com.nextel.model.solicitudes.beans.CondicionComercial;
 import ar.com.nextel.model.solicitudes.beans.Control;
 import ar.com.nextel.model.solicitudes.beans.EstadoHistorico;
 import ar.com.nextel.model.solicitudes.beans.EstadoPorSolicitud;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
+import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
+import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.PlanBase;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
@@ -80,7 +81,6 @@ import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
-import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.ComentarioAnalistaDto;
@@ -908,10 +908,38 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		GeneracionCierreResponse response = null;
 		try {
 			completarDomiciliosSolicitudTransferencia(solicitudServicioDto);
+			
+			//larce - Req#5 Cierre y Pass automático
+			String errorCC = "";
+			int puedeCerrar = 0;
+			if (!solicitudServicioDto.getGrupoSolicitud().isTransferencia()) {
+				puedeCerrar = puedeCerrarSS(solicitudServicioDto);
+				if (puedeCerrar == 3) {//pass de creditos segun la logica
+					if (puedeDarPassDeCreditos(solicitudServicioDto, pinMaestro, mapper)) {
+						solicitudServicioDto.setPassCreditos(true);
+					} else {
+						solicitudServicioDto.setPassCreditos(false);
+						if (!"".equals(resultado)) {
+							errorCC = generarErrorPorCC(solicitudServicioDto, pinMaestro);
+						}
+					}
+				}
+			}
+			
 			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
 			response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar);
+			if (puedeCerrar == 2) {
+				response.getMessages().addMesage((Message) this.messageRetriever.getObject(MessageIdentifier.TIPO_ORDEN_INCOMPATIBLE));
+				result.setError(true);
+			} else if (!"".equals(errorCC)) {
+				Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.CUSTOM_ERROR);
+				message.addParameters(new Object[] { errorCC });
+				response.getMessages().addMesage(message);
+				result.setError(true);
+			} else {
+				result.setError(response.getMessages().hasErrors());
+			}
 			// metodo changelog
-			result.setError(response.getMessages().hasErrors());
 			if (cerrar == true
 					&& response.getMessages().hasErrors() == false
 					&& sessionContextLoader.getVendedor().getTipoVendedor().getCodigoVantive().equals(
@@ -1518,6 +1546,145 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		}
 		
 		return null;
+	}
+
+	/**
+	 * Evalúo las líneas de la solicitud con los tipos de órdenes y tipos de
+	 * vendedor que se encuentran configurados.
+	 * 
+	 * @param solicitudServicioDto
+	 * @param result
+	 * @return 1- En caso de que ninguna de las líneas cumpla, se realizara el
+	 *         cierre y se transferirá a Vantive. 
+	 *         2- En caso de que al menos una de las líneas no cumpla, no se 
+	 *         realizara el cierre y se mostrara un mensaje de error. 
+	 *         3- En caso de que todas las líneas de la solicitud cumplan, se 
+	 *         realizara el cierre y pass de créditos automático a la SS.
+	 */
+	private int puedeCerrarSS(SolicitudServicioDto solicitudServicioDto) {
+		List<LineaSolicitudServicio> lineas = mapper.convertList(solicitudServicioDto.getLineas(), LineaSolicitudServicio.class);
+		List<CondicionComercial> condiciones = repository.find("from CondicionComercial ");
+		Set<TipoSolicitud> tiposSolicitud = new HashSet<TipoSolicitud>();
+		Set<TipoVendedor> tiposVendedor = new HashSet<TipoVendedor>();
+		
+		for (Iterator<CondicionComercial> iterator = condiciones.iterator(); iterator.hasNext();) {
+			CondicionComercial condicionComercial = (CondicionComercial) iterator.next();
+			if (condicionComercial.getTiposSolicitud().size() != 0) tiposSolicitud.addAll(condicionComercial.getTiposSolicitud());
+			if (condicionComercial.getTiposVendedor().size() != 0) tiposVendedor.addAll(condicionComercial.getTiposVendedor());
+		}
+		
+		int cumple = 0;
+		for (Iterator<LineaSolicitudServicio> iterator = lineas.iterator(); iterator.hasNext();) {
+			LineaSolicitudServicio linea = (LineaSolicitudServicio) iterator.next();
+			//los accesorios no deben evaluarse, los cuento igual para que me sirva la condición 
+			if (linea.getPlan() == null || tiposSolicitud.contains(linea.getTipoSolicitud()) ) {
+				cumple++;
+			}
+		}
+		TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor();
+		if (cumple == lineas.size() && tiposVendedor.contains(tipoVendedor)) {
+			return 3;
+		} else if ((cumple < lineas.size() && cumple != 0) || !tiposVendedor.contains(tipoVendedor)) {
+			return 2;
+		} else {
+			return 1;
+		}
+	}
+	
+	/**
+	 * Dependiendo del resultado del scoring o veraz, tipo de solicitud, del plan, la cantidad máxima de equipos, el 
+	 * modelo del equipo, el tipo de vendedor y cantidad máxima de $ por SS que se encuentran configurados; 
+	 * se dará o no el pass de créditos automático.
+	 * @param ss
+	 * @param pinMaestro
+	 * @param mapper
+	 * @return
+	 * @throws BusinessException 
+	 */
+	String resultado = "";
+	private boolean puedeDarPassDeCreditos(SolicitudServicioDto ss, String pinMaestro, MapperExtended mapper) throws BusinessException {
+		if ("".equals(pinMaestro) || pinMaestro == null) {
+			//devuelve un string vacio si el servicio de veraz falla
+			resultado = solicitudBusinessService.consultarVeraz(ss, mapper);
+			if ("".equals(resultado)) {
+				return false;
+			}
+		} else {
+			resultado = solicitudBusinessService.consultarScoring(ss, mapper);
+			if (Integer.valueOf(resultado) > 3) {
+				resultado = "3";
+			}
+		}
+
+		List<LineaSolicitudServicioDto> lineas = ss.getLineas();
+		TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor();
+		Integer cantEquipos = calcularCantEquipos(ss.getLineas());
+		Double cantPesos = new Double(0);
+		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
+    		LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
+    		cantPesos = cantPesos + linea.getPrecioVenta();
+		}
+    	
+		boolean existeCC = true;
+		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
+    		LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
+    		if (linea.getTipoSolicitud() != null && linea.getPlan() != null && linea.getItem() != null) {
+    			List<CondicionComercial> condiciones  = repository.executeCustomQuery("condicionesComercialesPorSS", resultado,
+    					tipoVendedor.getId(), linea.getTipoSolicitud().getId(), linea.getPlan().getId(), linea.getItem().getId(), cantEquipos, cantPesos);		
+    			if (condiciones.size() <= 0) {
+    				existeCC = false;
+    				break;
+    			}
+    		}
+		}
+		return existeCC;
+	}
+	
+	/**
+	 * Arma el mensaje de error, indicando las no coincidencias de cada línea, según lo que está configurado.
+	 * @param ss
+	 * @param pinMaestro
+	 * @return
+	 */
+	private String generarErrorPorCC(SolicitudServicioDto ss, String pinMaestro) {
+		String mensaje = "Para un";
+		if ("".equals(pinMaestro) || pinMaestro == null) {
+			mensaje += " Veraz con resultado '" + resultado + "', ";
+		} else {
+			mensaje += " Scoring con resultado '" + resultado + "', ";
+		}
+
+    	List<CondicionComercial> condiciones = repository.executeCustomQuery("condicionesComercialesPorResultado", resultado);
+    	List<LineaSolicitudServicio> lineas = mapper.convertList(ss.getLineas(), LineaSolicitudServicio.class);
+    	Double cantPesos = new Double(0);
+    	boolean flag = false;
+    	for (Iterator<LineaSolicitudServicio> iterator = lineas.iterator(); iterator.hasNext();) {
+    		LineaSolicitudServicio linea = (LineaSolicitudServicio) iterator.next();
+    		for (Iterator<CondicionComercial> iterator2 = condiciones.iterator(); iterator2.hasNext();) {
+    			CondicionComercial condicion = (CondicionComercial) iterator2.next();
+    			if (linea.getPlan() != null && linea.getItem() != null) {
+    				if (condicion.getPlanes().contains(linea.getPlan()) && condicion.getItems().contains(linea.getItem())) {
+    					flag = true;
+    					break;
+    				}
+    			}
+    		}
+    		if (!flag) {
+    			mensaje+= linea.getAlias() + " no cumple con los items y planes configurados.\n";
+			}
+    		cantPesos = cantPesos + linea.getPrecioVenta();
+    		flag = false;
+    	}
+    	Integer cantEquipos = calcularCantEquipos(ss.getLineas());
+    	List<Long> cantMaxEquipos = (repository.executeCustomQuery("maxCantEquipos", resultado));
+    	if (cantMaxEquipos.get(0) != null && cantEquipos > cantMaxEquipos.get(0)) {
+    		mensaje += "El máximo de equipos es " + cantMaxEquipos + ".\n";
+    	}
+    	List<Long> cantPesosMax = (repository.executeCustomQuery("maxCantPesos", resultado));
+    	if (cantPesosMax.get(0) != null && cantPesos.compareTo(new Double(cantPesosMax.get(0))) > 0) {
+    		mensaje += "La cantidad de pesos máxima es " + cantPesosMax + ".\n";
+    	}
+    	return mensaje;
 	}
 	
 }	

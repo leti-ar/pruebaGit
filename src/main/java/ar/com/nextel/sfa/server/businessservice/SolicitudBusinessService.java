@@ -49,9 +49,11 @@ import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
 import ar.com.nextel.model.personas.beans.Domicilio;
+import ar.com.nextel.model.personas.beans.Persona;
+import ar.com.nextel.model.personas.beans.Sexo;
+import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.model.solicitudes.beans.Control;
 import ar.com.nextel.model.solicitudes.beans.EstadoPorSolicitud;
-import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio;
@@ -65,14 +67,15 @@ import ar.com.nextel.model.solicitudes.beans.Sucursal;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
+import ar.com.nextel.services.nextelServices.veraz.dto.VerazRequestDTO;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
-import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
+import ar.com.nextel.util.StringUtil;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
 
@@ -776,6 +779,35 @@ public class SolicitudBusinessService {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void updateSolicitudServicio(SolicitudServicio solicitudServicio){
 		repository.update(solicitudServicio);
+	}
+
+	public String consultarScoring(SolicitudServicioDto solicitudServicioDto, MapperExtended mapper) throws BusinessException {
+		SolicitudServicio ss = repository.retrieve(SolicitudServicio.class, solicitudServicioDto.getId());
+		return generacionCierreBusinessOperator.consultarScoring(ss.getCuenta());
+		
+	}
+
+	public String consultarVeraz(SolicitudServicioDto solicitudServicioDto, MapperExtended mapper) throws BusinessException {
+		SolicitudServicio solicitudServicio = repository.retrieve(SolicitudServicio.class, solicitudServicioDto.getId());
+		VerazRequestDTO verazRequestDTO = createVerazRequestDTO(solicitudServicio.getCuenta().getPersona());
+		return generacionCierreBusinessOperator.consultarVeraz(verazRequestDTO);
+	}
+	
+	private VerazRequestDTO createVerazRequestDTO(Persona persona) {
+		Sexo sexo = (Sexo) this.repository.retrieve(Sexo.class, persona.getSexo().getId());
+		TipoDocumento tipoDocumento = (TipoDocumento) this.repository.retrieve(TipoDocumento.class,
+				persona.getDocumento().getTipoDocumento().getId());
+		long numeroDocumento = Long.parseLong(StringUtil.removeOcurrences(persona.getDocumento()
+				.getNumero(), '-'));
+		AppLogger.debug("Parametros consulta a Veraz: " + tipoDocumento.getCodigoVeraz() + " / "
+				+ numeroDocumento + " / " + sexo.getCodigoVeraz() + "...");
+
+		VerazRequestDTO verazRequestDTO = new VerazRequestDTO();
+		verazRequestDTO.setNroDoc(numeroDocumento);
+		verazRequestDTO.setSexo(sexo.getCodigoVeraz());
+		verazRequestDTO.setTipoDoc(tipoDocumento.getCodigoVeraz());
+		// verazRequestDTO.setVerazVersion(vendedor.getVerazVersion());
+		return verazRequestDTO;
 	}
 	
 }

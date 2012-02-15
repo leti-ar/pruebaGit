@@ -82,11 +82,13 @@ public class SolicitudServicioDto implements IsSerializable {
 	private EstadoHistoricoDto estadoH;
 	private Date fechaEstado;
 	private String clienteHistorico;
+	
+	private Boolean passCreditos;
     
-	//GB - si es customer o no
+    	//GB - si es customer o no
 	private boolean customer;
 	
-	public SolicitudServicioDto() {
+    public SolicitudServicioDto() {
 		solicitudServicioGeneracion = new SolicitudServicioGeneracionDto();
 	}
 
@@ -512,6 +514,14 @@ public class SolicitudServicioDto implements IsSerializable {
 		this.control = control;
 	}
 
+	public void setPassCreditos(Boolean passCreditos) {
+		this.passCreditos = passCreditos;
+	}
+
+	public Boolean getPassCreditos() {
+		return passCreditos;
+	}
+	
 	public boolean isCustomer() {
 		return customer;
 	}
@@ -519,4 +529,5 @@ public class SolicitudServicioDto implements IsSerializable {
 	public void setCustomer(boolean customer) {
 		this.customer = customer;
 	}
+		
 }
