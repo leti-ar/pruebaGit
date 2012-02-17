@@ -172,7 +172,6 @@ public class DocDigitalizadosUI extends NextelDialog implements ClickHandler{
 				int listPosition = tablePageBarDocDigitalizados.getCantRegistrosParcI() + cell.getRowIndex() - 2;
 				final DocDigitalizadosDto docDig = documentos.get(listPosition);
 				final String contextRoot = WindowUtils.getContextRoot();
-//				final String pahtAndNameFile = docDig.getServer() + ".com.ar" + docDig.getPaht() + docDig.getNombre();
 				final String pathAndNameFile = docDig.getPaht() + docDig.getNombre();
 
 				SolicitudRpcService.Util.getInstance().existDocDigitalizado(docDig.getServer(), pathAndNameFile, new DefaultWaitCallback<Boolean>() {

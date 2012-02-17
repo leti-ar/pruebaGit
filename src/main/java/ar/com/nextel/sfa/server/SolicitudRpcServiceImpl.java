@@ -674,16 +674,15 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			return null;
 		}
 		
-		//MGR - Prueba para apertura de archivo
-		AppLogger.info("MGR - Server que llega " + server + ".", this);
-		AppLogger.info("MGR - Path que llega " + pathAndNameFile + ".", this);
-		
-		
 		List result = null;
 		String path = "";
 		try {
-			if(!server.contains(".com.ar")){
-				server = server + ".com.ar";
+			String pathWindExtendido = ((GlobalParameter) globalParameterRetriever
+				.getObject(GlobalParameterIdentifier.PATH_WIND_EXTENDIDO)).getValue().trim();	
+			
+			//Si corresponde agrego la extencion para el correcto mapeo de unidades
+			if(!pathWindExtendido.equals("")){
+				server = server + pathWindExtendido;
 			}
 			path = server + pathAndNameFile;
 			
@@ -704,20 +703,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			}
 		}
 		
-		//MGR - Prueba para apertura de archivo
-		AppLogger.info("MGR - Server que hay que buscar " + path, this);
-
 		//Tengo que salvar las barras
 		path = path.replace('\\', File.separatorChar);
-		
-		//MGR - Prueba para apertura de archivo
-		AppLogger.info("MGR - La ruta en medio es " + path, this);
-		
 		path = path.replace('/', File.separatorChar);
-		
-		//MGR - Prueba para apertura de archivo
-		AppLogger.info("MGR - La ruta a buscar es " + path, this);
-		
 		return path;
 	}
 	
@@ -730,13 +718,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			return false;
 		}
 		else{
-			//MGR - Prueba para apertura de archivo
-			AppLogger.info("MGR - Verificando si existe archivo " + path, this);
-			
+			AppLogger.info("Buscando el archivo " + path, this);
 			boolean existe = new File(path).exists();
-			//MGR - Prueba para apertura de archivo
-			AppLogger.info("MGR - El resultado es " + existe, this);
-			
 			return existe;
 		}
 	}
