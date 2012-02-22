@@ -54,6 +54,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private FlowPanel mainpanel;
 	private EditarSSUIData editarSSUIData;
 	private Grid nnsLayout;
+	private Grid controlLayout;
 	private Grid historicoLayout;
 	private Grid domicilioLayout;
 	private FlexTable detalleSS;
@@ -91,6 +92,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		this.controller = controller;
 		editarSSUIData = controller.getEditarSSUIData();
 		mainpanel.add(getNssLayout());
+		mainpanel.add(getControlLayout());
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
 			mainpanel.add(getHistoricoVentasPanel());
 		}
@@ -101,12 +103,35 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private Widget getNssLayout() {
 		//nnsLayout = new Grid(1, 6);
 		//MGR - #1027
-		nnsLayout = new Grid(2, 12);
+		nnsLayout = new Grid(1, 12);
 		nnsLayout.addStyleName("layout");
 		refreshNssLayout();
 		return nnsLayout;
 	}
 
+	private Widget getControlLayout() {
+	
+		controlLayout = new Grid(1,4);
+		controlLayout.addStyleName("layout");
+		refreshNssLayout();
+		refreshControlLayout();
+		return controlLayout;
+	}
+	
+	
+	private void refreshControlLayout(){
+		
+		
+		controlLayout.setHTML(0,0, Sfa.constant().estado());
+		controlLayout.setWidget(0,1, editarSSUIData.getEstado());
+		
+	//	if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_ESTADO.getValue())){
+		controlLayout.setHTML(0,2, Sfa.constant().control());
+		controlLayout.setWidget(0,3, editarSSUIData.getControl());
+	//	}
+	}
+	
+	
 	private void refreshNssLayout() {
 		lineaModificada = new Long(0);
 		//MGR - #1050
@@ -179,13 +204,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			nnsLayout.clearCell(0, 11);
 		}
 	
-		nnsLayout.setHTML(1,0, Sfa.constant().estado());
-		nnsLayout.setWidget(1,1, editarSSUIData.getEstado());
-		
-	//	if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_ESTADO.getValue())){
-		nnsLayout.setHTML(1,2, Sfa.constant().control());
-		nnsLayout.setWidget(1,3, editarSSUIData.getControl());
-	//	}
+
 	
 		//LF
 
@@ -853,6 +872,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	
 	public void refresh() {
 		refreshNssLayout();
+		refreshControlLayout();
 		refreshDomicilioLayout();
 		refreshDetalleSSTable();
 		
