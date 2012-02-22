@@ -10,7 +10,7 @@
 @IMPORT url("icons.css");
 
 .waiting {
-	cursor: wait;
+	cursor: wait;  
 }
 
 body,td,.normalText {

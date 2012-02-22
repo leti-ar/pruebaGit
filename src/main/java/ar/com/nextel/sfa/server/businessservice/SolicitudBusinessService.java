@@ -324,8 +324,14 @@ public class SolicitudBusinessService {
 		if( (solicitudServicio.getSucursal() == null && solicitudServicioDto.getIdSucursal() != null) ||
 				(solicitudServicio.getSucursal() != null && solicitudServicioDto.getIdSucursal() != null &&
 				!solicitudServicio.getSucursal().getId().equals(solicitudServicioDto.getIdSucursal())) ){
-			Sucursal sucursal = repository.retrieve(Sucursal.class, solicitudServicioDto.getIdSucursal());
-			solicitudServicio.setSucursal(sucursal);
+			//#1802: Modificaciones en SS de Transferencia
+			Vendedor vendedorLogueado = sessionContextLoader.getVendedor();
+			if (vendedorLogueado.isAP()) {
+				solicitudServicio.setSucursal(vendedorLogueado.getSucursal());
+			} else {
+				Sucursal sucursal = repository.retrieve(Sucursal.class, solicitudServicioDto.getIdSucursal());
+				solicitudServicio.setSucursal(sucursal);
+			}
 		}
 		
 		mapper.map(solicitudServicioDto, solicitudServicio);
