@@ -31,6 +31,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.constants.MessageIdentifier;
+import ar.com.nextel.business.legacy.avalon.AvalonSystem;
+import ar.com.nextel.business.legacy.avalon.dto.CantidadEquiposDTO;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.vantive.VantiveSystem;
 import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO;
@@ -51,6 +53,7 @@ import ar.com.nextel.components.message.Message;
 import ar.com.nextel.components.message.MessageList;
 import ar.com.nextel.components.sequence.DefaultSequenceImpl;
 import ar.com.nextel.components.sms.EnvioSMSService;
+import ar.com.nextel.exception.LegacyDAOException;
 import ar.com.nextel.exception.SFAServerException;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.repository.hibernate.HibernateRepository;
@@ -66,12 +69,12 @@ import ar.com.nextel.model.solicitudes.beans.EstadoHistorico;
 import ar.com.nextel.model.solicitudes.beans.EstadoPorSolicitud;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
-import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.LineasPorSegmento;
 import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
-import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.PlanBase;
+import ar.com.nextel.model.solicitudes.beans.Segmento;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Sucursal;
@@ -89,6 +92,7 @@ import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
+import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
@@ -154,7 +158,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	
 	//MELI
 	private DefaultSequenceImpl tripticoNextValue;
-//	private AvalonSystem avalonSystem;
+	private AvalonSystem avalonSystem;
 	
 	//MGR - #1481
 	private DefaultRetriever messageRetriever;;
@@ -185,7 +189,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		globalParameterRetriever = (DefaultRetriever) context.getBean("globalParameterRetriever");
 		
 		tripticoNextValue = (DefaultSequenceImpl)context.getBean("tripticoNextValue");
-//		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
+		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
 		messageRetriever = (DefaultRetriever)context.getBean("messageRetriever");
 		
 		mailSender= (MailSender)context.getBean("mailSender");
@@ -553,7 +557,7 @@ public String getEstadoSolicitud(long solicitud) {
 		return resul;
 	}
 	
-
+	
 	
 	public SolicitudInitializer getSolicitudInitializer() {
 		SolicitudInitializer initializer = new SolicitudInitializer();
@@ -1687,4 +1691,98 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     	return mensaje;
 	}
 	
+	public boolean validarLineasPorSegmento(SolicitudServicioDto solicitud){
+		
+		ArrayList<Boolean> resultadoValidacion = new ArrayList<Boolean>();
+		Long idTipoVendedor = solicitud.getVendedor().getTipoVendedor().getId();
+		Long idSegmento = 0l;
+		int cantEquiposTotal = 0;
+//		List<LineasPorSegmento> lineas = repository.executeCustomQuery("getLineasPorSegmento",12,2,2);
+		if(solicitud.getCuenta() != null){
+			
+	        CantidadEquiposDTO resultDTO = getCantEquiposCuenta(solicitud.getCuenta());
+	        if(resultDTO != null){
+	        	int activos = Integer.parseInt(resultDTO.getCantidadActivos());
+	        	int suspendidos = Integer.parseInt(resultDTO.getCantidadSuspendidos());
+	        	cantEquiposTotal = activos+suspendidos;
+	        }
+			
+			if(solicitud.getCuenta().isEmpresa()){
+				List<Segmento> segmentos = repository.getAll(Segmento.class);
+				for (int i = 0; i < segmentos.size() ; i++) {
+					Segmento segmento = segmentos.get(i);
+					if(segmento.getDescripcion().equalsIgnoreCase("empresa") || segmento.getDescripcion().equalsIgnoreCase("empresas")){
+						idSegmento = segmento.getId();
+					}
+				}
+			}else{
+				List<Segmento> segmentos = repository.getAll(Segmento.class);
+				for (int i = 0; i < segmentos.size() ; i++) {
+					Segmento segmento = segmentos.get(i);
+					if(segmento.getDescripcion().equalsIgnoreCase("directo") || segmento.getDescripcion().equalsIgnoreCase("directos")){
+						idSegmento = segmento.getId();
+					}
+				}
+			}
+
+			if(idSegmento != 0l){
+				List<LineasPorSegmento> lineas = repository.executeCustomQuery("getLineasPorSegmentoDosIds",idTipoVendedor,idSegmento);	
+				
+//				List<Integer> lineasTest = repository.executeCustomQuery("getLineasPorSegmento",31,idTipoVendedor,idSegmento);	
+//				int cantidad = lineasTest.get(0);
+				
+				if(lineas != null){
+					for (int i = 0; i < lineas.size(); i++) {
+						LineasPorSegmento linea = lineas.get(i);
+						if(solicitud.getLineas() != null){
+							TipoSolicitud tipo = linea.getTipoSolicitud();
+							TipoSolicitudDto tipoDto = mapper.map(tipo, TipoSolicitudDto.class);
+							
+							int tipoUsado = 0;
+							
+							for (int j = 0; j < solicitud.getLineas().size(); j++) {
+								LineaSolicitudServicioDto lineaSS = solicitud.getLineas().get(j);
+								
+								if(lineaSS.getTipoSolicitud().equals(tipoDto)){
+									tipoUsado++;
+								}
+							}
+							tipoUsado = tipoUsado+cantEquiposTotal;
+							if(tipoUsado > linea.getCantLineas()){
+								resultadoValidacion.add(false);
+							}else{
+								resultadoValidacion.add(true);
+							}
+						}	
+					}
+					return allTrue(resultadoValidacion);
+				}
+			}
+		}
+		return false;
+	}
+	
+	private boolean allTrue(ArrayList<Boolean> validar){
+		if(validar != null){
+			if(validar.size() > 0){
+				for (int j = 0; j < validar.size(); j++) {
+					if(!validar.get(j)){
+						return false;
+					}
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private CantidadEquiposDTO getCantEquiposCuenta(CuentaSSDto cuenta){
+        CantidadEquiposDTO resultDTO = new CantidadEquiposDTO();
+        try {
+            resultDTO = this.avalonSystem.retreiveEquiposPorEstado(cuenta.getCodigoVantive());
+        } catch (LegacyDAOException e) {
+            resultDTO.setCantidadActivos("0");
+        }
+		return resultDTO;
+	}
 }	

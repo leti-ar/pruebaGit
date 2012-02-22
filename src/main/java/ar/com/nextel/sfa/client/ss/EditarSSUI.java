@@ -992,6 +992,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		}
 	}
 
+	List<String> errorsCerrar;
+	
 	private void openGenerarCerrarSolicitdDialog(boolean cerrando) {
 		cerrandoAux = cerrando;
 		
@@ -1013,24 +1015,45 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		        //si el campo nombre no está cargado significa que no están cargados los campos obligatorios de la cuenta
 		        if (CuentaClientService.cuentaDto.getPersona().getNombre() != null) {
 		        	
-		        	List<String> errors = null;
+		        	errorsCerrar = null;
 		        	if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
-						errors = editarSSUIData.validarTransferenciaParaCerrarGenerar(datosTranferencia.getContratosSSChequeados(),false);
+		        		errorsCerrar = editarSSUIData.validarTransferenciaParaCerrarGenerar(datosTranferencia.getContratosSSChequeados(),false);
 					}else{
-						errors = editarSSUIData.validarParaCerrarGenerar(false);
+						errorsCerrar = editarSSUIData.validarParaCerrarGenerar(false);
 					}
-		        	
-		            if (errors.isEmpty()) {
-		            	
-		            	if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
-		            		editarSSUIData.validarPlanesCedentes(abrirCerrarDialogCallback(), false);
-		            	}else{
-		            		abrirDialogCerrar();
-		            	}
-		            } else {
-		            	ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-		                ErrorDialog.getInstance().show(errors, false);
-		            }
+
+					SolicitudRpcService.Util.getInstance().validarLineasPorSegmento(editarSSUIData.getSolicitudServicio(), new DefaultWaitCallback<Boolean>() {
+						@Override
+						public void success(Boolean result) {
+							if(!result){
+								errorsCerrar.add("Ha superado la cantidad de lineas por cliente");
+							}else{
+					            if (errorsCerrar.isEmpty()) {
+					            	
+					            	if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
+					            		editarSSUIData.validarPlanesCedentes(abrirCerrarDialogCallback(), false);
+					            	}else{
+					            		abrirDialogCerrar();
+					            	}
+					            } else {
+					            	ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+					                ErrorDialog.getInstance().show(errorsCerrar, false);
+					            }
+							}
+						}
+					});
+					
+//		            if (errorsCerrar.isEmpty()) {
+//		            	
+//		            	if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
+//		            		editarSSUIData.validarPlanesCedentes(abrirCerrarDialogCallback(), false);
+//		            	}else{
+//		            		abrirDialogCerrar();
+//		            	}
+//		            } else {
+//		            	ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+//		                ErrorDialog.getInstance().show(errorsCerrar, false);
+//		            }
 		        } else {
 		        	ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 	                ErrorDialog.getInstance().show("Debe completar los campos obligatorios de la cuenta");

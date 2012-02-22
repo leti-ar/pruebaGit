@@ -346,4 +346,9 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.getControles(callback);
 	}
+	
+	public void validarLineasPorSegmento(SolicitudServicioDto solicitud, DefaultWaitCallback<Boolean> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.validarLineasPorSegmento(solicitud, callback);
+	}
 }

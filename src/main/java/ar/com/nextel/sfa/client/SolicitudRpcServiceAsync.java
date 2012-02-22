@@ -179,4 +179,6 @@ public interface SolicitudRpcServiceAsync {
 	public void changeToPass(long idSS ,AsyncCallback<Void> callback);
 
 	public void getControles(AsyncCallback<List<ControlDto>> callback);
+	
+	public void validarLineasPorSegmento(SolicitudServicioDto solicitud, AsyncCallback<Boolean> callback);
 }

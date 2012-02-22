@@ -183,4 +183,6 @@ public interface SolicitudRpcService extends RemoteService {
 	public void changeToPass(long idSS) throws RpcExceptionMessages;
 	
 	public List<ControlDto> getControles() throws RpcExceptionMessages;
+	
+	public boolean validarLineasPorSegmento(SolicitudServicioDto solicitud) throws RpcExceptionMessages;
 }
