@@ -939,7 +939,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			final long unDiaEnMilis = 1000*60*60*24;
 			final Date hace2Meses = new Date(System.currentTimeMillis() - 60*unDiaEnMilis);
 			final Date dentroDe1mes = new Date(System.currentTimeMillis() + 30*unDiaEnMilis);
-			final Date fechaEstadoTB = new Date(fechaEstado.getTextBox().getText());
+			final Date fechaEstadoTB = dateTimeFormat.parse(fechaEstado.getTextBox().getText());;
 			
 			if (fechaEstadoTB.before(hace2Meses) || fechaEstadoTB.after(dentroDe1mes)) {
 				validator.addError("La fecha de estado no debe ser menor a 2 meses o mayor a 1 mes con respecto a la fecha de hoy.");
