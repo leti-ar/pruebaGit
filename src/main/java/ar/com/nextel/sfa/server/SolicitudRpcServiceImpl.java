@@ -913,6 +913,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		try {
 			completarDomiciliosSolicitudTransferencia(solicitudServicioDto);
 			
+			String errorNF = "";
 			//larce - Req#5 Cierre y Pass automático
 			String errorCC = "";
 			int puedeCerrar = 0;
@@ -928,10 +929,18 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 						}
 					}
 				}
+				//larce - Req#9 Negative Files
+				errorNF = verificarNegativeFilesPorLinea(solicitudServicioDto.getLineas());
 			}
 			
 			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
 			response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar);
+			if (!"".equals(errorNF)) {
+				Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.CUSTOM_ERROR);
+				message.addParameters(new Object[] { errorNF });
+				response.getMessages().addMesage(message);
+				result.setError(true);
+			}
 			if (puedeCerrar == 2) {
 				response.getMessages().addMesage((Message) this.messageRetriever.getObject(MessageIdentifier.TIPO_ORDEN_INCOMPATIBLE));
 				result.setError(true);
@@ -1702,6 +1711,34 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     		mensaje += "La cantidad de pesos máxima es " + cantPesosMax + ".\n";
     	}
     	return mensaje;
+	}
+	
+	/**
+	 * Se valida que el resultado de la consulta a Negative Files de ok para todas las líneas de la SS; para el caso de activación. 
+	 * @param lineas
+	 * @return Un mensaje que indica las líneas que no pasaron la validación.
+	 * @throws RpcExceptionMessages
+	 */
+	private String verificarNegativeFilesPorLinea(List<LineaSolicitudServicioDto> lineas) throws RpcExceptionMessages {
+		String mensaje = "";
+		int i = 0;
+		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
+			LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
+			if (linea.getTipoSolicitud().isActivacion()) {
+				if(verificarNegativeFiles(linea.getNumeroIMEI()) != null) {
+					mensaje += (i == 0 ? "" : ", ") + linea.getAlias();
+					i++;
+				}
+			}
+		}
+		if (!"".equals(mensaje)) {
+			if (i == 1) {
+				mensaje += " no pasó la validación de Negative Files.";
+			} else {
+				mensaje += " no pasaron la validación de Negative Files.";
+			}
+		}
+		return mensaje;
 	}
 	
 	//GB
