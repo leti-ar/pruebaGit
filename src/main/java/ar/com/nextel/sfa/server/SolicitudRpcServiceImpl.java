@@ -1522,6 +1522,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		}
 	}
 
+	//GB
 	/**
 	 * Cambia el estado del historico a "Pass".
 	 */
@@ -1534,11 +1535,23 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		solicitudBusinessService.updateSolicitudServicio(ss);
 	}
 
+	//GB
+	/**
+	 * Obtiene todos los controles que hay en la tabla SFA_CONTROL.
+	 * @return controlesDto
+	 */
 	public List<ControlDto> getControles(){
 		List<Control> controles = repository.getAll(Control.class);
 		return mapper.convertList(controles, ControlDto.class);
 	}
 	
+	//GB
+	/**
+	 * Obtiene la caratula usando como clave el nro de ss.
+	 * @param caratulas
+	 * @param nroSS
+	 * @return caratulaDto
+	 */
 	public CaratulaDto getCaratulaPorNroSS(List<CaratulaDto> caratulas, String nroSS){
 		
 		if(caratulas != null){			
@@ -1691,6 +1704,13 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     	return mensaje;
 	}
 	
+	//GB
+	/**
+	 * Al momento del cierre se validara que la SS, dependiendo del tipo de ss, el tipo de vendedor y el segmento del cliente, no superare las X cantidad de líneas.
+  	 * Se obtiene de la tabla SFA.SFA_LINEAS_POR_SEGMENTO + la cantidad de líneas activas o suspendidas que posee el cliente.
+	 * @param solicitud
+	 * @return boolean
+	 */
 	public boolean validarLineasPorSegmento(SolicitudServicioDto solicitud){
 		
 		ArrayList<Boolean> resultadoValidacion = new ArrayList<Boolean>();
@@ -1732,36 +1752,48 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 //				int cantidad = lineasTest.get(0);
 				
 				if(lineas != null){
-					for (int i = 0; i < lineas.size(); i++) {
-						LineasPorSegmento linea = lineas.get(i);
-						if(solicitud.getLineas() != null){
-							TipoSolicitud tipo = linea.getTipoSolicitud();
-							TipoSolicitudDto tipoDto = mapper.map(tipo, TipoSolicitudDto.class);
-							
-							int tipoUsado = 0;
-							
-							for (int j = 0; j < solicitud.getLineas().size(); j++) {
-								LineaSolicitudServicioDto lineaSS = solicitud.getLineas().get(j);
+					if(lineas.size() > 0){
+						for (int i = 0; i < lineas.size(); i++) {
+							LineasPorSegmento linea = lineas.get(i);
+							if(solicitud.getLineas() != null){
+								TipoSolicitud tipo = linea.getTipoSolicitud();
+								TipoSolicitudDto tipoDto = mapper.map(tipo, TipoSolicitudDto.class);
 								
-								if(lineaSS.getTipoSolicitud().equals(tipoDto)){
-									tipoUsado++;
+								int tipoUsado = 0;
+								
+								for (int j = 0; j < solicitud.getLineas().size(); j++) {
+									LineaSolicitudServicioDto lineaSS = solicitud.getLineas().get(j);
+									
+									if(lineaSS.getTipoSolicitud().equals(tipoDto)){
+										tipoUsado++;
+									}
 								}
-							}
-							tipoUsado = tipoUsado+cantEquiposTotal;
-							if(tipoUsado > linea.getCantLineas()){
-								resultadoValidacion.add(false);
-							}else{
-								resultadoValidacion.add(true);
-							}
-						}	
+								tipoUsado = tipoUsado+cantEquiposTotal;
+								if(tipoUsado > linea.getCantLineas()){
+									resultadoValidacion.add(false);
+								}else{
+									resultadoValidacion.add(true);
+								}
+							}	
+						}
+						return allTrue(resultadoValidacion);
+					}else{
+						return true;
 					}
-					return allTrue(resultadoValidacion);
+				}else{
+					return true;
 				}
 			}
 		}
-		return false;
+		return true;
 	}
 	
+	//GB
+	/**
+	 * Valida que todos los boolean contenidos en el ArrayList sean true.
+	 * @param validar
+	 * @return boolean
+	 */
 	private boolean allTrue(ArrayList<Boolean> validar){
 		if(validar != null){
 			if(validar.size() > 0){
@@ -1776,6 +1808,13 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		return false;
 	}
 	
+	//GB
+	/**
+	 * Obtiene el CantidadEquiposDTO que corresponde a dicha cuenta.
+	 * Este contiene la informacion de la cantida de equipos : activos,desactivados y suspendidos.
+	 * @param cuenta
+	 * @return resultDTO
+	 */
 	private CantidadEquiposDTO getCantEquiposCuenta(CuentaSSDto cuenta){
         CantidadEquiposDTO resultDTO = new CantidadEquiposDTO();
         try {

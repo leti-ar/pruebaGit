@@ -1026,20 +1026,19 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 						@Override
 						public void success(Boolean result) {
 							if(!result){
-								errorsCerrar.add("Ha superado la cantidad de lineas por cliente");
-							}else{
-					            if (errorsCerrar.isEmpty()) {
-					            	
-					            	if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
-					            		editarSSUIData.validarPlanesCedentes(abrirCerrarDialogCallback(), false);
-					            	}else{
-					            		abrirDialogCerrar();
-					            	}
-					            } else {
-					            	ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-					                ErrorDialog.getInstance().show(errorsCerrar, false);
-					            }
+								errorsCerrar.add("Ha superado la cantidad de lineas por cliente.");
 							}
+				            if (errorsCerrar.isEmpty()) {
+				            	
+				            	if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
+				            		editarSSUIData.validarPlanesCedentes(abrirCerrarDialogCallback(), false);
+				            	}else{
+				            		abrirDialogCerrar();
+				            	}
+				            } else {
+				            	ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+				                ErrorDialog.getInstance().show(errorsCerrar, false);
+				            }
 						}
 					});
 					
