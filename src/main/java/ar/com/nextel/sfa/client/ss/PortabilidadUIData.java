@@ -112,6 +112,9 @@ public class PortabilidadUIData extends Composite {
 		lblProveedorAnterior.addStyleName(OBLIGATORIO);
 		lblTipoTelefonia.addStyleName(OBLIGATORIO);
 		lblModalidadCobro.addStyleName(OBLIGATORIO);
+		lblNombre.addStyleName(OBLIGATORIO);
+		lblApellido.addStyleName(OBLIGATORIO);
+		lblRazonSocial.addStyleName(OBLIGATORIO);
 		
 		lblApellido.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 		lblNroUltimaFacura.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
@@ -123,6 +126,9 @@ public class PortabilidadUIData extends Composite {
 		lnkCopiarCuenta.addStyleName("floatRight");
 		
 		lstProveedorAnterior.setSelectedIndex(-1);
+		//tTelefonoPortar.getArea().setMaxLength(2);
+		txtNroUltimaFacura.setMaxLength(50);
+		txtNroSS.setEnabled(false);
 		
 		comprobarTipoTelefonia();
 		validarTipoDocumento();
@@ -137,16 +143,18 @@ public class PortabilidadUIData extends Composite {
 		
 		txtTelefonoPortar.getArea().addChangeHandler(new ChangeHandler() {
 			public void onChange(ChangeEvent event) {
-				SolicitudRpcService.Util.getInstance().getExisteEnAreaCobertura(Integer.valueOf(txtTelefonoPortar.getArea().getText()), 
-						new DefaultWaitCallback<Boolean>() {
-					@Override
-					public void success(Boolean result) {
-						if(!result){ 
-							ModalMessageDialog.getInstance().showAceptar(WARNING, 
-									"El prefijo no está dentro del area de cobertura, no se podra efectuar la portabilidad", cmndAceptar);
+				if(txtTelefonoPortar.getArea().getText().length() > 0){
+					SolicitudRpcService.Util.getInstance().getExisteEnAreaCobertura(Integer.valueOf(txtTelefonoPortar.getArea().getText()), 
+							new DefaultWaitCallback<Boolean>() {
+						@Override
+						public void success(Boolean result) {
+							if(!result){ 
+								ModalMessageDialog.getInstance().showAceptar(WARNING, 
+										"El prefijo no está dentro del area de cobertura, no se podra efectuar la portabilidad", cmndAceptar);
+							}
 						}
-					}
-				});
+					});
+				}
 			}
 		});
 		
@@ -233,23 +241,13 @@ public class PortabilidadUIData extends Composite {
 	private void comprobarTipoTelefonia(){
 		if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")){
 			lblNroUltimaFacura.addStyleName(OBLIGATORIO);
-			lblRazonSocial.addStyleName(OBLIGATORIO);
-			lblNombre.addStyleName(OBLIGATORIO);
-			lblApellido.addStyleName(OBLIGATORIO);
-
 			chkRecibeSMS.setValue(false);
 			chkRecibeSMS.setEnabled(true);
-
 			txtNroUltimaFacura.setEnabled(true);
 		}else{
 			lblNroUltimaFacura.removeStyleName(OBLIGATORIO);
-			lblRazonSocial.removeStyleName(OBLIGATORIO);
-			lblNombre.removeStyleName(OBLIGATORIO);
-			lblApellido.removeStyleName(OBLIGATORIO);
-
 			chkRecibeSMS.setValue(true);
 			chkRecibeSMS.setEnabled(false);
-			
 			txtNroUltimaFacura.setText("");
 			txtNroUltimaFacura.setEnabled(false);
 		}
@@ -334,10 +332,14 @@ public class PortabilidadUIData extends Composite {
 		
 		if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")){
 			validador.addTarget(txtNroUltimaFacura).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nro. Ultima Factura"));
-			validador.addTarget(txtRazonSocial).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Razon Social"));
-			validador.addTarget(txtNombre).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nombre"));
-			validador.addTarget(txtApellido).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Apellido"));
 		}
+
+		validador.addTarget(txtRazonSocial).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Razon Social"));
+		validador.addTarget(txtNombre).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nombre"));
+		validador.addTarget(txtApellido).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Apellido"));
+
+		String numAportar = txtTelefonoPortar.getArea().getText() + txtTelefonoPortar.getNumero().getText();
+		if(numAportar.length() > 10) validador.addError("La cantidad de digitos de Portabilidad: Nro. a Portar (Codigo Area + Telefono) no debe ser mayor a 10");
 		
 		validador.fillResult();
 		return validador.getErrors();
