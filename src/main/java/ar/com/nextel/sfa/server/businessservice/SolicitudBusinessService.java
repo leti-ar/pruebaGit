@@ -735,16 +735,21 @@ public class SolicitudBusinessService {
 	/**
 	 * Transfiere la cuenta y el historico a vantive
 	 * @param solicitudServicio
+	 * @param saveHistorico
 	 * @throws RpcExceptionMessages
 	 */
-	public void transferirCuentaEHistorico(SolicitudServicioDto solicitudServicio) throws RpcExceptionMessages {
+	public void transferirCuentaEHistorico(SolicitudServicioDto solicitudServicio , boolean saveHistorico) throws RpcExceptionMessages {
 		TransferirCuentaHistoricoConfig config = this.getTransferirCuentaHistoricoConfig();
 		config.setIdCuenta(solicitudServicio.getCuenta().getId());
-		config.setNss(solicitudServicio.getNumero());
-		config.setCantidadEquipos(solicitudServicio.getCantidadEquiposH());
-		config.setFechaFirma(new java.sql.Date(solicitudServicio.getFechaFirma().getTime()));
-		config.setEstado(solicitudServicio.getEstadoH().getDescripcion());
-		config.setFechaEstado(new java.sql.Date(solicitudServicio.getFechaEstado().getTime()));
+		
+		if(saveHistorico){
+			config.setNss(solicitudServicio.getNumero());
+			config.setFechaEstado(new java.sql.Date(solicitudServicio.getFechaEstado().getTime()));
+			config.setFechaFirma(new java.sql.Date(solicitudServicio.getFechaFirma().getTime()));
+			config.setCantidadEquipos(solicitudServicio.getCantidadEquiposH());			
+			config.setEstado(solicitudServicio.getEstadoH().getDescripcion());
+		}
+		
 		try {
 			String result = (String) this.sfaConnectionDAO.execute(config);
 		} catch (ConnectionDAOException e) {

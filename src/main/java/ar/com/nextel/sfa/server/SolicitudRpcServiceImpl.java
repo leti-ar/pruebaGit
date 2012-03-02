@@ -130,6 +130,7 @@ import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
+import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.server.businessservice.SolicitudBusinessService;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
@@ -635,7 +636,7 @@ public String getEstadoSolicitud(long solicitud) {
 				resultDto.setError(response.getMessages().hasErrors());
 				resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
 				//larce
-				solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto);
+				solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,true);
 			}
 
 			if (solicitudServicioDto.getId() != null) {
@@ -921,6 +922,14 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				puedeCerrar = puedeCerrarSS(solicitudServicioDto);
 				if (puedeCerrar == 3) {//pass de creditos segun la logica
 					if (puedeDarPassDeCreditos(solicitudServicioDto, pinMaestro, mapper)) {
+						
+						//Antes de dar el pass si es un prospect tiene que transferir el cliente a Vantive
+						boolean esProspect = RegularExpressionConstants.isVancuc(solicitudServicioDto.getCuenta().getCodigoVantive());
+						
+						if(esProspect){
+							solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,false);
+						}
+						
 						solicitudServicioDto.setPassCreditos(true);
 					} else {
 						solicitudServicioDto.setPassCreditos(false);
@@ -1133,7 +1142,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				resultDto.setError(response.getMessages().hasErrors());
 				resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
 				//larce
-				solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto);
+				solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,true);
 			}
 		} catch (Exception e) {
 			AppLogger.error(e);
