@@ -466,6 +466,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
             <a>vendedor</a>
             <b>vendedor</b>
         </field>
+        <field type="one-way">
+            <a>transferido</a>
+            <b>transferido</b>
+        </field>
 	</mapping>
 	<mapping map-id="personaSolicitud" wildcard="false">
 		<class-a>ar.com.nextel.model.personas.beans.Persona</class-a>

@@ -923,10 +923,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				if (puedeCerrar == 3) {//pass de creditos segun la logica
 					if (puedeDarPassDeCreditos(solicitudServicioDto, pinMaestro, mapper)) {
 						
-						//Antes de dar el pass si es un prospect tiene que transferir el cliente a Vantive
-						boolean esProspect = RegularExpressionConstants.isVancuc(solicitudServicioDto.getCuenta().getCodigoVantive());
-						
-						if(esProspect){
+						//Antes de dar el pass si el cliente no fue tranferido anteriormente, se transfiere el cliente a Vantive
+						if(!solicitudServicioDto.getCuenta().isTransferido()){
 							solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,false);
 						}
 						
