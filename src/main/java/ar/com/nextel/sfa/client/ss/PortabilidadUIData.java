@@ -126,6 +126,8 @@ public class PortabilidadUIData extends Composite {
 		lnkCopiarCuenta.addStyleName("floatRight");
 		
 		lstProveedorAnterior.setSelectedIndex(-1);
+		lstTipoTelefonia.setSelectedIndex(-1);
+		
 		//tTelefonoPortar.getArea().setMaxLength(2);
 		txtNroUltimaFacura.setMaxLength(50);
 		txtNroSS.setEnabled(false);
@@ -264,8 +266,8 @@ public class PortabilidadUIData extends Composite {
 		txtTelefonoPortar.clean();
 
 		lstTipoDocumento.setSelectedIndex(0);
-		lstTipoTelefonia.setSelectedIndex(0);
 		lstModalidadCobro.setSelectedIndex(0);
+		lstTipoTelefonia.setSelectedIndex(-1);
 		lstProveedorAnterior.setSelectedIndex(-1);
 			
 		txtEmail.setText(null);
@@ -323,7 +325,10 @@ public class PortabilidadUIData extends Composite {
 		
 		if(lstProveedorAnterior.getSelectedIndex() < 0)
 			validador.addTarget(lstProveedorAnterior).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Proveedor anterior"));
-		
+
+		if(lstTipoTelefonia.getSelectedIndex() < 0)
+			validador.addTarget(lstTipoTelefonia).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Tipo Telefonia"));
+
 		if(!chkNoPoseeTel.getValue())
 			validador.addTarget(txtTelefono.getNumero()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Telefono"));
 		
@@ -439,6 +444,11 @@ public class PortabilidadUIData extends Composite {
 			txtEmail.setEnabled(true);
 		}
 		
+		if(solicitudPortabilidad.getTipoTelefonia() == null) {
+			lstTipoTelefonia.setSelectedIndex(-1);
+			lstTipoTelefonia.setSelectedItem(null);
+		}
+
 		if(solicitudPortabilidad.getNroSS() != null){
 			if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")) chkRecibeSMS.setValue(solicitudPortabilidad.isRecibeSMS());
 		}
@@ -447,7 +457,7 @@ public class PortabilidadUIData extends Composite {
 			lstProveedorAnterior.setSelectedIndex(-1);
 			lstProveedorAnterior.setSelectedItem(null);
 		}
-		
+
 		chkPortabilidad.setValue(true);
 		txtReserva.setText("");
 		txtReserva.setEnabled(false);

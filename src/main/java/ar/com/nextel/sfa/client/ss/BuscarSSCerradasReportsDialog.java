@@ -24,7 +24,6 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Widget;
@@ -87,7 +86,7 @@ public class BuscarSSCerradasReportsDialog extends NextelDialog{
 										boolean encontro = false;
 										for(int i = 0; i < portabilidadFileNames.size() && !encontro; i++){
 											if(sender == gridLayout.getWidget(i + 1, 1)){
-												descargarArchivo(((SimpleLink)gridLayout.getWidget(i + 1, 1)).getTitle());
+												descargarArchivo(((SimpleLink)gridLayout.getWidget(i + 1, 1)).getTitle() + ".rtf");
 												encontro = true;
 											}
 										}
@@ -131,15 +130,17 @@ public class BuscarSSCerradasReportsDialog extends NextelDialog{
 	 * 
 	 * @param fileName
 	 */
-	private void descargarArchivo(final String fileName){
+	private void descargarArchivo(String fileNameArg){
+		final String fileName = fileNameArg;
 		final String contextRoot = WindowUtils.getContextRoot();
 
 		SolicitudRpcService.Util.getInstance().existReport(fileName, new DefaultWaitCallback<Boolean>() {
 			@Override
 			public void success(Boolean result) {
 				LoadingModalDialog.getInstance().hide();
-				if(result) WindowUtils.redirect("/" + contextRoot + "/download/" + fileName + "?module=solicitudes&service=rtf&name=" + fileName);
-				else{
+				if(result) {
+					WindowUtils.redirect("/" + contextRoot + "/download/" + fileName + "?module=solicitudes&service=rtf&name=" + fileName);
+				}else{
 					SolicitudRpcService.Util.getInstance().crearArchivo(idSolicitud, false,new DefaultWaitCallback<Boolean>() {
 						@Override
 						public void success(Boolean result) {
