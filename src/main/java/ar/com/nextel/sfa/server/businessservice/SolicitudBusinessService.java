@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaService;
+import ar.com.nextel.business.cuentas.scoring.legacy.dto.ScoringCuentaLegacyDTO;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.financial.dto.EncabezadoCreditoDTO;
 import ar.com.nextel.business.legacy.financial.exception.FinancialSystemException;
@@ -68,6 +69,7 @@ import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazRequestDTO;
+import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
@@ -738,16 +740,16 @@ public class SolicitudBusinessService {
 	 * @param saveHistorico
 	 * @throws RpcExceptionMessages
 	 */
-	public void transferirCuentaEHistorico(SolicitudServicioDto solicitudServicio , boolean saveHistorico) throws RpcExceptionMessages {
+	public void transferirCuentaEHistorico(SolicitudServicioDto solicitudServicio, boolean saveHistorico) throws RpcExceptionMessages {
 		TransferirCuentaHistoricoConfig config = this.getTransferirCuentaHistoricoConfig();
 		config.setIdCuenta(solicitudServicio.getCuenta().getId());
 		
-		if(saveHistorico){
+		if(saveHistorico) {
 			config.setNss(solicitudServicio.getNumero());
-			config.setFechaEstado(new java.sql.Date(solicitudServicio.getFechaEstado().getTime()));
+			config.setCantidadEquipos(solicitudServicio.getCantidadEquiposH());
 			config.setFechaFirma(new java.sql.Date(solicitudServicio.getFechaFirma().getTime()));
-			config.setCantidadEquipos(solicitudServicio.getCantidadEquiposH());			
 			config.setEstado(solicitudServicio.getEstadoH().getDescripcion());
+			config.setFechaEstado(new java.sql.Date(solicitudServicio.getFechaEstado().getTime()));
 		}
 		
 		try {
@@ -786,15 +788,12 @@ public class SolicitudBusinessService {
 		repository.update(solicitudServicio);
 	}
 
-	public String consultarScoring(SolicitudServicioDto solicitudServicioDto, MapperExtended mapper) throws BusinessException {
-		SolicitudServicio ss = repository.retrieve(SolicitudServicio.class, solicitudServicioDto.getId());
+	public ScoringCuentaLegacyDTO consultarScoring(SolicitudServicio ss) throws BusinessException {
 		return generacionCierreBusinessOperator.consultarScoring(ss.getCuenta());
-		
 	}
 
-	public String consultarVeraz(SolicitudServicioDto solicitudServicioDto, MapperExtended mapper) throws BusinessException {
-		SolicitudServicio solicitudServicio = repository.retrieve(SolicitudServicio.class, solicitudServicioDto.getId());
-		VerazRequestDTO verazRequestDTO = createVerazRequestDTO(solicitudServicio.getCuenta().getPersona());
+	public VerazResponseDTO consultarVeraz(SolicitudServicio ss) throws BusinessException {
+		VerazRequestDTO verazRequestDTO = createVerazRequestDTO(ss.getCuenta().getPersona());
 		return generacionCierreBusinessOperator.consultarVeraz(verazRequestDTO);
 	}
 	

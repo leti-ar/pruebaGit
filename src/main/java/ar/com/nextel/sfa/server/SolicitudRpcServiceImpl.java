@@ -33,6 +33,7 @@ import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.constants.MessageIdentifier;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.legacy.avalon.dto.CantidadEquiposDTO;
+import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.vantive.VantiveSystem;
 import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO;
@@ -167,7 +168,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private static final String SS_SUCURSAL = "SS_SUCURSAL";
 	private static final String CANTIDAD_EQUIPOS = "CANTIDAD_EQUIPOS";
 	
-	
+	private static final Long MAX_DEUDA_CTA_CTE = 65L;
 	
 
 	public void init() throws ServletException {
@@ -919,20 +920,21 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			String errorCC = "";
 			int puedeCerrar = 0;
 			if (!solicitudServicioDto.getGrupoSolicitud().isTransferencia()) {
-				puedeCerrar = puedeCerrarSS(solicitudServicioDto);
-				if (puedeCerrar == 3) {//pass de creditos segun la logica
-					if (puedeDarPassDeCreditos(solicitudServicioDto, pinMaestro, mapper)) {
-						
-						//Antes de dar el pass si el cliente no fue tranferido anteriormente, se transfiere el cliente a Vantive
-						if(!solicitudServicioDto.getCuenta().isTransferido()){
-							solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,false);
-						}
-						
-						solicitudServicioDto.setPassCreditos(true);
-					} else {
-						solicitudServicioDto.setPassCreditos(false);
-						if (!"".equals(resultado)) {
-							errorCC = generarErrorPorCC(solicitudServicioDto, pinMaestro);
+				errorCC = evaluarEquiposYDeuda(solicitudServicioDto, pinMaestro);
+				if ("".equals(errorCC)) {
+					puedeCerrar = puedeCerrarSS(solicitudServicioDto);
+					if (puedeCerrar == 3) {//pass de creditos segun la logica
+						if (puedeDarPassDeCreditos(solicitudServicioDto, pinMaestro)) {
+							//Antes de dar el pass si el cliente no fue tranferido anteriormente, se transfiere el cliente a Vantive
+							if(!solicitudServicioDto.getCuenta().isTransferido()){
+								solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,false);
+							}
+							solicitudServicioDto.setPassCreditos(true);
+						} else {
+							solicitudServicioDto.setPassCreditos(false);
+							if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
+								errorCC = generarErrorPorCC(solicitudServicioDto, pinMaestro);
+							}
 						}
 					}
 				}
@@ -976,7 +978,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		AppLogger.info(accion + " de SS de id=" + solicitudServicioDto.getId() + " finalizado.");
 		return result;
 	}
-	
+
 	private void completarDomiciliosSolicitudTransferencia(SolicitudServicioDto solicitudServicioDto) {
 		if (solicitudServicioDto.getGrupoSolicitud().isTransferencia())
 			for (DomiciliosCuentaDto dom : solicitudServicioDto.getCuenta().getPersona().getDomicilios()) {
@@ -1582,6 +1584,58 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	}
 
 	/**
+	 * Dependiendo del tipo de cliente, si tiene equipos activos o suspendidos y deuda en cuenta corriente;
+	 * la SS se podrá o no, cerrar por Veraz o Scoring.
+	 * @param ss
+	 * @param pinMaestro
+	 * @return Mensaje de error si no se cumplen las condiciones.
+	 * @throws RpcExceptionMessages 
+	 */
+	private String evaluarEquiposYDeuda(SolicitudServicioDto ss, String pinMaestro) throws RpcExceptionMessages {
+		if (!RegularExpressionConstants.isVancuc(ss.getCuenta().getCodigoVantive())) {
+			CantidadEquiposDTO cantidadEquipos = getCantEquiposCuenta(ss.getCuenta());
+			if (Integer.valueOf(cantidadEquipos.getCantidadActivos()) > 0
+					|| Integer.valueOf(cantidadEquipos.getCantidadSuspendidos()) > 0) {
+				if (("".equals(pinMaestro) || pinMaestro == null)
+						&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
+					return "Cliente existente solo puede cerrar por Scoring.";
+				}
+			} else if (Integer.valueOf(cantidadEquipos.getCantidadActivos()) == 0
+						&& Integer.valueOf(cantidadEquipos.getCantidadSuspendidos()) == 0) {
+				SolicitudServicio solicitudServicio = repository.retrieve(SolicitudServicio.class, ss.getId());
+				/*pregunto si posee deuda de cuenta corriente*/
+				if (getDeudaCtaCte(solicitudServicio.getCuenta().getCodigoBSCS()) <= MAX_DEUDA_CTA_CTE) { //no posee
+					if (!("".equals(pinMaestro) || pinMaestro == null)
+							&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
+						return "Solo se permite cerrar por Veraz.";
+					}
+				} else {
+					return "Cliente no tiene equipos activos y deuda vencida.";
+				}
+			}
+		} else if (!("".equals(pinMaestro) || pinMaestro == null)
+				&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
+			return "Solo se permite cerrar por Veraz.";
+		}
+		return "";
+	}
+	
+	/**
+	 * Averiguo si el cliente posee deuda de cuenta corriente, evaluando si tiene deuda de equipos y servicio.
+	 * @param codigoBSCS
+	 * @return
+	 * @throws RpcExceptionMessages
+	 */
+	private Long getDeudaCtaCte(String codigoBSCS) throws RpcExceptionMessages {
+		try {
+			return this.avalonSystem.getDeudaCtaCte(codigoBSCS);
+		} catch (AvalonSystemException e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+	}
+
+	/**
 	 * Evalúo las líneas de la solicitud con los tipos de órdenes y tipos de
 	 * vendedor que se encuentran configurados.
 	 * 
@@ -1634,18 +1688,19 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 * @return
 	 * @throws BusinessException 
 	 */
-	String resultado = "";
-	private boolean puedeDarPassDeCreditos(SolicitudServicioDto ss, String pinMaestro, MapperExtended mapper) throws BusinessException {
-		if ("".equals(pinMaestro) || pinMaestro == null) {
+	String resultadoVerazScoring = "";
+	private boolean puedeDarPassDeCreditos(SolicitudServicioDto ss, String pinMaestro) throws BusinessException {
+		if (("".equals(pinMaestro) || pinMaestro == null)
+				&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
 			//devuelve un string vacio si el servicio de veraz falla
-			resultado = solicitudBusinessService.consultarVeraz(ss, mapper);
-			if ("".equals(resultado)) {
+			resultadoVerazScoring = solicitudBusinessService.consultarVeraz(repository.retrieve(SolicitudServicio.class, ss.getId())).getMensaje();
+			if ("".equals(resultadoVerazScoring) || resultadoVerazScoring == null) {
 				return false;
 			}
 		} else {
-			resultado = solicitudBusinessService.consultarScoring(ss, mapper);
-			if (Integer.valueOf(resultado) > 3) {
-				resultado = "3";
+			resultadoVerazScoring = solicitudBusinessService.consultarScoring(repository.retrieve(SolicitudServicio.class, ss.getId())).getCantidadTerminales();
+			if (Integer.valueOf(resultadoVerazScoring) > 3) {
+				resultadoVerazScoring = "3";
 			}
 		}
 
@@ -1662,7 +1717,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
     		LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
     		if (linea.getTipoSolicitud() != null && linea.getPlan() != null && linea.getItem() != null) {
-    			List<CondicionComercial> condiciones  = repository.executeCustomQuery("condicionesComercialesPorSS", resultado,
+    			List<CondicionComercial> condiciones  = repository.executeCustomQuery("condicionesComercialesPorSS", resultadoVerazScoring,
     					tipoVendedor.getId(), linea.getTipoSolicitud().getId(), linea.getPlan().getId(), linea.getItem().getId(), cantEquipos, cantPesos);		
     			if (condiciones.size() <= 0) {
     				existeCC = false;
@@ -1681,13 +1736,14 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 */
 	private String generarErrorPorCC(SolicitudServicioDto ss, String pinMaestro) {
 		String mensaje = "Para un";
-		if ("".equals(pinMaestro) || pinMaestro == null) {
-			mensaje += " Veraz con resultado '" + resultado + "', ";
+		if (("".equals(pinMaestro) || pinMaestro == null)
+				&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
+			mensaje += " Veraz con resultado '" + resultadoVerazScoring + "', ";
 		} else {
-			mensaje += " Scoring con resultado '" + resultado + "', ";
+			mensaje += " Scoring con resultado '" + resultadoVerazScoring + "', ";
 		}
 
-    	List<CondicionComercial> condiciones = repository.executeCustomQuery("condicionesComercialesPorResultado", resultado);
+    	List<CondicionComercial> condiciones = repository.executeCustomQuery("condicionesComercialesPorResultado", resultadoVerazScoring);
     	List<LineaSolicitudServicio> lineas = mapper.convertList(ss.getLineas(), LineaSolicitudServicio.class);
     	Double cantPesos = new Double(0);
     	boolean flag = false;
@@ -1709,11 +1765,11 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     		flag = false;
     	}
     	Integer cantEquipos = calcularCantEquipos(ss.getLineas());
-    	List<Long> cantMaxEquipos = (repository.executeCustomQuery("maxCantEquipos", resultado));
+    	List<Long> cantMaxEquipos = (repository.executeCustomQuery("maxCantEquipos", resultadoVerazScoring));
     	if (cantMaxEquipos.get(0) != null && cantEquipos > cantMaxEquipos.get(0)) {
     		mensaje += "El máximo de equipos es " + cantMaxEquipos + ".\n";
     	}
-    	List<Long> cantPesosMax = (repository.executeCustomQuery("maxCantPesos", resultado));
+    	List<Long> cantPesosMax = (repository.executeCustomQuery("maxCantPesos", resultadoVerazScoring));
     	if (cantPesosMax.get(0) != null && cantPesos.compareTo(new Double(cantPesosMax.get(0))) > 0) {
     		mensaje += "La cantidad de pesos máxima es " + cantPesosMax + ".\n";
     	}
