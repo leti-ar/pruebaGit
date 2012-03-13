@@ -638,6 +638,20 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		SolicitudServicio solicitudServicio = null;
 		GeneracionCierreResponse response = null;
 		try {
+			
+			Cuenta cuenta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
+			
+			int tipoPersona;
+			if(cuenta.getClaseCuenta().getEsGobierno()) tipoPersona = 3;
+			else{
+				if(cuenta.isEmpresa()) tipoPersona = 2;
+				else tipoPersona = 1;
+			}
+
+			for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
+				if(linea.getPortabilidad() != null) linea.getPortabilidad().setTipoPersona(tipoPersona);
+			}
+
 			completarDomiciliosSolicitudTransferencia(solicitudServicioDto);
 			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
 			response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar);
@@ -795,8 +809,20 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return mapper.convertList(serviciosAdicionales, ServicioAdicionalIncluidoDto.class);
 	}
 	
-	public CreateSaveSSTransfResultDto saveSolicituServicioTranferencia(
-			SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages {
+	public CreateSaveSSTransfResultDto saveSolicituServicioTranferencia(SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages {
+		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
+		
+		int tipoPersona;
+		if(cuenta.getClaseCuenta().getEsGobierno()) tipoPersona = 3;
+		else{
+			if(cuenta.isEmpresa()) tipoPersona = 2;
+			else tipoPersona = 1;
+		}
+
+		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
+			if(linea.getPortabilidad() != null) linea.getPortabilidad().setTipoPersona(tipoPersona);
+		}
+
 		CreateSaveSSTransfResultDto resultDto = new CreateSaveSSTransfResultDto();
 		try {
 	
