@@ -939,7 +939,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					}
 				}
 				//larce - Req#9 Negative Files
-				errorNF = verificarNegativeFilesPorLinea(solicitudServicioDto.getLineas());
+				if(solicitudServicioDto.getVendedor().getTipoVendedor().isEjecutaNegFiles()){
+					errorNF = verificarNegativeFilesPorLinea(solicitudServicioDto.getLineas());					
+				}
 			}
 			
 			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
