@@ -9,6 +9,7 @@
 			<list>
 				<ref bean="solicitudesModuleConfig"/>
 				<ref bean="cuentasModuleConfig"/>
+				<ref bean="verazModuleConfig"/>
 			</list>
 		</property>
 	</bean>
@@ -39,6 +40,15 @@
 		<property name="serviceName" value="rtf"/>
 		<property name="moduleName" value="solicitudes"/>
 		<property name="reportPathBuilder" ref="onSessionReportFileSystemPathBuilder"/>		
+	</bean>
+	
+	<!-- Para bajar los archivos de consulta generados por el veraz -->
+	<bean name="verazDownloadRichTextFormatService" class="ar.com.nextel.web.download.config.impl.DownloadVerazRichTextFormatService">
+		<property name="fileTypeConfig" ref="richTextFormatFileTypeConfig"/>
+		<property name="fileNameConfig" ref="fileNameConfig"/>
+		<property name="serviceName" value="rtf"/>
+		<property name="moduleName" value="veraz"/>
+		<property name="globalParameterRetriever" ref="globalParameterRetriever"/>
 	</bean>
 	
 	<bean name="cuentaDownloadTaggedImageFileFormatService" class="ar.com.nextel.web.download.config.impl.DownloadTaggedImageFileFormatService">
@@ -73,29 +83,25 @@
 		<property name="moduleName" value="cuentas"/>
 		<property name="serviceConfigs">
 			<list>
-				<ref bean="consultaVerazDownloadRichTextFormatService"/>
 				<ref bean="cuentaDownloadTaggedImageFileFormatService"/>
 			</list>
 		</property>
 	</bean>
 	
-	<bean name="consultaVerazDownloadRichTextFormatService" class="ar.com.nextel.web.download.config.impl.DownloadRichTextFormatService">
-		<property name="fileTypeConfig" ref="richTextFormatFileTypeConfig"/>
-		<property name="fileNameConfig" ref="fileNameConfig"/>
-		<property name="serviceName" value="veraz-rtf"/>
-		<property name="moduleName" value="cuentas"/>
-		<property name="reportPathBuilder" ref="consultaVerazReportFileSystemPathBuilder"/>		
+	<!-- Para los archivos de consulta de Veraz -->
+	<bean name="verazModuleConfig" class="ar.com.nextel.web.download.config.ModuleConfig">
+		<property name="moduleName" value="veraz"/>
+		<property name="serviceConfigs">
+			<list>
+				<ref bean="verazDownloadRichTextFormatService"/>
+			</list>
+		</property>
 	</bean>
 	
-	<bean name="consultaVerazReportFileSystemPathBuilder" class="ar.com.nextel.components.report.CustomReportFileSystemPathBuilder">
-		<property name="globalParameterRetriever" ref="globalParameterRetriever"/>
-		<property name="customPath" value="cuentas,veraz_html"/>		
-	</bean>
-
 	<bean name="downloadService" class="ar.com.nextel.web.download.DownloadServiceImpl">
 		<property name="serviceConfigs">
 			<list>
-				<ref bean="consultaVerazDownloadRichTextFormatService"/>
+				<ref bean="verazDownloadRichTextFormatService"/>
 				<ref bean="solicitudesDownloadExcelService"/>
 				<ref bean="solicitudesDownloadRichTextFormatService"/>
 			</list>

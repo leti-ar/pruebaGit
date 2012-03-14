@@ -1,5 +1,7 @@
 package ar.com.nextel.sfa.server;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -82,6 +84,7 @@ import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.services.nextelServices.NextelServices;
+import ar.com.nextel.services.nextelServices.veraz.VerazService;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazRequestDTO;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.sfa.client.CuentaRpcService;
@@ -390,12 +393,21 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	
 	public String leerConsultaDetalleVeraz(String verazFileName) throws RpcExceptionMessages {
 		AppLogger.info("Iniciando leer la consulta del detalle a Veraz...");
-		try {
-			return new String(FileCopyUtils.copyToByteArray(this.download.downloadFile(CONSULTA_VERAZ_SERVICE,verazFileName)),CHARSET);
-		} catch (Exception e) {
-			AppLogger.error(e);
-			AppLogger.error("Error leyendo detalle Veraz \n");
-			throw ExceptionUtil.wrap(e);
+		
+		File archVeraz = veraz.obtenerArchivoVeras(verazFileName);
+		
+		if(archVeraz != null){
+			try {
+				return new String(FileCopyUtils.copyToByteArray(archVeraz));
+			
+			} catch (IOException e) {
+				AppLogger.error(e);
+				AppLogger.error("Error leyendo detalle Veraz \n");
+				throw ExceptionUtil.wrap(e);
+			}
+		}else{
+			AppLogger.error("Error leyendo detalle Veraz. No se encontro el archivo " + verazFileName + "\n");
+			return null;
 		}
 	}
 
@@ -951,7 +963,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	
 
 	/**
-	 * Este metodo realiza una query para verificar si el domicilio de envío y de facturacion asociado al nro de SS, esta validado
+	 * Este metodo realiza una query para verificar si el domicilio de envï¿½o y de facturacion asociado al nro de SS, esta validado
 	 * por EECC.
 	 * @author fernaluc
 	 * @return true si esta validado por EECC, de lo contrario false.
@@ -1002,6 +1014,11 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		} else {
 			return null;
 		}
+	}
+	
+	public String obtenerPahtArchivoVeraz(String verazFileName){
+		AppLogger.info("Obteniendo path del archivo de Veraz.");
+		return veraz.obtenerPahtArchivoVeraz(verazFileName);
 	}
 	
 }

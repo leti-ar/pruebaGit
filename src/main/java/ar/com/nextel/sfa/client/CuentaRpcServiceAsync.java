@@ -70,4 +70,6 @@ public interface CuentaRpcServiceAsync {
 	public void isDomicilioValidadoPorEECC(String nro_ss, AsyncCallback<Boolean> callback);
 	//LF
 	public void autocompletarValoresVeraz(String score, int cantEquipos, AsyncCallback<ScoreVerazDto> callback);
+
+	public void obtenerPahtArchivoVeraz(String verazFileName, AsyncCallback<String> callback);
 }

@@ -206,4 +206,9 @@ public class CuentaRpcServiceDelegate {
 		WaitWindow.show();
 		cuentaRpcService.autocompletarValoresVeraz(score, cantEquipos, callback);		
 	}
+	
+	public void obtenerPahtArchivoVeraz(String verazFileName, DefaultWaitCallback<String> callback){
+		WaitWindow.show();
+		cuentaRpcService.obtenerPahtArchivoVeraz(verazFileName, callback);
+	}
 }

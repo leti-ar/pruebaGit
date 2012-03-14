@@ -86,4 +86,6 @@ public interface CuentaRpcService extends RemoteService {
 	public Boolean isDomicilioValidadoPorEECC(String nro_ss) throws RpcExceptionMessages;
 	// #LF
 	public ScoreVerazDto autocompletarValoresVeraz(String score, int cantEquipos) throws RpcExceptionMessages;
+	
+	public String obtenerPahtArchivoVeraz(String verazFileName);
 }

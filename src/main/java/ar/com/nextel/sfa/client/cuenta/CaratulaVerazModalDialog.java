@@ -2,11 +2,13 @@ package ar.com.nextel.sfa.client.cuenta;
 
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
+import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.util.ModalUtils;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.WindowUtils;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
@@ -46,7 +48,7 @@ public class CaratulaVerazModalDialog extends NextelDialog {
 		cancelar = new SimpleLink("Cerrar");
 		cancelar.setStyleName("link");
 		addFormButtons(cancelar);
-		guardar = new SimpleLink("Guardar");
+		guardar = new SimpleLink("Descargar");
 		guardar.setStyleName("link");
 		addFormButtons(guardar);
 		setFormButtonsVisible(true);
@@ -58,15 +60,28 @@ public class CaratulaVerazModalDialog extends NextelDialog {
 		});
 		guardar.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
-				WindowUtils.redirect("/" + WindowUtils.getContextRoot() + "/download/" + verazFileName
-						+ "?module=cuentas&service=veraz-rtf&name=" + verazFileName);
+				
+				CuentaRpcService.Util.getInstance().
+						obtenerPahtArchivoVeraz(verazFileName, new DefaultWaitCallback<String>() {
+
+							public void success(String result) {
+								if(result != null){
+									WindowUtils.redirect("/" + WindowUtils.getContextRoot() + "/download/" +
+											result + "?module=veraz&service=rtf&name=" + verazFileName);
+								}else{
+									ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
+									ErrorDialog.getInstance().show(Sfa.constant().ERR_FILE_NOT_FOUND(), false);
+								}
+							}
+				});
+				
 			}
 		});
 	}
 
 	public void showAndCenter(String fileName) {
 		verazFileName = fileName;
-		setDialogTitle("");
+		setDialogTitle("Consulta archivo: " + fileName);
 		CuentaRpcService.Util.getInstance().leerConsultaDetalleVeraz(fileName, 
 				new DefaultWaitCallback<String>() {
 
@@ -74,6 +89,9 @@ public class CaratulaVerazModalDialog extends NextelDialog {
 						if (result != null) {
 							verazMessage.setHTML(result);
 							showAndCenter();
+						}else{
+							ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
+							ErrorDialog.getInstance().show(Sfa.constant().ERR_FILE_NOT_FOUND(), false);
 						}
 					}
 				});
@@ -170,7 +188,7 @@ public class CaratulaVerazModalDialog extends NextelDialog {
 //			    +	"<PRE class='comun-bold' ><HR ALIGN=LEFT SIZE=3 NOSHADE WIDTH=640PX><U>       DEUDORES DEL SISTEMA FINANCIERO (FUENTE BCRA - ULTIMOS 2 A&#209;OS)           </U>"
 //			    +	"<PRE class='comun-bold'>"
 //			    +	"NO REGISTRA"                                                                     
-//			    +	"<PRE class='comun-bold' ><HR ALIGN=LEFT SIZE=3 NOSHADE WIDTH=640PX><U>                          CONSULTAS (ULTIMOS 5 AÑOS)                            </U>"
+//			    +	"<PRE class='comun-bold' ><HR ALIGN=LEFT SIZE=3 NOSHADE WIDTH=640PX><U>                          CONSULTAS (ULTIMOS 5 Aï¿½OS)                            </U>"
 //			    +	"<PRE class='comun-bold' >"
 //			    +	"<P><U>FECHA   EMPRESA/ENTIDAD                                                         </U></P>"
 //			    +	"<PRE class='comun-bold'>"
