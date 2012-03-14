@@ -10,27 +10,17 @@ import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
-import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
-import ar.com.nextel.sfa.server.SolicitudRpcServiceImpl;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.WindowUtils;
-import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
-import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Muestra la tabla correspondiente a las SS cerradas, resultado del buscador.
@@ -186,8 +176,11 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 							cantPataconex = cantPataconex + solicitudServicioCerradaResultDto.getPataconex();
 						}
 						
-						if(result.get(i) > 0)resultTable.setWidget(indiceRowTabla, 7, IconFactory.tildeVerde());
-						else resultTable.setHTML(indiceRowTabla, 7, Sfa.constant().whiteSpace());
+						if(result.get(i) != null){
+							resultTable.setWidget(indiceRowTabla, 7, IconFactory.tildeVerde());
+						}else{
+							resultTable.setHTML(indiceRowTabla, 7, Sfa.constant().whiteSpace());
+						}
 
 						indiceRowTabla++;
 					}

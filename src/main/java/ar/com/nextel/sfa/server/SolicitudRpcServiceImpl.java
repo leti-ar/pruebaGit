@@ -1250,7 +1250,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			if(id != null){ 
 				SolicitudServicio solicitudServicio = solicitudServicioRepository.getSolicitudServicioPorId(id);
 				listCantPort.add(solicitudServicio.getCantLineasPortabilidad());
-			}else listCantPort.add(0L);
+			}else listCantPort.add(null);
 		}
 		
 		return listCantPort;
