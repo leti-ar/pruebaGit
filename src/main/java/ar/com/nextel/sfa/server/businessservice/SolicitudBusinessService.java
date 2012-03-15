@@ -1,21 +1,28 @@
 package ar.com.nextel.sfa.server.businessservice;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.commons.validator.GenericValidator;
 import org.dozer.DozerBeanMapper;
+import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
+import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaService;
 import ar.com.nextel.business.cuentas.scoring.legacy.dto.ScoringCuentaLegacyDTO;
+import ar.com.nextel.business.legacy.avalon.AvalonSystem;
+import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.financial.dto.EncabezadoCreditoDTO;
 import ar.com.nextel.business.legacy.financial.exception.FinancialSystemException;
@@ -38,9 +45,12 @@ import ar.com.nextel.business.solicitudes.provider.SolicitudServicioProviderResu
 import ar.com.nextel.business.solicitudes.repository.GenerarChangelogConfig;
 import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepository;
 import ar.com.nextel.components.accessMode.AccessAuthorization;
+import ar.com.nextel.components.knownInstances.GlobalParameter;
+import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.framework.connectionDAO.ConnectionDAOException;
 import ar.com.nextel.framework.connectionDAO.TransactionConnectionDAO;
 import ar.com.nextel.framework.repository.Repository;
+import ar.com.nextel.framework.repository.hibernate.HibernateRepository;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoTarjetaCredito;
@@ -68,18 +78,21 @@ import ar.com.nextel.model.solicitudes.beans.Sucursal;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
-import ar.com.nextel.services.nextelServices.veraz.dto.VerazRequestDTO;
-import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
+import ar.com.nextel.services.nextelServices.scoring.ScoringHistoryItem;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
+import ar.com.nextel.sfa.client.ss.SoloItemSolicitudUI;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
 import ar.com.nextel.util.StringUtil;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
+import ar.com.nextel.services.nextelServices.veraz.ResultadoVeraz;
+import ar.com.nextel.services.nextelServices.veraz.dto.VerazRequestDTO;
+import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 
 @Service
 public class SolicitudBusinessService {
@@ -101,6 +114,22 @@ public class SolicitudBusinessService {
 	private VantiveHistoricoVentaRetrieveConfig vantiveHistoricoVentaRetrieveConfig;
 	private VantiveHistoricoClienteConfig vantiveHistoricoClienteConfig;
 	private TransferirCuentaHistoricoConfig transferirCuentaHistoricoConfig;
+	private AvalonSystem avalonSystem;
+	private DefaultRetriever globalParameterRetriever;
+
+	
+	@Autowired
+	public void setGlobalParameterRetriever(
+			@Qualifier("globalParameterRetriever") DefaultRetriever globalParameterRetriever) {
+		this.globalParameterRetriever = globalParameterRetriever;
+	}
+	
+	
+	@Autowired
+	public void setAvalonSystem(
+			@Qualifier("avalonSystemBean")AvalonSystem avalonSystem) {
+		this.avalonSystem = avalonSystem;
+	}
 
 	@Autowired
 	public void setFacturaElectronicaService(FacturaElectronicaService facturaElectronicaService) {
@@ -373,7 +402,8 @@ public class SolicitudBusinessService {
 				solicitudServicioDto.getId());
 		solicitudServicio.setDomicilioEnvio(null);
 		solicitudServicio.setDomicilioFacturacion(null);
-		
+//		EstadoSolicitud estado = repository.retrieve(EstadoSolicitud.class, solicitudServicioDto.getEstados().getCode());
+//		solicitudServicio.setUltimoEstado(estado.getDescripcion());
 //		if( (solicitudServicio.getVendedor() == null && solicitudServicioDto.getVendedor() != null) ||
 //				(solicitudServicio.getVendedor() != null && solicitudServicioDto.getVendedor() != null &&
 //				!solicitudServicio.getVendedor().getId().equals(solicitudServicioDto.getVendedor().getId())) ){
@@ -519,7 +549,8 @@ public class SolicitudBusinessService {
 				domicilio.setId(null);
 			}
 		}
-
+        solicitudServicio.setIdConsultaScoring(solicitudServicioDto.getIdConsultaScoring());
+        solicitudServicio.setIdConsultaVeraz(solicitudServicioDto.getIdConsultaVeraz());
 		repository.save(solicitudServicio);
 		return solicitudServicio;
 	}
@@ -554,9 +585,9 @@ public class SolicitudBusinessService {
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public GeneracionCierreResponse generarCerrarSolicitud(SolicitudServicio solicitudServicio,
-			String pinMaestro, boolean cerrar) {
+			String pinMaestro, boolean cerrar) throws BusinessException {
 //		#1636 mrial
-		boolean esProspect = false;
+		boolean esProspect = false;	
 		if (solicitudServicio.getCuenta().isProspectEnCarga()
 				|| solicitudServicio.getCuenta().isProspect()) {
 			esProspect = true;
@@ -630,7 +661,29 @@ public class SolicitudBusinessService {
 		} else {
 			response = generacionCierreBusinessOperator.generarSolicitudServicio(generacionCierreRequest);
 		}
+		//registrar resultados veraz y scoring
+		//setearle a la ss los dos nuevos valores de scoring y veraz+
+		Long idConsultaScoring = scoring(solicitudServicio);
+		solicitudServicio.setIdConsultaScoring(idConsultaScoring);
+		Long idConsultaVeraz = veraz(solicitudServicio);
+		solicitudServicio.setIdConsultaVeraz(idConsultaVeraz);
 		
+		// valores q deberan guardarse
+		GlobalParameter pinValidoGlobalParameter = (GlobalParameter) globalParameterRetriever
+		.getObject(GlobalParameterIdentifier.VALIDO_PIN);
+		
+		GlobalParameter pinNoValidoGlobalParameter = (GlobalParameter) globalParameterRetriever
+		.getObject(GlobalParameterIdentifier.NO_VALIDO_PIN);
+		
+		if (!GenericValidator.isBlankOrNull(pinMaestro)|| solicitudServicio.getSolicitudServicioGeneracion().getScoringChecked()){
+			solicitudServicio.setCierreConPin(pinValidoGlobalParameter.getValue());
+			
+         }else{
+        	 solicitudServicio.setCierreConPin(pinNoValidoGlobalParameter.getValue());
+        	 
+         }
+		solicitudServicio.setFechaCierre(new Date());
+		//aca deberia salvarse este  nuevo estado en estado_por_solicitud
 		repository.save(solicitudServicio);
 		
 		return response;
@@ -741,7 +794,7 @@ public class SolicitudBusinessService {
 	 * @throws RpcExceptionMessages
 	 */
 	public void transferirCuentaEHistorico(SolicitudServicioDto solicitudServicio, boolean saveHistorico) throws RpcExceptionMessages {
-		TransferirCuentaHistoricoConfig config = this.getTransferirCuentaHistoricoConfig();
+	    TransferirCuentaHistoricoConfig config = this.getTransferirCuentaHistoricoConfig();
 		config.setIdCuenta(solicitudServicio.getCuenta().getId());
 		config.setNss(solicitudServicio.getNumero());
 		config.setFechaEstado(new java.sql.Date(solicitudServicio.getFechaEstado().getTime()));
@@ -754,7 +807,6 @@ public class SolicitudBusinessService {
 		}else{
 			config.setSaveHistorico("F");
 		}
-		
 		try {
 			String result = (String) this.sfaConnectionDAO.execute(config);
 		} catch (ConnectionDAOException e) {
@@ -762,6 +814,7 @@ public class SolicitudBusinessService {
 			throw ExceptionUtil.wrap(e);
 		}
 	}
+	
 	
 	/**
 	 * Obtengo la SolicitudServicio por id.
@@ -800,6 +853,12 @@ public class SolicitudBusinessService {
 		return generacionCierreBusinessOperator.consultarVeraz(verazRequestDTO);
 	}
 	
+	
+//	public String consultarVerazCierreSS(SolicitudServicio solicitudServicio) throws BusinessException {
+//		VerazRequestDTO verazRequestDTO = createVerazRequestDTO(solicitudServicio.getCuenta().getPersona());
+//		return generacionCierreBusinessOperator.consultarVeraz(verazRequestDTO);
+//	}
+	
 	private VerazRequestDTO createVerazRequestDTO(Persona persona) {
 		Sexo sexo = (Sexo) this.repository.retrieve(Sexo.class, persona.getSexo().getId());
 		TipoDocumento tipoDocumento = (TipoDocumento) this.repository.retrieve(TipoDocumento.class,
@@ -816,5 +875,136 @@ public class SolicitudBusinessService {
 		// verazRequestDTO.setVerazVersion(vendedor.getVerazVersion());
 		return verazRequestDTO;
 	}
+	
+	
+	
+/**
+   * Consulta persona en el historico de scoring si ya existia una consulta antes de las 24 horas
+   * 
+   * @param tipoDoc
+   * @param nroDoc
+   * @param sexo
+   * @return
+   * @throws 
+   */
+   @SuppressWarnings("deprecation")
+public Long verHistoricoScoring(String tipoDoc, Integer nroDoc, String sexo)
+     
+  {
+    Long resultado = new Long(0);
+      PreparedStatement stmt;
+		Date resul;
+	    Date hoy= new Date();
+	    int diasValidez = ((GlobalParameter) this.globalParameterRetriever
+	            .getObject(GlobalParameterIdentifier. DIAS_CADUCACION_VERAZ_SS_CERRADA)).getAsDouble().intValue();
+	    SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+	    
+		String sql = String.format("select fecha_validez from  SFA_SCORING_HISTORY where sexo='" +sexo+
+				"' and NUMERO_DOC='" + nroDoc+ "' and TIPO_DOC='" + tipoDoc +"'");
+		try {
+			stmt = ((HibernateRepository) repository)
+					.getHibernateDaoSupport().getSessionFactory()
+					.getCurrentSession().connection().prepareStatement(sql);
+		
+			
+			ResultSet resultSet = stmt.executeQuery();
+			while (resultSet.next()) {
+				resul=resultSet.getDate(1);
+				long fechaInicialMs =resul.getTime();
+				long fechaFinalMs = hoy.getTime();
+				long diferencia = fechaFinalMs - fechaInicialMs;
+				double dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+				
+				if (dias < diasValidez ) {
+					resultado=(long) dias;
+					break;
+				}else{
+					
+					resultado= new Long(0);
+				}
+			}
+			
+		} catch (HibernateException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+       
+		return resultado;
+  }	
+		
+		
+	
+	
+	public Long scoring(SolicitudServicio solicitudServicio) throws BusinessException{
+		
+        Persona persona= new Persona();
+        ScoringHistoryItem item =new ScoringHistoryItem();
+		try {
+			persona = consultarPersona(solicitudServicio.getCuenta().getCodigoVantive());
+		} catch (RpcExceptionMessages e1) {
+		
+			e1.printStackTrace();
+		}
+		Sexo sexo = (Sexo) this.repository.retrieve(Sexo.class, persona.getSexo().getId());
+		TipoDocumento tipoDocumento = (TipoDocumento) this.repository.retrieve(TipoDocumento.class,
+				persona.getIdTipoDocumento());
+		Integer numeroDocumento = Integer.parseInt(StringUtil.removeOcurrences(persona.getDocumento()
+				.getNumero(), '-'));
+		Long consultar= verHistoricoScoring(tipoDocumento.getDescripcion(),numeroDocumento,sexo.getCodigoVeraz());
+		String scoring;
+		
+			if (consultar == 0){
+			AppLogger.info("Iniciando llamada para averiguar Scoring.....");
+			scoring = (String) this.consultarScoring(solicitudServicio).getScoringData();
+		
+			AppLogger.info("Scoring averiguado correctamente.....");
+			//guardar ScoringHistorial
+			item.setDatosScoring(scoring);
+			item.setNroDoc(numeroDocumento);
+			item.setSexo(sexo.getCodigoVeraz());
+			item.setTipoDoc(tipoDocumento.getDescripcion());
+			item.setValidez(new Date());
+			repository.persist(item);
+			}
+			return new Long(item.getId());
+		
+		
+	}
+	
+	
+	public Persona consultarPersona(String codVantive) throws RpcExceptionMessages {
+		ArrayList<Object> list = (ArrayList<Object>) this.repository.find("from Cuenta c where c.codigoVantive = ?", codVantive);
+		if(!list.isEmpty()){
+			Cuenta cta = (Cuenta) list.get(0);
+			return cta.getPersona();
+		}
+		return null;
+	
+	}
+	
+	
+	public Long veraz(SolicitudServicio solicitudServicio) throws BusinessException{
+		VerazRequestDTO verazRequestDTO = createVerazRequestDTO(solicitudServicio.getCuenta().getPersona());
+		VerazResponseDTO verazRequestDTOGuardar =(VerazResponseDTO) generacionCierreBusinessOperator.consultarVerazCierreSS(verazRequestDTO);
+		ResultadoVeraz rtaVeraz= new ResultadoVeraz();
+		rtaVeraz.setApellido(verazRequestDTOGuardar.getApellido());
+		rtaVeraz.setEstado(verazRequestDTOGuardar.getEstado());
+		rtaVeraz.setFileName(verazRequestDTOGuardar.getFileName());
+		rtaVeraz.setIdEstado(verazRequestDTOGuardar.getIdEstado());
+		rtaVeraz.setLote(verazRequestDTOGuardar.getLote());
+		rtaVeraz.setMensaje(verazRequestDTOGuardar.getMensaje());
+		rtaVeraz.setNombre(verazRequestDTOGuardar.getNombre());
+		rtaVeraz.setNroDoc(verazRequestDTO.getNroDoc());
+		rtaVeraz.setRangoTel(verazRequestDTOGuardar.getRangoTel());
+		rtaVeraz.setScore(new Long(verazRequestDTOGuardar.getScore()));
+		rtaVeraz.setScoreDni(new Long(verazRequestDTOGuardar.getScoreDni()));
+		rtaVeraz.setRazonSocial(verazRequestDTOGuardar.getRazonSocial());
+		rtaVeraz.setSexo(verazRequestDTO.getSexo());
+		rtaVeraz.setTipoDoc(verazRequestDTO.getTipoDoc());
+		repository.persist(rtaVeraz);
+		return rtaVeraz.getId();
+	}
+	
 	
 }

@@ -82,9 +82,9 @@ public class SolicitudServicioDto implements IsSerializable {
 	private EstadoHistoricoDto estadoH;
 	private Date fechaEstado;
 	private String clienteHistorico;
-	
-	private Boolean passCreditos;
-    
+    private Boolean passCreditos;
+	private Long idConsultaVeraz;
+	private Long idConsultaScoring;
     	//GB - si es customer o no
 	private boolean customer;
 	
@@ -528,6 +528,22 @@ public class SolicitudServicioDto implements IsSerializable {
 
 	public void setCustomer(boolean customer) {
 		this.customer = customer;
+	}
+
+	public Long getIdConsultaVeraz() {
+		return idConsultaVeraz;
+	}
+
+	public void setIdConsultaVeraz(Long idConsultaVeraz) {
+		this.idConsultaVeraz = idConsultaVeraz;
+	}
+
+	public Long getIdConsultaScoring() {
+		return idConsultaScoring;
+	}
+
+	public void setIdConsultaScoring(Long idConsultaScoring) {
+		this.idConsultaScoring = idConsultaScoring;
 	}
 		
 }

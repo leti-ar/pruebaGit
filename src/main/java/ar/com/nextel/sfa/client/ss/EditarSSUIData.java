@@ -724,6 +724,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	public SolicitudServicioDto getSolicitudServicio() {
 		solicitudServicio.setNumero(nss.getText());
 		solicitudServicio.setNumeroFlota(nflota.getText());
+		EstadoSolicitudDto estadoDto = (EstadoSolicitudDto) nuevoEstado.getSelectedItem();
+		solicitudServicio.setEstados(estadoDto);
 		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_ESTADO.getValue())) {
 		
 		solicitudServicio.setControl((ControlDto) control.getSelectedItem());// .getSelectedItem().getItemText());

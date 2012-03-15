@@ -209,7 +209,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			if(HistoryUtils.getParam(ID_SS) != null) {
 				Long idSS = Long.parseLong(HistoryUtils.getParam(ID_SS));
 				SolicitudRpcService.Util.getInstance().buscarSSPorId(idSS, new DefaultWaitCallback<SolicitudServicioDto>() {
-
+	
 					@Override
 					public void success(final SolicitudServicioDto result) {
 						if(result != null) {
@@ -264,7 +264,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 								}
 							}
 					
-							public void failure(Throwable caught) {
+						public void failure(Throwable caught) {
 								History.back();
 								super.failure(caught);
 							}
@@ -289,7 +289,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							ErrorDialog.getInstance().show(msgString.toString(), false);
 						
 						}else{
-							visibilidadConsultarScoring(result.getSolicitud().isCustomer());
+						visibilidadConsultarScoring(result.getSolicitud().isCustomer());
 							Command abrirSSCreada = new Command() {
 								public void execute() {
 									MessageDialog.getInstance().hide();
@@ -302,8 +302,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 									ssCreadaSuccess(solicitud);
 								}
 							};
-							
-							if(!result.getMessages().isEmpty()){
+					if(!result.getMessages().isEmpty()){
 								StringBuilder msgString = new StringBuilder();
 								for (MessageDto msg : result.getMessages()) {
 									msgString.append("<span class=\"info\">- " + msg.getDescription()
@@ -527,7 +526,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 //				analisis.habilitarCambiarEstado();	
 //			}	
 		}
-		
 		//MGR - #962 - #1017
 		if(ClientContext.getInstance().
 				checkPermiso(PermisosEnum.SELECT_OPC_TELEMARKETING_COMB_ORIGEN.getValue())){
@@ -606,7 +604,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		
 			//LF
 		validarCompletitud.setVisible(isEditable());
-//German - Comentado para salir solo con cierre - CU#5
+		//German - Comentado para salir solo con cierre - CU#5
 //		copiarSS.setVisible(!isEditable());
 		tabs = new TabPanel();
 		tabs.setWidth("98%");
@@ -898,7 +896,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				openGenerarCerrarSolicitdDialog(sender == cerrarSolicitud);
 			}
 		}
-//German - Comentado para salir solo con cierre - CU#5
+		//German - Comentado para salir solo con cierre - CU#5
 //		else if (sender == copiarSS) {			
 //			//LF
 //			MessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_COPIAR_SS_ACTUAL(),	
@@ -914,8 +912,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 //				};
 //			});
 //		}
-	}
-//German - Comentado para salir solo con cierre - CU#5
+//	}
+ }
 //	public Button getCopiarSS(){
 //		return copiarSS;
 //	}
@@ -932,6 +930,17 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				
 			}
 		  addEstado();
+		  
+		  
+		  
+		  //ver si esta cerrada y se le hizo un cambio de estado
+		  //invocar un metodo q persista en vantive el nuevo estado
+//		  if(editarSSUIData.getSolicitudServicio().getEnCarga().equals(false)){
+//			  
+//			  
+//			  
+//		  }
+//		  
 		if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
 			
 			SolicitudRpcService.Util.getInstance().saveSolicituServicioTranferencia(obtenerSolicitudTransferencia(false),
@@ -1552,7 +1561,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			});
 		}
 	}
-
 //	public void protegerCampos(EditarSSUIData editarSSUIdata){
 //		editarSSUIdata.getNss().setEnabled(false);
 //		editarSSUIdata.getNflota().setEnabled(false);

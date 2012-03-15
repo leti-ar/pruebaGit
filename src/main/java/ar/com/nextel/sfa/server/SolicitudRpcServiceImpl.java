@@ -70,10 +70,12 @@ import ar.com.nextel.model.solicitudes.beans.EstadoHistorico;
 import ar.com.nextel.model.solicitudes.beans.EstadoPorSolicitud;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
+import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.LineasPorSegmento;
 import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
+import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.PlanBase;
 import ar.com.nextel.model.solicitudes.beans.Segmento;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
@@ -84,6 +86,8 @@ import ar.com.nextel.model.solicitudes.beans.TipoPlan;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
+import ar.com.nextel.services.nextelServices.scoring.ScoringHistoryItem;
+import ar.com.nextel.services.nextelServices.veraz.exception.VerazException;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
@@ -160,7 +164,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	
 	//MELI
 	private DefaultSequenceImpl tripticoNextValue;
-	private AvalonSystem avalonSystem;
+    private AvalonSystem avalonSystem;
 	
 	//MGR - #1481
 	private DefaultRetriever messageRetriever;;
@@ -559,7 +563,7 @@ public String getEstadoSolicitud(long solicitud) {
 		return resul;
 	}
 	
-	
+
 	
 	public SolicitudInitializer getSolicitudInitializer() {
 		SolicitudInitializer initializer = new SolicitudInitializer();
@@ -913,9 +917,10 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		SolicitudServicio solicitudServicio = null;
 		GeneracionCierreResponse response = null;
 		try {
+			
 			completarDomiciliosSolicitudTransferencia(solicitudServicioDto);
 			
-			String errorNF = "";
+		String errorNF = "";
 			//larce - Req#5 Cierre y Pass automático
 			String errorCC = "";
 			int puedeCerrar = 0;
@@ -944,9 +949,10 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				}
 			}
 			
+			
 			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
 			response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar);
-			if (!"".equals(errorNF)) {
+				if (!"".equals(errorNF)) {
 				Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.CUSTOM_ERROR);
 				message.addParameters(new Object[] { errorNF });
 				response.getMessages().addMesage(message);
@@ -980,7 +986,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		AppLogger.info(accion + " de SS de id=" + solicitudServicioDto.getId() + " finalizado.");
 		return result;
 	}
-
+	
 	private void completarDomiciliosSolicitudTransferencia(SolicitudServicioDto solicitudServicioDto) {
 		if (solicitudServicioDto.getGrupoSolicitud().isTransferencia())
 			for (DomiciliosCuentaDto dom : solicitudServicioDto.getCuenta().getPersona().getDomicilios()) {
@@ -1584,8 +1590,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		
 		return null;
 	}
-
-	/**
+	
+	
+		/**
 	 * Dependiendo del tipo de cliente, si tiene equipos activos o suspendidos y deuda en cuenta corriente;
 	 * la SS se podrá o no, cerrar por Veraz o Scoring.
 	 * @param ss
@@ -1636,8 +1643,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			throw ExceptionUtil.wrap(e);
 		}
 	}
-
-	/**
+	
+/**
 	 * Evalúo las líneas de la solicitud con los tipos de órdenes y tipos de
 	 * vendedor que se encuentran configurados.
 	 * 
@@ -1719,7 +1726,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
     		LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
     		if (linea.getTipoSolicitud() != null && linea.getPlan() != null && linea.getItem() != null) {
-    			List<CondicionComercial> condiciones  = repository.executeCustomQuery("condicionesComercialesPorSS", resultadoVerazScoring,
+    			    			List<CondicionComercial> condiciones  = repository.executeCustomQuery("condicionesComercialesPorSS", resultadoVerazScoring,
     					tipoVendedor.getId(), linea.getTipoSolicitud().getId(), linea.getPlan().getId(), linea.getItem().getId(), cantEquipos, cantPesos);		
     			if (condiciones.size() <= 0) {
     				existeCC = false;
@@ -1738,7 +1745,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 */
 	private String generarErrorPorCC(SolicitudServicioDto ss, String pinMaestro) {
 		String mensaje = "Para un";
-		if (("".equals(pinMaestro) || pinMaestro == null)
+			if (("".equals(pinMaestro) || pinMaestro == null)
 				&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
 			mensaje += " Veraz con resultado '" + resultadoVerazScoring + "', ";
 		} else {
@@ -1926,4 +1933,20 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
         }
 		return resultDTO;
 	}
+
+//Estefania Iguacel- CU8
+//realizar un metodo q llame al metodo q hace la actualizacion en vantive
+
+//	public void actualizarEstadoSSCerradaVantive(SolicitudServicioDto ss) throws RpcExceptionMessages{
+//		
+//		try{
+//			
+//		//this.vantiveSystem.actualizarEstadoSSVantive(idVantive, estado);
+//		} catch (Exception e) {
+//			AppLogger.error(e);
+//			throw ExceptionUtil.wrap(e);
+//		}
+//	}
+	
+	
 }	
