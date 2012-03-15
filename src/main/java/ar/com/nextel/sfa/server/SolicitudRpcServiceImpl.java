@@ -404,6 +404,13 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			if(linea.getPortabilidad() != null) linea.getPortabilidad().setTipoPersona(tipoPersona);
 		}
 
+		// TODO: Portabilidad
+		long contadorPortabilidad = 0;
+		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
+			if(linea.getPortabilidad() != null) contadorPortabilidad++;
+		}
+		solicitudServicioDto.setCantLineasPortabilidad(contadorPortabilidad);
+
 		CreateSaveSolicitudServicioResultDto resultDto = new CreateSaveSolicitudServicioResultDto();
 		try {
 			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
@@ -652,6 +659,14 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				if(linea.getPortabilidad() != null) linea.getPortabilidad().setTipoPersona(tipoPersona);
 			}
 
+			// TODO: Portabilidad
+			long contadorPortabilidad = 0;
+			for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
+				if(linea.getPortabilidad() != null) contadorPortabilidad++;
+			}
+			solicitudServicioDto.setCantLineasPortabilidad(contadorPortabilidad);
+
+			
 			completarDomiciliosSolicitudTransferencia(solicitudServicioDto);
 			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
 			response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar);
@@ -822,6 +837,13 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
 			if(linea.getPortabilidad() != null) linea.getPortabilidad().setTipoPersona(tipoPersona);
 		}
+
+		// TODO: Portabilidad
+		long contadorPortabilidad = 0;
+		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
+			if(linea.getPortabilidad() != null) contadorPortabilidad++;
+		}
+		solicitudServicioDto.setCantLineasPortabilidad(contadorPortabilidad);
 
 		CreateSaveSSTransfResultDto resultDto = new CreateSaveSSTransfResultDto();
 		try {

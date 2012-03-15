@@ -591,6 +591,13 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		}
 		guardandoSolicitud = true;
 		
+		// TODO: Portabilidad
+		long contadorPortabilidad = 0;
+		for (LineaSolicitudServicioDto linea : editarSSUIData.getSolicitudServicio().getLineas()) {
+			if(linea.getPortabilidad() != null) contadorPortabilidad++;
+		}
+		editarSSUIData.getSolicitudServicio().setCantLineasPortabilidad(contadorPortabilidad);
+
 		if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
 			
 			SolicitudRpcService.Util.getInstance().saveSolicituServicioTranferencia(obtenerSolicitudTransferencia(false),
@@ -619,16 +626,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							super.failure(caught);
 						}
 					});
-		}else{
-			// TODO: Portabilidad
-			long contadorPortabilidad = 0;
-			for (LineaSolicitudServicioDto linea : editarSSUIData.getSolicitudServicio().getLineas()) {
-				if(linea.getPortabilidad() != null) contadorPortabilidad++;
-			}
-			editarSSUIData.getSolicitudServicio().setCantLineasPortabilidad(contadorPortabilidad);
-
-			saveSolicitudServicio();
-		}
+		}else saveSolicitudServicio();
 	}
 
 	private void saveSolicitudServicio(){
