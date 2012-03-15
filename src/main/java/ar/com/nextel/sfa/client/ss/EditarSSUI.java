@@ -100,7 +100,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private DatosSSUI datos;
 	private DatosTransferenciaSSUI datosTranferencia;
 	private VariosSSUI varios;
-	private AnalisisSSUI analisis;
+	//Estefania Iguacel - Comentado para salir solo con cierre - CU#8 		
+	//private AnalisisSSUI analisis;
 	private EditarSSUIData editarSSUIData;
 	private FormButtonsBar formButtonsBar;
 	private RazonSocialClienteBar razonSocialClienteBar;
@@ -515,17 +516,17 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				}
 			}
 		}
-		
-		if(solicitud != null && analisis != null){
-			analisis.refresh();
-			
+		//Estefania Iguacel - Comentado para salir solo con cierre - CU#8 				
+//		if(solicitud != null && analisis != null){
+//			analisis.refresh();
+//			
 			//Descomentarlo cuando se puedan cargar ss cerradas
 //			if(solicitud.getEnCarga()){
 //				analisis.desHabilitarCambiarEstado();					
 //			}else{
 //				analisis.habilitarCambiarEstado();	
 //			}	
-		}
+//		}
 		//MGR - #962 - #1017
 		if(ClientContext.getInstance().
 				checkPermiso(PermisosEnum.SELECT_OPC_TELEMARKETING_COMB_ORIGEN.getValue())){
@@ -548,8 +549,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		tabs.clear();
 		if(solicitud.getGrupoSolicitud().isTransferencia()){
 			tabs.add(datosTranferencia, "Transf.");
+			//Estefania Iguacel - Comentado para salir solo con cierre - CU#8 		
 		//	if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
-				tabs.add(analisis, "Analisis");
+		//		tabs.add(analisis, "Analisis");
 			//}
 			datosTranferencia.setDatosSolicitud(solicitud);
 		// el refresh se llama desde seDatosSolicitud.
@@ -558,8 +560,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		else{
 			tabs.add(datos, "Datos");
 			tabs.add(varios, "Varios");
+		//Estefania Iguacel - Comentado para salir solo con cierre - CU#8 		
 		//	if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
-				tabs.add(analisis, "Analisis");
+		//		tabs.add(analisis, "Analisis");
 		//	}
 			datos.refresh();
 		}
@@ -617,7 +620,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 //		tabs.selectTab(0);
 		datos = new DatosSSUI(this);
 		varios = new VariosSSUI(this);
-		analisis = new AnalisisSSUI(this);
+		
+		//Estefania Iguacel - Comentado para salir solo con cierre - CU#8
+		//analisis = new AnalisisSSUI(this);
 		datosTranferencia = new DatosTransferenciaSSUI(this);
 		grupoSS = HistoryUtils.getParam(ID_GRUPO_SS);
 
@@ -679,14 +684,16 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private void loadInitializer(SolicitudInitializer initializer) {
 		editarSSUIData.getOrigen().addAllItems(initializer.getOrigenesSolicitud());
 		editarSSUIData.getOrigen().setEnabled(isEditable());
-        editarSSUIData.getControl().addAllItems(initializer.getControl());
-        Label label;
-        if (initializer.getEstado()!=null){
-    	  label = new Label(initializer.getEstado().toString());}
-        else{
-        	label= new Label("");
-        }
-        editarSSUIData.setEstado(label);
+       //Estefania Iguacel - Comentado para salir solo con cierre - CU#6
+		//editarSSUIData.getControl().addAllItems(initializer.getControl());
+//        Label label;
+//        if (initializer.getEstado()!=null){
+//    	  label = new Label(initializer.getEstado().toString());}
+//        else{
+//        	label= new Label("");
+//        }
+        //Estefania Iguacel - Comentado para salir solo con cierre - CU#6
+        //editarSSUIData.setEstado(label);
 		//MGR - #1458
 		if(initializer.getOrigenesSolicitud().size() ==1){
 			editarSSUIData.getOrigen().setSelectedIndex(1);
@@ -770,30 +777,31 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	        editarSSUIData.getEstadoTr().addAllItems(initializer.getEstadosHistorico());
 		}
 		
-		if(initializer.getComentarioAnalistaMensaje() != null){
-			editarSSUIData.getComentarioAnalistaMensaje().addAll(initializer.getComentarioAnalistaMensaje());
-//			editarSSUIData.getComentarioAnalista().addAllItems(initializer.getComentarioAnalistaMensaje());
-		}
+		//Estefania Iguacel - Comentado para salir solo con cierre - CU#8
+//		if(initializer.getComentarioAnalistaMensaje() != null){
+//			editarSSUIData.getComentarioAnalistaMensaje().addAll(initializer.getComentarioAnalistaMensaje());
+////			editarSSUIData.getComentarioAnalista().addAllItems(initializer.getComentarioAnalistaMensaje());
+//		}
 		
-		if(initializer.getOpcionesEstado() != null){
-		    List<EstadoSolicitudDto> opcionesEstados = initializer.getOpcionesEstado();
-			editarSSUIData.getOpcionesEstado().addAll(opcionesEstados);
-		    List<Long> opciones = new ArrayList<Long>();
-		    
-		    addOpcionesIgnorandoEnCarga(opciones,editarSSUIData.getOpcionesEstado());
-		    
-	        editarSSUIData.getNuevoEstado().addAllItems(editarSSUIData.getOpcionesEstadoPorEstadoIds(opcionesEstados, opciones));
-		}
+//		if(initializer.getOpcionesEstado() != null){
+//		    List<EstadoSolicitudDto> opcionesEstados = initializer.getOpcionesEstado();
+//			editarSSUIData.getOpcionesEstado().addAll(opcionesEstados);
+//		    List<Long> opciones = new ArrayList<Long>();
+//		    
+//		    addOpcionesIgnorandoEnCarga(opciones,editarSSUIData.getOpcionesEstado());
+//		    
+//	        editarSSUIData.getNuevoEstado().addAllItems(editarSSUIData.getOpcionesEstadoPorEstadoIds(opcionesEstados, opciones));
+//		}
 	}
 
-	public void addOpcionesIgnorandoEnCarga(List<Long> opcionesACargar,List<EstadoSolicitudDto> opcionesTotal){
-		for (int i = 0; i < opcionesTotal.size() ; i++) {
-			if((!opcionesTotal.get(i).getDescripcion().equals("en carga"))&&(!opcionesTotal.get(i).getDescripcion().equals("En carga"))&&(!opcionesTotal.get(i).getDescripcion().equals("En Carga"))){
-				opcionesACargar.add(opcionesTotal.get(i).getCode());
-			}
-		}
-	}
-	
+//	public void addOpcionesIgnorandoEnCarga(List<Long> opcionesACargar,List<EstadoSolicitudDto> opcionesTotal){
+//		for (int i = 0; i < opcionesTotal.size() ; i++) {
+//			if((!opcionesTotal.get(i).getDescripcion().equals("en carga"))&&(!opcionesTotal.get(i).getDescripcion().equals("En carga"))&&(!opcionesTotal.get(i).getDescripcion().equals("En Carga"))){
+//				opcionesACargar.add(opcionesTotal.get(i).getCode());
+//			}
+//		}
+//	}
+//	
 	public boolean unload(String token) {
 		if (!editarSSUIData.isSaved() && !tokenLoaded.equals(token)) {
 			ModalMessageDialog.getInstance().showSiNoCancelar(Sfa.constant().guardar(),
@@ -864,7 +872,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				errors = editarSSUIData.validarParaGuardar();
 			}
 			if (errors.isEmpty()) {
-
+				//Estefania Iguacel - Comentado para salir solo con cierre - CU#8 
 //				if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
 //					aprobarCredito();	
 //				}else{
@@ -923,13 +931,16 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			return;
 		}
 		guardandoSolicitud = true;
-		if (editarSSUIData.getEnviar().isChecked()){
-			
-			  mandarMailySMS();	
-			
-				
-			}
-		  addEstado();
+		
+///////////////////////////////////////////////////////////////////////////////////////////////////////		
+//Estefania Iguacel - Comentado para salir solo con cierre - CU#8
+//		if (editarSSUIData.getEnviar().isChecked()){
+//			
+//			  mandarMailySMS();	
+//			
+//				
+//			}
+//		  addEstado();
 		  
 		  
 		  
@@ -941,6 +952,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 //			  
 //		  }
 //		  
+		
+///////////////////////////////////////////////////////////////////////////////////////////////////////		
+		
+		
 		if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
 			
 			SolicitudRpcService.Util.getInstance().saveSolicituServicioTranferencia(obtenerSolicitudTransferencia(false),
@@ -951,7 +966,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							editarSSUIData.setSolicitud(result.getSolicitud());
 							datosTranferencia.setDatosSolicitud(result.getSolicitud());
 //							datosTranferencia.refresh();
-							analisis.desHabilitarCampos();
+							//Estefania Iguacel - Comentado para salir solo con cierre - CU#8 		
+							//	analisis.desHabilitarCampos();
 							editarSSUIData.setSaved(true);
 							//MGR - #1759
 							if(!result.getMessages().isEmpty()){
@@ -982,7 +998,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							guardandoSolicitud = false;
 							editarSSUIData.setSolicitud(result.getSolicitud());
 							datos.refresh();
-							analisis.desHabilitarCampos();
+							 /////////////////////////////////////////////////////////////////////// ////
+						     //Estefania Iguacel - Comentado para salir solo con cierre - CU#8
+							 //analisis.desHabilitarCampos();
+							//////////////////////////////////////////////////////////////////////////
 							// MessageDialog.getInstance().showAceptar("Guardado Exitoso",
 							// Sfa.constant().MSG_SOLICITUD_GUARDADA_OK(), MessageDialog.getCloseCommand());
 							editarSSUIData.setSaved(true);
@@ -1463,104 +1482,111 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		this.editable = editable;
 	}	
 	
+///////////////////////////////////////////////////////////////////////////////////////////////////////////	  
+////Estefania Iguacel - Comentado para salir solo con cierre - CU#8
 	
-	/**
-	 * se manda mail y mensaje de texto a los EECC y Delear correspondientes
-	 */
-     public void mandarMailySMS(){
-			String destinatario=editarSSUIData.getEnviarA().getText();
-			String[] tokens = destinatario.split("-");
-			//	esto hay q descomentar solo esta asi para poder probar con mbermude q tiene muchos clientes
-	//			if (editarSSUIData.getSolicitudServicio().getUsuarioCreacion().isEECC()){
-			       String telefono="";
-					String mail=tokens[0];
-					if (tokens.length>1){
-						telefono=tokens[1];
-                     }
-					
-				     	if (mail!=null){
-									SolicitudRpcService.Util.getInstance().enviarMail(armarMensajeAEnviar(),mail,
-						        	new DefaultWaitCallback<Void>() {
-		
-									@Override
-									public void success(Void result) {
-									// TODO Auto-generated method stub
-									
-								}});
-					     }
-				     	if (telefono!= ""){
-				     		 SolicitudRpcService.Util.getInstance().enviarSMS(telefono,armarMensajeAEnviar(),
-								    	new DefaultWaitCallback<Void>() {
-			
-										@Override
-										public void success(Void result) {
-											// TODO Auto-generated method stub
-											
-										}});
-									
-				     	}
-						          
-//				}else{
+//	/**
+//	 * se manda mail y mensaje de texto a los EECC y Delear correspondientes
+//	 */
+//     public void mandarMailySMS(){
+//			String destinatario=editarSSUIData.getEnviarA().getText();
+//			String[] tokens = destinatario.split("-");
+//			//	esto hay q descomentar solo esta asi para poder probar con mbermude q tiene muchos clientes
+//	//			if (editarSSUIData.getSolicitudServicio().getUsuarioCreacion().isEECC()){
+//			       String telefono="";
+//					String mail=tokens[0];
+//					if (tokens.length>1){
+//						telefono=tokens[1];
+//                     }
 //					
-//					if(editarSSUIData.getSolicitudServicio().getUsuarioCreacion().isDealer()){
-//					//				SolicitudRpcService.Util.getInstance().enviarMail(armarMensajeAEnviar(),mail,
-//					//						new DefaultWaitCallback<Void>() {
-//					//
-//					//							@Override
-//					//							public void success(Void result) {
-//					//								// TODO Auto-generated method stub
-//					//								
-//					//							}});
-//					
-//				
-//			}
+//				     	if (mail!=null){
+//									SolicitudRpcService.Util.getInstance().enviarMail(armarMensajeAEnviar(),mail,
+//						        	new DefaultWaitCallback<Void>() {
+//		
+//									@Override
+//									public void success(Void result) {
+//									// TODO Auto-generated method stub
+//									
+//								}});
+//					     }
+//				     	if (telefono!= ""){
+//				     		 SolicitudRpcService.Util.getInstance().enviarSMS(telefono,armarMensajeAEnviar(),
+//								    	new DefaultWaitCallback<Void>() {
+//			
+//										@Override
+//										public void success(Void result) {
+//											// TODO Auto-generated method stub
+//											
+//										}});
+//									
+//				     	}
+//						          
+////				}else{
+////					
+////					if(editarSSUIData.getSolicitudServicio().getUsuarioCreacion().isDealer()){
+////					//				SolicitudRpcService.Util.getInstance().enviarMail(armarMensajeAEnviar(),mail,
+////					//						new DefaultWaitCallback<Void>() {
+////					//
+////					//							@Override
+////					//							public void success(Void result) {
+////					//								// TODO Auto-generated method stub
+////					//								
+////					//							}});
+////					
+////				
+////			}
+////    	 
+////       } 
 //    	 
-//       } 
-    	 
-     }	
-     
-     
-  public String armarMensajeAEnviar(){
-	 String mensaje="";
-	 String titulo=editarSSUIData.getTitulo().getText();
-	 String nuevoEstado= "Estado: "+ editarSSUIData.getNuevoEstado().getSelectedItemText();
-	 String comentarioAnalista="Comentario Analista: "+ editarSSUIData.getComentarioAnalista().getSelectedItemText();
-	 String notaAdicional= "Nota Adicional: " + editarSSUIData.getNotaAdicional().getSelectedText(); 
-	 String cantidadEquipos="Cantididad de Equipos: "+ editarSSUIData.getCantidadEquipos().getText();
-	 
-	 mensaje= titulo +"\n\n"+ nuevoEstado + "\n"+ comentarioAnalista + "\n" + notaAdicional + "\n" + cantidadEquipos;
-	 
-	 return mensaje; 
-  }   
-  
-  
-	private void addEstado(){
+//     }	
+//     
+//     
+//  public String armarMensajeAEnviar(){
+//	 String mensaje="";
+//	 String titulo=editarSSUIData.getTitulo().getText();
+//	 String nuevoEstado= "Estado: "+ editarSSUIData.getNuevoEstado().getSelectedItemText();
+//	 String comentarioAnalista="Comentario Analista: "+ editarSSUIData.getComentarioAnalista().getSelectedItemText();
+//	 String notaAdicional= "Nota Adicional: " + editarSSUIData.getNotaAdicional().getSelectedText(); 
+//	 String cantidadEquipos="Cantididad de Equipos: "+ editarSSUIData.getCantidadEquipos().getText();
+//	 
+//	 mensaje= titulo +"\n\n"+ nuevoEstado + "\n"+ comentarioAnalista + "\n" + notaAdicional + "\n" + cantidadEquipos;
+//	 
+//	 return mensaje; 
+//  }   
+
+//	private void addEstado(){
+//	
+//		if(editarSSUIData.getNuevoEstado().getSelectedItemText() != null){
+//			String descripcionEstado = editarSSUIData.getNuevoEstado().getSelectedItemText();
+//			
+//			EstadoSolicitudDto nuevoEstado = editarSSUIData.getEstadoPorEstadoText(editarSSUIData.getOpcionesEstado(), descripcionEstado);
+//			EstadoPorSolicitudDto estadoPorSolicitudDto = new EstadoPorSolicitudDto();
+//			estadoPorSolicitudDto.setEstado(nuevoEstado);
+//			estadoPorSolicitudDto.setFecha(new Date());
+//			
+//			if(!editarSSUIData.getSolicitudServicio().getNumero().equals("")){
+//				estadoPorSolicitudDto.setNumeroSolicitud(new Long(editarSSUIData.getSolicitudServicio().getId()));			
+//			}
+//			estadoPorSolicitudDto.setUsuario(editarSSUIData.getSolicitudServicio().getUsuarioCreacion().getId());
+//			
+//			editarSSUIData.getSolicitudServicio().addHistorialEstados(estadoPorSolicitudDto);
+//			
+//			SolicitudRpcService.Util.getInstance().saveEstadoPorSolicitudDto(estadoPorSolicitudDto, new DefaultWaitCallback<Boolean>() {
+//		
+//				@Override
+//					public void success(Boolean result) {
+//					  analisis.refresh();
+//					  editarSSUIData.getComentarioAnalista().clear();
+//					}
+//			});
+//		}
+//	}
+//Fin-Estefania Iguacel - Comentado para salir solo con cierre - CU#8 
+ ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-		if(editarSSUIData.getNuevoEstado().getSelectedItemText() != null){
-			String descripcionEstado = editarSSUIData.getNuevoEstado().getSelectedItemText();
-			
-			EstadoSolicitudDto nuevoEstado = editarSSUIData.getEstadoPorEstadoText(editarSSUIData.getOpcionesEstado(), descripcionEstado);
-			EstadoPorSolicitudDto estadoPorSolicitudDto = new EstadoPorSolicitudDto();
-			estadoPorSolicitudDto.setEstado(nuevoEstado);
-			estadoPorSolicitudDto.setFecha(new Date());
-			
-			if(!editarSSUIData.getSolicitudServicio().getNumero().equals("")){
-				estadoPorSolicitudDto.setNumeroSolicitud(new Long(editarSSUIData.getSolicitudServicio().getId()));			
-			}
-			estadoPorSolicitudDto.setUsuario(editarSSUIData.getSolicitudServicio().getUsuarioCreacion().getId());
-			
-			editarSSUIData.getSolicitudServicio().addHistorialEstados(estadoPorSolicitudDto);
-			
-			SolicitudRpcService.Util.getInstance().saveEstadoPorSolicitudDto(estadoPorSolicitudDto, new DefaultWaitCallback<Boolean>() {
-		
-				@Override
-					public void success(Boolean result) {
-					  analisis.refresh();
-					  editarSSUIData.getComentarioAnalista().clear();
-					}
-			});
-		}
-	}
+	
+	
+	
 //	public void protegerCampos(EditarSSUIData editarSSUIdata){
 //		editarSSUIdata.getNss().setEnabled(false);
 //		editarSSUIdata.getNflota().setEnabled(false);
@@ -1573,59 +1599,61 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 //		editarSSUIdata.getSucursalOrigen().setEnabled(false);
 //		editarSSUIdata.getCriterioBusqContrato().setEnabled(false);
 //	}
+
 	
-	//	GB
-	public void aprobarCredito(){
-		
-		SolicitudRpcService.Util.getInstance().validarCuentaPorId(editarSSUIData.getSolicitudServicio(), new DefaultWaitCallback<Integer>() {
-			@Override
-			public void success(Integer result) {
-				
-				//Mensajes
-				switch (result) {
-				case 0:
-				//No hubo ninguno de los errores contemplados
-					
-					if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
-						editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback(), true);
-					}else{
-						guardar();							
-					}
-					
-					break;
-				case 1:
-					MessageWindow.alert("Los datos de la cuenta deben ser transferidos a Vantive, Financials y BSCS");
-					break;
-				case 2:
-					MessageWindow.alert("La Gran Cuenta y la División no tienen un suscriptor 100000 transferido a Vantive, Financials y BSCS");
-					break;
-				case 3:
-					//Cambia el estado del historico a "Pass"
-					 if(Window.confirm("El histórico de ventas no se encuentra con estado Pass. Desea dar el pass de Histórico?")){
-						 SolicitudRpcService.Util.getInstance().changeToPass(editarSSUIData.getSolicitudServicio().getId() , new DefaultWaitCallback<Void>() {
-							@Override
-							public void success(Void result) {
-								if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
-									editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback(), true);
-								}else{
-									guardar();							
-								}
-							}
-						});
-		             }
-					break;
-				case 4:
-					MessageWindow.alert("La caratula debe estar completa y confirmada");
-					
-					break;
-					
-				default:
-					break;
-				}
-			}
-		}); 
-	}
-	
+////////////////////////////////////////////////////////////////////////////////////////////////	
+//	GB  - Comentado para salir solo con cierre - CU#8 
+//	public void aprobarCredito(){
+//		
+//		SolicitudRpcService.Util.getInstance().validarCuentaPorId(editarSSUIData.getSolicitudServicio(), new DefaultWaitCallback<Integer>() {
+//			@Override
+//			public void success(Integer result) {
+//				
+//				//Mensajes
+//				switch (result) {
+//				case 0:
+//				//No hubo ninguno de los errores contemplados
+//					
+//					if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
+//						editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback(), true);
+//					}else{
+//						guardar();							
+//					}
+//					
+//					break;
+//				case 1:
+//					MessageWindow.alert("Los datos de la cuenta deben ser transferidos a Vantive, Financials y BSCS");
+//					break;
+//				case 2:
+//					MessageWindow.alert("La Gran Cuenta y la División no tienen un suscriptor 100000 transferido a Vantive, Financials y BSCS");
+//					break;
+//				case 3:
+//					//Cambia el estado del historico a "Pass"
+//					 if(Window.confirm("El histórico de ventas no se encuentra con estado Pass. Desea dar el pass de Histórico?")){
+//						 SolicitudRpcService.Util.getInstance().changeToPass(editarSSUIData.getSolicitudServicio().getId() , new DefaultWaitCallback<Void>() {
+//							@Override
+//							public void success(Void result) {
+//								if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
+//									editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback(), true);
+//								}else{
+//									guardar();							
+//								}
+//							}
+//						});
+//		             }
+//					break;
+//				case 4:
+//					MessageWindow.alert("La caratula debe estar completa y confirmada");
+//					
+//					break;
+//					
+//				default:
+//					break;
+//				}
+//			}
+//		}); 
+//	}
+////////////////////////////////////////////////////////////////////////////////////////////////////	
 	public void visibilidadConsultarScoring(boolean show){
 		if(razonSocialClienteBar != null){
 			if(show){

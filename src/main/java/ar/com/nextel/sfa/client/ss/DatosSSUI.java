@@ -92,7 +92,8 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		this.controller = controller;
 		editarSSUIData = controller.getEditarSSUIData();
 		mainpanel.add(getNssLayout());
-		mainpanel.add(getControlLayout());
+		//Estefania Iguacek - Comentado para salir solo con cierre - CU#6
+		//mainpanel.add(getControlLayout());
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
 			mainpanel.add(getHistoricoVentasPanel());
 		}
@@ -109,28 +110,30 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		return nnsLayout;
 	}
 
-	private Widget getControlLayout() {
-	
-		controlLayout = new Grid(1,4);
-		controlLayout.addStyleName("layout");
-		refreshNssLayout();
-		refreshControlLayout();
-		return controlLayout;
-	}
-	
-	
-	private void refreshControlLayout(){
-		
-		
-		controlLayout.setHTML(0,0, Sfa.constant().estado());
-		controlLayout.setWidget(0,1, editarSSUIData.getEstado());
-		
-	//	if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_ESTADO.getValue())){
-		controlLayout.setHTML(0,2, Sfa.constant().control());
-		controlLayout.setWidget(0,3, editarSSUIData.getControl());
-	//	}
-	}
-	
+
+//Estefania Iguacel - Comentado para salir solo con cierre - CU#6
+//	private Widget getControlLayout() {
+//	
+//		controlLayout = new Grid(1,4);
+//		controlLayout.addStyleName("layout");
+//		refreshNssLayout();
+//		refreshControlLayout();
+//		return controlLayout;
+//	}
+//	
+//	
+//	private void refreshControlLayout(){
+//		
+//		
+//		controlLayout.setHTML(0,0, Sfa.constant().estado());
+//		controlLayout.setWidget(0,1, editarSSUIData.getEstado());
+//		
+//	//	if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_ESTADO.getValue())){
+//		controlLayout.setHTML(0,2, Sfa.constant().control());
+//		controlLayout.setWidget(0,3, editarSSUIData.getControl());
+//	//	}
+//	}
+//	
 	
 	private void refreshNssLayout() {
 		lineaModificada = new Long(0);
@@ -872,7 +875,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	
 	public void refresh() {
 		refreshNssLayout();
-		refreshControlLayout();
+
+		//Estefania Iguacek - Comentado para salir solo con cierre - CU#6
+		//refreshControlLayout();
 		refreshDomicilioLayout();
 		refreshDetalleSSTable();
 		

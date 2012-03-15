@@ -440,11 +440,11 @@ public class SolicitudBusinessService {
 		}
 		
 		mapper.map(solicitudServicioDto, solicitudServicio);
-		
-		if(solicitudServicioDto.getControl() != null){
-			Control control =  repository.retrieve(Control.class, solicitudServicioDto.getControl().getId());
-			solicitudServicio.setControl(control);			
-		}
+		//Estefania Iguacel - Comentado para salir solo con cierre - CU#8 				
+//		if(solicitudServicioDto.getControl() != null){
+//			Control control =  repository.retrieve(Control.class, solicitudServicioDto.getControl().getId());
+//			solicitudServicio.setControl(control);			
+//		}
 		
 		//PARCHE: Esto es por que dozer mapea los id cuando se le indica que no
 		for (LineaTransfSolicitudServicio lineaTransf : solicitudServicio.getLineasTranf()) {

@@ -59,7 +59,8 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	private FlowPanel mainpanel;
 	private EditarSSUIData editarSSUIData;
 	private Grid nnsLayout;
-	private Grid controlLayout;
+//Estefania Iguacel - Comentado para salir solo con cierre - CU#6	
+//	private Grid controlLayout;
 	private Grid historicoLayout;
 	private Grid obsLayout;
 	private Grid cedenteLayout;
@@ -104,7 +105,9 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		this.controller = controller;
 		editarSSUIData = controller.getEditarSSUIData();
 		mainpanel.add(getNssLayout());
-		mainpanel.add(getControlLayout());
+		////////////////////////////////////////////////////////////////////////////
+		//Estefania Iguacel - Comentado para salir solo con cierre - CU#6	
+		//	mainpanel.add(getControlLayout());
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
 			mainpanel.add(getHistoricoVentasPanel());
 		}			
@@ -163,28 +166,29 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		refreshNssLayout();
 		return nnsLayout;
 	}
+////////////////////////////////////////////////////////////////////////////
+//Estefania Iguacel - Comentado para salir solo con cierre - CU#6	
+//	private Widget getControlLayout() {
+//		
+//		controlLayout = new Grid(1,4);
+//		controlLayout.addStyleName("layout");
+//		refreshNssLayout();
+//		refreshControlLayout();
+//		return controlLayout;
+//	}
 	
-	private Widget getControlLayout() {
-		
-		controlLayout = new Grid(1,4);
-		controlLayout.addStyleName("layout");
-		refreshNssLayout();
-		refreshControlLayout();
-		return controlLayout;
-	}
-	
-	private void refreshControlLayout(){
-			
-			
-			controlLayout.setHTML(0,0, Sfa.constant().estado());
-			controlLayout.setWidget(0,1, editarSSUIData.getEstado());
-			
-		//	if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_ESTADO.getValue())){
-			controlLayout.setHTML(0,2, Sfa.constant().control());
-			controlLayout.setWidget(0,3, editarSSUIData.getControl());
-		//	}
-		}
-	
+//	private void refreshControlLayout(){
+//			
+//			
+//			controlLayout.setHTML(0,0, Sfa.constant().estado());
+//			controlLayout.setWidget(0,1, editarSSUIData.getEstado());
+//			
+//		//	if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_ESTADO.getValue())){
+//			controlLayout.setHTML(0,2, Sfa.constant().control());
+//			controlLayout.setWidget(0,3, editarSSUIData.getControl());
+//		//	}
+//		}
+/////////////////////////////////////////////////////////////////////////////////	
 	private Widget getHistoricoVentasPanel() {
 		TitledPanel historico = new TitledPanel("Histórico de Ventas");
 		historicoLayout = new Grid(1, 8);

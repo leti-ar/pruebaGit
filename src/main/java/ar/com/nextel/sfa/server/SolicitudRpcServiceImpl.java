@@ -603,9 +603,9 @@ public String getEstadoSolicitud(long solicitud) {
 		});
 		initializer.setVendedores(mapper.convertList(vendedores, VendedorDto.class));
 		
-		
-			List<Control> controles = repository.getAll(Control.class);
-			initializer.setControl(mapper.convertList(controles, ControlDto.class));
+//Estefania Iguacel - Comentado para salir solo con cierre - CU#6		
+//			List<Control> controles = repository.getAll(Control.class);
+//			initializer.setControl(mapper.convertList(controles, ControlDto.class));
 		
 //		 EstadoSolicitud estado=(EstadoSolicitud) knownInstanceRetriever
 //			.getObject(KnownInstanceIdentifier.ESTADO_ENCARGA_SS);
@@ -617,8 +617,8 @@ public String getEstadoSolicitud(long solicitud) {
 		List<EstadoHistorico> estadosHistorico = repository.getAll(EstadoHistorico.class);
 		initializer.setEstadosHistorico(mapper.convertList(estadosHistorico, EstadoHistoricoDto.class));
 		initializer.setOpcionesEstado(mapper.convertList(repository.getAll(EstadoSolicitud.class),EstadoSolicitudDto.class));
-		
-		initializer.setComentarioAnalistaMensaje(mapper.convertList(repository.getAll(ComentarioAnalista.class),ComentarioAnalistaDto.class));
+		//Estefania Iguacel - Comentado para salir solo con cierre - CU#8 			
+//		initializer.setComentarioAnalistaMensaje(mapper.convertList(repository.getAll(ComentarioAnalista.class),ComentarioAnalistaDto.class));
 
 		return initializer;
 	}
