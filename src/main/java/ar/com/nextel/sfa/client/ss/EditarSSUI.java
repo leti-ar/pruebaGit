@@ -118,8 +118,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private boolean cerrandoSolicitud = false;
 	private String codigoVant;
 	private boolean cerrandoAux;
-	
-	private Button copiarSS;
+//German - Comentado para salir solo con cierre - CU#5
+//	private Button copiarSS;
 	private final long pass = 2l;
 	private final long fail = 3l;
 	private final long aConfirmar = 5l;
@@ -214,9 +214,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					public void success(final SolicitudServicioDto result) {
 						if(result != null) {
 							visibilidadConsultarScoring(result.isCustomer());
-							if(result.getEnCarga()){
-								getCopiarSS().setVisible(false);
-							}
+//German - Comentado para salir solo con cierre - CU#5
+//							if(result.getEnCarga()){ 
+//								getCopiarSS().setVisible(false);
+//							}
 								ssCreadaSuccess(result);
 						}
 					};
@@ -242,9 +243,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 									Command abrirSSCreada = new Command() {
 										public void execute() {
 											MessageDialog.getInstance().hide();
-											if(result.getSolicitud().getEnCarga()){
-												getCopiarSS().setVisible(false);
-											}
+//German - Comentado para salir solo con cierre - CU#5
+//											if(result.getSolicitud().getEnCarga()){
+//												getCopiarSS().setVisible(false);
+//											}
 											ssCreadaSuccess(result.getSolicitud());
 										}
 									};
@@ -292,9 +294,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 								public void execute() {
 									MessageDialog.getInstance().hide();
 									SolicitudServicioDto solicitud = result.getSolicitud();
-									if(solicitud.getEnCarga()){
-										getCopiarSS().setVisible(false);
-									}
+//German - Comentado para salir solo con cierre - CU#5
+//									if(solicitud.getEnCarga()){ 
+//										getCopiarSS().setVisible(false);
+//									}
 									loadInfocom(String.valueOf(solicitud.getCuenta().getId()), solicitud.getCuenta().getCodigoVantive());
 									ssCreadaSuccess(solicitud);
 								}
@@ -590,11 +593,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 //		if(isEditable()) 
 		razonSocialClienteBar.setEnabledSilvioSoldan();
 //		else razonSocialClienteBar.setDisabledSilvioSoldan();
-	
-		copiarSS = new Button("Copiar SS");
-		copiarSS.addStyleName("copiarSS");
-		copiarSS.addClickHandler(this);
-		mainPanel.add(copiarSS);	
+//German - Comentado para salir solo con cierre - CU#5
+//		copiarSS = new Button("Copiar SS");
+//		copiarSS.addStyleName("copiarSS");
+//		copiarSS.addClickHandler(this);
+//		mainPanel.add(copiarSS);	
 		
 		validarCompletitud = new Button("Validar Completitud");
 		validarCompletitud.addStyleName("validarCompletitudButton");
@@ -603,7 +606,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		
 			//LF
 		validarCompletitud.setVisible(isEditable());
-		copiarSS.setVisible(!isEditable());
+//German - Comentado para salir solo con cierre - CU#5
+//		copiarSS.setVisible(!isEditable());
 		tabs = new TabPanel();
 		tabs.setWidth("98%");
 		tabs.addStyleName("mlr5 mb10 mt5");
@@ -894,26 +898,27 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				openGenerarCerrarSolicitdDialog(sender == cerrarSolicitud);
 			}
 		}
-		else if (sender == copiarSS) {			
-			//LF
-			MessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_COPIAR_SS_ACTUAL(),	
-			new Command() {
-			    public void execute() {
-			    	if(editarSSUIData.getSolicitudServicio()!=null)
-			    		loadCopiarSS(editarSSUIData.getSolicitudServicio());
-				};
-			}, 
-			new Command() {
-			    public void execute() {
-			    	MessageDialog.getInstance().hide();
-				};
-			});
-		}
+//German - Comentado para salir solo con cierre - CU#5
+//		else if (sender == copiarSS) {			
+//			//LF
+//			MessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_COPIAR_SS_ACTUAL(),	
+//			new Command() {
+//			    public void execute() {
+//			    	if(editarSSUIData.getSolicitudServicio()!=null)
+//			    		loadCopiarSS(editarSSUIData.getSolicitudServicio());
+//				};
+//			}, 
+//			new Command() {
+//			    public void execute() {
+//			    	MessageDialog.getInstance().hide();
+//				};
+//			});
+//		}
 	}
-
-	public Button getCopiarSS(){
-		return copiarSS;
-	}
+//German - Comentado para salir solo con cierre - CU#5
+//	public Button getCopiarSS(){
+//		return copiarSS;
+//	}
 	
 	private void guardar() {
 		if (guardandoSolicitud) {
