@@ -63,7 +63,8 @@ public interface SolicitudRpcService extends RemoteService {
 	//LF
 	//public List<SolicitudServicioCerradaResultDto> searchSSCerrada(
 	public List<SolicitudServicioCerradaResultDto> searchSolicitudesServicio(
-			SolicitudServicioCerradaDto solicitudServicioCerradaDto, boolean analistaCreditos) throws RpcExceptionMessages;
+			SolicitudServicioCerradaDto solicitudServicioCerradaDto//LF#3, boolean analistaCreditos
+			) throws RpcExceptionMessages;
 	
 	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
 	//que permite realizar el manejo de mensajes
@@ -91,8 +92,8 @@ public interface SolicitudRpcService extends RemoteService {
 	public List<ListaPreciosDto> getListasDePrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa)
 			throws RpcExceptionMessages;
 
-	public String buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto, boolean analistaCreditos)
-			throws RpcExceptionMessages;
+	public String buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto//LF#3, boolean analistaCreditos
+			) throws RpcExceptionMessages;
 
 	public List<PlanDto> getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado,
 			TipoPlanDto tipoPlan, Long idCuenta);
@@ -166,7 +167,6 @@ public interface SolicitudRpcService extends RemoteService {
 	public Integer calcularCantEquipos(List<LineaSolicitudServicioDto> lineaSS);
 	
 	public SolicitudServicioDto buscarSSPorId(Long id);	
-
 	
 	public String getEstadoSolicitud(long numeroSS)throws RpcExceptionMessages;
 	

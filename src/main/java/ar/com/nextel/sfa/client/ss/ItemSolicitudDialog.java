@@ -164,6 +164,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 
 	public void onChange(ChangeEvent event) {
 		TipoSolicitudDto tipoSolicitud = (TipoSolicitudDto) tipoOrden.getSelectedItem();
+		itemSolicitudUIData.setActivacionOnline(false);
 		if (tipoSolicitud != null) {
 			if (itemSolicitudUIData.getIdsTipoSolicitudBaseItemYPlan().contains(
 					tipoSolicitud.getTipoSolicitudBase().getId())) {
@@ -175,7 +176,10 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.SOLO_ITEM);
 			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseActivacion().contains(
 					tipoSolicitud.getTipoSolicitudBase().getId())) {
-				tipoSolicitudPanel.setWidget(getItemSolicitudActivacionUI());
+				if(itemSolicitudUIData.getIdTipoSolicitudBaseActivacionOnline().equals(tipoSolicitud.getTipoSolicitudBase().getId())) {
+					itemSolicitudUIData.setActivacionOnline(true);
+				}
+				tipoSolicitudPanel.setWidget(getItemSolicitudActivacionUI(itemSolicitudUIData.isActivacionOnline()));
 				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.ACTIVACION);
 			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseCDW().contains(
 					tipoSolicitud.getTipoSolicitudBase().getId())) {
@@ -218,8 +222,8 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		return itemYPlanSolicitudUI;
 	}
 
-	private ItemYPlanSolicitudUI getItemSolicitudActivacionUI() {
-		return getItemYPlanSolicitudUI().setActivacionVisible();
+	private ItemYPlanSolicitudUI getItemSolicitudActivacionUI(boolean online) {
+		return getItemYPlanSolicitudUI().setActivacionVisible(online);
 	}
 
 	private ItemYPlanSolicitudUI getItemSolicitudCDWUI() {

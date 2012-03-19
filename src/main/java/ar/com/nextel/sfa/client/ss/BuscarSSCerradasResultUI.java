@@ -59,63 +59,62 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler{
 	private String fileName;
 	private SolicitudServicioCerradaResultDto solicitud; 
 	private String numeroSS;
-	private boolean isAnalistaCreditos;
-	private OrdenTablaSolicitudServicio ordenTablaSS;
+//	LF#3	private boolean analistaCreditos;
+//	LF#3    private OrdenTablaSolicitudServicio ordenTablaSS;
 	
-	public BuscarSSCerradasResultUI(BuscarSSGenericoUI generic) {
+	public BuscarSSCerradasResultUI() { //LF#3 - BuscarSSGenericoUI generic) {
 		super();
 		addStyleName("gwt-BuscarCuentaResultPanel");
 		resultTotalTableWrapper = new FlowPanel();
 		resultTableWrapper = new FlowPanel();
+//		LF#3
 		// Se es analista de Creditos y cliente de Nexus se "alarga" la tabla.
-		if(generic.esAnalistaCreditos() && ClientContext.getInstance().soyClienteNexus()) {
-			resultTableWrapper.addStyleName("resultTableWrapperLarge");
-		}else {
+//		if(generic.esAnalistaCreditos() && ClientContext.getInstance().soyClienteNexus()) {
+//			resultTableWrapper.addStyleName("resultTableWrapperLarge");
+//		}else {
 			resultTableWrapper.addStyleName("resultTableWrapper");
-		}
+//		}
 		resultTable = new NextelTable();
 		resultTable.addClickHandler(this);
-		setAnalistaCreditos(generic.esAnalistaCreditos());
-		if(generic.esAnalistaCreditos()) {
-			initTableAnalistaCredito(resultTable);
-			ordenTablaSS = new OrdenTablaSolicitudServicio();
-		} else {
+//		LF#3
+//		setAnalistaCreditos(generic.esAnalistaCreditos());
+//		if(generic.esAnalistaCreditos()) {
+//			initTableAnalistaCredito(resultTable);
+//		} else {
 			initTable(resultTable);
-		}
+//		}
+//		LF#3 ordenTablaSS = new OrdenTablaSolicitudServicio();
 		resultTableWrapper.add(resultTable);
 		resultTotalTableWrapper.add(resultTableWrapper);
 		setVisible(false);
 		
 	}
-
-	/**
-	 * Metodo publico que contiene lo que se desea ejecutar la primera vez que se busca. (o sea, cuando se
-	 * hace click al boton Buscar)
-	 * 
-	 * @param: cuentaSearchDto
-	 * */
-//	LF
+	
+	//LF
+//	/**
+//	 * Metodo publico que contiene lo que se desea ejecutar la primera vez que se busca. (o sea, cuando se
+//	 * hace click al boton Buscar)
+//	 * 
+//	 * @param: cuentaSearchDto
+//	 * */
 //	public void searchSSCerradas(SolicitudServicioCerradaDto solicitudServicioSearchDto) {
 	public void searchSolicitudesServicio(SolicitudServicioCerradaDto solicitudServicioSearchDto) {
-		this.searchSSCerradas(solicitudServicioSearchDto, true);
-	};
-
-	private void searchSSCerradas(SolicitudServicioCerradaDto solicitudServicioCerradaDto, boolean firstTime) {
-		this.solicitudServicioCerradaDto = solicitudServicioCerradaDto;
+//		this.searchSSCerradas(solicitudServicioSearchDto, true);
+//	};
+//
+//	private void searchSSCerradas(final SolicitudServicioCerradaDto solicitudServicioCerradaDto, boolean firstTime) {
+//		this.solicitudServicioCerradaDto = solicitudServicioCerradaDto;
+		this.solicitudServicioCerradaDto = solicitudServicioSearchDto;
 		cantEquipos = new Long(0);
 		cantPataconex = new Double(0);
 		cantEqFirmados = 0;
 		exportarExcelSSResultUI.setNumResultados("Número de Resultados: ");
-		SolicitudRpcService.Util.getInstance().searchSolicitudesServicio(solicitudServicioCerradaDto, isAnalistaCreditos(),
+		solicitudServicioCerradaDto.setCantidadResultados(solicitudServicioSearchDto.getCantidadResultados());
+		SolicitudRpcService.Util.getInstance().searchSolicitudesServicio(solicitudServicioCerradaDto, //LF#3isAnalistaCreditos(),
 				new DefaultWaitCallback<List<SolicitudServicioCerradaResultDto>>() {
 					public void success(List<SolicitudServicioCerradaResultDto> result) {
 						if (result != null) {
 							if (result.size() == 0) {
-								// cambiosSSCerradasResultUI.CleanCambiosTable();
-								// cambiosSSCerradasResultUI.setSolicitudServicioCerradaDto(new
-								// DetalleSolicitudServicioDto("", "", "", null));
-								
-								//LF
 								if(ClientContext.getInstance().getVendedor().isADMCreditos() && 
 										ClientContext.getInstance().vengoDeNexus() && ClientContext.getInstance().soyClienteNexus()) {
 									MessageDialog.getInstance().showAceptar("Búsqueda de SS",
@@ -126,16 +125,13 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler{
 											"No se encontraron datos con el criterio utilizado",
 											MessageDialog.getCloseCommand());
 								}
-//								MessageDialog.getInstance().showAceptar("Búsqueda de SS",
-//										"No se encontraron datos con el criterio utilizado",
-//										MessageDialog.getCloseCommand());
 								cambiosSSCerradasResultUI.hideCambiosTable();
 							}
 							exportarExcelSSResultUI.setVisible(true);
 							loadExcel();
 							setSolicitudServicioDto(result);
 							buscarSSTotalesResultUI.setValues(cantEquipos.toString(), cantPataconex, String
-									.valueOf(cantEqFirmados));
+									.valueOf(cantEqFirmados));//LF#3, isAnalistaCreditos());
 							buscarSSTotalesResultUI.setVisible(true);
 						}
 					}
@@ -154,7 +150,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler{
 	private void loadExcel() {
 		exportarExcelSSResultUI.getIcon().addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				SolicitudRpcService.Util.getInstance().buildExcel(solicitudServicioCerradaDto, isAnalistaCreditos(),
+				SolicitudRpcService.Util.getInstance().buildExcel(solicitudServicioCerradaDto, //LF#3isAnalistaCreditos(),
 						new DefaultWaitCallback<String>() {
 							public void success(String result) {
 								if (result != null) {
@@ -178,17 +174,18 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler{
 				SolicitudServicioCerradaResultDto solicitudServicioCerradaResultDto = (SolicitudServicioCerradaResultDto) iter
 						.next();
 				int pos = 0;
-				if(isAnalistaCreditos()) {
-					resultTable.setWidget(indiceRowTabla, pos, IconFactory.lapiz());
-					//LF Si la ss esta cerrada(en carga false) muestro el rtf en la tabla, si no no muestro nada.
-					if(solicitudServicioCerradaResultDto.getEnCarga()) {
-						resultTable.setText(indiceRowTabla, ++pos, "");
-					} else {
-						resultTable.setWidget(indiceRowTabla, ++pos, IconFactory.word());
-					}
-				} else {
+				//LF#3
+//				if(isAnalistaCreditos()) {
+//					resultTable.setWidget(indiceRowTabla, pos, IconFactory.lapiz());
+//					//LF Si la ss esta cerrada(en carga false) muestro el rtf en la tabla, si no no muestro nada.
+//					if(solicitudServicioCerradaResultDto.getEnCarga()) {
+//						resultTable.setText(indiceRowTabla, ++pos, "");
+//					} else {
+//						resultTable.setWidget(indiceRowTabla, ++pos, IconFactory.word());
+//					}
+//				} else {
 					resultTable.setWidget(indiceRowTabla, pos, IconFactory.word());
-				}
+//				}
 				resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getNumeroSS());
 				resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getNumeroCuenta());
 				if (solicitudServicioCerradaResultDto.getRazonSocialCuenta() != null) {
@@ -197,59 +194,60 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler{
 					resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto
 							.getRazonSocialCuenta());
 				}
-				if(isAnalistaCreditos()) {
-					solicitudServicioCerradaResultDto.setCantidadEquipos(calcularCantEquipos(solicitudServicioCerradaResultDto.getLineas()));
+				//LF#3
+//				if(isAnalistaCreditos()) {
+//					solicitudServicioCerradaResultDto.setCantidadEquipos(calcularCantEquipos(solicitudServicioCerradaResultDto.getLineas()));
+//					resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getCantidadEquipos().toString());
+//					cantEquipos = cantEquipos + solicitudServicioCerradaResultDto.getCantidadEquipos();
+//				}else {
 					resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getCantidadEquipos().toString());
 					cantEquipos = cantEquipos + solicitudServicioCerradaResultDto.getCantidadEquipos();
-				}else {
-					resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getCantidadEquipos().toString());
-					cantEquipos = cantEquipos + solicitudServicioCerradaResultDto.getCantidadEquipos();
-				}
+//				}
 				
 				if (solicitudServicioCerradaResultDto.getFirmar().booleanValue() == Boolean.TRUE) {
 					cantEqFirmados++;
 				}
-
-				if(isAnalistaCreditos()) {
-			    	if (solicitudServicioCerradaResultDto.getApellidoUsuarioCreacion() != null) {
-						resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getApellidoUsuarioCreacion() + " " + solicitudServicioCerradaResultDto.getNombreUsuarioCreacion());
-					} else {
-						resultTable.setHTML(indiceRowTabla, ++pos, "");
-					}
-			    	if (solicitudServicioCerradaResultDto.getApellidoNombreVendedor() != null) {
-						resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getApellidoNombreVendedor());
-					} else {
-						resultTable.setHTML(indiceRowTabla, ++pos, "");
-					}		
-			    	if (solicitudServicioCerradaResultDto.getScoring().booleanValue()) {  //PIN/SCORING
-						resultTable.setWidget(indiceRowTabla, ++pos, IconFactory.tildeVerde());
-					} else {
-						resultTable.setText(indiceRowTabla, ++pos, "");
-					}
-			    	if (solicitudServicioCerradaResultDto.getScoring().booleanValue()) {
-						resultTable.setWidget(indiceRowTabla, ++pos, IconFactory.tildeVerde());
-					} else {
-						resultTable.setText(indiceRowTabla, ++pos, null);
-					}
-			    	if (solicitudServicioCerradaResultDto.getVeraz() != null) {
-						resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getVeraz());
-					} else {
-						resultTable.setText(indiceRowTabla, ++pos, "");
-					}
-						
-			    	resultTable.setText(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getUltimoEstado());
-			    	
-			    	if (solicitudServicioCerradaResultDto.getFechaCreacion() != null) {
-						resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getFechaCreacion().toLocaleString());
-					} else {
-						resultTable.setText(indiceRowTabla, ++pos, "");
-					}		
-//							    	if (solicitudServicioCerradaResultDto.getFechaCierre() != null) {
-//										resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getFechaCierre().toLocaleString());
-//									} else {
-					resultTable.setText(indiceRowTabla, ++pos, "");
-//									}	
-				    }
+				//LF#3
+//				if(isAnalistaCreditos()) {
+//			    	if (solicitudServicioCerradaResultDto.getApellidoUsuarioCreacion() != null) {
+//						resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getApellidoUsuarioCreacion() + " " + solicitudServicioCerradaResultDto.getNombreUsuarioCreacion());
+//					} else {
+//						resultTable.setHTML(indiceRowTabla, ++pos, "");
+//					}
+//			    	if (solicitudServicioCerradaResultDto.getApellidoNombreVendedor() != null) {
+//						resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getApellidoNombreVendedor());
+//					} else {
+//						resultTable.setHTML(indiceRowTabla, ++pos, "");
+//					}		
+//			    	if (solicitudServicioCerradaResultDto.getScoring().booleanValue()) {  //PIN/SCORING
+//						resultTable.setWidget(indiceRowTabla, ++pos, IconFactory.tildeVerde());
+//					} else {
+//						resultTable.setText(indiceRowTabla, ++pos, "");
+//					}
+//			    	if (solicitudServicioCerradaResultDto.getScoring().booleanValue()) {
+//						resultTable.setWidget(indiceRowTabla, ++pos, IconFactory.tildeVerde());
+//					} else {
+//						resultTable.setText(indiceRowTabla, ++pos, null);
+//					}
+//			    	if (solicitudServicioCerradaResultDto.getVeraz() != null) {
+//						resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getVeraz());
+//					} else {
+//						resultTable.setText(indiceRowTabla, ++pos, "");
+//					}
+//						
+//			    	resultTable.setText(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getUltimoEstado());
+//			    	
+//			    	if (solicitudServicioCerradaResultDto.getFechaCreacion() != null) {
+//						resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getFechaCreacion().toLocaleString());
+//					} else {
+//						resultTable.setText(indiceRowTabla, ++pos, "");
+//					}		
+////							    	if (solicitudServicioCerradaResultDto.getFechaCierre() != null) {
+////										resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getFechaCierre().toLocaleString());
+////									} else {
+//					resultTable.setText(indiceRowTabla, ++pos, "");
+////									}	
+//				    }
 					if (solicitudServicioCerradaResultDto.getPataconex() == null) {
 						resultTable.setHTML(indiceRowTabla, ++pos, "");
 					} else {
@@ -262,23 +260,18 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler{
 					} else {
 						resultTable.setText(indiceRowTabla, ++pos, "");
 					}
-					if(isAnalistaCreditos()) {
-				    	if (solicitudServicioCerradaResultDto.getAnticipo() != null) {
-							resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getAnticipo());
-						} else {
-							resultTable.setText(indiceRowTabla, ++pos, "");
-						}		
-//							    	if (solicitudServicioCerradaResultDto.getDesvios() != null) {
-//										resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getDesvios());
-//									} else {
-							resultTable.setText(indiceRowTabla, ++pos, calcularDesvio(solicitudServicioCerradaResultDto.getLineas()));
-//									}
-//							if(solicitudServicioCerradaResultDto.getIdSolicitudServicio() != null) {
-							//LF: Agrego una columna con el id_solicitud_servicio y oculto la misma para poder luego obtener el id para buscar la solicitud.
-							resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getIdSolicitudServicio().toString());
-							resultTable.getCellFormatter().setVisible(indiceRowTabla, pos, false);
-//							}
-				    }
+					//LF#3
+//					if(isAnalistaCreditos()) {
+//				    	if (solicitudServicioCerradaResultDto.getAnticipo() != null) {
+//							resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getAnticipo());
+//						} else {
+//							resultTable.setText(indiceRowTabla, ++pos, "");
+//						}						    	
+//						resultTable.setText(indiceRowTabla, ++pos, calcularDesvio(solicitudServicioCerradaResultDto));
+//						//LF: Agrego una columna con el id_solicitud_servicio y oculto la misma para poder luego obtener el id para buscar la solicitud.
+//						resultTable.setHTML(indiceRowTabla, ++pos, solicitudServicioCerradaResultDto.getIdSolicitudServicio().toString());
+//						resultTable.getCellFormatter().setVisible(indiceRowTabla, pos, false);
+//				    }
 										
 						indiceRowTabla++;
 			}
@@ -359,7 +352,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler{
 		table.setWidget(0, ++posTitle, new SimpleLink(Sfa.constant().desv()));	
 		
 	}
-	
+
 	public void setBuscarSSTotalesResultUI(BuscarSSTotalesResultUI buscarSSTotalesResultUI) {
 		this.buscarSSTotalesResultUI = buscarSSTotalesResultUI;
 	}
@@ -373,57 +366,60 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler{
 
 		if (cell == null)
 			return;
-		if(isAnalistaCreditos()) {
-			numeroSS = resultTable.getHTML(cell.getRowIndex(), 2).toString();
-		} else {
+		//LF#3
+//		if(isAnalistaCreditos()) {
+//			numeroSS = resultTable.getHTML(cell.getRowIndex(), 2).toString();
+//		} else {
 			numeroSS = resultTable.getHTML(cell.getRowIndex(), 1).toString();
-		}
+//		}
 		
 		// 18 es el numero de columna en el cual esta oculto el id_solicitud_servicio para realizar la busqueda de solicitudes.
 		if(cell.getRowIndex() != 0) {
-			if(isAnalistaCreditos()) {
-				Long idSS = Long.parseLong(resultTable.getHTML(cell.getRowIndex(), 18));
-				solicitud = buscarSS(idSS);
-			} else {
-				solicitud = buscarSS(numeroSS);
-			}
 			
-			if(isAnalistaCreditos()) {
-				if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() > 1)) {
-					if(solicitud.getIdVantive() != null) {
-						mostrarTablaDetalleSolicitudServicio();
-					} else {
-						// oculto la tabla de detalle.
-						cambiosSSCerradasResultUI.setVisible(false);
-					}
-				} else if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() == 1)) {
-					abrirArchivoRTF();
-				} else if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() == 0)) {
-					String url =  this.obtenerUrlSS(solicitud.getIdGrupoSolicitud(), solicitud.getNumeroCuenta(), solicitud.getIdCuenta());
-					url = "idss="+Long.parseLong(resultTable.getHTML(cell.getRowIndex(), 18))+"&" + url;
-					if(solicitud.getEnCarga()) {
-						new OpenPageCommand(UILoader.AGREGAR_SOLICITUD,url).execute();
-					} else {
-						new OpenPageCommand(UILoader.VER_SOLICITUD,url).execute();
-					}
-				}
-			} else {
+			//LF#3
+//			if(isAnalistaCreditos()) {
+//				Long idSS = Long.parseLong(resultTable.getHTML(cell.getRowIndex(), 18));
+//				solicitud = buscarSS(idSS);
+//			} else {
+				solicitud = buscarSS(numeroSS);
+//			}
+			
+				//LF#3
+//			if(isAnalistaCreditos()) {
+//				if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() > 1)) {
+//					if(solicitud.getIdVantive() != null) {
+//						mostrarTablaDetalleSolicitudServicio();
+//					} else {
+//						// oculto la tabla de detalle.
+//						cambiosSSCerradasResultUI.setVisible(false);
+//					}
+//				} else if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() == 1)) {
+//					abrirArchivoRTF();
+//				} else if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() == 0)) {
+//					String url =  this.obtenerUrlSS(solicitud.getIdGrupoSolicitud(), solicitud.getNumeroCuenta(), solicitud.getIdCuenta());
+//					url = "idss="+Long.parseLong(resultTable.getHTML(cell.getRowIndex(), 18))+"&" + url;
+//					if(solicitud.getEnCarga()) {
+//						new OpenPageCommand(UILoader.AGREGAR_SOLICITUD,url).execute();
+//					} else {
+//						new OpenPageCommand(UILoader.VER_SOLICITUD,url).execute();
+//					}
+//				}
+//			} else {
 				if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() >= 1)) {
 					mostrarTablaDetalleSolicitudServicio();
 				} else if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() == 0)) {
 					abrirArchivoRTF();
 				}
-			}
-		} else {
-			if(isAnalistaCreditos()) {
-				setSolicitudServicioDto(ordenTablaSS.ordenar(cell.getCellIndex(), solicitudesServicioCerradaResultDto));
-			}			
+//			}
+				//LF#3
+//		} else {
+//			if(isAnalistaCreditos()) {
+//				setSolicitudServicioDto(ordenTablaSS.ordenar(cell.getCellIndex(), solicitudesServicioCerradaResultDto));
+//			}			
 		}
 
 	}
 	
-	
-
 	public void mostrarTablaDetalleSolicitudServicio(){
 		SolicitudRpcService.Util.getInstance().getDetalleSolicitudServicio(solicitud.getId(),
 				new DefaultWaitCallback<DetalleSolicitudServicioDto>() {
@@ -557,33 +553,42 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler{
 	public void setCambiosSSCerradasResultUI(CambiosSSCerradasResultUI cambiosSSCerradasResultUI) {
 		this.cambiosSSCerradasResultUI = cambiosSSCerradasResultUI;
 	}
-
-	public boolean isAnalistaCreditos() {
-		return isAnalistaCreditos;
-	}
-
-	public void setAnalistaCreditos(boolean isAnalistaCreditos) {
-		this.isAnalistaCreditos = isAnalistaCreditos;
-	}
 	
-	public String calcularDesvio(List<LineaSolicitudServicioDto> lineas) {
+//	LF#3
+//	public boolean isAnalistaCreditos() {
+//		return analistaCreditos;
+//	}
+//
+//	public void setAnalistaCreditos(boolean analistaCreditos) {
+//		this.analistaCreditos = analistaCreditos;
+//	}
+
+	/**
+	 * Metodo que se utiliza para calcular si la ss tiene algun desvio. El mismo se calcula obteniendo
+	 * la diferencia entre el precio del plan � el precio de venta del plan mas la sumatoria de la diferencia 
+	 * del precio de lista y el precio de venta de todos los servicios seleccionados de la SS.
+	 * Si no tiene desvios retorna 0 (cero).
+	 * @param ssCerradaResultDto
+	 * @return 
+	 */
+	public String calcularDesvio(SolicitudServicioCerradaResultDto ssCerradaResultDto) {
 		double precioListaPlan = 0;
 		double precioVentaPlan = 0;
 		double precioListaServicio = 0;
 		double precioVentaServicio = 0;
 		double precioItemTotal = 0;
-		for (LineaSolicitudServicioDto linea : lineas) {
-			precioListaPlan = linea.getPrecioListaPlan();
-			precioVentaPlan = linea.getPrecioVentaPlan();
+		for (LineaSolicitudServicioDto linea : ssCerradaResultDto.getLineas()) {
+			precioListaPlan = precioListaPlan + linea.getPrecioListaPlan();
+			precioVentaPlan = precioVentaPlan + linea.getPrecioVentaPlan();
 			for (ServicioAdicionalLineaSolicitudServicioDto servicioAd : linea.getServiciosAdicionales()) {
 				if (servicioAd.isChecked()) {
-					precioListaPlan = precioListaPlan + servicioAd.getPrecioLista();
-					precioVentaPlan = precioVentaPlan + servicioAd.getPrecioVenta();
+					precioListaServicio = precioListaServicio + servicioAd.getPrecioLista();
+					precioVentaServicio = precioVentaServicio + servicioAd.getPrecioVenta();
 				}
 			}	
 		}
 		precioItemTotal = precioListaPlan - precioVentaPlan + (precioListaServicio - precioVentaServicio);
-		
+		ssCerradaResultDto.setDesvios(String.valueOf(precioItemTotal));
 		if(precioItemTotal == 0) 
 			return "$ 0.00";
 		return String.valueOf("$ " + precioItemTotal);
@@ -607,5 +612,8 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler{
 		}
 		return cantEquipos;
 	}
+
+	
+	
 	
 }

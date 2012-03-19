@@ -126,12 +126,12 @@ public class UILoader extends SimplePanel implements ValueChangeHandler<String> 
 			pages[AGREGAR_CUENTA] = AgregarCuentaUI.getInstance();
 			break;
 		case BUSCAR_SOLICITUD:
-//			if(ClientContext.getInstance().getVendedor().getTipoVendedor().getCodigo().equals("ADM")) {
-		if(ClientContext.getInstance().getVendedor().isADMCreditos()) {
-				pages[BUSCAR_SOLICITUD] = new BuscarSSAnalistaCreditosUI();
-			} else {
+//		LF#3
+//		if(ClientContext.getInstance().getVendedor().isADMCreditos()) {
+//				pages[BUSCAR_SOLICITUD] = new BuscarSSAnalistaCreditosUI();
+//			} else {
 				pages[BUSCAR_SOLICITUD] = new BuscarSSCerradaUI();	
-			}
+//			}
 			break;
 		//MGR - Integracion
 		case AGREGAR_PROSPECT:

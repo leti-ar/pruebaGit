@@ -91,11 +91,12 @@ public class SolicitudRpcServiceDelegate {
 	
 //	LF
 //	public void searchSSCerrada(SolicitudServicioCerradaDto solicitudServicioCerradaDto
-	public void searchSolicitudesServicio(SolicitudServicioCerradaDto solicitudServicioCerradaDto, boolean analistaCreditos,
+	public void searchSolicitudesServicio(SolicitudServicioCerradaDto solicitudServicioCerradaDto, //LF#3boolean analistaCreditos,
 			DefaultWaitCallback<List<SolicitudServicioCerradaResultDto>> callback) {
 		WaitWindow.show();
 //		solicitudRpcServiceAsync.searchSSCerrada(solicitudServicioCerradaDto, analistaCreditos, callback);
-		solicitudRpcServiceAsync.searchSolicitudesServicio(solicitudServicioCerradaDto, analistaCreditos, callback);
+		solicitudRpcServiceAsync.searchSolicitudesServicio(solicitudServicioCerradaDto, //LF#3analistaCreditos, 
+				callback);
 
 	}
 
@@ -111,10 +112,11 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.getLineasSolicitudServicioInitializer(grupoSolicitudDto, isEmpresa, callback);
 	}
 
-	public void buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto, boolean analistaCreditos,
+	public void buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto, //LF#3boolean analistaCreditos,
 			DefaultWaitCallback<String> callback) {
 		WaitWindow.show();
-		solicitudRpcServiceAsync.buildExcel(solicitudServicioCerradaDto, analistaCreditos, callback);
+		solicitudRpcServiceAsync.buildExcel(solicitudServicioCerradaDto, //LF#3analistaCreditos, 
+				callback);
 	}
 
 	public void getListasDePrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa,

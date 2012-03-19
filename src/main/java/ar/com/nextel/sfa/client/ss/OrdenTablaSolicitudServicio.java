@@ -20,6 +20,13 @@ import ar.com.nextel.sfa.client.comparator.UsuarioCreacionSSComparator;
 import ar.com.nextel.sfa.client.comparator.VendedorSSComparator;
 import ar.com.nextel.sfa.client.comparator.VerazSSComparator;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
+import ar.com.snoop.gwt.commons.client.window.WaitWindow;
+
+/**
+ * Clase utilizada para ordenar la tabla de resultados de SS
+ * @author fernaluc
+ *
+ */
 
 public class OrdenTablaSolicitudServicio {
 
@@ -32,98 +39,97 @@ public class OrdenTablaSolicitudServicio {
 		switch (nroColumna) {
 		case 2: // NUMERO SS
 			if(nroColumnaAnterior != 0 && nroColumnaAnterior == 2) {
-				ordenar();
+				ordenAscDesc();
 			} else {
 				setNroColumnaAnterior(nroColumna);
-				setOrdenDesc(false);
+				setOrdenDesc(true);
 			}
 			Collections.sort(solicitudesServicioCerradaResultDto, new NumeroSSComparator(isOrdenDesc()));
 			break;
 		case 3: // NUMERO CUENTA
 			if(nroColumnaAnterior != 0 && nroColumnaAnterior == 3) {
-				ordenar();
+				ordenAscDesc();
 			} else {
 				setNroColumnaAnterior(nroColumna);
-				setOrdenDesc(false);
+				setOrdenDesc(true);
 			}
-			System.out.println(isOrdenDesc());
 			Collections.sort(solicitudesServicioCerradaResultDto, new NumeroCuentaSSComparator(isOrdenDesc()));
 			break;
 		case 4: // RAZON SOCIAL
 			if(nroColumnaAnterior != 0 && nroColumnaAnterior == 4) {
-				ordenar();
+				ordenAscDesc();
 			} else {
 				setNroColumnaAnterior(nroColumna);
-				setOrdenDesc(false);
+				setOrdenDesc(true);
 			}
 			Collections.sort(solicitudesServicioCerradaResultDto, new RazonSocialSSComparator(isOrdenDesc()));
 			break;
 		case 5: // EQUIPOS 
 			if(nroColumnaAnterior != 0 && nroColumnaAnterior == 5) {
-				ordenar();
+				ordenAscDesc();
 			} else {
 				setNroColumnaAnterior(nroColumna);
-				setOrdenDesc(false);
+				setOrdenDesc(true);
 			}
 			Collections.sort(solicitudesServicioCerradaResultDto, new EquiposSSComparator(isOrdenDesc()));
 			break;
 		case 6: // USUARIO CREACION 
 			if(nroColumnaAnterior != 0 && nroColumnaAnterior == 6) {
-				ordenar();
+				ordenAscDesc();
 			} else {
 				setNroColumnaAnterior(nroColumna);
-				setOrdenDesc(false);
+				setOrdenDesc(true);
 			}
 			Collections.sort(solicitudesServicioCerradaResultDto, new UsuarioCreacionSSComparator(isOrdenDesc()));
 			break;
 		case 7: // VENDEDOR
 			if(nroColumnaAnterior != 0 && nroColumnaAnterior == 7) {
-				ordenar();
+				ordenAscDesc();
 			} else {
 				setNroColumnaAnterior(nroColumna);
-				setOrdenDesc(false);
+				setOrdenDesc(true);
 			}
 			Collections.sort(solicitudesServicioCerradaResultDto, new VendedorSSComparator(isOrdenDesc()));
 			break;
 		case 8: // PIN/SCORING
 			if(nroColumnaAnterior != 0 && nroColumnaAnterior == 8) {
-				ordenar();
+				ordenAscDesc();
 			} else {
 				setNroColumnaAnterior(nroColumna);
-				setOrdenDesc(false);
+				setOrdenDesc(true);
 			}
 			Collections.sort(solicitudesServicioCerradaResultDto, new PinScoringSSComparator(isOrdenDesc()));
 			break;
 		case 9: // SCORING
 			if(nroColumnaAnterior != 0 && nroColumnaAnterior == 9) {
-				ordenar();
+				ordenAscDesc();
 			} else {
 				setNroColumnaAnterior(nroColumna);
-				setOrdenDesc(false);
+				setOrdenDesc(true);
 			}
 			Collections.sort(solicitudesServicioCerradaResultDto, new ScoringSSComparator(isOrdenDesc()));
 			break;
 		case 10: // VERAZ
 			if(nroColumnaAnterior != 0 && nroColumnaAnterior == 10) {
-				ordenar();
+				ordenAscDesc();
 			} else {
 				setNroColumnaAnterior(nroColumna);
-				setOrdenDesc(false);
+				setOrdenDesc(true);
 			}
 			Collections.sort(solicitudesServicioCerradaResultDto, new VerazSSComparator(isOrdenDesc()));
 			break;
 		case 11: // ULTIMO ESTADO 
 			if(nroColumnaAnterior != 0 && nroColumnaAnterior == 11) {
-				ordenar();
+				ordenAscDesc();
 			} else {
 				setNroColumnaAnterior(nroColumna);
-				setOrdenDesc(false);
+				setOrdenDesc(true);
 			}
 			Collections.sort(solicitudesServicioCerradaResultDto, new UltimoEstadoSSComparator(isOrdenDesc()));
 			break;
 		case 12: // FECHA CREACION
 			if(nroColumnaAnterior != 0 && nroColumnaAnterior == 12) {
-				ordenar();
+				ordenAscDesc();
 			} else {
 				setNroColumnaAnterior(nroColumna);
 				setOrdenDesc(false);
@@ -132,51 +138,53 @@ public class OrdenTablaSolicitudServicio {
 			break;
 		case 13: // FECHA CIERRE
 			if(nroColumnaAnterior != 0 && nroColumnaAnterior == 13) {
-				ordenar();
+				ordenAscDesc();
 			} else {
 				setNroColumnaAnterior(nroColumna);
-				setOrdenDesc(false);
+				setOrdenDesc(true);
 			}
 			Collections.sort(solicitudesServicioCerradaResultDto, new FechaCierreSSComparator(isOrdenDesc()));
 			break;
 		case 14: // PATACONEX
 			if(nroColumnaAnterior != 0 && nroColumnaAnterior == 14) {
-				ordenar();
+				ordenAscDesc();
 			} else {
 				setNroColumnaAnterior(nroColumna);
-				setOrdenDesc(false);
+				setOrdenDesc(true);
 			}
 			Collections.sort(solicitudesServicioCerradaResultDto, new PataconexSSComparator(isOrdenDesc()));
 			break;
 		case 15: // FIRMAS
 			if(nroColumnaAnterior != 0 && nroColumnaAnterior == 15) {
-				ordenar();
+				ordenAscDesc();
 			} else {
 				setNroColumnaAnterior(nroColumna);
-				setOrdenDesc(false);
+				setOrdenDesc(true);
 			}
 			Collections.sort(solicitudesServicioCerradaResultDto, new FirmasSSComparator(isOrdenDesc()));
 			break;
 		case 16: // ANTICIPO
 			if(nroColumnaAnterior != 0 && nroColumnaAnterior == 16) {
-				ordenar();
+				ordenAscDesc();
 			} else {
 				setNroColumnaAnterior(nroColumna);
-				setOrdenDesc(false);
+				setOrdenDesc(true);
 			}
 			Collections.sort(solicitudesServicioCerradaResultDto, new AnticipoSSComparator(isOrdenDesc()));
 			break;
 		case 17: // DESVIOS
 			if(nroColumnaAnterior != 0 && nroColumnaAnterior == 17) {
-				ordenar();
+				ordenAscDesc();
 			} else {
 				setNroColumnaAnterior(nroColumna);
-				setOrdenDesc(false);
+				setOrdenDesc(true);
 			}
 			Collections.sort(solicitudesServicioCerradaResultDto, new DesviosSSComparator(isOrdenDesc()));
+			break;
 		default:
 			break;
 		}
+		WaitWindow.hide();
 		return solicitudesServicioCerradaResultDto;
 	}
 
@@ -205,7 +213,7 @@ public class OrdenTablaSolicitudServicio {
 		this.ordenDesc = ordenDesc;
 	}
 	
-	public void ordenar(){
+	public void ordenAscDesc(){
 		if(ordenDesc) {
 			ordenDesc = false;
 		} else {

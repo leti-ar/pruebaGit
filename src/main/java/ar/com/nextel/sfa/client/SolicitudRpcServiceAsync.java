@@ -11,8 +11,6 @@ import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
-import ar.com.nextel.sfa.client.dto.EstadoHistoricoDto;
-import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
 import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
@@ -36,7 +34,6 @@ import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
-import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -50,7 +47,7 @@ public interface SolicitudRpcServiceAsync {
 	//void searchSSCerrada(
 	public void searchSolicitudesServicio(
 	SolicitudServicioCerradaDto solicitudServicioCerradaDto,
-			boolean analistaCreditos,
+	  //LF#3boolean analistaCreditos,
 			AsyncCallback<List<SolicitudServicioCerradaResultDto>> callback);
 
 	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
@@ -74,7 +71,7 @@ public interface SolicitudRpcServiceAsync {
 	public void getListasDePrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa, 
 			AsyncCallback<List<ListaPreciosDto>> callback);
 
-	public void buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto, boolean analistaCreditos,
+	public void buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto, //LF#3boolean analistaCreditos,
 			AsyncCallback<String> callback);
 
 	public void getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,
@@ -160,11 +157,9 @@ public interface SolicitudRpcServiceAsync {
 	public void saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto,
 			AsyncCallback<Boolean> callback);
 	
-	
 	public void getEstadoSolicitud(long numeroSS,AsyncCallback<String> callback);
 	
-	
-	public void buscarSSPorId(Long id, AsyncCallback<SolicitudServicioDto> callback);	
+	public void buscarSSPorId(Long id, AsyncCallback<SolicitudServicioDto> callback);
 
 	public void buscarVendedorPorId(Long id, AsyncCallback<VendedorDto> callback);
 	

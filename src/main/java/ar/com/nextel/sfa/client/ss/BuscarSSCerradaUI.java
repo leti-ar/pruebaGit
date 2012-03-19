@@ -22,7 +22,7 @@ public class BuscarSSCerradaUI extends BuscarSSGenericoUI {//ApplicationUI {
 	@Override
 	public void firstLoad() {
 		buscadorSSCerradasFilterForm = new BuscarSSCerradasFilterUI();
-		buscarSSCerradasResultPanel = new BuscarSSCerradasResultUI(this);
+		buscarSSCerradasResultPanel = new BuscarSSCerradasResultUI();//LF#3-this);
 		buscadorSSCerradasFilterForm.setBuscarCuentaResultPanel(buscarSSCerradasResultPanel);
 		mainPanel.add(buscadorSSCerradasFilterForm);
 		super.firstLoad();

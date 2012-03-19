@@ -1998,6 +1998,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("SIM:")
   @Key("sim")
   String sim();
+  
+  /**
+   * Translated "<span class=\"req\">SIM:</span>".
+   * 
+   * @return translated "<span class=\"req\">SIM:</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">SIM:</span>")
+  @Key("simReq")
+  String simReq();
 
   /**
    * Translated "SS:".
@@ -3288,4 +3297,13 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Buscar SS")
   @Key("buscarSSTitle")
   String buscarSSTitle();  
+  
+  /**
+   * Translated "La solicitud de servicio posee portabilidad y no se le podrá dar el pass automático de créditos. ¿Desea cerrarla?".
+   * 
+   * @return translated "La solicitud de servicio posee portabilidad y no se le podrá dar el pass automático de créditos. ¿Desea cerrarla?"
+   */
+  @DefaultStringValue("La solicitud de servicio posee portabilidad y no se le podrá dar el pass automático de créditos. ¿Desea cerrarla?")
+  @Key("MSG_PORTABILIDAD")
+  String MSG_PORTABILIDAD();
 }

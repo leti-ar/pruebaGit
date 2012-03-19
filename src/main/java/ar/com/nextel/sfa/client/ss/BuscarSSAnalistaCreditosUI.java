@@ -26,7 +26,7 @@ public class BuscarSSAnalistaCreditosUI extends BuscarSSGenericoUI {
 
 	@Override
 	public void firstLoad() {
-		buscarSSCerradasResultPanel = new BuscarSSCerradasResultUI(this);		
+		buscarSSCerradasResultPanel = new BuscarSSCerradasResultUI();//LF#3-this);		
 		if(!ClientContext.getInstance().soyClienteNexus()) {			
 			buscadorSSCerradasFilterForm = new BuscarSSAnalistaCreditosFilterUI();
 			buscadorSSCerradasFilterForm.setBuscarCuentaResultPanel(buscarSSCerradasResultPanel);
@@ -45,7 +45,7 @@ public class BuscarSSAnalistaCreditosUI extends BuscarSSGenericoUI {
 			solicitudServicioCerradaDto.setIdSucursal(ClientContext.getInstance().getVendedor().getIdSucursal());
 			solicitudServicioCerradaDto.setIdCuenta(Long.parseLong(ClientContext.getInstance().getClienteNexus().getCustomerId()));
 			solicitudServicioCerradaDto.setPerfiles(obtenerPerfiles());
-			solicitudServicioCerradaDto.setPerfilAC(ClientContext.getInstance().getKnownInstance().get(VendedorDto.TIPO_VENDEDOR_ADM_CREDITOS));			
+			solicitudServicioCerradaDto.setPerfilAC(ClientContext.getInstance().getKnownInstance().get(VendedorDto.TIPO_VENDEDOR_ADM_CREDITOS));	
 			buscarSSCerradasResultPanel.searchSolicitudesServicio(solicitudServicioCerradaDto);
 			exportarExcelSSResultUI.setVisible(true);
 			buscarSSCerradasResultPanel.setVisible(true);

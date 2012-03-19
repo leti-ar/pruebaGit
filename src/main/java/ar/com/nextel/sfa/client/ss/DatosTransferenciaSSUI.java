@@ -48,6 +48,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -116,7 +117,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 			mainpanel.add(getCedenteLayout());
 		}	
 		mainpanel.add(getBusqLayout());
-		mainpanel.add(getContratosLayout());
+		mainpanel.add(getContratosLayout());//LF#3controller.isEditable()));
 		
 		verTodos.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
@@ -233,7 +234,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		return busqLayout;
 	}
 	
-	private Widget getContratosLayout(){
+	private Widget getContratosLayout(){//LF#3boolean isEditable){
 		contratosLayout = new Grid(5, 1);
 		contratosLayout.setWidth("100%");
 		
@@ -252,6 +253,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		}
 		CheckBox check = new CheckBox();
 		check.setValue(true);
+		//LF#3 check.setEnabled(isEditable);
 		contratosTable.setWidget(0, 0, check);
 		contratosTable.setCellPadding(0);
 		contratosTable.setCellSpacing(0);

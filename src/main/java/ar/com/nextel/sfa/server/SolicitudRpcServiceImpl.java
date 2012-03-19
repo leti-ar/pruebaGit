@@ -169,7 +169,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	//MGR - #1481
 	private DefaultRetriever messageRetriever;;
 	//#LF
-	private static final String SS_SUCURSAL = "SS_SUCURSAL";
 	private static final String CANTIDAD_EQUIPOS = "CANTIDAD_EQUIPOS";
 	
 	private static final Long MAX_DEUDA_CTA_CTE = 65L;
@@ -366,21 +365,30 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 //LF
 //	public List<SolicitudServicioCerradaResultDto> searchSSCerrada(
 	public List<SolicitudServicioCerradaResultDto> searchSolicitudesServicio(
-			SolicitudServicioCerradaDto solicitudServicioCerradaDto, boolean analistaCreditos) throws RpcExceptionMessages {
+			SolicitudServicioCerradaDto solicitudServicioCerradaDto//LF#3, boolean analistaCreditos
+			) throws RpcExceptionMessages {
 		AppLogger.info("Iniciando busqueda de SS cerradas...");
 		SolicitudServicioCerradaSearchCriteria solicitudServicioCerradaSearchCriteria = mapper.map(
 				solicitudServicioCerradaDto, SolicitudServicioCerradaSearchCriteria.class);
 
-		if(analistaCreditos) {
-			solicitudServicioCerradaSearchCriteria.setBusquedaAnalistaCreditos(true);
-			if(solicitudServicioCerradaDto.getNroDoc() != null && !solicitudServicioCerradaDto.getNroDoc().equals("")) {
-				solicitudServicioCerradaSearchCriteria.setIdCuentas(obtenerIdCuentasPorTipoyNroDocumento(solicitudServicioCerradaDto.getTipoDoc(), solicitudServicioCerradaDto.getNroDoc()));
-			}
-		} else {
-			solicitudServicioCerradaSearchCriteria.setBusquedaAnalistaCreditos(false);
+		//LF#3
+//		if(analistaCreditos) {
+//			solicitudServicioCerradaSearchCriteria.setBusquedaAnalistaCreditos(true);
+////			solicitudServicioCerradaSearchCriteria.setSucursal(this.repository.retrieve(Sucursal.class, solicitudServicioCerradaDto.getIdSucursal()));
+////			solicitudServicioCerradaSearchCriteria.getSucursal().setId(solicitudServicioCerradaDto.getIdSucursal());
+//			ArrayList<Object> list = (ArrayList<Object>) this.repository.find("from Sucursal s where s.id = ?", solicitudServicioCerradaDto.getIdSucursal());
+//			if(!list.isEmpty()){
+//				Long suc = ((Sucursal) list.get(0)).getId();
+//				solicitudServicioCerradaSearchCriteria.setIdSucursal(suc);
+//			}
+//			if(solicitudServicioCerradaDto.getNroDoc() != null && !solicitudServicioCerradaDto.getNroDoc().equals("")) {
+//				solicitudServicioCerradaSearchCriteria.setIdCuentas(obtenerIdCuentasPorTipoyNroDocumento(solicitudServicioCerradaDto.getTipoDoc(), solicitudServicioCerradaDto.getNroDoc()));
+//			}
+//		} else {
+//			solicitudServicioCerradaSearchCriteria.setBusquedaAnalistaCreditos(false);
 			Vendedor vendedor = sessionContextLoader.getVendedor();
 			solicitudServicioCerradaSearchCriteria.setVendedor(vendedor);
-		}
+//		}
 
 		List<SolicitudServicio> list = null;
 		try {
@@ -391,9 +399,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			throw ExceptionUtil.wrap(e);
 		}
 		
-		if(analistaCreditos) {
-			list = calcularUltimoEstado(list);
-		}
+		//LF#3
+//		if(analistaCreditos) {
+//			list = calcularUltimoEstado(list);
+//		}
 		
 		List result = mapper.convertList(list, SolicitudServicioCerradaResultDto.class, "ssCerradaResult");
 		AppLogger.info("Busqueda de SS cerradas finalizada...");
@@ -690,18 +699,19 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		}
 	}
 
-	public String buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto, boolean analistaCreditos) throws RpcExceptionMessages {
+	public String buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto//LF#3, boolean analistaCreditos
+			) throws RpcExceptionMessages {
 		AppLogger.info("Creando archivo Excel...");
 		SolicitudServicioCerradaSearchCriteria solicitudServicioCerradaSearchCriteria = mapper.map(
 				solicitudServicioCerradaDto, SolicitudServicioCerradaSearchCriteria.class);
 
-		
-		if(analistaCreditos) {
-			solicitudServicioCerradaSearchCriteria.setBusquedaAnalistaCreditos(true);
-			if(solicitudServicioCerradaDto.getNroDoc() != null && !solicitudServicioCerradaDto.getNroDoc().equals("")) {
-				solicitudServicioCerradaSearchCriteria.setIdCuentas(obtenerIdCuentasPorTipoyNroDocumento(solicitudServicioCerradaDto.getTipoDoc(), solicitudServicioCerradaDto.getNroDoc()));
-			}
-		}
+		//LF#3
+//		if(analistaCreditos) {
+//			solicitudServicioCerradaSearchCriteria.setBusquedaAnalistaCreditos(true);
+//			if(solicitudServicioCerradaDto.getNroDoc() != null && !solicitudServicioCerradaDto.getNroDoc().equals("")) {
+//				solicitudServicioCerradaSearchCriteria.setIdCuentas(obtenerIdCuentasPorTipoyNroDocumento(solicitudServicioCerradaDto.getTipoDoc(), solicitudServicioCerradaDto.getNroDoc()));
+//			}
+//		}
 		
 		List<SolicitudServicio> list = null;
 		try {
@@ -720,7 +730,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		
 		ExcelBuilder excel = new ExcelBuilder(nameExcel, "SFA Revolution");
 		try {
-			excel.crearExcel(list, analistaCreditos);
+			excel.crearExcel(list);//LF#3, analistaCreditos);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -830,7 +840,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		return tipoSolicitud.getTipoSolicitudBase().equals(knownInstanceRetriever
 				.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION))
 				|| tipoSolicitud.getTipoSolicitudBase().equals(knownInstanceRetriever
-						.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION_G4));
+						.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION_G4))
+						|| tipoSolicitud.getTipoSolicitudBase().equals(knownInstanceRetriever
+								.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION_ONLINE));
 
 	}
 	
@@ -1366,23 +1378,23 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				List <String> ultimoEstado = repository.executeCustomQuery("ULTIMO_ESTADO", solicitudServicio.getNumero());
 				if(!ultimoEstado.isEmpty()) {
 					solicitudServicio.setUltimoEstado(ultimoEstado.get(0));
-				} else {
-					DetalleSolicitudServicioDto detalleSolicitudServicioDto = getDetalleSolicitudServicio(solicitudServicio.getId());
-					int i = 0;
-					if (detalleSolicitudServicioDto.getCambiosEstadoSolicitud() != null) {
-						if(detalleSolicitudServicioDto.getCambiosEstadoSolicitud().size() > 1) {
-							for (int j = 0; j < detalleSolicitudServicioDto.getCambiosEstadoSolicitud().size(); j++) {
-								String estado = detalleSolicitudServicioDto.getCambiosEstadoSolicitud().get(j).getEstadoAprobacionSolicitud();
-								if(estado.equals("Eligible")) {
-									i = j - 1;
-								}
-							}
-						}
-						String ultEstado = detalleSolicitudServicioDto.getCambiosEstadoSolicitud().get(i).getEstadoAprobacionSolicitud();
-						solicitudServicio.setUltimoEstado(ultEstado);
-					} else {
-						solicitudServicio.setUltimoEstado("En carga");
-					}			
+//				} else {
+//					DetalleSolicitudServicioDto detalleSolicitudServicioDto = getDetalleSolicitudServicio(solicitudServicio.getId());
+//					int i = 0;
+//					if (detalleSolicitudServicioDto.getCambiosEstadoSolicitud() != null) {
+//						if(detalleSolicitudServicioDto.getCambiosEstadoSolicitud().size() > 1) {
+//							for (int j = 0; j < detalleSolicitudServicioDto.getCambiosEstadoSolicitud().size(); j++) {
+//								String estado = detalleSolicitudServicioDto.getCambiosEstadoSolicitud().get(j).getEstadoAprobacionSolicitud();
+//								if(estado.equals("Eligible")) {
+//									i = j - 1;
+//								}
+//							}
+//						}
+//						String ultEstado = detalleSolicitudServicioDto.getCambiosEstadoSolicitud().get(i).getEstadoAprobacionSolicitud();
+//						solicitudServicio.setUltimoEstado(ultEstado);
+//					} else {
+//						solicitudServicio.setUltimoEstado("En carga");
+//					}			
 				}
 			} else {
 				solicitudServicio.setUltimoEstado("En carga");
@@ -1560,7 +1572,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		ss.setEstadoH(estadoPass);
 		solicitudBusinessService.updateSolicitudServicio(ss);
 	}
-
+	
 	//GB
 	/**
 	 * Obtiene todos los controles que hay en la tabla SFA_CONTROL.
@@ -1589,8 +1601,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		}
 		
 		return null;
-	}
-	
+	}	
 	
 		/**
 	 * Dependiendo del tipo de cliente, si tiene equipos activos o suspendidos y deuda en cuenta corriente;
@@ -1784,7 +1795,6 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     	}
     	return mensaje;
 	}
-	
 	/**
 	 * Se valida que el resultado de la consulta a Negative Files de ok para todas las líneas de la SS; para el caso de activación. 
 	 * @param lineas
