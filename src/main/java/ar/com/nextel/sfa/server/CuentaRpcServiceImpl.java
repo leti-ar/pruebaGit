@@ -345,7 +345,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		} catch (Exception e) {
 			AppLogger.error(e);
 			AppLogger.error("Error consultando Veraz para la siguiente persona: \n" + personaDto.toString());
-			throw ExceptionUtil.wrap(e);
+			//MGR - Se agrega mensaje para identificar que hubo problema con el Veraz
+			throw ExceptionUtil.wrap("Se produjo un error al consultar al veraz.",e);
 		}
 
 		VerazResponseDto responseDto = mapper.map(responseDTO, VerazResponseDto.class);
@@ -363,7 +364,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		} catch (Exception e) {
 			AppLogger.error(e);
 			AppLogger.error("Error consultando Veraz para la siguiente persona: \n" + personaDto.toString());
-			throw ExceptionUtil.wrap(e);
+			//MGR - Se agrega mensaje para identificar que hubo problema con el Veraz
+			throw ExceptionUtil.wrap("Se produjo un error al consultar al veraz.",e);
 		}
 
 		VerazResponseDto responseDto = mapper.map(responseDTO, VerazResponseDto.class);
