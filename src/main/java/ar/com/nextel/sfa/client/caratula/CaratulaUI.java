@@ -45,6 +45,7 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 	private static CaratulaUI instance = null;
 	private CaratulaDto caratulaAEditar;
 	private int nroCaratula = 0; //Para saber si es la primer caratula o no (requerido validacion)
+	private static int SCORE_DNI_INEXISTENTE = 3;
 	
 	private Grid gridCabecera;
 	
@@ -383,7 +384,7 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 	
 	private void habilitarBotonesVeraz() {
 		/*  
-		 * Si la caratula está confirmada, el botón "Generar Veraz", debe estar deshabilitado, 
+		 * Si la caratula estï¿½ confirmada, el botï¿½n "Generar Veraz", debe estar deshabilitado, 
 		 * independientemente de que si el archivo no fue generado.
 		 */
 		boolean isVerazNoGenerado = !this.caratulaAEditar.isConfirmada() && (this.caratulaAEditar.getArchivoVeraz() == null || 
@@ -419,7 +420,7 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 								caratulaAEditar.setArchivoVeraz(result.getFileName());
 								habilitarBotonesVeraz();
 								// LF								
-								setEstadoVeraz(result.getEstado());
+								setEstadoVeraz(result);
 								obtenerCantidadEquipos();
 								// Utilizo el DeferredCommand para "esperar" a que se complete la llamada asincronica en el metodo obtenerCantidadEquipos().
 								DeferredCommand.addCommand(new IncrementalCommand() {
@@ -474,19 +475,29 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 	
 	
 	/**
-	 * Setea el estado del veraz en el Label y lo colorea según el mismo
-	 * @param estado
+	 * Setea el estado del veraz en el Label y lo colorea segï¿½n el mismo
+	 * @param response
 	 */
+	public void setEstadoVeraz(VerazResponseDto response){
+		if(response.getEstado().equals("REVISAR") && response.getScoreDni() == SCORE_DNI_INEXISTENTE){
+			setEstadoVeraz("DOCUMENTO INEXISTENTE");
+		}else{
+			setEstadoVeraz(response.getEstado());
+		}
+	}
+	
+
 	public void setEstadoVeraz(String estado){
 		estadoVeraz.setText(estado);
 		if ("ACEPTAR".equals(estado)) {
 			estadoVeraz.setStyleName("verazAceptarLabel");
-		} else if ("REVISAR".equals(estado)) {
+		} else if ("REVISAR".equals(estado) || "DOCUMENTO INEXISTENTE".equals(estado)) {
 			estadoVeraz.setStyleName("verazRevisarLabel");
 		} else {
 			estadoVeraz.setStyleName("verazRechazarLabel");
 		}
 	}
+	
 	//LF
 	/**
 	 * Obtengo una lista de SolicitudServicioDto segun el idCuenta y el nroSS ingresado en la caratula. Si la lista devuelve 
