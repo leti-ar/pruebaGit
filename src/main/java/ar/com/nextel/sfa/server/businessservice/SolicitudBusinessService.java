@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.validator.GenericValidator;
@@ -65,6 +66,7 @@ import ar.com.nextel.model.personas.beans.Sexo;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.model.solicitudes.beans.Control;
 import ar.com.nextel.model.solicitudes.beans.EstadoPorSolicitud;
+import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio;
@@ -81,6 +83,7 @@ import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.services.nextelServices.scoring.ScoringHistoryItem;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
+import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
@@ -632,6 +635,10 @@ public class SolicitudBusinessService {
 							.getCodigoVantive(), solicitudServicio.getCuenta()
 							.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor());
 					solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
+					
+					Long idConsultaScoring = scoring(solicitudServicio);
+					
+					solicitudServicio.setIdConsultaScoring(idConsultaScoring);
 				}
 				repository.save(solicitudServicio.getCuenta().getFacturaElectronica());
 				
@@ -663,11 +670,12 @@ public class SolicitudBusinessService {
 		}
 		//registrar resultados veraz y scoring
 		//setearle a la ss los dos nuevos valores de scoring y veraz+
-		Long idConsultaScoring = scoring(solicitudServicio);
-		solicitudServicio.setIdConsultaScoring(idConsultaScoring);
+
 		Long idConsultaVeraz = veraz(solicitudServicio);
+	
+		if (idConsultaVeraz >0){
 		solicitudServicio.setIdConsultaVeraz(idConsultaVeraz);
-		
+		}
 		// valores q deberan guardarse
 		GlobalParameter pinValidoGlobalParameter = (GlobalParameter) globalParameterRetriever
 		.getObject(GlobalParameterIdentifier.VALIDO_PIN);
@@ -683,7 +691,24 @@ public class SolicitudBusinessService {
         	 
          }
 		solicitudServicio.setFechaCierre(new Date());
-		//aca deberia salvarse este  nuevo estado en estado_por_solicitud
+		EstadoPorSolicitud nuevoEstado= new EstadoPorSolicitud();
+		nuevoEstado.setFecha(new Date());
+		nuevoEstado.setNumeroSolicitud(solicitudServicio.getId());
+		nuevoEstado.setUsuario(sessionContextLoader.getVendedor().getId());
+
+	    List<EstadoSolicitud> estados = repository.getAll(EstadoSolicitud.class);
+	    EstadoSolicitud cerrada = new EstadoSolicitud();
+	    for (Iterator iterator = estados.iterator(); iterator.hasNext();) {
+			
+	    	EstadoSolicitud estadoSolicitud = (EstadoSolicitud) iterator
+					.next();
+			if (estadoSolicitud.getDescripcion().equals("Cerrada")) {
+				cerrada = estadoSolicitud;
+			}
+		}
+	    nuevoEstado.setEstado(cerrada);
+		
+		repository.save(nuevoEstado);
 		repository.save(solicitudServicio);
 		
 		return response;
@@ -984,9 +1009,10 @@ public Long verHistoricoScoring(String tipoDoc, Integer nroDoc, String sexo)
 	}
 	
 	
-	public Long veraz(SolicitudServicio solicitudServicio) throws BusinessException{
+	public Long veraz(SolicitudServicio solicitudServicio){
 		VerazRequestDTO verazRequestDTO = createVerazRequestDTO(solicitudServicio.getCuenta().getPersona());
 		VerazResponseDTO verazRequestDTOGuardar =(VerazResponseDTO) generacionCierreBusinessOperator.consultarVerazCierreSS(verazRequestDTO);
+		if (verazRequestDTOGuardar.getIdEstado()>0){
 		ResultadoVeraz rtaVeraz= new ResultadoVeraz();
 		rtaVeraz.setApellido(verazRequestDTOGuardar.getApellido());
 		rtaVeraz.setEstado(verazRequestDTOGuardar.getEstado());
@@ -1004,6 +1030,10 @@ public Long verHistoricoScoring(String tipoDoc, Integer nroDoc, String sexo)
 		rtaVeraz.setTipoDoc(verazRequestDTO.getTipoDoc());
 		repository.persist(rtaVeraz);
 		return rtaVeraz.getId();
+		}else{
+			return new Long(0);
+		}
+		
 	}
 	
 	
