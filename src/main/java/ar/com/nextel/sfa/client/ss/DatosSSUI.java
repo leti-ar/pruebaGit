@@ -94,9 +94,10 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		mainpanel.add(getNssLayout());
 		//Estefania Iguacek - Comentado para salir solo con cierre - CU#6
 		//mainpanel.add(getControlLayout());
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
-			mainpanel.add(getHistoricoVentasPanel());
-		}
+		//larce - Comentado para salir solo con cierre
+//		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
+//			mainpanel.add(getHistoricoVentasPanel());
+//		}
 		mainpanel.add(getDomicilioPanel());
 		mainpanel.add(getDetallePanel());
 	}

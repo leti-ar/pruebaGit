@@ -650,7 +650,8 @@ public String getEstadoSolicitud(long solicitud) {
 				resultDto.setError(response.getMessages().hasErrors());
 				resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
 				//larce
-				solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,true);
+				//larce - Comentado para salir solo con cierre
+//				solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,true);
 			}
 
 			if (solicitudServicioDto.getId() != null) {
@@ -1162,7 +1163,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				resultDto.setError(response.getMessages().hasErrors());
 				resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
 				//larce
-				solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,true);
+				//larce - Comentado para salir solo con cierre
+//				solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,true);
 			}
 		} catch (Exception e) {
 			AppLogger.error(e);
@@ -1627,10 +1629,10 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				if (getDeudaCtaCte(solicitudServicio.getCuenta().getCodigoBSCS()) <= MAX_DEUDA_CTA_CTE) { //no posee
 					if (!("".equals(pinMaestro) || pinMaestro == null)
 							&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
-						return "Solo se permite cerrar por Veraz.";
+						return "Solo se permite cerrar por Veraz dado que es un cliente existente sin equipos activos ni suspendidos.";
 					}
 				} else {
-					return "Cliente no tiene equipos activos y deuda vencida.";
+					return "El cliente no tiene equipos activos y posee deuda vencida.";
 				}
 			}
 		} else if (!("".equals(pinMaestro) || pinMaestro == null)

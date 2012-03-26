@@ -500,22 +500,23 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		editarSSUIData.setSolicitud(solicitud);
 
 		//larce - Si los datos del histórico están vacíos, los traigo de vantive
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
-			if (!"".equals(editarSSUIData.getNss().getText()) || editarSSUIData.getNss().getText() != null) {
-				if (solicitud.getCantidadEquiposH() == null) {
-					SolicitudRpcService.Util.getInstance().buscarHistoricoVentas(editarSSUIData.getNss().getText(), 
-							new DefaultWaitCallback<List<SolicitudServicioDto>>() {
-						@Override
-						public void success(List<SolicitudServicioDto> result) {
-							if (result.size() > 0) {
-								SolicitudServicioDto ss = result.get(0);
-								editarSSUIData.completarCamposHistorico(ss);
-							}	
-						}
-					});
-				}
-			}
-		}
+		//larce - Comentado para salir solo con cierre
+//		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
+//			if (!"".equals(editarSSUIData.getNss().getText()) || editarSSUIData.getNss().getText() != null) {
+//				if (solicitud.getCantidadEquiposH() == null) {
+//					SolicitudRpcService.Util.getInstance().buscarHistoricoVentas(editarSSUIData.getNss().getText(), 
+//							new DefaultWaitCallback<List<SolicitudServicioDto>>() {
+//						@Override
+//						public void success(List<SolicitudServicioDto> result) {
+//							if (result.size() > 0) {
+//								SolicitudServicioDto ss = result.get(0);
+//								editarSSUIData.completarCamposHistorico(ss);
+//							}	
+//						}
+//					});
+//				}
+//			}
+//		}
 		//Estefania Iguacel - Comentado para salir solo con cierre - CU#8 				
 //		if(solicitud != null && analisis != null){
 //			analisis.refresh();
@@ -772,10 +773,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 //		 if(editarSSUIData.getSolicitudServicio() != null){
 //            analisis.refresh();
     //}   	
-		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
-	        editarSSUIData.getEstadoH().addAllItems(initializer.getEstadosHistorico());
-	        editarSSUIData.getEstadoTr().addAllItems(initializer.getEstadosHistorico());
-		}
+		//larce - Comentado para salir solo con cierre
+//		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
+//	        editarSSUIData.getEstadoH().addAllItems(initializer.getEstadosHistorico());
+//	        editarSSUIData.getEstadoTr().addAllItems(initializer.getEstadosHistorico());
+//		}
 		
 		//Estefania Iguacel - Comentado para salir solo con cierre - CU#8
 //		if(initializer.getComentarioAnalistaMensaje() != null){

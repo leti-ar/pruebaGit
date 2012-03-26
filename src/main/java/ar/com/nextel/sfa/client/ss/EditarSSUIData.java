@@ -300,14 +300,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 		fields.add(parametroBusqContrato = new RegexTextBox());
 		
-		fields.add(cantidadEquipos = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(3), true));
-		fields.add(fechaFirma = new SimpleDatePicker(false, true));
-		fields.add(estadoH = new ListBox(""));
-		fields.add(fechaEstado = new SimpleDatePicker(false, true));
-		fields.add(cantidadEquiposTr = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(3), true));
-		fields.add(fechaFirmaTr = new SimpleDatePicker(false, true));
-		fields.add(estadoTr = new ListBox(""));
-		fields.add(fechaEstadoTr = new SimpleDatePicker(false, true));
+		//larce - Comentado para salir solo con cierre
+//		fields.add(cantidadEquipos = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(3), true));
+//		fields.add(fechaFirma = new SimpleDatePicker(false, true));
+//		fields.add(estadoH = new ListBox(""));
+//		fields.add(fechaEstado = new SimpleDatePicker(false, true));
+//		fields.add(cantidadEquiposTr = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(3), true));
+//		fields.add(fechaFirmaTr = new SimpleDatePicker(false, true));
+//		fields.add(estadoTr = new ListBox(""));
+//		fields.add(fechaEstadoTr = new SimpleDatePicker(false, true));
 		
 		//LF
 		if(!controller.isEditable()) {
@@ -315,21 +316,22 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 		
 		//larce - Busco en vantive y completo los campos si están en blanco
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
-			nss.addBlurHandler(new BlurHandler() {
-				public void onBlur(BlurEvent event) {
-					SolicitudRpcService.Util.getInstance().buscarHistoricoVentas(nss.getText(), 
-							new DefaultWaitCallback<List<SolicitudServicioDto>>() {
-						public void success(List<SolicitudServicioDto> result) {
-							if (result.size() > 0) {
-								SolicitudServicioDto ss = result.get(0);
-								completarCamposHistorico(ss);
-							}
-						}
-					});
-				}
-			});
-		}
+		//larce - Comentado para salir solo con cierre
+//		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
+//			nss.addBlurHandler(new BlurHandler() {
+//				public void onBlur(BlurEvent event) {
+//					SolicitudRpcService.Util.getInstance().buscarHistoricoVentas(nss.getText(), 
+//							new DefaultWaitCallback<List<SolicitudServicioDto>>() {
+//						public void success(List<SolicitudServicioDto> result) {
+//							if (result.size() > 0) {
+//								SolicitudServicioDto ss = result.get(0);
+//								completarCamposHistorico(ss);
+//							}
+//						}
+//					});
+//				}
+//			});
+//		}
 		
 		inicializarBusquedaContratos();
 	}
@@ -622,10 +624,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			origen.setSelectedItem(solicitud.getOrigen());
 			origenTR.setSelectedItem(solicitud.getOrigen());
 			anticipo.setSelectedItem(solicitud.getTipoAnticipo());
-			if (solicitudServicio.getEstadoH() != null) {
-				estadoH.setSelectedItem(solicitudServicio.getEstadoH());
-				estadoTr.setSelectedItem(solicitudServicio.getEstadoH());
-			}
+			//larce - Comentado para salir solo con cierre
+//			if (solicitudServicio.getEstadoH() != null) {
+//				estadoH.setSelectedItem(solicitudServicio.getEstadoH());
+//				estadoTr.setSelectedItem(solicitudServicio.getEstadoH());
+//			}
 		} else {
 			deferredLoad();
 		}
@@ -660,20 +663,22 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		if(solicitud.getGrupoSolicitud().isTransferencia()){
 			cargarDatosTransferencia();
 			//larce
-			cantidadEquiposTr.setText(solicitudServicio.getCantidadEquiposH() != null ? solicitudServicio
-					.getCantidadEquiposH().toString() : "");
-			fechaFirmaTr.getTextBox().setText(solicitudServicio.getFechaFirma() != null ? dateTimeFormat.
-					format(solicitudServicio.getFechaFirma()) : "");
-			fechaEstadoTr.getTextBox().setText(solicitudServicio.getFechaEstado() != null ? dateTimeFormat.
-					format(solicitudServicio.getFechaEstado()) : "");
-		} else {
-			cantidadEquipos.setText(solicitudServicio.getCantidadEquiposH() != null ? solicitudServicio.
-					getCantidadEquiposH().toString() : "");
-			fechaFirma.getTextBox().setText(solicitudServicio.getFechaFirma() != null ? dateTimeFormat.
-					format(solicitudServicio.getFechaFirma()) : "");
-			fechaEstado.getTextBox().setText(solicitudServicio.getFechaEstado() != null ? dateTimeFormat.
-					format(solicitudServicio.getFechaEstado()) : "");
-		}
+			//larce - Comentado para salir solo con cierre
+//			cantidadEquiposTr.setText(solicitudServicio.getCantidadEquiposH() != null ? solicitudServicio
+//					.getCantidadEquiposH().toString() : "");
+//			fechaFirmaTr.getTextBox().setText(solicitudServicio.getFechaFirma() != null ? dateTimeFormat.
+//					format(solicitudServicio.getFechaFirma()) : "");
+//			fechaEstadoTr.getTextBox().setText(solicitudServicio.getFechaEstado() != null ? dateTimeFormat.
+//					format(solicitudServicio.getFechaEstado()) : "");
+		} 
+//		else {
+//			cantidadEquipos.setText(solicitudServicio.getCantidadEquiposH() != null ? solicitudServicio.
+//					getCantidadEquiposH().toString() : "");
+//			fechaFirma.getTextBox().setText(solicitudServicio.getFechaFirma() != null ? dateTimeFormat.
+//					format(solicitudServicio.getFechaFirma()) : "");
+//			fechaEstado.getTextBox().setText(solicitudServicio.getFechaEstado() != null ? dateTimeFormat.
+//					format(solicitudServicio.getFechaEstado()) : "");
+//		}
 		
 	}
 	
@@ -773,19 +778,20 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			solicitudServicio.setEmail(email.getText());
 		}
 		//larce
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
-			if(!cantidadEquipos.getText().equals("")) {
-				solicitudServicio.setCantidadEquiposH(new Long(cantidadEquipos.getText()));
-			}
-			if(!fechaFirma.getTextBox().getText().equals("")) {
-				solicitudServicio.setFechaFirma(dateTimeFormat.parse(fechaFirma.getTextBox().getText()));
-			}
-			solicitudServicio.setEstadoH((EstadoHistoricoDto) estadoH.getSelectedItem());
-			if(!fechaEstado.getTextBox().getText().equals("")) {
-				solicitudServicio.setFechaEstado(dateTimeFormat.parse(fechaEstado.getTextBox().getText()));
-			}
-			solicitudServicio.setClienteHistorico(clienteHistorico);
-		}
+		//larce - Comentado para salir solo con cierre
+//		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
+//			if(!cantidadEquipos.getText().equals("")) {
+//				solicitudServicio.setCantidadEquiposH(new Long(cantidadEquipos.getText()));
+//			}
+//			if(!fechaFirma.getTextBox().getText().equals("")) {
+//				solicitudServicio.setFechaFirma(dateTimeFormat.parse(fechaFirma.getTextBox().getText()));
+//			}
+//			solicitudServicio.setEstadoH((EstadoHistoricoDto) estadoH.getSelectedItem());
+//			if(!fechaEstado.getTextBox().getText().equals("")) {
+//				solicitudServicio.setFechaEstado(dateTimeFormat.parse(fechaEstado.getTextBox().getText()));
+//			}
+//			solicitudServicio.setClienteHistorico(clienteHistorico);
+//		}
 		return solicitudServicio;
 	}
 
@@ -838,22 +844,23 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			validator.addTarget(ordenCompra).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().ordenCompra()));
 		}
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
-			validator.addTarget(nss).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().nssReq()));
-			validator.addTarget(cantidadEquipos).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().cantidadEquipos()));
-			validator.addTarget(fechaFirma.getTextBox()).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().fechaFirma()));
-			if (estadoH.getSelectedIndex() == 0) {
-				validator.addError(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().estado()));
-			} else if (RegularExpressionConstants.isVancuc(solicitudServicio.getCuenta().getCodigoVantive())
-						&& "Pass".equals(estadoH.getSelectedItemText())) {
-					validator.addError("No puede elegir el estado Pass para este tipo de clientes.");
-				}
-			if ("".equals(fechaEstado.getTextBox().getText())) {
-				fechaEstado.getTextBox().setText(dateTimeFormat.format(new Date()));
-			}
-		}
+		//larce - Comentado para salir solo con cierre
+//		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
+//			validator.addTarget(nss).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().nssReq()));
+//			validator.addTarget(cantidadEquipos).required(
+//					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().cantidadEquipos()));
+//			validator.addTarget(fechaFirma.getTextBox()).required(
+//					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().fechaFirma()));
+//			if (estadoH.getSelectedIndex() == 0) {
+//				validator.addError(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().estado()));
+//			} else if (RegularExpressionConstants.isVancuc(solicitudServicio.getCuenta().getCodigoVantive())
+//						&& "Pass".equals(estadoH.getSelectedItemText())) {
+//					validator.addError("No puede elegir el estado Pass para este tipo de clientes.");
+//				}
+//			if ("".equals(fechaEstado.getTextBox().getText())) {
+//				fechaEstado.getTextBox().setText(dateTimeFormat.format(new Date()));
+//			}
+//		}
 		validator.fillResult();
 		return validator.getErrors();
 	}
@@ -937,27 +944,28 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			}
 		}
 		//larce - Se valida que la fecha estado no sea menor a 2 meses y mayor a 1 mes de la fecha del día.
-		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
-			final long unDiaEnMilis = 1000*60*60*24;
-			final Date hace2Meses = new Date(System.currentTimeMillis() - 60*unDiaEnMilis);
-			final Date dentroDe1mes = new Date(System.currentTimeMillis() + 30*unDiaEnMilis);
-			final Date fechaEstadoTB = dateTimeFormat.parse(fechaEstado.getTextBox().getText());;
-			
-			if (fechaEstadoTB.before(hace2Meses) || fechaEstadoTB.after(dentroDe1mes)) {
-				validator.addError("La fecha de estado no debe ser menor a 2 meses o mayor a 1 mes con respecto a la fecha de hoy.");
-			}
-			solicitudServicio.setClienteHistorico(clienteHistorico);
-			if ("".equals(solicitudServicio.getClienteHistorico()) || solicitudServicio.getClienteHistorico() == null) {
-				validator.addError("El cliente no se encuentra asociado al historico para el numero de solicitud ingresado.");
-			} else if (!solicitudServicio.getCuenta().getCodigoVantive().equals(solicitudServicio.getClienteHistorico())) {
-				validator.addError("El cliente difiere entre el de la SS y el ingresado en el Histórico de Ventas.");
-			}
-			
-			if (RegularExpressionConstants.isVancuc(solicitudServicio.getCuenta().getCodigoVantive())
-					&& "Pass".equals(estadoH.getSelectedItemText())) {
-				validator.addError("No puede elegir el estado Pass para este tipo de clientes.");
-			}
-		}
+		//larce - Comentado para salir solo con cierre
+//		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
+//			final long unDiaEnMilis = 1000*60*60*24;
+//			final Date hace2Meses = new Date(System.currentTimeMillis() - 60*unDiaEnMilis);
+//			final Date dentroDe1mes = new Date(System.currentTimeMillis() + 30*unDiaEnMilis);
+//			final Date fechaEstadoTB = dateTimeFormat.parse(fechaEstado.getTextBox().getText());;
+//			
+//			if (fechaEstadoTB.before(hace2Meses) || fechaEstadoTB.after(dentroDe1mes)) {
+//				validator.addError("La fecha de estado no debe ser menor a 2 meses o mayor a 1 mes con respecto a la fecha de hoy.");
+//			}
+//			solicitudServicio.setClienteHistorico(clienteHistorico);
+//			if ("".equals(solicitudServicio.getClienteHistorico()) || solicitudServicio.getClienteHistorico() == null) {
+//				validator.addError("El cliente no se encuentra asociado al historico para el numero de solicitud ingresado.");
+//			} else if (!solicitudServicio.getCuenta().getCodigoVantive().equals(solicitudServicio.getClienteHistorico())) {
+//				validator.addError("El cliente difiere entre el de la SS y el ingresado en el Histórico de Ventas.");
+//			}
+//			
+//			if (RegularExpressionConstants.isVancuc(solicitudServicio.getCuenta().getCodigoVantive())
+//					&& "Pass".equals(estadoH.getSelectedItemText())) {
+//				validator.addError("No puede elegir el estado Pass para este tipo de clientes.");
+//			}
+//		}
 		
 		validator.fillResult();
 		List<String> errores = validator.getErrors();
@@ -1381,13 +1389,14 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			}
 		}
 		//larce
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
-			solicitudServicio.setCantidadEquiposH(new Long(cantidadEquiposTr.getText()));
-			solicitudServicio.setFechaFirma(dateTimeFormat.parse(fechaFirmaTr.getTextBox().getText()));
-			solicitudServicio.setEstadoH((EstadoHistoricoDto) estadoTr.getSelectedItem());
-			solicitudServicio.setFechaEstado(dateTimeFormat.parse(fechaEstadoTr.getTextBox().getText()));
-			solicitudServicio.setClienteHistorico(clienteHistorico);
-		}
+		//larce - Comentado para salir solo con cierre
+//		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
+//			solicitudServicio.setCantidadEquiposH(new Long(cantidadEquiposTr.getText()));
+//			solicitudServicio.setFechaFirma(dateTimeFormat.parse(fechaFirmaTr.getTextBox().getText()));
+//			solicitudServicio.setEstadoH((EstadoHistoricoDto) estadoTr.getSelectedItem());
+//			solicitudServicio.setFechaEstado(dateTimeFormat.parse(fechaEstadoTr.getTextBox().getText()));
+//			solicitudServicio.setClienteHistorico(clienteHistorico);
+//		}
 		return solicitudServicio;
 	}
 	
@@ -1411,22 +1420,23 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 		validator.addTarget(canalVtas).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Canal de Ventas"));
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
-			validator.addTarget(nss).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().nssReq()));
-			validator.addTarget(cantidadEquiposTr).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().cantidadEquipos()));
-			validator.addTarget(fechaFirmaTr.getTextBox()).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().fechaFirma()));
-			if (estadoTr.getSelectedIndex() == 0) {
-				validator.addError(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().estado()));
-			} else if (RegularExpressionConstants.isVancuc(solicitudServicio.getCuenta().getCodigoVantive())
-					&& "Pass".equals(estadoTr.getSelectedItemText())) {
-				validator.addError("No puede elegir el estado Pass para este tipo de clientes.");
-			}
-			if ("".equals(fechaEstado.getTextBox().getText())) {
-				fechaEstado.getTextBox().setText(dateTimeFormat.format(new Date()));
-			}
-		}
+		//larce - Comentado para salir solo con cierre
+//		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
+//			validator.addTarget(nss).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().nssReq()));
+//			validator.addTarget(cantidadEquiposTr).required(
+//					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().cantidadEquipos()));
+//			validator.addTarget(fechaFirmaTr.getTextBox()).required(
+//					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().fechaFirma()));
+//			if (estadoTr.getSelectedIndex() == 0) {
+//				validator.addError(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().estado()));
+//			} else if (RegularExpressionConstants.isVancuc(solicitudServicio.getCuenta().getCodigoVantive())
+//					&& "Pass".equals(estadoTr.getSelectedItemText())) {
+//				validator.addError("No puede elegir el estado Pass para este tipo de clientes.");
+//			}
+//			if ("".equals(fechaEstado.getTextBox().getText())) {
+//				fechaEstado.getTextBox().setText(dateTimeFormat.format(new Date()));
+//			}
+//		}
 		validator.fillResult();
 		return validator.getErrors();
 	}
