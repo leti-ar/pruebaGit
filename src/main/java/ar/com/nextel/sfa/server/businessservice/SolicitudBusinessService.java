@@ -636,9 +636,7 @@ public class SolicitudBusinessService {
 							.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor());
 					solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
 					
-					Long idConsultaScoring = scoring(solicitudServicio);
 					
-					solicitudServicio.setIdConsultaScoring(idConsultaScoring);
 				}
 				repository.save(solicitudServicio.getCuenta().getFacturaElectronica());
 				
@@ -668,15 +666,22 @@ public class SolicitudBusinessService {
 		} else {
 			response = generacionCierreBusinessOperator.generarSolicitudServicio(generacionCierreRequest);
 		}
-		//registrar resultados veraz y scoring
-		//setearle a la ss los dos nuevos valores de scoring y veraz+
-
+		
+		 //Req Pass y cierre automatico- Req #1: Registrar resultado veraz y scoring
+		 //registrar resultados veraz y scoring
+		 //setearle a la ss los dos nuevos valores de scoring y veraz
+        if (!esProspect){
+		 Long idConsultaScoring = scoring(solicitudServicio);
+		 solicitudServicio.setIdConsultaScoring(idConsultaScoring);
+	     }
 		Long idConsultaVeraz = veraz(solicitudServicio);
-	
-		if (idConsultaVeraz >0){
+	     if (idConsultaVeraz >0){
 		solicitudServicio.setIdConsultaVeraz(idConsultaVeraz);
 		}
-		// valores q deberan guardarse
+	     
+	     
+	     //Req Pass y cierre automatico-Req #2: Registrar Cierre con Pin
+	     // valores q deberan guardarse
 		GlobalParameter pinValidoGlobalParameter = (GlobalParameter) globalParameterRetriever
 		.getObject(GlobalParameterIdentifier.VALIDO_PIN);
 		
@@ -690,7 +695,12 @@ public class SolicitudBusinessService {
         	 solicitudServicio.setCierreConPin(pinNoValidoGlobalParameter.getValue());
         	 
          }
+		
+		//Req Pass y cierre automatico-Req #3: Registrar fecha de cierre
 		solicitudServicio.setFechaCierre(new Date());
+		
+		
+		//Req Pass y cierre automatico- se deja guardado el cambio del estado de la ss es estado_por_solicitud
 		EstadoPorSolicitud nuevoEstado= new EstadoPorSolicitud();
 		nuevoEstado.setFecha(new Date());
 		nuevoEstado.setNumeroSolicitud(solicitudServicio.getId());
@@ -960,7 +970,13 @@ public Long verHistoricoScoring(String tipoDoc, Integer nroDoc, String sexo)
 		
 		
 	
-	
+	/**
+	 * busca en el historial de scoring si ya habia una consulta para esta ss , sino llama a 
+	 * la consulta basica de scoring y lo guarda en el historial para posibles consultas
+	 * @param solicitudServicio
+	 * @return
+	 * @throws BusinessException
+	 */
 	public Long scoring(SolicitudServicio solicitudServicio) throws BusinessException{
 		
         Persona persona= new Persona();
@@ -1008,7 +1024,12 @@ public Long verHistoricoScoring(String tipoDoc, Integer nroDoc, String sexo)
 	
 	}
 	
-	
+	/**
+	 * utiliza la consulta basica de veraz que ya existe solo que se le pasa por parametro q la valiz sea de un dia
+	 * luego guarda en la tabla de historial de veraz este consulta, para que pueda ser utilizada en otro momento
+	 * @param solicitudServicio
+	 * @return
+	 */
 	public Long veraz(SolicitudServicio solicitudServicio){
 		VerazRequestDTO verazRequestDTO = createVerazRequestDTO(solicitudServicio.getCuenta().getPersona());
 		VerazResponseDTO verazRequestDTOGuardar =(VerazResponseDTO) generacionCierreBusinessOperator.consultarVerazCierreSS(verazRequestDTO);
