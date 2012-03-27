@@ -21,7 +21,6 @@ import ar.com.nextel.business.cuentas.caratula.ArpuService;
 import ar.com.nextel.business.cuentas.caratula.CaratulaTransferidaResultDto;
 import ar.com.nextel.business.cuentas.caratula.dao.config.CaratulaTransferidaConfig;
 import ar.com.nextel.business.cuentas.caratula.exception.ArpuServiceException;
-import ar.com.nextel.business.constants.MessageIdentifier;
 import ar.com.nextel.business.cuentas.create.CreateCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
 import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaService;
@@ -69,7 +68,6 @@ import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
-import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
@@ -250,15 +248,6 @@ public class CuentaBusinessService {
 		repository.update(cuenta);
 	}
 
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void saveArchivoVeraz(Long caratulaId,String archivoVeraz) {
-		ArrayList<Object> list = (ArrayList<Object>) this.repository.find("from Caratula c where c.id = ?", caratulaId);
-		if(!list.isEmpty()){
-			Caratula caratula = (Caratula) list.get(0);
-			caratula.setArchivoVeraz(archivoVeraz);
-			this.repository.save(caratula);
-		}
-	}
 	//MGR - 05-07-2010 - Se cambian digitos de la tarjeta por asteriscos (*)
 	private String changeByAsterisks(String numero) {
 

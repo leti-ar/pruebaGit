@@ -450,14 +450,6 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		}
 	}
 
-	public VerazResponseDto consultarDetalleVeraz(Long cuentaId,Long caratulaId) throws RpcExceptionMessages {
-		VerazResponseDto verazResponseDto = consultarDetalleVeraz(cuentaId);
-		if (caratulaId != null) {
-			this.cuentaBusinessService.saveArchivoVeraz(caratulaId, verazResponseDto.getFileName());
-		}
-		return verazResponseDto;
-	}
-	
 	public CuentaDto saveCuenta(CuentaDto cuentaDto) throws RpcExceptionMessages {
 		try {
 			Long idCuenta = cuentaBusinessService.saveCuenta(cuentaDto, mapper, sessionContextLoader

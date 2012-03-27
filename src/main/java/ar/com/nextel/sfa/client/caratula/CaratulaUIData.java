@@ -22,6 +22,7 @@ import ar.com.nextel.sfa.client.dto.TipoCuentaBancariaDto;
 import ar.com.nextel.sfa.client.dto.TipoTarjetaDto;
 import ar.com.nextel.sfa.client.dto.ValidacionDomicilioDto;
 import ar.com.nextel.sfa.client.dto.VerazNosisDto;
+import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.initializer.CaratulaInitializer;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
@@ -65,6 +66,8 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 	private static final String v2 = "\\{2\\}";
 	public static final String RISK_CODE_EECC_AGENTE = "RISK_CODE_EECC_AGENTE";
 	private DateTimeFormat dateFormatter = DateTimeFormat.getFormat("dd/MM/yyyy");
+//	MGR - Para saber si el documento es vÃ¡lido o no
+	private static int SCORE_DNI_INEXISTENTE = 3;
 	
 	private TextBox nroSS;
 	private SimpleDatePicker fechaInicio;
@@ -113,6 +116,8 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 	//#LF
 	private boolean isCombosCargados;
 	private Label estadoVeraz = new Label("");
+//	MGR - Para guardar el nombre del archivo de Veraz (No se muestra por pantalla)
+	private String archivoVeraz = null;
 	
 	private CaratulaDto caratula = null;
 
@@ -493,8 +498,35 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 			comentAnalista.setText(caratulaDto.getComentarioAnalista());
 			scoring.setText(caratulaDto.getScoring());
 			//LF
-			CaratulaUI.getInstance().setEstadoVeraz(caratulaDto.getEstadoVeraz());
+			setEstiloYEstadoVeraz(caratulaDto.getEstadoVeraz());
+			archivoVeraz = caratulaDto.getArchivoVeraz();
 	//		mostrarOcultarCampos();
+		}
+	}
+	
+//	MGR
+	/**
+	 * Setea el estado de Veraz en el label y le aplica el estilo correspondiente
+	 */
+	public void setEstadoVeraz(VerazResponseDto response){
+		if(response.getEstado().equals("REVISAR") && response.getScoreDni() == SCORE_DNI_INEXISTENTE){
+			setEstiloYEstadoVeraz("DOCUMENTO INEXISTENTE");
+		}else{
+			setEstiloYEstadoVeraz(response.getEstado());
+		}
+	}
+	
+//	MGR - Para setear el estilo al label que muestra el estado
+	private void setEstiloYEstadoVeraz(String estado){
+		estadoVeraz.setText(estado);
+		if(estado != null){
+			if ("ACEPTAR".equals(estado)) {
+				estadoVeraz.setStyleName("verazAceptarLabel");
+			} else if ("REVISAR".equals(estado) || "DOCUMENTO INEXISTENTE".equals(estado)) {
+				estadoVeraz.setStyleName("verazRevisarLabel");
+			} else {
+				estadoVeraz.setStyleName("verazRechazarLabel");
+			}
 		}
 	}
 	
@@ -586,9 +618,9 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		caratula.setNumeroIMEI(imei.getText());
 		caratula.setFindIMEI(findImei.getValue());
 		caratula.setComentarioAnalista(comentAnalista.getText());
-		
 		//LF
 		caratula.setEstadoVeraz(estadoVeraz.getText());
+		caratula.setArchivoVeraz(archivoVeraz);
 
 		return caratula;
 	}
@@ -803,7 +835,7 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 	
 	/**
 	 * Si el domicilio de facturacion y el domicilio de entrega asociado con el numero de solicitud de servicio es validado, 
-	 * en el combo Validacion domicilio se selecciona "Validado por EECC”. 
+	 * en el combo Validacion domicilio se selecciona "Validado por EECCï¿½. 
 	 * @param nro_ss (Numero de solicitud de servicio).
 	 * @author fernaluc
 	 */
@@ -1166,9 +1198,15 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		return estadoVeraz;
 	}
 
-	public void setEstadoVeraz(String estado) {
-		this.estadoVeraz = new Label(estado);
+	public void setEstadoVeraz(Label estadoVeraz) {
+		this.estadoVeraz = estadoVeraz;
 	}
-	
-	
+
+	public String getArchivoVeraz() {
+		return archivoVeraz;
+	}
+
+	public void setArchivoVeraz(String archivoVeraz) {
+		this.archivoVeraz = archivoVeraz;
+	}
 }
