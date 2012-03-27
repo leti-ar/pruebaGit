@@ -262,10 +262,10 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.validarPlanesCedentes(ctoCedentes, isEmpresa, isSaving, callback);
 	}
 	
-	public void getSSPorIdCuentaYNumeroSS(Integer cuenta, String numeroSS,
+	public void getSSPorIdCuentaYNumeroSS(Long idCuenta, String numeroSS,
 			AsyncCallback<List<SolicitudServicioDto>> defaultWaitCallback){
 		WaitWindow.show();
-		solicitudRpcServiceAsync.getSSPorIdCuentaYNumeroSS(cuenta, numeroSS, defaultWaitCallback);		
+		solicitudRpcServiceAsync.getSSPorIdCuentaYNumeroSS(idCuenta, numeroSS, defaultWaitCallback);		
 	}
 	
 	public void getItemsPorLineaSS(SolicitudServicioDto ss, AsyncCallback<List<ItemSolicitudDto>> defaultWaitCallback){

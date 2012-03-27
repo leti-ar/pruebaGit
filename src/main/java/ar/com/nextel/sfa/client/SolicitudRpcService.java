@@ -153,11 +153,11 @@ public interface SolicitudRpcService extends RemoteService {
 	/**
 	 * Realiza una consulta a la tabla SFA_SS_CABECERA con los datos pasados por parametros y retorna una 
 	 * lista de Solicitudes de servicio que posee. 
-	 * @param cuenta El id de la cuenta
+	 * @param idCuenta El id de la cuenta
 	 * @param numeroSS El numero de la solicitud de servicio 
 	 * @return Lista de SolicitudServicioDto
 	 */
-	public List<SolicitudServicioDto> getSSPorIdCuentaYNumeroSS(Integer cuenta, String numeroSS);
+	public List<SolicitudServicioDto> getSSPorIdCuentaYNumeroSS(Long idCuenta, String numeroSS);
 	
 	//LF
 	/**

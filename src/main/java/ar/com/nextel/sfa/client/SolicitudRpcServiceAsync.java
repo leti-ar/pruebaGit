@@ -135,7 +135,7 @@ public interface SolicitudRpcServiceAsync {
 	
 	public void loginServer(String linea, AsyncCallback<Void> callback);
 
-	public void getSSPorIdCuentaYNumeroSS(Integer cuenta, String numeroSS, AsyncCallback<List<SolicitudServicioDto>> defaultWaitCallback);
+	public void getSSPorIdCuentaYNumeroSS(Long idCuenta, String numeroSS, AsyncCallback<List<SolicitudServicioDto>> defaultWaitCallback);
 
 	public void getItemsPorLineaSS(SolicitudServicioDto ss,	AsyncCallback<List<ItemSolicitudDto>> callback);
 }
