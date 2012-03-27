@@ -82,11 +82,6 @@ public class CuentaRpcServiceDelegate {
 		cuentaRpcService.consultarDetalleVeraz(cuentaId, callback);
 	}
 
-	public void consultarDetalleVeraz(Long cuentaId,Long caratulaId, DefaultWaitCallback<VerazResponseDto> callback) {
-		WaitWindow.show();
-		cuentaRpcService.consultarDetalleVeraz(cuentaId, caratulaId, callback);
-	}
-
 	public void leerConsultaDetalleVeraz(String verazFileName, DefaultWaitCallback<String> callback) {
 		WaitWindow.show();
 		cuentaRpcService.leerConsultaDetalleVeraz(verazFileName, callback);

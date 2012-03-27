@@ -40,7 +40,6 @@ public interface CuentaRpcServiceAsync {
 	//MGR - #960
 	public void consultarVeraz(String customerCode, AsyncCallback<VerazResponseDto> callback);
 	public void consultarDetalleVeraz(Long cuentaId, AsyncCallback<VerazResponseDto> callback);
-	public void consultarDetalleVeraz(Long cuentaId,Long caratulaId, AsyncCallback<VerazResponseDto> callback);
 	public void leerConsultaDetalleVeraz(String verazFileName, AsyncCallback<String> callback);
 	//MGR - #1466
 	public void selectCuenta(Long cuentaId, String cod_vantive,boolean filtradoPorDni, boolean deberiaLockear,AsyncCallback<CuentaDto> callback);
