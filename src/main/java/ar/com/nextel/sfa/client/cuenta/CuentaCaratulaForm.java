@@ -344,7 +344,7 @@ public class CuentaCaratulaForm extends Composite{
 															});
 												}else{
 													ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-													ErrorDialog.getInstance().show(Sfa.constant().ERR_NRO_SOLICITUD_NO_EXISTE(), false);
+													ErrorDialog.getInstance().show(Sfa.constant().ERR_NRO_SOLICITUD_NO_REQUERIDO(), false);
 													confirmandoCaratula = false;
 												}
 											}else{

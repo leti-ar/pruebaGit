@@ -3002,14 +3002,24 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("verVeraz")
   String verVeraz();
 
+//  MGR - #3012 - Se modifica el mensaje
+  /**
+   * Translated "El número de solicitud no existe.".
+   * 
+   * @return translated "El número de solicitud no existe."
+   */
+  @DefaultStringValue("El número de solicitud no existe.")
+  @Key("ERR_NRO_SOLICITUD_NO_EXISTE")
+  String ERR_NRO_SOLICITUD_NO_EXISTE();
+  
   /**
    * Translated "Se debe ingresar un número de solicitud.".
    * 
    * @return translated "Se debe ingresar un número de solicitud."
    */
   @DefaultStringValue("Se debe ingresar un número de solicitud.")
-  @Key("ERR_NRO_SOLICITUD_NO_EXISTE")
-  String ERR_NRO_SOLICITUD_NO_EXISTE();
+  @Key("ERR_NRO_SOLICITUD_NO_REQUERIDO")
+  String ERR_NRO_SOLICITUD_NO_REQUERIDO();
   
   /**
    * Translated "Documentos Digitalizados".
