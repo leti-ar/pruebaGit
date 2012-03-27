@@ -45,8 +45,6 @@ public class CuentaCaratulaForm extends Composite{
 	private SimplePanel consultaDocDigitalizados;
 	
 	private CuentaDto cuentaDto;
-	//#LF
-	//private CaratulaDto caratulaAEditar;
 	private boolean huboCambios = false;
 	private boolean confirmandoCaratula= false;
 	private int nroFila;
@@ -263,17 +261,14 @@ public class CuentaCaratulaForm extends Composite{
 					//#LF
 					// Seteo la nueva caratula seleccionada (La anterior ya no existe referencia).
 					setCaratulaSeleccionada(cuentaDto.getCaratulas().get(row - 1));
-					//caratulaAEditar = cuentaDto.getCaratulas().get(row - 1);
 					
 					//Toco el lapiz
 					if (col == 0) {
 						
-						//if(!caratulaAEditar.isConfirmada()){
 						if(!caratulaSeleccionada.isConfirmada()){
 							
 							CaratulaUI.getInstance().setAceptarCommand(new Command() {
 								public void execute() {
-//									int index = cuentaDto.getCaratulas().indexOf(caratulaAEditar);
 									int index = cuentaDto.getCaratulas().indexOf(caratulaSeleccionada);
 									cuentaDto.getCaratulas().remove(index);
 									cuentaDto.getCaratulas().add(index, CaratulaUI.getInstance().getCaraturaAEditar());
@@ -281,11 +276,9 @@ public class CuentaCaratulaForm extends Composite{
 									huboCambios = true;
 								}
 							});
-//							CaratulaUI.getInstance().cargarPopupEditarCaratula(caratulaAEditar, row);
 							CaratulaUI.getInstance().cargarPopupEditarCaratula(caratulaSeleccionada, row);
 						
 						}else{
-//							CaratulaUI.getInstance().cargarPopupCaratulaConfirmada(caratulaAEditar);
 							CaratulaUI.getInstance().cargarPopupCaratulaConfirmada(caratulaSeleccionada);
 						}
 					}
@@ -304,7 +297,6 @@ public class CuentaCaratulaForm extends Composite{
 							if(!confirmandoCaratula){
 								caratulaSeleccionada = cuentaDto.getCaratulas().get(row - 1);
 								//#LF
-								//caratulaAEditar = cuentaDto.getCaratulas().get(row - 1);
 								confirmandoCaratula = true;
 								
 								//#LF
@@ -316,12 +308,10 @@ public class CuentaCaratulaForm extends Composite{
 											return true;
 										} else {
 											//#LF
-											//List<String> errores = caratulaUI.validarCaratulaAConfirmar(caratulaAEditar, nroFila);
 											//Valida que esten cargados todos los datos antes de confirmar la caratula
 											List<String> errores = CaratulaUI.getInstance().validarCaratulaAConfirmar(caratulaSeleccionada, nroFila);
 											if(errores == null || errores.isEmpty()){
 												//#LF
-												//String nroSolicitud = caratulaAEditar.getNroSS();
 												String nroSolicitud = caratulaSeleccionada.getNroSS();
 												if(nroSolicitud != null && !nroSolicitud.equals("")){
 													CuentaRpcService.Util.getInstance().validarExistenciaTriptico(nroSolicitud, 
@@ -332,15 +322,12 @@ public class CuentaCaratulaForm extends Composite{
 																	
 																	if(result){
 																		//#LF
-																		//CuentaRpcService.Util.getInstance().confirmarCaratula(caratulaAEditar,
-																		//		new DefaultWaitCallback<CaratulaDto>() {
 																			CuentaRpcService.Util.getInstance().confirmarCaratula(caratulaSeleccionada,
 																				new DefaultWaitCallback<CaratulaDto>() {
 																					
 																					@Override
 																					public void success(CaratulaDto result) {
 																						//#LF
-																						//int index = cuentaDto.getCaratulas().indexOf(caratulaAEditar);
 																						int index = cuentaDto.getCaratulas().indexOf(caratulaSeleccionada);
 																						cuentaDto.getCaratulas().remove(index);
 																						cuentaDto.getCaratulas().add(index, result);
@@ -378,7 +365,7 @@ public class CuentaCaratulaForm extends Composite{
 	}
 	
 	/**
-	 * Este método retorna una buleano que indica si se debe hacer una nueva instancia de CaratulaUI. 
+	 * Este mï¿½todo retorna una buleano que indica si se debe hacer una nueva instancia de CaratulaUI. 
 	 * Compara la caratula seleccionada anteriormente con la reciente.
 	 * Si los documentos o el estado de la consulta al veraz son distintos retorna true, porque hay campos 
 	 * que son requeridos dependiendo el tipo de documento, y en el caso del veraz hace lo mismo porque pueden ser distintos
@@ -404,7 +391,7 @@ public class CuentaCaratulaForm extends Composite{
 	
 	/**
 	 * Este metodo se utiliza cuando se quiere crear una nueva caratula.
-	 * Recorre las caratula existentes, si existe sólo una quiere decir que la caratula es credito y retorna true
+	 * Recorre las caratula existentes, si existe sï¿½lo una quiere decir que la caratula es credito y retorna true
 	 * indicando que CaratulaUI debe ser una nueva instancia, si ya existe una caratula con el documento Anexo retorna
 	 * false.
 	 * @return boolean
@@ -449,7 +436,7 @@ public class CuentaCaratulaForm extends Composite{
 	}
 	
 	/**
-	 *  Este método obtiene la caratula que ha sido asignada para editar o confirmar.
+	 *  Este mï¿½todo obtiene la caratula que ha sido asignada para editar o confirmar.
 	 */
 	public CaratulaDto getCaratulaSeleccionada(){
 		return caratulaSeleccionada;

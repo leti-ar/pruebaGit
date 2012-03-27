@@ -31,7 +31,6 @@ import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -45,7 +44,7 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 	private static CaratulaUI instance = null;
 	private CaratulaDto caratulaAEditar;
 	private int nroCaratula = 0; //Para saber si es la primer caratula o no (requerido validacion)
-	private static int SCORE_DNI_INEXISTENTE = 3;
+//	private static int SCORE_DNI_INEXISTENTE = 3;
 	
 	private Grid gridCabecera;
 	
@@ -70,7 +69,6 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 	private Button generarVeraz;
 	private Button verVeraz;
 	//LF
-	private Label estadoVeraz;
 	private String cantEquipos = null;
 	private boolean isCantEquiposObtenidos = false;
 	
@@ -157,8 +155,7 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		gridBotonesVeraz = new Grid(1,3);
 		gridBotonesVeraz.addStyleName("layout");
 		gridBotonesVeraz.setWidget(0, 1, crearBotonesVeraz());
-		this.estadoVeraz = caratulaData.getEstadoVeraz();
-		gridBotonesVeraz.setWidget(0, 2, estadoVeraz);
+		gridBotonesVeraz.setWidget(0, 2, caratulaData.getEstadoVeraz());
 		
 		add(gridBotonesVeraz);
 		
@@ -387,8 +384,8 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		 * Si la caratula est� confirmada, el bot�n "Generar Veraz", debe estar deshabilitado, 
 		 * independientemente de que si el archivo no fue generado.
 		 */
-		boolean isVerazNoGenerado = !this.caratulaAEditar.isConfirmada() && (this.caratulaAEditar.getArchivoVeraz() == null || 
-			this.caratulaAEditar.getArchivoVeraz().length() == 0);
+		boolean isVerazNoGenerado = !this.caratulaData.getDatosCaratula().isConfirmada() && 
+				(this.caratulaData.getArchivoVeraz() == null || this.caratulaData.getArchivoVeraz().length() == 0);
 
 		setEnabledButton(isVerazNoGenerado,this.generarVeraz,"btn-disabled");
 		setEnabledButton(!isVerazNoGenerado,this.verVeraz,"btn-disabled");
@@ -412,15 +409,16 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		generarVeraz.addClickHandler(new ClickHandler() {
 			
 			public void onClick(ClickEvent event) {
-			    CuentaRpcService.Util.getInstance().consultarDetalleVeraz(caratulaAEditar.getIdCuenta(),caratulaAEditar.getId(), 
+//				MGR - Ya no tengo que registrar el nombre del archivo la generarlo, solo envio el Id de la cuenta
+			    CuentaRpcService.Util.getInstance().consultarDetalleVeraz(caratulaAEditar.getIdCuenta(), 
 			    		new DefaultWaitCallback<VerazResponseDto>() {
 
 							@Override
 							public void success(VerazResponseDto result) {
-								caratulaAEditar.setArchivoVeraz(result.getFileName());
+								// LF
+								caratulaData.setArchivoVeraz(result.getFileName());
+								caratulaData.setEstadoVeraz(result);
 								habilitarBotonesVeraz();
-								// LF								
-								setEstadoVeraz(result);
 								obtenerCantidadEquipos();
 								// Utilizo el DeferredCommand para "esperar" a que se complete la llamada asincronica en el metodo obtenerCantidadEquipos().
 								DeferredCommand.addCommand(new IncrementalCommand() {
@@ -429,7 +427,7 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 											return true;
 										} else {
 											if(cantEquipos != null) {
-												CuentaRpcService.Util.getInstance().autocompletarValoresVeraz(estadoVeraz.getText().toUpperCase()/*result.getEstado().toUpperCase()*/, Integer.valueOf(cantEquipos), new DefaultWaitCallback<ScoreVerazDto>() {
+												CuentaRpcService.Util.getInstance().autocompletarValoresVeraz(caratulaData.getEstadoVeraz().getText().toUpperCase(), Integer.valueOf(cantEquipos), new DefaultWaitCallback<ScoreVerazDto>() {
 													@Override
 													public void success(ScoreVerazDto result) {
 														if(result != null) {
@@ -473,31 +471,6 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		return verVeraz;
 	}
 	
-	
-	/**
-	 * Setea el estado del veraz en el Label y lo colorea seg�n el mismo
-	 * @param response
-	 */
-	public void setEstadoVeraz(VerazResponseDto response){
-		if(response.getEstado().equals("REVISAR") && response.getScoreDni() == SCORE_DNI_INEXISTENTE){
-			setEstadoVeraz("DOCUMENTO INEXISTENTE");
-		}else{
-			setEstadoVeraz(response.getEstado());
-		}
-	}
-	
-
-	public void setEstadoVeraz(String estado){
-		estadoVeraz.setText(estado);
-		if ("ACEPTAR".equals(estado)) {
-			estadoVeraz.setStyleName("verazAceptarLabel");
-		} else if ("REVISAR".equals(estado) || "DOCUMENTO INEXISTENTE".equals(estado)) {
-			estadoVeraz.setStyleName("verazRevisarLabel");
-		} else {
-			estadoVeraz.setStyleName("verazRechazarLabel");
-		}
-	}
-	
 	//LF
 	/**
 	 * Obtengo una lista de SolicitudServicioDto segun el idCuenta y el nroSS ingresado en la caratula. Si la lista devuelve 
@@ -507,31 +480,38 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 	 * 
 	 */
 	private void obtenerCantidadEquipos(){
-		SolicitudRpcService.Util.getInstance().getSSPorIdCuentaYNumeroSS(caratulaAEditar.getIdCuenta().intValue(), caratulaData.getNroSS().getText(), new DefaultWaitCallback<List<SolicitudServicioDto>>() {
-	
-			@Override
-			public void success(List<SolicitudServicioDto> result) {
-				if(!result.isEmpty()){
-					if(result.size() > 1){
-						MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), Sfa.constant().MAS_DE_UNA_SS(), cancelarCommand);
-					} else {
-						SolicitudRpcService.Util.getInstance().getItemsPorLineaSS(result.get(0), new DefaultWaitCallback<List<ItemSolicitudDto>>() {
-							@Override
-							public void success(List<ItemSolicitudDto> result) {
-								if(!result.isEmpty()) {
-									cantEquipos = String.valueOf(result.size());
-								}
-									isCantEquiposObtenidos = true;
-							}
-						});
-					}		
-				} else {
-					isCantEquiposObtenidos = true;
-				}
-					
+//		MGR - Verifico antes de llamar al servicio
+		cantEquipos = null;
+		isCantEquiposObtenidos = false;
+		Long idCuenta = caratulaData.getDatosCaratula().getIdCuenta();
+		String nroSS = caratulaData.getDatosCaratula().getNroSS();
+		if(idCuenta != null && nroSS != null && !nroSS.trim().equals("")){
 		
-			}
-		 });
+			SolicitudRpcService.Util.getInstance().getSSPorIdCuentaYNumeroSS(idCuenta, nroSS,
+					new DefaultWaitCallback<List<SolicitudServicioDto>>() {
+		
+				@Override
+				public void success(List<SolicitudServicioDto> result) {
+					if(!result.isEmpty()){
+						if(result.size() > 1){
+							MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), Sfa.constant().MAS_DE_UNA_SS(), cancelarCommand);
+						} else {
+							SolicitudRpcService.Util.getInstance().getItemsPorLineaSS(result.get(0), new DefaultWaitCallback<List<ItemSolicitudDto>>() {
+								@Override
+								public void success(List<ItemSolicitudDto> result) {
+									if(!result.isEmpty()) {
+										cantEquipos = String.valueOf(result.size());
+									}
+										isCantEquiposObtenidos = true;
+								}
+							});
+						}		
+					} else {
+						isCantEquiposObtenidos = true;
+					}
+				}
+			 });
+		}
 	}
 	
 	/**
