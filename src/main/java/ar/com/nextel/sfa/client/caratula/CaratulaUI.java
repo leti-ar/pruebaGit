@@ -44,7 +44,6 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 	private static CaratulaUI instance = null;
 	private CaratulaDto caratulaAEditar;
 	private int nroCaratula = 0; //Para saber si es la primer caratula o no (requerido validacion)
-//	private static int SCORE_DNI_INEXISTENTE = 3;
 	
 	private Grid gridCabecera;
 	
@@ -587,8 +586,9 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 			
 			if(caratulaData.getIngDemostrado().getValue()){
 				gridIngDem.setVisible(true);
-				hide();
-				showAndCenter();
+//				MGR - #3011 - Se comentan las dos lineas siguientes
+//				hide();
+//				showAndCenter();
 			}else
 				gridIngDem.setVisible(false);
 		}
