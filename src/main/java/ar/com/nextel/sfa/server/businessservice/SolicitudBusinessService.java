@@ -385,7 +385,7 @@ public class SolicitudBusinessService {
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public EstadoPorSolicitud saveEstadoPorSolicitudDto(EstadoPorSolicitud estadoPorSolicitud) {
-		if(estadoPorSolicitud.getNumeroSolicitud()>0){
+		if(estadoPorSolicitud.getIdSolicitud()>0){
 			repository.save(estadoPorSolicitud);			
 	}
 		
@@ -703,7 +703,7 @@ public class SolicitudBusinessService {
 		//Req Pass y cierre automatico- se deja guardado el cambio del estado de la ss es estado_por_solicitud
 		EstadoPorSolicitud nuevoEstado= new EstadoPorSolicitud();
 		nuevoEstado.setFecha(new Date());
-		nuevoEstado.setNumeroSolicitud(solicitudServicio.getId());
+		nuevoEstado.setIdSolicitud(solicitudServicio.getId());
 		nuevoEstado.setUsuario(sessionContextLoader.getVendedor().getId());
 
 	    List<EstadoSolicitud> estados = repository.getAll(EstadoSolicitud.class);

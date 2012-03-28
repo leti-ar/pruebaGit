@@ -1586,7 +1586,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 //			estadoPorSolicitudDto.setFecha(new Date());
 //			
 //			if(!editarSSUIData.getSolicitudServicio().getNumero().equals("")){
-//				estadoPorSolicitudDto.setNumeroSolicitud(new Long(editarSSUIData.getSolicitudServicio().getId()));			
+//				estadoPorSolicitudDto.setIdSolicitud(new Long(editarSSUIData.getSolicitudServicio().getId()));			
 //			}
 //			estadoPorSolicitudDto.setUsuario(editarSSUIData.getSolicitudServicio().getUsuarioCreacion().getId());
 //			

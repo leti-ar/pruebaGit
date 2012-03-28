@@ -273,7 +273,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		    EstadoPorSolicitudDto estadoPorSolicitudDto = new EstadoPorSolicitudDto();
 		  
 			estadoPorSolicitudDto.setFecha(new Date());
-			estadoPorSolicitudDto.setNumeroSolicitud(solicitudServicioDto.getId());
+			estadoPorSolicitudDto.setIdSolicitud(solicitudServicioDto.getId());
 	//			VendedorDto v = (VendedorDto) mapper.map(sessionContextLoader.getVendedor(),
 	//				VendedorDto.class);
 	//		
@@ -537,7 +537,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				EstadoPorSolicitudDto.class);
 		List<EstadoPorSolicitudDto> listaFinal = new ArrayList<EstadoPorSolicitudDto>();
 		for (int i = 0; i < lista.size(); i++) {
-			if (lista.get(i).getNumeroSolicitud() == numeroSS) {
+			if (lista.get(i).getIdSolicitud() == numeroSS) {
 				listaFinal.add(lista.get(i));
 			}
 		}
