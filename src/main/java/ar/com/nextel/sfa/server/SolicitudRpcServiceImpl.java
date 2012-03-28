@@ -130,6 +130,7 @@ import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
+import ar.com.nextel.sfa.client.dto.TipoVendedorDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
@@ -938,20 +939,23 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			String errorCC = "";
 			int puedeCerrar = 0;
 			if (!solicitudServicioDto.getGrupoSolicitud().isTransferencia()) {
-				errorCC = evaluarEquiposYDeuda(solicitudServicioDto, pinMaestro);
-				if ("".equals(errorCC)) {
-					puedeCerrar = puedeCerrarSS(solicitudServicioDto);
-					if (puedeCerrar == 3) {//pass de creditos segun la logica
-						if (puedeDarPassDeCreditos(solicitudServicioDto, pinMaestro)) {
-							//Antes de dar el pass si el cliente no fue tranferido anteriormente, se transfiere el cliente a Vantive
-							if(!solicitudServicioDto.getCuenta().isTransferido()){
-								solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,false);
-							}
-							solicitudServicioDto.setPassCreditos(true);
-						} else {
-							solicitudServicioDto.setPassCreditos(false);
-							if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
-								errorCC = generarErrorPorCC(solicitudServicioDto, pinMaestro);
+				//me fijo si tipo vendedor y orden pueden ser configurables por APG.
+				if (sonConfigurablesPorAPG(solicitudServicioDto.getVendedor().getTipoVendedor(), solicitudServicioDto.getLineas())) {
+					errorCC = evaluarEquiposYDeuda(solicitudServicioDto, pinMaestro);
+					if ("".equals(errorCC)) {
+						puedeCerrar = puedeCerrarSS(solicitudServicioDto);
+						if (puedeCerrar == 3) {//pass de creditos segun la logica
+							if (puedeDarPassDeCreditos(solicitudServicioDto, pinMaestro)) {
+								//Antes de dar el pass si el cliente no fue tranferido anteriormente, se transfiere el cliente a Vantive
+								if(!solicitudServicioDto.getCuenta().isTransferido()){
+									solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,false);
+								}
+								solicitudServicioDto.setPassCreditos(true);
+							} else {
+								solicitudServicioDto.setPassCreditos(false);
+								if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
+									errorCC = generarErrorPorCC(solicitudServicioDto, pinMaestro);
+								}
 							}
 						}
 					}
@@ -1605,7 +1609,20 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		return null;
 	}	
 	
-		/**
+	private boolean sonConfigurablesPorAPG(TipoVendedorDto tipoVendedor, List<LineaSolicitudServicioDto> lineas) {
+		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
+			LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
+			if (linea.getTipoSolicitud() != null && linea.getPlan() != null && linea.getItem() != null) {
+				List result = repository.executeCustomQuery("configurablePorAPG", tipoVendedor.getId(), linea.getTipoSolicitud().getId());  
+				if (result.size() <= 0) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	/**
 	 * Dependiendo del tipo de cliente, si tiene equipos activos o suspendidos y deuda en cuenta corriente;
 	 * la SS se podrá o no, cerrar por Veraz o Scoring.
 	 * @param ss
