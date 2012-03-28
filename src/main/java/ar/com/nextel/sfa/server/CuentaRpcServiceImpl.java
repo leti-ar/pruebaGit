@@ -962,24 +962,28 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	 * @author fernaluc
 	 * @return true si esta validado por EECC, de lo contrario false.
 	 */
-	public Boolean isDomicilioValidadoPorEECC(String nro_ss) throws RpcExceptionMessages{
+//	MGR - #3010 - Se pide el id de la cuenta para tenerlo en cuenta en la consulta
+	public Boolean isDomicilioValidadoPorEECC(Long idCuenta, String nro_ss) throws RpcExceptionMessages{
 		List result = null;
 		try {
-			String[] valores = {nro_ss,nro_ss,nro_ss};
-			AppLogger.info("Verificando que el domicilio de facturacion y de entrega asociados al nro de solicitud: " + nro_ss + " ,haya sido validado por EECC");
+			Object[] valores = {nro_ss,idCuenta,nro_ss,idCuenta};
+			AppLogger.info("Verificando que el domicilio de facturacion y de entrega asociados a la cuenta: " + idCuenta + 
+					" y al nro de solicitud: " + nro_ss + ",haya sido validado por EECC");
 			result = repository.executeCustomQuery(QUERY_VALID_EECC, valores);
 		}catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
 		
+		//Si hay mas de un resultado, hay un error
+		if(result.size() > 1)
+			return null;
 		
-		if((result == null || result.isEmpty()) || !result.get(0).equals("T")){
+		if(result == null || result.isEmpty() || !result.get(0).equals("T")){
 			return false;
 		} else {
 			return true;
 		}
-	  
 	}
 	
 	/**

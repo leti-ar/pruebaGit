@@ -108,7 +108,8 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		//#LF
 		caratulaData.getNroSS().addValueChangeHandler(new ValueChangeHandler<String>() {			
 			public void onValueChange(ValueChangeEvent<String> event) {
-				caratulaData.validarDomicilio(event.getValue());
+//				MGR - #3010 - Se envia el id de la cuenta
+				caratulaData.validarDomicilio(caratulaData.getDatosCaratula().getIdCuenta(), event.getValue());
 			}
 		});
 		
@@ -549,6 +550,11 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 //		onChange(caratulaData.getBanco());
 		mostrarDatosBanco(caratulaAEditar.getBanco());
 		onClick(caratulaData.getIngDemostrado());
+//		MGR - #3010 - Se envia el id de la cuenta
+		String nroSS = this.caratulaAEditar.getNroSS(); 
+		if(nroSS != null && !nroSS.equals("")){
+			caratulaData.validarDomicilio(caratulaAEditar.getIdCuenta(), nroSS);
+		}
 		setDialogTitle(titulo);
 		showAndCenter();
 	}

@@ -3021,6 +3021,16 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("ERR_NRO_SOLICITUD_NO_REQUERIDO")
   String ERR_NRO_SOLICITUD_NO_REQUERIDO();
   
+//  MGR - #3010
+  /**
+   * Translated "La cuenta tiene mas de una Solicitud con el número ingresado.".
+   * 
+   * @return translated "La cuenta tiene mas de una Solicitud con el número ingresado."
+   */
+  @DefaultStringValue("La cuenta tiene mas de una Solicitud con el número ingresado.")
+  @Key("ERR_CTA_MAS_UNA_SS_MISMO_NRO")
+  String ERR_CTA_MAS_UNA_SS_MISMO_NRO();
+  
   /**
    * Translated "Documentos Digitalizados".
    * 

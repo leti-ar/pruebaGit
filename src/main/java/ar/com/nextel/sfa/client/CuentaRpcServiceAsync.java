@@ -66,7 +66,8 @@ public interface CuentaRpcServiceAsync {
 	public void confirmarCaratula(CaratulaDto caratulaDto, AsyncCallback<CaratulaDto> callback);
 	public void validarExistenciaTriptico(String nro, AsyncCallback<Boolean> callback);
 	public void getDocDigitalizados(String customerCode, AsyncCallback<List<DocDigitalizadosDto>> callback);
-	public void isDomicilioValidadoPorEECC(String nro_ss, AsyncCallback<Boolean> callback);
+//	MGR - #3010 - Se pide el id de la cuenta para tenerlo en cuenta en la consulta
+	public void isDomicilioValidadoPorEECC(Long idCuenta, String nro_ss, AsyncCallback<Boolean> callback);
 	//LF
 	public void autocompletarValoresVeraz(String score, int cantEquipos, AsyncCallback<ScoreVerazDto> callback);
 

@@ -835,19 +835,28 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 	
 	/**
 	 * Si el domicilio de facturacion y el domicilio de entrega asociado con el numero de solicitud de servicio es validado, 
-	 * en el combo Validacion domicilio se selecciona "Validado por EECC�. 
+	 * en el combo Validacion domicilio se selecciona "Validado por EECC�.
+	 * @param idCuenta (Id de la cuenta a la que pertenece la ss) 
 	 * @param nro_ss (Numero de solicitud de servicio).
 	 * @author fernaluc
 	 */
-	public void validarDomicilio(String nro_ss) {
-		CuentaRpcService.Util.getInstance().isDomicilioValidadoPorEECC(nro_ss, new DefaultWaitCallback<Boolean>() {
+	public void validarDomicilio(Long idCuenta, String nro_ss) {
+//		MGR - #3010 - Se envia el id de la cuenta
+		CuentaRpcService.Util.getInstance().isDomicilioValidadoPorEECC(idCuenta, nro_ss, 
+				new DefaultWaitCallback<Boolean>() {
 			
 			@Override
 			public void success(Boolean result) {
-				if(result.booleanValue()){
-					validDomicilio.setSelectedIndex(2);
-				} else {
-					validDomicilio.setSelectedIndex(0);
+				
+				if(result == null){
+					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.ERROR);
+					ErrorDialog.getInstance().show(Sfa.constant().ERR_CTA_MAS_UNA_SS_MISMO_NRO(), false);
+				}else{
+					if(result.booleanValue()){
+						validDomicilio.setSelectedIndex(2);
+					} else {
+						validDomicilio.setSelectedIndex(0);
+					}
 				}
 			}
 		});

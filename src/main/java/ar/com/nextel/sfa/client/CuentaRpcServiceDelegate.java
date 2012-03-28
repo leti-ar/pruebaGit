@@ -192,9 +192,10 @@ public class CuentaRpcServiceDelegate {
 		cuentaRpcService.getDocDigitalizados(customerCode, callback);
 	}
 	
-	public void isDomicilioValidadoPorEECC(String nro_ss, DefaultWaitCallback<Boolean> callback){
+//	MGR - #3010 - Se pide el id de la cuenta para tenerlo en cuenta en la consulta
+	public void isDomicilioValidadoPorEECC(Long idCuenta, String nro_ss, DefaultWaitCallback<Boolean> callback){
 		WaitWindow.show();
-		cuentaRpcService.isDomicilioValidadoPorEECC(nro_ss, callback);
+		cuentaRpcService.isDomicilioValidadoPorEECC(idCuenta, nro_ss, callback);
 	}
 	// LF
 	public void autocompletarValoresVeraz(String score, int cantEquipos, DefaultWaitCallback<ScoreVerazDto> callback) {

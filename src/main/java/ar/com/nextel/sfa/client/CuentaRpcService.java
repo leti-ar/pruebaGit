@@ -82,7 +82,8 @@ public interface CuentaRpcService extends RemoteService {
 	public CaratulaDto confirmarCaratula(CaratulaDto caratulaDto) throws RpcExceptionMessages;
 	public boolean validarExistenciaTriptico(String nro) throws RpcExceptionMessages;
 	public List<DocDigitalizadosDto> getDocDigitalizados(String customerCode) throws RpcExceptionMessages;
-	public Boolean isDomicilioValidadoPorEECC(String nro_ss) throws RpcExceptionMessages;
+//	MGR - #3010 - Se pide el id de la cuenta para tenerlo en cuenta en la consulta
+	public Boolean isDomicilioValidadoPorEECC(Long idCuenta,String nro_ss) throws RpcExceptionMessages;
 	// #LF
 	public ScoreVerazDto autocompletarValoresVeraz(String score, int cantEquipos) throws RpcExceptionMessages;
 	
