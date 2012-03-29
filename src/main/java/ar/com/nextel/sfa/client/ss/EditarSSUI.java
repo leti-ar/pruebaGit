@@ -108,10 +108,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private HashMap<String, Long> knownInstancias;
 	FlowPanel linksCrearSS;
 
-	// Portabilidad
-	private long idCuentaPort;
-	
-	
 	public EditarSSUI() {
 		super();
 		addStyleName("Gwt-EditarSSUI");
@@ -152,9 +148,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		mainPanel.setVisible(false);
 //		tabs.selectTab(0);
 
-		// Portabilidad
-		idCuentaPort = Long.valueOf(cuenta);
-		
 		linksCrearSS.clear();
 		if(grupoSS != null && knownInstancias != null && 
 				!grupoSS.equals(knownInstancias.get(GrupoSolicitudDto.ID_TRANSFERENCIA).toString()) &&
@@ -280,7 +273,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			varios.cleanScoring();
 			
 			
-			cargarDatosPortabilidad();
+			cargarDatosPortabilidad(cuenta,codigoVantive);
 		}
 		return true;
 		
@@ -1128,8 +1121,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	/**
 	 * Portabilidad
 	 */
-	private void cargarDatosPortabilidad(){
-		SolicitudRpcService.Util.getInstance().getPortabilidadInitializer(idCuentaPort, new DefaultWaitCallback<PortabilidadInitializer>(){
+	private void cargarDatosPortabilidad(String idCuenta,String codigoVantive){
+		SolicitudRpcService.Util.getInstance().getPortabilidadInitializer(idCuenta,codigoVantive, new DefaultWaitCallback<PortabilidadInitializer>(){
 			@Override
 			public void success(PortabilidadInitializer result) {
 				datos.setPortabilidadInitializer(result);

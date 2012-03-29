@@ -150,7 +150,7 @@ public interface SolicitudRpcService extends RemoteService {
 	public List<String> validarPlanesCedentes(List<ContratoViewDto> ctoCedentes, boolean isEmpresa, boolean isSaving);
 		
 	// Portabilidad ------------------------------
-	PortabilidadInitializer getPortabilidadInitializer(long cuentaID) throws RpcExceptionMessages;
+	PortabilidadInitializer getPortabilidadInitializer(String idCuenta,String codigoVantive) throws RpcExceptionMessages;
 	
 	SolicitudPortabilidadDto getSolicitudPortabilidadDto(String lineaID) throws RpcExceptionMessages;
 	

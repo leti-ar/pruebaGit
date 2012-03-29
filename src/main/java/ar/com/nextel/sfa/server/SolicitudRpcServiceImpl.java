@@ -977,7 +977,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	 * TODO: Portabilidad
 	 * @return
 	 */
-	public PortabilidadInitializer getPortabilidadInitializer(long cuentaID) throws RpcExceptionMessages {
+	public PortabilidadInitializer getPortabilidadInitializer(String idCuenta,String codigoVantive) throws RpcExceptionMessages {
 		PortabilidadInitializer initializer = new PortabilidadInitializer();
 		
 		initializer.setLstTipoDocumento(mapper.convertList(
@@ -989,8 +989,23 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		initializer.setLstModalidadCobro(mapper.convertList(
 						repository.find("FROM ModalidadCobro mcob WHERE mcob.codigoBSCS IN('CPP','MPP')"), ModalidadCobroDto.class));
 
+		if (idCuenta==null) {
+			if (codigoVantive != null) {
+				try {
+					Cuenta cuenta = cuentaBusinessService.getCuentaSinLockear(codigoVantive);
+					idCuenta = cuenta.getId().toString();
+				} catch (Exception e) {
+					AppLogger.error(e);
+					throw ExceptionUtil.wrap(e);
+				}
+			} else {
+				AppLogger.error("Imposible inicializar datos de portabilidad sin cuenta ni codigo vantive");
+				throw new RpcExceptionMessages("Imposible inicializar datos de portabilidad sin cuenta ni codigo vantive");
+			}
+		}
+
 		// Carga la cuenta para poder extraer los datos de la persona
-		Cuenta persona_aux = (Cuenta) repository.retrieve(Cuenta.class, cuentaID);
+		Cuenta persona_aux = (Cuenta) repository.retrieve(Cuenta.class, Long.valueOf(idCuenta));
 		initializer.setPersona(mapper.map(persona_aux.getPersona(), PersonaDto.class));
 
 		return initializer;
@@ -1077,7 +1092,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			try{
 				int res = bpsSystem.resolverPortabilidadTransferencia(contrato.getContrato());
 				if(res == 1) 
-					result.addError(ERROR_ENUM.ERROR, "El contrato "+ contrato.getContrato() +" posee un trámite de portabilidad en curso. Por favor verificar.");
+					result.addError(ERROR_ENUM.ERROR, "El contrato "+ contrato.getContrato() +" posee un trï¿½mite de portabilidad en curso. Por favor verificar.");
 			}catch(Exception e){
 				throw ExceptionUtil.wrap(e);
 			}

@@ -133,7 +133,7 @@ public interface SolicitudRpcServiceAsync {
 	public void loginServer(String linea, AsyncCallback<Void> callback);
 	
 	// Portabilidad ------------------------------
-	public void getPortabilidadInitializer(long cuentaID, 
+	public void getPortabilidadInitializer(String idCuenta,String codigoVantive,
 			AsyncCallback<PortabilidadInitializer> callback);
 
 	void getExisteEnAreaCobertura(int codArea, 

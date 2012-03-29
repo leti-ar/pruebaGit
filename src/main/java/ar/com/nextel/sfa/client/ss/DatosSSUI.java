@@ -503,7 +503,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 					notEmpty(portabilidad.getRazonSocial()) && notEmpty(portabilidad.getNombre()) && notEmpty(portabilidad.getApellido())){
 
 				final DatosSSUI datos = this;
-				SolicitudRpcService.Util.getInstance().getPortabilidadInitializer(editarSSUIData.getCuentaId(),new DefaultWaitCallback<PortabilidadInitializer>() {
+				SolicitudRpcService.Util.getInstance().getPortabilidadInitializer(editarSSUIData.getCuentaId().toString(),editarSSUIData.getCuenta().getCodigoVantive(),new DefaultWaitCallback<PortabilidadInitializer>() {
 					@Override
 					public void success(PortabilidadInitializer result) {
 						PortabilidadReplicarDialog replicarDialog = new PortabilidadReplicarDialog();

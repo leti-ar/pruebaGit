@@ -257,9 +257,9 @@ public class SolicitudRpcServiceDelegate {
 	}
 
 	// Portabilidad ------------------------------
-	public void getPortabilidadInitializer(long cuentaID, AsyncCallback<PortabilidadInitializer> callback){
+	public void getPortabilidadInitializer(String idCuenta,String codigoVantive, AsyncCallback<PortabilidadInitializer> callback){
 		WaitWindow.show();
-		solicitudRpcServiceAsync.getPortabilidadInitializer(cuentaID, callback);
+		solicitudRpcServiceAsync.getPortabilidadInitializer(idCuenta, codigoVantive, callback);
 	}
 
 	public void getSolicitudPortabilidadDto(String lineaID, AsyncCallback<SolicitudPortabilidadDto> callback){
