@@ -1097,26 +1097,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	        }
         });
 	}
-	
-//	private void verificarPortabilidad() {
-//			MessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_PORTABILIDAD(),	
-//				new Command() {
-//				    public void execute() {
-//				    	MessageDialog.getInstance().hide();
-//				    	verificoPortabilidad = true;
-//				    	aceptoPortabilidad = true;
-////				    	cerrarSSUI.setAceptarCommand(generarCerrarSolicitudCommand(true));
-//					};
-//				}, 
-//				new Command() {
-//				    public void execute() {
-//				    	MessageDialog.getInstance().hide();
-//				    	verificoPortabilidad = true;
-//				    	aceptoPortabilidad = false;
-//					};
-//		    });
-//	}
-	
+
 	private Command generarCerrarSolicitudCommand() {
 		return new Command() {
 			public void execute() {

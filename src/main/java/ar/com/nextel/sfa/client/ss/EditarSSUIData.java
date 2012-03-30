@@ -972,54 +972,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		errores.addAll(validarCompletitud());
 		
 		
-//		//LF
-//		if(tienePortabilidad()) {
-//			MessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_PORTABILIDAD(),	
-//				new Command() {
-//				    public void execute() {
-//				    	
-//					};
-//				}, 
-//				new Command() {
-//				    public void execute() {
-//				    	MessageDialog.getInstance().hide();
-//					};
-//				});
-//		}
 		return errores;
 	}
 	
-	/**
-	 * Metodo que valida si alguna de las lineas de la SS tiene portabilidad.
-	 * @return true si es portabilidad
-	 */
-	public boolean tienePortabilidad() {
-//		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
-//			for (ServicioAdicionalLineaSolicitudServicioDto servicioAdicional : linea
-//					.getServiciosAdicionales()) {
-				//FIXME Averiguar como hacer para ver si es portabilidad..
-//				if(servicioAdicional.isEsGarantia()) {
-					return true;
-	//				MessageDialog.getInstance().showAceptarCancelar(Sfa.constant().MSG_PORTABILIDAD(),	
-	//						new Command() {
-	//						    public void execute() {
-	//						    	if(editarSSUIData.getSolicitudServicio()!=null)
-	//						    		loadCopiarSS(editarSSUIData.getSolicitudServicio());
-	//							};
-	//						}, 
-	//						new Command() {
-	//						    public void execute() {
-	//						    	MessageDialog.getInstance().hide();
-	//							};
-	//						});
-//				}
-				
-//			}
-//		}
-//			return false;
-		}
-	
-
 	private void validarAlquileresDeLineaSS(GwtValidator validator, LineaSolicitudServicioDto linea) {
 		// Pregunta si es de alquiler y busca si tiene uno seleccionado
 		if (linea.getTipoSolicitud().getTipoSolicitudBase().getFormaContratacion().equals(

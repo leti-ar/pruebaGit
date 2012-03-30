@@ -3298,12 +3298,4 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("buscarSSTitle")
   String buscarSSTitle();  
   
-  /**
-   * Translated "La solicitud de servicio posee portabilidad y no se le podrá dar el pass automático de créditos. ¿Desea cerrarla?".
-   * 
-   * @return translated "La solicitud de servicio posee portabilidad y no se le podrá dar el pass automático de créditos. ¿Desea cerrarla?"
-   */
-  @DefaultStringValue("La solicitud de servicio posee portabilidad y no se le podrá dar el pass automático de créditos. ¿Desea cerrarla?")
-  @Key("MSG_PORTABILIDAD")
-  String MSG_PORTABILIDAD();
 }
