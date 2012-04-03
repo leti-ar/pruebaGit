@@ -5,15 +5,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.tomcat.util.threads.ThreadPool.ControlRunnable;
+
+import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
+import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
+import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -23,9 +29,14 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -64,6 +75,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		aceptar = new SimpleLink("ACEPTAR");
 		cerrar = new SimpleLink("CERRAR");
 		itemSolicitudUIData = new ItemSolicitudUIData(controller);
+		itemSolicitudUIData.setItemSolicitudDialog(this);
 		tipoOrden = itemSolicitudUIData.getTipoOrden();
 
 		tipoSolicitudPanel.setWidget(getItemYPlanSolicitudUI());
@@ -88,8 +100,30 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 
 		aceptar.addClickListener(this);
 		cerrar.addClickListener(this);
-
+		
 		controller.getLineasSolicitudServicioInitializer(initTiposOrdenCallback());
+	}
+	
+	/**
+	 * TODO: Portabilidad
+	 */
+	public void resetearPanelPortabilidad(){
+		itemSolicitudUIData.getPortabilidadPanel().resetearPortabilidad();
+	}
+	
+	/**
+	 * TODO: Portabilidad
+	 */
+	public void cargarPortabilidadInitializer(PortabilidadInitializer portabilidadInitializer){
+		if(portabilidadInitializer != null) itemSolicitudUIData.getPortabilidadPanel().setInitializer(portabilidadInitializer);
+	}
+	
+	/**
+	 * TODO: Portabilidad
+	 * @param unaPersona
+	 */
+	public void cargarPersona(PersonaDto unaPersona){
+		itemSolicitudUIData.getPortabilidadPanel().setPersona(unaPersona);
 	}
 	
 	public void onClick(final Widget sender) {
@@ -97,30 +131,45 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 			executeItemCreation(sender);
 		} else if (sender == cerrar) {
 			itemSolicitudUIData.desreservarSiNoFueGrabado();
+			itemSolicitudUIData.getConfirmarReserva().setEnabled(true);
 			hide();
 		}
 	}
 
 	private void executeItemCreation(final Widget sender) {
-		List errors = itemSolicitudUIData.validate();
+		boolean portabilidadVisible = itemSolicitudUIData.getPortabilidadPanel().isVisible();
+		List<String> errors = new ArrayList<String>();
+		List<String> errorsPortabilidad = new ArrayList<String>();
+		
+		errors.addAll(itemSolicitudUIData.validate());
+		
+		if(portabilidadVisible) errorsPortabilidad.addAll(itemSolicitudUIData.getPortabilidadPanel().ejecutarValidacion());
+
 		if (errors.isEmpty()) {
-			// Si ingreso un numero para reservar y no lo reservo le pregunto si desea hacerlo.
-			if (itemSolicitudUIData.hasNumeroSinReservar()) {
-				ModalMessageDialog.getInstance().setDialogTitle("Reserva");
-				ModalMessageDialog.getInstance().showSiNo("Desea reservar el número elegido?",
-						getReservarCommand(), new Command() {
-							public void execute() {
-								itemSolicitudUIData.getReservar().setText("");
-								ModalMessageDialog.getInstance().hide();
-								guardarItem(sender == aceptar);
-							}
-						});
-			} else {
-				guardarItem(sender == aceptar);
+			if(errorsPortabilidad.isEmpty()){
+				// Si ingreso un numero para reservar y no lo reservo le pregunto si desea hacerlo.
+				if (itemSolicitudUIData.hasNumeroSinReservar()) {
+					ModalMessageDialog.getInstance().setDialogTitle("Reserva");
+					ModalMessageDialog.getInstance().showSiNo("Desea reservar el número elegido?",
+							getReservarCommand(), new Command() {
+								public void execute() {
+									itemSolicitudUIData.getReservar().setText("");
+									ModalMessageDialog.getInstance().hide();
+									guardarItem(sender == aceptar);
+								}
+							});
+				} else {
+					guardarItem(sender == aceptar);
+				}
+			}else{
+				ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+				ErrorDialog.getInstance().show(errorsPortabilidad, false);
 			}
 		} else {
 			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+			if(!errorsPortabilidad.isEmpty()) errors.addAll(errorsPortabilidad);
 			ErrorDialog.getInstance().show(errors, false);
+
 		}
 	}
 
@@ -239,6 +288,16 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		itemSolicitudUIData.getTipoPlan().clearPreseleccionados();
 		itemSolicitudUIData.setNombreMovil(controller.getNombreProximoMovil());
 		itemSolicitudUIData.setLineaSolicitudServicio(linea);
+
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(!instancias.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS).equals(controller.getEditarSSUIData().getGrupoSolicitud().getId())){
+			itemSolicitudUIData.getPortabilidad().setEnabled(false);
+			itemSolicitudUIData.getPortabilidad().setVisible(false);
+		}else{
+			itemSolicitudUIData.getPortabilidad().setEnabled(true);
+			itemSolicitudUIData.getPortabilidad().setVisible(true);
+		}
+
 		final TipoPlanDto tipoPlan = linea != null && linea.getPlan() != null ? linea.getPlan().getTipoPlan()
 				: null;
 		if (linea.getTipoSolicitud() != null) {

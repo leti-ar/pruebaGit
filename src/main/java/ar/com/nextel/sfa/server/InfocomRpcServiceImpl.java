@@ -127,6 +127,7 @@ public class InfocomRpcServiceImpl extends RemoteServiceServlet implements
 			} catch (Exception e) {
 				throw ExceptionUtil.wrap(e);
 			}
+
 			getCantidadEquipos(numeroCuenta, getCuentaRaiz(numeroCuenta, codigoVantive).getCodigoVantive(),
 					infocomInitializer);
 			getResponsablesPago(numeroCuenta, codigoVantive, infocomInitializer);

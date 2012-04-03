@@ -89,7 +89,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateFormat();
 	/** Contiene las listas de servicios adicionales de cada LineaSolicitudServicio */
 	private List<List<ServicioAdicionalLineaSolicitudServicioDto>> serviciosAdicionales;
-	private boolean saved = true;
+	private boolean saved = false;
 	private long lastFakeId = -1;
 	private NumberFormat currencyFormat = NumberFormat.getCurrencyFormat();
 	private EditarSSUIController controller;
@@ -607,6 +607,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		GwtValidator validator = new GwtValidator();
 		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
 			validarAlquileresDeLineaSS(validator, linea);
+			validarPortabilidadAdicional(validator, linea);
 			validarServicioMDS(validator, linea);
 			validarCargoActivacion(validator, linea);
 		}
@@ -644,6 +645,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				instancias.get(GrupoSolicitudDto.ID_FAC_MENSUAL).equals(solicitudServicio.getGrupoSolicitud().getId())){
 			validator.addTarget(ordenCompra).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().ordenCompra()));
+		}
+		
+		//Portabilidad
+		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
+			if(linea.getPortabilidad() != null){
+				if(linea.getPortabilidad().getTelefonoPortar() == null){
+					validator.addError("Falta validar el numero de telefono a portar del " + linea.getAlias());
+				}
+			}
 		}
 		
 		validator.fillResult();
@@ -715,6 +725,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
 			validarAlquileresDeLineaSS(validator, linea);
+			validarPortabilidadAdicional(validator,linea);
 			validarCargoActivacion(validator, linea);
 		}
 
@@ -734,6 +745,25 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		return errores;
 	}
 
+	/**
+	 * TODO: Portabilidad
+	 * @param validator
+	 * @param linea
+	 */
+	private void validarPortabilidadAdicional(GwtValidator validator,LineaSolicitudServicioDto linea){
+		if(linea.getPortabilidad() != null){
+//			boolean portabilidadAdicional = false;
+			for(ServicioAdicionalLineaSolicitudServicioDto servicioAdicional : linea.getServiciosAdicionales()){
+				if(servicioAdicional.getServicioAdicional().getEsPortabilidad()){
+					servicioAdicional.setChecked(true);
+					servicioAdicional.setObligatorio(true);
+				}
+//				if(servicioAdicional.getServicioAdicional().getEsPortabilidad() && servicioAdicional.isChecked()) portabilidadAdicional = true;
+			}
+//			if(!portabilidadAdicional) validator.addError(Sfa.constant().ERR_FALTA_PORTABILIDAD().replaceAll(V1, linea.getAlias()));
+		}
+	}
+	
 	private void validarAlquileresDeLineaSS(GwtValidator validator, LineaSolicitudServicioDto linea) {
 		// Pregunta si es de alquiler y busca si tiene uno seleccionado
 		if (linea.getTipoSolicitud().getTipoSolicitudBase().getFormaContratacion().equals(
@@ -831,6 +861,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				serviciosAdicionales.get(index.intValue()).clear();
 			}
 		}
+		
 		return linea.getNumeradorLinea().intValue();
 	}
 
@@ -847,6 +878,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 						}
 					});
 		}
+		solicitudServicio.getLineas().get(index).setPortabilidad(null);
 		solicitudServicio.getLineas().remove(index);
 		serviciosAdicionales.remove(index);
 		for (; index < solicitudServicio.getLineas().size(); index++) {
@@ -875,9 +907,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	}
 
 	/** Agrega a la LineaSolicitudServicio los servicios adicionales que vienen por defecto */
-	public void mergeServiciosAdicionalesConLineaSolicitudServicio(int indexLinea,
-			List<ServicioAdicionalLineaSolicitudServicioDto> list) {
-		List serviciosAGuardar = getLineasSolicitudServicio().get(indexLinea).getServiciosAdicionales();
+	public void mergeServiciosAdicionalesConLineaSolicitudServicio(int indexLinea,List<ServicioAdicionalLineaSolicitudServicioDto> list) {
+		List<ServicioAdicionalLineaSolicitudServicioDto> serviciosAGuardar = getLineasSolicitudServicio().get(indexLinea).getServiciosAdicionales();
+		
 		for (ServicioAdicionalLineaSolicitudServicioDto servicioAd : list) {
 			if (servicioAd.isChecked() && !serviciosAGuardar.contains(servicioAd)) {
 				serviciosAGuardar.add(servicioAd);

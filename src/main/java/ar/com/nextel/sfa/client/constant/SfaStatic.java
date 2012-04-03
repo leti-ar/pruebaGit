@@ -4,6 +4,10 @@ package ar.com.nextel.sfa.client.constant;
  * Interface to represent the constants contained in resource bundle:
  * 	'/home/lmolinero/workspaceSFAHead/sfa-web2/src/main/java/ar/com/nextel/sfa/client/constant/SfaStatic.properties'.
  */
+/**
+ * @author diazho
+ *
+ */
 public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   
   /**
@@ -1919,6 +1923,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String roaming();
 
   /**
+   * Translated "Portabilidad".
+   * 
+   * @return translated "Portabilidad"
+   */
+  @DefaultStringValue("Portabilidad")
+  @Key("portabilidad")
+  String portabilidad();
+  
+  /**
    * Translated "Rubro".
    * 
    * @return translated "Rubro"
@@ -2521,5 +2534,13 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Acceso denegado. No puede operar con esta cuenta. <br>La Cuenta {1} se encuentra lockeada por otro vendedor. <br>El Vendedor de lockeo es {2}")
   @Key("ERR_CUENTA_LOCKEADA_POR_OTRO_TLM")
   String ERR_CUENTA_LOCKEADA_POR_OTRO_TLM();
-  
+ 
+  /**
+   * 
+   * @return
+   */
+  @DefaultStringValue("El item {1} debe tener soleccionado el Servicio Adicional de Portabilidad")
+  @Key("ERR_FALTA_PORTABILIDAD")
+  String ERR_FALTA_PORTABILIDAD();
+
 }

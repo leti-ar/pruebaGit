@@ -37,9 +37,11 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 
 
 	<mapping>
-		<class-a>ar.com.nextel.model.cuentas.beans.ClaseCuenta
+		<class-a>
+			ar.com.nextel.model.cuentas.beans.ClaseCuenta
 		</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.ClaseCuentaDto
+		<class-b>
+			ar.com.nextel.sfa.client.dto.ClaseCuentaDto
 		</class-b>
 	</mapping>
 
@@ -240,6 +242,11 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>plainDescuentosLinea</a>
 			<b>descuentosLinea</b>
 		</field>
+		<field custom-converter-id="collectionPortabilidadConverter">
+			<a>plainSolicitudPortabilidad</a>
+			<b>solicitudPortabilidad</b>
+		</field>
+		
 	</mapping>
 
 	<mapping>
@@ -385,8 +392,13 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<field type="one-way">
 			<a>servicioAdicional.unicaVez</a>
 			<b>unicaVez</b>
-		</field>		
-	</mapping>
+		</field>
+<!--  		<field type="one-way">
+			<a>servicioAdicional.esPortabilidad</a>
+			<b>esPortabilidad</b>
+		</field>
+ --> 	
+ 	</mapping>
 
 	<mapping map-id="cuentaSolicitud" wildcard="false">
 		<class-a>ar.com.nextel.model.cuentas.beans.Cuenta
@@ -900,4 +912,85 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
             <b>idContrato</b>
         </field>
     </mapping>  
+    
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.SolicitudPortabilidad</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto</class-b>
+
+<!--         <field>
+        	<a>id</a>
+        	<b>id</b>
+        </field>
+ -->        <field>
+            <a>recibeSMS</a>
+            <b>recibeSMS</b>
+        </field>
+        <field>
+            <a>email</a>
+            <b>email</b>
+        </field>
+        <field>
+            <a>numeroSolicitud</a>
+            <b>nroSS</b>
+        </field>
+        <field>
+            <a>nombre</a>
+            <b>nombre</b>
+        </field>
+        <field>
+            <a>apellido</a>
+            <b>apellido</b>
+        </field>
+        <field>
+            <a>numeroTelefono</a>
+            <b>telefono</b>
+        </field>
+        <field>
+            <a>razonSocial</a>
+            <b>razonSocial</b>
+        </field>
+        <field>
+            <a>numeroDocumento</a>
+            <b>numeroDocumento</b>
+        </field>
+        <field>
+            <a>areaTelefono</a>
+            <b>areaTelefono</b>
+        </field>
+        <field>
+            <a>telefonoPortar</a>
+            <b>telefonoPortar</b>
+        </field>
+        <field>
+            <a>ultimaFactura</a>
+            <b>nroUltimaFacura</b>
+        </field>
+        
+        <field>
+        	<a>tipoPersona</a>
+        	<b>tipoPersona</b>
+        </field>
+        
+        <field custom-converter-id="enumToDto">
+            <a>proveedorInicial</a>
+            <b>proveedorAnterior</b>
+        </field>
+        <field custom-converter-id="enumToDto">
+            <a>tipoDocumento</a>
+            <b>tipoDocumento</b>
+        </field>
+        <field custom-converter-id="enumToDto"> 
+            <a>tipoTelefonia</a>
+            <b>tipoTelefonia</b>
+        </field>
+        <field custom-converter-id="enumToDto">
+            <a>modalidadCobro</a>
+            <b>modalidadCobro</b>
+        </field>
+        <field custom-converter-id="identifiableObjectToId">
+            <a>lineaSolicitudServicio</a>
+            <b>lineaSolicitudServicio</b>
+        </field>
+	</mapping>
+
 </mappings>

@@ -35,8 +35,10 @@ import ar.com.nextel.sfa.client.infocom.InfocomUIData;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
+import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
+import ar.com.nextel.sfa.client.util.PortabilidadResult;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
@@ -145,7 +147,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		String codigoVantive = HistoryUtils.getParam(CODIGO_VANTIVE);
 		mainPanel.setVisible(false);
 //		tabs.selectTab(0);
-		
+
 		linksCrearSS.clear();
 		if(grupoSS != null && knownInstancias != null && 
 				!grupoSS.equals(knownInstancias.get(GrupoSolicitudDto.ID_TRANSFERENCIA).toString()) &&
@@ -267,10 +269,13 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					}
 				});
 			}
-				editarSSUIData.clean();
-				varios.cleanScoring();
-			}
-			return true;
+			editarSSUIData.clean();
+			varios.cleanScoring();
+			
+			
+			cargarDatosPortabilidad(cuenta,codigoVantive);
+		}
+		return true;
 		
 	}
 	
@@ -579,6 +584,13 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		}
 		guardandoSolicitud = true;
 		
+		// TODO: Portabilidad
+		long contadorPortabilidad = 0;
+		for (LineaSolicitudServicioDto linea : editarSSUIData.getSolicitudServicio().getLineas()) {
+			if(linea.getPortabilidad() != null) contadorPortabilidad++;
+		}
+		editarSSUIData.getSolicitudServicio().setCantLineasPortabilidad(contadorPortabilidad);
+
 		if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
 			
 			SolicitudRpcService.Util.getInstance().saveSolicituServicioTranferencia(obtenerSolicitudTransferencia(false),
@@ -588,6 +600,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							guardandoSolicitud = false;
 							editarSSUIData.setSolicitud(result.getSolicitud());
 							datosTranferencia.setDatosSolicitud(result.getSolicitud());
+							
 //							datosTranferencia.refresh();
 							editarSSUIData.setSaved(true);
 							//MGR - #1759
@@ -606,41 +619,41 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							super.failure(caught);
 						}
 					});
-		}
-		else{
-			//MGR - ISDN 1824 - Como se realizan validaciones, ya no recibe una SolicitudServicioDto
-			//sino una SaveSolicitudServicioResultDto que permite realizar el manejo de mensajes
-			SolicitudRpcService.Util.getInstance().saveSolicituServicio(editarSSUIData.getSolicitudServicio(),
-					new DefaultWaitCallback<CreateSaveSolicitudServicioResultDto>() {
-						
-						public void success(CreateSaveSolicitudServicioResultDto result) {
-							guardandoSolicitud = false;
-							editarSSUIData.setSolicitud(result.getSolicitud());
-							datos.refresh();
-							
-							// MessageDialog.getInstance().showAceptar("Guardado Exitoso",
-							// Sfa.constant().MSG_SOLICITUD_GUARDADA_OK(), MessageDialog.getCloseCommand());
-							editarSSUIData.setSaved(true);
-							
-							//MGR - ISDN 1824 - MGR - #1759
-							if(!result.getMessages().isEmpty()){
-								StringBuilder msgString = new StringBuilder();
-								for (MessageDto msg : result.getMessages()) {
-									msgString.append("<span class=\"info\">- " + msg.getDescription()
-											+ "</span><br>");
-								}
-								MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), MessageDialog.getCloseCommand());
-							}
-						}
-
-						public void failure(Throwable caught) {
-							guardandoSolicitud = false;
-							super.failure(caught);
-						}
-					});
-		}
+		}else saveSolicitudServicio();
 	}
 
+	private void saveSolicitudServicio(){
+		//MGR - ISDN 1824 - Como se realizan validaciones, ya no recibe una SolicitudServicioDto
+		//sino una SaveSolicitudServicioResultDto que permite realizar el manejo de mensajes
+		SolicitudRpcService.Util.getInstance().saveSolicituServicio(editarSSUIData.getSolicitudServicio(),
+				new DefaultWaitCallback<CreateSaveSolicitudServicioResultDto>() {
+					public void success(CreateSaveSolicitudServicioResultDto result) {
+						guardandoSolicitud = false;
+						editarSSUIData.setSolicitud(result.getSolicitud());
+						datos.refresh();
+						
+						// MessageDialog.getInstance().showAceptar("Guardado Exitoso",
+						// Sfa.constant().MSG_SOLICITUD_GUARDADA_OK(), MessageDialog.getCloseCommand());
+						editarSSUIData.setSaved(true);
+						
+						//MGR - ISDN 1824 - MGR - #1759
+						if(!result.getMessages().isEmpty()){
+							StringBuilder msgString = new StringBuilder();
+							for (MessageDto msg : result.getMessages()) {
+								msgString.append("<span class=\"info\">- " + msg.getDescription()
+										+ "</span><br>");
+							}
+							MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), MessageDialog.getCloseCommand());
+						}
+					}
+
+					public void failure(Throwable caught) {
+						guardandoSolicitud = false;
+						super.failure(caught);
+					}
+		});
+	}
+	
 	private void openGenerarCerrarSolicitdDialog(boolean cerrando) {
 		cerrandoAux = cerrando;
 		cuenta = CuentaEdicionTabPanel.getInstance();
@@ -702,14 +715,25 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 				if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
 					errors = editarSSUIData.validarTransferenciaParaCerrarGenerar(datosTranferencia.getContratosSSChequeados(),true);
-					
 				}else{
 					errors = editarSSUIData.validarParaCerrarGenerar(true);
 				}
 				if (errors.isEmpty()) {
-					//MGR - #1481 - No vuelvo a validar los planes para que no aparesca el mensaje de
-					//aviso dos veces.
-					cerrarGenerarSolicitud();
+					//MGR - #1481 - No vuelvo a validar los planes para que no aparesca el mensaje de aviso dos veces.
+					
+					if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
+						SolicitudRpcService.Util.getInstance().validarPortabilidadTransferencia(datosTranferencia.getContratosSSChequeados(), 
+								new DefaultWaitCallback<PortabilidadResult>() {
+									@Override
+									public void success(PortabilidadResult result) {
+										if(result.isConError()){
+											ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+											ErrorDialog.getInstance().show(result.getErroresDesc());
+											CerradoSSExitosoDialog.getInstance().hideLoading();
+										}else validarPortabilidad(); 
+									}
+								});
+					}else validarPortabilidad();
 				} else {
 					CerradoSSExitosoDialog.getInstance().hideLoading();
 					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
@@ -719,13 +743,31 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		};
 	}
 	
+	// TODO: Portabilidad
+	private void validarPortabilidad(){
+		SolicitudRpcService.Util.getInstance().validarPortabilidad(editarSSUIData.getSolicitudServicio(), 
+				new DefaultWaitCallback<PortabilidadResult>() {
+			@Override
+			public void success(PortabilidadResult portabilidadResult) {
+				// Si arrastra un error en la validacion muestra un mensaje
+				if(portabilidadResult.isConError()){
+					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+					ErrorDialog.getInstance().show(portabilidadResult.getErroresDesc());
+
+					if(portabilidadResult.getPermiteGrabar()) cerrarGenerarSolicitud();
+					else CerradoSSExitosoDialog.getInstance().hideLoading();
+				}else cerrarGenerarSolicitud();
+			}
+		});
+	}
+	
 	private DefaultWaitCallback<GeneracionCierreResultDto> getGeneracionCierreCallback() {
 		if (generacionCierreCallback == null) {
 			generacionCierreCallback = new DefaultWaitCallback<GeneracionCierreResultDto>() {
-				public void success(GeneracionCierreResultDto result) {
+				public void success(final GeneracionCierreResultDto result) {
 					CerradoSSExitosoDialog.getInstance().hideLoading();
 					if (!result.isError()) {
-						final String rtfFileName = result.getRtfFileName();
+						//final String rtfFileName = result.getRtfFileName();
 						
 						Command mostrarDialogCerrado = new Command() {
 							
@@ -744,7 +786,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 								}
 								CerradoSSExitosoDialog.getInstance().setAceptarCommand(aceptar);
 								//MGR - #1415
-								CerradoSSExitosoDialog.getInstance().showCierreExitoso(rtfFileName, editarSSUIData.getIdSolicitudServicio());
+								CerradoSSExitosoDialog.getInstance().showCierreExitoso(result, editarSSUIData.getIdSolicitudServicio());
 							}
 						};
 						
@@ -1013,7 +1055,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				ssDto.getCuenta().setVendedor((VendedorDto) editarSSUIData.getVendedor().getSelectedItem());						
 			}		
 		}
-		
+
 		SolicitudRpcService.Util.getInstance().generarCerrarSolicitud(
 				ssDto, pinMaestro, cerrandoSolicitud,
 				getGeneracionCierreCallback());
@@ -1056,6 +1098,14 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private void abrirDialogCerrar(){
 		cerrandoSolicitud = cerrandoAux;
         getCerrarSSUI().setTitleCerrar(cerrandoAux);
+        
+        //TODO: Portabilidad
+        boolean permitePortabilidad = false;
+        for (LineaSolicitudServicioDto linea : editarSSUIData.getSolicitudServicio().getLineas()) {
+			if(linea.getPortabilidad() != null) permitePortabilidad = true;
+		}
+        
+        getCerrarSSUI().setTienePortabilidad(permitePortabilidad);
         getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
         editarSSUIData.getCuenta().isCliente(), editarSSUIData.getSolicitudServicioGeneracion(),
         editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA());
@@ -1069,5 +1119,16 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		       editarSSUIData.getVendedor().getSelectedItem() != null;
 	}	
 	
-	
+	/**
+	 * Portabilidad
+	 */
+	private void cargarDatosPortabilidad(String idCuenta,String codigoVantive){
+		SolicitudRpcService.Util.getInstance().getPortabilidadInitializer(idCuenta,codigoVantive, new DefaultWaitCallback<PortabilidadInitializer>(){
+			@Override
+			public void success(PortabilidadInitializer result) {
+				datos.setPortabilidadInitializer(result);
+			}
+		});
+	}
+
 }
