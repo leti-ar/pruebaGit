@@ -39,6 +39,7 @@
 			    <entry key="collectionLineaTransfSolicitudServicioConverter" value-ref="collectionLineaTransfSolicitudServicioConverter" />
 			    <entry key="collectionServicioAdicionalTransfConverter" value-ref="collectionServicioAdicionalTransfConverter" />
 			    <entry key="collectionCaratulaConverter" value-ref="collectionCaratulaConverter" />
+				<entry key="collectionPortabilidadConverter" value-ref="collectionPortabilidadConverter" />
 		    </map>
 		</property>
 	</bean>
@@ -56,6 +57,21 @@
 			<bean class="ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto"></bean>
 		</property>
 	</bean>
+
+
+
+	<bean id="collectionPortabilidadConverter" class="ar.com.nextel.sfa.server.converter.CollectionOwnedConverter">
+		<property name="dozerMapper" ref="dozerMapper" />
+		<property name="repository" ref="repository" />
+		<property name="modelClass">
+			<bean class="ar.com.nextel.model.solicitudes.beans.SolicitudPortabilidad"></bean>
+		</property>
+		<property name="dtoClass">
+			<bean class="ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto"></bean>
+		</property>
+	</bean>
+
+
 
 	<bean id="collectionDomiciliosServicioConverter" class="ar.com.nextel.sfa.server.converter.CollectionOwnedConverter">
 		<property name="dozerMapper" ref="dozerMapper" />

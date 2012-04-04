@@ -5,6 +5,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.OperacionesRpcService;
+import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.AgregarCuentaUI;
@@ -26,6 +27,7 @@ import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
 import ar.com.nextel.sfa.client.widget.UILoader;
+import ar.com.nextel.util.AppLogger;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -34,6 +36,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -91,7 +94,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 		addStyleName("gwt-OportunidadesResultPanel");
 		crearSSLink = new SimpleLink(Sfa.constant().crearSS(), "#", true);
 		crearSSLink.addClickListener(this);
-
+		
 		popupCrearSS = new PopupPanel(true);
 		popupCrearSS.addStyleName("dropUpStyle");
 
@@ -254,27 +257,51 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 		loadTableReservas(vtaPotencialActuales);
 	}
 
-	private void loadTableOpCurso(List<OperacionEnCursoDto> opEnCursoActuales) {
+	private List<Long> generarListIdSS(List<OperacionEnCursoDto> opEnCursoActuales){
+		List<Long> listIdSS = new ArrayList<Long>();
+		
+		for(int i = 0; i < opEnCursoActuales.size(); i++){
+			listIdSS.add(opEnCursoActuales.get(i).getIdSolicitudServicio());
+		}
+
+		return listIdSS;
+	}
+
+	private void loadTableOpCurso(final List<OperacionEnCursoDto> opEnCursoActuales) {
 		resultTableOpEnCurso.clearContent();
 		// initTableOpenCurso(resultTableOpEnCurso);
 		resultTableWrapperOpCurso.setWidget(resultTableOpEnCurso);
-		int rowIndex = 1;
-		for (OperacionEnCursoDto opCursoDto : opEnCursoActuales) {
-			resultTableOpEnCurso.setWidget(rowIndex, 0, IconFactory.lapiz());
-			// if (opEnCurso.isPuedeVerInfocom()) {
-			resultTableOpEnCurso.setWidget(rowIndex, 1, IconFactory.silvioSoldan());
-			// }
-			if (true) {
-				resultTableOpEnCurso.setWidget(rowIndex, 2, IconFactory.cancel());
-			}
-			resultTableOpEnCurso.setHTML(rowIndex, 3, opCursoDto.getNumeroCliente());
-			resultTableOpEnCurso.setHTML(rowIndex, 4, opCursoDto.getRazonSocial());
-			resultTableOpEnCurso.setHTML(rowIndex, 5, opCursoDto.getDescripcionGrupo());
-			rowIndex++;
-		}
-		numOperaciones.setText("N° Operaciones: " + opEnCurso.size());
+		
+		SolicitudRpcService.Util.getInstance().getCantidadLineasPortabilidad(generarListIdSS(opEnCursoActuales), new DefaultWaitCallback<List<Long>>() {
+			@Override
+			public void success(List<Long> result) {
+				int rowIndex = 1;
+				for(int i = 0; i < opEnCursoActuales.size(); i++){
+					OperacionEnCursoDto opCursoDto = opEnCursoActuales.get(i);
 
-		setVisible(true);
+					resultTableOpEnCurso.setWidget(rowIndex, 0, IconFactory.lapiz());
+					// if (opEnCurso.isPuedeVerInfocom()) {
+					resultTableOpEnCurso.setWidget(rowIndex, 1, IconFactory.silvioSoldan());
+					// }
+					if (true) {
+						resultTableOpEnCurso.setWidget(rowIndex, 2, IconFactory.cancel());
+					}
+					resultTableOpEnCurso.setHTML(rowIndex, 3, opCursoDto.getNumeroCliente());
+					resultTableOpEnCurso.setHTML(rowIndex, 4, opCursoDto.getRazonSocial());
+					resultTableOpEnCurso.setHTML(rowIndex, 5, opCursoDto.getDescripcionGrupo());
+					
+					if(result.get(i) != null){
+						if(result.get(i) > 0)resultTableOpEnCurso.setWidget(rowIndex, 6, IconFactory.tildeVerde());
+						else resultTableOpEnCurso.setHTML(rowIndex, 6, Sfa.constant().whiteSpace());
+					}else resultTableOpEnCurso.setHTML(rowIndex, 6, Sfa.constant().whiteSpace());
+
+					rowIndex++;
+				}
+
+				numOperaciones.setText("N° Operaciones: " + opEnCurso.size());
+				setVisible(true);
+			}
+		});
 	}
 
 	private void cargarDatosCuenta(int rowSelected) {
@@ -362,7 +389,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 	}
 
 	private void initTableOpenCurso(FlexTable table) {
-		String[] widths = { "24px", "24px", "24px", "214px", "470px", "230px", };
+		String[] widths = { "24px", "24px", "24px", "214px", "470px", "230px","120px"};
 		for (int col = 0; col < widths.length; col++) {
 			table.getColumnFormatter().setWidth(col, widths[col]);
 		}
@@ -379,6 +406,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 		table.setHTML(0, 3, Sfa.constant().numeroClienteCompleto());
 		table.setHTML(0, 4, Sfa.constant().razonSocial());
 		table.setHTML(0, 5, Sfa.constant().grupoSS());
+		table.setHTML(0, 6, Sfa.constant().portabilidad());
 	}
 
 	private void cancelarOperacionEnCurso(OperacionEnCursoDto op) {

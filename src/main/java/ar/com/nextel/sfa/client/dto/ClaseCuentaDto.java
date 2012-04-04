@@ -8,9 +8,19 @@ public class ClaseCuentaDto extends EnumDto implements IsSerializable, ListBoxIt
 
 	public static String ID_GOBIERNO = "CLASE_CUENTA_GOBIERNO";
 	public static String ID_GOB_BS_AS = "CLASE_CUENTA_GOB_BS_AS";
+	public Boolean esGobierno;
 	
 	public ClaseCuentaDto() {
 	}
+
+	public Boolean getEsGobierno() {
+		return esGobierno;
+	}
+	
+	public void setEsGobierno(Boolean esGobierno) {
+		this.esGobierno = esGobierno;
+	}
+
 	public ClaseCuentaDto(long id, String descripcion) {
 		super();
 		this.id=id;

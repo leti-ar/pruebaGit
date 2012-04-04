@@ -1,7 +1,9 @@
 package ar.com.nextel.sfa.client;
 
 import java.util.List;
+import java.util.Map;
 
+import ar.com.nextel.business.solicitudes.report.SolicitudPortabilidadPropertiesReport;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
@@ -20,6 +22,7 @@ import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
@@ -31,7 +34,9 @@ import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
+import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
+import ar.com.nextel.sfa.client.util.PortabilidadResult;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
@@ -272,4 +277,44 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.getItemsPorLineaSS(ss, defaultWaitCallback);		
 	}
+
+	// Portabilidad ------------------------------
+	public void getPortabilidadInitializer(String idCuenta,String codigoVantive, AsyncCallback<PortabilidadInitializer> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getPortabilidadInitializer(idCuenta, codigoVantive, callback);
+	}
+
+	public void getSolicitudPortabilidadDto(String lineaID, AsyncCallback<SolicitudPortabilidadDto> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getSolicitudPortabilidadDto(lineaID, callback);
+	}
+
+	public void getExisteEnAreaCobertura(int codArea,AsyncCallback<Boolean> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getExisteEnAreaCobertura(codArea, callback);
+	}
+
+	public void validarPortabilidad(SolicitudServicioDto solicitudServicioDto,AsyncCallback<PortabilidadResult> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.validarPortabilidad(solicitudServicioDto, callback);
+	}
+
+	public void generarParametrosPortabilidadRTF(Long idSolicitudServicio,AsyncCallback<List<String>> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.generarParametrosPortabilidadRTF(idSolicitudServicio, callback);
+	}
+	
+	public void getCantidadLineasPortabilidad(List<Long> listIdSS,AsyncCallback<List<Long>> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getCantidadLineasPortabilidad(listIdSS, callback);
+	}
+
+	public void validarPortabilidadTransferencia(List<ContratoViewDto> contratos, AsyncCallback<PortabilidadResult> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.validarPortabilidadTransferencia(contratos, callback);
+	}
+	
+	// -------------------------------------------
+
+
 }

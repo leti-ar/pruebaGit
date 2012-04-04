@@ -21,6 +21,7 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
@@ -142,16 +143,14 @@ public class ServiciosAdicionalesTable extends Composite {
 	 */
 	public void setServiciosAdicionalesFor(int selectedLineaSS) {
 		this.selectedLineaSSRow = selectedLineaSS;
-		if (selectedLineaSSRow < 1
-				|| editarSSUIData.getLineasSolicitudServicio().get(selectedLineaSSRow - 1).getPlan() == null) {
+		if (selectedLineaSSRow < 1 || editarSSUIData.getLineasSolicitudServicio().get(selectedLineaSSRow - 1).getPlan() == null) {
 			table.resizeRows(1);
 			return;
 		}
-		List serviciosAdicionalesOriginales = editarSSUIData.getServiciosAdicionales().get(
-				selectedLineaSSRow - 1);
+		List serviciosAdicionalesOriginales = editarSSUIData.getServiciosAdicionales().get(selectedLineaSSRow - 1);
+		
 		if (!serviciosAdicionalesOriginales.isEmpty()) {
-			editarSSUIData.mergeServiciosAdicionalesConLineaSolicitudServicio(selectedLineaSSRow - 1,
-					serviciosAdicionalesOriginales);
+			editarSSUIData.mergeServiciosAdicionalesConLineaSolicitudServicio(selectedLineaSSRow - 1,serviciosAdicionalesOriginales);
 			refreshServiciosAdicionalesTable(selectedLineaSSRow - 1);
 		} else {
 			controller.getServiciosAdicionales(editarSSUIData.getLineasSolicitudServicio().get(
@@ -188,8 +187,23 @@ public class ServiciosAdicionalesTable extends Composite {
 				servicioAdicional = linea.getServiciosAdicionales().get(saIndex);
 			}
 			CheckBox check = new CheckBox();
-			check.setEnabled(!servicioAdicional.isObligatorio());
-			check.setValue(servicioAdicional.isObligatorio() || servicioAdicional.isChecked());
+			
+			if(servicioAdicional.getServicioAdicional().getEsPortabilidad()){
+				servicioAdicional.setObligatorio(true);
+
+				if(linea.getPortabilidad() != null){
+					servicioAdicional.setChecked(true);
+					linea.getServiciosAdicionales().add(servicioAdicional);
+				}else servicioAdicional.setChecked(false); 
+
+				check.setValue(servicioAdicional.isChecked());
+				check.setEnabled(!servicioAdicional.isObligatorio());
+			}else{
+				check.setEnabled(!servicioAdicional.isObligatorio());
+				check.setValue(servicioAdicional.isObligatorio() || servicioAdicional.isChecked());
+			}
+
+			
 			table.setWidget(row, 0, check);
 			table.setHTML(row, 1, servicioAdicional.getDescripcionServicioAdicional());
 			table.setHTML(row, 2, currencyFormat.format(servicioAdicional.getPrecioLista()));
