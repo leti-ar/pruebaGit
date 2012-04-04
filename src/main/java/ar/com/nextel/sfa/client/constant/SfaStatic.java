@@ -758,11 +758,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String cargoReq();
 
   /**
-   * Translated "Categoría".
+   * Translated "CategorÃ­a".
    * 
-   * @return translated "Categoría"
+   * @return translated "CategorÃ­a"
    */
-  @DefaultStringValue("Categoría")
+  @DefaultStringValue("CategorÃ­a")
   @Key("categoria")
   String categoria();
 
@@ -947,11 +947,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String creditoFidel();
 
   /**
-   * Translated "Crédito de Fidelización".
+   * Translated "Crï¿½dito de Fidelizaciï¿½n".
    * 
-   * @return translated "Crédito de Fidelización"
+   * @return translated "Crï¿½dito de Fidelizaciï¿½n"
    */
-  @DefaultStringValue("Crédito de Fidelización")
+  @DefaultStringValue("Crï¿½dito de Fidelizaciï¿½n")
   @Key("creditoFidelizacionTitle")
   String creditoFidelizacionTitle();
 
@@ -1010,11 +1010,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ddn();
 
   /**
-   * Translated "Descripción".
+   * Translated "Descripciï¿½n".
    * 
-   * @return translated "Descripción"
+   * @return translated "Descripciï¿½n"
    */
-  @DefaultStringValue("Descripción")
+  @DefaultStringValue("Descripciï¿½n")
   @Key("descripcion")
   String descripcion();
 
@@ -1028,11 +1028,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String desde();
 
   /**
-   * Translated "Desvíos:".
+   * Translated "DesvÃ­os:".
    * 
-   * @return translated "Desvíos:"
+   * @return translated "DesvÃ­os:"
    */
-  @DefaultStringValue("Desvíos:")
+  @DefaultStringValue("DesvÃ­os:")
   @Key("desvios")
   String desvios();
 
@@ -1055,11 +1055,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String disponible();
 
   /**
-   * Translated "División".
+   * Translated "DivisiÃ³n".
    * 
-   * @return translated "División"
+   * @return translated "DivisiÃ³n"
    */
-  @DefaultStringValue("División")
+  @DefaultStringValue("DivisiÃ³n")
   @Key("division")
   String division();
 
