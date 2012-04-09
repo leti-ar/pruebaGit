@@ -8,15 +8,15 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class EstadoPorSolicitudDto implements ListBoxItem, IsSerializable {
 
 	private long id;
-	private long usuario;
+	private VendedorDto usuario;
     private EstadoSolicitudDto estado;
     private Date fecha;
-	private long idSolicitud;
+	private SolicitudServicioDto solicitud;
 	
 	public EstadoPorSolicitudDto() {
 	}
 
-	public EstadoPorSolicitudDto(long usuario, Date fecha, EstadoSolicitudDto estado) {
+	public EstadoPorSolicitudDto(VendedorDto usuario, Date fecha, EstadoSolicitudDto estado) {
 		super();
 		
 		this.usuario = usuario;
@@ -64,22 +64,23 @@ public class EstadoPorSolicitudDto implements ListBoxItem, IsSerializable {
 		this.estado = estado;
 	}
 
-	public long getUsuario() {
+	public VendedorDto getUsuario() {
 		return usuario;
 	}
 
-	public void setUsuario(long usuario) {
+	public void setUsuario(VendedorDto usuario) {
 		this.usuario = usuario;
 	}
 
-	public long getIdSolicitud() {
-		return idSolicitud;
+	public SolicitudServicioDto getSolicitud() {
+		return solicitud;
 	}
 
-	public void setIdSolicitud(long idSolicitud) {
-		this.idSolicitud = idSolicitud;
+	public void setSolicitud(SolicitudServicioDto solicitud) {
+		this.solicitud = solicitud;
 	}
 
+	
 
 	
 }

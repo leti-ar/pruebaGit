@@ -657,8 +657,8 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>estado</b>
 		</field>
 		<field>
-            <a>idSolicitud</a>
-            <b>idSolicitud</b>
+            <a>solicitud</a>
+            <b>solicitud</b>
         </field>
 		<field>
 			<a>usuario</a>

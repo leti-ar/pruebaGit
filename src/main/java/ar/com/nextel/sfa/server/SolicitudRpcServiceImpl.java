@@ -273,12 +273,18 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		    EstadoPorSolicitudDto estadoPorSolicitudDto = new EstadoPorSolicitudDto();
 		  
 			estadoPorSolicitudDto.setFecha(new Date());
-			estadoPorSolicitudDto.setIdSolicitud(solicitudServicioDto.getId());
-	//			VendedorDto v = (VendedorDto) mapper.map(sessionContextLoader.getVendedor(),
-	//				VendedorDto.class);
-	//		
-	//		estadoPorSolicitudDto.setUsuario(v);
-			estadoPorSolicitudDto.setUsuario(sessionContextLoader.getVendedor().getId());
+			SolicitudServicio ss= repository.retrieve(SolicitudServicio.class, solicitudServicioDto.getId());
+			SolicitudServicioDto ssDto= (SolicitudServicioDto) mapper.map(ss,SolicitudServicioDto.class);
+			estadoPorSolicitudDto.setSolicitud(ssDto);
+			
+
+			Vendedor vendedor = repository.retrieve(Vendedor.class, solicitudServicioDto.getVendedor().getId());
+			VendedorDto v = (VendedorDto) mapper.map(vendedor,VendedorDto.class);
+			estadoPorSolicitudDto.setUsuario(v);
+			
+			
+			
+
 			EstadoPorSolicitud e= mapper.map(estadoPorSolicitudDto,EstadoPorSolicitud.class);
 			
 		    List<EstadoSolicitud> estados = repository.getAll(EstadoSolicitud.class);
@@ -537,7 +543,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				EstadoPorSolicitudDto.class);
 		List<EstadoPorSolicitudDto> listaFinal = new ArrayList<EstadoPorSolicitudDto>();
 		for (int i = 0; i < lista.size(); i++) {
-			if (lista.get(i).getIdSolicitud() == numeroSS) {
+			if (lista.get(i).getSolicitud().getId() == numeroSS) {
 				listaFinal.add(lista.get(i));
 			}
 		}
@@ -551,7 +557,7 @@ public String getEstadoSolicitud(long solicitud) {
 		String s=String.valueOf(solicitud);
 		String sql = String.format("select e.descripcion from sfa_estado_solicitud e "+
 				"where e.id_estado_solicitud=(select * from (select id_estado_solicitud "+
-				"from sfa_estado_por_solicitud s where s.numero_solicitud="+ s +"order by s.fecha_creacion desc)where rownum <=1)");
+				"from sfa_estado_por_solicitud s where s.id_estado_solicitud= "+ s +" order by s.fecha_creacion desc)where rownum <=1)");
 		try {
 			stmt = ((HibernateRepository) repository)
 					.getHibernateDaoSupport().getSessionFactory()
