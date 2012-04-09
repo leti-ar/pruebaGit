@@ -170,7 +170,12 @@ public class PortabilidadUIData extends Composite {
 	@UiHandler(value={"lnkCopiarCuenta","chkNoPoseeTel","chkNoPoseeEmail"})
 	void onCLick(ClickEvent evt){
 		if(evt.getSource() == lnkCopiarCuenta){
-			if(persona != null){
+			// #LF - PERSONA FISICA
+			if(getTipoPersona().intValue() == 1) {
+				ModalMessageDialog.getInstance().showAceptar(
+						"No puede replicar los datos para una persona fisica", 
+						ModalMessageDialog.getCloseCommand());
+			} else if(persona != null){
 				txtNombre.setText(persona.getNombre());
 				txtApellido.setText(persona.getApellido());
 				txtRazonSocial.setText(persona.getRazonSocial());
@@ -214,11 +219,12 @@ public class PortabilidadUIData extends Composite {
 	 * 
 	 */
 	private void validarTipoDocumento(){
-		if(lstTipoDocumento.getSelectedItemText().equals("CUIL") || lstTipoDocumento.getSelectedItemText().equals("CUIT"))
-			txtNroDocumento.setPattern(RegularExpressionConstants.cuilCuit);
-		else if(lstTipoDocumento.getSelectedItemText().equals("DNI")) 
-			txtNroDocumento.setPattern(RegularExpressionConstants.dni);
-		else txtNroDocumento.setPattern(RegularExpressionConstants.documentoOtros);
+//		if(lstTipoDocumento.getSelectedItemText().equals("CUIL") || lstTipoDocumento.getSelectedItemText().equals("CUIT"))
+//			txtNroDocumento.setPattern(RegularExpressionConstants.cuilCuit);
+//		else if(lstTipoDocumento.getSelectedItemText().equals("DNI")) 
+//			txtNroDocumento.setPattern(RegularExpressionConstants.dni);
+//		else 
+			txtNroDocumento.setPattern(RegularExpressionConstants.documentoOtros);
 	}
 	
 	/**
@@ -242,18 +248,18 @@ public class PortabilidadUIData extends Composite {
 	 * 
 	 */
 	private void comprobarTipoTelefonia(){
-		if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")){
-			lblNroUltimaFacura.addStyleName(OBLIGATORIO);
-			chkRecibeSMS.setValue(false);
-			chkRecibeSMS.setEnabled(true);
-			txtNroUltimaFacura.setEnabled(true);
-		}else{
+//		if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")){
+//			lblNroUltimaFacura.addStyleName(OBLIGATORIO);
+//			chkRecibeSMS.setValue(false);
+//			chkRecibeSMS.setEnabled(true);
+//			txtNroUltimaFacura.setEnabled(true);
+//		}else{
 			lblNroUltimaFacura.removeStyleName(OBLIGATORIO);
 			chkRecibeSMS.setValue(true);
 			chkRecibeSMS.setEnabled(false);
 			txtNroUltimaFacura.setText("");
 			txtNroUltimaFacura.setEnabled(false);
-		}
+//		}
 	}
 	
 	/**
