@@ -431,10 +431,10 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 													@Override
 													public void success(ScoreVerazDto result) {
 														if(result != null) {
-															Long riskCode = caratulaData.getKeyRiskCode(result.getRiskCode());
-															caratulaData.getRiskCode().setSelectedIndex(riskCode.intValue());
-															Long calificacion = caratulaData.getKeyCalificacion(result.getClasificacion());
-															caratulaData.getCalificacion().setSelectedIndex(calificacion.intValue());
+															//Long riskCode = caratulaData.getKeyRiskCode(result.getRiskCode());
+															caratulaData.getRiskCode().setSelectedIndex(result.getRiskCode().getId().intValue());
+															//Long calificacion = caratulaData.getKeyCalificacion(result.getClasificacion());
+															caratulaData.getCalificacion().setSelectedIndex(result.getClasificacion().getId().intValue());
 															caratulaData.getLimiteCred().setValue(result.getLimCredito().toString());
 														}										
 													}

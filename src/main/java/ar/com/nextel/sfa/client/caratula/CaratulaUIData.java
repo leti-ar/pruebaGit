@@ -690,17 +690,17 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 	 * @param valor
 	 * @return Long, id del item
 	 */
-	public Long getKeyRiskCode(String valor) {
-		Iterator it = riskCode.getItems().entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry entry = (Map.Entry)it.next();
-			RiskCodeDto listBox = (RiskCodeDto)entry.getValue();
-			if(listBox.getDescripcion().equals(valor)) {
-				return listBox.getId();
-			}
-		}
-		return null;
-	}
+//	public Long getKeyRiskCode(String valor) {
+//		Iterator it = riskCode.getItems().entrySet().iterator();
+//		while (it.hasNext()) {
+//			Map.Entry entry = (Map.Entry)it.next();
+//			RiskCodeDto listBox = (RiskCodeDto)entry.getValue();
+//			if(listBox.getDescripcion().equals(valor)) {
+//				return listBox.getId();
+//			}
+//		}
+//		return null;
+//	}
 	
 	/**
 	 * Este metodo se utiliza para recorrer los elementos de calificacion y compararlo 
@@ -708,17 +708,17 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 	 * @param valor
 	 * @return Long, id del item
 	 */
-	public Long getKeyCalificacion(String valor) {
-		Iterator it = calificacion.getItems().entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry entry = (Map.Entry)it.next();
-			CalificacionDto listBox = (CalificacionDto)entry.getValue();
-			if(listBox.getDescripcion().equals(valor)) {
-				return listBox.getId();
-			}
-		}
-		return null;
-	}
+//	public Long getKeyCalificacion(String valor) {
+//		Iterator it = calificacion.getItems().entrySet().iterator();
+//		while (it.hasNext()) {
+//			Map.Entry entry = (Map.Entry)it.next();
+//			CalificacionDto listBox = (CalificacionDto)entry.getValue();
+//			if(listBox.getDescripcion().equals(valor)) {
+//				return listBox.getId();
+//			}
+//		}
+//		return null;
+//	}
 		
 	private boolean isComplete(Object obj){
 		

@@ -6,27 +6,27 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class ScoreVerazDto implements IsSerializable  {
 
 
-	private Integer limCredito;
-	private String clasificacion;
-	private String riskCode;
+	private Double limCredito;
+	private CalificacionDto clasificacion;
+	private RiskCodeDto riskCode;
 
 	
-	public Integer getLimCredito() {
+	public Double getLimCredito() {
 		return limCredito;
 	}
-	public void setLimCredito(Integer limCredito) {
+	public void setLimCredito(Double limCredito) {
 		this.limCredito = limCredito;
 	}
-	public String getClasificacion() {
+	public CalificacionDto getClasificacion() {
 		return clasificacion;
 	}
-	public void setClasificacion(String clasificacion) {
+	public void setClasificacion(CalificacionDto clasificacion) {
 		this.clasificacion = clasificacion;
 	}
-	public String getRiskCode() {
+	public RiskCodeDto getRiskCode() {
 		return riskCode;
 	}
-	public void setRiskCode(String riskCode) {
+	public void setRiskCode(RiskCodeDto riskCode) {
 		this.riskCode = riskCode;
 	}	
 		
