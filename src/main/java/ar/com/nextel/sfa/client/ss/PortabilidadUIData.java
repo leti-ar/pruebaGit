@@ -219,12 +219,11 @@ public class PortabilidadUIData extends Composite {
 	 * 
 	 */
 	private void validarTipoDocumento(){
-//		if(lstTipoDocumento.getSelectedItemText().equals("CUIL") || lstTipoDocumento.getSelectedItemText().equals("CUIT"))
-//			txtNroDocumento.setPattern(RegularExpressionConstants.cuilCuit);
-//		else if(lstTipoDocumento.getSelectedItemText().equals("DNI")) 
-//			txtNroDocumento.setPattern(RegularExpressionConstants.dni);
-//		else 
-			txtNroDocumento.setPattern(RegularExpressionConstants.documentoOtros);
+		if(lstTipoDocumento.getSelectedItemText().equals("CUIL") || lstTipoDocumento.getSelectedItemText().equals("CUIT"))
+			txtNroDocumento.setPattern(RegularExpressionConstants.cuilCuit);
+		else if(lstTipoDocumento.getSelectedItemText().equals("DNI")) 
+			txtNroDocumento.setPattern(RegularExpressionConstants.dni);
+		else txtNroDocumento.setPattern(RegularExpressionConstants.documentoOtros);
 	}
 	
 	/**
@@ -248,18 +247,18 @@ public class PortabilidadUIData extends Composite {
 	 * 
 	 */
 	private void comprobarTipoTelefonia(){
-//		if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")){
-//			lblNroUltimaFacura.addStyleName(OBLIGATORIO);
-//			chkRecibeSMS.setValue(false);
-//			chkRecibeSMS.setEnabled(true);
-//			txtNroUltimaFacura.setEnabled(true);
-//		}else{
+		if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")){
+			lblNroUltimaFacura.addStyleName(OBLIGATORIO);
+			chkRecibeSMS.setValue(false);
+			chkRecibeSMS.setEnabled(true);
+			txtNroUltimaFacura.setEnabled(true);
+		}else{
 			lblNroUltimaFacura.removeStyleName(OBLIGATORIO);
 			chkRecibeSMS.setValue(true);
 			chkRecibeSMS.setEnabled(false);
 			txtNroUltimaFacura.setText("");
 			txtNroUltimaFacura.setEnabled(false);
-//		}
+		}
 	}
 	
 	/**
