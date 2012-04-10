@@ -7,7 +7,7 @@ public class ScoreVerazDto implements IsSerializable  {
 
 
 	private Double limCredito;
-	private CalificacionDto clasificacion;
+	private CalificacionDto calificacion;
 	private RiskCodeDto riskCode;
 
 	
@@ -17,11 +17,11 @@ public class ScoreVerazDto implements IsSerializable  {
 	public void setLimCredito(Double limCredito) {
 		this.limCredito = limCredito;
 	}
-	public CalificacionDto getClasificacion() {
-		return clasificacion;
+	public CalificacionDto getCalificacion() {
+		return calificacion;
 	}
-	public void setClasificacion(CalificacionDto clasificacion) {
-		this.clasificacion = clasificacion;
+	public void setCalificacion(CalificacionDto calificacion) {
+		this.calificacion = calificacion;
 	}
 	public RiskCodeDto getRiskCode() {
 		return riskCode;
