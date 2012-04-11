@@ -433,8 +433,8 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 														if(result != null) {
 															//Long riskCode = caratulaData.getKeyRiskCode(result.getRiskCode());
 															caratulaData.getRiskCode().setSelectedIndex(result.getRiskCode().getId().intValue());
-															//Long calificacion = caratulaData.getKeyCalificacion(result.getClasificacion());
-															caratulaData.getCalificacion().setSelectedIndex(result.getClasificacion().getId().intValue());
+															//Long calificacion = caratulaData.getKeyCalificacion(result.getCalificacion());
+															caratulaData.getCalificacion().setSelectedIndex(result.getCalificacion().getId().intValue());
 															caratulaData.getLimiteCred().setValue(result.getLimCredito().toString());
 														}										
 													}

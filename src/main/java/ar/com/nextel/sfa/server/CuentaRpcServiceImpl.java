@@ -987,7 +987,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	}
 	
 	/**
-	 * Autocompleta los valores que requiere el veraz (limCredito, Clasificacion, RiskCode).
+	 * Autocompleta los valores que requiere el veraz (limCredito, Calificacion, RiskCode).
 	 * @author fernaluc
 	 * @return ScoreVerazDto
 	 */
@@ -1006,7 +1006,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 			List<ScoreVerazDto> listVeraz = mapper.convertList(result, ScoreVerazDto.class);
 			ScoreVerazDto scoreVeraz = new ScoreVerazDto();
 			scoreVeraz.setLimCredito(listVeraz.get(0).getLimCredito());
-			scoreVeraz.setClasificacion(listVeraz.get(0).getClasificacion());
+			scoreVeraz.setCalificacion(listVeraz.get(0).getCalificacion());
 			scoreVeraz.setRiskCode(listVeraz.get(0).getRiskCode());	
 			return scoreVeraz;
 		} else {
