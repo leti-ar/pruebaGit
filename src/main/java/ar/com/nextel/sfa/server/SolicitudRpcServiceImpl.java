@@ -270,34 +270,39 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		//crea registro estado de la ss
 
        if (solicitud.getNumero()== null){
-		    EstadoPorSolicitudDto estadoPorSolicitudDto = new EstadoPorSolicitudDto();
+		  //  EstadoPorSolicitudDto estadoPorSolicitudDto = new EstadoPorSolicitudDto();
 		  
-			estadoPorSolicitudDto.setFecha(new Date());
+//			estadoPorSolicitudDto.setFecha(new Date());
 			SolicitudServicio ss= repository.retrieve(SolicitudServicio.class, solicitudServicioDto.getId());
-			SolicitudServicioDto ssDto= (SolicitudServicioDto) mapper.map(ss,SolicitudServicioDto.class);
-			estadoPorSolicitudDto.setSolicitud(ssDto);
+//			SolicitudServicioDto ssDto= (SolicitudServicioDto) mapper.map(ss,SolicitudServicioDto.class);
+//			estadoPorSolicitudDto.setSolicitud(ssDto);
 			
 
 			Vendedor vendedor = repository.retrieve(Vendedor.class, solicitudServicioDto.getVendedor().getId());
-			VendedorDto v = (VendedorDto) mapper.map(vendedor,VendedorDto.class);
-			estadoPorSolicitudDto.setUsuario(v);
+//			VendedorDto v = (VendedorDto) mapper.map(vendedor,VendedorDto.class);
+//			estadoPorSolicitudDto.setUsuario(v);
 			
 			
 			
 
-			EstadoPorSolicitud e= mapper.map(estadoPorSolicitudDto,EstadoPorSolicitud.class);
+			EstadoPorSolicitud e= new EstadoPorSolicitud();
 			
 		    List<EstadoSolicitud> estados = repository.getAll(EstadoSolicitud.class);
-		    EstadoSolicitud encarga = new EstadoSolicitud();
-		    for (Iterator iterator = estados.iterator(); iterator.hasNext();) {
-				
-		    	EstadoSolicitud estadoSolicitud = (EstadoSolicitud) iterator
-						.next();
-				if (estadoSolicitud.getDescripcion().equals("En carga")) {
-					encarga = estadoSolicitud;
-				}
-			}
+//		    EstadoSolicitud encarga = new EstadoSolicitud();
+//		    for (Iterator iterator = estados.iterator(); iterator.hasNext();) {
+//				
+//		    	EstadoSolicitud estadoSolicitud = (EstadoSolicitud) iterator
+//						.next();
+//				if (estadoSolicitud.getDescripcion().equals("En carga")) {
+//					encarga = estadoSolicitud;
+//				}
+//			}
+		    EstadoSolicitud encarga  =(EstadoSolicitud) knownInstanceRetriever
+			.getObject(KnownInstanceIdentifier.ESTADO_ENCARGA_SS);
 			e.setEstado(encarga);
+			e.setUsuario(vendedor);
+			e.setSolicitud(ss);
+			e.setFecha(new Date());
 			
 			String totalRegistros=  this.getEstadoSolicitud(solicitudServicioDto.getId());
 			if (totalRegistros.equals("")){
@@ -679,7 +684,7 @@ public String getEstadoSolicitud(long solicitud) {
 		return resultDto;
 	}
 
-	public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto) throws RpcExceptionMessages {
+public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto) throws RpcExceptionMessages {
 
 		try {
 			EstadoPorSolicitud estadoPorSolicitud = mapper.map(estadoPorSolicitudDto, EstadoPorSolicitud.class);
