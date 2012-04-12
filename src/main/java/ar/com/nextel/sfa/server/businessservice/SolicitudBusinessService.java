@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import org.apache.commons.validator.GenericValidator;
 import org.dozer.DozerBeanMapper;
 import org.hibernate.HibernateException;
@@ -19,11 +19,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
+import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaService;
 import ar.com.nextel.business.cuentas.scoring.legacy.dto.ScoringCuentaLegacyDTO;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
-import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.financial.dto.EncabezadoCreditoDTO;
 import ar.com.nextel.business.legacy.financial.exception.FinancialSystemException;
@@ -48,6 +49,7 @@ import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepository
 import ar.com.nextel.components.accessMode.AccessAuthorization;
 import ar.com.nextel.components.knownInstances.GlobalParameter;
 import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
+import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
 import ar.com.nextel.framework.connectionDAO.ConnectionDAOException;
 import ar.com.nextel.framework.connectionDAO.TransactionConnectionDAO;
 import ar.com.nextel.framework.repository.Repository;
@@ -64,7 +66,6 @@ import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.personas.beans.Persona;
 import ar.com.nextel.model.personas.beans.Sexo;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
-import ar.com.nextel.model.solicitudes.beans.Control;
 import ar.com.nextel.model.solicitudes.beans.EstadoPorSolicitud;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.Item;
@@ -81,21 +82,19 @@ import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.services.nextelServices.scoring.ScoringHistoryItem;
+import ar.com.nextel.services.nextelServices.veraz.ResultadoVeraz;
+import ar.com.nextel.services.nextelServices.veraz.dto.VerazRequestDTO;
+import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
-import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
-import ar.com.nextel.sfa.client.ss.SoloItemSolicitudUI;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
 import ar.com.nextel.util.StringUtil;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
-import ar.com.nextel.services.nextelServices.veraz.ResultadoVeraz;
-import ar.com.nextel.services.nextelServices.veraz.dto.VerazRequestDTO;
-import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 
 @Service
 public class SolicitudBusinessService {
@@ -119,7 +118,7 @@ public class SolicitudBusinessService {
 	private TransferirCuentaHistoricoConfig transferirCuentaHistoricoConfig;
 	private AvalonSystem avalonSystem;
 	private DefaultRetriever globalParameterRetriever;
-
+	private KnownInstanceRetriever knownInstanceRetriever;
 	
 	@Autowired
 	public void setGlobalParameterRetriever(
@@ -218,6 +217,12 @@ public class SolicitudBusinessService {
 	public void setTransferirCuentaHistoricoConfig(
 			TransferirCuentaHistoricoConfig transferirCuentaHistoricoConfig) {
 		this.transferirCuentaHistoricoConfig = transferirCuentaHistoricoConfig;
+	}
+	
+	@Autowired
+	public void setKnownInstanceRetriever(
+			@Qualifier("knownInstancesRetriever") KnownInstanceRetriever knownInstanceRetrieverBean) {
+		this.knownInstanceRetriever = knownInstanceRetrieverBean;
 	}
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
@@ -709,16 +714,8 @@ public class SolicitudBusinessService {
 
 		nuevoEstado.setUsuario(vendedor);
 
-	    List<EstadoSolicitud> estados = repository.getAll(EstadoSolicitud.class);
-	    EstadoSolicitud cerrada = new EstadoSolicitud();
-	    for (Iterator iterator = estados.iterator(); iterator.hasNext();) {
-			
-	    	EstadoSolicitud estadoSolicitud = (EstadoSolicitud) iterator
-					.next();
-			if (estadoSolicitud.getDescripcion().equals("Cerrada")) {
-				cerrada = estadoSolicitud;
-			}
-		}
+	    EstadoSolicitud cerrada  =(EstadoSolicitud) knownInstanceRetriever
+								.getObject(KnownInstanceIdentifier.ESTADO_CERRADA_SS);
 	    nuevoEstado.setEstado(cerrada);
 		
 		repository.save(nuevoEstado);
