@@ -1004,7 +1004,8 @@ public Long verHistoricoScoring(String tipoDoc, Integer nroDoc, String sexo)
 			item.setDatosScoring(scoring);
 			item.setNroDoc(numeroDocumento);
 			item.setSexo(sexo.getCodigoVeraz());
-			item.setTipoDoc(tipoDocumento.getDescripcion());
+			//MGR -  Se cambia el tipo para hacer referencia a la tabla SFA_TIPO_DOCUMENTO
+			item.setTipoDocumento(tipoDocumento);
 			item.setValidez(new Date());
 			repository.persist(item);
 			}
