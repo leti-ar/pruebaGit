@@ -271,7 +271,9 @@ public class PortabilidadUIData extends Composite {
 		txtTelefono.clean();
 		txtTelefonoPortar.clean();
 
-		lstTipoDocumento.setSelectedIndex(0);
+		if(this.getTipoPersona().intValue() != 1) {
+			lstTipoDocumento.setSelectedIndex(0);
+		}
 		lstModalidadCobro.setSelectedIndex(0);
 		lstTipoTelefonia.setSelectedIndex(-1);
 		lstProveedorAnterior.setSelectedIndex(-1);
@@ -496,7 +498,11 @@ public class PortabilidadUIData extends Composite {
 			solicitudPortabilidad.setNroUltimaFacura(txtNroUltimaFacura.getText());
 
 			solicitudPortabilidad.setProveedorAnterior((ProveedorDto)lstProveedorAnterior.getSelectedItem());
-			solicitudPortabilidad.setTipoDocumento((TipoDocumentoDto)lstTipoDocumento.getSelectedItem());
+			if(getTipoPersona().intValue() == 1) {
+				solicitudPortabilidad.setTipoDocumento(null);
+			} else {
+				solicitudPortabilidad.setTipoDocumento((TipoDocumentoDto)lstTipoDocumento.getSelectedItem());
+			}
 			solicitudPortabilidad.setTipoTelefonia((TipoTelefoniaDto)lstTipoTelefonia.getSelectedItem());
 			solicitudPortabilidad.setModalidadCobro((ModalidadCobroDto)lstModalidadCobro.getSelectedItem());
 

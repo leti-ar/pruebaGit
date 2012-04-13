@@ -337,16 +337,13 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 					portabilidadPanel.txtRazonSocial.setEnabled(true);
 					portabilidadPanel.txtNombre.setEnabled(true);
 					portabilidadPanel.txtApellido.setEnabled(true);
-//					portabilidadPanel.lstTipoDocumento.set
 				} else { // PERSONA FISICA
-					portabilidadPanel.lstTipoDocumento.selectNullElement();
 					portabilidadPanel.lblTipoDocumento.removeStyleName("req");
 					portabilidadPanel.lblNroDocumento.removeStyleName("req");
 					portabilidadPanel.lblRazonSocial.removeStyleName("req");
 					portabilidadPanel.lblNombre.removeStyleName("req");
 					portabilidadPanel.lblApellido.removeStyleName("req");
 					portabilidadPanel.lstTipoDocumento.setEnabled(false);
-					portabilidadPanel.lstTipoDocumento.getAllItemsButNull();
 					portabilidadPanel.txtNroDocumento.setEnabled(false);
 					portabilidadPanel.txtRazonSocial.setEnabled(false);
 					portabilidadPanel.txtNombre.setEnabled(false);
