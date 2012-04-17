@@ -172,9 +172,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	//#LF
 	private static final String CANTIDAD_EQUIPOS = "CANTIDAD_EQUIPOS";
 	
-	private static final Long MAX_DEUDA_CTA_CTE = 65L;
-	
-
 	public void init() throws ServletException {
 		super.init();
 		context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
@@ -1666,7 +1663,12 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 						&& Integer.valueOf(cantidadEquipos.getCantidadSuspendidos()) == 0) {
 				SolicitudServicio solicitudServicio = repository.retrieve(SolicitudServicio.class, ss.getId());
 				/*pregunto si posee deuda de cuenta corriente*/
-				if (getDeudaCtaCte(solicitudServicio.getCuenta().getCodigoBSCS()) <= MAX_DEUDA_CTA_CTE) { //no posee
+				Long maxDeuda = Long.valueOf(((GlobalParameter) globalParameterRetriever
+									.getObject(GlobalParameterIdentifier.MAX_DEUDA_CTA_CTE)).getValue());
+				
+				AppLogger.info("#Log Cierre y pass - La deuda de la cuenta corriente es: " + maxDeuda, this);
+				
+				if (getDeudaCtaCte(solicitudServicio.getCuenta().getCodigoBSCS()) <= maxDeuda) { //no posee
 					if (!("".equals(pinMaestro) || pinMaestro == null)
 							&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
 						return "Solo se permite cerrar por Veraz dado que es un cliente existente sin equipos activos ni suspendidos.";
