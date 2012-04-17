@@ -931,23 +931,21 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			String errorCC = "";
 			int puedeCerrar = 0;
 			if (!solicitudServicioDto.getGrupoSolicitud().isTransferencia()) {
-				//me fijo si tipo vendedor y orden pueden ser configurables por APG.
-				if (sonConfigurablesPorAPG(solicitudServicioDto.getVendedor().getTipoVendedor(), solicitudServicioDto.getLineas())) {
+				//me fijo si tipo vendedor y orden son configurables por APG.
+				puedeCerrar = sonConfigurablesPorAPG(solicitudServicioDto.getLineas());
+				if (puedeCerrar == 3) {//pass de creditos segun la logica
 					errorCC = evaluarEquiposYDeuda(solicitudServicioDto, pinMaestro);
 					if ("".equals(errorCC)) {
-						puedeCerrar = puedeCerrarSS(solicitudServicioDto);
-						if (puedeCerrar == 3) {//pass de creditos segun la logica
-							if (puedeDarPassDeCreditos(solicitudServicioDto, pinMaestro)) {
-								//Antes de dar el pass si el cliente no fue tranferido anteriormente, se transfiere el cliente a Vantive
-								if(!solicitudServicioDto.getCuenta().isTransferido()){
-									solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,false);
-								}
-								solicitudServicioDto.setPassCreditos(true);
-							} else {
-								solicitudServicioDto.setPassCreditos(false);
-								if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
-									errorCC = generarErrorPorCC(solicitudServicioDto, pinMaestro);
-								}
+						if (puedeDarPassDeCreditos(solicitudServicioDto, pinMaestro)) {
+							//Antes de dar el pass si el cliente no fue tranferido anteriormente, se transfiere el cliente a Vantive
+							if(!solicitudServicioDto.getCuenta().isTransferido()){
+								solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,false);
+							}
+							solicitudServicioDto.setPassCreditos(true);
+						} else {
+							solicitudServicioDto.setPassCreditos(false);
+							if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
+								errorCC = generarErrorPorCC(solicitudServicioDto, pinMaestro);
 							}
 						}
 					}
@@ -961,7 +959,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			
 			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
 			response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar);
-				if (!"".equals(errorNF)) {
+			if (!"".equals(errorNF)) {
 				Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.CUSTOM_ERROR);
 				message.addParameters(new Object[] { errorNF });
 				response.getMessages().addMesage(message);
@@ -1599,19 +1597,44 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		}
 		
 		return null;
-	}	
+	}
 	
-	private boolean sonConfigurablesPorAPG(TipoVendedorDto tipoVendedor, List<LineaSolicitudServicioDto> lineas) {
+	/**
+	 * Evalúo las líneas de la solicitud con los tipos de órdenes y tipos de
+	 * vendedor que se encuentran configurados.
+	 * 
+	 * @param solicitudServicioDto
+	 * @param result
+	 * @return 1- En caso de que ninguna de las líneas cumpla, se realizara el
+	 *         cierre y se transferirá a Vantive. 
+	 *         2- En caso de que al menos una de las líneas no cumpla, no se 
+	 *         realizara el cierre y se mostrara un mensaje de error. 
+	 *         3- En caso de que todas las líneas de la solicitud cumplan, se 
+	 *         realizara el cierre y pass de créditos automático a la SS.
+	 */
+	private int sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas) {
+		AppLogger.info("#Log Cierre y pass - Validando que todas las líneas sean configurables por APG...");
+		int cumple = 0;
+		TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor();
 		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
 			LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
 			if (linea.getTipoSolicitud() != null && linea.getPlan() != null && linea.getItem() != null) {
 				List result = repository.executeCustomQuery("configurablePorAPG", tipoVendedor.getId(), linea.getTipoSolicitud().getId());  
-				if (result.size() <= 0) {
-					return false;
+				if (result.size() > 0) {
+					cumple++;
 				}
 			}
 		}
-		return true;
+		if (cumple == lineas.size()) {
+			AppLogger.info("#Log Cierre y pass - Todas las líneas son configurables por APG");
+			return 3;
+		} else if ((cumple < lineas.size() && cumple != 0) ) {
+			AppLogger.info("#Log Cierre y pass - No todas las líneas son configurables por APG");
+			return 2;
+		} else {
+			AppLogger.info("#Log Cierre y pass - Ninguna línea es configurable por APG");			
+			return 1;
+		}
 	}
 	
 	/**
@@ -1666,49 +1689,6 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		}
 	}
 	
-/**
-	 * Evalúo las líneas de la solicitud con los tipos de órdenes y tipos de
-	 * vendedor que se encuentran configurados.
-	 * 
-	 * @param solicitudServicioDto
-	 * @param result
-	 * @return 1- En caso de que ninguna de las líneas cumpla, se realizara el
-	 *         cierre y se transferirá a Vantive. 
-	 *         2- En caso de que al menos una de las líneas no cumpla, no se 
-	 *         realizara el cierre y se mostrara un mensaje de error. 
-	 *         3- En caso de que todas las líneas de la solicitud cumplan, se 
-	 *         realizara el cierre y pass de créditos automático a la SS.
-	 */
-	private int puedeCerrarSS(SolicitudServicioDto solicitudServicioDto) {
-		List<LineaSolicitudServicio> lineas = mapper.convertList(solicitudServicioDto.getLineas(), LineaSolicitudServicio.class);
-		List<CondicionComercial> condiciones = repository.find("from CondicionComercial ");
-		Set<TipoSolicitud> tiposSolicitud = new HashSet<TipoSolicitud>();
-		Set<TipoVendedor> tiposVendedor = new HashSet<TipoVendedor>();
-		
-		for (Iterator<CondicionComercial> iterator = condiciones.iterator(); iterator.hasNext();) {
-			CondicionComercial condicionComercial = (CondicionComercial) iterator.next();
-			if (condicionComercial.getTiposSolicitud().size() != 0) tiposSolicitud.addAll(condicionComercial.getTiposSolicitud());
-			if (condicionComercial.getTiposVendedor().size() != 0) tiposVendedor.addAll(condicionComercial.getTiposVendedor());
-		}
-		
-		int cumple = 0;
-		for (Iterator<LineaSolicitudServicio> iterator = lineas.iterator(); iterator.hasNext();) {
-			LineaSolicitudServicio linea = (LineaSolicitudServicio) iterator.next();
-			//los accesorios no deben evaluarse, los cuento igual para que me sirva la condición 
-			if (linea.getPlan() == null || tiposSolicitud.contains(linea.getTipoSolicitud()) ) {
-				cumple++;
-			}
-		}
-		TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor();
-		if (cumple == lineas.size() && tiposVendedor.contains(tipoVendedor)) {
-			return 3;
-		} else if ((cumple < lineas.size() && cumple != 0) || !tiposVendedor.contains(tipoVendedor)) {
-			return 2;
-		} else {
-			return 1;
-		}
-	}
-	
 	/**
 	 * Dependiendo del resultado del scoring o veraz, tipo de solicitud, del plan, la cantidad máxima de equipos, el 
 	 * modelo del equipo, el tipo de vendedor y cantidad máxima de $ por SS que se encuentran configurados; 
@@ -1721,6 +1701,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 */
 	String resultadoVerazScoring = "";
 	private boolean puedeDarPassDeCreditos(SolicitudServicioDto ss, String pinMaestro) throws BusinessException {
+		AppLogger.info("#Log Cierre y pass - Validando que todas las líneas cumplan con las condiciones comerciales...");
 		if (("".equals(pinMaestro) || pinMaestro == null)
 				&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
 			//devuelve un string vacio si el servicio de veraz falla
@@ -1756,6 +1737,11 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     			}
     		}
 		}
+		if (existeCC) {
+			AppLogger.info("#Log Cierre y pass - Todas las líneas cumplen con las condiciones comerciales...");
+		} else {
+			AppLogger.info("#Log Cierre y pass - No todas las líneas cumplen con las condiciones comerciales...");
+		}
 		return existeCC;
 	}
 	
@@ -1774,28 +1760,26 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			mensaje += " Scoring con resultado '" + resultadoVerazScoring + "', ";
 		}
 
-    	List<CondicionComercial> condiciones = repository.executeCustomQuery("condicionesComercialesPorResultado", resultadoVerazScoring);
+		TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor();
     	List<LineaSolicitudServicio> lineas = mapper.convertList(ss.getLineas(), LineaSolicitudServicio.class);
+    	Integer cantEquipos = calcularCantEquipos(ss.getLineas());
     	Double cantPesos = new Double(0);
-    	boolean flag = false;
+		for (Iterator<LineaSolicitudServicio> iterator = lineas.iterator(); iterator.hasNext();) {
+    		LineaSolicitudServicio linea = (LineaSolicitudServicio) iterator.next();
+    		cantPesos = cantPesos + linea.getPrecioVenta();
+		}
+    	
     	for (Iterator<LineaSolicitudServicio> iterator = lineas.iterator(); iterator.hasNext();) {
     		LineaSolicitudServicio linea = (LineaSolicitudServicio) iterator.next();
-    		for (Iterator<CondicionComercial> iterator2 = condiciones.iterator(); iterator2.hasNext();) {
-    			CondicionComercial condicion = (CondicionComercial) iterator2.next();
-    			if (linea.getPlan() != null && linea.getItem() != null) {
-    				if (condicion.getPlanes().contains(linea.getPlan()) && condicion.getItems().contains(linea.getItem())) {
-    					flag = true;
-    					break;
-    				}
+    		if (linea.getPlan() != null && linea.getItem() != null) {
+    			List<CondicionComercial> condiciones  = repository.executeCustomQuery("condicionesComercialesPorSS", resultadoVerazScoring,
+        			tipoVendedor.getId(), linea.getTipoSolicitud().getId(), linea.getPlan().getId(), linea.getItem().getId(), cantEquipos, cantPesos);	
+    			if (condiciones.size() <= 0) {
+    				mensaje+= linea.getAlias() + " no cumple con los items y planes configurados.\n";
+    				break;
     			}
     		}
-    		if (!flag) {
-    			mensaje+= linea.getAlias() + " no cumple con los items y planes configurados.\n";
-			}
-    		cantPesos = cantPesos + linea.getPrecioVenta();
-    		flag = false;
     	}
-    	Integer cantEquipos = calcularCantEquipos(ss.getLineas());
     	List<Long> cantMaxEquipos = (repository.executeCustomQuery("maxCantEquipos", resultadoVerazScoring));
     	if (cantMaxEquipos.get(0) != null && cantEquipos > cantMaxEquipos.get(0)) {
     		mensaje += "El máximo de equipos es " + cantMaxEquipos + ".\n";
