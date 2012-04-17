@@ -1647,7 +1647,15 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 */
 	private String evaluarEquiposYDeuda(SolicitudServicioDto ss, String pinMaestro) throws RpcExceptionMessages {
 		if (!RegularExpressionConstants.isVancuc(ss.getCuenta().getCodigoVantive())) {
+			
+			AppLogger.info("#Log Cierre y pass - Buscando cantidad de equipos en la cuenta: " + ss.getCuenta().getCodigoVantive(), this);
+			
 			CantidadEquiposDTO cantidadEquipos = getCantEquiposCuenta(ss.getCuenta());
+			
+			AppLogger.info("#Log Cierre y pass - Cantidad equipos activos: " + cantidadEquipos.getCantidadActivos(), this);
+			AppLogger.info("#Log Cierre y pass - Cantidad equipos suspendidos: " + cantidadEquipos.getCantidadSuspendidos(), this);
+			AppLogger.info("#Log Cierre y pass - Cantidad equipos desactivados: " + cantidadEquipos.getCantidadDesactivados(), this);
+			
 			if (Integer.valueOf(cantidadEquipos.getCantidadActivos()) > 0
 					|| Integer.valueOf(cantidadEquipos.getCantidadSuspendidos()) > 0) {
 				if (("".equals(pinMaestro) || pinMaestro == null)
