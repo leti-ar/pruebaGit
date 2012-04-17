@@ -539,10 +539,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			editarSSUIData.getNss().setText(String.valueOf(solicitud.getTripticoNumber()));
 		} 
 		
-		if (esProspect) {
-			editarSSUIData.getEstadoH().setVisibleItemCount(0);
-			editarSSUIData.getEstadoTr().setVisibleItemCount(0);
-		}
+		//larce - Comentado para salir solo con cierre
+//		if (esProspect) {
+//			editarSSUIData.getEstadoH().setVisibleItemCount(0);
+//			editarSSUIData.getEstadoTr().setVisibleItemCount(0);
+//		}
 		
 		validarCompletitud(false);
 		//datos.refresh();
