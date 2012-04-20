@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -63,19 +62,16 @@ import ar.com.nextel.model.cuentas.beans.TipoVendedor;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.personas.beans.Localidad;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
-import ar.com.nextel.model.solicitudes.beans.ComentarioAnalista;
 import ar.com.nextel.model.solicitudes.beans.CondicionComercial;
 import ar.com.nextel.model.solicitudes.beans.Control;
 import ar.com.nextel.model.solicitudes.beans.EstadoHistorico;
 import ar.com.nextel.model.solicitudes.beans.EstadoPorSolicitud;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
-import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.LineasPorSegmento;
 import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
-import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.PlanBase;
 import ar.com.nextel.model.solicitudes.beans.Segmento;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
@@ -84,14 +80,13 @@ import ar.com.nextel.model.solicitudes.beans.Sucursal;
 import ar.com.nextel.model.solicitudes.beans.TipoAnticipo;
 import ar.com.nextel.model.solicitudes.beans.TipoPlan;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
+import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
-import ar.com.nextel.services.nextelServices.scoring.ScoringHistoryItem;
-import ar.com.nextel.services.nextelServices.veraz.exception.VerazException;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
-import ar.com.nextel.sfa.client.dto.ComentarioAnalistaDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
@@ -130,8 +125,8 @@ import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
-import ar.com.nextel.sfa.client.dto.TipoVendedorDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
+import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
@@ -142,6 +137,7 @@ import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
 import ar.com.nextel.util.DateUtils;
 import ar.com.nextel.util.ExcelBuilder;
+import ar.com.nextel.util.PermisosUserCenter;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.server.RemoteService;
 import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
@@ -1655,9 +1651,24 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			
 			if (Integer.valueOf(cantidadEquipos.getCantidadActivos()) > 0
 					|| Integer.valueOf(cantidadEquipos.getCantidadSuspendidos()) > 0) {
+				//	En el caso de que el usuario no ingrese el pin, debido a que es un prospect o 
+				//	no tenga la posibilidad de cerrar por pin se realizara el cierre por Veraz.
+				
+				HashMap<String, Boolean> mapaPermisosClient = (HashMap<String, Boolean>) sessionContextLoader.getSessionContext().get(SessionContext.PERMISOS);
+				boolean permisoCierrePin = (Boolean) mapaPermisosClient.get(PermisosUserCenter.CERRAR_SS_CON_PIN.getValue());
+				boolean cerrandoConItemBB = false;
+				for (LineaSolicitudServicioDto linea : ss.getLineas()) {
+					ModeloDto modelo = linea.getModelo();
+					if (modelo != null && modelo.isEsBlackberry()) {
+						cerrandoConItemBB = true;
+						break;
+					}
+				}
 				if (("".equals(pinMaestro) || pinMaestro == null)
 						&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
-					return "Cliente existente solo puede cerrar por Scoring.";
+					if (ss.getGrupoSolicitud().getId() == 1L && permisoCierrePin && !cerrandoConItemBB) {
+						return "Cliente existente solo puede cerrar por Scoring.";
+					}
 				}
 			} else if (Integer.valueOf(cantidadEquipos.getCantidadActivos()) == 0
 						&& Integer.valueOf(cantidadEquipos.getCantidadSuspendidos()) == 0) {
