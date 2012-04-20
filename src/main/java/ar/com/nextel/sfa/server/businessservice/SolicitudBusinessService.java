@@ -923,7 +923,8 @@ public class SolicitudBusinessService {
    * @throws 
    */
    @SuppressWarnings("deprecation")
-public Long verHistoricoScoring(String tipoDoc, Integer nroDoc, String sexo)
+   //MGR - Se modifica el dato por que se agrego la referencia a la tabla sfa_tipo_documento
+public Long verHistoricoScoring(Long tipoDoc, Integer nroDoc, String sexo)
      
   {
     Long resultado = new Long(0);
@@ -992,7 +993,8 @@ public Long verHistoricoScoring(String tipoDoc, Integer nroDoc, String sexo)
 				persona.getIdTipoDocumento());
 		Integer numeroDocumento = Integer.parseInt(StringUtil.removeOcurrences(persona.getDocumento()
 				.getNumero(), '-'));
-		Long consultar= verHistoricoScoring(tipoDocumento.getDescripcion(),numeroDocumento,sexo.getCodigoVeraz());
+		//MGR - Se modifica el dato por que se agrego la referencia a la tabla sfa_tipo_documento
+		Long consultar= verHistoricoScoring(tipoDocumento.getId(),numeroDocumento,sexo.getCodigoVeraz());
 		String scoring;
 		
 			if (consultar == 0){
