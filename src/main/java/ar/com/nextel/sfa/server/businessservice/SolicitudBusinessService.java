@@ -888,11 +888,11 @@ public class SolicitudBusinessService {
 		return generacionCierreBusinessOperator.consultarVeraz(verazRequestDTO);
 	}
 	
-	
-//	public String consultarVerazCierreSS(SolicitudServicio solicitudServicio) throws BusinessException {
-//		VerazRequestDTO verazRequestDTO = createVerazRequestDTO(solicitudServicio.getCuenta().getPersona());
-//		return generacionCierreBusinessOperator.consultarVeraz(verazRequestDTO);
-//	}
+	//MGR - #3118
+	public VerazResponseDTO consultarVerazCierreSS(SolicitudServicio solicitudServicio) throws BusinessException {
+		VerazRequestDTO verazRequestDTO = createVerazRequestDTO(solicitudServicio.getCuenta().getPersona());
+		return generacionCierreBusinessOperator.consultarVerazCierreSS(verazRequestDTO);
+	}
 	
 	private VerazRequestDTO createVerazRequestDTO(Persona persona) {
 		Sexo sexo = (Sexo) this.repository.retrieve(Sexo.class, persona.getSexo().getId());

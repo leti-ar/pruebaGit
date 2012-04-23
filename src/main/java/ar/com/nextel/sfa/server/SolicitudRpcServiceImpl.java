@@ -85,6 +85,7 @@ import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
+import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
@@ -170,6 +171,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	
 	//MGR - #3122
 	private static final String ERROR_CC_POR_RESULTADO = "ERROR_CC_POR_RESULTADO";
+	//MGR - #3118
+	private static int SCORE_DNI_INEXISTENTE = 3;
 	
 	public void init() throws ServletException {
 		super.init();
@@ -1729,7 +1732,14 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		if (("".equals(pinMaestro) || pinMaestro == null)
 				&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
 			//devuelve un string vacio si el servicio de veraz falla
-			resultadoVerazScoring = solicitudBusinessService.consultarVeraz(repository.retrieve(SolicitudServicio.class, ss.getId())).getMensaje();
+			//MGR - #3118 - Cambio a leyenda en caso de que el documento sea inexistente
+			VerazResponseDTO responseDTO = solicitudBusinessService.consultarVerazCierreSS(repository.retrieve(SolicitudServicio.class, ss.getId()));
+			if(responseDTO.getScoreDni() == SCORE_DNI_INEXISTENTE){
+				resultadoVerazScoring = "DOCUMENTO INEXISTENTE";
+			}
+			else{
+				resultadoVerazScoring = responseDTO.getMensaje();
+			}
 			if ("".equals(resultadoVerazScoring) || resultadoVerazScoring == null) {
 				return false;
 			}
