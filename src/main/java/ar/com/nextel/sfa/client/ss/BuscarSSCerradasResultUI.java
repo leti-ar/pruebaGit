@@ -176,12 +176,11 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler 
 							cantPataconex = cantPataconex + solicitudServicioCerradaResultDto.getPataconex();
 						}
 						
-						if(result.get(i) != null){
-							resultTable.setWidget(indiceRowTabla, 7, IconFactory.tildeVerde());
+						if(result.get(i) == null || result.get(i).intValue() == 0){
+								resultTable.setHTML(indiceRowTabla, 7, Sfa.constant().whiteSpace());
 						}else{
-							resultTable.setHTML(indiceRowTabla, 7, Sfa.constant().whiteSpace());
+								resultTable.setWidget(indiceRowTabla, 7, IconFactory.tildeVerde());
 						}
-
 						indiceRowTabla++;
 					}
 					setVisible(true);
