@@ -68,10 +68,12 @@ import ar.com.nextel.model.solicitudes.beans.EstadoHistorico;
 import ar.com.nextel.model.solicitudes.beans.EstadoPorSolicitud;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
+import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.LineasPorSegmento;
 import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
+import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.PlanBase;
 import ar.com.nextel.model.solicitudes.beans.Segmento;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
@@ -84,7 +86,6 @@ import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
-import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
@@ -126,7 +127,6 @@ import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
-import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
@@ -167,6 +167,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private DefaultRetriever messageRetriever;;
 	//#LF
 	private static final String CANTIDAD_EQUIPOS = "CANTIDAD_EQUIPOS";
+	
+	//MGR - #3122
+	private static final String ERROR_CC_POR_RESULTADO = "ERROR_CC_POR_RESULTADO";
 	
 	public void init() throws ServletException {
 		super.init();
@@ -1771,43 +1774,114 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 * @param ss
 	 * @param pinMaestro
 	 * @return
+	 * @throws RpcExceptionMessages 
 	 */
-	private String generarErrorPorCC(SolicitudServicioDto ss, String pinMaestro) {
-		String mensaje = "Para un";
-			if (("".equals(pinMaestro) || pinMaestro == null)
-				&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
-			mensaje += " Veraz con resultado '" + resultadoVerazScoring + "', ";
-		} else {
-			mensaje += " Scoring con resultado '" + resultadoVerazScoring + "', ";
-		}
-
-		TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor();
-    	List<LineaSolicitudServicio> lineas = mapper.convertList(ss.getLineas(), LineaSolicitudServicio.class);
+	private String generarErrorPorCC(SolicitudServicioDto ss, String pinMaestro) throws RpcExceptionMessages {
+    	//MGR - #3122 - Nueva forma de armar el mensaje de error
+    	String mensaje = "";
+    	String error = null;
+    	
     	Integer cantEquipos = calcularCantEquipos(ss.getLineas());
+    	List<Long> cantMaxEquipos = (repository.executeCustomQuery("maxCantEquipos", resultadoVerazScoring));
+    	
+    	if (cantMaxEquipos.get(0) != null && cantEquipos > cantMaxEquipos.get(0)) {
+    		error = "el máximo de equipos es " + cantMaxEquipos;
+    	}
+    	
+    	
+    	List<LineaSolicitudServicio> lineas = mapper.convertList(ss.getLineas(), LineaSolicitudServicio.class);
     	Double cantPesos = new Double(0);
 		for (Iterator<LineaSolicitudServicio> iterator = lineas.iterator(); iterator.hasNext();) {
     		LineaSolicitudServicio linea = (LineaSolicitudServicio) iterator.next();
     		cantPesos = cantPesos + linea.getPrecioVenta();
 		}
+    	List<Long> cantPesosMax = (repository.executeCustomQuery("maxCantPesos", resultadoVerazScoring));
+    	
+    	if (cantPesosMax.get(0) != null && cantPesos.compareTo(new Double(cantPesosMax.get(0))) > 0) {
+    		if(error != null){
+    			error += " y ";
+    		}
+    		error += "la cantidad de pesos máxima es " + cantPesosMax;
+    	}
+    	
+    	if(error != null){
+    		mensaje = "Para validación por ";
+    		if (("".equals(pinMaestro) || pinMaestro == null)
+				&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
+    			mensaje += "Veraz ";
+			} else {
+				mensaje += "Scoring ";
+			}
+    		mensaje += "con resultado '" + resultadoVerazScoring + "' " + error + ".\n";
+    	}
+    	
+    	
+    	TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor();
+    	List<CondicionComercial> condiciones;
     	
     	for (Iterator<LineaSolicitudServicio> iterator = lineas.iterator(); iterator.hasNext();) {
     		LineaSolicitudServicio linea = (LineaSolicitudServicio) iterator.next();
-    		if (linea.getPlan() != null && linea.getItem() != null) {
-    			List<CondicionComercial> condiciones  = repository.executeCustomQuery("condicionesComercialesPorSS", resultadoVerazScoring,
-        			tipoVendedor.getId(), linea.getTipoSolicitud().getId(), linea.getPlan().getId(), linea.getItem().getId(), cantEquipos, cantPesos);	
-    			if (condiciones.size() <= 0) {
-    				mensaje+= linea.getAlias() + " no cumple con los items y planes configurados.\n";
-    				break;
+    		error = null;
+    		
+    		//Verifico que exite la CC para el Tipo Vend, el Tipo SS, y el resultado obtenido
+    		condiciones = repository.executeCustomQuery(ERROR_CC_POR_RESULTADO, resultadoVerazScoring, tipoVendedor.getId(), linea.getTipoSolicitud().getId());
+    		
+    		//No puede haber mas de una CC para un Tipo Vend, un Tipo de SS y un resultado
+    		if(condiciones.size() > 1){
+    			error = "Existe mas de una Condicion Comercial para el tipo vendedor " + tipoVendedor.getDescripcion() + 
+							", el tipo de Solicitud " + linea.getTipoSolicitud().getDescripcion() + " y resultado " + resultadoVerazScoring;
+    			AppLogger.error(error);
+    			throw ExceptionUtil.wrap(new Exception(error));
+    		}
+    		else if(condiciones.isEmpty()){
+    			error = "el resultado " + resultadoVerazScoring + " para el vendedor " + 
+    				tipoVendedor.getDescripcion() + " y el tipo de Solicitud " + linea.getTipoSolicitud().getDescripcion();
+    		}
+    		else{
+    			CondicionComercial condActual = condiciones.get(0);
+    			
+    			//Verifico que el plan es valido para la CC
+    			boolean existePlan = false;
+    			Set<Plan> planes = condActual.getPlanes();
+    			for(Iterator<Plan> it = planes.iterator(); it.hasNext() && !existePlan;){
+    				Plan plan = (Plan) it.next();
+    				
+    				if(plan.getId().equals(linea.getPlan().getId())){
+    					existePlan = true;
+    				}
+    			}
+    			
+    			//Verifico que el item es valido para la CC
+    			boolean existeItem = false;
+    			Set<Item> items = condActual.getItems();
+    			for(Iterator<Item> it = items.iterator(); it.hasNext() && !existeItem;){
+    				Item item= (Item) it.next();
+    				
+    				if(item.getId().equals(linea.getItem().getId())){
+    					existeItem = true;
+    				}
+    			}
+    			
+    			if(!existePlan){
+					error = "plan " + linea.getPlan().getDescripcion();
+				}
+    			
+    			if(!existeItem){
+    				if(error != null){
+    					error += "e item ";
+    				}else{
+    					error = "item ";
+    				}
+    				
+    				error += linea.getItem().getDescripcion();
     			}
     		}
-    	}
-    	List<Long> cantMaxEquipos = (repository.executeCustomQuery("maxCantEquipos", resultadoVerazScoring));
-    	if (cantMaxEquipos.get(0) != null && cantEquipos > cantMaxEquipos.get(0)) {
-    		mensaje += "El máximo de equipos es " + cantMaxEquipos + ".\n";
-    	}
-    	List<Long> cantPesosMax = (repository.executeCustomQuery("maxCantPesos", resultadoVerazScoring));
-    	if (cantPesosMax.get(0) != null && cantPesos.compareTo(new Double(cantPesosMax.get(0))) > 0) {
-    		mensaje += "La cantidad de pesos máxima es " + cantPesosMax + ".\n";
+    		
+    		//Voy juntando los mensajes
+    		if(error != null){
+    			error = "Para la linea " + linea.getAlias() + ", no existe una Condicion Comercial con " + error;
+    			mensaje += error + ".\n";
+    		}
     	}
     	return mensaje;
 	}
