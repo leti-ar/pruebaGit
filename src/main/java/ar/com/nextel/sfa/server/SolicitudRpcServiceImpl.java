@@ -920,12 +920,14 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		AppLogger.info("Iniciando " + accion + " de SS de id=" + solicitudServicioDto.getId() + " ...");
 		GeneracionCierreResultDto result = new GeneracionCierreResultDto();
 		SolicitudServicio solicitudServicio = null;
-		GeneracionCierreResponse response = null;
+		//MGR - #3123
+		GeneracionCierreResponse response = new GeneracionCierreResponse();
+		boolean hayError = false;
 		try {
 			
 			completarDomiciliosSolicitudTransferencia(solicitudServicioDto);
 			
-		String errorNF = "";
+			String errorNF = "";
 			//larce - Req#5 Cierre y Pass automático
 			String errorCC = "";
 			int puedeCerrar = 0;
@@ -953,38 +955,49 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				if(solicitudServicioDto.getVendedor().getTipoVendedor().isEjecutaNegFiles()){
 					errorNF = verificarNegativeFilesPorLinea(solicitudServicioDto.getLineas());					
 				}
+				
+				if (!"".equals(errorNF)) {
+					hayError = true;
+					Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.CUSTOM_ERROR);
+					message.addParameters(new Object[] { errorNF });
+					response.getMessages().addMesage(message);
+					result.setError(true);
+				}
+				if (puedeCerrar == 2) {
+					hayError = true;
+					response.getMessages().addMesage((Message) this.messageRetriever.getObject(MessageIdentifier.TIPO_ORDEN_INCOMPATIBLE));
+					result.setError(true);
+				} else if (!"".equals(errorCC)) {
+					hayError = true;
+					Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.CUSTOM_ERROR);
+					message.addParameters(new Object[] { errorCC });
+					response.getMessages().addMesage(message);
+					result.setError(true);
+				}
 			}
 			
-			
+
 			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
-			response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar);
-			if (!"".equals(errorNF)) {
-				Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.CUSTOM_ERROR);
-				message.addParameters(new Object[] { errorNF });
-				response.getMessages().addMesage(message);
-				result.setError(true);
-			}
-			if (puedeCerrar == 2) {
-				response.getMessages().addMesage((Message) this.messageRetriever.getObject(MessageIdentifier.TIPO_ORDEN_INCOMPATIBLE));
-				result.setError(true);
-			} else if (!"".equals(errorCC)) {
-				Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.CUSTOM_ERROR);
-				message.addParameters(new Object[] { errorCC });
-				response.getMessages().addMesage(message);
-				result.setError(true);
-			} else {
+
+			//MGR - #3123 - Si ninguno no fallo por alguna de las validaciones anteriores
+			if(!hayError){
+				response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar);
 				result.setError(response.getMessages().hasErrors());
+				
+				// metodo changelog
+				if (cerrar == true
+						&& response.getMessages().hasErrors() == false
+						&& sessionContextLoader.getVendedor().getTipoVendedor().getCodigoVantive().equals(
+								KnownInstanceIdentifier.TIPO_VENDEDOR_EECC.getKey())) {
+					solicitudBusinessService.generarChangeLog(solicitudServicioDto.getId(), solicitudServicio
+							.getVendedor().getId());
+				}
+				
+				result.setRtfFileName(getReporteFileName(solicitudServicio));
 			}
-			// metodo changelog
-			if (cerrar == true
-					&& response.getMessages().hasErrors() == false
-					&& sessionContextLoader.getVendedor().getTipoVendedor().getCodigoVantive().equals(
-							KnownInstanceIdentifier.TIPO_VENDEDOR_EECC.getKey())) {
-				solicitudBusinessService.generarChangeLog(solicitudServicioDto.getId(), solicitudServicio
-						.getVendedor().getId());
-			}
+			
 			result.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
-			result.setRtfFileName(getReporteFileName(solicitudServicio));
+			
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
