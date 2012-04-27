@@ -593,7 +593,7 @@ public class SolicitudBusinessService {
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public GeneracionCierreResponse generarCerrarSolicitud(SolicitudServicio solicitudServicio,
-			String pinMaestro, boolean cerrar) throws BusinessException {
+			String pinMaestro, boolean cerrar, boolean cierraPorCC) throws BusinessException {
 //		#1636 mrial
 		boolean esProspect = false;	
 		if (solicitudServicio.getCuenta().isProspectEnCarga()
@@ -616,7 +616,7 @@ public class SolicitudBusinessService {
 		GeneracionCierreResponse response = null;
 		if (cerrar) {
 			
-			response = generacionCierreBusinessOperator.cerrarSolicitudServicio(generacionCierreRequest);
+			response = generacionCierreBusinessOperator.cerrarSolicitudServicio(generacionCierreRequest, cierraPorCC);
 			
 			if (solicitudServicio.getCuenta().getFacturaElectronica() != null
 //					&& !solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion()

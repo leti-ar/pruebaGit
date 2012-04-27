@@ -981,7 +981,11 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 
 			//MGR - #3123 - Si ninguno no fallo por alguna de las validaciones anteriores
 			if(!hayError){
-				response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar);
+				if (puedeCerrar != 1) { //larce #3161
+					response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, true);
+				} else {
+					response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, false);
+				}
 				result.setError(response.getMessages().hasErrors());
 				
 				// metodo changelog
