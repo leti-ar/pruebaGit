@@ -668,57 +668,63 @@ public class SolicitudBusinessService {
 					solicitudServicio.getCuenta().getFacturaElectronica().setIdGestion(idGestion);
 				}
 			}
+			
+			//MGR - #3120 - Guardo el cambio de estado y demas datos solo si la SS se cerro correctamente
+			if(!response.getMessages().hasErrors()){
+				
+				//Req Pass y cierre automatico- Req #1: Registrar resultado veraz y scoring
+				//registrar resultados veraz y scoring
+				//setearle a la ss los dos nuevos valores de scoring y veraz
+				if (!esProspect) {
+					Long idConsultaScoring = scoring(solicitudServicio);
+					solicitudServicio.setIdConsultaScoring(idConsultaScoring);
+				}
+				Long idConsultaVeraz = veraz(solicitudServicio);
+				if (idConsultaVeraz > 0) {
+					solicitudServicio.setIdConsultaVeraz(idConsultaVeraz);
+				}
+			     
+			    //Req Pass y cierre automatico-Req #2: Registrar Cierre con Pin
+			    // valores q deberan guardarse
+				GlobalParameter pinValidoGlobalParameter = (GlobalParameter) globalParameterRetriever
+						.getObject(GlobalParameterIdentifier.VALIDO_PIN);
+				
+				GlobalParameter pinNoValidoGlobalParameter = (GlobalParameter) globalParameterRetriever
+						.getObject(GlobalParameterIdentifier.NO_VALIDO_PIN);
+				
+				if (!GenericValidator.isBlankOrNull(pinMaestro) || 
+						solicitudServicio.getSolicitudServicioGeneracion().getScoringChecked()){
+					solicitudServicio.setCierreConPin(pinValidoGlobalParameter.getValue());
+					
+		         }else{
+		        	 solicitudServicio.setCierreConPin(pinNoValidoGlobalParameter.getValue());
+		         }
+				
+				//Req Pass y cierre automatico-Req #3: Registrar fecha de cierre
+				solicitudServicio.setFechaCierre(new Date());
+				
+				
+				//Req Pass y cierre automatico- se deja guardado el cambio del estado de la ss en sfa_estado_por_solicitud
+				EstadoPorSolicitud nuevoEstado= new EstadoPorSolicitud();
+				nuevoEstado.setFecha(new Date());
+
+				SolicitudServicio ss= repository.retrieve(SolicitudServicio.class, solicitudServicio.getId());
+				nuevoEstado.setSolicitud(ss);
+				
+				Vendedor vendedor = repository.retrieve(Vendedor.class, solicitudServicio.getVendedor().getId());
+				nuevoEstado.setUsuario(vendedor);
+
+				EstadoSolicitud cerrada  =(EstadoSolicitud) knownInstanceRetriever
+										.getObject(KnownInstanceIdentifier.ESTADO_CERRADA_SS);
+			    nuevoEstado.setEstado(cerrada);
+				
+				repository.save(nuevoEstado);
+			}
+			
 		} else {
 			response = generacionCierreBusinessOperator.generarSolicitudServicio(generacionCierreRequest);
 		}
 		
-		 //Req Pass y cierre automatico- Req #1: Registrar resultado veraz y scoring
-		 //registrar resultados veraz y scoring
-		 //setearle a la ss los dos nuevos valores de scoring y veraz
-        if (!esProspect){
-		 Long idConsultaScoring = scoring(solicitudServicio);
-		 solicitudServicio.setIdConsultaScoring(idConsultaScoring);
-	     }
-		Long idConsultaVeraz = veraz(solicitudServicio);
-	     if (idConsultaVeraz >0){
-		solicitudServicio.setIdConsultaVeraz(idConsultaVeraz);
-		}
-	     
-	     
-	     //Req Pass y cierre automatico-Req #2: Registrar Cierre con Pin
-	     // valores q deberan guardarse
-		GlobalParameter pinValidoGlobalParameter = (GlobalParameter) globalParameterRetriever
-		.getObject(GlobalParameterIdentifier.VALIDO_PIN);
-		
-		GlobalParameter pinNoValidoGlobalParameter = (GlobalParameter) globalParameterRetriever
-		.getObject(GlobalParameterIdentifier.NO_VALIDO_PIN);
-		
-		if (!GenericValidator.isBlankOrNull(pinMaestro)|| solicitudServicio.getSolicitudServicioGeneracion().getScoringChecked()){
-			solicitudServicio.setCierreConPin(pinValidoGlobalParameter.getValue());
-			
-         }else{
-        	 solicitudServicio.setCierreConPin(pinNoValidoGlobalParameter.getValue());
-        	 
-         }
-		
-		//Req Pass y cierre automatico-Req #3: Registrar fecha de cierre
-		solicitudServicio.setFechaCierre(new Date());
-		
-		
-		//Req Pass y cierre automatico- se deja guardado el cambio del estado de la ss es estado_por_solicitud
-		EstadoPorSolicitud nuevoEstado= new EstadoPorSolicitud();
-		nuevoEstado.setFecha(new Date());
-		SolicitudServicio ss= repository.retrieve(SolicitudServicio.class, solicitudServicio.getId());
-		nuevoEstado.setSolicitud(ss);
-		Vendedor vendedor = repository.retrieve(Vendedor.class, solicitudServicio.getVendedor().getId());
-
-		nuevoEstado.setUsuario(vendedor);
-
-	    EstadoSolicitud cerrada  =(EstadoSolicitud) knownInstanceRetriever
-								.getObject(KnownInstanceIdentifier.ESTADO_CERRADA_SS);
-	    nuevoEstado.setEstado(cerrada);
-		
-		repository.save(nuevoEstado);
 		repository.save(solicitudServicio);
 		
 		return response;
