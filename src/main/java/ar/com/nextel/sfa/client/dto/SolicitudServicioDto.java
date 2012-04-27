@@ -87,6 +87,7 @@ public class SolicitudServicioDto implements IsSerializable {
 	private Long idConsultaScoring;
     	//GB - si es customer o no
 	private boolean customer;
+	private VendedorDto vendedorLogueado;
 	
     public SolicitudServicioDto() {
 		solicitudServicioGeneracion = new SolicitudServicioGeneracionDto();
@@ -545,5 +546,14 @@ public class SolicitudServicioDto implements IsSerializable {
 	public void setIdConsultaScoring(Long idConsultaScoring) {
 		this.idConsultaScoring = idConsultaScoring;
 	}
+
+	public VendedorDto getVendedorLogueado() {
+		return vendedorLogueado;
+	}
+
+	public void setVendedorLogueado(VendedorDto vendedorLogueado) {
+		this.vendedorLogueado = vendedorLogueado;
+	}
 		
+	
 }

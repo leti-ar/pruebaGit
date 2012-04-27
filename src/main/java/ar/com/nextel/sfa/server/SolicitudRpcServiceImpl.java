@@ -981,6 +981,10 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 
 			//MGR - #3123 - Si ninguno no fallo por alguna de las validaciones anteriores
 			if(!hayError){
+				
+				//LF - #3109 - Registro el vendedor logueado que realiza el cierre
+				solicitudServicio.setVendedorLogueado(sessionContextLoader.getVendedor());
+				
 				if (puedeCerrar != 1) { //larce #3161
 					response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, true);
 				} else {
