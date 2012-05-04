@@ -1766,8 +1766,10 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			}
 		} else {
 			resultadoVerazScoring = solicitudBusinessService.consultarScoring(repository.retrieve(SolicitudServicio.class, ss.getId())).getCantidadTerminales();
-			if (Integer.valueOf(resultadoVerazScoring) > 3) {
-				resultadoVerazScoring = "3";
+			if (resultadoVerazScoring != null) {
+				if (Integer.valueOf(resultadoVerazScoring) > 3) {
+					resultadoVerazScoring = "3";
+				}
 			}
 		}
 
@@ -1781,9 +1783,24 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		}
     	
 		boolean existeCC = true;
+		
 		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
     		LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
-    		if (linea.getTipoSolicitud() != null && linea.getPlan() != null && linea.getItem() != null) {
+    		/*LF - #3144: Cierre y Pass Automatico – Evaluacion de condiciones comerciales para Activacion y Activacion On-line 
+    		  Si el tipo de solicitud es Activacion o Activacion online, se deben tomar todos los item del modelo seleccionado y 
+    		  verificar que cada uno corresponda con las condiciones comerciales, si al menos uno no corresponde no se cumple las cc */
+    		if(linea.getTipoSolicitud().isActivacion() || linea.getTipoSolicitud().isActivacionOnline()) {
+    			List<Item> items = repository.executeCustomQuery("LISTA_ITEMS_POR_MODELO", linea.getModelo().getId());
+    			for (Iterator<Item> iterator2 = items.iterator(); iterator2.hasNext();) {
+					Item item = (Item ) iterator2.next();
+					List<CondicionComercial> condiciones  = repository.executeCustomQuery("condicionesComercialesPorSS", resultadoVerazScoring,
+	    					tipoVendedor.getId(), linea.getTipoSolicitud().getId(), linea.getPlan().getId(), item.getId(), cantEquipos, cantPesos);		
+	    			if (condiciones.size() <= 0) {
+	    				existeCC = false;
+	    				break;
+	    			}
+				}
+    		} else if (linea.getTipoSolicitud() != null && linea.getPlan() != null && linea.getItem() != null) {
     			    			List<CondicionComercial> condiciones  = repository.executeCustomQuery("condicionesComercialesPorSS", resultadoVerazScoring,
     					tipoVendedor.getId(), linea.getTipoSolicitud().getId(), linea.getPlan().getId(), linea.getItem().getId(), cantEquipos, cantPesos);		
     			if (condiciones.size() <= 0) {

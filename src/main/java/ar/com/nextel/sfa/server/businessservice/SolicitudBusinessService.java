@@ -930,7 +930,7 @@ public class SolicitudBusinessService {
    */
    @SuppressWarnings("deprecation")
    //MGR - Se modifica el dato por que se agrego la referencia a la tabla sfa_tipo_documento
-public Long verHistoricoScoring(Long tipoDoc, Integer nroDoc, String sexo)
+public Long verHistoricoScoring(Long tipoDoc, String nroDoc, String sexo)
      
   {
     Long resultado = new Long(0);
@@ -997,8 +997,7 @@ public Long verHistoricoScoring(Long tipoDoc, Integer nroDoc, String sexo)
 		Sexo sexo = (Sexo) this.repository.retrieve(Sexo.class, persona.getSexo().getId());
 		TipoDocumento tipoDocumento = (TipoDocumento) this.repository.retrieve(TipoDocumento.class,
 				persona.getIdTipoDocumento());
-		Integer numeroDocumento = Integer.parseInt(StringUtil.removeOcurrences(persona.getDocumento()
-				.getNumero(), '-'));
+		String numeroDocumento = StringUtil.removeOcurrences(persona.getDocumento().getNumero(), '-');
 		//MGR - Se modifica el dato por que se agrego la referencia a la tabla sfa_tipo_documento
 		Long consultar= verHistoricoScoring(tipoDocumento.getId(),numeroDocumento,sexo.getCodigoVeraz());
 		String scoring;
