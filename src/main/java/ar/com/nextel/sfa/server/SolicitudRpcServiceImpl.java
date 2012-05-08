@@ -1763,18 +1763,29 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 */
 	String resultadoVerazScoring = "";
 	private boolean puedeDarPassDeCreditos(SolicitudServicioDto ss, String pinMaestro) throws BusinessException {
+		//MGR - Limpio la variable resultadoVerazScoring sino la proxima vez trae problemas
+		resultadoVerazScoring = "";
+		
 		AppLogger.info("#Log Cierre y pass - Validando que todas las líneas cumplan con las condiciones comerciales...");
+		
 		if (("".equals(pinMaestro) || pinMaestro == null)
 				&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
 			//devuelve un string vacio si el servicio de veraz falla
 			//MGR - #3118 - Cambio a leyenda en caso de que el documento sea inexistente
 			VerazResponseDTO responseDTO = solicitudBusinessService.consultarVerazCierreSS(repository.retrieve(SolicitudServicio.class, ss.getId()));
+			
+			AppLogger.info("#Log Cierre y pass - Categoria de Veraz: " + responseDTO.getEstado() + " y mensaje: " +
+					responseDTO.getMensaje());
+			
 			if(responseDTO.getScoreDni() == SCORE_DNI_INEXISTENTE){
 				resultadoVerazScoring = "DOCUMENTO INEXISTENTE";
 			}
 			else{
 				resultadoVerazScoring = responseDTO.getMensaje();
 			}
+			
+			AppLogger.info("#Log Cierre y pass - Resultado Veraz Scoring es: -" + resultadoVerazScoring + "-.");
+			
 			if ("".equals(resultadoVerazScoring) || resultadoVerazScoring == null) {
 				return false;
 			}
@@ -1823,6 +1834,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     			}
     		}
 		}
+		
+		AppLogger.info("#Log Cierre y pass - Dejo el método Resultado Veraz Scoring con valor: -" + resultadoVerazScoring + "-.");
+		
 		if (existeCC) {
 			AppLogger.info("#Log Cierre y pass - Todas las líneas cumplen con las condiciones comerciales...");
 		} else {
