@@ -22,6 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
+import ar.com.nextel.business.cuentas.caratula.CaratulaTransferidaResultDto;
+import ar.com.nextel.business.cuentas.caratula.dao.config.CaratulaTransferidaConfig;
+import ar.com.nextel.business.cuentas.create.InsertUpdateCuentaConfig;
 import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaService;
 import ar.com.nextel.business.cuentas.scoring.legacy.dto.ScoringCuentaLegacyDTO;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
@@ -54,10 +57,13 @@ import ar.com.nextel.framework.connectionDAO.ConnectionDAOException;
 import ar.com.nextel.framework.connectionDAO.TransactionConnectionDAO;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.repository.hibernate.HibernateRepository;
+import ar.com.nextel.model.cuentas.beans.Calificacion;
+import ar.com.nextel.model.cuentas.beans.Caratula;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoTarjetaCredito;
 import ar.com.nextel.model.cuentas.beans.EstadoCreditoFidelizacion;
+import ar.com.nextel.model.cuentas.beans.RiskCode;
 import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
@@ -119,6 +125,8 @@ public class SolicitudBusinessService {
 	private AvalonSystem avalonSystem;
 	private DefaultRetriever globalParameterRetriever;
 	private KnownInstanceRetriever knownInstanceRetriever;
+	private InsertUpdateCuentaConfig insertUpdateCuentaConfig;
+	private CaratulaTransferidaConfig caratulaTransferidaConfig;
 	
 	@Autowired
 	public void setGlobalParameterRetriever(
@@ -223,6 +231,17 @@ public class SolicitudBusinessService {
 	public void setKnownInstanceRetriever(
 			@Qualifier("knownInstancesRetriever") KnownInstanceRetriever knownInstanceRetrieverBean) {
 		this.knownInstanceRetriever = knownInstanceRetrieverBean;
+	}
+	
+	@Autowired
+	public void setInsertUpdateCuentaConfig(
+			InsertUpdateCuentaConfig insertUpdateCuentaConfig) {
+		this.insertUpdateCuentaConfig = insertUpdateCuentaConfig;
+	}
+	
+	@Autowired
+	public void setCaratulaTransferidaConfig(CaratulaTransferidaConfig caratulaTransferidaConfig) {
+		this.caratulaTransferidaConfig = caratulaTransferidaConfig;
 	}
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
@@ -1065,5 +1084,77 @@ public Long verHistoricoScoring(Long tipoDoc, String nroDoc, String sexo)
 		
 	}
 	
+	public CaratulaTransferidaConfig getCaratulaTransferidaConfig() {
+		return caratulaTransferidaConfig;
+	}
+	
+	/**
+	 * Crea la carátula de créditos y la transfiere a Vantive.
+	 * @param ss
+	 * @param resultadoVerazScoring 
+	 * @throws RpcExceptionMessages 
+	 */
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void crearCaratula(SolicitudServicio ss, String resultadoVerazScoring) throws RpcExceptionMessages {
+		Caratula caratula = new Caratula();
+		caratula.setNroSS(ss.getNumero());
+		if ("ACEPTAR".equals(resultadoVerazScoring)) {
+			caratula.setLimiteCredito(new Double(625));
+			List<RiskCode> risks = repository.find("from RiskCode r where r.descripcion = 'AP.On-Line'");
+			caratula.setRiskCode(risks.get(0));
+		} else if ("REVISAR".equals(resultadoVerazScoring)) {
+			caratula.setLimiteCredito(new Double(375));
+			List<RiskCode> risks = repository.find("from RiskCode r where r.descripcion = 'AP.On-Line'");
+			caratula.setRiskCode(risks.get(0));
+		} else {
+			caratula.setLimiteCredito(new Double(100));
+			List<RiskCode> risks = repository.find("from RiskCode r where r.descripcion = 'Lim.Acot.'");
+			caratula.setRiskCode(risks.get(0));
+		}
+		List<Calificacion> calificaciones = repository.find("from Calificacion c where c.descripcion = 'No Aplica'");
+		caratula.setCalificacion(calificaciones.get(0));		
+		caratula.setEstadoVeraz(resultadoVerazScoring);
+		caratula.setConfirmada(true);
+		caratula.setAntiguedad(ss.getCuenta().getFechaCreacion());
+		if (ss.getCuenta().getCaratulas().isEmpty()) {
+			caratula.setDocumento("Crédito");
+		} else {
+			caratula.setDocumento("Anexo");
+		}
+		caratula.setCuenta(ss.getCuenta());
+		caratula.setUsuarioCreacion(sessionContextLoader.getVendedor());
+		repository.save(caratula);
+		
+		CaratulaTransferidaConfig caratulaTransferidaConfig = getCaratulaTransferidaConfig();
+		caratulaTransferidaConfig.setIdCaratula(caratula.getId());
+		try {
+			CaratulaTransferidaResultDto result = (CaratulaTransferidaResultDto) sfaConnectionDAO.execute(caratulaTransferidaConfig);
+		} catch (ConnectionDAOException e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+
+	}
+	
+	public InsertUpdateCuentaConfig getInsertUpdateCuentaConfig() {
+		return insertUpdateCuentaConfig;
+	}
+	
+	public Long crearCliente(Long idCuenta) throws RpcExceptionMessages {
+	    InsertUpdateCuentaConfig config = this.getInsertUpdateCuentaConfig();
+		config.setIdCuenta(idCuenta);
+		Long result;
+		try {
+			result = (Long) this.sfaConnectionDAO.execute(config);
+		} catch (ConnectionDAOException e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+		return result;
+	}
+
+	public void enviarMail(String asunto, String[] to, String mensaje) {
+		generacionCierreBusinessOperator.enviarMail(asunto, to, mensaje);
+	}
 	
 }

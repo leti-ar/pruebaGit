@@ -174,6 +174,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	//MGR - #3118
 	private static int SCORE_DNI_INEXISTENTE = 3;
 	
+	private String mensajeErrorCrearCuenta = "La SS % quedó pendiente de aprobación, por favor verificar y dar curso manual.";
+	
 	public void init() throws ServletException {
 		super.init();
 		context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
@@ -938,10 +940,6 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					errorCC = evaluarEquiposYDeuda(solicitudServicioDto, pinMaestro);
 					if ("".equals(errorCC)) {
 						if (puedeDarPassDeCreditos(solicitudServicioDto, pinMaestro)) {
-							//Antes de dar el pass si el cliente no fue tranferido anteriormente, se transfiere el cliente a Vantive
-							if(!solicitudServicioDto.getCuenta().isTransferido()){
-								solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,false);
-							}
 							solicitudServicioDto.setPassCreditos(true);
 						} else {
 							solicitudServicioDto.setPassCreditos(false);
@@ -992,6 +990,22 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				}
 				result.setError(response.getMessages().hasErrors());
 				
+//				larce - #3177: Cierre y Pass Automatico – Pass a Prospect
+				if (!result.isError() && !solicitudServicio.getCuenta().isTransferido()) {
+					if(solicitudBusinessService.crearCliente(solicitudServicio.getCuenta().getId()) != 0L) {
+						//si falla la creación del cliente no se da el pass de crédito y se envía un mail informando la situación
+						String destinatario = String.valueOf(((GlobalParameter) globalParameterRetriever
+								.getObject(GlobalParameterIdentifier.MAIL_ERROR_CREAR_CTA)).getValue());
+						String asunto = String.valueOf(((GlobalParameter) globalParameterRetriever
+								.getObject(GlobalParameterIdentifier.ASUNTO_ERROR_CREAR_CTA)).getValue());
+						solicitudBusinessService.enviarMail(asunto.replaceAll("%", solicitudServicio.getNumero()), 
+								destinatario.split(","), mensajeErrorCrearCuenta.replaceAll("%", solicitudServicio.getNumero()));
+						solicitudServicioDto.setPassCreditos(false);
+						solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
+					}
+					solicitudBusinessService.crearCaratula(solicitudServicio, resultadoVerazScoring);
+				}
+				
 				// metodo changelog
 				if (cerrar == true
 						&& response.getMessages().hasErrors() == false
@@ -1013,7 +1027,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		AppLogger.info(accion + " de SS de id=" + solicitudServicioDto.getId() + " finalizado.");
 		return result;
 	}
-	
+
 	private void completarDomiciliosSolicitudTransferencia(SolicitudServicioDto solicitudServicioDto) {
 		if (solicitudServicioDto.getGrupoSolicitud().isTransferencia())
 			for (DomiciliosCuentaDto dom : solicitudServicioDto.getCuenta().getPersona().getDomicilios()) {
@@ -1786,7 +1800,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		
 		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
     		LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
-    		/*LF - #3144: Cierre y Pass Automatico � Evaluacion de condiciones comerciales para Activacion y Activacion On-line 
+    		/*LF - #3144: Cierre y Pass Automatico � Evaluacion de condiciones comerciales para Activacion y Activacion On-line 
     		  Si el tipo de solicitud es Activacion o Activacion online, se deben tomar todos los item del modelo seleccionado y 
     		  verificar que cada uno corresponda con las condiciones comerciales, si al menos uno no corresponde no se cumple las cc */
     		if(linea.getTipoSolicitud().isActivacion() || linea.getTipoSolicitud().isActivacionOnline()) {
@@ -1828,9 +1842,10 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     	//MGR - #3122 - Nueva forma de armar el mensaje de error
     	String mensaje = "";
     	String error = null;
+    	TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor(); //larce #3210
     	
     	Integer cantEquipos = calcularCantEquipos(ss.getLineas());
-    	List<Long> cantMaxEquipos = (repository.executeCustomQuery("maxCantEquipos", resultadoVerazScoring));
+    	List<Long> cantMaxEquipos = (repository.executeCustomQuery("maxCantEquipos", resultadoVerazScoring, tipoVendedor.getId()));
     	
     	if (cantMaxEquipos.get(0) != null && cantEquipos > cantMaxEquipos.get(0)) {
     		error = "el máximo de equipos es " + cantMaxEquipos;
@@ -1843,7 +1858,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     		LineaSolicitudServicio linea = (LineaSolicitudServicio) iterator.next();
     		cantPesos = cantPesos + linea.getPrecioVenta();
 		}
-    	List<Long> cantPesosMax = (repository.executeCustomQuery("maxCantPesos", resultadoVerazScoring));
+    	List<Long> cantPesosMax = (repository.executeCustomQuery("maxCantPesos", resultadoVerazScoring, tipoVendedor.getId()));
     	
     	if (cantPesosMax.get(0) != null && cantPesos.compareTo(new Double(cantPesosMax.get(0))) > 0) {
     		if(error != null){
@@ -1863,8 +1878,6 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     		mensaje += "con resultado '" + resultadoVerazScoring + "' " + error + ".\n";
     	}
     	
-    	
-    	TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor();
     	List<CondicionComercial> condiciones;
     	
     	for (Iterator<LineaSolicitudServicio> iterator = lineas.iterator(); iterator.hasNext();) {
@@ -1933,6 +1946,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     	}
     	return mensaje;
 	}
+	
 	/**
 	 * Se valida que el resultado de la consulta a Negative Files de ok para todas las líneas de la SS; para el caso de activación. 
 	 * @param lineas
