@@ -1841,14 +1841,14 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	private String generarErrorPorCC(SolicitudServicioDto ss, String pinMaestro) throws RpcExceptionMessages {
     	//MGR - #3122 - Nueva forma de armar el mensaje de error
     	String mensaje = "";
-    	String error = null;
+    	String error = "";
     	TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor(); //larce #3210
     	
     	Integer cantEquipos = calcularCantEquipos(ss.getLineas());
     	List<Long> cantMaxEquipos = (repository.executeCustomQuery("maxCantEquipos", resultadoVerazScoring, tipoVendedor.getId()));
     	
     	if (cantMaxEquipos.get(0) != null && cantEquipos > cantMaxEquipos.get(0)) {
-    		error = "el máximo de equipos es " + cantMaxEquipos;
+    		error += "el máximo de equipos es " + cantMaxEquipos.get(0);
     	}
     	
     	
@@ -1861,13 +1861,13 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     	List<Long> cantPesosMax = (repository.executeCustomQuery("maxCantPesos", resultadoVerazScoring, tipoVendedor.getId()));
     	
     	if (cantPesosMax.get(0) != null && cantPesos.compareTo(new Double(cantPesosMax.get(0))) > 0) {
-    		if(error != null){
+    		if(!"".equals(error)){
     			error += " y ";
     		}
-    		error += "la cantidad de pesos máxima es " + cantPesosMax;
+    		error += "la cantidad de pesos máxima es " + cantPesosMax.get(0);
     	}
     	
-    	if(error != null){
+    	if(!"".equals(error)){
     		mensaje = "Para validación por ";
     		if (("".equals(pinMaestro) || pinMaestro == null)
 				&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
@@ -1882,20 +1882,20 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     	
     	for (Iterator<LineaSolicitudServicio> iterator = lineas.iterator(); iterator.hasNext();) {
     		LineaSolicitudServicio linea = (LineaSolicitudServicio) iterator.next();
-    		error = null;
+    		error = "";
     		
     		//Verifico que exite la CC para el Tipo Vend, el Tipo SS, y el resultado obtenido
     		condiciones = repository.executeCustomQuery(ERROR_CC_POR_RESULTADO, resultadoVerazScoring, tipoVendedor.getId(), linea.getTipoSolicitud().getId());
     		
     		//No puede haber mas de una CC para un Tipo Vend, un Tipo de SS y un resultado
     		if(condiciones.size() > 1){
-    			error = "Existe mas de una Condicion Comercial para el tipo vendedor " + tipoVendedor.getDescripcion() + 
+    			error += "Existe mas de una Condicion Comercial para el tipo vendedor " + tipoVendedor.getDescripcion() + 
 							", el tipo de Solicitud " + linea.getTipoSolicitud().getDescripcion() + " y resultado " + resultadoVerazScoring;
     			AppLogger.error(error);
     			throw ExceptionUtil.wrap(new Exception(error));
     		}
     		else if(condiciones.isEmpty()){
-    			error = "el resultado " + resultadoVerazScoring + " para el vendedor " + 
+    			error += "el resultado " + resultadoVerazScoring + " para el vendedor " + 
     				tipoVendedor.getDescripcion() + " y el tipo de Solicitud " + linea.getTipoSolicitud().getDescripcion();
     		}
     		else{
@@ -1924,14 +1924,14 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     			}
     			
     			if(!existePlan){
-					error = "plan " + linea.getPlan().getDescripcion();
+					error += "plan " + linea.getPlan().getDescripcion();
 				}
     			
     			if(!existeItem){
-    				if(error != null){
+    				if(!"".equals(error)){
     					error += "e item ";
     				}else{
-    					error = "item ";
+    					error += "item ";
     				}
     				
     				error += linea.getItem().getDescripcion();
@@ -1939,7 +1939,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     		}
     		
     		//Voy juntando los mensajes
-    		if(error != null){
+    		if(!"".equals(error)){
     			error = "Para la linea " + linea.getAlias() + ", no existe una Condicion Comercial con " + error;
     			mensaje += error + ".\n";
     		}
