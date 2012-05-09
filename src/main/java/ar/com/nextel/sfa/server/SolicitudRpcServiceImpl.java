@@ -943,9 +943,11 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 							solicitudServicioDto.setPassCreditos(true);
 						} else {
 							solicitudServicioDto.setPassCreditos(false);
-							if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
+//							MGR**** - Temporal hasta que definamos como manejarnos si hay error en el Veraz
+//							comento el if
+//							if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
 								errorCC = generarErrorPorCC(solicitudServicioDto, pinMaestro);
-							}
+//							}
 						}
 					}
 				}
@@ -1853,7 +1855,13 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 * @throws RpcExceptionMessages 
 	 */
 	private String generarErrorPorCC(SolicitudServicioDto ss, String pinMaestro) throws RpcExceptionMessages {
-    	//MGR - #3122 - Nueva forma de armar el mensaje de error
+//    	MGR**** - Temporal hasta que definamos como manejarnos si hay error en el Veraz
+		if(resultadoVerazScoring == null || resultadoVerazScoring.equals("")){
+			return "Se produjo un error al consultar el veraz, no hay resultado para poder comparar las CC";
+		}
+		
+		
+		//MGR - #3122 - Nueva forma de armar el mensaje de error
     	String mensaje = "";
     	String error = "";
     	TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor(); //larce #3210
