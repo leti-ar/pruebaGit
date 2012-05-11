@@ -940,14 +940,21 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					errorCC = evaluarEquiposYDeuda(solicitudServicioDto, pinMaestro);
 					if ("".equals(errorCC)) {
 						if (puedeDarPassDeCreditos(solicitudServicioDto, pinMaestro)) {
-							solicitudServicioDto.setPassCreditos(true);
+							String isVerazDisponible = String.valueOf(((GlobalParameter) globalParameterRetriever
+									.getObject(GlobalParameterIdentifier.VERAZ_DISPONIBLE)).getValue());
+							if ("T".equals(isVerazDisponible)) {
+								solicitudServicioDto.setPassCreditos(true);
+							} else {
+								//En caso de que el veraz no esté disponible, de cumplir con las condiciones comerciales se cierra 
+								//la SS quedando pendiente de aprobación en vantive y se envia un mail informando la situación
+								solicitudServicioDto.setPassCreditos(false);
+								enviarMailPassCreditos(solicitudServicioDto.getNumero());
+							}
 						} else {
 							solicitudServicioDto.setPassCreditos(false);
-//							MGR**** - Temporal hasta que definamos como manejarnos si hay error en el Veraz
-//							comento el if
-//							if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
+							if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
 								errorCC = generarErrorPorCC(solicitudServicioDto, pinMaestro);
-//							}
+							}
 						}
 					}
 				}
@@ -996,12 +1003,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				if (!result.isError() && !solicitudServicio.getCuenta().isTransferido()) {
 					if(solicitudBusinessService.crearCliente(solicitudServicio.getCuenta().getId()) != 0L) {
 						//si falla la creación del cliente no se da el pass de crédito y se envía un mail informando la situación
-						String destinatario = String.valueOf(((GlobalParameter) globalParameterRetriever
-								.getObject(GlobalParameterIdentifier.MAIL_ERROR_CREAR_CTA)).getValue());
-						String asunto = String.valueOf(((GlobalParameter) globalParameterRetriever
-								.getObject(GlobalParameterIdentifier.ASUNTO_ERROR_CREAR_CTA)).getValue());
-						solicitudBusinessService.enviarMail(asunto.replaceAll("%", solicitudServicio.getNumero()), 
-								destinatario.split(","), mensajeErrorCrearCuenta.replaceAll("%", solicitudServicio.getNumero()));
+						enviarMailPassCreditos(solicitudServicio.getNumero());
 						solicitudServicioDto.setPassCreditos(false);
 						solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
 					}
@@ -1772,25 +1774,33 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		
 		if (("".equals(pinMaestro) || pinMaestro == null)
 				&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
-			//devuelve un string vacio si el servicio de veraz falla
-			//MGR - #3118 - Cambio a leyenda en caso de que el documento sea inexistente
-			VerazResponseDTO responseDTO = solicitudBusinessService.consultarVerazCierreSS(repository.retrieve(SolicitudServicio.class, ss.getId()));
-			
-			AppLogger.info("#Log Cierre y pass - Categoria de Veraz: " + responseDTO.getEstado() + " y mensaje: " +
-					responseDTO.getMensaje());
-			
-			if(responseDTO.getScoreDni() == SCORE_DNI_INEXISTENTE){
-				resultadoVerazScoring = "DOCUMENTO INEXISTENTE";
+			String isVerazDisponible = String.valueOf(((GlobalParameter) globalParameterRetriever
+					.getObject(GlobalParameterIdentifier.VERAZ_DISPONIBLE)).getValue());
+			if ("T".equals(isVerazDisponible)) {
+				//devuelve un string vacio si el servicio de veraz falla
+				//MGR - #3118 - Cambio a leyenda en caso de que el documento sea inexistente
+				VerazResponseDTO responseDTO = solicitudBusinessService.consultarVerazCierreSS(repository.retrieve(SolicitudServicio.class, ss.getId()));
+				
+				AppLogger.info("#Log Cierre y pass - Categoria de Veraz: " + responseDTO.getEstado() + " y mensaje: " +
+						responseDTO.getMensaje());
+				
+				if(responseDTO.getScoreDni() == SCORE_DNI_INEXISTENTE){
+					resultadoVerazScoring = "DOCUMENTO INEXISTENTE";
+				}
+				else{
+					resultadoVerazScoring = responseDTO.getMensaje();
+				}
+				
+				AppLogger.info("#Log Cierre y pass - Resultado Veraz Scoring es: -" + resultadoVerazScoring + "-.");
+				
+				if ("".equals(resultadoVerazScoring) || resultadoVerazScoring == null) {
+					return false;
+				}
+			} else {// En caso de no estar activa la consulta al veraz, se deben evaluar 
+					// las condiciones comerciales para un resultado de veraz “REVISAR”
+				resultadoVerazScoring = "REVISAR";
 			}
-			else{
-				resultadoVerazScoring = responseDTO.getMensaje();
-			}
 			
-			AppLogger.info("#Log Cierre y pass - Resultado Veraz Scoring es: -" + resultadoVerazScoring + "-.");
-			
-			if ("".equals(resultadoVerazScoring) || resultadoVerazScoring == null) {
-				return false;
-			}
 		} else {
 			resultadoVerazScoring = solicitudBusinessService.consultarScoring(repository.retrieve(SolicitudServicio.class, ss.getId())).getCantidadTerminales();
 			if (resultadoVerazScoring != null) {
@@ -1967,6 +1977,16 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     		}
     	}
     	return mensaje;
+	}
+	
+
+	private void enviarMailPassCreditos(String numeroSS) {
+		String destinatario = String.valueOf(((GlobalParameter) globalParameterRetriever
+				.getObject(GlobalParameterIdentifier.MAIL_ERROR_CREAR_CTA)).getValue());
+		String asunto = String.valueOf(((GlobalParameter) globalParameterRetriever
+				.getObject(GlobalParameterIdentifier.ASUNTO_ERROR_CREAR_CTA)).getValue());
+		solicitudBusinessService.enviarMail(asunto.replaceAll("%", numeroSS), 
+				destinatario.split(","), mensajeErrorCrearCuenta.replaceAll("%", numeroSS));
 	}
 	
 	/**
