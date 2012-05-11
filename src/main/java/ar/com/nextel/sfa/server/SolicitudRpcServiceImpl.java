@@ -1927,8 +1927,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     			throw ExceptionUtil.wrap(new Exception(error));
     		}
     		else if(condiciones.isEmpty()){
-    			error += "el resultado " + resultadoVerazScoring + " para el vendedor " + 
-    				tipoVendedor.getDescripcion() + " y el tipo de Solicitud " + linea.getTipoSolicitud().getDescripcion();
+    			error += "el resultado " + resultadoVerazScoring + " para el tipo de Solicitud " + linea.getTipoSolicitud().getDescripcion();
     		}
     		else{
     			CondicionComercial condActual = condiciones.get(0);
