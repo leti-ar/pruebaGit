@@ -863,6 +863,12 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales = solicitudServicioRepository
 				.getServiciosAdicionales(linea.getTipoSolicitud().getId(), linea.getPlan().getId(), linea
 						.getItem().getId(), idCuenta, sessionContextLoader.getVendedor(), isEmpresa);
+		//LF - #3141 - Se agregan los SA para Activación - Activación On-Line
+		if(linea.getTipoSolicitud().isActivacion() || linea.getTipoSolicitud().isActivacionOnline()) {
+			List<Item> listItems = repository.executeCustomQuery("LISTA_ITEMS_POR_MODELO", linea.getModelo().getId());
+			serviciosAdicionales.addAll(solicitudServicioRepository.getServiciosAdicionalesActivOnLine(linea.getTipoSolicitud().getId(),
+					listItems, sessionContextLoader.getVendedor(), isEmpresa));
+		}
 		return mapper.convertList(serviciosAdicionales, ServicioAdicionalLineaSolicitudServicioDto.class);
 	}
 
@@ -983,6 +989,27 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				}
 			}
 			
+//			//LF - #3139-[ESP RES] - Validacion de SIM repetidos
+//			List<String> listaAlias = listaAliasSimRepetidos(solicitudServicioDto.getLineas());
+//			if(!listaAlias.isEmpty()) {
+//			    String mensaje = "";
+//				if(listaAlias.size() > 1) {
+//					String alias = "";
+//		            for (Iterator iterator = listaAlias.iterator(); iterator.hasNext();) {
+//		    			String aliasAux = (String) iterator.next();
+//		    		    alias = alias + aliasAux + " ,";				
+//		    		}	
+//		            alias = alias.substring(0, alias.length() - 1);
+//		            mensaje = " las líneas " + alias + "ya fueron utilizados ";
+//		    	} else {
+//		    		mensaje  = " la línea " + listaAlias.get(0) + " ya fue utilizado ";
+//		    	}
+//	            Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.SIM_REPETIDO);
+//	            message.addParameters(new Object[] {mensaje});
+//	            response.getMessages().addMesage(message);
+//				hayError = true;
+//			    result.setError(true);
+//			}
 
 			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
 
@@ -1823,7 +1850,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		
 		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
     		LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
-    		/*LF - #3144: Cierre y Pass Automatico � Evaluacion de condiciones comerciales para Activacion y Activacion On-line 
+    		/*LF - #3144: Cierre y Pass Automatico - Evaluacion de condiciones comerciales para Activacion y Activacion On-line 
     		  Si el tipo de solicitud es Activacion o Activacion online, se deben tomar todos los item del modelo seleccionado y 
     		  verificar que cada uno corresponda con las condiciones comerciales, si al menos uno no corresponde no se cumple las cc */
     		if(linea.getTipoSolicitud().isActivacion() || linea.getTipoSolicitud().isActivacionOnline()) {
@@ -2144,6 +2171,27 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 
 
 
+	
+//	/**
+//	 * LF - #3139-[ESP RES]
+//	 * Metodo que se utiliza para verificar que los numeros de Sim de cada linea no se encuentren en ninguna
+//	 * solicitud de servicio cerrada.
+//	 * Retorna una lista de Alias de las lineas que poseen el numero de sim repetido.
+//	 * @param lineas
+//	 * @return
+//	 */
+//	private List<String> listaAliasSimRepetidos(List<LineaSolicitudServicioDto> lineas) {
+//		List<String> alias = new ArrayList<String>();
+//		for (Iterator iterator = lineas.iterator(); iterator.hasNext();) {
+//			LineaSolicitudServicioDto lineaSS = (LineaSolicitudServicioDto) iterator.next();
+//			AppLogger.info("#Verificando si el numero de SIM de la linea " + lineaSS.getId() + " ya se encuentra cargada en otra solicitud");
+//			String cantidadSims = (String) repository.executeCustomQuery("SIM_REPETIDO", lineaSS.getNumeroSimcard()).get(0);
+//			if(Integer.parseInt(cantidadSims) > 0) {
+//				alias.add(lineaSS.getAlias());
+//			}		
+//		}
+//		return alias;
+//	}
 	
 	
 }	
