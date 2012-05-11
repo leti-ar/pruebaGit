@@ -1907,7 +1907,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			} else {
 				mensaje += "Scoring ";
 			}
-    		mensaje += "con resultado '" + resultadoVerazScoring + "' " + error + ".\n";
+    		mensaje += "con resultado '" + resultadoVerazScoring + "' " + error + ".<br />";
     	}
     	
     	List<CondicionComercial> condiciones;
@@ -1927,7 +1927,12 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     			throw ExceptionUtil.wrap(new Exception(error));
     		}
     		else if(condiciones.isEmpty()){
-    			error += "el resultado " + resultadoVerazScoring + " para el tipo de Solicitud " + linea.getTipoSolicitud().getDescripcion();
+        		if (("".equals(pinMaestro) || pinMaestro == null)
+        				&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
+            			error += "el resultado " + resultadoVerazScoring + " para el tipo de Solicitud " + linea.getTipoSolicitud().getDescripcion();
+        			} else {
+        				error += "el resultado de scoring hasta " + resultadoVerazScoring + " terminales para el tipo de Solicitud " + linea.getTipoSolicitud().getDescripcion();
+        			}
     		}
     		else{
     			CondicionComercial condActual = condiciones.get(0);
@@ -1972,7 +1977,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     		//Voy juntando los mensajes
     		if(!"".equals(error)){
     			error = "Para la linea " + linea.getAlias() + ", no existe una Condicion Comercial con " + error;
-    			mensaje += error + ".\n";
+    			mensaje += error + ".<br />";
     		}
     	}
     	return mensaje;
