@@ -946,9 +946,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					errorCC = evaluarEquiposYDeuda(solicitudServicioDto, pinMaestro);
 					if ("".equals(errorCC)) {
 						if (puedeDarPassDeCreditos(solicitudServicioDto, pinMaestro)) {
-							String isVerazDisponible = String.valueOf(((GlobalParameter) globalParameterRetriever
-									.getObject(GlobalParameterIdentifier.VERAZ_DISPONIBLE)).getValue());
-							if ("T".equals(isVerazDisponible)) {
+							List<String> isVerazDisponible = (repository.executeCustomQuery("isVerazDisponible", "VERAZ_DISPONIBLE"));
+							if ("T".equals(isVerazDisponible.get(0))) {
 								solicitudServicioDto.setPassCreditos(true);
 							} else {
 								//En caso de que el veraz no esté disponible, de cumplir con las condiciones comerciales se cierra 
@@ -1801,9 +1800,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		
 		if (("".equals(pinMaestro) || pinMaestro == null)
 				&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
-			String isVerazDisponible = String.valueOf(((GlobalParameter) globalParameterRetriever
-					.getObject(GlobalParameterIdentifier.VERAZ_DISPONIBLE)).getValue());
-			if ("T".equals(isVerazDisponible)) {
+			List<String> isVerazDisponible = (repository.executeCustomQuery("isVerazDisponible", "VERAZ_DISPONIBLE"));
+			if ("T".equals(isVerazDisponible.get(0))) {
 				//devuelve un string vacio si el servicio de veraz falla
 				//MGR - #3118 - Cambio a leyenda en caso de que el documento sea inexistente
 				VerazResponseDTO responseDTO = solicitudBusinessService.consultarVerazCierreSS(repository.retrieve(SolicitudServicio.class, ss.getId()));
