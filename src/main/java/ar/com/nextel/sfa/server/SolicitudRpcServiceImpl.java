@@ -1892,11 +1892,6 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 * @throws RpcExceptionMessages 
 	 */
 	private String generarErrorPorCC(SolicitudServicioDto ss, String pinMaestro) throws RpcExceptionMessages {
-//    	MGR**** - Temporal hasta que definamos como manejarnos si hay error en el Veraz
-		if(resultadoVerazScoring == null || resultadoVerazScoring.equals("")){
-			return "Se produjo un error al consultar el veraz, no hay resultado para poder comparar las CC";
-		}
-		
 		
 		//MGR - #3122 - Nueva forma de armar el mensaje de error
     	String mensaje = "";
@@ -2071,6 +2066,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	        	cantEquiposTotal = activos+suspendidos;
 	        }
 			
+//	        MGR***** - Modificar como obtiene el segmento
 			if(solicitud.getCuenta().isEmpresa()){
 				List<Segmento> segmentos = repository.getAll(Segmento.class);
 				for (int i = 0; i < segmentos.size() ; i++) {
