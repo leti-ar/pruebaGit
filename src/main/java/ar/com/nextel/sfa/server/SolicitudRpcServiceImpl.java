@@ -1996,6 +1996,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     		
     		//Voy juntando los mensajes
     		if(!"".equals(error)){
+    			if (!"".equals(mensaje)) {
+    				mensaje += "- ";
+    			}
     			error = "Para la linea " + linea.getAlias() + ", no existe una Condicion Comercial con " + error;
     			mensaje += error + ".<br />";
     		}
