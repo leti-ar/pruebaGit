@@ -945,8 +945,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				if (puedeCerrar == 3) {//pass de creditos segun la logica
 					errorCC = evaluarEquiposYDeuda(solicitudServicioDto, pinMaestro);
 					if ("".equals(errorCC)) {
-						if (puedeDarPassDeCreditos(solicitudServicioDto, pinMaestro)) {
-							List<String> isVerazDisponible = (repository.executeCustomQuery("isVerazDisponible", "VERAZ_DISPONIBLE"));
+						List<String> isVerazDisponible = (repository.executeCustomQuery("isVerazDisponible", "VERAZ_DISPONIBLE"));
+						if (puedeDarPassDeCreditos(solicitudServicioDto, pinMaestro, isVerazDisponible.get(0))) {
 							if ("T".equals(isVerazDisponible.get(0))) {
 								solicitudServicioDto.setPassCreditos(true);
 							} else {
@@ -1792,7 +1792,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 * @throws BusinessException 
 	 */
 	String resultadoVerazScoring = "";
-	private boolean puedeDarPassDeCreditos(SolicitudServicioDto ss, String pinMaestro) throws BusinessException {
+	private boolean puedeDarPassDeCreditos(SolicitudServicioDto ss, String pinMaestro, String isVerazDisponible) throws BusinessException {
 		//MGR - Limpio la variable resultadoVerazScoring sino la proxima vez trae problemas
 		resultadoVerazScoring = "";
 		
@@ -1800,8 +1800,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		
 		if (("".equals(pinMaestro) || pinMaestro == null)
 				&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
-			List<String> isVerazDisponible = (repository.executeCustomQuery("isVerazDisponible", "VERAZ_DISPONIBLE"));
-			if ("T".equals(isVerazDisponible.get(0))) {
+			if ("T".equals(isVerazDisponible)) {
 				//devuelve un string vacio si el servicio de veraz falla
 				//MGR - #3118 - Cambio a leyenda en caso de que el documento sea inexistente
 				VerazResponseDTO responseDTO = solicitudBusinessService.consultarVerazCierreSS(repository.retrieve(SolicitudServicio.class, ss.getId()));
