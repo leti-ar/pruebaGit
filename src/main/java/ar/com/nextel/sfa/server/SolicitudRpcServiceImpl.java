@@ -1853,14 +1853,27 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     		  verificar que cada uno corresponda con las condiciones comerciales, si al menos uno no corresponde no se cumple las cc */
     		if(linea.getTipoSolicitud().isActivacion() || linea.getTipoSolicitud().isActivacionOnline()) {
     			List<Item> items = repository.executeCustomQuery("LISTA_ITEMS_POR_MODELO", linea.getModelo().getId());
+    			//LF - Este for es solo para logear los items que corresponden al modelo.
+    			if(!items.isEmpty()) {
+					AppLogger.info("#Los items que corresponden con el modelo: " + linea.getModelo().getDescripcion() + " son los siguientes: ");
+    				for (Iterator<Item> iterator2 = items.iterator(); iterator2.hasNext();) {
+    					Item item = (Item ) iterator2.next();
+    					AppLogger.info("-" + item.getDescripcion() + "-");
+    				}
+    			}
     			for (Iterator<Item> iterator2 = items.iterator(); iterator2.hasNext();) {
 					Item item = (Item ) iterator2.next();
+					AppLogger.info("#Evaluando condicion comercial para el item: -" + item.getDescripcion() + "-");
 					List<CondicionComercial> condiciones  = repository.executeCustomQuery("condicionesComercialesPorSS", resultadoVerazScoring,
 	    					tipoVendedor.getId(), linea.getTipoSolicitud().getId(), linea.getPlan().getId(), item.getId(), cantEquipos, cantPesos);		
 	    			if (condiciones.size() <= 0) {
 	    				existeCC = false;
+	    				AppLogger.info("#El item: -" + item.getDescripcion() + "- NO cumple con las condiciones comerciales");
 	    				break;
+	    			} else {
+	    				AppLogger.info("#El item: -" + item.getDescripcion() + "- cumple con las condiciones comerciales");
 	    			}
+	    			
 				}
     		} else if (linea.getTipoSolicitud() != null && linea.getPlan() != null && linea.getItem() != null) {
     			    			List<CondicionComercial> condiciones  = repository.executeCustomQuery("condicionesComercialesPorSS", resultadoVerazScoring,
