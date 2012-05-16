@@ -1999,7 +1999,12 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     			if (!"".equals(mensaje)) {
     				mensaje += "- ";
     			}
-    			error = "Para la linea " + linea.getAlias() + ", no existe una Condicion Comercial con " + error;
+        		if (("".equals(pinMaestro) || pinMaestro == null)
+    				&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
+        			error = "Para la linea " + linea.getAlias() + " para el resultado de veraz " + resultadoVerazScoring + ", no existe una Condicion Comercial con " + error; 
+    			} else {
+    				error = "Para la linea " + linea.getAlias() + " para el resultado de scoring " + resultadoVerazScoring + ", no existe una Condicion Comercial con " + error;
+    			}
     			mensaje += error + ".<br />";
     		}
     	}
