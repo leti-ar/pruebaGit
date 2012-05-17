@@ -398,17 +398,18 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	public CreateSaveSolicitudServicioResultDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
 			throws RpcExceptionMessages {
 
-		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
-		
-		int tipoPersona;
-		if(cuenta.getClaseCuenta().getEsGobierno()) tipoPersona = 3;
-		else{
-			if(cuenta.isEmpresa()) tipoPersona = 2;
-			else tipoPersona = 1;
-		}
+		//#LF
+//		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
+//		
+//		int tipoPersona;
+//		if(cuenta.getClaseCuenta().getEsGobierno()) tipoPersona = 3;
+//		else{
+//			if(cuenta.isEmpresa()) tipoPersona = 2;
+//			else tipoPersona = 1;
+//		}
 
 		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
-			if(linea.getPortabilidad() != null) linea.getPortabilidad().setTipoPersona(tipoPersona);
+			if(linea.getPortabilidad() != null) linea.getPortabilidad().setTipoPersona(obtenerTipoPersona(solicitudServicioDto));
 		}
 
 		// TODO: Portabilidad
@@ -653,17 +654,18 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		GeneracionCierreResponse response = null;
 		try {
 			
-			Cuenta cuenta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
-			
-			int tipoPersona;
-			if(cuenta.getClaseCuenta().getEsGobierno()) tipoPersona = 3;
-			else{
-				if(cuenta.isEmpresa()) tipoPersona = 2;
-				else tipoPersona = 1;
-			}
+			//#LF
+//			Cuenta cuenta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
+//			
+//			int tipoPersona;
+//			if(cuenta.getClaseCuenta().getEsGobierno()) tipoPersona = 3;
+//			else{
+//				if(cuenta.isEmpresa()) tipoPersona = 2;
+//				else tipoPersona = 1;
+//			}
 
 			for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
-				if(linea.getPortabilidad() != null) linea.getPortabilidad().setTipoPersona(tipoPersona);
+				if(linea.getPortabilidad() != null) linea.getPortabilidad().setTipoPersona(obtenerTipoPersona(solicitudServicioDto));
 			}
 
 			// TODO: Portabilidad
@@ -887,17 +889,18 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	}
 	
 	public CreateSaveSSTransfResultDto saveSolicituServicioTranferencia(SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages {
-		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
+	    //#LF	
+//		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
 		
-		int tipoPersona;
-		if(cuenta.getClaseCuenta().getEsGobierno()) tipoPersona = 3;
-		else{
-			if(cuenta.isEmpresa()) tipoPersona = 2;
-			else tipoPersona = 1;
-		}
+//		int tipoPersona;
+//		if(cuenta.getClaseCuenta().getEsGobierno()) tipoPersona = 3;
+//		else{
+//			if(cuenta.isEmpresa()) tipoPersona = 2;
+//			else tipoPersona = 1;
+//		}
 
 		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
-			if(linea.getPortabilidad() != null) linea.getPortabilidad().setTipoPersona(tipoPersona);
+			if(linea.getPortabilidad() != null) linea.getPortabilidad().setTipoPersona(obtenerTipoPersona(solicitudServicioDto));
 		}
 
 		// TODO: Portabilidad
@@ -1391,6 +1394,16 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		}
 		
 		return listCantPort;
+	}
+	
+	public Integer obtenerTipoPersona(SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages {
+		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
+		
+		if(cuenta.getClaseCuenta().getEsGobierno()) return 3;
+		else{
+			if(cuenta.isEmpresa()) return 2;
+			else return 1;
+		}
 	}
 	
 }

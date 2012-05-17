@@ -163,4 +163,7 @@ public interface SolicitudRpcServiceAsync {
 
 	void validarPortabilidadTransferencia(List<ContratoViewDto> contratos,
 			AsyncCallback<PortabilidadResult> callback);
+
+	void obtenerTipoPersona(SolicitudServicioDto solicitudServicioDto,
+			AsyncCallback<Integer> callback);	
 }
