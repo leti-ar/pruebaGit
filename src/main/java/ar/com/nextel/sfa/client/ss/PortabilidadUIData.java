@@ -96,6 +96,7 @@ public class PortabilidadUIData extends Composite {
 
 	private PersonaDto persona;
 	private SolicitudPortabilidadDto solicitudPortabilidad;
+	private int tipoPersona;
 	
 	/**
 	 * 
@@ -104,17 +105,17 @@ public class PortabilidadUIData extends Composite {
 		initWidget(uiBinder.createAndBindUi(this));
 		
 		lblNroSS.addStyleName(OBLIGATORIO);
-		lblTipoDocumento.addStyleName(OBLIGATORIO);	
-		lblNroDocumento.addStyleName(OBLIGATORIO);
+//		lblTipoDocumento.addStyleName(OBLIGATORIO);	
+//		lblNroDocumento.addStyleName(OBLIGATORIO);
 		lblTelefonoPortar.addStyleName(OBLIGATORIO);
 		lblTelefono.addStyleName(OBLIGATORIO);
 		lblTelefono.addStyleName(OBLIGATORIO);
 		lblProveedorAnterior.addStyleName(OBLIGATORIO);
 		lblTipoTelefonia.addStyleName(OBLIGATORIO);
 		lblModalidadCobro.addStyleName(OBLIGATORIO);
-		lblNombre.addStyleName(OBLIGATORIO);
-		lblApellido.addStyleName(OBLIGATORIO);
-		lblRazonSocial.addStyleName(OBLIGATORIO);
+//		lblNombre.addStyleName(OBLIGATORIO);
+//		lblApellido.addStyleName(OBLIGATORIO);
+//		lblRazonSocial.addStyleName(OBLIGATORIO);
 		
 		lblApellido.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 		lblNroUltimaFacura.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
@@ -169,7 +170,12 @@ public class PortabilidadUIData extends Composite {
 	@UiHandler(value={"lnkCopiarCuenta","chkNoPoseeTel","chkNoPoseeEmail"})
 	void onCLick(ClickEvent evt){
 		if(evt.getSource() == lnkCopiarCuenta){
-			if(persona != null){
+			// #LF - PERSONA FISICA
+			if(getTipoPersona().intValue() == 1) {
+				ModalMessageDialog.getInstance().showAceptar(
+						"No puede replicar los datos para una persona fisica", 
+						ModalMessageDialog.getCloseCommand());
+			} else if(persona != null){
 				txtNombre.setText(persona.getNombre());
 				txtApellido.setText(persona.getApellido());
 				txtRazonSocial.setText(persona.getRazonSocial());
@@ -265,7 +271,9 @@ public class PortabilidadUIData extends Composite {
 		txtTelefono.clean();
 		txtTelefonoPortar.clean();
 
-		lstTipoDocumento.setSelectedIndex(0);
+		if(this.getTipoPersona().intValue() != 1) {
+			lstTipoDocumento.setSelectedIndex(0);
+		}
 		lstModalidadCobro.setSelectedIndex(0);
 		lstTipoTelefonia.setSelectedIndex(-1);
 		lstProveedorAnterior.setSelectedIndex(-1);
@@ -333,16 +341,18 @@ public class PortabilidadUIData extends Composite {
 			validador.addTarget(txtTelefono.getNumero()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Telefono"));
 		
 		validador.addTarget(txtTelefonoPortar.getNumero()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Telefono a Portar"));
-		validador.addTarget(txtNroDocumento).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nro. de Documento"));
 		
 		if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")){
 			validador.addTarget(txtNroUltimaFacura).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nro. Ultima Factura"));
 		}
 
-		validador.addTarget(txtRazonSocial).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Razon Social"));
-		validador.addTarget(txtNombre).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nombre"));
-		validador.addTarget(txtApellido).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Apellido"));
-
+		// #LF - PERSONA JURIDICA
+		if(getTipoPersona().intValue() != 1) {
+			validador.addTarget(txtNroDocumento).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nro. de Documento"));
+			validador.addTarget(txtRazonSocial).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Razon Social"));
+			validador.addTarget(txtNombre).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nombre"));
+			validador.addTarget(txtApellido).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Apellido"));
+		} 
 		String numAportar = txtTelefonoPortar.getArea().getText() + txtTelefonoPortar.getNumero().getText();
 		if(numAportar.length() > 10) validador.addError("La cantidad de digitos de Portabilidad: Nro. a Portar (Codigo Area + Telefono) no debe ser mayor a 10");
 		
@@ -488,7 +498,11 @@ public class PortabilidadUIData extends Composite {
 			solicitudPortabilidad.setNroUltimaFacura(txtNroUltimaFacura.getText());
 
 			solicitudPortabilidad.setProveedorAnterior((ProveedorDto)lstProveedorAnterior.getSelectedItem());
-			solicitudPortabilidad.setTipoDocumento((TipoDocumentoDto)lstTipoDocumento.getSelectedItem());
+			if(getTipoPersona().intValue() == 1) {
+				solicitudPortabilidad.setTipoDocumento(null);
+			} else {
+				solicitudPortabilidad.setTipoDocumento((TipoDocumentoDto)lstTipoDocumento.getSelectedItem());
+			}
 			solicitudPortabilidad.setTipoTelefonia((TipoTelefoniaDto)lstTipoTelefonia.getSelectedItem());
 			solicitudPortabilidad.setModalidadCobro((ModalidadCobroDto)lstModalidadCobro.getSelectedItem());
 
@@ -623,5 +637,13 @@ public class PortabilidadUIData extends Composite {
 
 	public void setChkPortabilidad(CheckBox chkPortabilidad) {
 		this.chkPortabilidad = chkPortabilidad;
+	}
+	
+	public void setTipoPersona(int tipoPersona) {
+		this.tipoPersona = tipoPersona;
+	}
+	
+	public Integer getTipoPersona() {
+		return tipoPersona;
 	}
 }
