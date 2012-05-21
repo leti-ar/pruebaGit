@@ -866,8 +866,10 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		//LF - #3141 - Se agregan los SA para Activación - Activación On-Line
 		if(linea.getTipoSolicitud().isActivacion() || linea.getTipoSolicitud().isActivacionOnline()) {
 			List<Item> listItems = repository.executeCustomQuery("LISTA_ITEMS_POR_MODELO", linea.getModelo().getId());
-			serviciosAdicionales.addAll(solicitudServicioRepository.getServiciosAdicionalesActivOnLine(linea.getTipoSolicitud().getId(),
+			if(!listItems.isEmpty()) {
+				serviciosAdicionales.addAll(solicitudServicioRepository.getServiciosAdicionalesActivOnLine(linea.getTipoSolicitud().getId(),
 					listItems, sessionContextLoader.getVendedor(), isEmpresa));
+			}
 		}
 		return mapper.convertList(serviciosAdicionales, ServicioAdicionalLineaSolicitudServicioDto.class);
 	}
@@ -1857,12 +1859,12 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					AppLogger.info("#Log Cierre y pass - Los items que corresponden con el modelo: " + linea.getModelo().getDescripcion() + " son los siguientes: ");
     				for (Iterator<Item> iterator2 = items.iterator(); iterator2.hasNext();) {
     					Item item = (Item ) iterator2.next();
-    					AppLogger.info("#Log Cierre y pass - " + item.getDescripcion() + "-");
+    					AppLogger.info("#Log Cierre y pass - " + item.getDescripcion() + " - " + item.getWarehouse().getDescripcion());
     				}
     			}
     			for (Iterator<Item> iterator2 = items.iterator(); iterator2.hasNext();) {
 					Item item = (Item ) iterator2.next();
-					AppLogger.info("#Log Cierre y pass - Evaluando condicion comercial para el item: -" + item.getDescripcion() + "-");
+					AppLogger.info("#Log Cierre y pass - Evaluando condicion comercial para el item: -" + item.getDescripcion() + " - " + item.getWarehouse().getDescripcion() + "-");
 					List<CondicionComercial> condiciones  = repository.executeCustomQuery("condicionesComercialesPorSS", resultadoVerazScoring,
 	    					tipoVendedor.getId(), linea.getTipoSolicitud().getId(), linea.getPlan().getId(), item.getId(), cantEquipos, cantPesos);		
 	    			if (condiciones.size() <= 0) {
@@ -1995,15 +1997,26 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					error += "plan " + linea.getPlan().getDescripcion();
 				}
     			
-    			if(!existeItem){
-    				if(!"".equals(error)){
-    					error += "e item ";
-    				}else{
-    					error += "item ";
-    				}
-    				
-    				error += linea.getItem().getDescripcion();
-    			}
+    			//LF #3245 - Si es act/act online se debe expresar el error como modelo en lugar del item.
+				boolean activacion = (linea.getTipoSolicitud().getDescripcion().equals("Activación")||linea.getTipoSolicitud().getDescripcion().equals("Activacion (On line)"));
+    			
+				if(!existeItem){
+					if(activacion) {
+						if(!"".equals(error)){
+							error += "y modelo ";
+						} else {
+							error += "modelo ";
+						}
+						error += linea.getModelo().getDescripcion();
+					} else {
+						if(!"".equals(error)){
+							error += "e item ";
+						} else {
+							error += "item ";
+						}
+						error += linea.getItem().getDescripcion();
+					}
+				}
     		}
     		
     		//Voy juntando los mensajes
