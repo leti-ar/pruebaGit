@@ -1798,7 +1798,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		//MGR - Limpio la variable resultadoVerazScoring sino la proxima vez trae problemas
 		resultadoVerazScoring = "";
 		
-		AppLogger.info("#Log Cierre y pass - Validando que todas las líneas cumplan con las condiciones comerciales...");
+		//LF #3248 
+		AppLogger.info("#Log Cierre y pass - Validando resultado Veraz/Scoring..");
 		
 		if (("".equals(pinMaestro) || pinMaestro == null)
 				&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
@@ -1820,6 +1821,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				AppLogger.info("#Log Cierre y pass - Resultado Veraz Scoring es: -" + resultadoVerazScoring + "-.");
 				
 				if ("".equals(resultadoVerazScoring) || resultadoVerazScoring == null) {
+					AppLogger.info("#Log Cierre y pass - No valida condiciones comerciales porque el resultado de Veraz/Scoring es '" + resultadoVerazScoring + "'");
 					return false;
 				}
 			} else {// En caso de no estar activa la consulta al veraz, se deben evaluar 
@@ -1836,6 +1838,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			}
 		}
 
+		AppLogger.info("#Log Cierre y pass - Validando que todas las líneas cumplan con las condiciones comerciales...");
+		
 		List<LineaSolicitudServicioDto> lineas = ss.getLineas();
 		TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor();
 		Integer cantEquipos = calcularCantEquipos(ss.getLineas());
