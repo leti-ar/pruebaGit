@@ -2103,8 +2103,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	        }
 			
 	        //larce - #3187
-//	        Long lineasPendientes = getCantLineasPendientes(solicitud.getCuenta().getCodigoVantive());
-//	        cantEquiposTotal += lineasPendientes;
+	        Long lineasPendientes = getCantLineasPendientes(solicitud.getCuenta().getCodigoVantive());
+	        cantEquiposTotal += lineasPendientes;
 	        
 //	        MGR***** - Modificar como obtiene el segmento
 			if(solicitud.getCuenta().isEmpresa()){
