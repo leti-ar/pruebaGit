@@ -153,7 +153,7 @@ public class PortabilidadUIData extends Composite {
 						public void success(Boolean result) {
 							if(!result){ 
 								ModalMessageDialog.getInstance().showAceptar(WARNING, 
-										"El prefijo no está dentro del area de cobertura, no se podra efectuar la portabilidad", cmndAceptar);
+										"El prefijo no estï¿½ dentro del area de cobertura, no se podra efectuar la portabilidad", cmndAceptar);
 							}
 						}
 					});
@@ -219,9 +219,9 @@ public class PortabilidadUIData extends Composite {
 	 * 
 	 */
 	private void validarTipoDocumento(){
-		if(lstTipoDocumento.getSelectedItemText().equals("CUIL") || lstTipoDocumento.getSelectedItemText().equals("CUIT"))
+		if(lstTipoDocumento.getSelectedItemText() != null && (lstTipoDocumento.getSelectedItemText().equals("CUIL") || lstTipoDocumento.getSelectedItemText().equals("CUIT")))
 			txtNroDocumento.setPattern(RegularExpressionConstants.cuilCuit);
-		else if(lstTipoDocumento.getSelectedItemText().equals("DNI")) 
+		else if(lstTipoDocumento.getSelectedItemText() != null && lstTipoDocumento.getSelectedItemText().equals("DNI")) 
 			txtNroDocumento.setPattern(RegularExpressionConstants.dni);
 		else txtNroDocumento.setPattern(RegularExpressionConstants.documentoOtros);
 	}
@@ -247,7 +247,7 @@ public class PortabilidadUIData extends Composite {
 	 * 
 	 */
 	private void comprobarTipoTelefonia(){
-		if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")){
+		if(lstTipoTelefonia.getSelectedItemText() != null && lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")){
 			lblNroUltimaFacura.addStyleName(OBLIGATORIO);
 			chkRecibeSMS.setValue(false);
 			chkRecibeSMS.setEnabled(true);
