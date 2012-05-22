@@ -388,7 +388,12 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 				(this.caratulaData.getArchivoVeraz() == null || this.caratulaData.getArchivoVeraz().length() == 0);
 
 		setEnabledButton(isVerazNoGenerado,this.generarVeraz,"btn-disabled");
-		setEnabledButton(!isVerazNoGenerado,this.verVeraz,"btn-disabled");
+		//#3244
+		if (this.caratulaData.getArchivoVeraz() == null || this.caratulaData.getArchivoVeraz().length() == 0) {
+			setEnabledButton(false, this.verVeraz, "btn-disabled");
+		} else {
+			setEnabledButton(!isVerazNoGenerado,this.verVeraz,"btn-disabled");
+		}
 	}
 	
 	private void setEnabledButton(boolean enabled, Button btn, String styleDisable) {
