@@ -2080,8 +2080,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
   	 * Se obtiene de la tabla SFA.SFA_LINEAS_POR_SEGMENTO + la cantidad de líneas activas o suspendidas que posee el cliente.
 	 * @param solicitud
 	 * @return boolean
+	 * @throws RpcExceptionMessages  
 	 */
-	public boolean validarLineasPorSegmento(SolicitudServicioDto solicitud){
+	public boolean validarLineasPorSegmento(SolicitudServicioDto solicitud) throws RpcExceptionMessages {
 		
 		ArrayList<Boolean> resultadoValidacion = new ArrayList<Boolean>();
 		Long idTipoVendedor = solicitud.getVendedor().getTipoVendedor().getId();
@@ -2097,6 +2098,10 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	        	cantEquiposTotal = activos+suspendidos;
 	        }
 			
+	        //larce - #3187
+//	        Long lineasPendientes = getCantLineasPendientes(solicitud.getCuenta().getCodigoVantive());
+//	        cantEquiposTotal += lineasPendientes;
+	        
 //	        MGR***** - Modificar como obtiene el segmento
 			if(solicitud.getCuenta().isEmpresa()){
 				List<Segmento> segmentos = repository.getAll(Segmento.class);
@@ -2196,8 +2201,20 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		return resultDTO;
 	}
 
-
-
+	/**
+	 * Devuelve la cantidad de líneas pendientes de activación para una cuenta.
+	 * @param codigoVantive
+	 * @return
+	 * @throws RpcExceptionMessages
+	 */
+	private Long getCantLineasPendientes(String codigoVantive) throws RpcExceptionMessages {
+		try {
+			return this.avalonSystem.getCantLineasPendientes(codigoVantive);
+		} catch (AvalonSystemException e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+	}
 	
 //	/**
 //	 * LF - #3139-[ESP RES]
