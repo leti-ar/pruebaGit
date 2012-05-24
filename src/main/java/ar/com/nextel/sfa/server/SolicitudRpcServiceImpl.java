@@ -959,8 +959,12 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 							}
 						} else {
 							solicitudServicioDto.setPassCreditos(false);
-							if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
-								errorCC = generarErrorPorCC(solicitudServicioDto, pinMaestro);
+							if ("N".equals(resultadoVerazScoring)) { //#3254
+								errorCC = "No se puede cerrar la SS. Error consultando Scoring.";
+							} else {
+								if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
+									errorCC = generarErrorPorCC(solicitudServicioDto, pinMaestro);
+								}
 							}
 						}
 					}
@@ -1831,10 +1835,14 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			
 		} else {
 			resultadoVerazScoring = solicitudBusinessService.consultarScoring(repository.retrieve(SolicitudServicio.class, ss.getId())).getCantidadTerminales();
+			AppLogger.info("#Log Cierre y pass - Resultado del scoring: " + resultadoVerazScoring);
 			if (resultadoVerazScoring != null) {
 				if (Integer.valueOf(resultadoVerazScoring) > 3) {
 					resultadoVerazScoring = "3";
 				}
+			} else { //#3254
+				resultadoVerazScoring = "N";
+				return false;
 			}
 		}
 
