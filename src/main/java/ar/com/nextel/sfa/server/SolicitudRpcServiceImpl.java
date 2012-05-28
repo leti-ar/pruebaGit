@@ -175,6 +175,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private static int SCORE_DNI_INEXISTENTE = 3;
 	
 	private String mensajeErrorCrearCuenta = "La SS % quedó pendiente de aprobación, por favor verificar y dar curso manual.";
+	private String SIM_DISPONIBLE = "ACTIVE";
 	
 	public void init() throws ServletException {
 		super.init();
@@ -994,27 +995,46 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				}
 			}
 			
-//			//LF - #3139-[ESP RES] - Validacion de SIM repetidos
-//			List<String> listaAlias = listaAliasSimRepetidos(solicitudServicioDto.getLineas());
-//			if(!listaAlias.isEmpty()) {
-//			    String mensaje = "";
-//				if(listaAlias.size() > 1) {
-//					String alias = "";
-//		            for (Iterator iterator = listaAlias.iterator(); iterator.hasNext();) {
-//		    			String aliasAux = (String) iterator.next();
-//		    		    alias = alias + aliasAux + " ,";				
-//		    		}	
-//		            alias = alias.substring(0, alias.length() - 1);
-//		            mensaje = " las líneas " + alias + "ya fueron utilizados ";
-//		    	} else {
-//		    		mensaje  = " la línea " + listaAlias.get(0) + " ya fue utilizado ";
-//		    	}
-//	            Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.SIM_REPETIDO);
-//	            message.addParameters(new Object[] {mensaje});
-//	            response.getMessages().addMesage(message);
-//				hayError = true;
-//			    result.setError(true);
-//			}
+			//LF - #3139 - Validacion de SIM repetidos
+			List<String> listaAlias = listaAliasSimRepetidos(solicitudServicioDto.getLineas());
+			if(!listaAlias.isEmpty()) {
+			    String mensaje = "";
+				if(listaAlias.size() > 1) {
+					String alias = "";
+		            for (Iterator iterator = listaAlias.iterator(); iterator.hasNext();) {
+		    			String aliasAux = (String) iterator.next();
+		    		    alias = alias + aliasAux + " ,";				
+		    		}	
+		            alias = alias.substring(0, alias.length() - 1);
+		            mensaje = " las líneas " + alias + "ya fueron utilizados ";
+		    	} else {
+		    		mensaje  = " la línea " + listaAlias.get(0) + " ya fue utilizado ";
+		    	}
+	            Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.SIM_REPETIDO);
+	            message.addParameters(new Object[] {mensaje});
+	            response.getMessages().addMesage(message);
+				hayError = true;
+			    result.setError(true);
+			} else { // Si el SIM no se cargó en otra solicitud, verifica que este disponible en AVALON
+				for (Iterator iterator = solicitudServicioDto.getLineas().iterator(); iterator.hasNext();) {
+					LineaSolicitudServicioDto lineaSS = (LineaSolicitudServicioDto) iterator.next();
+					String nroSIM = lineaSS.getNumeroSimcard();
+					if(nroSIM != null) {
+						AppLogger.info("##Log Cierre y pass - Verificando que el numero de SIM '"+ nroSIM +"' se encuentre disponible en AVALON");
+						String estadoSim = this.getEstadoSim(nroSIM);
+						if(estadoSim != SIM_DISPONIBLE) {
+							AppLogger.info("##Log Cierre y pass - El numero de SIM '"+ nroSIM +"' de la linea " + lineaSS.getId() + " NO se encuentra disponible en AVALON");
+							Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.SIM_NO_DISPONIBLE);
+					        message.addParameters(new Object[] { nroSIM });
+					        response.getMessages().addMesage(message);
+							hayError = true;
+							result.setError(true);
+						} else {
+							AppLogger.info("##Log Cierre y pass - El numero de SIM '"+ lineaSS.getNumeroSimcard() +"' se encuentra disponible");
+						}
+					}
+				}
+			}
 
 			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
 
@@ -2228,26 +2248,45 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		}
 	}
 	
-//	/**
-//	 * LF - #3139-[ESP RES]
-//	 * Metodo que se utiliza para verificar que los numeros de Sim de cada linea no se encuentren en ninguna
-//	 * solicitud de servicio cerrada.
-//	 * Retorna una lista de Alias de las lineas que poseen el numero de sim repetido.
-//	 * @param lineas
-//	 * @return
-//	 */
-//	private List<String> listaAliasSimRepetidos(List<LineaSolicitudServicioDto> lineas) {
-//		List<String> alias = new ArrayList<String>();
-//		for (Iterator iterator = lineas.iterator(); iterator.hasNext();) {
-//			LineaSolicitudServicioDto lineaSS = (LineaSolicitudServicioDto) iterator.next();
-//			AppLogger.info("#Verificando si el numero de SIM de la linea " + lineaSS.getId() + " ya se encuentra cargada en otra solicitud");
-//			String cantidadSims = (String) repository.executeCustomQuery("SIM_REPETIDO", lineaSS.getNumeroSimcard()).get(0);
-//			if(Integer.parseInt(cantidadSims) > 0) {
-//				alias.add(lineaSS.getAlias());
-//			}		
-//		}
-//		return alias;
-//	}
+	/**
+	 * LF - #3139
+	 * Metodo que se utiliza para verificar que los numeros de Sim de cada linea no se encuentren en ninguna
+	 * solicitud de servicio cerrada.
+	 * Retorna una lista de Alias de las lineas que poseen el numero de sim repetido.
+	 * @param lineas
+	 * @return
+	 */
+	private List<String> listaAliasSimRepetidos(List<LineaSolicitudServicioDto> lineas) {
+		List<String> alias = new ArrayList<String>();
+		for (Iterator iterator = lineas.iterator(); iterator.hasNext();) {
+			LineaSolicitudServicioDto lineaSS = (LineaSolicitudServicioDto) iterator.next();
+			if(lineaSS.getNumeroSimcard() != null) {
+				AppLogger.info("##Log Cierre y pass - Verificando si el numero de SIM " + lineaSS.getNumeroSimcard() + " de la linea " + lineaSS.getId() + " ya se encuentra cargada en otra solicitud");
+				String cantidadSims = (String) repository.executeCustomQuery("SIM_REPETIDO", lineaSS.getNumeroSimcard()).get(0);
+				if(Integer.parseInt(cantidadSims) > 0) {
+					AppLogger.info("##Log Cierre y pass - El numero de SIM ya se encuentra cargada en otra solicitud");
+					alias.add(lineaSS.getAlias());
+				} else {
+					AppLogger.info("##Log Cierre y pass - El numero de SIM no se encuentra cargada en otra solicitud");
+				}
+			}
+		}
+		return alias;
+	}
 	
+	/**
+	 * Devuelve el estado en que se encuentra el numero de SIM en AVALON
+	 * @param nroSim
+	 * @return
+	 * @throws RpcExceptionMessages
+	 */
+	private String getEstadoSim(String nroSim) throws RpcExceptionMessages {
+		try {
+			return this.avalonSystem.getEstadoSim(nroSim);
+		} catch (AvalonSystemException e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+	}
 	
 }	
