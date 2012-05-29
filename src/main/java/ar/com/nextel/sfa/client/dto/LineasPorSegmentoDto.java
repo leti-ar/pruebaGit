@@ -5,7 +5,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class LineasPorSegmentoDto implements IsSerializable{
 	
 	int idLineasPorSegmento;
-	TipoSolicitudDto tipoSolicitud;
+//	LF - #3249
+//	TipoSolicitudDto tipoSolicitud;
 	TipoVendedorDto tipoVendedor;
 	SegmentoDto SegmentoCliente;
 	int cantLineas;
@@ -20,13 +21,14 @@ public class LineasPorSegmentoDto implements IsSerializable{
 		this.idLineasPorSegmento = idLineasPorSegmento;
 	}
 	
-	public TipoSolicitudDto getTipoSolicitud() {
-		return tipoSolicitud;
-	}
-	
-	public void setTipoSolicitud(TipoSolicitudDto tipoSolicitud) {
-		this.tipoSolicitud = tipoSolicitud;
-	}
+//	LF - #3249
+//	public TipoSolicitudDto getTipoSolicitud() {
+//		return tipoSolicitud;
+//	}
+//	
+//	public void setTipoSolicitud(TipoSolicitudDto tipoSolicitud) {
+//		this.tipoSolicitud = tipoSolicitud;
+//	}
 	
 	public TipoVendedorDto getTipoVendedor() {
 		return tipoVendedor;
