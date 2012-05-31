@@ -368,7 +368,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private void verificarSim() {
 		controller.verificarNegativeFiles(sim.getText(), new DefaultWaitCallback<String>() {
 			public void success(String result) {
-				if (result == null) {
+				if (result != null) { //#3265
 					ErrorDialog.getInstance().show(result, false);
 					verificarSimWrapper.setHTML(IconFactory.comprobarRojo(Sfa.constant().verificarSim())
 							.toString());
