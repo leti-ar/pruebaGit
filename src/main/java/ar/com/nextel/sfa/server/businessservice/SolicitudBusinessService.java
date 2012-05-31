@@ -1133,6 +1133,12 @@ public Long verHistoricoScoring(Long tipoDoc, String nroDoc, String sexo)
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
+		//MGR********-#3177-Borrar cuando se solucione
+//		catch (Exception e) {
+//			AppLogger.error(e);
+//			throw ExceptionUtil.wrap(e);
+//		}
+//		MGR********Fin-#3177-Borrar cuando se solucione
 
 	}
 	
@@ -1141,12 +1147,22 @@ public Long verHistoricoScoring(Long tipoDoc, String nroDoc, String sexo)
 	}
 	
 	public Long crearCliente(Long idCuenta) throws RpcExceptionMessages {
+		AppLogger.info("##Log Cierre y pass - Se procede a transformar el prospect en cliente.");
 	    InsertUpdateCuentaConfig config = this.getInsertUpdateCuentaConfig();
 		config.setIdCuenta(idCuenta);
 		Long result;
 		try {
 			result = (Long) this.sfaConnectionDAO.execute(config);
+			
+			AppLogger.info("##Log Cierre y pass - Resultado de la creción de cliente: " + result);
+			if(result == 0L){
+				AppLogger.info("##Log Cierre y pass - Cliente creado correctamente.");
+			}else{
+				AppLogger.info("##Log Cierre y pass - Hubo un problema al crear al cliente.");
+			}
+			
 		} catch (ConnectionDAOException e) {
+			AppLogger.info("##Log Cierre y pass - Error al transformar el prospect en cliente.");
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}

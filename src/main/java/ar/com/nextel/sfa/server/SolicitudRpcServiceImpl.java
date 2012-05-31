@@ -1062,6 +1062,30 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 						solicitudServicioDto.setPassCreditos(false);
 						solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
 					}
+					//MGR********-#3177-Borrar cuando se solucione
+//					else{
+//						
+//						int d = 0;
+//						if(d != 0){
+//							solicitudServicio = repository.retrieve(SolicitudServicio.class, solicitudServicio.getId());
+//						}
+//						
+//						int h = 0;
+//						if(h != 0){
+//							solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
+//						}
+//						
+//						int y = 0;
+//						if(y != 0){
+//							Cuenta cta = repository.retrieve(Cuenta.class, solicitudServicio.getCuenta().getId());
+//							CuentaSSDto ctaDto = mapper.map(cta, CuentaSSDto.class);
+//							solicitudServicioDto.setCuenta(ctaDto);
+//						}
+//						
+//						
+//						
+//					}
+//					MGR********Fin-#3177-Borrar cuando se solucione
 					solicitudBusinessService.crearCaratula(solicitudServicio, resultadoVerazScoring);
 				}
 				
