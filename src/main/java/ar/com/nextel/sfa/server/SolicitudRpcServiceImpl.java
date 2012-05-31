@@ -128,6 +128,7 @@ import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
+import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
@@ -1755,6 +1756,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				
 				HashMap<String, Boolean> mapaPermisosClient = (HashMap<String, Boolean>) sessionContextLoader.getSessionContext().get(SessionContext.PERMISOS);
 				boolean permisoCierrePin = (Boolean) mapaPermisosClient.get(PermisosUserCenter.CERRAR_SS_CON_PIN.getValue());
+				boolean permisoCierreScoring = (Boolean) mapaPermisosClient.get(PermisosEnum.SCORING_CHECKED.getValue());
 				boolean cerrandoConItemBB = false;
 				for (LineaSolicitudServicioDto linea : ss.getLineas()) {
 					ModeloDto modelo = linea.getModelo();
@@ -1763,9 +1765,12 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 						break;
 					}
 				}
+				
 				if (("".equals(pinMaestro) || pinMaestro == null)
 						&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
-					if (ss.getGrupoSolicitud().getId() == 1L && permisoCierrePin && !cerrandoConItemBB) {
+					//#3248
+					if ((ss.getGrupoSolicitud().getId() == 1L && permisoCierreScoring && !cerrandoConItemBB && ss.getCuenta().isCliente())
+							|| (ss.getGrupoSolicitud().getId() == 1L && permisoCierrePin && !cerrandoConItemBB)) {
 						return "Cliente existente solo puede cerrar por Scoring.";
 					}
 				}
