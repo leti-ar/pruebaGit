@@ -224,7 +224,7 @@ public class DocDigitalizadosUI extends NextelDialog implements ClickHandler{
 									Sfa.constant().ERR_DOC_DIGITALIZADOS_NO_ENCONTRADOS(),
 									MessageDialog.getCloseCommand());
 						}else{
-							Collections.sort(result, new DocDigitalizadosComparator());
+//							Collections.sort(result, new DocDigitalizadosComparator()); //#2206
 							documentos = result;
 							tablePageBarDocDigitalizados.setPagina(1);
 							setDocDigitalizados();	
