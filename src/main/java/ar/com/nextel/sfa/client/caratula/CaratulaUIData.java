@@ -801,7 +801,9 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		bcra.setEnabled(habilitar);
 		otras.setEnabled(habilitar);
 		otras.setVisible(true);
-		validFirma.setEnabled(habilitar);
+//		validFirma.setEnabled(habilitar);
+		//MGR*****-#2211 Temp
+		validFirma.setReadOnly(habilitar);
 		validFirma.setVisible(true);
 		depGarantia.setEnabled(habilitar);
 		depGarantia.setVisible(true);
