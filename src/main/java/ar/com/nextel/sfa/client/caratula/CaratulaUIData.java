@@ -181,10 +181,11 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 //		refBancaria = new RegexTextBox(RegularExpressionConstants.getNumerosYLetrasLimitado(100));
 		refBancaria.addKeyUpHandler(new KeyUpHandler() {			
 			public void onKeyUp(KeyUpEvent event) {
-				if(refBancaria.getText().length() > MAX_LENGHT_200) {
+				//MGR - Le ponemos de nuevo largo 100 por que es lo que acepta Vantive
+				if(refBancaria.getText().length() > MAX_LENGHT_100) {
 					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 					ErrorDialog.getInstance().show(Sfa.constant().ERR_MAX_LARGO_CAMPO(), false);
-					refBancaria.setText(refBancaria.getText().substring(0, MAX_LENGHT_200));					
+					refBancaria.setText(refBancaria.getText().substring(0, MAX_LENGHT_100));					
 				}
 			}
 		});
@@ -306,10 +307,11 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		
 		validFirma.addKeyUpHandler(new KeyUpHandler() {
 			public void onKeyUp(KeyUpEvent arg0) {
-				if (validFirma.getText().length() > MAX_LENGHT_200) {
+				//MGR - Le ponemos de nuevo largo 100 por que es lo que acepta Vantive
+				if (validFirma.getText().length() > MAX_LENGHT_100) {
 					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 					ErrorDialog.getInstance().show(Sfa.constant().ERR_MAX_LARGO_CAMPO(), false);
-					validFirma.setText(validFirma.getText().substring(0, MAX_LENGHT_200));
+					validFirma.setText(validFirma.getText().substring(0, MAX_LENGHT_100));
 				}
 			}
 		});
@@ -760,12 +762,13 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		nroSS.setEnabled(habilitar);
 		
 		fechaInicio.setEnabled(habilitar);
-		actividad.setEnabled(habilitar);
-		//(TextArea).setVisible(true), para que se pueda scrollear.
+		//MGR - #2211
+		actividad.setReadOnly(!habilitar);
 		actividad.setVisible(true);
 		validDomicilio.setEnabled(habilitar);
 		banco.setEnabled(habilitar);
-		refBancaria.setEnabled(habilitar);
+		//MGR - #2211
+		refBancaria.setReadOnly(!habilitar);
 		refBancaria.setVisible(true);
 		tipoCuenta.setEnabled(habilitar);
 		mayorSaldoFavor.setEnabled(habilitar);
@@ -773,18 +776,24 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		tarjCredito.setEnabled(habilitar);
 		limiteTarj.setEnabled(habilitar);
 		ingDemostrado.setEnabled(habilitar);
-		iva.setEnabled(habilitar);
+		//MGR - #2211
+		iva.setReadOnly(!habilitar);
 		iva.setVisible(true);
-		ganancias.setEnabled(habilitar);
+		//MGR - #2211
+		ganancias.setReadOnly(!habilitar);
 		ganancias.setVisible(true);
-		balance.setEnabled(habilitar);
+		//MGR - #2211
+		balance.setReadOnly(!habilitar);
 		balance.setVisible(true);
-		ingBrutos.setEnabled(habilitar);
+		//MGR - #2211
+		ingBrutos.setReadOnly(!habilitar);
 		ingBrutos.setVisible(true);
-		reciboHaberes.setEnabled(habilitar);
+		//MGR - #2211
+		reciboHaberes.setReadOnly(!habilitar);
 		reciboHaberes.setVisible(true);
 		pyp.setEnabled(habilitar);
-		factCelular.setEnabled(habilitar);
+		//MGR - #2211
+		factCelular.setReadOnly(!habilitar);
 		factCelular.setVisible(true);
 		okEECCAgente.setEnabled(habilitar);
 		com.setEnabled(habilitar);
@@ -799,19 +808,22 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 		veraz.setEnabled(habilitar);
 		nosis.setEnabled(habilitar);
 		bcra.setEnabled(habilitar);
-		otras.setEnabled(habilitar);
+		//MGR - #2211
+		otras.setReadOnly(!habilitar);
 		otras.setVisible(true);
-//		validFirma.setEnabled(habilitar);
-		//MGR*****-#2211 Temp
-		validFirma.setReadOnly(habilitar);
+		//MGR - #2211
+		validFirma.setReadOnly(!habilitar);
 		validFirma.setVisible(true);
-		depGarantia.setEnabled(habilitar);
+		//MGR - #2211
+		depGarantia.setReadOnly(!habilitar);
 		depGarantia.setVisible(true);
-		anticipo.setEnabled(habilitar);
+		//MGR - #2211
+		anticipo.setReadOnly(!habilitar);
 		anticipo.setVisible(true);
 		soloHibridos.setEnabled(habilitar);
 		findImei.setEnabled(habilitar);
-		comentAnalista.setEnabled(habilitar);
+		//MGR - #2211
+		comentAnalista.setReadOnly(!habilitar);
 		comentAnalista.setVisible(true);
 		scoring.setVisible(true);
 	}
