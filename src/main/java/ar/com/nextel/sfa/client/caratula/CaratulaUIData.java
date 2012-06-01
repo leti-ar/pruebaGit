@@ -346,7 +346,8 @@ public class CaratulaUIData extends UIData{// implements ChangeListener, ClickLi
 			}
 		});
 		
-		scoring.setEnabled(false);
+		//MGR - #2211
+		scoring.setReadOnly(true);
 	}
 	
 	
