@@ -1805,9 +1805,12 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				Long maxDeuda = Long.valueOf(((GlobalParameter) globalParameterRetriever
 									.getObject(GlobalParameterIdentifier.MAX_DEUDA_CTA_CTE)).getValue());
 				
-				AppLogger.info("#Log Cierre y pass - La deuda de la cuenta corriente es: " + maxDeuda, this);
+				AppLogger.info("#Log Cierre y pass - La deuda maxima posible es: " + maxDeuda, this);
 				
-				if (getDeudaCtaCte(solicitudServicio.getCuenta().getCodigoBSCS()) <= maxDeuda) { //no posee
+				Long deudaCta = getDeudaCtaCte(solicitudServicio.getCuenta().getCodigoBSCS());
+				AppLogger.info("#Log Cierre y pass - La deuda de la cuenta corriente es: " + deudaCta, this);
+				
+				if ( deudaCta <= maxDeuda) { //no posee
 					if (!("".equals(pinMaestro) || pinMaestro == null)
 							&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
 						return "Solo se permite cerrar por Veraz dado que es un cliente existente sin equipos activos ni suspendidos.";
