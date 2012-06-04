@@ -1121,6 +1121,11 @@ public Long verHistoricoScoring(Long tipoDoc, String nroDoc, String sexo)
 		} else {
 			caratula.setDocumento("Anexo");
 		}
+		
+		AppLogger.info("##Log Cierre y pass - A la caratula se le asigna la cuenta de Id: " +ss.getCuenta().getId());
+		AppLogger.info("##Log Cierre y pass - A la caratula se le asigna la cuenta con cod vantive: " + ss.getCuenta().getCodigoVantive());
+		
+		
 		caratula.setCuenta(ss.getCuenta());
 		caratula.setUsuarioCreacion(sessionContextLoader.getVendedor());
 		repository.save(caratula);
@@ -1128,16 +1133,18 @@ public Long verHistoricoScoring(Long tipoDoc, String nroDoc, String sexo)
 		CaratulaTransferidaConfig caratulaTransferidaConfig = getCaratulaTransferidaConfig();
 		caratulaTransferidaConfig.setIdCaratula(caratula.getId());
 		try {
+			AppLogger.info("##Log Cierre y pass - Transfiriendo caratula...");
 			CaratulaTransferidaResultDto result = (CaratulaTransferidaResultDto) sfaConnectionDAO.execute(caratulaTransferidaConfig);
+			AppLogger.info("##Log Cierre y pass - Caratula transferida correctamente.");
 		} catch (ConnectionDAOException e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
 		//MGR********-#3177-Borrar cuando se solucione
-//		catch (Exception e) {
-//			AppLogger.error(e);
-//			throw ExceptionUtil.wrap(e);
-//		}
+		catch (Exception e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
 //		MGR********Fin-#3177-Borrar cuando se solucione
 
 	}
