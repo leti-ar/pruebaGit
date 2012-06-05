@@ -1024,7 +1024,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 						if(nroSIM != null) {
 							AppLogger.info("##Log Cierre y pass - Verificando que el numero de SIM '"+ nroSIM +"' se encuentre disponible en AVALON");
 							String estadoSim = this.getEstadoSim(nroSIM);
-							if(estadoSim != SIM_DISPONIBLE) {
+							if(!estadoSim.equals(SIM_DISPONIBLE)) {
 								AppLogger.info("##Log Cierre y pass - El numero de SIM '"+ nroSIM +"' de la linea " + lineaSS.getId() + " NO se encuentra disponible en AVALON");
 								Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.SIM_NO_DISPONIBLE);
 						        message.addParameters(new Object[] { nroSIM });
