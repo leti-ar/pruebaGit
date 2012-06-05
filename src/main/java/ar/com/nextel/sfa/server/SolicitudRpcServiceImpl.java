@@ -1814,7 +1814,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				
 				if ( deudaCta <= maxDeuda) { //no posee
 					if (!("".equals(pinMaestro) || pinMaestro == null)
-							&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
+							|| ss.getSolicitudServicioGeneracion().isScoringChecked()) {
 						return "Solo se permite cerrar por Veraz dado que es un cliente existente sin equipos activos ni suspendidos.";
 					}
 				} else {
