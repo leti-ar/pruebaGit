@@ -2170,6 +2170,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	        Long lineasPendientes = getCantLineasPendientes(solicitud.getCuenta().getCodigoVantive());
 	        cantEquiposTotal += lineasPendientes;
 	        
+	        //#3275
+	        cantEquiposTotal += solicitud.getLineas().size();
+	        
 //	        MGR***** - Modificar como obtiene el segmento
 			if(solicitud.getCuenta().isEmpresa()){
 				List<Segmento> segmentos = repository.getAll(Segmento.class);
