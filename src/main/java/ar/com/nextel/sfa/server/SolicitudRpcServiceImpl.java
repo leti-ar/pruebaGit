@@ -644,7 +644,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		AppLogger.info("Iniciando " + accion + " de SS de id=" + solicitudServicioDto.getId() + " ...");
 		GeneracionCierreResultDto result = new GeneracionCierreResultDto();
 		SolicitudServicio solicitudServicio = null;
-		GeneracionCierreResponse response = null;
+		GeneracionCierreResponse response = new GeneracionCierreResponse();
 		try {
 			
 			//#LF
@@ -657,42 +657,64 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 //				else tipoPersona = 1;
 //			}
 
-			for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
-				if(linea.getPortabilidad() != null) linea.getPortabilidad().setTipoPersona(obtenerTipoPersona(solicitudServicioDto));
-			}
+			
+//			for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
+//				if(linea.getPortabilidad() != null) linea.getPortabilidad().setTipoPersona(obtenerTipoPersona(solicitudServicioDto));
+//			}
 
+			boolean hayError = false;
 			// TODO: Portabilidad
 			long contadorPortabilidad = 0;
 			for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
-				if(linea.getPortabilidad() != null) contadorPortabilidad++;
+				if(linea.getPortabilidad() != null) {
+					if(linea.getPortabilidad().getFechaUltFactura() != null) {
+						long dias = DateUtils.getInstance().getDistanceInDays(DateUtils.getInstance().getCurrentDate(), linea.getPortabilidad().getFechaUltFactura());
+						if(dias > 30) {
+							hayError = true;
+							String alias = linea.getAlias();
+							Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.FECHA_EMISION_PORT_ERROR);
+							message.addParameters(new Object[] { alias });
+							response.getMessages().addMesage(message);
+							result.setError(true);
+						}
+					}
+					contadorPortabilidad++;
+					linea.getPortabilidad().setTipoPersona(obtenerTipoPersona(solicitudServicioDto));
+				}
 			}
 			solicitudServicioDto.setCantLineasPortabilidad(contadorPortabilidad);
-
-			
 			completarDomiciliosSolicitudTransferencia(solicitudServicioDto);
-			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
-			response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar);
-			// metodo changelog
-			result.setError(response.getMessages().hasErrors());
-			if (cerrar == true
-					&& response.getMessages().hasErrors() == false
-					&& sessionContextLoader.getVendedor().getTipoVendedor().getCodigoVantive().equals(
-							KnownInstanceIdentifier.TIPO_VENDEDOR_EECC.getKey())) {
-				solicitudBusinessService.generarChangeLog(solicitudServicioDto.getId(), solicitudServicio
-						.getVendedor().getId());
-			}
-			result.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
-			result.setRtfFileName(getReporteFileName(solicitudServicio));
 			
-			//TODO: Portabilidad - Setea los nombres de los rtf Generados
-			if(response.getRtfFileNamePortabilidad().size() > 0){
-				for (String rtfFileNamePorta : response.getRtfFileNamePortabilidad().get("PORTABILIDAD")) {
-					result.getRtfFileNamePortabilidad().add(rtfFileNamePorta);
+			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
+			
+			if(!hayError) {
+			
+				response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar);
+				// metodo changelog
+				result.setError(response.getMessages().hasErrors());
+				if (cerrar == true
+						&& response.getMessages().hasErrors() == false
+						&& sessionContextLoader.getVendedor().getTipoVendedor().getCodigoVantive().equals(
+								KnownInstanceIdentifier.TIPO_VENDEDOR_EECC.getKey())) {
+					solicitudBusinessService.generarChangeLog(solicitudServicioDto.getId(), solicitudServicio
+							.getVendedor().getId());
 				}
-				for (String rtfFileNamePorta_adj : response.getRtfFileNamePortabilidad().get("PORTABILIDAD_ADJUNTO")) {
-					result.getRtfFileNamePortabilidad_adj().add(rtfFileNamePorta_adj);
+				result.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
+				result.setRtfFileName(getReporteFileName(solicitudServicio));
+				
+				//TODO: Portabilidad - Setea los nombres de los rtf Generados
+				if(response.getRtfFileNamePortabilidad().size() > 0){
+					for (String rtfFileNamePorta : response.getRtfFileNamePortabilidad().get("PORTABILIDAD")) {
+						result.getRtfFileNamePortabilidad().add(rtfFileNamePorta);
+					}
+					for (String rtfFileNamePorta_adj : response.getRtfFileNamePortabilidad().get("PORTABILIDAD_ADJUNTO")) {
+						result.getRtfFileNamePortabilidad_adj().add(rtfFileNamePorta_adj);
+					}
 				}
+			
 			}
+			
+			result.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
 			
 		} catch (Exception e) {
 			AppLogger.error(e);

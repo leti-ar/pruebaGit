@@ -321,33 +321,36 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		}
 	};
 	
+	/**
+	 * Metodo que habilita/deshabilita ciertos campos dependiendo si la persona es fisica o juridica.
+	 */
 	public void habilitarCamposTipoPersona() {
 //		
 //		SolicitudRpcService.Util.getInstance().obtenerTipoPersona(controller.getEditarSSUIData().getSolicitudServicio(), new DefaultWaitCallback<Integer>() {
 //			@Override
 //			public void success(Integer result) {
 				if(controller.getEditarSSUIData().getTipoPersona().intValue() != 1) {//#LF - PERSONA JURIDICA
-					portabilidadPanel.lblTipoDocumento.addStyleName("req");
-					portabilidadPanel.lblNroDocumento.addStyleName("req");
 					portabilidadPanel.lblRazonSocial.addStyleName("req");
+					portabilidadPanel.lblTipoDocApod.addStyleName("req");
+					portabilidadPanel.lblNroDocApod.addStyleName("req");
+					portabilidadPanel.lblNombreApod.addStyleName("req");
+					portabilidadPanel.lblApellidoApod.addStyleName("req");
+					portabilidadPanel.lblNombre.removeStyleName("req");
+					portabilidadPanel.lblApellido.removeStyleName("req");					
+					portabilidadPanel.txtRazonSocial.setEnabled(true);
+					portabilidadPanel.txtNombre.setEnabled(false);
+					portabilidadPanel.txtApellido.setEnabled(false);					
+				} else { // PERSONA FISICA
 					portabilidadPanel.lblNombre.addStyleName("req");
 					portabilidadPanel.lblApellido.addStyleName("req");
-					portabilidadPanel.lstTipoDocumento.setEnabled(true);
-					portabilidadPanel.txtNroDocumento.setEnabled(true);
-					portabilidadPanel.txtRazonSocial.setEnabled(true);
+					portabilidadPanel.lblRazonSocial.removeStyleName("req");
+					portabilidadPanel.lblTipoDocApod.removeStyleName("req");
+					portabilidadPanel.lblNroDocApod.removeStyleName("req");
+					portabilidadPanel.lblNombreApod.removeStyleName("req");
+					portabilidadPanel.lblApellidoApod.removeStyleName("req");
+					portabilidadPanel.txtRazonSocial.setEnabled(false);
 					portabilidadPanel.txtNombre.setEnabled(true);
 					portabilidadPanel.txtApellido.setEnabled(true);
-				} else { // PERSONA FISICA
-					portabilidadPanel.lblTipoDocumento.removeStyleName("req");
-					portabilidadPanel.lblNroDocumento.removeStyleName("req");
-					portabilidadPanel.lblRazonSocial.removeStyleName("req");
-					portabilidadPanel.lblNombre.removeStyleName("req");
-					portabilidadPanel.lblApellido.removeStyleName("req");
-					portabilidadPanel.lstTipoDocumento.setEnabled(false);
-					portabilidadPanel.txtNroDocumento.setEnabled(false);
-					portabilidadPanel.txtRazonSocial.setEnabled(false);
-					portabilidadPanel.txtNombre.setEnabled(false);
-					portabilidadPanel.txtApellido.setEnabled(false);
 				}
 			}
 

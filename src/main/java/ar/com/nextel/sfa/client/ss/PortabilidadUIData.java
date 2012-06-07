@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.ss;
 
+import java.util.Date;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
@@ -15,6 +16,7 @@ import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
+import ar.com.nextel.sfa.client.widget.FechaDatePicker;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.TelefonoTextBox;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -29,7 +31,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
@@ -65,17 +66,28 @@ public class PortabilidadUIData extends Composite {
 	@UiField Label lblRazonSocial;
 	@UiField Label lblNombre;
 	@UiField Label lblApellido;
+	//LF - CR SFA - Carga Datos Apoderado
+	@UiField Label lblTipoDocApod;
+	@UiField Label lblNroDocApod;
+	@UiField Label lblNombreApod;
+	@UiField Label lblApellidoApod;
+	
 	@UiField Label lblTelefono;
 	@UiField Label lblEmail;
 	@UiField Label lblProveedorAnterior;
 	@UiField Label lblTipoTelefonia;
 	@UiField Label lblModalidadCobro;
 	@UiField Label lblTelefonoPortar;
+//	LF - CR SFA - Carga Datos Apoderado
+	@UiField Label lblFechaUltimaFactura;
+	
 	
 	@UiField ListBox lstTipoDocumento;
 	@UiField ListBox lstTipoTelefonia;
 	@UiField ListBox lstModalidadCobro;
 	@UiField ListBox lstProveedorAnterior;
+//	LF - CR SFA - Carga Datos Apoderado
+	@UiField ListBox lstTipoDocApod;
 	
 	@UiField RegexTextBox txtEmail;
 	@UiField RegexTextBox txtNroSS;
@@ -84,6 +96,12 @@ public class PortabilidadUIData extends Composite {
 	@UiField RegexTextBox txtRazonSocial;
 	@UiField RegexTextBox txtNroDocumento;
 	@UiField RegexTextBox txtNroUltimaFacura;
+	
+//	LF - CR SFA - Carga Datos Apoderado
+	@UiField RegexTextBox txtNroDocApod;
+	@UiField RegexTextBox txtNombreApod;
+	@UiField RegexTextBox txtApellidoApod;
+	@UiField (provided = true) FechaDatePicker fechaUltFactura = new FechaDatePicker();
 	
 	private Command cmndAceptar;
 	private CheckBox chkPortabilidad;
@@ -105,8 +123,8 @@ public class PortabilidadUIData extends Composite {
 		initWidget(uiBinder.createAndBindUi(this));
 		
 		lblNroSS.addStyleName(OBLIGATORIO);
-//		lblTipoDocumento.addStyleName(OBLIGATORIO);	
-//		lblNroDocumento.addStyleName(OBLIGATORIO);
+		lblTipoDocumento.addStyleName(OBLIGATORIO);	
+		lblNroDocumento.addStyleName(OBLIGATORIO);
 		lblTelefonoPortar.addStyleName(OBLIGATORIO);
 		lblTelefono.addStyleName(OBLIGATORIO);
 		lblTelefono.addStyleName(OBLIGATORIO);
@@ -120,6 +138,10 @@ public class PortabilidadUIData extends Composite {
 		lblApellido.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 		lblNroUltimaFacura.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 		lblNroDocumento.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+		//LF - CR SFA - Carga Datos Apoderado
+		lblNroDocApod.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+		lblApellidoApod.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+		lblFechaUltimaFactura.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 
 		chkRecibeSMS.addStyleName("portabilidadCheck");
 		chkNoPoseeTel.addStyleName("portabilidadCheck");
@@ -133,8 +155,11 @@ public class PortabilidadUIData extends Composite {
 		txtNroUltimaFacura.setMaxLength(50);
 		txtNroSS.setEnabled(false);
 		
+		fechaUltFactura.getTextBox().setMaxLength(10);
+		
 		comprobarTipoTelefonia();
 		validarTipoDocumento();
+		validarTipoDocApoderado();
 		
 		cmndAceptar = new Command() {
 			public void execute() {
@@ -176,11 +201,15 @@ public class PortabilidadUIData extends Composite {
 						"No puede replicar los datos para una persona fisica", 
 						ModalMessageDialog.getCloseCommand());
 			} else if(persona != null){
-				txtNombre.setText(persona.getNombre());
-				txtApellido.setText(persona.getApellido());
+//				txtNombre.setText(persona.getNombre());
+//				txtApellido.setText(persona.getApellido());
 				txtRazonSocial.setText(persona.getRazonSocial());
 				txtNroDocumento.setText(persona.getDocumento().getNumero());
 				lstTipoDocumento.selectByText(persona.getDocumento().getTipoDocumento().getDescripcion());
+				lstTipoDocApod.selectByText(persona.getDocumento().getTipoDocumento().getDescripcion());
+				txtNroDocApod.setText(persona.getDocumento().getNumero());
+				txtNombreApod.setText(persona.getNombre());
+				txtApellidoApod.setText(persona.getApellido());
 			}
 		}
 		else if(evt.getSource() == chkNoPoseeTel){
@@ -209,10 +238,12 @@ public class PortabilidadUIData extends Composite {
 	 * Maneja los eventos del tipo ChangeEvent de los componentes construidos desde ui.xml referenciados por UiHandler
 	 * @param evt
 	 */
-	@UiHandler(value={"lstTipoDocumento","lstTipoTelefonia"})
+	@UiHandler(value={"lstTipoDocumento","lstTipoTelefonia","lstTipoDocApod"})
 	void onChange(ChangeEvent evt){
 		if(evt.getSource() == lstTipoDocumento) validarTipoDocumento();
 		else if(evt.getSource() == lstTipoTelefonia) comprobarTipoTelefonia();
+		//LF - CR SFA - Carga Datos Apoderado
+		else if(evt.getSource() == lstTipoDocApod) validarTipoDocApoderado();
 	}
 
 	/**
@@ -223,8 +254,19 @@ public class PortabilidadUIData extends Composite {
 			txtNroDocumento.setPattern(RegularExpressionConstants.cuilCuit);
 		else if(lstTipoDocumento.getSelectedItemText().equals("DNI")) 
 			txtNroDocumento.setPattern(RegularExpressionConstants.dni);
-		else txtNroDocumento.setPattern(RegularExpressionConstants.documentoOtros);
+		else 
+			txtNroDocumento.setPattern(RegularExpressionConstants.documentoOtros);
 	}
+	
+	private void validarTipoDocApoderado(){
+		if(lstTipoDocApod.getSelectedItemText().equals("CUIL") || lstTipoDocApod.getSelectedItemText().equals("CUIT"))
+			txtNroDocApod.setPattern(RegularExpressionConstants.cuilCuit);
+		else if(lstTipoDocApod.getSelectedItemText().equals("DNI")) 
+			txtNroDocApod.setPattern(RegularExpressionConstants.dni);
+		else 
+			txtNroDocApod.setPattern(RegularExpressionConstants.documentoOtros);
+	}
+	
 	
 	/**
 	 * 
@@ -252,12 +294,16 @@ public class PortabilidadUIData extends Composite {
 			chkRecibeSMS.setValue(false);
 			chkRecibeSMS.setEnabled(true);
 			txtNroUltimaFacura.setEnabled(true);
+			fechaUltFactura.bloquear(false);
+			lblFechaUltimaFactura.addStyleName(OBLIGATORIO);
 		}else{
 			lblNroUltimaFacura.removeStyleName(OBLIGATORIO);
 			chkRecibeSMS.setValue(true);
 			chkRecibeSMS.setEnabled(false);
 			txtNroUltimaFacura.setText("");
 			txtNroUltimaFacura.setEnabled(false);
+			fechaUltFactura.bloquear(true);
+			lblFechaUltimaFactura.removeStyleName(OBLIGATORIO);
 		}
 	}
 	
@@ -271,9 +317,10 @@ public class PortabilidadUIData extends Composite {
 		txtTelefono.clean();
 		txtTelefonoPortar.clean();
 
-		if(this.getTipoPersona().intValue() != 1) {
-			lstTipoDocumento.setSelectedIndex(0);
-		}
+//		if(this.getTipoPersona().intValue() != 1) {
+		lstTipoDocumento.setSelectedIndex(0);
+		lstTipoDocApod.setSelectedIndex(0);
+//		}
 		lstModalidadCobro.setSelectedIndex(0);
 		lstTipoTelefonia.setSelectedIndex(-1);
 		lstProveedorAnterior.setSelectedIndex(-1);
@@ -296,6 +343,13 @@ public class PortabilidadUIData extends Composite {
 		
 		chkNoPoseeTel.setValue(true);
 		chkNoPoseeEmail.setValue(true);
+		
+		//LF - CR SFA - Carga Datos Apoderado
+		fechaUltFactura.getTextBox().setText(null);
+	    lstTipoDocApod.setSelectedIndex(-1);
+	    txtNroDocApod.setText(null);
+	    txtNombreApod.setText(null);
+	    txtApellidoApod.setText(null);
 
 		this.setVisible(false);
 	}
@@ -309,6 +363,8 @@ public class PortabilidadUIData extends Composite {
 		lstProveedorAnterior.addAllItems(initiliazer.getLstProveedorAnterior());
 		lstTipoTelefonia.addAllItems(initiliazer.getLstTipoTelefonia()); 
 		lstModalidadCobro.addAllItems(initiliazer.getLstModalidadCobro()); 
+		//LF - CR SFA - Carga Datos Apoderado
+		lstTipoDocApod.addAllItems(initiliazer.getLstTipoDocumento());
 
 		lnkCopiarCuenta.setVisible(true);
 	}
@@ -344,17 +400,33 @@ public class PortabilidadUIData extends Composite {
 		
 		if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")){
 			validador.addTarget(txtNroUltimaFacura).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nro. Ultima Factura"));
-		}
+			validador.addTarget(fechaUltFactura.getTextBox()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Fecha de Emisión"));
+			if(!fechaUltFactura.getTextBox().getText().equals("") && !fechaUltFactura.validarFecha()) {
+				validador.addError("El campo Portabilidad: Fecha de Emisión debe tener el siguiente formato dd/mm/yyyy");
+			} else {
+				Date fechaActual = new Date();
+				if(fechaUltFactura.getFecha().compareTo(fechaActual) == 1) {
+					validador.addError("El campo Portabilidad: Fecha de Emisión no debe ser mayor a la fecha actual");
+				}
+			}
 
-		// #LF - PERSONA JURIDICA
-		if(getTipoPersona().intValue() != 1) {
+		}
+		
+		if(getTipoPersona().intValue() != 1) { // PERSONA JURIDICA
 			validador.addTarget(txtNroDocumento).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nro. de Documento"));
 			validador.addTarget(txtRazonSocial).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Razon Social"));
+//			validador.addTarget(txtNombre).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nombre"));
+//			validador.addTarget(txtApellido).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Apellido"));
+			validador.addTarget(txtNombreApod).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nombre Apoderado"));
+			validador.addTarget(txtApellidoApod).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Apellido Apoderado"));
+			validador.addTarget(lstTipoDocApod).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Tipo Documento Apoderado"));
+			validador.addTarget(txtNroDocApod).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Número Documento Apoderado"));
+		} else { // PERSONA FISICA
 			validador.addTarget(txtNombre).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nombre"));
 			validador.addTarget(txtApellido).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Apellido"));
-		} 
+		}
 		String numAportar = txtTelefonoPortar.getArea().getText() + txtTelefonoPortar.getNumero().getText();
-		if(numAportar.length() > 10) validador.addError("La cantidad de digitos de Portabilidad: Nro. a Portar (Codigo Area + Telefono) no debe ser mayor a 10");
+		if(numAportar.length() != 10) validador.addError("La cantidad de digitos de Portabilidad: Nro. a Portar (Codigo Area + Telefono) debe ser igual a 10");
 		
 		validador.fillResult();
 		return validador.getErrors();
@@ -381,7 +453,12 @@ public class PortabilidadUIData extends Composite {
 		lstTipoTelefonia.setSelectedItem(solicitudPortabilidad.getTipoTelefonia());
 		lstModalidadCobro.setSelectedItem(solicitudPortabilidad.getModalidadCobro());
 		lstProveedorAnterior.setSelectedItem(solicitudPortabilidad.getProveedorAnterior());
-
+		//LF - CR SFA - Carga Datos Apoderado
+		lstTipoDocApod.setSelectedItem(solicitudPortabilidad.getTipoDocumentoRep());
+		txtNroDocApod.setText(solicitudPortabilidad.getNumeroDocRep());
+		txtNombreApod.setText(solicitudPortabilidad.getNombreRep());
+		txtApellidoApod.setText(solicitudPortabilidad.getApellidoRep());
+		
 		setVisible(true);
 		comprobarTipoTelefonia();
 		validarTipoDocumento();
@@ -472,6 +549,10 @@ public class PortabilidadUIData extends Composite {
 		txtReserva.setText("");
 		txtReserva.setEnabled(false);
 		btnReserva.setEnabled(false);
+		
+		if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")) {
+			fechaUltFactura.setFecha(solicitudPortabilidad.getFechaUltFactura());
+		}
 	}
 	
     public boolean isEmpty(String s) {
@@ -498,11 +579,11 @@ public class PortabilidadUIData extends Composite {
 			solicitudPortabilidad.setNroUltimaFacura(txtNroUltimaFacura.getText());
 
 			solicitudPortabilidad.setProveedorAnterior((ProveedorDto)lstProveedorAnterior.getSelectedItem());
-			if(getTipoPersona().intValue() == 1) {
-				solicitudPortabilidad.setTipoDocumento(null);
-			} else {
-				solicitudPortabilidad.setTipoDocumento((TipoDocumentoDto)lstTipoDocumento.getSelectedItem());
-			}
+//			if(getTipoPersona().intValue() == 1) {
+//				solicitudPortabilidad.setTipoDocumento(null);
+//			} else {
+			solicitudPortabilidad.setTipoDocumento((TipoDocumentoDto)lstTipoDocumento.getSelectedItem());
+//			}
 			solicitudPortabilidad.setTipoTelefonia((TipoTelefoniaDto)lstTipoTelefonia.getSelectedItem());
 			solicitudPortabilidad.setModalidadCobro((ModalidadCobroDto)lstModalidadCobro.getSelectedItem());
 
@@ -510,6 +591,13 @@ public class PortabilidadUIData extends Composite {
 			if(!isEmpty(txtTelefono.getArea().getText())) telefono = txtTelefono.getArea().getText() + "-" + telefono; 
 			if(!isEmpty(txtTelefono.getInterno().getText())) telefono =  telefono + "-" + txtTelefono.getInterno().getText();
 			solicitudPortabilidad.setTelefono(telefono);
+			
+			//LF - CR SFA - Carga Datos Apoderado
+			solicitudPortabilidad.setFechaUltFactura(fechaUltFactura.getFecha());
+			solicitudPortabilidad.setTipoDocumentoRep((TipoDocumentoDto)lstTipoDocApod.getSelectedItem());
+			solicitudPortabilidad.setNumeroDocRep(txtNroDocApod.getText());
+			solicitudPortabilidad.setNombreRep(txtNombreApod.getText());
+			solicitudPortabilidad.setApellidoRep(txtApellidoApod.getText());
 		}
 		resetearPortabilidad();
 		return solicitudPortabilidad;
@@ -645,5 +733,45 @@ public class PortabilidadUIData extends Composite {
 	
 	public Integer getTipoPersona() {
 		return tipoPersona;
+	}
+
+	public ListBox getLstTipoDocApod() {
+		return lstTipoDocApod;
+	}
+
+	public void setLstTipoDocApod(ListBox lstTipoDocApod) {
+		this.lstTipoDocApod = lstTipoDocApod;
+	}
+
+	public RegexTextBox getTxtNroDocApod() {
+		return txtNroDocApod;
+	}
+
+	public void setTxtNroDocApod(RegexTextBox txtNroDocApod) {
+		this.txtNroDocApod = txtNroDocApod;
+	}
+
+	public RegexTextBox getTxtNombreApod() {
+		return txtNombreApod;
+	}
+
+	public void setTxtNombreApod(RegexTextBox txtNombreApod) {
+		this.txtNombreApod = txtNombreApod;
+	}
+
+	public RegexTextBox getTxtApellidoApod() {
+		return txtApellidoApod;
+	}
+
+	public void setTxtApellidoApod(RegexTextBox txtApellidoApod) {
+		this.txtApellidoApod = txtApellidoApod;
+	}
+
+	public FechaDatePicker getFechaUltFactura() {
+		return fechaUltFactura;
+	}
+
+	public void setFechaUltFactura(FechaDatePicker fechaUltFactura) {
+		this.fechaUltFactura = fechaUltFactura;
 	}
 }
