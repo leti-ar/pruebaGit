@@ -83,16 +83,22 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 			
 			// Datos a Replicar
 			pnlDescripcionReplica = new TitledPanel("Datos a Replicar");
-			gridLayout = new Grid(5,2);
+			gridLayout = new Grid(4,2);
 			gridLayout.addStyleName("layout");
 			gridLayout.getColumnFormatter().setWidth(0, "150px");
 			gridLayout.getColumnFormatter().setWidth(1, "350px");
 			
-			gridLayout.setHTML(0,0, "Razon Social:"); 	gridLayout.setHTML(0,1, strRazonSocial);
-			gridLayout.setHTML(1,0, "Nombre:");			gridLayout.setHTML(1,1, strNombre);
-			gridLayout.setHTML(2,0, "Apellido:");		gridLayout.setHTML(2,1, strApellido);
-			gridLayout.setHTML(3,0, "Tipo Documento:");	gridLayout.setHTML(3,1, tipoDocumento.getDescripcion());
-			gridLayout.setHTML(4,0, "Nro. Documento:");	gridLayout.setHTML(4,1, strNroDocumento);
+			// LF #3278
+			if (lineas.get(indexLinea).getPortabilidad().getTipoPersona().equals("1")) { //FISICA
+				gridLayout.setHTML(0,0, "Nombre:");			gridLayout.setHTML(1,1, strNombre);
+				gridLayout.setHTML(1,0, "Apellido:");		gridLayout.setHTML(2,1, strApellido);
+				gridLayout.setHTML(2,0, "Tipo Documento:");	gridLayout.setHTML(3,1, tipoDocumento.getDescripcion());
+				gridLayout.setHTML(3,0, "Nro. Documento:");	gridLayout.setHTML(4,1, strNroDocumento);
+			} else { //JURIDICA
+				gridLayout.setHTML(0,0, "Razon Social:"); 	gridLayout.setHTML(0,1, strRazonSocial);
+				gridLayout.setHTML(1,0, "Tipo Documento:");	gridLayout.setHTML(1,1, tipoDocumento.getDescripcion());
+				gridLayout.setHTML(2,0, "Nro. Documento:");	gridLayout.setHTML(2,1, strNroDocumento);
+			}
 			
 			// Grilla
 			pnlTblDetalle = new SimplePanel();

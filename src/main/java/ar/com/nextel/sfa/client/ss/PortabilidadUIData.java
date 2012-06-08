@@ -195,21 +195,16 @@ public class PortabilidadUIData extends Composite {
 	@UiHandler(value={"lnkCopiarCuenta","chkNoPoseeTel","chkNoPoseeEmail"})
 	void onCLick(ClickEvent evt){
 		if(evt.getSource() == lnkCopiarCuenta){
-			// #LF - PERSONA FISICA
+			// #LF - #3278
 			if(getTipoPersona().intValue() == 1) {
-				ModalMessageDialog.getInstance().showAceptar(
-						"No puede replicar los datos para una persona fisica", 
-						ModalMessageDialog.getCloseCommand());
+				txtNombre.setText(persona.getNombre());
+				txtApellido.setText(persona.getApellido());
+				txtNroDocumento.setText(persona.getDocumento().getNumero());
+				lstTipoDocumento.selectByText(persona.getDocumento().getTipoDocumento().getDescripcion());
 			} else if(persona != null){
-//				txtNombre.setText(persona.getNombre());
-//				txtApellido.setText(persona.getApellido());
 				txtRazonSocial.setText(persona.getRazonSocial());
 				txtNroDocumento.setText(persona.getDocumento().getNumero());
 				lstTipoDocumento.selectByText(persona.getDocumento().getTipoDocumento().getDescripcion());
-				lstTipoDocApod.selectByText(persona.getDocumento().getTipoDocumento().getDescripcion());
-				txtNroDocApod.setText(persona.getDocumento().getNumero());
-				txtNombreApod.setText(persona.getNombre());
-				txtApellidoApod.setText(persona.getApellido());
 			}
 		}
 		else if(evt.getSource() == chkNoPoseeTel){

@@ -511,14 +511,12 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		
 
 		if(portabilidad != null){
-			//#LF
-			if(editarSSUIData.getTipoPersona() == 1) {
-				ModalMessageDialog.getInstance().showAceptar(
-						"No puede replicar los datos para una persona fisica", 
-						ModalMessageDialog.getCloseCommand());
-			} else if(portabilidad.getTipoDocumento() != null && notEmpty(portabilidad.getNumeroDocumento()) && 
-						notEmpty(portabilidad.getRazonSocial()) && notEmpty(portabilidad.getNombre()) && notEmpty(portabilidad.getApellido())){
-	
+			//LF - #3278 y #3282
+//			if(editarSSUIData.getTipoPersona() == 1) {
+//				ModalMessageDialog.getInstance().showAceptar(
+//						"No puede replicar los datos para una persona fisica", 
+//						ModalMessageDialog.getCloseCommand());
+//			} else {
 					final DatosSSUI datos = this;
 					SolicitudRpcService.Util.getInstance().getPortabilidadInitializer(editarSSUIData.getCuentaId().toString(),editarSSUIData.getCuenta().getCodigoVantive(),new DefaultWaitCallback<PortabilidadInitializer>() {
 						@Override
@@ -527,11 +525,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 							replicarDialog.show(editarSSUIData.getSolicitudServicio(),row - 1,result,datos,controller);
 						}
 					});
-				}else{
-					ModalMessageDialog.getInstance().showAceptar(
-							"Para portar los datos de Portabilidad deben estar completos Tipo y Numero de Documento, Razon Social, Nombre y Apellido", 
-							ModalMessageDialog.getCloseCommand());
-				}
+//				}
 			}else{
 				ModalMessageDialog.getInstance().showAceptar(
 						"El Item seleccionado no posee una Solicitud de Portabilidad para replicar", 
@@ -539,13 +533,13 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			}
 	}
 	
-    private boolean empty(String s) {
-        return s == null || s.length() == 0;
-    }
-
-    private boolean notEmpty(String s) {
-        return !empty(s);
-    }
+//    private boolean empty(String s) {
+//        return s == null || s.length() == 0;
+//    }
+//
+//    private boolean notEmpty(String s) {
+//        return !empty(s);
+//    }
 
     private void selectDetalleLineaSSRow(int row) {
 		if (row > 0) {
@@ -620,7 +614,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 							&& !lineaSeleccionada.getId().equals(lineaModificada)) {
 						openAplicarDescuentoDialog(lineaSeleccionada, result);
 					} else {
-						noSePuedeAplicarDescuento(false);
+//						noSePuedeAplicarDescuento(false);
 					}
 				}
 			});
