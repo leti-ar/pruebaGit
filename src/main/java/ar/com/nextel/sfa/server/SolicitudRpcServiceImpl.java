@@ -1087,7 +1087,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 //					}
 //					MGR********Fin-#3177-Borrar cuando se solucione
 					AppLogger.info("##Log Cierre y pass - Se va a crear la caratula.");
-					solicitudBusinessService.crearCaratula(solicitudServicio, resultadoVerazScoring);
+					Long idCaratula = solicitudBusinessService.crearCaratula(solicitudServicio, resultadoVerazScoring);
+					solicitudBusinessService.transferirCaratula(idCaratula);
 					AppLogger.info("##Log Cierre y pass - Caratula creada correctamente.");
 				}
 				

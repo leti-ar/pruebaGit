@@ -1092,10 +1092,11 @@ public Long verHistoricoScoring(Long tipoDoc, String nroDoc, String sexo)
 	 * Crea la carátula de créditos y la transfiere a Vantive.
 	 * @param ss
 	 * @param resultadoVerazScoring 
+	 * @return 
 	 * @throws RpcExceptionMessages 
 	 */
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void crearCaratula(SolicitudServicio ss, String resultadoVerazScoring) throws RpcExceptionMessages {
+	public Long crearCaratula(SolicitudServicio ss, String resultadoVerazScoring) {
 		Caratula caratula = new Caratula();
 		caratula.setNroSS(ss.getNumero());
 		if ("ACEPTAR".equals(resultadoVerazScoring)) {
@@ -1129,9 +1130,12 @@ public Long verHistoricoScoring(Long tipoDoc, String nroDoc, String sexo)
 		caratula.setCuenta(ss.getCuenta());
 		caratula.setUsuarioCreacion(sessionContextLoader.getVendedor());
 		repository.save(caratula);
-		
+		return caratula.getId();
+	}
+	
+	public void transferirCaratula(Long idCaratula) throws RpcExceptionMessages {
 		CaratulaTransferidaConfig caratulaTransferidaConfig = getCaratulaTransferidaConfig();
-		caratulaTransferidaConfig.setIdCaratula(caratula.getId());
+		caratulaTransferidaConfig.setIdCaratula(idCaratula);
 		try {
 			AppLogger.info("##Log Cierre y pass - Transfiriendo caratula...");
 			CaratulaTransferidaResultDto result = (CaratulaTransferidaResultDto) sfaConnectionDAO.execute(caratulaTransferidaConfig);
@@ -1146,7 +1150,6 @@ public Long verHistoricoScoring(Long tipoDoc, String nroDoc, String sexo)
 			throw ExceptionUtil.wrap(e);
 		}
 //		MGR********Fin-#3177-Borrar cuando se solucione
-
 	}
 	
 	public InsertUpdateCuentaConfig getInsertUpdateCuentaConfig() {
