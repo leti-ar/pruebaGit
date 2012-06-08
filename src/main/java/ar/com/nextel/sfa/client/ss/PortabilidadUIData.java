@@ -159,7 +159,7 @@ public class PortabilidadUIData extends Composite {
 		
 		comprobarTipoTelefonia();
 		validarTipoDocumento();
-		validarTipoDocApoderado();
+//		validarTipoDocApoderado();
 		
 		cmndAceptar = new Command() {
 			public void execute() {
