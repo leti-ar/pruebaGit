@@ -178,6 +178,11 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private String mensajeErrorCrearCuenta = "La SS % quedó pendiente de aprobación, por favor verificar y dar curso manual.";
 	private String SIM_DISPONIBLE = "ACTIVE";
 	
+	//MGR - Para dejar el codigo un poco mas oredenado
+	public static final int CIERRE_NORMAL = 1; //Se cierra la solicitud de servicio y se transfiere a Vantive
+	public static final int LINEAS_NO_CUMPLEN_CC = 2;
+	public static final int CIERRE_PASS_AUTOMATICO = 3;
+	
 	public void init() throws ServletException {
 		super.init();
 		context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
@@ -265,7 +270,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		resultDto.setMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
 		
 		if (solicitudServicioDto.getId() != null) {
-			solicitudServicioDto.setHistorialEstados(getEstadosPorSolicitud(new Long(solicitudServicioDto.getId())));//solicitudServicioDto.getNumero())));
+			solicitudServicioDto.setHistorialEstados(getEstadosPorSolicitud(new Long(solicitudServicioDto.getId())));
 		}
 		
 		AppLogger.info("Creacion de Solicitud de Servicio finalizada");
@@ -789,7 +794,6 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		initializer
 				.setLocalidades(mapper.convertList(repository.getAll(Localidad.class), LocalidadDto.class));
 
-		//System.out.println(new Date());
 		return initializer;
 	}
 
@@ -946,11 +950,14 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			if (!solicitudServicioDto.getGrupoSolicitud().isTransferencia()) {
 				//me fijo si tipo vendedor y orden son configurables por APG.
 				puedeCerrar = sonConfigurablesPorAPG(solicitudServicioDto.getLineas());
-				if (puedeCerrar == 3) {//pass de creditos segun la logica
+				
+				if (puedeCerrar == CIERRE_PASS_AUTOMATICO) {//pass de creditos segun la logica
 					errorCC = evaluarEquiposYDeuda(solicitudServicioDto, pinMaestro);
 					if ("".equals(errorCC)) {
+						
 						List<String> isVerazDisponible = (repository.executeCustomQuery("isVerazDisponible", "VERAZ_DISPONIBLE"));
 						if (puedeDarPassDeCreditos(solicitudServicioDto, pinMaestro, isVerazDisponible.get(0))) {
+						
 							if ("T".equals(isVerazDisponible.get(0))) {
 								solicitudServicioDto.setPassCreditos(true);
 							} else {
@@ -971,6 +978,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 						}
 					}
 				}
+				
 				//larce - Req#9 Negative Files
 				if(solicitudServicioDto.getVendedor().getTipoVendedor().isEjecutaNegFiles()){
 					errorNF = verificarNegativeFilesPorLinea(solicitudServicioDto.getLineas());					
@@ -983,7 +991,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					response.getMessages().addMesage(message);
 					result.setError(true);
 				}
-				if (puedeCerrar == 2) {
+				if (puedeCerrar == LINEAS_NO_CUMPLEN_CC) {
 					hayError = true;
 					response.getMessages().addMesage((Message) this.messageRetriever.getObject(MessageIdentifier.TIPO_ORDEN_INCOMPATIBLE));
 					result.setError(true);
@@ -996,7 +1004,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				}
 			}
 			
-			if(!hayError){
+			if(!hayError && puedeCerrar == CIERRE_PASS_AUTOMATICO){
+				
 				//LF - #3139 - Validacion de SIM repetidos
 				List<String> listaAlias = listaAliasSimRepetidos(solicitudServicioDto.getLineas());
 				if(!listaAlias.isEmpty()) {
@@ -1046,8 +1055,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				
 				//LF - #3109 - Registro el vendedor logueado que realiza el cierre
 				solicitudServicio.setVendedorLogueado(sessionContextLoader.getVendedor());
-				
-				if (puedeCerrar != 1) { //larce #3161
+			
+//				MGR**** Preguntar si puede ser: if (puedeCerrar == CIERRE_PASS_AUTOMATICO)
+				if (puedeCerrar != CIERRE_NORMAL) { //larce #3161
 					response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, true);
 				} else {
 					response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, false);
@@ -1055,41 +1065,25 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				result.setError(response.getMessages().hasErrors());
 				
 //				larce - #3177: Cierre y Pass Automatico – Pass a Prospect
-				if (!result.isError() && !solicitudServicio.getCuenta().isTransferido()) {
-					if(solicitudBusinessService.crearCliente(solicitudServicio.getCuenta().getId()) != 0L) {
+				if (!result.isError() && !solicitudServicio.getCuenta().isTransferido() && puedeCerrar == CIERRE_PASS_AUTOMATICO) {
+					
+					Long crearCliente = solicitudBusinessService.crearCliente(solicitudServicio.getCuenta().getId()); 
+					if( crearCliente != 0L) {
 						//si falla la creación del cliente no se da el pass de crédito y se envía un mail informando la situación
 						enviarMailPassCreditos(solicitudServicio.getNumero());
 						solicitudServicioDto.setPassCreditos(false);
 						solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
+					
+					}else{ //MGR - Solo si el cliente se transfiere correctamente, hago la caratula
+						
+//						MGR - Se que el prospect se paso a cliente, entonces actualizo
+						Cuenta cta = repository.retrieve(Cuenta.class, solicitudServicio.getCuenta().getId());
+						repository.refresh(cta);
+						
+						Long idCaratula = solicitudBusinessService.crearCaratula(cta, solicitudServicio.getNumero(), resultadoVerazScoring);
+						solicitudBusinessService.transferirCaratula(idCaratula);
 					}
-					//MGR********-#3177-Borrar cuando se solucione
-//					else{
-//						
-//						int d = 0;
-//						if(d != 0){
-//							solicitudServicio = repository.retrieve(SolicitudServicio.class, solicitudServicio.getId());
-//						}
-//						
-//						int h = 0;
-//						if(h != 0){
-//							solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
-//						}
-//						
-//						int y = 0;
-//						if(y != 0){
-//							Cuenta cta = repository.retrieve(Cuenta.class, solicitudServicio.getCuenta().getId());
-//							CuentaSSDto ctaDto = mapper.map(cta, CuentaSSDto.class);
-//							solicitudServicioDto.setCuenta(ctaDto);
-//						}
-//						
-//						
-//						
-//					}
-//					MGR********Fin-#3177-Borrar cuando se solucione
-					AppLogger.info("##Log Cierre y pass - Se va a crear la caratula.");
-					Long idCaratula = solicitudBusinessService.crearCaratula(solicitudServicio, resultadoVerazScoring);
-					solicitudBusinessService.transferirCaratula(idCaratula);
-					AppLogger.info("##Log Cierre y pass - Caratula creada correctamente.");
+					
 				}
 				
 				// metodo changelog
@@ -1747,13 +1741,13 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		}
 		if (cumple == lineas.size()) {
 			AppLogger.info("#Log Cierre y pass - Todas las líneas son configurables por APG");
-			return 3;
+			return CIERRE_PASS_AUTOMATICO;
 		} else if ((cumple < lineas.size() && cumple != 0) ) {
 			AppLogger.info("#Log Cierre y pass - No todas las líneas son configurables por APG");
-			return 2;
+			return LINEAS_NO_CUMPLEN_CC;
 		} else {
 			AppLogger.info("#Log Cierre y pass - Ninguna línea es configurable por APG");			
-			return 1;
+			return CIERRE_NORMAL;
 		}
 	}
 	

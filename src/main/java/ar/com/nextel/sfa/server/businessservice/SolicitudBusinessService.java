@@ -1089,16 +1089,14 @@ public Long verHistoricoScoring(Long tipoDoc, String nroDoc, String sexo)
 	}
 	
 	/**
-	 * Crea la carátula de créditos y la transfiere a Vantive.
-	 * @param ss
-	 * @param resultadoVerazScoring 
-	 * @return 
-	 * @throws RpcExceptionMessages 
+	 * Crea la carátula de créditos.
 	 */
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public Long crearCaratula(SolicitudServicio ss, String resultadoVerazScoring) {
+	public Long crearCaratula(Cuenta cta, String nroSS, String resultadoVerazScoring) {
+		AppLogger.info("##Log Cierre y pass - Se va a crear la caratula.");
+		
 		Caratula caratula = new Caratula();
-		caratula.setNroSS(ss.getNumero());
+		caratula.setNroSS(nroSS);
 		if ("ACEPTAR".equals(resultadoVerazScoring)) {
 			caratula.setLimiteCredito(new Double(625));
 			List<RiskCode> risks = repository.find("from RiskCode r where r.descripcion = 'AP.On-Line'");
@@ -1116,20 +1114,19 @@ public Long verHistoricoScoring(Long tipoDoc, String nroDoc, String sexo)
 		caratula.setCalificacion(calificaciones.get(0));		
 		caratula.setEstadoVeraz(resultadoVerazScoring);
 		caratula.setConfirmada(true);
-		caratula.setAntiguedad(ss.getCuenta().getFechaCreacion());
-		if (ss.getCuenta().getCaratulas().isEmpty()) {
+		
+		caratula.setAntiguedad(cta.getFechaCreacion());
+		if (cta.getCaratulas().isEmpty()) {
 			caratula.setDocumento("Crédito");
 		} else {
 			caratula.setDocumento("Anexo");
 		}
 		
-		AppLogger.info("##Log Cierre y pass - A la caratula se le asigna la cuenta de Id: " +ss.getCuenta().getId());
-		AppLogger.info("##Log Cierre y pass - A la caratula se le asigna la cuenta con cod vantive: " + ss.getCuenta().getCodigoVantive());
-		
-		
-		caratula.setCuenta(ss.getCuenta());
+		caratula.setCuenta(cta);
 		caratula.setUsuarioCreacion(sessionContextLoader.getVendedor());
 		repository.save(caratula);
+		
+		AppLogger.info("##Log Cierre y pass - Caratula creada correctamente.");
 		return caratula.getId();
 	}
 	
@@ -1139,17 +1136,19 @@ public Long verHistoricoScoring(Long tipoDoc, String nroDoc, String sexo)
 		try {
 			AppLogger.info("##Log Cierre y pass - Transfiriendo caratula...");
 			CaratulaTransferidaResultDto result = (CaratulaTransferidaResultDto) sfaConnectionDAO.execute(caratulaTransferidaConfig);
-			AppLogger.info("##Log Cierre y pass - Caratula transferida correctamente.");
+			
+			if(result.getDescripcion() == null || result.getDescripcion().equals("")){
+				AppLogger.info("##Log Cierre y pass - Caratula transferida correctamente.");
+			}else{
+				String error = result.getCodError() + ". " + result.getDescripcion();
+				AppLogger.info("##Log Cierre y pass - Error al transferir la Caratula. " + error);
+				throw new ConnectionDAOException(error);
+			}
+			
 		} catch (ConnectionDAOException e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
-		//MGR********-#3177-Borrar cuando se solucione
-		catch (Exception e) {
-			AppLogger.error(e);
-			throw ExceptionUtil.wrap(e);
-		}
-//		MGR********Fin-#3177-Borrar cuando se solucione
 	}
 	
 	public InsertUpdateCuentaConfig getInsertUpdateCuentaConfig() {
