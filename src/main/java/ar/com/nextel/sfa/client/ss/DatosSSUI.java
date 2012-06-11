@@ -614,7 +614,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 							&& !lineaSeleccionada.getId().equals(lineaModificada)) {
 						openAplicarDescuentoDialog(lineaSeleccionada, result);
 					} else {
-//						noSePuedeAplicarDescuento(false);
+						noSePuedeAplicarDescuento(false);
 					}
 				}
 			});
