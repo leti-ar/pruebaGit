@@ -238,7 +238,10 @@ public class PortabilidadUIData extends Composite {
 		if(evt.getSource() == lstTipoDocumento) validarTipoDocumento();
 		else if(evt.getSource() == lstTipoTelefonia) comprobarTipoTelefonia();
 		//LF - CR SFA - Carga Datos Apoderado
-		else if(evt.getSource() == lstTipoDocApod) validarTipoDocApoderado();
+		else if(evt.getSource() == lstTipoDocApod) {
+			validarTipoDocApoderado();
+			txtNroDocApod.setText("");
+		}
 	}
 
 	/**
@@ -254,12 +257,14 @@ public class PortabilidadUIData extends Composite {
 	}
 	
 	private void validarTipoDocApoderado(){
-		if(lstTipoDocApod.getSelectedItemText().equals("CUIL") || lstTipoDocApod.getSelectedItemText().equals("CUIT"))
-			txtNroDocApod.setPattern(RegularExpressionConstants.cuilCuit);
-		else if(lstTipoDocApod.getSelectedItemText().equals("DNI")) 
-			txtNroDocApod.setPattern(RegularExpressionConstants.dni);
-		else 
-			txtNroDocApod.setPattern(RegularExpressionConstants.documentoOtros);
+		if(lstTipoDocApod.getSelectedItemText() != null) {
+			if(lstTipoDocApod.getSelectedItemText().equals("CUIL") || lstTipoDocApod.getSelectedItemText().equals("CUIT"))
+				txtNroDocApod.setPattern(RegularExpressionConstants.cuilCuit);
+			else if(lstTipoDocApod.getSelectedItemText().equals("DNI")) 
+				txtNroDocApod.setPattern(RegularExpressionConstants.dni);
+			else 
+				txtNroDocApod.setPattern(RegularExpressionConstants.documentoOtros);
+		}
 	}
 	
 	
@@ -330,6 +335,7 @@ public class PortabilidadUIData extends Composite {
 
 		comprobarTipoTelefonia();
 		validarTipoDocumento();
+		validarTipoDocApoderado();
 
 		txtTelefono.getArea().setEnabled(false);
 		txtTelefono.getNumero().setEnabled(false);
@@ -457,6 +463,7 @@ public class PortabilidadUIData extends Composite {
 		setVisible(true);
 		comprobarTipoTelefonia();
 		validarTipoDocumento();
+		validarTipoDocApoderado();
 
 		if(solicitudPortabilidad.getTelefono() != null){
 			String[] telefono = solicitudPortabilidad.getTelefono().split("-");
