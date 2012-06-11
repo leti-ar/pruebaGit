@@ -1056,7 +1056,6 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				//LF - #3109 - Registro el vendedor logueado que realiza el cierre
 				solicitudServicio.setVendedorLogueado(sessionContextLoader.getVendedor());
 			
-//				MGR**** Preguntar si puede ser: if (puedeCerrar == CIERRE_PASS_AUTOMATICO)
 				if (puedeCerrar != CIERRE_NORMAL) { //larce #3161
 					response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, true);
 				} else {
@@ -1071,9 +1070,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					if( crearCliente != 0L) {
 						//si falla la creación del cliente no se da el pass de crédito y se envía un mail informando la situación
 						enviarMailPassCreditos(solicitudServicio.getNumero());
-						solicitudServicioDto.setPassCreditos(false);
-						solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
-					
+						solicitudServicio.setPassCreditos(false);
 					}else{ //MGR - Solo si el cliente se transfiere correctamente, hago la caratula
 						
 //						MGR - Se que el prospect se paso a cliente, entonces actualizo
@@ -1081,11 +1078,11 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 						repository.refresh(cta);
 						
 						Long idCaratula = solicitudBusinessService.crearCaratula(cta, solicitudServicio.getNumero(), resultadoVerazScoring);
-						solicitudBusinessService.transferirCaratula(idCaratula);
+						solicitudBusinessService.transferirCaratula(idCaratula);						
+						solicitudServicio.setNumeroCuenta(solicitudServicio.getCuenta().getCodigoVantive());
 					}
-					
+					solicitudBusinessService.updateSolicitudServicio(solicitudServicio);
 				}
-				
 				// metodo changelog
 				if (cerrar == true
 						&& response.getMessages().hasErrors() == false
