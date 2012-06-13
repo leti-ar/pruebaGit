@@ -1142,6 +1142,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				"Nombre y Apellido, tipo y numero Documento";
 		final String MSG_ERR_08 = "Existen Lineas que tienen un numero de Solicitud de Portabilidad incorrecto";
 		final String MSG_ERR_09 = "La Cuenta posee Solicitudes de Portabilidad pendientes";
+		final String MSG_ERR_10 = "Debe agregar el numero a portar en la solicitud Nro: _NUMERO_";
+
 		
 		int contLineasPrepagas = 0;
 		int cantRecibeSMS;
@@ -1186,12 +1188,16 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				
 				// Verifica que no se repita el telefono a portar en la misma solicitud de servicio
 				telefono = lineas.get(i).getPortabilidad().getAreaTelefono() + lineas.get(i).getPortabilidad().getTelefonoPortar();
-				for(int n = 0; n < lineas.size(); n++){
-					if(n != i){
-						if(lineas.get(n).getPortabilidad() != null){
-							telefonoAUX = lineas.get(n).getPortabilidad().getAreaTelefono() + lineas.get(n).getPortabilidad().getTelefonoPortar();
-							// Los telefonos a portar no pueden ser iguales entre lineas
-							if(telefono.equals(telefonoAUX)) result.addError(ERROR_ENUM.ERROR,MSG_ERR_01.replaceAll("_NUMERO_", telefono));
+				if(lineas.get(i).getPortabilidad().getTelefonoPortar() == null) {
+					result.addError(ERROR_ENUM.ERROR,MSG_ERR_10.replaceAll("_NUMERO_", lineas.get(i).getPortabilidad().getNroSS()));
+				} else {
+					for(int n = 0; n < lineas.size(); n++){
+						if(n != i){
+							if(lineas.get(n).getPortabilidad() != null){
+								telefonoAUX = lineas.get(n).getPortabilidad().getAreaTelefono() + lineas.get(n).getPortabilidad().getTelefonoPortar();
+								// Los telefonos a portar no pueden ser iguales entre lineas
+								if(telefono.equals(telefonoAUX)) result.addError(ERROR_ENUM.ERROR,MSG_ERR_01.replaceAll("_NUMERO_", telefono));
+							}
 						}
 					}
 				}

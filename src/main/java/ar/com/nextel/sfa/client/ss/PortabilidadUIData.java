@@ -151,6 +151,8 @@ public class PortabilidadUIData extends Composite {
 		lstProveedorAnterior.setSelectedIndex(-1);
 		lstTipoTelefonia.setSelectedIndex(-1);
 		
+		// LF - #3287
+		lstTipoDocApod.setSelectedIndex(-1);
 		//tTelefonoPortar.getArea().setMaxLength(2);
 		txtNroUltimaFacura.setMaxLength(50);
 		txtNroSS.setEnabled(false);
@@ -319,7 +321,7 @@ public class PortabilidadUIData extends Composite {
 
 //		if(this.getTipoPersona().intValue() != 1) {
 		lstTipoDocumento.setSelectedIndex(0);
-		lstTipoDocApod.setSelectedIndex(0);
+//		lstTipoDocApod.setSelectedIndex(0);
 //		}
 		lstModalidadCobro.setSelectedIndex(0);
 		lstTipoTelefonia.setSelectedIndex(-1);
@@ -402,12 +404,14 @@ public class PortabilidadUIData extends Composite {
 		if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")){
 			validador.addTarget(txtNroUltimaFacura).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nro. Ultima Factura"));
 			validador.addTarget(fechaUltFactura.getTextBox()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Fecha de Emisión"));
-			if(!fechaUltFactura.getTextBox().getText().equals("") && !fechaUltFactura.validarFecha()) {
-				validador.addError("El campo Portabilidad: Fecha de Emisión debe tener el siguiente formato dd/mm/yyyy");
-			} else {
-				Date fechaActual = new Date();
-				if(fechaUltFactura.getFecha().compareTo(fechaActual) == 1) {
-					validador.addError("El campo Portabilidad: Fecha de Emisión no debe ser mayor a la fecha actual");
+			if(!fechaUltFactura.getTextBox().getText().equals("")) {
+				if(!fechaUltFactura.validarFecha()) {
+					validador.addError("El campo Portabilidad: Fecha de Emisión debe tener el siguiente formato dd/mm/yyyy");
+				} else {
+					Date fechaActual = new Date();
+					if(fechaUltFactura.getFecha().compareTo(fechaActual) == 1) {
+						validador.addError("El campo Portabilidad: Fecha de Emisión no debe ser mayor a la fecha actual");
+					}
 				}
 			}
 
