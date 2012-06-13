@@ -1142,7 +1142,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				"Nombre y Apellido, tipo y numero Documento";
 		final String MSG_ERR_08 = "Existen Lineas que tienen un numero de Solicitud de Portabilidad incorrecto";
 		final String MSG_ERR_09 = "La Cuenta posee Solicitudes de Portabilidad pendientes";
-		final String MSG_ERR_10 = "Debe agregar el numero a portar en la solicitud Nro: _NUMERO_";
+		final String MSG_ERR_10 = "Debe agregar el numero de telefono portar en la solicitud Nro: _NUMERO_";
 
 		
 		int contLineasPrepagas = 0;
