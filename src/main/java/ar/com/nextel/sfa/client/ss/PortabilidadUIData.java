@@ -431,7 +431,9 @@ public class PortabilidadUIData extends Composite {
 			validador.addTarget(txtApellido).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Apellido"));
 		}
 		String numAportar = txtTelefonoPortar.getArea().getText() + txtTelefonoPortar.getNumero().getText();
-		if(numAportar.length() != 10) validador.addError("La cantidad de digitos de Portabilidad: Nro. a Portar (Codigo Area + Telefono) debe ser igual a 10");
+		if(!numAportar.equals("")) {
+			if(numAportar.length() != 10) validador.addError("La cantidad de digitos de Portabilidad: Nro. a Portar (Codigo Area + Telefono) debe ser igual a 10");
+		}
 		
 		validador.fillResult();
 		return validador.getErrors();

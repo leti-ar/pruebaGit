@@ -94,12 +94,13 @@
 		
 		<g:HTMLPanel>  <!-- f_HTMLPanel8   -->
 			<table>
-				<tr> 
+				<tr>
+				<center>
 					<br/>
 					<div style="height: 1px; text-align: center; border-top: 1px dashed black">
-  						<div style="display: inline-block; position: relative; top: -8px; background-color: white;">Apoderado</div>
+  						<div style="display: inline-block; position: relative; top: -8px; background-color: white;"><b>Apoderado</b></div>
 					</div>
-					<br/>
+				</center>
 				</tr>
 			</table>
 			<table>
@@ -139,12 +140,6 @@
 		<g:HTMLPanel>  <!-- f_HTMLPanel9   -->
 			<table>
 				<br/>
-				<tr> 
-					<div style="height: 1px; text-align: center; border-top: 1px dashed black">
-  						<div style="display: inline-block;"/>
-					</div>
-				</tr>
-				<br/>		
 				<tr>
 					<td style="padding-bottom:3px; padding-top:3px;"> 
 						<g:Label ui:field='lblTelefono' text="Teléfono: " width="68"></g:Label> 
