@@ -922,7 +922,9 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public CaratulaDto confirmarCaratula(CaratulaDto caratulaDto) throws RpcExceptionMessages{
 		Caratula caratula;
-		caratula = cuentaBusinessService.confirmarCaratula(caratulaDto);
+		//MGR - #3285 - Se separa el proceso en dos partes
+		caratula =cuentaBusinessService.completarCaratula(caratulaDto);
+		cuentaBusinessService.confirmarCaratula(caratula);
 		mapper.map(caratula, caratulaDto);
 		return caratulaDto;
 	}
