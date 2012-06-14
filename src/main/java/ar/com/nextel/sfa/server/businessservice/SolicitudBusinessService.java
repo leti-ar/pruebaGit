@@ -946,27 +946,23 @@ public class SolicitudBusinessService {
    * @param sexo
    * @return
    * @throws 
-   */
-   @SuppressWarnings("deprecation")
+   */	
    //MGR - Se modifica el dato por que se agrego la referencia a la tabla sfa_tipo_documento
-public Long verHistoricoScoring(Long tipoDoc, String nroDoc, String sexo)
-     
-  {
-    Long resultado = new Long(0);
-      PreparedStatement stmt;
+	public Long verHistoricoScoring(Long tipoDoc, String nroDoc, String sexo){
+		Long resultado = new Long(0);
+		PreparedStatement stmt;
 		Date resul;
 	    Date hoy= new Date();
 	    int diasValidez = ((GlobalParameter) this.globalParameterRetriever
-	            .getObject(GlobalParameterIdentifier. DIAS_CADUCACION_VERAZ_SS_CERRADA)).getAsDouble().intValue();
+	            .getObject(GlobalParameterIdentifier.DIAS_CADUCACION_SCORING_SS_CERRADA)).getAsDouble().intValue();
 	    SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
 	    
-		String sql = String.format("select fecha_validez from  SFA_SCORING_HISTORY where sexo='" +sexo+
-				"' and NUMERO_DOC='" + nroDoc+ "' and TIPO_DOC='" + tipoDoc +"'");
+		String sql = "select fecha_validez from  SFA_SCORING_HISTORY where sexo='" +sexo+
+				"' and NUMERO_DOC='" + nroDoc+ "' and TIPO_DOC='" + tipoDoc +"'";
 		try {
 			stmt = ((HibernateRepository) repository)
 					.getHibernateDaoSupport().getSessionFactory()
 					.getCurrentSession().connection().prepareStatement(sql);
-		
 			
 			ResultSet resultSet = stmt.executeQuery();
 			while (resultSet.next()) {
@@ -992,7 +988,7 @@ public Long verHistoricoScoring(Long tipoDoc, String nroDoc, String sexo)
 		}
        
 		return resultado;
-  }	
+	}	
 		
 		
 	
@@ -1022,18 +1018,18 @@ public Long verHistoricoScoring(Long tipoDoc, String nroDoc, String sexo)
 		String scoring;
 		
 			if (consultar == 0){
-			AppLogger.info("Iniciando llamada para averiguar Scoring.....");
-			scoring = (String) this.consultarScoring(solicitudServicio).getScoringData();
-		
-			AppLogger.info("Scoring averiguado correctamente.....");
-			//guardar ScoringHistorial
-			item.setDatosScoring(scoring);
-			item.setNroDoc(numeroDocumento);
-			item.setSexo(sexo.getCodigoVeraz());
-			//MGR -  Se cambia el tipo para hacer referencia a la tabla SFA_TIPO_DOCUMENTO
-			item.setTipoDocumento(tipoDocumento);
-			item.setValidez(new Date());
-			repository.persist(item);
+				AppLogger.info("Iniciando llamada para averiguar Scoring.....");
+				scoring = (String) this.consultarScoring(solicitudServicio).getScoringData();
+			
+				AppLogger.info("Scoring averiguado correctamente.....");
+				//guardar ScoringHistorial
+				item.setDatosScoring(scoring);
+				item.setNroDoc(numeroDocumento);
+				item.setSexo(sexo.getCodigoVeraz());
+				//MGR -  Se cambia el tipo para hacer referencia a la tabla SFA_TIPO_DOCUMENTO
+				item.setTipoDocumento(tipoDocumento);
+				item.setValidez(new Date());
+				repository.persist(item);
 			}
 			return new Long(item.getId());
 		
