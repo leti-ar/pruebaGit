@@ -1883,8 +1883,11 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			
 		} else {
 			SolicitudServicio ssTemp = repository.retrieve(SolicitudServicio.class, ss.getId());
+			
+			AppLogger.info("#Log Cierre y pass - Se procede a la consulta de Scoring.");
 			resultadoVerazScoring = solicitudBusinessService.consultarScoring(ssTemp).getCantidadTerminales();
 			AppLogger.info("#Log Cierre y pass - Resultado del scoring: " + resultadoVerazScoring);
+			
 			if (resultadoVerazScoring != null) {
 				if (Integer.valueOf(resultadoVerazScoring) > 3) {
 					resultadoVerazScoring = "3";
