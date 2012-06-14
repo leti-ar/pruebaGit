@@ -903,49 +903,61 @@ public class CuentaBusinessService {
 		return arpu;
 	}
 	
-	
+	//MGR - #3285 - Se separa el proceso en dos partes
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public Caratula confirmarCaratula(CaratulaDto caratulaDto) throws RpcExceptionMessages{
-		Cuenta cuenta = repository.retrieve(Cuenta.class, caratulaDto.getIdCuenta());
-		String codVantive = cuenta.getCodigoVantive();
+	public Caratula completarCaratula(CaratulaDto caratulaDto) throws RpcExceptionMessages{
 		Double arpu = null;
 		String mensScoring = null;
+		
+		Caratula caratula = repository.retrieve(Caratula.class, caratulaDto.getId());
+		String codVantive = caratula.getCuenta().getCodigoVantive();
 		
 		if(codVantive != null && !codVantive.equals("")){
 			try{
 				
 				arpu = arpuService.getArpu(codVantive);
+				caratula.setConsumoProm(arpu);
 				
 				AppLogger.info("Iniciando llamada para averiguar Scoring.....");
 				ScoringCuentaLegacyDTO scoring = avalonSystem.retrieveScoringCuenta(codVantive);
 				mensScoring = scoring.getMensajeAdicional();
+				caratula.setScoring(mensScoring);
 				AppLogger.info("Scoring averiguado correctamente.....");
-		
-				String error = this.transferirCaratulaVantive(caratulaDto.getId());
-				if(error != null){
-					throw new ConnectionDAOException(error);
-				}
 				
-			} catch (ConnectionDAOException e) {
+				repository.save(caratula);
+				repository.flush();
+		
+			} catch (Exception e) {
 				AppLogger.error(e);
-				throw ExceptionUtil.wrap("Se produjo un error al querer transferir la caratula a Vantive. No se realizara la confirmación.", e);
-			} 
-			catch (Exception e) {
-				AppLogger.error(e);
-				throw ExceptionUtil.wrap("Se produjo un error al calcular el scoring. No se realizara la confirmación.", e);
+				throw ExceptionUtil.wrap("Se produjo un error al completar la caratula.", e);
 			} 
 			
  		}
-		
-		Caratula caratula = repository.retrieve(Caratula.class, caratulaDto.getId());
-		caratula.setConsumoProm(arpu);
-		caratula.setScoring(mensScoring);
-		caratula.setConfirmada(true);
-		repository.save(caratula);
 		return caratula;
 	}
 	
-
+	//MGR - #3285 - Se separa el proceso en dos partes
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public Caratula confirmarCaratula(Caratula caratula) throws RpcExceptionMessages{
+		try{
+			String error = this.transferirCaratulaVantive(caratula.getId());
+			if(error != null){
+				throw new ConnectionDAOException(error);
+			}
+		} catch (ConnectionDAOException e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap("Se produjo un error al querer transferir la caratula a Vantive. No se realizara la confirmaci�n.", e);
+		} 
+		
+		
+//		Se refresca el objeto ya que el procedure que transfiere la caratula modifica el mismo
+		repository.refresh(caratula);
+		caratula.setConfirmada(true);
+		repository.save(caratula);
+		
+		return caratula;
+	}
+	
 	public String transferirCaratulaVantive(Long idCaratula) throws ConnectionDAOException{
 		CaratulaTransferidaConfig caratulaTransferidaConfig = getCaratulaTransferidaConfig();
 		caratulaTransferidaConfig.setIdCaratula(idCaratula);
