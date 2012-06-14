@@ -1130,7 +1130,7 @@ public Long verHistoricoScoring(Long tipoDoc, String nroDoc, String sexo)
 		return caratula.getId();
 	}
 	
-	public void transferirCaratula(Long idCaratula) throws RpcExceptionMessages {
+	public void transferirCaratula(Long idCaratula, String numeroSS) throws RpcExceptionMessages {
 		CaratulaTransferidaConfig caratulaTransferidaConfig = getCaratulaTransferidaConfig();
 		caratulaTransferidaConfig.setIdCaratula(idCaratula);
 		try {
@@ -1144,10 +1144,14 @@ public Long verHistoricoScoring(Long tipoDoc, String nroDoc, String sexo)
 				AppLogger.info("##Log Cierre y pass - Error al transferir la Caratula. " + error);
 				throw new ConnectionDAOException(error);
 			}
-			
 		} catch (ConnectionDAOException e) {
-			AppLogger.error(e);
-			throw ExceptionUtil.wrap(e);
+			//si hay un error mando un mail informando dicha situación y sigo con la ejecución.
+			String mensajeErrorCaratula = "SS %. Hubo  un error en la generación de la caratula, por favor verificar.";
+			String asunto = "SS % – Error al Generar Caratula";
+			String destinatario = String.valueOf(((GlobalParameter) globalParameterRetriever
+					.getObject(GlobalParameterIdentifier.MAIL_ERROR_TRANSF_CARATULA)).getValue());
+			enviarMail(asunto.replaceAll("%", numeroSS), 
+					destinatario.split(","), mensajeErrorCaratula.replaceAll("%", numeroSS));
 		}
 	}
 	

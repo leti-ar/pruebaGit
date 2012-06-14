@@ -1078,7 +1078,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 						repository.refresh(cta);
 						
 						Long idCaratula = solicitudBusinessService.crearCaratula(cta, solicitudServicio.getNumero(), resultadoVerazScoring);
-						solicitudBusinessService.transferirCaratula(idCaratula);						
+						solicitudBusinessService.transferirCaratula(idCaratula, solicitudServicio.getNumero());						
 						solicitudServicio.setNumeroCuenta(solicitudServicio.getCuenta().getCodigoVantive());
 					}
 					solicitudBusinessService.updateSolicitudServicio(solicitudServicio);
