@@ -1814,7 +1814,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				}
 			}
 		} else if (!("".equals(pinMaestro) || pinMaestro == null)
-				&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
+				|| ss.getSolicitudServicioGeneracion().isScoringChecked()) {
 			return "Solo se permite cerrar por Veraz.";
 		}
 		return "";
