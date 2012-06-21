@@ -25,6 +25,7 @@ import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.cuentas.caratula.CaratulaTransferidaResultDto;
 import ar.com.nextel.business.cuentas.caratula.dao.config.CaratulaTransferidaConfig;
 import ar.com.nextel.business.cuentas.create.InsertUpdateCuentaConfig;
+import ar.com.nextel.business.cuentas.create.InsertUpdateCuentaResultDto;
 import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaService;
 import ar.com.nextel.business.cuentas.scoring.legacy.dto.ScoringCuentaLegacyDTO;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
@@ -1159,23 +1160,23 @@ public class SolicitudBusinessService {
 		AppLogger.info("##Log Cierre y pass - Se procede a transformar el prospect en cliente.");
 	    InsertUpdateCuentaConfig config = this.getInsertUpdateCuentaConfig();
 		config.setIdCuenta(idCuenta);
-		Long result;
+		InsertUpdateCuentaResultDto result;
 		try {
-			result = (Long) this.sfaConnectionDAO.execute(config);
+			result = (InsertUpdateCuentaResultDto)this.sfaConnectionDAO.execute(config);
 			
-			AppLogger.info("##Log Cierre y pass - Resultado de la creción de cliente: " + result);
-			if(result == 0L){
-				AppLogger.info("##Log Cierre y pass - Cliente creado correctamente.");
+			if(result.getDescripcion() == null || result.getDescripcion().equals("")){
+				AppLogger.info("#Log Cierre y pass - Cliente creado correctamente.");
 			}else{
-				AppLogger.info("##Log Cierre y pass - Hubo un problema al crear al cliente.");
+				String error = result.getCodError() + ". " + result.getDescripcion();
+				AppLogger.info("#Log Cierre y pass - Hubo un problema al crear al cliente. " + error);
+				throw new ConnectionDAOException(error);
 			}
-			
 		} catch (ConnectionDAOException e) {
 			AppLogger.info("##Log Cierre y pass - Error al transformar el prospect en cliente.");
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
-		return result;
+		return result.getCodError();
 	}
 
 	public void enviarMail(String asunto, String[] to, String mensaje) {
