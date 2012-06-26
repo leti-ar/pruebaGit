@@ -1161,17 +1161,16 @@ public class SolicitudBusinessService {
 		InsertUpdateCuentaConfig config = this.getInsertUpdateCuentaConfig();
 		config.setIdCuenta(idCuenta);
 		InsertUpdateCuentaResultDto result;
+		PreparedStatement stmt = null;
 		try {
 			// MGR - Para que pueda transformar a cliente, debo setearle el lenguaje a la base
-			PreparedStatement stmt = ((HibernateRepository) repository)
+			stmt = ((HibernateRepository) repository)
 					.getHibernateDaoSupport().getSessionFactory()
 					.getCurrentSession().connection()
 					.prepareStatement(
 							"BEGIN EXECUTE IMMEDIATE 'ALTER SESSION SET NLS_LANGUAGE =''Latin American Spanish'''; END;");
 
 			ResultSet resultSet = stmt.executeQuery();
-			stmt.close();
-
 			result = (InsertUpdateCuentaResultDto) this.sfaConnectionDAO
 					.execute(config);
 
@@ -1188,6 +1187,7 @@ public class SolicitudBusinessService {
 				throw new ConnectionDAOException(error);
 			}
 
+			stmt.close();
 			return result.getCodError();
 		} catch (Exception e) {
 			AppLogger
@@ -1195,6 +1195,7 @@ public class SolicitudBusinessService {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
+	
 	}
 
 	public void enviarMail(String asunto, String[] to, String mensaje) {
