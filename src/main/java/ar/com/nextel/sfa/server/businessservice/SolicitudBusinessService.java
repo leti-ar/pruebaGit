@@ -1158,25 +1158,43 @@ public class SolicitudBusinessService {
 	
 	public Long crearCliente(Long idCuenta) throws RpcExceptionMessages {
 		AppLogger.info("##Log Cierre y pass - Se procede a transformar el prospect en cliente.");
-	    InsertUpdateCuentaConfig config = this.getInsertUpdateCuentaConfig();
+		InsertUpdateCuentaConfig config = this.getInsertUpdateCuentaConfig();
 		config.setIdCuenta(idCuenta);
 		InsertUpdateCuentaResultDto result;
 		try {
-			result = (InsertUpdateCuentaResultDto)this.sfaConnectionDAO.execute(config);
-			
-			if(result.getDescripcion() == null || result.getDescripcion().equals("")){
-				AppLogger.info("#Log Cierre y pass - Cliente creado correctamente.");
-			}else{
-				String error = result.getCodError() + ". " + result.getDescripcion();
-				AppLogger.info("#Log Cierre y pass - Hubo un problema al crear al cliente. " + error);
+			// MGR - Para que pueda transformar a cliente, debo setearle el lenguaje a la base
+			PreparedStatement stmt = ((HibernateRepository) repository)
+					.getHibernateDaoSupport().getSessionFactory()
+					.getCurrentSession().connection()
+					.prepareStatement(
+							"BEGIN EXECUTE IMMEDIATE 'ALTER SESSION SET NLS_LANGUAGE =''Latin American Spanish'''; END;");
+
+			ResultSet resultSet = stmt.executeQuery();
+			stmt.close();
+
+			result = (InsertUpdateCuentaResultDto) this.sfaConnectionDAO
+					.execute(config);
+
+			if (result.getDescripcion() == null
+					|| result.getDescripcion().equals("")) {
+				AppLogger
+						.info("#Log Cierre y pass - Cliente creado correctamente.");
+			} else {
+				String error = result.getCodError() + ". "
+						+ result.getDescripcion();
+				AppLogger
+						.info("#Log Cierre y pass - Hubo un problema al crear al cliente. "
+								+ error);
 				throw new ConnectionDAOException(error);
 			}
-		} catch (ConnectionDAOException e) {
-			AppLogger.info("##Log Cierre y pass - Error al transformar el prospect en cliente.");
+
+			return result.getCodError();
+		} catch (Exception e) {
+			AppLogger
+					.info("##Log Cierre y pass - Error al transformar el prospect en cliente.");
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
-		return result.getCodError();
 	}
 
 	public void enviarMail(String asunto, String[] to, String mensaje) {
