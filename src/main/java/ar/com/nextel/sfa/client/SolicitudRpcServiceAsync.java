@@ -176,4 +176,6 @@ public interface SolicitudRpcServiceAsync {
 	public void getControles(AsyncCallback<List<ControlDto>> callback);
 	
 	public void validarLineasPorSegmento(SolicitudServicioDto solicitud, AsyncCallback<Boolean> callback);
+//	se debe habilitar cuando se haga el merge con el branch de portabilidad
+//	public void sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas, AsyncCallback<Integer> callback);
 }

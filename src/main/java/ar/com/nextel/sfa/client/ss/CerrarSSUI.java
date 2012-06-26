@@ -23,6 +23,8 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 	private static final String generarTitle = "SS - Generar SS";
 	private static final String cerrarTitle = "SS - Cerrar SS";
 	private FlexTable layout;
+//	se debe habilitar cuando se haga el merge con el branch de portabilidad	
+//	private boolean tienePortabilidad;
 
 	public CerrarSSUI() {
 		super("SS - Generar SS", false, true);
@@ -60,6 +62,8 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 		layout.setHTML(3, 1, Sfa.constant().scoringTitle());
 		layout.setWidget(3, 0, cerarSSUIData.getScoring());
 		add(layout);
+//		se debe habilitar cuando se haga el merge con el branch de portabilidad		
+//		tienePortabilidad = false;
 	}
 
 	public void onClick(Widget sender) {
@@ -76,7 +80,15 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 	public void setAceptarCommand(Command aceptarCommand) {
 		this.aceptarCommand = aceptarCommand;
 	}
-
+//	se debe habilitar cuando se haga el merge con el branch de portabilidad
+//	/**
+//	 * TODO: Portabilidad
+//	 * @param tienePortabilidad
+//	 */
+//	public void setTienePortabilidad(boolean tienePortabilidad){
+//		this.tienePortabilidad = tienePortabilidad;
+//	}
+	
 	public void show(PersonaDto persona, boolean isCliente, SolicitudServicioGeneracionDto solicitudServicioGeneracion,
 			boolean isCDW, boolean isMDS, boolean cerrandoConItemBB, boolean isTRANSFERENCIA) {
 		cerarSSUIData.setEmails(persona.getEmails(), solicitudServicioGeneracion);
@@ -89,17 +101,22 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 		if(ClientContext.getInstance().getVendedor().isAP()){
 			isTRANSFERENCIA = false;
 		}
-		
-		if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierreScoring && !permisoCierrePin && isCliente) {
-			layout.setWidget(3, 0, cerarSSUIData.getScoring());
-			layout.setHTML(3, 1, Sfa.constant().scoringTitle());
-		} else if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierrePin && !cerrandoConItemBB && isCliente) {
-			layout.setHTML(3, 0, Sfa.constant().pinMaestro());
-			layout.setWidget(3, 1, cerarSSUIData.getPin());
-		} else {
-			layout.setHTML(3, 0, "");
-			layout.setHTML(3, 1, "");
-		}
+//		se debe habilitar cuando se haga el merge con el branch de portabilidad		
+//		if(!tienePortabilidad) {
+			if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierreScoring && !permisoCierrePin && isCliente) {
+				layout.setWidget(3, 0, cerarSSUIData.getScoring());
+				layout.setHTML(3, 1, Sfa.constant().scoringTitle());
+			} else if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierrePin && !cerrandoConItemBB && isCliente) {
+				layout.setHTML(3, 0, Sfa.constant().pinMaestro());
+				layout.setWidget(3, 1, cerarSSUIData.getPin());
+			} else {
+				layout.setHTML(3, 0, "");
+				layout.setHTML(3, 1, "");
+			}
+//		} else {
+//			layout.setHTML(3, 0, "");
+//			layout.setHTML(3, 1, "");
+//		}
 		
 		if(isMDS){
 			layout.setHTML(4, 2, Sfa.constant().dae());

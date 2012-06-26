@@ -353,4 +353,9 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.validarLineasPorSegmento(solicitud, callback);
 	}
+//	se debe habilitar cuando se haga el merge con el branch de portabilidad
+//	public void sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas, DefaultWaitCallback<Integer> callback) {
+//		WaitWindow.show();
+//		solicitudRpcServiceAsync.sonConfigurablesPorAPG(lineas, callback);
+//	}
 }

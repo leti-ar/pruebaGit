@@ -1723,7 +1723,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 *         3- En caso de que todas las líneas de la solicitud cumplan, se 
 	 *         realizara el cierre y pass de créditos automático a la SS.
 	 */
-	private int sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas) {
+	public int sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas) {
 		AppLogger.info("#Log Cierre y pass - Validando que todas las líneas sean configurables por APG...");
 		int cumple = 0;
 		TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor();
