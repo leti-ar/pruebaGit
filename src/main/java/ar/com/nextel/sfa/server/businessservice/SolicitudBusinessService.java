@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.server.businessservice;
 
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,6 +11,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import oracle.jdbc.driver.OracleTypes;
 
 import org.apache.commons.validator.GenericValidator;
 import org.dozer.DozerBeanMapper;
@@ -25,7 +28,6 @@ import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.cuentas.caratula.CaratulaTransferidaResultDto;
 import ar.com.nextel.business.cuentas.caratula.dao.config.CaratulaTransferidaConfig;
 import ar.com.nextel.business.cuentas.create.InsertUpdateCuentaConfig;
-import ar.com.nextel.business.cuentas.create.InsertUpdateCuentaResultDto;
 import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaService;
 import ar.com.nextel.business.cuentas.scoring.legacy.dto.ScoringCuentaLegacyDTO;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
@@ -1158,10 +1160,9 @@ public class SolicitudBusinessService {
 	
 	public Long crearCliente(Long idCuenta) throws RpcExceptionMessages {
 		AppLogger.info("##Log Cierre y pass - Se procede a transformar el prospect en cliente.");
-		InsertUpdateCuentaConfig config = this.getInsertUpdateCuentaConfig();
-		config.setIdCuenta(idCuenta);
-		InsertUpdateCuentaResultDto result;
 		PreparedStatement stmt = null;
+		CallableStatement cstmt = null;
+		Long codError = null;
 		try {
 			// MGR - Para que pueda transformar a cliente, debo setearle el lenguaje a la base
 			stmt = ((HibernateRepository) repository)
@@ -1169,33 +1170,49 @@ public class SolicitudBusinessService {
 					.getCurrentSession().connection()
 					.prepareStatement(
 							"BEGIN EXECUTE IMMEDIATE 'ALTER SESSION SET NLS_LANGUAGE =''Latin American Spanish'''; END;");
-
-			ResultSet resultSet = stmt.executeQuery();
-			result = (InsertUpdateCuentaResultDto) this.sfaConnectionDAO
-					.execute(config);
-
-			if (result.getDescripcion() == null
-					|| result.getDescripcion().equals("")) {
-				AppLogger
-						.info("#Log Cierre y pass - Cliente creado correctamente.");
+			stmt.executeQuery();
+			
+			cstmt = ((HibernateRepository) repository)
+					.getHibernateDaoSupport().getSessionFactory()
+					.getCurrentSession().connection()
+					.prepareCall(
+							"call SFA_INSERT_UPDATE_CUENTA(?,?,?)");
+			cstmt.setLong(1, idCuenta);
+			cstmt.registerOutParameter(2, OracleTypes.NUMBER);
+			cstmt.registerOutParameter(3, OracleTypes.VARCHAR);
+			cstmt.execute();
+			
+			codError = cstmt.getLong(2);
+			if (codError == 0L) {
+				AppLogger.info("#Log Cierre y pass - Cliente creado correctamente.");
 			} else {
-				String error = result.getCodError() + ". "
-						+ result.getDescripcion();
-				AppLogger
-						.info("#Log Cierre y pass - Hubo un problema al crear al cliente. "
+				String error = codError + ". "
+						+ cstmt.getString(3);
+				AppLogger.info("#Log Cierre y pass - Hubo un problema al crear al cliente. "
 								+ error);
 				throw new ConnectionDAOException(error);
 			}
 
-			stmt.close();
-			return result.getCodError();
 		} catch (Exception e) {
-			AppLogger
-					.info("##Log Cierre y pass - Error al transformar el prospect en cliente.");
+			AppLogger.info("##Log Cierre y pass - Error al transformar el prospect en cliente.");
 			AppLogger.error(e);
-			throw ExceptionUtil.wrap(e);
+		}finally{
+			if (stmt != null) {
+		        try {
+		        	stmt.close();
+		        } catch (SQLException sqlEx) {}
+		        stmt = null;
+		    }
+			
+			if (cstmt != null) {
+		        try {
+		        	cstmt.close();
+		        } catch (SQLException sqlEx) {}
+		        cstmt = null;
+		    }
+			
 		}
-	
+		return codError;
 	}
 
 	public void enviarMail(String asunto, String[] to, String mensaje) {
