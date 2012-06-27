@@ -2021,8 +2021,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     		if(condiciones.size() > 1){
     			error += "Existe mas de una Condicion Comercial para el tipo vendedor " + tipoVendedor.getDescripcion() + 
 							", el tipo de Solicitud " + linea.getTipoSolicitud().getDescripcion() + " y resultado " + resultadoVerazScoring;
-    			AppLogger.error(error);
-    			throw ExceptionUtil.wrap(new Exception(error));
+    			return error;
     		}
     		else if(condiciones.isEmpty()){
         		if (("".equals(pinMaestro) || pinMaestro == null)
