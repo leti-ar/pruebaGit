@@ -543,6 +543,12 @@ public class PortabilidadUIData extends Composite {
 			lstTipoTelefonia.setSelectedIndex(-1);
 			lstTipoTelefonia.setSelectedItem(null);
 		}
+		
+		//LF - #3320 
+		if(solicitudPortabilidad.getTipoDocumentoRep() == null) {
+			lstTipoDocApod.setSelectedIndex(-1);
+			lstTipoDocApod.setSelectedItem(null);
+		}
 
 		if(solicitudPortabilidad.getNroSS() != null){
 			if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")) chkRecibeSMS.setValue(solicitudPortabilidad.isRecibeSMS());
