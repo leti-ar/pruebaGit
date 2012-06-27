@@ -1225,6 +1225,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					
 					if(portabilidad.isRecibeSMS()) cantRecibeSMS++;
 					
+					//LF - #3320
+					if(portabilidad.getNumeroDocRep() == null) {
+						portabilidad.setTipoDocumentoRep(null);
+					}
 					
 					// Empieza un bucle para lograr comparaciones
 					for(int n = 0; n < x_nroSS.get(i).size(); n++){
