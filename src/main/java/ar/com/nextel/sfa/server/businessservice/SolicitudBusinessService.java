@@ -12,8 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import oracle.jdbc.OracleTypes;
-
 import org.apache.commons.validator.GenericValidator;
 import org.dozer.DozerBeanMapper;
 import org.hibernate.HibernateException;
@@ -1178,8 +1176,8 @@ public class SolicitudBusinessService {
 					.prepareCall(
 							"call SFA_INSERT_UPDATE_CUENTA(?,?,?)");
 			cstmt.setLong(1, idCuenta);
-			cstmt.registerOutParameter(2, OracleTypes.NUMBER);
-			cstmt.registerOutParameter(3, OracleTypes.VARCHAR);
+			cstmt.registerOutParameter(2, java.sql.Types.NUMERIC);
+			cstmt.registerOutParameter(3, java.sql.Types.VARCHAR);
 			cstmt.execute();
 			
 			codError = cstmt.getLong(2);
