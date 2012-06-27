@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import oracle.jdbc.driver.OracleTypes;
+import oracle.jdbc.OracleTypes;
 
 import org.apache.commons.validator.GenericValidator;
 import org.dozer.DozerBeanMapper;
