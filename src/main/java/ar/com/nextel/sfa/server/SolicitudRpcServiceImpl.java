@@ -968,12 +968,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 							}
 						} else {
 							solicitudServicioDto.setPassCreditos(false);
-							if ("N".equals(resultadoVerazScoring)) { //#3254
-								errorCC = "No se puede cerrar la SS. Error consultando Scoring.";
-							} else {
-								if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
-									errorCC = generarErrorPorCC(solicitudServicioDto, pinMaestro);
-								}
+							if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
+								errorCC = generarErrorPorCC(solicitudServicioDto, pinMaestro);
 							}
 						}
 					}
@@ -1892,9 +1888,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				if (Integer.valueOf(resultadoVerazScoring) > 3) {
 					resultadoVerazScoring = "3";
 				}
-			} else { //#3254
-				resultadoVerazScoring = "N";
-				return false;
+			} else { //#3321
+				resultadoVerazScoring = "0";
 			}
 		}
 
