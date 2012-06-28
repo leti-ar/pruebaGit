@@ -235,7 +235,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		SolicitudServicioDto solicitudServicioDto = mapper.map(solicitud, SolicitudServicioDto.class);
 		
 		if(solicitudServicioDto.getCuenta() != null){
-			CuentaDto cuentaDto = obtenerCuentaPorId(solicitudServicioDto.getCuenta().getId());
+//			MGR - Se modifica esta parte para mejorar el codigo
+			Cuenta cta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
+			CuentaDto cuentaDto = mapper.map(cta, CuentaDto.class);
 			
 			if(cuenta != null){
 				solicitudServicioDto.setCustomer(cuentaDto.isCustomer());
@@ -1283,7 +1285,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		SolicitudServicioDto solicitudDto = resultSSAux.getSolicitud();
 		
 		if(solicitudDto.getCuenta() != null){
-			CuentaDto cuenta = obtenerCuentaPorId(solicitudDto.getCuenta().getId());
+//			MGR - Se modifica esta parte para mejorar el codigo
+			Cuenta cta = repository.retrieve(Cuenta.class, solicitudDto.getCuenta().getId());
+			CuentaDto cuenta = mapper.map(cta, CuentaDto.class);
 			
 			if(cuenta != null){
 				solicitudDto.setCustomer(cuenta.isCustomer());
@@ -1324,8 +1328,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		SolicitudServicioDto solicitudDto = resultSSAux.getSolicitud();
 		
 		if(solicitudDto.getCuenta() != null){
-			CuentaDto cuenta = obtenerCuentaPorId(solicitudDto.getCuenta().getId());
-			
+//			MGR - Se modifica esta parte para mejorar el codigo
+			Cuenta cta = repository.retrieve(Cuenta.class, solicitudDto.getCuenta().getId());
+			CuentaDto cuenta = mapper.map(cta, CuentaDto.class);
 			if(cuenta != null){
 				solicitudDto.setCustomer(cuenta.isCustomer());
 			}			
@@ -1519,7 +1524,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		SolicitudServicioDto ssDto2 = mapper.map(ss, SolicitudServicioDto.class);
 		
 		if(ssDto2.getCuenta() != null){
-			CuentaDto cuenta = obtenerCuentaPorId(ssDto2.getCuenta().getId());
+//			MGR - Se modifica esta parte para mejorar el codigo
+			Cuenta cta = repository.retrieve(Cuenta.class, ssDto2.getCuenta().getId());
+			CuentaDto cuenta = mapper.map(cta, CuentaDto.class);
 			
 			if(cuenta != null){
 				ssDto2.setCustomer(cuenta.isCustomer());
@@ -1569,98 +1576,74 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	
 	//GB
 	/**
-	 * Metodo generico para obtener la Cuenta utilizando su id.
-	 * Fue creado porque el SolicitudServicioDto en lugar de CuentaDto
-	 * posee un CuentaSSDto que es una version reducida.
-	 */
-	public CuentaDto obtenerCuentaPorId(long idCuenta) {
-	List<Cuenta> cuentas = repository.executeCustomQuery("getCuentaById", idCuenta);
-		if(cuentas != null && cuentas.size() > 0){
-			return mapper.map(cuentas.get(0), CuentaDto.class);
-		}else{
-			return null;
-		}
-	}
-	
-	//GB
-	/**
 	 * Valida que la solicitud de servicio cumpla con los requerimientos.
 	 */
 	public Integer validarCuentaPorId(SolicitudServicioDto solicitud) {
+//		MGR - Se modifica esta parte para mejorar el codigo
+		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitud.getCuenta().getId());
 		
-		long idCuenta = solicitud.getCuenta().getId();
-		List<Cuenta> cuentas = repository.executeCustomQuery("getCuentaById", idCuenta);
-		
-		if(cuentas != null && cuentas.size() > 0){
-			
-			Cuenta cuenta = cuentas.get(0);
-			
-			//Validacion 1
-			if(cuenta.getCodigoBSCS() != null && cuenta.getCodigoFNCL() != null  && cuenta.getIdVantive() != null){
-			//	List<Cuenta> suscriptorCuenta = repository.executeCustomQuery("getGCuentaSuscriptorId", cuentas.get(0).getCodigoVantive()+".00.00.1%");
-				List<Cuenta> suscriptorCuenta = repository.executeCustomQuery("getGCuentaSuscriptorId", cuenta.getCodigoVantive()+".00.00.100000");
-				//Validacion 2
-				if(suscriptorCuenta.size() > 0){
-					//Sigue...
-					if(suscriptorCuenta.get(0).getCodigoBSCS() != null && suscriptorCuenta.get(0).getCodigoFNCL() != null  && suscriptorCuenta.get(0).getIdVantive() != null){
-						//Validacion 3
-						if(solicitud.getEstadoH() != null){
-							if(solicitud.getEstadoH().getItemText().equalsIgnoreCase("Pass")){
+		//Validacion 1
+		if(cuenta.getCodigoBSCS() != null && cuenta.getCodigoFNCL() != null  && cuenta.getIdVantive() != null){
+			List<Cuenta> suscriptorCuenta = repository.executeCustomQuery("getGCuentaSuscriptorId", cuenta.getCodigoVantive()+".00.00.100000");
+			//Validacion 2
+			if(suscriptorCuenta.size() > 0){
+				//Sigue...
+				if(suscriptorCuenta.get(0).getCodigoBSCS() != null && suscriptorCuenta.get(0).getCodigoFNCL() != null  && suscriptorCuenta.get(0).getIdVantive() != null){
+					//Validacion 3
+					if(solicitud.getEstadoH() != null){
+						if(solicitud.getEstadoH().getItemText().equalsIgnoreCase("Pass")){
 
-								CuentaDto cuentaDto = mapper.map(cuenta, CuentaDto.class);
-								
-								CaratulaDto caratula = getCaratulaPorNroSS(cuentaDto.getCaratulas() , solicitud.getNumero());
-								
-								if(caratula != null){
-									//Validacion 4
-									if(caratula.isConfirmada()){
-										
-										String riskCodeText = caratula.getRiskCode().getDescripcion();
-										List<ControlDto> controles = getControles();
-										
-										ControlDto aprobadoPorAgente = null;
-										ControlDto analizadoPorCreditos = null;
-										
-										for (int i = 0; i < controles.size(); i++) {
-											ControlDto control = controles.get(i);
-											if(control.getDescripcion().equalsIgnoreCase("Analizado por Creditos")){
-												analizadoPorCreditos = control;
-											}
-											if(control.getDescripcion().equalsIgnoreCase("Aprobado por Ejecutivo")){
-												aprobadoPorAgente = control;
-											}
+							CuentaDto cuentaDto = mapper.map(cuenta, CuentaDto.class);
+							
+							CaratulaDto caratula = getCaratulaPorNroSS(cuentaDto.getCaratulas() , solicitud.getNumero());
+							
+							if(caratula != null){
+								//Validacion 4
+								if(caratula.isConfirmada()){
+									
+									String riskCodeText = caratula.getRiskCode().getDescripcion();
+									List<ControlDto> controles = getControles();
+									
+									ControlDto aprobadoPorAgente = null;
+									ControlDto analizadoPorCreditos = null;
+									
+									for (int i = 0; i < controles.size(); i++) {
+										ControlDto control = controles.get(i);
+										if(control.getDescripcion().equalsIgnoreCase("Analizado por Creditos")){
+											analizadoPorCreditos = control;
 										}
-										
-										if(riskCodeText.equalsIgnoreCase("EECC/Agente")){
-											solicitud.setControl(aprobadoPorAgente);
-										}else{
-											solicitud.setControl(analizadoPorCreditos);
+										if(control.getDescripcion().equalsIgnoreCase("Aprobado por Ejecutivo")){
+											aprobadoPorAgente = control;
 										}
 									}
 									
-								}else{
-									
-									return 4;
+									if(riskCodeText.equalsIgnoreCase("EECC/Agente")){
+										solicitud.setControl(aprobadoPorAgente);
+									}else{
+										solicitud.setControl(analizadoPorCreditos);
+									}
 								}
-								return 0;
+								
 							}else{
-								 return 3;
+								
+								return 4;
 							}
+							return 0;
 						}else{
 							 return 3;
 						}
 					}else{
-						return 2;
+						 return 3;
 					}
 				}else{
 					return 2;
 				}
 			}else{
-				return 1;
-			}		
+				return 2;
+			}
 		}else{
 			return 1;
-		}
+		}		
 	}
 
 	//GB
@@ -2163,24 +2146,14 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	        //#3275
 	        cantEquiposTotal += solicitud.getLineas().size();
 	        
-//	        MGR***** - Modificar como obtiene el segmento
+//	        MGR - Se modifica esta parte para mejorar el codigo
+	        Segmento segmento;
 			if(solicitud.getCuenta().isEmpresa()){
-				List<Segmento> segmentos = repository.getAll(Segmento.class);
-				for (int i = 0; i < segmentos.size() ; i++) {
-					Segmento segmento = segmentos.get(i);
-					if(segmento.getDescripcion().equalsIgnoreCase("empresa") || segmento.getDescripcion().equalsIgnoreCase("empresas")){
-						idSegmento = segmento.getId();
-					}
-				}
+				segmento = (Segmento)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SEGMENTO_EMPRESA);
 			}else{
-				List<Segmento> segmentos = repository.getAll(Segmento.class);
-				for (int i = 0; i < segmentos.size() ; i++) {
-					Segmento segmento = segmentos.get(i);
-					if(segmento.getDescripcion().equalsIgnoreCase("directo") || segmento.getDescripcion().equalsIgnoreCase("directos")){
-						idSegmento = segmento.getId();
-					}
-				}
+				segmento = (Segmento)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SEGMENTO_DIRECTO);
 			}
+			idSegmento = segmento.getId();
 
 			if(idSegmento != 0l){
 				List<LineasPorSegmento> lineas = repository.executeCustomQuery("getLineasPorSegmentoDosIds",idTipoVendedor,idSegmento);	

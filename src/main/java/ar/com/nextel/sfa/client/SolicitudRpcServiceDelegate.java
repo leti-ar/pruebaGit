@@ -328,11 +328,6 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.enviarSMS(to, mensaje,callback);
 	}
 	
-	public void obtenerCuentaPorId(long idCuenta , AsyncCallback<CuentaDto> callback) {
-		WaitWindow.show();
-		solicitudRpcServiceAsync.obtenerCuentaPorId(idCuenta , callback);
-	}
-	
 	public void validarCuentaPorId(SolicitudServicioDto solicitud, AsyncCallback<Integer> callback) {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.validarCuentaPorId(solicitud, callback);

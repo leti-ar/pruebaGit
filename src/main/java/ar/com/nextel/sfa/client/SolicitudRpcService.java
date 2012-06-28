@@ -176,8 +176,6 @@ public interface SolicitudRpcService extends RemoteService {
 	
 	public void enviarSMS(String to, String mensaje);
 	
-	public CuentaDto obtenerCuentaPorId(long idCuenta) throws RpcExceptionMessages;
-	
 	public Integer validarCuentaPorId(SolicitudServicioDto solicitud) throws RpcExceptionMessages;
 	
 	public void changeToPass(long idSS) throws RpcExceptionMessages;
