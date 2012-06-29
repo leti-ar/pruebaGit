@@ -1904,20 +1904,26 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     					AppLogger.info("#Log Cierre y pass - " + item.getDescripcion() + " - " + item.getWarehouse().getDescripcion());
     				}
     			}
-    			for (Iterator<Item> iterator2 = items.iterator(); iterator2.hasNext();) {
-					Item item = (Item ) iterator2.next();
-					AppLogger.info("#Log Cierre y pass - Evaluando condicion comercial para el item: -" + item.getDescripcion() + " - " + item.getWarehouse().getDescripcion() + "-");
-					List<CondicionComercial> condiciones  = repository.executeCustomQuery("condicionesComercialesPorSS", resultadoVerazScoring,
-	    					tipoVendedor.getId(), linea.getTipoSolicitud().getId(), linea.getPlan().getId(), item.getId(), cantEquipos, cantPesos);		
-	    			if (condiciones.size() <= 0) {
-	    				existeCC = false;
-	    				AppLogger.info("#Log Cierre y pass - El item: -" + item.getDescripcion() + "- NO cumple con las condiciones comerciales");
-	    				break;
-	    			} else {
-	    				AppLogger.info("#Log Cierre y pass - El item: -" + item.getDescripcion() + "- cumple con las condiciones comerciales");
-	    			}
-	    			
-				}
+    			
+    			//MGR - #3323 - Si no hay items, entonces no se cumple con las condiciones comerciales
+    			if(items.isEmpty()){
+    				existeCC = false;
+    			}else{
+	    			for (Iterator<Item> iterator2 = items.iterator(); iterator2.hasNext();) {
+						Item item = (Item ) iterator2.next();
+						AppLogger.info("#Log Cierre y pass - Evaluando condicion comercial para el item: -" + item.getDescripcion() + " - " + item.getWarehouse().getDescripcion() + "-");
+						List<CondicionComercial> condiciones  = repository.executeCustomQuery("condicionesComercialesPorSS", resultadoVerazScoring,
+		    					tipoVendedor.getId(), linea.getTipoSolicitud().getId(), linea.getPlan().getId(), item.getId(), cantEquipos, cantPesos);		
+		    			if (condiciones.size() <= 0) {
+		    				existeCC = false;
+		    				AppLogger.info("#Log Cierre y pass - El item: -" + item.getDescripcion() + "- NO cumple con las condiciones comerciales");
+		    				break;
+		    			} else {
+		    				AppLogger.info("#Log Cierre y pass - El item: -" + item.getDescripcion() + "- cumple con las condiciones comerciales");
+		    			}
+		    			
+					}
+    			}
     		} else if (linea.getTipoSolicitud() != null && linea.getPlan() != null && linea.getItem() != null) {
     			    			List<CondicionComercial> condiciones  = repository.executeCustomQuery("condicionesComercialesPorSS", resultadoVerazScoring,
     					tipoVendedor.getId(), linea.getTipoSolicitud().getId(), linea.getPlan().getId(), linea.getItem().getId(), cantEquipos, cantPesos);		

@@ -37,7 +37,7 @@ public class TipoSolicitudDto extends EnumDto implements IsSerializable, ListBox
 	}
 	
 	public boolean isActivacionOnline() {
-		return "activacionOnline".equals(formaContratacion != null ? formaContratacion.toLowerCase() : "");
+		return "activaciononline".equals(formaContratacion != null ? formaContratacion.toLowerCase() : "");
 	}
 
 	public TipoSolicitudBaseDto getTipoSolicitudBase() {
