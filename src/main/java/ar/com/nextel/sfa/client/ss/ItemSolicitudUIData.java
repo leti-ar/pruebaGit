@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
-import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -43,8 +41,6 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -309,50 +305,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				}
 			}
 			
-			//#LF 
-			SolicitudRpcService.Util.getInstance().obtenerTipoPersona(controller.getEditarSSUIData().getSolicitudServicio(), new DefaultWaitCallback<Integer>() {
-				@Override
-				public void success(Integer result) {
-					controller.getEditarSSUIData().setTipoPersona(result);
-					habilitarCamposTipoPersona();
-				}
-			});
 			dialog.center();
 		}
 	};
 	
-	/**
-	 * Metodo que habilita/deshabilita ciertos campos dependiendo si la persona es fisica o juridica.
-	 */
-	public void habilitarCamposTipoPersona() {
-//		
-//		SolicitudRpcService.Util.getInstance().obtenerTipoPersona(controller.getEditarSSUIData().getSolicitudServicio(), new DefaultWaitCallback<Integer>() {
-//			@Override
-//			public void success(Integer result) {
-				if(controller.getEditarSSUIData().getTipoPersona().intValue() != 1) {//#LF - PERSONA JURIDICA
-					portabilidadPanel.lblRazonSocial.addStyleName("req");
-					portabilidadPanel.lblTipoDocApod.addStyleName("req");
-					portabilidadPanel.lblNroDocApod.addStyleName("req");
-					portabilidadPanel.lblNombreApod.addStyleName("req");
-					portabilidadPanel.lblApellidoApod.addStyleName("req");
-					portabilidadPanel.lblNombre.removeStyleName("req");
-					portabilidadPanel.lblApellido.removeStyleName("req");					
-					portabilidadPanel.txtRazonSocial.setEnabled(true);
-					portabilidadPanel.txtNombre.setEnabled(false);
-					portabilidadPanel.txtApellido.setEnabled(false);					
-				} else { // PERSONA FISICA
-					portabilidadPanel.lblNombre.addStyleName("req");
-					portabilidadPanel.lblApellido.addStyleName("req");
-					portabilidadPanel.lblRazonSocial.removeStyleName("req");
-					portabilidadPanel.lblTipoDocApod.removeStyleName("req");
-					portabilidadPanel.lblNroDocApod.removeStyleName("req");
-					portabilidadPanel.lblNombreApod.removeStyleName("req");
-					portabilidadPanel.lblApellidoApod.removeStyleName("req");
-					portabilidadPanel.txtRazonSocial.setEnabled(false);
-					portabilidadPanel.txtNombre.setEnabled(true);
-					portabilidadPanel.txtApellido.setEnabled(true);
-				}
-			}
 
 	public void setItemSolicitudDialog(ItemSolicitudDialog dialog){
 		this.dialog = dialog;

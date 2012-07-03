@@ -459,14 +459,17 @@ public class DatosSSUI extends Composite implements ClickHandler {
 							selectDetalleLineaSSRow(row);
 						}
 					} else if (col == 0) {
-							SolicitudRpcService.Util.getInstance().obtenerTipoPersona(controller.getEditarSSUIData().getSolicitudServicio(), new DefaultWaitCallback<Integer>() {
-								@Override
-								public void success(Integer result) {
-									editarSSUIData.setTipoPersona(result);
+						openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
+
+//							SolicitudRpcService.Util.getInstance().obtenerTipoPersona(controller.getEditarSSUIData().getSolicitudServicio(), new DefaultWaitCallback<Integer>() {
+//								@Override
+//								public void success(Integer result) {
+//									editarSSUIData.setTipoPersona(result);
 									// Abre panel de edicion de la LineaSolicitudServicio
+						            // LF-VER
 									openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
-								}
-							});
+//								}
+//							});
 
 					} else if (col == 1) {
 						// Elimina la LineaSolicitudServicio
@@ -490,13 +493,14 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		// TODO: Portabilidad
 		if(detalleSS == sender){
 			if(row > 0 && col == 2){
-				SolicitudRpcService.Util.getInstance().obtenerTipoPersona(controller.getEditarSSUIData().getSolicitudServicio(), new DefaultWaitCallback<Integer>() {
-				@Override
-				public void success(Integer result) {
-					editarSSUIData.setTipoPersona(result);
+//				SolicitudRpcService.Util.getInstance().obtenerTipoPersona(controller.getEditarSSUIData().getSolicitudServicio(), new DefaultWaitCallback<Integer>() {
+//				@Override
+//				public void success(Integer result) {
+//					//LF - TP Port
+////					editarSSUIData.setTipoPersona(result);
 					openPortabilidadReplicarDialog(row);
-				}
-			});
+//				}
+//			});
 				
 			}
 		}
@@ -511,12 +515,8 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		
 
 		if(portabilidad != null){
-			//LF - #3278 y #3282
-//			if(editarSSUIData.getTipoPersona() == 1) {
-//				ModalMessageDialog.getInstance().showAceptar(
-//						"No puede replicar los datos para una persona fisica", 
-//						ModalMessageDialog.getCloseCommand());
-//			} else {
+			//LF
+			if(portabilidad.getTipoPersona() != null) {
 					final DatosSSUI datos = this;
 					SolicitudRpcService.Util.getInstance().getPortabilidadInitializer(editarSSUIData.getCuentaId().toString(),editarSSUIData.getCuenta().getCodigoVantive(),new DefaultWaitCallback<PortabilidadInitializer>() {
 						@Override
@@ -525,12 +525,16 @@ public class DatosSSUI extends Composite implements ClickHandler {
 							replicarDialog.show(editarSSUIData.getSolicitudServicio(),row - 1,result,datos,controller);
 						}
 					});
-//				}
-			}else{
+			} else {
 				ModalMessageDialog.getInstance().showAceptar(
-						"El Item seleccionado no posee una Solicitud de Portabilidad para replicar", 
+						"Debe seleccionar un Tipo de Persona en el item seleccionado", 
 						ModalMessageDialog.getCloseCommand());
 			}
+	    }else{
+			ModalMessageDialog.getInstance().showAceptar(
+					"El Item seleccionado no posee una Solicitud de Portabilidad para replicar", 
+					ModalMessageDialog.getCloseCommand());
+		}
 	}
 	
 //    private boolean empty(String s) {
@@ -593,14 +597,15 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		itemSolicitudDialog.setCuentaEmpresa(editarSSUIData.getCuenta().isEmpresa());
 
 		itemSolicitudDialog.show(linea);
-			SolicitudRpcService.Util.getInstance().obtenerTipoPersona(controller.getEditarSSUIData().getSolicitudServicio(), new DefaultWaitCallback<Integer>() {
-				@Override
-				public void success(Integer result) {
-					editarSSUIData.setTipoPersona(result);
-					itemSolicitudDialog.getItemSolicitudUIData().getPortabilidadPanel().setTipoPersona(result);
-					itemSolicitudDialog.getItemSolicitudUIData().habilitarCamposTipoPersona();
-				}
-			});
+//			SolicitudRpcService.Util.getInstance().obtenerTipoPersona(controller.getEditarSSUIData().getSolicitudServicio(), new DefaultWaitCallback<Integer>() {
+//				@Override
+//				public void success(Integer result) {
+//					editarSSUIData.setTipoPersona(result);
+		            // LF-VER
+//					itemSolicitudDialog.getItemSolicitudUIData().getPortabilidadPanel().setTipoPersona(result);
+//					itemSolicitudDialog.getItemSolicitudUIData().habilitarCamposTipoPersona();
+//				}
+//			});
 	}
 
 	/**Verifica si se puede aplicar un descuento al item seleccionado*/

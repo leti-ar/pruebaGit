@@ -33,8 +33,12 @@
 					</td>
 				</tr>
 				<tr>
-				    <td style="padding-bottom:3px; padding-top:3px;"/>
-				    <td style="padding-bottom:3px; padding-top:3px;"/>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<g:Label ui:field='lblTipoPersona' text="Tipo Per.: " width="80"></g:Label> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<s:ListBox ui:field='lstTipoPersona' width="85"></s:ListBox> 
+					</td>
 					<td style="padding-bottom:3px; padding-top:3px;"> 
 						<g:Label ui:field='lblFechaUltimaFactura' text="Fecha de Emisión: " width="130"></g:Label>   
 					</td>

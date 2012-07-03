@@ -60,6 +60,7 @@ import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServ
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Sucursal;
 import ar.com.nextel.model.solicitudes.beans.TipoAnticipo;
+import ar.com.nextel.model.solicitudes.beans.TipoPersona;
 import ar.com.nextel.model.solicitudes.beans.TipoPlan;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
@@ -101,6 +102,7 @@ import ar.com.nextel.sfa.client.dto.SucursalDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
+import ar.com.nextel.sfa.client.dto.TipoPersonaDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefoniaDto;
@@ -401,10 +403,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 //			else tipoPersona = 1;
 //		}
 
-		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
-			if(linea.getPortabilidad() != null) linea.getPortabilidad().setTipoPersona(obtenerTipoPersona(solicitudServicioDto));
-		}
-
 		// TODO: Portabilidad
 		long contadorPortabilidad = 0;
 		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
@@ -679,7 +677,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 						}
 					}
 					contadorPortabilidad++;
-					linea.getPortabilidad().setTipoPersona(obtenerTipoPersona(solicitudServicioDto));
 				}
 			}
 			solicitudServicioDto.setCantLineasPortabilidad(contadorPortabilidad);
@@ -859,10 +856,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 //			else tipoPersona = 1;
 //		}
 
-		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
-			if(linea.getPortabilidad() != null) linea.getPortabilidad().setTipoPersona(obtenerTipoPersona(solicitudServicioDto));
-		}
-
+		
 		// TODO: Portabilidad
 		long contadorPortabilidad = 0;
 		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
@@ -1013,6 +1007,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 						repository.find("FROM TipoTelefonia ttel WHERE ttel.codigoBSCS IN('1','2')"), TipoTelefoniaDto.class));
 		initializer.setLstModalidadCobro(mapper.convertList(
 						repository.find("FROM ModalidadCobro mcob WHERE mcob.codigoBSCS IN('CPP','MPP')"), ModalidadCobroDto.class));
+		initializer.setLstTipoPersona(mapper.convertList(repository.getAll(TipoPersona.class), TipoPersonaDto.class));
 
 		if (idCuenta==null) {
 			if (codigoVantive != null) {
@@ -1326,16 +1321,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		}
 		
 		return listCantPort;
-	}
-	
-	public Integer obtenerTipoPersona(SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages {
-		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
-		
-		if(cuenta.getClaseCuenta().getEsGobierno()) return 3;
-		else{
-			if(cuenta.isEmpresa()) return 2;
-			else return 1;
-		}
 	}
 	
 }

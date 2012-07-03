@@ -9,6 +9,7 @@ import ar.com.nextel.sfa.client.dto.ProveedorDto;
 import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
+import ar.com.nextel.sfa.client.dto.TipoPersonaDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefoniaDto;
 import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.util.PortabilidadUtil;
@@ -50,6 +51,7 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 	private ProveedorDto proveedorAnterior;
 	private String strTelefonoContacto;
 	private String strEmailContacto;
+	private TipoPersonaDto tipoPersona;
 	
 	public PortabilidadReplicarDialog(){
 		super(TITULO,false,true);
@@ -86,16 +88,20 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 			gridLayout.getColumnFormatter().setWidth(0, "150px");
 			gridLayout.getColumnFormatter().setWidth(1, "350px");
 			
-			// LF #3278
-			if (solicitudServicio.getCuenta().isEmpresa()) { //JURIDICA
-				gridLayout.setHTML(0,0, "Razon Social:"); 	gridLayout.setHTML(0,1, strRazonSocial);
-				gridLayout.setHTML(1,0, "Tipo Documento:");	gridLayout.setHTML(1,1, tipoDocumento.getDescripcion());
-				gridLayout.setHTML(2,0, "Nro. Documento:");	gridLayout.setHTML(2,1, strNroDocumento);
-			} else { //FISICA
-				gridLayout.setHTML(0,0, "Nombre:");			gridLayout.setHTML(0,1, strNombre);
-				gridLayout.setHTML(1,0, "Apellido:");		gridLayout.setHTML(1,1, strApellido);
-				gridLayout.setHTML(2,0, "Tipo Documento:");	gridLayout.setHTML(2,1, tipoDocumento.getDescripcion());
-				gridLayout.setHTML(3,0, "Nro. Documento:");	gridLayout.setHTML(3,1, strNroDocumento);
+			tipoPersona = lineas.get(indexLinea).getPortabilidad().getTipoPersona();
+			if(tipoPersona != null) {
+				// LF #3278
+//				if (solicitudServicio.getCuenta().isEmpresa()) { //JURIDICA
+				if(!tipoPersona.getDescripcion().equals("FISICA")) {
+					gridLayout.setHTML(0,0, "Razon Social:"); 	gridLayout.setHTML(0,1, strRazonSocial);
+					gridLayout.setHTML(1,0, "Tipo Documento:");	gridLayout.setHTML(1,1, tipoDocumento.getDescripcion());
+					gridLayout.setHTML(2,0, "Nro. Documento:");	gridLayout.setHTML(2,1, strNroDocumento);
+				} else { //FISICA
+					gridLayout.setHTML(0,0, "Nombre:");			gridLayout.setHTML(0,1, strNombre);
+					gridLayout.setHTML(1,0, "Apellido:");		gridLayout.setHTML(1,1, strApellido);
+					gridLayout.setHTML(2,0, "Tipo Documento:");	gridLayout.setHTML(2,1, tipoDocumento.getDescripcion());
+					gridLayout.setHTML(3,0, "Nro. Documento:");	gridLayout.setHTML(3,1, strNroDocumento);
+				}
 			}
 			
 			// Grilla
@@ -158,6 +164,8 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 											linea.getPortabilidad().setNumeroDocumento(strNroDocumento);
 											linea.getPortabilidad().setEmail(strEmailContacto);
 											linea.getPortabilidad().setTelefono(strTelefonoContacto);
+											// LF
+											linea.getPortabilidad().setTipoPersona(tipoPersona);
 											// LF - #3286
 											linea.getPortabilidad().setRecibeSMS(true);
 

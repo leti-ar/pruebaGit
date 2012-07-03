@@ -966,11 +966,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
             <b>nroUltimaFacura</b>
         </field>
         
-        <field>
+        <field custom-converter-id="enumToDto">
         	<a>tipoPersona</a>
         	<b>tipoPersona</b>
         </field>
-        
         <field custom-converter-id="enumToDto">
             <a>proveedorInicial</a>
             <b>proveedorAnterior</b>
@@ -994,7 +993,14 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
         <field custom-converter-id="enumToDto">
             <a>tipoDocumentoRep</a>
             <b>tipoDocumentoRep</b>
-        </field>        
+        </field>      
+	</mapping>
+	
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.TipoPersona
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.TipoPersonaDto
+		</class-b>
 	</mapping>
 
 </mappings>

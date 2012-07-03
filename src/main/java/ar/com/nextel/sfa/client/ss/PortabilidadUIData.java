@@ -1,6 +1,8 @@
 package ar.com.nextel.sfa.client.ss;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
@@ -11,6 +13,7 @@ import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProveedorDto;
 import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
+import ar.com.nextel.sfa.client.dto.TipoPersonaDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefoniaDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
@@ -79,7 +82,8 @@ public class PortabilidadUIData extends Composite {
 	@UiField Label lblModalidadCobro;
 	@UiField Label lblTelefonoPortar;
 //	LF - CR SFA - Carga Datos Apoderado
-	@UiField Label lblFechaUltimaFactura;
+	@UiField Label lblFechaUltimaFactura;	
+	@UiField Label lblTipoPersona;
 	
 	
 	@UiField ListBox lstTipoDocumento;
@@ -88,6 +92,7 @@ public class PortabilidadUIData extends Composite {
 	@UiField ListBox lstProveedorAnterior;
 //	LF - CR SFA - Carga Datos Apoderado
 	@UiField ListBox lstTipoDocApod;
+	@UiField ListBox lstTipoPersona;
 	
 	@UiField RegexTextBox txtEmail;
 	@UiField RegexTextBox txtNroSS;
@@ -114,9 +119,10 @@ public class PortabilidadUIData extends Composite {
 
 	private PersonaDto persona;
 	private SolicitudPortabilidadDto solicitudPortabilidad;
-	private int tipoPersona;
+	private List<TipoDocumentoDto> listaTipoDocumento = new ArrayList<TipoDocumentoDto>();
 	
 	/**
+	 * @param focusListener 
 	 * 
 	 */
 	public PortabilidadUIData() {
@@ -134,6 +140,7 @@ public class PortabilidadUIData extends Composite {
 //		lblNombre.addStyleName(OBLIGATORIO);
 //		lblApellido.addStyleName(OBLIGATORIO);
 //		lblRazonSocial.addStyleName(OBLIGATORIO);
+		lblTipoPersona.addStyleName(OBLIGATORIO);	
 		
 		lblApellido.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 		lblNroUltimaFacura.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
@@ -142,6 +149,8 @@ public class PortabilidadUIData extends Composite {
 		lblNroDocApod.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 		lblApellidoApod.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 		lblFechaUltimaFactura.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+		
+		txtRazonSocial.setEnabled(false);
 
 		chkRecibeSMS.addStyleName("portabilidadCheck");
 		chkNoPoseeTel.addStyleName("portabilidadCheck");
@@ -198,7 +207,7 @@ public class PortabilidadUIData extends Composite {
 	void onCLick(ClickEvent evt){
 		if(evt.getSource() == lnkCopiarCuenta){
 			// #LF - #3278
-			if(getTipoPersona().intValue() == 1) {
+			if(isPersonaFisica()) {
 				txtNombre.setText(persona.getNombre());
 				txtApellido.setText(persona.getApellido());
 				txtNroDocumento.setText(persona.getDocumento().getNumero());
@@ -235,7 +244,7 @@ public class PortabilidadUIData extends Composite {
 	 * Maneja los eventos del tipo ChangeEvent de los componentes construidos desde ui.xml referenciados por UiHandler
 	 * @param evt
 	 */
-	@UiHandler(value={"lstTipoDocumento","lstTipoTelefonia","lstTipoDocApod"})
+	@UiHandler(value={"lstTipoDocumento","lstTipoTelefonia","lstTipoDocApod", "lstTipoPersona"})
 	void onChange(ChangeEvent evt){
 		if(evt.getSource() == lstTipoDocumento) validarTipoDocumento();
 		else if(evt.getSource() == lstTipoTelefonia) comprobarTipoTelefonia();
@@ -243,9 +252,39 @@ public class PortabilidadUIData extends Composite {
 		else if(evt.getSource() == lstTipoDocApod) {
 			validarTipoDocApoderado();
 			txtNroDocApod.setText("");
+		} else if(evt.getSource() == lstTipoPersona) {
+			if(isPersonaFisica()) {
+				resetearTipoDocCuit(true);
+			} else {
+				resetearTipoDocCuit(false);
+			}
 		}
 	}
 
+	public void resetearTipoDocCuit(boolean esFisica) {
+		if(esFisica) {
+			lstTipoDocumento.clear();
+			lstTipoDocumento.addAllItems(this.getListaTipoDocumento());
+		} else {
+			lstTipoDocumento.clear();
+			TipoDocumentoDto cuit = obtenerTipoDocumentoCuit();
+			lstTipoDocumento.addItem(cuit);
+		}
+		txtNroDocumento.setText(null);
+		habilitarCamposTipoPersona(esFisica);
+	}
+	
+	private TipoDocumentoDto obtenerTipoDocumentoCuit(){
+		TipoDocumentoDto cuit = new TipoDocumentoDto();
+		for (Iterator<TipoDocumentoDto> iterator = this.getListaTipoDocumento().iterator(); iterator.hasNext();) {
+			TipoDocumentoDto tipoDocumento = (TipoDocumentoDto) iterator.next();
+			if(tipoDocumento.getDescripcion().equals("CUIT")) {
+				cuit = tipoDocumento;
+			}
+		}
+		return cuit;
+	}
+	
 	/**
 	 * 
 	 */
@@ -326,7 +365,9 @@ public class PortabilidadUIData extends Composite {
 		lstModalidadCobro.setSelectedIndex(0);
 		lstTipoTelefonia.setSelectedIndex(-1);
 		lstProveedorAnterior.setSelectedIndex(-1);
-			
+
+		lstTipoPersona.setSelectedIndex(0);
+		
 		txtEmail.setText(null);
 		txtNroSS.setText(null);;
 		txtNombre.setText(null);;
@@ -368,8 +409,11 @@ public class PortabilidadUIData extends Composite {
 		lstModalidadCobro.addAllItems(initiliazer.getLstModalidadCobro()); 
 		//LF - CR SFA - Carga Datos Apoderado
 		lstTipoDocApod.addAllItems(initiliazer.getLstTipoDocumento());
+		lstTipoPersona.addAllItems(initiliazer.getLstTipoPersona());
 
 		lnkCopiarCuenta.setVisible(true);
+		//LF
+		listaTipoDocumento.addAll(initiliazer.getLstTipoDocumento());
 	}
 	
 	public void setPersona(PersonaDto unaPersona){
@@ -399,6 +443,9 @@ public class PortabilidadUIData extends Composite {
 		if(!chkNoPoseeTel.getValue())
 			validador.addTarget(txtTelefono.getNumero()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Telefono"));
 		
+		if(lstTipoPersona.getSelectedIndex() < 0)
+			validador.addTarget(lstTipoPersona).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Tipo Persona"));
+		
 		validador.addTarget(txtTelefonoPortar.getNumero()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Telefono a Portar"));
 		
 		if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")){
@@ -417,7 +464,10 @@ public class PortabilidadUIData extends Composite {
 
 		}
 		
-		if(getTipoPersona().intValue() != 1) { // PERSONA JURIDICA
+		if(isPersonaFisica()) {
+			validador.addTarget(txtNombre).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nombre"));
+			validador.addTarget(txtApellido).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Apellido"));
+		} else {
 			validador.addTarget(txtNroDocumento).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nro. de Documento"));
 			validador.addTarget(txtRazonSocial).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Razon Social"));
 //			validador.addTarget(txtNombre).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nombre"));
@@ -426,9 +476,6 @@ public class PortabilidadUIData extends Composite {
 			validador.addTarget(txtApellidoApod).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Apellido Apoderado"));
 			validador.addTarget(lstTipoDocApod).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Tipo Documento Apoderado"));
 			validador.addTarget(txtNroDocApod).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Número Documento Apoderado"));
-		} else { // PERSONA FISICA
-			validador.addTarget(txtNombre).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nombre"));
-			validador.addTarget(txtApellido).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Apellido"));
 		}
 		String numAportar = txtTelefonoPortar.getArea().getText() + txtTelefonoPortar.getNumero().getText();
 		if(!numAportar.equals("")) {
@@ -465,6 +512,8 @@ public class PortabilidadUIData extends Composite {
 		txtNroDocApod.setText(solicitudPortabilidad.getNumeroDocRep());
 		txtNombreApod.setText(solicitudPortabilidad.getNombreRep());
 		txtApellidoApod.setText(solicitudPortabilidad.getApellidoRep());
+		
+		lstTipoPersona.setSelectedItem(solicitudPortabilidad.getTipoPersona());
 		
 		setVisible(true);
 		comprobarTipoTelefonia();
@@ -537,6 +586,16 @@ public class PortabilidadUIData extends Composite {
 
 			chkNoPoseeEmail.setValue(false);
 			txtEmail.setEnabled(true);
+			//LF
+			resetearTipoDocCuit(true);
+		} else {
+			if(solicitudPortabilidad.getTipoPersona() == null ){
+				resetearTipoDocCuit(true);
+			} else if(!solicitudPortabilidad.getTipoPersona().getDescripcion().equals("FISICA")) {
+				String numDoc = solicitudPortabilidad.getNumeroDocumento();
+				resetearTipoDocCuit(false);
+				txtNroDocumento.setText(numDoc);
+			}
 		}
 		
 		if(solicitudPortabilidad.getTipoTelefonia() == null) {
@@ -612,9 +671,49 @@ public class PortabilidadUIData extends Composite {
 			solicitudPortabilidad.setNumeroDocRep(txtNroDocApod.getText());
 			solicitudPortabilidad.setNombreRep(txtNombreApod.getText());
 			solicitudPortabilidad.setApellidoRep(txtApellidoApod.getText());
+			solicitudPortabilidad.setTipoPersona((TipoPersonaDto)lstTipoPersona.getSelectedItem());
 		}
 		resetearPortabilidad();
 		return solicitudPortabilidad;
+	}
+	
+	/**
+	 * Metodo que habilita/deshabilita ciertos campos dependiendo si la persona es fisica o juridica.
+	 */
+	public void habilitarCamposTipoPersona(boolean esFisica) {
+		if(esFisica) {
+			lblNombre.addStyleName("req");
+			lblApellido.addStyleName("req");
+			lblRazonSocial.removeStyleName("req");
+			lblTipoDocApod.removeStyleName("req");
+			lblNroDocApod.removeStyleName("req");
+			lblNombreApod.removeStyleName("req");
+			lblApellidoApod.removeStyleName("req");
+			txtRazonSocial.setEnabled(false);
+			txtNombre.setEnabled(true);
+			txtApellido.setEnabled(true);
+			txtRazonSocial.setText(null);
+		} else {
+			lblRazonSocial.addStyleName("req");
+			lblTipoDocApod.addStyleName("req");
+			lblNroDocApod.addStyleName("req");
+			lblNombreApod.addStyleName("req");
+			lblApellidoApod.addStyleName("req");
+			lblNombre.removeStyleName("req");
+			lblApellido.removeStyleName("req");					
+			txtRazonSocial.setEnabled(true);
+			txtNombre.setEnabled(false);
+			txtApellido.setEnabled(false);	
+			txtNombre.setText(null);
+			txtApellido.setText(null);	
+		}
+	}
+	
+	
+	public boolean isPersonaFisica(){
+		if(lstTipoPersona.getSelectedItemText().equals("FISICA"))
+			return true;
+		else return false;
 	}
 
 	public void setSolicitudPortabilidad(SolicitudPortabilidadDto solicitudPortabilidad) {
@@ -740,14 +839,6 @@ public class PortabilidadUIData extends Composite {
 	public void setChkPortabilidad(CheckBox chkPortabilidad) {
 		this.chkPortabilidad = chkPortabilidad;
 	}
-	
-	public void setTipoPersona(int tipoPersona) {
-		this.tipoPersona = tipoPersona;
-	}
-	
-	public Integer getTipoPersona() {
-		return tipoPersona;
-	}
 
 	public ListBox getLstTipoDocApod() {
 		return lstTipoDocApod;
@@ -788,4 +879,23 @@ public class PortabilidadUIData extends Composite {
 	public void setFechaUltFactura(FechaDatePicker fechaUltFactura) {
 		this.fechaUltFactura = fechaUltFactura;
 	}
+
+	public ListBox getLstTipoPersona() {
+		return lstTipoPersona;
+	}
+
+	public void setLstTipoPersona(ListBox lstTipoPersona) {
+		this.lstTipoPersona = lstTipoPersona;
+	}
+
+	private List<TipoDocumentoDto> getListaTipoDocumento() {
+		return listaTipoDocumento;
+	}
+
+	private void setListaTipoDocumento(List<TipoDocumentoDto> listaTipoDocumento) {
+		this.listaTipoDocumento = listaTipoDocumento;
+	}
+	
+	
+	
 }
