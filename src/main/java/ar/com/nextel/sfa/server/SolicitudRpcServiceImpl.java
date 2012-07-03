@@ -2054,7 +2054,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				}
     			
     			//LF #3245 - Si es act/act online se debe expresar el error como modelo en lugar del item.
-				boolean activacion = (linea.getTipoSolicitud().getDescripcion().equals("Activación")||linea.getTipoSolicitud().getDescripcion().equals("Activacion (On line)"));
+//    			MGR - Para ordenar el codigo
+    			boolean activacion = (linea.getTipoSolicitud().isActivacion() || linea.getTipoSolicitud().isActivacionOnline());
 
 				if(!existeItem){
 					if(activacion) {
