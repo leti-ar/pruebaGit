@@ -873,10 +873,13 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 						.getItem().getId(), idCuenta, sessionContextLoader.getVendedor(), isEmpresa);
 		//LF - #3141 - Se agregan los SA para Activación - Activación On-Line
 		if(linea.getTipoSolicitud().isActivacion() || linea.getTipoSolicitud().isActivacionOnline()) {
-			List<Item> listItems = repository.executeCustomQuery("LISTA_ITEMS_POR_MODELO", linea.getModelo().getId());
-			if(!listItems.isEmpty()) {
-				serviciosAdicionales.addAll(solicitudServicioRepository.getServiciosAdicionalesActivOnLine(linea.getTipoSolicitud().getId(),
-					listItems, sessionContextLoader.getVendedor(), isEmpresa));
+//			MGR - #3331
+			if(linea.getModelo() != null){
+				List<Item> listItems = repository.executeCustomQuery("LISTA_ITEMS_POR_MODELO", linea.getModelo().getId());
+				if(!listItems.isEmpty()) {
+					serviciosAdicionales.addAll(solicitudServicioRepository.getServiciosAdicionalesActivOnLine(linea.getTipoSolicitud().getId(),
+						listItems, sessionContextLoader.getVendedor(), isEmpresa));
+				}
 			}
 		}
 		return mapper.convertList(serviciosAdicionales, ServicioAdicionalLineaSolicitudServicioDto.class);
@@ -1895,35 +1898,41 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     		  Si el tipo de solicitud es Activacion o Activacion online, se deben tomar todos los item del modelo seleccionado y 
     		  verificar que cada uno corresponda con las condiciones comerciales, si al menos uno no corresponde no se cumple las cc */
     		if(linea.getTipoSolicitud().isActivacion() || linea.getTipoSolicitud().isActivacionOnline()) {
-    			List<Item> items = repository.executeCustomQuery("LISTA_ITEMS_POR_MODELO", linea.getModelo().getId());
-    			//LF - Este for es solo para logear los items que corresponden al modelo.
-    			if(!items.isEmpty()) {
-					AppLogger.info("#Log Cierre y pass - Los items que corresponden con el modelo: " + linea.getModelo().getDescripcion() + " son los siguientes: ");
-    				for (Iterator<Item> iterator2 = items.iterator(); iterator2.hasNext();) {
-    					Item item = (Item ) iterator2.next();
-    					AppLogger.info("#Log Cierre y pass - " + item.getDescripcion() + " - " + item.getWarehouse().getDescripcion());
-    				}
+//    			MGR - #3331
+    			if(linea.getModelo() != null){
+    				List<Item> items = repository.executeCustomQuery("LISTA_ITEMS_POR_MODELO", linea.getModelo().getId());
+        			//LF - Este for es solo para logear los items que corresponden al modelo.
+        			if(!items.isEmpty()) {
+    					AppLogger.info("#Log Cierre y pass - Los items que corresponden con el modelo: " + linea.getModelo().getDescripcion() + " son los siguientes: ");
+        				for (Iterator<Item> iterator2 = items.iterator(); iterator2.hasNext();) {
+        					Item item = (Item ) iterator2.next();
+        					AppLogger.info("#Log Cierre y pass - " + item.getDescripcion() + " - " + item.getWarehouse().getDescripcion());
+        				}
+        			}
+        			
+        			//MGR - #3323 - Si no hay items, entonces no se cumple con las condiciones comerciales
+        			if(items.isEmpty()){
+        				existeCC = false;
+        			}else{
+    	    			for (Iterator<Item> iterator2 = items.iterator(); iterator2.hasNext();) {
+    						Item item = (Item ) iterator2.next();
+    						AppLogger.info("#Log Cierre y pass - Evaluando condicion comercial para el item: -" + item.getDescripcion() + " - " + item.getWarehouse().getDescripcion() + "-");
+    						List<CondicionComercial> condiciones  = repository.executeCustomQuery("condicionesComercialesPorSS", resultadoVerazScoring,
+    		    					tipoVendedor.getId(), linea.getTipoSolicitud().getId(), linea.getPlan().getId(), item.getId(), cantEquipos, cantPesos);		
+    		    			if (condiciones.size() <= 0) {
+    		    				existeCC = false;
+    		    				AppLogger.info("#Log Cierre y pass - El item: -" + item.getDescripcion() + "- NO cumple con las condiciones comerciales");
+    		    				break;
+    		    			} else {
+    		    				AppLogger.info("#Log Cierre y pass - El item: -" + item.getDescripcion() + "- cumple con las condiciones comerciales");
+    		    			}
+    		    			
+    					}
+        			}
+    			}else{
+    				existeCC = false;
     			}
     			
-    			//MGR - #3323 - Si no hay items, entonces no se cumple con las condiciones comerciales
-    			if(items.isEmpty()){
-    				existeCC = false;
-    			}else{
-	    			for (Iterator<Item> iterator2 = items.iterator(); iterator2.hasNext();) {
-						Item item = (Item ) iterator2.next();
-						AppLogger.info("#Log Cierre y pass - Evaluando condicion comercial para el item: -" + item.getDescripcion() + " - " + item.getWarehouse().getDescripcion() + "-");
-						List<CondicionComercial> condiciones  = repository.executeCustomQuery("condicionesComercialesPorSS", resultadoVerazScoring,
-		    					tipoVendedor.getId(), linea.getTipoSolicitud().getId(), linea.getPlan().getId(), item.getId(), cantEquipos, cantPesos);		
-		    			if (condiciones.size() <= 0) {
-		    				existeCC = false;
-		    				AppLogger.info("#Log Cierre y pass - El item: -" + item.getDescripcion() + "- NO cumple con las condiciones comerciales");
-		    				break;
-		    			} else {
-		    				AppLogger.info("#Log Cierre y pass - El item: -" + item.getDescripcion() + "- cumple con las condiciones comerciales");
-		    			}
-		    			
-					}
-    			}
     		} else if (linea.getTipoSolicitud() != null && linea.getPlan() != null && linea.getItem() != null) {
     			    			List<CondicionComercial> condiciones  = repository.executeCustomQuery("condicionesComercialesPorSS", resultadoVerazScoring,
     					tipoVendedor.getId(), linea.getTipoSolicitud().getId(), linea.getPlan().getId(), linea.getItem().getId(), cantEquipos, cantPesos);		
@@ -2046,24 +2055,34 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     			
     			//LF #3245 - Si es act/act online se debe expresar el error como modelo en lugar del item.
 				boolean activacion = (linea.getTipoSolicitud().getDescripcion().equals("Activación")||linea.getTipoSolicitud().getDescripcion().equals("Activacion (On line)"));
-    			
+
 				if(!existeItem){
 					if(activacion) {
-						if(!"".equals(error)){
-							error += "y modelo ";
-						} else {
-							error += "modelo ";
+//						MGR - #3331
+						if(linea.getModelo() == null){
+							if(!"".equals(error)){
+								error += " y con Modelo sin especificar";
+							}else{
+								error += "con Modelo sin especificar";
+							}
+						}else{
+							if(!"".equals(error)){
+								error += " y modelo ";
+							} else {
+								error += "modelo ";
+							}
+							error += linea.getModelo().getDescripcion();		
 						}
-						error += linea.getModelo().getDescripcion();
 					} else {
 						if(!"".equals(error)){
-							error += "e item ";
+							error += " e item ";
 						} else {
 							error += "item ";
 						}
 						error += linea.getItem().getDescripcion();
 					}
 				}
+				
     		}
     		
     		//Voy juntando los mensajes
