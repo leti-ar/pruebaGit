@@ -975,6 +975,21 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 							solicitudServicioDto.setPassCreditos(false);
 							if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
 								errorCC = generarErrorPorCC(solicitudServicioDto, pinMaestro);
+								
+						    	/* MGR - 04/07/2012
+						    	 * Al verificar si las lineas cumplen con las condiciones comerciales, la cantidad de equipos y la cantidad de pesos
+						    	 * de todas las lineas se suman y se evalua que todas las lineas cumplan con esas restriciones, por lo que puede suceder
+						    	 * que una Solicitud de Servicio no cumpla con las condiciones comerciales, pero que al armar el error a mostrar, el mismo
+						    	 * no se genere ya que por separado las lineas si cumplen.
+						    	 * En estos casos, se decidio junto con el usuario que se le otroga el pass a la solicitud de todas formas y que ellos 
+						    	 * asumen el riesgo en estos casos.
+						    	 * (Revisar mail enviado por Marco Rossi el día 04/07/2012 a Damian Schnaider, Giselle Rivas y Gonzalo Suarez, 
+						    	 * donde confirman esto)
+						    	 */
+								if(errorCC.equals("")){
+									solicitudServicioDto.setPassCreditos(true);
+								}
+
 							}
 						}
 					}
@@ -2036,24 +2051,38 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     				}
     			}
     			
+    			//LF #3245 - Si es act/act online se debe expresar el error como modelo en lugar del item.
+//    			MGR - Para ordenar el codigo
+    			boolean activacion = (linea.getTipoSolicitud().isActivacion() || linea.getTipoSolicitud().isActivacionOnline());
+    			
+    			
     			//Verifico que el item es valido para la CC
     			boolean existeItem = false;
-    			Set<Item> items = condActual.getItems();
-    			for(Iterator<Item> it = items.iterator(); it.hasNext() && !existeItem;){
-    				Item item= (Item) it.next();
-    				
-    				if(item.getId().equals(linea.getItem().getId())){
+//    			MGR - Si es activacion, el item se controla de otra manera
+    			if(!activacion){
+    				Set<Item> items = condActual.getItems();
+        			for(Iterator<Item> it = items.iterator(); it.hasNext() && !existeItem;){
+        				Item item= (Item) it.next();
+        				
+        				if(item.getId().equals(linea.getItem().getId())){
+        					existeItem = true;
+        				}
+        			}
+    			}else{
+    				Set<Item> itemsCond = condActual.getItems();
+    				List<Item> itemsLinea = repository.executeCustomQuery("LISTA_ITEMS_POR_MODELO", linea.getModelo().getId());
+    				if(itemsCond.containsAll(itemsLinea)){
     					existeItem = true;
+    				}else{
+    					existeItem = false;
     				}
     			}
+    			
     			
     			if(!existePlan){
 					error += "plan " + linea.getPlan().getDescripcion();
 				}
     			
-    			//LF #3245 - Si es act/act online se debe expresar el error como modelo en lugar del item.
-//    			MGR - Para ordenar el codigo
-    			boolean activacion = (linea.getTipoSolicitud().isActivacion() || linea.getTipoSolicitud().isActivacionOnline());
 
 				if(!existeItem){
 					if(activacion) {
@@ -2098,6 +2127,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     			mensaje += error + ".<br />";
     		}
     	}
+    	
     	return mensaje;
 	}
 	
