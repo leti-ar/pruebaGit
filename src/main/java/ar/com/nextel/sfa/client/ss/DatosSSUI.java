@@ -460,17 +460,6 @@ public class DatosSSUI extends Composite implements ClickHandler {
 						}
 					} else if (col == 0) {
 						openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
-
-//							SolicitudRpcService.Util.getInstance().obtenerTipoPersona(controller.getEditarSSUIData().getSolicitudServicio(), new DefaultWaitCallback<Integer>() {
-//								@Override
-//								public void success(Integer result) {
-//									editarSSUIData.setTipoPersona(result);
-									// Abre panel de edicion de la LineaSolicitudServicio
-						            // LF-VER
-									openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
-//								}
-//							});
-
 					} else if (col == 1) {
 						// Elimina la LineaSolicitudServicio
 						ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
@@ -597,15 +586,6 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		itemSolicitudDialog.setCuentaEmpresa(editarSSUIData.getCuenta().isEmpresa());
 
 		itemSolicitudDialog.show(linea);
-//			SolicitudRpcService.Util.getInstance().obtenerTipoPersona(controller.getEditarSSUIData().getSolicitudServicio(), new DefaultWaitCallback<Integer>() {
-//				@Override
-//				public void success(Integer result) {
-//					editarSSUIData.setTipoPersona(result);
-		            // LF-VER
-//					itemSolicitudDialog.getItemSolicitudUIData().getPortabilidadPanel().setTipoPersona(result);
-//					itemSolicitudDialog.getItemSolicitudUIData().habilitarCamposTipoPersona();
-//				}
-//			});
 	}
 
 	/**Verifica si se puede aplicar un descuento al item seleccionado*/

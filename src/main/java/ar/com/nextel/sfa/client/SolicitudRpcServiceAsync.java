@@ -25,6 +25,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
+import ar.com.nextel.sfa.client.dto.TipoPersonaDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
@@ -154,4 +155,7 @@ public interface SolicitudRpcServiceAsync {
 
 	void validarPortabilidadTransferencia(List<ContratoViewDto> contratos,
 			AsyncCallback<PortabilidadResult> callback);
+
+	void obtenerTipoPersonaCuenta(SolicitudServicioDto ssDto,
+			AsyncCallback<TipoPersonaDto> callback);
 }

@@ -12,6 +12,7 @@ import ar.com.nextel.sfa.client.dto.ModalidadCobroDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProveedorDto;
 import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
+import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoPersonaDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefoniaDto;
@@ -120,6 +121,8 @@ public class PortabilidadUIData extends Composite {
 	private PersonaDto persona;
 	private SolicitudPortabilidadDto solicitudPortabilidad;
 	private List<TipoDocumentoDto> listaTipoDocumento = new ArrayList<TipoDocumentoDto>();
+	private SolicitudServicioDto solicitudServicio = null;
+	private TipoPersonaDto tipoPersonaCuenta = null;
 	
 	/**
 	 * @param focusListener 
@@ -207,15 +210,16 @@ public class PortabilidadUIData extends Composite {
 	void onCLick(ClickEvent evt){
 		if(evt.getSource() == lnkCopiarCuenta){
 			// #LF - #3278
-			if(isPersonaFisica()) {
-				txtNombre.setText(persona.getNombre());
-				txtApellido.setText(persona.getApellido());
-				txtNroDocumento.setText(persona.getDocumento().getNumero());
-				lstTipoDocumento.selectByText(persona.getDocumento().getTipoDocumento().getDescripcion());
-			} else if(persona != null){
-				txtRazonSocial.setText(persona.getRazonSocial());
-				txtNroDocumento.setText(persona.getDocumento().getNumero());
-				lstTipoDocumento.selectByText(persona.getDocumento().getTipoDocumento().getDescripcion());
+			if(tipoPersonaCuenta == null) {
+				SolicitudRpcService.Util.getInstance().obtenerTipoPersonaCuenta(this.getSolicitudServicio(), new DefaultWaitCallback<TipoPersonaDto>() {
+					@Override
+					public void success(TipoPersonaDto result) {
+						setTipoPersonaCuenta(result);
+						replicarTipoPersonaCuenta(result);
+					}
+				});
+			} else {
+				replicarTipoPersonaCuenta(tipoPersonaCuenta);
 			}
 		}
 		else if(evt.getSource() == chkNoPoseeTel){
@@ -237,6 +241,22 @@ public class PortabilidadUIData extends Composite {
 				txtEmail.setText("");
 				txtEmail.setEnabled(false);
 			}else txtEmail.setEnabled(true);
+		}
+	}
+	
+	private void replicarTipoPersonaCuenta(TipoPersonaDto tipoPersonaCuenta) {
+		lstTipoPersona.setSelectedItem(tipoPersonaCuenta);
+		if(tipoPersonaCuenta.getDescripcion().equals("FISICA")) {
+			resetearTipoDocCuit(true);
+			txtNombre.setText(persona.getNombre());
+			txtApellido.setText(persona.getApellido());
+			txtNroDocumento.setText(persona.getDocumento().getNumero());
+			lstTipoDocumento.selectByText(persona.getDocumento().getTipoDocumento().getDescripcion());
+		} else {
+			resetearTipoDocCuit(false);
+			txtRazonSocial.setText(persona.getRazonSocial());
+			txtNroDocumento.setText(persona.getDocumento().getNumero());
+			lstTipoDocumento.selectByText(persona.getDocumento().getTipoDocumento().getDescripcion());
 		}
 	}
 	
@@ -895,7 +915,21 @@ public class PortabilidadUIData extends Composite {
 	private void setListaTipoDocumento(List<TipoDocumentoDto> listaTipoDocumento) {
 		this.listaTipoDocumento = listaTipoDocumento;
 	}
-	
-	
-	
+
+	public SolicitudServicioDto getSolicitudServicio() {
+		return solicitudServicio;
+	}
+
+	public void setSolicitudServicio(SolicitudServicioDto solicitudServicio) {
+		this.solicitudServicio = solicitudServicio;
+	}
+
+	public TipoPersonaDto getTipoPersonaCuenta() {
+		return tipoPersonaCuenta;
+	}
+
+	public void setTipoPersonaCuenta(TipoPersonaDto tipoPersonaCuenta) {
+		this.tipoPersonaCuenta = tipoPersonaCuenta;
+	}
+
 }

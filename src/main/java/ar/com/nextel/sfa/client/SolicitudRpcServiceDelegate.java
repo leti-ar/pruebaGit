@@ -1,9 +1,7 @@
 package ar.com.nextel.sfa.client;
 
 import java.util.List;
-import java.util.Map;
 
-import ar.com.nextel.business.solicitudes.report.SolicitudPortabilidadPropertiesReport;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
@@ -27,6 +25,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
+import ar.com.nextel.sfa.client.dto.TipoPersonaDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
@@ -36,7 +35,6 @@ import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.client.util.PortabilidadResult;
-import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
@@ -290,6 +288,11 @@ public class SolicitudRpcServiceDelegate {
 	public void validarPortabilidadTransferencia(List<ContratoViewDto> contratos, AsyncCallback<PortabilidadResult> callback){
 		WaitWindow.show();
 		solicitudRpcServiceAsync.validarPortabilidadTransferencia(contratos, callback);
+	}
+	
+	public void obtenerTipoPersonaCuenta(SolicitudServicioDto ssDto, AsyncCallback<TipoPersonaDto> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.obtenerTipoPersonaCuenta(ssDto, callback);
 	}
 	
 	// -------------------------------------------

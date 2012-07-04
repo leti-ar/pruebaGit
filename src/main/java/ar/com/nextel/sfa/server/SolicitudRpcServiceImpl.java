@@ -1323,4 +1323,27 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return listCantPort;
 	}
 	
+	public TipoPersonaDto obtenerTipoPersonaCuenta(SolicitudServicioDto ssDto) {
+		Cuenta cuenta = repository.retrieve(Cuenta.class, ssDto.getCuenta().getId());
+        List<TipoPersonaDto> listTipoPersonaDto = mapper.convertList(repository.getAll(TipoPersona.class), TipoPersonaDto.class);
+        String tipoPersona;
+        
+		if(cuenta.isGobierno()) {
+			tipoPersona = "GOBIERNO";
+		} else if (cuenta.isEmpresa()) {
+			tipoPersona = "JURIDICA";
+		} else {
+			tipoPersona = "FISICA";
+		}		
+        
+        for (Iterator iterator = listTipoPersonaDto.iterator(); iterator
+				.hasNext();) {
+			TipoPersonaDto tipoPersonaDto = (TipoPersonaDto) iterator.next();
+			if(tipoPersonaDto.getDescripcion().equals(tipoPersona)) 
+				return tipoPersonaDto;
+        }
+        
+        return null;
+	}
+	
 }
