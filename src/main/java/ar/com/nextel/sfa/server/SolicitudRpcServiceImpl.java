@@ -987,6 +987,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 						    	 * donde confirman esto)
 						    	 */
 								if(errorCC.equals("")){
+									AppLogger.info("#Log Cierre y pass - La SS con cumple con las CC pero el mensaje de error se encuentra vacio. Damos el pass de todas formas.", this);
 									solicitudServicioDto.setPassCreditos(true);
 								}
 
