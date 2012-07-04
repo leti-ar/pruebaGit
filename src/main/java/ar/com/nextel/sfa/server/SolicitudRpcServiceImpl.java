@@ -1892,7 +1892,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     	
 		boolean existeCC = true;
 		
-		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
+		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext() && existeCC;) {
     		LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
     		/*LF - #3144: Cierre y Pass Automatico - Evaluacion de condiciones comerciales para Activacion y Activacion On-line 
     		  Si el tipo de solicitud es Activacion o Activacion online, se deben tomar todos los item del modelo seleccionado y 
@@ -1922,7 +1922,6 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     		    			if (condiciones.size() <= 0) {
     		    				existeCC = false;
     		    				AppLogger.info("#Log Cierre y pass - El item: -" + item.getDescripcion() + "- NO cumple con las condiciones comerciales");
-    		    				break;
     		    			} else {
     		    				AppLogger.info("#Log Cierre y pass - El item: -" + item.getDescripcion() + "- cumple con las condiciones comerciales");
     		    			}
@@ -1938,7 +1937,6 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     					tipoVendedor.getId(), linea.getTipoSolicitud().getId(), linea.getPlan().getId(), linea.getItem().getId(), cantEquipos, cantPesos);		
     			if (condiciones.size() <= 0) {
     				existeCC = false;
-    				break;
     			}
     		}
 		}
