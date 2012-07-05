@@ -221,6 +221,7 @@ public class PortabilidadUIData extends Composite {
 			} else {
 				replicarTipoPersonaCuenta(tipoPersonaCuenta);
 			}
+			validarTipoDocumento();
 		}
 		else if(evt.getSource() == chkNoPoseeTel){
 			if(chkNoPoseeTel.getValue()){
@@ -278,6 +279,7 @@ public class PortabilidadUIData extends Composite {
 			} else {
 				resetearTipoDocCuit(false);
 			}
+			validarTipoDocumento();
 		}
 	}
 
@@ -537,7 +539,6 @@ public class PortabilidadUIData extends Composite {
 		
 		setVisible(true);
 		comprobarTipoTelefonia();
-		validarTipoDocumento();
 		validarTipoDocApoderado();
 
 		if(solicitudPortabilidad.getTelefono() != null){
@@ -617,6 +618,8 @@ public class PortabilidadUIData extends Composite {
 				txtNroDocumento.setText(numDoc);
 			}
 		}
+		
+		validarTipoDocumento();
 		
 		if(solicitudPortabilidad.getTipoTelefonia() == null) {
 			lstTipoTelefonia.setSelectedIndex(-1);
