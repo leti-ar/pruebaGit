@@ -1930,7 +1930,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
         			if(items.isEmpty()){
         				existeCC = false;
         			}else{
-    	    			for (Iterator<Item> iterator2 = items.iterator(); iterator2.hasNext();) {
+    	    			for (Iterator<Item> iterator2 = items.iterator(); iterator2.hasNext() && existeCC;) {
     						Item item = (Item ) iterator2.next();
     						AppLogger.info("#Log Cierre y pass - Evaluando condicion comercial para el item: -" + item.getDescripcion() + " - " + item.getWarehouse().getDescripcion() + "-");
     						List<CondicionComercial> condiciones  = repository.executeCustomQuery("condicionesComercialesPorSS", resultadoVerazScoring,
