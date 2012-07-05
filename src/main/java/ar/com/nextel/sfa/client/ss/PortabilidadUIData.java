@@ -267,7 +267,10 @@ public class PortabilidadUIData extends Composite {
 	 */
 	@UiHandler(value={"lstTipoDocumento","lstTipoTelefonia","lstTipoDocApod", "lstTipoPersona"})
 	void onChange(ChangeEvent evt){
-		if(evt.getSource() == lstTipoDocumento) validarTipoDocumento();
+		if(evt.getSource() == lstTipoDocumento) {
+		    txtNroDocumento.setText(null);
+			validarTipoDocumento();
+		}
 		else if(evt.getSource() == lstTipoTelefonia) comprobarTipoTelefonia();
 		//LF - CR SFA - Carga Datos Apoderado
 		else if(evt.getSource() == lstTipoDocApod) {
