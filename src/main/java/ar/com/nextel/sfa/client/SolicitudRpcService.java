@@ -174,7 +174,7 @@ public interface SolicitudRpcService extends RemoteService {
 	public List<ItemSolicitudDto> getItemsPorLineaSS(SolicitudServicioDto ss);
 	
 	// Portabilidad ------------------------------
-	PortabilidadInitializer getPortabilidadInitializer(String idCuenta,String codigoVantive) throws RpcExceptionMessages;
+	PortabilidadInitializer getPortabilidadInitializer(String idCuenta) throws RpcExceptionMessages;
 	
 	SolicitudPortabilidadDto getSolicitudPortabilidadDto(String lineaID) throws RpcExceptionMessages;
 	
@@ -188,7 +188,7 @@ public interface SolicitudRpcService extends RemoteService {
 	
 	List<Long> getCantidadLineasPortabilidad(List<Long> listIdSS) throws RpcExceptionMessages;
 	// -------------------------------------------
-	public Integer obtenerTipoPersona(SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages;
+//	public Integer obtenerTipoPersona(SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages;
 	
 }
 

@@ -459,15 +459,8 @@ public class DatosSSUI extends Composite implements ClickHandler {
 							selectDetalleLineaSSRow(row);
 						}
 					} else if (col == 0) {
-							SolicitudRpcService.Util.getInstance().obtenerTipoPersona(controller.getEditarSSUIData().getSolicitudServicio(), new DefaultWaitCallback<Integer>() {
-								@Override
-								public void success(Integer result) {
-									editarSSUIData.setTipoPersona(result);
-									// Abre panel de edicion de la LineaSolicitudServicio
-									openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
-								}
-							});
-
+						// Abre panel de edicion de la LineaSolicitudServicio
+						openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
 					} else if (col == 1) {
 						// Elimina la LineaSolicitudServicio
 						ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
@@ -490,14 +483,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		// TODO: Portabilidad
 		if(detalleSS == sender){
 			if(row > 0 && col == 2){
-				SolicitudRpcService.Util.getInstance().obtenerTipoPersona(controller.getEditarSSUIData().getSolicitudServicio(), new DefaultWaitCallback<Integer>() {
-				@Override
-				public void success(Integer result) {
-					editarSSUIData.setTipoPersona(result);
-					openPortabilidadReplicarDialog(row);
-				}
-			});
-				
+				openPortabilidadReplicarDialog(row);
 			}
 		}
 	}
@@ -511,32 +497,27 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		
 
 		if(portabilidad != null){
-			//#LF
-			if(editarSSUIData.getTipoPersona() == 1) {
-				ModalMessageDialog.getInstance().showAceptar(
-						"No puede replicar los datos para una persona fisica", 
-						ModalMessageDialog.getCloseCommand());
-			} else if(portabilidad.getTipoDocumento() != null && notEmpty(portabilidad.getNumeroDocumento()) && 
-						notEmpty(portabilidad.getRazonSocial()) && notEmpty(portabilidad.getNombre()) && notEmpty(portabilidad.getApellido())){
-	
-					final DatosSSUI datos = this;
-					SolicitudRpcService.Util.getInstance().getPortabilidadInitializer(editarSSUIData.getCuentaId().toString(),editarSSUIData.getCuenta().getCodigoVantive(),new DefaultWaitCallback<PortabilidadInitializer>() {
-						@Override
-						public void success(PortabilidadInitializer result) {
-							PortabilidadReplicarDialog replicarDialog = new PortabilidadReplicarDialog();
-							replicarDialog.show(editarSSUIData.getSolicitudServicio(),row - 1,result,datos,controller);
-						}
-					});
-				}else{
-					ModalMessageDialog.getInstance().showAceptar(
-							"Para portar los datos de Portabilidad deben estar completos Tipo y Numero de Documento, Razon Social, Nombre y Apellido", 
-							ModalMessageDialog.getCloseCommand());
-				}
+			if(portabilidad.getTipoDocumento() != null && notEmpty(portabilidad.getNumeroDocumento()) && 
+					notEmpty(portabilidad.getRazonSocial()) && notEmpty(portabilidad.getNombre()) && notEmpty(portabilidad.getApellido())){
+
+				final DatosSSUI datos = this;
+				SolicitudRpcService.Util.getInstance().getPortabilidadInitializer(editarSSUIData.getCuentaId().toString(), new DefaultWaitCallback<PortabilidadInitializer>() {
+					@Override
+					public void success(PortabilidadInitializer result) {
+						PortabilidadReplicarDialog replicarDialog = new PortabilidadReplicarDialog();
+						replicarDialog.show(editarSSUIData.getSolicitudServicio(),row - 1,result,datos,controller);
+					}
+				});
 			}else{
 				ModalMessageDialog.getInstance().showAceptar(
-						"El Item seleccionado no posee una Solicitud de Portabilidad para replicar", 
+						"Para portar los datos de Portabilidad deben estar completos Tipo y Numero de Documento, Razon Social, Nombre y Apellido", 
 						ModalMessageDialog.getCloseCommand());
 			}
+		}else{
+			ModalMessageDialog.getInstance().showAceptar(
+					"El Item seleccionado no posee una Solicitud de Portabilidad para replicar", 
+					ModalMessageDialog.getCloseCommand());
+		}
 	}
 	
     private boolean empty(String s) {
@@ -599,14 +580,6 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		itemSolicitudDialog.setCuentaEmpresa(editarSSUIData.getCuenta().isEmpresa());
 
 		itemSolicitudDialog.show(linea);
-			SolicitudRpcService.Util.getInstance().obtenerTipoPersona(controller.getEditarSSUIData().getSolicitudServicio(), new DefaultWaitCallback<Integer>() {
-				@Override
-				public void success(Integer result) {
-					editarSSUIData.setTipoPersona(result);
-					itemSolicitudDialog.getItemSolicitudUIData().getPortabilidadPanel().setTipoPersona(result);
-					itemSolicitudDialog.getItemSolicitudUIData().habilitarCamposTipoPersona();
-				}
-			});
 	}
 
 	/**Verifica si se puede aplicar un descuento al item seleccionado*/

@@ -279,9 +279,9 @@ public class SolicitudRpcServiceDelegate {
 	}
 
 	// Portabilidad ------------------------------
-	public void getPortabilidadInitializer(String idCuenta,String codigoVantive, AsyncCallback<PortabilidadInitializer> callback){
+	public void getPortabilidadInitializer(String idCuenta, AsyncCallback<PortabilidadInitializer> callback){
 		WaitWindow.show();
-		solicitudRpcServiceAsync.getPortabilidadInitializer(idCuenta, codigoVantive, callback);
+		solicitudRpcServiceAsync.getPortabilidadInitializer(idCuenta, callback);
 	}
 
 	public void getSolicitudPortabilidadDto(String lineaID, AsyncCallback<SolicitudPortabilidadDto> callback){
@@ -314,10 +314,10 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.validarPortabilidadTransferencia(contratos, callback);
 	}
 	
-	public void obtenerTipoPersona(SolicitudServicioDto solicitudServicioDto, AsyncCallback<Integer> callback){ 
-		WaitWindow.show();
-		solicitudRpcServiceAsync.obtenerTipoPersona(solicitudServicioDto, callback);
-	}
+//	public void obtenerTipoPersona(SolicitudServicioDto solicitudServicioDto, AsyncCallback<Integer> callback){ 
+//		WaitWindow.show();
+//		solicitudRpcServiceAsync.obtenerTipoPersona(solicitudServicioDto, callback);
+//	}
 	
 	// -------------------------------------------
 

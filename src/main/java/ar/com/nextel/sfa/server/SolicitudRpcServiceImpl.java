@@ -398,20 +398,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	public CreateSaveSolicitudServicioResultDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
 			throws RpcExceptionMessages {
 
-		//#LF
-//		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
-//		
-//		int tipoPersona;
-//		if(cuenta.getClaseCuenta().getEsGobierno()) tipoPersona = 3;
-//		else{
-//			if(cuenta.isEmpresa()) tipoPersona = 2;
-//			else tipoPersona = 1;
-//		}
-
-		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
-			if(linea.getPortabilidad() != null) linea.getPortabilidad().setTipoPersona(obtenerTipoPersona(solicitudServicioDto));
-		}
-
 		// TODO: Portabilidad
 		long contadorPortabilidad = 0;
 		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
@@ -654,20 +640,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		GeneracionCierreResponse response = null;
 		try {
 			
-			//#LF
-//			Cuenta cuenta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
-//			
-//			int tipoPersona;
-//			if(cuenta.getClaseCuenta().getEsGobierno()) tipoPersona = 3;
-//			else{
-//				if(cuenta.isEmpresa()) tipoPersona = 2;
-//				else tipoPersona = 1;
-//			}
-
-			for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
-				if(linea.getPortabilidad() != null) linea.getPortabilidad().setTipoPersona(obtenerTipoPersona(solicitudServicioDto));
-			}
-
 			// TODO: Portabilidad
 			long contadorPortabilidad = 0;
 			for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
@@ -889,20 +861,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	}
 	
 	public CreateSaveSSTransfResultDto saveSolicituServicioTranferencia(SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages {
-	    //#LF	
-//		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
-		
-//		int tipoPersona;
-//		if(cuenta.getClaseCuenta().getEsGobierno()) tipoPersona = 3;
-//		else{
-//			if(cuenta.isEmpresa()) tipoPersona = 2;
-//			else tipoPersona = 1;
-//		}
-
-		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
-			if(linea.getPortabilidad() != null) linea.getPortabilidad().setTipoPersona(obtenerTipoPersona(solicitudServicioDto));
-		}
-
 		// TODO: Portabilidad
 		long contadorPortabilidad = 0;
 		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
@@ -1080,7 +1038,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	 * TODO: Portabilidad
 	 * @return
 	 */
-	public PortabilidadInitializer getPortabilidadInitializer(String idCuenta,String codigoVantive) throws RpcExceptionMessages {
+	public PortabilidadInitializer getPortabilidadInitializer(String cuentaID) throws RpcExceptionMessages {
 		PortabilidadInitializer initializer = new PortabilidadInitializer();
 		
 		initializer.setLstTipoDocumento(mapper.convertList(
@@ -1092,23 +1050,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		initializer.setLstModalidadCobro(mapper.convertList(
 						repository.find("FROM ModalidadCobro mcob WHERE mcob.codigoBSCS IN('CPP','MPP')"), ModalidadCobroDto.class));
 
-		if (idCuenta==null) {
-			if (codigoVantive != null) {
-				try {
-					Cuenta cuenta = cuentaBusinessService.getCuentaSinLockear(codigoVantive);
-					idCuenta = cuenta.getId().toString();
-				} catch (Exception e) {
-					AppLogger.error(e);
-					throw ExceptionUtil.wrap(e);
-				}
-			} else {
-				AppLogger.error("Imposible inicializar datos de portabilidad sin cuenta ni codigo vantive");
-				throw new RpcExceptionMessages("Imposible inicializar datos de portabilidad sin cuenta ni codigo vantive");
-			}
-		}
-
 		// Carga la cuenta para poder extraer los datos de la persona
-		Cuenta persona_aux = (Cuenta) repository.retrieve(Cuenta.class, Long.valueOf(idCuenta));
+		Cuenta persona_aux = (Cuenta) repository.retrieve(Cuenta.class, Long.valueOf(cuentaID));
 		initializer.setPersona(mapper.map(persona_aux.getPersona(), PersonaDto.class));
 
 		return initializer;
@@ -1396,14 +1339,15 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return listCantPort;
 	}
 	
-	public Integer obtenerTipoPersona(SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages {
-		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
-		
-		if(cuenta.getClaseCuenta().getEsGobierno()) return 3;
-		else{
-			if(cuenta.isEmpresa()) return 2;
-			else return 1;
-		}
-	}
-	
+	// LF
+//	public Integer obtenerTipoPersona(SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages {
+//		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
+//		
+//		if(cuenta.getClaseCuenta().getEsGobierno()) return 3;
+//		else{
+//			if(cuenta.isEmpresa()) return 2;
+//			else return 1;
+//		}
+//	}
+//	
 }

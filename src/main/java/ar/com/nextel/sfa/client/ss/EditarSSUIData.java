@@ -128,8 +128,6 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private static final String TIPO_CANAL_VTA_TRANSFERENCIA = "TIPO_CANAL_VENTAS_TRANSFERENCIA";
 	private static final String CANAL_VTA_TRANSFERENCIA = "Transferencia";
 	public static final String NO_COMISIONABLE = "No Comisionable";
-	public Integer tipoPersona;
-	
 	
 	public EditarSSUIData(EditarSSUIController controller) {
 		this.controller = controller;
@@ -1295,14 +1293,4 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 		return null;
 	}
-
-	public Integer getTipoPersona() {
-		return tipoPersona;
-	}
-
-	public void setTipoPersona(Integer tipoPersona) {
-		this.tipoPersona = tipoPersona;
-	}
-	
-	
 }

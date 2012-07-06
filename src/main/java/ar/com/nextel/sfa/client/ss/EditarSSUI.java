@@ -273,7 +273,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			varios.cleanScoring();
 			
 			
-			cargarDatosPortabilidad(cuenta,codigoVantive);
+			cargarDatosPortabilidad(cuenta);
 		}
 		return true;
 		
@@ -1122,8 +1122,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	/**
 	 * Portabilidad
 	 */
-	private void cargarDatosPortabilidad(String idCuenta,String codigoVantive){
-		SolicitudRpcService.Util.getInstance().getPortabilidadInitializer(idCuenta,codigoVantive, new DefaultWaitCallback<PortabilidadInitializer>(){
+	private void cargarDatosPortabilidad(String idCuenta){
+		SolicitudRpcService.Util.getInstance().getPortabilidadInitializer(idCuenta, new DefaultWaitCallback<PortabilidadInitializer>(){
 			@Override
 			public void success(PortabilidadInitializer result) {
 				datos.setPortabilidadInitializer(result);

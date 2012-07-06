@@ -141,8 +141,7 @@ public interface SolicitudRpcServiceAsync {
 
 	public void getItemsPorLineaSS(SolicitudServicioDto ss,	AsyncCallback<List<ItemSolicitudDto>> callback);
 	
-	// Portabilidad ------------------------------
-	public void getPortabilidadInitializer(String idCuenta,String codigoVantive,
+	void getPortabilidadInitializer(String idCuenta,
 			AsyncCallback<PortabilidadInitializer> callback);
 
 	void getExisteEnAreaCobertura(int codArea, 
@@ -164,6 +163,6 @@ public interface SolicitudRpcServiceAsync {
 	void validarPortabilidadTransferencia(List<ContratoViewDto> contratos,
 			AsyncCallback<PortabilidadResult> callback);
 
-	void obtenerTipoPersona(SolicitudServicioDto solicitudServicioDto,
-			AsyncCallback<Integer> callback);	
+//	void obtenerTipoPersona(SolicitudServicioDto solicitudServicioDto,
+//			AsyncCallback<Integer> callback);	
 }
