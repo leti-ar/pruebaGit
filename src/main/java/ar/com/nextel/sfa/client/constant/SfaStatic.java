@@ -947,11 +947,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String creditoFidel();
 
   /**
-   * Translated "Cr�dito de Fidelizaci�n".
+   * Translated "Crédito de Fidelización".
    * 
-   * @return translated "Cr�dito de Fidelizaci�n"
+   * @return translated "Crédito de Fidelización"
    */
-  @DefaultStringValue("Cr�dito de Fidelizaci�n")
+  @DefaultStringValue("Crédito de Fidelización")
   @Key("creditoFidelizacionTitle")
   String creditoFidelizacionTitle();
 
@@ -1010,11 +1010,11 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   String ddn();
 
   /**
-   * Translated "Descripci�n".
+   * Translated "Descripción".
    * 
-   * @return translated "Descripci�n"
+   * @return translated "Descripción"
    */
-  @DefaultStringValue("Descripci�n")
+  @DefaultStringValue("Descripción")
   @Key("descripcion")
   String descripcion();
 
@@ -2011,6 +2011,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("SIM:")
   @Key("sim")
   String sim();
+  
+  /**
+   * Translated "<span class=\"req\">SIM:</span>".
+   * 
+   * @return translated "<span class=\"req\">SIM:</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">SIM:</span>")
+  @Key("simReq")
+  String simReq();
 
   /**
    * Translated "SS:".
@@ -3134,4 +3143,209 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Existen mas de una solicitud de servicio con el N°SS ingresado")
   @Key("MAS_DE_UNA_SS")
   String MAS_DE_UNA_SS();
+  
+  /**
+   * Translated "<span class=\"req\">Cantidad de Equipos:</span>".
+   * 
+   * @return translated "<span class=\"req\">Cantidad de Equipos:</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Cantidad de Equipos:</span>")
+  @Key("cantidadEquipos")  
+  String cantidadEquipos();
+  
+  /**
+   * Translated "<span class=\"req\">Fecha firma:</span>".
+   * 
+   * @return translated "<span class=\"req\">Fecha firma:</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Fecha firma:</span>")
+  @Key("fechaFirma")  
+  String fechaFirma();
+  
+  /**
+   * Translated "<span class=\"req\">Estado:</span>".
+   * 
+   * @return translated "<span class=\"req\">Estado:</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Estado:</span>")
+  @Key("estadoReq")  
+  String estadoReq();
+  
+  /**
+   * Translated "<span class=\"req\">Fecha estado::</span>".
+   * 
+   * @return translated "<span class=\"req\">Fecha estado:</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Fecha estado:</span>")
+  @Key("fechaEstado")  
+  String fechaEstado();
+		  
+  /**
+   * Translated "Control".
+   * 
+   * @return translated "Control"
+   */
+  @DefaultStringValue("Control:")
+  @Key("control")
+  String control();
+  
+  /**
+   * Translated "Cambiar Estado".
+   * 
+   * @return translated "Cambiar Estado"
+   */
+  @DefaultStringValue("Cambiar Estado")
+  @Key("Cambiar Estado")
+  String cambiarEstado();
+  
+  /**
+   * Translated "Comentario Analista".
+   * 
+   * @return translated "Comentario Analista"
+   */
+  @DefaultStringValue("Comentario Analista:")
+  @Key("Comentario Analista")
+  String comentarioAnalista();
+  
+  
+  
+  
+  /**
+   * Translated "Nota Adicional".
+   * 
+   * @return translated "Nota Adicional"
+   */
+  @DefaultStringValue("Nota Adicional:")
+  @Key("notaAdicional")
+  String notaAdicional();
+  
+  
+
+    
+  /**
+   * Translated "Enviar a".
+   * 
+   * @return translated "Enviar a"
+   */
+  @DefaultStringValue("Enviar a:")
+  @Key("enviarA")
+  String enviarA();
+  
+  
+  /**
+   * Translated "Mail".
+   * 
+   * @return translated "Mail"
+   */
+  @DefaultStringValue("MAIL")
+  @Key("mail")
+  String mail();
+  
+  /**
+   * Translated "nuevoEstado".
+   * 
+   * @return translated "nuevoEstado"
+   */
+  @DefaultStringValue("Nuevo Estado")
+  @Key("nuevoEstado")
+  String nuevoEstado();
+  
+  /**
+   * Translated "Desea copiar la solicitud actual".
+   * 
+   * @return translated "Desea copiar la solicitud actual"
+   */
+  @DefaultStringValue("Desea copiar la solicitud actual?")
+  @Key("MSG_COPIAR_SS_ACTUAL")
+  String MSG_COPIAR_SS_ACTUAL();
+  
+  /**
+   * Translated "PIN/SCORING:".
+   * 
+   * @return translated "PIN/SCORING:"
+   */
+  @DefaultStringValue("Pin/Scoring")
+  @Key("pinScoring")
+  String pinScoring();
+  
+  /**
+   * Translated "PIN/SCORING:".
+   * 
+   * @return translated "PIN/SCORING:"
+   */
+  @DefaultStringValue("Últ. estado")
+  @Key("ultimoEstado")
+  String ultimoEstado();
+  
+  /**
+   * Translated "Fecha Cierre".
+   * 
+   * @return translated "Fecha Cierre"
+   */
+  @DefaultStringValue("Fecha Cierre")
+  @Key("fechaCierre")
+  String fechaCierre();
+  
+  /**
+   * Translated "Desvíos".
+   * 
+   * @return translated "Desvíos"
+   */
+  @DefaultStringValue("Desvíos")
+  @Key("desv")
+  String desv();
+  
+  /**
+   * Translated "Búsqueda SS".
+   * 
+   * @return translated "Búsqueda SS"
+   */
+  @DefaultStringValue("Búsqueda SS")
+  @Key("busquedaSS")
+  String busquedaSS();
+  
+  /**
+   * Translated "Tipo y Nro Doc.".
+   * 
+   * @return translated "Tipo y Nro Doc."
+   */
+  @DefaultStringValue("Tipo y Nro Doc. :")
+  @Key("tipoYNumeroDoc")
+  String tipoYNumeroDoc();
+  
+  /**
+   * Translated "Creacion Desde:".
+   * 
+   * @return translated "Creacion Desde:"
+   */
+  @DefaultStringValue("Creacion Desde:")
+  @Key("creacionDesde")
+  String creacionDesde();
+  
+  /**
+   * Translated "SS".
+   * 
+   * @return translated "SS"
+   */
+  @DefaultStringValue("SS")
+  @Key("ssTitle")
+  String ssTitle();
+  
+  /**
+   * Translated "SS Cliente".
+   * 
+   * @return translated "SS Cliente"
+   */
+  @DefaultStringValue("SS Cliente")
+  @Key("ssClienteTitle")
+  String ssClienteTitle();
+  
+  /**
+   * Translated "Buscar SS".
+   * 
+   * @return translated "Buscar SS"
+   */
+  @DefaultStringValue("Buscar SS")
+  @Key("buscarSSTitle")
+  String buscarSSTitle();
 }

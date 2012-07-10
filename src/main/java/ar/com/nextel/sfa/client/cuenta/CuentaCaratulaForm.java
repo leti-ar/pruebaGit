@@ -111,7 +111,7 @@ public class CuentaCaratulaForm extends Composite{
 		mainPanel.add(datosTabla);
 		
 		docDigitalizados = new Button(Sfa.constant().docDigitalizados());
-		docDigitalizados.addStyleName("btn-bkg-big");
+//		docDigitalizados.addStyleName("btn-bkg-big");
 		docDigitalizados.addClickHandler(new ClickHandler() {
 			
 			public void onClick(ClickEvent event) {

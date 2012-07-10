@@ -2,13 +2,17 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import ar.com.nextel.exception.SFAServerException;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
+import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudDto;
@@ -60,20 +64,30 @@ public interface SolicitudRpcService extends RemoteService {
 
 	public BuscarSSCerradasInitializer getBuscarSSCerradasInitializer() throws RpcExceptionMessages;
 
-	public List<SolicitudServicioCerradaResultDto> searchSSCerrada(
-			SolicitudServicioCerradaDto solicitudServicioCerradaDto) throws RpcExceptionMessages;
-
+	public BuscarSSCerradasInitializer getBuscarSSInitializer(boolean analistaCredito) throws RpcExceptionMessages;
+	
+	//LF
+	//public List<SolicitudServicioCerradaResultDto> searchSSCerrada(
+	public List<SolicitudServicioCerradaResultDto> searchSolicitudesServicio(
+			SolicitudServicioCerradaDto solicitudServicioCerradaDto//LF#3, boolean analistaCreditos
+			) throws RpcExceptionMessages;
+	
 	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
 	//que permite realizar el manejo de mensajes
 	public CreateSaveSolicitudServicioResultDto createSolicitudServicio(
 			SolicitudServicioRequestDto solicitudServicioRequestDto) throws RpcExceptionMessages;
 
+	public CreateSaveSolicitudServicioResultDto copySolicitudServicio(
+			SolicitudServicioRequestDto solicitudServicioRequestDto , SolicitudServicioDto solicitudToCopy) throws RpcExceptionMessages;
+	
 	public SolicitudInitializer getSolicitudInitializer() throws RpcExceptionMessages;
 
 	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un SaveSolicitudServicioResultDto 
 	//que permite realizar el manejo de mensajes
 	public CreateSaveSolicitudServicioResultDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
 			throws RpcExceptionMessages;
+	
+	public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto) throws RpcExceptionMessages;
 
 	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(
 			GrupoSolicitudDto grupoSolicitudDto, boolean isEmpresa) throws RpcExceptionMessages;
@@ -84,8 +98,8 @@ public interface SolicitudRpcService extends RemoteService {
 	public List<ListaPreciosDto> getListasDePrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa)
 			throws RpcExceptionMessages;
 
-	public String buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto)
-			throws RpcExceptionMessages;
+	public String buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto//LF#3, boolean analistaCreditos
+			) throws RpcExceptionMessages;
 
 	public List<PlanDto> getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado,
 			TipoPlanDto tipoPlan, Long idCuenta);
@@ -190,5 +204,32 @@ public interface SolicitudRpcService extends RemoteService {
 	// -------------------------------------------
 //	public Integer obtenerTipoPersona(SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages;
 	
+	public List<SolicitudServicioDto> buscarHistoricoVentas(String nss) throws RpcExceptionMessages;
+
+	public CreateSaveSSTransfResultDto createCopySolicitudServicioTranferencia(
+			SolicitudServicioRequestDto solicitudServicioRequestDto,
+			SolicitudServicioDto solicitudSS) throws RpcExceptionMessages;
+	
+	public Integer calcularCantEquipos(List<LineaSolicitudServicioDto> lineaSS);
+	
+	public SolicitudServicioDto buscarSSPorId(Long id);	
+	
+	public String getEstadoSolicitud(long numeroSS)throws RpcExceptionMessages;
+	
+	public VendedorDto buscarVendedorPorId(Long id);
+	
+	public void enviarMail(String subject, String to);
+	
+	public void enviarSMS(String to, String mensaje);
+	
+	public Integer validarCuentaPorId(SolicitudServicioDto solicitud) throws RpcExceptionMessages;
+	
+	public void changeToPass(long idSS) throws RpcExceptionMessages;
+	
+	public List<ControlDto> getControles() throws RpcExceptionMessages;
+	
+	public boolean validarLineasPorSegmento(SolicitudServicioDto solicitud) throws RpcExceptionMessages;
+//	se debe habilitar cuando se haga el merge con el branch de portabilidad
+//	public int sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas) throws RpcExceptionMessages;
 }
 

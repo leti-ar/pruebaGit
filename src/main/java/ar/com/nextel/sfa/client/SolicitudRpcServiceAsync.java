@@ -3,12 +3,15 @@ package ar.com.nextel.sfa.client;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
+import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudDto;
@@ -41,8 +44,16 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface SolicitudRpcServiceAsync {
 
 	public void getBuscarSSCerradasInitializer(AsyncCallback<BuscarSSCerradasInitializer> callback);
+	
+	//LF
+	//public void getBuscarSSCerradasInitializer(AsyncCallback<BuscarSSCerradasInitializer> callback);
+	public void getBuscarSSInitializer(boolean analistaCreditos, AsyncCallback<BuscarSSCerradasInitializer> callback);
 
-	public void searchSSCerrada(SolicitudServicioCerradaDto solicitudServicioCerradaDto,
+	//LF
+	//void searchSSCerrada(
+	public void searchSolicitudesServicio(
+	SolicitudServicioCerradaDto solicitudServicioCerradaDto,
+	  //LF#3boolean analistaCreditos,
 			AsyncCallback<List<SolicitudServicioCerradaResultDto>> callback);
 
 	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
@@ -66,7 +77,7 @@ public interface SolicitudRpcServiceAsync {
 	public void getListasDePrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa, 
 			AsyncCallback<List<ListaPreciosDto>> callback);
 
-	public void buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto,
+	public void buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto, //LF#3boolean analistaCreditos,
 			AsyncCallback<String> callback);
 
 	public void getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,
@@ -165,4 +176,41 @@ public interface SolicitudRpcServiceAsync {
 
 //	void obtenerTipoPersona(SolicitudServicioDto solicitudServicioDto,
 //			AsyncCallback<Integer> callback);	
+	
+	public void copySolicitudServicio(
+			SolicitudServicioRequestDto solicitudServicioRequestDto , SolicitudServicioDto solicitudToCopy,
+			AsyncCallback<CreateSaveSolicitudServicioResultDto> callback);
+	
+	public void createCopySolicitudServicioTranferencia(
+			SolicitudServicioRequestDto solicitudServicioRequestDto,
+			SolicitudServicioDto solicitudSS,
+			AsyncCallback<CreateSaveSSTransfResultDto> callback);
+
+	public void calcularCantEquipos(List<LineaSolicitudServicioDto> lineaSS,
+			AsyncCallback<Integer> callback);
+
+	public void buscarHistoricoVentas(String nss, AsyncCallback<List<SolicitudServicioDto>> callback);
+
+	public void saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto,
+			AsyncCallback<Boolean> callback);
+	
+	public void getEstadoSolicitud(long numeroSS,AsyncCallback<String> callback);
+	
+	public void buscarSSPorId(Long id, AsyncCallback<SolicitudServicioDto> callback);
+
+	public void buscarVendedorPorId(Long id, AsyncCallback<VendedorDto> callback);
+	
+	public void enviarMail(String subject, String to, AsyncCallback<Void> callback);
+	
+	public void enviarSMS(String to,String mensaje ,AsyncCallback<Void> callback);
+	
+	public void validarCuentaPorId(SolicitudServicioDto solicitud, AsyncCallback<Integer> callback);
+	
+	public void changeToPass(long idSS ,AsyncCallback<Void> callback);
+
+	public void getControles(AsyncCallback<List<ControlDto>> callback);
+	
+	public void validarLineasPorSegmento(SolicitudServicioDto solicitud, AsyncCallback<Boolean> callback);
+//	se debe habilitar cuando se haga el merge con el branch de portabilidad
+//	public void sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas, AsyncCallback<Integer> callback);
 }

@@ -278,16 +278,7 @@ public class CuentaEdicionTabPanel {
 		});
 		crearSSButton.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				if(!cuenta2editDto.getResponsablePago()) {
-					MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(),
-							Sfa.constant().ERR_NO_ACCESO_NO_ES_RESP_PAGO().replaceAll("\\{1\\}", cuenta2editDto.getCodigoVantive()), MessageDialog.getCloseCommand());
-				} else {
-					if (isFormCompletoYguardado()) {
-						linksCrearSS.setHistoryToken(cuenta2editDto.getId());
-						popupCrearSS.show();
-						popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton.getAbsoluteTop() - popupCrearSS.getOffsetHeight());
-					}
-				}
+				pageSolicitudServicio();
 			}
 		});
 		agregarCuentaButton.addClickListener(new ClickListener() {
@@ -508,6 +499,20 @@ public class CuentaEdicionTabPanel {
 			((DivisionDto)ctaDto).getGranCuenta().setContactos(CuentaContactoForm.getInstance().getListaContactos());
 		}
 	}
+	
+	public void pageSolicitudServicio(){
+		if(!cuenta2editDto.getResponsablePago()) {
+			MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(),
+					Sfa.constant().ERR_NO_ACCESO_NO_ES_RESP_PAGO().replaceAll("\\{1\\}", cuenta2editDto.getCodigoVantive()), MessageDialog.getCloseCommand());
+		} else {
+			if (isFormCompletoYguardado()) {
+				linksCrearSS.setHistoryToken(cuenta2editDto.getId());
+				popupCrearSS.show();
+				popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton.getAbsoluteTop() - popupCrearSS.getOffsetHeight());
+			}
+		}
+	}
+
 	
 	///////////////
 	public CuentaDto getCuenta2editDto() {

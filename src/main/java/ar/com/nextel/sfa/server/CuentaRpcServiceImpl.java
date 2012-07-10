@@ -450,6 +450,14 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		}
 	}
 
+	public VerazResponseDto consultarDetalleVeraz(Long cuentaId,Long caratulaId) throws RpcExceptionMessages {
+		VerazResponseDto verazResponseDto = consultarDetalleVeraz(cuentaId);
+		if (caratulaId != null) {
+			this.cuentaBusinessService.saveArchivoVeraz(caratulaId, verazResponseDto.getFileName());
+		}
+		return verazResponseDto;
+	}
+	
 	public CuentaDto saveCuenta(CuentaDto cuentaDto) throws RpcExceptionMessages {
 		try {
 			Long idCuenta = cuentaBusinessService.saveCuenta(cuentaDto, mapper, sessionContextLoader
@@ -959,8 +967,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	
 
 	/**
-	 * Este metodo realiza una query para verificar si el domicilio de env�o y de facturacion asociado al nro de SS, esta validado
-	 * por EECC.
+	 * Este metodo realiza una query para verificar si el domicilio de envio y de facturacion asociado al nro de SS, esta validado
+	 * por un EECC.
 	 * @author fernaluc
 	 * @return true si esta validado por EECC, de lo contrario false.
 	 */
@@ -970,7 +978,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		try {
 			Object[] valores = {nro_ss,idCuenta,nro_ss,idCuenta};
 			AppLogger.info("Verificando que el domicilio de facturacion y de entrega asociados a la cuenta: " + idCuenta + 
-					" y al nro de solicitud: " + nro_ss + ",haya sido validado por EECC");
+					" y al nro de solicitud: " + nro_ss + ",haya sido validado por un EECC");
 			result = repository.executeCustomQuery(QUERY_VALID_EECC, valores);
 		}catch (Exception e) {
 			AppLogger.error(e);

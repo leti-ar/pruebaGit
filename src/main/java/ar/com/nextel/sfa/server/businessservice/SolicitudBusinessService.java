@@ -1,5 +1,11 @@
 package ar.com.nextel.sfa.server.businessservice;
 
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -8,13 +14,21 @@ import java.util.Set;
 
 import org.apache.commons.validator.GenericValidator;
 import org.dozer.DozerBeanMapper;
+import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import ar.com.nextel.business.constants.GlobalParameterIdentifier;
+import ar.com.nextel.business.constants.KnownInstanceIdentifier;
+import ar.com.nextel.business.cuentas.caratula.CaratulaTransferidaResultDto;
+import ar.com.nextel.business.cuentas.caratula.dao.config.CaratulaTransferidaConfig;
+import ar.com.nextel.business.cuentas.create.InsertUpdateCuentaConfig;
 import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaService;
+import ar.com.nextel.business.cuentas.scoring.legacy.dto.ScoringCuentaLegacyDTO;
+import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.financial.dto.EncabezadoCreditoDTO;
 import ar.com.nextel.business.legacy.financial.exception.FinancialSystemException;
@@ -30,23 +44,38 @@ import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequ
 import ar.com.nextel.business.solicitudes.generacionCierre.GeneracionCierreBusinessOperator;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreRequest;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
+import ar.com.nextel.business.solicitudes.historico.TransferirCuentaHistoricoConfig;
+import ar.com.nextel.business.solicitudes.historico.VantiveHistoricoClienteConfig;
+import ar.com.nextel.business.solicitudes.historico.VantiveHistoricoVentaRetrieveConfig;
 import ar.com.nextel.business.solicitudes.provider.SolicitudServicioProviderResult;
 import ar.com.nextel.business.solicitudes.repository.GenerarChangelogConfig;
 import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepository;
 import ar.com.nextel.components.accessMode.AccessAuthorization;
+import ar.com.nextel.components.knownInstances.GlobalParameter;
+import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
+import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
 import ar.com.nextel.framework.connectionDAO.ConnectionDAOException;
 import ar.com.nextel.framework.connectionDAO.TransactionConnectionDAO;
 import ar.com.nextel.framework.repository.Repository;
+import ar.com.nextel.framework.repository.hibernate.HibernateRepository;
+import ar.com.nextel.model.cuentas.beans.Calificacion;
+import ar.com.nextel.model.cuentas.beans.Caratula;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoTarjetaCredito;
 import ar.com.nextel.model.cuentas.beans.EstadoCreditoFidelizacion;
 import ar.com.nextel.model.cuentas.beans.Proveedor;
+import ar.com.nextel.model.cuentas.beans.RiskCode;
 import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
 import ar.com.nextel.model.personas.beans.Domicilio;
+import ar.com.nextel.model.personas.beans.Persona;
+import ar.com.nextel.model.personas.beans.Sexo;
+import ar.com.nextel.model.personas.beans.TipoDocumento;
+import ar.com.nextel.model.solicitudes.beans.EstadoPorSolicitud;
+import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
@@ -64,6 +93,10 @@ import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.TipoTelefonia;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
+import ar.com.nextel.services.nextelServices.scoring.ScoringHistoryItem;
+import ar.com.nextel.services.nextelServices.veraz.ResultadoVeraz;
+import ar.com.nextel.services.nextelServices.veraz.dto.VerazRequestDTO;
+import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
@@ -73,6 +106,9 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
+import ar.com.nextel.util.StringUtil;
+import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
+import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
 
 @Service
 public class SolicitudBusinessService {
@@ -91,7 +127,27 @@ public class SolicitudBusinessService {
 	private TransactionConnectionDAO sfaConnectionDAO;
 	private GenerarChangelogConfig generarChangelogConfig;
 	private FacturaElectronicaService facturaElectronicaService;
-
+	private VantiveHistoricoVentaRetrieveConfig vantiveHistoricoVentaRetrieveConfig;
+	private VantiveHistoricoClienteConfig vantiveHistoricoClienteConfig;
+	private TransferirCuentaHistoricoConfig transferirCuentaHistoricoConfig;
+	private AvalonSystem avalonSystem;
+	private DefaultRetriever globalParameterRetriever;
+	private KnownInstanceRetriever knownInstanceRetriever;
+	private InsertUpdateCuentaConfig insertUpdateCuentaConfig;
+	private CaratulaTransferidaConfig caratulaTransferidaConfig;
+	
+	@Autowired
+	public void setGlobalParameterRetriever(
+			@Qualifier("globalParameterRetriever") DefaultRetriever globalParameterRetriever) {
+		this.globalParameterRetriever = globalParameterRetriever;
+	}
+	
+	
+	@Autowired
+	public void setAvalonSystem(
+			@Qualifier("avalonSystemBean")AvalonSystem avalonSystem) {
+		this.avalonSystem = avalonSystem;
+	}
 
 	@Autowired
 	public void setFacturaElectronicaService(FacturaElectronicaService facturaElectronicaService) {
@@ -161,6 +217,41 @@ public class SolicitudBusinessService {
 		this.generarChangelogConfig = generarChangelogConfig;
 	}
 
+	@Autowired
+	public void setVantiveHistoricoVentaRetrieveConfig(
+			VantiveHistoricoVentaRetrieveConfig vantiveHistoricoVentaRetrieveConfig) {
+		this.vantiveHistoricoVentaRetrieveConfig = vantiveHistoricoVentaRetrieveConfig;
+	}
+	
+	@Autowired
+	public void setVantiveHistoricoClienteConfig(
+			VantiveHistoricoClienteConfig vantiveHistoricoClienteConfig) {
+		this.vantiveHistoricoClienteConfig = vantiveHistoricoClienteConfig;
+	}
+	
+	@Autowired
+	public void setTransferirCuentaHistoricoConfig(
+			TransferirCuentaHistoricoConfig transferirCuentaHistoricoConfig) {
+		this.transferirCuentaHistoricoConfig = transferirCuentaHistoricoConfig;
+	}
+	
+	@Autowired
+	public void setKnownInstanceRetriever(
+			@Qualifier("knownInstancesRetriever") KnownInstanceRetriever knownInstanceRetrieverBean) {
+		this.knownInstanceRetriever = knownInstanceRetrieverBean;
+	}
+	
+	@Autowired
+	public void setInsertUpdateCuentaConfig(
+			InsertUpdateCuentaConfig insertUpdateCuentaConfig) {
+		this.insertUpdateCuentaConfig = insertUpdateCuentaConfig;
+	}
+	
+	@Autowired
+	public void setCaratulaTransferidaConfig(CaratulaTransferidaConfig caratulaTransferidaConfig) {
+		this.caratulaTransferidaConfig = caratulaTransferidaConfig;
+	}
+	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public SolicitudServicio createSolicitudServicio(SolicitudServicioRequest solicitudServicioRequest,
 			DozerBeanMapper mapper) throws BusinessException, FinancialSystemException {
@@ -199,6 +290,44 @@ public class SolicitudBusinessService {
 		return solicitud;
 	}
 
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public SolicitudServicio copySolicitudServicio(SolicitudServicioRequest solicitudServicioRequest,
+			DozerBeanMapper mapper) throws BusinessException, FinancialSystemException {
+
+		SolicitudServicioProviderResult providerResult = null;
+		providerResult = this.solicitudesBusinessOperator.provideEmptySolicitudServicio(solicitudServicioRequest);
+
+		SolicitudServicio solicitud = providerResult.getSolicitudServicio();
+
+		addCreditoFidelizacion(solicitud);
+
+		AccessAuthorization accessAuthorization = this.solicitudesBusinessOperator
+				.calculateAccessAuthorization(providerResult.getSolicitudServicio());
+
+		if (!accessAuthorization.hasSamePermissionsAs(AccessAuthorization.fullAccess())) {
+			accessAuthorization.setReasonPrefix(CUENTA_FILTRADA);
+			throw new BusinessException(null, accessAuthorization.getReason());
+		}
+
+		Vendedor vendedor = sessionContextLoader.getVendedor();
+
+		// if(no tiene permiso de edicion){
+		// solicitudServicio.getCuenta().terminarOperacion();
+		// }
+		checkServiciosAdicionales(solicitud);
+
+		solicitud.consultarCuentaPotencial();
+		if (providerResult.wasCreationNeeded()) {
+			if (!solicitud.getCuenta().isLockedByAnyone(vendedor) || solicitud.getCuenta().isUnlockedFor(vendedor)) {
+				solicitud.getCuenta().iniciarOperacion(vendedor);
+			}
+			repository.save(solicitud);
+		}
+
+		mapper.map(solicitud.getCuenta(), CuentaSSDto.class, "cuentaSolicitud");
+		return solicitud;
+	}
+	
 	/** Controla que los servicios adicionales que poseen las lineas de la solicitud aun sean validos */
 	private void checkServiciosAdicionales(SolicitudServicio solicitud) {
 		// Controlo la consistencia de los servicios adicionales existentes
@@ -286,7 +415,17 @@ public class SolicitudBusinessService {
 		return retrieveEncabezadoCreditoFidelizacion;
 	}
 
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public EstadoPorSolicitud saveEstadoPorSolicitudDto(EstadoPorSolicitud estadoPorSolicitud) {
+		if(estadoPorSolicitud.getSolicitud().getId()>0){
+			repository.save(estadoPorSolicitud);			
+	}
+		
+		return estadoPorSolicitud;
+	}
 	
+	
+	 
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public SolicitudServicio saveSolicitudServicio(SolicitudServicioDto solicitudServicioDto,
@@ -298,7 +437,8 @@ public class SolicitudBusinessService {
 				solicitudServicioDto.getId());
 		solicitudServicio.setDomicilioEnvio(null);
 		solicitudServicio.setDomicilioFacturacion(null);
-		
+//		EstadoSolicitud estado = repository.retrieve(EstadoSolicitud.class, solicitudServicioDto.getEstados().getCode());
+//		solicitudServicio.setUltimoEstado(estado.getDescripcion());
 //		if( (solicitudServicio.getVendedor() == null && solicitudServicioDto.getVendedor() != null) ||
 //				(solicitudServicio.getVendedor() != null && solicitudServicioDto.getVendedor() != null &&
 //				!solicitudServicio.getVendedor().getId().equals(solicitudServicioDto.getVendedor().getId())) ){
@@ -335,6 +475,11 @@ public class SolicitudBusinessService {
 		}
 		
 		mapper.map(solicitudServicioDto, solicitudServicio);
+		//Estefania Iguacel - Comentado para salir solo con cierre - CU#8 				
+//		if(solicitudServicioDto.getControl() != null){
+//			Control control =  repository.retrieve(Control.class, solicitudServicioDto.getControl().getId());
+//			solicitudServicio.setControl(control);			
+//		}
 		
 		//PARCHE: Esto es por que dozer mapea los id cuando se le indica que no
 		for (LineaTransfSolicitudServicio lineaTransf : solicitudServicio.getLineasTranf()) {
@@ -437,7 +582,8 @@ public class SolicitudBusinessService {
 				domicilio.setId(null);
 			}
 		}
-
+		solicitudServicio.setIdConsultaScoring(solicitudServicioDto.getIdConsultaScoring());
+        solicitudServicio.setIdConsultaVeraz(solicitudServicioDto.getIdConsultaVeraz());
 		repository.save(solicitudServicio);
 		
 		return solicitudServicio;
@@ -473,9 +619,9 @@ public class SolicitudBusinessService {
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public GeneracionCierreResponse generarCerrarSolicitud(SolicitudServicio solicitudServicio,
-			String pinMaestro, boolean cerrar) {
+			String pinMaestro, boolean cerrar, boolean cierraPorCC) throws BusinessException {
 //		#1636 mrial
-		boolean esProspect = false;
+		boolean esProspect = false;	
 		if (solicitudServicio.getCuenta().isProspectEnCarga()
 				|| solicitudServicio.getCuenta().isProspect()) {
 			esProspect = true;
@@ -496,7 +642,7 @@ public class SolicitudBusinessService {
 		GeneracionCierreResponse response = null;
 		if (cerrar) {
 			
-			response = generacionCierreBusinessOperator.cerrarSolicitudServicio(generacionCierreRequest);
+			response = generacionCierreBusinessOperator.cerrarSolicitudServicio(generacionCierreRequest, cierraPorCC);
 			
 			if (solicitudServicio.getCuenta().getFacturaElectronica() != null
 //					&& !solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion()
@@ -505,7 +651,7 @@ public class SolicitudBusinessService {
 				
 				//MGR - ISDN 1824 - El adm. de creditos adhiere el cliente a factura electronica y genera la gestion
 				//tanto para prospect como para clientes
-				Vendedor vendedor = repository.retrieve(Vendedor.class, this.sessionContextLoader.getInstance().getVendedor().getId());
+				Vendedor vendedor = repository.retrieve(Vendedor.class, SessionContextLoader.getInstance().getVendedor().getId());
 				boolean isADMCreditos = vendedor.isADMCreditos();
 				
 				Long codigoBSCS = null;
@@ -546,6 +692,59 @@ public class SolicitudBusinessService {
 					solicitudServicio.getCuenta().getFacturaElectronica().setIdGestion(idGestion);
 				}
 			}
+			
+			//MGR - #3120 - Guardo el cambio de estado y demas datos solo si la SS se cerro correctamente
+			if(!response.getMessages().hasErrors()){
+				
+				//Req Pass y cierre automatico- Req #1: Registrar resultado veraz y scoring
+				//registrar resultados veraz y scoring
+				//setearle a la ss los dos nuevos valores de scoring y veraz
+				if (!esProspect) {
+					Long idConsultaScoring = scoring(solicitudServicio);
+					solicitudServicio.setIdConsultaScoring(idConsultaScoring);
+				}
+				Long idConsultaVeraz = veraz(solicitudServicio);
+				if (idConsultaVeraz > 0) {
+					solicitudServicio.setIdConsultaVeraz(idConsultaVeraz);
+				}
+			     
+			    //Req Pass y cierre automatico-Req #2: Registrar Cierre con Pin
+			    // valores q deberan guardarse
+				GlobalParameter pinValidoGlobalParameter = (GlobalParameter) globalParameterRetriever
+						.getObject(GlobalParameterIdentifier.VALIDO_PIN);
+				
+				GlobalParameter pinNoValidoGlobalParameter = (GlobalParameter) globalParameterRetriever
+						.getObject(GlobalParameterIdentifier.NO_VALIDO_PIN);
+				
+				if (!GenericValidator.isBlankOrNull(pinMaestro) || 
+						solicitudServicio.getSolicitudServicioGeneracion().getScoringChecked()){
+					solicitudServicio.setCierreConPin(pinValidoGlobalParameter.getValue());
+					
+		         }else{
+		        	 solicitudServicio.setCierreConPin(pinNoValidoGlobalParameter.getValue());
+		         }
+				
+				//Req Pass y cierre automatico-Req #3: Registrar fecha de cierre
+				solicitudServicio.setFechaCierre(new Date());
+				
+				
+				//Req Pass y cierre automatico- se deja guardado el cambio del estado de la ss en sfa_estado_por_solicitud
+				EstadoPorSolicitud nuevoEstado= new EstadoPorSolicitud();
+				nuevoEstado.setFecha(new Date());
+
+				SolicitudServicio ss= repository.retrieve(SolicitudServicio.class, solicitudServicio.getId());
+				nuevoEstado.setSolicitud(ss);
+				
+				Vendedor vendedor = repository.retrieve(Vendedor.class, solicitudServicio.getVendedor().getId());
+				nuevoEstado.setUsuario(vendedor);
+
+				EstadoSolicitud cerrada  =(EstadoSolicitud) knownInstanceRetriever
+										.getObject(KnownInstanceIdentifier.ESTADO_CERRADA_SS);
+			    nuevoEstado.setEstado(cerrada);
+				
+				repository.save(nuevoEstado);
+			}
+			
 		} else {
 			response = generacionCierreBusinessOperator.generarSolicitudServicio(generacionCierreRequest);
 		}
@@ -614,4 +813,412 @@ public class SolicitudBusinessService {
 	public CreateSaveSSResponse validarCreateSS(SolicitudServicio solicitud){
 		return solicitudesBusinessOperator.validarCreateSS(solicitud);
 	}
+	
+	/**
+	 * Traigo los datos del histórico de ventas de Vantive asociados al número de SS
+	 * @param nss - Número de SS
+	 * @return Histórico de ventas
+	 * @throws ConnectionDAOException
+	 */
+    public List<SolicitudServicio> buscarHistoricoVentas(String nss) throws ConnectionDAOException {
+    	VantiveHistoricoVentaRetrieveConfig config = this.getVantiveHistoricoVentaRetrieveConfig();
+		config.setNss(nss);
+		List result = (List) this.sfaConnectionDAO.execute(config);
+		return result;
+    }
+
+	public VantiveHistoricoVentaRetrieveConfig getVantiveHistoricoVentaRetrieveConfig() {
+        return vantiveHistoricoVentaRetrieveConfig;
+	}
+	
+	/**
+	 * Si el codigoVantive es null, lo busco en nxa_ra_customers
+	 * @param nss - Número de SS
+	 * @return Código vantive
+	 * @throws ConnectionDAOException
+	 */
+	public String buscarClienteByNss(String nss) throws ConnectionDAOException {
+		VantiveHistoricoClienteConfig config = this.getVantiveHistoricoClienteConfig();
+		config.setNss(nss);
+		String result = (String) this.sfaConnectionDAO.execute(config);
+		return result;
+	}
+	
+	public VantiveHistoricoClienteConfig getVantiveHistoricoClienteConfig() {
+		return vantiveHistoricoClienteConfig;
+	}
+	
+	public TransferirCuentaHistoricoConfig getTransferirCuentaHistoricoConfig() {
+		return transferirCuentaHistoricoConfig;
+	}
+
+	/**
+	 * Transfiere la cuenta y el historico a vantive
+	 * @param solicitudServicio
+	 * @param saveHistorico
+	 * @throws RpcExceptionMessages
+	 */
+	public void transferirCuentaEHistorico(SolicitudServicioDto solicitudServicio, boolean saveHistorico) throws RpcExceptionMessages {
+	    TransferirCuentaHistoricoConfig config = this.getTransferirCuentaHistoricoConfig();
+		config.setIdCuenta(solicitudServicio.getCuenta().getId());
+		config.setNss(solicitudServicio.getNumero());
+		config.setFechaEstado(new java.sql.Date(solicitudServicio.getFechaEstado().getTime()));
+		config.setFechaFirma(new java.sql.Date(solicitudServicio.getFechaFirma().getTime()));
+		config.setCantidadEquipos(solicitudServicio.getCantidadEquiposH());			
+		config.setEstado(solicitudServicio.getEstadoH().getDescripcion());
+		
+		if(saveHistorico){
+			config.setSaveHistorico("T");
+		}else{
+			config.setSaveHistorico("F");
+		}
+		try {
+			String result = (String) this.sfaConnectionDAO.execute(config);
+		} catch (ConnectionDAOException e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+	}
+	
+	
+	/**
+	 * Obtengo la SolicitudServicio por id.
+	 * @param ssDto
+	 * @return SolicitudServicio
+	 */
+	public SolicitudServicio obtenerSSPorId(SolicitudServicioDto ssDto){
+		SolicitudServicio solicitudServicio = repository.retrieve(SolicitudServicio.class, ssDto.getId());
+		return solicitudServicio;
+	}
+	
+	/**
+	 * Obtengo la SolicitudServicio por id.
+	 * @param idSS
+	 * @return SolicitudServicio
+	 */
+	public SolicitudServicio getSSById(long idSS){
+		SolicitudServicio solicitudServicio = repository.retrieve(SolicitudServicio.class, idSS);
+		return solicitudServicio;
+	}
+	
+	/**
+	 * Actualizo la SolicitudServicio.
+	 */
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void updateSolicitudServicio(SolicitudServicio solicitudServicio){
+		repository.update(solicitudServicio);
+	}
+
+	public ScoringCuentaLegacyDTO consultarScoring(SolicitudServicio ss) throws BusinessException {
+		return generacionCierreBusinessOperator.consultarScoring(ss.getCuenta());
+	}
+
+	public VerazResponseDTO consultarVeraz(SolicitudServicio ss) throws BusinessException {
+		VerazRequestDTO verazRequestDTO = createVerazRequestDTO(ss.getCuenta().getPersona());
+		return generacionCierreBusinessOperator.consultarVeraz(verazRequestDTO);
+	}
+	
+	//MGR - #3118
+	public VerazResponseDTO consultarVerazCierreSS(SolicitudServicio solicitudServicio) throws BusinessException {
+		VerazRequestDTO verazRequestDTO = createVerazRequestDTO(solicitudServicio.getCuenta().getPersona());
+		return generacionCierreBusinessOperator.consultarVerazCierreSS(verazRequestDTO);
+	}
+	
+	private VerazRequestDTO createVerazRequestDTO(Persona persona) {
+		Sexo sexo = (Sexo) this.repository.retrieve(Sexo.class, persona.getSexo().getId());
+		TipoDocumento tipoDocumento = (TipoDocumento) this.repository.retrieve(TipoDocumento.class,
+				persona.getDocumento().getTipoDocumento().getId());
+		long numeroDocumento = Long.parseLong(StringUtil.removeOcurrences(persona.getDocumento()
+				.getNumero(), '-'));
+		AppLogger.debug("Parametros consulta a Veraz: " + tipoDocumento.getCodigoVeraz() + " / "
+				+ numeroDocumento + " / " + sexo.getCodigoVeraz() + "...");
+
+		VerazRequestDTO verazRequestDTO = new VerazRequestDTO();
+		verazRequestDTO.setNroDoc(numeroDocumento);
+		verazRequestDTO.setSexo(sexo.getCodigoVeraz());
+		verazRequestDTO.setTipoDoc(tipoDocumento.getCodigoVeraz());
+		// verazRequestDTO.setVerazVersion(vendedor.getVerazVersion());
+		return verazRequestDTO;
+	}
+	
+	
+	
+/**
+   * Consulta persona en el historico de scoring si ya existia una consulta antes de las 24 horas
+   * 
+   * @param tipoDoc
+   * @param nroDoc
+   * @param sexo
+   * @return
+   * @throws 
+   */	
+   //MGR - Se modifica el dato por que se agrego la referencia a la tabla sfa_tipo_documento
+	public Long verHistoricoScoring(Long tipoDoc, String nroDoc, String sexo){
+		Long resultado = new Long(0);
+		PreparedStatement stmt;
+		Date resul;
+	    Date hoy= new Date();
+	    int diasValidez = ((GlobalParameter) this.globalParameterRetriever
+	            .getObject(GlobalParameterIdentifier.DIAS_CADUCACION_SCORING_SS_CERRADA)).getAsDouble().intValue();
+	    SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+	    
+		String sql = "select fecha_validez from  SFA_SCORING_HISTORY where sexo='" +sexo+
+				"' and NUMERO_DOC='" + nroDoc+ "' and TIPO_DOC='" + tipoDoc +"'";
+		try {
+			stmt = ((HibernateRepository) repository)
+					.getHibernateDaoSupport().getSessionFactory()
+					.getCurrentSession().connection().prepareStatement(sql);
+			
+			ResultSet resultSet = stmt.executeQuery();
+			while (resultSet.next()) {
+				resul=resultSet.getDate(1);
+				long fechaInicialMs =resul.getTime();
+				long fechaFinalMs = hoy.getTime();
+				long diferencia = fechaFinalMs - fechaInicialMs;
+				double dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+				
+				if (dias < diasValidez ) {
+					resultado=(long) dias;
+					break;
+				}else{
+					
+					resultado= new Long(0);
+				}
+			}
+			
+		} catch (HibernateException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+       
+		return resultado;
+	}	
+		
+		
+	
+	/**
+	 * busca en el historial de scoring si ya habia una consulta para esta ss , sino llama a 
+	 * la consulta basica de scoring y lo guarda en el historial para posibles consultas
+	 * @param solicitudServicio
+	 * @return
+	 * @throws BusinessException
+	 */
+	public Long scoring(SolicitudServicio solicitudServicio) throws BusinessException{
+		
+        Persona persona= new Persona();
+        ScoringHistoryItem item =new ScoringHistoryItem();
+		try {
+			persona = consultarPersona(solicitudServicio.getCuenta().getCodigoVantive());
+		} catch (RpcExceptionMessages e1) {
+		
+			e1.printStackTrace();
+		}
+		Sexo sexo = (Sexo) this.repository.retrieve(Sexo.class, persona.getSexo().getId());
+		TipoDocumento tipoDocumento = (TipoDocumento) this.repository.retrieve(TipoDocumento.class,
+				persona.getIdTipoDocumento());
+		String numeroDocumento = StringUtil.removeOcurrences(persona.getDocumento().getNumero(), '-');
+		//MGR - Se modifica el dato por que se agrego la referencia a la tabla sfa_tipo_documento
+		Long consultar= verHistoricoScoring(tipoDocumento.getId(),numeroDocumento,sexo.getCodigoVeraz());
+		String scoring;
+		
+			if (consultar == 0){
+				AppLogger.info("Iniciando llamada para averiguar Scoring.....");
+				scoring = (String) this.consultarScoring(solicitudServicio).getScoringData();
+			
+				AppLogger.info("Scoring averiguado correctamente.....");
+				//guardar ScoringHistorial
+				item.setDatosScoring(scoring);
+				item.setNroDoc(numeroDocumento);
+				item.setSexo(sexo.getCodigoVeraz());
+				//MGR -  Se cambia el tipo para hacer referencia a la tabla SFA_TIPO_DOCUMENTO
+				item.setTipoDocumento(tipoDocumento);
+				item.setValidez(new Date());
+				repository.persist(item);
+			}
+			return new Long(item.getId());
+		
+		
+	}
+	
+	
+	public Persona consultarPersona(String codVantive) throws RpcExceptionMessages {
+		ArrayList<Object> list = (ArrayList<Object>) this.repository.find("from Cuenta c where c.codigoVantive = ?", codVantive);
+		if(!list.isEmpty()){
+			Cuenta cta = (Cuenta) list.get(0);
+			return cta.getPersona();
+		}
+		return null;
+	
+	}
+	
+	/**
+	 * utiliza la consulta basica de veraz que ya existe solo que se le pasa por parametro q la valiz sea de un dia
+	 * luego guarda en la tabla de historial de veraz este consulta, para que pueda ser utilizada en otro momento
+	 * @param solicitudServicio
+	 * @return
+	 */
+	public Long veraz(SolicitudServicio solicitudServicio){
+		VerazRequestDTO verazRequestDTO = createVerazRequestDTO(solicitudServicio.getCuenta().getPersona());
+		VerazResponseDTO verazRequestDTOGuardar =(VerazResponseDTO) generacionCierreBusinessOperator.consultarVerazCierreSS(verazRequestDTO);
+		if (verazRequestDTOGuardar.getIdEstado()>0){
+		ResultadoVeraz rtaVeraz= new ResultadoVeraz();
+		rtaVeraz.setApellido(verazRequestDTOGuardar.getApellido());
+		rtaVeraz.setEstado(verazRequestDTOGuardar.getEstado());
+		rtaVeraz.setFileName(verazRequestDTOGuardar.getFileName());
+		rtaVeraz.setIdEstado(verazRequestDTOGuardar.getIdEstado());
+		rtaVeraz.setLote(verazRequestDTOGuardar.getLote());
+		rtaVeraz.setMensaje(verazRequestDTOGuardar.getMensaje());
+		rtaVeraz.setNombre(verazRequestDTOGuardar.getNombre());
+		rtaVeraz.setNroDoc(verazRequestDTO.getNroDoc());
+		rtaVeraz.setRangoTel(verazRequestDTOGuardar.getRangoTel());
+		rtaVeraz.setScore(new Long(verazRequestDTOGuardar.getScore()));
+		rtaVeraz.setScoreDni(new Long(verazRequestDTOGuardar.getScoreDni()));
+		rtaVeraz.setRazonSocial(verazRequestDTOGuardar.getRazonSocial());
+		rtaVeraz.setSexo(verazRequestDTO.getSexo());
+		rtaVeraz.setTipoDoc(verazRequestDTO.getTipoDoc());
+		repository.persist(rtaVeraz);
+		return rtaVeraz.getId();
+		}else{
+			return new Long(0);
+		}
+		
+	}
+	
+	public CaratulaTransferidaConfig getCaratulaTransferidaConfig() {
+		return caratulaTransferidaConfig;
+	}
+	
+	/**
+	 * Crea la carátula de créditos.
+	 */
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public Long crearCaratula(Cuenta cta, String nroSS, String resultadoVerazScoring) {
+		AppLogger.info("##Log Cierre y pass - Se va a crear la caratula.");
+		
+		Caratula caratula = new Caratula();
+		caratula.setNroSS(nroSS);
+		if ("ACEPTAR".equals(resultadoVerazScoring)) {
+			caratula.setLimiteCredito(new Double(625));
+			List<RiskCode> risks = repository.find("from RiskCode r where r.descripcion = 'AP.On-Line'");
+			caratula.setRiskCode(risks.get(0));
+		} else if ("REVISAR".equals(resultadoVerazScoring)) {
+			caratula.setLimiteCredito(new Double(375));
+			List<RiskCode> risks = repository.find("from RiskCode r where r.descripcion = 'AP.On-Line'");
+			caratula.setRiskCode(risks.get(0));
+		} else {
+			caratula.setLimiteCredito(new Double(100));
+			List<RiskCode> risks = repository.find("from RiskCode r where r.descripcion = 'Lim.Acot.'");
+			caratula.setRiskCode(risks.get(0));
+		}
+		List<Calificacion> calificaciones = repository.find("from Calificacion c where c.descripcion = 'No Aplica'");
+		caratula.setCalificacion(calificaciones.get(0));		
+		caratula.setEstadoVeraz(resultadoVerazScoring);
+		caratula.setConfirmada(true);
+		
+		caratula.setAntiguedad(cta.getFechaCreacion());
+		if (cta.getCaratulas().isEmpty()) {
+			caratula.setDocumento("Crédito");
+		} else {
+			caratula.setDocumento("Anexo");
+		}
+		
+		caratula.setCuenta(cta);
+		caratula.setUsuarioCreacion(sessionContextLoader.getVendedor());
+		repository.save(caratula);
+		
+		AppLogger.info("##Log Cierre y pass - Caratula creada correctamente.");
+		return caratula.getId();
+	}
+	
+	public void transferirCaratula(Long idCaratula, String numeroSS) throws RpcExceptionMessages {
+		CaratulaTransferidaConfig caratulaTransferidaConfig = getCaratulaTransferidaConfig();
+		caratulaTransferidaConfig.setIdCaratula(idCaratula);
+		try {
+			AppLogger.info("##Log Cierre y pass - Transfiriendo caratula...");
+			CaratulaTransferidaResultDto result = (CaratulaTransferidaResultDto) sfaConnectionDAO.execute(caratulaTransferidaConfig);
+			
+			if(result.getDescripcion() == null || result.getDescripcion().equals("")){
+				AppLogger.info("##Log Cierre y pass - Caratula transferida correctamente.");
+			}else{
+				String error = result.getCodError() + ". " + result.getDescripcion();
+				AppLogger.info("##Log Cierre y pass - Error al transferir la Caratula. " + error);
+				throw new ConnectionDAOException(error);
+			}
+		} catch (ConnectionDAOException e) {
+			//si hay un error mando un mail informando dicha situación y sigo con la ejecución.
+			String mensajeErrorCaratula = "SS %. Hubo  un error en la generación de la caratula, por favor verificar.";
+			String asunto = "SS % – Error al Generar Caratula";
+			String destinatario = String.valueOf(((GlobalParameter) globalParameterRetriever
+					.getObject(GlobalParameterIdentifier.MAIL_ERROR_TRANSF_CARATULA)).getValue());
+			enviarMail(asunto.replaceAll("%", numeroSS), 
+					destinatario.split(","), mensajeErrorCaratula.replaceAll("%", numeroSS));
+		}
+	}
+	
+	public InsertUpdateCuentaConfig getInsertUpdateCuentaConfig() {
+		return insertUpdateCuentaConfig;
+	}
+	
+	public Long crearCliente(Long idCuenta) throws RpcExceptionMessages {
+		AppLogger.info("##Log Cierre y pass - Se procede a transformar el prospect en cliente.");
+		PreparedStatement stmt = null;
+		CallableStatement cstmt = null;
+		Long codError = null;
+		try {
+			// MGR - Para que pueda transformar a cliente, debo setearle el lenguaje a la base
+			stmt = ((HibernateRepository) repository)
+					.getHibernateDaoSupport().getSessionFactory()
+					.getCurrentSession().connection()
+					.prepareStatement(
+							"BEGIN EXECUTE IMMEDIATE 'ALTER SESSION SET NLS_LANGUAGE =''Latin American Spanish'''; END;");
+			stmt.executeQuery();
+			
+			cstmt = ((HibernateRepository) repository)
+					.getHibernateDaoSupport().getSessionFactory()
+					.getCurrentSession().connection()
+					.prepareCall(
+							"call SFA_INSERT_UPDATE_CUENTA(?,?,?)");
+			cstmt.setLong(1, idCuenta);
+			cstmt.registerOutParameter(2, java.sql.Types.NUMERIC);
+			cstmt.registerOutParameter(3, java.sql.Types.VARCHAR);
+			cstmt.execute();
+			
+			codError = cstmt.getLong(2);
+			if (codError == 0L) {
+				AppLogger.info("#Log Cierre y pass - Cliente creado correctamente.");
+			} else {
+				String error = codError + ". "
+						+ cstmt.getString(3);
+				AppLogger.info("#Log Cierre y pass - Hubo un problema al crear al cliente. "
+								+ error);
+				throw new ConnectionDAOException(error);
+			}
+
+		} catch (Exception e) {
+			AppLogger.info("##Log Cierre y pass - Error al transformar el prospect en cliente.");
+			AppLogger.error(e);
+		}finally{
+			if (stmt != null) {
+		        try {
+		        	stmt.close();
+		        } catch (SQLException sqlEx) {}
+		        stmt = null;
+		    }
+			
+			if (cstmt != null) {
+		        try {
+		        	cstmt.close();
+		        } catch (SQLException sqlEx) {}
+		        cstmt = null;
+		    }
+			
+		}
+		return codError;
+	}
+
+	public void enviarMail(String asunto, String[] to, String mensaje) {
+		generacionCierreBusinessOperator.enviarMail(asunto, to, mensaje);
+	}
+	
 }

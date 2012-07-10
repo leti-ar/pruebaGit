@@ -55,4 +55,5 @@ public interface EditarSSUIController {
 
 	void getContratoViewInitializer(DefaultWaitCallback<ContratoViewInitializer> callback);
 	
+	boolean isEditable();
 }

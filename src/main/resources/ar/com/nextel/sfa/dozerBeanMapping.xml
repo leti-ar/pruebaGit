@@ -78,14 +78,18 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto
 		</class-b>
+<!--		<field>-->
+<!--			<a>idVantive</a>-->
+<!--			<b>idSolicitudServicio</b>-->
+<!--		</field>-->
 		<field>
-			<a>idVantive</a>
+			<a>id</a>
 			<b>idSolicitudServicio</b>
 		</field>
-		<field>
-			<a>cuenta.cliente</a>
-			<b>cliente</b>
-		</field>
+<!--		<field>-->
+<!--			<a>cuenta.cliente</a>-->
+<!--			<b>cliente</b>-->
+<!--		</field>-->
 		<field>
 			<a>cuenta.id</a>
 			<b>idCuenta</b>
@@ -109,7 +113,48 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<field>
 			<a>numero</a>
 			<b>numeroSS</b>
+		</field>	
+		
+		<field>
+			<a>usuarioCreacion.nombre</a>
+			<b>nombreUsuarioCreacion</b>
+		</field>		
+		<field>
+			<a>usuarioCreacion.apellido</a>
+			<b>apellidoUsuarioCreacion</b>
+		</field>	
+		<field>
+			<a>vendedor.apellidoNombre</a>
+			<b>apellidoNombreVendedor</b>
+		</field>		
+		<field>
+			<a>pinValidationSuccess</a>
+			<b>pin</b>
+		</field>	
+		<field>
+			<a>scoringValidationSuccess</a>
+			<b>scoring</b>
+		</field>			
+		<field>
+			<a>scoringValidationSuccess</a>
+			<b>scoring</b>
 		</field>
+		<field>
+			<a>tipoAnticipo.descripcion</a>
+			<b>anticipo</b>
+		</field>
+<!--        <field>-->
+<!--            <a>lineas</a>-->
+<!--            <b>lineas</b>-->
+<!--        </field>   -->
+        <field custom-converter-id="identifiableObjectToId">
+			<a>grupoSolicitud</a>
+			<b>idGrupoSolicitud</b>
+        </field>     	
+        <field>
+            <a>enCarga</a>
+            <b>enCarga</b>
+        </field>   
 	</mapping>
 
 	<mapping>
@@ -174,6 +219,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
             <a>vendedor</a>
             <b>vendedor</b>
         </field>
+        <field custom-converter-id="enumToDto">
+			<a>estadoH</a>
+			<b>estadoH</b>
+		</field>
 	</mapping>
 
 	<mapping>
@@ -429,6 +478,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
             <a>vendedor</a>
             <b>vendedor</b>
         </field>
+        <field type="one-way">
+            <a>transferido</a>
+            <b>transferido</b>
+        </field>
 	</mapping>
 	<mapping map-id="personaSolicitud" wildcard="false">
 		<class-a>ar.com.nextel.model.personas.beans.Persona</class-a>
@@ -608,6 +661,53 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</field>
 	</mapping>
 
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.EstadoPorSolicitud</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto</class-b>
+		<field>
+			<a>estado</a>
+			<b>estado</b>
+		</field>
+		<field>
+            <a>solicitud</a>
+            <b>solicitud</b>
+        </field>
+		<field>
+			<a>usuario</a>
+			<b>usuario</b>
+		</field>
+		<field>
+			<a>fecha</a>
+			<b>fecha</b>
+		</field>
+	</mapping>
+
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.EstadoSolicitud</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.EstadoSolicitudDto</class-b>
+		<field>
+			<a>id</a>
+			<b>code</b>
+		</field>
+		<field>
+            <a>descripcion</a>
+            <b>descripcion</b>
+        </field>          
+	</mapping>
+	
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.ComentarioAnalista</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.ComentarioAnalistaDto</class-b>
+		<field>
+            <a>estadoSolicitud</a>
+            <b>estadoSolicitud</b>
+        </field>  
+        <field>
+            <a>comentario</a>
+            <b>comentario</b>
+        </field>  
+	</mapping>
+	
 	<mapping>
 		<class-a>ar.com.nextel.model.cuentas.beans.GranCuenta</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.GranCuentaDto</class-b>

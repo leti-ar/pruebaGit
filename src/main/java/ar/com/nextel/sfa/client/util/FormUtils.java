@@ -4,6 +4,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.widget.TelefonoTextBox;
 import ar.com.snoop.gwt.commons.client.widget.datepicker.DatePicker;
+import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
 
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Label;
@@ -102,6 +103,9 @@ public class FormUtils {
 				((CheckBox) field).setEnabled(false);
 			} else if (field instanceof TelefonoTextBox) {
 				// TODO: Falta averiguar como se habilita/deshabilita.
+			} else if (field instanceof SimpleDatePicker) {
+				((SimpleDatePicker) field).getTextBox().setEnabled(false);
+				((SimpleDatePicker) field).setEnabled(false);
 			} else if (field instanceof DatePicker) {
 				((DatePicker) field).setEnabled(false);
 			}
