@@ -562,9 +562,6 @@ public class CaratulaUI extends NextelDialog implements ChangeListener, ClickLis
 		}
 		setDialogTitle(titulo);
 		showAndCenter();
-		if(caratula.getNroSS() != null) {
-			caratulaData.validarDomicilio(caratula.getNroSS());
-		}
 	}
 	
 	public CaratulaDto getCaraturaAEditar(){

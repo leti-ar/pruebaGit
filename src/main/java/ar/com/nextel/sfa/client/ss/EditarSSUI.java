@@ -1174,7 +1174,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				public void success(final GeneracionCierreResultDto result) {
 					CerradoSSExitosoDialog.getInstance().hideLoading();
 					if (!result.isError()) {
-						final String rtfFileName = result.getRtfFileName();
+						//final String rtfFileName = result.getRtfFileName();
 						
 						Command mostrarDialogCerrado = new Command() {
 							
@@ -1193,7 +1193,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 								}
 								CerradoSSExitosoDialog.getInstance().setAceptarCommand(aceptar);
 								//MGR - #1415
-								CerradoSSExitosoDialog.getInstance().showCierreExitoso(rtfFileName, editarSSUIData.getIdSolicitudServicio());
+								CerradoSSExitosoDialog.getInstance().showCierreExitoso(result, editarSSUIData.getIdSolicitudServicio());
 							}
 						};
 						

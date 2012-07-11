@@ -62,8 +62,6 @@ public interface SolicitudRpcService extends RemoteService {
 		}
 	}
 
-	public BuscarSSCerradasInitializer getBuscarSSCerradasInitializer() throws RpcExceptionMessages;
-
 	public BuscarSSCerradasInitializer getBuscarSSInitializer(boolean analistaCredito) throws RpcExceptionMessages;
 	
 	//LF
@@ -229,7 +227,7 @@ public interface SolicitudRpcService extends RemoteService {
 	public List<ControlDto> getControles() throws RpcExceptionMessages;
 	
 	public boolean validarLineasPorSegmento(SolicitudServicioDto solicitud) throws RpcExceptionMessages;
-//	se debe habilitar cuando se haga el merge con el branch de portabilidad
-//	public int sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas) throws RpcExceptionMessages;
+
+	public int sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas) throws RpcExceptionMessages;
 }
 

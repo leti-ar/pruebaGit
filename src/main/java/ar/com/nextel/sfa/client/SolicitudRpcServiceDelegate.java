@@ -96,11 +96,6 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.getBuscarSSInitializer(analistaCreditos, callback);
 	}
 
-	public void getBuscarSSCerradasInitializer(DefaultWaitCallback<BuscarSSCerradasInitializer> callback) {
-		WaitWindow.show();
-		solicitudRpcServiceAsync.getBuscarSSCerradasInitializer(callback);
-	}
-	
 //	LF
 //	public void searchSSCerrada(SolicitudServicioCerradaDto solicitudServicioCerradaDto
 	public void searchSolicitudesServicio(SolicitudServicioCerradaDto solicitudServicioCerradaDto, //LF#3boolean analistaCreditos,
@@ -421,9 +416,9 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.validarLineasPorSegmento(solicitud, callback);
 	}
-//	se debe habilitar cuando se haga el merge con el branch de portabilidad
-//	public void sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas, DefaultWaitCallback<Integer> callback) {
-//		WaitWindow.show();
-//		solicitudRpcServiceAsync.sonConfigurablesPorAPG(lineas, callback);
-//	}
+
+	public void sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas, DefaultWaitCallback<Integer> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.sonConfigurablesPorAPG(lineas, callback);
+	}
 }

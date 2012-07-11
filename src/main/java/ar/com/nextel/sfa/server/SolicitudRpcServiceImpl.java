@@ -1136,17 +1136,20 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					}
 					solicitudBusinessService.updateSolicitudServicio(solicitudServicio);
 				}
-			// metodo changelog
-
-			if (cerrar == true
-					&& response.getMessages().hasErrors() == false
-					&& sessionContextLoader.getVendedor().getTipoVendedor().getCodigoVantive().equals(
-							KnownInstanceIdentifier.TIPO_VENDEDOR_EECC.getKey())) {
-				solicitudBusinessService.generarChangeLog(solicitudServicioDto.getId(), solicitudServicio
-						.getVendedor().getId());
+			
+				// metodo changelog
+				if (cerrar == true
+						&& response.getMessages().hasErrors() == false
+						&& sessionContextLoader.getVendedor().getTipoVendedor().getCodigoVantive().equals(
+								KnownInstanceIdentifier.TIPO_VENDEDOR_EECC.getKey())) {
+					solicitudBusinessService.generarChangeLog(solicitudServicioDto.getId(), solicitudServicio
+							.getVendedor().getId());
+				}
+				result.setRtfFileName(getReporteFileName(solicitudServicio));
 			}
+			
 			result.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
-			result.setRtfFileName(getReporteFileName(solicitudServicio));
+			
 			
 			//TODO: Portabilidad - Setea los nombres de los rtf Generados
 			if(response.getRtfFileNamePortabilidad().size() > 0){

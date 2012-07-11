@@ -483,87 +483,88 @@ public class DatosSSUI extends Composite implements ClickHandler {
 
 	public void onTableClick(Widget sender, final int row, int col) {
 //		if(controller.isEditable()) {
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
-			if (detalleSS == sender) {
-				if (row > 0) {
-					if (col == 9) {
-						if (!serviciosAdicionales.isEditing()) {
-							editarPrecioDeVentaPlan();
-						}
-					} else if (col > 3) {
-						// Carga servicios adicionales en la tabla
-						if (!serviciosAdicionales.isEditing()) {
-							selectDetalleLineaSSRow(row);
-						}
-					} else if (col == 0) {
-						// Abre panel de edicion de la LineaSolicitudServicio
-						lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1);
-						openItemSolicitudDialog(lineaSeleccionada);
-					} else if (col == 1) {
-						// Elimina la LineaSolicitudServicio
-						ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
-								new Command() {
-							public void execute() {
-								removeDetalleLineaSSRow(row);
-								asignarNroSSPortabilidad();
-							};
-						}, ModalMessageDialog.getCloseCommand());
-					} else if (col == 3) {
-						if (descuentoTotalAplicado) {
-							noSePuedeAplicarDescuento(false);
-						} else {
-							//Abre el panel de descuento de la LineaSolicitudServicio
-							lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1); 
-							verificarDescuento(lineaSeleccionada);
+			if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
+				if (detalleSS == sender) {
+					if (row > 0) {
+						if (col == 9) {
+							if (!serviciosAdicionales.isEditing()) {
+								editarPrecioDeVentaPlan();
+							}
+						} else if (col > 3) {
+							// Carga servicios adicionales en la tabla
+							if (!serviciosAdicionales.isEditing()) {
+								selectDetalleLineaSSRow(row);
+							}
+						} else if (col == 0) {
+							// Abre panel de edicion de la LineaSolicitudServicio
+							lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1);
+							openItemSolicitudDialog(lineaSeleccionada);
+						} else if (col == 1) {
+							// Elimina la LineaSolicitudServicio
+							ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
+									new Command() {
+								public void execute() {
+									removeDetalleLineaSSRow(row);
+									asignarNroSSPortabilidad();
+								};
+							}, ModalMessageDialog.getCloseCommand());
+						} else if (col == 3) {
+							if (descuentoTotalAplicado) {
+								noSePuedeAplicarDescuento(false);
+							} else {
+								//Abre el panel de descuento de la LineaSolicitudServicio
+								lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1); 
+								verificarDescuento(lineaSeleccionada);
+							}
 						}
 					}
-				}
-			} else if (serviciosAdicionales.getTable() == sender) {
-				if (col == 0 && row > 0) {
-					serviciosAdicionales.agregarQuitarServicioAdicional(row);
-				} else if (col == 5 && row > 0) {
-					serviciosAdicionales.editarPrecioDeVentaServicioAdicional(row);
-				}
-			}
-		} else {
-			if (detalleSS == sender) {
-
-				if (row > 0) {
-					if (col == 7) {
-						if (!serviciosAdicionales.isEditing()) {
-							editarPrecioDeVentaPlan();
-						}
-					} else if (col > 2) {
-						// Carga servicios adicionales en la tabla
-						if (!serviciosAdicionales.isEditing()) {
-							selectDetalleLineaSSRow(row);
-						}
-					} else if (col == 0) {
-						// Abre panel de edicion de la LineaSolicitudServicio
-						openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
-					} else if (col == 1) {
-						// Elimina la LineaSolicitudServicio
-						ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
-								new Command() {
-									public void execute() {
-										removeDetalleLineaSSRow(row);
-										asignarNroSSPortabilidad();
-									};
-								}, ModalMessageDialog.getCloseCommand());
+				} else if (serviciosAdicionales.getTable() == sender) {
+					if (col == 0 && row > 0) {
+						serviciosAdicionales.agregarQuitarServicioAdicional(row);
+					} else if (col == 5 && row > 0) {
+						serviciosAdicionales.editarPrecioDeVentaServicioAdicional(row);
 					}
 				}
-			} else if (serviciosAdicionales.getTable() == sender) {
-				if (col == 0 && row > 0) {
-					serviciosAdicionales.agregarQuitarServicioAdicional(row);
-				} else if (col == 4 && row > 0) {
-					serviciosAdicionales.editarPrecioDeVentaServicioAdicional(row);
+			} else {
+				if (detalleSS == sender) {
+	
+					if (row > 0) {
+						if (col == 7) {
+							if (!serviciosAdicionales.isEditing()) {
+								editarPrecioDeVentaPlan();
+							}
+						} else if (col > 2) {
+							// Carga servicios adicionales en la tabla
+							if (!serviciosAdicionales.isEditing()) {
+								selectDetalleLineaSSRow(row);
+							}
+						} else if (col == 0) {
+							// Abre panel de edicion de la LineaSolicitudServicio
+							openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
+						} else if (col == 1) {
+							// Elimina la LineaSolicitudServicio
+							ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
+									new Command() {
+										public void execute() {
+											removeDetalleLineaSSRow(row);
+											asignarNroSSPortabilidad();
+										};
+									}, ModalMessageDialog.getCloseCommand());
+						}
+					}
+				} else if (serviciosAdicionales.getTable() == sender) {
+					if (col == 0 && row > 0) {
+						serviciosAdicionales.agregarQuitarServicioAdicional(row);
+					} else if (col == 4 && row > 0) {
+						serviciosAdicionales.editarPrecioDeVentaServicioAdicional(row);
+					}
 				}
 			}
-		}
-		// TODO: Portabilidad
-		if(detalleSS == sender){
-			if(row > 0 && col == 2){
-				openPortabilidadReplicarDialog(row);
+			// TODO: Portabilidad
+			if(detalleSS == sender){
+				if(row > 0 && col == 2){
+					openPortabilidadReplicarDialog(row);
+				}
 			}
 //		}
 	}
