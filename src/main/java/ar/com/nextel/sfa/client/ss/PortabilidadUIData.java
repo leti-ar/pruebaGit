@@ -151,7 +151,7 @@ public class PortabilidadUIData extends Composite {
 						public void success(Boolean result) {
 							if(!result){ 
 								ModalMessageDialog.getInstance().showAceptar(WARNING, 
-										"El prefijo no est� dentro del area de cobertura, no se podra efectuar la portabilidad", cmndAceptar);
+										"El prefijo no está dentro del area de cobertura, no se podra efectuar la portabilidad", cmndAceptar);
 							}
 						}
 					});
