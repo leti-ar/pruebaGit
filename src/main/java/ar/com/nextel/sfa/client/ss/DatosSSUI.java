@@ -800,6 +800,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 
 	/** Agrega una fila a la tabla de Detalle de Solicitud de Servicio en la posicion indicada */
 	private void drawDetalleSSRow(LineaSolicitudServicioDto linea, int newRow) {
+		//ver si acá se puede resolver el incidente 3399
 		if(controller.isEditable()) {
 			detalleSS.setWidget(newRow, 0, IconFactory.lapiz());
 			detalleSS.setWidget(newRow, 1, IconFactory.cancel());
