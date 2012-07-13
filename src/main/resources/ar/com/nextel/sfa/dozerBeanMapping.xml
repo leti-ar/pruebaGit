@@ -656,9 +656,9 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>estado</a>
 			<b>estado</b>
 		</field>
-		<field>
+		<field custom-converter-id="identifiableObjectToId">
             <a>solicitud</a>
-            <b>solicitud</b>
+            <b>idSolicitud</b>
         </field>
 		<field>
 			<a>usuario</a>

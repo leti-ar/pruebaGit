@@ -539,7 +539,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				EstadoPorSolicitudDto.class);
 		List<EstadoPorSolicitudDto> listaFinal = new ArrayList<EstadoPorSolicitudDto>();
 		for (int i = 0; i < lista.size(); i++) {
-			if (lista.get(i).getSolicitud().getId() == numeroSS) {
+			if (lista.get(i).getIdSolicitud() == numeroSS) {
 				listaFinal.add(lista.get(i));
 			}
 		}
