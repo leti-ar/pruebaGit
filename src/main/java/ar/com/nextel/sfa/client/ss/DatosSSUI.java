@@ -375,7 +375,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	}
 	
 	public String[] tableConDescuento(){
-		String[] titlesDetalleEditable = { Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), 
+		String[] titlesDetalleEditable = {  Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), 
 				Sfa.constant().whiteSpace(), "Item", "Pcio Vta.", "Precio con Desc.", "Alias", "Plan", 
 				"Pcio Vta. Plan", "Localidad", "Nº Reserva", "Tipo SS", "Cant.", "DDN", "DDI", "Roaming",Sfa.constant().portabilidad() };
 		String[] titlesDetalle = { "Item", "Pcio Vta.", "Precio con Desc.", "Alias", "Plan", 
@@ -387,7 +387,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	}
 	
 	public String[] tableSinDescuento() {
-		String[] titlesDetalleEditable = { Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), "Item",
+		String[] titlesDetalleEditable = {  Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), "Item",
 				"Pcio Vta.", "Alias", "Plan", "Pcio Vta. Plan", "Localidad", "Nº Reserva", "Tipo SS",
 				"Cant.", "DDN", "DDI", "Roaming",Sfa.constant().portabilidad() };
 		String[] titlesDetalle = { "Item", "Pcio Vta.", "Alias", "Plan", "Pcio Vta. Plan", "Localidad", "Nº Reserva",
