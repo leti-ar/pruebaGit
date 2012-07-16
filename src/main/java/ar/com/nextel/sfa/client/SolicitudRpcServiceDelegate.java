@@ -292,11 +292,6 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.validarPortabilidadTransferencia(contratos, callback);
 	}
 	
-	public void obtenerTipoPersona(SolicitudServicioDto solicitudServicioDto, AsyncCallback<Integer> callback){ 
-		WaitWindow.show();
-		solicitudRpcServiceAsync.obtenerTipoPersona(solicitudServicioDto, callback);
-	}
-	
 	// -------------------------------------------
 
 

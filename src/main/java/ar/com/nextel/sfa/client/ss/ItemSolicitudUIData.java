@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import ar.com.nextel.sfa.client.SolicitudRpcService;
+import org.apache.bcel.generic.LNEG;
+import org.apache.bcel.generic.NEW;
+
+import ar.com.nextel.model.solicitudes.beans.SolicitudPortabilidad;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
-import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -43,8 +45,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.IncrementalCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -121,7 +122,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private ItemSolicitudDialog dialog;
 
 	public ItemSolicitudUIData(EditarSSUIController controller) {
-		
 		// Oculta las opciones de portabilidad
 		portabilidadPanel.setVisible(false);
 		
@@ -308,48 +308,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 					}
 				}
 			}
-			
-			//#LF 
-			SolicitudRpcService.Util.getInstance().obtenerTipoPersona(controller.getEditarSSUIData().getSolicitudServicio(), new DefaultWaitCallback<Integer>() {
-				@Override
-				public void success(Integer result) {
-					controller.getEditarSSUIData().setTipoPersona(result);
-					habilitarCamposTipoPersona();
-				}
-			});
 			dialog.center();
 		}
 	};
-	
-	public void habilitarCamposTipoPersona() {
-//		
-//		SolicitudRpcService.Util.getInstance().obtenerTipoPersona(controller.getEditarSSUIData().getSolicitudServicio(), new DefaultWaitCallback<Integer>() {
-//			@Override
-//			public void success(Integer result) {
-				if(controller.getEditarSSUIData().getTipoPersona().intValue() != 1) {//#LF - PERSONA JURIDICA
-					portabilidadPanel.lblTipoDocumento.addStyleName("req");
-					portabilidadPanel.lblNroDocumento.addStyleName("req");
-					portabilidadPanel.lblRazonSocial.addStyleName("req");
-					portabilidadPanel.lblNombre.addStyleName("req");
-					portabilidadPanel.lblApellido.addStyleName("req");
-					portabilidadPanel.lstTipoDocumento.setEnabled(true);
-					portabilidadPanel.txtNroDocumento.setEnabled(true);
-					portabilidadPanel.txtRazonSocial.setEnabled(true);
-					portabilidadPanel.txtNombre.setEnabled(true);
-					portabilidadPanel.txtApellido.setEnabled(true);
-				} else { // PERSONA FISICA
-					portabilidadPanel.lblTipoDocumento.removeStyleName("req");
-					portabilidadPanel.lblNroDocumento.removeStyleName("req");
-					portabilidadPanel.lblRazonSocial.removeStyleName("req");
-					portabilidadPanel.lblNombre.removeStyleName("req");
-					portabilidadPanel.lblApellido.removeStyleName("req");
-					portabilidadPanel.lstTipoDocumento.setEnabled(false);
-					portabilidadPanel.txtNroDocumento.setEnabled(false);
-					portabilidadPanel.txtRazonSocial.setEnabled(false);
-					portabilidadPanel.txtNombre.setEnabled(false);
-					portabilidadPanel.txtApellido.setEnabled(false);
-				}
-			}
 
 	public void setItemSolicitudDialog(ItemSolicitudDialog dialog){
 		this.dialog = dialog;

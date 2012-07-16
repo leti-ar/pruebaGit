@@ -164,7 +164,6 @@ public interface SolicitudRpcService extends RemoteService {
 	
 	List<Long> getCantidadLineasPortabilidad(List<Long> listIdSS) throws RpcExceptionMessages;
 	// -------------------------------------------
-	public Integer obtenerTipoPersona(SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages;
 
 }
 
