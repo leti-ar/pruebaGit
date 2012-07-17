@@ -2217,12 +2217,17 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
         			}
     			}else{
     				Set<Item> itemsCond = condActual.getItems();
-    				List<Item> itemsLinea = repository.executeCustomQuery("LISTA_ITEMS_POR_MODELO", linea.getModelo().getId());
-    				if(itemsCond.containsAll(itemsLinea)){
-    					existeItem = true;
-    				}else{
-    					existeItem = false;
+    				//MGR - #3406 - Si no hay modelo, directamente no busco
+    				existeItem = false;
+    				if(linea.getModelo() != null){
+    					List<Item> itemsLinea = repository.executeCustomQuery("LISTA_ITEMS_POR_MODELO", linea.getModelo().getId());
+        				if(itemsCond.containsAll(itemsLinea)){
+        					existeItem = true;
+        				}else{
+        					existeItem = false;
+        				}
     				}
+    				
     			}
     			
     			
@@ -2238,7 +2243,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 							if(!"".equals(error)){
 								error += " y con Modelo sin especificar";
 							}else{
-								error += "con Modelo sin especificar";
+								error += "Modelo sin especificar";
 							}
 						}else{
 							if(!"".equals(error)){
