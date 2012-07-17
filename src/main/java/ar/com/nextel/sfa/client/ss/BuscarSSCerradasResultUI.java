@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
-import ar.com.nextel.sfa.client.command.OpenPageCommand;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
@@ -17,12 +16,12 @@ import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
-import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.WindowUtils;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.Request;
@@ -272,6 +271,22 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler{
 							} else {
 								resultTable.setText(indiceRowTabla, ++pos, "");
 							}
+							
+							//LF - #3416
+							boolean esPortabilidad = false;
+							for (Iterator iterator = solicitudServicioCerradaResultDto.getLineas().iterator(); iterator
+									.hasNext();) {
+								LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
+								if(linea.getPortabilidad() != null) {
+									esPortabilidad = true;
+								} 
+							} 
+							if (esPortabilidad) {
+								resultTable.setWidget(indiceRowTabla, ++pos, IconFactory.tildeVerde());
+							} else {
+								resultTable.setHTML(indiceRowTabla, ++pos, "");
+							}
+							
 							//LF#3
 //							if(isAnalistaCreditos()) {
 //						    	if (solicitudServicioCerradaResultDto.getAnticipo() != null) {
