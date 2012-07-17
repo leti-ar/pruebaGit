@@ -745,6 +745,11 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 //				solicitudServicioCerradaSearchCriteria.setIdCuentas(obtenerIdCuentasPorTipoyNroDocumento(solicitudServicioCerradaDto.getTipoDoc(), solicitudServicioCerradaDto.getNroDoc()));
 //			}
 //		}
+		
+		//LF - #3415
+		Vendedor vendedor = sessionContextLoader.getVendedor();
+		solicitudServicioCerradaSearchCriteria.setVendedor(vendedor);
+		
 		List<SolicitudServicio> list = null;
 		try {
 			list = this.solicitudesBusinessOperator
