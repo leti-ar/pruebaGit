@@ -662,6 +662,12 @@ public String getEstadoSolicitud(long solicitud) {
 	//que permite realizar el manejo de mensajes
 	public CreateSaveSolicitudServicioResultDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
 			throws RpcExceptionMessages {
+		
+		//#LF
+		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
+			if(linea.getPortabilidad() != null) linea.getPortabilidad().setTipoPersona(obtenerTipoPersona(solicitudServicioDto));
+		}
+		
 		// TODO: Portabilidad
 		long contadorPortabilidad = 0;
 		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
@@ -2809,15 +2815,14 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		return listCantPort;
 	}
 	
-	// LF
-//	public Integer obtenerTipoPersona(SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages {
-//		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
-//		
-//		if(cuenta.getClaseCuenta().getEsGobierno()) return 3;
-//		else{
-//			if(cuenta.isEmpresa()) return 2;
-//			else return 1;
-//		}
-//	}
-//	
+	public Integer obtenerTipoPersona(SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages {
+		Cuenta cuenta = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuenta().getId());
+		
+		if(cuenta.getClaseCuenta().getEsGobierno()) return 3;
+		else{
+			if(cuenta.isEmpresa()) return 2;
+			else return 1;
+		}
+	}
+	
 }
