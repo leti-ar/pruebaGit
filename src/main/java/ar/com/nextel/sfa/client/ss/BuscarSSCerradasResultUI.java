@@ -438,7 +438,9 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler{
 				if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() >= 1)) {
 					mostrarTablaDetalleSolicitudServicio();
 				} else if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() == 0)) {
-					abrirArchivoRTF();
+//					MGR - #3423 - Para que se muestre el pop-up que lista los archivos disponibles
+					BuscarSSCerradasReportsDialog reportsDialog = new BuscarSSCerradasReportsDialog();
+					reportsDialog.show(solicitud);
 				}
 //			}
 				//LF#3
