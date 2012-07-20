@@ -203,6 +203,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	public static final int CIERRE_NORMAL = 1; //Se cierra la solicitud de servicio y se transfiere a Vantive
 	public static final int LINEAS_NO_CUMPLEN_CC = 2;
 	public static final int CIERRE_PASS_AUTOMATICO = 3;
+	private static final String querryEstadosPorSSPorIdSS = "ESTADOS_POR_SOLICITUD_SEGUN_ID_SOLICITUD";
 
 	public void init() throws ServletException {
 		super.init();
@@ -557,19 +558,16 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	}
 
 	public List<EstadoPorSolicitudDto> getEstadosPorSolicitud(long numeroSS) {
+//		MGR - Mejora de codigo
 		List<EstadoPorSolicitudDto> lista = mapper.convertList(
-				repository.getAll(EstadoPorSolicitud.class),
+				repository.executeCustomQuery(querryEstadosPorSSPorIdSS, numeroSS),
 				EstadoPorSolicitudDto.class);
-		List<EstadoPorSolicitudDto> listaFinal = new ArrayList<EstadoPorSolicitudDto>();
-		for (int i = 0; i < lista.size(); i++) {
-			if (lista.get(i).getSolicitud().getId() == numeroSS) {
-				listaFinal.add(lista.get(i));
-			}
-		}
-		return listaFinal;
+		
+		return lista;
+		
 	}
 	 
-public String getEstadoSolicitud(long solicitud) {
+	public String getEstadoSolicitud(long solicitud) {
 		
 		PreparedStatement stmt;
 		String resul ="";
