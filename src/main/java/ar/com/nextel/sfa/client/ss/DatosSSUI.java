@@ -625,13 +625,28 @@ public class DatosSSUI extends Composite implements ClickHandler {
 //			selectDetalleLineaSSRow(--selectedDetalleRow);
 //		}
 
-		if(detalleSS.getRowCount() > 1) selectDetalleLineaSSRow(1);
-		else selectDetalleLineaSSRow(0);
-
+//		MGR Inicio (23/07/2012) - Este es el codigo que habia antes de resolver el incidente #3424
+		//Si pasado un tiempo el nuevo codigo no trae problemas, eliminar estas lineas comentadas
+//		if(detalleSS.getRowCount() > 1) selectDetalleLineaSSRow(1);
+//		else selectDetalleLineaSSRow(0);
+//
+//		editarSSUIData.removeLineaSolicitudServicio(row - 1);
+//		detalleSS.removeRow(row);
+//		
+//		if(detalleSS.getRowCount() == 1) serviciosAdicionales.setServiciosAdicionalesFor(0);
+//		
+//		ModalMessageDialog.getInstance().hide();
+//		MGR Inicio (23/07/2012)
+		
+//		MGR - #3424
 		editarSSUIData.removeLineaSolicitudServicio(row - 1);
 		detalleSS.removeRow(row);
 		
-		if(detalleSS.getRowCount() == 1) serviciosAdicionales.setServiciosAdicionalesFor(0);
+		if (selectedDetalleRow == row) {
+			selectDetalleLineaSSRow(editarSSUIData.getLineasSolicitudServicio().isEmpty() ? 0 : 1);
+		} else if (selectedDetalleRow > row) {
+			selectDetalleLineaSSRow(--selectedDetalleRow);
+		}
 		
 		ModalMessageDialog.getInstance().hide();
 	}
