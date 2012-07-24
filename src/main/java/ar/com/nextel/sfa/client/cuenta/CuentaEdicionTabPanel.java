@@ -65,7 +65,8 @@ public class CuentaEdicionTabPanel {
 	private CuentaContactoForm   cuentaContactoForm   = CuentaContactoForm.getInstance();
 	private CuentaInfocomForm    cuentaInfocomForm    = CuentaInfocomForm.getInstance();
 	private CuentaNotasForm      cuentaNotasForm      = CuentaNotasForm.getInstance();
-	private CuentaCaratulaForm   cuentaCaratulaForm   = CuentaCaratulaForm.getInstance();
+//	MGR - Para salir sin "Caratula" (24-07-2012)
+//	private CuentaCaratulaForm   cuentaCaratulaForm   = CuentaCaratulaForm.getInstance();
 	private TabPanel tabPanel;
 	private FormButtonsBar footerBar;
 	
@@ -73,7 +74,10 @@ public class CuentaEdicionTabPanel {
 	public static final String VALIDAR_COMPLETITUD_FAIL_STYLE = "validarCompletitudFailButton";
 	public static final String ID_CUENTA = "idCuenta";
 	//MGR - Adm. Vtas. R2 -  Se agrego la pestaña "Caratulas" que es fija
-	public static final int CANT_PESTANIAS_FIJAS = 4;
+//	MGR - Para salir sin "Caratula" (24-07-2012)
+//	public static final int CANT_PESTANIAS_FIJAS = 4;
+	public static final int CANT_PESTANIAS_FIJAS = 3;
+	
 	public static final Long DEFAULT_OPP_PRIORITY = 2L;
 	private GwtValidator validator = new GwtValidator();
 	
@@ -159,9 +163,10 @@ public class CuentaEdicionTabPanel {
 		tabPanel.add(cuentaDomiciliosForm, Sfa.constant().domicilios());
 		tabPanel.add(cuentaContactoForm, Sfa.constant().contactos());
 		
-		if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
-			tabPanel.add(cuentaCaratulaForm, Sfa.constant().caratula());
-		}
+//		MGR - Para salir sin "Caratula" (24-07-2012)
+//		if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
+//			tabPanel.add(cuentaCaratulaForm, Sfa.constant().caratula());
+//		}
 		
 		tabPanel.add(cuentaInfocomForm, Sfa.constant().infocom());
 		if (!ClientContext.getInstance().getVendedor().isADMCreditos()) {
@@ -174,7 +179,9 @@ public class CuentaEdicionTabPanel {
 			}
 			public void onTabSelected(SourcesTabEvents arg0, int arg1) {
 				//MGR - Adm. Vtas. R2 - La 3 ahora es la pasteña de caratulas
-				if(arg1 == 4){
+//				MGR - Para salir sin "Caratula" (24-07-2012)
+//				if(arg1 == 4){
+				if(arg1 == 3){
 					//cuentaInfocomForm.setIdCuenta(cliente.getText());
 					cuentaInfocomForm.load();					
 				}
@@ -405,7 +412,8 @@ public class CuentaEdicionTabPanel {
 		agregarContactos(ctaDto);
 		
 		//Agrego Caratulas
-		ctaDto.setCaratulas(cuentaCaratulaForm.getCaratulas());
+//		MGR - Para salir sin "Caratula" (24-07-2012)
+//		ctaDto.setCaratulas(cuentaCaratulaForm.getCaratulas());
 		
 		//solo para actualizar imagen (sin mensaje de error).
 		validarCompletitud(false);
@@ -423,8 +431,11 @@ public class CuentaEdicionTabPanel {
 				cuentaContactoForm.cargarTablaContactos(cuentaDto);
 				CuentaContactoForm.getInstance().setFormDirty(false);
 				//actualiza pestaña caratula
-				cuentaCaratulaForm.cargaTablaCaratula(cuentaDto);
-				cuentaCaratulaForm.setHuboCambios(false);
+//				MGR - Para salir sin "Caratula" (24-07-2012)
+//				cuentaCaratulaForm.cargaTablaCaratula(cuentaDto);
+//				cuentaCaratulaForm.setHuboCambios(false);
+				
+				
 //				MessageDialog.getInstance().showAceptar("", Sfa.constant().MSG_CUENTA_GUARDADA_OK(), MessageDialog.getCloseCommand());
 			}
 		});	
@@ -482,8 +493,9 @@ public class CuentaEdicionTabPanel {
 	private boolean editorDirty() {
 		return cuentaDatosForm.formularioDatosDirty() 
 		    || cuentaDomiciliosForm.formularioDatosDirty() 
-		    || cuentaContactoForm.formContactosDirty()
-		    || cuentaCaratulaForm.formularioCaratulaDirty();
+		    || cuentaContactoForm.formContactosDirty();
+//		    MGR - Para salir sin "Caratula" (24-07-2012)
+//		    || cuentaCaratulaForm.formularioCaratulaDirty();
 	}
 	
 	private void agregarContactos(CuentaDto ctaDto) {
@@ -569,12 +581,15 @@ public class CuentaEdicionTabPanel {
 	public void setCuentaNotasForm(CuentaNotasForm cuentaNotasForm) {
 		this.cuentaNotasForm = cuentaNotasForm;
 	}
-	public CuentaCaratulaForm getCuentaCaratulaForm() {
-		return cuentaCaratulaForm;
-	}
-	public void setCuentaCaratulaForm(CuentaCaratulaForm cuentaCaratulaForm) {
-		this.cuentaCaratulaForm = cuentaCaratulaForm;
-	}
+	
+//	MGR - Para salir sin "Caratula" (24-07-2012)
+//	public CuentaCaratulaForm getCuentaCaratulaForm() {
+//		return cuentaCaratulaForm;
+//	}
+//	
+//	public void setCuentaCaratulaForm(CuentaCaratulaForm cuentaCaratulaForm) {
+//		this.cuentaCaratulaForm = cuentaCaratulaForm;
+//	}
 
 	public GwtValidator getValidator() {
 		return validator;
