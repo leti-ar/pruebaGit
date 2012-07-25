@@ -192,6 +192,10 @@ public class SolicitudBusinessService {
 			if (!solicitud.getCuenta().isLockedByAnyone(vendedor) || solicitud.getCuenta().isUnlockedFor(vendedor)) {
 				solicitud.getCuenta().iniciarOperacion(vendedor);
 			}
+			//#3427 - Si el vendedor es AP, pero es distinto al que tenía cargado anteriormente, actualizo la solicitud con el nuevo vendedor
+			if (vendedor.isAP() && !solicitud.getVendedor().getId().equals(vendedor.getId())) {
+				repository.update(solicitud);
+			}
 			repository.save(solicitud);
 		}
 
