@@ -2041,11 +2041,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			resultadoVerazScoring = solicitudBusinessService.consultarScoring(ssTemp).getCantidadTerminales();
 			AppLogger.info("#Log Cierre y pass - Resultado del scoring: " + resultadoVerazScoring);
 			
-			if (resultadoVerazScoring != null) {
-				if (Integer.valueOf(resultadoVerazScoring) > 3) {
-					resultadoVerazScoring = "3";
-				}
-			} else { //#3321
+//			MGR - Cambio -  Si el scoring es mayor a 3, se deja ese valor
+			if (resultadoVerazScoring == null) { //#3321
 				resultadoVerazScoring = "0";
 			}
 		}
