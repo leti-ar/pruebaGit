@@ -2356,8 +2356,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	        cantEquiposTotal += lineasPendientes;
 	        
 	        //#3275
-	        cantEquiposTotal += solicitud.getLineas().size();
-	        
+//	        MGR - Cambio la forma de calcular esto
+	        cantEquiposTotal += this.calcularCantEquipos(solicitud.getLineas());
+
 //	        MGR - Se modifica esta parte para mejorar el codigo
 	        Segmento segmento;
 			if(solicitud.getCuenta().isEmpresa()){
