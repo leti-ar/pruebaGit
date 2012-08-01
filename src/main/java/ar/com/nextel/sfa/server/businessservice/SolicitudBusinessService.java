@@ -746,7 +746,8 @@ public class SolicitudBusinessService {
 			}
 			
 		} else {
-			response = generacionCierreBusinessOperator.generarSolicitudServicio(generacionCierreRequest);
+//			MGR - #3440 - Si no hace las mismas validaciones
+			response = generacionCierreBusinessOperator.generarSolicitudServicio(generacionCierreRequest, cierraPorCC);
 		}
 		
 		repository.save(solicitudServicio);
