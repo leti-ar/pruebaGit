@@ -1060,6 +1060,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	        	if (CuentaClientService.cuentaDto == null){
 	            	return true;
 	        	}
+//	        	MGR - Se cambia el lugar donde se oculta el mensaje, sino no se muestra el cartel
+//	        	de espera al validar las lineas por segmento
+	        	WaitWindow.hide();
+	        	
 		        //si el campo nombre no está cargado significa que no están cargados los campos obligatorios de la cuenta
 		        if (CuentaClientService.cuentaDto.getPersona().getNombre() != null) {
 		        	
@@ -1105,7 +1109,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		        	ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 	                ErrorDialog.getInstance().show("Debe completar los campos obligatorios de la cuenta");
 		        }
-		        WaitWindow.hide();
+//		        WaitWindow.hide();
 		        return false;
 	        }
         });
