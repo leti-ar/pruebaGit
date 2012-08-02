@@ -1126,7 +1126,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				result.setError(response.getMessages().hasErrors());
 				
 //				larce - #3177: Cierre y Pass Automatico – Pass a Prospect
-				if (!result.isError() && !solicitudServicio.getCuenta().isTransferido() && puedeCerrar == CIERRE_PASS_AUTOMATICO) {
+//				MGR - #3445 - Solo al cerrar se debe crear el cliente si corresponde
+				if (!result.isError() && !solicitudServicio.getCuenta().isTransferido() && puedeCerrar == CIERRE_PASS_AUTOMATICO && cerrar) {
 					
 					Long crearCliente = solicitudBusinessService.crearCliente(solicitudServicio.getCuenta().getId()); 
 					if( crearCliente != 0L) {
