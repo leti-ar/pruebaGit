@@ -189,7 +189,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	//MGR - #3118
 	private static int SCORE_DNI_INEXISTENTE = 3;
 	
-	private String mensajeErrorCrearCuenta = "La SS % quedó pendiente de aprobación, por favor verificar y dar curso manual.";
 	private String SIM_DISPONIBLE = "ACTIVE";
 	
 	//LF 
@@ -1014,7 +1013,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 								//En caso de que el veraz no esté disponible, de cumplir con las condiciones comerciales se cierra 
 								//la SS quedando pendiente de aprobación en vantive y se envia un mail informando la situación
 								solicitudServicioDto.setPassCreditos(false);
-								enviarMailPassCreditos(solicitudServicioDto.getNumero());
+								solicitudBusinessService.enviarMailPassCreditos(solicitudServicioDto.getNumero());
 							}
 						} else {
 							solicitudServicioDto.setPassCreditos(false);
@@ -1118,33 +1117,25 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				//LF - #3109 - Registro el vendedor logueado que realiza el cierre
 				solicitudServicio.setVendedorLogueado(sessionContextLoader.getVendedor());
 			
-				if (puedeCerrar != CIERRE_NORMAL) { //larce #3161
-					response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, true);
-				} else {
-					response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, false);
-				}
+//				MGR - Se mueve la creacion de la cuenta. Debo recordar si es prospect antes de enviar a cerrar
+				boolean eraProspect = !solicitudServicio.getCuenta().isCliente();
+				response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, puedeCerrar);
+				
 				result.setError(response.getMessages().hasErrors());
 				
 //				larce - #3177: Cierre y Pass Automatico – Pass a Prospect
 //				MGR - #3445 - Solo al cerrar se debe crear el cliente si corresponde
-				if (!result.isError() && !solicitudServicio.getCuenta().isTransferido() && puedeCerrar == CIERRE_PASS_AUTOMATICO && cerrar) {
+//				MGR - Se mueve la creacion de la cuenta, cambia el if y su contenido
+//				Si era prospect, se cerro la SS correctamente, se creo la cuenta correctamente,
+//				va por pass automatico y es un cierre, creo y tranfiero caratula
+				if (eraProspect && !result.isError() && 
+						solicitudServicio.getCuenta().isTransferido() && 
+						puedeCerrar == CIERRE_PASS_AUTOMATICO && cerrar) {
 					
-					Long crearCliente = solicitudBusinessService.crearCliente(solicitudServicio.getCuenta().getId()); 
-					if( crearCliente != 0L) {
-						//si falla la creación del cliente no se da el pass de crédito y se envía un mail informando la situación
-						enviarMailPassCreditos(solicitudServicio.getNumero());
-						solicitudServicio.setPassCreditos(false);
-					}else{ //MGR - Solo si el cliente se transfiere correctamente, hago la caratula
-						
-//						MGR - Se que el prospect se paso a cliente, entonces actualizo
-						Cuenta cta = repository.retrieve(Cuenta.class, solicitudServicio.getCuenta().getId());
-						repository.refresh(cta);
-						
-						Long idCaratula = solicitudBusinessService.crearCaratula(cta, solicitudServicio.getNumero(), resultadoVerazScoring);
+						Long idCaratula = solicitudBusinessService.crearCaratula(solicitudServicio.getCuenta(), solicitudServicio.getNumero(), resultadoVerazScoring);
 						solicitudBusinessService.transferirCaratula(idCaratula, solicitudServicio.getNumero());						
 						solicitudServicio.setNumeroCuenta(solicitudServicio.getCuenta().getCodigoVantive());
-					}
-					solicitudBusinessService.updateSolicitudServicio(solicitudServicio);
+						solicitudBusinessService.updateSolicitudServicio(solicitudServicio);
 				}
 			
 				// metodo changelog
@@ -2291,14 +2282,15 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	}
 	
 
-	private void enviarMailPassCreditos(String numeroSS) {
-		String destinatario = String.valueOf(((GlobalParameter) globalParameterRetriever
-				.getObject(GlobalParameterIdentifier.MAIL_ERROR_CREAR_CTA)).getValue());
-		String asunto = String.valueOf(((GlobalParameter) globalParameterRetriever
-				.getObject(GlobalParameterIdentifier.ASUNTO_ERROR_CREAR_CTA)).getValue());
-		solicitudBusinessService.enviarMail(asunto.replaceAll("%", numeroSS), 
-				destinatario.split(","), mensajeErrorCrearCuenta.replaceAll("%", numeroSS));
-	}
+//	MGR - Se mueve la creacion de la cuenta, se movio el metodo a SolicitudBusinessService
+//	private void enviarMailPassCreditos(String numeroSS) {
+//		String destinatario = String.valueOf(((GlobalParameter) globalParameterRetriever
+//				.getObject(GlobalParameterIdentifier.MAIL_ERROR_CREAR_CTA)).getValue());
+//		String asunto = String.valueOf(((GlobalParameter) globalParameterRetriever
+//				.getObject(GlobalParameterIdentifier.ASUNTO_ERROR_CREAR_CTA)).getValue());
+//		solicitudBusinessService.enviarMail(asunto.replaceAll("%", numeroSS), 
+//				destinatario.split(","), mensajeErrorCrearCuenta.replaceAll("%", numeroSS));
+//	}
 	
 	/**
 	 * Se valida que el resultado de la consulta a Negative Files de ok para todas las líneas de la SS; para el caso de activación. 

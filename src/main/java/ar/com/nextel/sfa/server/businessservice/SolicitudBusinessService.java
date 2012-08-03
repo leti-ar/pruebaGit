@@ -64,7 +64,6 @@ import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.DatosDebitoTarjetaCredito;
 import ar.com.nextel.model.cuentas.beans.EstadoCreditoFidelizacion;
-import ar.com.nextel.model.cuentas.beans.Proveedor;
 import ar.com.nextel.model.cuentas.beans.RiskCode;
 import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
@@ -76,21 +75,17 @@ import ar.com.nextel.model.personas.beans.Sexo;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.model.solicitudes.beans.EstadoPorSolicitud;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
-import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.LineaTransfSolicitudServicio;
-import ar.com.nextel.model.solicitudes.beans.ModalidadCobro;
 import ar.com.nextel.model.solicitudes.beans.ParametrosGestion;
 import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalIncluido;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaTransfSolicitudServicio;
-import ar.com.nextel.model.solicitudes.beans.SolicitudPortabilidad;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Sucursal;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
-import ar.com.nextel.model.solicitudes.beans.TipoTelefonia;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.services.nextelServices.scoring.ScoringHistoryItem;
@@ -99,11 +94,10 @@ import ar.com.nextel.services.nextelServices.veraz.dto.VerazRequestDTO;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
-import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
-import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
+import ar.com.nextel.sfa.server.SolicitudRpcServiceImpl;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
 import ar.com.nextel.util.StringUtil;
@@ -135,6 +129,9 @@ public class SolicitudBusinessService {
 	private KnownInstanceRetriever knownInstanceRetriever;
 	private InsertUpdateCuentaConfig insertUpdateCuentaConfig;
 	private CaratulaTransferidaConfig caratulaTransferidaConfig;
+	
+//	MGR - Se mueve la creacion de la cuenta
+	private String MENSAJE_ERROR_CREAR_CUENTA= "La SS % quedó pendiente de aprobación, por favor verificar y dar curso manual.";
 	
 	@Autowired
 	public void setGlobalParameterRetriever(
@@ -617,9 +614,16 @@ public class SolicitudBusinessService {
 	}
 	private final long unDiaEnMilis = 1000*60*60*24;
 
+	
+//	MGR - Se mueve la creacion de la cuenta, se pasa "puedeCerrar" en lugar de "cierraPorCC"
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public GeneracionCierreResponse generarCerrarSolicitud(SolicitudServicio solicitudServicio,
-			String pinMaestro, boolean cerrar, boolean cierraPorCC) throws BusinessException {
+			String pinMaestro, boolean cerrar, int puedeCerrar) 
+			throws BusinessException {
+		
+//		MGR - Se crea la variable que venia en la llamada		
+		boolean cierraPorCC = puedeCerrar != SolicitudRpcServiceImpl.CIERRE_NORMAL;
+		
 //		#1636 mrial
 		boolean esProspect = false;	
 		if (solicitudServicio.getCuenta().isProspectEnCarga()
@@ -743,8 +747,36 @@ public class SolicitudBusinessService {
 			    nuevoEstado.setEstado(cerrada);
 				
 				repository.save(nuevoEstado);
+				
+//				larce - #3177: Cierre y Pass Automatico – Pass a Prospect
+//				MGR - Se mueve la creacion de la cuenta. 
+//				Se mueve esto desde la clase SolicitudRpcServiceImpl, metodo generarCerrarSolicitud
+				if (!solicitudServicio.getCuenta().isTransferido() 
+						&& puedeCerrar == SolicitudRpcServiceImpl.CIERRE_PASS_AUTOMATICO) {
+					
+//					MGR - Se mueve la creacion de la cuenta. Pongo la solicitud en carga hasta haber creado el cliente
+//					Esto es por un bug raro que sucede si durante la creacion del cliente, el chron levanta la ss
+					solicitudServicio.setEnCarga(Boolean.TRUE);
+					repository.save(solicitudServicio);
+					repository.flush();
+					
+					Long crearCliente = this.crearCliente(solicitudServicio.getCuenta().getId());
+					Cuenta cta = repository.retrieve(Cuenta.class, solicitudServicio.getCuenta().getId());
+					repository.refresh(cta);
+					
+//					MGR - Vuelvo a poner la solicitud en carga false
+					solicitudServicio.setEnCarga(Boolean.FALSE);
+					repository.save(solicitudServicio);
+
+					
+					if( crearCliente != 0L) {
+						//si falla la creación del cliente no se da el pass de crédito y se envía un mail informando la situación
+						enviarMailPassCreditos(solicitudServicio.getNumero());
+						solicitudServicio.setPassCreditos(false);
+					}
+				}
 			}
-			
+						
 		} else {
 //			MGR - #3440 - Si no hace las mismas validaciones
 			response = generacionCierreBusinessOperator.generarSolicitudServicio(generacionCierreRequest, cierraPorCC);
@@ -1132,7 +1164,8 @@ public class SolicitudBusinessService {
 		return caratula.getId();
 	}
 	
-	public void transferirCaratula(Long idCaratula, String numeroSS) throws RpcExceptionMessages {
+//	MGR - Se mueve la creacion de la cuenta. Este metodo NO lanza excepcion, lo quito
+	public void transferirCaratula(Long idCaratula, String numeroSS){
 		CaratulaTransferidaConfig caratulaTransferidaConfig = getCaratulaTransferidaConfig();
 		caratulaTransferidaConfig.setIdCaratula(idCaratula);
 		try {
@@ -1161,11 +1194,12 @@ public class SolicitudBusinessService {
 		return insertUpdateCuentaConfig;
 	}
 	
-	public Long crearCliente(Long idCuenta) throws RpcExceptionMessages {
+//	MGR - Se mueve la creacion de la cuenta. Este metodo NO lanza excepcion, lo quito
+	public Long crearCliente(Long idCuenta){
 		AppLogger.info("##Log Cierre y pass - Se procede a transformar el prospect en cliente.");
 		PreparedStatement stmt = null;
 		CallableStatement cstmt = null;
-		Long codError = null;
+		Long codError = -1l;
 		try {
 			// MGR - Para que pueda transformar a cliente, debo setearle el lenguaje a la base
 			stmt = ((HibernateRepository) repository)
@@ -1222,4 +1256,13 @@ public class SolicitudBusinessService {
 		generacionCierreBusinessOperator.enviarMail(asunto, to, mensaje);
 	}
 	
+//	MGR - Se mueve la creacion de la cuenta, es necesario mover este metodo y hacerlo publico
+	public void enviarMailPassCreditos(String numeroSS) {
+		String destinatario = String.valueOf(((GlobalParameter) globalParameterRetriever
+				.getObject(GlobalParameterIdentifier.MAIL_ERROR_CREAR_CTA)).getValue());
+		String asunto = String.valueOf(((GlobalParameter) globalParameterRetriever
+				.getObject(GlobalParameterIdentifier.ASUNTO_ERROR_CREAR_CTA)).getValue());
+		this.enviarMail(asunto.replaceAll("%", numeroSS), 
+				destinatario.split(","), MENSAJE_ERROR_CREAR_CUENTA.replaceAll("%", numeroSS));
+	}
 }
