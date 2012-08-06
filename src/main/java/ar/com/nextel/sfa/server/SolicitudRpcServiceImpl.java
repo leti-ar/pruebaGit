@@ -2304,8 +2304,10 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		int i = 0;
 		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
 			LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
-			if (linea.getTipoSolicitud().isActivacion()) {
-				if(verificarNegativeFiles(linea.getNumeroIMEI()) != null) {
+			if (linea.getTipoSolicitud().isActivacion() || linea.getTipoSolicitud().isActivacionOnline()) {
+				if(verificarNegativeFiles(linea.getNumeroIMEI()) != null ||
+//						MGR - #3446 - Tambien se debe validar la SIM
+						verificarNegativeFiles(linea.getNumeroSimcard()) != null) {
 					mensaje += (i == 0 ? "" : ", ") + linea.getAlias();
 					i++;
 				}
