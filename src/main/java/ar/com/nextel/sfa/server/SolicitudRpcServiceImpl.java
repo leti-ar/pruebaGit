@@ -1955,7 +1955,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 						return "Solo se permite cerrar por Veraz dado que es un cliente existente sin equipos activos ni suspendidos.";
 					}
 				} else {
-					return "El cliente no tiene equipos activos y posee deuda vencida.";
+//					MGR - #3454 - Se cambia "posee" por "tiene"
+					return "El cliente no tiene equipos activos y tiene deuda vencida.";
 				}
 			}
 		} else if (!("".equals(pinMaestro) || pinMaestro == null)
