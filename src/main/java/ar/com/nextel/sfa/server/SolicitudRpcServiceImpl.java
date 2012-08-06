@@ -981,6 +981,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		//MGR - #3123
 		GeneracionCierreResponse response = new GeneracionCierreResponse();
 		boolean hayError = false;
+//		MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
+		List<String> isVerazDisponible = new ArrayList<String>();
 		try {
 			
 			// TODO: Portabilidad
@@ -1004,7 +1006,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					errorCC = evaluarEquiposYDeuda(solicitudServicioDto, pinMaestro);
 					if ("".equals(errorCC)) {
 						
-						List<String> isVerazDisponible = (repository.executeCustomQuery("isVerazDisponible", "VERAZ_DISPONIBLE"));
+						isVerazDisponible = (repository.executeCustomQuery("isVerazDisponible", "VERAZ_DISPONIBLE"));
 						if (puedeDarPassDeCreditos(solicitudServicioDto, pinMaestro, isVerazDisponible.get(0))) {
 						
 							if ("T".equals(isVerazDisponible.get(0))) {
@@ -1013,7 +1015,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 								//En caso de que el veraz no esté disponible, de cumplir con las condiciones comerciales se cierra 
 								//la SS quedando pendiente de aprobación en vantive y se envia un mail informando la situación
 								solicitudServicioDto.setPassCreditos(false);
-								solicitudBusinessService.enviarMailPassCreditos(solicitudServicioDto.getNumero());
+//								MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
+//								solicitudBusinessService.enviarMailPassCreditos(solicitudServicioDto.getNumero());
 							}
 						} else {
 							solicitudServicioDto.setPassCreditos(false);
@@ -1122,6 +1125,13 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, puedeCerrar);
 				
 				result.setError(response.getMessages().hasErrors());
+				
+				
+//				MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
+				if (!result.isError() && puedeCerrar == CIERRE_PASS_AUTOMATICO &&
+						cerrar && !"T".equals(isVerazDisponible.get(0))) {
+					solicitudBusinessService.enviarMailPassCreditos(solicitudServicioDto.getNumero());
+				}
 				
 //				larce - #3177: Cierre y Pass Automatico – Pass a Prospect
 //				MGR - #3445 - Solo al cerrar se debe crear el cliente si corresponde
