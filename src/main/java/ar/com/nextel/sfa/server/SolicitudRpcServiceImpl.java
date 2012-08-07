@@ -983,6 +983,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		boolean hayError = false;
 //		MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
 		List<String> isVerazDisponible = new ArrayList<String>();
+//		MGR - #3458
+		boolean cierrePorVeraz = false;
 		try {
 			
 			// TODO: Portabilidad
@@ -1007,17 +1009,23 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					if ("".equals(errorCC)) {
 						
 						isVerazDisponible = (repository.executeCustomQuery("isVerazDisponible", "VERAZ_DISPONIBLE"));
-						if (puedeDarPassDeCreditos(solicitudServicioDto, pinMaestro, isVerazDisponible.get(0))) {
-						
-							if ("T".equals(isVerazDisponible.get(0))) {
-								solicitudServicioDto.setPassCreditos(true);
-							} else {
+//						MGR - #3458 - Verifico si corresponde cerrar por Veraz (o Scoring)
+						cierrePorVeraz = ("".equals(pinMaestro) || pinMaestro == null)
+											&& !solicitudServicioDto.getSolicitudServicioGeneracion().isScoringChecked();
+						if (puedeDarPassDeCreditos(solicitudServicioDto, cierrePorVeraz, isVerazDisponible.get(0))) {
+							
+//							MGR - #3458
+//							Si puede dar el pass, pero el veraz esta deshabilitado y el pass se dio por veraz,
+//							entonces no le doy el pass (y mas adelante, si se cierra ccorrectamente, envio un mail)
+//							Si el pass se da por Scoring, sigue su curso normal
+							if(cierrePorVeraz && !"T".equals(isVerazDisponible.get(0))){
 								//En caso de que el veraz no esté disponible, de cumplir con las condiciones comerciales se cierra 
 								//la SS quedando pendiente de aprobación en vantive y se envia un mail informando la situación
 								solicitudServicioDto.setPassCreditos(false);
 //								MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
 //								solicitudBusinessService.enviarMailPassCreditos(solicitudServicioDto.getNumero());
 							}
+							
 						} else {
 							solicitudServicioDto.setPassCreditos(false);
 							if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
@@ -1128,8 +1136,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				
 				
 //				MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
+//				MGR - #3458 - Y si el cierre fue por veraz
 				if (!result.isError() && puedeCerrar == CIERRE_PASS_AUTOMATICO &&
-						cerrar && !"T".equals(isVerazDisponible.get(0))) {
+						cerrar && !"T".equals(isVerazDisponible.get(0)) && cierrePorVeraz) {
 					solicitudBusinessService.enviarMailPassCreditos(solicitudServicioDto.getNumero());
 				}
 				
@@ -2002,15 +2011,16 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 * @throws BusinessException 
 	 */
 	String resultadoVerazScoring = "";
-	private boolean puedeDarPassDeCreditos(SolicitudServicioDto ss, String pinMaestro, String isVerazDisponible) throws BusinessException {
+//	MGR - #3458 - Envio "cierrePorVeraz" en lugar de "pinMaestro"
+	private boolean puedeDarPassDeCreditos(SolicitudServicioDto ss, boolean cierrePorVeraz, String isVerazDisponible)
+			throws BusinessException {
 		//MGR - Limpio la variable resultadoVerazScoring sino la proxima vez trae problemas
 		resultadoVerazScoring = "";
 		
 		//LF #3248 
 		AppLogger.info("#Log Cierre y pass - Validando resultado Veraz/Scoring..");
-		
-		if (("".equals(pinMaestro) || pinMaestro == null)
-				&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
+//		MGR - #3458
+		if(cierrePorVeraz){
 			if ("T".equals(isVerazDisponible)) {
 				//devuelve un string vacio si el servicio de veraz falla
 				//MGR - #3118 - Cambio a leyenda en caso de que el documento sea inexistente
