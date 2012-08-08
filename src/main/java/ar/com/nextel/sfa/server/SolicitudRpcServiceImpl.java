@@ -203,6 +203,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	public static final int LINEAS_NO_CUMPLEN_CC = 2;
 	public static final int CIERRE_PASS_AUTOMATICO = 3;
 	private static final String querryEstadosPorSSPorIdSS = "ESTADOS_POR_SOLICITUD_SEGUN_ID_SOLICITUD";
+	
+//  MGR - #3462 - Para la busqueda del item que corresponda
+    private static String namedQueryItemParaActivacionOnline = "ITEMS_PARA_PLANES_ACT_ONLINE";
 
 	public void init() throws ServletException {
 		super.init();
@@ -894,11 +897,16 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 
 	}
 
+//	MGR - #3462 - Es necesario indicar el modelo y si es activacion online
 	public List<PlanDto> getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado,
-			TipoPlanDto tipoPlan, Long idCuenta) {
+			TipoPlanDto tipoPlan, Long idCuenta, boolean isActivacionOnline, ModeloDto modelo) {
 		List planes = null;
+		
+//		MGR - #3462
+		Long idModelo = modelo != null ? modelo.getId() : null;
 		planes = solicitudServicioRepository.getPlanes(tipoPlan.getId(), itemSolicitudTasado.getItem()
-				.getId(), idCuenta, sessionContextLoader.getVendedor());
+				.getId(), idCuenta, sessionContextLoader.getVendedor(), isActivacionOnline, idModelo);
+		
 		return mapper.convertList(planes, PlanDto.class);
 	}
 
@@ -912,8 +920,10 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		if(linea.getTipoSolicitud().isActivacion() || linea.getTipoSolicitud().isActivacionOnline()) {
 //			MGR - #3331
 			if(linea.getModelo() != null){
-				List<Item> listItems = repository.executeCustomQuery("LISTA_ITEMS_POR_MODELO", linea.getModelo().getId());
-				if(!listItems.isEmpty()) {
+//				MGR - #3462 - Si es Activacion OnLine, tengo que levantar el item correcto, se cambia la query
+            	List<Item> listItems = repository.executeCustomQuery(namedQueryItemParaActivacionOnline, linea.getModelo().getId());
+
+            	if(!listItems.isEmpty()) {
 					serviciosAdicionales.addAll(solicitudServicioRepository.getServiciosAdicionalesActivOnLine(linea.getTipoSolicitud().getId(),
 						listItems, sessionContextLoader.getVendedor(), isEmpresa));
 				}

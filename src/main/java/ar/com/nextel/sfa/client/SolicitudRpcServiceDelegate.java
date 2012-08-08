@@ -132,10 +132,13 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.getListasDePrecios(tipoSolicitudDto, isEmpresa, callback);
 	}
 
+//	MGR - #3462 - Es necesario indicar el modelo y si es activacion online
 	public void getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,
-			Long idCuenta, DefaultWaitCallback<List<PlanDto>> callback) {
+			Long idCuenta, boolean isActivacionOnline, ModeloDto modelo, DefaultWaitCallback<List<PlanDto>> callback) {
+		
 		WaitWindow.show();
-		solicitudRpcServiceAsync.getPlanesPorItemYTipoPlan(itemSolicitudTasado, tipoPlan, idCuenta, callback);
+		solicitudRpcServiceAsync.getPlanesPorItemYTipoPlan(itemSolicitudTasado, tipoPlan, idCuenta,
+				isActivacionOnline, modelo, callback);
 	}
 
 	public void getServiciosAdicionales(LineaSolicitudServicioDto linea, Long idCuenta,

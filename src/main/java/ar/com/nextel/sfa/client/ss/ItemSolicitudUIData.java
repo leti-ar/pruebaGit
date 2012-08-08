@@ -591,8 +591,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				}
 				precioListaItem.setInnerHTML(currencyFormat.format(precio));
 				if (tipoPlan.getSelectedItem() != null) {
+//					MGR - #3462 - Es necesario indicar el modelo y si es activacion online
+					ModeloDto modelo = (ModeloDto) modeloEq.getSelectedItem();
 					controller.getPlanesPorItemYTipoPlan(is, (TipoPlanDto) tipoPlan.getSelectedItem(),
-							getActualizarPlanCallback());
+							this.isActivacionOnline(), modelo, getActualizarPlanCallback());
 				}
 				// if(is.getItem().) // alcanza con isEquipo, isAccesorio?
 				ddn.setValue(true);
@@ -616,8 +618,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		} else if (sender == tipoPlan) {
 			// Cargo los planes correspondientes al tipo de plan seleccionado
 			if (tipoPlan.getSelectedItem() != null && item.getSelectedItem() != null) {
+//				MGR - #3462 - Es necesario indicar el modelo y si es activacion online
+				ModeloDto modelo = (ModeloDto) modeloEq.getSelectedItem();
 				controller.getPlanesPorItemYTipoPlan((ItemSolicitudTasadoDto) item.getSelectedItem(),
-						(TipoPlanDto) tipoPlan.getSelectedItem(), getActualizarPlanCallback());
+						(TipoPlanDto) tipoPlan.getSelectedItem(), this.isActivacionOnline(), modelo,
+						getActualizarPlanCallback());
 			}
 		} else if (sender == plan) {
 			// Cargo Modalidades de Cobro posibles

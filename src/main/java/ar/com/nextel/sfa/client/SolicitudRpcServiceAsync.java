@@ -78,8 +78,9 @@ public interface SolicitudRpcServiceAsync {
 	public void buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto, //LF#3boolean analistaCreditos,
 			AsyncCallback<String> callback);
 
+//	MGR - #3462 - Es necesario indicar el modelo y si es activacion online
 	public void getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,
-			Long idCuenta, AsyncCallback<List<PlanDto>> callback);
+			Long idCuenta, boolean isActivacionOnline, ModeloDto modelo, AsyncCallback<List<PlanDto>> callback);
 
 	public void getServiciosAdicionales(LineaSolicitudServicioDto linea, Long idCuenta,
 			boolean isEmpresa, AsyncCallback<List<ServicioAdicionalLineaSolicitudServicioDto>> defaultWaitCallback);
