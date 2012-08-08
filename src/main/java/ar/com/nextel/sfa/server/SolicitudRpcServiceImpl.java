@@ -1034,6 +1034,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 								solicitudServicioDto.setPassCreditos(false);
 //								MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
 //								solicitudBusinessService.enviarMailPassCreditos(solicitudServicioDto.getNumero());
+							}else{ //MGR - #3463
+								solicitudServicioDto.setPassCreditos(true);
 							}
 							
 						} else {
