@@ -899,36 +899,60 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 
 //	MGR - #3462 - Es necesario indicar el modelo y si es activacion online
 	public List<PlanDto> getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado,
-			TipoPlanDto tipoPlan, Long idCuenta, boolean isActivacionOnline, ModeloDto modelo) {
+			TipoPlanDto tipoPlan, Long idCuenta, boolean isActivacion, ModeloDto modelo) {
 		List planes = null;
 		
 //		MGR - #3462
 		Long idModelo = modelo != null ? modelo.getId() : null;
 		planes = solicitudServicioRepository.getPlanes(tipoPlan.getId(), itemSolicitudTasado.getItem()
-				.getId(), idCuenta, sessionContextLoader.getVendedor(), isActivacionOnline, idModelo);
+				.getId(), idCuenta, sessionContextLoader.getVendedor(), isActivacion, idModelo);
 		
 		return mapper.convertList(planes, PlanDto.class);
 	}
 
 	public List<ServicioAdicionalLineaSolicitudServicioDto> getServiciosAdicionales(
 			LineaSolicitudServicioDto linea, Long idCuenta, boolean isEmpresa) {
-		//MGR - #873 - Se agrega el Vendedor
-		Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales = solicitudServicioRepository
-				.getServiciosAdicionales(linea.getTipoSolicitud().getId(), linea.getPlan().getId(), linea
-						.getItem().getId(), idCuenta, sessionContextLoader.getVendedor(), isEmpresa);
-		//LF - #3141 - Se agregan los SA para Activación - Activación On-Line
-		if(linea.getTipoSolicitud().isActivacion() || linea.getTipoSolicitud().isActivacionOnline()) {
-//			MGR - #3331
-			if(linea.getModelo() != null){
-//				MGR - #3462 - Si es Activacion OnLine, tengo que levantar el item correcto, se cambia la query
-            	List<Item> listItems = repository.executeCustomQuery(namedQueryItemParaActivacionOnline, linea.getModelo().getId());
+		
+//		MGR - #3462 - Si es activacion o activacion online, debo buscar el item que corresponde
+		Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales = 
+				new ArrayList<ServicioAdicionalLineaSolicitudServicio>();
+		Long idItem = null;
+		List<Item> listItems = new ArrayList<Item>();
+		if( (linea.getTipoSolicitud().isActivacion() || linea.getTipoSolicitud().isActivacionOnline())
+				&& linea.getModelo() != null) {
 
-            	if(!listItems.isEmpty()) {
-					serviciosAdicionales.addAll(solicitudServicioRepository.getServiciosAdicionalesActivOnLine(linea.getTipoSolicitud().getId(),
-						listItems, sessionContextLoader.getVendedor(), isEmpresa));
-				}
+			listItems = repository.executeCustomQuery(namedQueryItemParaActivacionOnline, linea.getModelo().getId());
+			if(!listItems.isEmpty()) {
+				idItem = listItems.get(0).getId();
 			}
+		}else{
+			idItem = linea.getItem().getId();
 		}
+		
+		if(idItem != null){
+			//MGR - #873 - Se agrega el Vendedor
+//			MGR - #3462 - Se envia el item encontrado
+			serviciosAdicionales = solicitudServicioRepository.getServiciosAdicionales(
+						linea.getTipoSolicitud().getId(), linea.getPlan().getId(), 
+								idItem, idCuenta, sessionContextLoader.getVendedor(), isEmpresa);
+		}
+		
+//		MGR - #3462 - Creo que a partir del cambio que genero este incidente, esto ya no es necesario
+//		MGR - #3462 - Inicio NO necesario
+		//LF - #3141 - Se agregan los SA para Activación - Activación On-Line
+//		if(linea.getTipoSolicitud().isActivacion() || linea.getTipoSolicitud().isActivacionOnline()) {
+//			MGR - #3331
+//			if(linea.getModelo() != null){
+//				MGR - #3462 - Si es Activacion OnLine, tengo que levantar el item correcto, se cambia la query
+//            	List<Item> listItems = repository.executeCustomQuery(namedQueryItemParaActivacionOnline, linea.getModelo().getId());
+//
+//            	if(!listItems.isEmpty()) {
+//					serviciosAdicionales.addAll(solicitudServicioRepository.getServiciosAdicionalesActivOnLine(linea.getTipoSolicitud().getId(),
+//						listItems, sessionContextLoader.getVendedor(), isEmpresa));
+//				}
+//			}
+//		}
+//		MGR - #3462 - Fin NO necesario
 		return mapper.convertList(serviciosAdicionales, ServicioAdicionalLineaSolicitudServicioDto.class);
 	}
 

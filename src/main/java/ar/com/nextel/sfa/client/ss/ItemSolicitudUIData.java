@@ -117,6 +117,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private ItemSolicitudDialog dialog;
 	private boolean activacionOnline;
 	private Long idTipoSolicitudBaseActivacionOnline;
+//	MGR - #3462
+	private boolean activacion = false;
+	private Long idTipoSolicitudBaseActivacion = 0L;
 
 	public ItemSolicitudUIData(EditarSSUIController controller) {
 		
@@ -334,7 +337,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 		setIdTipoSolicitudBaseActivacionOnline(Long.valueOf(17)); // 17-TIPO_SOLICITUD_BASE_ACTIVACION_ONLINE
 		
-		idsTipoSolicitudBaseActivacion.add(Long.valueOf(9)); // 9-TIPO_SOLICITUD_BASE_ACTIVACION
+//		MGR - #3462
+//		idsTipoSolicitudBaseActivacion.add(Long.valueOf(9)); // 9-TIPO_SOLICITUD_BASE_ACTIVACION
+		setIdTipoSolicitudBaseActivacion(Long.valueOf(9)); 
+		idsTipoSolicitudBaseActivacion.add(getIdTipoSolicitudBaseActivacion()); // 17-TIPO_SOLICITUD_BASE_ACTIVACION_ONLINE
+		
 		idsTipoSolicitudBaseActivacion.add(Long.valueOf(13)); // 13-TIPO_SOLICITUD_BASE_ACTIVACION_G4
 		idsTipoSolicitudBaseActivacion.add(Long.valueOf(getIdTipoSolicitudBaseActivacionOnline())); // 17-TIPO_SOLICITUD_BASE_ACTIVACION_ONLINE
 		
@@ -593,8 +600,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				if (tipoPlan.getSelectedItem() != null) {
 //					MGR - #3462 - Es necesario indicar el modelo y si es activacion online
 					ModeloDto modelo = (ModeloDto) modeloEq.getSelectedItem();
+					boolean isActivacion = this.isActivacion() || this.isActivacionOnline();
 					controller.getPlanesPorItemYTipoPlan(is, (TipoPlanDto) tipoPlan.getSelectedItem(),
-							this.isActivacionOnline(), modelo, getActualizarPlanCallback());
+							isActivacion, modelo, getActualizarPlanCallback());
 				}
 				// if(is.getItem().) // alcanza con isEquipo, isAccesorio?
 				ddn.setValue(true);
@@ -620,8 +628,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			if (tipoPlan.getSelectedItem() != null && item.getSelectedItem() != null) {
 //				MGR - #3462 - Es necesario indicar el modelo y si es activacion online
 				ModeloDto modelo = (ModeloDto) modeloEq.getSelectedItem();
+				boolean isActivacion = this.isActivacion() || this.isActivacionOnline();
 				controller.getPlanesPorItemYTipoPlan((ItemSolicitudTasadoDto) item.getSelectedItem(),
-						(TipoPlanDto) tipoPlan.getSelectedItem(), this.isActivacionOnline(), modelo,
+						(TipoPlanDto) tipoPlan.getSelectedItem(), isActivacion, modelo,
 						getActualizarPlanCallback());
 			}
 		} else if (sender == plan) {
@@ -1219,7 +1228,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	public void setActivacionOnline(boolean activacionOnline) {
 		this.activacionOnline = activacionOnline;
 	}
-
+	
 	public Long getIdTipoSolicitudBaseActivacionOnline() {
 		return idTipoSolicitudBaseActivacionOnline;
 	}
@@ -1227,5 +1236,22 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	public void setIdTipoSolicitudBaseActivacionOnline(
 			Long idTipoSolicitudBaseActivacionOnline) {
 		this.idTipoSolicitudBaseActivacionOnline = idTipoSolicitudBaseActivacionOnline;
+	}
+	
+//	MGR - #3462
+	public boolean isActivacion() {
+		return activacion;
+	}
+
+	public void setActivacion(boolean activacion) {
+		this.activacion = activacion;
+	}
+
+	public Long getIdTipoSolicitudBaseActivacion() {
+		return idTipoSolicitudBaseActivacion;
+	}
+
+	public void setIdTipoSolicitudBaseActivacion(Long idTipoSolicitudBaseActivacion) {
+		this.idTipoSolicitudBaseActivacion = idTipoSolicitudBaseActivacion;
 	}
 }

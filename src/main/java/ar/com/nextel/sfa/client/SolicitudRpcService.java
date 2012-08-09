@@ -101,7 +101,7 @@ public interface SolicitudRpcService extends RemoteService {
 
 //	MGR - #3462 - Es necesario indicar el modelo y si es activacion online
 	public List<PlanDto> getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado,
-			TipoPlanDto tipoPlan, Long idCuenta, boolean isActivacionOnline, ModeloDto modelo);
+			TipoPlanDto tipoPlan, Long idCuenta, boolean isActivacion, ModeloDto modelo);
 
 	public List<ServicioAdicionalLineaSolicitudServicioDto> getServiciosAdicionales(
 			LineaSolicitudServicioDto linea, Long idCuenta, boolean isEmpresa) throws RpcExceptionMessages;

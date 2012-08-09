@@ -28,7 +28,7 @@ public interface EditarSSUIController {
 
 //	MGR - #3462 - Es necesario indicar el modelo y si es activacion online
 	public void getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,
-			boolean isActivacionOnline, ModeloDto modelo, DefaultWaitCallback<List<PlanDto>> callback);
+			boolean isActivacion, ModeloDto modelo, DefaultWaitCallback<List<PlanDto>> callback);
 
 	public void getServiciosAdicionales(LineaSolicitudServicioDto linea,
 			DefaultWaitCallback<List<ServicioAdicionalLineaSolicitudServicioDto>> defaultWaitCallback);

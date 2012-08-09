@@ -220,6 +220,10 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 				if(itemSolicitudUIData.getIdTipoSolicitudBaseActivacionOnline().equals(tipoSolicitud.getTipoSolicitudBase().getId())) {
 					itemSolicitudUIData.setActivacionOnline(true);
 				}
+//				MGR - #3462
+				if(itemSolicitudUIData.getIdTipoSolicitudBaseActivacion().equals(tipoSolicitud.getTipoSolicitudBase().getId())) {
+					itemSolicitudUIData.setActivacion(true);
+				}
 				tipoSolicitudPanel.setWidget(getItemSolicitudActivacionUI(itemSolicitudUIData.isActivacionOnline()));
 				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.ACTIVACION);
 			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseCDW().contains(

@@ -1275,10 +1275,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 //	MGR - #3462 - Es necesario indicar el modelo y si es activacion online
 	public void getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,
-			boolean isActivacionOnline, ModeloDto modelo, DefaultWaitCallback<List<PlanDto>> callback) {
+			boolean isActivacion, ModeloDto modelo, DefaultWaitCallback<List<PlanDto>> callback) {
 		
 		SolicitudRpcService.Util.getInstance().getPlanesPorItemYTipoPlan(itemSolicitudTasado, tipoPlan,
-				editarSSUIData.getCuentaId(), isActivacionOnline, modelo, callback);
+				editarSSUIData.getCuentaId(), isActivacion, modelo, callback);
 	}
 
 	public void getServiciosAdicionales(LineaSolicitudServicioDto linea,
