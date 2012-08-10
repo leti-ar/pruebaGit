@@ -87,7 +87,8 @@ public class SolicitudServicioDto implements IsSerializable {
 	private Long idConsultaScoring;
     	//GB - si es customer o no
 	private boolean customer;
-	private VendedorDto vendedorLogueado;
+//	MGR - #3460 - A raiz de este bug, me di cuenta que esto esta de mas
+//	private VendedorDto vendedorLogueado;
 	
 	private Long cantLineasPortabilidad;
 
@@ -557,13 +558,12 @@ public class SolicitudServicioDto implements IsSerializable {
 		this.idConsultaScoring = idConsultaScoring;
 	}
 
-	public VendedorDto getVendedorLogueado() {
-		return vendedorLogueado;
-	}
-
-	public void setVendedorLogueado(VendedorDto vendedorLogueado) {
-		this.vendedorLogueado = vendedorLogueado;
-	}
-		
-	
+//	MGR - #3460
+//	public VendedorDto getVendedorLogueado() {
+//		return vendedorLogueado;
+//	}
+//
+//	public void setVendedorLogueado(VendedorDto vendedorLogueado) {
+//		this.vendedorLogueado = vendedorLogueado;
+//	}
 }
