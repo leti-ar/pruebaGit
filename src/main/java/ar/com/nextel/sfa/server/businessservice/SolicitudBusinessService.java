@@ -1340,9 +1340,9 @@ public class SolicitudBusinessService {
 	public Integer calcularCantEquipos(Collection<LineaSolicitudServicio> lineaSS){
 		int cantEquipos = 0;
 		for (Iterator iterator = lineaSS.iterator(); iterator.hasNext();) {
-			LineaSolicitudServicioDto lineaSolicitudServicioDto = (LineaSolicitudServicioDto) iterator
+			LineaSolicitudServicio lineaSolicitudServicio = (LineaSolicitudServicio) iterator
 					.next();
-			cantEquipos = cantEquipos + Integer.parseInt(repository.executeCustomQuery(CANTIDAD_EQUIPOS, lineaSolicitudServicioDto.getItem().getId()).get(0).toString());
+			cantEquipos = cantEquipos + Integer.parseInt(repository.executeCustomQuery(CANTIDAD_EQUIPOS, lineaSolicitudServicio.getItem().getId()).get(0).toString());
 		}
 		
 		return cantEquipos;
