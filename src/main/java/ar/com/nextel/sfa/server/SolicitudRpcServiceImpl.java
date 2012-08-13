@@ -1139,7 +1139,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				    result.setError(true);
 				} else { // Si el SIM no se cargó en otra solicitud, verifica que este disponible en AVALON
 					for (Iterator iterator = solicitudServicio.getLineas().iterator(); iterator.hasNext();) {
-						LineaSolicitudServicioDto lineaSS = (LineaSolicitudServicioDto) iterator.next();
+						LineaSolicitudServicio lineaSS = (LineaSolicitudServicio) iterator.next();
 						String nroSIM = lineaSS.getNumeroSimcard();
 						if(nroSIM != null) {
 							AppLogger.info("##Log Cierre y pass - Verificando que el numero de SIM '"+ nroSIM +"' se encuentre disponible en AVALON");
