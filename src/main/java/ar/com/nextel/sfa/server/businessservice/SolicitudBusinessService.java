@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -67,6 +68,7 @@ import ar.com.nextel.model.cuentas.beans.EstadoCreditoFidelizacion;
 import ar.com.nextel.model.cuentas.beans.RiskCode;
 import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
 import ar.com.nextel.model.cuentas.beans.TipoTarjeta;
+import ar.com.nextel.model.cuentas.beans.TipoVendedor;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
 import ar.com.nextel.model.personas.beans.Domicilio;
@@ -94,7 +96,9 @@ import ar.com.nextel.services.nextelServices.veraz.dto.VerazRequestDTO;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
+import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.server.SolicitudRpcServiceImpl;
@@ -132,6 +136,14 @@ public class SolicitudBusinessService {
 	
 //	MGR - Se mueve la creacion de la cuenta
 	private String MENSAJE_ERROR_CREAR_CUENTA= "La SS % quedó pendiente de aprobación, por favor verificar y dar curso manual.";
+	
+//	MGR - Parche de emergencia
+	public static final int CIERRE_NORMAL = 1; //Se cierra la solicitud de servicio y se transfiere a Vantive
+	public static final int LINEAS_NO_CUMPLEN_CC = 2;
+	public static final int CIERRE_PASS_AUTOMATICO = 3;
+	
+//	MGR - Parche de emergencia
+	private static final String CANTIDAD_EQUIPOS = "CANTIDAD_EQUIPOS";
 	
 	@Autowired
 	public void setGlobalParameterRetriever(
@@ -621,8 +633,13 @@ public class SolicitudBusinessService {
 			String pinMaestro, boolean cerrar, int puedeCerrar) 
 			throws BusinessException {
 		
-//		MGR - Se crea la variable que venia en la llamada		
-		boolean cierraPorCC = puedeCerrar != SolicitudRpcServiceImpl.CIERRE_NORMAL;
+//		MGR - Se crea la variable que venia en la llamada	
+//		MGR - Parche de emergencia
+		boolean cierraPorCC = false;
+		if(!solicitudServicio.getGrupoSolicitud().isGrupoTransferencia()){
+			cierraPorCC = puedeCerrar != SolicitudBusinessService.CIERRE_NORMAL;
+		}
+		
 		
 //		#1636 mrial
 		boolean esProspect = false;	
@@ -752,7 +769,7 @@ public class SolicitudBusinessService {
 //				MGR - Se mueve la creacion de la cuenta. 
 //				Se mueve esto desde la clase SolicitudRpcServiceImpl, metodo generarCerrarSolicitud
 				if (!solicitudServicio.getCuenta().isTransferido() 
-						&& puedeCerrar == SolicitudRpcServiceImpl.CIERRE_PASS_AUTOMATICO) {
+						&& puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO) {
 					
 //					MGR - Se mueve la creacion de la cuenta. Pongo la solicitud en carga hasta haber creado el cliente
 //					Esto es por un bug raro que sucede si durante la creacion del cliente, el chron levanta la ss
@@ -1264,5 +1281,77 @@ public class SolicitudBusinessService {
 				.getObject(GlobalParameterIdentifier.ASUNTO_ERROR_CREAR_CTA)).getValue());
 		this.enviarMail(asunto.replaceAll("%", numeroSS), 
 				destinatario.split(","), MENSAJE_ERROR_CREAR_CUENTA.replaceAll("%", numeroSS));
+	}
+
+
+//	MGR - Parche de emergencia
+//	public List<ServicioAdicionalLineaSolicitudServicioDto> getServicioAdicionalLineaIncluidosNoVisibles(
+//			VendedorDto vendedor, LineaSolicitudServicioDto linea) {
+//		
+//		Item item = null;
+//		if( (linea.isActivacion() || linea.isActivacionOnline()) 
+//				&& linea.getModelo() != null){
+//			List<Item> listItems = repository.executeCustomQuery(namedQueryItemParaActivacionOnline, linea.getModelo().getId());
+//		
+//			if(!listItems.isEmpty()){
+//				item = listItems.get(0);
+//			}
+//		}else{
+//			item = linea.getItem();
+//		}
+//		
+//		if(item != null){
+//			List<ServicioAdicionalLineaSolicitudServicio> lineasSSAA = linea.getPlan()
+//			.getServicioAdicionalLineaIncluidosNoVisibles(item,
+//				ss.getVendedor(), linea);
+//			
+//		}
+//		
+//		return null;
+//	}
+	
+//	MGR - Parche de emergencia
+	public int sonConfigurablesPorAPG(List<LineaSolicitudServicio> lineas) {
+		AppLogger.info("#Log Cierre y pass - Validando que todas las líneas sean configurables por APG...");
+		int cumple = 0;
+		TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor();
+		for (Iterator<LineaSolicitudServicio> iterator = lineas.iterator(); iterator.hasNext();) {
+			LineaSolicitudServicio linea = (LineaSolicitudServicio) iterator.next();
+			if (linea.getTipoSolicitud() != null && linea.getPlan() != null && linea.getItem() != null) {
+				List result = repository.executeCustomQuery("configurablePorAPG", tipoVendedor.getId(), linea.getTipoSolicitud().getId());  
+				if (result.size() > 0) {
+					cumple++;
+				}
+			}
+		}
+		if (cumple == lineas.size()) {
+			AppLogger.info("#Log Cierre y pass - Todas las líneas son configurables por APG");
+			return CIERRE_PASS_AUTOMATICO;
+		} else if ((cumple < lineas.size() && cumple != 0) ) {
+			AppLogger.info("#Log Cierre y pass - No todas las líneas son configurables por APG");
+			return LINEAS_NO_CUMPLEN_CC;
+		} else {
+			AppLogger.info("#Log Cierre y pass - Ninguna línea es configurable por APG");			
+			return CIERRE_NORMAL;
+		}
+	}
+	
+//	MGR - Parche de emergencia
+	public Integer calcularCantEquipos(Collection<LineaSolicitudServicio> lineaSS){
+		int cantEquipos = 0;
+		for (Iterator iterator = lineaSS.iterator(); iterator.hasNext();) {
+			LineaSolicitudServicioDto lineaSolicitudServicioDto = (LineaSolicitudServicioDto) iterator
+					.next();
+			cantEquipos = cantEquipos + Integer.parseInt(repository.executeCustomQuery(CANTIDAD_EQUIPOS, lineaSolicitudServicioDto.getItem().getId()).get(0).toString());
+		}
+		
+		return cantEquipos;
+	}
+	
+//	MGR - Parche de emergencia
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public SolicitudServicio saveSolicituServicio(SolicitudServicio ss){
+		repository.save(ss);
+		return ss;
 	}
 }

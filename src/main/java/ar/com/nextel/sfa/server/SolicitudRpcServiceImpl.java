@@ -62,6 +62,7 @@ import ar.com.nextel.framework.repository.hibernate.HibernateRepository;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.TipoVendedor;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
+import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.personas.beans.Localidad;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.model.solicitudes.beans.CondicionComercial;
@@ -74,6 +75,7 @@ import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.LineasPorSegmento;
 import ar.com.nextel.model.solicitudes.beans.ListaPrecios;
+import ar.com.nextel.model.solicitudes.beans.Modelo;
 import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
 import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.PlanBase;
@@ -142,6 +144,7 @@ import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
+import ar.com.nextel.sfa.client.ss.SoloItemSolicitudUI;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.util.PortabilidadResult;
 import ar.com.nextel.sfa.client.util.PortabilidadResult.ERROR_ENUM;
@@ -181,8 +184,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	
 	//MGR - #1481
 	private DefaultRetriever messageRetriever;;
-	//#LF
-	private static final String CANTIDAD_EQUIPOS = "CANTIDAD_EQUIPOS";
 	
 	//MGR - #3122
 	private static final String ERROR_CC_POR_RESULTADO = "ERROR_CC_POR_RESULTADO";
@@ -198,10 +199,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	//MGR - Para buscar el path que corresponda para cada documento digitalizado
 	private static final String GET_PATH_LINUX = "GET_PATH_LINUX";
 	
-	//MGR - Para dejar el codigo un poco mas oredenado
-	public static final int CIERRE_NORMAL = 1; //Se cierra la solicitud de servicio y se transfiere a Vantive
-	public static final int LINEAS_NO_CUMPLEN_CC = 2;
-	public static final int CIERRE_PASS_AUTOMATICO = 3;
 	private static final String querryEstadosPorSSPorIdSS = "ESTADOS_POR_SOLICITUD_SEGUN_ID_SOLICITUD";
 	
 //  MGR - #3462 - Para la busqueda del item que corresponda
@@ -1028,25 +1025,31 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			}
 			solicitudServicioDto.setCantLineasPortabilidad(contadorPortabilidad);
 
-			
 			completarDomiciliosSolicitudTransferencia(solicitudServicioDto);
+//			MGR - Parche de emergencia
+			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
+//			MGR - Log informativo, quitar
+			AppLogger.info("Solicitud servicio de id: " + solicitudServicio.getId() + 
+					" es de trasnferencia: " + solicitudServicio.getGrupoSolicitud().isGrupoTransferencia(), this);
+			
 			String errorNF = "";
 			//larce - Req#5 Cierre y Pass automático
 			String errorCC = "";
 			int puedeCerrar = 0;
-			if (!solicitudServicioDto.getGrupoSolicitud().isTransferencia()) {
+//			MGR - Parche de emergencia
+			if (!solicitudServicio.getGrupoSolicitud().isGrupoTransferencia()) {
 				//me fijo si tipo vendedor y orden son configurables por APG.
 				puedeCerrar = sonConfigurablesPorAPG(solicitudServicioDto.getLineas());
 				
-				if (puedeCerrar == CIERRE_PASS_AUTOMATICO) {//pass de creditos segun la logica
-					errorCC = evaluarEquiposYDeuda(solicitudServicioDto, pinMaestro);
+				if (puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO) {//pass de creditos segun la logica
+					errorCC = evaluarEquiposYDeuda(solicitudServicio, pinMaestro);
 					if ("".equals(errorCC)) {
 						
 						isVerazDisponible = (repository.executeCustomQuery("isVerazDisponible", "VERAZ_DISPONIBLE"));
 //						MGR - #3458 - Verifico si corresponde cerrar por Veraz (o Scoring)
 						cierrePorVeraz = ("".equals(pinMaestro) || pinMaestro == null)
-											&& !solicitudServicioDto.getSolicitudServicioGeneracion().isScoringChecked();
-						if (puedeDarPassDeCreditos(solicitudServicioDto, cierrePorVeraz, isVerazDisponible.get(0))) {
+											&& !solicitudServicio.getSolicitudServicioGeneracion().getScoringChecked();
+						if (puedeDarPassDeCreditos(solicitudServicio, cierrePorVeraz, isVerazDisponible.get(0))) {
 							
 //							MGR - #3458
 //							Si puede dar el pass, pero el veraz esta deshabilitado y el pass se dio por veraz,
@@ -1055,17 +1058,17 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 							if(cierrePorVeraz && !"T".equals(isVerazDisponible.get(0))){
 								//En caso de que el veraz no esté disponible, de cumplir con las condiciones comerciales se cierra 
 								//la SS quedando pendiente de aprobación en vantive y se envia un mail informando la situación
-								solicitudServicioDto.setPassCreditos(false);
+								solicitudServicio.setPassCreditos(false);
 //								MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
 //								solicitudBusinessService.enviarMailPassCreditos(solicitudServicioDto.getNumero());
 							}else{ //MGR - #3463
-								solicitudServicioDto.setPassCreditos(true);
+								solicitudServicio.setPassCreditos(true);
 							}
 							
 						} else {
-							solicitudServicioDto.setPassCreditos(false);
+							solicitudServicio.setPassCreditos(false);
 							if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
-								errorCC = generarErrorPorCC(solicitudServicioDto, pinMaestro);
+								errorCC = generarErrorPorCC(solicitudServicio, pinMaestro);
 								
 						    	/* MGR - 04/07/2012
 						    	 * Al verificar si las lineas cumplen con las condiciones comerciales, la cantidad de equipos y la cantidad de pesos
@@ -1079,7 +1082,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 						    	 */
 								if(errorCC.equals("")){
 									AppLogger.info("#Log Cierre y pass - La SS con cumple con las CC pero el mensaje de error se encuentra vacio. Damos el pass de todas formas.", this);
-									solicitudServicioDto.setPassCreditos(true);
+									solicitudServicio.setPassCreditos(true);
 								}
 
 							}
@@ -1088,8 +1091,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				}
 				
 				//larce - Req#9 Negative Files
-				if(solicitudServicioDto.getVendedor().getTipoVendedor().isEjecutaNegFiles()){
-					errorNF = verificarNegativeFilesPorLinea(solicitudServicioDto.getLineas());					
+				if(solicitudServicio.getVendedor().getTipoVendedor().isEjecutaNegFiles()){
+					errorNF = verificarNegativeFilesPorLinea(solicitudServicio.getLineas());
 				}
 				
 				if (!"".equals(errorNF)) {
@@ -1099,7 +1102,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					response.getMessages().addMesage(message);
 					result.setError(true);
 				}
-				if (puedeCerrar == LINEAS_NO_CUMPLEN_CC) {
+				if (puedeCerrar == SolicitudBusinessService.LINEAS_NO_CUMPLEN_CC) {
 					hayError = true;
 					response.getMessages().addMesage((Message) this.messageRetriever.getObject(MessageIdentifier.TIPO_ORDEN_INCOMPATIBLE));
 					result.setError(true);
@@ -1112,10 +1115,10 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				}
 			}
 			
-			if(!hayError && puedeCerrar == CIERRE_PASS_AUTOMATICO){
+			if(!hayError && puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO){
 				
 				//LF - #3139 - Validacion de SIM repetidos
-				List<String> listaAlias = listaAliasSimRepetidos(solicitudServicioDto.getLineas());
+				List<String> listaAlias = listaAliasSimRepetidos(solicitudServicio.getLineas());
 				if(!listaAlias.isEmpty()) {
 				    String mensaje = "";
 					if(listaAlias.size() > 1) {
@@ -1135,7 +1138,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					hayError = true;
 				    result.setError(true);
 				} else { // Si el SIM no se cargó en otra solicitud, verifica que este disponible en AVALON
-					for (Iterator iterator = solicitudServicioDto.getLineas().iterator(); iterator.hasNext();) {
+					for (Iterator iterator = solicitudServicio.getLineas().iterator(); iterator.hasNext();) {
 						LineaSolicitudServicioDto lineaSS = (LineaSolicitudServicioDto) iterator.next();
 						String nroSIM = lineaSS.getNumeroSimcard();
 						if(nroSIM != null) {
@@ -1156,7 +1159,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				}
 			}
 
-			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
+			solicitudServicio = solicitudBusinessService.saveSolicituServicio(solicitudServicio);
 
 			//MGR - #3123 - Si ninguno no fallo por alguna de las validaciones anteriores
 			if(!hayError){
@@ -1173,9 +1176,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				
 //				MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
 //				MGR - #3458 - Y si el cierre fue por veraz
-				if (!result.isError() && puedeCerrar == CIERRE_PASS_AUTOMATICO &&
+				if (!result.isError() && puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO &&
 						cerrar && !"T".equals(isVerazDisponible.get(0)) && cierrePorVeraz) {
-					solicitudBusinessService.enviarMailPassCreditos(solicitudServicioDto.getNumero());
+					solicitudBusinessService.enviarMailPassCreditos(solicitudServicio.getNumero());
 				}
 				
 //				larce - #3177: Cierre y Pass Automatico – Pass a Prospect
@@ -1185,7 +1188,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 //				va por pass automatico y es un cierre, creo y tranfiero caratula
 				if (eraProspect && !result.isError() && 
 						solicitudServicio.getCuenta().isTransferido() && 
-						puedeCerrar == CIERRE_PASS_AUTOMATICO && cerrar) {
+						puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO && cerrar) {
 					
 						Long idCaratula = solicitudBusinessService.crearCaratula(solicitudServicio.getCuenta(), solicitudServicio.getNumero(), resultadoVerazScoring);
 						solicitudBusinessService.transferirCaratula(idCaratula, solicitudServicio.getNumero());						
@@ -1226,9 +1229,11 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	}
 
 	private void completarDomiciliosSolicitudTransferencia(SolicitudServicioDto solicitudServicioDto) {
+//		MGR - Log informativo, quitar
+		AppLogger.info("Solicitud servicio de id: " + solicitudServicioDto.getId() + 
+				" es de trasnferencia: " + solicitudServicioDto.getGrupoSolicitud().isTransferencia(), this);
 		if (solicitudServicioDto.getGrupoSolicitud().isTransferencia())
 			for (DomiciliosCuentaDto dom : solicitudServicioDto.getCuenta().getPersona().getDomicilios()) {
-
 				if (dom.getIdEntrega().equals(EstadoTipoDomicilioDto.PRINCIPAL.getId())) {
 					solicitudServicioDto.setIdDomicilioEnvio(dom.getId());
 				}
@@ -1655,14 +1660,18 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	}
 	
 	public Integer calcularCantEquipos(List<LineaSolicitudServicioDto> lineaSS){
-		int cantEquipos = 0;
-		for (Iterator iterator = lineaSS.iterator(); iterator.hasNext();) {
-			LineaSolicitudServicioDto lineaSolicitudServicioDto = (LineaSolicitudServicioDto) iterator
-					.next();
-			cantEquipos = cantEquipos + Integer.parseInt(repository.executeCustomQuery(CANTIDAD_EQUIPOS, lineaSolicitudServicioDto.getItem().getId()).get(0).toString());
-		}
-		
-		return cantEquipos;
+//		MGR - Parche de emergencia
+//		int cantEquipos = 0;
+//		for (Iterator iterator = lineaSS.iterator(); iterator.hasNext();) {
+//			LineaSolicitudServicioDto lineaSolicitudServicioDto = (LineaSolicitudServicioDto) iterator
+//					.next();
+//			cantEquipos = cantEquipos + Integer.parseInt(repository.executeCustomQuery(CANTIDAD_EQUIPOS, lineaSolicitudServicioDto.getItem().getId()).get(0).toString());
+//		}
+//		
+//		return cantEquipos;
+
+		List<LineaSolicitudServicio> lineas = mapper.convertList(lineaSS, LineaSolicitudServicio.class);
+		return solicitudBusinessService.calcularCantEquipos(lineas);
 	}
 	
 	public List<SolicitudServicioDto> buscarHistoricoVentas(String nss) throws RpcExceptionMessages {
@@ -1923,30 +1932,39 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 *         3- En caso de que todas las líneas de la solicitud cumplan, se 
 	 *         realizara el cierre y pass de créditos automático a la SS.
 	 */
+//	MGR - Parche de emergencia
 	public int sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas) {
-		AppLogger.info("#Log Cierre y pass - Validando que todas las líneas sean configurables por APG...");
-		int cumple = 0;
-		TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor();
-		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
-			LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
-			if (linea.getTipoSolicitud() != null && linea.getPlan() != null && linea.getItem() != null) {
-				List result = repository.executeCustomQuery("configurablePorAPG", tipoVendedor.getId(), linea.getTipoSolicitud().getId());  
-				if (result.size() > 0) {
-					cumple++;
-				}
-			}
-		}
-		if (cumple == lineas.size()) {
-			AppLogger.info("#Log Cierre y pass - Todas las líneas son configurables por APG");
-			return CIERRE_PASS_AUTOMATICO;
-		} else if ((cumple < lineas.size() && cumple != 0) ) {
-			AppLogger.info("#Log Cierre y pass - No todas las líneas son configurables por APG");
-			return LINEAS_NO_CUMPLEN_CC;
-		} else {
-			AppLogger.info("#Log Cierre y pass - Ninguna línea es configurable por APG");			
-			return CIERRE_NORMAL;
-		}
+		List<LineaSolicitudServicio> lineasSS = mapper.convertList(lineas, LineaSolicitudServicio.class);
+		return solicitudBusinessService.sonConfigurablesPorAPG(lineasSS);
 	}
+	
+//	MGR - Parche de emergencia
+//	public int sonConfigurablesPorAPG(List<LineaSolicitudServicio> lineas) {
+//		AppLogger.info("#Log Cierre y pass - Validando que todas las líneas sean configurables por APG...");
+//		int cumple = 0;
+//		TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor();
+////		MGR****for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
+//		for (Iterator<LineaSolicitudServicio> iterator = lineas.iterator(); iterator.hasNext();) {
+////			MGR****LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
+//			LineaSolicitudServicio linea = (LineaSolicitudServicio) iterator.next();
+//			if (linea.getTipoSolicitud() != null && linea.getPlan() != null && linea.getItem() != null) {
+//				List result = repository.executeCustomQuery("configurablePorAPG", tipoVendedor.getId(), linea.getTipoSolicitud().getId());  
+//				if (result.size() > 0) {
+//					cumple++;
+//				}
+//			}
+//		}
+//		if (cumple == lineas.size()) {
+//			AppLogger.info("#Log Cierre y pass - Todas las líneas son configurables por APG");
+//			return CIERRE_PASS_AUTOMATICO;
+//		} else if ((cumple < lineas.size() && cumple != 0) ) {
+//			AppLogger.info("#Log Cierre y pass - No todas las líneas son configurables por APG");
+//			return LINEAS_NO_CUMPLEN_CC;
+//		} else {
+//			AppLogger.info("#Log Cierre y pass - Ninguna línea es configurable por APG");			
+//			return CIERRE_NORMAL;
+//		}
+//	}
 	
 	/**
 	 * Dependiendo del tipo de cliente, si tiene equipos activos o suspendidos y deuda en cuenta corriente;
@@ -1956,12 +1974,14 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 * @return Mensaje de error si no se cumplen las condiciones.
 	 * @throws RpcExceptionMessages 
 	 */
-	private String evaluarEquiposYDeuda(SolicitudServicioDto ss, String pinMaestro) throws RpcExceptionMessages {
+//	MGR - Parche de emergencia
+	private String evaluarEquiposYDeuda(SolicitudServicio ss, String pinMaestro) throws RpcExceptionMessages {
 		if (!RegularExpressionConstants.isVancuc(ss.getCuenta().getCodigoVantive())) {
 			
 			AppLogger.info("#Log Cierre y pass - Buscando cantidad de equipos en la cuenta: " + ss.getCuenta().getCodigoVantive(), this);
 			
-			CantidadEquiposDTO cantidadEquipos = getCantEquiposCuenta(ss.getCuenta());
+//			MGR - Parche de emergencia
+			CantidadEquiposDTO cantidadEquipos = getCantEquiposCuenta(ss.getCuenta().getCodigoVantive());
 			
 			AppLogger.info("#Log Cierre y pass - Cantidad equipos activos: " + cantidadEquipos.getCantidadActivos(), this);
 			AppLogger.info("#Log Cierre y pass - Cantidad equipos suspendidos: " + cantidadEquipos.getCantidadSuspendidos(), this);
@@ -1976,16 +1996,17 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				boolean permisoCierrePin = (Boolean) mapaPermisosClient.get(PermisosUserCenter.CERRAR_SS_CON_PIN.getValue());
 				boolean permisoCierreScoring = (Boolean) mapaPermisosClient.get(PermisosEnum.SCORING_CHECKED.getValue());
 				boolean cerrandoConItemBB = false;
-				for (LineaSolicitudServicioDto linea : ss.getLineas()) {
-					ModeloDto modelo = linea.getModelo();
-					if (modelo != null && modelo.isEsBlackberry()) {
+
+				for (LineaSolicitudServicio linea : ss.getLineas()) {
+					Modelo modelo = linea.getModelo();
+					if (modelo != null && modelo.getEsBlackberry()) {
 						cerrandoConItemBB = true;
 						break;
 					}
 				}
 				
 				if (("".equals(pinMaestro) || pinMaestro == null)
-						&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
+						&& !ss.getSolicitudServicioGeneracion().getScoringChecked()) {
 					//#3248
 					if ((ss.getGrupoSolicitud().getId() == 1L && permisoCierreScoring && !cerrandoConItemBB && ss.getCuenta().isCliente())
 							|| (ss.getGrupoSolicitud().getId() == 1L && permisoCierrePin && !cerrandoConItemBB)) {
@@ -2006,7 +2027,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				
 				if ( deudaCta <= maxDeuda) { //no posee
 					if (!("".equals(pinMaestro) || pinMaestro == null)
-							|| ss.getSolicitudServicioGeneracion().isScoringChecked()) {
+							|| ss.getSolicitudServicioGeneracion().getScoringChecked()) {
 						return "Solo se permite cerrar por Veraz dado que es un cliente existente sin equipos activos ni suspendidos.";
 					}
 				} else {
@@ -2015,7 +2036,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				}
 			}
 		} else if (!("".equals(pinMaestro) || pinMaestro == null)
-				|| ss.getSolicitudServicioGeneracion().isScoringChecked()) {
+				|| ss.getSolicitudServicioGeneracion().getScoringChecked()) {
 			return "Solo se permite cerrar por Veraz.";
 		}
 		return "";
@@ -2048,7 +2069,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 */
 	String resultadoVerazScoring = "";
 //	MGR - #3458 - Envio "cierrePorVeraz" en lugar de "pinMaestro"
-	private boolean puedeDarPassDeCreditos(SolicitudServicioDto ss, boolean cierrePorVeraz, String isVerazDisponible)
+//	MGR - Parche de emergencia
+	private boolean puedeDarPassDeCreditos(SolicitudServicio ss, boolean cierrePorVeraz, String isVerazDisponible)
 			throws BusinessException {
 		//MGR - Limpio la variable resultadoVerazScoring sino la proxima vez trae problemas
 		resultadoVerazScoring = "";
@@ -2060,7 +2082,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			if ("T".equals(isVerazDisponible)) {
 				//devuelve un string vacio si el servicio de veraz falla
 				//MGR - #3118 - Cambio a leyenda en caso de que el documento sea inexistente
-				VerazResponseDTO responseDTO = solicitudBusinessService.consultarVerazCierreSS(repository.retrieve(SolicitudServicio.class, ss.getId()));
+				VerazResponseDTO responseDTO = solicitudBusinessService.consultarVerazCierreSS(ss);
 				
 				AppLogger.info("#Log Cierre y pass - Categoria de Veraz: " + responseDTO.getEstado() + " y mensaje: " +
 						responseDTO.getMensaje());
@@ -2098,19 +2120,21 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 
 		AppLogger.info("#Log Cierre y pass - Validando que todas las líneas cumplan con las condiciones comerciales...");
 		
-		List<LineaSolicitudServicioDto> lineas = ss.getLineas();
+		Set<LineaSolicitudServicio> lineas = ss.getLineas();
+		
 		TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor();
-		Integer cantEquipos = calcularCantEquipos(ss.getLineas());
+		Integer cantEquipos = solicitudBusinessService.calcularCantEquipos(ss.getLineas());
+		
 		Double cantPesos = new Double(0);
-		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
-    		LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
+		for (Iterator<LineaSolicitudServicio> iterator = lineas.iterator(); iterator.hasNext();) {
+			LineaSolicitudServicio linea = (LineaSolicitudServicio) iterator.next();
     		cantPesos = cantPesos + linea.getPrecioVenta();
 		}
     	
 		boolean existeCC = true;
 		
-		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext() && existeCC;) {
-    		LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
+		for (Iterator<LineaSolicitudServicio> iterator = lineas.iterator(); iterator.hasNext() && existeCC;) {
+			LineaSolicitudServicio linea = (LineaSolicitudServicio) iterator.next();
     		/*LF - #3144: Cierre y Pass Automatico - Evaluacion de condiciones comerciales para Activacion y Activacion On-line 
     		  Si el tipo de solicitud es Activacion o Activacion online, se deben tomar todos los item del modelo seleccionado y 
     		  verificar que cada uno corresponda con las condiciones comerciales, si al menos uno no corresponde no se cumple las cc */
@@ -2175,14 +2199,15 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 * @return
 	 * @throws RpcExceptionMessages 
 	 */
-	private String generarErrorPorCC(SolicitudServicioDto ss, String pinMaestro) throws RpcExceptionMessages {
+//	MGR - Parche de emergencia
+	private String generarErrorPorCC(SolicitudServicio ss, String pinMaestro) throws RpcExceptionMessages {
 		
 		//MGR - #3122 - Nueva forma de armar el mensaje de error
     	String mensaje = "";
     	String error = "";
     	TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor(); //larce #3210
     	
-    	Integer cantEquipos = calcularCantEquipos(ss.getLineas());
+    	Integer cantEquipos = solicitudBusinessService.calcularCantEquipos(ss.getLineas());
     	List<Long> cantMaxEquipos = (repository.executeCustomQuery("maxCantEquipos", resultadoVerazScoring, tipoVendedor.getId()));
     	
     	if (cantMaxEquipos.get(0) != null && cantEquipos > cantMaxEquipos.get(0)) {
@@ -2208,7 +2233,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     	if(!"".equals(error)){
     		mensaje = "Para validación por ";
     		if (("".equals(pinMaestro) || pinMaestro == null)
-				&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
+    				&& !ss.getSolicitudServicioGeneracion().getScoringChecked()) {
     			mensaje += "Veraz ";
 			} else {
 				mensaje += "Scoring ";
@@ -2233,7 +2258,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     		}
     		else if(condiciones.isEmpty()){
         		if (("".equals(pinMaestro) || pinMaestro == null)
-        				&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
+        				&& !ss.getSolicitudServicioGeneracion().getScoringChecked()) {
             			error += "el resultado " + resultadoVerazScoring + " para el tipo de Solicitud " + linea.getTipoSolicitud().getDescripcion();
         			} else {
         				error += "el resultado de scoring hasta " + resultadoVerazScoring + " terminales para el tipo de Solicitud " + linea.getTipoSolicitud().getDescripcion();
@@ -2326,7 +2351,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     				mensaje += "- ";
     			}
         		if (("".equals(pinMaestro) || pinMaestro == null)
-    				&& !ss.getSolicitudServicioGeneracion().isScoringChecked()) {
+        				&& !ss.getSolicitudServicioGeneracion().getScoringChecked()) {
         			error = "Para la linea " + linea.getAlias() + " para el resultado de veraz " + resultadoVerazScoring + ", no existe una Condicion Comercial con " + error; 
     			} else {
     				error = "Para la linea " + linea.getAlias() + " para el resultado de scoring " + resultadoVerazScoring + ", no existe una Condicion Comercial con " + error;
@@ -2351,15 +2376,16 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	
 	/**
 	 * Se valida que el resultado de la consulta a Negative Files de ok para todas las líneas de la SS; para el caso de activación. 
-	 * @param lineas
+	 * @param set
 	 * @return Un mensaje que indica las líneas que no pasaron la validación.
 	 * @throws RpcExceptionMessages
 	 */
-	private String verificarNegativeFilesPorLinea(List<LineaSolicitudServicioDto> lineas) throws RpcExceptionMessages {
+//	MGR - Parche de emergencia
+	private String verificarNegativeFilesPorLinea(Set<LineaSolicitudServicio> set) throws RpcExceptionMessages {
 		String mensaje = "";
 		int i = 0;
-		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
-			LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
+		for (Iterator<LineaSolicitudServicio> iterator = set.iterator(); iterator.hasNext();) {
+			LineaSolicitudServicio linea = (LineaSolicitudServicio) iterator.next();
 			if (linea.getTipoSolicitud().isActivacion() || linea.getTipoSolicitud().isActivacionOnline()) {
 				if(verificarNegativeFiles(linea.getNumeroIMEI()) != null ||
 //						MGR - #3446 - Tambien se debe validar la SIM
@@ -2390,13 +2416,17 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	public boolean validarLineasPorSegmento(SolicitudServicioDto solicitud) throws RpcExceptionMessages {
 		
 		ArrayList<Boolean> resultadoValidacion = new ArrayList<Boolean>();
-		Long idTipoVendedor = solicitud.getVendedor().getTipoVendedor().getId();
+		
+//		MGR - Parche de emergencia
+		Vendedor vend = repository.retrieve(Vendedor.class, solicitud.getVendedor().getId());
+		Long idTipoVendedor = vend.getTipoVendedor().getId();
+		
 		Long idSegmento = 0l;
 		int cantEquiposTotal = 0;
 //		List<LineasPorSegmento> lineas = repository.executeCustomQuery("getLineasPorSegmento",12,2,2);
 		if(solicitud.getCuenta() != null){
 			
-	        CantidadEquiposDTO resultDTO = getCantEquiposCuenta(solicitud.getCuenta());
+			CantidadEquiposDTO resultDTO = getCantEquiposCuenta(solicitud.getCuenta().getCodigoVantive());
 	        if(resultDTO != null){
 	        	int activos = Integer.parseInt(resultDTO.getCantidadActivos());
 	        	int suspendidos = Integer.parseInt(resultDTO.getCantidadSuspendidos());
@@ -2492,10 +2522,11 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 * @param cuenta
 	 * @return resultDTO
 	 */
-	private CantidadEquiposDTO getCantEquiposCuenta(CuentaSSDto cuenta){
+//	MGR - Parche de emergencia
+	private CantidadEquiposDTO getCantEquiposCuenta(String codigoVantive){
         CantidadEquiposDTO resultDTO = new CantidadEquiposDTO();
         try {
-            resultDTO = this.avalonSystem.retreiveEquiposPorEstado(cuenta.getCodigoVantive());
+        	resultDTO = this.avalonSystem.retreiveEquiposPorEstado(codigoVantive);
         } catch (LegacyDAOException e) {
             resultDTO.setCantidadActivos("0");
         }
@@ -2525,10 +2556,11 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 * @param lineas
 	 * @return
 	 */
-	private List<String> listaAliasSimRepetidos(List<LineaSolicitudServicioDto> lineas) {
+//	MGR - Parche de emergencia
+	private List<String> listaAliasSimRepetidos(Set<LineaSolicitudServicio> lineas) {
 		List<String> alias = new ArrayList<String>();
 		for (Iterator iterator = lineas.iterator(); iterator.hasNext();) {
-			LineaSolicitudServicioDto lineaSS = (LineaSolicitudServicioDto) iterator.next();
+			LineaSolicitudServicio lineaSS = (LineaSolicitudServicio) iterator.next();
 			if(lineaSS.getNumeroSimcard() != null) {
 				AppLogger.info("##Log Cierre y pass - Verificando si el numero de SIM " + lineaSS.getNumeroSimcard() + " de la linea " + lineaSS.getId() + " ya se encuentra cargada en otra solicitud");
 				String cantidadSims = (String) repository.executeCustomQuery("SIM_REPETIDO", lineaSS.getNumeroSimcard()).get(0);
