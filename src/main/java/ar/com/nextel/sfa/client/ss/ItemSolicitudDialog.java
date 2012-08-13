@@ -5,12 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.tomcat.util.threads.ThreadPool.ControlRunnable;
-
-import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
-import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
@@ -29,14 +25,9 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -103,6 +94,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		
 		controller.getLineasSolicitudServicioInitializer(initTiposOrdenCallback());
 	}
+	
 	
 	/**
 	 * TODO: Portabilidad
@@ -213,6 +205,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 
 	public void onChange(ChangeEvent event) {
 		TipoSolicitudDto tipoSolicitud = (TipoSolicitudDto) tipoOrden.getSelectedItem();
+		itemSolicitudUIData.setActivacionOnline(false);
 		if (tipoSolicitud != null) {
 			if (itemSolicitudUIData.getIdsTipoSolicitudBaseItemYPlan().contains(
 					tipoSolicitud.getTipoSolicitudBase().getId())) {
@@ -224,7 +217,14 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.SOLO_ITEM);
 			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseActivacion().contains(
 					tipoSolicitud.getTipoSolicitudBase().getId())) {
-				tipoSolicitudPanel.setWidget(getItemSolicitudActivacionUI());
+				if(itemSolicitudUIData.getIdTipoSolicitudBaseActivacionOnline().equals(tipoSolicitud.getTipoSolicitudBase().getId())) {
+					itemSolicitudUIData.setActivacionOnline(true);
+				}
+//				MGR - #3462
+				if(itemSolicitudUIData.getIdTipoSolicitudBaseActivacion().equals(tipoSolicitud.getTipoSolicitudBase().getId())) {
+					itemSolicitudUIData.setActivacion(true);
+				}
+				tipoSolicitudPanel.setWidget(getItemSolicitudActivacionUI(itemSolicitudUIData.isActivacionOnline()));
 				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.ACTIVACION);
 			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseCDW().contains(
 					tipoSolicitud.getTipoSolicitudBase().getId())) {
@@ -267,8 +267,8 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		return itemYPlanSolicitudUI;
 	}
 
-	private ItemYPlanSolicitudUI getItemSolicitudActivacionUI() {
-		return getItemYPlanSolicitudUI().setActivacionVisible();
+	private ItemYPlanSolicitudUI getItemSolicitudActivacionUI(boolean online) {
+		return getItemYPlanSolicitudUI().setActivacionVisible(online);
 	}
 
 	private ItemYPlanSolicitudUI getItemSolicitudCDWUI() {

@@ -65,7 +65,7 @@ public class BuscarSSCerradasFilterUI extends Composite {
 		layout.setWidget(3, 5, buscadorSSCerradasFilterEditor.getResultadosCombo());
 		EventWrapper eventWrapper = new EventWrapper() {
 			public void doEnter() {
-				buscarSSCerradasResultPanel.searchSSCerradas(buscadorSSCerradasFilterEditor
+				buscarSSCerradasResultPanel.searchSolicitudesServicio(buscadorSSCerradasFilterEditor
 						.getSSCerradaSearch());
 			}
 		};
@@ -85,7 +85,7 @@ public class BuscarSSCerradasFilterUI extends Composite {
 
 		buscadorSSCerradasFilterEditor.getBuscarButton().addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				buscarSSCerradasResultPanel.searchSSCerradas(buscadorSSCerradasFilterEditor
+				buscarSSCerradasResultPanel.searchSolicitudesServicio(buscadorSSCerradasFilterEditor
 						.getSSCerradaSearch());
 			}
 		});

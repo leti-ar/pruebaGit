@@ -4,7 +4,7 @@ import ar.com.nextel.web.download.Request;
 
 /**
  * 
- * TODO: Falta descripción de la clase.
+ * Configuracion del nombre dado al archivo
  *
  * Creada: 30/10/2007
  *

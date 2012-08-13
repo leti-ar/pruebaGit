@@ -3,6 +3,7 @@ package ar.com.nextel.web.download.config.impl;
 import java.io.File;
 
 import ar.com.nextel.components.report.ReportPathBuilder;
+import ar.com.nextel.util.AppLogger;
 import ar.com.nextel.web.download.config.ServiceConfig;
 
 /**
@@ -11,7 +12,7 @@ import ar.com.nextel.web.download.config.ServiceConfig;
  * 
  * @author cacciaresi
  */
-public class SolicitudRichTextFormatService extends ServiceConfig {
+public class DownloadRichTextFormatService extends ServiceConfig {
 
     private ReportPathBuilder reportPathBuilder;
     
@@ -30,6 +31,7 @@ public class SolicitudRichTextFormatService extends ServiceConfig {
 		 * El path del archivo debe coincidir con el path especificado por el
 		 * siguiente par�metro: GlobalParameterIdentifier.REPORTS_DIR
 		 */
+		AppLogger.info("path donde guarda el archivo: " + reportPathBuilder.buildReportPath());
         return new File(this.reportPathBuilder.buildReportPath(), name);	    
 	}
 

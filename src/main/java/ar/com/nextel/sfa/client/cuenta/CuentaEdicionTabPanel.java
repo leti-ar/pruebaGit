@@ -3,25 +3,21 @@ package ar.com.nextel.sfa.client.cuenta;
 import java.util.ArrayList;
 import java.util.List;
 
-import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DivisionDto;
 import ar.com.nextel.sfa.client.dto.GranCuentaDto;
-import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.enums.PrioridadEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
-import ar.com.nextel.sfa.client.ss.EditarSSUI;
 import ar.com.nextel.sfa.client.ss.LinksCrearSS;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
-import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -69,13 +65,19 @@ public class CuentaEdicionTabPanel {
 	private CuentaContactoForm   cuentaContactoForm   = CuentaContactoForm.getInstance();
 	private CuentaInfocomForm    cuentaInfocomForm    = CuentaInfocomForm.getInstance();
 	private CuentaNotasForm      cuentaNotasForm      = CuentaNotasForm.getInstance();
+//	MGR - Para salir sin "Caratula" (24-07-2012)
+//	private CuentaCaratulaForm   cuentaCaratulaForm   = CuentaCaratulaForm.getInstance();
 	private TabPanel tabPanel;
 	private FormButtonsBar footerBar;
 	
 	public Button validarCompletitudButton;
 	public static final String VALIDAR_COMPLETITUD_FAIL_STYLE = "validarCompletitudFailButton";
 	public static final String ID_CUENTA = "idCuenta";
+	//MGR - Adm. Vtas. R2 -  Se agrego la pestaña "Caratulas" que es fija
+//	MGR - Para salir sin "Caratula" (24-07-2012)
+//	public static final int CANT_PESTANIAS_FIJAS = 4;
 	public static final int CANT_PESTANIAS_FIJAS = 3;
+	
 	public static final Long DEFAULT_OPP_PRIORITY = 2L;
 	private GwtValidator validator = new GwtValidator();
 	
@@ -160,6 +162,12 @@ public class CuentaEdicionTabPanel {
 		tabPanel.add(cuentaDatosForm, Sfa.constant().datos());
 		tabPanel.add(cuentaDomiciliosForm, Sfa.constant().domicilios());
 		tabPanel.add(cuentaContactoForm, Sfa.constant().contactos());
+		
+//		MGR - Para salir sin "Caratula" (24-07-2012)
+//		if (ClientContext.getInstance().getVendedor().isADMCreditos()) {
+//			tabPanel.add(cuentaCaratulaForm, Sfa.constant().caratula());
+//		}
+		
 		tabPanel.add(cuentaInfocomForm, Sfa.constant().infocom());
 		if (!ClientContext.getInstance().getVendedor().isADMCreditos()) {
 			tabPanel.add(cuentaNotasForm, Sfa.constant().notas());
@@ -170,6 +178,9 @@ public class CuentaEdicionTabPanel {
 				return true;
 			}
 			public void onTabSelected(SourcesTabEvents arg0, int arg1) {
+				//MGR - Adm. Vtas. R2 - La 3 ahora es la pasteña de caratulas
+//				MGR - Para salir sin "Caratula" (24-07-2012)
+//				if(arg1 == 4){
 				if(arg1 == 3){
 					//cuentaInfocomForm.setIdCuenta(cliente.getText());
 					cuentaInfocomForm.load();					
@@ -274,16 +285,7 @@ public class CuentaEdicionTabPanel {
 		});
 		crearSSButton.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				if(!cuenta2editDto.getResponsablePago()) {
-					MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(),
-							Sfa.constant().ERR_NO_ACCESO_NO_ES_RESP_PAGO().replaceAll("\\{1\\}", cuenta2editDto.getCodigoVantive()), MessageDialog.getCloseCommand());
-				} else {
-					if (isFormCompletoYguardado()) {
-						linksCrearSS.setHistoryToken(cuenta2editDto.getId());
-						popupCrearSS.show();
-						popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton.getAbsoluteTop() - popupCrearSS.getOffsetHeight());
-					}
-				}
+				pageSolicitudServicio();
 			}
 		});
 		agregarCuentaButton.addClickListener(new ClickListener() {
@@ -408,6 +410,11 @@ public class CuentaEdicionTabPanel {
 		ctaDto.getPersona().setDomicilios(CuentaDomiciliosForm.getInstance().getCuenta().getPersona().getDomicilios());
 		//asegura que los contatos esten cargados en la granCuenta (para divisiones y suscriptores)
 		agregarContactos(ctaDto);
+		
+		//Agrego Caratulas
+//		MGR - Para salir sin "Caratula" (24-07-2012)
+//		ctaDto.setCaratulas(cuentaCaratulaForm.getCaratulas());
+		
 		//solo para actualizar imagen (sin mensaje de error).
 		validarCompletitud(false);
 		
@@ -423,6 +430,12 @@ public class CuentaEdicionTabPanel {
 				//actualiza pestaña contactos
 				cuentaContactoForm.cargarTablaContactos(cuentaDto);
 				CuentaContactoForm.getInstance().setFormDirty(false);
+				//actualiza pestaña caratula
+//				MGR - Para salir sin "Caratula" (24-07-2012)
+//				cuentaCaratulaForm.cargaTablaCaratula(cuentaDto);
+//				cuentaCaratulaForm.setHuboCambios(false);
+				
+				
 //				MessageDialog.getInstance().showAceptar("", Sfa.constant().MSG_CUENTA_GUARDADA_OK(), MessageDialog.getCloseCommand());
 			}
 		});	
@@ -481,6 +494,8 @@ public class CuentaEdicionTabPanel {
 		return cuentaDatosForm.formularioDatosDirty() 
 		    || cuentaDomiciliosForm.formularioDatosDirty() 
 		    || cuentaContactoForm.formContactosDirty();
+//		    MGR - Para salir sin "Caratula" (24-07-2012)
+//		    || cuentaCaratulaForm.formularioCaratulaDirty();
 	}
 	
 	private void agregarContactos(CuentaDto ctaDto) {
@@ -496,6 +511,20 @@ public class CuentaEdicionTabPanel {
 			((DivisionDto)ctaDto).getGranCuenta().setContactos(CuentaContactoForm.getInstance().getListaContactos());
 		}
 	}
+	
+	public void pageSolicitudServicio(){
+		if(!cuenta2editDto.getResponsablePago()) {
+			MessageDialog.getInstance().showAceptar(Sfa.constant().ERR_DIALOG_TITLE(),
+					Sfa.constant().ERR_NO_ACCESO_NO_ES_RESP_PAGO().replaceAll("\\{1\\}", cuenta2editDto.getCodigoVantive()), MessageDialog.getCloseCommand());
+		} else {
+			if (isFormCompletoYguardado()) {
+				linksCrearSS.setHistoryToken(cuenta2editDto.getId());
+				popupCrearSS.show();
+				popupCrearSS.setPopupPosition(crearSSButton.getAbsoluteLeft() - 10, crearSSButton.getAbsoluteTop() - popupCrearSS.getOffsetHeight());
+			}
+		}
+	}
+
 	
 	///////////////
 	public CuentaDto getCuenta2editDto() {
@@ -552,6 +581,16 @@ public class CuentaEdicionTabPanel {
 	public void setCuentaNotasForm(CuentaNotasForm cuentaNotasForm) {
 		this.cuentaNotasForm = cuentaNotasForm;
 	}
+	
+//	MGR - Para salir sin "Caratula" (24-07-2012)
+//	public CuentaCaratulaForm getCuentaCaratulaForm() {
+//		return cuentaCaratulaForm;
+//	}
+//	
+//	public void setCuentaCaratulaForm(CuentaCaratulaForm cuentaCaratulaForm) {
+//		this.cuentaCaratulaForm = cuentaCaratulaForm;
+//	}
+
 	public GwtValidator getValidator() {
 		return validator;
 	}

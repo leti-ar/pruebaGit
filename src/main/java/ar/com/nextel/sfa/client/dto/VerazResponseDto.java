@@ -14,6 +14,7 @@ public class VerazResponseDto implements IsSerializable{
     private int scoreDni;
     private int score;
     private String explicacion;
+    private String fileName;
 	
 	
 	public String getEstado() {
@@ -63,5 +64,11 @@ public class VerazResponseDto implements IsSerializable{
 	}
 	public void setExplicacion(String explicacion) {
 		this.explicacion = explicacion;
+	}
+	public String getFileName() {
+		return fileName;
+	}
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 }

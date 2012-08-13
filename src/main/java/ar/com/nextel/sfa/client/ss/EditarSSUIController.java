@@ -6,7 +6,6 @@ import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
-import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
@@ -15,7 +14,6 @@ import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
-import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
 public interface EditarSSUIController {
@@ -28,8 +26,9 @@ public interface EditarSSUIController {
 	public void getListaPrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa,
 			DefaultWaitCallback<List<ListaPreciosDto>> defaultWaitCallback);
 
+//	MGR - #3462 - Es necesario indicar el modelo y si es activacion online
 	public void getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,
-			DefaultWaitCallback<List<PlanDto>> callback);
+			boolean isActivacion, ModeloDto modelo, DefaultWaitCallback<List<PlanDto>> callback);
 
 	public void getServiciosAdicionales(LineaSolicitudServicioDto linea,
 			DefaultWaitCallback<List<ServicioAdicionalLineaSolicitudServicioDto>> defaultWaitCallback);
@@ -57,4 +56,5 @@ public interface EditarSSUIController {
 
 	void getContratoViewInitializer(DefaultWaitCallback<ContratoViewInitializer> callback);
 	
+	boolean isEditable();
 }

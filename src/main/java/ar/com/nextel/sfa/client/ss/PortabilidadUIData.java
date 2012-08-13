@@ -29,7 +29,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
@@ -45,11 +44,6 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class PortabilidadUIData extends Composite {
-
-	private static final String TIPO_TELEFONIA_POSTPAGO = "POSTPAGO";
-	private static final String TIPO_DOC_DNI = "DNI";
-	private static final String TIPO_DOC_CUIT = "CUIT";
-	private static final String TIPO_DOC_CUIL = "CUIL";
 
 	interface PortabilidadUiBinder extends UiBinder<Widget , PortabilidadUIData> {}
     private static PortabilidadUiBinder uiBinder = GWT.create(PortabilidadUiBinder.class);
@@ -157,7 +151,7 @@ public class PortabilidadUIData extends Composite {
 						public void success(Boolean result) {
 							if(!result){ 
 								ModalMessageDialog.getInstance().showAceptar(WARNING, 
-										"El prefijo no est· dentro del area de cobertura, no se podra efectuar la portabilidad", cmndAceptar);
+										"El prefijo no est√° dentro del area de cobertura, no se podra efectuar la portabilidad", cmndAceptar);
 							}
 						}
 					});
@@ -218,9 +212,9 @@ public class PortabilidadUIData extends Composite {
 	 * 
 	 */
 	private void validarTipoDocumento(){
-		if(TIPO_DOC_CUIL.equals(lstTipoDocumento.getSelectedItemText()) || TIPO_DOC_CUIT.equals(lstTipoDocumento.getSelectedItemText()))
+		if(lstTipoDocumento.getSelectedItemText() != null && (lstTipoDocumento.getSelectedItemText().equals("CUIL") || lstTipoDocumento.getSelectedItemText().equals("CUIT")))
 			txtNroDocumento.setPattern(RegularExpressionConstants.cuilCuit);
-		else if(TIPO_DOC_DNI.equals(lstTipoDocumento.getSelectedItemText())) 
+		else if(lstTipoDocumento.getSelectedItemText() != null && lstTipoDocumento.getSelectedItemText().equals("DNI")) 
 			txtNroDocumento.setPattern(RegularExpressionConstants.dni);
 		else txtNroDocumento.setPattern(RegularExpressionConstants.documentoOtros);
 	}
@@ -246,7 +240,7 @@ public class PortabilidadUIData extends Composite {
 	 * 
 	 */
 	private void comprobarTipoTelefonia(){
-		if(TIPO_TELEFONIA_POSTPAGO.equals(lstTipoTelefonia.getSelectedItemText())){
+		if(lstTipoTelefonia.getSelectedItemText() != null && lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")){
 			lblNroUltimaFacura.addStyleName(OBLIGATORIO);
 			chkRecibeSMS.setValue(false);
 			chkRecibeSMS.setEnabled(true);
@@ -338,12 +332,12 @@ public class PortabilidadUIData extends Composite {
 			validador.addTarget(txtTelefono.getNumero()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Telefono"));
 		
 		validador.addTarget(txtTelefonoPortar.getNumero()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Telefono a Portar"));
-		validador.addTarget(txtNroDocumento).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nro. de Documento"));
 		
-		if(lstTipoTelefonia.getSelectedItemText().equals(TIPO_TELEFONIA_POSTPAGO)){
+		if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")){
 			validador.addTarget(txtNroUltimaFacura).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nro. Ultima Factura"));
 		}
 
+		validador.addTarget(txtNroDocumento).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nro. de Documento"));
 		validador.addTarget(txtRazonSocial).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Razon Social"));
 		validador.addTarget(txtNombre).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nombre"));
 		validador.addTarget(txtApellido).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Apellido"));
@@ -455,7 +449,7 @@ public class PortabilidadUIData extends Composite {
 		}
 
 		if(solicitudPortabilidad.getNroSS() != null){
-			if(lstTipoTelefonia.getSelectedItemText().equals(TIPO_TELEFONIA_POSTPAGO)) chkRecibeSMS.setValue(solicitudPortabilidad.isRecibeSMS());
+			if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")) chkRecibeSMS.setValue(solicitudPortabilidad.isRecibeSMS());
 		}
 
 		if(solicitudPortabilidad.getProveedorAnterior() == null) {

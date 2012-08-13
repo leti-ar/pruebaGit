@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.bcel.generic.LNEG;
-import org.apache.bcel.generic.NEW;
-
-import ar.com.nextel.model.solicitudes.beans.SolicitudPortabilidad;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
@@ -45,7 +41,6 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -120,8 +115,14 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private static final String WARNING = "Advertencia";
 	private int tipoEdicion;
 	private ItemSolicitudDialog dialog;
+	private boolean activacionOnline;
+	private Long idTipoSolicitudBaseActivacionOnline;
+//	MGR - #3462
+	private boolean activacion = false;
+	private Long idTipoSolicitudBaseActivacion = 0L;
 
 	public ItemSolicitudUIData(EditarSSUIController controller) {
+		
 		// Oculta las opciones de portabilidad
 		portabilidadPanel.setVisible(false);
 		
@@ -209,6 +210,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		tipoPlan.addChangeListener(this);
 		confirmarReserva.addClickHandler(this);
 		desreservar.addClickHandler(this);
+		cantidad.addChangeListener(this);
 		modeloEq.addChangeListener(this);
 		verificarImeiWrapper.addClickHandler(this);
 		verificarSimWrapper.addClickHandler(this);
@@ -333,9 +335,16 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		idsTipoSolicitudBaseItem.add(Long.valueOf(16)); // 16-TIPO_SOLICITUD_BASE_VTA_LICENCIAS_BB
 		idsTipoSolicitudBaseItem.add(Long.valueOf(12)); // 12-TIPO_SOLICITUD_BASE_VENTA_ACCESORIOS_G4
 
-		idsTipoSolicitudBaseActivacion.add(Long.valueOf(9)); // 9-TIPO_SOLICITUD_BASE_ACTIVACION
+		setIdTipoSolicitudBaseActivacionOnline(Long.valueOf(17)); // 17-TIPO_SOLICITUD_BASE_ACTIVACION_ONLINE
+		
+//		MGR - #3462
+//		idsTipoSolicitudBaseActivacion.add(Long.valueOf(9)); // 9-TIPO_SOLICITUD_BASE_ACTIVACION
+		setIdTipoSolicitudBaseActivacion(Long.valueOf(9)); 
+		idsTipoSolicitudBaseActivacion.add(getIdTipoSolicitudBaseActivacion()); // 17-TIPO_SOLICITUD_BASE_ACTIVACION_ONLINE
+		
 		idsTipoSolicitudBaseActivacion.add(Long.valueOf(13)); // 13-TIPO_SOLICITUD_BASE_ACTIVACION_G4
-
+		idsTipoSolicitudBaseActivacion.add(Long.valueOf(getIdTipoSolicitudBaseActivacionOnline())); // 17-TIPO_SOLICITUD_BASE_ACTIVACION_ONLINE
+		
 		idsTipoSolicitudBaseCDW.add(Long.valueOf(3)); // 3-TIPO_SOLICITUD_BASE_VENTA_CDW
 	}
 	
@@ -479,12 +488,16 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 						});
 			}
 		}
+		// LF
+//		if (isActivacionOnline()) {
+//			listaPrecio.setVisible(false);
+//		}
 	}
 
 	private void verificarSim() {
 		controller.verificarNegativeFiles(sim.getText(), new DefaultWaitCallback<String>() {
 			public void success(String result) {
-				if (result != null) {
+				if (result != null) { //#3265
 					ErrorDialog.getInstance().show(result, false);
 					verificarSimWrapper.setHTML(IconFactory.comprobarRojo(Sfa.constant().verificarSim())
 							.toString());
@@ -585,8 +598,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				}
 				precioListaItem.setInnerHTML(currencyFormat.format(precio));
 				if (tipoPlan.getSelectedItem() != null) {
+//					MGR - #3462 - Es necesario indicar el modelo y si es activacion online
+					ModeloDto modelo = (ModeloDto) modeloEq.getSelectedItem();
+					boolean isActivacion = this.isActivacion() || this.isActivacionOnline();
 					controller.getPlanesPorItemYTipoPlan(is, (TipoPlanDto) tipoPlan.getSelectedItem(),
-							getActualizarPlanCallback());
+							isActivacion, modelo, getActualizarPlanCallback());
 				}
 				// if(is.getItem().) // alcanza con isEquipo, isAccesorio?
 				ddn.setValue(true);
@@ -605,12 +621,17 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				sim.setEnabled(true);
 				sim.setReadOnly(false);
 			}
+
 			refreshTotalLabel();
 		} else if (sender == tipoPlan) {
 			// Cargo los planes correspondientes al tipo de plan seleccionado
 			if (tipoPlan.getSelectedItem() != null && item.getSelectedItem() != null) {
+//				MGR - #3462 - Es necesario indicar el modelo y si es activacion online
+				ModeloDto modelo = (ModeloDto) modeloEq.getSelectedItem();
+				boolean isActivacion = this.isActivacion() || this.isActivacionOnline();
 				controller.getPlanesPorItemYTipoPlan((ItemSolicitudTasadoDto) item.getSelectedItem(),
-						(TipoPlanDto) tipoPlan.getSelectedItem(), getActualizarPlanCallback());
+						(TipoPlanDto) tipoPlan.getSelectedItem(), isActivacion, modelo,
+						getActualizarPlanCallback());
 			}
 		} else if (sender == plan) {
 			// Cargo Modalidades de Cobro posibles
@@ -642,12 +663,19 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			} else {
 				precioListaPlan.setInnerHTML(currencyFormat.format(0d));
 			}
+		} else if (sender == cantidad) {
+			refreshTotalLabel();
+			enableAliasYReserva(isCantiadIgualNadaOUno());
 		} else if (sender == modeloEq) {
 			// Cargo los items correspondientes al modelo seleccionado
 			ModeloDto modelo = (ModeloDto) modeloEq.getSelectedItem();
 			if (modelo != null) {
 				item.clear();
 				item.addAllItems(modelo.getItems());
+				//LF - Si el combo Item trae un solo valor se autocompletara el combo.
+				if(isActivacionOnline() && modelo.getItems().size() == 1) {
+					item.setSelectedItem(modelo.getItems().get(0));
+				}
 				if (lineaSolicitudServicio.getItem() != null) {
 					ItemSolicitudTasadoDto itemTasado = new ItemSolicitudTasadoDto();
 					itemTasado.setItem(lineaSolicitudServicio.getItem());
@@ -666,6 +694,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 		} else if (sender == imei) {
 			refreshModelos();
+		}
+		if (isActivacionOnline()) {
+			listaPrecio.setVisible(false);
 		}
 	}
 
@@ -865,7 +896,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 					Sfa.constant().ERR_CANT_MA_CERO().replaceAll(v1, "Cantidad"), 0);
 		} else {
 			ModeloDto modelo = (ModeloDto) modeloEq.getSelectedItem();
-			if (modelo != null) {
+			if (modelo != null && !isActivacionOnline()) {
 				if (modelo.isEsBlackberry()) {
 					validator.addTarget(pin).required(
 							Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "PIN")).length(8,
@@ -883,7 +914,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM"));
 			}
 		}
-		
 		return validator.fillResult().getErrors();
 	}
 
@@ -1189,5 +1219,39 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	 */
 	public PortabilidadUIData getPortabilidadPanel() {
 		return portabilidadPanel;
+	}
+	
+	public boolean isActivacionOnline() {
+		return activacionOnline;
+	}
+
+	public void setActivacionOnline(boolean activacionOnline) {
+		this.activacionOnline = activacionOnline;
+	}
+	
+	public Long getIdTipoSolicitudBaseActivacionOnline() {
+		return idTipoSolicitudBaseActivacionOnline;
+	}
+
+	public void setIdTipoSolicitudBaseActivacionOnline(
+			Long idTipoSolicitudBaseActivacionOnline) {
+		this.idTipoSolicitudBaseActivacionOnline = idTipoSolicitudBaseActivacionOnline;
+	}
+	
+//	MGR - #3462
+	public boolean isActivacion() {
+		return activacion;
+	}
+
+	public void setActivacion(boolean activacion) {
+		this.activacion = activacion;
+	}
+
+	public Long getIdTipoSolicitudBaseActivacion() {
+		return idTipoSolicitudBaseActivacion;
+	}
+
+	public void setIdTipoSolicitudBaseActivacion(Long idTipoSolicitudBaseActivacion) {
+		this.idTipoSolicitudBaseActivacion = idTipoSolicitudBaseActivacion;
 	}
 }
