@@ -1509,26 +1509,46 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	}
 	
 	private void abrirDialogCerrar(){
-		SolicitudRpcService.Util.getInstance().sonConfigurablesPorAPG(editarSSUIData.getSolicitudServicio().getLineas(), new DefaultWaitCallback<Integer>() {
-			public void success(Integer result) {
-				cerrandoSolicitud = cerrandoAux;
-				getCerrarSSUI().setTitleCerrar(cerrandoAux);
-        
-		        //TODO: Portabilidad
-		        boolean permitePortabilidad = false;
-		        for (LineaSolicitudServicioDto linea : editarSSUIData.getSolicitudServicio().getLineas()) {
-					if(linea.getPortabilidad() != null) permitePortabilidad = true;
-				}
-		        if (result == 3) {
-					permitePortabilidad = false;
-				}
-        
-		        getCerrarSSUI().setTienePortabilidad(permitePortabilidad);
-		        getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
-		        editarSSUIData.getCuenta().isCliente(), editarSSUIData.getSolicitudServicioGeneracion(),
-		        editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA());				}
-	        }
-	   );
+//		MGR - Parche de emergencia
+		if(!editarSSUIData.getSolicitudServicio().getGrupoSolicitud().isTransferencia()){
+			SolicitudRpcService.Util.getInstance().sonConfigurablesPorAPG(editarSSUIData.getSolicitudServicio().getLineas(), new DefaultWaitCallback<Integer>() {
+				public void success(Integer result) {
+						cerrandoSolicitud = cerrandoAux;
+						getCerrarSSUI().setTitleCerrar(cerrandoAux);
+		        
+				        //TODO: Portabilidad
+				        boolean permitePortabilidad = false;
+				        for (LineaSolicitudServicioDto linea : editarSSUIData.getSolicitudServicio().getLineas()) {
+							if(linea.getPortabilidad() != null) permitePortabilidad = true;
+						}
+				        
+				        if (result == 3) {
+							permitePortabilidad = false;
+						}
+		        
+				        getCerrarSSUI().setTienePortabilidad(permitePortabilidad);
+				        getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
+				        editarSSUIData.getCuenta().isCliente(), editarSSUIData.getSolicitudServicioGeneracion(),
+				        editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA());				
+			        }
+		        }
+		   );
+			
+		}else{
+			cerrandoSolicitud = cerrandoAux;
+			getCerrarSSUI().setTitleCerrar(cerrandoAux);
+    
+	        //TODO: Portabilidad
+	        boolean permitePortabilidad = false;
+	        for (LineaSolicitudServicioDto linea : editarSSUIData.getSolicitudServicio().getLineas()) {
+				if(linea.getPortabilidad() != null) permitePortabilidad = true;
+			}
+	        
+	        getCerrarSSUI().setTienePortabilidad(permitePortabilidad);
+	        getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
+	        editarSSUIData.getCuenta().isCliente(), editarSSUIData.getSolicitudServicioGeneracion(),
+	        editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA());
+		}
 	}
 	
 
