@@ -1166,7 +1166,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			if(!hayError){
 				
 				//LF - #3109 - Registro el vendedor logueado que realiza el cierre
-				solicitudServicio.setVendedorLogueado(sessionContextLoader.getVendedor());
+//				MGR - #3460 - Se pide registrar el nombre en lugar del id del vendedor
+//				solicitudServicio.setVendedorLogueado(sessionContextLoader.getVendedor());
+				solicitudServicio.setNombreVendedorLogueado(sessionContextLoader.getVendedor().getUserName());
 			
 //				MGR - Se mueve la creacion de la cuenta. Debo recordar si es prospect antes de enviar a cerrar
 				boolean eraProspect = !solicitudServicio.getCuenta().isCliente();
