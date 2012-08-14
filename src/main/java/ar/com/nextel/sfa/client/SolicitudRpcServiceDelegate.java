@@ -5,14 +5,18 @@ import java.util.Map;
 
 import ar.com.nextel.business.solicitudes.report.SolicitudPortabilidadPropertiesReport;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
+import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
+import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
+import ar.com.nextel.sfa.client.dto.ItemSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
@@ -27,6 +31,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
+import ar.com.nextel.sfa.client.dto.TipoPersonaDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
@@ -61,6 +66,13 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.createSolicitudServicio(solicitudServicioRequestDto, callback);
 
 	}
+	
+	public void copySolicitudServicio(SolicitudServicioRequestDto solicitudServicioRequestDto,SolicitudServicioDto solicitudToCopy,
+			DefaultWaitCallback<CreateSaveSolicitudServicioResultDto> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.copySolicitudServicio(solicitudServicioRequestDto , solicitudToCopy , callback);
+
+	}
 
 	public void getSolicitudInitializer(DefaultWaitCallback<SolicitudInitializer> callback) {
 		WaitWindow.show();
@@ -74,16 +86,26 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.saveSolicituServicio(solicitudServicioDto, callback);
 	}
-
-	public void getBuscarSSCerradasInitializer(DefaultWaitCallback<BuscarSSCerradasInitializer> callback) {
+	
+	//LF
+	//public void getBuscarSSCerradasInitializer(DefaultWaitCallback<BuscarSSCerradasInitializer> callback) {
+	//	WaitWindow.show();
+	//	solicitudRpcServiceAsync.getBuscarSSCerradasInitializer(callback);
+	//}
+	public void getBuscarSSInitializer(boolean analistaCreditos, DefaultWaitCallback<BuscarSSCerradasInitializer> callback) {
 		WaitWindow.show();
-		solicitudRpcServiceAsync.getBuscarSSCerradasInitializer(callback);
+		solicitudRpcServiceAsync.getBuscarSSInitializer(analistaCreditos, callback);
 	}
 
-	public void searchSSCerrada(SolicitudServicioCerradaDto solicitudServicioCerradaDto,
+//	LF
+//	public void searchSSCerrada(SolicitudServicioCerradaDto solicitudServicioCerradaDto
+	public void searchSolicitudesServicio(SolicitudServicioCerradaDto solicitudServicioCerradaDto, //LF#3boolean analistaCreditos,
 			DefaultWaitCallback<List<SolicitudServicioCerradaResultDto>> callback) {
 		WaitWindow.show();
-		solicitudRpcServiceAsync.searchSSCerrada(solicitudServicioCerradaDto, callback);
+//		solicitudRpcServiceAsync.searchSSCerrada(solicitudServicioCerradaDto, analistaCreditos, callback);
+		solicitudRpcServiceAsync.searchSolicitudesServicio(solicitudServicioCerradaDto, //LF#3analistaCreditos, 
+				callback);
+
 	}
 
 	public void getDetalleSolicitudServicio(Long idSolicitudServicio,
@@ -98,10 +120,11 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.getLineasSolicitudServicioInitializer(grupoSolicitudDto, isEmpresa, callback);
 	}
 
-	public void buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto,
+	public void buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto, //LF#3boolean analistaCreditos,
 			DefaultWaitCallback<String> callback) {
 		WaitWindow.show();
-		solicitudRpcServiceAsync.buildExcel(solicitudServicioCerradaDto, callback);
+		solicitudRpcServiceAsync.buildExcel(solicitudServicioCerradaDto, //LF#3analistaCreditos, 
+				callback);
 	}
 
 	public void getListasDePrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa,
@@ -110,10 +133,13 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.getListasDePrecios(tipoSolicitudDto, isEmpresa, callback);
 	}
 
+//	MGR - #3462 - Es necesario indicar el modelo y si es activacion online
 	public void getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,
-			Long idCuenta, DefaultWaitCallback<List<PlanDto>> callback) {
+			Long idCuenta, boolean isActivacion, ModeloDto modelo, DefaultWaitCallback<List<PlanDto>> callback) {
+		
 		WaitWindow.show();
-		solicitudRpcServiceAsync.getPlanesPorItemYTipoPlan(itemSolicitudTasado, tipoPlan, idCuenta, callback);
+		solicitudRpcServiceAsync.getPlanesPorItemYTipoPlan(itemSolicitudTasado, tipoPlan, idCuenta,
+				isActivacion, modelo, callback);
 	}
 
 	public void getServiciosAdicionales(LineaSolicitudServicioDto linea, Long idCuenta,
@@ -154,6 +180,16 @@ public class SolicitudRpcServiceDelegate {
 	public void existReport(String report, DefaultWaitCallback<Boolean> callback) {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.existReport(report, callback);
+	}
+	
+	public void existDocDigitalizado(String server, String pathAndNameFile, DefaultWaitCallback<Boolean> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.existDocDigitalizado(server, pathAndNameFile, callback);
+	}
+	
+	public void obtenerPathLinux(String server, String pathAndNameFile, DefaultWaitCallback<String> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.obtenerPathLinux(server, pathAndNameFile, callback);
 	}
 	
 	public void getVendedoresDae(DefaultWaitCallback<List<VendedorDto>> callback) {
@@ -255,6 +291,17 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.validarPlanesCedentes(ctoCedentes, isEmpresa, isSaving, callback);
 	}
+	
+	public void getSSPorIdCuentaYNumeroSS(Long idCuenta, String numeroSS,
+			AsyncCallback<List<SolicitudServicioDto>> defaultWaitCallback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getSSPorIdCuentaYNumeroSS(idCuenta, numeroSS, defaultWaitCallback);		
+	}
+	
+	public void getItemsPorLineaSS(SolicitudServicioDto ss, AsyncCallback<List<ItemSolicitudDto>> defaultWaitCallback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getItemsPorLineaSS(ss, defaultWaitCallback);		
+	}
 
 	// Portabilidad ------------------------------
 	public void getPortabilidadInitializer(String idCuenta,String codigoVantive, AsyncCallback<PortabilidadInitializer> callback){
@@ -292,12 +339,95 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.validarPortabilidadTransferencia(contratos, callback);
 	}
 	
-	public void obtenerTipoPersona(SolicitudServicioDto solicitudServicioDto, AsyncCallback<Integer> callback){ 
-		WaitWindow.show();
-		solicitudRpcServiceAsync.obtenerTipoPersona(solicitudServicioDto, callback);
-	}
+//	public void obtenerTipoPersona(SolicitudServicioDto solicitudServicioDto, AsyncCallback<Integer> callback){ 
+//		WaitWindow.show();
+//		solicitudRpcServiceAsync.obtenerTipoPersona(solicitudServicioDto, callback);
+//	}
 	
 	// -------------------------------------------
 
+	
+	public void obtenerTipoPersonaCuenta(SolicitudServicioDto ssDto, AsyncCallback<TipoPersonaDto> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.obtenerTipoPersonaCuenta(ssDto, callback);
+	}
+	
+	
+	public void createCopySolicitudServicioTranferencia(SolicitudServicioRequestDto solicitudServicioRequestDto,
+			SolicitudServicioDto solicitudSS, DefaultWaitCallback<CreateSaveSSTransfResultDto> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.createCopySolicitudServicioTranferencia(
+				solicitudServicioRequestDto, solicitudSS, callback);
+	}
+	
+	public void calcularCantEquipos(List<LineaSolicitudServicioDto> lineaSS, DefaultWaitCallback<Integer> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.calcularCantEquipos(lineaSS, callback);
+	}
 
+	public void buscarHistoricoVentas(String nss, DefaultWaitCallback<List<SolicitudServicioDto>> defaultWaitCallback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.buscarHistoricoVentas(nss, defaultWaitCallback);
+	}
+	
+	public void saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto,
+			AsyncCallback<Boolean> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.saveEstadoPorSolicitudDto(estadoPorSolicitudDto, callback);
+	}
+	
+	public void getEstadoSolicitud(long solicitud,
+			AsyncCallback<String> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getEstadoSolicitud(solicitud, callback);
+	}
+	public void buscarSSPorId(Long id,
+			DefaultWaitCallback<SolicitudServicioDto> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.buscarSSPorId(id, callback);
+	}
+	
+	public void buscarVendedorPorId(Long id,
+			DefaultWaitCallback<VendedorDto> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.buscarVendedorPorId(id, callback);
+	}
+	
+	public void enviarMail(String subject, String to,
+			DefaultWaitCallback<Void> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.enviarMail(subject, to, callback);
+	}
+	
+	public void enviarSMS(String to,String mensaje,
+			DefaultWaitCallback<Void> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.enviarSMS(to, mensaje,callback);
+	}
+	
+	public void validarCuentaPorId(SolicitudServicioDto solicitud, AsyncCallback<Integer> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.validarCuentaPorId(solicitud, callback);
+	}
+	
+	public void changeToPass(long idSS,
+			DefaultWaitCallback<Void> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.changeToPass(idSS ,callback);
+	}
+	
+	public void getControles(DefaultWaitCallback<List<ControlDto>> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getControles(callback);
+	}
+	
+	public void validarLineasPorSegmento(SolicitudServicioDto solicitud, DefaultWaitCallback<Boolean> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.validarLineasPorSegmento(solicitud, callback);
+	}
+
+	public void sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas, DefaultWaitCallback<Integer> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.sonConfigurablesPorAPG(lineas, callback);
+	}
 }

@@ -1,5 +1,7 @@
 package ar.com.nextel.sfa.client.dto;
 
+import java.util.Date;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class SolicitudPortabilidadDto implements IsSerializable, IdentifiableDto, Cloneable{
@@ -19,8 +21,6 @@ public class SolicitudPortabilidadDto implements IsSerializable, IdentifiableDto
 	private String telefonoPortar;
 	private String nroUltimaFacura;
 
-	private Integer tipoPersona;
-	
 	private ProveedorDto proveedorAnterior;
 	private TipoDocumentoDto tipoDocumento;
 	private TipoTelefoniaDto tipoTelefonia;
@@ -29,13 +29,21 @@ public class SolicitudPortabilidadDto implements IsSerializable, IdentifiableDto
 	private Long lineaSolicitudServicio;
 //	private LineaSolicitudServicioDto lineaSolicitudServicio;
 	
-	public Integer getTipoPersona() {
+	private String nombreRep;
+	private String apellidoRep;
+	private TipoDocumentoDto tipoDocumentoRep;
+	private String numeroDocRep;
+	private Date fechaUltFactura;
+	
+	private TipoPersonaDto tipoPersona;
+
+	public TipoPersonaDto getTipoPersona() {
 		return tipoPersona;
 	}
-	
-	public void setTipoPersona(Integer tipoPersona) {
+
+	public void setTipoPersona(TipoPersonaDto tipoPersona) {
 		this.tipoPersona = tipoPersona;
-	}
+	}	
 	
 	public Long getLineaSolicitudServicio() {
 		return lineaSolicitudServicio;
@@ -149,4 +157,46 @@ public class SolicitudPortabilidadDto implements IsSerializable, IdentifiableDto
 	public void setNumeroDocumento(String numeroDocumento) {
 		this.numeroDocumento = numeroDocumento;
 	}
+
+	public String getNombreRep() {
+		return nombreRep;
+	}
+
+	public void setNombreRep(String nombreRep) {
+		this.nombreRep = nombreRep;
+	}
+
+	public String getApellidoRep() {
+		return apellidoRep;
+	}
+
+	public void setApellidoRep(String apellidoRep) {
+		this.apellidoRep = apellidoRep;
+	}
+
+	public TipoDocumentoDto getTipoDocumentoRep() {
+		return tipoDocumentoRep;
+	}
+
+	public void setTipoDocumentoRep(TipoDocumentoDto tipoDocumentoRep) {
+		this.tipoDocumentoRep = tipoDocumentoRep;
+	}
+
+	public String getNumeroDocRep() {
+		return numeroDocRep;
+	}
+
+	public void setNumeroDocRep(String numeroDocRep) {
+		this.numeroDocRep = numeroDocRep;
+	}
+
+	public Date getFechaUltFactura() {
+		return fechaUltFactura;
+	}
+
+	public void setFechaUltFactura(Date fechaUltFactura) {
+		this.fechaUltFactura = fechaUltFactura;
+	}
+	
+	
 }
