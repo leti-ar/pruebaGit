@@ -2,12 +2,10 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
-import ar.com.nextel.exception.SFAServerException;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
-import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
@@ -30,6 +28,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
+import ar.com.nextel.sfa.client.dto.TipoPersonaDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
