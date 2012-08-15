@@ -915,12 +915,16 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			MessageDialog.getInstance().showAceptar("Ingrese un monto válido",
 					MessageDialog.getCloseCommand());
 		}
-		if (valor > lineaSS.getPrecioVentaPlan()) {
-			MessageDialog.getInstance().showAceptar(
-					"El desvío debe ser menor o igual al precio de lista del Plan",
-					MessageDialog.getCloseCommand());
-			valor = lineaSS.getPrecioVentaPlan();
+//		MGR - #3464
+		if(!ClientContext.getInstance().checkPermiso(PermisosEnum.PERMITE_CUALQUIER_PRECIO_VTA_PLAN.getValue())){
+			if (valor > lineaSS.getPrecioVentaPlan()) {
+				MessageDialog.getInstance().showAceptar(
+						"El desvío debe ser menor o igual al precio de lista del Plan",
+						MessageDialog.getCloseCommand());
+				valor = lineaSS.getPrecioVentaPlan();
+			}
 		}
+		
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
 			detalleSS.setHTML(selectedDetalleRow, 9, NumberFormat.getCurrencyFormat().format(valor));
 		} else {
