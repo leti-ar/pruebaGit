@@ -145,6 +145,9 @@ public class SolicitudBusinessService {
 //	MGR - Parche de emergencia
 	private static final String CANTIDAD_EQUIPOS = "CANTIDAD_EQUIPOS";
 	
+//	MGR - #3464
+	private static String namedQueryItemParaActivacionOnline = "ITEMS_PARA_PLANES_ACT_ONLINE";
+	
 	@Autowired
 	public void setGlobalParameterRetriever(
 			@Qualifier("globalParameterRetriever") DefaultRetriever globalParameterRetriever) {
@@ -1284,31 +1287,33 @@ public class SolicitudBusinessService {
 	}
 
 
-//	MGR - Parche de emergencia
-//	public List<ServicioAdicionalLineaSolicitudServicioDto> getServicioAdicionalLineaIncluidosNoVisibles(
-//			VendedorDto vendedor, LineaSolicitudServicioDto linea) {
-//		
-//		Item item = null;
-//		if( (linea.isActivacion() || linea.isActivacionOnline()) 
-//				&& linea.getModelo() != null){
-//			List<Item> listItems = repository.executeCustomQuery(namedQueryItemParaActivacionOnline, linea.getModelo().getId());
-//		
-//			if(!listItems.isEmpty()){
-//				item = listItems.get(0);
-//			}
-//		}else{
-//			item = linea.getItem();
-//		}
-//		
-//		if(item != null){
-//			List<ServicioAdicionalLineaSolicitudServicio> lineasSSAA = linea.getPlan()
-//			.getServicioAdicionalLineaIncluidosNoVisibles(item,
-//				ss.getVendedor(), linea);
-//			
-//		}
-//		
-//		return null;
-//	}
+//	MGR - #3464
+	public List<ServicioAdicionalLineaSolicitudServicio> getServicioAdicionalLineaIncluidosNoVisibles(
+			Vendedor vendedor, LineaSolicitudServicio linea) {
+		
+		List<ServicioAdicionalLineaSolicitudServicio> lineasSSAA = 
+						new ArrayList<ServicioAdicionalLineaSolicitudServicio>();
+		Item item = null;
+		
+		if( (linea.isActivacion() || linea.isActivacionOnline()) 
+				&& linea.getModelo() != null){
+			List<Item> listItems = repository.executeCustomQuery(namedQueryItemParaActivacionOnline, linea.getModelo().getId());
+		
+			if(!listItems.isEmpty()){
+				item = listItems.get(0);
+			}
+		}else{
+			item = linea.getItem();
+		}
+		
+		if(item != null){
+			lineasSSAA = linea.getPlan()
+				.getServicioAdicionalLineaIncluidosNoVisibles(item,	vendedor, linea);
+			
+		}
+		
+		return lineasSSAA;
+	}
 	
 //	MGR - Parche de emergencia
 	public int sonConfigurablesPorAPG(List<LineaSolicitudServicio> lineas) {

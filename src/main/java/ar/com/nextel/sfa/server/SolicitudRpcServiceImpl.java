@@ -1175,8 +1175,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, puedeCerrar);
 				
 				result.setError(response.getMessages().hasErrors());
-				
-				
+								
 //				MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
 //				MGR - #3458 - Y si el cierre fue por veraz
 				if (!result.isError() && puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO &&
@@ -2132,6 +2131,18 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		for (Iterator<LineaSolicitudServicio> iterator = lineas.iterator(); iterator.hasNext();) {
 			LineaSolicitudServicio linea = (LineaSolicitudServicio) iterator.next();
     		cantPesos = cantPesos + linea.getPrecioVenta();
+    		
+//    		MGR - #3464
+    		cantPesos += linea.getPlan().getPrecioLista();
+    		
+//    		Busco los servico adicionales que se agregarian al cerrar la SS
+    		List<ServicioAdicionalLineaSolicitudServicio> servAdic = 
+    			solicitudBusinessService.getServicioAdicionalLineaIncluidosNoVisibles
+    						(ss.getVendedor(), linea);
+    		
+    		for (ServicioAdicionalLineaSolicitudServicio servicio : servAdic) {
+				cantPesos += servicio.getPrecioVenta();
+			}
 		}
     	
 		boolean existeCC = true;
@@ -2223,6 +2234,19 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		for (Iterator<LineaSolicitudServicio> iterator = lineas.iterator(); iterator.hasNext();) {
     		LineaSolicitudServicio linea = (LineaSolicitudServicio) iterator.next();
     		cantPesos = cantPesos + linea.getPrecioVenta();
+    		
+//    		MGR -  #3464
+    		cantPesos += linea.getPlan().getPrecioLista();
+    		
+//    		Busco los servico adicionales que se agregarian al cerrar la SS
+    		List<ServicioAdicionalLineaSolicitudServicio> servAdic = 
+    			solicitudBusinessService.getServicioAdicionalLineaIncluidosNoVisibles
+    						(ss.getVendedor(), linea);
+    		
+    		for (ServicioAdicionalLineaSolicitudServicio servicio : servAdic) {
+				cantPesos += servicio.getPrecioVenta();
+			}
+
 		}
     	List<Long> cantPesosMax = (repository.executeCustomQuery("maxCantPesos", resultadoVerazScoring, tipoVendedor.getId()));
     	
