@@ -137,12 +137,11 @@ public class SolicitudBusinessService {
 //	MGR - Se mueve la creacion de la cuenta
 	private String MENSAJE_ERROR_CREAR_CUENTA= "La SS % quedó pendiente de aprobación, por favor verificar y dar curso manual.";
 	
-//	MGR - Parche de emergencia
+//	MGR - Para el cierre y pass automatico de la ss
 	public static final int CIERRE_NORMAL = 1; //Se cierra la solicitud de servicio y se transfiere a Vantive
 	public static final int LINEAS_NO_CUMPLEN_CC = 2;
 	public static final int CIERRE_PASS_AUTOMATICO = 3;
-	
-//	MGR - Parche de emergencia
+
 	private static final String CANTIDAD_EQUIPOS = "CANTIDAD_EQUIPOS";
 	
 //	MGR - #3464
@@ -637,7 +636,7 @@ public class SolicitudBusinessService {
 			throws BusinessException {
 		
 //		MGR - Se crea la variable que venia en la llamada	
-//		MGR - Parche de emergencia
+//		MGR - Si es trasferencia, no cierra por pass, sino evaluo
 		boolean cierraPorCC = false;
 		if(!solicitudServicio.getGrupoSolicitud().isGrupoTransferencia()){
 			cierraPorCC = puedeCerrar != SolicitudBusinessService.CIERRE_NORMAL;
@@ -1315,7 +1314,6 @@ public class SolicitudBusinessService {
 		return lineasSSAA;
 	}
 	
-//	MGR - Parche de emergencia
 	public int sonConfigurablesPorAPG(List<LineaSolicitudServicio> lineas) {
 		AppLogger.info("#Log Cierre y pass - Validando que todas las líneas sean configurables por APG...");
 		int cumple = 0;
@@ -1341,7 +1339,6 @@ public class SolicitudBusinessService {
 		}
 	}
 	
-//	MGR - Parche de emergencia
 	public Integer calcularCantEquipos(Collection<LineaSolicitudServicio> lineaSS){
 		int cantEquipos = 0;
 		for (Iterator iterator = lineaSS.iterator(); iterator.hasNext();) {
@@ -1353,7 +1350,7 @@ public class SolicitudBusinessService {
 		return cantEquipos;
 	}
 	
-//	MGR - Parche de emergencia
+//	MGR - Para guardar la solicitud, creado por un parche de emergencia
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public SolicitudServicio saveSolicituServicio(SolicitudServicio ss){
 		repository.save(ss);

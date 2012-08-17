@@ -1027,17 +1027,13 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			solicitudServicioDto.setCantLineasPortabilidad(contadorPortabilidad);
 
 			completarDomiciliosSolicitudTransferencia(solicitudServicioDto);
-//			MGR - Parche de emergencia
+//			MGR - No se puede trabajar con el dto, hay que trabajar con el objeto de negocio
 			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
-//			MGR - Log informativo, quitar
-			AppLogger.info("Solicitud servicio de id: " + solicitudServicio.getId() + 
-					" es de trasnferencia: " + solicitudServicio.getGrupoSolicitud().isGrupoTransferencia(), this);
 			
 			String errorNF = "";
 			//larce - Req#5 Cierre y Pass automático
 			String errorCC = "";
 			int puedeCerrar = 0;
-//			MGR - Parche de emergencia
 			if (!solicitudServicio.getGrupoSolicitud().isGrupoTransferencia()) {
 				//me fijo si tipo vendedor y orden son configurables por APG.
 				puedeCerrar = sonConfigurablesPorAPG(solicitudServicioDto.getLineas());
@@ -1231,9 +1227,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	}
 
 	private void completarDomiciliosSolicitudTransferencia(SolicitudServicioDto solicitudServicioDto) {
-//		MGR - Log informativo, quitar
-		AppLogger.info("Solicitud servicio de id: " + solicitudServicioDto.getId() + 
-				" es de trasnferencia: " + solicitudServicioDto.getGrupoSolicitud().isTransferencia(), this);
+//		MGR - El metodo deberia trabajar con el objeto de negocio, no con el dto, siempre da "false"
+//		el if sino
 		if (solicitudServicioDto.getGrupoSolicitud().isTransferencia())
 			for (DomiciliosCuentaDto dom : solicitudServicioDto.getCuenta().getPersona().getDomicilios()) {
 				if (dom.getIdEntrega().equals(EstadoTipoDomicilioDto.PRINCIPAL.getId())) {
@@ -1662,16 +1657,6 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	}
 	
 	public Integer calcularCantEquipos(List<LineaSolicitudServicioDto> lineaSS){
-//		MGR - Parche de emergencia
-//		int cantEquipos = 0;
-//		for (Iterator iterator = lineaSS.iterator(); iterator.hasNext();) {
-//			LineaSolicitudServicioDto lineaSolicitudServicioDto = (LineaSolicitudServicioDto) iterator
-//					.next();
-//			cantEquipos = cantEquipos + Integer.parseInt(repository.executeCustomQuery(CANTIDAD_EQUIPOS, lineaSolicitudServicioDto.getItem().getId()).get(0).toString());
-//		}
-//		
-//		return cantEquipos;
-
 		List<LineaSolicitudServicio> lineas = mapper.convertList(lineaSS, LineaSolicitudServicio.class);
 		return solicitudBusinessService.calcularCantEquipos(lineas);
 	}
@@ -1934,39 +1919,10 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 *         3- En caso de que todas las líneas de la solicitud cumplan, se 
 	 *         realizara el cierre y pass de créditos automático a la SS.
 	 */
-//	MGR - Parche de emergencia
 	public int sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas) {
 		List<LineaSolicitudServicio> lineasSS = mapper.convertList(lineas, LineaSolicitudServicio.class);
 		return solicitudBusinessService.sonConfigurablesPorAPG(lineasSS);
 	}
-	
-//	MGR - Parche de emergencia
-//	public int sonConfigurablesPorAPG(List<LineaSolicitudServicio> lineas) {
-//		AppLogger.info("#Log Cierre y pass - Validando que todas las líneas sean configurables por APG...");
-//		int cumple = 0;
-//		TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor();
-////		MGR****for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
-//		for (Iterator<LineaSolicitudServicio> iterator = lineas.iterator(); iterator.hasNext();) {
-////			MGR****LineaSolicitudServicioDto linea = (LineaSolicitudServicioDto) iterator.next();
-//			LineaSolicitudServicio linea = (LineaSolicitudServicio) iterator.next();
-//			if (linea.getTipoSolicitud() != null && linea.getPlan() != null && linea.getItem() != null) {
-//				List result = repository.executeCustomQuery("configurablePorAPG", tipoVendedor.getId(), linea.getTipoSolicitud().getId());  
-//				if (result.size() > 0) {
-//					cumple++;
-//				}
-//			}
-//		}
-//		if (cumple == lineas.size()) {
-//			AppLogger.info("#Log Cierre y pass - Todas las líneas son configurables por APG");
-//			return CIERRE_PASS_AUTOMATICO;
-//		} else if ((cumple < lineas.size() && cumple != 0) ) {
-//			AppLogger.info("#Log Cierre y pass - No todas las líneas son configurables por APG");
-//			return LINEAS_NO_CUMPLEN_CC;
-//		} else {
-//			AppLogger.info("#Log Cierre y pass - Ninguna línea es configurable por APG");			
-//			return CIERRE_NORMAL;
-//		}
-//	}
 	
 	/**
 	 * Dependiendo del tipo de cliente, si tiene equipos activos o suspendidos y deuda en cuenta corriente;
@@ -1976,13 +1932,11 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 * @return Mensaje de error si no se cumplen las condiciones.
 	 * @throws RpcExceptionMessages 
 	 */
-//	MGR - Parche de emergencia
 	private String evaluarEquiposYDeuda(SolicitudServicio ss, String pinMaestro) throws RpcExceptionMessages {
 		if (!RegularExpressionConstants.isVancuc(ss.getCuenta().getCodigoVantive())) {
 			
 			AppLogger.info("#Log Cierre y pass - Buscando cantidad de equipos en la cuenta: " + ss.getCuenta().getCodigoVantive(), this);
 			
-//			MGR - Parche de emergencia
 			CantidadEquiposDTO cantidadEquipos = getCantEquiposCuenta(ss.getCuenta().getCodigoVantive());
 			
 			AppLogger.info("#Log Cierre y pass - Cantidad equipos activos: " + cantidadEquipos.getCantidadActivos(), this);
@@ -2071,7 +2025,6 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 */
 	String resultadoVerazScoring = "";
 //	MGR - #3458 - Envio "cierrePorVeraz" en lugar de "pinMaestro"
-//	MGR - Parche de emergencia
 	private boolean puedeDarPassDeCreditos(SolicitudServicio ss, boolean cierrePorVeraz, String isVerazDisponible)
 			throws BusinessException {
 		//MGR - Limpio la variable resultadoVerazScoring sino la proxima vez trae problemas
@@ -2213,7 +2166,6 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 * @return
 	 * @throws RpcExceptionMessages 
 	 */
-//	MGR - Parche de emergencia
 	private String generarErrorPorCC(SolicitudServicio ss, String pinMaestro) throws RpcExceptionMessages {
 		
 		//MGR - #3122 - Nueva forma de armar el mensaje de error
@@ -2407,7 +2359,6 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 * @return Un mensaje que indica las líneas que no pasaron la validación.
 	 * @throws RpcExceptionMessages
 	 */
-//	MGR - Parche de emergencia
 	private String verificarNegativeFilesPorLinea(Set<LineaSolicitudServicio> set) throws RpcExceptionMessages {
 		String mensaje = "";
 		int i = 0;
@@ -2444,7 +2395,6 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		
 		ArrayList<Boolean> resultadoValidacion = new ArrayList<Boolean>();
 		
-//		MGR - Parche de emergencia
 		Vendedor vend = repository.retrieve(Vendedor.class, solicitud.getVendedor().getId());
 		Long idTipoVendedor = vend.getTipoVendedor().getId();
 		
@@ -2546,10 +2496,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	/**
 	 * Obtiene el CantidadEquiposDTO que corresponde a dicha cuenta.
 	 * Este contiene la informacion de la cantida de equipos : activos,desactivados y suspendidos.
-	 * @param cuenta
+	 * @param codigoVantive
 	 * @return resultDTO
 	 */
-//	MGR - Parche de emergencia
 	private CantidadEquiposDTO getCantEquiposCuenta(String codigoVantive){
         CantidadEquiposDTO resultDTO = new CantidadEquiposDTO();
         try {
@@ -2583,7 +2532,6 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 * @param lineas
 	 * @return
 	 */
-//	MGR - Parche de emergencia
 	private List<String> listaAliasSimRepetidos(Set<LineaSolicitudServicio> lineas) {
 		List<String> alias = new ArrayList<String>();
 		for (Iterator iterator = lineas.iterator(); iterator.hasNext();) {
