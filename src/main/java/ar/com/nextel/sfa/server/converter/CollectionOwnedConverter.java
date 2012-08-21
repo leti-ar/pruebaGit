@@ -100,7 +100,7 @@ public class CollectionOwnedConverter implements CustomConverter {
 		return ((CollectionOwned) destination).getCollection();
 	}
 
-	private IdentifiableObject getById(Collection<IdentifiableObject> collection, Long id) {
+	protected IdentifiableObject getById(Collection<IdentifiableObject> collection, Long id) {
 		for (IdentifiableObject idObject : collection) {
 			if (idObject.getId().equals(id)) {
 				return idObject;

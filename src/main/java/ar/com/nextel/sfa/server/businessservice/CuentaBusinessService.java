@@ -17,10 +17,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
+import ar.com.nextel.business.cuentas.caratula.ArpuService;
+import ar.com.nextel.business.cuentas.caratula.CaratulaTransferidaResultDto;
+import ar.com.nextel.business.cuentas.caratula.dao.config.CaratulaTransferidaConfig;
+import ar.com.nextel.business.cuentas.caratula.exception.ArpuServiceException;
+import ar.com.nextel.business.constants.MessageIdentifier;
 import ar.com.nextel.business.cuentas.create.CreateCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
 import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaService;
+import ar.com.nextel.business.cuentas.scoring.legacy.dto.ScoringCuentaLegacyDTO;
 import ar.com.nextel.business.cuentas.select.SelectCuentaBusinessOperator;
+import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.oportunidades.CuentaPotencialBusinessOperator;
 import ar.com.nextel.business.oportunidades.ReservaCreacionCuentaBusinessOperator;
 import ar.com.nextel.business.oportunidades.ReservaCreacionCuentaBusinessOperatorResult;
@@ -31,9 +38,12 @@ import ar.com.nextel.components.accessMode.controller.AccessAuthorizationControl
 import ar.com.nextel.components.knownInstances.GlobalParameter;
 import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
+import ar.com.nextel.framework.connectionDAO.ConnectionDAOException;
+import ar.com.nextel.framework.connectionDAO.TransactionConnectionDAO;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.repository.hibernate.HibernateRepository;
 import ar.com.nextel.model.cuentas.beans.AbstractDatosPago;
+import ar.com.nextel.model.cuentas.beans.Caratula;
 import ar.com.nextel.model.cuentas.beans.ClaseCuenta;
 import ar.com.nextel.model.cuentas.beans.ContactoCuenta;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
@@ -50,12 +60,16 @@ import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.EstadoOportunidad;
 import ar.com.nextel.model.oportunidades.beans.MotivoNoCierre;
 import ar.com.nextel.model.oportunidades.beans.OportunidadNegocio;
+import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.personas.beans.Email;
 import ar.com.nextel.model.personas.beans.Persona;
 import ar.com.nextel.model.personas.beans.Telefono;
+import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
+import ar.com.nextel.sfa.client.dto.CaratulaDto;
+import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
@@ -71,18 +85,29 @@ import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
 import ar.com.nextel.util.PermisosUserCenter;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
+import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
 
 @Service
 public class CuentaBusinessService {
 
 	private final String ERR_CUENTA_PREFIX = "La cuenta no puede abrirse. <BR/>";
-	private final String ERR_CUENTA_NO_ACCESS = "Acceso denegado. No puede operar con esta cuenta.";
+	private final static String ERR_CUENTA_NO_ACCESS = "Acceso denegado. No puede operar con esta cuenta.";
 	private final String ERR_CUENTA_NO_EDITABLE = ERR_CUENTA_PREFIX
 			+ "La Cuenta es de clase {1}";
 	private final String ERR_CUENTA_GOBIERNO = ERR_CUENTA_PREFIX
 			+ "La Cuenta: {1} ({2}) es de clase {3} y pertenece a la cartera de otro vendedor";
 	private final String ERR_CUENTA_NO_PERMISO = "No tiene permiso para ver esa cuenta.";
+	
+	//MGR - ISDM #1794 - Los telemarketing muestran otro mensaje
+	private static final String ERR_CUENTA_LOCKEADA_POR_OTRO_TLM = ERR_CUENTA_NO_ACCESS +
+									"<br/>\n La Cuenta {1} se encuentra lockeada por otro vendedor. " +
+									"<br/>\n El Vendedor de lockeo es {2}";
 
+	private static final String ERROR_OPER_OTRO_VENDEDOR = "El prospect/cliente tiene una operación en curso con otro vendedor. No puede ver sus datos. El {1} es {2}";
+	
+	private static final String ULT_NRO_SS = "ULT_NRO_SS";
+	private static final String ULT_DOMICILIO_CTA = "ULT_DOMICILIO_CTA";
+	
 	@Qualifier("createCuentaBusinessOperator")
 	private CreateCuentaBusinessOperator createCuentaBusinessOperator;
 
@@ -106,6 +131,22 @@ public class CuentaBusinessService {
 	private Repository repository;
 
 	private DefaultRetriever globalParameterRetriever;
+	
+	private ArpuService arpuService;
+	private AvalonSystem avalonSystem;
+	private CaratulaTransferidaConfig caratulaTransferidaConfig;
+	private TransactionConnectionDAO sfaConnectionDAO;
+	
+	@Autowired
+	public void setCaratulaTransferidaConfig(CaratulaTransferidaConfig caratulaTransferidaConfig) {
+		this.caratulaTransferidaConfig = caratulaTransferidaConfig;
+	}
+
+	@Autowired
+	public void setSfaConnectionDAO(
+			@Qualifier("sfaConnectionDAOBean") TransactionConnectionDAO sfaConnectionDAOBean) {
+		this.sfaConnectionDAO = sfaConnectionDAOBean;
+	}
 
 	@Autowired
 	public void setReservaCreacionCuentaBusinessOperator(
@@ -159,6 +200,17 @@ public class CuentaBusinessService {
 			@Qualifier("globalParameterRetriever") DefaultRetriever globalParameterRetriever) {
 		this.globalParameterRetriever = globalParameterRetriever;
 	}
+	
+	@Autowired
+	public void setArpuService(ArpuService arpuService) {
+		this.arpuService = arpuService;
+	}
+
+	@Autowired
+	public void setAvalonSystem(
+			@Qualifier("avalonSystemBean")AvalonSystem avalonSystem) {
+		this.avalonSystem = avalonSystem;
+	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Cuenta reservarCrearCta(SolicitudCuenta solicitudCta,
@@ -198,6 +250,16 @@ public class CuentaBusinessService {
 		repository.update(cuenta);
 	}
 
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void saveArchivoVeraz(Long caratulaId,String archivoVeraz) {
+		ArrayList<Object> list = (ArrayList<Object>) this.repository.find("from Caratula c where c.id = ?", caratulaId);
+		if(!list.isEmpty()){
+			Caratula caratula = (Caratula) list.get(0);
+			caratula.setArchivoVeraz(archivoVeraz);
+			this.repository.save(caratula);
+		}
+	}
+	
 	//MGR - 05-07-2010 - Se cambian digitos de la tarjeta por asteriscos (*)
 	private String changeByAsterisks(String numero) {
 
@@ -339,6 +401,15 @@ public class CuentaBusinessService {
 		cuenta.getPlainContactos().addAll(listaContactos);
 		// *************************************************************************************************
 
+		// FIXME: Necesario para refrescar el vendedor en las nuevas caratulas
+		for (Caratula caratula : cuenta.getCaratulas()) {
+			if(caratula.getId() == null){
+//				Vendedor vend = repository.retrieve(Vendedor.class, caratula.getUsuarioCreacion().getId());
+				Vendedor vend = repository.retrieve(Vendedor.class, SessionContextLoader.getInstance().getVendedor().getId());
+				caratula.setUsuarioCreacion(vend);
+			}
+		}
+		
 		// FIXME: revisar mapeo de Persona/Telefono/Mail en dozer para no tener
 		// que hacer esto
 		// ***********************
@@ -525,7 +596,13 @@ public class CuentaBusinessService {
 						|| accessCuenta.getAccessAuthorization()
 								.hasSamePermissionsAs(
 										AccessAuthorization.fullAccess()))) {
-					cuenta.editar(vendedor);
+					if (cuenta.getVendedorLockeo() == null) {
+						cuenta.editar(vendedor);
+					} 
+					//1709 - Si el vendedor de lockeo es dealer no debe pisar el id_vendedor_lockeo
+					if (cuenta.getVendedorLockeo() != null && !cuenta.getVendedorLockeo().isDealer()) {
+						cuenta.editar(vendedor);
+					}
 					repository.save(cuenta);
 				}
 			}
@@ -585,7 +662,7 @@ public class CuentaBusinessService {
 	}
 
 	public void validarAccesoCuenta(Cuenta cuenta, Vendedor vendedor,
-			boolean filtradoPorDni) throws RpcExceptionMessages {
+			boolean filtradoPorDni) throws RpcExceptionMessages, BusinessException {
 		// logueado no es el de la cuenta
 		if ( !vendedor.getId().equals(cuenta.getVendedor().getId())) {
 			HashMap<String, Boolean> mapaPermisosClient = (HashMap<String, Boolean>) 
@@ -646,7 +723,21 @@ public class CuentaBusinessService {
 				if ((cuenta.getVendedorLockeo() != null)
 						&& (!vendedor.getId().equals(
 								cuenta.getVendedorLockeo().getId())) && vendedor.getTipoVendedor().isUsaLockeo()) {
-					throw new RpcExceptionMessages(ERR_CUENTA_NO_PERMISO);
+					
+					//Si el que consulta y el que lockea la cuenta son del tipo Telemarketing, 
+					//entonces cambia el mensaje a mostrar
+					if(vendedor.isTelemarketing() && cuenta.getVendedorLockeo() != null &&
+								cuenta.getVendedorLockeo().isTelemarketing()){
+						throw new RpcExceptionMessages(ERR_CUENTA_LOCKEADA_POR_OTRO_TLM
+								.replaceAll("\\{1\\}", cuenta.getCodigoVantive())
+									.replaceAll("\\{2\\}", cuenta.getVendedorLockeo().getApellidoYNombre()));
+					} else {
+						//#1718
+						String nombre = cuenta.getVendedorLockeo().getResponsable().getNombre()
+								+ " " + cuenta.getVendedorLockeo().getResponsable().getApellido();
+						String cargo = cuenta.getVendedorLockeo().getResponsable().getCargo();
+						throw new RpcExceptionMessages(ERROR_OPER_OTRO_VENDEDOR.replaceAll("\\{1\\}", cargo).replaceAll("\\{2\\}", nombre));
+					}
 				}
 			}
 		}
@@ -785,6 +876,102 @@ public class CuentaBusinessService {
 		BaseAccessObject accessCuenta = new BaseAccessObject(
 				accessAuthorization, cuenta);
 		return accessCuenta;
+	}
+
+	public SolicitudServicio getUltimaSSModificada(Long idCuenta){
+		List result = repository.executeCustomQuery(ULT_NRO_SS, idCuenta);
+		if(result != null && !result.isEmpty()){
+			return (SolicitudServicio) result.get(0);
+		}else{
+			return null;
+		}
+	}
+	
+	public boolean isUltimoDomicilioValidado(Long idCuenta){
+		List result = repository.executeCustomQuery(ULT_DOMICILIO_CTA, idCuenta);
+		if(result != null && !result.isEmpty()){
+			Domicilio domicilio = (Domicilio) result.get(0);
+			return domicilio.getValidado();	
+		}
+		return false;
+	}
+	
+	public Double getARPU(String customerCode) throws ArpuServiceException{
+		AppLogger.info("Iniciando llamada para averiguar ARPU.....");
+		Double arpu = null;
+		arpu = arpuService.getArpu(customerCode);
+		AppLogger.info("ARPU averiguado correctamente.....");
+		return arpu;
+	}
+	
+	//MGR - #3285 - Se separa el proceso en dos partes
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public Caratula completarCaratula(CaratulaDto caratulaDto) throws RpcExceptionMessages{
+		Double arpu = null;
+		String mensScoring = null;
+		
+		Caratula caratula = repository.retrieve(Caratula.class, caratulaDto.getId());
+		String codVantive = caratula.getCuenta().getCodigoVantive();
+		
+		if(codVantive != null && !codVantive.equals("")){
+			try{
+				
+				arpu = arpuService.getArpu(codVantive);
+				caratula.setConsumoProm(arpu);
+				
+				AppLogger.info("Iniciando llamada para averiguar Scoring.....");
+				ScoringCuentaLegacyDTO scoring = avalonSystem.retrieveScoringCuenta(codVantive);
+				mensScoring = scoring.getMensajeAdicional();
+				caratula.setScoring(mensScoring);
+				AppLogger.info("Scoring averiguado correctamente.....");
+				
+				repository.save(caratula);
+				repository.flush();
+		
+			} catch (Exception e) {
+				AppLogger.error(e);
+				throw ExceptionUtil.wrap("Se produjo un error al completar la caratula.", e);
+			} 
+			
+ 		}
+		return caratula;
+	}
+	
+	//MGR - #3285 - Se separa el proceso en dos partes
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public Caratula confirmarCaratula(Caratula caratula) throws RpcExceptionMessages{
+		try{
+			String error = this.transferirCaratulaVantive(caratula.getId());
+			if(error != null){
+				throw new ConnectionDAOException(error);
+			}
+		} catch (ConnectionDAOException e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap("Se produjo un error al querer transferir la caratula a Vantive. No se realizara la confirmaci�n.", e);
+		} 
+		
+		
+//		Se refresca el objeto ya que el procedure que transfiere la caratula modifica el mismo
+		repository.refresh(caratula);
+		caratula.setConfirmada(true);
+		repository.save(caratula);
+		
+		return caratula;
+	}
+	
+	public String transferirCaratulaVantive(Long idCaratula) throws ConnectionDAOException{
+		CaratulaTransferidaConfig caratulaTransferidaConfig = getCaratulaTransferidaConfig();
+		caratulaTransferidaConfig.setIdCaratula(idCaratula);
+		CaratulaTransferidaResultDto result = (CaratulaTransferidaResultDto) sfaConnectionDAO.execute(caratulaTransferidaConfig);
+		
+		if(result.getDescripcion() == null || result.getDescripcion().equals("")){
+			return null;
+		}
+		return result.getCodError() + ". " + result.getDescripcion();
+	}
+
+	public CaratulaTransferidaConfig getCaratulaTransferidaConfig() {
+		return caratulaTransferidaConfig;
 	}
 
 }

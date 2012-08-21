@@ -23,7 +23,7 @@ public class ItemSolicitudActivacionUI extends Composite {
 		Grid primeraTabla = new Grid(5, 2);
 		primeraTabla.setWidget(0, 0, new InlineLabel(Sfa.constant().listaPrecio()));
 		primeraTabla.setWidget(0, 1, itemSolicitudUIData.getListaPrecio());
-		primeraTabla.setWidget(1, 0, new InlineLabel(Sfa.constant().imei()));
+		primeraTabla.setWidget(1, 0, new InlineLabel(Sfa.constant().imeiReq()));
 		primeraTabla.setWidget(1, 1, itemSolicitudUIData.getImei());
 		primeraTabla.setWidget(2, 0, new InlineLabel(Sfa.constant().modeloEq()));
 		primeraTabla.setWidget(2, 1, itemSolicitudUIData.getModeloEq());
@@ -62,13 +62,14 @@ public class ItemSolicitudActivacionUI extends Composite {
 		cuartaTabla.setWidget(1, 2, itemSolicitudUIData.getReservar());
 		cuartaTabla.setWidget(1, 3, itemSolicitudUIData.getConfirmarReserva());
 		mainPanel.add(cuartaTabla);
-		Grid quintaTabla = new Grid(1, 6);
+		Grid quintaTabla = new Grid(1, 7);
 		quintaTabla.setWidget(0, 0, new InlineLabel(Sfa.constant().ddn()));
 		quintaTabla.setWidget(0, 1, itemSolicitudUIData.getDdn());
 		quintaTabla.setWidget(0, 2, new InlineLabel(Sfa.constant().ddi()));
 		quintaTabla.setWidget(0, 3, itemSolicitudUIData.getDdi());
 		quintaTabla.setWidget(0, 4, new InlineLabel(Sfa.constant().roaming()));
 		quintaTabla.setWidget(0, 5, itemSolicitudUIData.getRoaming());
+		quintaTabla.setWidget(0, 6, itemSolicitudUIData.getPortabilidad());
 		mainPanel.add(quintaTabla);
 	}
 

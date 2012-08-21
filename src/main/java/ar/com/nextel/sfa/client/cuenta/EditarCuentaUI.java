@@ -219,7 +219,7 @@ public class EditarCuentaUI extends ApplicationUI {
 					TipoContribuyenteEnum.CONS_FINAL.getDescripcion()));
 		}
 		if (esEdicionCuenta)
-			cuentaTab.getCuentaDatosForm().ponerDatosBusquedaEnFormulario(cuenta);
+			cuentaTab.getCuentaDatosForm().ponerDatosBusquedaEnFormulario(cuenta, false);
 
 		// carga info pestaña Domicilio
 		cuentaTab.getCuentaDomicilioForm().getCrearDomicilio().setVisible(verCrearNuevoDomicilio);
@@ -231,6 +231,10 @@ public class EditarCuentaUI extends ApplicationUI {
 		cuentaTab.getCuentaContactoForm().getCrearButton().setVisible(esEdicionCuenta);
 		cuentaTab.getCuentaContactoForm().cargarTablaContactos(cuentaTab.getCuenta2editDto());
 
+		//Carga info pestaña Caratua
+//		MGR - Para salir sin "Caratula" (24-07-2012)
+//		cuentaTab.getCuentaCaratulaForm().cargaTablaCaratula(cuentaTab.getCuenta2editDto());
+		
 		// prepara UI para edicion cuenta o visualizacion opp
 		cuentaTab.setTabsTipoEditorCuenta(esEdicionCuenta);
 		cuentaTab.getCuentaDatosForm().setUItipoEditorCuenta(esEdicionCuenta);
