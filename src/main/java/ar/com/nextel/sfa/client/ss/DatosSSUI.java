@@ -578,36 +578,35 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		
 
 		if(portabilidad != null){
-			if(portabilidad.getTipoDocumento() != null && notEmpty(portabilidad.getNumeroDocumento()) && 
-					notEmpty(portabilidad.getRazonSocial()) && notEmpty(portabilidad.getNombre()) && notEmpty(portabilidad.getApellido())){
-
-				final DatosSSUI datos = this;
-				SolicitudRpcService.Util.getInstance().getPortabilidadInitializer(editarSSUIData.getCuentaId().toString(),editarSSUIData.getCuenta().getCodigoVantive(), new DefaultWaitCallback<PortabilidadInitializer>() {
-					@Override
-					public void success(PortabilidadInitializer result) {
-						PortabilidadReplicarDialog replicarDialog = new PortabilidadReplicarDialog();
-						replicarDialog.show(editarSSUIData.getSolicitudServicio(),row - 1,result,datos,controller);
-					}
-				});
-			}else{
+			//LF
+			if(portabilidad.getTipoPersona() != null) {
+					final DatosSSUI datos = this;
+					SolicitudRpcService.Util.getInstance().getPortabilidadInitializer(editarSSUIData.getCuentaId().toString(),editarSSUIData.getCuenta().getCodigoVantive(),new DefaultWaitCallback<PortabilidadInitializer>() {
+						@Override
+						public void success(PortabilidadInitializer result) {
+							PortabilidadReplicarDialog replicarDialog = new PortabilidadReplicarDialog();
+							replicarDialog.show(editarSSUIData.getSolicitudServicio(),row - 1,result,datos,controller);
+						}
+					});
+			} else {
 				ModalMessageDialog.getInstance().showAceptar(
-						"Para portar los datos de Portabilidad deben estar completos Tipo y Numero de Documento, Razon Social, Nombre y Apellido", 
+						"Debe seleccionar un Tipo de Persona en el item seleccionado", 
 						ModalMessageDialog.getCloseCommand());
 			}
-		}else{
+	    }else{
 			ModalMessageDialog.getInstance().showAceptar(
 					"El Item seleccionado no posee una Solicitud de Portabilidad para replicar", 
 					ModalMessageDialog.getCloseCommand());
 		}
 	}
 	
-    private boolean empty(String s) {
-        return s == null || s.length() == 0;
-    }
-
-    private boolean notEmpty(String s) {
-        return !empty(s);
-    }
+//    private boolean empty(String s) {
+//        return s == null || s.length() == 0;
+//    }
+//
+//    private boolean notEmpty(String s) {
+//        return !empty(s);
+//    }
 
     private void selectDetalleLineaSSRow(int row) {
 		if (row > 0) {
