@@ -23,11 +23,15 @@ public class CuentaClientService {
 	private static boolean error;
 	public static String nombreFromVeraz;
 	public static String apellidoFromVeraz;
+	public static String sexoVeraz;
+	public static String razonSocialFromVeraz;
 
 	public static void reservaCreacionCuentaFromVeraz(Long idTipoDoc, String nroDoc, String nombre,
-			String apellido) {
+			String apellido, String sexo, String razonSocial) {
 		nombreFromVeraz = nombre;
 		apellidoFromVeraz = apellido;
+		sexoVeraz = sexo;//#3481
+		razonSocialFromVeraz = razonSocial;
 		reservaCreacionCuenta(idTipoDoc, nroDoc, null, true);
 	}
 

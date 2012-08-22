@@ -190,8 +190,16 @@ public class EditarCuentaUI extends ApplicationUI {
 			cuentaTab.getCuentaDatosForm().getCamposTabDatos().getNombre().setText(nom);
 			cuentaTab.getCuentaDatosForm().getCamposTabDatos().getApellido().setText(ape);
 			cuentaTab.getCuentaDatosForm().getCamposTabDatos().getRazonSocial().setText(nom + " " + ape);
+			cuentaTab.getCuentaDatosForm().getCamposTabDatos().getSexo().selectByText(CuentaClientService.sexoVeraz);//#3481
 			CuentaClientService.nombreFromVeraz = null;
 			CuentaClientService.apellidoFromVeraz = null;
+			CuentaClientService.sexoVeraz = null;
+		} else if (CuentaClientService.razonSocialFromVeraz != null 
+					&& cuentaTab.getCuentaDatosForm().getCamposTabDatos().getRazonSocial().getText().equals("")) { //#3481
+			cuentaTab.getCuentaDatosForm().getCamposTabDatos().getRazonSocial().setText(CuentaClientService.razonSocialFromVeraz);
+			cuentaTab.getCuentaDatosForm().getCamposTabDatos().getSexo().selectByText(CuentaClientService.sexoVeraz);
+			CuentaClientService.razonSocialFromVeraz = null;
+			CuentaDatosForm.getInstance().cambiarVisibilidadCamposSegunSexo();
 		}
 		cuentaTab.validarCompletitud(false);
 	}
