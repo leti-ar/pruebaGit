@@ -549,8 +549,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					TipoDocumentoDto.class));
 		}
 
-		mapper.convertList(repository.getAll(EstadoPorSolicitud.class),
-				EstadoPorSolicitudDto.class);
+//		MGR - Se comenta esto ya que aparentemente no hace nada y trae problemas
+//		mapper.convertList(repository.getAll(EstadoPorSolicitud.class),
+//				EstadoPorSolicitudDto.class);
 				
 		return buscarSSCerradasInitializer;
 	}
