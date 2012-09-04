@@ -349,6 +349,11 @@ public class PortabilidadUIData extends Composite {
 		return validador.getErrors();
 	}
 	
+//	MGR - RQN 2328 - Retorno el número a portar
+	public String obtenerNumeroAportar(){
+		return txtTelefonoPortar.getArea().getText() + txtTelefonoPortar.getNumero().getText();
+	}
+	
 	/**
 	 * 
 	 * @param idLinea

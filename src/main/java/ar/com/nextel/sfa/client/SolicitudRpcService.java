@@ -230,5 +230,8 @@ public interface SolicitudRpcService extends RemoteService {
 	public boolean validarLineasPorSegmento(SolicitudServicioDto solicitud) throws RpcExceptionMessages;
 
 	public int sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas) throws RpcExceptionMessages;
+
+//	MGR - RQN 2328
+	boolean validarAreaBilling(String numeroAPortar) throws RpcExceptionMessages;
 }
 

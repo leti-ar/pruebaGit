@@ -35,9 +35,12 @@ import ar.com.nextel.business.legacy.avalon.dto.CantidadEquiposDTO;
 import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
 import ar.com.nextel.business.legacy.bps.BPSSystem;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
+import ar.com.nextel.business.legacy.shift.ShiftSystem;
+import ar.com.nextel.business.legacy.shift.exception.ShiftSystemException;
 import ar.com.nextel.business.legacy.vantive.VantiveSystem;
 import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
+import ar.com.nextel.business.shift.InformacionNumeroDTO;
 import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSResponse;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
@@ -62,7 +65,6 @@ import ar.com.nextel.framework.repository.hibernate.HibernateRepository;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.TipoVendedor;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
-import ar.com.nextel.model.personas.beans.Domicilio;
 import ar.com.nextel.model.personas.beans.Localidad;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.model.solicitudes.beans.CondicionComercial;
@@ -98,7 +100,6 @@ import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
-import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
@@ -144,10 +145,9 @@ import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
-import ar.com.nextel.sfa.client.ss.SoloItemSolicitudUI;
-import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.util.PortabilidadResult;
 import ar.com.nextel.sfa.client.util.PortabilidadResult.ERROR_ENUM;
+import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.server.businessservice.CuentaBusinessService;
 import ar.com.nextel.sfa.server.businessservice.SolicitudBusinessService;
 import ar.com.nextel.sfa.server.util.MapperExtended;
@@ -182,6 +182,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private DefaultSequenceImpl tripticoNextValue;
     private AvalonSystem avalonSystem;
 	
+//  MGR - RQN 2328
+    private ShiftSystem shiftSystem;
+    
 	//MGR - #1481
 	private DefaultRetriever messageRetriever;;
 	
@@ -226,10 +229,14 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		
 		tripticoNextValue = (DefaultSequenceImpl)context.getBean("tripticoNextValue");
 		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
+		
+//		MGR - RQN 2328
+		shiftSystem = (ShiftSystem) context.getBean("shiftSystemBean");
+		
 		messageRetriever = (DefaultRetriever)context.getBean("messageRetriever");
 		mailSender= (MailSender)context.getBean("mailSender");
-		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");
-		
+		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");		
+
 	}
 
 	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
@@ -2628,7 +2635,6 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 */
 	public boolean getExisteEnAreaCobertura(int codArea) throws RpcExceptionMessages {
 		//SolicitudPortabilidadWSImpl ws = new SolicitudPortabilidadWSImpl();
-		
 		String query = "FROM Localidad local WHERE local.codigoArea = ? AND local.cobertura = ?";
 		return repository.find(query, String.valueOf(codArea),true).size() > 0 ? true : false;
 	}
@@ -2905,5 +2911,36 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			else return 1;
 		}
 	}
+
+//	MGR - RQN 2328
+	public boolean validarAreaBilling(String numeroAPortar) throws RpcExceptionMessages {
+		try {
+			InformacionNumeroDTO infoDto = shiftSystem.getInformarcionNumero(numeroAPortar);
+			if(infoDto.getPi() == null || infoDto.getPi().toString().equals("")
+					|| infoDto.getPu() == null || infoDto.getPu().equals(""))
+				return false;
+			
+			String areaAPortar = shiftSystem.getAreaBilling(infoDto.getPi().toString(), infoDto.getPu());
+			
+			for (AreaBillingValidas areaBilling : AreaBillingValidas.values()) {
+				if(areaBilling.name().equals(areaAPortar))
+					return true;
+			}
+		} catch (ShiftSystemException e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+		return false;
+	}
 	
+//	MGR - RQN 2328
+	private enum AreaBillingValidas{
+		//AF, //AFUERA //No se puede portar
+		AM, //AMBA
+		CO, //CORDO
+		CA, //COSTA
+		ME, //MENDO
+		RO, //ROSAR
+		ZZ; //SIN AREA
+	}
 }
