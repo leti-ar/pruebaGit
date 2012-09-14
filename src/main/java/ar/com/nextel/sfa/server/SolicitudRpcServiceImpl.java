@@ -2742,7 +2742,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		final String MSG_ERR_07 = "Existen Lineas con igual numero de Solicitud de Portabilidad para distintas Razon Social, " +
 				"Nombre y Apellido, tipo y numero Documento";
 		final String MSG_ERR_08 = "Existen Lineas que tienen un numero de Solicitud de Portabilidad incorrecto";
-		final String MSG_ERR_09 = "La Cuenta posee Solicitudes de Portabilidad pendientes";
+		//LF #3620
+//		final String MSG_ERR_09 = "La Cuenta posee Solicitudes de Portabilidad pendientes";
 		final String MSG_ERR_10 = "Debe agregar el numero de telefono portar en la solicitud Nro: _NUMERO_";
 		
 		int contLineasPrepagas = 0;
@@ -2888,12 +2889,13 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				}catch(Exception e){
 					throw ExceptionUtil.wrap(e);
 				}
-				if(!permiteVantive || !permiteBPS){
-					// Al analista de Creditos le muestra un mensaje y guarda
-					Long idTipoVendADM = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_CREDITOS);
-					if(sessionContextLoader.getVendedor().getTipoVendedor().getId() == idTipoVendADM) result.addError(ERROR_ENUM.WARNING,MSG_ERR_09);// Tipo vendedor analista creditos = 21
-					else result.addError(ERROR_ENUM.ERROR,MSG_ERR_09);
-				}
+				//LF #3620
+//				if(!permiteVantive || !permiteBPS){
+//					// Al analista de Creditos le muestra un mensaje y guarda
+//					Long idTipoVendADM = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_CREDITOS);
+//					if(sessionContextLoader.getVendedor().getTipoVendedor().getId() == idTipoVendADM) result.addError(ERROR_ENUM.WARNING,MSG_ERR_09);// Tipo vendedor analista creditos = 21
+//					else result.addError(ERROR_ENUM.ERROR,MSG_ERR_09);
+//				}
 			}
 		}	
 		// Puede guardar
