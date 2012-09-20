@@ -2,7 +2,6 @@ package ar.com.nextel.sfa.client.ss;
 
 import java.util.List;
 
-import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.dto.EmailDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioGeneracionDto;

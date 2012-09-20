@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
+
 public class CerrarSSUI extends NextelDialog implements ClickListener {
 
 	private CerrarSSUIData cerarSSUIData;
@@ -23,7 +24,8 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 	private static final String generarTitle = "SS - Generar SS";
 	private static final String cerrarTitle = "SS - Cerrar SS";
 	private FlexTable layout;
-
+	private boolean tienePortabilidad;
+	
 	public CerrarSSUI() {
 		super("SS - Generar SS", false, true);
 		init();
@@ -38,7 +40,7 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 		addFormButtons(aceptar);
 		addFormButtons(cancelar);
 		setFooterVisible(false);
-		setFormButtonsVisible(true);
+		setFormButtonsVisible(true);		
 		cerarSSUIData = new CerrarSSUIData();
 		layout = new FlexTable();
 		layout.setWidth("100%");
@@ -60,6 +62,8 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 		layout.setHTML(3, 1, Sfa.constant().scoringTitle());
 		layout.setWidget(3, 0, cerarSSUIData.getScoring());
 		add(layout);
+		
+		tienePortabilidad = false;
 	}
 
 	public void onClick(Widget sender) {
@@ -77,8 +81,24 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 		this.aceptarCommand = aceptarCommand;
 	}
 
+	/**
+	 * TODO: Portabilidad
+	 * @param tienePortabilidad
+	 */
+	public void setTienePortabilidad(boolean tienePortabilidad){
+		this.tienePortabilidad = tienePortabilidad;
+	}
+	
+//	//CRSfaVta3Cuotcc: sobrecargamos el método para no afectar otros workflow.
+//	public void show(PersonaDto persona, boolean isCliente, SolicitudServicioGeneracionDto solicitudServicioGeneracion,
+//			boolean isCDW, boolean isMDS, boolean cerrandoConItemBB, boolean isTRANSFERENCIA) {
+//		this.show(persona, isCliente, solicitudServicioGeneracion, isCDW, isMDS, cerrandoConItemBB, isTRANSFERENCIA, false);
+//	
+//	}
+	
+	//CRSfaVta3Cuotcc: se agrega un parametro mas que debe ser tenido en cuenta para Validar por Pin (isValidaPinTipoFormaPago)
 	public void show(PersonaDto persona, boolean isCliente, SolicitudServicioGeneracionDto solicitudServicioGeneracion,
-			boolean isCDW, boolean isMDS, boolean cerrandoConItemBB, boolean isTRANSFERENCIA) {
+			boolean isCDW, boolean isMDS, boolean cerrandoConItemBB, boolean isTRANSFERENCIA, boolean isValidaPinTipoFormaPago) {
 		cerarSSUIData.setEmails(persona.getEmails(), solicitudServicioGeneracion);
 		boolean permisoCierreScoring = ClientContext.getInstance().checkPermiso(
 				PermisosEnum.SCORING_CHECKED.getValue());
@@ -90,13 +110,18 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 			isTRANSFERENCIA = false;
 		}
 		
-		if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierreScoring && !permisoCierrePin && isCliente) {
-			layout.setWidget(3, 0, cerarSSUIData.getScoring());
-			layout.setHTML(3, 1, Sfa.constant().scoringTitle());
-		} else if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierrePin && !cerrandoConItemBB && isCliente) {
-			layout.setHTML(3, 0, Sfa.constant().pinMaestro());
-			layout.setWidget(3, 1, cerarSSUIData.getPin());
-		} else {
+		if(!tienePortabilidad){
+			if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierreScoring && !permisoCierrePin && isCliente) {
+				layout.setWidget(3, 0, cerarSSUIData.getScoring());
+				layout.setHTML(3, 1, Sfa.constant().scoringTitle());
+			} else if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierrePin && !cerrandoConItemBB && isCliente && isValidaPinTipoFormaPago) {
+				layout.setHTML(3, 0, Sfa.constant().pinMaestro());
+				layout.setWidget(3, 1, cerarSSUIData.getPin());
+			} else {
+				layout.setHTML(3, 0, "");
+				layout.setHTML(3, 1, "");
+			}
+		}else {
 			layout.setHTML(3, 0, "");
 			layout.setHTML(3, 1, "");
 		}
@@ -109,7 +134,7 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 			layout.setHTML(4, 3, "");
 		}
 		
-		showAndCenter();
+		showAndCenter();	
 	}
 
 	public CerrarSSUIData getCerrarSSUIData() {

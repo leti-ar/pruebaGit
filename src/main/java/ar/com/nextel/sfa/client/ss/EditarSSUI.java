@@ -1,31 +1,18 @@
 package ar.com.nextel.sfa.client.ss;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.springframework.stereotype.Controller;
-
-import ar.com.nextel.components.mail.MailSender;
-import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.sfa.client.InfocomRpcService;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
-import ar.com.nextel.sfa.client.dto.ComentarioAnalistaDto;
-import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
-import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
-import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
-import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -64,7 +51,6 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItemImpl;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
-import ar.com.snoop.gwt.commons.client.window.MessageWindow;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -75,11 +61,9 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.IncrementalCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TabPanel;
@@ -1043,8 +1027,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	List<String> errorsCerrar;
 	
 	private void openGenerarCerrarSolicitdDialog(boolean cerrando) {
-		cerrandoAux = cerrando;
-		
+		cerrandoAux = cerrando;		
 		//obtengo la cuenta que acaba de seleccionar
 		Long idCuenta = null;
 		if (HistoryUtils.getParam("idCuenta") != null) {
@@ -1053,10 +1036,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			idCuenta = Long.parseLong(HistoryUtils.getParam("cuenta_id"));
 		}
 		CuentaClientService.cargarDatosCuenta(idCuenta, codigoVant, false, false);
-			
+					
 		WaitWindow.show();
         DeferredCommand.addCommand(new IncrementalCommand() {
-	        public boolean execute() {
+	        public boolean execute() {	        	
 	        	if (CuentaClientService.cuentaDto == null){
 	            	return true;
 	        	}
@@ -1084,7 +1067,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				            	
 				            	if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
 				            		editarSSUIData.validarPlanesCedentes(abrirCerrarDialogCallback(), false);
-				            	}else{
+				            	}else{				            		
 				            		abrirDialogCerrar();
 				            	}
 				            } else {
@@ -1115,9 +1098,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
         });
 	}
 
-	private Command generarCerrarSolicitudCommand() {
+	private Command generarCerrarSolicitudCommand() {		
 		return new Command() {
-			public void execute() {
+			public void execute() {				
 				editarSSUIData.setSolicitudServicioGeneracion(getCerrarSSUI().getCerrarSSUIData()
 						.getSolicitudServicioGeneracion());
 				// Se comenta por el nuevo cartel de cargando;
@@ -1163,8 +1146,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				// Si arrastra un error en la validacion muestra un mensaje
 				if(portabilidadResult.isConError()){
 					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-					ErrorDialog.getInstance().show(portabilidadResult.getErroresDesc());
-
+					ErrorDialog.getInstance().show(portabilidadResult.getErroresDesc());					
 					if(portabilidadResult.getPermiteGrabar()) cerrarGenerarSolicitud();
 					else CerradoSSExitosoDialog.getInstance().hideLoading();
 				}else cerrarGenerarSolicitud();
@@ -1172,7 +1154,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		});
 	}
 	
-	private DefaultWaitCallback<GeneracionCierreResultDto> getGeneracionCierreCallback() {
+	private DefaultWaitCallback<GeneracionCierreResultDto> getGeneracionCierreCallback() {		
 		if (generacionCierreCallback == null) {
 			generacionCierreCallback = new DefaultWaitCallback<GeneracionCierreResultDto>() {
 				public void success(final GeneracionCierreResultDto result) {
@@ -1252,7 +1234,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 	private CerrarSSUI getCerrarSSUI() {
 		if (cerrarSSUI == null) {
-			cerrarSSUI = new CerrarSSUI();
+			cerrarSSUI = new CerrarSSUI();			
 			cerrarSSUI.setAceptarCommand(generarCerrarSolicitudCommand());
 		}
 		return cerrarSSUI;
@@ -1457,6 +1439,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	
 	private void cerrarGenerarSolicitud(){
 		SolicitudServicioDto ssDto = null;
+				
 		String pinMaestro = getCerrarSSUI().getCerrarSSUIData().getPin().getText();
 		if(editarSSUIData.getGrupoSolicitud()!= null &&
 				editarSSUIData.getGrupoSolicitud().isTransferencia()){
@@ -1468,7 +1451,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				ssDto.getCuenta().setVendedor((VendedorDto) editarSSUIData.getVendedor().getSelectedItem());						
 			}		
 		}
-
+		
 		SolicitudRpcService.Util.getInstance().generarCerrarSolicitud(
 				ssDto, pinMaestro, cerrandoSolicitud,
 				getGeneracionCierreCallback());
@@ -1509,11 +1492,38 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	}
 	
 	private void abrirDialogCerrar(){
-//		MGR - Parche de emergencia
-		if(!editarSSUIData.getSolicitudServicio().getGrupoSolicitud().isTransferencia()){
+		
+				
+		//CRSfaVta3Cuotcc: debe validar ademas de otorgar esta nueva forma de pago, que los items que tengan la forma de pago con columna VALIDA_PIN = true disparen este Popup (tabla TIPO_FORMA_PAGO)
+		//Solo debe existir una forma de pago con esta propiedad para que sea obligatorio presentar el popup
+        ////////////////////////////////////////////////////////////
+		String flag = null;
+		for (LineaSolicitudServicioDto linea : editarSSUIData.getSolicitudServicio().getLineas()) {
+			if(linea.getTerminoPago() != null){
+				if(linea.getTerminoPago().getValidaPin() != null){					
+					if (flag == null) 
+							flag = linea.getTerminoPago().getValidaPin().toUpperCase();
+					else{
+						if (!flag.equals(linea.getTerminoPago().getValidaPin().toUpperCase())){	
+							flag = "F";
+							ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+							ErrorDialog.getInstance().show(Sfa.constant().ERR_AL_VALIDAR_TIPO_FORMA_PAGO() + linea.getTerminoPago().getDescripcion(), false);							
+						}
+					}					
+				}
+			}
+		}
+				
+		if (flag.toUpperCase().equals("T"))
+			editarSSUIData.setValidaPin(true);		
+		////////////////////////////////////////////////////////////
+		
+                
+        //	MGR - Parche de emergencia
+		if(!editarSSUIData.getSolicitudServicio().getGrupoSolicitud().isTransferencia()){			
 			SolicitudRpcService.Util.getInstance().sonConfigurablesPorAPG(editarSSUIData.getSolicitudServicio().getLineas(), new DefaultWaitCallback<Integer>() {
 				public void success(Integer result) {
-						cerrandoSolicitud = cerrandoAux;
+						cerrandoSolicitud = cerrandoAux;						
 						getCerrarSSUI().setTitleCerrar(cerrandoAux);
 		        
 				        //TODO: Portabilidad
@@ -1525,17 +1535,18 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				        if (result == 3) {
 							permitePortabilidad = false;
 						}
-		        
+				        
+			        	        
 				        getCerrarSSUI().setTienePortabilidad(permitePortabilidad);
 				        getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
 				        editarSSUIData.getCuenta().isCliente(), editarSSUIData.getSolicitudServicioGeneracion(),
-				        editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA());				
+				        editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA(), editarSSUIData.getValidaPin());				
 			        }
 		        }
 		   );
 			
 		}else{
-			cerrandoSolicitud = cerrandoAux;
+			cerrandoSolicitud = cerrandoAux;			
 			getCerrarSSUI().setTitleCerrar(cerrandoAux);
     
 	        //TODO: Portabilidad
@@ -1547,7 +1558,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	        getCerrarSSUI().setTienePortabilidad(permitePortabilidad);
 	        getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
 	        editarSSUIData.getCuenta().isCliente(), editarSSUIData.getSolicitudServicioGeneracion(),
-	        editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA());
+	        editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA(), editarSSUIData.getValidaPin());
 		}
 	}
 	

@@ -45,6 +45,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Hubo un error al validar tarjeta")
   @Key("ERR_AL_VALIDAR_TARJETA")
   String ERR_AL_VALIDAR_TARJETA();
+  
+  /**
+   * Translated "Hubo un error al validar el Tipo de Forma de Pago".
+   * 
+   * @return translated "Hubo un error al validar el Tipo de Forma de Pago"
+   */
+  @DefaultStringValue("Hubo un error al validar el Tipo de Forma de Pago")
+  @Key("ERR_AL_VALIDAR_TIPO_FORMA_PAGO")
+  String ERR_AL_VALIDAR_TIPO_FORMA_PAGO();
 
   /**
    * Translated "El año de vencimiento de la tarjeta no es válido".

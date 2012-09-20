@@ -162,7 +162,20 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private TextArea notaAdicional;
 	Label cantEquipos;
 	
-    private List<ComentarioAnalistaDto> comentarioAnalistaMensaje = new ArrayList<ComentarioAnalistaDto>();
+	//CRSfaVta3Cuotcc
+	private Boolean validaPin = false;
+	
+	//CRSfaVta3Cuotcc
+    public Boolean getValidaPin() {
+		return validaPin;
+	}
+
+    //CRSfaVta3Cuotcc
+	public void setValidaPin(Boolean validaPin) {
+		this.validaPin = validaPin;
+	}
+
+	private List<ComentarioAnalistaDto> comentarioAnalistaMensaje = new ArrayList<ComentarioAnalistaDto>();
     private List<EstadoSolicitudDto> opcionesEstado = new ArrayList<EstadoSolicitudDto>();
 	
 	public EditarSSUIData(EditarSSUIController controller) {
