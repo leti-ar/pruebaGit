@@ -51,7 +51,7 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
    * 
    * @return translated "Hubo un error al validar el Tipo de Forma de Pago"
    */
-  @DefaultStringValue("Hubo un error al validar el Tipo de Forma de Pago")
+  @DefaultStringValue("La operación requerirá analisis. Motivo: el término de pago para venta de equipos debe Validar por Pin")
   @Key("ERR_AL_VALIDAR_TIPO_FORMA_PAGO")
   String ERR_AL_VALIDAR_TIPO_FORMA_PAGO();
 

@@ -1497,7 +1497,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		//CRSfaVta3Cuotcc: debe validar ademas de otorgar esta nueva forma de pago, que los items que tengan la forma de pago con columna VALIDA_PIN = true disparen este Popup (tabla TIPO_FORMA_PAGO)
 		//Solo debe existir una forma de pago con esta propiedad para que sea obligatorio presentar el popup
         ////////////////////////////////////////////////////////////
-		String flag = null;
+		String flag = null;	
+		boolean errorDistinctFP = false; 
 		for (LineaSolicitudServicioDto linea : editarSSUIData.getSolicitudServicio().getLineas()) {
 			if(linea.getTerminoPago() != null){
 				if(linea.getTerminoPago().getValidaPin() != null){					
@@ -1507,7 +1508,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 						if (!flag.equals(linea.getTerminoPago().getValidaPin().toUpperCase())){	
 							flag = "F";
 							ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-							ErrorDialog.getInstance().show(Sfa.constant().ERR_AL_VALIDAR_TIPO_FORMA_PAGO() + linea.getTerminoPago().getDescripcion(), false);							
+							ErrorDialog.getInstance().show(Sfa.constant().ERR_AL_VALIDAR_TIPO_FORMA_PAGO(), false);			
+							errorDistinctFP=true; //si hay inconsistencia debo evitar que siga el workflow
 						}
 					}					
 				}
@@ -1520,7 +1522,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		
                 
         //	MGR - Parche de emergencia
-		if(!editarSSUIData.getSolicitudServicio().getGrupoSolicitud().isTransferencia()){			
+		if(!editarSSUIData.getSolicitudServicio().getGrupoSolicitud().isTransferencia() && errorDistinctFP == false) {			
 			SolicitudRpcService.Util.getInstance().sonConfigurablesPorAPG(editarSSUIData.getSolicitudServicio().getLineas(), new DefaultWaitCallback<Integer>() {
 				public void success(Integer result) {
 						cerrandoSolicitud = cerrandoAux;						
@@ -1545,7 +1547,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		        }
 		   );
 			
-		}else{
+		}else if (errorDistinctFP==false){
 			cerrandoSolicitud = cerrandoAux;			
 			getCerrarSSUI().setTitleCerrar(cerrandoAux);
     

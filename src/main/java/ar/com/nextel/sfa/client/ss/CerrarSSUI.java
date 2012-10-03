@@ -6,7 +6,9 @@ import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioGeneracionDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
+import ar.com.nextel.util.AppLogger;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -89,12 +91,6 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 		this.tienePortabilidad = tienePortabilidad;
 	}
 	
-//	//CRSfaVta3Cuotcc: sobrecargamos el método para no afectar otros workflow.
-//	public void show(PersonaDto persona, boolean isCliente, SolicitudServicioGeneracionDto solicitudServicioGeneracion,
-//			boolean isCDW, boolean isMDS, boolean cerrandoConItemBB, boolean isTRANSFERENCIA) {
-//		this.show(persona, isCliente, solicitudServicioGeneracion, isCDW, isMDS, cerrandoConItemBB, isTRANSFERENCIA, false);
-//	
-//	}
 	
 	//CRSfaVta3Cuotcc: se agrega un parametro mas que debe ser tenido en cuenta para Validar por Pin (isValidaPinTipoFormaPago)
 	public void show(PersonaDto persona, boolean isCliente, SolicitudServicioGeneracionDto solicitudServicioGeneracion,
@@ -109,6 +105,7 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 		if(ClientContext.getInstance().getVendedor().isAP()){
 			isTRANSFERENCIA = false;
 		}
+		
 		
 		if(!tienePortabilidad){
 			if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierreScoring && !permisoCierrePin && isCliente) {
@@ -133,7 +130,7 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 			layout.setHTML(2, 2, "");
 			layout.setHTML(4, 3, "");
 		}
-		
+				
 		showAndCenter();	
 	}
 
