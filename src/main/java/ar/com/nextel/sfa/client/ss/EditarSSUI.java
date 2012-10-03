@@ -1542,7 +1542,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				        getCerrarSSUI().setTienePortabilidad(permitePortabilidad);
 				        getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
 				        editarSSUIData.getCuenta().isCliente(), editarSSUIData.getSolicitudServicioGeneracion(),
-				        editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA(), editarSSUIData.getValidaPin());				
+				        editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA());				
 			        }
 		        }
 		   );
@@ -1560,7 +1560,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	        getCerrarSSUI().setTienePortabilidad(permitePortabilidad);
 	        getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
 	        editarSSUIData.getCuenta().isCliente(), editarSSUIData.getSolicitudServicioGeneracion(),
-	        editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA(), editarSSUIData.getValidaPin());
+	        editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA());
 		}
 	}
 	

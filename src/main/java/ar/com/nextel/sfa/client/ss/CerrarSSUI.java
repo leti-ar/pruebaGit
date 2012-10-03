@@ -92,9 +92,8 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 	}
 	
 	
-	//CRSfaVta3Cuotcc: se agrega un parametro mas que debe ser tenido en cuenta para Validar por Pin (isValidaPinTipoFormaPago)
 	public void show(PersonaDto persona, boolean isCliente, SolicitudServicioGeneracionDto solicitudServicioGeneracion,
-			boolean isCDW, boolean isMDS, boolean cerrandoConItemBB, boolean isTRANSFERENCIA, boolean isValidaPinTipoFormaPago) {
+			boolean isCDW, boolean isMDS, boolean cerrandoConItemBB, boolean isTRANSFERENCIA) {
 		cerarSSUIData.setEmails(persona.getEmails(), solicitudServicioGeneracion);
 		boolean permisoCierreScoring = ClientContext.getInstance().checkPermiso(
 				PermisosEnum.SCORING_CHECKED.getValue());
@@ -111,7 +110,7 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 			if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierreScoring && !permisoCierrePin && isCliente) {
 				layout.setWidget(3, 0, cerarSSUIData.getScoring());
 				layout.setHTML(3, 1, Sfa.constant().scoringTitle());
-			} else if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierrePin && !cerrandoConItemBB && isCliente && isValidaPinTipoFormaPago) {
+			} else if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierrePin && !cerrandoConItemBB && isCliente) {
 				layout.setHTML(3, 0, Sfa.constant().pinMaestro());
 				layout.setWidget(3, 1, cerarSSUIData.getPin());
 			} else {
