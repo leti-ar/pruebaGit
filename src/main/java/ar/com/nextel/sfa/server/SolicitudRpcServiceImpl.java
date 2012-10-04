@@ -1536,7 +1536,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		resultDto.addMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
 		
 		Vendedor vendLogeo = sessionContextLoader.getVendedor();
-		if(vendLogeo.isADMCreditos() || vendLogeo.isAP()){
+		if(vendLogeo.isADMCreditos()){//#3427 Para AP no se debe evaluar este predicate
 			
 			if(solicitud.getCuenta().getVendedorLockeo() != null &&
 				!vendLogeo.getId().equals(solicitud.getCuenta().getVendedorLockeo().getId())){
