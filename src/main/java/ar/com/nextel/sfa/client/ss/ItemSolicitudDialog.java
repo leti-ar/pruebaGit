@@ -141,33 +141,24 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		if (errors.isEmpty()) {
 			if(errorsPortabilidad.isEmpty()){
 				
-//				MGR - RQN 2328 - Valido que el numero ingresado pertenesca a un area de billing válida
-				String numeroAPortar = itemSolicitudUIData.getPortabilidadPanel().obtenerNumeroAportar();
-				SolicitudRpcService.Util.getInstance().validarAreaBilling(numeroAPortar,
-						new DefaultWaitCallback<Boolean>() {
-					@Override
-					public void success(Boolean result) {
-						if(!result){ 
-							ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-							ErrorDialog.getInstance().show(Sfa.constant().ERR_AREA_BILLING_NO_VALIDA(), false);
-						}else{
-							// Si ingreso un numero para reservar y no lo reservo le pregunto si desea hacerlo.
-							if (itemSolicitudUIData.hasNumeroSinReservar()) {
-								ModalMessageDialog.getInstance().setDialogTitle("Reserva");
-								ModalMessageDialog.getInstance().showSiNo("Desea reservar el número elegido?",
-										getReservarCommand(), new Command() {
-											public void execute() {
-												itemSolicitudUIData.getReservar().setText("");
-												ModalMessageDialog.getInstance().hide();
-												guardarItem(sender == aceptar);
-											}
-										});
-							} else {
-								guardarItem(sender == aceptar);
+//				MGR - RQN 2328 - Si hay portabilidad, valido que el numero ingresado pertenesca a un area de billing válida
+				if(portabilidadVisible){
+					String numeroAPortar = itemSolicitudUIData.getPortabilidadPanel().obtenerNumeroAportar();
+					SolicitudRpcService.Util.getInstance().validarAreaBilling(numeroAPortar,
+							new DefaultWaitCallback<Boolean>() {
+						@Override
+						public void success(Boolean result) {
+							if(!result){ 
+								ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+								ErrorDialog.getInstance().show(Sfa.constant().ERR_AREA_BILLING_NO_VALIDA(), false);
+							}else{
+								aceptarItem(sender);
 							}
 						}
-					}
-				});
+					});
+				}else{
+					aceptarItem(sender);
+				}
 				
 			}else{
 				ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
@@ -180,6 +171,25 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 
 		}
 	}
+	
+//	MGR - RQN 2328 - Continuo con la aceptación del item ingresado
+	public void aceptarItem(final Widget sender){
+		// Si ingreso un numero para reservar y no lo reservo le pregunto si desea hacerlo.
+		if (itemSolicitudUIData.hasNumeroSinReservar()) {
+			ModalMessageDialog.getInstance().setDialogTitle("Reserva");
+			ModalMessageDialog.getInstance().showSiNo("Desea reservar el número elegido?",
+					getReservarCommand(), new Command() {
+						public void execute() {
+							itemSolicitudUIData.getReservar().setText("");
+							ModalMessageDialog.getInstance().hide();
+							guardarItem(sender == aceptar);
+						}
+					});
+		} else {
+			guardarItem(sender == aceptar);
+		}
+	}
+	
 
 	private void guardarItem(boolean soloGuardar) {
 		aceptarCommand.execute();
