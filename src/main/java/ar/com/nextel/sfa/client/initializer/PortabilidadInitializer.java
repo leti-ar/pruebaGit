@@ -5,8 +5,8 @@ import java.util.List;
 import ar.com.nextel.sfa.client.dto.ModalidadCobroDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.ProveedorDto;
-import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
+import ar.com.nextel.sfa.client.dto.TipoPersonaDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefoniaDto;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -17,6 +17,7 @@ public class PortabilidadInitializer implements IsSerializable{
 	private List<ProveedorDto> lstProveedorAnterior;
 	private List<TipoTelefoniaDto> lstTipoTelefonia;
 	private List<ModalidadCobroDto> lstModalidadCobro;
+	private List<TipoPersonaDto> lstTipoPersona;
 	
 	public PortabilidadInitializer(){
 		
@@ -25,11 +26,13 @@ public class PortabilidadInitializer implements IsSerializable{
 	public PortabilidadInitializer(List<TipoDocumentoDto> unTipoDocumento, 
 			List<ProveedorDto> unProveedorAnterior,
 			List<TipoTelefoniaDto> unTipoTelefonia,
-			List<ModalidadCobroDto> unModalidadCobro){
+			List<ModalidadCobroDto> unModalidadCobro,
+			List<TipoPersonaDto> unTipoPersona){
 		this.lstTipoDocumento = unTipoDocumento;
 		this.lstTipoTelefonia = unTipoTelefonia;
 		this.lstModalidadCobro = unModalidadCobro;
 		this.lstProveedorAnterior = unProveedorAnterior;
+		this.lstTipoPersona = unTipoPersona;
 	}
 
 	public List<TipoDocumentoDto> getLstTipoDocumento() {
@@ -62,6 +65,14 @@ public class PortabilidadInitializer implements IsSerializable{
 
 	public void setLstModalidadCobro(List<ModalidadCobroDto> lstModalidadCobro) {
 		this.lstModalidadCobro = lstModalidadCobro;
+	}
+	
+	public List<TipoPersonaDto> getLstTipoPersona() {
+		return lstTipoPersona;
+	}
+
+	public void setLstTipoPersona(List<TipoPersonaDto> lstTipoPersona) {
+		this.lstTipoPersona = lstTipoPersona;
 	}
 
 	public PersonaDto getPersona() {
