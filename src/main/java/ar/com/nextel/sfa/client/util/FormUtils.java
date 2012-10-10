@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client.util;
 
 import java.util.List;
 
+import ar.com.nextel.sfa.client.widget.FechaDatePicker;
 import ar.com.nextel.sfa.client.widget.TelefonoTextBox;
 import ar.com.snoop.gwt.commons.client.widget.datepicker.DatePicker;
 import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
@@ -38,6 +39,8 @@ public class FormUtils {
 				((DatePicker) field).setSelectedDate(null);
 			} else if (field instanceof Label) {
 				((Label) field).setText("");
+			} else if (field instanceof FechaDatePicker) {
+				((FechaDatePicker) field).clean();
 			}
 		}
 	}
@@ -65,6 +68,8 @@ public class FormUtils {
 				((DatePicker) field).resetSelectedDates();
 				((DatePicker) field).setSelectedDate(null);
 				((DatePicker) field).setEnabled(true);
+			} else if (field instanceof FechaDatePicker) {
+				((FechaDatePicker) field).clean();
 			}
 		}
 	}

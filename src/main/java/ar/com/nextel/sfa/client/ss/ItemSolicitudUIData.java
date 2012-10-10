@@ -125,7 +125,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		
 		// Oculta las opciones de portabilidad
 		portabilidadPanel.setVisible(false);
-		
+		portabilidadPanel.setSolicitudServicio(controller.getEditarSSUIData().getSolicitudServicio());
 		this.controller = controller;
 
 		fields = new ArrayList<Widget>();
