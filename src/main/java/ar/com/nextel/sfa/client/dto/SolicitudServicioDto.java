@@ -90,7 +90,8 @@ public class SolicitudServicioDto implements IsSerializable {
 	private VendedorDto vendedorLogueado;
 	
 	private Long cantLineasPortabilidad;
-
+	private String numeroSSWeb;//Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.	
+	
     public SolicitudServicioDto() {
 		solicitudServicioGeneracion = new SolicitudServicioGeneracionDto();
 	}
@@ -565,5 +566,12 @@ public class SolicitudServicioDto implements IsSerializable {
 		this.vendedorLogueado = vendedorLogueado;
 	}
 		
+	public String getNumeroSSWeb() {
+		return numeroSSWeb;
+	}
 	
+	public void setNumeroSSWeb(String numeroSSWeb) {
+		this.numeroSSWeb = numeroSSWeb;
+	}		
+		
 }
