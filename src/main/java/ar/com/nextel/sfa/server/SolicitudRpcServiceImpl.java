@@ -270,7 +270,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		if(solicitudServicioDto.getNumero() == null)
 			solicitudServicioDto.setTripticoNumber(tripticoNextValue.nextNumber());
 		
-		//calculo los descuentos aplicados a cada lÃ­nea y se los seteo 
+		//calculo los descuentos aplicados a cada linea y se los seteo 
 		List<LineaSolicitudServicioDto> lineas = solicitudServicioDto.getLineas(); 
 		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
 			Double descuentoAplicado = 0.0;
@@ -300,7 +300,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		AppLogger.info("Creacion de Solicitud de Servicio finalizada");
 		resultDto.setSolicitud(solicitudServicioDto);
 		
-//		Estefania: CU#8 - CU#8 - AprobaciÃ³n 	
+//		Estefania: CU#8 - CU#8 - Aprobacion 	
 //		//crea registro estado de la ss con el estado en carga
 //
 //       if (solicitud.getNumero()== null){
@@ -352,7 +352,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		if(solicitudServicioDto.getNumero() == null)
 			solicitudServicioDto.setTripticoNumber(tripticoNextValue.nextNumber());
 		
-		//calculo los descuentos aplicados a cada lÃ­nea y se los seteo 
+		//calculo los descuentos aplicados a cada linea y se los seteo 
 		List<LineaSolicitudServicioDto> lineas = solicitudServicioDto.getLineas(); 
 		for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
 			Double descuentoAplicado = 0.0;
@@ -609,7 +609,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		List tiposAnticipo = repository.getAll(TipoAnticipo.class);
 		initializer.setTiposAnticipo(mapper.convertList(tiposAnticipo, TipoAnticipoDto.class));
 		
-		//Se cargan todos los vendedores que no sean del tipo Telemarketer, Dae o Administrador de CrÃ©ditos,
+		//Se cargan todos los vendedores que no sean del tipo Telemarketer, Dae o Administrador de Creditos,
 		Long idTipoVendTLM = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_TELEMARKETING);
 		Long idTipoVendDAE = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_DAE);
 		Long idTipoVendADM = knownInstanceRetriever.getObjectId(KnownInstanceIdentifier.TIPO_VENDEDOR_CREDITOS);
@@ -838,7 +838,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		boolean activacion = isTipoSolicitudActivacion(tipoSolicitud);
 		boolean accesorios = isTipoSolicitudAccesorios(tipoSolicitud);
 
-		// Se realiza el mapeo de la colecciï¿½n a mano para poder filtrar los items por warehouse
+		// Se realiza el mapeo de la coleccion a mano para poder filtrar los items por warehouse
 		for (ListaPrecios listaPrecios : listasPrecios) {
 			ListaPreciosDto lista = mapper.map(listaPrecios, ListaPreciosDto.class);
 			if (!activacion) {
@@ -931,7 +931,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		
 //		MGR - #3462 - Creo que a partir del cambio que genero este incidente, esto ya no es necesario
 //		MGR - #3462 - Inicio NO necesario
-		//LF - #3141 - Se agregan los SA para ActivaciÃ³n - ActivaciÃ³n On-Line
+		//LF - #3141 - Se agregan los SA para Activacion - Activacion On-Line
 //		if(linea.getTipoSolicitud().isActivacion() || linea.getTipoSolicitud().isActivacionOnline()) {
 //			MGR - #3331
 //			if(linea.getModelo() != null){
@@ -1000,7 +1000,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 
 	public GeneracionCierreResultDto generarCerrarSolicitud(SolicitudServicioDto solicitudServicioDto,
 			String pinMaestro, boolean cerrar) throws RpcExceptionMessages {
-		String accion = cerrar ? "cierre" : "generaciÃ³n";
+		String accion = cerrar ? "cierre" : "generación";
 		AppLogger.info("Iniciando " + accion + " de SS de id=" + solicitudServicioDto.getId() + " ...");
 		GeneracionCierreResultDto result = new GeneracionCierreResultDto();
 		SolicitudServicio solicitudServicio = null;
@@ -1064,8 +1064,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 //							entonces no le doy el pass (y mas adelante, si se cierra ccorrectamente, envio un mail)
 //							Si el pass se da por Scoring, sigue su curso normal
 							if(cierrePorVeraz && !"T".equals(isVerazDisponible.get(0))){
-								//En caso de que el veraz no estÃ© disponible, de cumplir con las condiciones comerciales se cierra 
-								//la SS quedando pendiente de aprobaciÃ³n en vantive y se envia un mail informando la situaciÃ³n
+								//En caso de que el veraz no este disponible, de cumplir con las condiciones comerciales se cierra 
+								//la SS quedando pendiente de aprobacion en vantive y se envia un mail informando la situaciÃ³n
 								solicitudServicio.setPassCreditos(false);
 //								MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
 //								solicitudBusinessService.enviarMailPassCreditos(solicitudServicioDto.getNumero());
@@ -1085,7 +1085,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 						    	 * no se genere ya que por separado las lineas si cumplen.
 						    	 * En estos casos, se decidio junto con el usuario que se le otroga el pass a la solicitud de todas formas y que ellos 
 						    	 * asumen el riesgo en estos casos.
-						    	 * (Revisar mail enviado por Marco Rossi el dÃ­a 04/07/2012 a Damian Schnaider, Giselle Rivas y Gonzalo Suarez, 
+						    	 * (Revisar mail enviado por Marco Rossi el dia 04/07/2012 a Damian Schnaider, Giselle Rivas y Gonzalo Suarez, 
 						    	 * donde confirman esto)
 						    	 */
 								if(errorCC.equals("")){
@@ -1145,7 +1145,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		            response.getMessages().addMesage(message);
 					hayError = true;
 				    result.setError(true);
-				} else { // Si el SIM no se cargÃ³ en otra solicitud, verifica que este disponible en AVALON
+				} else { // Si el SIM no se carga en otra solicitud, verifica que este disponible en AVALON
 					for (Iterator iterator = solicitudServicio.getLineas().iterator(); iterator.hasNext();) {
 						LineaSolicitudServicio lineaSS = (LineaSolicitudServicio) iterator.next();
 						String nroSIM = lineaSS.getNumeroSimcard();
@@ -1189,7 +1189,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					solicitudBusinessService.enviarMailPassCreditos(solicitudServicio.getNumero());
 				}
 				
-//				larce - #3177: Cierre y Pass Automatico â€“ Pass a Prospect
+//				larce - #3177: Cierre y Pass Automatico y Pass a Prospect
 //				MGR - #3445 - Solo al cerrar se debe crear el cliente si corresponde
 //				MGR - Se mueve la creacion de la cuenta, cambia el if y su contenido
 //				Si era prospect, se cerro la SS correctamente, se creo la cuenta correctamente,
@@ -1508,7 +1508,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				if(solicitud.getCuenta().getVendedorLockeo().getSupervisor() != null){
 					nombSuper = solicitud.getCuenta().getVendedorLockeo().getSupervisor().getNombreYApellido();
 				}
-				resultDto.addMessage("La cuenta estÃ¡ lockeada por un ejecutivo, el supervisor es " + 
+				resultDto.addMessage("La cuenta está lockeada por un ejecutivo, el supervisor es " + 
 						nombSuper + ". Puede proseguir la carga de la SS");
 			}
 		}	
@@ -1543,7 +1543,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		resultDto.addMessages(mapper.convertList(messages.getMessages(), MessageDto.class));
 		
 		Vendedor vendLogeo = sessionContextLoader.getVendedor();
-		if(vendLogeo.isADMCreditos() || vendLogeo.isAP()){
+		if(vendLogeo.isADMCreditos()){//#3427 Para AP no se debe evaluar este predicate
 			
 			if(solicitud.getCuenta().getVendedorLockeo() != null &&
 				!vendLogeo.getId().equals(solicitud.getCuenta().getVendedorLockeo().getId())){
@@ -1551,7 +1551,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				if(solicitud.getCuenta().getVendedorLockeo().getSupervisor() != null){
 					nombSuper = solicitud.getCuenta().getVendedorLockeo().getSupervisor().getNombreYApellido();
 				}
-				resultDto.addMessage("La cuenta estÃ¡ lockeada por un ejecutivo, el supervisor es " + 
+				resultDto.addMessage("La cuenta está lockeada por un ejecutivo, el supervisor es " + 
 						nombSuper + ". Puede proseguir la carga de la SS");
 			}
 		}
@@ -1612,7 +1612,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 									if (vendedor.isDealer()) {
 										errores.add("Debe seleccionar Planes Vigentes");
 									} else {
-										errores.add("EstÃ¡ seleccionando Planes No Vigentes");
+										errores.add("Está seleccionando Planes No Vigentes");
 									}
 									error = true;
 								}
@@ -2066,9 +2066,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	}
 	
 	/**
-	 * Dependiendo del resultado del scoring o veraz, tipo de solicitud, del plan, la cantidad mÃ¡xima de equipos, el 
-	 * modelo del equipo, el tipo de vendedor y cantidad mÃ¡xima de $ por SS que se encuentran configurados; 
-	 * se darÃ¡ o no el pass de crÃ©ditos automÃ¡tico.
+	 * Dependiendo del resultado del scoring o veraz, tipo de solicitud, del plan, la cantidad maxima de equipos, el 
+	 * modelo del equipo, el tipo de vendedor y cantidad maxima de $ por SS que se encuentran configurados; 
+	 * se dara o no el pass de creditos automatico.
 	 * @param ss
 	 * @param pinMaestro
 	 * @param mapper
@@ -2109,7 +2109,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					return false;
 				}
 			} else {// En caso de no estar activa la consulta al veraz, se deben evaluar 
-					// las condiciones comerciales para un resultado de veraz â€œREVISARâ€�
+					// las condiciones comerciales para un resultado de veraz 'REVISAR'
 				resultadoVerazScoring = "REVISAR";
 			}
 			
@@ -2126,7 +2126,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			}
 		}
 
-		AppLogger.info("#Log Cierre y pass - Validando que todas las lÃ­neas cumplan con las condiciones comerciales...");
+		AppLogger.info("#Log Cierre y pass - Validando que todas las lineas cumplan con las condiciones comerciales...");
 		
 		Set<LineaSolicitudServicio> lineas = ss.getLineas();
 		
@@ -2190,12 +2190,12 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     		}
 		}
 		
-		AppLogger.info("#Log Cierre y pass - Dejo el mÃ©todo Resultado Veraz Scoring con valor: -" + resultadoVerazScoring + "-.");
+		AppLogger.info("#Log Cierre y pass - Dejo el metodo Resultado Veraz Scoring con valor: -" + resultadoVerazScoring + "-.");
 		
 		if (existeCC) {
-			AppLogger.info("#Log Cierre y pass - Todas las lÃ­neas cumplen con las condiciones comerciales...");
+			AppLogger.info("#Log Cierre y pass - Todas las lineas cumplen con las condiciones comerciales...");
 		} else {
-			AppLogger.info("#Log Cierre y pass - No todas las lÃ­neas cumplen con las condiciones comerciales...");
+			AppLogger.info("#Log Cierre y pass - No todas las lineas cumplen con las condiciones comerciales...");
 		}
 		return existeCC;
 	}
@@ -2219,7 +2219,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     	List<Long> cantMaxEquipos = (repository.executeCustomQuery("maxCantEquipos", resultadoVerazScoring, tipoVendedor.getId()));
     	
     	if (cantMaxEquipos.get(0) != null && cantEquipos > cantMaxEquipos.get(0)) {
-    		error += "el mÃ¡ximo de equipos es " + cantMaxEquipos.get(0);
+    		error += "el máximo de equipos es " + cantMaxEquipos.get(0);
     	}
     	
     	
@@ -2235,11 +2235,11 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     		if(!"".equals(error)){
     			error += " y ";
     		}
-    		error += "la cantidad de pesos mÃ¡xima es " + cantPesosMax.get(0);
+    		error += "la cantidad de pesos máxima es " + cantPesosMax.get(0);
     	}
     	
     	if(!"".equals(error)){
-    		mensaje = "Para validaciÃ³n por ";
+    		mensaje = "Para validación por ";
     		if (("".equals(pinMaestro) || pinMaestro == null)
     				&& !ss.getSolicitudServicioGeneracion().getScoringChecked()) {
     			mensaje += "Veraz ";
@@ -2383,9 +2383,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 //	}
 	
 	/**
-	 * Se valida que el resultado de la consulta a Negative Files de ok para todas las lÃ­neas de la SS; para el caso de activaciÃ³n. 
+	 * Se valida que el resultado de la consulta a Negative Files de ok para todas las lineas de la SS; para el caso de activacion. 
 	 * @param set
-	 * @return Un mensaje que indica las lÃ­neas que no pasaron la validaciÃ³n.
+	 * @return Un mensaje que indica las lineas que no pasaron la validacion.
 	 * @throws RpcExceptionMessages
 	 */
 //	MGR - Parche de emergencia
@@ -2405,9 +2405,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		}
 		if (!"".equals(mensaje)) {
 			if (i == 1) {
-				mensaje += " no pasÃ³ la validaciÃ³n de Negative Files.";
+				mensaje += " no pasa la validación de Negative Files.";
 			} else {
-				mensaje += " no pasaron la validaciÃ³n de Negative Files.";
+				mensaje += " no pasaron la validación de Negative Files.";
 			}
 		}
 		return mensaje;
@@ -2415,8 +2415,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	
 	//GB
 	/**
-	 * Al momento del cierre se validara que la SS, dependiendo del tipo de ss, el tipo de vendedor y el segmento del cliente, no superare las X cantidad de lÃ­neas.
-  	 * Se obtiene de la tabla SFA.SFA_LINEAS_POR_SEGMENTO + la cantidad de lÃ­neas activas o suspendidas que posee el cliente.
+	 * Al momento del cierre se validara que la SS, dependiendo del tipo de ss, el tipo de vendedor y el segmento del cliente, no superare las X cantidad de lineas.
+  	 * Se obtiene de la tabla SFA.SFA_LINEAS_POR_SEGMENTO + la cantidad de lineas activas o suspendidas que posee el cliente.
 	 * @param solicitud
 	 * @return boolean
 	 * @throws RpcExceptionMessages  
@@ -2542,7 +2542,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	}
 
 	/**
-	 * Devuelve la cantidad de lÃ­neas pendientes de activaciÃ³n para una cuenta.
+	 * Devuelve la cantidad de lineas pendientes de activacion para una cuenta.
 	 * @param codigoVantive
 	 * @return
 	 * @throws RpcExceptionMessages
@@ -2718,7 +2718,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			try{
 				int res = bpsSystem.resolverPortabilidadTransferencia(contrato.getContrato());
 				if(res == 1) 
-					result.addError(ERROR_ENUM.ERROR, "El contrato "+ contrato.getContrato() +" posee un trï¿½mite de portabilidad en curso. Por favor verificar.");
+					result.addError(ERROR_ENUM.ERROR, "El contrato "+ contrato.getContrato() +" posee un trámite de portabilidad en curso. Por favor verificar.");
 			}catch(Exception e){
 				throw ExceptionUtil.wrap(e);
 			}
