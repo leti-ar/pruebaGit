@@ -28,6 +28,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
+import ar.com.nextel.sfa.client.dto.TipoPersonaDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
@@ -150,7 +151,8 @@ public interface SolicitudRpcServiceAsync {
 
 	public void getItemsPorLineaSS(SolicitudServicioDto ss,	AsyncCallback<List<ItemSolicitudDto>> callback);
 	
-	void getPortabilidadInitializer(String idCuenta,
+	// Portabilidad ------------------------------
+	public void getPortabilidadInitializer(String idCuenta,String codigoVantive,
 			AsyncCallback<PortabilidadInitializer> callback);
 
 	void getExisteEnAreaCobertura(int codArea, 
@@ -174,6 +176,9 @@ public interface SolicitudRpcServiceAsync {
 
 //	void obtenerTipoPersona(SolicitudServicioDto solicitudServicioDto,
 //			AsyncCallback<Integer> callback);	
+
+	void obtenerTipoPersonaCuenta(SolicitudServicioDto ssDto,
+			AsyncCallback<TipoPersonaDto> callback);
 	
 	public void copySolicitudServicio(
 			SolicitudServicioRequestDto solicitudServicioRequestDto , SolicitudServicioDto solicitudToCopy,

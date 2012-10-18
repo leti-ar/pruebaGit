@@ -31,6 +31,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
+import ar.com.nextel.sfa.client.dto.TipoPersonaDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
@@ -303,9 +304,9 @@ public class SolicitudRpcServiceDelegate {
 	}
 
 	// Portabilidad ------------------------------
-	public void getPortabilidadInitializer(String idCuenta, AsyncCallback<PortabilidadInitializer> callback){
+	public void getPortabilidadInitializer(String idCuenta,String codigoVantive, AsyncCallback<PortabilidadInitializer> callback){
 		WaitWindow.show();
-		solicitudRpcServiceAsync.getPortabilidadInitializer(idCuenta, callback);
+		solicitudRpcServiceAsync.getPortabilidadInitializer(idCuenta, codigoVantive, callback);
 	}
 
 	public void getSolicitudPortabilidadDto(String lineaID, AsyncCallback<SolicitudPortabilidadDto> callback){
@@ -345,7 +346,12 @@ public class SolicitudRpcServiceDelegate {
 	
 	// -------------------------------------------
 
-
+	
+	public void obtenerTipoPersonaCuenta(SolicitudServicioDto ssDto, AsyncCallback<TipoPersonaDto> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.obtenerTipoPersonaCuenta(ssDto, callback);
+	}
+	
 	
 	public void createCopySolicitudServicioTranferencia(SolicitudServicioRequestDto solicitudServicioRequestDto,
 			SolicitudServicioDto solicitudSS, DefaultWaitCallback<CreateSaveSSTransfResultDto> callback) {

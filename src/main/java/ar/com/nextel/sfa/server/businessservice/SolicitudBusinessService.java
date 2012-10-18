@@ -96,12 +96,9 @@ import ar.com.nextel.services.nextelServices.veraz.dto.VerazRequestDTO;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
-import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
-import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
-import ar.com.nextel.sfa.server.SolicitudRpcServiceImpl;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
 import ar.com.nextel.util.StringUtil;
@@ -291,6 +288,10 @@ public class SolicitudBusinessService {
 		if (providerResult.wasCreationNeeded()) {
 			if (!solicitud.getCuenta().isLockedByAnyone(vendedor) || solicitud.getCuenta().isUnlockedFor(vendedor)) {
 				solicitud.getCuenta().iniciarOperacion(vendedor);
+			}
+			//#3427 - Si el vendedor es AP, pero es distinto al que tenía cargado anteriormente, actualizo la solicitud con el nuevo vendedor
+			if (vendedor.isAP() && !solicitud.getVendedor().getId().equals(vendedor.getId())) {
+				repository.update(solicitud);
 			}
 			repository.save(solicitud);
 		}

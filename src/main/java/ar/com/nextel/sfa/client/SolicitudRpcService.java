@@ -30,6 +30,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
+import ar.com.nextel.sfa.client.dto.TipoPersonaDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
@@ -187,7 +188,7 @@ public interface SolicitudRpcService extends RemoteService {
 	public List<ItemSolicitudDto> getItemsPorLineaSS(SolicitudServicioDto ss);
 	
 	// Portabilidad ------------------------------
-	PortabilidadInitializer getPortabilidadInitializer(String idCuenta) throws RpcExceptionMessages;
+	PortabilidadInitializer getPortabilidadInitializer(String idCuenta,String codigoVantive) throws RpcExceptionMessages;
 	
 	SolicitudPortabilidadDto getSolicitudPortabilidadDto(String lineaID) throws RpcExceptionMessages;
 	
@@ -200,7 +201,8 @@ public interface SolicitudRpcService extends RemoteService {
 	List<String> generarParametrosPortabilidadRTF(Long idSolicitudServicio) throws RpcExceptionMessages;
 	
 	List<Long> getCantidadLineasPortabilidad(List<Long> listIdSS) throws RpcExceptionMessages;
-	// -------------------------------------------
+	
+	TipoPersonaDto obtenerTipoPersonaCuenta(SolicitudServicioDto ssDto); 
 //	public Integer obtenerTipoPersona(SolicitudServicioDto solicitudServicioDto) throws RpcExceptionMessages;
 	
 	public List<SolicitudServicioDto> buscarHistoricoVentas(String nss) throws RpcExceptionMessages;

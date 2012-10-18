@@ -6,10 +6,10 @@ import java.util.List;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ProveedorDto;
-import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
+import ar.com.nextel.sfa.client.dto.TipoPersonaDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefoniaDto;
 import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.util.PortabilidadUtil;
@@ -19,7 +19,6 @@ import ar.com.nextel.sfa.client.widget.TitledPanel;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -52,6 +51,7 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 	private ProveedorDto proveedorAnterior;
 	private String strTelefonoContacto;
 	private String strEmailContacto;
+	private TipoPersonaDto tipoPersona;
 	
 	public PortabilidadReplicarDialog(){
 		super(TITULO,false,true);
@@ -83,16 +83,26 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 			
 			// Datos a Replicar
 			pnlDescripcionReplica = new TitledPanel("Datos a Replicar");
-			gridLayout = new Grid(5,2);
+			gridLayout = new Grid(4,2);
 			gridLayout.addStyleName("layout");
 			gridLayout.getColumnFormatter().setWidth(0, "150px");
 			gridLayout.getColumnFormatter().setWidth(1, "350px");
 			
-			gridLayout.setHTML(0,0, "Razon Social:"); 	gridLayout.setHTML(0,1, strRazonSocial);
-			gridLayout.setHTML(1,0, "Nombre:");			gridLayout.setHTML(1,1, strNombre);
-			gridLayout.setHTML(2,0, "Apellido:");		gridLayout.setHTML(2,1, strApellido);
-			gridLayout.setHTML(3,0, "Tipo Documento:");	gridLayout.setHTML(3,1, tipoDocumento.getDescripcion());
-			gridLayout.setHTML(4,0, "Nro. Documento:");	gridLayout.setHTML(4,1, strNroDocumento);
+			tipoPersona = lineas.get(indexLinea).getPortabilidad().getTipoPersona();
+			if(tipoPersona != null) {
+				// LF #3278
+//				if (solicitudServicio.getCuenta().isEmpresa()) { //JURIDICA
+				if(!tipoPersona.getDescripcion().equals("FISICA")) {
+					gridLayout.setHTML(0,0, "Razon Social:"); 	gridLayout.setHTML(0,1, strRazonSocial);
+					gridLayout.setHTML(1,0, "Tipo Documento:");	gridLayout.setHTML(1,1, tipoDocumento.getDescripcion());
+					gridLayout.setHTML(2,0, "Nro. Documento:");	gridLayout.setHTML(2,1, strNroDocumento);
+				} else { //FISICA
+					gridLayout.setHTML(0,0, "Nombre:");			gridLayout.setHTML(0,1, strNombre);
+					gridLayout.setHTML(1,0, "Apellido:");		gridLayout.setHTML(1,1, strApellido);
+					gridLayout.setHTML(2,0, "Tipo Documento:");	gridLayout.setHTML(2,1, tipoDocumento.getDescripcion());
+					gridLayout.setHTML(3,0, "Nro. Documento:");	gridLayout.setHTML(3,1, strNroDocumento);
+				}
+			}
 			
 			// Grilla
 			pnlTblDetalle = new SimplePanel();
@@ -154,6 +164,10 @@ public class PortabilidadReplicarDialog extends NextelDialog{
 											linea.getPortabilidad().setNumeroDocumento(strNroDocumento);
 											linea.getPortabilidad().setEmail(strEmailContacto);
 											linea.getPortabilidad().setTelefono(strTelefonoContacto);
+											// LF
+											linea.getPortabilidad().setTipoPersona(tipoPersona);
+											// LF - #3286
+											linea.getPortabilidad().setRecibeSMS(true);
 
 											String numeroReservado = linea.getNumeroReserva();
 											boolean tieneNReserva = numeroReservado != null && numeroReservado.length() > 0;
