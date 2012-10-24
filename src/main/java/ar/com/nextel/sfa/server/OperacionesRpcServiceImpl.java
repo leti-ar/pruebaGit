@@ -65,8 +65,13 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 				return operacionesEnCursoDto;
 			
 			}else{
-				List<OperacionEnCurso> oppEnCurso = this.repository.executeCustomQuery
-							(oppEnCursoNoTLMNoDAE,vendedor.getId());
+				//#3427 - Busco operaciones en curso por sucursal para los tipos de vendedor AP
+				List<OperacionEnCurso> oppEnCurso = null;
+				if (vendedor.isAP()) {
+					oppEnCurso = this.repository.executeCustomQuery("OPP_CURSO_AP", vendedor.getSucursal().getId(), vendedor.getTipoVendedor());
+				} else {
+					oppEnCurso = this.repository.executeCustomQuery(oppEnCursoNoTLMNoDAE,vendedor.getId());
+				}
 				List<OperacionEnCursoDto> operacionesEnCursoDto = mapper.convertList(
 						oppEnCurso, OperacionEnCursoDto.class);
 				return operacionesEnCursoDto;
@@ -103,7 +108,7 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 						(oppEnCursoACancelarAdmCredito, idOperacionEnCurso, vendedor.getId());
 				
 				if(oppEnCurso.isEmpty() || oppEnCurso.size() > 1){
-					String error = "No se pudo identificar una operación en curso con id: " + idOperacionEnCurso;
+					String error = "No se pudo identificar una operaciï¿½n en curso con id: " + idOperacionEnCurso;
 					AppLogger.error(error);
 					throw ExceptionUtil.wrap(new Exception(error));
 				}else{
