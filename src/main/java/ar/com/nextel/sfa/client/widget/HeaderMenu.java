@@ -43,6 +43,8 @@ public class HeaderMenu extends Composite {
 	private MenuItem verazMenuItem;
 	private MenuItem oppBuscarMenuItem;
 	private MenuItem opEnCursoMenuItem;
+	private MenuItem opValidarStockItem;
+	
 	public static final int MENU_CUENTA = 1;
 	public static final int MENU_CUENTA_BUSCAR = 2;
 	public static final int MENU_CUENTA_AGREGAR = 4;
@@ -54,7 +56,8 @@ public class HeaderMenu extends Composite {
 	public static final int MENU_VERAZ = 64;//16;
 	public static final int MENU_OPORTUNIDADES = 128;//32;
 	public static final int MENU_OP_EN_CURSO = 256;//64;
-    public static final int MENU_CAMBIO_SUCURSAL= 512;
+	public static final int MENU_CAMBIO_SUCURSAL= 512;
+
 	public HeaderMenu() {
 		initWidget(mainPanel);
 		addStyleName("gwt-HeaderMenu");
@@ -157,14 +160,17 @@ public class HeaderMenu extends Composite {
 		mainMenu.addItem(oppBuscarMenuItem);
 		mainMenu.addSeparator();
 
-		
-		
-		
 		opEnCursoMenuItem = new MenuItem("Op. en Curso", new OpenPageCommand(UILoader.OP_EN_CURSO));
 		mainMenu.addItem(opEnCursoMenuItem);
 		mainMenu.addSeparator();
+		
 		sucursalMenuItem = new MenuItem("Configurar Sucursal", new OpenPageCommand(UILoader.CAMBIAR_SUCURSAL));
 		mainMenu.addItem(sucursalMenuItem);
+		mainMenu.addSeparator();
+		
+		opValidarStockItem = new MenuItem("Validar Stock",new OpenPageCommand(UILoader.VALIDAR_STOCK));
+		mainMenu.addItem(opValidarStockItem);
+		
 	}
 
 	public void setVisible(boolean visible) {
@@ -262,7 +268,7 @@ public class HeaderMenu extends Composite {
 
 	//LF#3
 //	/**
-//	 * Obtengo el titulo de la pestaña de Solicitud de Servicio. Si el usuario no es analista de creditos devuelve SS. 
+//	 * Obtengo el titulo de la pestaï¿½a de Solicitud de Servicio. Si el usuario no es analista de creditos devuelve SS. 
 //	 * Si el usuario es analista de creditos y cliente de nexus devuel "SS Cliente", si no es cliente retorna "Buscar SS". 
 //	 * @return String
 //	 */

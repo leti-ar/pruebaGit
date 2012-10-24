@@ -12,6 +12,8 @@ import ar.com.nextel.sfa.client.oportunidad.BuscarOportunidadUI;
 import ar.com.nextel.sfa.client.ss.BuscarSSCerradaUI;
 import ar.com.nextel.sfa.client.ss.BuscarSSAnalistaCreditosUI;
 import ar.com.nextel.sfa.client.ss.EditarSSUI;
+import ar.com.nextel.sfa.client.stock.StockUI;
+import ar.com.nextel.sfa.client.stock.StockUIDlg;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.veraz.VerazUI;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -51,12 +53,15 @@ public class UILoader extends SimplePanel implements ValueChangeHandler<String> 
 	public final static int EDITAR_CUENTA = 7;
 	public final static int VER_INFOCOM = 8;
 	public final static int VER_SOLICITUD = 10;
+	public final static int VALIDAR_STOCK = 11;
     public final static int CAMBIAR_SUCURSAL= 12;
 	
 	private String lastToken = "";
 
 	private UILoader() {
-		//MGR - Integracion
+		//MGR - Inte    public final static int CAMBIAR_SUCURSAL= 12;
+	
+
 		//pages = new ApplicationUI[9];
 		pages = new ApplicationUI[13];
 		
@@ -64,7 +69,8 @@ public class UILoader extends SimplePanel implements ValueChangeHandler<String> 
 		History.fireCurrentHistoryState();
 	}
 
-	public static UILoader getInstance() {
+	public static UILoader getInstance() 
+{
 		if (pageLoader == null) {
 			pageLoader = new UILoader();
 		}
@@ -160,7 +166,10 @@ public class UILoader extends SimplePanel implements ValueChangeHandler<String> 
 			break;
 		case VER_SOLICITUD:
 			pages[VER_SOLICITUD] = new EditarSSUI(false);
-			break;	
+			break;
+		case VALIDAR_STOCK:
+			pages[VALIDAR_STOCK] = new StockUI();
+			break;
 		case CAMBIAR_SUCURSAL:
 			pages[CAMBIAR_SUCURSAL] = new CambiarSucursalUI();
 			break;	
