@@ -38,7 +38,7 @@ public class HeaderMenu extends Composite {
 	//MGR - Integracion
 	private MenuItem agregarProspectMenuItem;
 	private MenuItem menuItemCrearSS;
-	
+	private MenuItem sucursalMenuItem;
 	private MenuItem ssBuscarMenuItem;
 	private MenuItem verazMenuItem;
 	private MenuItem oppBuscarMenuItem;
@@ -54,7 +54,7 @@ public class HeaderMenu extends Composite {
 	public static final int MENU_VERAZ = 64;//16;
 	public static final int MENU_OPORTUNIDADES = 128;//32;
 	public static final int MENU_OP_EN_CURSO = 256;//64;
-
+    public static final int MENU_CAMBIO_SUCURSAL= 512;
 	public HeaderMenu() {
 		initWidget(mainPanel);
 		addStyleName("gwt-HeaderMenu");
@@ -157,8 +157,14 @@ public class HeaderMenu extends Composite {
 		mainMenu.addItem(oppBuscarMenuItem);
 		mainMenu.addSeparator();
 
+		
+		
+		
 		opEnCursoMenuItem = new MenuItem("Op. en Curso", new OpenPageCommand(UILoader.OP_EN_CURSO));
 		mainMenu.addItem(opEnCursoMenuItem);
+		mainMenu.addSeparator();
+		sucursalMenuItem = new MenuItem("Configurar Sucursal", new OpenPageCommand(UILoader.CAMBIAR_SUCURSAL));
+		mainMenu.addItem(sucursalMenuItem);
 	}
 
 	public void setVisible(boolean visible) {

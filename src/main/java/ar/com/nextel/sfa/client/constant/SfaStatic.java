@@ -3348,4 +3348,44 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("Buscar SS")
   @Key("buscarSSTitle")
   String buscarSSTitle();
+  
+  
+  /**
+   * Translated "Configurar Sucursal".
+   * 
+   * @return translated "Configurar Sucursal"
+   */
+  @DefaultStringValue("Configurar Sucursal")
+  @Key("configSucursal")
+  String configurarSucursal();
+  
+  
+  /**
+   * Translated "Sucursal".
+   * 
+   * @return translated "Sucursal"
+   */
+  @DefaultStringValue("Sucursal:")
+  @Key("sucursal")
+  String sucursal();
+  
+  
+  /**
+   * Translated "Debe seleccionar un Documento".
+   * 
+   * @return translated "Debe seleccionar un Documento"
+   */
+  @DefaultStringValue("Debe seleccionar una Sucursal")
+  @Key("ERR_NO_SUCURSAL_SELECTED")
+  String ERR_NO_SUCURSAL_SELECTED();
+  
+  /**
+   * Translated "Se ha guardado la solicitud con éxito.".
+   * 
+   * @return translated "Se ha guardado la solicitud con éxito."
+   */
+  @DefaultStringValue("Se ha guardado la sucursal con éxito.")
+  @Key("MSG_SUCURSAL_GUARDADA_OK")
+  String MSG_SUCURSAL_GUARDADA_OK();
+  
 }

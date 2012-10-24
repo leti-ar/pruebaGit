@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.widget;
 
+import ar.com.nextel.sfa.client.configurarsucursal.CambiarSucursalUI;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.AgregarCuentaUI;
 import ar.com.nextel.sfa.client.cuenta.BuscarCuentaUI;
@@ -50,13 +51,14 @@ public class UILoader extends SimplePanel implements ValueChangeHandler<String> 
 	public final static int EDITAR_CUENTA = 7;
 	public final static int VER_INFOCOM = 8;
 	public final static int VER_SOLICITUD = 10;
-
+    public final static int CAMBIAR_SUCURSAL= 12;
+	
 	private String lastToken = "";
 
 	private UILoader() {
 		//MGR - Integracion
 		//pages = new ApplicationUI[9];
-		pages = new ApplicationUI[11];
+		pages = new ApplicationUI[13];
 		
 		History.addValueChangeHandler(this);
 		History.fireCurrentHistoryState();
@@ -158,7 +160,10 @@ public class UILoader extends SimplePanel implements ValueChangeHandler<String> 
 			break;
 		case VER_SOLICITUD:
 			pages[VER_SOLICITUD] = new EditarSSUI(false);
-			break;			
+			break;	
+		case CAMBIAR_SUCURSAL:
+			pages[CAMBIAR_SUCURSAL] = new CambiarSucursalUI();
+			break;	
 		default:
 			GWT.log("Page not found. Check PageLoader.createPageWidget()", null);
 			break;
