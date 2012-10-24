@@ -3349,6 +3349,20 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("buscarSSTitle")
   String buscarSSTitle();
   
+  @DefaultStringValue("Validar Stock")
+  @Key("validarStock")
+  String ValidarStock();
+  
+  @DefaultStringValue("Cant. Items")
+  @Key("cantItems")
+  String cantidadItems();
+ 
+  @DefaultStringValue("Debe seleccionar al menos un item.")
+  @Key("ERROR_DEBE_SEL_ITEM")
+  String ERROR_DEBE_SEL_ITEM();
+
+
+  
   
   /**
    * Translated "Configurar Sucursal".

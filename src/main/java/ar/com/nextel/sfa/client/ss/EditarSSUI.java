@@ -1,31 +1,18 @@
 package ar.com.nextel.sfa.client.ss;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.springframework.stereotype.Controller;
-
-import ar.com.nextel.components.mail.MailSender;
-import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.sfa.client.InfocomRpcService;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
-import ar.com.nextel.sfa.client.dto.ComentarioAnalistaDto;
-import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
-import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
-import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
-import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -64,7 +51,6 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItemImpl;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
-import ar.com.snoop.gwt.commons.client.window.MessageWindow;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -75,11 +61,9 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.IncrementalCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TabPanel;
@@ -1509,26 +1493,46 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	}
 	
 	private void abrirDialogCerrar(){
-		SolicitudRpcService.Util.getInstance().sonConfigurablesPorAPG(editarSSUIData.getSolicitudServicio().getLineas(), new DefaultWaitCallback<Integer>() {
-			public void success(Integer result) {
-				cerrandoSolicitud = cerrandoAux;
-				getCerrarSSUI().setTitleCerrar(cerrandoAux);
-        
-		        //TODO: Portabilidad
-		        boolean permitePortabilidad = false;
-		        for (LineaSolicitudServicioDto linea : editarSSUIData.getSolicitudServicio().getLineas()) {
-					if(linea.getPortabilidad() != null) permitePortabilidad = true;
-				}
-		        if (result == 3) {
-					permitePortabilidad = false;
-				}
-        
-		        getCerrarSSUI().setTienePortabilidad(permitePortabilidad);
-		        getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
-		        editarSSUIData.getCuenta().isCliente(), editarSSUIData.getSolicitudServicioGeneracion(),
-		        editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA());				}
-	        }
-	   );
+//		MGR - Parche de emergencia
+		if(!editarSSUIData.getSolicitudServicio().getGrupoSolicitud().isTransferencia()){
+			SolicitudRpcService.Util.getInstance().sonConfigurablesPorAPG(editarSSUIData.getSolicitudServicio().getLineas(), new DefaultWaitCallback<Integer>() {
+				public void success(Integer result) {
+						cerrandoSolicitud = cerrandoAux;
+						getCerrarSSUI().setTitleCerrar(cerrandoAux);
+		        
+				        //TODO: Portabilidad
+				        boolean permitePortabilidad = false;
+				        for (LineaSolicitudServicioDto linea : editarSSUIData.getSolicitudServicio().getLineas()) {
+							if(linea.getPortabilidad() != null) permitePortabilidad = true;
+						}
+				        
+				        if (result == 3) {
+							permitePortabilidad = false;
+						}
+		        
+				        getCerrarSSUI().setTienePortabilidad(permitePortabilidad);
+				        getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
+				        editarSSUIData.getCuenta().isCliente(), editarSSUIData.getSolicitudServicioGeneracion(),
+				        editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA());				
+			        }
+		        }
+		   );
+			
+		}else{
+			cerrandoSolicitud = cerrandoAux;
+			getCerrarSSUI().setTitleCerrar(cerrandoAux);
+    
+	        //TODO: Portabilidad
+	        boolean permitePortabilidad = false;
+	        for (LineaSolicitudServicioDto linea : editarSSUIData.getSolicitudServicio().getLineas()) {
+				if(linea.getPortabilidad() != null) permitePortabilidad = true;
+			}
+	        
+	        getCerrarSSUI().setTienePortabilidad(permitePortabilidad);
+	        getCerrarSSUI().show(editarSSUIData.getCuenta().getPersona(),
+	        editarSSUIData.getCuenta().isCliente(), editarSSUIData.getSolicitudServicioGeneracion(),
+	        editarSSUIData.isCDW(), editarSSUIData.isMDS(), editarSSUIData.hasItemBB(), editarSSUIData.isTRANSFERENCIA());
+		}
 	}
 	
 
