@@ -1,7 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
 	xmlns:g='urn:import:com.google.gwt.user.client.ui'
 	xmlns:s='urn:import:ar.com.snoop.gwt.commons.client.widget'
-	xmlns:sfa='urn:import:ar.com.nextel.sfa.client.widget'>
+	xmlns:sfa='urn:import:ar.com.nextel.sfa.client.widget' xmlns:t="urn:import:com.sun.jmx.trace">
 
 	<ui:style>
 		.frm{
@@ -10,13 +10,13 @@
 		}
 	</ui:style>
     
-    <g:HTMLPanel height="260px" width="530px" styleName="{style.frm}">
+    <g:HTMLPanel height="385px" width="530px" styleName="{style.frm}"> <!--  -->
 		
 		<g:HorizontalPanel horizontalAlignment="ALIGN_RIGHT" width="515px" spacing="5">
 			<g:HTML ui:field="lnkCopiarCuenta" width="15px" height="15px"></g:HTML>
 		</g:HorizontalPanel>
 		
-		<g:HTMLPanel>
+		<g:HTMLPanel> <!-- f_HTMLPanel3   -->
 			<table>
 				<tr>
 					<td style="padding-bottom:3px; padding-top:3px;"> 
@@ -34,10 +34,24 @@
 				</tr>
 				<tr>
 					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<g:Label ui:field='lblTipoPersona' text="Tipo Per.: " width="80"></g:Label> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<s:ListBox ui:field='lstTipoPersona' width="85"></s:ListBox> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<g:Label ui:field='lblFechaUltimaFactura' text="Fecha de Emisión: " width="130"></g:Label>   
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<sfa:FechaDatePicker ui:field='fechaUltFactura' width="80"></sfa:FechaDatePicker>
+					</td>
+				</tr>
+				<tr>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
 						<g:Label ui:field='lblTipoDocumento' text="Tipo Doc.: " width="72"></g:Label> 
 					</td>
 					<td style="padding-bottom:3px; padding-top:3px;"> 
-						<s:ListBox ui:field='lstTipoDocumento' width="70"></s:ListBox> 
+						<s:ListBox ui:field='lstTipoDocumento' width="80"></s:ListBox> 
 					</td>
 					<td style="padding-bottom:3px; padding-top:3px;"> 
 						<g:Label ui:field='lblNroDocumento' text="Número: " width="130"></g:Label> 
@@ -49,7 +63,7 @@
 			</table>
 		</g:HTMLPanel>
 		
-		<g:HTMLPanel>
+		<g:HTMLPanel>  <!-- f_HTMLPanel4   -->
 			<table>
 				<tr>
 					<td style="padding-bottom:2px; padding-top:2px;"> 
@@ -62,22 +76,74 @@
 			</table>
 		</g:HTMLPanel>
 		
-		<g:HTMLPanel>
+		<g:HTMLPanel>  <!-- f_HTMLPanel5   -->
 			<table>
 				<tr>
 					<td style="padding-bottom:3px; padding-top:3px;"> 
 						<g:Label ui:field='lblNombre' text="Nombre: " width="65" ></g:Label> 
 					</td>
 					<td style="padding-bottom:3px; padding-top:3px;"> 
-						<s:RegexTextBox ui:field='txtNombre' width="165" maxLength="50"></s:RegexTextBox> 
+						<s:RegexTextBox ui:field='txtNombre' width="150" maxLength="50"></s:RegexTextBox> 
 					</td>
 					<td style="padding-bottom:3px; padding-top:3px;"> 
 						<g:Label ui:field='lblApellido' text="Apellido: " width="70" ></g:Label> 
 					</td>
 					<td style="padding-bottom:3px; padding-top:3px;"> 
-						<s:RegexTextBox ui:field='txtApellido' width="160" maxLength="50"></s:RegexTextBox> 
+						<s:RegexTextBox ui:field='txtApellido' width="150" maxLength="50"></s:RegexTextBox> 
 					</td>
 				</tr>
+			</table>
+		</g:HTMLPanel>
+
+		
+		<g:HTMLPanel>  <!-- f_HTMLPanel8   -->
+			<table>
+				<tr>
+				<center>
+					<br/>
+					<div style="height: 1px; text-align: center; border-top: 1px dashed black">
+  						<div style="display: inline-block; position: relative; top: -8px; background-color: white;"><b>Apoderado</b></div>
+					</div>
+				</center>
+				</tr>
+			</table>
+			<table>
+				<tr>
+					<td  style="padding-bottom:3px; padding-top:3px;"> 
+						<g:Label ui:field='lblTipoDocApod' text="Tipo Doc.: " width="72"></g:Label> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<s:ListBox ui:field='lstTipoDocApod' width="80"></s:ListBox> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<g:Label ui:field='lblNroDocApod' text="Número: " width="130"></g:Label> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<s:RegexTextBox ui:field='txtNroDocApod' width="150" maxLength="20" ></s:RegexTextBox> 
+					</td>
+				</tr>
+			</table>
+			<table>
+				<tr>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<g:Label ui:field='lblNombreApod' text="Nombre: " width="65" ></g:Label> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<s:RegexTextBox ui:field='txtNombreApod' width="150" maxLength="100"></s:RegexTextBox> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<g:Label ui:field='lblApellidoApod' text="Apellido: " width="70" ></g:Label> 
+					</td>
+					<td style="padding-bottom:3px; padding-top:3px;"> 
+						<s:RegexTextBox ui:field='txtApellidoApod' width="150" maxLength="100"></s:RegexTextBox> 
+					</td>
+				</tr>
+			</table>
+		</g:HTMLPanel>
+		
+		<g:HTMLPanel>  <!-- f_HTMLPanel9   -->
+			<table>
+				<br/>
 				<tr>
 					<td style="padding-bottom:3px; padding-top:3px;"> 
 						<g:Label ui:field='lblTelefono' text="Teléfono: " width="68"></g:Label> 
@@ -104,7 +170,7 @@
 			</table>
 		</g:HTMLPanel>
 		
-		<g:HTMLPanel>
+		<g:HTMLPanel> <!-- f_HTMLPanel6   -->
 			<table>
 				<tr>
 					<td style="padding-bottom:3px; padding-top:2px;"> 
@@ -131,7 +197,7 @@
 			</table>
 		</g:HTMLPanel>
 		
-		<g:HTMLPanel>
+		<g:HTMLPanel>  <!-- f_HTMLPanel7   -->
 			<table>
 				<tr>
 					<td style="padding-bottom:3px; padding-top:2px;"> 
