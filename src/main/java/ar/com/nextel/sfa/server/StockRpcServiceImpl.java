@@ -46,9 +46,12 @@ public class StockRpcServiceImpl extends RemoteService implements StockRpcServic
 	}
 
 	public String validarStock(Long idLPrecio, Long idItem, Long idVendedor) throws RpcExceptionMessages {
-		//String msg = stockService.validarStock(idLPrecio, idItem, id);
-		String m = "";
+		
+		
+		
+		String m = stockService.validarStock(idLPrecio, idItem, idVendedor);
 		Message message = null;
+		
 		
 	//	if (msg.equals("MSG1")){
 			message = (Message)this.messageRetriever.getObject(MessageIdentifier.SFA_VAL_STOCK_PA);

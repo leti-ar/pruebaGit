@@ -2,9 +2,11 @@ package ar.com.nextel.sfa.client.stock;
 
 import ar.com.nextel.sfa.client.StockRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.util.CargaDeCombos;
 import ar.com.nextel.sfa.client.widget.EventWrapper;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
@@ -54,6 +56,7 @@ public class StockUIDlg extends NextelDialog {
 				Long idTipoOrden = null;
 				Long idListaPrecio = null;
 				Long idItem = null;
+				final VendedorDto vendedorDto = ClientContext.getInstance().getVendedor();
 				if (tipoOrdenLst.getSelectedItem() != null) {
 					idTipoOrden = Long.valueOf(tipoOrdenLst.getSelectedItem()
 							.getItemValue());
@@ -65,13 +68,13 @@ public class StockUIDlg extends NextelDialog {
 				}
 
 				if (cantItemsLst.getSelectedItem() != null) {
-					idItem = Long.valueOf(cantItemsLst.getSelectedItem()
-							.getItemValue());
+					
+					idItem = Long.valueOf(cantItemsLst.getSelectedItemId());
 				}
 				
 				if (cantItemsLst.getSelectedItem() != null){
-				StockRpcService.Util.getInstance().validarStock(idTipoOrden,
-						idListaPrecio, idItem,
+				StockRpcService.Util.getInstance().validarStock(vendedorDto.getId(),
+						idItem, vendedorDto.getId(),
 						new DefaultWaitCallback<String>() {
 
 							@Override
