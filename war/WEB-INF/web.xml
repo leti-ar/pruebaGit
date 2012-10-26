@@ -178,7 +178,16 @@
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
 
-
+	<servlet>
+		<servlet-name>stockRpcServiceImpl</servlet-name>
+		<servlet-class>ar.com.nextel.sfa.server.StockRpcServiceImpl</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>stockRpcServiceImpl</servlet-name>
+		<url-pattern>/ar.com.nextel.sfa.SFAWeb/stock.rpc</url-pattern>
+	</servlet-mapping>
+	
 	<resource-ref>
 		<description>SFA DS</description>
 		<res-ref-name>jdbc/sfaDS</res-ref-name>
