@@ -364,7 +364,12 @@ public class CuentaEdicionTabPanel {
 			    tabPanel.remove(i);			
 		}
 		//si no es prospect agrega tab infocom
-		if (!RegularExpressionConstants.isVancuc(cuenta2editDto.getCodigoVantive()) && (ClientContext.getInstance().getUsuario().getUserName().equals(cuenta2editDto.getVendedor().getUsuarioDto().getUserName()))) 
+//		MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing. 
+		//Si no es cliente, es prospect o prospect en carga
+//		if (!RegularExpressionConstants.isVancuc(cuenta2editDto.getCodigoVantive()) &&  
+		if (cuenta2editDto.isCustomer() && 
+				(ClientContext.getInstance().getUsuario().getUserName().
+						equals(cuenta2editDto.getVendedor().getUsuarioDto().getUserName())))
 			tabPanel.add(cuentaInfocomForm, Sfa.constant().infocom());
 
 		//si viene de opp agrega notas (Dejar comentado)

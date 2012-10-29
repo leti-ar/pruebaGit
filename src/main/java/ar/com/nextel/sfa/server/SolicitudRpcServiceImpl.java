@@ -262,7 +262,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			CuentaDto cuentaDto = mapper.map(cta, CuentaDto.class);
 			
 			if(cuenta != null){
-				solicitudServicioDto.setCustomer(cuentaDto.isCustomer());
+//				MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
+				solicitudServicioDto.setCustomer(cta.isCliente());
 			}			
 		}
 		
@@ -1486,7 +1487,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			CuentaDto cuenta = mapper.map(cta, CuentaDto.class);
 			
 			if(cuenta != null){
-				solicitudDto.setCustomer(cuenta.isCustomer());
+//				MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
+				solicitudDto.setCustomer(cta.isCliente());
 			}			
 		}
 		
@@ -1528,7 +1530,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			Cuenta cta = repository.retrieve(Cuenta.class, solicitudDto.getCuenta().getId());
 			CuentaDto cuenta = mapper.map(cta, CuentaDto.class);
 			if(cuenta != null){
-				solicitudDto.setCustomer(cuenta.isCustomer());
+//				MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
+				solicitudDto.setCustomer(cta.isCliente());
 			}			
 		}
 		
@@ -1767,7 +1770,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			CuentaDto cuenta = mapper.map(cta, CuentaDto.class);
 			
 			if(cuenta != null){
-				ssDto2.setCustomer(cuenta.isCustomer());
+//				MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
+				ssDto2.setCustomer(cta.isCliente());
 			}			
 		}
 		return ssDto2;
@@ -1976,7 +1980,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	
 	/**
 	 * Dependiendo del tipo de cliente, si tiene equipos activos o suspendidos y deuda en cuenta corriente;
-	 * la SS se podrÃ¡ o no, cerrar por Veraz o Scoring.
+	 * la SS se podra o no, cerrar por Veraz o Scoring.
 	 * @param ss
 	 * @param pinMaestro
 	 * @return Mensaje de error si no se cumplen las condiciones.
@@ -1984,7 +1988,10 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 */
 //	MGR - Parche de emergencia
 	private String evaluarEquiposYDeuda(SolicitudServicio ss, String pinMaestro) throws RpcExceptionMessages {
-		if (!RegularExpressionConstants.isVancuc(ss.getCuenta().getCodigoVantive())) {
+//		MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
+		//Si es cliente, no es prospect o prospect en carga
+//		if (!RegularExpressionConstants.isVancuc(ss.getCuenta().getCodigoVantive())) {
+		if (ss.getCuenta().isCliente()) {
 			
 			AppLogger.info("#Log Cierre y pass - Buscando cantidad de equipos en la cuenta: " + ss.getCuenta().getCodigoVantive(), this);
 			
