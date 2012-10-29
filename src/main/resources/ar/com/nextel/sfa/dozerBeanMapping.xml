@@ -482,6 +482,21 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
             <a>transferido</a>
             <b>transferido</b>
         </field>
+<!--         MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
+		Paso los parametros para utilizarlos en lugar de verificar si contiene vancuc en el codigo vantive
+		de la cuenta o preguntar por la condicion de la cuenta -->
+		<field type="one-way">
+			<a>prospect</a>
+			<b>prospect</b>
+		</field>
+		<field type="one-way">
+			<a>cliente</a>
+			<b>cliente</b>
+		</field>
+		<field type="one-way">
+			<a>prospectEnCarga</a>
+			<b>prospectEnCarga</b>
+		</field>
 	</mapping>
 	<mapping map-id="personaSolicitud" wildcard="false">
 		<class-a>ar.com.nextel.model.personas.beans.Persona</class-a>
@@ -658,6 +673,13 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<b>caratulas</b>
 			<a-hint>ar.com.nextel.model.cuentas.beans.Caratula</a-hint>
 			<b-hint>ar.com.nextel.sfa.client.dto.CaratulaDto</b-hint>
+		</field>
+<!-- 		MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
+		Paso los parametros para utilizarlos en lugar de verificar si contiene vancuc en el codigo vantive
+		de la cuenta o preguntar por la condicion de la cuenta -->
+		<field type="one-way">
+			<a>prospect</a>
+			<b>prospect</b>
 		</field>
 	</mapping>
 

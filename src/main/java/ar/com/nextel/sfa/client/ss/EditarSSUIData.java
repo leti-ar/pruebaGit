@@ -563,7 +563,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 	
 		//MGR - #1152
-		boolean esProspect =RegularExpressionConstants.isVancuc(solicitud.getCuenta().getCodigoVantive());
+//		MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
+		//Si no es cliente, es prospect o prospect en carga
+//		boolean esProspect =RegularExpressionConstants.isVancuc(solicitud.getCuenta().getCodigoVantive());
+		boolean esProspect = !solicitud.getCuenta().isCliente();
 		
 		//MGR - #1026
 		if(!ClientContext.getInstance().

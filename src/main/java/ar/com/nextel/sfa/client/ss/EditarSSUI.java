@@ -502,8 +502,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		codigoVant = solicitud.getCuenta().getCodigoVantive();
 		
 		//MGR - #1152
-		final boolean esProspect =RegularExpressionConstants.isVancuc(solicitud.getCuenta().getCodigoVantive());
-
+//		MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
+		//Si no es cliente, es prospect o prospect en carga
+//		final boolean esProspect =RegularExpressionConstants.isVancuc(solicitud.getCuenta().getCodigoVantive());
+		final boolean esProspect =!solicitud.getCuenta().isCliente();
 		editarSSUIData.setSolicitud(solicitud);
 
 		//larce - Si los datos del histórico están vacíos, los traigo de vantive
