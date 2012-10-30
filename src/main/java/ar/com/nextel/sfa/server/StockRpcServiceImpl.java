@@ -63,13 +63,13 @@ public class StockRpcServiceImpl extends RemoteService implements StockRpcServic
 			message.addParameters(new Object[] {resultado.getValor()});
 			respuesta = message.getDescription();
 			}
-		 if (resultado.isEquipos() || resultado.isAccesorios()){
+		 if ((resultado.isEquipos() || resultado.isAccesorios()) && resultado.getValor() > 0){
 			 // Retirar del pañol (%)
 			 message = (Message)this.messageRetriever.getObject(MessageIdentifier.SFA_VAL_STOCK_PA);
 			 message.addParameters(new Object[] {resultado.getValor()});
 			 respuesta = message.getDescription();
 		 }
-		 if (resultado.getValor() == -1 ){
+		 if (resultado.getValor() == 0 ){
 			 // No hay stock disponible en esta sucursal. Optar por envío a domicilio.
 			 message = (Message)this.messageRetriever.getObject(MessageIdentifier.SFA_VAL_STOCK_SU);
 			 respuesta = message.getDescription();
