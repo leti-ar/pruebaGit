@@ -1,4 +1,4 @@
-package ar.com.nextel.sfa.client;
+package ar.com.nextel.sfa.client; 
 
 import java.util.List;
 
@@ -30,6 +30,6 @@ public interface StockRpcService extends RemoteService {
 	List<TipoSolicitudDto> obtenerTiposDeSolicitudParaVendedor(
 			VendedorDto vendedorDto) throws RpcExceptionMessages;
 
-	String validarStock(Long idLPrecio, Long idItem, Long idVendedor) throws RpcExceptionMessages;
+	String validarStock(Long idSolicitud, Long idVendedor) throws RpcExceptionMessages;
 	
 }

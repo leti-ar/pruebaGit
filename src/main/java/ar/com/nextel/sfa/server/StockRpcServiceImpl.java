@@ -11,6 +11,7 @@ import ar.com.nextel.business.constants.MessageIdentifier;
 import ar.com.nextel.business.stock.StockService;
 import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.components.message.Message;
+import ar.com.nextel.components.message.Resultado;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.sfa.client.StockRpcService;
@@ -45,23 +46,37 @@ public class StockRpcServiceImpl extends RemoteService implements StockRpcServic
 		messageRetriever = (DefaultRetriever)context.getBean("messageRetriever");
 	}
 
-	public String validarStock(Long idLPrecio, Long idItem, Long idVendedor) throws RpcExceptionMessages {
-		
-		
-		
-		String m = stockService.validarStock(idLPrecio, idItem, idVendedor);
+	/**
+	 * Llama al servicio de validación de stock y en base al resutado selecciona 
+	 * el mensaje adecuado para informar al usuario
+	 */
+	public String validarStock(Long idItem, Long idVendedor) throws RpcExceptionMessages {
+		String respuesta = new String();
+		Resultado resultado = new Resultado();
+		resultado = stockService.validarStock(idItem, idVendedor);
+
 		Message message = null;
 		
-		
-	//	if (msg.equals("MSG1")){
-			message = (Message)this.messageRetriever.getObject(MessageIdentifier.SFA_VAL_STOCK_PA);
-			message.addParameters(new Object[] {5});
-			m = message.getDescription();
-	//	}
-		 
-		return m;
+		if (resultado.isVSalon()){
+			// Hay stock disponible (%)
+			message = (Message)this.messageRetriever.getObject(MessageIdentifier.SFA_VAL_STOCK_VS);
+			message.addParameters(new Object[] {resultado.getValor()});
+			respuesta = message.getDescription();
+			}
+		 if (resultado.isEquipos() || resultado.isAccesorios()){
+			 // Retirar del pañol (%)
+			 message = (Message)this.messageRetriever.getObject(MessageIdentifier.SFA_VAL_STOCK_PA);
+			 message.addParameters(new Object[] {resultado.getValor()});
+			 respuesta = message.getDescription();
+		 }
+		 if (resultado.getValor() == -1 ){
+			 // No hay stock disponible en esta sucursal. Optar por envío a domicilio.
+			 message = (Message)this.messageRetriever.getObject(MessageIdentifier.SFA_VAL_STOCK_SU);
+			 respuesta = message.getDescription();
+		 }
+
+		 return respuesta;
 	}
 
-	
 
 }
