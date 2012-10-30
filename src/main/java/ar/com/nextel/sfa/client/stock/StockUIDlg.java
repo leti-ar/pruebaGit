@@ -37,8 +37,6 @@ public class StockUIDlg extends NextelDialog {
 
 	private ListBox cantItemsLst = new ListBox();
 
-	// private RegexTextBox listaPrecioLst = new
-	// RegexTextBox(RegularExpressionConstants.importe);
 	private Label tipoOrden;
 
 	private Label listaPrecio;
@@ -53,19 +51,8 @@ public class StockUIDlg extends NextelDialog {
 		init();
 		aceptar.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent arg0) {
-				Long idTipoOrden = null;
-				Long idListaPrecio = null;
 				Long idItem = null;
 				final VendedorDto vendedorDto = ClientContext.getInstance().getVendedor();
-				if (tipoOrdenLst.getSelectedItem() != null) {
-					idTipoOrden = Long.valueOf(tipoOrdenLst.getSelectedItem()
-							.getItemValue());
-				}
-
-				if (listaPrecioLst.getSelectedItem() != null) {
-					idListaPrecio = Long.valueOf(listaPrecioLst
-							.getSelectedItem().getItemValue());
-				}
 
 				if (cantItemsLst.getSelectedItem() != null) {
 					
@@ -73,8 +60,7 @@ public class StockUIDlg extends NextelDialog {
 				}
 				
 				if (cantItemsLst.getSelectedItem() != null){
-				StockRpcService.Util.getInstance().validarStock(vendedorDto.getId(),
-						idItem, vendedorDto.getId(),
+				StockRpcService.Util.getInstance().validarStock(idItem, vendedorDto.getId(),
 						new DefaultWaitCallback<String>() {
 
 							@Override
@@ -143,8 +129,6 @@ public class StockUIDlg extends NextelDialog {
 		addFooter(botonesTable);
 		add(buscadorDocumentoPanel);
 
-		// listaPrecioLst.ensureDebugId(DebugConstants.AGREGAR_CUENTAS_POPUP_TEXTBOX_NUM_DOC_ID);
-		// tipoOrdenLst.ensureDebugId(DebugConstants.AGREGAR_CUENTAS_POPUP_COMBO_TIPO_DOC_ID);
 		cerrar.ensureDebugId(DebugConstants.AGREGAR_CUENTAS_POPUP_BUTTON_CERRAR_ID);
 		aceptar.ensureDebugId(DebugConstants.AGREGAR_CUENTAS_POPUP_BUTTON_ACEPTAR_ID);
 		
