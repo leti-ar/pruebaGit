@@ -13,11 +13,11 @@ public class TerminoPagoDto extends EnumDto implements IsSerializable {
      */
     private String codigoFNCL;
     
-	//CRSfaVta3Cuotcc:
+//    MGR - Cta. Cte. 3 cuotas
     /**
      * validaPin
      */
-    private String validaPin;
+    private boolean validaPin;
     
     // ----------------------------------------------------------
     // Public methods
@@ -37,21 +37,11 @@ public class TerminoPagoDto extends EnumDto implements IsSerializable {
 		this.codigoFNCL = codigoFNCL;
 	}
 
-	//CRSfaVta3Cuotcc:
-	/**
-     * @return
-     */
-	public String getValidaPin() {
+	public boolean isValidaPin() {
 		return validaPin;
 	}
 
-	//CRSfaVta3Cuotcc: se agrega una columna mas a la tabla para forzar a validar por PIN por SFA_TERMINO_PAGO 
-    /**
-     * @param validaPin
-     */
-	public void setValidaPin(String validaPin) {
+	public void setValidaPin(boolean validaPin) {
 		this.validaPin = validaPin;
 	}
-
-	
 }

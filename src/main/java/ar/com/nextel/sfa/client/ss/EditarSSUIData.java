@@ -15,7 +15,6 @@ import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
-import ar.com.nextel.sfa.client.dto.EstadoHistoricoDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
@@ -44,8 +43,6 @@ import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -162,19 +159,6 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private TextArea notaAdicional;
 	Label cantEquipos;
 	
-	//CRSfaVta3Cuotcc
-	private Boolean validaPin = false;
-	
-	//CRSfaVta3Cuotcc
-    public Boolean getValidaPin() {
-		return validaPin;
-	}
-
-    //CRSfaVta3Cuotcc
-	public void setValidaPin(Boolean validaPin) {
-		this.validaPin = validaPin;
-	}
-
 	private List<ComentarioAnalistaDto> comentarioAnalistaMensaje = new ArrayList<ComentarioAnalistaDto>();
     private List<EstadoSolicitudDto> opcionesEstado = new ArrayList<EstadoSolicitudDto>();
 	
