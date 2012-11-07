@@ -3402,4 +3402,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("MSG_SUCURSAL_GUARDADA_OK")
   String MSG_SUCURSAL_GUARDADA_OK();
   
+  
+  /**
+   * Translated "Retira en Sucursal:".
+   * 
+   * @return translated "Retira en Sucursal:"
+   */
+  @DefaultStringValue("Retira en Sucursal:")
+  @Key("retiraEnSucursal")
+  String retiraEnSucursal();
+  
+   
 }

@@ -255,14 +255,14 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		if (soloItemSolicitudUI == null) {
 			soloItemSolicitudUI = new SoloItemSolicitudUI(itemSolicitudUIData);
 		}
-		return soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_CON_TOTAL);
+		return soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_CON_TOTAL,controller);
 	}
 
 	private ItemYPlanSolicitudUI getItemYPlanSolicitudUI() {
 		if (itemYPlanSolicitudUI == null) {
-			itemYPlanSolicitudUI = new ItemYPlanSolicitudUI(getSoloItemSolicitudUI(), itemSolicitudUIData);
+			itemYPlanSolicitudUI = new ItemYPlanSolicitudUI(getSoloItemSolicitudUI(), itemSolicitudUIData,controller);
 		}
-		soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_SIMPLE);
+		soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_SIMPLE, controller);
 		itemYPlanSolicitudUI.load();
 		return itemYPlanSolicitudUI;
 	}

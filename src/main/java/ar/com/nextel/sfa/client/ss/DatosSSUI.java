@@ -185,21 +185,29 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			nnsLayout.setWidget(0, 3, editarSSUIData.getNflota());
 			nnsLayout.setHTML(0, 4, Sfa.constant().origenReq());
 			nnsLayout.setWidget(0, 5, editarSSUIData.getOrigen());
+		
 		} else {
 			nnsLayout.setHTML(0, 2, Sfa.constant().origenReq());
 			nnsLayout.setWidget(0, 3, editarSSUIData.getOrigen());
 			nnsLayout.clearCell(0, 4);
 			nnsLayout.clearCell(0, 5);
 		}
+		
+		if (editarSSUIData.getGrupoSolicitud()!= null){
+		if (!editarSSUIData.isCDW() && !editarSSUIData.isMDS()&& !editarSSUIData.isTRANSFERENCIA()) {
+			nnsLayout.setHTML(0, 6, Sfa.constant().retiraEnSucursal());
+			nnsLayout.setWidget(0, 7, editarSSUIData.getRetiraEnSucursal());
+		}
+		}
 
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
-			nnsLayout.setHTML(0, 6, Sfa.constant().vendedorReq());
-			nnsLayout.setWidget(0, 7, editarSSUIData.getVendedor());
+			nnsLayout.setHTML(0, 8, Sfa.constant().vendedorReq());
+			nnsLayout.setWidget(0, 9, editarSSUIData.getVendedor());
 		}
 		
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
-			nnsLayout.setHTML(0, 8, Sfa.constant().sucOrigenReq());
-			nnsLayout.setWidget(0, 9, editarSSUIData.getSucursalOrigen());
+			nnsLayout.setHTML(0, 10, Sfa.constant().sucOrigenReq());
+			nnsLayout.setWidget(0, 11, editarSSUIData.getSucursalOrigen());
 		}
 		
 //		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
@@ -1005,6 +1013,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		editarSSUIData.getFacturacion().setEnabled(controller.isEditable());
 		editarSSUIData.getAclaracion().setEnabled(controller.isEditable());
 		editarSSUIData.getEmail().setEnabled(controller.isEditable());
+		editarSSUIData.getRetiraEnSucursal().setEnabled(controller.isEditable());
 	}
 	
 	/**

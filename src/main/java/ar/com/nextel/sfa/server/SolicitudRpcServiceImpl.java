@@ -382,7 +382,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		solicitudToCopy.setPataconex(0d);
 		solicitudToCopy.setFirmar(false);
 		solicitudToCopy.setAclaracionEntrega(null);
-		
+		solicitudToCopy.setRetiraEnSucursal(false);
 		resultDto.setSolicitud(solicitudToCopy);
 //		resultDto.setSolicitud(solicitudServicioDto);
 		return resultDto;

@@ -36,7 +36,7 @@ public class SolicitudServicioDto implements IsSerializable {
 	private Double montoDisponible; // cuenta.estadoCreditoFidelizacion.monto
 	private Long channelCode;
 	private Double pataconex;
-
+    private Boolean retiraEnSucursal= Boolean.FALSE;
 	private Boolean firmar = Boolean.FALSE;
 	// private EstadoAprobacionSolicitud estadoActual;
 	private String observaciones;
@@ -564,6 +564,16 @@ public class SolicitudServicioDto implements IsSerializable {
 	public void setVendedorLogueado(VendedorDto vendedorLogueado) {
 		this.vendedorLogueado = vendedorLogueado;
 	}
+
+	public Boolean getRetiraEnSucursal() {
+		return retiraEnSucursal;
+	}
+
+	public void setRetiraEnSucursal(Boolean retiraEnSucursal) {
+		this.retiraEnSucursal = retiraEnSucursal;
+	}
+
+	
 		
 	
 }

@@ -161,15 +161,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private ListBox comentarioAnalista;
 	private TextArea notaAdicional;
 	Label cantEquipos;
-	
-    private List<ComentarioAnalistaDto> comentarioAnalistaMensaje = new ArrayList<ComentarioAnalistaDto>();
+	private List<ComentarioAnalistaDto> comentarioAnalistaMensaje = new ArrayList<ComentarioAnalistaDto>();
     private List<EstadoSolicitudDto> opcionesEstado = new ArrayList<EstadoSolicitudDto>();
-	
+    //finde analisis
+	private CheckBox retiraEnSucursal;
 	public EditarSSUIData(EditarSSUIController controller) {
 		this.controller = controller;
 		serviciosAdicionales = new ArrayList();
 		serviciosAdicionalesContrato = new ArrayList<ServicioAdicionalIncluidoDto>();
-
+        fields.add(retiraEnSucursal= new CheckBox());
 		fields.add(nss = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(10), true));
 		fields.add(nflota = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(5)));
 		fields.add(origen = new ListBox(""));
@@ -558,7 +558,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		solicitudServicio = solicitud;
 		nss.setText(solicitud.getNumero());
 		
-	
+		if(solicitud.getGrupoSolicitud().getId().equals(new Long(1))){
+		retiraEnSucursal.setValue(solicitud.getRetiraEnSucursal());
+		}
 		//MGR - #1152
 		boolean esProspect =RegularExpressionConstants.isVancuc(solicitud.getCuenta().getCodigoVantive());
 		
@@ -650,7 +652,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			}
 			
 		}
-	  
+	 
 		enviarA.setText(textoDeEnvio);
 		titulo.setText("Nro de SS:" + ss + "  Razon Social:" +solicitudServicio.getCuenta().getPersona().getRazonSocial()  );
 		vendedor.setSelectedItem(solicitudServicio.getVendedor());
@@ -777,6 +779,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		if (solicitudServicio.getGrupoSolicitud().isCDW()) {
 			solicitudServicio.setEmail(email.getText());
 		}
+		
+		if(solicitudServicio.getGrupoSolicitud().getId().equals(new Long(1))){
+			solicitudServicio.setRetiraEnSucursal(retiraEnSucursal.getValue());
+			}
+		
 		//larce
 		//larce - Comentado para salir solo con cierre
 //		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
@@ -1750,5 +1757,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	public void setEnviar(CheckBox enviar) {
 		this.enviar = enviar;
+	}
+
+	public CheckBox getRetiraEnSucursal() {
+		return retiraEnSucursal;
+	}
+
+	public void setRetiraEnSucursal(CheckBox retiraEnSucursal) {
+		this.retiraEnSucursal = retiraEnSucursal;
 	}
 }

@@ -28,9 +28,9 @@ public class ItemYPlanSolicitudUI extends Composite {
 	private FlexTable cppAliasReservaTable;
 	//MGR - #1039 - Necesito poder identificar la tabla para poder ocultarla
 	private Grid table;
-
+	private EditarSSUIController controller;
 	public ItemYPlanSolicitudUI(SoloItemSolicitudUI soloItemSolicitudUI,
-			ItemSolicitudUIData itemSolicitudUIData) {
+			ItemSolicitudUIData itemSolicitudUIData,EditarSSUIController controller) {
 		this.soloItemSolicitudUI = soloItemSolicitudUI;
 		mainPanel = new FlowPanel();
 		this.itemSolicitudUIData = itemSolicitudUIData;
