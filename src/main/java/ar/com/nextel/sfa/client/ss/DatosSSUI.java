@@ -905,24 +905,23 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	}
 
 	private void updatePrecioVentaDePlan(String precioVenta) {
+//		MGR - #3466 - Solo se permite modificar el precio de venta si tiene el permiso correspondiente 
 		LineaSolicitudServicioDto lineaSS = editarSSUIData.getLineasSolicitudServicio().get(
 				selectedDetalleRow - 1);
 		double valor = lineaSS.getPrecioVentaPlan();
 		MessageDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-		try {
-			valor = NumberFormat.getDecimalFormat().parse(precioVenta);
-		} catch (NumberFormatException e) {
-			MessageDialog.getInstance().showAceptar("Ingrese un monto válido",
-					MessageDialog.getCloseCommand());
-		}
-//		MGR - #3464
 		if(!ClientContext.getInstance().checkPermiso(PermisosEnum.PERMITE_CUALQUIER_PRECIO_VTA_PLAN.getValue())){
-			if (valor > lineaSS.getPrecioVentaPlan()) {
-				MessageDialog.getInstance().showAceptar(
-						"El desvío debe ser menor o igual al precio de lista del Plan",
+			MessageDialog.getInstance().showAceptar(
+					"No tiene permisos para modificar el precio de venta del Plan",
+					MessageDialog.getCloseCommand());
+		}else{
+			try {
+				valor = NumberFormat.getDecimalFormat().parse(precioVenta);
+			} catch (NumberFormatException e) {
+				MessageDialog.getInstance().showAceptar("Ingrese un monto válido",
 						MessageDialog.getCloseCommand());
-				valor = lineaSS.getPrecioVentaPlan();
 			}
+			
 		}
 		
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
