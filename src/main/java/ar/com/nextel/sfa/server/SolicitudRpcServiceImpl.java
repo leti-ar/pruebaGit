@@ -2093,16 +2093,14 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     		cantPesos = cantPesos + linea.getPrecioVenta();
     		
 //    		MGR - #3464
-    		cantPesos += linea.getPlan().getPrecioLista();
-    		
-//    		Busco los servico adicionales que se agregarian al cerrar la SS
-    		List<ServicioAdicionalLineaSolicitudServicio> servAdic = 
-    			solicitudBusinessService.getServicioAdicionalLineaIncluidosNoVisibles
-    						(ss.getVendedor(), linea);
-    		
-    		for (ServicioAdicionalLineaSolicitudServicio servicio : servAdic) {
-				cantPesos += servicio.getPrecioVenta();
-			}
+			cantPesos += linea.getPrecioVentaPlan();
+
+//    		MGR - #3464 - Sumo los servicios adicionales que tiene la linea
+    		Iterator itServAd = linea.getServiciosAdicionales().iterator();
+    		while(itServAd.hasNext()){
+    			ServicioAdicionalLineaSolicitudServicio serv = (ServicioAdicionalLineaSolicitudServicio)itServAd.next();
+    			cantPesos += serv.getPrecioVenta();
+    		}
 		}
     	
 		boolean existeCC = true;
@@ -2195,17 +2193,14 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     		cantPesos = cantPesos + linea.getPrecioVenta();
     		
 //    		MGR -  #3464
-    		cantPesos += linea.getPlan().getPrecioLista();
+    		cantPesos += linea.getPrecioVentaPlan();
     		
-//    		Busco los servico adicionales que se agregarian al cerrar la SS
-    		List<ServicioAdicionalLineaSolicitudServicio> servAdic = 
-    			solicitudBusinessService.getServicioAdicionalLineaIncluidosNoVisibles
-    						(ss.getVendedor(), linea);
-    		
-    		for (ServicioAdicionalLineaSolicitudServicio servicio : servAdic) {
-				cantPesos += servicio.getPrecioVenta();
-			}
-
+//    		MGR - #3464 - Sumo los servicios adicionales que tiene la linea
+    		Iterator itServAd = linea.getServiciosAdicionales().iterator();
+    		while(itServAd.hasNext()){
+    			ServicioAdicionalLineaSolicitudServicio serv = (ServicioAdicionalLineaSolicitudServicio)itServAd.next();
+    			cantPesos += serv.getPrecioVenta();
+    		}
 		}
     	List<Long> cantPesosMax = (repository.executeCustomQuery("maxCantPesos", resultadoVerazScoring, tipoVendedor.getId()));
     	
