@@ -8,10 +8,10 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import ar.com.nextel.business.constants.MessageIdentifier;
+import ar.com.nextel.business.stock.ResultadoValidarStock;
 import ar.com.nextel.business.stock.StockService;
 import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.components.message.Message;
-import ar.com.nextel.components.message.Resultado;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.sfa.client.StockRpcService;
@@ -42,7 +42,7 @@ public class StockRpcServiceImpl extends RemoteService implements StockRpcServic
 		super.init();
 		context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		mapper = (MapperExtended) context.getBean("dozerMapper");
-		stockService = (StockService) context.getBean("stockServicioRepositoryBean");
+		stockService = (StockService) context.getBean("stockServiceBean");
 		messageRetriever = (DefaultRetriever)context.getBean("messageRetriever");
 	}
 
@@ -52,30 +52,32 @@ public class StockRpcServiceImpl extends RemoteService implements StockRpcServic
 	 */
 	public String validarStock(Long idItem, Long idVendedor) throws RpcExceptionMessages {
 		String respuesta = new String();
-		Resultado resultado = new Resultado();
+		ResultadoValidarStock resultado = new ResultadoValidarStock();
 		resultado = stockService.validarStock(idItem, idVendedor);
 
-		Message message = null;
-		
 		if (resultado.isVSalon()){
 			// Hay stock disponible (%)
-			message = (Message)this.messageRetriever.getObject(MessageIdentifier.SFA_VAL_STOCK_VS);
-			message.addParameters(new Object[] {resultado.getValor()});
-			respuesta = message.getDescription();
+			respuesta = getMessage(resultado.getStock(), MessageIdentifier.SFA_VAL_STOCK_VS);
 			}
-		 if ((resultado.isEquipos() || resultado.isAccesorios()) && resultado.getValor() > 0){
+		 if ((resultado.isEquipos() || resultado.isAccesorios()) && resultado.getStock() > 0){
 			 // Retirar del pañol (%)
-			 message = (Message)this.messageRetriever.getObject(MessageIdentifier.SFA_VAL_STOCK_PA);
-			 message.addParameters(new Object[] {resultado.getValor()});
-			 respuesta = message.getDescription();
+			respuesta = getMessage(resultado.getStock(), MessageIdentifier.SFA_VAL_STOCK_PA);			 
 		 }
-		 if (resultado.getValor() == 0 ){
+		 if (resultado.getStock() == 0 ){
 			 // No hay stock disponible en esta sucursal. Optar por envío a domicilio.
-			 message = (Message)this.messageRetriever.getObject(MessageIdentifier.SFA_VAL_STOCK_SU);
-			 respuesta = message.getDescription();
+ 			respuesta = getMessage(resultado.getStock(), MessageIdentifier.SFA_VAL_STOCK_SU);			 
 		 }
 
 		 return respuesta;
+	}
+
+	private String getMessage(int stock,MessageIdentifier keyMsj) {
+		String respuesta;
+		Message message;
+		message = (Message)this.messageRetriever.getObject(keyMsj);
+		message.addParameters(new Object[] {stock});
+		respuesta = message.getDescription();
+		return respuesta;
 	}
 
 
