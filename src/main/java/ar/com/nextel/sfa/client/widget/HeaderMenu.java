@@ -4,7 +4,6 @@ package ar.com.nextel.sfa.client.widget;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.command.OpenPageCommand;
-import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
@@ -57,6 +56,7 @@ public class HeaderMenu extends Composite {
 	public static final int MENU_OPORTUNIDADES = 128;//32;
 	public static final int MENU_OP_EN_CURSO = 256;//64;
 	public static final int MENU_CAMBIO_SUCURSAL= 512;
+	public static final int MENU_VALIDAR_STOCK= 1024;
 
 	public HeaderMenu() {
 		initWidget(mainPanel);
@@ -226,6 +226,10 @@ public class HeaderMenu extends Composite {
 		}else{
 			opEnCursoMenuItem.setVisible((items & MENU_OP_EN_CURSO) != 0);
 		}
+
+		this.sucursalMenuItem.setVisible((items & MENU_CAMBIO_SUCURSAL) != 0);
+		this.opValidarStockItem.setVisible((items & MENU_VALIDAR_STOCK) != 0);
+	
 	}
 	
 	//MGR - Integracion
