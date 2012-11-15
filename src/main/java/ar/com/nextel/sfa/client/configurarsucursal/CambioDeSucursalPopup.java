@@ -1,5 +1,7 @@
 package ar.com.nextel.sfa.client.configurarsucursal;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.ConfigurarSucursalRPCService;
@@ -66,8 +68,6 @@ public class CambioDeSucursalPopup extends NextelDialog {
 		botonesTable.setWidth("100%");
 		cambioSucursalTable.setWidth("100%");
 		selectsucursales    = new ListBox();
-		//numeroDocTextBox = new TextBox();
-		//numeroDocTextBox.setMaxLength(13);
 		sucursales   = new Label(Sfa.constant().sucursal());
 		
 		inicializarCombo();
@@ -97,7 +97,7 @@ public class CambioDeSucursalPopup extends NextelDialog {
 	private void cambiarSucursalVendedor(){
 		final VendedorDto vendedorDto = ClientContext.getInstance().getVendedor();
 	
-		if (!selectsucursales.getSelectedItemText().equals("")) {
+		if (!selectsucursales.getSelectedItemId().equals(vendedorDto.getIdSucursal().toString())) {
 		ConfigurarSucursalRPCService.Util.getInstance().cambiarSucursal(new Long(selectsucursales.getSelectedItemId()), vendedorDto.getId(), new AsyncCallback<VendedorDto>(){
 
 			public void onFailure(Throwable caught) {
@@ -125,11 +125,13 @@ public class CambioDeSucursalPopup extends NextelDialog {
 	
 	
 	public void inicializarCombo(){
+		
          ConfigurarSucursalRPCService.Util.getInstance().getSucursales(new AsyncCallback<List<SucursalDto>>() {
 			
 			public void onSuccess(List<SucursalDto> result) {
-				selectsucursales.addItem("");
-				selectsucursales.addAllItems(result);
+			
+				selectsucursales.clear();
+				selectsucursales.addAllItems(setearPrimerElemtodeLaLista(result));
 				WaitWindow.hide();
 			}
 			
@@ -139,8 +141,22 @@ public class CambioDeSucursalPopup extends NextelDialog {
 		
 	}
 	
-	
-	
-	
+	public List<SucursalDto> setearPrimerElemtodeLaLista(List<SucursalDto> result){
+		List<SucursalDto> nuevaLista= new ArrayList<SucursalDto>();	
+	    final VendedorDto vendedorDto = ClientContext.getInstance().getVendedor();
+	    Iterator<SucursalDto> iter = result.iterator();
+	    while (iter.hasNext())
+	    {
+	    	SucursalDto obj = (SucursalDto) iter.next();
+	    	int comparacion= vendedorDto.getIdSucursal().compareTo(obj.getId());
+	    	if(comparacion==0){
+	    		nuevaLista.add(0, obj);
+	    		
+	    	}else{
+	          nuevaLista.add(obj);
+	       }
+	    }
+	    return nuevaLista;
+	}
 }
 

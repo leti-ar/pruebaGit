@@ -32,4 +32,10 @@ public class SucursalDto implements IsSerializable, ListBoxItem {
 	public String getItemValue() {
 		return id + "";
 	}
+	
+	
+	public int compareTo(Object o) {
+		SucursalDto suc1 = (SucursalDto)o;
+		return this.id.compareTo(suc1.id); 
+	}
 }

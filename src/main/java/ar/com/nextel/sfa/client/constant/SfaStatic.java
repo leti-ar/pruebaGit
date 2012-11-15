@@ -3389,7 +3389,7 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
    * 
    * @return translated "Debe seleccionar un Documento"
    */
-  @DefaultStringValue("Debe seleccionar una Sucursal")
+  @DefaultStringValue("Debe seleccionar una Sucursal distinta")
   @Key("ERR_NO_SUCURSAL_SELECTED")
   String ERR_NO_SUCURSAL_SELECTED();
   
