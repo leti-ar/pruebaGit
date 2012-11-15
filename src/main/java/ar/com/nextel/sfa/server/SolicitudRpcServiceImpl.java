@@ -2099,7 +2099,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     		Iterator itServAd = linea.getServiciosAdicionales().iterator();
     		while(itServAd.hasNext()){
     			ServicioAdicionalLineaSolicitudServicio serv = (ServicioAdicionalLineaSolicitudServicio)itServAd.next();
-    			cantPesos += serv.getPrecioVenta();
+    			//Solo se suman los servicios que se encuentran seleccionados
+    			if(serv.getChecked().booleanValue())
+    				cantPesos += serv.getPrecioVenta();
     		}
 		}
     	
@@ -2199,7 +2201,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     		Iterator itServAd = linea.getServiciosAdicionales().iterator();
     		while(itServAd.hasNext()){
     			ServicioAdicionalLineaSolicitudServicio serv = (ServicioAdicionalLineaSolicitudServicio)itServAd.next();
-    			cantPesos += serv.getPrecioVenta();
+    			//Solo se suman los servicios que se encuentran seleccionados
+    			if(serv.getChecked().booleanValue())
+    				cantPesos += serv.getPrecioVenta();
     		}
 		}
     	List<Long> cantPesosMax = (repository.executeCustomQuery("maxCantPesos", resultadoVerazScoring, tipoVendedor.getId()));
