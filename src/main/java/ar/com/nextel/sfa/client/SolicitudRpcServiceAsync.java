@@ -2,6 +2,7 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
@@ -217,4 +218,7 @@ public interface SolicitudRpcServiceAsync {
 	public void validarLineasPorSegmento(SolicitudServicioDto solicitud, AsyncCallback<Boolean> callback);
 
 	public void sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas, AsyncCallback<Integer> callback);
+	
+	
+	public void validarSIM_IMEI(SolicitudServicioDto solicitud, AsyncCallback<List<String>> callback);
 }

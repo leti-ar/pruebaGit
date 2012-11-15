@@ -29,6 +29,7 @@ import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.UIData;
+
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
@@ -66,7 +67,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private CheckBox ddn;
 	private CheckBox ddi;
 	private CheckBox roaming;
-
+    
 	// portabilidad
 	private CheckBox portabilidad;
 	private PortabilidadUIData portabilidadPanel = new PortabilidadUIData();
@@ -216,7 +217,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		verificarSimWrapper.addClickHandler(this);
 		roaming.addClickHandler(this);
 		imei.addChangeListener(this);
-		
+		setImeiSim();
 		initIdsTipoSolicitudBase();
 		
 		// TODO: portabilidad
@@ -556,7 +557,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			if (listaSelected.getItemsListaPrecioVisibles() != null && listaSelected.getItemsListaPrecioVisibles().size() == 1) {
 				item.setSelectedIndex(1);
 			}
-			if (tipoEdicion == ACTIVACION) {
+			if (tipoEdicion == ACTIVACION || controller.getEditarSSUIData().getSolicitudServicio().getRetiraEnSucursal()) {
 				refreshModelos();
 			} else {
 				onChange(item);
@@ -607,7 +608,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				// if(is.getItem().) // alcanza con isEquipo, isAccesorio?
 				ddn.setValue(true);
 				
-				if (tipoEdicion == ACTIVACION) {
+				if (tipoEdicion == ACTIVACION || controller.getEditarSSUIData().getSolicitudServicio().getRetiraEnSucursal()) {
 					if (is.getItem().getSinModelo()) {
 						sim.setEnabled(false);
 						sim.setReadOnly(true);
@@ -914,6 +915,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM"));
 			}
 		}
+		
 		return validator.fillResult().getErrors();
 	}
 
@@ -1254,4 +1256,50 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	public void setIdTipoSolicitudBaseActivacion(Long idTipoSolicitudBaseActivacion) {
 		this.idTipoSolicitudBaseActivacion = idTipoSolicitudBaseActivacion;
 	}
+	
+	private void setImeiSim(){
+	  boolean retirar= controller.getEditarSSUIData().getSolicitudServicio().getRetiraEnSucursal();
+	  if (retirar){
+			//Para perfil vendedor de salon
+			//Para tipo de solicitud venta
+			//Si el item es kit los campos imei y sim son obligatorios
+			//Si el item es sim el campo imei no se ingresa y el campo sim es obligatorio
+			
+			//Para tipo de solicitud venta de accesorios
+			//El si el item es kit el campo imei es obligatorio
+			//La lista de precios tiene si usa plan o no
+		
+//		    ItemSolicitudTasadoDto itemT=(ItemSolicitudTasadoDto) item.getSelectedItem();
+//			//Marisa: incidencia ##0002237: Si el Item es accesorio nunca se debe permitir ingreso de Imei y sim.
+//			boolean habilitarIMEI = itemT != null && ! itemT.getItem().isAccesorio();
+//			
+//			//Cuando es Tipo de Venta Accesorios, se identifica a traves del Item, entonces a este nv
+//			agregarItemSS.setVisibilidadDatosVendedorDeSalon(habilitarIMEI);
+//		
+//			
+//			//Si no es Accesorio controlo para el perfil vendedor de salon
+//			habilitarIMEI = habilitarIMEI && (ClientContext.getInstance().getUsuarioLogueadoDTO().isVendedorSalon() && itemTasadoDTO != null && itemTasadoDTO.getItem().isKitPrepago());		
+//			//TipoSolicitudDTO tipoSolicitudDTO = (TipoSolicitudDTO)agregarItemSS.getComboTipoSolicitud().getSelectedItem();
+//			ListaPreciosDTO listaPreciosDTO = (ListaPreciosDTO)agregarItemSS.getComboListaPrecios().getSelectedItem();
+//			
+//			agregarItemSS.getTextBoxImei().setEnabled(habilitarIMEI);
+//			if (!habilitarIMEI) agregarItemSS.getTextBoxImei().setText("");
+//			
+//			
+//			//Marisa: incidencia ##0002237: Si el Item es accesorio nunca se debe permitir ingreso de Imei y sim.
+//			boolean habilitarSIM =itemTasadoDTO != null && !itemTasadoDTO.getItem().isAccesorio();
+//			
+//			//Si no es Accesorio controlo para el perfil vendedor de salon
+//			habilitarSIM =  habilitarSIM && (ClientContext.getInstance().getUsuarioLogueadoDTO().isVendedorSalon()  && itemT!= null && ( itemT.getItem().isKitPrepago() || listaPreciosDTO.isUsaPlan())); 	
+//			
+//			agregarItemSS.getTextBoxSim().setEnabled(habilitarSIM);
+//			if (!habilitarSIM){
+//				agregarItemSS.getTextBoxSim().setText("");
+//			}
+			
+	  sim.setEnabled(true);	
+	  imei.setVisible(true);
+	}
+	  }
+
 }

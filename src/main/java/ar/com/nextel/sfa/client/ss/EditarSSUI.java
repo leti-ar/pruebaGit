@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.sfa.client.InfocomRpcService;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -990,6 +991,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	}
 
 	private void saveSolicitudServicio(){
+		
+		
+		
 		//MGR - ISDN 1824 - Como se realizan validaciones, ya no recibe una SolicitudServicioDto
 		//sino una SaveSolicitudServicioResultDto que permite realizar el manejo de mensajes
 		SolicitudRpcService.Util.getInstance().saveSolicituServicio(editarSSUIData.getSolicitudServicio(),
@@ -1287,6 +1291,13 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				callback);
 	}
 
+	
+//	//validacion de stock
+//	public List<String> validarSIM_IMEI(SolicitudServicioDto solicitudServicio,
+//			DefaultWaitCallback callback) {
+//		SolicitudRpcService.Util.getInstance().validarSIM_IMEI(solicitudServicio,
+//				callback);
+//	}
 	public void getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios,
 			DefaultWaitCallback<List<ModeloDto>> callback) {
 		SolicitudRpcService.Util.getInstance().getModelos(imei, idTipoSolicitud, idListaPrecios, callback);
@@ -1744,5 +1755,19 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			}
 		});
 	}
+
+
+	/**
+	 * validacion de stock para el imei-sin cargados en agregar item
+	 * 
+	 */
+	public void validarSIM_IMEI(SolicitudServicioDto solicitud,
+			DefaultWaitCallback<List<String>> callback) {
+		SolicitudRpcService.Util.getInstance().validarSIM_IMEI(solicitud, callback);
+			
+	}
+	
+	
+	
 
 }

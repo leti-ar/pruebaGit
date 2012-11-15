@@ -636,7 +636,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler{
 		Long cantEquipos = new Long(0);
 		for (Iterator iterator = lineaSS.iterator(); iterator.hasNext();) {
 			LineaSolicitudServicioDto lineaSolicitudServicioDto = (LineaSolicitudServicioDto) iterator.next();
-			String sim = lineaSolicitudServicioDto.getItem().getEsSim();
+			String sim = lineaSolicitudServicioDto.getItem().getEsSim().toString();
 			String classIndicator = lineaSolicitudServicioDto.getItem().getClassIndicator();
 			if(sim.equals("T") || classIndicator.equals("EQUIPO") || classIndicator.equals("SERVICIO")) {
 				cantEquipos++;

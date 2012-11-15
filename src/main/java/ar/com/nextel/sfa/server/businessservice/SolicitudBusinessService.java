@@ -12,8 +12,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.commons.validator.GenericValidator;
+import org.apache.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.cuentas.caratula.CaratulaTransferidaResultDto;
@@ -31,6 +30,7 @@ import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaServi
 import ar.com.nextel.business.cuentas.scoring.legacy.dto.ScoringCuentaLegacyDTO;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
+import ar.com.nextel.business.legacy.financial.dao.storedProcedure.SubInventarioProcedureImpl;
 import ar.com.nextel.business.legacy.financial.dto.EncabezadoCreditoDTO;
 import ar.com.nextel.business.legacy.financial.exception.FinancialSystemException;
 import ar.com.nextel.business.oportunidades.OperacionEnCursoBusinessOperator;
@@ -86,8 +86,10 @@ import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalIncluido;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaTransfSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
+import ar.com.nextel.model.solicitudes.beans.Subinventario;
 import ar.com.nextel.model.solicitudes.beans.Sucursal;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
+import ar.com.nextel.model.solicitudes.beans.Warehouse;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.services.nextelServices.scoring.ScoringHistoryItem;
@@ -130,6 +132,9 @@ public class SolicitudBusinessService {
 	private KnownInstanceRetriever knownInstanceRetriever;
 	private InsertUpdateCuentaConfig insertUpdateCuentaConfig;
 	private CaratulaTransferidaConfig caratulaTransferidaConfig;
+	private Logger log = Logger.getLogger(SolicitudBusinessService.class);
+	private SubInventarioProcedureImpl subinventarioProcedure;
+	
 	
 //	MGR - Se mueve la creacion de la cuenta
 	private String MENSAJE_ERROR_CREAR_CUENTA= "La SS % quedó pendiente de aprobación, por favor verificar y dar curso manual.";
@@ -1355,4 +1360,120 @@ public class SolicitudBusinessService {
 		repository.save(ss);
 		return ss;
 	}
+	
+	
+	  /**
+     * Se valida que el/los n�meros de sim/imei ingresados pertenezcan al
+     * inventario/subinventario del usuario que realizo el ingreso de la
+     * solicitud (solo si es vendedor de salon)
+     *
+     * @param solicitudServicio a validar
+     * @return retorna lista de mensajes con errores si es que hubiese o vacia
+     * en caso contrario
+     */
+    public List<String> validarSIM_IMEI(SolicitudServicio solicitudServicio) {
+        List<String> mensajesError = new ArrayList<String>();
+        if (solicitudServicio.getVendedor().isVendedorSalon()) {
+            Vendedor vendedorSalon = solicitudServicio.getVendedor();
+            //si tiene subinventario si no no
+            // update verificar en ambos subinventarios (vendedor y pañol)
+
+            for (LineaSolicitudServicio linea : solicitudServicio.getLineas()) {
+                //si tiene IMEI y/o SIM
+                if (!linea.getItem().isAccesorio()) {
+
+                    List<Subinventario> subinventarios;
+                    try {
+                        subinventarios = getWarehouseSubInventario(vendedorSalon, linea.getItem());
+                    } catch (IllegalArgumentException ie) {
+                        log.info("error :" + ie.getMessage(), ie);
+                        mensajesError.add(ie.getMessage());
+                        return mensajesError;
+                    }
+
+
+                    log.info("Subinventarios a probar :" + subinventarios);
+                    // Warehouse debe ser solo uno controlado en getWarehouseSubInventario.
+                  Warehouse wh =  (Warehouse) vendedorSalon.getSucursal().getWarehouses();
+
+                    for (int i = 0; i < subinventarios.size(); i++) {
+                        Subinventario subI = subinventarios.get(i);
+                        log.info("******************************************************");
+                        log.info("Probando con Subinventario: " + subI.getId() + " " + subI.getDescripcion() + " " + subI.getCodigoFNCL());
+                        log.info("******************************************************");
+                        List<String> mensajes = subinventarioProcedure.execute(
+                                linea.getNumeroIMEI(),
+                                linea.getNumeroSimcard(),
+                                linea.getItem().getEsSim(),
+                                new Long(linea.getItem().getCodigoFNCL()),
+                                wh.getCodigoFNCL(),
+                                subI.getCodigoFNCL());
+                        if (!mensajes.isEmpty()) {
+                            for (String msg : mensajes) {
+                                if (!mensajesError.contains(msg)) {
+                                    mensajesError.add(msg);
+                                    log.info("Agregando mensaje de error: " + msg);
+                                } else {
+                                    log.info("Mensaje de error ya existe: " + msg);
+                                }
+                            }
+                        } else {
+                            log.info("&&& --- &&&& Operacion Existosa &&& --- &&&");
+                            mensajesError.clear();
+                            break;
+                        }
+                    }
+                }
+            }
+
+        }
+        return mensajesError;
+    }
+
+    /**
+     * Al cambiar el modo en que se recuperan los subinventarios (anteriormente
+     * directamente desde el vendedor y ahora desde la sucursal via su
+     * warehouse) se hizo necesario discriminar cual de ellos utilizar, dando
+     * siempre prioridad al subinventario marcado como VSALON si existiere, o
+     * bien utilizando el pañol si es que la suc. no tiene configurado VSALON o
+     * bien si este no tiene existencia de stock para el item.
+     *
+     * @param vendedor
+     * @param item
+     * @return
+     */
+    protected List<Subinventario> getWarehouseSubInventario(Vendedor vendedor, Item item) {
+
+        List<Subinventario> subinventarios = new ArrayList();
+        Set<Warehouse> warehouses = vendedor.getSucursal().getWarehouses();
+        if(warehouses.isEmpty()) {
+             throw new IllegalArgumentException("Error de configuracion - La sucursal no tiene Warehouse");
+        }
+        if (warehouses.size() > 1) {
+            throw new IllegalArgumentException("Error de configuracion - La sucursal solo puede tener un Warehouse Local");
+        }
+        List<Warehouse> listWh = new ArrayList<Warehouse>(warehouses);
+      
+        for (Subinventario si : listWh.get(0).getSubinventarios()) {
+            if ((si.getVsalon()!= null) && (si.isVsalon())) {
+                subinventarios.add(0, si);
+            } else {
+                Long sbSi = si.getId_subinventario_base();
+                Long sbItem = item.getSubinventario().getId_subinventario_base();
+                if (sbSi.equals(sbItem)) {
+                    subinventarios.add(si);
+                }
+            }
+        }
+
+        if (subinventarios.isEmpty()) {
+            throw new IllegalArgumentException("Error de configuracion - Sucursal sin Warehouse Local");
+        } else if (subinventarios.size() > 2) {
+            throw new IllegalArgumentException("Error de configuracion - Demasiados Subinventarios para Item: " + item.getDescripcion());
+        }
+        return subinventarios;
+    }
+	
+	
+	
 }

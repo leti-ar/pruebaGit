@@ -157,6 +157,9 @@ import ar.com.nextel.util.ExcelBuilder;
 import ar.com.nextel.util.PermisosUserCenter;
 import ar.com.nextel.util.StringUtil;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
+import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
+import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 import ar.com.snoop.gwt.commons.server.RemoteService;
 import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
 
@@ -243,6 +246,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				SolicitudServicioRequest.class);
 		AppLogger.info("Creando Solicitud de Servicio con Request -> " + request.toString());
 		SolicitudServicio solicitud = null;
+	
 		try {
 			solicitud = solicitudBusinessService.createSolicitudServicio(request, mapper);
 		} catch (BusinessException e) {
@@ -660,9 +664,12 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	//que permite realizar el manejo de mensajes
 	public CreateSaveSolicitudServicioResultDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
 			throws RpcExceptionMessages {
-		
+		List<String> mensajesError = new ArrayList<String>();
 		// TODO: Portabilidad
 		long contadorPortabilidad = 0;
+
+
+		//List<String>validacionStock=solicitudBusinessService.validarSIM_IMEI(solicitudServicio);
 		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
 			if(linea.getPortabilidad() != null) contadorPortabilidad++;
 		}
@@ -694,7 +701,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					solicitudServicioDto.setHistorialEstados(getEstadosPorSolicitud(new Long(solicitudServicioDto.getId())));									
 				}
 			}
-			
+					
 			resultDto.setSolicitud(solicitudServicioDto);
 		} catch (Exception e) {
 			AppLogger.error(e);
@@ -2954,6 +2961,12 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
         return null;
 	}
 
+	public List<String> validarSIM_IMEI(SolicitudServicioDto solicitud)throws RpcExceptionMessages{
+		
+		return solicitudBusinessService.validarSIM_IMEI(mapper.map(solicitud, SolicitudServicio.class));
+	}
+
+	
 	
 
 	

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import ar.com.nextel.business.solicitudes.report.SolicitudPortabilidadPropertiesReport;
+import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
@@ -430,4 +431,10 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.sonConfigurablesPorAPG(lineas, callback);
 	}
+	
+	public void validarSIM_IMEI(SolicitudServicioDto solicitud, DefaultWaitCallback<List<String>> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.validarSIM_IMEI(solicitud, callback);
+	}
+	
 }

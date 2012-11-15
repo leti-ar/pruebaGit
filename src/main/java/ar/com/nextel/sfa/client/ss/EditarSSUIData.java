@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -558,7 +559,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		solicitudServicio = solicitud;
 		nss.setText(solicitud.getNumero());
 		
-		if(solicitud.getGrupoSolicitud().getId().equals(new Long(1))){
+		if(solicitud.getGrupoSolicitud().isEquiposAccesorios() && solicitud.getRetiraEnSucursal()!= null){
 		retiraEnSucursal.setValue(solicitud.getRetiraEnSucursal());
 		}
 		//MGR - #1152
@@ -780,7 +781,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			solicitudServicio.setEmail(email.getText());
 		}
 		
-		if(solicitudServicio.getGrupoSolicitud().getId().equals(new Long(1))){
+		if(solicitudServicio.getGrupoSolicitud().isEquiposAccesorios()){
 			solicitudServicio.setRetiraEnSucursal(retiraEnSucursal.getValue());
 			}
 		
@@ -877,6 +878,19 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				}
 			}
 		}
+		
+		//validacion de stock
+		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
+			final List<String>lista= new ArrayList<String>();
+            controller.validarSIM_IMEI(solicitudServicio, new DefaultWaitCallback<List<String>>() {
+				public void success(List<String> result) {
+					lista.addAll(result);
+				}
+			});
+			
+		}
+		
+		
 		
 		validator.fillResult();
 		return validator.getErrors();
@@ -1559,6 +1573,14 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		SolicitudRpcService.Util.getInstance().validarPlanesCedentes(solicitudServicio.getContratosCedidos(),
 				getCuenta().isEmpresa(), isSaving, defaultWaitCallback);
 	}
+	
+	
+	
+	public void validarStockAgregarItem(final DefaultWaitCallback<List<String>> defaultWaitCallback, boolean isSaving){
+		
+		SolicitudRpcService.Util.getInstance().validarSIM_IMEI(solicitudServicio, defaultWaitCallback);
+	}
+	
 	
 	//MGR - #1415
 	public Long getIdSolicitudServicio(){
