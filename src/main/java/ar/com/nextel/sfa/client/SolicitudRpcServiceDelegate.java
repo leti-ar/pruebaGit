@@ -436,5 +436,10 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.validarSIM_IMEI(solicitud, callback);
 	}
-	
+
+//	MGR - RQN 2328
+	public void validarAreaBilling(String numeroAPortar, DefaultWaitCallback<Boolean> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.validarAreaBilling(numeroAPortar, callback);
+	}
 }

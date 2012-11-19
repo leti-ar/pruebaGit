@@ -232,7 +232,9 @@ public interface SolicitudRpcService extends RemoteService {
 
 	public int sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas) throws RpcExceptionMessages;
 	
-	
 	public List<String> validarSIM_IMEI(SolicitudServicioDto solicitud)throws RpcExceptionMessages;
+
+//	MGR - RQN 2328
+	boolean validarAreaBilling(String numeroAPortar) throws RpcExceptionMessages;
 }
 

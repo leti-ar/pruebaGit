@@ -7,7 +7,6 @@ import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
-import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
@@ -219,6 +218,8 @@ public interface SolicitudRpcServiceAsync {
 
 	public void sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas, AsyncCallback<Integer> callback);
 	
-	
 	public void validarSIM_IMEI(SolicitudServicioDto solicitud, AsyncCallback<List<String>> callback);
+
+//	MGR - RQN 2328
+	public void validarAreaBilling(String numeroAPortar, AsyncCallback<Boolean> callback);
 }

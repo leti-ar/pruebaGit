@@ -35,9 +35,12 @@ import ar.com.nextel.business.legacy.avalon.dto.CantidadEquiposDTO;
 import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
 import ar.com.nextel.business.legacy.bps.BPSSystem;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
+import ar.com.nextel.business.legacy.shift.ShiftSystem;
+import ar.com.nextel.business.legacy.shift.exception.ShiftSystemException;
 import ar.com.nextel.business.legacy.vantive.VantiveSystem;
 import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
+import ar.com.nextel.business.shift.InformacionNumeroDTO;
 import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSResponse;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
@@ -185,6 +188,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private DefaultSequenceImpl tripticoNextValue;
     private AvalonSystem avalonSystem;
 	
+//  MGR - RQN 2328
+    private ShiftSystem shiftSystem;
+    
 	//MGR - #1481
 	private DefaultRetriever messageRetriever;;
 	
@@ -229,10 +235,14 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		
 		tripticoNextValue = (DefaultSequenceImpl)context.getBean("tripticoNextValue");
 		avalonSystem = (AvalonSystem) context.getBean("avalonSystemBean");
+		
+//		MGR - RQN 2328
+		shiftSystem = (ShiftSystem) context.getBean("shiftSystemBean");
+		
 		messageRetriever = (DefaultRetriever)context.getBean("messageRetriever");
 		mailSender= (MailSender)context.getBean("mailSender");
-		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");
-		
+		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");		
+
 	}
 
 	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
@@ -802,7 +812,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 
 		List<TipoSolicitudDto> tiposSolicitudDeGrupoSelected = tiposSolicitudPorGrupo.get(grupoSolicitudDto
 				.getId());
-		// Si no es vaciï¿½ (no deberï¿½a serlo) carga la lista de precios del primer tipoSolicitud que se muestra
+		// Si no es vacio (no deberia serlo) carga la lista de precios del primer tipoSolicitud que se muestra
 		if (!tiposSolicitudDeGrupoSelected.isEmpty()) {
 			TipoSolicitudDto firstTipoSolicitudDto = tiposSolicitudDeGrupoSelected.get(0);
 			TipoSolicitud firstTipoSolicitud = repository.retrieve(TipoSolicitud.class, firstTipoSolicitudDto
@@ -1049,7 +1059,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					" es de trasnferencia: " + solicitudServicio.getGrupoSolicitud().isGrupoTransferencia(), this);
 			
 			String errorNF = "";
-			//larce - Req#5 Cierre y Pass automÃ¡tico
+			//larce - Req#5 Cierre y Pass automatico
 			String errorCC = "";
 			int puedeCerrar = 0;
 //			MGR - Parche de emergencia
@@ -1073,7 +1083,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 //							Si el pass se da por Scoring, sigue su curso normal
 							if(cierrePorVeraz && !"T".equals(isVerazDisponible.get(0))){
 								//En caso de que el veraz no este disponible, de cumplir con las condiciones comerciales se cierra 
-								//la SS quedando pendiente de aprobacion en vantive y se envia un mail informando la situaciÃ³n
+								//la SS quedando pendiente de aprobacion en vantive y se envia un mail informando la situacion
 								solicitudServicio.setPassCreditos(false);
 //								MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
 //								solicitudBusinessService.enviarMailPassCreditos(solicitudServicioDto.getNumero());
@@ -1144,9 +1154,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			    		    alias = alias + aliasAux + " ,";				
 			    		}	
 			            alias = alias.substring(0, alias.length() - 1);
-			            mensaje = " las lÃ­neas " + alias + "ya fueron utilizados ";
+			            mensaje = " las líneas " + alias + "ya fueron utilizados ";
 			    	} else {
-			    		mensaje  = " la lÃ­nea " + listaAlias.get(0) + " ya fue utilizado ";
+			    		mensaje  = " la línea " + listaAlias.get(0) + " ya fue utilizado ";
 			    	}
 		            Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.SIM_REPETIDO);
 		            message.addParameters(new Object[] {mensaje});
@@ -1936,17 +1946,17 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	}
 	
 	/**
-	 * EvalÃºo las lÃ­neas de la solicitud con los tipos de Ã³rdenes y tipos de
+	 * Evaluo las lineas de la solicitud con los tipos de ordenes y tipos de
 	 * vendedor que se encuentran configurados.
 	 * 
 	 * @param solicitudServicioDto
 	 * @param result
-	 * @return 1- En caso de que ninguna de las lÃ­neas cumpla, se realizara el
-	 *         cierre y se transferirÃ¡ a Vantive. 
-	 *         2- En caso de que al menos una de las lÃ­neas no cumpla, no se 
+	 * @return 1- En caso de que ninguna de las lineas cumpla, se realizara el
+	 *         cierre y se transferira a Vantive. 
+	 *         2- En caso de que al menos una de las lineas no cumpla, no se 
 	 *         realizara el cierre y se mostrara un mensaje de error. 
-	 *         3- En caso de que todas las lÃ­neas de la solicitud cumplan, se 
-	 *         realizara el cierre y pass de crÃ©ditos automÃ¡tico a la SS.
+	 *         3- En caso de que todas las lineas de la solicitud cumplan, se 
+	 *         realizara el cierre y pass de creditos automatico a la SS.
 	 */
 //	MGR - Parche de emergencia
 	public int sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas) {
@@ -1956,7 +1966,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	
 //	MGR - Parche de emergencia
 //	public int sonConfigurablesPorAPG(List<LineaSolicitudServicio> lineas) {
-//		AppLogger.info("#Log Cierre y pass - Validando que todas las lÃ­neas sean configurables por APG...");
+//		AppLogger.info("#Log Cierre y pass - Validando que todas las lineas sean configurables por APG...");
 //		int cumple = 0;
 //		TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor();
 ////		MGR****for (Iterator<LineaSolicitudServicioDto> iterator = lineas.iterator(); iterator.hasNext();) {
@@ -1971,20 +1981,20 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 //			}
 //		}
 //		if (cumple == lineas.size()) {
-//			AppLogger.info("#Log Cierre y pass - Todas las lÃ­neas son configurables por APG");
+//			AppLogger.info("#Log Cierre y pass - Todas las lineas son configurables por APG");
 //			return CIERRE_PASS_AUTOMATICO;
 //		} else if ((cumple < lineas.size() && cumple != 0) ) {
-//			AppLogger.info("#Log Cierre y pass - No todas las lÃ­neas son configurables por APG");
+//			AppLogger.info("#Log Cierre y pass - No todas las lineas son configurables por APG");
 //			return LINEAS_NO_CUMPLEN_CC;
 //		} else {
-//			AppLogger.info("#Log Cierre y pass - Ninguna lÃ­nea es configurable por APG");			
+//			AppLogger.info("#Log Cierre y pass - Ninguna linea es configurable por APG");			
 //			return CIERRE_NORMAL;
 //		}
 //	}
 	
 	/**
 	 * Dependiendo del tipo de cliente, si tiene equipos activos o suspendidos y deuda en cuenta corriente;
-	 * la SS se podrÃ¡ o no, cerrar por Veraz o Scoring.
+	 * la SS se podra o no, cerrar por Veraz o Scoring.
 	 * @param ss
 	 * @param pinMaestro
 	 * @return Mensaje de error si no se cumplen las condiciones.
@@ -2209,7 +2219,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	}
 	
 	/**
-	 * Arma el mensaje de error, indicando las no coincidencias de cada lÃ­nea, segÃºn lo que estÃ¡ configurado.
+	 * Arma el mensaje de error, indicando las no coincidencias de cada linea, segun lo que esta configurado.
 	 * @param ss
 	 * @param pinMaestro
 	 * @return
@@ -2659,7 +2669,6 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 */
 	public boolean getExisteEnAreaCobertura(int codArea) throws RpcExceptionMessages {
 		//SolicitudPortabilidadWSImpl ws = new SolicitudPortabilidadWSImpl();
-		
 		String query = "FROM Localidad local WHERE local.codigoArea = ? AND local.cobertura = ?";
 		return repository.find(query, String.valueOf(codArea),true).size() > 0 ? true : false;
 	}
@@ -2966,8 +2975,35 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		return solicitudBusinessService.validarSIM_IMEI(mapper.map(solicitud, SolicitudServicio.class));
 	}
 
+//	MGR - RQN 2328
+	public boolean validarAreaBilling(String numeroAPortar) throws RpcExceptionMessages {
+		try {
+			InformacionNumeroDTO infoDto = shiftSystem.getInformarcionNumero(numeroAPortar);
+			if(infoDto.getPi() == null || infoDto.getPi().toString().equals("")
+					|| infoDto.getPu() == null || infoDto.getPu().equals(""))
+				return false;
+			
+			String areaAPortar = shiftSystem.getAreaBilling(infoDto.getPi().toString(), infoDto.getPu());
+			
+			for (AreaBillingValidas areaBilling : AreaBillingValidas.values()) {
+				if(areaBilling.name().equals(areaAPortar))
+					return true;
+			}
+		} catch (ShiftSystemException e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+		return false;
+	}
 	
-	
-
-	
+//	MGR - RQN 2328
+	private enum AreaBillingValidas{
+		//AF, //AFUERA //No se puede portar
+		AM, //AMBA
+		CO, //CORDO
+		CA, //COSTA
+		ME, //MENDO
+		RO, //ROSAR
+		ZZ; //SIN AREA
+	}
 }
