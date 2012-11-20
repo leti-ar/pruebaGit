@@ -61,7 +61,7 @@ public class CargaDeCombos {
 			final TipoSolicitudDto tipoSolicitud, final ListBox lboxListaDePrecios) {
 		lboxListaDePrecios.clear();
 		if (tipoSolicitud != null) {
-			if (tipoSolicitud.getListasPrecios() == null) {
+			if (tipoSolicitud.getListasPrecios().size() > 0 ) {
 				WaitWindow.show();
 				SolicitudRpcService.Util.getInstance().getListasDePrecios(
 						tipoSolicitud, false,
@@ -93,13 +93,15 @@ public class CargaDeCombos {
 		if (itemSeleccionado.getId() != null){
 			// Copio los elementos del item selecionado asi puedo incorporarle un elemento nulo sin afectar el dto.
 			List<ItemSolicitudTasadoDto> items = new ArrayList<ItemSolicitudTasadoDto>();
-			items.addAll((List<ItemSolicitudTasadoDto>)itemSeleccionado.getItemsListaPrecioVisibles());
-			ItemSolicitudTasadoDto itemTasadaoDTO = new ItemSolicitudTasadoDto();
-			ItemSolicitudDto itemDto = new ItemSolicitudDto();
-			itemTasadaoDTO.setItem(itemDto);
-			// Ponemos el elemento nulo al principio de la lista.
-			items.add(0,itemTasadaoDTO);
-			lboxCantItemsLst.addAllItems(items);
+			if(itemSeleccionado.getItemsListaPrecioVisibles() != null){
+				items.addAll((List<ItemSolicitudTasadoDto>)itemSeleccionado.getItemsListaPrecioVisibles());
+				ItemSolicitudTasadoDto itemTasadaoDTO = new ItemSolicitudTasadoDto();
+				ItemSolicitudDto itemDto = new ItemSolicitudDto();
+				itemTasadaoDTO.setItem(itemDto);
+				// Ponemos el elemento nulo al principio de la lista.
+				items.add(0,itemTasadaoDTO);
+				lboxCantItemsLst.addAllItems(items);
+			}
 		}
 		
 	}

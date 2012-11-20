@@ -36,7 +36,7 @@ public class StockUI extends ApplicationUI {
 	}
 
 	public boolean unload(String token) {
-		((StockUIDlg)dialog).clearCombos();
+		//((StockUIDlg)dialog).clearCombos();
 		return true;
 	}
 
