@@ -60,4 +60,6 @@ public interface EditarSSUIController {
 	boolean isEditable();
 	
     public void validarSIM_IMEI(SolicitudServicioDto solicitud,DefaultWaitCallback<List<String>> callback);
+    
+    boolean tieneLineasSolicitud();
 }

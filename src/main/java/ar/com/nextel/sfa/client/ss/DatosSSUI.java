@@ -1013,8 +1013,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		editarSSUIData.getFacturacion().setEnabled(controller.isEditable());
 		editarSSUIData.getAclaracion().setEnabled(controller.isEditable());
 		editarSSUIData.getEmail().setEnabled(controller.isEditable());
-		editarSSUIData.getRetiraEnSucursal().setEnabled(controller.isEditable());
-	}
+		if (controller.getEditarSSUIData().isEquiposAccesorios()){
+		editarSSUIData.getRetiraEnSucursal().setEnabled(controller.tieneLineasSolicitud());
+	}}
 	
 	/**
 	 * Después de modificar una lineaSS elimino los descuentos

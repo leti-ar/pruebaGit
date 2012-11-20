@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.TextBox;
 
 /**
  * Panel de edicion de linea de solicitud que solo contiene Item, como por ejemplo una venta de accesorio
@@ -98,7 +99,9 @@ public class SoloItemSolicitudUI extends Composite {
 		precioCantidad.setHTML(0, 0, Sfa.constant().precioLista());
 		precioCantidad.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
 		precioCantidad.setHTML(0, 2, Sfa.constant().cantidadReq());
-		precioCantidad.setWidget(0, 3, itemSolicitudData.getCantidad());
+		
+		 precioCantidad.setWidget(0, 3, itemSolicitudData.getCantidad());
+		
 		mainPanel.add(precioCantidad);
 
 		total = new Grid(1, 2);
@@ -130,7 +133,12 @@ public class SoloItemSolicitudUI extends Composite {
 	}
 
 	public SoloItemSolicitudUI setLayout(int layout, EditarSSUIController controller) {
-		 boolean retirar= controller.getEditarSSUIData().getSolicitudServicio().getRetiraEnSucursal();
+		boolean retirar = false;
+		boolean esEquipoAccesorio= false;
+		if (controller.getEditarSSUIData().isEquiposAccesorios()){
+		 retirar= controller.getEditarSSUIData().getSolicitudServicio().getRetiraEnSucursal();
+		 esEquipoAccesorio= true;
+		}
 		total.setVisible(false);
 
 		switch (layout) {
@@ -156,6 +164,12 @@ public class SoloItemSolicitudUI extends Composite {
 			if (retirar){
 			activacionModeloImei.setVisible(true);
 			activacionSimSeriePin.setVisible(true);
+			if (esEquipoAccesorio){
+				TextBox cantidadUnica= new TextBox();
+				cantidadUnica.setValue("1");
+				cantidadUnica.setEnabled(false);
+				 precioCantidad.setWidget(0, 3, cantidadUnica);
+				}
 			}else{
 				activacionModeloImei.setVisible(false);
 				activacionSimSeriePin.setVisible(false);

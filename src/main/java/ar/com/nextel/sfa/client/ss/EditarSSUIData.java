@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -16,7 +15,6 @@ import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
-import ar.com.nextel.sfa.client.dto.EstadoHistoricoDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
@@ -45,8 +43,6 @@ import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -558,10 +554,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 		solicitudServicio = solicitud;
 		nss.setText(solicitud.getNumero());
-		
+	
 		if(solicitud.getGrupoSolicitud().isEquiposAccesorios() && solicitud.getRetiraEnSucursal()!= null){
-		retiraEnSucursal.setValue(solicitud.getRetiraEnSucursal());
-		}
+			retiraEnSucursal.setValue(solicitud.getRetiraEnSucursal());
+			}
+		tieneLineasDeSolicitud();
+		
+		
 		//MGR - #1152
 		boolean esProspect =RegularExpressionConstants.isVancuc(solicitud.getCuenta().getCodigoVantive());
 		
@@ -683,6 +682,14 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //					format(solicitudServicio.getFechaEstado()) : "");
 //		}
 		
+	}
+
+	public SolicitudServicioDto tieneLineasDeSolicitud() {
+		return solicitudServicio;
+//		if(solicitudServicio.getLineas().size()>0){
+//			controller.tieneLineasSolicitud(false);
+//			//retiraEnSucursal.setEnabled(false);
+//		}
 	}
 	
 	private void cargarDatosTransferencia(){
@@ -879,16 +886,16 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			}
 		}
 		
-		//validacion de stock
-		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
-			final List<String>lista= new ArrayList<String>();
-            controller.validarSIM_IMEI(solicitudServicio, new DefaultWaitCallback<List<String>>() {
-				public void success(List<String> result) {
-					lista.addAll(result);
-				}
-			});
-			
-		}
+//		//validacion de stock
+//		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
+//			final List<String>lista= new ArrayList<String>();
+//            controller.validarSIM_IMEI(solicitudServicio, new DefaultWaitCallback<List<String>>() {
+//				public void success(List<String> result) {
+//					lista.addAll(result);
+//				}
+//			});
+//			
+//		}
 		
 		
 		
@@ -1277,6 +1284,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	public boolean isCDW() {
 		return solicitudServicio.getGrupoSolicitud().isCDW();
+	}
+	
+	public boolean isEquiposAccesorios(){
+		return solicitudServicio.getGrupoSolicitud().isEquiposAccesorios();
 	}
 
 	public boolean isMDS() {

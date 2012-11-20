@@ -884,6 +884,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			}
 		} else if (sender == cancelarButton) {
 			History.newItem("");
+			
 		} else if (sender == validarCompletitud) {
 			validarCompletitud(true);
 		} else if (sender == acionesSS) {
@@ -1767,6 +1768,16 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			
 	}
 	
+	/**
+	 * si existe por lo menos una linea de solicitud no deja cambiar el check de retiro en sucursal
+	 */
+	public boolean tieneLineasSolicitud(){
+		boolean activar = true;
+		if(editarSSUIData.tieneLineasDeSolicitud().getLineas().size()>0){
+			activar = false;
+		}
+		return activar;	
+	}
 	
 	
 
