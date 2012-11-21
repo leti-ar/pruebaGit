@@ -188,7 +188,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
     private ShiftSystem shiftSystem;
     
 	//MGR - #1481
-	private DefaultRetriever messageRetriever;;
+	private DefaultRetriever messageRetriever;
 	
 	//MGR - #3122
 	private static final String ERROR_CC_POR_RESULTADO = "ERROR_CC_POR_RESULTADO";
@@ -209,6 +209,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 //  MGR - #3462 - Para la busqueda del item que corresponda
     private static String namedQueryItemParaActivacionOnline = "ITEMS_PARA_PLANES_ACT_ONLINE";
 
+//	MGR - #3460 - Se pide registrar el nombre y el id del vendedor de registro logeado
+	private static String GET_ID_REGISTRO_VENDEDOR = "GET_ID_REGISTRO_VENDEDOR";
+	
 	public void init() throws ServletException {
 		super.init();
 		context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
@@ -1183,15 +1186,23 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			if(!hayError){
 				
 				//LF - #3109 - Registro el vendedor logueado que realiza el cierre
-				solicitudServicio.setVendedorLogueado(sessionContextLoader.getVendedor());
+//				MGR - #3460 - Se pide registrar el nombre y el id del vendedor
+				String userName = sessionContextLoader.getVendedor().getUserName();
+				List<Long> listRegistroVend = repository.executeCustomQuery(GET_ID_REGISTRO_VENDEDOR, userName);
+				
+				Long idRegistroVendedor = 0l;
+				if(!listRegistroVend.isEmpty())
+					idRegistroVendedor = listRegistroVend.get(0);
+				
+				solicitudServicio.setIdRegistroVendedor(idRegistroVendedor);
+				solicitudServicio.setNombreRegistroVendedor(userName);
 			
 //				MGR - Se mueve la creacion de la cuenta. Debo recordar si es prospect antes de enviar a cerrar
 				boolean eraProspect = !solicitudServicio.getCuenta().isCliente();
 				response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, puedeCerrar);
 				
 				result.setError(response.getMessages().hasErrors());
-				
-				
+								
 //				MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
 //				MGR - #3458 - Y si el cierre fue por veraz
 				if (!result.isError() && puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO &&
@@ -2147,6 +2158,18 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		for (Iterator<LineaSolicitudServicio> iterator = lineas.iterator(); iterator.hasNext();) {
 			LineaSolicitudServicio linea = (LineaSolicitudServicio) iterator.next();
     		cantPesos = cantPesos + linea.getPrecioVenta();
+    		
+//    		MGR - #3464
+			cantPesos += linea.getPrecioVentaPlan();
+
+//    		MGR - #3464 - Sumo los servicios adicionales que tiene la linea
+    		Iterator itServAd = linea.getServiciosAdicionales().iterator();
+    		while(itServAd.hasNext()){
+    			ServicioAdicionalLineaSolicitudServicio serv = (ServicioAdicionalLineaSolicitudServicio)itServAd.next();
+    			//Solo se suman los servicios que se encuentran seleccionados
+    			if(serv.getChecked().booleanValue())
+    				cantPesos += serv.getPrecioVenta();
+    		}
 		}
     	
 		boolean existeCC = true;
@@ -2238,6 +2261,18 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		for (Iterator<LineaSolicitudServicio> iterator = lineas.iterator(); iterator.hasNext();) {
     		LineaSolicitudServicio linea = (LineaSolicitudServicio) iterator.next();
     		cantPesos = cantPesos + linea.getPrecioVenta();
+    		
+//    		MGR -  #3464
+    		cantPesos += linea.getPrecioVentaPlan();
+    		
+//    		MGR - #3464 - Sumo los servicios adicionales que tiene la linea
+    		Iterator itServAd = linea.getServiciosAdicionales().iterator();
+    		while(itServAd.hasNext()){
+    			ServicioAdicionalLineaSolicitudServicio serv = (ServicioAdicionalLineaSolicitudServicio)itServAd.next();
+    			//Solo se suman los servicios que se encuentran seleccionados
+    			if(serv.getChecked().booleanValue())
+    				cantPesos += serv.getPrecioVenta();
+    		}
 		}
     	List<Long> cantPesosMax = (repository.executeCustomQuery("maxCantPesos", resultadoVerazScoring, tipoVendedor.getId()));
     	

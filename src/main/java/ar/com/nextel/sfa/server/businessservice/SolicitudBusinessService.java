@@ -138,9 +138,11 @@ public class SolicitudBusinessService {
 	public static final int CIERRE_NORMAL = 1; //Se cierra la solicitud de servicio y se transfiere a Vantive
 	public static final int LINEAS_NO_CUMPLEN_CC = 2;
 	public static final int CIERRE_PASS_AUTOMATICO = 3;
-	
-//	MGR - Parche de emergencia
+
 	private static final String CANTIDAD_EQUIPOS = "CANTIDAD_EQUIPOS";
+	
+//	MGR - #3464
+//	private static String namedQueryItemParaActivacionOnline = "ITEMS_PARA_PLANES_ACT_ONLINE";
 	
 	@Autowired
 	public void setGlobalParameterRetriever(
@@ -1285,11 +1287,14 @@ public class SolicitudBusinessService {
 	}
 
 
-//	MGR - Parche de emergencia
-//	public List<ServicioAdicionalLineaSolicitudServicioDto> getServicioAdicionalLineaIncluidosNoVisibles(
-//			VendedorDto vendedor, LineaSolicitudServicioDto linea) {
+//	MGR - #3464 - Ya no es necesario
+//	public List<ServicioAdicionalLineaSolicitudServicio> getServicioAdicionalLineaIncluidosNoVisibles(
+//			Vendedor vendedor, LineaSolicitudServicio linea) {
 //		
+//		List<ServicioAdicionalLineaSolicitudServicio> lineasSSAA = 
+//						new ArrayList<ServicioAdicionalLineaSolicitudServicio>();
 //		Item item = null;
+//		
 //		if( (linea.isActivacion() || linea.isActivacionOnline()) 
 //				&& linea.getModelo() != null){
 //			List<Item> listItems = repository.executeCustomQuery(namedQueryItemParaActivacionOnline, linea.getModelo().getId());
@@ -1302,13 +1307,12 @@ public class SolicitudBusinessService {
 //		}
 //		
 //		if(item != null){
-//			List<ServicioAdicionalLineaSolicitudServicio> lineasSSAA = linea.getPlan()
-//			.getServicioAdicionalLineaIncluidosNoVisibles(item,
-//				ss.getVendedor(), linea);
+//			lineasSSAA = linea.getPlan()
+//				.getServicioAdicionalLineaIncluidosNoVisibles(item,	vendedor, linea);
 //			
 //		}
 //		
-//		return null;
+//		return lineasSSAA;
 //	}
 	
 //	MGR - Parche de emergencia
@@ -1349,7 +1353,7 @@ public class SolicitudBusinessService {
 		return cantEquipos;
 	}
 	
-//	MGR - Parche de emergencia
+//	MGR - Para guardar la solicitud, creado por un parche de emergencia
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public SolicitudServicio saveSolicituServicio(SolicitudServicio ss){
 		repository.save(ss);
