@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -2971,8 +2972,15 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	}
 
 	public List<String> validarSIM_IMEI(SolicitudServicioDto solicitud)throws RpcExceptionMessages{
-		
-		return solicitudBusinessService.validarSIM_IMEI(mapper.map(solicitud, SolicitudServicio.class));
+		 Set<LineaSolicitudServicio> lineas = new HashSet<LineaSolicitudServicio>();
+		 for (Iterator iterator = solicitud.getLineas().iterator(); iterator.hasNext();) {
+			LineaSolicitudServicioDto lineaSolicitudServicioDTO = (LineaSolicitudServicioDto) iterator
+					.next();
+			lineas.add(mapper.map(lineaSolicitudServicioDTO, LineaSolicitudServicio.class));
+		}
+		 Vendedor vendedor= mapper.map(solicitud.getVendedor(), Vendedor.class);
+		 
+		return solicitudBusinessService.validarSIM_IMEI(lineas,vendedor);
 	}
 
 //	MGR - RQN 2328

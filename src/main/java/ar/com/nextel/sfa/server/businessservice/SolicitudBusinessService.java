@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.validator.GenericValidator;
-import org.apache.log4j.Logger;
 import org.dozer.DozerBeanMapper;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,7 +131,7 @@ public class SolicitudBusinessService {
 	private KnownInstanceRetriever knownInstanceRetriever;
 	private InsertUpdateCuentaConfig insertUpdateCuentaConfig;
 	private CaratulaTransferidaConfig caratulaTransferidaConfig;
-	private Logger log = Logger.getLogger(SolicitudBusinessService.class);
+	
 	private SubInventarioProcedureImpl subinventarioProcedure;
 	
 	
@@ -1371,36 +1370,36 @@ public class SolicitudBusinessService {
      * @return retorna lista de mensajes con errores si es que hubiese o vacia
      * en caso contrario
      */
-    public List<String> validarSIM_IMEI(SolicitudServicio solicitudServicio) {
+    public List<String> validarSIM_IMEI(Set<LineaSolicitudServicio> lineas, Vendedor vendedor) {
         List<String> mensajesError = new ArrayList<String>();
-        if (solicitudServicio.getVendedor().isVendedorSalon()) {
-            Vendedor vendedorSalon = solicitudServicio.getVendedor();
+        if (vendedor.isVendedorSalon()) {
+           
             //si tiene subinventario si no no
             // update verificar en ambos subinventarios (vendedor y pañol)
 
-            for (LineaSolicitudServicio linea : solicitudServicio.getLineas()) {
+            for (LineaSolicitudServicio linea : lineas) {
                 //si tiene IMEI y/o SIM
                 if (!linea.getItem().isAccesorio()) {
 
                     List<Subinventario> subinventarios;
                     try {
-                        subinventarios = getWarehouseSubInventario(vendedorSalon, linea.getItem());
+                        subinventarios = getWarehouseSubInventario(vendedor, linea.getItem());
                     } catch (IllegalArgumentException ie) {
-                        log.info("error :" + ie.getMessage(), ie);
+                    	AppLogger.info("error :" + ie.getMessage(), ie);
                         mensajesError.add(ie.getMessage());
                         return mensajesError;
                     }
 
 
-                    log.info("Subinventarios a probar :" + subinventarios);
+                    AppLogger.info("Subinventarios a probar :" + subinventarios);
                     // Warehouse debe ser solo uno controlado en getWarehouseSubInventario.
-                  Warehouse wh =  (Warehouse) vendedorSalon.getSucursal().getWarehouses();
+                  Warehouse wh =  (Warehouse) vendedor.getSucursal().getWarehouses();
 
                     for (int i = 0; i < subinventarios.size(); i++) {
                         Subinventario subI = subinventarios.get(i);
-                        log.info("******************************************************");
-                        log.info("Probando con Subinventario: " + subI.getId() + " " + subI.getDescripcion() + " " + subI.getCodigoFNCL());
-                        log.info("******************************************************");
+                        AppLogger.info("******************************************************");
+                        AppLogger.info("Probando con Subinventario: " + subI.getId() + " " + subI.getDescripcion() + " " + subI.getCodigoFNCL());
+                        AppLogger.info("******************************************************");
                         List<String> mensajes = subinventarioProcedure.execute(
                                 linea.getNumeroIMEI(),
                                 linea.getNumeroSimcard(),
@@ -1412,13 +1411,13 @@ public class SolicitudBusinessService {
                             for (String msg : mensajes) {
                                 if (!mensajesError.contains(msg)) {
                                     mensajesError.add(msg);
-                                    log.info("Agregando mensaje de error: " + msg);
+                                    AppLogger.info("Agregando mensaje de error: " + msg);
                                 } else {
-                                    log.info("Mensaje de error ya existe: " + msg);
+                                	AppLogger.info("Mensaje de error ya existe: " + msg);
                                 }
                             }
                         } else {
-                            log.info("&&& --- &&&& Operacion Existosa &&& --- &&&");
+                        	AppLogger.info("&&& --- &&&& Operacion Existosa &&& --- &&&");
                             mensajesError.clear();
                             break;
                         }

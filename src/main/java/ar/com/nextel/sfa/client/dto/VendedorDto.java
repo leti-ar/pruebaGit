@@ -2,6 +2,8 @@ package ar.com.nextel.sfa.client.dto;
 
 import java.util.HashMap;
 
+import ar.com.nextel.business.constants.KnownInstanceIdentifier;
+import ar.com.nextel.model.cuentas.beans.TipoVendedor;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
@@ -38,6 +40,13 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
     	return false;
     }
     
+    public boolean isVendedorSalon() {
+    	HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+    	if(instancias != null && this.getTipoVendedor() != null){
+    		return instancias.get(TIPO_VENDEDOR_SALON).equals(this.getTipoVendedor().getId());
+    	}
+    	return false;
+    }
     public boolean isLap(){
     	HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
     	if(instancias != null && this.getTipoVendedor() != null){

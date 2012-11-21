@@ -762,6 +762,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	public TextBox getCantidad() {
 		return cantidad;
 	}
+	
+	public void setCantidad(String cantidadNueva) {
+		 cantidad.setText(cantidadNueva);
+	}
 
 	public ListBox getTipoOrden() {
 		return tipoOrden;

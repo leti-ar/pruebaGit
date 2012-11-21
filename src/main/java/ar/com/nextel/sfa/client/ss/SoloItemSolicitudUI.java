@@ -165,10 +165,10 @@ public class SoloItemSolicitudUI extends Composite {
 			activacionModeloImei.setVisible(true);
 			activacionSimSeriePin.setVisible(true);
 			if (esEquipoAccesorio){
-				TextBox cantidadUnica= new TextBox();
-				cantidadUnica.setValue("1");
-				cantidadUnica.setEnabled(false);
-				 precioCantidad.setWidget(0, 3, cantidadUnica);
+				itemSolicitudData.getCantidad().setEnabled(false);
+				itemSolicitudData.setCantidad("1");
+				precioCantidad.setWidget(0, 3, itemSolicitudData.getCantidad());
+			
 				}
 			}else{
 				activacionModeloImei.setVisible(false);

@@ -802,10 +802,19 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>usuarioActivo</a>
 			<b>usuarioDto</b>
 		</field>
+		<field custom-converter-id="enumToDto">
+			<a>localidad</a>
+			<b>localidad</b>
+		</field>
+		<field>
+			<a>tipoVendedor</a>
+			<b>tipoVendedor</b>
+		</field>
 		<field type="one-way">
             <a>sucursal.id</a>
             <b>idSucursal</b>
         </field>
+        
 	</mapping>
 	<mapping>
 		<class-a>ar.com.nextel.business.oportunidades.search.result.OportunidadNegocioSearchResult
