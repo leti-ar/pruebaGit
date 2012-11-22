@@ -65,10 +65,9 @@ public class StockUIDlg extends NextelDialog {
 
 							@Override
 							public void success(String result) {
-								//CargaDeCombos.cargarComboTipoOrden(tipoOrdenLst);
+//								hide();
 								MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO,
 										result, MessageDialog.getCloseCommand());
-								
 								History.newItem(UILoader.SOLO_MENU + "");
 							}
 						});
@@ -87,7 +86,6 @@ public class StockUIDlg extends NextelDialog {
 		});
 	}
 
-	
 	public void init() {
 		buscadorDocumentoPanel = new SimplePanel();
 		buscadorDocumentoPanel.setWidth("320");
@@ -134,7 +132,7 @@ public class StockUIDlg extends NextelDialog {
 		cerrar.ensureDebugId(DebugConstants.AGREGAR_CUENTAS_POPUP_BUTTON_CERRAR_ID);
 		aceptar.ensureDebugId(DebugConstants.AGREGAR_CUENTAS_POPUP_BUTTON_ACEPTAR_ID);
 		
-		CargaDeCombos.cargarComboTipoOrden(tipoOrdenLst);
+		initCombos();
 
 		tipoOrdenLst.setWidth("220");
 		listaPrecioLst.setWidth("220");
@@ -154,22 +152,23 @@ public class StockUIDlg extends NextelDialog {
 						.getSelectedItem();
 				getCantItemsLst().clear();
 				CargaDeCombos.cargarListaDePrecios(tipoSolicitudDTO,
-						listaPrecioLst);
-			}
-		});
-		
-		listaPrecioLst.addChangeHandler(new ChangeHandler() {
-			public void onChange(ChangeEvent event) {
-				CargaDeCombos.cargarComboItems(listaPrecioLst, cantItemsLst);	
+						listaPrecioLst, cantItemsLst);
 			}
 		});
 
 	}
 
 	public void initCombos(){
-		CargaDeCombos.cargarComboTipoOrden(tipoOrdenLst);
+		CargaDeCombos.cargarComboTipoOrden(tipoOrdenLst, listaPrecioLst,
+				cantItemsLst);
 	}
 	
+	public void clearCombos(){
+		getTipoOrdenLst().clear();
+		getListaPrecioLst().clear();
+		getCantItemsLst().clear();
+	}
+
 	public ListBox getTipoOrdenLst() {
 		return tipoOrdenLst;
 	}
