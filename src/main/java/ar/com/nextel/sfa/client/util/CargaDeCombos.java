@@ -61,7 +61,6 @@ public class CargaDeCombos {
 			final TipoSolicitudDto tipoSolicitud, final ListBox lboxListaDePrecios) {
 		lboxListaDePrecios.clear();
 		if (tipoSolicitud != null) {
-			if (tipoSolicitud.getListasPrecios().size() > 0 ) {
 				WaitWindow.show();
 				SolicitudRpcService.Util.getInstance().getListasDePrecios(
 						tipoSolicitud, false,
@@ -77,7 +76,6 @@ public class CargaDeCombos {
 							}
 						});
 				WaitWindow.hide();
-			} 
 		}
 	}
 	
