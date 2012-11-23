@@ -135,7 +135,6 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		List<String> errorsPortabilidad = new ArrayList<String>();
 		
 		errors.addAll(itemSolicitudUIData.validate());
-	//	List<String>validacionStock=solicitudBusinessService.validarSIM_IMEI(solicitudServicio);
 
 		if(portabilidadVisible) errorsPortabilidad.addAll(itemSolicitudUIData.getPortabilidadPanel().ejecutarValidacion());
 

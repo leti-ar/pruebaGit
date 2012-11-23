@@ -1013,7 +1013,16 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 			sim.setText(linea.getNumeroSimcard());
 		}
-		
+		if (imei.getText()!=null) {
+			imei.setText(linea.getNumeroIMEI());
+			modeloEq.setSelectedItem(linea.getModelo());
+			if (linea.getModelo() != null && linea.getModelo().isEsBlackberry()) {
+				pin.setText(linea.getNumeroSerie());
+			} else {
+				serie.setText(linea.getNumeroSerie());
+			}
+			sim.setText(linea.getNumeroSimcard());
+		}
 		// TODO: Portabilidad
 		portabilidadPanel.resetearPortabilidad();
 		if(linea.getPortabilidad() != null) portabilidadPanel.loadSolicitudPortabilidad(linea.getPortabilidad(),false);
@@ -1132,7 +1141,15 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		lineaSolicitudServicio.setPortabilidad(portabilidadPanel.getSolicitudPortabilidad(lineaSolicitudServicio));
 		portabilidadPanel.setSolicitudPortabilidad(null);
 		
+		if(imei.getText()!= null){
+		lineaSolicitudServicio.setNumeroIMEI(imei.getText());
+		}
+		if(sim.getText()!= null){
+			lineaSolicitudServicio.setNumeroSimcard(sim.getText());
+			
+		}
 		return lineaSolicitudServicio;
+		
 	}
 
 	public void setNombreMovil(String nombreMovil) {

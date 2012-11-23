@@ -818,7 +818,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	}
 
 	public List<String> validarParaGuardar() {
-		GwtValidator validator = new GwtValidator();
+		final GwtValidator validator = new GwtValidator();
 		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
 			validarAlquileresDeLineaSS(validator, linea);
 			validarPortabilidadAdicional(validator, linea);
@@ -887,18 +887,21 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 		
 		//validacion de stock
+		final List<String>lista= new ArrayList<String>();
 		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
-			final List<String>lista= new ArrayList<String>();
+		
             controller.validarSIM_IMEI(solicitudServicio, new DefaultWaitCallback<List<String>>() {
 				public void success(List<String> result) {
-					lista.addAll(result);
+					
+					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+					ErrorDialog.getInstance().show(result, false);
 				}
 			});
 			
 		}
 		
 		
-		
+		;
 		validator.fillResult();
 		return validator.getErrors();
 	}

@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
+import ar.com.nextel.business.constants.MessageIdentifier;
 import ar.com.nextel.business.cuentas.caratula.CaratulaTransferidaResultDto;
 import ar.com.nextel.business.cuentas.caratula.dao.config.CaratulaTransferidaConfig;
 import ar.com.nextel.business.cuentas.create.InsertUpdateCuentaConfig;
@@ -29,6 +30,7 @@ import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaServi
 import ar.com.nextel.business.cuentas.scoring.legacy.dto.ScoringCuentaLegacyDTO;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
+import ar.com.nextel.business.legacy.financial.dao.FinancialLegacyDAOImpl;
 import ar.com.nextel.business.legacy.financial.dao.storedProcedure.SubInventarioProcedureImpl;
 import ar.com.nextel.business.legacy.financial.dto.EncabezadoCreditoDTO;
 import ar.com.nextel.business.legacy.financial.exception.FinancialSystemException;
@@ -54,6 +56,7 @@ import ar.com.nextel.components.accessMode.AccessAuthorization;
 import ar.com.nextel.components.knownInstances.GlobalParameter;
 import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
+import ar.com.nextel.exception.LegacyDAOException;
 import ar.com.nextel.framework.connectionDAO.ConnectionDAOException;
 import ar.com.nextel.framework.connectionDAO.TransactionConnectionDAO;
 import ar.com.nextel.framework.repository.Repository;
@@ -132,7 +135,7 @@ public class SolicitudBusinessService {
 	private InsertUpdateCuentaConfig insertUpdateCuentaConfig;
 	private CaratulaTransferidaConfig caratulaTransferidaConfig;
 	
-	private SubInventarioProcedureImpl subinventarioProcedure;
+	private FinancialLegacyDAOImpl financialDAOBean;
 	
 	
 //	MGR - Se mueve la creacion de la cuenta
@@ -158,7 +161,12 @@ public class SolicitudBusinessService {
 			@Qualifier("avalonSystemBean")AvalonSystem avalonSystem) {
 		this.avalonSystem = avalonSystem;
 	}
-
+	@Autowired
+	public void setFinancialDAOBean(
+			@Qualifier("financialDAOBean")FinancialLegacyDAOImpl financialDAOBean) {
+		this.financialDAOBean = financialDAOBean;
+	}
+	
 	@Autowired
 	public void setFacturaElectronicaService(FacturaElectronicaService facturaElectronicaService) {
 		this.facturaElectronicaService = facturaElectronicaService;
@@ -1370,8 +1378,11 @@ public class SolicitudBusinessService {
      * @return retorna lista de mensajes con errores si es que hubiese o vacia
      * en caso contrario
      */
-    public List<String> validarSIM_IMEI(Set<LineaSolicitudServicio> lineas, Vendedor vendedor) {
+    public List<String> validarSIM_IMEI(Set<LineaSolicitudServicio> lineas, Long idvendedor) {
         List<String> mensajesError = new ArrayList<String>();
+   
+        
+        Vendedor vendedor= repository.retrieve(Vendedor.class, idvendedor);
         if (vendedor.isVendedorSalon()) {
            
             //si tiene subinventario si no no
@@ -1393,20 +1404,37 @@ public class SolicitudBusinessService {
 
                     AppLogger.info("Subinventarios a probar :" + subinventarios);
                     // Warehouse debe ser solo uno controlado en getWarehouseSubInventario.
-                  Warehouse wh =  (Warehouse) vendedor.getSucursal().getWarehouses();
-
+                    Warehouse warehouse = null;
+                    if  (!vendedor.getSucursal().getWarehouses().isEmpty()){
+	                     for (Warehouse ws :vendedor.getSucursal().getWarehouses() ) {
+	                    	 warehouse= ws;
+						}
+                    }
+              
+               //   Warehouse wh = vendedorSalon.getSucursal().getWarehouse().get(0);
                     for (int i = 0; i < subinventarios.size(); i++) {
                         Subinventario subI = subinventarios.get(i);
                         AppLogger.info("******************************************************");
                         AppLogger.info("Probando con Subinventario: " + subI.getId() + " " + subI.getDescripcion() + " " + subI.getCodigoFNCL());
                         AppLogger.info("******************************************************");
-                        List<String> mensajes = subinventarioProcedure.execute(
-                                linea.getNumeroIMEI(),
-                                linea.getNumeroSimcard(),
-                                linea.getItem().getEsSim(),
-                                new Long(linea.getItem().getCodigoFNCL()),
-                                wh.getCodigoFNCL(),
-                                subI.getCodigoFNCL());
+                        List<String> mensajes = null;
+						
+							try {
+								mensajes = financialDAOBean.subInventario(linea.getNumeroIMEI(),
+								        linea.getNumeroSimcard(),
+								        linea.getItem().getEsSim(),
+								        new Long(linea.getItem().getCodigoFNCL()),
+								        warehouse.getCodigoFNCL(),
+								        subI.getCodigoFNCL());
+							} catch (LegacyDAOException e) {
+								e.printStackTrace();
+								 
+							} catch (NumberFormatException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						
+                                
                         if (!mensajes.isEmpty()) {
                             for (String msg : mensajes) {
                                 if (!mensajesError.contains(msg)) {

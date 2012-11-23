@@ -865,6 +865,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			}
 			else{
 				errors = editarSSUIData.validarParaGuardar();
+				
 			}
 			if (errors.isEmpty()) {
 				//Estefania Iguacel - Comentado para salir solo con cierre - CU#8 
@@ -873,6 +874,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 //				}else{
 					if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
 						editarSSUIData.validarPlanesCedentes(guardarSolicitudCallback(), true);
+						
+						
 					}else{
 						guardar();							
 					}						
@@ -1292,13 +1295,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				callback);
 	}
 
-	
-//	//validacion de stock
-//	public List<String> validarSIM_IMEI(SolicitudServicioDto solicitudServicio,
-//			DefaultWaitCallback callback) {
-//		SolicitudRpcService.Util.getInstance().validarSIM_IMEI(solicitudServicio,
-//				callback);
-//	}
+
 	public void getModelos(String imei, Long idTipoSolicitud, Long idListaPrecios,
 			DefaultWaitCallback<List<ModeloDto>> callback) {
 		SolicitudRpcService.Util.getInstance().getModelos(imei, idTipoSolicitud, idListaPrecios, callback);

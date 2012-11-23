@@ -2978,9 +2978,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					.next();
 			lineas.add(mapper.map(lineaSolicitudServicioDTO, LineaSolicitudServicio.class));
 		}
-		 Vendedor vendedor= mapper.map(solicitud.getVendedor(), Vendedor.class);
 		 
-		return solicitudBusinessService.validarSIM_IMEI(lineas,vendedor);
+		return solicitudBusinessService.validarSIM_IMEI(lineas,solicitud.getVendedor().getId());
 	}
 
 //	MGR - RQN 2328
