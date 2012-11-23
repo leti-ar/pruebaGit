@@ -475,14 +475,14 @@ public class PortabilidadUIData extends Composite {
 		
 		if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")){
 			validador.addTarget(txtNroUltimaFacura).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nro. Ultima Factura"));
-			validador.addTarget(fechaUltFactura.getTextBox()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Fecha de Emisión"));
+			validador.addTarget(fechaUltFactura.getTextBox()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Fecha de Emisiï¿½n"));
 			if(!fechaUltFactura.getTextBox().getText().equals("")) {
 				if(!fechaUltFactura.validarFecha()) {
-					validador.addError("El campo Portabilidad: Fecha de Emisión debe tener el siguiente formato dd/mm/yyyy");
+					validador.addError("El campo Portabilidad: Fecha de Emisiï¿½n debe tener el siguiente formato dd/mm/yyyy");
 				} else {
 					Date fechaActual = new Date();
 					if(fechaUltFactura.getFecha().compareTo(fechaActual) == 1) {
-						validador.addError("El campo Portabilidad: Fecha de Emisión no debe ser mayor a la fecha actual");
+						validador.addError("El campo Portabilidad: Fecha de Emisiï¿½n no debe ser mayor a la fecha actual");
 					}
 				}
 			}
@@ -500,7 +500,7 @@ public class PortabilidadUIData extends Composite {
 			validador.addTarget(txtNombreApod).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nombre Apoderado"));
 			validador.addTarget(txtApellidoApod).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Apellido Apoderado"));
 			validador.addTarget(lstTipoDocApod).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Tipo Documento Apoderado"));
-			validador.addTarget(txtNroDocApod).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Número Documento Apoderado"));
+			validador.addTarget(txtNroDocApod).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nï¿½mero Documento Apoderado"));
 		}
 		String numAportar = txtTelefonoPortar.getArea().getText() + txtTelefonoPortar.getNumero().getText();
 		if(!numAportar.equals("")) {
@@ -509,6 +509,11 @@ public class PortabilidadUIData extends Composite {
 		
 		validador.fillResult();
 		return validador.getErrors();
+	}
+	
+//	MGR - RQN 2328 - Retorno el nÃºmero a portar
+	public String obtenerNumeroAportar(){
+		return txtTelefonoPortar.getArea().getText() + txtTelefonoPortar.getNumero().getText();
 	}
 	
 	/**

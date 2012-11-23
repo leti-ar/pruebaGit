@@ -3358,4 +3358,14 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("nroSSWeb")
   String nroSSWeb();
 
+  
+//  MGR - RQN 2328
+  /**
+   * Translated "El teléfono a portar no pertenece a un área habilitada para Nextel".
+   * 
+   * @return translated "El teléfono a portar no pertenece a un área habilitada para Nextel"
+   */
+  @DefaultStringValue("El teléfono a portar no pertenece a un área habilitada para Nextel")
+  @Key("ERR_AREA_BILLING_NO_VALIDA")
+  String ERR_AREA_BILLING_NO_VALIDA();
 }
