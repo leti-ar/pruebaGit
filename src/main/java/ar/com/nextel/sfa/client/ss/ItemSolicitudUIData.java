@@ -77,10 +77,12 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 
 	private TextBox imei;
+	private TextBox imeiRetiroEnSucursal;
 	private ListBox modeloEq;
 	private ListBox item;
 	private ListBox terminoPago;
 	private TextBox sim;
+	private TextBox simRetiroEnSucursal;
 	private TextBox serie;
 	private TextBox pin;
 	private Button confirmarReserva;
@@ -143,10 +145,12 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		fields.add(reservarHidden = new TextBox());
 		fields.add(reservar = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(4)));
 		fields.add(imei = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(15)));
+		fields.add(imeiRetiroEnSucursal = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(15)));
 		fields.add(modeloEq = new ListBox());
 		fields.add(item = new ListBox(" "));
 		fields.add(terminoPago = new ListBox());
 		fields.add(sim = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(15)));
+		fields.add(simRetiroEnSucursal = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(15)));
 		fields.add(serie = new RegexTextBox(RegularExpressionConstants.getNumerosYLetrasLimitado(10)));
 		fields.add(pin = new RegexTextBox(RegularExpressionConstants.getNumerosYLetrasLimitado(8)));
 		fields.add(ddn = new CheckBox());
@@ -169,7 +173,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		tipoPlan.setWidth("400px");
 		imei.setWidth("370px");
 		imei.setMaxLength(15);
+		imeiRetiroEnSucursal.setMaxLength(15);
 		sim.setMaxLength(15);
+		simRetiroEnSucursal.setMaxLength(15);
 		serie.setMaxLength(10);
 		pin.setMaxLength(8);
 		modeloEq.setWidth("400px");
@@ -1023,6 +1029,19 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 			sim.setText(linea.getNumeroSimcard());
 		}
+		//Desc de Despacho
+		if (imeiRetiroEnSucursal.getText()!=null) {
+			
+			imeiRetiroEnSucursal.setText(linea.getNumeroIMEI());
+			
+		}
+		if (simRetiroEnSucursal.getText()!=null) {
+					
+					simRetiroEnSucursal.setText(linea.getNumeroSimcard());
+					
+				}
+		//Fin de Desc de Despacho
+		
 		// TODO: Portabilidad
 		portabilidadPanel.resetearPortabilidad();
 		if(linea.getPortabilidad() != null) portabilidadPanel.loadSolicitudPortabilidad(linea.getPortabilidad(),false);
@@ -1140,14 +1159,17 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		// TODO:Portabilidad
 		lineaSolicitudServicio.setPortabilidad(portabilidadPanel.getSolicitudPortabilidad(lineaSolicitudServicio));
 		portabilidadPanel.setSolicitudPortabilidad(null);
-		
-		if(imei.getText()!= null){
-		lineaSolicitudServicio.setNumeroIMEI(imei.getText());
+		 
+		//Desc de Despacho, esto se creo para no tocar el compartamiento
+		//de imei y sim que ya existia en la activacion 
+		if(imeiRetiroEnSucursal.getText()!= null){
+		lineaSolicitudServicio.setNumeroIMEI(imeiRetiroEnSucursal.getText());
 		}
-		if(sim.getText()!= null){
-			lineaSolicitudServicio.setNumeroSimcard(sim.getText());
+		if(simRetiroEnSucursal.getText()!= null){
+			lineaSolicitudServicio.setNumeroSimcard(simRetiroEnSucursal.getText());
 			
 		}
+		//Fin de desc de despacho
 		return lineaSolicitudServicio;
 		
 	}
@@ -1276,6 +1298,14 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 	public void setIdTipoSolicitudBaseActivacion(Long idTipoSolicitudBaseActivacion) {
 		this.idTipoSolicitudBaseActivacion = idTipoSolicitudBaseActivacion;
+	}
+
+	public TextBox getImeiRetiroEnSucursal() {
+		return imeiRetiroEnSucursal;
+	}
+
+	public TextBox getSimRetiroEnSucursal() {
+		return simRetiroEnSucursal;
 	}
 	
 	

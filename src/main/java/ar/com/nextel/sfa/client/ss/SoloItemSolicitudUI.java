@@ -30,7 +30,10 @@ public class SoloItemSolicitudUI extends Composite {
 	public static final int LAYOUT_ACTIVACION = 1;
 	public static final int LAYOUT_CON_TOTAL = 2;
 	public static final int LAYOUT_ACTIVACION_ONLINE = 3;
-
+	private FlexTable imeiSimRetiroEnSucursal;
+	
+	
+	
 	public SoloItemSolicitudUI(ItemSolicitudUIData itemSolicitudUIData) {
 		mainPanel = new FlowPanel();
 		itemSolicitudData = itemSolicitudUIData;
@@ -129,76 +132,48 @@ public class SoloItemSolicitudUI extends Composite {
 		activacionSimSeriePin.getFlexCellFormatter().setColSpan(1, 3, 4);
 		mainPanel.add(activacionSimSeriePin);
 		
+		imeiSimRetiroEnSucursal =  new FlexTable();
+		
+		imeiSimRetiroEnSucursal.addStyleName("layout");
+		imeiSimRetiroEnSucursal.getCellFormatter().setWidth(0, 0, "100px");
+		imeiSimRetiroEnSucursal.setHTML(0, 0, Sfa.constant().imeiReq());
+		imeiSimRetiroEnSucursal.setWidget(0, 1,  itemSolicitudData.getImeiRetiroEnSucursal());
+		imeiSimRetiroEnSucursal.setHTML(0, 2, Sfa.constant().simReq());
+		imeiSimRetiroEnSucursal.setWidget(0, 3, itemSolicitudData.getSimRetiroEnSucursal());
+		imeiSimRetiroEnSucursal.setVisible(false);
+		mainPanel.add(imeiSimRetiroEnSucursal);
+		
 		
 	}
 
 	public SoloItemSolicitudUI setLayout(int layout, EditarSSUIController controller) {
 		boolean retirar = false;
 		boolean esEquipoAccesorio= false;
-		if (controller.getEditarSSUIData().isEquiposAccesorios()){
-		 retirar= controller.getEditarSSUIData().getSolicitudServicio().getRetiraEnSucursal();
-		 esEquipoAccesorio= true;
-		}
-		total.setVisible(false);
-
-		switch (layout) {
-		case LAYOUT_ACTIVACION:
-			activacionModeloImei.setVisible(true);
-			activacionSimSeriePin.setVisible(true);
-			activacionSimSeriePin.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
-			mostrarActivacionPrecioListaYPin(true);
-			itemSolicitudData.resetIMEICheck();
-			precioCantidad.setVisible(false);
-			break;
-
-		case LAYOUT_CON_TOTAL:
-			total.setVisible(true);
-			if (retirar){
-			activacionModeloImei.setVisible(false);
-			activacionSimSeriePin.setVisible(true);
+			if (controller.getEditarSSUIData().isEquiposAccesorios()){
+			 retirar= controller.getEditarSSUIData().getSolicitudServicio().getRetiraEnSucursal();
+			 esEquipoAccesorio= true;
 			}
-			break;
-			
-		case LAYOUT_SIMPLE:
-			precioCantidad.setVisible(true);
-			if (retirar){
-			activacionModeloImei.setVisible(true);
-			activacionSimSeriePin.setVisible(true);
-			if (esEquipoAccesorio){
+			//solo va a estar visible este panel en el caso de que este chequeado el retiro en sucursal
+			if (retirar && esEquipoAccesorio){
+				imeiSimRetiroEnSucursal.setVisible(true);
+      
+				//cuando se retura en sucursal y es un tipo equipo accesorio solo existe uno para ser retirado
 				itemSolicitudData.getCantidad().setEnabled(false);
 				itemSolicitudData.setCantidad("1");
 				precioCantidad.setWidget(0, 3, itemSolicitudData.getCantidad());
 			
 				}
-			}else{
-				activacionModeloImei.setVisible(false);
-				activacionSimSeriePin.setVisible(false);
-			}
-			precioCantidad.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
-			break;
 			
-		case LAYOUT_ACTIVACION_ONLINE:
-			listaPrecio.setVisible(false);
-			activacionModeloImei.setVisible(true);
-			activacionSimSeriePin.setVisible(true);
-			mostrarActivacionPrecioListaYPin(false);
-			
-			itemSolicitudData.resetIMEICheck();
-			precioCantidad.setVisible(false);
-			terminoPago.setVisible(false);
-			break;
-			
-		default:
-			break;
-		}
-		return this;
+			return this.setLayout(layout);
+	
 	}
 	
 	
 	public SoloItemSolicitudUI setLayout(int layout) {
 	
 		total.setVisible(false);
-
+	
+        
 		switch (layout) {
 		case LAYOUT_ACTIVACION:
 			activacionModeloImei.setVisible(true);
@@ -207,8 +182,19 @@ public class SoloItemSolicitudUI extends Composite {
 			mostrarActivacionPrecioListaYPin(true);
 			itemSolicitudData.resetIMEICheck();
 			precioCantidad.setVisible(false);
+			imeiSimRetiroEnSucursal.setVisible(false);
 			break;
-	
+
+		case LAYOUT_CON_TOTAL:
+			total.setVisible(true);
+
+		case LAYOUT_SIMPLE:
+			precioCantidad.setVisible(true);
+			activacionModeloImei.setVisible(false);
+			activacionSimSeriePin.setVisible(false);
+			precioCantidad.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
+			break;
+			
 		case LAYOUT_ACTIVACION_ONLINE:
 			listaPrecio.setVisible(false);
 			activacionModeloImei.setVisible(true);
