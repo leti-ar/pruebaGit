@@ -886,22 +886,23 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			}
 		}
 		
-		//validacion de stock
-		final List<String>lista= new ArrayList<String>();
-		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
-		
-            controller.validarSIM_IMEI(solicitudServicio, new DefaultWaitCallback<List<String>>() {
-				public void success(List<String> result) {
+		if ((solicitudServicio.getGrupoSolicitud().isEquiposAccesorios())&& (solicitudServicio.getRetiraEnSucursal()) ){
+				//validacion de stock
+				final List<String>lista= new ArrayList<String>();
+				for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
+				
+		            controller.validarSIM_IMEI(solicitudServicio, new DefaultWaitCallback<List<String>>() {
+						public void success(List<String> result) {
+							
+							ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+							ErrorDialog.getInstance().show(result, false);
+						}
+					});
 					
-					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-					ErrorDialog.getInstance().show(result, false);
 				}
-			});
-			
 		}
 		
 		
-		;
 		validator.fillResult();
 		return validator.getErrors();
 	}
