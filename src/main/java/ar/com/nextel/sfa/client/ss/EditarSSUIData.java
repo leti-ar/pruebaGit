@@ -165,7 +165,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
     private List<ComentarioAnalistaDto> comentarioAnalistaMensaje = new ArrayList<ComentarioAnalistaDto>();
     private List<EstadoSolicitudDto> opcionesEstado = new ArrayList<EstadoSolicitudDto>();
 	
-    private RegexTextBox numeroSSWeb; //Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
+    private RegexTextBox numeroSSWeb; //Mejoras Perfil Telemarketing. REQ#2 - Nro de SS Web en la Solicitud de Servicio.
     
 	public EditarSSUIData(EditarSSUIController controller) {
 		this.controller = controller;
@@ -334,7 +334,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //				}
 //			});
 //		}
-		fields.add(numeroSSWeb = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(10), true));
+		fields.add(numeroSSWeb = new RegexTextBox(RegularExpressionConstants.getCantCaracteres(10), true));
 				
 		inicializarBusquedaContratos();
 	}

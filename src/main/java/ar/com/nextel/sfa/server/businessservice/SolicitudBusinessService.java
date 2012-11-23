@@ -1330,13 +1330,13 @@ public class SolicitudBusinessService {
 			}
 		}
 		if (cumple == lineas.size()) {
-			AppLogger.info("#Log Cierre y pass - Todas las lÃ­neas son configurables por APG");
+			AppLogger.info("#Log Cierre y pass - Todas las líneas son configurables por APG");
 			return CIERRE_PASS_AUTOMATICO;
 		} else if ((cumple < lineas.size() && cumple != 0) ) {
-			AppLogger.info("#Log Cierre y pass - No todas las lÃ­neas son configurables por APG");
+			AppLogger.info("#Log Cierre y pass - No todas las líneas son configurables por APG");
 			return LINEAS_NO_CUMPLEN_CC;
 		} else {
-			AppLogger.info("#Log Cierre y pass - Ninguna lÃ­nea es configurable por APG");			
+			AppLogger.info("#Log Cierre y pass - Ninguna línea es configurable por APG");			
 			return CIERRE_NORMAL;
 		}
 	}
