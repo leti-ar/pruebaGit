@@ -242,7 +242,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	public void onChange(ChangeEvent event) {
 		TipoSolicitudDto tipoSolicitud = (TipoSolicitudDto) tipoOrden.getSelectedItem();
 		itemSolicitudUIData.setActivacionOnline(false);
-		
+		visualizarIMEI_SIM(tipoSolicitud);
 		if (tipoSolicitud != null) {
 			if (itemSolicitudUIData.getIdsTipoSolicitudBaseItemYPlan().contains(
 					tipoSolicitud.getTipoSolicitudBase().getId())) {
@@ -271,8 +271,9 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 				tipoSolicitudPanel.clear();
 			}
 			
-			visualizarIMEI_SIM(tipoSolicitud);
+			
 			loadUIData(tipoSolicitud);
+			
 		}
 	}
 	
@@ -282,12 +283,15 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 			getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().setVisible(tipoSolicitud.getItemText().equalsIgnoreCase("Alquiler (Amba)"));
 		}
 		
-		if(tipoSolicitud.getItemText().equalsIgnoreCase(tipoSolicitud.getItemText())){
-			getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().setVisible(!tipoSolicitud.getItemText().equalsIgnoreCase("Activación"));
+		if(tipoSolicitud.getTipoSolicitudBase().getDescripcion().equals("ACTIVACION")){
+			getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().setVisible(false);
 		}
 		
 		if(tipoSolicitud.getItemText().equalsIgnoreCase("Venta de Accesorios")){
-			getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().setVisible(tipoSolicitud.getItemText().equalsIgnoreCase("Venta de Accesorios"));
+			getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().setVisible(true);
+
+			getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().getWidget(0,1).setVisible(false);
+			
 		}
 		
 		//getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().getWidget(0, 3).setVisible(!tipoSolicitud.getItemText().equalsIgnoreCase("Venta de Accesorios"));
