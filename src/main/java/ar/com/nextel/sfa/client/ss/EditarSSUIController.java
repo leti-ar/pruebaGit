@@ -62,4 +62,6 @@ public interface EditarSSUIController {
     public void validarSIM_IMEI(SolicitudServicioDto solicitud,DefaultWaitCallback<List<String>> callback);
     
     boolean tieneLineasSolicitud();
+    
+//    boolean validarIMEI_SIM_RetiroSucursal();
 }

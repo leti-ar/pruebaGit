@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ar.com.nextel.model.solicitudes.beans.IMEI;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -30,10 +31,12 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, ClickListener {
@@ -69,7 +72,6 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		itemSolicitudUIData = new ItemSolicitudUIData(controller);
 		itemSolicitudUIData.setItemSolicitudDialog(this);
 		tipoOrden = itemSolicitudUIData.getTipoOrden();
-
 		tipoSolicitudPanel.setWidget(getItemYPlanSolicitudUI());
 		tipoOrden.addChangeHandler(this);
 
@@ -84,7 +86,15 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		topBar.add(tipoOrdenLabel);
 		topBar.add(tipoOrden);
 		add(topBar);
+		
+		
+		//
+		
+		//add(imeiSimRetiroEnSucursal);
+		//tipoSolicitudPanel.setWidget(imeiSimRetiroEnSucursal);
 		add(tipoSolicitudPanel);
+		
+		
 		addFormButtons(aceptar);
 		addFormButtons(cerrar);
 		setFormButtonsVisible(true);
@@ -232,6 +242,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	public void onChange(ChangeEvent event) {
 		TipoSolicitudDto tipoSolicitud = (TipoSolicitudDto) tipoOrden.getSelectedItem();
 		itemSolicitudUIData.setActivacionOnline(false);
+		
 		if (tipoSolicitud != null) {
 			if (itemSolicitudUIData.getIdsTipoSolicitudBaseItemYPlan().contains(
 					tipoSolicitud.getTipoSolicitudBase().getId())) {
@@ -259,8 +270,28 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 			} else {
 				tipoSolicitudPanel.clear();
 			}
+			
+			visualizarIMEI_SIM(tipoSolicitud);
 			loadUIData(tipoSolicitud);
 		}
+	}
+	
+	public void  visualizarIMEI_SIM(TipoSolicitudDto tipoSolicitud){
+		
+		if (tipoSolicitud.getItemText().equalsIgnoreCase("Alquiler (Amba)")){
+			getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().setVisible(tipoSolicitud.getItemText().equalsIgnoreCase("Alquiler (Amba)"));
+		}
+		
+		if(tipoSolicitud.getItemText().equalsIgnoreCase(tipoSolicitud.getItemText())){
+			getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().setVisible(!tipoSolicitud.getItemText().equalsIgnoreCase("Activación"));
+		}
+		
+		if(tipoSolicitud.getItemText().equalsIgnoreCase("Venta de Accesorios")){
+			getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().setVisible(tipoSolicitud.getItemText().equalsIgnoreCase("Venta de Accesorios"));
+		}
+		
+		//getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().getWidget(0, 3).setVisible(!tipoSolicitud.getItemText().equalsIgnoreCase("Venta de Accesorios"));
+
 	}
 	
 	private void loadUIData(final TipoSolicitudDto tiposSolicitud) {

@@ -820,10 +820,14 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		public void execute() {
 			List<String> errors = null;
 			if (save) {
+				// Si es una transferencia y tiene grupo de solicitud realizo la validación de 
+				// transferencia y colecciono los errores
 				if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
 					errors = editarSSUIData.validarTransferenciaParaGuardar(datosTranferencia.getContratosSSChequeados());
 				}else{
-					errors = editarSSUIData.validarParaGuardar();
+					//errors = editarSSUIData.validarParaGuardar();
+					editarSSUIData.validarParaGuardar();
+					
 				}
 				if (errors.isEmpty()) {
 					if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
@@ -864,6 +868,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				errors = editarSSUIData.validarTransferenciaParaGuardar(datosTranferencia.getContratosSSChequeados());
 			}
 			else{
+				// TODO
 				errors = editarSSUIData.validarParaGuardar();
 				
 			}
@@ -1759,8 +1764,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	 * validacion de stock para el imei-sin cargados en agregar item
 	 * 
 	 */
-	public void validarSIM_IMEI(SolicitudServicioDto solicitud,
-			DefaultWaitCallback<List<String>> callback) {
+	public void validarSIM_IMEI(SolicitudServicioDto solicitud, DefaultWaitCallback<List<String>> callback) {
 		SolicitudRpcService.Util.getInstance().validarSIM_IMEI(solicitud, callback);
 			
 	}
@@ -1775,7 +1779,15 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		}
 		return activar;	
 	}
-	
+
 	
 
+//    boolean validarIMEI_SIM_RetiroSucursal(TipoSolicitudDto tipoSolicitud){
+//    	boolean esEquipoOAccesorio = esEquipoOAccesorio = this.getEditarSSUIData().isEquiposAccesorios() && this.getEditarSSUIData().getSolicitudServicio().getRetiraEnSucursal();
+//		if (esEquipoOAccesorio){
+//			getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().setVisible(!tipoSolicitud.getItemText().equalsIgnoreCase("Activación"));
+//		}
+//
+//		return esEquipoOAccesorio;
+//    }
 }

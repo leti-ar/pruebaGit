@@ -132,16 +132,16 @@ public class SoloItemSolicitudUI extends Composite {
 		activacionSimSeriePin.getFlexCellFormatter().setColSpan(1, 3, 4);
 		mainPanel.add(activacionSimSeriePin);
 		
-		imeiSimRetiroEnSucursal =  new FlexTable();
-		
-		imeiSimRetiroEnSucursal.addStyleName("layout");
-		imeiSimRetiroEnSucursal.getCellFormatter().setWidth(0, 0, "100px");
-		imeiSimRetiroEnSucursal.setHTML(0, 0, Sfa.constant().imeiReq());
-		imeiSimRetiroEnSucursal.setWidget(0, 1,  itemSolicitudData.getImeiRetiroEnSucursal());
-		imeiSimRetiroEnSucursal.setHTML(0, 2, Sfa.constant().simReq());
-		imeiSimRetiroEnSucursal.setWidget(0, 3, itemSolicitudData.getSimRetiroEnSucursal());
-		imeiSimRetiroEnSucursal.setVisible(false);
-		mainPanel.add(imeiSimRetiroEnSucursal);
+//		imeiSimRetiroEnSucursal =  new FlexTable();
+//		
+//		imeiSimRetiroEnSucursal.addStyleName("layout");
+//		imeiSimRetiroEnSucursal.getCellFormatter().setWidth(0, 0, "100px");
+//		imeiSimRetiroEnSucursal.setHTML(0, 0, Sfa.constant().imeiReq());
+//		imeiSimRetiroEnSucursal.setWidget(0, 1,  itemSolicitudData.getImeiRetiroEnSucursal());
+//		imeiSimRetiroEnSucursal.setHTML(0, 2, Sfa.constant().simReq());
+//		imeiSimRetiroEnSucursal.setWidget(0, 3, itemSolicitudData.getSimRetiroEnSucursal());
+//		imeiSimRetiroEnSucursal.setVisible(false);
+//		mainPanel.add(imeiSimRetiroEnSucursal);
 		
 		
 	}
@@ -155,7 +155,7 @@ public class SoloItemSolicitudUI extends Composite {
 			}
 			//solo va a estar visible este panel en el caso de que este chequeado el retiro en sucursal
 			if (retirar && esEquipoAccesorio){
-				imeiSimRetiroEnSucursal.setVisible(true);
+				//imeiSimRetiroEnSucursal.setVisible(true);
       
 				//cuando se retura en sucursal y es un tipo equipo accesorio solo existe uno para ser retirado
 				itemSolicitudData.getCantidad().setEnabled(false);
@@ -182,7 +182,7 @@ public class SoloItemSolicitudUI extends Composite {
 			mostrarActivacionPrecioListaYPin(true);
 			itemSolicitudData.resetIMEICheck();
 			precioCantidad.setVisible(false);
-			imeiSimRetiroEnSucursal.setVisible(false);
+			//imeiSimRetiroEnSucursal.setVisible(false);
 			break;
 
 		case LAYOUT_CON_TOTAL:
