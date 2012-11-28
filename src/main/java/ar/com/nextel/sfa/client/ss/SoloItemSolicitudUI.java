@@ -31,6 +31,7 @@ public class SoloItemSolicitudUI extends Composite {
 	public static final int LAYOUT_CON_TOTAL = 2;
 	public static final int LAYOUT_ACTIVACION_ONLINE = 3;
 	private FlexTable imeiSimRetiroEnSucursal;
+	private boolean visibleImeiSimRetiroSucursal;
 	
 	
 	
@@ -132,39 +133,39 @@ public class SoloItemSolicitudUI extends Composite {
 		activacionSimSeriePin.getFlexCellFormatter().setColSpan(1, 3, 4);
 		mainPanel.add(activacionSimSeriePin);
 		
-//		imeiSimRetiroEnSucursal =  new FlexTable();
-//		
-//		imeiSimRetiroEnSucursal.addStyleName("layout");
-//		imeiSimRetiroEnSucursal.getCellFormatter().setWidth(0, 0, "100px");
-//		imeiSimRetiroEnSucursal.setHTML(0, 0, Sfa.constant().imeiReq());
-//		imeiSimRetiroEnSucursal.setWidget(0, 1,  itemSolicitudData.getImeiRetiroEnSucursal());
-//		imeiSimRetiroEnSucursal.setHTML(0, 2, Sfa.constant().simReq());
-//		imeiSimRetiroEnSucursal.setWidget(0, 3, itemSolicitudData.getSimRetiroEnSucursal());
-//		imeiSimRetiroEnSucursal.setVisible(false);
-//		mainPanel.add(imeiSimRetiroEnSucursal);
+		imeiSimRetiroEnSucursal =  new FlexTable();
 		
+		imeiSimRetiroEnSucursal.addStyleName("layout");
+		imeiSimRetiroEnSucursal.getCellFormatter().setWidth(0, 0, "100px");
+		imeiSimRetiroEnSucursal.setHTML(0, 0, Sfa.constant().imeiReq());
+		imeiSimRetiroEnSucursal.setWidget(0, 1,  itemSolicitudData.getImeiRetiroEnSucursal());
+		imeiSimRetiroEnSucursal.setHTML(0, 2, Sfa.constant().simReq());
+		imeiSimRetiroEnSucursal.setWidget(0, 3, itemSolicitudData.getSimRetiroEnSucursal());
+		//imeiSimRetiroEnSucursal.setVisible(false);
+		mainPanel.add(imeiSimRetiroEnSucursal);
 		
+		visibleImeiSimRetiroSucursal = false;
 	}
 
 	public SoloItemSolicitudUI setLayout(int layout, EditarSSUIController controller) {
 		boolean retirar = false;
 		boolean esEquipoAccesorio= false;
-			if (controller.getEditarSSUIData().isEquiposAccesorios()){
+		visibleImeiSimRetiroSucursal = false;
+		if (controller.getEditarSSUIData().isEquiposAccesorios()){
 			 retirar= controller.getEditarSSUIData().getSolicitudServicio().getRetiraEnSucursal();
 			 esEquipoAccesorio= true;
-			}
-			//solo va a estar visible este panel en el caso de que este chequeado el retiro en sucursal
-			if (retirar && esEquipoAccesorio){
-				//imeiSimRetiroEnSucursal.setVisible(true);
-      
+		}
+		//solo va a estar visible este panel en el caso de que este chequeado el retiro en sucursal
+		if (retirar && esEquipoAccesorio){
 				//cuando se retura en sucursal y es un tipo equipo accesorio solo existe uno para ser retirado
 				itemSolicitudData.getCantidad().setEnabled(false);
 				itemSolicitudData.setCantidad("1");
 				precioCantidad.setWidget(0, 3, itemSolicitudData.getCantidad());
+				visibleImeiSimRetiroSucursal = true;
 			
-				}
+		}
 			
-			return this.setLayout(layout);
+		return this.setLayout(layout);	
 	
 	}
 	
@@ -172,6 +173,7 @@ public class SoloItemSolicitudUI extends Composite {
 	public SoloItemSolicitudUI setLayout(int layout) {
 	
 		total.setVisible(false);
+		imeiSimRetiroEnSucursal.setVisible(false);
 	
         
 		switch (layout) {
@@ -193,6 +195,7 @@ public class SoloItemSolicitudUI extends Composite {
 			activacionModeloImei.setVisible(false);
 			activacionSimSeriePin.setVisible(false);
 			precioCantidad.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
+			imeiSimRetiroEnSucursal.setVisible(visibleImeiSimRetiroSucursal);
 			break;
 			
 		case LAYOUT_ACTIVACION_ONLINE:

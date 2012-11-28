@@ -86,18 +86,18 @@ public class ItemYPlanSolicitudUI extends Composite {
 		mainPanel.add(cppAliasReservaTable);
 		
 		// TODO
-		imeiSimRetiroEnSucursal =  new FlexTable();
-		
-		imeiSimRetiroEnSucursal.addStyleName("layout");
-		imeiSimRetiroEnSucursal.getCellFormatter().setWidth(0, 0, "100px");
-		imeiSimRetiroEnSucursal.setHTML(0, 0, Sfa.constant().imeiReq());
-		//imeiSimRetiroEnSucursal.setWidget(0, 1,  itemSolicitudData.getImeiRetiroEnSucursal());
-		imeiSimRetiroEnSucursal.setWidget(0, 1,  new TextBox());
-		imeiSimRetiroEnSucursal.setHTML(0, 2, Sfa.constant().simReq());
-		imeiSimRetiroEnSucursal.setWidget(0, 3, new TextBox());
-		imeiSimRetiroEnSucursal.setVisible(false);
-		//imeiSimRetiroEnSucursal.setVisible(esEquipoAccesorioYRetiraEnSucursal());
-		mainPanel.add(imeiSimRetiroEnSucursal);
+//		imeiSimRetiroEnSucursal =  new FlexTable();
+//		
+//		imeiSimRetiroEnSucursal.addStyleName("layout");
+//		imeiSimRetiroEnSucursal.getCellFormatter().setWidth(0, 0, "100px");
+//		imeiSimRetiroEnSucursal.setHTML(0, 0, Sfa.constant().imeiReq());
+//		//imeiSimRetiroEnSucursal.setWidget(0, 1,  itemSolicitudData.getImeiRetiroEnSucursal());
+//		imeiSimRetiroEnSucursal.setWidget(0, 1,  new TextBox());
+//		imeiSimRetiroEnSucursal.setHTML(0, 2, Sfa.constant().simReq());
+//		imeiSimRetiroEnSucursal.setWidget(0, 3, new TextBox());
+//		imeiSimRetiroEnSucursal.setVisible(false);
+//		//imeiSimRetiroEnSucursal.setVisible(esEquipoAccesorioYRetiraEnSucursal());
+//		mainPanel.add(imeiSimRetiroEnSucursal);
 		//
 		
 		roamingTable = new Grid(1, 7);

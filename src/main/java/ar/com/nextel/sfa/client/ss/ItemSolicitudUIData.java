@@ -623,6 +623,21 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 						sim.setEnabled(true);
 						sim.setReadOnly(false);
 					}
+				// agregado para entrega por sucursal	
+				} else if (tipoEdicion == ITEM_PLAN || tipoEdicion == SOLO_ITEM) {
+					if (is.getItem().isEquipo()) {
+						imeiRetiroEnSucursal.setEnabled(true);
+						simRetiroEnSucursal.setEnabled(true);
+						cantidad.setEnabled(false);
+					} else if (is.getItem().isAccesorio() && is.getItem().getEsSim()) {
+						imeiRetiroEnSucursal.setEnabled(false);
+						simRetiroEnSucursal.setEnabled(true);
+						cantidad.setEnabled(false);
+					} else {
+						imeiRetiroEnSucursal.setEnabled(false);
+						simRetiroEnSucursal.setEnabled(false);
+						cantidad.setEnabled(true);
+					}
 				}
 			} else {
 				sim.setEnabled(true);
@@ -926,6 +941,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 		}
 		
+		if (controller.getEditarSSUIData().getRetiraEnSucursal().getValue()) {
+		   // TODO obligatoriedad del imei y sim dependiendo del item elegido
+		}
+		
 		return validator.fillResult().getErrors();
 	}
 
@@ -1031,15 +1050,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		}
 		//Desc de Despacho
 		if (imeiRetiroEnSucursal.getText()!=null) {
-			
 			imeiRetiroEnSucursal.setText(linea.getNumeroIMEI());
-			
 		}
 		if (simRetiroEnSucursal.getText()!=null) {
-					
-					simRetiroEnSucursal.setText(linea.getNumeroSimcard());
-					
-				}
+			simRetiroEnSucursal.setText(linea.getNumeroSimcard());
+		}
 		//Fin de Desc de Despacho
 		
 		// TODO: Portabilidad
@@ -1163,7 +1178,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		//Desc de Despacho, esto se creo para no tocar el compartamiento
 		//de imei y sim que ya existia en la activacion 
 		if(imeiRetiroEnSucursal.getText()!= null){
-		lineaSolicitudServicio.setNumeroIMEI(imeiRetiroEnSucursal.getText());
+			lineaSolicitudServicio.setNumeroIMEI(imeiRetiroEnSucursal.getText());
 		}
 		if(simRetiroEnSucursal.getText()!= null){
 			lineaSolicitudServicio.setNumeroSimcard(simRetiroEnSucursal.getText());

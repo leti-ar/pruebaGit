@@ -242,7 +242,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	public void onChange(ChangeEvent event) {
 		TipoSolicitudDto tipoSolicitud = (TipoSolicitudDto) tipoOrden.getSelectedItem();
 		itemSolicitudUIData.setActivacionOnline(false);
-		visualizarIMEI_SIM(tipoSolicitud);
+		
 		if (tipoSolicitud != null) {
 			if (itemSolicitudUIData.getIdsTipoSolicitudBaseItemYPlan().contains(
 					tipoSolicitud.getTipoSolicitudBase().getId())) {
@@ -271,32 +271,28 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 				tipoSolicitudPanel.clear();
 			}
 			
-			
+//			visualizarIMEI_SIM(tipoSolicitud);
 			loadUIData(tipoSolicitud);
-			
 		}
 	}
 	
-	public void  visualizarIMEI_SIM(TipoSolicitudDto tipoSolicitud){
-		
-		if (tipoSolicitud.getItemText().equalsIgnoreCase("Alquiler (Amba)")){
-			getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().setVisible(tipoSolicitud.getItemText().equalsIgnoreCase("Alquiler (Amba)"));
-		}
-		
-		if(tipoSolicitud.getTipoSolicitudBase().getDescripcion().equals("ACTIVACION")){
-			getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().setVisible(false);
-		}
-		
-		if(tipoSolicitud.getItemText().equalsIgnoreCase("Venta de Accesorios")){
-			getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().setVisible(true);
-
-			getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().getWidget(0,1).setVisible(false);
-			
-		}
+//	public void  visualizarIMEI_SIM(TipoSolicitudDto tipoSolicitud){
+//		
+//		if (tipoSolicitud.getItemText().equalsIgnoreCase("Alquiler (Amba)")){
+//			getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().setVisible(tipoSolicitud.getItemText().equalsIgnoreCase("Alquiler (Amba)"));
+//		}
+//		
+//		if(tipoSolicitud.getItemText().equalsIgnoreCase(tipoSolicitud.getItemText())){
+//			getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().setVisible(!tipoSolicitud.getItemText().equalsIgnoreCase("Activaci�n"));
+//		}
+//		
+//		if(tipoSolicitud.getItemText().equalsIgnoreCase("Venta de Accesorios")){
+//			getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().setVisible(tipoSolicitud.getItemText().equalsIgnoreCase("Venta de Accesorios"));
+//		}
 		
 		//getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().getWidget(0, 3).setVisible(!tipoSolicitud.getItemText().equalsIgnoreCase("Venta de Accesorios"));
 
-	}
+//	}
 	
 	private void loadUIData(final TipoSolicitudDto tiposSolicitud) {
 		//#1757 - La ListaPrecios se carga según el segmento del cliente
