@@ -103,8 +103,7 @@ public class SoloItemSolicitudUI extends Composite {
 		precioCantidad.setHTML(0, 0, Sfa.constant().precioLista());
 		precioCantidad.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
 		precioCantidad.setHTML(0, 2, Sfa.constant().cantidadReq());
-		
-		 precioCantidad.setWidget(0, 3, itemSolicitudData.getCantidad());
+		precioCantidad.setWidget(0, 3, itemSolicitudData.getCantidad());
 		
 		mainPanel.add(precioCantidad);
 
@@ -141,7 +140,7 @@ public class SoloItemSolicitudUI extends Composite {
 		imeiSimRetiroEnSucursal.setWidget(0, 1,  itemSolicitudData.getImeiRetiroEnSucursal());
 		imeiSimRetiroEnSucursal.setHTML(0, 2, Sfa.constant().simReq());
 		imeiSimRetiroEnSucursal.setWidget(0, 3, itemSolicitudData.getSimRetiroEnSucursal());
-		//imeiSimRetiroEnSucursal.setVisible(false);
+		imeiSimRetiroEnSucursal.setVisible(false);
 		mainPanel.add(imeiSimRetiroEnSucursal);
 		
 		visibleImeiSimRetiroSucursal = false;

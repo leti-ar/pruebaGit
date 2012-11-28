@@ -943,7 +943,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		if (controller.getEditarSSUIData().getRetiraEnSucursal().getValue()) {
 			if (imeiRetiroEnSucursal.isEnabled()) {
 				validator.addTarget(imeiRetiroEnSucursal).required(
-						Sfa.constant().ERR_LENGHT().replaceAll(v1, "IMEI").replaceAll(v2, "15"));
+						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "IMEI"));
 			}
 			if (simRetiroEnSucursal.isEnabled()) {
 				validator.addTarget(simRetiroEnSucursal).required(
