@@ -29,7 +29,6 @@ import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.UIData;
-
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
@@ -942,7 +941,14 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		}
 		
 		if (controller.getEditarSSUIData().getRetiraEnSucursal().getValue()) {
-		   // TODO obligatoriedad del imei y sim dependiendo del item elegido
+			if (imeiRetiroEnSucursal.isEnabled()) {
+				validator.addTarget(imeiRetiroEnSucursal).required(
+						Sfa.constant().ERR_LENGHT().replaceAll(v1, "IMEI").replaceAll(v2, "15"));
+			}
+			if (simRetiroEnSucursal.isEnabled()) {
+				validator.addTarget(simRetiroEnSucursal).required(
+						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM"));
+			}
 		}
 		
 		return validator.fillResult().getErrors();
