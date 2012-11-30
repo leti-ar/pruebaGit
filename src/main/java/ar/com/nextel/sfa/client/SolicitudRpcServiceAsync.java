@@ -2,7 +2,6 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
-import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;

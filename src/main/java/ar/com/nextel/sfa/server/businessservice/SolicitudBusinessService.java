@@ -1370,7 +1370,7 @@ public class SolicitudBusinessService {
 	
 	
 	  /**
-     * Se valida que el/los números de sim/imei ingresados pertenezcan al
+     * Se valida que el/los nï¿½meros de sim/imei ingresados pertenezcan al
      * inventario/subinventario del usuario que realizo el ingreso de la
      * solicitud (solo si es vendedor de salon)
      *
@@ -1390,7 +1390,7 @@ public class SolicitudBusinessService {
 
             for (LineaSolicitudServicio linea : lineas) {
                 //si tiene IMEI y/o SIM
-                if (!linea.getItem().isAccesorio()) {
+                if (linea.getItem().isEquipo() || linea.getItem().isAccesorio() && linea.getItem().getEsSim()) {
 
                     List<Subinventario> subinventarios;
                     try {

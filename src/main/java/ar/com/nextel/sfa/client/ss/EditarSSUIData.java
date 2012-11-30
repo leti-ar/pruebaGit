@@ -894,8 +894,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		            controller.validarSIM_IMEI(solicitudServicio, new DefaultWaitCallback<List<String>>() {
 						public void success(List<String> result) {
 							
-							ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-							ErrorDialog.getInstance().show(result, false);
+							if (!result.isEmpty()) {
+								ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+								ErrorDialog.getInstance().show(result, false);
+							}
 						}
 					});
 					
