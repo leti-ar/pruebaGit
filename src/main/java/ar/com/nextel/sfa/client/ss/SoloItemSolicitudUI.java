@@ -7,7 +7,6 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.TextBox;
 
 /**
  * Panel de edicion de linea de solicitud que solo contiene Item, como por ejemplo una venta de accesorio
@@ -155,17 +154,8 @@ public class SoloItemSolicitudUI extends Composite {
 			 esEquipoAccesorio= true;
 		}
 		//solo va a estar visible este panel en el caso de que este chequeado el retiro en sucursal
-		if (retirar && esEquipoAccesorio){
-				//cuando se retura en sucursal y es un tipo equipo accesorio solo existe uno para ser retirado
-				itemSolicitudData.getCantidad().setEnabled(false);
-				itemSolicitudData.setCantidad("1");
-				precioCantidad.setWidget(0, 3, itemSolicitudData.getCantidad());
-				visibleImeiSimRetiroSucursal = true;
-			
-		}
-			
+		this.visibleImeiSimRetiroSucursal = (retirar && esEquipoAccesorio);
 		return this.setLayout(layout);	
-	
 	}
 	
 	

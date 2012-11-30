@@ -271,28 +271,10 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 				tipoSolicitudPanel.clear();
 			}
 			
-//			visualizarIMEI_SIM(tipoSolicitud);
 			loadUIData(tipoSolicitud);
 		}
 	}
 	
-//	public void  visualizarIMEI_SIM(TipoSolicitudDto tipoSolicitud){
-//		
-//		if (tipoSolicitud.getItemText().equalsIgnoreCase("Alquiler (Amba)")){
-//			getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().setVisible(tipoSolicitud.getItemText().equalsIgnoreCase("Alquiler (Amba)"));
-//		}
-//		
-//		if(tipoSolicitud.getItemText().equalsIgnoreCase(tipoSolicitud.getItemText())){
-//			getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().setVisible(!tipoSolicitud.getItemText().equalsIgnoreCase("Activaci�n"));
-//		}
-//		
-//		if(tipoSolicitud.getItemText().equalsIgnoreCase("Venta de Accesorios")){
-//			getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().setVisible(tipoSolicitud.getItemText().equalsIgnoreCase("Venta de Accesorios"));
-//		}
-		
-		//getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().getWidget(0, 3).setVisible(!tipoSolicitud.getItemText().equalsIgnoreCase("Venta de Accesorios"));
-
-//	}
 	
 	private void loadUIData(final TipoSolicitudDto tiposSolicitud) {
 		//#1757 - La ListaPrecios se carga según el segmento del cliente
