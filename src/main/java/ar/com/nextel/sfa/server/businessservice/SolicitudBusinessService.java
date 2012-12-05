@@ -12,6 +12,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import javax.management.RuntimeErrorException;
+
 import org.apache.commons.validator.GenericValidator;
 import org.dozer.DozerBeanMapper;
 import org.hibernate.HibernateException;
@@ -20,9 +23,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
-import ar.com.nextel.business.constants.MessageIdentifier;
 import ar.com.nextel.business.cuentas.caratula.CaratulaTransferidaResultDto;
 import ar.com.nextel.business.cuentas.caratula.dao.config.CaratulaTransferidaConfig;
 import ar.com.nextel.business.cuentas.create.InsertUpdateCuentaConfig;
@@ -31,7 +34,6 @@ import ar.com.nextel.business.cuentas.scoring.legacy.dto.ScoringCuentaLegacyDTO;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.financial.dao.FinancialLegacyDAOImpl;
-import ar.com.nextel.business.legacy.financial.dao.storedProcedure.SubInventarioProcedureImpl;
 import ar.com.nextel.business.legacy.financial.dto.EncabezadoCreditoDTO;
 import ar.com.nextel.business.legacy.financial.exception.FinancialSystemException;
 import ar.com.nextel.business.oportunidades.OperacionEnCursoBusinessOperator;
@@ -56,6 +58,7 @@ import ar.com.nextel.components.accessMode.AccessAuthorization;
 import ar.com.nextel.components.knownInstances.GlobalParameter;
 import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
+import ar.com.nextel.components.message.MessageList;
 import ar.com.nextel.exception.LegacyDAOException;
 import ar.com.nextel.framework.connectionDAO.ConnectionDAOException;
 import ar.com.nextel.framework.connectionDAO.TransactionConnectionDAO;
@@ -805,8 +808,12 @@ public class SolicitudBusinessService {
 						solicitudServicio.setPassCreditos(false);
 					}
 				}
+				
+				//mover inventario si se retira en sucursal
+				List<String> mensajesMovimientoInventario = movimientoInventario(solicitudServicio,vendedor);	
+				response.setMessages((MessageList) mensajesMovimientoInventario);
 			}
-						
+		
 		} else {
 //			MGR - #3440 - Si no hace las mismas validaciones
 			response = generacionCierreBusinessOperator.generarSolicitudServicio(generacionCierreRequest, cierraPorCC);
@@ -1369,8 +1376,79 @@ public class SolicitudBusinessService {
 	}
 	
 	
-	  /**
-     * Se valida que el/los nï¿½meros de sim/imei ingresados pertenezcan al
+	
+	public List<String> movimientoInventario(SolicitudServicio ss, Vendedor vendedor){
+		  List<String> mensajesError = new ArrayList<String>();
+		   
+	        	        if (vendedor.isVendedorSalon()&& ss.getRetiraEnSucursal()) {
+
+	                        AppLogger.info("******************************************************");
+	                        AppLogger.info("******************************************************");
+	                        for (LineaSolicitudServicio linea : ss.getLineas()) {
+
+	                            List<Subinventario> subinventarios;
+	                            try {
+	                                subinventarios = getWarehouseSubInventario(vendedor, linea.getItem());
+	                            } catch (IllegalArgumentException ie) {
+	                            	mensajesError.add(ie.getMessage());
+	                                return mensajesError;
+	                            }
+	                            
+	                            // Warehouse debe ser solo uno controlado en getWarehouseSubInventario.
+	                            Warehouse warehouse = null;
+	                            if  (!vendedor.getSucursal().getWarehouses().isEmpty()){
+	        	                     for (Warehouse ws :vendedor.getSucursal().getWarehouses() ) {
+	        	                    	 warehouse= ws;
+	        						}
+	                            }
+
+	                            for (int i = 0; i < subinventarios.size(); i++) {
+	                                Subinventario subI = subinventarios.get(i);
+	                                AppLogger.info("******************************************************");
+	                                AppLogger.info("Probando con Subinventario: " + subI.getId() + " " + subI.getDescripcion() + " " + subI.getCodigoFNCL());
+	                                AppLogger.info("******************************************************");
+	                             
+									try {
+										mensajesError = financialDAOBean.movimientoInventario(
+										        linea.getTipoSolicitud().getCodigoFNCL(),
+										        warehouse.getCodigoFNCL(),
+										        subI.getCodigoFNCL(),
+										        new Long(linea.getItem().getCodigoFNCL()),
+										        linea.getId(),
+										        linea.getNumeroSimcard(),
+										        linea.getNumeroIMEI());
+									} catch (LegacyDAOException e) {
+										AppLogger.info("Error al acceso de financial para mover inventario");
+										AppLogger.error(e);
+										throw new RuntimeException(e.getMessage());
+										
+										
+									} catch (NumberFormatException e) {
+										AppLogger.error(e);
+										throw new RuntimeException(e.getMessage());
+										
+									}
+	                                if (mensajesError.isEmpty()) {
+	                                	AppLogger.info("&&& --- &&&& Operacion Existosa &&& --- &&&");
+	                                    mensajesError.clear();
+	                                    break;
+	                                } else {
+	                                    for (String msg : mensajesError) {
+	                                        if (!mensajesError.contains(msg)) {
+	                                        	mensajesError.add(msg);
+	                                        }
+	                                    }
+	                                }
+	                            }
+	                        }
+	        	        }
+	        return mensajesError;
+	    }
+	
+	
+	
+     /**
+     * Se valida que el/los números de sim/imei ingresados pertenezcan al
      * inventario/subinventario del usuario que realizo el ingreso de la
      * solicitud (solo si es vendedor de salon)
      *
@@ -1411,7 +1489,7 @@ public class SolicitudBusinessService {
 						}
                     }
               
-               //   Warehouse wh = vendedorSalon.getSucursal().getWarehouse().get(0);
+             
                     for (int i = 0; i < subinventarios.size(); i++) {
                         Subinventario subI = subinventarios.get(i);
                         AppLogger.info("******************************************************");
@@ -1427,11 +1505,12 @@ public class SolicitudBusinessService {
 								        warehouse.getCodigoFNCL(),
 								        subI.getCodigoFNCL());
 							} catch (LegacyDAOException e) {
-								e.printStackTrace();
+								AppLogger.info("Error al acceso de financial para valida que el/los números de sim/imei");
+								AppLogger.error(e);
+								throw new RuntimeException(e.getMessage());
 								 
 							} catch (NumberFormatException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								throw new RuntimeException(e.getMessage());
 							}
 						
                                 

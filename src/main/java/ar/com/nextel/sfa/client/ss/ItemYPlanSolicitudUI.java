@@ -84,7 +84,7 @@ public class ItemYPlanSolicitudUI extends Composite {
 		cppAliasReservaTable.setHTML(1, 0, Sfa.constant().reservarN());
 		cppAliasReservaTable.setWidget(1, 1, getReservaPanel());
 		mainPanel.add(cppAliasReservaTable);
-		
+			
 		roamingTable = new Grid(1, 7);
 		roamingTable.addStyleName("layout ml10");
 		roamingTable.getCellFormatter().setWidth(0, 0, "100px");

@@ -155,6 +155,8 @@ public class SoloItemSolicitudUI extends Composite {
 		}
 		//solo va a estar visible este panel en el caso de que este chequeado el retiro en sucursal
 		this.visibleImeiSimRetiroSucursal = (retirar && esEquipoAccesorio);
+		
+		controller.getEditarSSUIData().getRetiraEnSucursal().setEnabled(false);
 		return this.setLayout(layout);	
 	}
 	
@@ -173,7 +175,7 @@ public class SoloItemSolicitudUI extends Composite {
 			mostrarActivacionPrecioListaYPin(true);
 			itemSolicitudData.resetIMEICheck();
 			precioCantidad.setVisible(false);
-			//imeiSimRetiroEnSucursal.setVisible(false);
+		
 			break;
 
 		case LAYOUT_CON_TOTAL:

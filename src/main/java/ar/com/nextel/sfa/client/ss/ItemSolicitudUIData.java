@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.StockRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
@@ -22,6 +23,7 @@ import ar.com.nextel.sfa.client.dto.TerminoPagoValidoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefoniaDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
@@ -30,6 +32,7 @@ import ar.com.nextel.sfa.client.widget.MensajeRegex;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.UIData;
+import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.nextel.sfa.client.widget.VerificationRegexTextBox;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
@@ -43,6 +46,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -126,7 +130,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 //	MGR - #3462
 	private boolean activacion = false;
 	private Long idTipoSolicitudBaseActivacion = 0L;
-
+	private static final String LUGAR_DE_LLAMADA_DE_VALIDACION_STOCK="agregarItem";
+	
 	public ItemSolicitudUIData(EditarSSUIController controller) {
 		
 		// Oculta las opciones de portabilidad
@@ -270,7 +275,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 					portabilidadPanel.loadSolicitudPortabilidad(new SolicitudPortabilidadDto(),true);
 					dialog.center();
 				}
-				
+			
 				ModalMessageDialog.getInstance().hide();
 			}
 		};
@@ -653,7 +658,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			} else {
 				this.enableTextBox(sim);
 			}
-
+			if (item.getSelectedItem()!=null){
+            //llamar al metodo de validacion de stock
+			validarStock(new Long(item.getSelectedItem().getItemValue()));
+			}
 			refreshTotalLabel();
 		} else if (sender == tipoPlan) {
 			// Cargo los planes correspondientes al tipo de plan seleccionado
@@ -1218,6 +1226,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			lineaSolicitudServicio.setNumeroSimcard(simRetiroEnSucursal.getText());
 			
 		}
+		controller.tieneLineasSolicitud();
 		//Fin de desc de despacho
 		return lineaSolicitudServicio;
 		
@@ -1355,6 +1364,21 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 	public TextBox getSimRetiroEnSucursal() {
 		return simRetiroEnSucursal;
+	}
+	
+	public void validarStock(Long idItem){
+		final VendedorDto vendedorDto = ClientContext.getInstance().getVendedor();
+		StockRpcService.Util.getInstance().validarStock(idItem, vendedorDto.getId(),LUGAR_DE_LLAMADA_DE_VALIDACION_STOCK,
+				new DefaultWaitCallback<String>() {
+
+					@Override
+					public void success(String result) {
+//						
+						MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO,
+								result, MessageDialog.getCloseCommand());
+						History.newItem(UILoader.SOLO_MENU + "");
+					}
+				});
 	}
 	
 }

@@ -13,6 +13,6 @@ public interface StockRpcServiceAsync {
 	void obtenerTiposDeSolicitudParaVendedor(VendedorDto vendedorDto,
 			AsyncCallback<List<TipoSolicitudDto>> asyncCallback);
 
-	void validarStock(Long idSolicitud, Long idLPrecio, AsyncCallback<String> callback);
+	void validarStock(Long idSolicitud, Long idLPrecio,String procedencia, AsyncCallback<String> callback);
 
 }

@@ -63,5 +63,5 @@ public interface EditarSSUIController {
     
     boolean tieneLineasSolicitud();
     
-//    boolean validarIMEI_SIM_RetiroSucursal();
+
 }

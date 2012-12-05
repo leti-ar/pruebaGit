@@ -45,7 +45,7 @@ public class StockUIDlg extends NextelDialog {
 	private Anchor cerrar = new Anchor(Sfa.constant().cerrar());
 	public static Long idOpp;
 	public static boolean fromMenu = true;
-
+	public static final String LUGAR_DE_LLAMADA_DE_VALIDACION_STOCK= "menu";
 	public StockUIDlg(String title) {
 		super(title, false, true);
 		init();
@@ -60,7 +60,7 @@ public class StockUIDlg extends NextelDialog {
 				}
 				
 				if (cantItemsLst.getSelectedItem() != null){
-				StockRpcService.Util.getInstance().validarStock(idItem, vendedorDto.getId(),
+				StockRpcService.Util.getInstance().validarStock(idItem, vendedorDto.getId(),LUGAR_DE_LLAMADA_DE_VALIDACION_STOCK,
 						new DefaultWaitCallback<String>() {
 
 							@Override

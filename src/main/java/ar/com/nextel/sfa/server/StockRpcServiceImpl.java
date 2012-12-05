@@ -28,6 +28,7 @@ public class StockRpcServiceImpl extends RemoteService implements StockRpcServic
 	private WebApplicationContext context;
 	private StockService stockService;
 	private DefaultRetriever messageRetriever;
+	public static final String LUGAR_DE_LLAMADA_DE_VALIDACION_STOCK= "menu";
 	
 	public List<TipoSolicitudDto> obtenerTiposDeSolicitudParaVendedor(VendedorDto vendedorDto)
 			throws RpcExceptionMessages {
@@ -50,12 +51,12 @@ public class StockRpcServiceImpl extends RemoteService implements StockRpcServic
 	 * Llama al servicio de validación de stock y en base al resutado selecciona 
 	 * el mensaje adecuado para informar al usuario
 	 */
-	public String validarStock(Long idItem, Long idVendedor) throws RpcExceptionMessages {
+	public String validarStock(Long idItem, Long idVendedor,String lugarDellamada) throws RpcExceptionMessages {
 		String respuesta = new String();
 		ResultadoValidarStock resultado = new ResultadoValidarStock();
 		resultado = stockService.validarStock(idItem, idVendedor);
 
-		if (resultado.isVSalon()){
+		if (resultado.isVSalon()&& lugarDellamada.equals(LUGAR_DE_LLAMADA_DE_VALIDACION_STOCK)){
 			// Hay stock disponible (%)
 			respuesta = getMessage(resultado.getStock(), MessageIdentifier.SFA_VAL_STOCK_VS);
 			}
@@ -70,6 +71,13 @@ public class StockRpcServiceImpl extends RemoteService implements StockRpcServic
 
 		 return respuesta;
 	}
+	
+	
+	
+	
+	
+	
+	
 
 	private String getMessage(int stock,MessageIdentifier keyMsj) {
 		String respuesta;

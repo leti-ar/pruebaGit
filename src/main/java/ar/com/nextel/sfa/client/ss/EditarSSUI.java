@@ -1848,13 +1848,4 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	}
 
 	
-
-//    boolean validarIMEI_SIM_RetiroSucursal(TipoSolicitudDto tipoSolicitud){
-//    	boolean esEquipoOAccesorio = esEquipoOAccesorio = this.getEditarSSUIData().isEquiposAccesorios() && this.getEditarSSUIData().getSolicitudServicio().getRetiraEnSucursal();
-//		if (esEquipoOAccesorio){
-//			getItemYPlanSolicitudUI().getImeiSimRetiroEnSucursal().setVisible(!tipoSolicitud.getItemText().equalsIgnoreCase("Activación"));
-//		}
-//
-//		return esEquipoOAccesorio;
-//    }
 }

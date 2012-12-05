@@ -29,8 +29,8 @@ public class StockRpcServiceDelegate {
 	stockRpcServiceAsync.obtenerTiposDeSolicitudParaVendedor(vendedorDto, callback);
 	}
 	
-	public void validarStock(Long idItem, Long idVendedor, AsyncCallback<String> callback){
+	public void validarStock(Long idItem, Long idVendedor,String procedencia ,AsyncCallback<String> callback){
 		WaitWindow.show();
-		stockRpcServiceAsync.validarStock(idItem, idVendedor, callback);
+		stockRpcServiceAsync.validarStock(idItem, idVendedor,procedencia, callback);
 	}
 }

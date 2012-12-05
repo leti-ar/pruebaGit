@@ -119,7 +119,7 @@ public class CambioDeSucursalPopup extends NextelDialog {
 		}else{
 			
 			MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO,
-					Sfa.constant().ERR_NO_SUCURSAL_SELECTED(), MessageDialog.getCloseCommand());
+				Sfa.constant().ERR_NO_SUCURSAL_SELECTED(), MessageDialog.getCloseCommand());
 		}
 	}
 	

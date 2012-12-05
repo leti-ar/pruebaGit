@@ -87,11 +87,6 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		topBar.add(tipoOrden);
 		add(topBar);
 		
-		
-		//
-		
-		//add(imeiSimRetiroEnSucursal);
-		//tipoSolicitudPanel.setWidget(imeiSimRetiroEnSucursal);
 		add(tipoSolicitudPanel);
 		
 		
@@ -271,10 +266,12 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 				tipoSolicitudPanel.clear();
 			}
 			
+//			visualizarIMEI_SIM(tipoSolicitud);
 			loadUIData(tipoSolicitud);
 		}
 	}
 	
+
 	
 	private void loadUIData(final TipoSolicitudDto tiposSolicitud) {
 		//#1757 - La ListaPrecios se carga según el segmento del cliente
