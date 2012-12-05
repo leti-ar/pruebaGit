@@ -49,4 +49,9 @@ public class FormButtonsBar extends Composite {
 
 		}
 	}
+	
+//	MGR - Facturacion - Elimina todos los widgets hijos
+	public void clear(){
+		formButtons.clear();
+	}
 }

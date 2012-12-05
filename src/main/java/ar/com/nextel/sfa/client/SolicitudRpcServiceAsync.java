@@ -221,4 +221,7 @@ public interface SolicitudRpcServiceAsync {
 
 //	MGR - RQN 2328
 	public void validarAreaBilling(String numeroAPortar, AsyncCallback<Boolean> callback);
+	
+//	MGR - Facturacion
+	public void facturarSolicitudServicio(SolicitudServicioDto solicitudServicioDto, AsyncCallback<SolicitudServicioDto> callback);
 }

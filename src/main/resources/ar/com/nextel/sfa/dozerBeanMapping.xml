@@ -1241,4 +1241,26 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-b>
 	</mapping>
 
+	<!-- MGR - Facturacion -->
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.Factura
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.FacturaDto
+		</class-b>
+		<field>
+            <a>solicitudServicio</a>
+            <b>solicitudServicioDTO</b>
+        </field>
+        <field>
+            <a>itemsFactura</a>
+            <b>items</b>
+        </field>
+	</mapping>
+	
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.ItemFactura
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.ItemFacturaDto
+		</class-b>
+	</mapping>
 </mappings>

@@ -442,4 +442,10 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.validarAreaBilling(numeroAPortar, callback);
 	}
+	
+//	MGR - Facturacion
+	public void facturarSolicitudServicio(SolicitudServicioDto solicitudServicioDto, DefaultWaitCallback<SolicitudServicioDto> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.facturarSolicitudServicio(solicitudServicioDto, callback);
+	}
 }

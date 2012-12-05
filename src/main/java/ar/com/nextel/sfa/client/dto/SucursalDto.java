@@ -8,6 +8,8 @@ public class SucursalDto implements IsSerializable, ListBoxItem {
 	
 	private Long id;
 	private String descripcion;
+//  MGR - Facturacion
+    private Long idVantive;
 	
 	public Long getId() {
 		return id;
@@ -33,6 +35,13 @@ public class SucursalDto implements IsSerializable, ListBoxItem {
 		return id + "";
 	}
 	
+	public Long getIdVantive() {
+		return idVantive;
+	}
+
+	public void setIdVantive(Long idVantive) {
+		this.idVantive = idVantive;
+	}
 	
 	public int compareTo(Object o) {
 		SucursalDto suc1 = (SucursalDto)o;

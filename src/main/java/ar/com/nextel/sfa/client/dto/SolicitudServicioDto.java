@@ -91,6 +91,9 @@ public class SolicitudServicioDto implements IsSerializable {
 	
 	private Long cantLineasPortabilidad;
 
+//	MGR - Facturacion
+	private FacturaDto factura;
+	
     public SolicitudServicioDto() {
 		solicitudServicioGeneracion = new SolicitudServicioGeneracionDto();
 	}
@@ -573,7 +576,11 @@ public class SolicitudServicioDto implements IsSerializable {
 		this.retiraEnSucursal = retiraEnSucursal;
 	}
 
-	
-		
-	
+	public FacturaDto getFactura() {
+		return factura;
+	}
+
+	public void setFactura(FacturaDto factura) {
+		this.factura = factura;
+	}
 }

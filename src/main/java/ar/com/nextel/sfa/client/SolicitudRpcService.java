@@ -236,5 +236,8 @@ public interface SolicitudRpcService extends RemoteService {
 
 //	MGR - RQN 2328
 	boolean validarAreaBilling(String numeroAPortar) throws RpcExceptionMessages;
+	
+//	MGR - Facturacion
+	SolicitudServicioDto facturarSolicitudServicio(SolicitudServicioDto solicitudServicioDto);
 }
 

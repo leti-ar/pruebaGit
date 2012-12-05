@@ -94,6 +94,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private RazonSocialClienteBar razonSocialClienteBar;
 	private SimpleLink guardarButton;
 	private SimpleLink cancelarButton;
+//	MGR - Facturacion
+	private SimpleLink facturarButton;
+	private SimpleLink verificarPagoButton;
 	private SimpleLink acionesSS;
 	private Button validarCompletitud;
 	private String tokenLoaded;
@@ -169,6 +172,21 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		}
 		linksCrearSS.add(wrap(cerrarSolicitud));
 		
+//		MGR*** - Necesito evaluar que links se muestran cada vez que se carga una SS
+		formButtonsBar.clear();
+		if(isEditable()) {
+			formButtonsBar.addLink(guardarButton);
+			
+//			MGR***** - Ver bien en que condiciones se carga facturar
+			if(grupoSS.equals(knownInstancias.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS).toString())
+					&& ClientContext.getInstance().getVendedor().isVendedorSalon()
+					&& !editarSSUIData.getRetiraEnSucursal().getValue()){
+				formButtonsBar.addLink(facturarButton);
+			}else{
+				formButtonsBar.addLink(acionesSS);
+				formButtonsBar.addLink(cancelarButton);
+			}
+		}
 		
 		if (cuenta == null && cuentaPotencial == null && codigoVantive == null) {
 			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
@@ -658,15 +676,32 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		formButtonsBar = new FormButtonsBar();
 		mainPanel.add(formButtonsBar);
 		formButtonsBar.addStyleName("mt10");
+
+//		MGR - Facturacion - Lo muevo al load por que necesito que se evalue cada vez que se carga una ss
+//		y no solo la primera vez, solo dejo la parte de crear los links
 		//LF
-		if(isEditable()) {
-			formButtonsBar.addLink(guardarButton = new SimpleLink("Guardar"));
-			formButtonsBar.addLink(acionesSS = new SimpleLink("^SS"));
-			formButtonsBar.addLink(cancelarButton = new SimpleLink("Cancelar"));
-			guardarButton.addClickListener(this);
-			acionesSS.addClickListener(this);
-			cancelarButton.addClickListener(this);
-		}
+//		if(isEditable()) {
+//			formButtonsBar.addLink(guardarButton = new SimpleLink("Guardar"));
+//			formButtonsBar.addLink(acionesSS = new SimpleLink("^SS"));
+//			formButtonsBar.addLink(cancelarButton = new SimpleLink("Cancelar"));
+//			guardarButton.addClickListener(this);
+//			acionesSS.addClickListener(this);
+//			cancelarButton.addClickListener(this);
+//		}
+		guardarButton = new SimpleLink("Guardar");
+		guardarButton.addClickListener(this);
+
+		acionesSS = new SimpleLink("^SS");
+		acionesSS.addClickListener(this);
+		
+		cancelarButton = new SimpleLink("Cancelar");
+		cancelarButton.addClickListener(this);
+		
+		facturarButton = new SimpleLink("Facturar");
+		facturarButton.addClickListener(this);
+		
+		verificarPagoButton = new SimpleLink("Verificar Pago");
+		verificarPagoButton.addClickListener(this);
 	}
 
 	private Widget wrap(Widget w) {
@@ -907,6 +942,38 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			} else {
 				openGenerarCerrarSolicitdDialog(sender == cerrarSolicitud);
 			}
+		}
+//		MGR - Facturacion - Funcionalidad del link Facturar
+		else if (sender ==  facturarButton){
+//			MGR**** - Facturar
+			//Validar la SS - Tiene que cumplir con las mismas condiciones que si fuera a cerrar
+			//y no se hubiera ingresado un pin
+			//Si ok, facturo
+			editarSSUIData.getSolicitudServicio().setUsuarioCreacion(ClientContext.getInstance().getVendedor());
+			SolicitudRpcService.Util.getInstance().facturarSolicitudServicio(editarSSUIData.getSolicitudServicio(),
+					new DefaultWaitCallback<SolicitudServicioDto>() {
+
+						@Override
+						public void success(SolicitudServicioDto result) {
+							editarSSUIData.setSolicitud(result);
+							facturarButton.removeFromParent();
+							if (result.getFactura().getPagado()){ 
+								//Se chequea por el caso que sea cuenta corriente. Si es cuenta corriente 
+								//no se deberia mostrar el verificar pago.
+								formButtonsBar.addLink(cancelarButton);
+							}else{
+								formButtonsBar.addLink(verificarPagoButton);
+							}
+						}
+					});
+//		MGR - Facturacion
+		}else if (sender == verificarPagoButton){
+			MessageDialog.getInstance().showAceptar("Hay que validar el pago",
+					new Command() {
+			    public void execute() {
+			    	MessageDialog.getInstance().hide();
+				};
+			});
 		}
 		//German - Comentado para salir solo con cierre - CU#5
 //		else if (sender == copiarSS) {			

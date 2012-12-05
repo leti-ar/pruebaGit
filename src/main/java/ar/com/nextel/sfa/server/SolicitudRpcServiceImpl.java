@@ -45,6 +45,7 @@ import ar.com.nextel.business.shift.InformacionNumeroDTO;
 import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSResponse;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
+import ar.com.nextel.business.solicitudes.facturacion.FacturacionSolServicioService;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
 import ar.com.nextel.business.solicitudes.negativeFiles.NegativeFilesBusinessOperator;
 import ar.com.nextel.business.solicitudes.negativeFiles.result.NegativeFilesBusinessResult;
@@ -141,7 +142,6 @@ import ar.com.nextel.sfa.client.dto.TipoPersonaDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefoniaDto;
-import ar.com.nextel.sfa.client.dto.UsuarioDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.initializer.BuscarSSCerradasInitializer;
@@ -161,9 +161,6 @@ import ar.com.nextel.util.ExcelBuilder;
 import ar.com.nextel.util.PermisosUserCenter;
 import ar.com.nextel.util.StringUtil;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
-import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
-import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
-import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 import ar.com.snoop.gwt.commons.server.RemoteService;
 import ar.com.snoop.gwt.commons.server.util.ExceptionUtil;
 
@@ -193,7 +190,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
     private ShiftSystem shiftSystem;
     
 	//MGR - #1481
-	private DefaultRetriever messageRetriever;;
+	private DefaultRetriever messageRetriever;
+	
+//	MGR - Facturacion
+	private FacturacionSolServicioService facturacionSolServicioService;
 	
 	//MGR - #3122
 	private static final String ERROR_CC_POR_RESULTADO = "ERROR_CC_POR_RESULTADO";
@@ -242,7 +242,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		
 		messageRetriever = (DefaultRetriever)context.getBean("messageRetriever");
 		mailSender= (MailSender)context.getBean("mailSender");
-		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");		
+		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");
+		facturacionSolServicioService = (FacturacionSolServicioService) context.getBean("facturacionSolServicioServiceBean");
 
 	}
 
@@ -3013,4 +3014,33 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		RO, //ROSAR
 		ZZ; //SIN AREA
 	}
+	
+//	MGR****
+	public SolicitudServicioDto facturarSolicitudServicio(SolicitudServicioDto solicitudServicioDto){
+//		MGR**** verificar si hace falta if (solicitudServicioDTO.getUsuario().isVendedorSalon()){
+		Vendedor vendedor = repository.retrieve(Vendedor.class, solicitudServicioDto.getUsuarioCreacion().getId());
+		SolicitudServicio solServ = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
+		facturacionSolServicioService.facturar(solServ,vendedor);
+		solServ = repository.retrieve(SolicitudServicio.class, solServ.getId());
+		return mapper.map(solServ, SolicitudServicioDto.class);
+	}
+	
+	/**Facturador. La solicitud de servicio tiene que estar persistida
+	 * @param solicitudServicio
+	 * @param vendedor 
+	 */
+//	MGR***
+//	private FacturaDto facturarSolicitudServicio(SolicitudServicio solicitudServicio, Vendedor vendedor){
+//		
+//		FacturaDto facturaDto = null;
+//		try {
+//			facturacionSolServicioService.facturar(solicitudServicio,vendedor);
+//			Factura factura = solicitudServicio.getFactura();
+//			facturaDto = new FacturaDto(factura.getNumero(),factura.getPagado());
+//		} catch (Exception e) {
+//			log.error(e, e);
+//			throw new RuntimeException(e);
+//		}
+//		return facturaDto;
+//	}
 }
