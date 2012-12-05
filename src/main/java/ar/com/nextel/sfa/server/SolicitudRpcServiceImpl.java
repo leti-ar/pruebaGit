@@ -3015,32 +3015,13 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		ZZ; //SIN AREA
 	}
 	
-//	MGR****
+//	MGR - Facturacion
 	public SolicitudServicioDto facturarSolicitudServicio(SolicitudServicioDto solicitudServicioDto){
-//		MGR**** verificar si hace falta if (solicitudServicioDTO.getUsuario().isVendedorSalon()){
+//		MGR - Verificar si hace falta if (solicitudServicioDTO.getUsuario().isVendedorSalon()){
 		Vendedor vendedor = repository.retrieve(Vendedor.class, solicitudServicioDto.getUsuarioCreacion().getId());
 		SolicitudServicio solServ = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
 		facturacionSolServicioService.facturar(solServ,vendedor);
 		solServ = repository.retrieve(SolicitudServicio.class, solServ.getId());
 		return mapper.map(solServ, SolicitudServicioDto.class);
 	}
-	
-	/**Facturador. La solicitud de servicio tiene que estar persistida
-	 * @param solicitudServicio
-	 * @param vendedor 
-	 */
-//	MGR***
-//	private FacturaDto facturarSolicitudServicio(SolicitudServicio solicitudServicio, Vendedor vendedor){
-//		
-//		FacturaDto facturaDto = null;
-//		try {
-//			facturacionSolServicioService.facturar(solicitudServicio,vendedor);
-//			Factura factura = solicitudServicio.getFactura();
-//			facturaDto = new FacturaDto(factura.getNumero(),factura.getPagado());
-//		} catch (Exception e) {
-//			log.error(e, e);
-//			throw new RuntimeException(e);
-//		}
-//		return facturaDto;
-//	}
 }

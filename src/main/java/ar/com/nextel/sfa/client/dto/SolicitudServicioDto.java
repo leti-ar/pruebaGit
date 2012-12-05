@@ -93,6 +93,7 @@ public class SolicitudServicioDto implements IsSerializable {
 
 //	MGR - Facturacion
 	private FacturaDto factura;
+	private String customerNumberFactura;
 	
     public SolicitudServicioDto() {
 		solicitudServicioGeneracion = new SolicitudServicioGeneracionDto();
@@ -582,5 +583,18 @@ public class SolicitudServicioDto implements IsSerializable {
 
 	public void setFactura(FacturaDto factura) {
 		this.factura = factura;
+	}
+	
+	public String getCustomerNumberFactura() {
+		return customerNumberFactura;
+	}
+
+	public void setCustomerNumberFactura(String customerNumberFactura) {
+		this.customerNumberFactura = customerNumberFactura;
+	}
+
+	//	MGR - Facturacion	
+	public Boolean isCuentaCorriene(){
+		return (this.customerNumberFactura != null);
 	}
 }

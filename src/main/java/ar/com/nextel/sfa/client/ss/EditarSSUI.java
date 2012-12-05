@@ -172,22 +172,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		}
 		linksCrearSS.add(wrap(cerrarSolicitud));
 		
-//		MGR*** - Necesito evaluar que links se muestran cada vez que se carga una SS
-		formButtonsBar.clear();
-		if(isEditable()) {
-			formButtonsBar.addLink(guardarButton);
-			
-//			MGR***** - Ver bien en que condiciones se carga facturar
-			if(grupoSS.equals(knownInstancias.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS).toString())
-					&& ClientContext.getInstance().getVendedor().isVendedorSalon()
-					&& !editarSSUIData.getRetiraEnSucursal().getValue()){
-				formButtonsBar.addLink(facturarButton);
-			}else{
-				formButtonsBar.addLink(acionesSS);
-				formButtonsBar.addLink(cancelarButton);
-			}
-		}
-		
 		if (cuenta == null && cuentaPotencial == null && codigoVantive == null) {
 			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 			ErrorDialog.getInstance().show(Sfa.constant().ERR_URL_PARAMS_EMPTY(), false);
@@ -496,6 +480,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 
 	private void ssCreadaSuccess(SolicitudServicioDto solicitud){
 		editarSSUIData.setSaved(true);
+		
 		// varios.setScoringVisible(!solicitud.getGrupoSolicitud().isCDW());
 		razonSocialClienteBar.setCliente(solicitud.getCuenta().getCodigoVantive());
 		razonSocialClienteBar.setRazonSocial(solicitud.getCuenta().getPersona()
@@ -581,20 +566,34 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		tabs.selectTab(0);
 		mainPanel.setVisible(true);
 		
+		
+//		MGR - Facturacion - Necesito evaluar que links se muestran cada vez que se carga una SS
+//		Ojo! Tiene que ir luego de datos.refresh();
+		formButtonsBar.clear();
+		if(isEditable()) {
+			formButtonsBar.addLink(guardarButton);
+			
+			if(grupoSS.equals(knownInstancias.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS).toString())
+					&& ClientContext.getInstance().getVendedor().isVendedorSalon()
+					&& editarSSUIData.getRetiraEnSucursal().getValue()
+					&& solicitud.isCuentaCorriene()){
+				formButtonsBar.addLink(facturarButton);
+			}else{
+				formButtonsBar.addLink(acionesSS);
+				formButtonsBar.addLink(cancelarButton);
+			}
+		}
+		
 		long numeross= editarSSUIData.getIdSolicitudServicio();
 		SolicitudRpcService.Util.getInstance().getEstadoSolicitud(numeross, 
 				new DefaultWaitCallback<String>() {
-			
 
-		
 			public void success(String result) {
-  
-					         editarSSUIData.setEstado(result);
-					
+				editarSSUIData.setEstado(result);
 			}
-			
 		});
 	}
+	
 	public void firstLoad() {
 		razonSocialClienteBar = new RazonSocialClienteBar(this);//();
 		
@@ -677,8 +676,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		mainPanel.add(formButtonsBar);
 		formButtonsBar.addStyleName("mt10");
 
-//		MGR - Facturacion - Lo muevo al load por que necesito que se evalue cada vez que se carga una ss
-//		y no solo la primera vez, solo dejo la parte de crear los links
+//		MGR - Facturacion - Lo muevo al metodo 'ssCreadaSuccess' por que necesito que se evalue cada vez que 
+//		se carga una ss y no solo la primera vez, solo dejo la parte de crear los links
 		//LF
 //		if(isEditable()) {
 //			formButtonsBar.addLink(guardarButton = new SimpleLink("Guardar"));
@@ -702,6 +701,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		
 		verificarPagoButton = new SimpleLink("Verificar Pago");
 		verificarPagoButton.addClickListener(this);
+//		MGR - Facturacion - Necesito saber cuando se presiono el check para evaluar que opciones mostrar
+		editarSSUIData.getRetiraEnSucursal().addClickListener(this);
 	}
 
 	private Widget wrap(Widget w) {
@@ -945,7 +946,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		}
 //		MGR - Facturacion - Funcionalidad del link Facturar
 		else if (sender ==  facturarButton){
-//			MGR**** - Facturar
 			//Validar la SS - Tiene que cumplir con las mismas condiciones que si fuera a cerrar
 			//y no se hubiera ingresado un pin
 			//Si ok, facturo
@@ -974,6 +974,21 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			    	MessageDialog.getInstance().hide();
 				};
 			});
+		}
+//		MGR - Facturacion - Cuando retira en sucursal, permito facturar
+		else if (sender == editarSSUIData.getRetiraEnSucursal()){
+			if(editarSSUIData.getSolicitudServicio().getGrupoSolicitud().isEquiposAccesorios()
+					&& ClientContext.getInstance().getVendedor().isVendedorSalon()
+					&& editarSSUIData.getRetiraEnSucursal().getValue()){
+				
+				acionesSS.removeFromParent();
+				cancelarButton.removeFromParent();
+				formButtonsBar.addLink(facturarButton);
+			}else{
+				facturarButton.removeFromParent();
+				formButtonsBar.addLink(acionesSS);
+				formButtonsBar.addLink(cancelarButton);
+			}
 		}
 		//German - Comentado para salir solo con cierre - CU#5
 //		else if (sender == copiarSS) {			

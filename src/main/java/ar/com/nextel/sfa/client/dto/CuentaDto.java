@@ -41,6 +41,9 @@ public class CuentaDto implements IsSerializable {
 	
 	private List<CaratulaDto> caratulas = new ArrayList<CaratulaDto>();
 
+//	MGR - Facturacion
+	private String customerNumberFactura;
+	
 	public Long getId() {
 		return id;
 	}
@@ -335,5 +338,18 @@ public class CuentaDto implements IsSerializable {
 	
 	public void setCaratulas(List<CaratulaDto> caratulas) {
 		this.caratulas = caratulas;
+	}
+
+//	MGR - Facturacion
+	public void setCustomerNumberFactura(String customerNumberFactura) {
+		this.customerNumberFactura = customerNumberFactura;
+	}
+	
+	public String getCustomerNumberFactura() {
+		return customerNumberFactura;
+	}
+	
+	public Boolean isCuentaCorriene(){
+		return (this.customerNumberFactura != null);
 	}
 }
