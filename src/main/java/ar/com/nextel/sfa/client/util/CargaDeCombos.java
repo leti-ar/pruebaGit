@@ -51,8 +51,10 @@ public class CargaDeCombos {
 								lst.addAllItems(listBoxItem);
 								tipoSolicitud.setListasPrecios(listBoxItem);
 								ListaPreciosDto item = (ListaPreciosDto)lst.getSelectedItem(); 
-								List<ItemSolicitudTasadoDto> items = (List<ItemSolicitudTasadoDto>)item.getItemsListaPrecioVisibles();
-								cantItemsLst.addAllItems(items);
+								if (item != null) {
+									List<ItemSolicitudTasadoDto> items = (List<ItemSolicitudTasadoDto>)item.getItemsListaPrecioVisibles();
+									cantItemsLst.addAllItems(items);
+								}
 							}
 
 						});
