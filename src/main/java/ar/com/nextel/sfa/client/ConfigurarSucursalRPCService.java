@@ -32,5 +32,5 @@ public interface ConfigurarSucursalRPCService extends RemoteService {
 	public List<SucursalDto> getSucursales() throws RpcExceptionMessages;
 	
 	
-	public VendedorDto cambiarSucursal(Long idSucursal,Long idVendedor)throws RpcExceptionMessages;
+	public void cambiarSucursal(Long idSucursal)throws RpcExceptionMessages;
 }

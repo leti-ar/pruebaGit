@@ -39,11 +39,8 @@ public class ConfigurarSucursalRPCServiceImpl extends RemoteService implements C
 	}
 	
 
-	public VendedorDto cambiarSucursal(Long idSucursal,Long idVendedor)throws RpcExceptionMessages{
-		
-		VendedorDto vendedor= new VendedorDto();
-		vendedor=mapper.map(configurarSucursalService.cambiarSucursal(idSucursal, idVendedor), VendedorDto.class);
-		return vendedor;
+	public void cambiarSucursal(Long idSucursal)throws RpcExceptionMessages{
+		configurarSucursalService.cambiarSucursal(idSucursal);
 	}
 		
 		

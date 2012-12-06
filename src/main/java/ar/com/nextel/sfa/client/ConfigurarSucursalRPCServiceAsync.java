@@ -11,9 +11,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface ConfigurarSucursalRPCServiceAsync {
 	
-	
-	
-	void getSucursales(AsyncCallback<List<SucursalDto>> callback);
-    void cambiarSucursal(Long idSucursal,Long idVendedor,AsyncCallback<VendedorDto> callback);
+	public void getSucursales(AsyncCallback<List<SucursalDto>> callback);
+    public void cambiarSucursal(Long idSucursal,AsyncCallback<Void> callback);
 
 }

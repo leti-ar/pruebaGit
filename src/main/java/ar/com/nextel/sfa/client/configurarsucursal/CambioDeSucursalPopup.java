@@ -96,26 +96,28 @@ public class CambioDeSucursalPopup extends NextelDialog {
 	
 	private void cambiarSucursalVendedor(){
 		final VendedorDto vendedorDto = ClientContext.getInstance().getVendedor();
+		final Long sucursalIdSelected= Long.parseLong(selectsucursales.getSelectedItemId());
 	
-		if (!selectsucursales.getSelectedItemId().equals(vendedorDto.getIdSucursal().toString())) {
-		ConfigurarSucursalRPCService.Util.getInstance().cambiarSucursal(new Long(selectsucursales.getSelectedItemId()), vendedorDto.getId(), new AsyncCallback<VendedorDto>(){
+		if (!sucursalIdSelected.equals(vendedorDto.getIdSucursal())) {
+			ConfigurarSucursalRPCService.Util.getInstance().cambiarSucursal(new Long(selectsucursales.getSelectedItemId()), new AsyncCallback<Void>(){
 
-			public void onFailure(Throwable caught) {
-				System.out.println(caught.getMessage());
+				public void onFailure(Throwable caught) {
+					System.out.println(caught.getMessage());
 					
-			}
+				}
 
 
-			public void onSuccess(VendedorDto result) {
-				hide();
-				cleanForm();
-				WaitWindow.hide();
-				MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO,
-				Sfa.constant().MSG_SUCURSAL_GUARDADA_OK(), MessageDialog.getCloseCommand());
-				History.newItem(UILoader.SOLO_MENU + "");
-			}
+				public void onSuccess(Void result) {
+					ClientContext.getInstance().getVendedor().setIdSucursal(sucursalIdSelected);
+					hide();
+					cleanForm();
+					WaitWindow.hide();
+					MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO,
+							Sfa.constant().MSG_SUCURSAL_GUARDADA_OK(), MessageDialog.getCloseCommand());
+					History.newItem(UILoader.SOLO_MENU + "");
+				}
 			
-	});
+			});
 		}else{
 			
 			MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO,

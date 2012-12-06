@@ -3,7 +3,6 @@ package ar.com.nextel.sfa.client;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.SucursalDto;
-import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -29,9 +28,9 @@ public class ConfigurarSucursalRpcServiceDelegate {
 	confSucursalRpcServiceAsync.getSucursales(callback);
 	}
 	
-	public void cambiarSucursal(Long idSucursal,Long idVendedor ,AsyncCallback<VendedorDto>callback){
+	public void cambiarSucursal(Long idSucursal,AsyncCallback<Void> callback){
 		WaitWindow.show();
-		confSucursalRpcServiceAsync.cambiarSucursal(idSucursal,idVendedor,callback);
+		confSucursalRpcServiceAsync.cambiarSucursal(idSucursal,callback);
 	}
 	
 	
