@@ -1376,7 +1376,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 //						
 						MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO,
 								result, MessageDialog.getCloseCommand());
-						History.newItem(UILoader.SOLO_MENU + "");
+						
 					}
 				});
 	}
