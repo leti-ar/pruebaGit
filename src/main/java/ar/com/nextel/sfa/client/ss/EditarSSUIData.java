@@ -30,6 +30,8 @@ import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudBaseDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
+import ar.com.nextel.sfa.client.event.EventBusUtil;
+import ar.com.nextel.sfa.client.event.RefrescarPantallaSSEvent;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
 import ar.com.nextel.sfa.client.util.FormUtils;
@@ -57,6 +59,7 @@ import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineHTML;
@@ -329,6 +332,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //				}
 //			});
 //		}
+		
+//		MGR - Facturacion - Necesito saber cuando se presiono el check para evaluar que opciones mostrar
+		retiraEnSucursal.addClickListener(new ClickListener() {
+				public void onClick(Widget arg0) {
+					EventBusUtil.getEventBus().fireEvent(
+							new RefrescarPantallaSSEvent(solicitudServicio, 
+									retiraEnSucursal.getValue()));
+				}
+			});
 		
 		inicializarBusquedaContratos();
 	}
@@ -1136,6 +1148,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				serviciosAdicionales.get(index.intValue()).clear();
 			}
 		}
+		
+//		MGR - Facturacion
+		EventBusUtil.getEventBus().fireEvent(
+				new RefrescarPantallaSSEvent(solicitudServicio, this.getRetiraEnSucursal().getValue()));
 		
 		return linea.getNumeradorLinea().intValue();
 	}

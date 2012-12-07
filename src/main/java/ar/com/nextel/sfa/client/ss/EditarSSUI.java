@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.sfa.client.InfocomRpcService;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -14,6 +13,7 @@ import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
+import ar.com.nextel.sfa.client.dto.FacturaDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -32,6 +32,9 @@ import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
+import ar.com.nextel.sfa.client.event.EventBusUtil;
+import ar.com.nextel.sfa.client.event.RefrescarPantallaSSEvent;
+import ar.com.nextel.sfa.client.event.RefrescarPantallaSSEventHandler;
 import ar.com.nextel.sfa.client.infocom.InfocomUIData;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
 import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
@@ -129,6 +132,15 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		addStyleName("Gwt-EditarSSUI");
 		knownInstancias = ClientContext.getInstance().getKnownInstance();
 		linksCrearSS = new FlowPanel();
+		
+//		MGR - Facturacion
+		EventBusUtil.getEventBus().addHandler(RefrescarPantallaSSEvent.TYPE, 
+				new RefrescarPantallaSSEventHandler() {
+			
+			public void refrescarPantallaSS(RefrescarPantallaSSEvent event) {
+				doRefrescarPantallaSS(event);
+			}
+		});
 	}
 
 	private void getInfocomData(String idCuenta, String responsablePago, String codigoVantive) {
@@ -566,24 +578,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		tabs.selectTab(0);
 		mainPanel.setVisible(true);
 		
-		
-//		MGR - Facturacion - Necesito evaluar que links se muestran cada vez que se carga una SS
-//		Ojo! Tiene que ir luego de datos.refresh();
-		formButtonsBar.clear();
-		if(isEditable()) {
-			formButtonsBar.addLink(guardarButton);
-			
-			if(grupoSS.equals(knownInstancias.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS).toString())
-					&& ClientContext.getInstance().getVendedor().isVendedorSalon()
-					&& editarSSUIData.getRetiraEnSucursal().getValue()
-					&& solicitud.isCuentaCorriene()){
-				formButtonsBar.addLink(facturarButton);
-			}else{
-				formButtonsBar.addLink(acionesSS);
-				formButtonsBar.addLink(cancelarButton);
-			}
-		}
-		
 		long numeross= editarSSUIData.getIdSolicitudServicio();
 		SolicitudRpcService.Util.getInstance().getEstadoSolicitud(numeross, 
 				new DefaultWaitCallback<String>() {
@@ -592,6 +586,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				editarSSUIData.setEstado(result);
 			}
 		});
+		
+//		MGR - Facturacion - Necesito evaluar como queda la pantalla de carga
+//		segun los datos de la solicitud
+		EventBusUtil.getEventBus().fireEvent(
+				new RefrescarPantallaSSEvent(solicitud, editarSSUIData.getRetiraEnSucursal().getValue()));
 	}
 	
 	public void firstLoad() {
@@ -701,8 +700,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		
 		verificarPagoButton = new SimpleLink("Verificar Pago");
 		verificarPagoButton.addClickListener(this);
-//		MGR - Facturacion - Necesito saber cuando se presiono el check para evaluar que opciones mostrar
-		editarSSUIData.getRetiraEnSucursal().addClickListener(this);
+
 	}
 
 	private Widget wrap(Widget w) {
@@ -956,14 +954,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 						@Override
 						public void success(SolicitudServicioDto result) {
 							editarSSUIData.setSolicitud(result);
-							facturarButton.removeFromParent();
-							if (result.getFactura().getPagado()){ 
-								//Se chequea por el caso que sea cuenta corriente. Si es cuenta corriente 
-								//no se deberia mostrar el verificar pago.
-								formButtonsBar.addLink(cancelarButton);
-							}else{
-								formButtonsBar.addLink(verificarPagoButton);
-							}
+							EventBusUtil.getEventBus().fireEvent(
+									new RefrescarPantallaSSEvent(result, 
+											editarSSUIData.getRetiraEnSucursal().getValue()));
 						}
 					});
 //		MGR - Facturacion
@@ -974,21 +967,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			    	MessageDialog.getInstance().hide();
 				};
 			});
-		}
-//		MGR - Facturacion - Cuando retira en sucursal, permito facturar
-		else if (sender == editarSSUIData.getRetiraEnSucursal()){
-			if(editarSSUIData.getSolicitudServicio().getGrupoSolicitud().isEquiposAccesorios()
-					&& ClientContext.getInstance().getVendedor().isVendedorSalon()
-					&& editarSSUIData.getRetiraEnSucursal().getValue()){
-				
-				acionesSS.removeFromParent();
-				cancelarButton.removeFromParent();
-				formButtonsBar.addLink(facturarButton);
-			}else{
-				facturarButton.removeFromParent();
-				formButtonsBar.addLink(acionesSS);
-				formButtonsBar.addLink(cancelarButton);
-			}
 		}
 		//German - Comentado para salir solo con cierre - CU#5
 //		else if (sender == copiarSS) {			
@@ -1862,5 +1840,53 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		return activar;	
 	}
 
+//	MGR - Facturacion
+	private void doRefrescarPantallaSS(RefrescarPantallaSSEvent event) {
+		datos.habilitarModificarSolicitud();
+		SolicitudServicioDto solicitud = event.getSolicitud();
+		
+		formButtonsBar.clear();
+		if(isEditable()) {
+			FacturaDto factura = solicitud.getFactura();
+			if(factura != null){
+				//Tiene factura, ya no se puede modificar
+				datos.deshabilitarModificarSolicitud();
+				
+				if(factura.getPagado()){
+					showGenerarCerrarMenu();
+				}else{
+					showVerificarPago();
+				}
+			}
+			//No tiene factura asociada
+			else{
+				showGuardar();
+				if(solicitud.getGrupoSolicitud().isEquiposAccesorios()
+						&& ClientContext.getInstance().getVendedor().isVendedorSalon()
+						&& event.isRetiraEnSucursal()
+						&& !solicitud.isCuentaCorriene()){
+					showFacturar();
+				}else{
+					showGenerarCerrarMenu();
+				}
+			}
+		}
+	}
 	
+	private void showGuardar(){
+		formButtonsBar.addLink(guardarButton);
+	}
+	
+	private void showGenerarCerrarMenu(){
+		formButtonsBar.addLink(acionesSS);
+		formButtonsBar.addLink(cancelarButton);
+	}
+	
+	private void showFacturar(){
+		formButtonsBar.addLink(facturarButton);
+	}
+	
+	private void showVerificarPago(){
+		formButtonsBar.addLink(verificarPagoButton);
+	}
 }

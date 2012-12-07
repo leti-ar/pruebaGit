@@ -595,6 +595,10 @@ public class SolicitudServicioDto implements IsSerializable {
 
 	//	MGR - Facturacion	
 	public Boolean isCuentaCorriene(){
-		return (this.customerNumberFactura != null);
+		if(this.lineas.isEmpty())
+        	return false;
+        
+        LineaSolicitudServicioDto linea = this.lineas.get(0);
+        return linea.getTerminoPago().isCuentaCorriente();
 	}
 }

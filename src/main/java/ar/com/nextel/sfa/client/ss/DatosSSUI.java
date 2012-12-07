@@ -194,10 +194,10 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		}
 		
 		if (editarSSUIData.getGrupoSolicitud()!= null){
-		if (!editarSSUIData.isCDW() && !editarSSUIData.isMDS()&& !editarSSUIData.isTRANSFERENCIA()) {
-			nnsLayout.setHTML(0, 6, Sfa.constant().retiraEnSucursal());
-			nnsLayout.setWidget(0, 7, editarSSUIData.getRetiraEnSucursal());
-		}
+			if (!editarSSUIData.isCDW() && !editarSSUIData.isMDS()&& !editarSSUIData.isTRANSFERENCIA()) {
+				nnsLayout.setHTML(0, 6, Sfa.constant().retiraEnSucursal());
+				nnsLayout.setWidget(0, 7, editarSSUIData.getRetiraEnSucursal());
+			}
 		}
 
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
@@ -248,7 +248,6 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			nnsLayout.clearCell(0, 10);
 			nnsLayout.clearCell(0, 11);
 		}
-	
 
 	}
 	
@@ -1026,5 +1025,64 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		if(lineaSeleccionada!=null){
 			lineaSeleccionada.setPrecioConDescuento(null);
 		}
-	}	
+	}
+	
+//	MGR - Facturacion
+	public void deshabilitarModificarSolicitud(){
+		habilitarNssLayout(false);
+		deshabilitarDomicilioPanel(false);
+		deshabilitarDetallePanel();		
+	}
+	
+	public void habilitarModificarSolicitud(){
+		habilitarNssLayout(true);
+		deshabilitarDomicilioPanel(true);
+		habilitarDetallePanel();		
+	}
+	
+	private void habilitarDetallePanel(){
+		crearLinea.setVisible(true);
+	}
+	
+	private void deshabilitarDetallePanel(){
+		String[] titlesDetalle;
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
+			titlesDetalle = tableConDescuento();	
+		} else {
+			titlesDetalle = tableSinDescuento();
+		}
+		
+		//Si no hay titulo, es por que hay un icono, entonces los elimino
+		for (int i = 1; i < detalleSS.getRowCount(); i++) {
+			for(int j = 0; j < titlesDetalle.length; j++){
+				if(titlesDetalle[j].equals(Sfa.constant().whiteSpace()))
+					detalleSS.setHTML(i,j,Sfa.constant().whiteSpace());
+			}
+		} 
+		
+		//Oculto el boton para crear mas lineas
+		crearLinea.setVisible(false);
+	}
+	
+	private void deshabilitarDomicilioPanel(boolean habilitar){
+		crearDomicilio.setEnabled(habilitar);
+		editarDomicioFacturacion.setVisible(habilitar);
+		borrarDomicioFacturacion.setVisible(habilitar);
+		editarDomicioEntrega.setVisible(habilitar);
+		borrarDomicioEntrega.setVisible(habilitar);
+		editarSSUIData.getEntrega().setEnabled(habilitar);
+		editarSSUIData.getFacturacion().setEnabled(habilitar);
+		editarSSUIData.getAclaracion().setEnabled(habilitar);
+		editarSSUIData.getEmail().setEnabled(habilitar);
+	}
+	
+	private void habilitarNssLayout(boolean habilitar){
+		editarSSUIData.getNss().setEnabled(habilitar);
+		editarSSUIData.getNflota().setEnabled(habilitar);
+		editarSSUIData.getOrigen().setEnabled(habilitar);
+		editarSSUIData.getRetiraEnSucursal().setEnabled(habilitar);
+		editarSSUIData.getVendedor().setEnabled(habilitar);
+		editarSSUIData.getSucursalOrigen().setEnabled(habilitar);
+		editarSSUIData.getOrdenCompra().setEnabled(habilitar);
+	}
 }
