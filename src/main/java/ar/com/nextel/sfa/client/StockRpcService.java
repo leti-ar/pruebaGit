@@ -30,8 +30,8 @@ public interface StockRpcService extends RemoteService {
 	List<TipoSolicitudDto> obtenerTiposDeSolicitudParaVendedor(
 			VendedorDto vendedorDto) throws RpcExceptionMessages;
 
-	String validarStock(Long idSolicitud, Long idVendedor) throws RpcExceptionMessages;
+	String validarStock(Long idItem, Long idVendedor) throws RpcExceptionMessages;
 	
-	String validarStockDesdeSS(Long idSolicitud, Long idVendedor) throws RpcExceptionMessages;
+	String validarStockDesdeSS(Long idItem, Long idVendedor) throws RpcExceptionMessages;
 	
 }
