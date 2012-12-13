@@ -1376,9 +1376,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 					@Override
 					public void success(String result) {
-//						
+					    if (!result.equals("")){
 						MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO,
-								result, MessageDialog.getCloseCommand());
+								result, MessageDialog.getCloseCommand());}
 						
 					}
 				});
