@@ -640,27 +640,30 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 						this.enableTextBox(sim);
 					}
 				// agregado para entrega por sucursal	
-				} else if (tipoEdicion == ITEM_PLAN || tipoEdicion == SOLO_ITEM) {
-					if (is.getItem().isEquipo()) {
-						this.enableTextBox(imeiRetiroEnSucursal);
-						this.enableTextBox(simRetiroEnSucursal);
-						this.disableTextBox(cantidad,"1");
-					} else if (is.getItem().isAccesorio() && is.getItem().getEsSim()) {
-						this.disableTextBox(imeiRetiroEnSucursal);
-						this.enableTextBox(simRetiroEnSucursal);
-						this.disableTextBox(cantidad, "1");
-					} else {
-						this.disableTextBox(imeiRetiroEnSucursal);
-						this.disableTextBox(simRetiroEnSucursal);
-						this.enableTextBox(cantidad);
+				} else if (controller.getEditarSSUIData().getRetiraEnSucursal().getValue()) {
+					if (tipoEdicion == ITEM_PLAN || tipoEdicion == SOLO_ITEM) {
+						if (is.getItem().isEquipo()) {
+							this.enableTextBox(imeiRetiroEnSucursal);
+							this.enableTextBox(simRetiroEnSucursal);
+							this.disableTextBox(cantidad,"1");
+						} else if (is.getItem().isAccesorio() && is.getItem().getEsSim()) {
+							this.disableTextBox(imeiRetiroEnSucursal);
+							this.enableTextBox(simRetiroEnSucursal);
+							this.disableTextBox(cantidad, "1");
+						} else {
+							this.disableTextBox(imeiRetiroEnSucursal);
+							this.disableTextBox(simRetiroEnSucursal);
+							this.enableTextBox(cantidad);
+						}
 					}
 				}
 			} else {
 				this.enableTextBox(sim);
 			}
-			if (item.getSelectedItem()!=null){
-            //llamar al metodo de validacion de stock
-			validarStock(new Long(item.getSelectedItem().getItemValue()));
+			if (controller.getEditarSSUIData().getRetiraEnSucursal().getValue() &&
+				item.getSelectedItem()!=null) {
+				//llamar al metodo de validacion de stock
+				validarStock(new Long(item.getSelectedItem().getItemValue()));
 			}
 			refreshTotalLabel();
 		} else if (sender == tipoPlan) {
