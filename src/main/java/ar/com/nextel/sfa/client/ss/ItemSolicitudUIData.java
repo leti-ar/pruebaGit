@@ -1371,7 +1371,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	
 	public void validarStock(Long idItem){
 		final VendedorDto vendedorDto = ClientContext.getInstance().getVendedor();
-		StockRpcService.Util.getInstance().validarStock(idItem, vendedorDto.getId(),LUGAR_DE_LLAMADA_DE_VALIDACION_STOCK,
+		StockRpcService.Util.getInstance().validarStockDesdeSS(idItem, vendedorDto.getId(),
 				new DefaultWaitCallback<String>() {
 
 					@Override
