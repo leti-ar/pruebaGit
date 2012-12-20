@@ -11,6 +11,7 @@ import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
+import ar.com.nextel.sfa.client.dto.FacturaDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudDto;
@@ -224,4 +225,7 @@ public interface SolicitudRpcServiceAsync {
 	
 //	MGR - Facturacion
 	public void facturarSolicitudServicio(SolicitudServicioDto solicitudServicioDto, AsyncCallback<SolicitudServicioDto> callback);
+	
+//	MGR - Verificar Pago
+	public void verificarPagoFacturaSolicitudServicio(SolicitudServicioDto solicitudServicioDto, AsyncCallback<FacturaDto> callback);
 }

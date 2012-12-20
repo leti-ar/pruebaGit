@@ -961,12 +961,31 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					});
 //		MGR - Facturacion
 		}else if (sender == verificarPagoButton){
-			MessageDialog.getInstance().showAceptar("Hay que validar el pago",
-					new Command() {
-			    public void execute() {
-			    	MessageDialog.getInstance().hide();
-				};
-			});
+			
+//			MGR - Verificar Pago
+			SolicitudRpcService.Util.getInstance().verificarPagoFacturaSolicitudServicio(
+					editarSSUIData.getSolicitudServicio(), new DefaultWaitCallback<FacturaDto>() {
+
+						@Override
+						public void success(FacturaDto result) {
+							if (result.getPagado()){
+								editarSSUIData.getSolicitudServicio().setFactura(result);
+								
+								EventBusUtil.getEventBus().fireEvent(
+										new RefrescarPantallaSSEvent(editarSSUIData.getSolicitudServicio(), 
+												editarSSUIData.getSolicitudServicio().getRetiraEnSucursal()));
+							}
+							else{
+								MessageDialog.getInstance().showAceptar("No se realizo el pago",
+										new Command() {
+								    public void execute() {
+								    	MessageDialog.getInstance().hide();
+									};
+								});
+							}
+							
+						}
+					});
 		}
 		//German - Comentado para salir solo con cierre - CU#5
 //		else if (sender == copiarSS) {			
@@ -1853,7 +1872,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				datos.deshabilitarModificarSolicitud();
 				
 				if(factura.getPagado()){
-					showGenerarCerrarMenu();
+//					MGR - Verificar Pago
+					showCerrar();
 				}else{
 					showVerificarPago();
 				}
@@ -1880,6 +1900,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private void showGenerarCerrarMenu(){
 		formButtonsBar.addLink(acionesSS);
 		formButtonsBar.addLink(cancelarButton);
+	}
+	
+//	MGR - Verificar Pago
+	private void showCerrar(){
+		formButtonsBar.addLink(cerrarSolicitud);
 	}
 	
 	private void showFacturar(){

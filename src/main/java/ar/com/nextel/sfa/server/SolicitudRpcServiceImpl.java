@@ -74,6 +74,7 @@ import ar.com.nextel.model.solicitudes.beans.Control;
 import ar.com.nextel.model.solicitudes.beans.EstadoHistorico;
 import ar.com.nextel.model.solicitudes.beans.EstadoPorSolicitud;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
+import ar.com.nextel.model.solicitudes.beans.Factura;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
@@ -112,6 +113,7 @@ import ar.com.nextel.sfa.client.dto.EstadoHistoricoDto;
 import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
+import ar.com.nextel.sfa.client.dto.FacturaDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudDto;
@@ -3023,5 +3025,23 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		facturacionSolServicioService.facturar(solServ,vendedor);
 		solServ = repository.retrieve(SolicitudServicio.class, solServ.getId());
 		return mapper.map(solServ, SolicitudServicioDto.class);
+	}
+	
+//	MGR - Verificar Pago
+	/**
+	 * Verificar Pago de una factura.
+	 * @param solicitudServicioDTO
+	 */
+	public FacturaDto verificarPagoFacturaSolicitudServicio(SolicitudServicioDto solicitudServicioDto){
+		try {
+			SolicitudServicio solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
+			Factura factura = solicitudServicio.getFactura();
+			this.facturacionSolServicioService.verificarPago(factura);
+			return mapper.map(factura, FacturaDto.class);
+			
+		} catch (Exception e) {
+			log.error(e, e);
+			throw new RuntimeException(e);
+		}
 	}
 }
