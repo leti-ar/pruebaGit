@@ -569,9 +569,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	
 		if(solicitud.getGrupoSolicitud().isEquiposAccesorios() && solicitud.getRetiraEnSucursal()!= null){
 			retiraEnSucursal.setValue(solicitud.getRetiraEnSucursal());
-			}
-		tieneLineasDeSolicitud();
-		
+		}
 		
 		//MGR - #1152
 		boolean esProspect =RegularExpressionConstants.isVancuc(solicitud.getCuenta().getCodigoVantive());
@@ -696,14 +694,6 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 	}
 
-	public SolicitudServicioDto tieneLineasDeSolicitud() {
-		return solicitudServicio;
-//		if(solicitudServicio.getLineas().size()>0){
-//			controller.tieneLineasSolicitud(false);
-//			//retiraEnSucursal.setEnabled(false);
-//		}
-	}
-	
 	private void cargarDatosTransferencia(){
 		if(solicitudServicio.getCuentaCedente() != null){
 			clienteCedente.setText(solicitudServicio.getCuentaCedente().getCodigoVantive());

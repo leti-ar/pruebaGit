@@ -1013,7 +1013,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		editarSSUIData.getAclaracion().setEnabled(controller.isEditable());
 		editarSSUIData.getEmail().setEnabled(controller.isEditable());
 		if (controller.getEditarSSUIData().isEquiposAccesorios()) {
-			editarSSUIData.getRetiraEnSucursal().setEnabled(controller.tieneLineasSolicitud());
+			editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
 		}
 	}
 	
@@ -1080,7 +1080,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		editarSSUIData.getNss().setEnabled(habilitar);
 		editarSSUIData.getNflota().setEnabled(habilitar);
 		editarSSUIData.getOrigen().setEnabled(habilitar);
-		editarSSUIData.getRetiraEnSucursal().setEnabled(habilitar);
+		editarSSUIData.getRetiraEnSucursal().setEnabled(!this.controller.tieneLineasSolicitud() && habilitar);
 		editarSSUIData.getVendedor().setEnabled(habilitar);
 		editarSSUIData.getSucursalOrigen().setEnabled(habilitar);
 		editarSSUIData.getOrdenCompra().setEnabled(habilitar);

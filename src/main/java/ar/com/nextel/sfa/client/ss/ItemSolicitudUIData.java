@@ -32,7 +32,6 @@ import ar.com.nextel.sfa.client.widget.MensajeRegex;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.UIData;
-import ar.com.nextel.sfa.client.widget.UILoader;
 import ar.com.nextel.sfa.client.widget.VerificationRegexTextBox;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
@@ -46,7 +45,6 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -1229,7 +1227,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			lineaSolicitudServicio.setNumeroSimcard(simRetiroEnSucursal.getText());
 			
 		}
-		controller.tieneLineasSolicitud();
+//		controller.tieneLineasSolicitud();
 		//Fin de desc de despacho
 		return lineaSolicitudServicio;
 		

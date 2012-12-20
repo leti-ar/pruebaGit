@@ -1852,11 +1852,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	 * si existe por lo menos una linea de solicitud no deja cambiar el check de retiro en sucursal
 	 */
 	public boolean tieneLineasSolicitud(){
-		boolean activar = true;
-		if(editarSSUIData.tieneLineasDeSolicitud().getLineas().size()>0){
-			activar = false;
-		}
-		return activar;	
+		return editarSSUIData.getLineasSolicitudServicio().size()>0;
 	}
 
 //	MGR - Facturacion

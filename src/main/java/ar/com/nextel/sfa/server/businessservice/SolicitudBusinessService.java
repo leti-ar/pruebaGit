@@ -13,8 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.management.RuntimeErrorException;
-
 import org.apache.commons.validator.GenericValidator;
 import org.dozer.DozerBeanMapper;
 import org.hibernate.HibernateException;
@@ -45,6 +43,7 @@ import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSTrans
 import ar.com.nextel.business.solicitudes.crearGuardar.request.GuardarRequest;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
+import ar.com.nextel.business.solicitudes.despacho.DespachoSolicitudBusinessOperator;
 import ar.com.nextel.business.solicitudes.generacionCierre.GeneracionCierreBusinessOperator;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreRequest;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
@@ -139,6 +138,7 @@ public class SolicitudBusinessService {
 	private CaratulaTransferidaConfig caratulaTransferidaConfig;
 	
 	private FinancialLegacyDAOImpl financialDAOBean;
+	private DespachoSolicitudBusinessOperator despachoSolicitudBusinessOperator;
 	
 	
 //	MGR - Se mueve la creacion de la cuenta
@@ -273,6 +273,13 @@ public class SolicitudBusinessService {
 		this.caratulaTransferidaConfig = caratulaTransferidaConfig;
 	}
 	
+	@Autowired
+	public void setDespachoSolicitudBusinessOperator(
+			DespachoSolicitudBusinessOperator despachoSolicitudBusinessOperator) {
+		this.despachoSolicitudBusinessOperator = despachoSolicitudBusinessOperator;
+	}
+
+
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public SolicitudServicio createSolicitudServicio(SolicitudServicioRequest solicitudServicioRequest,
 			DozerBeanMapper mapper) throws BusinessException, FinancialSystemException {
@@ -1375,80 +1382,8 @@ public class SolicitudBusinessService {
 		return ss;
 	}
 	
-	
-	
-	public List<String> movimientoInventario(SolicitudServicio ss, Vendedor vendedor){
-		  List<String> mensajesError = new ArrayList<String>();
-		   
-	        	        if (vendedor.isVendedorSalon()&& ss.getRetiraEnSucursal()) {
-
-	                        AppLogger.info("******************************************************");
-	                        AppLogger.info("******************************************************");
-	                        for (LineaSolicitudServicio linea : ss.getLineas()) {
-
-	                            List<Subinventario> subinventarios;
-	                            try {
-	                                subinventarios = getWarehouseSubInventario(vendedor, linea.getItem());
-	                            } catch (IllegalArgumentException ie) {
-	                            	mensajesError.add(ie.getMessage());
-	                                return mensajesError;
-	                            }
-	                            
-	                            // Warehouse debe ser solo uno controlado en getWarehouseSubInventario.
-	                            Warehouse warehouse = null;
-	                            if  (!vendedor.getSucursal().getWarehouses().isEmpty()){
-	        	                     for (Warehouse ws :vendedor.getSucursal().getWarehouses() ) {
-	        	                    	 warehouse= ws;
-	        						}
-	                            }
-
-	                            for (int i = 0; i < subinventarios.size(); i++) {
-	                                Subinventario subI = subinventarios.get(i);
-	                                AppLogger.info("******************************************************");
-	                                AppLogger.info("Probando con Subinventario: " + subI.getId() + " " + subI.getDescripcion() + " " + subI.getCodigoFNCL());
-	                                AppLogger.info("******************************************************");
-	                             
-									try {
-										mensajesError = financialDAOBean.movimientoInventario(
-										        linea.getTipoSolicitud().getCodigoFNCL(),
-										        warehouse.getCodigoFNCL(),
-										        subI.getCodigoFNCL(),
-										        new Long(linea.getItem().getCodigoFNCL()),
-										        linea.getId(),
-										        linea.getNumeroSimcard(),
-										        linea.getNumeroIMEI());
-									} catch (LegacyDAOException e) {
-										AppLogger.info("Error al acceso de financial para mover inventario");
-										AppLogger.error(e);
-										throw new RuntimeException(e.getMessage());
-										
-										
-									} catch (NumberFormatException e) {
-										AppLogger.error(e);
-										throw new RuntimeException(e.getMessage());
-										
-									}
-	                                if (mensajesError.isEmpty()) {
-	                                	AppLogger.info("&&& --- &&&& Operacion Existosa &&& --- &&&");
-	                                    mensajesError.clear();
-	                                    break;
-	                                } else {
-	                                    for (String msg : mensajesError) {
-	                                        if (!mensajesError.contains(msg)) {
-	                                        	mensajesError.add(msg);
-	                                        }
-	                                    }
-	                                }
-	                            }
-	                        }
-	        	        }
-	        return mensajesError;
-	    }
-	
-	
-	
-     /**
-     * Se valida que el/los números de sim/imei ingresados pertenezcan al
+    /**
+     * Se valida que el/los numeros de sim/imei ingresados pertenezcan al
      * inventario/subinventario del usuario que realizo el ingreso de la
      * solicitud (solo si es vendedor de salon)
      *
@@ -1456,7 +1391,24 @@ public class SolicitudBusinessService {
      * @return retorna lista de mensajes con errores si es que hubiese o vacia
      * en caso contrario
      */
-    public List<String> validarSIM_IMEI(Set<LineaSolicitudServicio> lineas, Long idvendedor) {
+    public List<String> validarSIM_IMEI(Set<LineaSolicitudServicio> lineas,Long idVendedor) {
+    	return this.despachoSolicitudBusinessOperator.validarSIM_IMEI(lineas,idVendedor);
+    }
+
+	public List<String> movimientoInventario(SolicitudServicio ss, Vendedor vendedor){
+		return this.despachoSolicitudBusinessOperator.movimientoInventario(ss, vendedor);
+	};
+	
+     /**
+     * Se valida que el/los numeros de sim/imei ingresados pertenezcan al
+     * inventario/subinventario del usuario que realizo el ingreso de la
+     * solicitud (solo si es vendedor de salon)
+     *
+     * @param solicitudServicio a validar
+     * @return retorna lista de mensajes con errores si es que hubiese o vacia
+     * en caso contrario
+     */
+    public List<String> validarSIM_IMEI2(Set<LineaSolicitudServicio> lineas, Long idvendedor) {
         List<String> mensajesError = new ArrayList<String>();
    
         
@@ -1505,7 +1457,7 @@ public class SolicitudBusinessService {
 								        warehouse.getCodigoFNCL(),
 								        subI.getCodigoFNCL());
 							} catch (LegacyDAOException e) {
-								AppLogger.info("Error al acceso de financial para valida que el/los números de sim/imei");
+								AppLogger.info("Error al acceso de financial para valida que el/los nï¿½meros de sim/imei");
 								AppLogger.error(e);
 								throw new RuntimeException(e.getMessage());
 								 
