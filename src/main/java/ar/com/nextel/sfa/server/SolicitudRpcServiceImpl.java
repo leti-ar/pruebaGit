@@ -2975,13 +2975,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	}
 
 	public List<String> validarSIM_IMEI(SolicitudServicioDto solicitudDTO)throws RpcExceptionMessages{
-		 Set<LineaSolicitudServicio> lineas = new HashSet<LineaSolicitudServicio>();
-		 for (Iterator<LineaSolicitudServicioDto> iterator = solicitudDTO.getLineas().iterator(); iterator.hasNext();) {
-			LineaSolicitudServicioDto lineaSolicitudServicioDTO = iterator.next();
-			lineas.add(mapper.map(lineaSolicitudServicioDTO, LineaSolicitudServicio.class));
-		}
-		 
-		return solicitudBusinessService.validarSIM_IMEI(lineas,solicitudDTO.getVendedor().getId());
+		SolicitudServicio solicitud = this.solicitudBusinessService.mapperSSDtoToSolicitudServicio(solicitudDTO,this.mapper);
+		return solicitudBusinessService.validarSIM_IMEI(solicitud);
 	}
 
 //	MGR - RQN 2328

@@ -456,14 +456,31 @@ public class SolicitudBusinessService {
 		return estadoPorSolicitud;
 	}
 	
-	
-	 
-	
+	/**
+	 * Mapea desde el DTO de la solicitud y luego lo salva en la base.
+	 * @param solicitudServicioDto
+	 * @param mapper
+	 * @return
+	 */
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public SolicitudServicio saveSolicitudServicio(SolicitudServicioDto solicitudServicioDto,
 			MapperExtended mapper) {
-		
-		
+		SolicitudServicio ss = this.mapperSSDtoToSolicitudServicio(solicitudServicioDto,mapper);
+		this.saveSolicituServicio(ss);
+		return ss;
+	}
+	 
+	
+	/**
+	 * El mapper de DozerMapping no convierte completamente la SolicitudServicioDTO a la entidad
+	 * SolicitudServicio por lo tanto utilizar esté servicio para obtener la solicitud desde su dto.
+	 * @param solicitudServicioDto
+	 * @param mapper
+	 * @return
+	 */
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public SolicitudServicio mapperSSDtoToSolicitudServicio(SolicitudServicioDto solicitudServicioDto,
+			MapperExtended mapper) {
 		
 		SolicitudServicio solicitudServicio = repository.retrieve(SolicitudServicio.class,
 				solicitudServicioDto.getId());
@@ -616,7 +633,6 @@ public class SolicitudBusinessService {
 		}
 		solicitudServicio.setIdConsultaScoring(solicitudServicioDto.getIdConsultaScoring());
         solicitudServicio.setIdConsultaVeraz(solicitudServicioDto.getIdConsultaVeraz());
-		repository.save(solicitudServicio);
 		
 		return solicitudServicio;
 	}
@@ -1375,7 +1391,6 @@ public class SolicitudBusinessService {
 		return cantEquipos;
 	}
 	
-//	MGR - Parche de emergencia
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public SolicitudServicio saveSolicituServicio(SolicitudServicio ss){
 		repository.save(ss);
@@ -1391,147 +1406,13 @@ public class SolicitudBusinessService {
      * @return retorna lista de mensajes con errores si es que hubiese o vacia
      * en caso contrario
      */
-    public List<String> validarSIM_IMEI(Set<LineaSolicitudServicio> lineas,Long idVendedor) {
-    	return this.despachoSolicitudBusinessOperator.validarSIM_IMEI(lineas,idVendedor);
+    public List<String> validarSIM_IMEI(SolicitudServicio solicitudServicio) {
+    	return this.despachoSolicitudBusinessOperator.validarSIM_IMEI(solicitudServicio);
     }
 
 	public List<String> movimientoInventario(SolicitudServicio ss, Vendedor vendedor){
 		return this.despachoSolicitudBusinessOperator.movimientoInventario(ss, vendedor);
 	};
-	
-     /**
-     * Se valida que el/los numeros de sim/imei ingresados pertenezcan al
-     * inventario/subinventario del usuario que realizo el ingreso de la
-     * solicitud (solo si es vendedor de salon)
-     *
-     * @param solicitudServicio a validar
-     * @return retorna lista de mensajes con errores si es que hubiese o vacia
-     * en caso contrario
-     */
-    public List<String> validarSIM_IMEI2(Set<LineaSolicitudServicio> lineas, Long idvendedor) {
-        List<String> mensajesError = new ArrayList<String>();
-   
-        
-        Vendedor vendedor= repository.retrieve(Vendedor.class, idvendedor);
-        if (vendedor.isVendedorSalon()) {
-           
-            //si tiene subinventario si no no
-            // update verificar en ambos subinventarios (vendedor y pañol)
-
-            for (LineaSolicitudServicio linea : lineas) {
-                //si tiene IMEI y/o SIM
-                if (linea.getItem().isEquipo() || linea.getItem().isAccesorio() && linea.getItem().getEsSim()) {
-
-                    List<Subinventario> subinventarios;
-                    try {
-                        subinventarios = getWarehouseSubInventario(vendedor, linea.getItem());
-                    } catch (IllegalArgumentException ie) {
-                    	AppLogger.info("error :" + ie.getMessage(), ie);
-                        mensajesError.add(ie.getMessage());
-                        return mensajesError;
-                    }
-
-
-                    AppLogger.info("Subinventarios a probar :" + subinventarios);
-                    // Warehouse debe ser solo uno controlado en getWarehouseSubInventario.
-                    Warehouse warehouse = null;
-                    if  (!vendedor.getSucursal().getWarehouses().isEmpty()){
-	                     for (Warehouse ws :vendedor.getSucursal().getWarehouses() ) {
-	                    	 warehouse= ws;
-						}
-                    }
-              
-             
-                    for (int i = 0; i < subinventarios.size(); i++) {
-                        Subinventario subI = subinventarios.get(i);
-                        AppLogger.info("******************************************************");
-                        AppLogger.info("Probando con Subinventario: " + subI.getId() + " " + subI.getDescripcion() + " " + subI.getCodigoFNCL());
-                        AppLogger.info("******************************************************");
-                        List<String> mensajes = null;
-						
-							try {
-								mensajes = financialDAOBean.subInventario(linea.getNumeroIMEI(),
-								        linea.getNumeroSimcard(),
-								        linea.getItem().getEsSim(),
-								        new Long(linea.getItem().getCodigoFNCL()),
-								        warehouse.getCodigoFNCL(),
-								        subI.getCodigoFNCL());
-							} catch (LegacyDAOException e) {
-								AppLogger.info("Error al acceso de financial para valida que el/los n�meros de sim/imei");
-								AppLogger.error(e);
-								throw new RuntimeException(e.getMessage());
-								 
-							} catch (NumberFormatException e) {
-								throw new RuntimeException(e.getMessage());
-							}
-						
-                                
-                        if (!mensajes.isEmpty()) {
-                            for (String msg : mensajes) {
-                                if (!mensajesError.contains(msg)) {
-                                    mensajesError.add(msg);
-                                    AppLogger.info("Agregando mensaje de error: " + msg);
-                                } else {
-                                	AppLogger.info("Mensaje de error ya existe: " + msg);
-                                }
-                            }
-                        } else {
-                        	AppLogger.info("&&& --- &&&& Operacion Existosa &&& --- &&&");
-                            mensajesError.clear();
-                            break;
-                        }
-                    }
-                }
-            }
-
-        }
-        return mensajesError;
-    }
-
-    /**
-     * Al cambiar el modo en que se recuperan los subinventarios (anteriormente
-     * directamente desde el vendedor y ahora desde la sucursal via su
-     * warehouse) se hizo necesario discriminar cual de ellos utilizar, dando
-     * siempre prioridad al subinventario marcado como VSALON si existiere, o
-     * bien utilizando el pañol si es que la suc. no tiene configurado VSALON o
-     * bien si este no tiene existencia de stock para el item.
-     *
-     * @param vendedor
-     * @param item
-     * @return
-     */
-    protected List<Subinventario> getWarehouseSubInventario(Vendedor vendedor, Item item) {
-
-        List<Subinventario> subinventarios = new ArrayList();
-        Set<Warehouse> warehouses = vendedor.getSucursal().getWarehouses();
-        if(warehouses.isEmpty()) {
-             throw new IllegalArgumentException("Error de configuracion - La sucursal no tiene Warehouse");
-        }
-        if (warehouses.size() > 1) {
-            throw new IllegalArgumentException("Error de configuracion - La sucursal solo puede tener un Warehouse Local");
-        }
-        List<Warehouse> listWh = new ArrayList<Warehouse>(warehouses);
-      
-        for (Subinventario si : listWh.get(0).getSubinventarios()) {
-            if ((si.getVsalon()!= null) && (si.isVsalon())) {
-                subinventarios.add(0, si);
-            } else {
-                Long sbSi = si.getId_subinventario_base();
-                Long sbItem = item.getSubinventario().getId_subinventario_base();
-                if (sbSi.equals(sbItem)) {
-                    subinventarios.add(si);
-                }
-            }
-        }
-
-        if (subinventarios.isEmpty()) {
-            throw new IllegalArgumentException("Error de configuracion - Sucursal sin Warehouse Local");
-        } else if (subinventarios.size() > 2) {
-            throw new IllegalArgumentException("Error de configuracion - Demasiados Subinventarios para Item: " + item.getDescripcion());
-        }
-        return subinventarios;
-    }
-	
 	
 	
 }
