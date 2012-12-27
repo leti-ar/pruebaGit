@@ -654,7 +654,7 @@ public class PortabilidadUIData extends Composite {
 		txtReserva.setEnabled(false);
 		btnReserva.setEnabled(false);
 		
-		if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")) {
+		if("POSTPAGO".equals(lstTipoTelefonia.getSelectedItemText())) {
 			fechaUltFactura.setFecha(solicitudPortabilidad.getFechaUltFactura());
 		}
 	}

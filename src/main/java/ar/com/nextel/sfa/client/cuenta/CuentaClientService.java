@@ -224,10 +224,13 @@ public class CuentaClientService {
 		return (vengoDeOportunidad&&CuentaClientService.cuentaPotencialDto == null)|| (!vengoDeOportunidad&&CuentaClientService.cuentaDto==null);
 	}
 	
-	public static String getCodigoVantive(){
-		boolean vengoDeOportunidad= HistoryUtils.getParam(EditarCuentaUI.PARAM_OPORTUNIDAD) != null;
-		return vengoDeOportunidad?cuentaPotencialDto.getCodigoVantive() : cuentaDto.getCodigoVantive();
-	}
+//	MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
+	//entonces ya no puedo preguntar por el codigo vantive (que era para lo que se estaba usando este metodo)
+	//es preferible usar el metodo "isProspectOrProspectEnCarga".
+//	public static String getCodigoVantive(){
+//		boolean vengoDeOportunidad= HistoryUtils.getParam(EditarCuentaUI.PARAM_OPORTUNIDAD) != null;
+//		return vengoDeOportunidad?cuentaPotencialDto.getCodigoVantive() : cuentaDto.getCodigoVantive();
+//	}
 
 	public static void cargarDatosCuentaInfocom(final Long cuentaID, final String codVantive,
 			final boolean filtradoPorDni, final String url) {
@@ -256,5 +259,18 @@ public class CuentaClientService {
 			}
 		});
 	}
-	
+
+//	MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
+	public static boolean isProspectOrProspectEnCarga() {
+		boolean vengoDeOportunidad= HistoryUtils.getParam(EditarCuentaUI.PARAM_OPORTUNIDAD) != null;
+		if(vengoDeOportunidad){
+			return false;
+		}else{
+			if(cuentaDto != null){
+//				Si no es cliente, es prospect o prospect en carga
+				return (!cuentaDto.isCustomer());
+			}
+			return false;
+		}
+	}
 }

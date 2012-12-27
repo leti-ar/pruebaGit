@@ -3349,6 +3349,16 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("buscarSSTitle")
   String buscarSSTitle();
   
+  /**
+   * Translated "<span class=\"req\">Nº SS Web:</span>".
+   * 
+   * @return translated "<span class=\"req\">Nº SS Web:</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Nº SS Web:</span>")
+  @Key("nroSSWeb")
+  String nroSSWeb();
+
+  
 //  MGR - RQN 2328
   /**
    * Translated "El teléfono a portar no pertenece a un área habilitada para Nextel".

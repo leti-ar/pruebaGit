@@ -165,6 +165,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
     private List<ComentarioAnalistaDto> comentarioAnalistaMensaje = new ArrayList<ComentarioAnalistaDto>();
     private List<EstadoSolicitudDto> opcionesEstado = new ArrayList<EstadoSolicitudDto>();
 	
+    private RegexTextBox numeroSSWeb; //Mejoras Perfil Telemarketing. REQ#2 - Nro de SS Web en la Solicitud de Servicio.
+    
 	public EditarSSUIData(EditarSSUIController controller) {
 		this.controller = controller;
 		serviciosAdicionales = new ArrayList();
@@ -332,7 +334,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //				}
 //			});
 //		}
-		
+		fields.add(numeroSSWeb = new RegexTextBox(RegularExpressionConstants.getCantCaracteres(10), true));
+				
 		inicializarBusquedaContratos();
 	}
 
@@ -560,7 +563,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 	
 		//MGR - #1152
-		boolean esProspect =RegularExpressionConstants.isVancuc(solicitud.getCuenta().getCodigoVantive());
+//		MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
+		//Si no es cliente, es prospect o prospect en carga
+//		boolean esProspect =RegularExpressionConstants.isVancuc(solicitud.getCuenta().getCodigoVantive());
+		boolean esProspect = !solicitud.getCuenta().isCliente();
 		
 		//MGR - #1026
 		if(!ClientContext.getInstance().
@@ -679,7 +685,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //			fechaEstado.getTextBox().setText(solicitudServicio.getFechaEstado() != null ? dateTimeFormat.
 //					format(solicitudServicio.getFechaEstado()) : "");
 //		}
-		
+		//Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
+		if (ClientContext.getInstance().getVendedor().isTelemarketing()
+				&& solicitud.getGrupoSolicitud().isEquiposAccesorios()) {
+			numeroSSWeb.setText(solicitud.getNumeroSSWeb());
+		}
 	}
 	
 	private void cargarDatosTransferencia(){
@@ -792,6 +802,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //			}
 //			solicitudServicio.setClienteHistorico(clienteHistorico);
 //		}
+//		Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
+		if (ClientContext.getInstance().getVendedor().isTelemarketing()
+				&& solicitudServicio.getGrupoSolicitud().isEquiposAccesorios()) {
+			solicitudServicio.setNumeroSSWeb(numeroSSWeb.getText());
+		}		
 		return solicitudServicio;
 	}
 
@@ -978,10 +993,18 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //			}
 //		}
 		
+//		Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
+		if (ClientContext.getInstance().getVendedor().isTelemarketing()
+				&& solicitudServicio.getGrupoSolicitud().isEquiposAccesorios()) {
+			OrigenSolicitudDto origenSolicitudDto = (OrigenSolicitudDto) origen.getSelectedItem();
+			if (origenSolicitudDto != null && origenSolicitudDto.getUsaNumeroSSWeb()) {
+				validator.addTarget(numeroSSWeb).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nro SS Web"));
+			}
+		}
+		
 		validator.fillResult();
 		List<String> errores = validator.getErrors();
 		errores.addAll(validarCompletitud());
-		
 		
 		return errores;
 	}
@@ -1751,4 +1774,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	public void setEnviar(CheckBox enviar) {
 		this.enviar = enviar;
 	}
+
+	public RegexTextBox getNumeroSSWeb() {
+		return numeroSSWeb;
+	}
+	
 }
