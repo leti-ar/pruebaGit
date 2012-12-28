@@ -13,6 +13,7 @@ import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
 import ar.com.nextel.sfa.client.dto.FacturaDto;
+import ar.com.nextel.sfa.client.dto.FacturacionResultDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudDto;
@@ -239,7 +240,7 @@ public interface SolicitudRpcService extends RemoteService {
 	boolean validarAreaBilling(String numeroAPortar) throws RpcExceptionMessages;
 	
 //	MGR - Facturacion
-	SolicitudServicioDto facturarSolicitudServicio(SolicitudServicioDto solicitudServicioDto);
+	FacturacionResultDto facturarSolicitudServicio(SolicitudServicioDto solicitudServicioDto);
 	
 //	MGR - Verificar Pago
 	FacturaDto verificarPagoFacturaSolicitudServicio(SolicitudServicioDto solicitudServicioDto);

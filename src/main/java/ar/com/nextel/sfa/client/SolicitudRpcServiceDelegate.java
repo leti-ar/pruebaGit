@@ -1,21 +1,18 @@
 package ar.com.nextel.sfa.client;
 
 import java.util.List;
-import java.util.Map;
 
-import ar.com.nextel.business.solicitudes.report.SolicitudPortabilidadPropertiesReport;
-import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
-import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoDto;
 import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
 import ar.com.nextel.sfa.client.dto.FacturaDto;
+import ar.com.nextel.sfa.client.dto.FacturacionResultDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudDto;
@@ -43,7 +40,6 @@ import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.client.util.PortabilidadResult;
-import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
@@ -445,7 +441,7 @@ public class SolicitudRpcServiceDelegate {
 	}
 	
 //	MGR - Facturacion
-	public void facturarSolicitudServicio(SolicitudServicioDto solicitudServicioDto, DefaultWaitCallback<SolicitudServicioDto> callback){
+	public void facturarSolicitudServicio(SolicitudServicioDto solicitudServicioDto, DefaultWaitCallback<FacturacionResultDto> callback){
 		WaitWindow.show();
 		solicitudRpcServiceAsync.facturarSolicitudServicio(solicitudServicioDto, callback);
 	}

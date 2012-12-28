@@ -114,6 +114,7 @@ import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.FacturaDto;
+import ar.com.nextel.sfa.client.dto.FacturacionResultDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudDto;
@@ -3012,13 +3013,34 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	}
 	
 //	MGR - Facturacion
-	public SolicitudServicioDto facturarSolicitudServicio(SolicitudServicioDto solicitudServicioDto){
+	public FacturacionResultDto facturarSolicitudServicio(SolicitudServicioDto solicitudServicioDto){
 //		MGR - Verificar si hace falta if (solicitudServicioDTO.getUsuario().isVendedorSalon()){
+		FacturacionResultDto result = new FacturacionResultDto();
+		boolean facturar = false;
 		Vendedor vendedor = repository.retrieve(Vendedor.class, solicitudServicioDto.getUsuarioCreacion().getId());
 		SolicitudServicio solServ = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
-		facturacionSolServicioService.facturar(solServ,vendedor);
+		
+//		MGR - Si es prospect, primero creo la cuenta y si todo va bien, entonces facturo
+		if (solServ.getCuenta().isProspectEnCarga() || solServ.getCuenta().isProspect()) {
+			Long crearCliente = solicitudBusinessService.crearCliente(solServ);
+			
+			if(crearCliente == 0L){//Se creo la cuenta con exito
+				facturar = true;
+			}else{
+				result.setError(true);
+				result.addMessage("Hubo un problema al crear al cliente, no se realizó la facturación.");
+			}
+		}else{
+			facturar = true;
+		}
+			
+		if(facturar){
+			facturacionSolServicioService.facturar(solServ,vendedor);
+		}
+		
 		solServ = repository.retrieve(SolicitudServicio.class, solServ.getId());
-		return mapper.map(solServ, SolicitudServicioDto.class);
+		result.setSolicitud(mapper.map(solServ, SolicitudServicioDto.class));
+		return result;
 	}
 	
 //	MGR - Verificar Pago

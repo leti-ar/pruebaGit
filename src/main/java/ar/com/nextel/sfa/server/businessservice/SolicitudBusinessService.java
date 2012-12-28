@@ -816,9 +816,7 @@ public class SolicitudBusinessService {
 					repository.save(solicitudServicio);
 					repository.flush();
 					
-					Long crearCliente = this.crearCliente(solicitudServicio.getCuenta().getId());
-					Cuenta cta = repository.retrieve(Cuenta.class, solicitudServicio.getCuenta().getId());
-					repository.refresh(cta);
+					Long crearCliente = this.crearCliente(solicitudServicio);
 					
 //					MGR - Vuelvo a poner la solicitud en carga false
 					solicitudServicio.setEnCarga(Boolean.FALSE);
@@ -1254,9 +1252,31 @@ public class SolicitudBusinessService {
 		return insertUpdateCuentaConfig;
 	}
 	
+	/**
+	 * 
+	 * @param idCuenta
+	 * @return 0L Si el cliente de creo correctamente, otro valor en caso contrario
+	 */
 //	MGR - Se mueve la creacion de la cuenta. Este metodo NO lanza excepcion, lo quito
-	public Long crearCliente(Long idCuenta){
-		AppLogger.info("##Log Cierre y pass - Se procede a transformar el prospect en cliente.");
+	@Transactional(readOnly = false, propagation= Propagation.REQUIRED)
+	public Long crearCliente(SolicitudServicio solicitud){
+//		MGR - Primero pongo todos los datos 'en_carga = F'
+		solicitud.getCuenta().getCuentaRaiz().descargar();
+		repository.save(solicitud.getCuenta());
+		repository.flush(); //Es necesario que este cambio se refleje en la base antes de crear el cliente
+		
+		Long idCuenta = solicitud.getCuenta().getId();
+		Long codError = prospectToCliente(idCuenta);
+		
+//		MGR - Actualizo la cuenta ya que la creacion del cliente la modifico
+		Cuenta cta = repository.retrieve(Cuenta.class, idCuenta);
+		repository.refresh(cta);
+		
+		return codError;
+	}
+	
+	private Long prospectToCliente(Long idCuenta){
+		AppLogger.info("Se procede a transformar el prospect en cliente.");
 		PreparedStatement stmt = null;
 		CallableStatement cstmt = null;
 		Long codError = -1l;
@@ -1289,7 +1309,7 @@ public class SolicitudBusinessService {
 								+ error);
 				throw new ConnectionDAOException(error);
 			}
-
+			
 		} catch (Exception e) {
 			AppLogger.info("##Log Cierre y pass - Error al transformar el prospect en cliente.");
 			AppLogger.error(e);

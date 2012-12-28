@@ -14,6 +14,7 @@ import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.FacturaDto;
+import ar.com.nextel.sfa.client.dto.FacturacionResultDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -949,14 +950,27 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			//Si ok, facturo
 			editarSSUIData.getSolicitudServicio().setUsuarioCreacion(ClientContext.getInstance().getVendedor());
 			SolicitudRpcService.Util.getInstance().facturarSolicitudServicio(editarSSUIData.getSolicitudServicio(),
-					new DefaultWaitCallback<SolicitudServicioDto>() {
+					new DefaultWaitCallback<FacturacionResultDto>() {
 
 						@Override
-						public void success(SolicitudServicioDto result) {
-							editarSSUIData.setSolicitud(result);
-							EventBusUtil.getEventBus().fireEvent(
-									new RefrescarPantallaSSEvent(result, 
-											editarSSUIData.getRetiraEnSucursal().getValue()));
+						public void success(FacturacionResultDto result) {
+							if(result.isError()){
+								
+								ErrorDialog.getInstance().setDialogTitle("Aviso");
+								StringBuilder msgString = new StringBuilder();
+								for (MessageDto msg : result.getMessages()) {
+									msgString.append(msg.getDescription());
+								}
+								ErrorDialog.getInstance().show(msgString.toString(), false);
+								
+							}else{
+								editarSSUIData.setSolicitud(result.getSolicitud());
+								EventBusUtil.getEventBus().fireEvent(
+										new RefrescarPantallaSSEvent(result.getSolicitud(), 
+												editarSSUIData.getRetiraEnSucursal().getValue()));
+							}
+							
+							
 						}
 					});
 //		MGR - Facturacion
