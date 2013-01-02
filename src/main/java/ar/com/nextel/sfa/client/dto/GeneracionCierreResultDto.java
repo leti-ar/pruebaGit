@@ -12,6 +12,7 @@ public class GeneracionCierreResultDto implements IsSerializable {
 	private String rtfFileName;
 	private List<String> rtfFileNamePortabilidad;
 	private List<String> rtfFileNamePortabilidad_adj;
+	private List<String> reportes = new ArrayList<String>();
 	
 	public GeneracionCierreResultDto() {
 		error = false;
@@ -59,4 +60,13 @@ public class GeneracionCierreResultDto implements IsSerializable {
 	public void setRtfFileNamePortabilidad_adj(List<String> rtfFileNamePortabilidad_adj) {
 		this.rtfFileNamePortabilidad_adj = rtfFileNamePortabilidad_adj;
 	}
+
+	public List<String> getReportes() {
+		return reportes;
+	}
+
+	public void setReportes(List<String> reportes) {
+		this.reportes = reportes;
+	}
+	
 }
