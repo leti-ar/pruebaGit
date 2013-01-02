@@ -18,6 +18,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class CargaDeCombos {
 
 	public static void cargarComboTipoOrden(final ListBox lst, final ListBox listaPreciosLst, final ListBox item) {
+		lst.clear();
 		StockRpcService.Util.getInstance().obtenerTiposDeSolicitudParaVendedor(
 						ClientContext.getInstance().getVendedor(),
 						new AsyncCallback<List<TipoSolicitudDto>>() {

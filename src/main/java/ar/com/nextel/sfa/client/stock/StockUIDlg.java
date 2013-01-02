@@ -160,6 +160,9 @@ public class StockUIDlg extends NextelDialog {
 	public void initCombos(){
 		CargaDeCombos.cargarComboTipoOrden(tipoOrdenLst, listaPrecioLst,
 				cantItemsLst);
+		listaPrecioLst.clear();
+		cantItemsLst.clear();
+		
 	}
 	
 	public void clearCombos(){
