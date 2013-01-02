@@ -3353,7 +3353,7 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("validarStock")
   String ValidarStock();
   
-  @DefaultStringValue("Cant. Items")
+  @DefaultStringValue("Items:")
   @Key("cantItems")
   String cantidadItems();
  
