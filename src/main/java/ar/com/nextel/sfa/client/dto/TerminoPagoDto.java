@@ -14,4 +14,17 @@ public class TerminoPagoDto extends EnumDto implements IsSerializable {
 	public void setCuentaCorriente(boolean cuentaCorriente) {
 		this.cuentaCorriente = cuentaCorriente;
 	}
+//    MGR - Cta. Cte. 3 cuotas
+    /**
+     * validaPin
+     */
+    private boolean validaPin;
+    
+	public boolean isValidaPin() {
+		return validaPin;
+	}
+
+	public void setValidaPin(boolean validaPin) {
+		this.validaPin = validaPin;
+	}
 }

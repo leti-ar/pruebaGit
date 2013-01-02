@@ -127,7 +127,9 @@ public enum PermisosEnum {
 	VALIDAR_TRIPTICO_AL_GUARDAR("validarTripticoAlGuardar", Accion.X, false),
 	VER_COMBO_ESTADO("verComboControl", Accion.X,true),
 	//@larce - Indica si en las pantallas de SS se puede ver el panel con los datos del histórico
-	VER_HISTORICO("verHistorico",Accion.X,true);
+	VER_HISTORICO("verHistorico",Accion.X,true),
+//	MGR - #3466
+	PERMITE_CUALQUIER_PRECIO_VTA_PLAN("permiteCualquierPrecioVtaPlan", Accion.X, true);
 
 	private String value;
     private String accion;

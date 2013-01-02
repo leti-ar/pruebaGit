@@ -399,7 +399,10 @@ public class CuentaUIData extends UIData {
 							}
 
 							private void cargarValoresComboClaseCliente() {
-								boolean esProspect =RegularExpressionConstants.isVancuc(CuentaClientService.getCodigoVantive());
+//								MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
+//								Si no es cliente, es prospect o prospect en carga
+//								boolean esProspect =RegularExpressionConstants.isVancuc(CuentaClientService.getCodigoVantive());
+								boolean esProspect =CuentaClientService.isProspectOrProspectEnCarga();
 //						si es prospect le agrego solo los perfilados, sino agrego todo
 								if(esProspect){
 									claseCliente.addAllItems(listaClaseClientePorVendedor);

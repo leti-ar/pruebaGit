@@ -87,10 +87,12 @@ public class SolicitudServicioDto implements IsSerializable {
 	private Long idConsultaScoring;
     	//GB - si es customer o no
 	private boolean customer;
-	private VendedorDto vendedorLogueado;
+//	MGR - #3460 - A raiz de este bug, me di cuenta que esto esta de mas
+//	private VendedorDto vendedorLogueado;
 	
 	private Long cantLineasPortabilidad;
-
+	private String numeroSSWeb;//Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.	
+	
 //	MGR - Facturacion
 	private FacturaDto factura;
 	private String customerNumberFactura;
@@ -561,13 +563,22 @@ public class SolicitudServicioDto implements IsSerializable {
 		this.idConsultaScoring = idConsultaScoring;
 	}
 
-	public VendedorDto getVendedorLogueado() {
-		return vendedorLogueado;
+//	MGR - #3460
+//	public VendedorDto getVendedorLogueado() {
+//		return vendedorLogueado;
+//	}
+//
+//	public void setVendedorLogueado(VendedorDto vendedorLogueado) {
+//		this.vendedorLogueado = vendedorLogueado;
+//	}
+		
+	public String getNumeroSSWeb() {
+		return numeroSSWeb;
 	}
-
-	public void setVendedorLogueado(VendedorDto vendedorLogueado) {
-		this.vendedorLogueado = vendedorLogueado;
-	}
+	
+	public void setNumeroSSWeb(String numeroSSWeb) {
+		this.numeroSSWeb = numeroSSWeb;
+	}		
 
 	public Boolean getRetiraEnSucursal() {
 		return retiraEnSucursal;
@@ -584,7 +595,6 @@ public class SolicitudServicioDto implements IsSerializable {
 	public void setFactura(FacturaDto factura) {
 		this.factura = factura;
 	}
-	
 	public String getCustomerNumberFactura() {
 		return customerNumberFactura;
 	}

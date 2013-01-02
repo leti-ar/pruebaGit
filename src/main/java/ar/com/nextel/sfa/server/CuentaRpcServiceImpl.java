@@ -84,7 +84,6 @@ import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.services.nextelServices.NextelServices;
-import ar.com.nextel.services.nextelServices.veraz.VerazService;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazRequestDTO;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.sfa.client.CuentaRpcService;
@@ -92,6 +91,7 @@ import ar.com.nextel.sfa.client.dto.BancoDto;
 import ar.com.nextel.sfa.client.dto.BusquedaPredefinidaDto;
 import ar.com.nextel.sfa.client.dto.CalifCrediticiaDto;
 import ar.com.nextel.sfa.client.dto.CalificacionDto;
+import ar.com.nextel.sfa.client.dto.CantEquiposDTO;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
@@ -1028,5 +1028,21 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		AppLogger.info("Obteniendo path del archivo de Veraz.");
 		return veraz.obtenerPahtArchivoVeraz(verazFileName);
 	}
-	
+
+	public CantEquiposDTO retreiveEquiposPorEstado(String numeroCuenta) throws RpcExceptionMessages{
+		try{
+			CantidadEquiposDTO equipDto = this.avalonSystem.retreiveEquiposPorEstado(numeroCuenta);
+			
+			CantEquiposDTO cantEquipoDto = new CantEquiposDTO();
+			cantEquipoDto.setCantEquipActivos(Integer.parseInt(equipDto.getCantidadActivos()));
+			cantEquipoDto.setCantEquipDesactivados(Integer.parseInt(equipDto.getCantidadDesactivados()));
+			cantEquipoDto.setCantEquipSuspendidos(Integer.parseInt(equipDto.getCantidadSuspendidos()));
+			
+			return cantEquipoDto;
+			
+		}catch (Exception e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+	}
 }

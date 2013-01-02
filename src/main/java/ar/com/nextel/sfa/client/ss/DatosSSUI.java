@@ -138,7 +138,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private Widget getNssLayout() {
 		//nnsLayout = new Grid(1, 6);
 		//MGR - #1027
-		nnsLayout = new Grid(1, 12);
+		nnsLayout = new Grid(1, 14);
 		nnsLayout.addStyleName("layout");
 		refreshNssLayout();
 		return nnsLayout;
@@ -247,6 +247,18 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		} else {
 			nnsLayout.clearCell(0, 10);
 			nnsLayout.clearCell(0, 11);
+		}
+
+		
+//		Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
+		if (ClientContext.getInstance().getVendedor().isTelemarketing()
+				&& (editarSSUIData.getGrupoSolicitud() != null
+				&& instancias.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS).equals(editarSSUIData.getGrupoSolicitud().getId()))) {
+			nnsLayout.setHTML(0, 12, Sfa.constant().nroSSWeb());
+			nnsLayout.setWidget(0, 13, editarSSUIData.getNumeroSSWeb());
+		} else {
+			nnsLayout.clearCell(0, 12);
+			nnsLayout.clearCell(0, 13);
 		}
 
 	}
@@ -911,15 +923,23 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	}
 
 	private void updatePrecioVentaDePlan(String precioVenta) {
+//		MGR - #3466 - Solo se permite modificar el precio de venta si tiene el permiso correspondiente 
 		LineaSolicitudServicioDto lineaSS = editarSSUIData.getLineasSolicitudServicio().get(
 				selectedDetalleRow - 1);
 		double valor = lineaSS.getPrecioVentaPlan();
 		MessageDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-		try {
-			valor = NumberFormat.getDecimalFormat().parse(precioVenta);
-		} catch (NumberFormatException e) {
-			MessageDialog.getInstance().showAceptar("Ingrese un monto válido",
+		if(!ClientContext.getInstance().checkPermiso(PermisosEnum.PERMITE_CUALQUIER_PRECIO_VTA_PLAN.getValue())){
+			MessageDialog.getInstance().showAceptar(
+					"No tiene permisos para modificar el precio de venta del Plan",
 					MessageDialog.getCloseCommand());
+		}else{
+			try {
+				valor = NumberFormat.getDecimalFormat().parse(precioVenta);
+			} catch (NumberFormatException e) {
+				MessageDialog.getInstance().showAceptar("Ingrese un monto válido",
+						MessageDialog.getCloseCommand());
+			}
+			
 		}
 		if (valor > lineaSS.getPrecioVentaPlan()) {
 			MessageDialog.getInstance().showAceptar(

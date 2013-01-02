@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.enums.CondicionCuentaEnum;
 import ar.com.nextel.sfa.client.enums.TipoDocumentoEnum;
 
@@ -40,6 +41,9 @@ public class CuentaDto implements IsSerializable {
 	private FacturaElectronicaDto facturaElectronica;
 	
 	private List<CaratulaDto> caratulas = new ArrayList<CaratulaDto>();
+	
+//	MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
+	private boolean prospect;
 
 //	MGR - Facturacion
 	private String customerNumberFactura;
@@ -300,11 +304,18 @@ public class CuentaDto implements IsSerializable {
 	}
 
 	public boolean isProspect() {
-		return getCondicionCuenta().getId() == CondicionCuentaEnum.PROSPECT.getId()
-				|| getCondicionCuenta().getId() == CondicionCuentaEnum.PROSPECT_EN_CARGA.getId();
+		return this.prospect;
+	}
+
+	public void setProspect(boolean prospect) {
+		this.prospect = prospect;
 	}
 
 	public boolean isCustomer() {
+//		MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
+		if(ClientContext.getInstance().getVendedor().isTelemarketing()){
+			return (!isProspect() && !isProspectEnCarga());
+		}
 		return getCondicionCuenta().getId() == CondicionCuentaEnum.CUSTOMER.getId();
 	}
 

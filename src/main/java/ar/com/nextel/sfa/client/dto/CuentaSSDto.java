@@ -12,6 +12,12 @@ public class CuentaSSDto implements IsSerializable {
 	private boolean transferido;
 	
 	private VendedorDto vendedor;
+	
+//	MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
+//	Traigo esta propiedades desde la cuenta mapeada a travez del dozer mapping
+	private boolean prospect;
+	private boolean cliente;
+	private boolean prospectEnCarga;
 
 	public Long getId() {
 		return id;
@@ -46,7 +52,9 @@ public class CuentaSSDto implements IsSerializable {
 	}
 
 	public boolean isCliente() {
-		return getIdVantive() != null;
+//		MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
+//		return getIdVantive() != null;
+		return this.cliente;
 	}
 
 	public boolean isEmpresa() {
@@ -72,4 +80,25 @@ public class CuentaSSDto implements IsSerializable {
 	public void setTransferido(boolean transferido) {
 		this.transferido = transferido;
 	}
+	
+	public boolean isProspect() {
+		return this.prospect;
+	}
+	
+	public void setProspect(boolean prospect) {
+		this.prospect = prospect;
+	}
+
+	public boolean isProspectEnCarga() {
+		return prospectEnCarga;
+	}
+
+	public void setProspectEnCarga(boolean prospectEnCarga) {
+		this.prospectEnCarga = prospectEnCarga;
+	}
+
+	public void setCliente(boolean cliente) {
+		this.cliente = cliente;
+	}
+	
 }
