@@ -18,7 +18,13 @@ public class LocalidadDto extends EnumDto implements IsSerializable, ListBoxItem
 	//MGR - #934 - La lista de localidades debe estar ordenada por orden alfabetico
 	public int compareTo(Object o) {
 		LocalidadDto loc1 = (LocalidadDto)o;
-		return this.descripcion.compareToIgnoreCase(loc1.descripcion); 
+		if (this.descripcion == null) {
+			return -1;
+		}
+		if (loc1 == null) {
+			return 1;
+		}
+		return this.descripcion.compareToIgnoreCase(loc1.descripcion);
 	}
 
 }

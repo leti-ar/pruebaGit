@@ -30,8 +30,6 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
     public static final String TIPO_VENDEDOR_MINORISTA = "TIPO_VENDEDOR_MINORISTA";
     public static final String TIPO_VENDEDOR_MAYORISTA = "TIPO_VENDEDOR_MAYORISTA";
     public static final String TIPO_VENDEDOR_SALON = "TIPO_VENDEDOR_SALON";    
-
-
     
     public boolean isEECC(){
     	HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();

@@ -57,8 +57,8 @@ import ar.com.nextel.components.accessMode.AccessAuthorization;
 import ar.com.nextel.components.knownInstances.GlobalParameter;
 import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
+import ar.com.nextel.components.message.MessageImpl;
 import ar.com.nextel.components.message.MessageList;
-import ar.com.nextel.exception.LegacyDAOException;
 import ar.com.nextel.framework.connectionDAO.ConnectionDAOException;
 import ar.com.nextel.framework.connectionDAO.TransactionConnectionDAO;
 import ar.com.nextel.framework.repository.Repository;
@@ -90,10 +90,8 @@ import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalIncluido;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaTransfSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
-import ar.com.nextel.model.solicitudes.beans.Subinventario;
 import ar.com.nextel.model.solicitudes.beans.Sucursal;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
-import ar.com.nextel.model.solicitudes.beans.Warehouse;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.services.nextelServices.scoring.ScoringHistoryItem;
@@ -480,7 +478,6 @@ public class SolicitudBusinessService {
 	 * @param mapper
 	 * @return
 	 */
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public SolicitudServicio mapperSSDtoToSolicitudServicio(SolicitudServicioDto solicitudServicioDto,
 			MapperExtended mapper) {
 		
@@ -833,8 +830,14 @@ public class SolicitudBusinessService {
 				}
 				
 				//mover inventario si se retira en sucursal
-				List<String> mensajesMovimientoInventario = movimientoInventario(solicitudServicio,vendedor);	
-				response.setMessages((MessageList) mensajesMovimientoInventario);
+				List<String> mensajesMovimientoInventario = movimientoInventario(solicitudServicio,vendedor);
+				MessageList msgs = new MessageList();
+				for (String str : mensajesMovimientoInventario) {
+					MessageImpl msg = new MessageImpl();
+					msg.setDescription(str);
+					msgs.addMesage(msg);
+				}
+				response.setMessages(msgs);
 			}
 		
 		} else {
@@ -1415,7 +1418,7 @@ public class SolicitudBusinessService {
 		return cantEquipos;
 	}
 	
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public SolicitudServicio saveSolicituServicio(SolicitudServicio ss){
 		repository.save(ss);
 		return ss;

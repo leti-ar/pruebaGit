@@ -179,8 +179,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		
 		nnsLayout.setHTML(0, 0, Sfa.constant().nssReq());
 		nnsLayout.setWidget(0, 1, editarSSUIData.getNss());
-		if (editarSSUIData.getGrupoSolicitud() == null
-				|| !instancias.get(GrupoSolicitudDto.ID_CDW).equals(editarSSUIData.getGrupoSolicitud().getId())) {
+		if (!editarSSUIData.isCDW()) {
 			nnsLayout.setHTML(0, 2, Sfa.constant().nflota());
 			nnsLayout.setWidget(0, 3, editarSSUIData.getNflota());
 			nnsLayout.setHTML(0, 4, Sfa.constant().origenReq());
@@ -193,23 +192,36 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			nnsLayout.clearCell(0, 5);
 		}
 		
-		if (editarSSUIData.getGrupoSolicitud()!= null){
-			if (!editarSSUIData.isCDW() && !editarSSUIData.isMDS()&& !editarSSUIData.isTRANSFERENCIA()) {
-				nnsLayout.setHTML(0, 6, Sfa.constant().retiraEnSucursal());
-				nnsLayout.setWidget(0, 7, editarSSUIData.getRetiraEnSucursal());
-			}
+		if (ClientContext.getInstance().getVendedor().isVendedorSalon() && editarSSUIData.isEquiposAccesorios()) {
+			nnsLayout.setHTML(0, 6, Sfa.constant().retiraEnSucursal());
+			nnsLayout.setWidget(0, 7, editarSSUIData.getRetiraEnSucursal());
+		} else {
+			nnsLayout.clearCell(0, 6);
+			nnsLayout.clearCell(0, 7);
 		}
 
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
 			nnsLayout.setHTML(0, 8, Sfa.constant().vendedorReq());
 			nnsLayout.setWidget(0, 9, editarSSUIData.getVendedor());
+		} else {
+			nnsLayout.clearCell(0, 8);
+			nnsLayout.clearCell(0, 9);
 		}
 		
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
 			nnsLayout.setHTML(0, 10, Sfa.constant().sucOrigenReq());
 			nnsLayout.setWidget(0, 11, editarSSUIData.getSucursalOrigen());
-		}
+		} 
 		
+		if(editarSSUIData.getGrupoSolicitud() != null &&
+				instancias.get(GrupoSolicitudDto.ID_FAC_MENSUAL).equals(editarSSUIData.getGrupoSolicitud().getId())){
+			nnsLayout.setHTML(0, 10, Sfa.constant().ordenCompraReq());
+			nnsLayout.setWidget(0, 11, editarSSUIData.getOrdenCompra());
+		} else {
+			nnsLayout.clearCell(0, 10);
+			nnsLayout.clearCell(0, 11);
+		}
+
 //		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
 //			nnsLayout.setHTML(0, 6, "Descuento Total:");
 //			nnsLayout.setWidget(0, 7, editarSSUIData.getDescuentoTotal());
@@ -240,20 +252,10 @@ public class DatosSSUI extends Composite implements ClickHandler {
 //			nnsLayout.clearCell(0, 8);
 //		}
 			
-		if(editarSSUIData.getGrupoSolicitud() != null &&
-				instancias.get(GrupoSolicitudDto.ID_FAC_MENSUAL).equals(editarSSUIData.getGrupoSolicitud().getId())){
-			nnsLayout.setHTML(0, 10, Sfa.constant().ordenCompraReq());
-			nnsLayout.setWidget(0, 11, editarSSUIData.getOrdenCompra());
-		} else {
-			nnsLayout.clearCell(0, 10);
-			nnsLayout.clearCell(0, 11);
-		}
 
 		
 //		Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
-		if (ClientContext.getInstance().getVendedor().isTelemarketing()
-				&& (editarSSUIData.getGrupoSolicitud() != null
-				&& instancias.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS).equals(editarSSUIData.getGrupoSolicitud().getId()))) {
+		if (ClientContext.getInstance().getVendedor().isTelemarketing()	&& editarSSUIData.isEquiposAccesorios()) {
 			nnsLayout.setHTML(0, 12, Sfa.constant().nroSSWeb());
 			nnsLayout.setWidget(0, 13, editarSSUIData.getNumeroSSWeb());
 		} else {
@@ -813,7 +815,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			}
 			drawDetalleSSRow(nueva, newRow);
 		}
-		onTableClick(detalleSS, firstNewRow, 4);
+		onTableClick(detalleSS, firstNewRow, 5);
 	}
 
 	/** Limpia y recarga la tabla de Detalle de Solicitud de Servicio completamente */
@@ -825,7 +827,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			drawDetalleSSRow(linea, editarSSUIData.getLineasSolicitudServicio().indexOf(linea) + 1);
 		}
 		if (!editarSSUIData.getLineasSolicitudServicio().isEmpty()) {
-			onTableClick(detalleSS, 1, 3);
+			onTableClick(detalleSS, 1, 5);
 		} else {
 			serviciosAdicionales.clear();
 		}

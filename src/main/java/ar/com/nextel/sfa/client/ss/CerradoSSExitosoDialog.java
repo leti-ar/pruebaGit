@@ -44,7 +44,7 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 	private Command aceptarCommand;
 	private InlineHTML successText;
 	private SimpleLink solicitudLink;
-	private SimpleLink reporteLink;
+//	private SimpleLink reporteLink;
 	private SimpleLink aceptar;
 	private String fileName;
 	private Long idSolicitudCerrada;
@@ -93,14 +93,14 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 		layout.getRowFormatter().setVerticalAlign(0, HasAlignment.ALIGN_MIDDLE);
 		cierreExitoso.add(layout);
 		solicitudLink.addClickListener(this);
-		reporteLink.addClickListener(this);
+//		reporteLink.addClickListener(this);
 		
 		solicitudRtf = new Grid(1 + rtfFileNamePorta.size(), 2);
 		solicitudRtf.setWidget(0, 0, IconFactory.word());
 		solicitudRtf.setWidget(0, 1, solicitudLink);
 		
-		solicitudRtf.setWidget(1, 0, IconFactory.word());
-		solicitudRtf.setWidget(1, 1, solicitudLink);
+//		solicitudRtf.setWidget(1, 0, IconFactory.word());
+//		solicitudRtf.setWidget(1, 1, solicitudLink);
 		
 		List<String> aux = new ArrayList<String>();
 		for (String fname : rtfFileNamePorta) {
@@ -115,12 +115,12 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 			((SimpleLink)solicitudRtf.getWidget(i + 1, 1)).setTitle(aux.get(i) + ".rtf");
 		}
 		
-		for(int j = 0; j< reportes.size();j++){
-			solicitudRtf.setWidget(j + 1, 0, IconFactory.word());
-			solicitudRtf.setWidget(j + 1, 1, new SimpleLink(reportes.get(j),"#" + History.getToken(),true));
-			((SimpleLink)solicitudRtf.getWidget(j + 1, 1)).addClickListener(this);
-			((SimpleLink)solicitudRtf.getWidget(j + 1, 1)).setTitle(reportes.get(j));
-		}
+//		for(int j = 0; j< reportes.size();j++){
+//			solicitudRtf.setWidget(j + 1, 0, IconFactory.word());
+//			solicitudRtf.setWidget(j + 1, 1, new SimpleLink(reportes.get(j),"#" + History.getToken(),true));
+//			((SimpleLink)solicitudRtf.getWidget(j + 1, 1)).addClickListener(this);
+//			((SimpleLink)solicitudRtf.getWidget(j + 1, 1)).setTitle(reportes.get(j));
+//		}
 		
 		cierreExitoso.add(solicitudRtf);
 		cierreExitoso.setWidth("350px");

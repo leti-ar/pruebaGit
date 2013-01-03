@@ -1312,19 +1312,31 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	}
 
 	public boolean isCDW() {
-		return solicitudServicio.getGrupoSolicitud().isCDW();
+		if (solicitudServicio != null && solicitudServicio.getGrupoSolicitud() != null) {
+			return solicitudServicio.getGrupoSolicitud().isCDW();
+		}
+		return false;
 	}
 	
 	public boolean isEquiposAccesorios(){
-		return solicitudServicio.getGrupoSolicitud().isEquiposAccesorios();
+		if (solicitudServicio != null && solicitudServicio.getGrupoSolicitud() != null) {
+			return solicitudServicio.getGrupoSolicitud().isEquiposAccesorios();
+		}
+		return false;
 	}
 
 	public boolean isMDS() {
-		return solicitudServicio.getGrupoSolicitud().isMDS();
+		if (solicitudServicio != null && solicitudServicio.getGrupoSolicitud() != null) {
+			return solicitudServicio.getGrupoSolicitud().isMDS();
+		}
+		return false;
 	}
 	
 	public boolean isTRANSFERENCIA() {
-		return solicitudServicio.getGrupoSolicitud().isTransferencia();
+		if (solicitudServicio != null && solicitudServicio.getGrupoSolicitud() != null) {
+		    return solicitudServicio.getGrupoSolicitud().isTransferencia();
+		}
+		return false;
 	}
 
 	/** Indica si contiene lineas de solicitud con item BlackBerry */
