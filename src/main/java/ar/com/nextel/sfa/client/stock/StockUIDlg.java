@@ -131,7 +131,7 @@ public class StockUIDlg extends NextelDialog {
 		cerrar.ensureDebugId(DebugConstants.AGREGAR_CUENTAS_POPUP_BUTTON_CERRAR_ID);
 		aceptar.ensureDebugId(DebugConstants.AGREGAR_CUENTAS_POPUP_BUTTON_ACEPTAR_ID);
 		
-		initCombos();
+		//initCombos();
 
 		tipoOrdenLst.setWidth("220");
 		listaPrecioLst.setWidth("220");
@@ -158,11 +158,11 @@ public class StockUIDlg extends NextelDialog {
 	}
 
 	public void initCombos(){
-		CargaDeCombos.cargarComboTipoOrden(tipoOrdenLst, listaPrecioLst,
-				cantItemsLst);
 		listaPrecioLst.clear();
 		cantItemsLst.clear();
-		
+		tipoOrdenLst.clear();
+		CargaDeCombos.cargarComboTipoOrden(tipoOrdenLst, listaPrecioLst,
+				cantItemsLst);
 	}
 	
 	public void clearCombos(){
