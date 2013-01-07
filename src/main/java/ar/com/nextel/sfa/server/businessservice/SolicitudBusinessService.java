@@ -47,6 +47,7 @@ import ar.com.nextel.business.solicitudes.despacho.DespachoSolicitudBusinessOper
 import ar.com.nextel.business.solicitudes.generacionCierre.GeneracionCierreBusinessOperator;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreRequest;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
+import ar.com.nextel.business.solicitudes.generacionCierre.result.CierreYPassResult;
 import ar.com.nextel.business.solicitudes.historico.TransferirCuentaHistoricoConfig;
 import ar.com.nextel.business.solicitudes.historico.VantiveHistoricoClienteConfig;
 import ar.com.nextel.business.solicitudes.historico.VantiveHistoricoVentaRetrieveConfig;
@@ -142,11 +143,6 @@ public class SolicitudBusinessService {
 //	MGR - Se mueve la creacion de la cuenta
 	private String MENSAJE_ERROR_CREAR_CUENTA= "La SS % quedó pendiente de aprobación, por favor verificar y dar curso manual.";
 	
-//	MGR - Parche de emergencia
-	public static final int CIERRE_NORMAL = 1; //Se cierra la solicitud de servicio y se transfiere a Vantive
-	public static final int LINEAS_NO_CUMPLEN_CC = 2;
-	public static final int CIERRE_PASS_AUTOMATICO = 3;
-
 	private static final String CANTIDAD_EQUIPOS = "CANTIDAD_EQUIPOS";
 	
 //	MGR - #3464
@@ -675,7 +671,7 @@ public class SolicitudBusinessService {
 //		MGR - Parche de emergencia
 		boolean cierraPorCC = false;
 		if(!solicitudServicio.getGrupoSolicitud().isGrupoTransferencia()){
-			cierraPorCC = puedeCerrar != SolicitudBusinessService.CIERRE_NORMAL;
+			cierraPorCC = puedeCerrar != CierreYPassResult.CIERRE_NORMAL;
 		}
 		
 		
@@ -807,7 +803,7 @@ public class SolicitudBusinessService {
 //				MGR - Se mueve la creacion de la cuenta. 
 //				Se mueve esto desde la clase SolicitudRpcServiceImpl, metodo generarCerrarSolicitud
 				if (!solicitudServicio.getCuenta().isTransferido() 
-						&& puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO) {
+						&& puedeCerrar == CierreYPassResult.CIERRE_PASS_AUTOMATICO) {
 					
 //					MGR - Se mueve la creacion de la cuenta. Pongo la solicitud en carga hasta haber creado el cliente
 //					Esto es por un bug raro que sucede si durante la creacion del cliente, el chron levanta la ss
@@ -1396,13 +1392,13 @@ public class SolicitudBusinessService {
 		}
 		if (cumple == lineas.size()) {
 			AppLogger.info("#Log Cierre y pass - Todas las l�neas son configurables por APG");
-			return CIERRE_PASS_AUTOMATICO;
+			return CierreYPassResult.CIERRE_PASS_AUTOMATICO;
 		} else if ((cumple < lineas.size() && cumple != 0) ) {
 			AppLogger.info("#Log Cierre y pass - No todas las l�neas son configurables por APG");
-			return LINEAS_NO_CUMPLEN_CC;
+			return CierreYPassResult.LINEAS_NO_CUMPLEN_CC;
 		} else {
 			AppLogger.info("#Log Cierre y pass - Ninguna l�nea es configurable por APG");			
-			return CIERRE_NORMAL;
+			return CierreYPassResult.CIERRE_NORMAL;
 		}
 	}
 	

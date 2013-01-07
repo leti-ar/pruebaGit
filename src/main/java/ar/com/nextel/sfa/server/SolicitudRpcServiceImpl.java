@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +46,7 @@ import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOper
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
 import ar.com.nextel.business.solicitudes.facturacion.FacturacionSolServicioService;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
+import ar.com.nextel.business.solicitudes.generacionCierre.result.CierreYPassResult;
 import ar.com.nextel.business.solicitudes.negativeFiles.NegativeFilesBusinessOperator;
 import ar.com.nextel.business.solicitudes.negativeFiles.result.NegativeFilesBusinessResult;
 import ar.com.nextel.business.solicitudes.report.SolicitudPortabilidadPropertiesReport;
@@ -154,7 +154,6 @@ import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.client.util.PortabilidadResult;
 import ar.com.nextel.sfa.client.util.PortabilidadResult.ERROR_ENUM;
-import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.server.businessservice.CuentaBusinessService;
 import ar.com.nextel.sfa.server.businessservice.SolicitudBusinessService;
 import ar.com.nextel.sfa.server.util.MapperExtended;
@@ -1033,171 +1032,52 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		SolicitudServicio solicitudServicio = null;
 		//MGR - #3123
 		GeneracionCierreResponse response = new GeneracionCierreResponse();
-		boolean hayError = false;
-//		MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
-		List<String> isVerazDisponible = new ArrayList<String>();
-//		MGR - #3458
-		boolean cierrePorVeraz = false;
+		
+//		MGR - Refactorizacion del cierre
+		CierreYPassResult resultadoCierre = new CierreYPassResult();
+		
 		try {
 			
-			// TODO: Portabilidad
-			long contadorPortabilidad = 0;
-			for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
-				if(linea.getPortabilidad() != null) {
-					if(linea.getPortabilidad().getFechaUltFactura() != null) {
-						long dias = DateUtils.getInstance().getDistanceInDays(DateUtils.getInstance().getCurrentDate(), linea.getPortabilidad().getFechaUltFactura());
-						if(dias > 30) {
-							hayError = true;
-							String alias = linea.getAlias();
-							Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.FECHA_EMISION_PORT_ERROR);
-							message.addParameters(new Object[] { alias });
-							response.getMessages().addMesage(message);
-							result.setError(true);
-						}
-					}
-					contadorPortabilidad++;
-				}
-			}
+//			MGR - Refactorizacion del cierre
+			long contadorPortabilidad = verificarFacturaPortabilidad(solicitudServicioDto, result);
 			solicitudServicioDto.setCantLineasPortabilidad(contadorPortabilidad);
 
 			completarDomiciliosSolicitudTransferencia(solicitudServicioDto);
 //			MGR - Parche de emergencia
 			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
-//			MGR - Log informativo, quitar
-			AppLogger.info("Solicitud servicio de id: " + solicitudServicio.getId() + 
-					" es de trasnferencia: " + solicitudServicio.getGrupoSolicitud().isGrupoTransferencia(), this);
 			
-			String errorNF = "";
-			//larce - Req#5 Cierre y Pass automatico
-			String errorCC = "";
-			int puedeCerrar = 0;
 //			MGR - Parche de emergencia
 			if (!solicitudServicio.getGrupoSolicitud().isGrupoTransferencia()) {
-				//me fijo si tipo vendedor y orden son configurables por APG.
-				puedeCerrar = sonConfigurablesPorAPG(solicitudServicioDto.getLineas());
 				
-				if (puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO) {//pass de creditos segun la logica
-					errorCC = evaluarEquiposYDeuda(solicitudServicio, pinMaestro);
-					if ("".equals(errorCC)) {
-						
-						isVerazDisponible = (repository.executeCustomQuery("isVerazDisponible", "VERAZ_DISPONIBLE"));
-//						MGR - #3458 - Verifico si corresponde cerrar por Veraz (o Scoring)
-						cierrePorVeraz = ("".equals(pinMaestro) || pinMaestro == null)
-											&& !solicitudServicio.getSolicitudServicioGeneracion().getScoringChecked();
-						if (puedeDarPassDeCreditos(solicitudServicio, cierrePorVeraz, isVerazDisponible.get(0))) {
-							
-//							MGR - #3458
-//							Si puede dar el pass, pero el veraz esta deshabilitado y el pass se dio por veraz,
-//							entonces no le doy el pass (y mas adelante, si se cierra ccorrectamente, envio un mail)
-//							Si el pass se da por Scoring, sigue su curso normal
-							if(cierrePorVeraz && !"T".equals(isVerazDisponible.get(0))){
-								//En caso de que el veraz no este disponible, de cumplir con las condiciones comerciales se cierra 
-								//la SS quedando pendiente de aprobacion en vantive y se envia un mail informando la situacion
-								solicitudServicio.setPassCreditos(false);
-//								MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
-//								solicitudBusinessService.enviarMailPassCreditos(solicitudServicioDto.getNumero());
-							}else{ //MGR - #3463
-								solicitudServicio.setPassCreditos(true);
-							}
-							
-						} else {
-							solicitudServicio.setPassCreditos(false);
-							if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
-								errorCC = generarErrorPorCC(solicitudServicio, pinMaestro);
-								
-						    	/* MGR - 04/07/2012
-						    	 * Al verificar si las lineas cumplen con las condiciones comerciales, la cantidad de equipos y la cantidad de pesos
-						    	 * de todas las lineas se suman y se evalua que todas las lineas cumplan con esas restriciones, por lo que puede suceder
-						    	 * que una Solicitud de Servicio no cumpla con las condiciones comerciales, pero que al armar el error a mostrar, el mismo
-						    	 * no se genere ya que por separado las lineas si cumplen.
-						    	 * En estos casos, se decidio junto con el usuario que se le otroga el pass a la solicitud de todas formas y que ellos 
-						    	 * asumen el riesgo en estos casos.
-						    	 * (Revisar mail enviado por Marco Rossi el dia 04/07/2012 a Damian Schnaider, Giselle Rivas y Gonzalo Suarez, 
-						    	 * donde confirman esto)
-						    	 */
-								if(errorCC.equals("")){
-									AppLogger.info("#Log Cierre y pass - La SS con cumple con las CC pero el mensaje de error se encuentra vacio. Damos el pass de todas formas.", this);
-									solicitudServicio.setPassCreditos(true);
-								}
+//				MGR - Refactorizacion del cierre
+				resultadoCierre = comprobarCierreYPassAutomatico(solicitudServicio, pinMaestro, result);
 
-							}
-						}
-					}
-				}
-				
 				//larce - Req#9 Negative Files
 				if(solicitudServicio.getVendedor().getTipoVendedor().isEjecutaNegFiles()){
-					errorNF = verificarNegativeFilesPorLinea(solicitudServicio.getLineas());
-				}
-				
-				if (!"".equals(errorNF)) {
-					hayError = true;
-					Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.CUSTOM_ERROR);
-					message.addParameters(new Object[] { errorNF });
-					response.getMessages().addMesage(message);
-					result.setError(true);
-				}
-				if (puedeCerrar == SolicitudBusinessService.LINEAS_NO_CUMPLEN_CC) {
-					hayError = true;
-					response.getMessages().addMesage((Message) this.messageRetriever.getObject(MessageIdentifier.TIPO_ORDEN_INCOMPATIBLE));
-					result.setError(true);
-				} else if (!"".equals(errorCC)) {
-					hayError = true;
-					Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.CUSTOM_ERROR);
-					message.addParameters(new Object[] { errorCC });
-					response.getMessages().addMesage(message);
-					result.setError(true);
+					String errorNF = verificarNegativeFilesPorLinea(solicitudServicio.getLineas());
+					
+//					MGR - Refactorizacion del cierre
+					if (!"".equals(errorNF)) {
+						Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.CUSTOM_ERROR);
+						message.addParameters(new Object[] { errorNF });
+						response.getMessages().addMesage(message);
+						result.setError(true);
+					}
 				}
 			}
 			
-			if(!hayError && puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO){
+//			MGR - Refactorizacion del cierre
+			if(!result.isError() && resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO){
 				
-				//LF - #3139 - Validacion de SIM repetidos
-				List<String> listaAlias = listaAliasSimRepetidos(solicitudServicio.getLineas());
-				if(!listaAlias.isEmpty()) {
-				    String mensaje = "";
-					if(listaAlias.size() > 1) {
-						String alias = "";
-			            for (Iterator iterator = listaAlias.iterator(); iterator.hasNext();) {
-			    			String aliasAux = (String) iterator.next();
-			    		    alias = alias + aliasAux + " ,";				
-			    		}	
-			            alias = alias.substring(0, alias.length() - 1);
-			            mensaje = " las líneas " + alias + "ya fueron utilizados ";
-			    	} else {
-			    		mensaje  = " la línea " + listaAlias.get(0) + " ya fue utilizado ";
-			    	}
-		            Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.SIM_REPETIDO);
-		            message.addParameters(new Object[] {mensaje});
-		            response.getMessages().addMesage(message);
-					hayError = true;
-				    result.setError(true);
-				} else { // Si el SIM no se carga en otra solicitud, verifica que este disponible en AVALON
-					for (Iterator iterator = solicitudServicio.getLineas().iterator(); iterator.hasNext();) {
-						LineaSolicitudServicio lineaSS = (LineaSolicitudServicio) iterator.next();
-						String nroSIM = lineaSS.getNumeroSimcard();
-						if(nroSIM != null) {
-							AppLogger.info("##Log Cierre y pass - Verificando que el numero de SIM '"+ nroSIM +"' se encuentre disponible en AVALON");
-							String estadoSim = this.getEstadoSim(nroSIM);
-							if(!estadoSim.equals(SIM_DISPONIBLE)) {
-								AppLogger.info("##Log Cierre y pass - El numero de SIM '"+ nroSIM +"' de la linea " + lineaSS.getId() + " NO se encuentra disponible en AVALON");
-								Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.SIM_NO_DISPONIBLE);
-						        message.addParameters(new Object[] {nroSIM, lineaSS.getAlias()}); //#3139 Nota
-						        response.getMessages().addMesage(message);
-								hayError = true;
-								result.setError(true);
-							} else {
-								AppLogger.info("##Log Cierre y pass - El numero de SIM '"+ lineaSS.getNumeroSimcard() +"' se encuentra disponible");
-							}
-						}
-					}
-				}
+//				MGR - Refactorizacion del cierre
+				validarSIMRepetidos(solicitudServicio, result);
 			}
 
 			solicitudServicio = solicitudBusinessService.saveSolicituServicio(solicitudServicio);
 
 			//MGR - #3123 - Si ninguno no fallo por alguna de las validaciones anteriores
-			if(!hayError){
+//			MGR - Refactorizacion del cierre
+			if(!result.isError()){
 				
 				//LF - #3109 - Registro el vendedor logueado que realiza el cierre
 //				MGR - #3460 - Se pide registrar el nombre y el id del vendedor
@@ -1213,14 +1093,16 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			
 //				MGR - Se mueve la creacion de la cuenta. Debo recordar si es prospect antes de enviar a cerrar
 				boolean eraProspect = !solicitudServicio.getCuenta().isCliente();
-				response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, puedeCerrar);
+//				MGR - Refactorizacion del cierre
+				response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, resultadoCierre.getPuedeCerrar());
 				
 				result.setError(response.getMessages().hasErrors());
 								
 //				MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
 //				MGR - #3458 - Y si el cierre fue por veraz
-				if (!result.isError() && puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO &&
-						cerrar && !"T".equals(isVerazDisponible.get(0)) && cierrePorVeraz) {
+//				MGR - Refactorizacion del cierre
+				if (!result.isError() && resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO &&
+						cerrar && !"T".equals(resultadoCierre.getIsVerazDisponible()) && resultadoCierre.isCierrePorVeraz()) {
 					solicitudBusinessService.enviarMailPassCreditos(solicitudServicio.getNumero());
 				}
 				
@@ -1231,7 +1113,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 //				va por pass automatico y es un cierre, creo y tranfiero caratula
 				if (eraProspect && !result.isError() && 
 						solicitudServicio.getCuenta().isTransferido() && 
-						puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO && cerrar) {
+//						MGR - Refactorizacion del cierre
+						resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO && cerrar) {
 					
 						Long idCaratula = solicitudBusinessService.crearCaratula(solicitudServicio.getCuenta(), solicitudServicio.getNumero(), resultadoVerazScoring);
 						solicitudBusinessService.transferirCaratula(idCaratula, solicitudServicio.getNumero());						
@@ -1271,6 +1154,158 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		return result;
 	}
 
+//	MGR - Refactorizacion del cierre
+	private long verificarFacturaPortabilidad(SolicitudServicioDto solicitudServicioDto, GeneracionCierreResultDto result){
+		long contadorPortabilidad = 0;
+		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
+			if(linea.getPortabilidad() != null) {
+				if(linea.getPortabilidad().getFechaUltFactura() != null) {
+					long dias = DateUtils.getInstance()
+								.getDistanceInDays(DateUtils.getInstance().getCurrentDate(), linea.getPortabilidad().getFechaUltFactura());
+					if(dias > 30) {
+						String alias = linea.getAlias();
+						Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.FECHA_EMISION_PORT_ERROR);
+						message.addParameters(new Object[] { alias });
+						result.addMessage(message.getDescription());
+						result.setError(true);
+					}
+				}
+				contadorPortabilidad++;
+			}
+		}
+		
+		return contadorPortabilidad;
+	}
+	
+
+//	MGR - Refactorizacion del cierre
+	private CierreYPassResult comprobarCierreYPassAutomatico(SolicitudServicio solicitudServicio, 
+			String pinMaestro, GeneracionCierreResultDto result) throws Exception{
+		CierreYPassResult resultado = new CierreYPassResult();
+		
+		//larce - Req#5 Cierre y Pass automatico
+		boolean cierrePorVeraz = false;
+		String errorCC = "";
+		int puedeCerrar = 0;
+		List<String> isVerazDisponible;
+		
+		if (!solicitudServicio.getGrupoSolicitud().isGrupoTransferencia()) {
+			//me fijo si tipo vendedor y orden son configurables por APG.
+			List<LineaSolicitudServicio> lineas = new ArrayList<LineaSolicitudServicio>(solicitudServicio.getLineas());
+			puedeCerrar = solicitudBusinessService.sonConfigurablesPorAPG(lineas);
+			resultado.setPuedeCerrar(puedeCerrar);
+			
+			if (puedeCerrar == CierreYPassResult.CIERRE_PASS_AUTOMATICO) {//pass de creditos segun la logica
+				errorCC = evaluarEquiposYDeuda(solicitudServicio, pinMaestro);
+				if ("".equals(errorCC)) {
+					
+					isVerazDisponible = (repository.executeCustomQuery("isVerazDisponible", "VERAZ_DISPONIBLE"));
+					resultado.setIsVerazDisponible(isVerazDisponible.get(0));
+					
+//					MGR - #3458 - Verifico si corresponde cerrar por Veraz (o Scoring)
+					cierrePorVeraz = ("".equals(pinMaestro) || pinMaestro == null)
+										&& !solicitudServicio.getSolicitudServicioGeneracion().getScoringChecked();
+					resultado.setCierrePorVeraz(cierrePorVeraz);
+					
+					if (puedeDarPassDeCreditos(solicitudServicio, cierrePorVeraz, isVerazDisponible.get(0))) {
+						
+//						MGR - #3458
+//						Si puede dar el pass, pero el veraz esta deshabilitado y el pass se dio por veraz,
+//						entonces no le doy el pass (y mas adelante, si se cierra ccorrectamente, envio un mail)
+//						Si el pass se da por Scoring, sigue su curso normal
+						if(cierrePorVeraz && !"T".equals(isVerazDisponible.get(0))){
+							//En caso de que el veraz no este disponible, de cumplir con las condiciones comerciales se cierra 
+							//la SS quedando pendiente de aprobacion en vantive y se envia un mail informando la situacion
+							solicitudServicio.setPassCreditos(false);
+//							MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
+//							solicitudBusinessService.enviarMailPassCreditos(solicitudServicioDto.getNumero());
+						}else{ //MGR - #3463
+							solicitudServicio.setPassCreditos(true);
+						}
+						
+					} else {
+						solicitudServicio.setPassCreditos(false);
+						if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
+							errorCC = generarErrorPorCC(solicitudServicio, pinMaestro);
+							
+					    	/* MGR - 04/07/2012
+					    	 * Al verificar si las lineas cumplen con las condiciones comerciales, la cantidad de equipos y la cantidad de pesos
+					    	 * de todas las lineas se suman y se evalua que todas las lineas cumplan con esas restriciones, por lo que puede suceder
+					    	 * que una Solicitud de Servicio no cumpla con las condiciones comerciales, pero que al armar el error a mostrar, el mismo
+					    	 * no se genere ya que por separado las lineas si cumplen.
+					    	 * En estos casos, se decidio junto con el usuario que se le otroga el pass a la solicitud de todas formas y que ellos 
+					    	 * asumen el riesgo en estos casos.
+					    	 * (Revisar mail enviado por Marco Rossi el dia 04/07/2012 a Damian Schnaider, Giselle Rivas y Gonzalo Suarez, 
+					    	 * donde confirman esto)
+					    	 */
+							if(errorCC.equals("")){
+								AppLogger.info("#Log Cierre y pass - La SS con cumple con las CC pero el mensaje de error se encuentra vacio. Damos el pass de todas formas.", this);
+								solicitudServicio.setPassCreditos(true);
+							}
+
+						}
+					}
+				}
+			}
+		}
+		
+		if (puedeCerrar == CierreYPassResult.LINEAS_NO_CUMPLEN_CC) {
+			Message msg = (Message) this.messageRetriever.getObject(MessageIdentifier.TIPO_ORDEN_INCOMPATIBLE);
+			result.addMessage(msg.getDescription());
+			result.setError(true);
+		} else if (!"".equals(errorCC)) {
+			Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.CUSTOM_ERROR);
+			message.addParameters(new Object[] { errorCC });
+			result.addMessage(message.getDescription());
+			result.setError(true);
+		}
+		
+		return resultado;
+	}
+	
+//	MGR - Refactorizacion del cierre
+	private void validarSIMRepetidos(SolicitudServicio solicitudServicio, GeneracionCierreResultDto result) throws RpcExceptionMessages{
+		
+		//LF - #3139 - Validacion de SIM repetidos
+		List<String> listaAlias = listaAliasSimRepetidos(solicitudServicio.getLineas());
+		if(!listaAlias.isEmpty()) {
+		    String mensaje = "";
+			if(listaAlias.size() > 1) {
+				String alias = "";
+	            for (Iterator iterator = listaAlias.iterator(); iterator.hasNext();) {
+	    			String aliasAux = (String) iterator.next();
+	    		    alias = alias + aliasAux + " ,";				
+	    		}	
+	            alias = alias.substring(0, alias.length() - 1);
+	            mensaje = " las líneas " + alias + "ya fueron utilizados ";
+	    	} else {
+	    		mensaje  = " la línea " + listaAlias.get(0) + " ya fue utilizado ";
+	    	}
+            Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.SIM_REPETIDO);
+            message.addParameters(new Object[] {mensaje});
+            result.addMessage(message.getDescription());
+            result.setError(true);
+		} else { // Si el SIM no se carga en otra solicitud, verifica que este disponible en AVALON
+			for (Iterator iterator = solicitudServicio.getLineas().iterator(); iterator.hasNext();) {
+				LineaSolicitudServicio lineaSS = (LineaSolicitudServicio) iterator.next();
+				String nroSIM = lineaSS.getNumeroSimcard();
+				if(nroSIM != null) {
+					AppLogger.info("##Log Cierre y pass - Verificando que el numero de SIM '"+ nroSIM +"' se encuentre disponible en AVALON");
+					String estadoSim = this.getEstadoSim(nroSIM);
+					if(!estadoSim.equals(SIM_DISPONIBLE)) {
+						AppLogger.info("##Log Cierre y pass - El numero de SIM '"+ nroSIM +"' de la linea " + lineaSS.getId() + " NO se encuentra disponible en AVALON");
+						Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.SIM_NO_DISPONIBLE);
+				        message.addParameters(new Object[] {nroSIM, lineaSS.getAlias()}); //#3139 Nota
+				        result.addMessage(message.getDescription());
+						result.setError(true);
+					} else {
+						AppLogger.info("##Log Cierre y pass - El numero de SIM '"+ lineaSS.getNumeroSimcard() +"' se encuentra disponible");
+					}
+				}
+			}
+		}
+	}
+	
 	private void completarDomiciliosSolicitudTransferencia(SolicitudServicioDto solicitudServicioDto) {
 //		MGR - Log informativo, quitar
 		AppLogger.info("Solicitud servicio de id: " + solicitudServicioDto.getId() + 
@@ -3103,3 +3138,4 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		}
 	}
 }
+

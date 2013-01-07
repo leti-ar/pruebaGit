@@ -26,7 +26,9 @@ public class GeneracionCierreResultDto implements IsSerializable {
 	}
 
 	public void setMessages(List<MessageDto> messages) {
-		this.messages = messages;
+//		this.messages = messages;
+//		MGR - Refactorizacion del cierre
+		this.messages.addAll(messages);
 	}
 
 	public boolean isError() {
@@ -69,4 +71,10 @@ public class GeneracionCierreResultDto implements IsSerializable {
 		this.reportes = reportes;
 	}
 	
+//	MGR - Refactorizacion del cierre
+	public void addMessage(String msg){
+		MessageDto mens = new MessageDto();
+		mens.setDescription(msg);
+		this.messages.add(mens);
+	}
 }
