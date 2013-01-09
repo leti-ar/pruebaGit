@@ -20,6 +20,7 @@ import ar.com.nextel.sfa.client.dto.ItemSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
+import ar.com.nextel.sfa.client.dto.MessageDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
@@ -244,5 +245,8 @@ public interface SolicitudRpcService extends RemoteService {
 	
 //	MGR - Verificar Pago
 	FacturaDto verificarPagoFacturaSolicitudServicio(SolicitudServicioDto solicitudServicioDto);
+	
+//	MGR - Validaciones previas a la facturacion
+	List<MessageDto> validarParaFacturar(SolicitudServicioDto solicitudServicioDto)	throws RpcExceptionMessages;
 }
 

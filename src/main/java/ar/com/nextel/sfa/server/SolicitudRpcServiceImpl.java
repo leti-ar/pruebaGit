@@ -728,7 +728,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return resultDto;
 	}
 
-public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto) throws RpcExceptionMessages {
+	public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto) throws RpcExceptionMessages {
 
 		try {
 			EstadoPorSolicitud estadoPorSolicitud = mapper.map(estadoPorSolicitudDto, EstadoPorSolicitud.class);
@@ -1075,7 +1075,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 
 			solicitudServicio = solicitudBusinessService.saveSolicituServicio(solicitudServicio);
 
-			//MGR - #3123 - Si ninguno no fallo por alguna de las validaciones anteriores
+			//MGR - #3123 - Si ninguno fallo por alguna de las validaciones anteriores
 //			MGR - Refactorizacion del cierre
 			if(!result.isError()){
 				
@@ -3136,6 +3136,50 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			log.error(e, e);
 			throw new RuntimeException(e);
 		}
+	}
+	
+//	MGR - Validaciones previas a la facturacion
+	public List<MessageDto> validarParaFacturar(SolicitudServicioDto solicitudServicioDto)
+			throws RpcExceptionMessages{
+		List<MessageDto> mensajes = new ArrayList<MessageDto>();
+
+		//MGR - Si bien el objeto no representa la validacion de facturacion
+		//lo utilizo igualmente para realizar las mismas validaciones que al cierre
+		GeneracionCierreResultDto result = new GeneracionCierreResultDto();
+		verificarFacturaPortabilidad(solicitudServicioDto, result);
+		if(result.isError()){
+			return result.getMessages();
+		}
+		
+		try{
+			SolicitudServicio solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
+	
+			if(solicitudServicio.getVendedor().getTipoVendedor().isEjecutaNegFiles()){
+				String errorNF = verificarNegativeFilesPorLinea(solicitudServicio.getLineas());
+				
+				if (!"".equals(errorNF)) {
+					Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.CUSTOM_ERROR);
+					message.addParameters(new Object[] { errorNF });
+					mensajes.add(mapper.map(message, MessageDto.class));
+				}
+			}
+			
+			CierreYPassResult resultadoCierre = comprobarCierreYPassAutomatico(solicitudServicio, null, result);
+			if(!result.isError() && resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO){
+				validarSIMRepetidos(solicitudServicio, result);
+			}
+			
+			if(result.isError()){
+				mensajes.addAll(result.getMessages());
+			}else{
+				List<Message> mens = solicitudBusinessService.validarParaFacturar(solicitudServicio, resultadoCierre.getPuedeCerrar());
+				mensajes.addAll(mapper.convertList(mens, MessageDto.class));
+			}
+		} catch (Exception e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+		return mensajes;
 	}
 }
 

@@ -44,7 +44,6 @@ import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.util.PortabilidadResult;
-import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
@@ -126,6 +125,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	FlowPanel linksCrearSS;
 	
 	private boolean editable;
+	
+//	MGR - Validaciones previas a la facturacion
+	private List<String> erroresFacturacion;
 
 	public EditarSSUI(boolean isEditable) {
 		super();
@@ -495,11 +497,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		editarSSUIData.setSaved(true);
 		
 		// varios.setScoringVisible(!solicitud.getGrupoSolicitud().isCDW());
-		razonSocialClienteBar.setCliente(solicitud.getCuenta().getCodigoVantive());
-		razonSocialClienteBar.setRazonSocial(solicitud.getCuenta().getPersona()
-				.getRazonSocial());
-		razonSocialClienteBar.setIdCuenta(solicitud.getCuenta().getId(), solicitud
-				.getCuenta().getCodigoVantive());
+//		MGR - Se mueve el seteo de datos a un metodo reutilizable
+		setearDatosRazonSocialClienteBar(solicitud.getCuenta());
 		codigoVant = solicitud.getCuenta().getCodigoVantive();
 		
 		//MGR - #1152
@@ -947,34 +946,42 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		}
 //		MGR - Facturacion - Funcionalidad del link Facturar
 		else if (sender ==  facturarButton){
-			//Validar la SS - Tiene que cumplir con las mismas condiciones que si fuera a cerrar
-			//y no se hubiera ingresado un pin
-			//Si ok, facturo
-			editarSSUIData.getSolicitudServicio().setUsuarioCreacion(ClientContext.getInstance().getVendedor());
-			SolicitudRpcService.Util.getInstance().facturarSolicitudServicio(editarSSUIData.getSolicitudServicio(),
-					new DefaultWaitCallback<FacturacionResultDto>() {
-
-						@Override
-						public void success(FacturacionResultDto result) {
-							if(result.isError()){
-								
-								ErrorDialog.getInstance().setDialogTitle("Aviso");
-								StringBuilder msgString = new StringBuilder();
-								for (MessageDto msg : result.getMessages()) {
-									msgString.append(msg.getDescription());
-								}
-								ErrorDialog.getInstance().show(msgString.toString(), false);
-								
-							}else{
-								editarSSUIData.setSolicitud(result.getSolicitud());
-								EventBusUtil.getEventBus().fireEvent(
-										new RefrescarPantallaSSEvent(result.getSolicitud(), 
-												editarSSUIData.getRetiraEnSucursal().getValue()));
-							}
-							
-							
+			
+			if(!editarSSUIData.isSaved()){
+				//guardar primero
+				ErrorDialog.getInstance().setDialogTitle("Aviso");
+				ErrorDialog.getInstance().show("Debe guardar la solicitud antes de facturar", false);
+			}else{
+				
+				//obtengo la cuenta
+				Long idCuenta = null;
+				if (HistoryUtils.getParam("idCuenta") != null) {
+					idCuenta = Long.parseLong(HistoryUtils.getParam("idCuenta"));
+				} else if (HistoryUtils.getParam("cuenta_id") != null) {
+					idCuenta = Long.parseLong(HistoryUtils.getParam("cuenta_id"));
+				}
+				CuentaClientService.cargarDatosCuenta(idCuenta, codigoVant, false, false);
+	
+				WaitWindow.show();
+				DeferredCommand.addCommand(new IncrementalCommand() {
+					public boolean execute() {
+						if (CuentaClientService.cuentaDto == null){
+							return true;
 						}
-					});
+						WaitWindow.hide();
+						
+						//si el campo nombre no está cargado significa que no están cargados los campos obligatorios de la cuenta
+						if (CuentaClientService.cuentaDto.getPersona().getNombre() != null) {
+							validacionPreviaFacturacion();
+						} else {
+							ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+							ErrorDialog.getInstance().show("Debe completar los campos obligatorios de la cuenta");
+						}
+						return false;
+					}
+				});
+			}
+			
 //		MGR - Facturacion
 		}else if (sender == verificarPagoButton){
 			
@@ -1876,6 +1883,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		datos.habilitarModificarSolicitud();
 		SolicitudServicioDto solicitud = event.getSolicitud();
 		
+		//En el caso de que se haya creado el cliente, actualizo la barra de razon social
+		setearDatosRazonSocialClienteBar(solicitud.getCuenta());
+		
 		formButtonsBar.clear();
 		if(isEditable()) {
 			FacturaDto factura = solicitud.getFactura();
@@ -1925,5 +1935,103 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	
 	private void showVerificarPago(){
 		formButtonsBar.addLink(verificarPagoButton);
+	}
+	
+	/**
+	 * Son las validaciones que en general se dan del lado del cliente, luego
+	 * si la validación fue exitosa se pasa a validar del lado del servidor
+	 * mediante 'validarFacturacion'
+	 */
+	private void validacionPreviaFacturacion(){
+		erroresFacturacion= null;
+		erroresFacturacion = editarSSUIData.validarParaCerrarGenerar(false);
+		SolicitudRpcService.Util.getInstance().validarLineasPorSegmento(editarSSUIData.getSolicitudServicio(), 
+				new DefaultWaitCallback<Boolean>() {
+					@Override
+					public void success(Boolean result) {
+						if(!result){
+							erroresFacturacion.add("Ha superado la cantidad de lineas por cliente.");
+						}
+						if (erroresFacturacion.isEmpty()) {
+		
+							SolicitudRpcService.Util.getInstance().validarPortabilidad(editarSSUIData.getSolicitudServicio(), 
+									new DefaultWaitCallback<PortabilidadResult>() {
+										@Override
+										public void success(PortabilidadResult portabilidadResult) {
+				
+											if(portabilidadResult.isConError()){
+												erroresFacturacion.addAll(portabilidadResult.getErroresDesc());
+				
+												ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+												ErrorDialog.getInstance().show(erroresFacturacion, false);
+				
+											}else {
+												validarFacturacion();
+											}
+										}
+									});
+						} else {
+							ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+							ErrorDialog.getInstance().show(erroresFacturacion, false);
+						}
+					}
+				});
+	}
+	
+	private void validarFacturacion(){
+		SolicitudServicioDto ssDto =editarSSUIData.getSolicitudServicio();
+		//El vendedor de la cuenta solo se cambia si la cuenta es prospect y el usuario logueado es Administrador de creditos
+		if(isProspectAndADMCreditos(ssDto.getCuenta())) {
+			ssDto.getCuenta().setVendedor((VendedorDto) editarSSUIData.getVendedor().getSelectedItem());						
+		}
+
+		SolicitudRpcService.Util.getInstance().validarParaFacturar(ssDto, 
+				new DefaultWaitCallback<List<MessageDto>>() {
+
+					@Override
+					public void success(List<MessageDto> result) {
+						if(!result.isEmpty()){
+							ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+							StringBuilder msgString = new StringBuilder();
+							for (MessageDto msg : result) {
+								msgString.append("<span class=\"error\">- " + msg.getDescription()
+										+ "</span><br>");
+							}
+							ErrorDialog.getInstance().show(msgString.toString(), false);
+						}else{
+							editarSSUIData.getSolicitudServicio().setUsuarioCreacion(ClientContext.getInstance().getVendedor());
+							SolicitudRpcService.Util.getInstance().facturarSolicitudServicio(editarSSUIData.getSolicitudServicio(),
+									new DefaultWaitCallback<FacturacionResultDto>() {
+		
+										@Override
+										public void success(FacturacionResultDto result) {
+											if(result.isError()){
+				
+												ErrorDialog.getInstance().setDialogTitle("Aviso");
+												StringBuilder msgString = new StringBuilder();
+												for (MessageDto msg : result.getMessages()) {
+													msgString.append(msg.getDescription());
+												}
+												ErrorDialog.getInstance().show(msgString.toString(), false);
+				
+											}else{
+												editarSSUIData.setSolicitud(result.getSolicitud());
+												EventBusUtil.getEventBus().fireEvent(
+														new RefrescarPantallaSSEvent(result.getSolicitud(), 
+																editarSSUIData.getRetiraEnSucursal().getValue()));
+											}
+										}
+									});
+						}
+					}
+				});
+	}
+	
+//	MGR - Se setean los datos en un metodo para poder reutilizar el codigo
+	private void setearDatosRazonSocialClienteBar(CuentaSSDto cuenta) {
+		razonSocialClienteBar.setCliente(cuenta.getCodigoVantive());
+		razonSocialClienteBar.setRazonSocial(cuenta.getPersona()
+				.getRazonSocial());
+		razonSocialClienteBar.setIdCuenta(cuenta.getId(), cuenta.getCodigoVantive());
 	}
 }

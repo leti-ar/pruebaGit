@@ -58,6 +58,7 @@ import ar.com.nextel.components.accessMode.AccessAuthorization;
 import ar.com.nextel.components.knownInstances.GlobalParameter;
 import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
+import ar.com.nextel.components.message.Message;
 import ar.com.nextel.components.message.MessageImpl;
 import ar.com.nextel.components.message.MessageList;
 import ar.com.nextel.framework.connectionDAO.ConnectionDAOException;
@@ -1437,5 +1438,16 @@ public class SolicitudBusinessService {
 		return this.despachoSolicitudBusinessOperator.movimientoInventario(ss, vendedor);
 	};
 	
-	
+//	MGR - Validaciones previas a la facturacion
+	public List<Message> validarParaFacturar(SolicitudServicio solicitudServicio,
+			int puedeCerrar){
+		
+		boolean cierraPorCC = puedeCerrar != CierreYPassResult.CIERRE_NORMAL;
+		
+		setScoringChecked(solicitudServicio, null);
+		// La SS se está invocando desde Objeto B (Interfaz web)
+		solicitudServicio.setSourceModule("B");
+
+		return generacionCierreBusinessOperator.validarParaFacturar(solicitudServicio, cierraPorCC);
+	}
 }
