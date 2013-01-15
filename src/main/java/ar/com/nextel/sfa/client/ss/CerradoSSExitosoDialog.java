@@ -44,9 +44,10 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 	private Command aceptarCommand;
 	private InlineHTML successText;
 	private SimpleLink solicitudLink;
-//	private SimpleLink reporteLink;
+	private SimpleLink remitoLink;
 	private SimpleLink aceptar;
 	private String fileName;
+	private String remitoName;
 	private Long idSolicitudCerrada;
 	private Grid solicitudRtf;
 	
@@ -76,9 +77,11 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 		solicitudLink = new SimpleLink("Solicitud link", "#" + History.getToken(), true);
 		aceptar = new SimpleLink(Sfa.constant().aceptar());
 		aceptar.addClickListener(this);
+//		MGR - Remito
+		remitoLink = new SimpleLink("Remito link", "#" + History.getToken(), true);
 	}
 	
-	private void init(List<String> rtfFileNamePorta, List<String> reportes) {
+	private void init(List<String> rtfFileNamePorta) {
 		cierreExitoso.clear();
 		
 		addStyleName("gwt-CerrarSSDialog");
@@ -93,14 +96,20 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 		layout.getRowFormatter().setVerticalAlign(0, HasAlignment.ALIGN_MIDDLE);
 		cierreExitoso.add(layout);
 		solicitudLink.addClickListener(this);
-//		reporteLink.addClickListener(this);
+		remitoLink.addClickListener(this);
 		
-		solicitudRtf = new Grid(1 + rtfFileNamePorta.size(), 2);
+//		MGR - Remito
+		int filas = this.remitoName == null ? 0 : 1;
+		filas += 1 + rtfFileNamePorta.size();
+		solicitudRtf = new Grid(filas, 2);
 		solicitudRtf.setWidget(0, 0, IconFactory.word());
 		solicitudRtf.setWidget(0, 1, solicitudLink);
 		
-//		solicitudRtf.setWidget(1, 0, IconFactory.word());
-//		solicitudRtf.setWidget(1, 1, solicitudLink);
+//		MGR - Remito
+		if(this.remitoName != null){
+			solicitudRtf.setWidget(1, 0, IconFactory.word());
+			solicitudRtf.setWidget(1, 1, remitoLink);
+		}
 		
 		List<String> aux = new ArrayList<String>();
 		for (String fname : rtfFileNamePorta) {
@@ -108,19 +117,13 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 		}
 		Collections.sort(aux);
 		
-		for (int i = 0; i < rtfFileNamePorta.size(); i++) {
+		int i = this.remitoName == null ? 0 : 1;
+		for (;i < rtfFileNamePorta.size(); i++) {
 			solicitudRtf.setWidget(i + 1, 0, IconFactory.word());
 			solicitudRtf.setWidget(i + 1, 1, new SimpleLink(aux.get(i) + ".rtf","#" + History.getToken(),true));
 			((SimpleLink)solicitudRtf.getWidget(i + 1, 1)).addClickListener(this);
 			((SimpleLink)solicitudRtf.getWidget(i + 1, 1)).setTitle(aux.get(i) + ".rtf");
 		}
-		
-//		for(int j = 0; j< reportes.size();j++){
-//			solicitudRtf.setWidget(j + 1, 0, IconFactory.word());
-//			solicitudRtf.setWidget(j + 1, 1, new SimpleLink(reportes.get(j),"#" + History.getToken(),true));
-//			((SimpleLink)solicitudRtf.getWidget(j + 1, 1)).addClickListener(this);
-//			((SimpleLink)solicitudRtf.getWidget(j + 1, 1)).setTitle(reportes.get(j));
-//		}
 		
 		cierreExitoso.add(solicitudRtf);
 		cierreExitoso.setWidth("350px");
@@ -134,8 +137,11 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 		if (sender == aceptar) {
 			hide();
 			aceptarCommand.execute();
-		}else if(sender == solicitudLink) tirarDownload(fileName);
-		else{
+		}else if(sender == solicitudLink){ 
+			tirarDownload(fileName);
+		}else if(sender == remitoLink){
+			tirarDownload(remitoName);
+		}else{
 			boolean find = false;
 			SimpleLink link;
 			
@@ -146,9 +152,7 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 					tirarDownload(link.getTitle());
 				}
 			}
-			
 		}
-
 	}
 
 	private void tirarDownload(final String file){
@@ -247,7 +251,10 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 
 		Collections.sort(rtfFileNamePorta);
 
-		init(rtfFileNamePorta, cierreResult.getReportes());
+//		MGR - Remito
+		this.remitoName = cierreResult.getRemitoRtfFileName();
+		
+		init(rtfFileNamePorta);
 		
 		cierreExitoso.setVisible(true);
 		formButtons.setVisible(true);

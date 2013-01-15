@@ -31,7 +31,6 @@ import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaServi
 import ar.com.nextel.business.cuentas.scoring.legacy.dto.ScoringCuentaLegacyDTO;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
-import ar.com.nextel.business.legacy.financial.dao.FinancialLegacyDAOImpl;
 import ar.com.nextel.business.legacy.financial.dto.EncabezadoCreditoDTO;
 import ar.com.nextel.business.legacy.financial.exception.FinancialSystemException;
 import ar.com.nextel.business.oportunidades.OperacionEnCursoBusinessOperator;
@@ -137,9 +136,7 @@ public class SolicitudBusinessService {
 	private InsertUpdateCuentaConfig insertUpdateCuentaConfig;
 	private CaratulaTransferidaConfig caratulaTransferidaConfig;
 	
-	private FinancialLegacyDAOImpl financialDAOBean;
 	private DespachoSolicitudBusinessOperator despachoSolicitudBusinessOperator;
-	
 	
 //	MGR - Se mueve la creacion de la cuenta
 	private String MENSAJE_ERROR_CREAR_CUENTA= "La SS % quedó pendiente de aprobación, por favor verificar y dar curso manual.";
@@ -160,11 +157,6 @@ public class SolicitudBusinessService {
 	public void setAvalonSystem(
 			@Qualifier("avalonSystemBean")AvalonSystem avalonSystem) {
 		this.avalonSystem = avalonSystem;
-	}
-	@Autowired
-	public void setFinancialDAOBean(
-			@Qualifier("financialDAOBean")FinancialLegacyDAOImpl financialDAOBean) {
-		this.financialDAOBean = financialDAOBean;
 	}
 	
 	@Autowired

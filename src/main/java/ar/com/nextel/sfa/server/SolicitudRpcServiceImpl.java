@@ -1146,6 +1146,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				}
 			}
 			
+//			MGR - Remito - Seteo el nombre del remito
+			result.setRemitoRtfFileName(response.getRtfFileNameRemito());
+			
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);

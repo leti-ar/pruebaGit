@@ -12,7 +12,7 @@ public class GeneracionCierreResultDto implements IsSerializable {
 	private String rtfFileName;
 	private List<String> rtfFileNamePortabilidad;
 	private List<String> rtfFileNamePortabilidad_adj;
-	private List<String> reportes = new ArrayList<String>();
+	private String remitoRtfFileName;
 	
 	public GeneracionCierreResultDto() {
 		error = false;
@@ -63,14 +63,14 @@ public class GeneracionCierreResultDto implements IsSerializable {
 		this.rtfFileNamePortabilidad_adj = rtfFileNamePortabilidad_adj;
 	}
 
-	public List<String> getReportes() {
-		return reportes;
+	public String getRemitoRtfFileName() {
+		return remitoRtfFileName;
 	}
 
-	public void setReportes(List<String> reportes) {
-		this.reportes = reportes;
+	public void setRemitoRtfFileName(String remitoRtfFileName) {
+		this.remitoRtfFileName = remitoRtfFileName;
 	}
-	
+
 //	MGR - Refactorizacion del cierre
 	public void addMessage(String msg){
 		MessageDto mens = new MessageDto();
