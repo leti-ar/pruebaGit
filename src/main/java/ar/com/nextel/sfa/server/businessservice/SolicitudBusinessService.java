@@ -455,7 +455,7 @@ public class SolicitudBusinessService {
 	public SolicitudServicio saveSolicitudServicio(SolicitudServicioDto solicitudServicioDto,
 			MapperExtended mapper) {
 		SolicitudServicio ss = this.mapperSSDtoToSolicitudServicio(solicitudServicioDto,mapper);
-		this.saveSolicituServicio(ss);
+		this.saveSolicitudServicio(ss);
 		return ss;
 	}
 	 
@@ -819,14 +819,18 @@ public class SolicitudBusinessService {
 				}
 				
 				//mover inventario si se retira en sucursal
-				List<String> mensajesMovimientoInventario = movimientoInventario(solicitudServicio,vendedor);
-				MessageList msgs = new MessageList();
-				for (String str : mensajesMovimientoInventario) {
-					MessageImpl msg = new MessageImpl();
-					msg.setDescription(str);
-					msgs.addMesage(msg);
+			    Vendedor vendedorSalon= solicitudServicio.getVendedor();
+				if (vendedorSalon.isVendedorSalon() && solicitudServicio.getRetiraEnSucursal()) {
+					List<String> mensajesMovimientoInventario = movimientoInventario(solicitudServicio);
+					MessageList msgs = new MessageList();
+					for (String str : mensajesMovimientoInventario) {
+						MessageImpl msg = new MessageImpl();
+						msg.setDescription(str);
+						msgs.addMesage(msg);
+					}
+					response.setMessages(msgs);
 				}
-				response.setMessages(msgs);
+				
 			}
 		
 		} else {
@@ -1408,7 +1412,7 @@ public class SolicitudBusinessService {
 	}
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-	public SolicitudServicio saveSolicituServicio(SolicitudServicio ss){
+	public SolicitudServicio saveSolicitudServicio(SolicitudServicio ss){
 		repository.save(ss);
 		return ss;
 	}
@@ -1423,11 +1427,12 @@ public class SolicitudBusinessService {
      * en caso contrario
      */
     public List<String> validarSIM_IMEI(SolicitudServicio solicitudServicio) {
-    	return this.despachoSolicitudBusinessOperator.validarSIM_IMEI(solicitudServicio);
+    	List<String> mensajes = this.despachoSolicitudBusinessOperator.validarSIM_IMEI(solicitudServicio);
+		return mensajes;
     }
 
-	public List<String> movimientoInventario(SolicitudServicio ss, Vendedor vendedor){
-		return this.despachoSolicitudBusinessOperator.movimientoInventario(ss, vendedor);
+	public List<String> movimientoInventario(SolicitudServicio ss){
+		return this.despachoSolicitudBusinessOperator.movimientoInventario(ss);
 	};
 	
 //	MGR - Validaciones previas a la facturacion

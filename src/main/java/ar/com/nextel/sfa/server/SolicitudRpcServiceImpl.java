@@ -1044,7 +1044,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 			completarDomiciliosSolicitudTransferencia(solicitudServicioDto);
 //			MGR - Parche de emergencia
-			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
+//			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
+			// no es suficiente con mappear del Dto a la entidad sin grabarla?
+			solicitudServicio = solicitudBusinessService.mapperSSDtoToSolicitudServicio(solicitudServicioDto, mapper);
 			
 //			MGR - Parche de emergencia
 			if (!solicitudServicio.getGrupoSolicitud().isGrupoTransferencia()) {
@@ -1073,7 +1075,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				validarSIMRepetidos(solicitudServicio, result);
 			}
 
-			solicitudServicio = solicitudBusinessService.saveSolicituServicio(solicitudServicio);
+			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicio);
 
 			//MGR - #3123 - Si ninguno fallo por alguna de las validaciones anteriores
 //			MGR - Refactorizacion del cierre
