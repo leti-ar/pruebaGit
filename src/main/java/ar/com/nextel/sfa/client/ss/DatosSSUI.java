@@ -527,6 +527,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 								public void execute() {
 									removeDetalleLineaSSRow(row);
 									asignarNroSSPortabilidad();
+									if (controller.getEditarSSUIData().isEquiposAccesorios()) {
+										editarSSUIData.getRetiraEnSucursal().setEnabled(!(detalleSS.getRowCount() - 1 > 0));
+									}
 								};
 							}, ModalMessageDialog.getCloseCommand());
 						} else if (col == 3) {
@@ -569,6 +572,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 										public void execute() {
 											removeDetalleLineaSSRow(row);
 											asignarNroSSPortabilidad();
+											if (controller.getEditarSSUIData().isEquiposAccesorios()) {
+												editarSSUIData.getRetiraEnSucursal().setEnabled(!(detalleSS.getRowCount() - 1 > 0));
+											}
 										};
 									}, ModalMessageDialog.getCloseCommand());
 						}
@@ -1035,7 +1041,8 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		editarSSUIData.getAclaracion().setEnabled(controller.isEditable());
 		editarSSUIData.getEmail().setEnabled(controller.isEditable());
 		if (controller.getEditarSSUIData().isEquiposAccesorios()) {
-			editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
+			//editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
+			editarSSUIData.getRetiraEnSucursal().setEnabled(detalleSS.getRowCount()>0);
 		}
 	}
 	
@@ -1107,4 +1114,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		editarSSUIData.getSucursalOrigen().setEnabled(habilitar);
 		editarSSUIData.getOrdenCompra().setEnabled(habilitar);
 	}
+
+	public FlexTable getDetalleSS() {
+		return detalleSS;
+	}
+	
 }

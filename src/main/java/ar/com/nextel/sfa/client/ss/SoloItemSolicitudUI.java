@@ -156,7 +156,7 @@ public class SoloItemSolicitudUI extends Composite {
 		//solo va a estar visible este panel en el caso de que este chequeado el retiro en sucursal
 		this.visibleImeiSimRetiroSucursal = (retirar && esEquipoAccesorio);
 		
-		controller.getEditarSSUIData().getRetiraEnSucursal().setEnabled(false);
+		//controller.getEditarSSUIData().getRetiraEnSucursal().setEnabled(false);
 		return this.setLayout(layout);	
 	}
 	

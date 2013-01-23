@@ -1090,6 +1090,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 											+ "</span><br>");
 								}
 								MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), MessageDialog.getCloseCommand());
+								editarSSUIData.getRetiraEnSucursal().setEnabled(!(datos.getDetalleSS().getRowCount() - 1 > 0 ));
 							}
 						}
 
@@ -1099,6 +1100,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 						}
 					});
 		}else saveSolicitudServicio();
+		
+		
 	}
 
 	private void saveSolicitudServicio(){
@@ -1129,6 +1132,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 										+ "</span><br>");
 							}
 							MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), MessageDialog.getCloseCommand());
+							editarSSUIData.getRetiraEnSucursal().setEnabled(!(datos.getDetalleSS().getRowCount() - 1 > 0 ));
 						}
 					}
 
