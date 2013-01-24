@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ar.com.nextel.model.solicitudes.beans.IMEI;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -31,12 +30,10 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, ClickListener {
@@ -98,6 +95,11 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		aceptar.addClickListener(this);
 		cerrar.addClickListener(this);
 		
+		initTiposOrden(controller);
+	}
+
+
+	public void initTiposOrden(EditarSSUIController controller) {
 		controller.getLineasSolicitudServicioInitializer(initTiposOrdenCallback());
 	}
 	
@@ -214,10 +216,12 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		};
 	}
 
-	private DefaultWaitCallback initTiposOrdenCallback() {
+	private DefaultWaitCallback<LineasSolicitudServicioInitializer> initTiposOrdenCallback() {
 		return new DefaultWaitCallback<LineasSolicitudServicioInitializer>() {
 			public void success(LineasSolicitudServicioInitializer initializer) {
 				List<TipoSolicitudDto> tiposSS = new ArrayList<TipoSolicitudDto>();
+				idGrupoSolicitudLoaded = null;
+				tiposSolicitudes.clear();
 				tiposSolicitudesPorGrupo = initializer.getTiposSolicitudPorGrupo();
 				for (Map.Entry<Long, List<TipoSolicitudDto>> tiposSSDeGrupo : tiposSolicitudesPorGrupo
 						.entrySet()) {

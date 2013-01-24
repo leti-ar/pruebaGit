@@ -21,6 +21,8 @@ public class ClientContext {
 	private ClienteNexusDto clienteNexus;
 	//MGR - #1050
 	private HashMap<String, Long> knownInstance;
+    public static final String ST_PARAMS_KEY_RECARGA_TIPO_ORDEN = "RecargaTipoOrden";
+    public static final String ST_PARAMS_VALUE_TRUE = "true";
 	
 	private ClientContext() {
 	}

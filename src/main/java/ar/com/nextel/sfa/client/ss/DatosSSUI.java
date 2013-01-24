@@ -693,15 +693,22 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				}
 			};
 			itemSolicitudDialog.setAceptarCommand(aceptarCommand);
-
 			// TODO: Carga los datos de inizializacion del componente de portabilidad
 			itemSolicitudDialog.cargarPortabilidadInitializer(portabilidadInitializer);
+		}
+		if (recargaTiposOrden()) {
+			itemSolicitudDialog.initTiposOrden(controller);
+			ClientContext.getInstance().getSecretParams().remove(ClientContext.ST_PARAMS_KEY_RECARGA_TIPO_ORDEN);
 		}
 		itemSolicitudDialog.cargarPersona(portabilidadInitializer.getPersona());
 		itemSolicitudDialog.resetearPanelPortabilidad();
 		itemSolicitudDialog.setCuentaEmpresa(editarSSUIData.getCuenta().isEmpresa());
 
 		itemSolicitudDialog.show(linea);
+	}
+
+	private boolean recargaTiposOrden() {
+		return ClientContext.ST_PARAMS_VALUE_TRUE.equals(ClientContext.getInstance().getSecretParams().get(ClientContext.ST_PARAMS_KEY_RECARGA_TIPO_ORDEN));
 	}
 
 	/**Verifica si se puede aplicar un descuento al item seleccionado*/

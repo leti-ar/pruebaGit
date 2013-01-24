@@ -109,6 +109,7 @@ public class CambioDeSucursalPopup extends NextelDialog {
 
 				public void onSuccess(Void result) {
 					ClientContext.getInstance().getVendedor().setIdSucursal(sucursalIdSelected);
+					ClientContext.getInstance().getSecretParams().put(ClientContext.ST_PARAMS_KEY_RECARGA_TIPO_ORDEN, ClientContext.ST_PARAMS_VALUE_TRUE);
 					hide();
 					cleanForm();
 					WaitWindow.hide();
