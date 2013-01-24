@@ -861,9 +861,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
 					errors = editarSSUIData.validarTransferenciaParaGuardar(datosTranferencia.getContratosSSChequeados());
 				}else{
-					//errors = editarSSUIData.validarParaGuardar();
-					editarSSUIData.validarParaGuardar();
-					
+//					MGR - Validacion SIM_IMEI
+					errors = editarSSUIData.validarParaGuardar();
 				}
 				if (errors.isEmpty()) {
 					if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
@@ -1100,8 +1099,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 						}
 					});
 		}else saveSolicitudServicio();
-		
-		
 	}
 
 	private void saveSolicitudServicio(){

@@ -166,7 +166,6 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
     //finde analisis
 	private CheckBox retiraEnSucursal;
     private RegexTextBox numeroSSWeb; //Mejoras Perfil Telemarketing. REQ#2 - Nro de SS Web en la Solicitud de Servicio.
-    private boolean waitCallback;
     
 	public EditarSSUIData(EditarSSUIController controller) {
 		this.controller = controller;
@@ -903,18 +902,6 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				}
 			}
 		}
-		
-		if ((solicitudServicio.getGrupoSolicitud().isEquiposAccesorios())&& (solicitudServicio.getRetiraEnSucursal()) ){
-	            controller.validarSIM_IMEI(solicitudServicio, new DefaultWaitCallback<List<String>>() {
-					public void success(List<String> result) {
-						if (!result.isEmpty()) {
-							ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-							ErrorDialog.getInstance().show(result, false);
-						}
-					}
-				});
-		}
-		
 		
 		validator.fillResult();
 		return validator.getErrors();

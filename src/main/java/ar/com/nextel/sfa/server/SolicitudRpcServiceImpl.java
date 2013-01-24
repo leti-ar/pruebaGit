@@ -686,7 +686,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		// TODO: Portabilidad
 		long contadorPortabilidad = 0;
 
-
 		//List<String>validacionStock=solicitudBusinessService.validarSIM_IMEI(solicitudServicio);
 		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
 			if(linea.getPortabilidad() != null) contadorPortabilidad++;
@@ -697,19 +696,20 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		try {
 
 			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
-			solicitudServicioDto = mapper.map(solicitudSaved, SolicitudServicioDto.class);
-			
 			Vendedor vendedor = sessionContextLoader.getSessionContext().getVendedor();
-			if (vendedor.isADMCreditos()) {
-				//Valida los predicados y el triptico
-				CreateSaveSSResponse response = solicitudBusinessService.validarPredicadosGuardarSS(solicitudSaved);
-				resultDto.setError(response.getMessages().hasErrors());
-				resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
-				//larce
-				//larce - Comentado para salir solo con cierre
-//				solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,true);
-			}
 
+//			MGR - Validacion SIM_IMEI - Valida los predicados que correspondan
+			CreateSaveSSResponse response = solicitudBusinessService.validarPredicadosGuardarSS(solicitudSaved, vendedor);
+			resultDto.setError(response.getMessages().hasErrors());
+			resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
+			solicitudServicioDto = mapper.map(response.getSolicitudServicio(), SolicitudServicioDto.class);
+			
+			//larce
+			//larce - Comentado para salir solo con cierre
+//			if (vendedor.isADMCreditos()) {
+//				solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,true);
+//			}
+				
 			if (solicitudServicioDto.getId() != null) {
 				if (solicitudServicioDto.getHistorialEstados() != null) {
 					if(solicitudServicioDto.getHistorialEstados().size() > 0){
@@ -1516,8 +1516,21 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			//el resto de las validaciones
 			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(
 					solicitudServicioDto, mapper);
-			SolicitudServicioDto solicitudDto = mapper.map(solicitudSaved, SolicitudServicioDto.class);
-
+			Vendedor vendedor = sessionContextLoader.getSessionContext().getVendedor();
+			
+//			MGR - Validacion SIM_IMEI
+			CreateSaveSSResponse response = solicitudBusinessService.validarPredicadosGuardarSS(solicitudSaved, vendedor);
+			resultDto.setError(response.getMessages().hasErrors());
+			resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
+			
+			solicitudServicioDto = mapper.map(response.getSolicitudServicio(), SolicitudServicioDto.class);
+			
+			//larce
+//			//larce - Comentado para salir solo con cierre
+//			if (vendedor.isADMCreditos()) {
+//				solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,true);
+//			}
+			
 			if (solicitudServicioDto.getId() != null) {
 				if (solicitudServicioDto.getHistorialEstados() != null) {
 					if(solicitudServicioDto.getHistorialEstados().size() > 0){
@@ -1528,18 +1541,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				}
 			}
 			
-			resultDto.setSolicitud(solicitudDto);
-
-			Vendedor vendedor = sessionContextLoader.getSessionContext().getVendedor();
-			if (vendedor.isADMCreditos()) {
-				//Valida los predicados y el triptico
-				CreateSaveSSResponse response = solicitudBusinessService.validarPredicadosGuardarSS(solicitudSaved);
-				resultDto.setError(response.getMessages().hasErrors());
-				resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
-				//larce
-				//larce - Comentado para salir solo con cierre
-//				solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,true);
-			}
+			resultDto.setSolicitud(solicitudServicioDto);
+			
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);

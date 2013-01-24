@@ -892,8 +892,8 @@ public class SolicitudBusinessService {
 	}
 	
 	//MGR - ISDN 1824
-	public CreateSaveSSResponse validarPredicadosGuardarSS(SolicitudServicio solicitudServicio) {
-		GuardarRequest guardarRequest = new GuardarRequest(solicitudServicio);
+	public CreateSaveSSResponse validarPredicadosGuardarSS(SolicitudServicio solicitudServicio, Vendedor vendedor) {
+		GuardarRequest guardarRequest = new GuardarRequest(solicitudServicio, vendedor);
 		CreateSaveSSResponse response = guardarBusinessOperator.validarPredicadosGuardarSS(guardarRequest);
 		return response;
 	}
