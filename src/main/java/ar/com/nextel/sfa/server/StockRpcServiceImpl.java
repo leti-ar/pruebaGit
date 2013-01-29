@@ -12,7 +12,6 @@ import ar.com.nextel.business.stock.ResultadoValidarStock;
 import ar.com.nextel.business.stock.StockService;
 import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.components.message.Message;
-import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
 import ar.com.nextel.sfa.client.StockRpcService;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
@@ -32,8 +31,7 @@ public class StockRpcServiceImpl extends RemoteService implements StockRpcServic
 	public List<TipoSolicitudDto> obtenerTiposDeSolicitudParaVendedor(VendedorDto vendedorDto)
 			throws RpcExceptionMessages {
 		List<TipoSolicitudDto> listBoxItems = null;
-		Vendedor vendedor = mapper.map(vendedorDto, Vendedor.class);
-		List<TipoSolicitud> tiposDeSolicitud = stockService.getTiposSolicitudesServicio(vendedor,vendedorDto.getIdSucursal());
+		List<TipoSolicitud> tiposDeSolicitud = stockService.getTiposSolicitudesServicio(vendedorDto.getId(),vendedorDto.getIdSucursal());
 		listBoxItems = mapper.convertList(tiposDeSolicitud, TipoSolicitudDto.class);
 		return listBoxItems;
 	}
