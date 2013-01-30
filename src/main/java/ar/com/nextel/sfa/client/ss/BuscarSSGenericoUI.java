@@ -4,7 +4,7 @@ import ar.com.nextel.sfa.client.widget.ApplicationUI;
 
 /**
  * Esta es la clase "padre" de BuscarSSCerradasUI y BuscarSSAnalistaCreditosUI, todo las operaciones que haga 
- * esta clase la utilizarán sus hijos, como al exportacion a excel, la grilla de estados, etc..
+ * esta clase la utilizarï¿½n sus hijos, como al exportacion a excel, la grilla de estados, etc..
  *
  * @author fernaluc
  *
@@ -16,6 +16,7 @@ public abstract class BuscarSSGenericoUI extends ApplicationUI{
 	protected BuscarSSCerradasResultUI buscarSSCerradasResultPanel;
 	protected BuscarSSTotalesResultUI buscarSSTotalesResultUI;
 	protected CambiosSSCerradasResultUI cambiosSSCerradasResultUI;
+	protected ExportarRemitoSSResultUI exportarRemitoSSResultUI;
 	
 	public abstract boolean esAnalistaCreditos();
 	
@@ -24,12 +25,14 @@ public abstract class BuscarSSGenericoUI extends ApplicationUI{
 		buscarSSTotalesResultUI = new BuscarSSTotalesResultUI();    
 		exportarExcelSSResultUI = new ExportarExcelSSResultUI();   
 		cambiosSSCerradasResultUI = new CambiosSSCerradasResultUI();
+		exportarRemitoSSResultUI = new ExportarRemitoSSResultUI();
 		buscarSSTotalesResultUI.setVisible(false);
 		exportarExcelSSResultUI.setVisible(false);
 		cambiosSSCerradasResultUI.setVisible(false);
 		buscarSSCerradasResultPanel.setExportarExcelSSResultUI(exportarExcelSSResultUI);
 		buscarSSCerradasResultPanel.setBuscarSSTotalesResultUI(buscarSSTotalesResultUI);
 		buscarSSCerradasResultPanel.setCambiosSSCerradasResultUI(cambiosSSCerradasResultUI);
+		//buscarSSCerradasResultPanel.setExportarRemitoSSResultUI(exportarRemitoSSResultUI);
 		
 		mainPanel.add(exportarExcelSSResultUI);
 		mainPanel.add(buscarSSCerradasResultPanel);

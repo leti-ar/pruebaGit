@@ -40,6 +40,7 @@ import ar.com.nextel.business.legacy.shift.exception.ShiftSystemException;
 import ar.com.nextel.business.legacy.vantive.VantiveSystem;
 import ar.com.nextel.business.legacy.vantive.dto.EstadoSolicitudServicioCerradaDTO;
 import ar.com.nextel.business.personas.reservaNumeroTelefono.result.ReservaNumeroTelefonoBusinessResult;
+import ar.com.nextel.business.reportes.ReporteRemito;
 import ar.com.nextel.business.shift.InformacionNumeroDTO;
 import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSResponse;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
@@ -49,6 +50,7 @@ import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCie
 import ar.com.nextel.business.solicitudes.generacionCierre.result.CierreYPassResult;
 import ar.com.nextel.business.solicitudes.negativeFiles.NegativeFilesBusinessOperator;
 import ar.com.nextel.business.solicitudes.negativeFiles.result.NegativeFilesBusinessResult;
+import ar.com.nextel.business.solicitudes.report.ReportBusinessOperator;
 import ar.com.nextel.business.solicitudes.report.SolicitudPortabilidadPropertiesReport;
 import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepository;
 import ar.com.nextel.business.solicitudes.search.dto.SolicitudServicioCerradaSearchCriteria;
@@ -183,6 +185,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private DefaultRetriever globalParameterRetriever;
 	private MailSender mailSender;
 	private CuentaBusinessService cuentaBusinessService;
+	private ReportBusinessOperator reportBusinessOperator;
 
 	//MELI
 	private DefaultSequenceImpl tripticoNextValue;
@@ -249,6 +252,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		mailSender= (MailSender)context.getBean("mailSender");
 		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");
 		facturacionSolServicioService = (FacturacionSolServicioService) context.getBean("facturacionSolServicioServiceBean");
+		reportBusinessOperator = (ReportBusinessOperator) context.getBean("reportBusinessOperator");
 
 	}
 
@@ -1486,6 +1490,25 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
+		return true;
+	}
+	
+	public boolean crearRemito(Long idSolicitud) throws RpcExceptionMessages{
+		SolicitudServicio solicitudServicio = solicitudServicioRepository
+				.getSolicitudServicioPorId(idSolicitud);
+			GeneracionCierreResponse response = new GeneracionCierreResponse();
+			try {
+				ReporteRemito rr = new ReporteRemito();
+				rr.setFinancialSystem(financialSystem);
+				rr.setRepository(repository);
+				rr.setReportBusinessOperator(reportBusinessOperator);
+				String nombreRemito = rr.generarRemito(solicitudServicio, false);
+				response.setRtfFileNameRemito(nombreRemito);
+			} catch (Exception e) {
+				AppLogger.error(e);
+				throw ExceptionUtil.wrap(e);
+			}
+		
 		return true;
 	}
 

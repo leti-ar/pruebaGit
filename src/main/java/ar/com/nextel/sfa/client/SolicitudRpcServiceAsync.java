@@ -41,6 +41,7 @@ import ar.com.nextel.sfa.client.initializer.LineasSolicitudServicioInitializer;
 import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.client.util.PortabilidadResult;
+import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -233,4 +234,6 @@ public interface SolicitudRpcServiceAsync {
 	
 //	MGR - Validaciones previas a la facturacion
 	public void validarParaFacturar(SolicitudServicioDto solicitudServicioDto, AsyncCallback<List<MessageDto>> callback);
+
+	public void crearRemito(Long idSolicitud, AsyncCallback<Boolean> defaultWaitCallback);
 }

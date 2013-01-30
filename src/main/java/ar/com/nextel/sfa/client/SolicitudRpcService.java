@@ -248,5 +248,7 @@ public interface SolicitudRpcService extends RemoteService {
 	
 //	MGR - Validaciones previas a la facturacion
 	List<MessageDto> validarParaFacturar(SolicitudServicioDto solicitudServicioDto)	throws RpcExceptionMessages;
+
+	boolean crearRemito(Long idSolicitud) throws RpcExceptionMessages;
 }
 

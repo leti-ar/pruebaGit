@@ -253,6 +253,11 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.crearArchivo(idSolicitud, enviarEmail, defaultWaitCallback);
 	}
+	
+	public void crearRemito(Long idSolicitud, DefaultWaitCallback<Boolean> defaultWaitCallback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.crearRemito(idSolicitud, defaultWaitCallback);
+	}
 
 	public void getPlanesPorTipoPlan(Long idTipoPlan, Long idCuenta,
 			DefaultWaitCallback<List<PlanDto>> defaultWaitCallback) {

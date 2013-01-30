@@ -8,7 +8,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class SolicitudServicioCerradaResultDto implements IsSerializable {
 
-	private Long idSolicitudServicio;
+	private SolicitudServicioDto solicitudServicio;
 	private String numeroSS;
 	private String numeroCuenta;
 	private String razonSocialCuenta;
@@ -41,6 +41,7 @@ public class SolicitudServicioCerradaResultDto implements IsSerializable {
 	private Boolean enCarga;
 	private String apellidoNombreVendedor;
 	private String ultimoEstado;
+	private RemitoDTO remito;
 
 	/** 
 	 * 
@@ -50,13 +51,15 @@ public class SolicitudServicioCerradaResultDto implements IsSerializable {
         return !(("S".equals(numeroCuentaAlCierreSS.substring(0,1))) || ("V".equals(numeroCuentaAlCierreSS.substring(0,1))));       
     }
 
-	public Long getIdSolicitudServicio() {
-		return idSolicitudServicio;
+	public SolicitudServicioDto getSolicitudServicio() {
+		return solicitudServicio;
 	}
 
-	public void setIdSolicitudServicio(Long idSolicitudServicio) {
-		this.idSolicitudServicio = idSolicitudServicio;
+
+	public void setSolicitudServicio(SolicitudServicioDto solicitudServicio) {
+		this.solicitudServicio = solicitudServicio;
 	}
+
 
 	public String getNumeroSS() {
 		return numeroSS;
@@ -305,4 +308,13 @@ public class SolicitudServicioCerradaResultDto implements IsSerializable {
 	public void setUltimoEstado(String ultimoEstado) {
 		this.ultimoEstado = ultimoEstado;
 	}
+
+	public RemitoDTO getRemito() {
+		return remito;
+	}
+
+	public void setRemito(RemitoDTO remito) {
+		this.remito = remito;
+	}
+
 }

@@ -97,6 +97,9 @@ public class SolicitudServicioDto implements IsSerializable {
 	private FacturaDto factura;
 	private String customerNumberFactura;
 	
+	private RemitoDTO remito;
+	
+	
     public SolicitudServicioDto() {
 		solicitudServicioGeneracion = new SolicitudServicioGeneracionDto();
 	}
@@ -611,4 +614,13 @@ public class SolicitudServicioDto implements IsSerializable {
         LineaSolicitudServicioDto linea = this.lineas.get(0);
         return linea.getTerminoPago().isCuentaCorriente();
 	}
+
+	public RemitoDTO getRemito() {
+		return remito;
+	}
+
+	public void setRemito(RemitoDTO remito) {
+		this.remito = remito;
+	}
+	
 }
