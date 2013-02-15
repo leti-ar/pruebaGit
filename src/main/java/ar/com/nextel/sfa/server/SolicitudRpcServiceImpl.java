@@ -1234,7 +1234,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					solicitudBusinessService.generarChangeLog(solicitudServicioDto.getId(), solicitudServicio
 							.getVendedor().getId());
 				}
-				result.setRtfFileName(getReporteFileName(solicitudServicio));
+				result.setReportSSFileName(getReporteFileName(solicitudServicio));
 			}
 			
 			result.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
@@ -1278,10 +1278,10 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		String filename;
 		if (solicitudServicio.getCuenta().isCliente()) {
 			filename = solicitudServicio.getCuenta().getId().toString() + "-5-"
-					+ solicitudServicio.getNumero() + ".rtf";
+					+ solicitudServicio.getNumero() + ".pdf";
 		} else {
 			filename = solicitudServicio.getCuenta().getId().toString() + "-5-"
-					+ solicitudServicio.getNumero() + ".rtf";
+					+ solicitudServicio.getNumero() + ".pdf";
 		}
 		return filename;
 	}

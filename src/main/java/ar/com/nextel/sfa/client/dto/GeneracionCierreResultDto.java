@@ -9,7 +9,7 @@ public class GeneracionCierreResultDto implements IsSerializable {
 
 	private List<MessageDto> messages;
 	private boolean error;
-	private String rtfFileName;
+	private String reportSSFileName;
 	private List<String> rtfFileNamePortabilidad;
 	private List<String> rtfFileNamePortabilidad_adj;
 	
@@ -36,12 +36,12 @@ public class GeneracionCierreResultDto implements IsSerializable {
 		this.error = error;
 	}
 
-	public String getRtfFileName() {
-		return rtfFileName;
+	public String getReportSSFileName() {
+		return reportSSFileName;
 	}
 
-	public void setRtfFileName(String rtfFileName) {
-		this.rtfFileName = rtfFileName;
+	public void setReportSSFileName(String reportSSFileName) {
+		this.reportSSFileName = reportSSFileName;
 	}
 
 	public List<String> getRtfFileNamePortabilidad() {
