@@ -1287,7 +1287,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		}
 		
 		//MGR - Los Vendedores del tipo retail generan pdf, el resto, rtf
-        if(ClientContext.getInstance().getVendedor().isRetail())
+        if(sessionContextLoader.getVendedor().isRetail())
         	filename += Report.EXT_PDF;
         else
         	filename += Report.EXT_RTF;
