@@ -16,6 +16,8 @@ import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -45,6 +47,8 @@ public class StockUIDlg extends NextelDialog {
 	private Anchor cerrar = new Anchor(Sfa.constant().cerrar());
 	public static Long idOpp;
 	public static boolean fromMenu = true;
+	public String ANCHO_DIALOGO = "500";
+	
 	public StockUIDlg(String title) {
 		super(title, false, true);
 		init();
@@ -87,8 +91,8 @@ public class StockUIDlg extends NextelDialog {
 
 	public void init() {
 		buscadorDocumentoPanel = new SimplePanel();
-		buscadorDocumentoPanel.setWidth("320");
-		buscadorDocumentoPanel.setHeight("90");
+		buscadorDocumentoPanel.setWidth(ANCHO_DIALOGO);
+//		buscadorDocumentoPanel.setHeight("90");
 
 		buscadorDocumentoTable = new FlexTable();
 		botonesTable = new FlexTable();
@@ -133,9 +137,10 @@ public class StockUIDlg extends NextelDialog {
 		
 		//initCombos();
 
-		tipoOrdenLst.setWidth("220");
-		listaPrecioLst.setWidth("220");
-		cantItemsLst.setWidth("220");
+		tipoOrdenLst.setWidth(ANCHO_DIALOGO);
+		listaPrecioLst.setWidth(ANCHO_DIALOGO);
+		cantItemsLst.setWidth(ANCHO_DIALOGO);
+		
 		listaPrecioLst.addChangeHandler(new ChangeHandler() {
 
 			public void onChange(ChangeEvent event) {
