@@ -28,9 +28,8 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
     public static final String TIPO_VENDEDOR_MINORISTA = "TIPO_VENDEDOR_MINORISTA";
     public static final String TIPO_VENDEDOR_MAYORISTA = "TIPO_VENDEDOR_MAYORISTA";
     public static final String TIPO_VENDEDOR_SALON = "TIPO_VENDEDOR_SALON";    
+    public static final String TIPO_VENDEDOR_RETAIL = "TIPO_VENDEDOR_RETAIL";
 
-
-    
     public boolean isEECC(){
     	HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
     	if(instancias != null && this.getTipoVendedor() != null){
@@ -85,6 +84,14 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
 		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
 		if(instancias != null && this.getTipoVendedor() != null){
 			return instancias.get(TIPO_VENDEDOR_ADM_CREDITOS).equals(this.getTipoVendedor().getId());
+		}
+		return false;
+	}
+	
+	public boolean isRetail(){
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias != null && this.getTipoVendedor() != null){
+			return instancias.get(TIPO_VENDEDOR_RETAIL).equals(this.getTipoVendedor().getId());
 		}
 		return false;
 	}

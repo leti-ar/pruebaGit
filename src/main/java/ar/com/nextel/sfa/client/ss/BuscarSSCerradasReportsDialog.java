@@ -6,6 +6,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
@@ -61,8 +62,16 @@ public class BuscarSSCerradasReportsDialog extends NextelDialog{
 	 */
 	public void show(SolicitudServicioCerradaResultDto solicitudServicio){
 		idSolicitud = solicitudServicio.getId();
+		
+		String reportFileName = solicitudServicio.getIdCuenta().toString() + "-5-" + solicitudServicio.getNumeroSS();
+		//MGR - Los Vendedores del tipo retail generan pdf, el resto, rtf
+        if(ClientContext.getInstance().getVendedor().isRetail())
+        	reportFileName += ".pdf";
+        else
+        	reportFileName += ".rtf";
+		
 		// Setea el nombre del archivo de la solicitud de servicio
-		setFileSolicitudReport(solicitudServicio.getIdCuenta().toString() + "-5-" + solicitudServicio.getNumeroSS() + ".pdf");
+		setFileSolicitudReport(reportFileName);
 		// Genera los parametros y los nombres de los archivos de las solicitudes de portabilidad
 		SolicitudRpcService.Util.getInstance().generarParametrosPortabilidadRTF(idSolicitud, 
 				new DefaultWaitCallback<List<String>>() {
