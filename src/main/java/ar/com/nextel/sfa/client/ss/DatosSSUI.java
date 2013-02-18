@@ -462,8 +462,17 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	 */
 	private void cargarSA(List<ServicioAdicionalLineaSolicitudServicioDto> sas){
 		for (int i=0; i < editarSSUIData.getSolicitudServicio().getLineas().size(); i++) {
-			editarSSUIData.getSolicitudServicio().getLineas().get(i).setServiciosAdicionales(sas);
+			editarSSUIData.getSolicitudServicio().getLineas().get(i).setServiciosAdicionales(clonarSA(sas));
 		} 
+	}
+	
+	private List<ServicioAdicionalLineaSolicitudServicioDto> clonarSA(List<ServicioAdicionalLineaSolicitudServicioDto> sas){
+		List<ServicioAdicionalLineaSolicitudServicioDto> sasClonado = new ArrayList<ServicioAdicionalLineaSolicitudServicioDto>();
+		for (ServicioAdicionalLineaSolicitudServicioDto servicioAdicionalLineaSolicitudServicioDto : sas) {
+			sasClonado.add(servicioAdicionalLineaSolicitudServicioDto);
+		}
+		return sasClonado;
+	
 	}
 	
 	/**
