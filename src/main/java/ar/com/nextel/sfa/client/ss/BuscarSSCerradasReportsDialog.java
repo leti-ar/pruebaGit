@@ -93,9 +93,16 @@ public class BuscarSSCerradasReportsDialog extends NextelDialog{
 									else if(sender == lnkSS) descargarArchivo(getFileSolicitudReport());
 									else{
 										boolean encontro = false;
+										String extension = null;
+										//MGR - Los Vendedores del tipo retail generan pdf, el resto, rtf
+								        if(ClientContext.getInstance().getVendedor().isRetail())
+								        	extension = ".pdf";
+								        else
+								        	extension = ".rtf";
+								        
 										for(int i = 0; i < portabilidadFileNames.size() && !encontro; i++){
 											if(sender == gridLayout.getWidget(i + 1, 1)){
-												descargarArchivo(((SimpleLink)gridLayout.getWidget(i + 1, 1)).getTitle() + ".rtf");
+												descargarArchivo(((SimpleLink)gridLayout.getWidget(i + 1, 1)).getTitle() + extension);
 												encontro = true;
 											}
 										}

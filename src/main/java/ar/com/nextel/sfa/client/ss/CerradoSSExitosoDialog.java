@@ -6,6 +6,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
@@ -77,7 +78,7 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 		aceptar.addClickListener(this);
 	}
 	
-	private void init(List<String> rtfFileNamePorta) {
+	private void init(List<String> fileNamePorta) {
 		cierreExitoso.clear();
 		
 		addStyleName("gwt-CerrarSSDialog");
@@ -93,21 +94,28 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 		cierreExitoso.add(layout);
 		solicitudLink.addClickListener(this);
 		
-		solicitudReport = new Grid(1 + rtfFileNamePorta.size(), 2);
+		solicitudReport = new Grid(1 + fileNamePorta.size(), 2);
 		solicitudReport.setWidget(0, 0, IconFactory.word());
 		solicitudReport.setWidget(0, 1, solicitudLink);
 		
+		//MGR - Los Vendedores del tipo retail generan pdf, el resto, rtf
+		String extension = null;
+        if(ClientContext.getInstance().getVendedor().isRetail())
+        	extension = ".pdf";
+        else
+        	extension = ".rtf";
+        
 		List<String> aux = new ArrayList<String>();
-		for (String fname : rtfFileNamePorta) {
+		for (String fname : fileNamePorta) {
 			aux.add(fname.substring(0,fname.lastIndexOf(".")));
 		}
 		Collections.sort(aux);
 		
-		for (int i = 0; i < rtfFileNamePorta.size(); i++) {
+		for (int i = 0; i < fileNamePorta.size(); i++) {
 			solicitudReport.setWidget(i + 1, 0, IconFactory.word());
-			solicitudReport.setWidget(i + 1, 1, new SimpleLink(aux.get(i) + ".rtf","#" + History.getToken(),true));
+			solicitudReport.setWidget(i + 1, 1, new SimpleLink(aux.get(i) + extension,"#" + History.getToken(),true));
 			((SimpleLink)solicitudReport.getWidget(i + 1, 1)).addClickListener(this);
-			((SimpleLink)solicitudReport.getWidget(i + 1, 1)).setTitle(aux.get(i) + ".rtf");
+			((SimpleLink)solicitudReport.getWidget(i + 1, 1)).setTitle(aux.get(i) + extension);
 		}
 		
 		cierreExitoso.add(solicitudReport);
@@ -225,17 +233,17 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 	}
 
 	public void showCierreExitoso(GeneracionCierreResultDto cierreResult, Long idSolicitud) {
-		List<String> rtfFileNamePorta = new ArrayList<String>();
+		List<String> fileNamePorta = new ArrayList<String>();
 
-		for (String str : cierreResult.getRtfFileNamePortabilidad()) 
-			rtfFileNamePorta.add(str.substring(str.lastIndexOf("\\") + 1));
+		for (String str : cierreResult.getFileNamePortabilidad()) 
+			fileNamePorta.add(str.substring(str.lastIndexOf("\\") + 1));
 
-		for (String str : cierreResult.getRtfFileNamePortabilidad_adj()) 
-			rtfFileNamePorta.add(str.substring(str.lastIndexOf("\\") + 1));
+		for (String str : cierreResult.getFileNamePortabilidad_adj()) 
+			fileNamePorta.add(str.substring(str.lastIndexOf("\\") + 1));
 
-		Collections.sort(rtfFileNamePorta);
+		Collections.sort(fileNamePorta);
 
-		init(rtfFileNamePorta);
+		init(fileNamePorta);
 		
 		cierreExitoso.setVisible(true);
 		formButtons.setVisible(true);

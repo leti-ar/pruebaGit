@@ -1243,12 +1243,12 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			
 			
 			//TODO: Portabilidad - Setea los nombres de los rtf Generados
-			if(response.getRtfFileNamePortabilidad().size() > 0){
-				for (String rtfFileNamePorta : response.getRtfFileNamePortabilidad().get("PORTABILIDAD")) {
-					result.getRtfFileNamePortabilidad().add(rtfFileNamePorta);
+			if(response.getFileNamePortabilidad().size() > 0){
+				for (String fileNamePorta : response.getFileNamePortabilidad().get("PORTABILIDAD")) {
+					result.getFileNamePortabilidad().add(fileNamePorta);
 				}
-				for (String rtfFileNamePorta_adj : response.getRtfFileNamePortabilidad().get("PORTABILIDAD_ADJUNTO")) {
-					result.getRtfFileNamePortabilidad_adj().add(rtfFileNamePorta_adj);
+				for (String fileNamePorta_adj : response.getFileNamePortabilidad().get("PORTABILIDAD_ADJUNTO")) {
+					result.getFileNamePortabilidad_adj().add(fileNamePorta_adj);
 				}
 			}
 			
