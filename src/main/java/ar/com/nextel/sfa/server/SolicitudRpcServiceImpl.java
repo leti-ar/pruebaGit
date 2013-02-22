@@ -2476,9 +2476,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	public boolean validarLineasPorSegmento(SolicitudServicioDto solicitud) throws RpcExceptionMessages {
 		
 		ArrayList<Boolean> resultadoValidacion = new ArrayList<Boolean>();
-		
+
 //		MGR - Parche de emergencia
-		Vendedor vend = repository.retrieve(Vendedor.class, solicitud.getVendedor().getId());
+		Vendedor vend = repository.retrieve(Vendedor.class, solicitud.getUsuarioCreacion().getId());
 		Long idTipoVendedor = vend.getTipoVendedor().getId();
 		
 		Long idSegmento = 0l;
