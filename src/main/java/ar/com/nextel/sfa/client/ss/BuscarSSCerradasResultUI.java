@@ -437,16 +437,10 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler{
 //			} else {
 				if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() >= 1) && solicitud.getRemito() == null) {
 					mostrarTablaDetalleSolicitudServicio();
-				} else if ((cell.getRowIndex() >= 1 && solicitud.getRemito() == null) && (cell.getCellIndex() == 0)) {
+				} else if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() == 0)) {
 //					MGR - #3423 - Para que se muestre el pop-up que lista los archivos disponibles
 					BuscarSSCerradasReportsDialog reportsDialog = new BuscarSSCerradasReportsDialog();
 					reportsDialog.show(solicitud);
-				}
-				
-				if (solicitud.getRemito() != null){
-					WaitWindow.hide();
-					BuscarSSCerradasRemitoDialog remitoDlg = new BuscarSSCerradasRemitoDialog();
-					remitoDlg.show(solicitud);
 				}
 //			}
 				//LF#3

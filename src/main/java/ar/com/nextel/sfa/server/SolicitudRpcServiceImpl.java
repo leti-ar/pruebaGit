@@ -1493,25 +1493,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return true;
 	}
 	
-	public boolean crearRemito(Long idSolicitud) throws RpcExceptionMessages{
-		SolicitudServicio solicitudServicio = solicitudServicioRepository
-				.getSolicitudServicioPorId(idSolicitud);
-			GeneracionCierreResponse response = new GeneracionCierreResponse();
-			try {
-				ReporteRemito rr = new ReporteRemito();
-				rr.setFinancialSystem(financialSystem);
-				rr.setRepository(repository);
-				rr.setReportBusinessOperator(reportBusinessOperator);
-				String nombreRemito = rr.generarRemito(solicitudServicio, false);
-				response.setRtfFileNameRemito(nombreRemito);
-			} catch (Exception e) {
-				AppLogger.error(e);
-				throw ExceptionUtil.wrap(e);
-			}
-		
-		return true;
-	}
-
 	public List<PlanDto> getPlanesPorTipoPlan(Long idTipoPlan, Long idCuenta) throws RpcExceptionMessages {
 		List planes = null;
 		planes = solicitudServicioRepository.getPlanesPorTipoPlan(idTipoPlan, idCuenta, sessionContextLoader.getVendedor());

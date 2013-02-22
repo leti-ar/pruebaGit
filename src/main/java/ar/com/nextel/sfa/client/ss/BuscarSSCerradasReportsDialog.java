@@ -40,6 +40,10 @@ public class BuscarSSCerradasReportsDialog extends NextelDialog{
 	private ClickListener clickListener; 
 	private String fileSolicitudRtf;
 	private List<String> portabilidadFileNames;
+//	MGR - Reporte remito
+	private String fileRemitoRtf;
+	private SimpleLink lnkRemito;
+	
 	private Long idSolicitud;
 	
 	/**
@@ -53,6 +57,7 @@ public class BuscarSSCerradasReportsDialog extends NextelDialog{
 		gridLayout = new Grid();
 		lnkSS = new SimpleLink("Solicitud link", "#" + History.getToken(), true);
 		lnkAceptar = new SimpleLink("ACEPTAR");
+		lnkRemito = new SimpleLink("Remito link", "#" + History.getToken(), true);
 	}
 
 	/**
@@ -63,65 +68,87 @@ public class BuscarSSCerradasReportsDialog extends NextelDialog{
 		idSolicitud = solicitudServicio.getId();
 		// Setea el nombre del archivo de la solicitud de servicio
 		setFileSolicitudRtf(solicitudServicio.getIdCuenta().toString() + "-5-" + solicitudServicio.getNumeroSS() + ".rtf");
+		
+//		MGR - Reporte remito - Seteo el nombre del remito de la solicitud si corresponde
+		if(solicitudServicio.getRemito() != null)
+			setFileRemitoRtf("remito_" + solicitudServicio.getNumeroSS() + ".rtf");
+		else
+			setFileRemitoRtf(null);
+		
 		// Genera los parametros y los nombres de los archivos de las solicitudes de portabilidad
 		SolicitudRpcService.Util.getInstance().generarParametrosPortabilidadRTF(idSolicitud, 
 				new DefaultWaitCallback<List<String>>() {
 					@Override
 					public void success(List<String> result) {
-						// Verifica si existe archivos
-						if(result.size() > 0){
-							portabilidadFileNames = new ArrayList<String>();
-							for (String fname : result) {
-								portabilidadFileNames.add(fname.substring(0,fname.lastIndexOf(".")));
-							}
-							Collections.sort(portabilidadFileNames);
+//						MGR - Reporte remito
+						portabilidadFileNames = new ArrayList<String>();
+						for (String fname : result) {
+							portabilidadFileNames.add(fname.substring(0,fname.lastIndexOf(".")));
+						}
+						Collections.sort(portabilidadFileNames);
 
-							
-							// inicializa el escuchador
-							clickListener = new ClickListener() {
-								public void onClick(Widget sender) {
-									if(sender == lnkAceptar) hide();
-									else if(sender == lnkSS) descargarArchivo(getFileSolicitudRtf());
-									else{
-										boolean encontro = false;
-										for(int i = 0; i < portabilidadFileNames.size() && !encontro; i++){
-											if(sender == gridLayout.getWidget(i + 1, 1)){
-												descargarArchivo(((SimpleLink)gridLayout.getWidget(i + 1, 1)).getTitle() + ".rtf");
-												encontro = true;
-											}
+						// inicializa el escuchador
+						clickListener = new ClickListener() {
+							public void onClick(Widget sender) {
+								if(sender == lnkAceptar) 
+									hide();
+								else if(sender == lnkSS) 
+									descargarArchivo(getFileSolicitudRtf());
+								else if(sender == lnkRemito)
+									descargarArchivo(getFileRemitoRtf());
+								else{
+//									MGR - Reporte remito
+									int fila = fileRemitoRtf == null ? 1 : 2;
+									boolean encontro = false;
+									for(int i = 0; i < portabilidadFileNames.size() && !encontro; i++){
+										if(sender == gridLayout.getWidget(i + fila, 1)){
+											descargarArchivo(((SimpleLink)gridLayout.getWidget(i + fila, 1)).getTitle() + ".rtf");
+											encontro = true;
 										}
 									}
 								}
-							};
-
-							gridLayout.resize(1 + portabilidadFileNames.size(),2);
-							gridLayout.addStyleName("layout");
-							gridLayout.getColumnFormatter().setWidth(1, "320px");
-
-							// Carga la lista primeros con el de la solicitud de servicio y despues con los de portabilidad
-							gridLayout.setWidget(0,0, IconFactory.word());
-							gridLayout.setWidget(0,1, lnkSS);
-							lnkSS.addClickListener(clickListener);
-							lnkSS.setTitle(getFileSolicitudRtf());
-							
-							for(int i = 0; i < portabilidadFileNames.size(); i++){
-								gridLayout.setWidget(i + 1, 0, IconFactory.word());
-								gridLayout.setWidget(i + 1, 1, new SimpleLink(portabilidadFileNames.get(i), "#" + History.getToken(), true));
-								((SimpleLink)gridLayout.getWidget(i + 1, 1)).addClickListener(clickListener);
-								((SimpleLink)gridLayout.getWidget(i + 1, 1)).setTitle(portabilidadFileNames.get(i));
 							}
+						};
+
+//						MGR - Reporte remito
+						int fila = 1 + (fileRemitoRtf == null ? 0 : 1);
+						gridLayout.resize(fila + portabilidadFileNames.size(),2);
+						
+						gridLayout.addStyleName("layout");
+						gridLayout.getColumnFormatter().setWidth(1, "320px");
+
+						// Carga la lista primeros con el de la solicitud de servicio,
+						//luego con el remito si corresponde y despues con los de portabilidad
+						gridLayout.setWidget(0,0, IconFactory.word());
+						gridLayout.setWidget(0,1, lnkSS);
+						lnkSS.addClickListener(clickListener);
+						lnkSS.setTitle(getFileSolicitudRtf());
+						
+//						MGR - Reporte remito - Hay Remito
+						if(getFileRemitoRtf() != null){
+							gridLayout.setWidget(1,0, IconFactory.word());
+							gridLayout.setWidget(1,1, lnkRemito);
+							lnkRemito.addClickListener(clickListener);
+							lnkRemito.setTitle(getFileRemitoRtf());
+						}
 							
-							pnlDescripcionReplica.add(gridLayout);
-							lnkAceptar.addClickListener(clickListener);
+						for(int i = 0; i < portabilidadFileNames.size(); i++){
+							gridLayout.setWidget(i + fila, 0, IconFactory.word());
+							gridLayout.setWidget(i + fila, 1, new SimpleLink(portabilidadFileNames.get(i), "#" + History.getToken(), true));
+							((SimpleLink)gridLayout.getWidget(i + fila, 1)).addClickListener(clickListener);
+							((SimpleLink)gridLayout.getWidget(i + fila, 1)).setTitle(portabilidadFileNames.get(i));
+						}
+						
+						pnlDescripcionReplica.add(gridLayout);
+						lnkAceptar.addClickListener(clickListener);
 
-							add(pnlDescripcionReplica);
-							addFormButtons(lnkAceptar);
+						add(pnlDescripcionReplica);
+						addFormButtons(lnkAceptar);
 
-							setFormButtonsVisible(true);
-							setFooterVisible(false);
+						setFormButtonsVisible(true);
+						setFooterVisible(false);
 
-							showAndCenter();
-						}else descargarArchivo(getFileSolicitudRtf());
+						showAndCenter();
 					}
 		});
 	}
@@ -205,5 +232,11 @@ public class BuscarSSCerradasReportsDialog extends NextelDialog{
 		this.fileSolicitudRtf = fileSolicitudRtf;
 	}
 
+	public String getFileRemitoRtf() {
+		return fileRemitoRtf;
+	}
 
+	public void setFileRemitoRtf(String fileRemitoRtf) {
+		this.fileRemitoRtf = fileRemitoRtf;
+	}
 }

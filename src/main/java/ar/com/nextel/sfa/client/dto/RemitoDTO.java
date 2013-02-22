@@ -1,10 +1,6 @@
 package ar.com.nextel.sfa.client.dto;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
-import ar.com.nextel.business.reportes.ItemRemito;
 
 public class RemitoDTO implements Serializable {
 
