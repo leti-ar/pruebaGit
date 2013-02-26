@@ -48,6 +48,7 @@ public class StockUIDlg extends NextelDialog {
 	public static Long idOpp;
 	public static boolean fromMenu = true;
 	public String ANCHO_DIALOGO = "500";
+	public String ANCHO_COMBOS = "400";
 	
 	public StockUIDlg(String title) {
 		super(title, false, true);
@@ -137,9 +138,9 @@ public class StockUIDlg extends NextelDialog {
 		
 		//initCombos();
 
-		tipoOrdenLst.setWidth(ANCHO_DIALOGO);
-		listaPrecioLst.setWidth(ANCHO_DIALOGO);
-		cantItemsLst.setWidth(ANCHO_DIALOGO);
+		tipoOrdenLst.setWidth(ANCHO_COMBOS);
+		listaPrecioLst.setWidth(ANCHO_COMBOS);
+		cantItemsLst.setWidth(ANCHO_COMBOS);
 		
 		listaPrecioLst.addChangeHandler(new ChangeHandler() {
 
