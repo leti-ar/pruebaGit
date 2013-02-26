@@ -9,15 +9,15 @@ public class GeneracionCierreResultDto implements IsSerializable {
 
 	private List<MessageDto> messages;
 	private boolean error;
-	private String rtfFileName;
-	private List<String> rtfFileNamePortabilidad;
-	private List<String> rtfFileNamePortabilidad_adj;
+	private String reportSSFileName;
+	private List<String> fileNamePortabilidad;
+	private List<String> fileNamePortabilidad_adj;
 	
 	public GeneracionCierreResultDto() {
 		error = false;
 		messages = new ArrayList<MessageDto>();
-		rtfFileNamePortabilidad = new ArrayList<String>();
-		rtfFileNamePortabilidad_adj = new ArrayList<String>();
+		fileNamePortabilidad = new ArrayList<String>();
+		fileNamePortabilidad_adj = new ArrayList<String>();
 	}
 
 	public List<MessageDto> getMessages() {
@@ -36,27 +36,27 @@ public class GeneracionCierreResultDto implements IsSerializable {
 		this.error = error;
 	}
 
-	public String getRtfFileName() {
-		return rtfFileName;
+	public String getReportSSFileName() {
+		return reportSSFileName;
 	}
 
-	public void setRtfFileName(String rtfFileName) {
-		this.rtfFileName = rtfFileName;
+	public void setReportSSFileName(String reportSSFileName) {
+		this.reportSSFileName = reportSSFileName;
 	}
 
-	public List<String> getRtfFileNamePortabilidad() {
-		return rtfFileNamePortabilidad;
+	public List<String> getFileNamePortabilidad() {
+		return fileNamePortabilidad;
 	}
 
-	public void setRtfFileNamePortabilidad(List<String> rtfFileNamePortabilidad) {
-		this.rtfFileNamePortabilidad = rtfFileNamePortabilidad;
+	public void setFileNamePortabilidad(List<String> fileNamePortabilidad) {
+		this.fileNamePortabilidad = fileNamePortabilidad;
 	}
 
-	public List<String> getRtfFileNamePortabilidad_adj() {
-		return rtfFileNamePortabilidad_adj;
+	public List<String> getFileNamePortabilidad_adj() {
+		return fileNamePortabilidad_adj;
 	}
 
-	public void setRtfFileNamePortabilidad_adj(List<String> rtfFileNamePortabilidad_adj) {
-		this.rtfFileNamePortabilidad_adj = rtfFileNamePortabilidad_adj;
+	public void setFileNamePortabilidad_adj(List<String> fileNamePortabilidad_adj) {
+		this.fileNamePortabilidad_adj = fileNamePortabilidad_adj;
 	}
 }
