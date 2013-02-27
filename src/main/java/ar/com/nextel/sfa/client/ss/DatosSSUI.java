@@ -146,7 +146,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private Widget getNssLayout() {
 		//nnsLayout = new Grid(1, 6);
 		//MGR - #1027
-		nnsLayout = new Grid(1, 14);
+		nnsLayout = new Grid(1, 16);
 		nnsLayout.addStyleName("layout");
 		refreshNssLayout();
 		return nnsLayout;
@@ -223,11 +223,20 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		
 		if(editarSSUIData.getGrupoSolicitud() != null &&
 				instancias.get(GrupoSolicitudDto.ID_FAC_MENSUAL).equals(editarSSUIData.getGrupoSolicitud().getId())){
-			nnsLayout.setHTML(0, 10, Sfa.constant().ordenCompraReq());
-			nnsLayout.setWidget(0, 11, editarSSUIData.getOrdenCompra());
+			nnsLayout.setHTML(0, 12, Sfa.constant().ordenCompraReq());
+			nnsLayout.setWidget(0, 13, editarSSUIData.getOrdenCompra());
 		} else {
-			nnsLayout.clearCell(0, 10);
-			nnsLayout.clearCell(0, 11);
+			nnsLayout.clearCell(0, 12);
+			nnsLayout.clearCell(0, 13);
+		}
+		
+//		Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
+		if (ClientContext.getInstance().getVendedor().isTelemarketing()	&& editarSSUIData.isEquiposAccesorios()) {
+			nnsLayout.setHTML(0, 14, Sfa.constant().nroSSWeb());
+			nnsLayout.setWidget(0, 15, editarSSUIData.getNumeroSSWeb());
+		} else {
+			nnsLayout.clearCell(0, 14);
+			nnsLayout.clearCell(0, 15);
 		}
 
 //		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
@@ -259,18 +268,6 @@ public class DatosSSUI extends Composite implements ClickHandler {
 //			nnsLayout.clearCell(0, 7);
 //			nnsLayout.clearCell(0, 8);
 //		}
-			
-
-		
-//		Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
-		if (ClientContext.getInstance().getVendedor().isTelemarketing()	&& editarSSUIData.isEquiposAccesorios()) {
-			nnsLayout.setHTML(0, 12, Sfa.constant().nroSSWeb());
-			nnsLayout.setWidget(0, 13, editarSSUIData.getNumeroSSWeb());
-		} else {
-			nnsLayout.clearCell(0, 12);
-			nnsLayout.clearCell(0, 13);
-		}
-
 	}
 	
 	private Widget getHistoricoVentasPanel() {
@@ -974,12 +971,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			}
 			
 		}
-		if (valor > lineaSS.getPrecioVentaPlan()) {
-			MessageDialog.getInstance().showAceptar(
-					"El desvío debe ser menor o igual al precio de lista del Plan",
-					MessageDialog.getCloseCommand());
-			valor = lineaSS.getPrecioVentaPlan();
-		}
+		
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
 			detalleSS.setHTML(selectedDetalleRow, 9, NumberFormat.getCurrencyFormat().format(valor));
 		} else {

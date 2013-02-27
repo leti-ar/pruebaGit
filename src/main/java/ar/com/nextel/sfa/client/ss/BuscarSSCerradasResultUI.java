@@ -462,17 +462,24 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler{
 				});
 	}
 	
-	public void abrirArchivoRTF(){
+	public void abrirArchivo(){
 		
 		final String contextRoot = WindowUtils.getContextRoot();
 		fileName = null;
 		if (solicitud.isNumeroCuentaAlCierreSSIdVantive()) {
 			// Si es cliente usamos el codigo Vantive, sino el Id (ya que no podemos
 			// guardar archivos con los caracteres de VANCUC
-			fileName = solicitud.getIdCuenta().toString() + "-5-" + numeroSS + ".rtf";
+			fileName = solicitud.getIdCuenta().toString() + "-5-" + numeroSS;
 		} else {
-			fileName = solicitud.getIdCuenta().toString() + "-5-" + numeroSS + ".rtf";
+			fileName = solicitud.getIdCuenta().toString() + "-5-" + numeroSS;
 		}
+		
+		//MGR - Los Vendedores del tipo retail generan pdf, el resto, rtf
+        if(ClientContext.getInstance().getVendedor().isRetail())
+        	fileName += ".pdf";
+        else
+        	fileName += ".rtf";
+		
 		final String filenameFinal = fileName;
 		SolicitudRpcService.Util.getInstance().existReport(fileName, new DefaultWaitCallback<Boolean>() {
 			public void success(Boolean result) {

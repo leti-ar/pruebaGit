@@ -11,7 +11,7 @@ import ar.com.nextel.sfa.client.dto.VendedorDto;
 /**
  * Esta clase es creada para poder realizar la busqueda de las SS si el usuario logueado 
  * es Analista de Creditos, y se podra filtrar por las SS del mismo y de todos los 
- * analista de creditos que estén en la misma sucursal.
+ * analista de creditos que estï¿½n en la misma sucursal.
  * @author fernaluc
  *
  */
@@ -38,7 +38,7 @@ public class BuscarSSAnalistaCreditosUI extends BuscarSSGenericoUI {
 
 	@Override
 	public boolean load() {
-		// Si es cliente de Nexus no aparecerá ningun filtro para la busqueda, se busca directamente todas las SS 
+		// Si es cliente de Nexus no aparecerï¿½ ningun filtro para la busqueda, se busca directamente todas las SS 
 		// que correspondan al usuario y a los analistas de creditos de la misma sucursal.
 		if(ClientContext.getInstance().vengoDeNexus() && ClientContext.getInstance().soyClienteNexus()) {	
 			SolicitudServicioCerradaDto solicitudServicioCerradaDto = new SolicitudServicioCerradaDto();
@@ -76,6 +76,7 @@ public class BuscarSSAnalistaCreditosUI extends BuscarSSGenericoUI {
 		listaPerfiles.add(instancias.get(VendedorDto.TIPO_VENDEDOR_MINORISTA));
 		listaPerfiles.add(instancias.get(VendedorDto.TIPO_VENDEDOR_MAYORISTA));
 		listaPerfiles.add(instancias.get(VendedorDto.TIPO_VENDEDOR_SALON));
+		listaPerfiles.add(instancias.get(VendedorDto.TIPO_VENDEDOR_RETAIL));
 		return listaPerfiles;
 	}
 	

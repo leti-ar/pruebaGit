@@ -83,10 +83,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		topBar.add(tipoOrdenLabel);
 		topBar.add(tipoOrden);
 		add(topBar);
-		
 		add(tipoSolicitudPanel);
-		
-		
 		addFormButtons(aceptar);
 		addFormButtons(cerrar);
 		setFormButtonsVisible(true);
@@ -98,11 +95,9 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		initTiposOrden(controller);
 	}
 
-
 	public void initTiposOrden(EditarSSUIController controller) {
 		controller.getLineasSolicitudServicioInitializer(initTiposOrdenCallback());
 	}
-	
 	
 	/**
 	 * TODO: Portabilidad
@@ -275,8 +270,6 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		}
 	}
 	
-
-	
 	private void loadUIData(final TipoSolicitudDto tiposSolicitud) {
 		//#1757 - La ListaPrecios se carga según el segmento del cliente
 //		if (tiposSolicitudes.get(tiposSolicitud.getId()).getListasPrecios() == null) {
@@ -402,7 +395,6 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	public void setCuentaEmpresa(boolean empresa) {
 		this.empresa = empresa;
 	}
-	
 	
 	//MGR - #1039
 	public static ItemYPlanSolicitudUI obtenerItemYPlanSolicitudUI(){
