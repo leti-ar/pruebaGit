@@ -2034,5 +2034,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		razonSocialClienteBar.setRazonSocial(cuenta.getPersona()
 				.getRazonSocial());
 		razonSocialClienteBar.setIdCuenta(cuenta.getId(), cuenta.getCodigoVantive());
+		codigoVant = cuenta.getCodigoVantive();
+		codigoVantive = cuenta.getCodigoVantive();
 	}
 }
