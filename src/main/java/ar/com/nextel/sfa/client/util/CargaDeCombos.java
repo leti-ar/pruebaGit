@@ -17,16 +17,16 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class CargaDeCombos {
 
-	public static void cargarComboTipoOrden(final ListBox lst, final ListBox listaPreciosLst, final ListBox item) {
-		lst.clear();
+	public static void cargarComboTipoOrden(final ListBox listaTipoOrden, final ListBox listasPrecios, final ListBox listaItems) {
+		listaTipoOrden.clear();
 		StockRpcService.Util.getInstance().obtenerTiposDeSolicitudParaVendedor(
 						ClientContext.getInstance().getVendedor(),
 						new AsyncCallback<List<TipoSolicitudDto>>() {
 
 							public void onSuccess(List<TipoSolicitudDto> result) {
-								lst.addAllItems(result);
-								TipoSolicitudDto tipoSolicitud = (TipoSolicitudDto)lst.getSelectedItem();
-								cargarListaDePrecios(tipoSolicitud, listaPreciosLst, item);
+								listaTipoOrden.addAllItems(result);
+								TipoSolicitudDto tipoSolicitud = (TipoSolicitudDto)listaTipoOrden.getSelectedItem();
+								cargarListaDePrecios(tipoSolicitud, listasPrecios, listaItems);
 								WaitWindow.hide();
 							}
 
@@ -39,8 +39,8 @@ public class CargaDeCombos {
 	}
 
 	public static void cargarListaDePrecios(
-			final TipoSolicitudDto tipoSolicitud, final ListBox lst, final ListBox cantItemsLst) {
-		lst.clear();
+			final TipoSolicitudDto tipoSolicitud, final ListBox listasPrecios, final ListBox listaItems) {
+		listasPrecios.clear();
 		if (tipoSolicitud != null) {
 			if (tipoSolicitud.getListasPrecios() == null) {
 				WaitWindow.show();
@@ -49,20 +49,26 @@ public class CargaDeCombos {
 						new DefaultWaitCallback<List<ListaPreciosDto>>() {
 							public void success(
 									List<ListaPreciosDto> listBoxItem) {
-								lst.addAllItems(listBoxItem);
+								listasPrecios.addAllItems(listBoxItem);
 								tipoSolicitud.setListasPrecios(listBoxItem);
-								ListaPreciosDto item = (ListaPreciosDto)lst.getSelectedItem(); 
-								if (item != null) {
-									List<ItemSolicitudTasadoDto> items = (List<ItemSolicitudTasadoDto>)item.getItemsListaPrecioVisibles();
-									cantItemsLst.addAllItems(items);
-								}
+								cargarListaDeItems(listasPrecios, listaItems);
 							}
 
 						});
 				WaitWindow.hide();
 			} else {
-				lst.addAllItems(tipoSolicitud.getListasPrecios());
+				listasPrecios.addAllItems(tipoSolicitud.getListasPrecios());
+				cargarListaDeItems(listasPrecios, listaItems);
 			}
+		}
+	}
+
+	private static void cargarListaDeItems(final ListBox listasPrecios,
+			final ListBox listaItems) {
+		ListaPreciosDto item = (ListaPreciosDto)listasPrecios.getSelectedItem(); 
+		if (item != null) {
+			List<ItemSolicitudTasadoDto> items = (List<ItemSolicitudTasadoDto>)item.getItemsListaPrecioVisibles();
+			listaItems.addAllItems(items);
 		}
 	}
 }
