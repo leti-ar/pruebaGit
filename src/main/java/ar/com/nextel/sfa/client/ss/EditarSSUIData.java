@@ -36,6 +36,7 @@ import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
 import ar.com.nextel.sfa.client.util.FormUtils;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
+import ar.com.nextel.sfa.client.validator.GwtValidationUtils;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -902,11 +903,39 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				}
 			}
 		}
+
+		if(existeSIM_IMEIRepetidas(validator)){
+			validator.addError("No puede tener la misma SIM o IMEI en mas de una linea");
+		}
 		
 		validator.fillResult();
 		return validator.getErrors();
 	}
 
+	private boolean existeSIM_IMEIRepetidas(GwtValidator validator) {
+		boolean haySIM_IMEIRepetidas = false;
+		if (solicitudServicio.getRetiraEnSucursal()) {
+			for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
+				int cantIMEI = 0;
+				int cantSIM = 0;
+				if (!haySIM_IMEIRepetidas) {
+					for (LineaSolicitudServicioDto li : solicitudServicio.getLineas()) {
+						if (GwtValidationUtils.validateNotEmpty(linea.getNumeroIMEI()) 
+								&& GwtValidationUtils.validateEquals(linea.getNumeroIMEI(),li.getNumeroIMEI())) {
+							cantIMEI = cantIMEI + 1;
+						}
+						if (GwtValidationUtils.validateNotEmpty(linea.getNumeroSimcard()) 
+								&& GwtValidationUtils.validateEquals(linea.getNumeroSimcard(),li.getNumeroSimcard())) {
+							cantSIM = cantSIM + 1;
+						}
+					}
+					haySIM_IMEIRepetidas = cantIMEI > 1 || cantSIM > 1;
+				}
+			}
+		}
+		return haySIM_IMEIRepetidas;
+	}
+	
 	/**
 	 * @param generacionCierreDefinitivo
 	 *            true si debe validar para la generacion o cierre definitiva de la solicitud, que seria el

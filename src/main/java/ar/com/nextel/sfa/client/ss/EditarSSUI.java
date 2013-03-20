@@ -861,7 +861,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
 					errors = editarSSUIData.validarTransferenciaParaGuardar(datosTranferencia.getContratosSSChequeados());
 				}else{
-//					MGR - Validacion SIM_IMEI
 					errors = editarSSUIData.validarParaGuardar();
 				}
 				if (errors.isEmpty()) {
