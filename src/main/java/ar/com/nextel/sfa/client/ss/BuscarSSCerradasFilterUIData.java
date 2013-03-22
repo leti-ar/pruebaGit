@@ -1,6 +1,8 @@
 package ar.com.nextel.sfa.client.ss;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -44,6 +46,7 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 	private Button limpiarButton;
 	
 	private DateTimeFormat dateFormatter = DateTimeFormat.getFormat("dd/MM/yyyy");
+	private List<String> errorList = new ArrayList();
 
 
 	public BuscarSSCerradasFilterUIData() {
@@ -206,5 +209,18 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 	public SimpleDatePicker getHastaDatePicker() {
 		return this.hasta;
 	}
+	
+	public List<String> validarCriterioBusquedaSSCerradas() {
+		errorList.clear();
+		Date date1 = desde.getSelectedDate();
+		Date date2 = DateUtil.getDaysBeforeADate(30, new Date());
+		int dif = DateUtil.compareJustDate(date1, date2);
+		if (dif == -1) {
+			errorList
+					.add("Fecha invalida, solo puede buscar SS cerradas en un rango no mayor a los 30 días");
+		}
+		return errorList;
+	}
+	
 	
 }
