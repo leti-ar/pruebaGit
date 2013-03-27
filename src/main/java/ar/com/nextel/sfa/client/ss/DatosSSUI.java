@@ -906,7 +906,8 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		detalleSS.getCellFormatter().addStyleName(newRow, controller.isEditable()?9-i:i, "alignRight");
 		detalleSS.setHTML(newRow, controller.isEditable()?10-i:++i, linea.getLocalidad() != null ? linea.getLocalidad().getDescripcion()
 				: "");
-		detalleSS.setHTML(newRow, controller.isEditable()?11-i:++i, linea.getNumeroReserva());
+		detalleSS.setHTML(newRow, controller.isEditable()?11-i:++i, linea.getNumeroReserva()!=null ? linea.getNumeroReserva() : Sfa.constant()
+				.whiteSpace());
 		detalleSS.setHTML(newRow, controller.isEditable()?12-i:++i, linea.getTipoSolicitud().getDescripcion());
 		detalleSS.setHTML(newRow, controller.isEditable()?13-i:++i, "" + linea.getCantidad());
 		detalleSS.setHTML(newRow, controller.isEditable()?14-i:++i, linea.getDdn() ? IconFactory.tildeVerde().toString() : Sfa.constant()
