@@ -12,7 +12,6 @@ import ar.com.nextel.sfa.client.cuenta.AgregarCuentaUI;
 import ar.com.nextel.sfa.client.cuenta.BuscadorDocumentoPopup;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
-import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaResultDto;
@@ -26,8 +25,6 @@ import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.nextel.sfa.client.widget.TablePageBar;
-import ar.com.nextel.sfa.client.widget.UILoader;
-import ar.com.nextel.util.AppLogger;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
@@ -36,17 +33,15 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 /**
  * Muestra la tabla con los resultados de la busqueda de operaciones. También maneja la logica de busqueda
@@ -410,10 +405,19 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 	}
 
 	private void cancelarOperacionEnCurso(OperacionEnCursoDto op) {
-		ModalMessageDialog.getInstance().setDialogTitle("Eliminar Operación en Curso");
-		ModalMessageDialog.getInstance().setSize("300px", "100px");
-		ModalMessageDialog.getInstance().showSiNo("Se cancelará la operación en curso. ¿Desea continuar?",
-				getComandoCancelarOperacionEnCurso(op.getId()), ModalMessageDialog.getCloseCommand());
+//		MGR - #4231 - Si la solicitud tiene una factura, entonces no se puede borrar
+		if(op.getIdFactura()!= null){
+			ModalMessageDialog.getInstance().setDialogTitle("Eliminar Operación en Curso");
+			ModalMessageDialog.getInstance().setSize("300px", "100px");
+			ModalMessageDialog.getInstance().showAceptar("No se puede cancelar la operacion seleccionada " +
+					"ya que contiene un item facturado", ModalMessageDialog.getCloseCommand());
+		}else{
+		
+			ModalMessageDialog.getInstance().setDialogTitle("Eliminar Operación en Curso");
+			ModalMessageDialog.getInstance().setSize("300px", "100px");
+			ModalMessageDialog.getInstance().showSiNo("Se cancelará la operación en curso. ¿Desea continuar?",
+					getComandoCancelarOperacionEnCurso(op.getId()), ModalMessageDialog.getCloseCommand());
+		}
 	}
 
 	private Command getComandoCancelarOperacionEnCurso(final String idOperacionEnCurso) {

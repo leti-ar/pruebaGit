@@ -11,6 +11,9 @@ public class OperacionEnCursoDto implements IsSerializable {
 	private String numeroCliente;
 	private String descripcionGrupo;
 	private Long idSolicitudServicio;
+	
+//	MGR - #4231 - Necesito el id de la factura
+	private Long idFactura;
 
 	public Long getIdSolicitudServicio() {
 		return idSolicitudServicio;
@@ -68,4 +71,19 @@ public class OperacionEnCursoDto implements IsSerializable {
 		this.descripcionGrupo = descripcionGrupo;
 	}
 
+//	public SolicitudServicioDto getSolicitudServicio() {
+//		return solicitudServicio;
+//	}
+//
+//	public void setSolicitudServicio(SolicitudServicioDto solicitudServicio) {
+//		this.solicitudServicio = solicitudServicio;
+//	}
+
+	public Long getIdFactura() {
+		return idFactura;
+	}
+
+	public void setIdFactura(Long idFactura) {
+		this.idFactura = idFactura;
+	}
 }
