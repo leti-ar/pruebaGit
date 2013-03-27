@@ -1920,6 +1920,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	}
 	
 	private void showGenerarCerrarMenu(){
+//		MGR - #4237 - Le quito el estilo que pudo haber tomado al ser parte del la barra inferior
+		cerrarSolicitud.removeStyleName("popFormButton");
 		formButtonsBar.addLink(acionesSS);
 		formButtonsBar.addLink(cancelarButton);
 	}
