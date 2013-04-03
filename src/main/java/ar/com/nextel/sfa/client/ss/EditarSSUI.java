@@ -1242,6 +1242,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 											CerradoSSExitosoDialog.getInstance().hideLoading();
 										}else validarPortabilidad(); 
 									}
+									
+									@Override
+									public void failure(Throwable caught) {
+										CerradoSSExitosoDialog.getInstance().hideLoading();
+										super.failure(caught);
+									}
 								});
 					}else validarPortabilidad();
 				} else {
@@ -1267,6 +1273,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					if(portabilidadResult.getPermiteGrabar()) cerrarGenerarSolicitud();
 					else CerradoSSExitosoDialog.getInstance().hideLoading();
 				}else cerrarGenerarSolicitud();
+			}
+			@Override
+			public void failure(Throwable caught) {
+				CerradoSSExitosoDialog.getInstance().hideLoading();
+				super.failure(caught);
 			}
 		});
 	}
@@ -1325,7 +1336,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				}
 
 				public void failure(Throwable caught) {
-					CerradoSSExitosoDialog.getInstance().hide();
+					CerradoSSExitosoDialog.getInstance().hideLoading();
 					super.failure(caught);
 				}
 			};
