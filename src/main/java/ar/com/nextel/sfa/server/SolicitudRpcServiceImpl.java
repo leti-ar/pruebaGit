@@ -1203,7 +1203,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					solicitudServicio.setNombreRegistroVendedor(userName);
 				}
 //				MGR - Se mueve la creacion de la cuenta. Debo recordar si es prospect antes de enviar a cerrar
-				boolean eraProspect = !solicitudServicio.getCuenta().isCliente();
+//				JPP - 0003641: N-IM003607979 - Cierre y Pass Automatico. No genera automaticamente Caratula para anexo , reingreso. 
+//				eraProspect solo se usaba para la condicion que se modifico (ver informacion del ticket #3641 del mantis)
+//				boolean eraProspect = !solicitudServicio.getCuenta().isCliente();
 				response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, puedeCerrar);
 				
 				result.setError(response.getMessages().hasErrors());
@@ -1220,9 +1222,14 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 //				MGR - Se mueve la creacion de la cuenta, cambia el if y su contenido
 //				Si era prospect, se cerro la SS correctamente, se creo la cuenta correctamente,
 //				va por pass automatico y es un cierre, creo y tranfiero caratula
-				if (eraProspect && !result.isError() && 
-						solicitudServicio.getCuenta().isTransferido() && 
-						puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO && cerrar) {
+				
+//				JPP - 0003641: N-IM003607979 - Cierre y Pass Automatico. No genera automaticamente Caratula para anexo , reingreso. 
+//				Se modifico la condicion (se saco la validacion de eraProspect)
+//				if (eraProspect && !result.isError() && 
+//						solicitudServicio.getCuenta().isTransferido() && 
+//						puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO && cerrar) {
+					
+				if (!result.isError() && solicitudServicio.getCuenta().isTransferido() && puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO && cerrar) {
 					
 						Long idCaratula = solicitudBusinessService.crearCaratula(solicitudServicio.getCuenta(), solicitudServicio.getNumero(), resultadoVerazScoring);
 						solicitudBusinessService.transferirCaratula(idCaratula, solicitudServicio.getNumero());						
