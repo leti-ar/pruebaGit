@@ -1375,7 +1375,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public void getLineasSolicitudServicioInitializer(
 			DefaultWaitCallback<LineasSolicitudServicioInitializer> defaultWaitCallback) {
 		SolicitudRpcService.Util.getInstance().getLineasSolicitudServicioInitializer(
-				editarSSUIData.getGrupoSolicitud(), editarSSUIData.getCuenta().isEmpresa(), defaultWaitCallback);
+				editarSSUIData.getGrupoSolicitud(), editarSSUIData.getCuenta().isEmpresa(), editarSSUIData.getRetiraEnSucursal().getValue(), defaultWaitCallback);
 	}
 
 	public void getListaPrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa,

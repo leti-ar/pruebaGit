@@ -114,9 +114,9 @@ public class SolicitudRpcServiceDelegate {
 	}
 
 	public void getLineasSolicitudServicioInitializer(GrupoSolicitudDto grupoSolicitudDto,
-			boolean isEmpresa, DefaultWaitCallback<LineasSolicitudServicioInitializer> callback) {
+			boolean isEmpresa, boolean retiraEnSucursal, DefaultWaitCallback<LineasSolicitudServicioInitializer> callback) {
 		WaitWindow.show();
-		solicitudRpcServiceAsync.getLineasSolicitudServicioInitializer(grupoSolicitudDto, isEmpresa, callback);
+		solicitudRpcServiceAsync.getLineasSolicitudServicioInitializer(grupoSolicitudDto, isEmpresa, retiraEnSucursal, callback);
 	}
 
 	public void buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto, //LF#3boolean analistaCreditos,

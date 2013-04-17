@@ -73,7 +73,7 @@ public interface SolicitudRpcServiceAsync {
 			AsyncCallback<DetalleSolicitudServicioDto> callback);
 
 	public void getLineasSolicitudServicioInitializer(GrupoSolicitudDto grupoSolicitudDto,
-			boolean isEmpresa, AsyncCallback<LineasSolicitudServicioInitializer> callback);
+			boolean isEmpresa, boolean retiraEnSucursal, AsyncCallback<LineasSolicitudServicioInitializer> callback);
 
 	public void getListasDePrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa, 
 			AsyncCallback<List<ListaPreciosDto>> callback);

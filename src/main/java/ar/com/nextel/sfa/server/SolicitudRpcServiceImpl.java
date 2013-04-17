@@ -805,7 +805,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	}
 
 	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(
-			GrupoSolicitudDto grupoSolicitudDto, boolean isEmpresa) {
+			GrupoSolicitudDto grupoSolicitudDto, boolean isEmpresa, boolean retiraEnSucursal) {
 
 		LineasSolicitudServicioInitializer initializer = new LineasSolicitudServicioInitializer();
 		List<GrupoSolicitud> grupos = 
@@ -817,7 +817,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		Map<Long, List<TipoSolicitudDto>> tiposSolicitudPorGrupo = new HashMap();
 		for (GrupoSolicitud gp : grupos) {
 			tiposSolicitudPorGrupo.put(gp.getId(), 
-					mapper.convertList(gp.calculateTiposSolicitud(sucursal, sessionContextLoader.getVendedor()),
+					mapper.convertList(gp.calculateTiposSolicitud(sucursal, sessionContextLoader.getVendedor(),retiraEnSucursal),
 							TipoSolicitudDto.class));
 		}
 		initializer.setTiposSolicitudPorGrupo(tiposSolicitudPorGrupo);

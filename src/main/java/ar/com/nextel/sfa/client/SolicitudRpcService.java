@@ -90,7 +90,7 @@ public interface SolicitudRpcService extends RemoteService {
 	public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto) throws RpcExceptionMessages;
 
 	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(
-			GrupoSolicitudDto grupoSolicitudDto, boolean isEmpresa) throws RpcExceptionMessages;
+			GrupoSolicitudDto grupoSolicitudDto, boolean isEmpresa, boolean retiraEnSucursal) throws RpcExceptionMessages;
 
 	public DetalleSolicitudServicioDto getDetalleSolicitudServicio(Long idSolicitudServicio)
 			throws RpcExceptionMessages;

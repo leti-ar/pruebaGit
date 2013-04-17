@@ -536,8 +536,8 @@ public class DatosSSUI extends Composite implements ClickHandler {
 									public void execute() {
 										removeDetalleLineaSSRow(row);
 										asignarNroSSPortabilidad();
-										if (controller.getEditarSSUIData().isEquiposAccesorios()) {
-											editarSSUIData.getRetiraEnSucursal().setEnabled(!(detalleSS.getRowCount() - 1 > 0));
+										if (ClientContext.getInstance().getVendedor().isVendedorSalon() && editarSSUIData.isEquiposAccesorios()) {
+											editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
 										}
 									};
 								}, ModalMessageDialog.getCloseCommand());
@@ -585,8 +585,8 @@ public class DatosSSUI extends Composite implements ClickHandler {
 											public void execute() {
 												removeDetalleLineaSSRow(row);
 												asignarNroSSPortabilidad();
-												if (controller.getEditarSSUIData().isEquiposAccesorios()) {
-													editarSSUIData.getRetiraEnSucursal().setEnabled(!(detalleSS.getRowCount() - 1 > 0));
+												if (ClientContext.getInstance().getVendedor().isVendedorSalon() && editarSSUIData.isEquiposAccesorios()) {
+													editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
 												}
 											};
 										}, ModalMessageDialog.getCloseCommand());
@@ -710,8 +710,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			itemSolicitudDialog.setAceptarCommand(aceptarCommand);
 			// TODO: Carga los datos de inizializacion del componente de portabilidad
 			itemSolicitudDialog.cargarPortabilidadInitializer(portabilidadInitializer);
-		}
-		if (recargaTiposOrden()) {
+		} else if (recargaTiposOrden()) {
 			itemSolicitudDialog.initTiposOrden(controller);
 			ClientContext.getInstance().getSecretParams().remove(ClientContext.ST_PARAMS_KEY_RECARGA_TIPO_ORDEN);
 		}
@@ -723,7 +722,8 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	}
 
 	private boolean recargaTiposOrden() {
-		return ClientContext.ST_PARAMS_VALUE_TRUE.equals(ClientContext.getInstance().getSecretParams().get(ClientContext.ST_PARAMS_KEY_RECARGA_TIPO_ORDEN));
+		return ClientContext.ST_PARAMS_VALUE_TRUE.equals(ClientContext.getInstance().getSecretParams().get(ClientContext.ST_PARAMS_KEY_RECARGA_TIPO_ORDEN))
+		|| editarSSUIData.getRetiraEnSucursal().isEnabled();
 	}
 
 	/**Verifica si se puede aplicar un descuento al item seleccionado*/
@@ -1059,8 +1059,8 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		editarSSUIData.getAclaracion().setEnabled(controller.isEditable());
 		editarSSUIData.getEmail().setEnabled(controller.isEditable());
 		if (controller.getEditarSSUIData().isEquiposAccesorios()) {
-			//editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
-			editarSSUIData.getRetiraEnSucursal().setEnabled(detalleSS.getRowCount()>0);
+			editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
+//			editarSSUIData.getRetiraEnSucursal().setEnabled(detalleSS.getRowCount()>0);
 		}
 	}
 	

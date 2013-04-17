@@ -275,8 +275,10 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 //		if (tiposSolicitudes.get(tiposSolicitud.getId()).getListasPrecios() == null) {
 			controller.getListaPrecios(tiposSolicitud, empresa, new DefaultWaitCallback<List<ListaPreciosDto>>() {
 				public void success(List<ListaPreciosDto> listasPrecios) {
-					tiposSolicitudes.get(tiposSolicitud.getId()).setListasPrecios(listasPrecios);
-					itemSolicitudUIData.load(tiposSolicitud.getListasPrecios());
+					if (tiposSolicitudes.get(tiposSolicitud.getId())!= null) {
+						tiposSolicitudes.get(tiposSolicitud.getId()).setListasPrecios(listasPrecios);
+						itemSolicitudUIData.load(tiposSolicitud.getListasPrecios());
+					}
 				};
 			});
 //		} else {
