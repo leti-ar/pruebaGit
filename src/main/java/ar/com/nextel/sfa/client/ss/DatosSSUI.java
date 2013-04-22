@@ -1128,7 +1128,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	}
 	
 	private void habilitarNssLayout(boolean habilitar){
-		editarSSUIData.getNss().setEnabled(habilitar);
+//		editarSSUIData.getNss().setEnabled(habilitar);
 		editarSSUIData.getNflota().setEnabled(habilitar);
 		editarSSUIData.getOrigen().setEnabled(habilitar);
 		editarSSUIData.getRetiraEnSucursal().setEnabled(!this.controller.tieneLineasSolicitud() && habilitar);
