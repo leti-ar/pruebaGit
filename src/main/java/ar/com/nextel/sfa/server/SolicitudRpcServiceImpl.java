@@ -149,7 +149,6 @@ import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.client.util.PortabilidadResult;
 import ar.com.nextel.sfa.client.util.PortabilidadResult.ERROR_ENUM;
-import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.server.businessservice.CuentaBusinessService;
 import ar.com.nextel.sfa.server.businessservice.SolicitudBusinessService;
 import ar.com.nextel.sfa.server.util.MapperExtended;
@@ -1228,11 +1227,29 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 //				if (eraProspect && !result.isError() && 
 //						solicitudServicio.getCuenta().isTransferido() && 
 //						puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO && cerrar) {
-					
+				
+				
+				
 				if (!result.isError() && solicitudServicio.getCuenta().isTransferido() && puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO && cerrar) {
 					
-						Long idCaratula = solicitudBusinessService.crearCaratula(solicitudServicio.getCuenta(), solicitudServicio.getNumero(), resultadoVerazScoring);
-						solicitudBusinessService.transferirCaratula(idCaratula, solicitudServicio.getNumero());						
+						/*
+						 * JPP - #3641 - N-IM003607979 - Cierre y Pass Automatico. No genera automaticamente Caratula para anexo , reingreso.
+						 * Para detectar si una cuenta es Anexo, se va a obtener la cantidad de equipos activos del cliente, 
+						 * si tiene UN equipo activo o MAS DE UNO, lo damos como Anexo.
+						 * Si el cliente es Anexo, NO se crea la caratula.
+						 * Si el cliente NO tiene equipos activos (no es Anexo), se crea la caratula.
+						 */
+					
+						CantidadEquiposDTO cantidadEquiposDTO = avalonSystem.retreiveEquiposPorEstado(solicitudServicio.getCuenta().getCodigoVantive());
+						
+						if (("0".equals(cantidadEquiposDTO.getCantidadActivos())))
+						{
+							// El cliente NO es Anexo, es Reingreso o Cliente que nunca tuvo equipos activos
+							Long idCaratula = solicitudBusinessService.crearCaratula(solicitudServicio.getCuenta(), solicitudServicio.getNumero(), resultadoVerazScoring);
+							solicitudBusinessService.transferirCaratula(idCaratula, solicitudServicio.getNumero());		
+						}
+						
+					
 						solicitudServicio.setNumeroCuenta(solicitudServicio.getCuenta().getCodigoVantive());
 						solicitudBusinessService.updateSolicitudServicio(solicitudServicio);
 				}
