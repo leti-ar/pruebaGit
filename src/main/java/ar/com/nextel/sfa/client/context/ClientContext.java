@@ -108,4 +108,11 @@ public class ClientContext {
 		this.knownInstance = knownInstance;
 	}
 
+	public boolean isPinChequeadoEnNexus() {
+		if (vengoDeNexus() && ClientContext.getInstance().getVendedor().isTelemarketing()) {
+			return this.clienteNexus.isPinChequeadoEnNexus();
+		}
+		return false;
+	}
+	
 }
