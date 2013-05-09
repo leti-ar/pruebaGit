@@ -1,31 +1,18 @@
 package ar.com.nextel.sfa.client.ss;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.springframework.stereotype.Controller;
-
-import ar.com.nextel.components.mail.MailSender;
-import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.sfa.client.InfocomRpcService;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
-import ar.com.nextel.sfa.client.dto.ComentarioAnalistaDto;
-import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
-import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
-import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
-import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
@@ -40,6 +27,7 @@ import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
+import ar.com.nextel.sfa.client.dto.SubsidiosDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
@@ -52,7 +40,6 @@ import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
 import ar.com.nextel.sfa.client.util.PortabilidadResult;
-import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
@@ -64,7 +51,6 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItemImpl;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
-import ar.com.snoop.gwt.commons.client.window.MessageWindow;
 import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -75,11 +61,9 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.IncrementalCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TabPanel;
@@ -115,6 +99,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private PopupPanel generarCerrarMenu;
 	private SimpleLink cerrarSolicitud;
 	private SimpleLink generarSolicitud;
+	private SimpleLink facturarSolicitud;
 	private DefaultWaitCallback<GeneracionCierreResultDto> generacionCierreCallback;
 	private CerrarSSUI cerrarSSUI;
 	private boolean guardandoSolicitud = false;
@@ -333,6 +318,20 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		}
 		return true;
 		
+	}
+	
+	public void loadTransferencia(Boolean tienePermanencia){
+		linksCrearSS.clear();
+		if(grupoSS != null && knownInstancias != null && 
+				!grupoSS.equals(knownInstancias.get(GrupoSolicitudDto.ID_TRANSFERENCIA).toString()) &&
+				!ClientContext.getInstance().checkPermiso(PermisosEnum.OCULTA_LINK_GENERAR_SS.getValue())){
+			linksCrearSS.add(wrap(generarSolicitud));
+		}
+		if (tienePermanencia){
+			linksCrearSS.add(wrap(facturarSolicitud));
+		}else{
+			linksCrearSS.add(wrap(cerrarSolicitud));
+		}
 	}
 		
 		public boolean loadCopiarSS(SolicitudServicioDto solicitudSS) {
@@ -659,6 +658,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 //		FlowPanel linksCrearSS = new FlowPanel();
 		generarSolicitud = new SimpleLink("Generar");
 		cerrarSolicitud = new SimpleLink("Cerrar");
+		facturarSolicitud = new SimpleLink("Facturar");
 		
 		//MGR - #1122
 //		if(grupoSS != null && knownInstancias != null && 
@@ -670,6 +670,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 //		linksCrearSS.add(wrap(cerrarSolicitud));
 		generarSolicitud.addClickListener(this);
 		cerrarSolicitud.addClickListener(this);
+		facturarSolicitud.addClickListener(this);
 		generarCerrarMenu.setWidget(linksCrearSS);
 
 		formButtonsBar = new FormButtonsBar();
@@ -915,6 +916,8 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			} else {
 				openGenerarCerrarSolicitdDialog(sender == cerrarSolicitud);
 			}
+		} else if (sender == facturarSolicitud){
+			//TODO CAM boton facturar
 		}
 		//German - Comentado para salir solo con cierre - CU#5
 //		else if (sender == copiarSS) {			
@@ -1281,6 +1284,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		
 		SolicitudRpcService.Util.getInstance().getPlanesPorItemYTipoPlan(itemSolicitudTasado, tipoPlan,
 				editarSSUIData.getCuentaId(), isActivacion, modelo, callback);
+	}
+	
+	public void getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado, 
+			DefaultWaitCallback<List<SubsidiosDto>> callback) {
+		SolicitudRpcService.Util.getInstance().getSubsidiosPorItem(itemSolicitudTasado, callback);
 	}
 
 	public void getServiciosAdicionales(LineaSolicitudServicioDto linea,

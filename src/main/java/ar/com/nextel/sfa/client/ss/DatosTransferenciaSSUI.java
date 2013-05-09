@@ -654,6 +654,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 				}
 //			}
 		}
+		verificarContratosConPermanencia();
 	}
 	
 	private void chequarPrimero() {
@@ -801,6 +802,17 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 			refresh();
 		}
 	}
+
+	private void verificarContratosConPermanencia() {
+		CuentaRpcService.Util.getInstance().searchContratosConPermanencia(contratosChequeados,
+				new DefaultWaitCallback<Boolean>() {
+			@Override
+			public void success(Boolean result) {
+				controller.loadTransferencia(result);
+			}
+		});
+	}
+
 	
 	private void limpiarTablaServFacturados(){
 		//Limpio la tabla de servicios

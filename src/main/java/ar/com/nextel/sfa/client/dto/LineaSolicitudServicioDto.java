@@ -57,6 +57,7 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 	private Boolean ddn = Boolean.FALSE;
 	private Boolean ddi = Boolean.FALSE;
 	private Boolean roaming = Boolean.FALSE;
+	private Boolean fullPrice = Boolean.TRUE;
 	
 	private Double precioConDescuento;
 	private Double monto;
@@ -440,6 +441,7 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 		linea.ddn = ddn;
 		linea.ddi = ddi;
 		linea.roaming = roaming;
+		linea.fullPrice = fullPrice;
 		linea.precioConDescuento = precioConDescuento;
 		return linea;
 	}
@@ -479,5 +481,13 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
     public void addDescuentoLinea(DescuentoLineaDto descuento) {
         this.descuentosLinea.add(descuento);
     }
+
+	public void setFullPrice(Boolean fullPrice) {
+		this.fullPrice = fullPrice;
+	}
+
+	public Boolean getFullPrice() {
+		return fullPrice;
+	}
     
 }

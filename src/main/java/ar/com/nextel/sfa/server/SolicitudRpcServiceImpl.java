@@ -33,6 +33,7 @@ import ar.com.nextel.business.constants.MessageIdentifier;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.legacy.avalon.dto.CantidadEquiposDTO;
 import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
+import ar.com.nextel.business.legacy.avalon.service.AvalonService;
 import ar.com.nextel.business.legacy.bps.BPSSystem;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.shift.ShiftSystem;
@@ -95,7 +96,6 @@ import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
-import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
@@ -134,6 +134,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
+import ar.com.nextel.sfa.client.dto.SubsidiosDto;
 import ar.com.nextel.sfa.client.dto.SucursalDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
@@ -151,7 +152,6 @@ import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.client.util.PortabilidadResult;
 import ar.com.nextel.sfa.client.util.PortabilidadResult.ERROR_ENUM;
-import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.server.businessservice.CuentaBusinessService;
 import ar.com.nextel.sfa.server.businessservice.SolicitudBusinessService;
 import ar.com.nextel.sfa.server.util.MapperExtended;
@@ -181,6 +181,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private DefaultRetriever globalParameterRetriever;
 	private MailSender mailSender;
 	private CuentaBusinessService cuentaBusinessService;
+	private AvalonService avalonService;
 
 	//MELI
 	private DefaultSequenceImpl tripticoNextValue;
@@ -243,6 +244,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		messageRetriever = (DefaultRetriever)context.getBean("messageRetriever");
 		mailSender= (MailSender)context.getBean("mailSender");
 		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");		
+		avalonService = (AvalonService) context.getBean("avalonService");		
 
 	}
 
@@ -916,6 +918,10 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				.getId(), idCuenta, sessionContextLoader.getVendedor(), isActivacion, idModelo);
 		
 		return mapper.convertList(planes, PlanDto.class);
+	}
+
+	public List<SubsidiosDto> getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado) {
+		return solicitudBusinessService.getSubsidiosPorItem(itemSolicitudTasado);
 	}
 
 	public List<ServicioAdicionalLineaSolicitudServicioDto> getServiciosAdicionales(
@@ -3043,5 +3049,14 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		ME, //MENDO
 		RO, //ROSAR
 		ZZ; //SIN AREA
+	}
+
+	public boolean validarImeiSim(String imei, String sim, String modeloEq)
+			throws RpcExceptionMessages {
+		String handsetAsociadoConSIM = avalonService.getHandsetAsociadoConSIM(sim);
+		if (handsetAsociadoConSIM==imei){
+			return true;
+		}
+		return false;
 	}
 }

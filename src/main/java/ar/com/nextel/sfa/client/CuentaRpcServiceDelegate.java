@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.client;
 
 import java.util.List;
+import java.util.Set;
 
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
@@ -206,5 +207,10 @@ public class CuentaRpcServiceDelegate {
 	public void obtenerPahtArchivoVeraz(String verazFileName, DefaultWaitCallback<String> callback){
 		WaitWindow.show();
 		cuentaRpcService.obtenerPahtArchivoVeraz(verazFileName, callback);
+	}
+	
+	public void searchContratosConPermanencia(Set<ContratoViewDto> listaContratos, DefaultWaitCallback<Boolean> callback){
+		WaitWindow.show();
+		cuentaRpcService.searchContratosConPermanencia(listaContratos, callback);
 	}
 }

@@ -96,8 +96,10 @@ import ar.com.nextel.services.nextelServices.veraz.dto.VerazRequestDTO;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
+import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.SubsidiosDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
@@ -1359,4 +1361,44 @@ public class SolicitudBusinessService {
 		repository.save(ss);
 		return ss;
 	}
+	
+	public List<SubsidiosDto> getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado) {
+		Long idTipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor().getId();
+		Long idItem = itemSolicitudTasado.getItem().getId();
+
+		List<SubsidiosDto> subsidios = new ArrayList<SubsidiosDto>();
+		PreparedStatement stmt = null;
+		String sql = String.format("select a.id_plan,b.subsidio from sfa_plan_item a,sfa_plan_item_vendedor b " +
+				"where a.id_plan_item = b.id_plan_item " +
+				"and b.id_tipo_vendedor = " +idTipoVendedor+
+				"and a.id_item = " +idItem);
+
+		try {
+			stmt = ((HibernateRepository) repository)
+					.getHibernateDaoSupport().getSessionFactory()
+					.getCurrentSession().connection().prepareStatement(sql);
+		
+			ResultSet resultSet = stmt.executeQuery();
+			while (resultSet.next()) {
+				SubsidiosDto s = new SubsidiosDto();
+				s.setIdPlan(resultSet.getLong(1));
+				s.setSubsidio(resultSet.getDouble(2));
+				subsidios.add(s);
+			}
+		} catch (HibernateException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally{
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException sqlEx) {}
+				stmt = null;
+			}
+	    }
+		return subsidios;
+	}
+
+	
 }

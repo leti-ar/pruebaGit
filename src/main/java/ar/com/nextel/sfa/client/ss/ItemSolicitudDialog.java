@@ -121,7 +121,12 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	
 	public void onClick(final Widget sender) {
 		if (sender == aceptar || sender == nuevoItem) {
-			executeItemCreation(sender);
+			if (itemSolicitudUIData.isActivacionOnline()){
+				executeItemCreationActivacionOnline(sender);
+			}else{
+				executeItemCreation(sender);
+			}
+			
 		} else if (sender == cerrar) {
 			itemSolicitudUIData.desreservarSiNoFueGrabado();
 			itemSolicitudUIData.getConfirmarReserva().setEnabled(true);
@@ -170,6 +175,25 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 			ErrorDialog.getInstance().show(errors, false);
 
 		}
+	}
+	
+	// TODO CAM si es activacion online el imei/sim deben estar linkeados
+	private void executeItemCreationActivacionOnline(final Widget sender) {
+		String imei = itemSolicitudUIData.getImei().getText();
+		String sim = itemSolicitudUIData.getSim().getText();
+		String modeloEq = itemSolicitudUIData.getModeloEq().getSelectedItem().getItemValue();
+		SolicitudRpcService.Util.getInstance().validarImeiSim(imei, sim, modeloEq,
+				new DefaultWaitCallback<Boolean>() {
+			@Override
+			public void success(Boolean result) {
+				if(result){
+					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+					ErrorDialog.getInstance().show("El IMEI y la SIM no se encuentran linkeadas", false);
+				}else{
+					executeItemCreation(sender);
+				}
+			}
+		});
 	}
 	
 //	MGR - RQN 2328 - Continuo con la aceptación del item ingresado
@@ -232,10 +256,12 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	public void onChange(ChangeEvent event) {
 		TipoSolicitudDto tipoSolicitud = (TipoSolicitudDto) tipoOrden.getSelectedItem();
 		itemSolicitudUIData.setActivacionOnline(false);
+		itemSolicitudUIData.setActivacion(false);
+		itemSolicitudUIData.getFullPrice().setEnabled(false);
 		if (tipoSolicitud != null) {
 			if (itemSolicitudUIData.getIdsTipoSolicitudBaseItemYPlan().contains(
 					tipoSolicitud.getTipoSolicitudBase().getId())) {
-				tipoSolicitudPanel.setWidget(getItemYPlanSolicitudUI());
+				tipoSolicitudPanel.setWidget(getItemYPlanSolicitudPermanenciaUI());
 				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.ITEM_PLAN);
 			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseItem().contains(
 					tipoSolicitud.getTipoSolicitudBase().getId())) {
@@ -292,6 +318,17 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		itemYPlanSolicitudUI.load();
 		return itemYPlanSolicitudUI;
 	}
+
+	// TODO CAM layout con checkbox de permanencia
+	private ItemYPlanSolicitudUI getItemYPlanSolicitudPermanenciaUI() {
+		if (itemYPlanSolicitudUI == null) {
+			itemYPlanSolicitudUI = new ItemYPlanSolicitudUI(getSoloItemSolicitudUI(), itemSolicitudUIData);
+		}
+		soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_SIMPLE_PERMANENCIA);
+		itemYPlanSolicitudUI.load();
+		return itemYPlanSolicitudUI;
+	}
+
 
 	private ItemYPlanSolicitudUI getItemSolicitudActivacionUI(boolean online) {
 		return getItemYPlanSolicitudUI().setActivacionVisible(online);

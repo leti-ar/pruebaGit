@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.client;
 
 import java.util.List;
+import java.util.Set;
 
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
@@ -88,4 +89,5 @@ public interface CuentaRpcService extends RemoteService {
 	public ScoreVerazDto autocompletarValoresVeraz(String score, int cantEquipos) throws RpcExceptionMessages;
 	
 	public String obtenerPahtArchivoVeraz(String verazFileName);
+	public Boolean searchContratosConPermanencia(Set<ContratoViewDto> listaContratos);
 }

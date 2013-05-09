@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.client;
 
 import java.util.List;
+import java.util.Set;
 
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
@@ -72,4 +73,5 @@ public interface CuentaRpcServiceAsync {
 	public void autocompletarValoresVeraz(String score, int cantEquipos, AsyncCallback<ScoreVerazDto> callback);
 
 	public void obtenerPahtArchivoVeraz(String verazFileName, AsyncCallback<String> callback);
+	public void searchContratosConPermanencia(Set<ContratoViewDto> listaContratos, AsyncCallback<Boolean> callback);
 }

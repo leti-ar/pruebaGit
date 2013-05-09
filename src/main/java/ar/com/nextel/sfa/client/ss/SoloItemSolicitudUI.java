@@ -23,12 +23,14 @@ public class SoloItemSolicitudUI extends Composite {
 	private Grid total;
 	private ItemSolicitudUIData itemSolicitudData;
 	private FlexTable listaPrecio;
+	private FlexTable permanencia;
 	private FlexTable terminoPago;
 
 	public static final int LAYOUT_SIMPLE = 0;
 	public static final int LAYOUT_ACTIVACION = 1;
 	public static final int LAYOUT_CON_TOTAL = 2;
 	public static final int LAYOUT_ACTIVACION_ONLINE = 3;
+	public static final int LAYOUT_SIMPLE_PERMANENCIA = 4;
 
 	public SoloItemSolicitudUI(ItemSolicitudUIData itemSolicitudUIData) {
 		mainPanel = new FlowPanel();
@@ -67,6 +69,13 @@ public class SoloItemSolicitudUI extends Composite {
 
 		mainPanel.add(activacionModeloImei);
 		
+		permanencia = new FlexTable();
+		permanencia.setVisible(false);
+		permanencia.getCellFormatter().setWidth(0, 0, "100px");
+		permanencia.setWidget(0, 1, itemSolicitudData.getFullPrice());
+		
+		mainPanel.add(permanencia);
+
 //		Grid segundaTabla = new Grid(2, 2);
 //		segundaTabla.addStyleName("layout");
 //		segundaTabla.getCellFormatter().setWidth(0, 0, "100px");
@@ -141,18 +150,30 @@ public class SoloItemSolicitudUI extends Composite {
 			mostrarActivacionPrecioListaYPin(true);
 			itemSolicitudData.resetIMEICheck();
 			precioCantidad.setVisible(false);
+			permanencia.setVisible(false);
 			break;
 
 		case LAYOUT_CON_TOTAL:
 			total.setVisible(true);
+			permanencia.setVisible(false);
+
 
 		case LAYOUT_SIMPLE:
 			precioCantidad.setVisible(true);
 			activacionModeloImei.setVisible(false);
 			activacionSimSeriePin.setVisible(false);
 			precioCantidad.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
+			permanencia.setVisible(false);
 			break;
 			
+		case LAYOUT_SIMPLE_PERMANENCIA:
+			precioCantidad.setVisible(true);
+			activacionModeloImei.setVisible(false);
+			activacionSimSeriePin.setVisible(false);
+			precioCantidad.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
+			permanencia.setVisible(true);
+			break;
+
 		case LAYOUT_ACTIVACION_ONLINE:
 			listaPrecio.setVisible(false);
 			activacionModeloImei.setVisible(true);
@@ -162,6 +183,7 @@ public class SoloItemSolicitudUI extends Composite {
 			itemSolicitudData.resetIMEICheck();
 			precioCantidad.setVisible(false);
 			terminoPago.setVisible(false);
+			permanencia.setVisible(true);
 			break;
 			
 		default:

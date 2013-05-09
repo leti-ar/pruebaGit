@@ -27,6 +27,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
+import ar.com.nextel.sfa.client.dto.SubsidiosDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.dto.TipoPersonaDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
@@ -233,5 +234,9 @@ public interface SolicitudRpcService extends RemoteService {
 
 //	MGR - RQN 2328
 	boolean validarAreaBilling(String numeroAPortar) throws RpcExceptionMessages;
+	
+	public List<SubsidiosDto> getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado);
+
+	public boolean validarImeiSim(String imei, String sim, String modeloEq) throws RpcExceptionMessages;
 }
 

@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 
@@ -22,6 +23,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
 import ar.com.nextel.business.cuentas.migrator.legacy.dto.DocDigitalizadoLegacyDto;
+import ar.com.nextel.business.cuentas.permanencia.PermanenciaService;
 import ar.com.nextel.business.cuentas.search.SearchCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.search.businessUnits.CuentaSearchData;
 import ar.com.nextel.business.cuentas.search.result.CuentaSearchResult;
@@ -172,6 +174,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	private SessionContextLoader sessionContextLoader;
 	private MessageRetriever messageRetriever;
 	private AvalonSystem avalonSystem;
+	private PermanenciaService permanencia;
 
 	private static final String ASOCIAR_CUENTA_A_OPP_ERROR = "La cuenta ya existe. No puede asociarse a la Oportunidad.";
 	private static final String ERROR_OPER_OTRO_VENDEDOR = "El prospect/cliente tiene una operación en curso con otro vendedor. No puede ver sus datos. El {1} es {2}";
@@ -210,6 +213,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		vantiveSystem = (VantiveSystem) context.getBean("vantiveSystemBean");
 		
 		setGetAllBusinessOperator((GetAllBusinessOperator) context.getBean("getAllBusinessOperatorBean"));
+		permanencia = (PermanenciaService) context.getBean("permanenciaService");
 	}
 
 	public List<CuentaSearchResultDto> searchCuenta(CuentaSearchDto cuentaSearchDto)
@@ -1044,5 +1048,15 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
+	}
+	
+	public Boolean searchContratosConPermanencia(Set<ContratoViewDto> listaContratos){
+		for (ContratoViewDto contrato : listaContratos) {
+			boolean tienePermanencia = permanencia.tienePermanencia(contrato.getContrato());
+			if (tienePermanencia){
+				return true;
+			}
+		}
+		return false;
 	}
 }
