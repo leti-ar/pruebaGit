@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ar.com.nextel.sfa</groupId>
 	<artifactId>sfa-web</artifactId>
-	<version>2.9.0.PERMANENCIA</version>
+	<version>2.10.0.PERMANENCIA-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>SFA WEB</name>
 	<description>SFA Revolution Web - IE support</description>
