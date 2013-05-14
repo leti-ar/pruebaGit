@@ -6,6 +6,7 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
@@ -38,7 +39,7 @@ public class BuscarSSCerradasReportsDialog extends NextelDialog{
 	private TitledPanel pnlDescripcionReplica;
 	private Grid gridLayout;
 	private ClickListener clickListener; 
-	private String fileSolicitudRtf;
+	private String fileSolicitudReport;
 	private List<String> portabilidadFileNames;
 	private Long idSolicitud;
 	
@@ -61,8 +62,16 @@ public class BuscarSSCerradasReportsDialog extends NextelDialog{
 	 */
 	public void show(SolicitudServicioCerradaResultDto solicitudServicio){
 		idSolicitud = solicitudServicio.getId();
+		
+		String reportFileName = solicitudServicio.getIdCuenta().toString() + "-5-" + solicitudServicio.getNumeroSS();
+		//MGR - Los Vendedores del tipo retail generan pdf, el resto, rtf
+        if(ClientContext.getInstance().getVendedor().isRetail())
+        	reportFileName += ".pdf";
+        else
+        	reportFileName += ".rtf";
+		
 		// Setea el nombre del archivo de la solicitud de servicio
-		setFileSolicitudRtf(solicitudServicio.getIdCuenta().toString() + "-5-" + solicitudServicio.getNumeroSS() + ".rtf");
+		setFileSolicitudReport(reportFileName);
 		// Genera los parametros y los nombres de los archivos de las solicitudes de portabilidad
 		SolicitudRpcService.Util.getInstance().generarParametrosPortabilidadRTF(idSolicitud, 
 				new DefaultWaitCallback<List<String>>() {
@@ -81,12 +90,19 @@ public class BuscarSSCerradasReportsDialog extends NextelDialog{
 							clickListener = new ClickListener() {
 								public void onClick(Widget sender) {
 									if(sender == lnkAceptar) hide();
-									else if(sender == lnkSS) descargarArchivo(getFileSolicitudRtf());
+									else if(sender == lnkSS) descargarArchivo(getFileSolicitudReport());
 									else{
 										boolean encontro = false;
+										String extension = null;
+										//MGR - Los Vendedores del tipo retail generan pdf, el resto, rtf
+								        if(ClientContext.getInstance().getVendedor().isRetail())
+								        	extension = ".pdf";
+								        else
+								        	extension = ".rtf";
+								        
 										for(int i = 0; i < portabilidadFileNames.size() && !encontro; i++){
 											if(sender == gridLayout.getWidget(i + 1, 1)){
-												descargarArchivo(((SimpleLink)gridLayout.getWidget(i + 1, 1)).getTitle() + ".rtf");
+												descargarArchivo(((SimpleLink)gridLayout.getWidget(i + 1, 1)).getTitle() + extension);
 												encontro = true;
 											}
 										}
@@ -102,7 +118,7 @@ public class BuscarSSCerradasReportsDialog extends NextelDialog{
 							gridLayout.setWidget(0,0, IconFactory.word());
 							gridLayout.setWidget(0,1, lnkSS);
 							lnkSS.addClickListener(clickListener);
-							lnkSS.setTitle(getFileSolicitudRtf());
+							lnkSS.setTitle(getFileSolicitudReport());
 							
 							for(int i = 0; i < portabilidadFileNames.size(); i++){
 								gridLayout.setWidget(i + 1, 0, IconFactory.word());
@@ -121,7 +137,7 @@ public class BuscarSSCerradasReportsDialog extends NextelDialog{
 							setFooterVisible(false);
 
 							showAndCenter();
-						}else descargarArchivo(getFileSolicitudRtf());
+						}else descargarArchivo(getFileSolicitudReport());
 					}
 		});
 	}
@@ -194,16 +210,14 @@ public class BuscarSSCerradasReportsDialog extends NextelDialog{
 	 */
 	public String getUrlReporte(String fileName) {
 		return "/" + WindowUtils.getContextRoot() + "/download/" + fileName
-		+ "?module=solicitudes&service=rtf&name=" + fileName;
+				+ "?module=solicitudes&service=rtf&name=" + fileName;
 	}
 
-	public String getFileSolicitudRtf() {
-		return fileSolicitudRtf;
+	public String getFileSolicitudReport() {
+		return fileSolicitudReport;
 	}
 
-	public void setFileSolicitudRtf(String fileSolicitudRtf) {
-		this.fileSolicitudRtf = fileSolicitudRtf;
+	public void setFileSolicitudReport(String fileSolicitudReport) {
+		this.fileSolicitudReport = fileSolicitudReport;
 	}
-
-
 }
