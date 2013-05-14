@@ -56,6 +56,7 @@ import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRet
 import ar.com.nextel.components.mail.MailSender;
 import ar.com.nextel.components.message.Message;
 import ar.com.nextel.components.message.MessageList;
+import ar.com.nextel.components.report.Report;
 import ar.com.nextel.components.sequence.DefaultSequenceImpl;
 import ar.com.nextel.components.sms.EnvioSMSService;
 import ar.com.nextel.exception.LegacyDAOException;
@@ -94,6 +95,7 @@ import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
+import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
@@ -1262,19 +1264,19 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					solicitudBusinessService.generarChangeLog(solicitudServicioDto.getId(), solicitudServicio
 							.getVendedor().getId());
 				}
-				result.setRtfFileName(getReporteFileName(solicitudServicio));
+				result.setReportSSFileName(getReporteFileName(solicitudServicio));
 			}
 			
 			result.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
 			
 			
 			//TODO: Portabilidad - Setea los nombres de los rtf Generados
-			if(response.getRtfFileNamePortabilidad().size() > 0){
-				for (String rtfFileNamePorta : response.getRtfFileNamePortabilidad().get("PORTABILIDAD")) {
-					result.getRtfFileNamePortabilidad().add(rtfFileNamePorta);
+			if(response.getFileNamePortabilidad().size() > 0){
+				for (String fileNamePorta : response.getFileNamePortabilidad().get("PORTABILIDAD")) {
+					result.getFileNamePortabilidad().add(fileNamePorta);
 				}
-				for (String rtfFileNamePorta_adj : response.getRtfFileNamePortabilidad().get("PORTABILIDAD_ADJUNTO")) {
-					result.getRtfFileNamePortabilidad_adj().add(rtfFileNamePorta_adj);
+				for (String fileNamePorta_adj : response.getFileNamePortabilidad().get("PORTABILIDAD_ADJUNTO")) {
+					result.getFileNamePortabilidad_adj().add(fileNamePorta_adj);
 				}
 			}
 			
@@ -1306,11 +1308,18 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		String filename;
 		if (solicitudServicio.getCuenta().isCliente()) {
 			filename = solicitudServicio.getCuenta().getId().toString() + "-5-"
-					+ solicitudServicio.getNumero() + ".rtf";
+					+ solicitudServicio.getNumero();
 		} else {
 			filename = solicitudServicio.getCuenta().getId().toString() + "-5-"
-					+ solicitudServicio.getNumero() + ".rtf";
+					+ solicitudServicio.getNumero();
 		}
+		
+		//MGR - Los Vendedores del tipo retail generan pdf, el resto, rtf
+        if(sessionContextLoader.getVendedor().isRetail())
+        	filename += Report.EXT_PDF;
+        else
+        	filename += Report.EXT_RTF;
+        
 		return filename;
 	}
 
