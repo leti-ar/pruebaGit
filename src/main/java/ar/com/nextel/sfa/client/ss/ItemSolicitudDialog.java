@@ -187,10 +187,10 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 			@Override
 			public void success(Boolean result) {
 				if(result){
+					executeItemCreation(sender);
+				}else{
 					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 					ErrorDialog.getInstance().show("El IMEI y la SIM no se encuentran linkeadas", false);
-				}else{
-					executeItemCreation(sender);
 				}
 			}
 		});
