@@ -437,13 +437,6 @@ public class CuentaBusinessService {
 		}
 		// **********************************************************************************************
 		
-		// Canales de venta
-		if (cuenta.getVendedor().getTipoVendedor().getVendCanalVenta() == null) {
-			cuenta.setVendCanalVenta(cuenta.getVendedor());
-		} else {
-			cuenta.setVendCanalVenta(cuenta.getVendedor().getTipoVendedor().getVendCanalVenta());
-		}
-
 		repository.save(cuenta.getDatosPago());
 		repository.save(cuenta);
 		return cuenta.getId();
