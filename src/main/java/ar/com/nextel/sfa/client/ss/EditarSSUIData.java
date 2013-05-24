@@ -1642,9 +1642,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				getCuenta().isEmpresa(), isSaving, defaultWaitCallback);
 	}
 	
-	public void validarStockAgregarItem(final DefaultWaitCallback<List<String>> defaultWaitCallback, boolean isSaving){
-		SolicitudRpcService.Util.getInstance().validarSIM_IMEI(solicitudServicio, defaultWaitCallback);
-	}
+//	public void validarStockAgregarItem(final DefaultWaitCallback<List<String>> defaultWaitCallback, boolean isSaving){
+//		SolicitudRpcService.Util.getInstance().validarSIM_IMEI(solicitudServicio, defaultWaitCallback);
+//	}
 	
 	//MGR - #1415
 	public Long getIdSolicitudServicio(){

@@ -1877,10 +1877,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	 * validacion de stock para el imei-sin cargados en agregar item
 	 * 
 	 */
-	public void validarSIM_IMEI(SolicitudServicioDto solicitud, DefaultWaitCallback<List<String>> callback) {
-		SolicitudRpcService.Util.getInstance().validarSIM_IMEI(solicitud, callback);
-			
-	}
+//	public void validarSIM_IMEI(SolicitudServicioDto solicitud, DefaultWaitCallback<List<String>> callback) {
+//		SolicitudRpcService.Util.getInstance().validarSIM_IMEI(solicitud, callback);
+//			
+//	}
 	
 	/**
 	 * si existe por lo menos una linea de solicitud no deja cambiar el check de retiro en sucursal
