@@ -1004,6 +1004,17 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		}
 		return modelos;
 	}
+	
+	public ItemSolicitudTasadoDto getItemPorModelo(Long idModelo, Long idListaPrecios)
+			throws RpcExceptionMessages {
+		
+		List<ItemSolicitudTasadoDto> items = mapper.convertList(solicitudServicioRepository.getItemPorModelo(idListaPrecios
+				, idModelo, sessionContextLoader.getVendedor() ), ItemSolicitudTasadoDto.class);
+		if (items.isEmpty()){
+			return null;
+		}
+		return items.get(0);
+	}
 
 	/** Retorna null si la SIM es correcta. De lo contrario retorna el mensaje de error */
 	public String verificarNegativeFiles(String numero) throws RpcExceptionMessages {

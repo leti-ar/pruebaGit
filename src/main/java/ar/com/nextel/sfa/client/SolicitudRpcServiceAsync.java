@@ -224,4 +224,6 @@ public interface SolicitudRpcServiceAsync {
 	public void getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado, AsyncCallback<List<SubsidiosDto>> callback);
 
 	public void validarImeiSim(String imei, String sim, String modeloEq, AsyncCallback<Boolean> callback);
+	
+	public void getItemPorModelo(Long idModelo, Long idListaPrecios, AsyncCallback<ItemSolicitudTasadoDto> callback);
 }

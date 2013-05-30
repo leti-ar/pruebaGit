@@ -35,6 +35,7 @@ public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 	
 	private Long idTipoTelefoniaCedente;
 
+	private boolean isPermanencia = false;
 	
 	public Long getContrato() {
 		return contrato;
@@ -242,5 +243,13 @@ public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 
 	public Long getIdTipoTelefoniaCedente() {
 		return idTipoTelefoniaCedente;
+	}
+
+	public void setPermanencia(boolean isPermanencia) {
+		this.isPermanencia = isPermanencia;
+	}
+
+	public boolean isPermanencia() {
+		return isPermanencia;
 	}
 }

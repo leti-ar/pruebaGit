@@ -209,8 +209,8 @@ public class CuentaRpcServiceDelegate {
 		cuentaRpcService.obtenerPahtArchivoVeraz(verazFileName, callback);
 	}
 	
-	public void searchContratosConPermanencia(Set<ContratoViewDto> listaContratos, DefaultWaitCallback<Boolean> callback){
+	public void checkPermanencia(Set<ContratoViewDto> listaContratos, DefaultWaitCallback<Set<ContratoViewDto>> callback){
 		WaitWindow.show();
-		cuentaRpcService.searchContratosConPermanencia(listaContratos, callback);
+		cuentaRpcService.checkPermanencia(listaContratos, callback);
 	}
 }

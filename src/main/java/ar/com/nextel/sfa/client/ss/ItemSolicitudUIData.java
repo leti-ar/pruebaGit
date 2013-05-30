@@ -124,6 +124,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 //	MGR - #3462
 	private boolean activacion = false;
 	private Long idTipoSolicitudBaseActivacion = 0L;
+	private ItemSolicitudTasadoDto itemActivacionOnline = null;
 
 	public ItemSolicitudUIData(EditarSSUIController controller) {
 		
@@ -602,6 +603,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			if (is != null) {
 				TerminoPagoValidoDto terminoSelected = (TerminoPagoValidoDto) terminoPago.getSelectedItem();
 				double precio = is.getPrecioLista();
+				// Selecciono el item relacionado al modelo si es activacion online
+				if (isActivacionOnline() && itemActivacionOnline!=null){
+					precio = itemActivacionOnline.getPrecioLista();
+				}
 				if (terminoSelected != null && terminoSelected.getAjuste() != null) {
 					precio = terminoSelected.getAjuste() * precio;
 				}
@@ -612,7 +617,13 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 					boolean isActivacion = this.isActivacion() || this.isActivacionOnline();
 					controller.getPlanesPorItemYTipoPlan(is, (TipoPlanDto) tipoPlan.getSelectedItem(),
 							isActivacion, modelo, getActualizarPlanCallback());
-					controller.getSubsidiosPorItem(is, getActualizarSubsidiosCallback());
+					if (!isActivacionOnline()){
+						controller.getSubsidiosPorItem(is, getActualizarSubsidiosCallback());
+					}else{
+						if (itemActivacionOnline!=null){
+							controller.getSubsidiosPorItem(itemActivacionOnline, getActualizarSubsidiosCallback());
+						}
+					}
 				}
 				// if(is.getItem().) // alcanza con isEquipo, isAccesorio?
 				ddn.setValue(true);
@@ -704,6 +715,17 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 					setSerieVisibleAndPinInvisible(true);
 					setDisableAndCheckedRoaming(false);
 				}
+				// busco el item relacionado al modelo para activacion online
+				if (isActivacionOnline()){
+					Long idListaPrecio = ((ListaPreciosDto) listaPrecio.getSelectedItem()).getId();
+					controller.getItemPorModelo(modelo.getId(), idListaPrecio,
+						new DefaultWaitCallback<ItemSolicitudTasadoDto>() {
+							public void success(ItemSolicitudTasadoDto result) {
+								itemActivacionOnline = result; 
+								onChange(item);
+							}
+						});
+				}
 			}
 		} else if (sender == imei) {
 			refreshModelos();
@@ -719,6 +741,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		if (is != null) {
 			TerminoPagoValidoDto terminoSelected = (TerminoPagoValidoDto) terminoPago.getSelectedItem();
 			double precio = is.getPrecioLista();
+			// Selecciono el item relacionado al modelo si es activacion online
+			if (isActivacionOnline() && itemActivacionOnline!=null){
+				precio = itemActivacionOnline.getPrecioLista();
+			}
 			if (terminoSelected != null && terminoSelected.getAjuste() != null) {
 				precio = terminoSelected.getAjuste() * precio;
 			}
@@ -1106,6 +1132,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 			lineaSolicitudServicio.setNumeroSimcard(sim.getText());
 			lineaSolicitudServicio.setCantidad(1);
+			//TODO CAM ACTIVACION ONLINE VER SI SE DEBE CARGAR..
+			lineaSolicitudServicio.setPrecioLista(itemActivacionOnline.getPrecioLista());
+			lineaSolicitudServicio.setPrecioVenta(itemActivacionOnline.getPrecioLista());
 		} else {
 			lineaSolicitudServicio.setCantidad(Integer.parseInt(cantidad.getText()));
 

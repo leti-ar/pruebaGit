@@ -3368,4 +3368,23 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("El teléfono a portar no pertenece a un área habilitada para Nextel")
   @Key("ERR_AREA_BILLING_NO_VALIDA")
   String ERR_AREA_BILLING_NO_VALIDA();
+  
+  /**
+   * Translated "Cargos de Permanencia".
+   * 
+   * @return translated "Cargos de Permanencia"
+   */
+  @DefaultStringValue("Cargos de Permanencia")
+  @Key("cargosPermanencia")
+  String cargosPermanencia();
+
+  /**
+   * Translated "Contrato Número: {1} \n Monto a Cobrar: ${2}".
+   * 
+   * @return translated "Contrato Número: {1} \n Monto a Cobrar: ${2}"
+   */
+  @DefaultStringValue("Contrato Número: {1} \n Monto a Cobrar: ${2}")
+  @Key("infoContrato")
+  String infoContrato();
+  
 }

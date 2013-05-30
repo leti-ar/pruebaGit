@@ -121,7 +121,8 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	
 	public void onClick(final Widget sender) {
 		if (sender == aceptar || sender == nuevoItem) {
-			if (itemSolicitudUIData.isActivacionOnline()){
+			// se valida la imei/sim cuando sea activacion online y sea subsidiado
+			if (itemSolicitudUIData.isActivacionOnline() && !itemSolicitudUIData.getFullPrice().getValue()){
 				executeItemCreationActivacionOnline(sender);
 			}else{
 				executeItemCreation(sender);
@@ -177,7 +178,6 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		}
 	}
 	
-	// TODO CAM si es activacion online el imei/sim deben estar linkeados
 	private void executeItemCreationActivacionOnline(final Widget sender) {
 		String imei = itemSolicitudUIData.getImei().getText();
 		String sim = itemSolicitudUIData.getSim().getText();
@@ -319,7 +319,6 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		return itemYPlanSolicitudUI;
 	}
 
-	// TODO CAM layout con checkbox de permanencia
 	private ItemYPlanSolicitudUI getItemYPlanSolicitudPermanenciaUI() {
 		if (itemYPlanSolicitudUI == null) {
 			itemYPlanSolicitudUI = new ItemYPlanSolicitudUI(getSoloItemSolicitudUI(), itemSolicitudUIData);

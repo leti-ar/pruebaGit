@@ -89,5 +89,5 @@ public interface CuentaRpcService extends RemoteService {
 	public ScoreVerazDto autocompletarValoresVeraz(String score, int cantEquipos) throws RpcExceptionMessages;
 	
 	public String obtenerPahtArchivoVeraz(String verazFileName);
-	public Boolean searchContratosConPermanencia(Set<ContratoViewDto> listaContratos);
+	public Set<ContratoViewDto> checkPermanencia(Set<ContratoViewDto> listaContratos);
 }

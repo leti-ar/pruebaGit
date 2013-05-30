@@ -443,4 +443,11 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.validarImeiSim(imei,sim,modeloEq, callback);
 	}
+	
+	public void getItemPorModelo(Long idModelo, Long idListaPrecios,
+			DefaultWaitCallback<ItemSolicitudTasadoDto> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getItemPorModelo(idModelo, idListaPrecios, callback);
+	}
+
 }

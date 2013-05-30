@@ -20,6 +20,7 @@ public class SoloItemSolicitudUI extends Composite {
 	private FlexTable activacionModeloImei;
 	private FlexTable activacionSimSeriePin;
 	private Grid precioCantidad;
+	private Grid precioActivacion;
 	private Grid total;
 	private ItemSolicitudUIData itemSolicitudData;
 	private FlexTable listaPrecio;
@@ -109,6 +110,15 @@ public class SoloItemSolicitudUI extends Composite {
 		precioCantidad.setHTML(0, 2, Sfa.constant().cantidadReq());
 		precioCantidad.setWidget(0, 3, itemSolicitudData.getCantidad());
 		mainPanel.add(precioCantidad);
+		
+		precioActivacion = new Grid(1, 2);
+		precioActivacion.addStyleName("layout");
+		precioActivacion.getCellFormatter().setWidth(0, 0, "100px");
+		precioActivacion.getCellFormatter().setWidth(0, 1, "125px");
+		precioActivacion.setHTML(0, 0, Sfa.constant().precioLista());
+		precioActivacion.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
+		precioActivacion.setVisible(false);
+		mainPanel.add(precioActivacion);
 
 		total = new Grid(1, 2);
 		total.addStyleName("layout");
@@ -151,6 +161,7 @@ public class SoloItemSolicitudUI extends Composite {
 			itemSolicitudData.resetIMEICheck();
 			precioCantidad.setVisible(false);
 			permanencia.setVisible(false);
+			precioActivacion.setVisible(false);
 			break;
 
 		case LAYOUT_CON_TOTAL:
@@ -164,6 +175,7 @@ public class SoloItemSolicitudUI extends Composite {
 			activacionSimSeriePin.setVisible(false);
 			precioCantidad.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
 			permanencia.setVisible(false);
+			precioActivacion.setVisible(false);
 			break;
 			
 		case LAYOUT_SIMPLE_PERMANENCIA:
@@ -172,6 +184,7 @@ public class SoloItemSolicitudUI extends Composite {
 			activacionSimSeriePin.setVisible(false);
 			precioCantidad.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
 			permanencia.setVisible(true);
+			precioActivacion.setVisible(false);
 			break;
 
 		case LAYOUT_ACTIVACION_ONLINE:
@@ -179,11 +192,12 @@ public class SoloItemSolicitudUI extends Composite {
 			activacionModeloImei.setVisible(true);
 			activacionSimSeriePin.setVisible(true);
 			mostrarActivacionPrecioListaYPin(false);
-			
 			itemSolicitudData.resetIMEICheck();
 			precioCantidad.setVisible(false);
 			terminoPago.setVisible(false);
 			permanencia.setVisible(true);
+			precioActivacion.setVisible(true);
+			precioActivacion.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
 			break;
 			
 		default:

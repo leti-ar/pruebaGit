@@ -238,5 +238,9 @@ public interface SolicitudRpcService extends RemoteService {
 	public List<SubsidiosDto> getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado);
 
 	public boolean validarImeiSim(String imei, String sim, String modeloEq) throws RpcExceptionMessages;
+	
+	public ItemSolicitudTasadoDto getItemPorModelo(Long idModelo, Long idListaPrecios)
+		throws RpcExceptionMessages;
+
 }
 

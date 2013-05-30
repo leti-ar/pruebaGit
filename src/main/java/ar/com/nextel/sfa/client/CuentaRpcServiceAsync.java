@@ -73,5 +73,5 @@ public interface CuentaRpcServiceAsync {
 	public void autocompletarValoresVeraz(String score, int cantEquipos, AsyncCallback<ScoreVerazDto> callback);
 
 	public void obtenerPahtArchivoVeraz(String verazFileName, AsyncCallback<String> callback);
-	public void searchContratosConPermanencia(Set<ContratoViewDto> listaContratos, AsyncCallback<Boolean> callback);
+	public void checkPermanencia(Set<ContratoViewDto> listaContratos, AsyncCallback<Set<ContratoViewDto>> callback);
 }

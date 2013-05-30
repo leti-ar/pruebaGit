@@ -20,6 +20,8 @@ import ar.com.nextel.sfa.client.dto.ServicioContratoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
+import ar.com.nextel.sfa.client.event.ClickPermanenciaEvent;
+import ar.com.nextel.sfa.client.event.ClickPermanenciaEventHandler;
 import ar.com.nextel.sfa.client.event.ClickPincheEvent;
 import ar.com.nextel.sfa.client.event.ClickPincheEventHandler;
 import ar.com.nextel.sfa.client.event.EventBusUtil;
@@ -53,7 +55,6 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	
@@ -138,6 +139,13 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 				doClickChinche(event);
 			}
 		});
+		
+		EventBusUtil.getEventBus().addHandler(ClickPermanenciaEvent.TYPE, new ClickPermanenciaEventHandler() {
+			public void onClickPermanencia(ClickPermanenciaEvent event) {
+				onClickPopUpPermanencia(event);
+			}
+		});
+
 	}
 	
 //	@Override
@@ -804,11 +812,20 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	}
 
 	private void verificarContratosConPermanencia() {
-		CuentaRpcService.Util.getInstance().searchContratosConPermanencia(contratosChequeados,
-				new DefaultWaitCallback<Boolean>() {
+		CuentaRpcService.Util.getInstance().checkPermanencia(contratosChequeados,
+				new DefaultWaitCallback<Set<ContratoViewDto>>() {
 			@Override
-			public void success(Boolean result) {
-				controller.loadTransferencia(result);
+			public void success(Set<ContratoViewDto> result) {
+				contratosChequeados.clear();
+				contratosChequeados.addAll(result);
+				boolean tienePermanencia = false;
+				for (ContratoViewDto contrato : result) {
+					if (contrato.isPermanencia()){
+						tienePermanencia = true;
+						break;
+					}
+				}
+				controller.loadTransferencia(tienePermanencia,false);
 			}
 		});
 	}
@@ -829,6 +846,13 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		this.todosContratosActivos.clear();
 		this.limpiarTablaContratos();
 		this.limpiarTablaServFacturados();
+	}
+
+	protected void onClickPopUpPermanencia(ClickPermanenciaEvent event) {
+		//TODO CAM 9. El MP genera la factura por el monto de los cargos abonados detallando cada uno.
+		MessageDialog.getInstance().showAceptar("Aca deberia realizar la facturacion para permanencia..."
+				, MessageDialog.getCloseCommand());
+		controller.loadTransferencia(false,true);
 	}
 	
 
