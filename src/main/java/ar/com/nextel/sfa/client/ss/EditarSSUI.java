@@ -1125,7 +1125,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 							StringBuilder msgString = new StringBuilder();
 							for (MessageDto msg : result.getMessages()) {
 								msgString.append("<span class=\"info\">- " + msg.getDescription()
-										+ "</span><br>");
+										+ "</span>");
 							}
 							MessageDialog.getInstance().showAceptar("Aviso",msgString.toString(), MessageDialog.getCloseCommand());
 							editarSSUIData.getRetiraEnSucursal().setEnabled(!(datos.getDetalleSS().getRowCount() - 1 > 0 ));
