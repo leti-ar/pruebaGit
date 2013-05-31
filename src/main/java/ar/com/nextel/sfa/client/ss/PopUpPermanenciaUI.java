@@ -57,10 +57,10 @@ public class PopUpPermanenciaUI extends DialogBox {
 			}
 		});
 		for (ContratoViewDto value : values) {
-			if (value.isPermanencia()){
+			if (!value.getCargosPermanencia().equals(0d)){
 				String msg = Sfa.constant().infoContrato().replaceAll("\\{1\\}"
 						,value.getContrato().toString()).replaceAll("\\{2\\}"
-						, value.getPrecioPlanCedente().toString());
+						, value.getCargosPermanencia().toString());
 				Label contratoInfo = new Label(msg);
 				contentTable.setWidget(row++, 0, contratoInfo);
 			}

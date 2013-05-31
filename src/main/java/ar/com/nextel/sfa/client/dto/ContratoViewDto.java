@@ -34,8 +34,7 @@ public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 	private List<ServicioAdicionalIncluidoDto> serviciosAdicionalesInc = new ArrayList<ServicioAdicionalIncluidoDto>();
 	
 	private Long idTipoTelefoniaCedente;
-
-	private boolean isPermanencia = false;
+	private Double cargosPermanencia;
 	
 	public Long getContrato() {
 		return contrato;
@@ -245,11 +244,11 @@ public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 		return idTipoTelefoniaCedente;
 	}
 
-	public void setPermanencia(boolean isPermanencia) {
-		this.isPermanencia = isPermanencia;
+	public void setCargosPermanencia(Double cargosPermanencia) {
+		this.cargosPermanencia = cargosPermanencia;
 	}
 
-	public boolean isPermanencia() {
-		return isPermanencia;
+	public Double getCargosPermanencia() {
+		return cargosPermanencia;
 	}
 }

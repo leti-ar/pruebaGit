@@ -820,7 +820,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 				contratosChequeados.addAll(result);
 				boolean tienePermanencia = false;
 				for (ContratoViewDto contrato : result) {
-					if (contrato.isPermanencia()){
+					if (!contrato.getCargosPermanencia().equals(0d)){
 						tienePermanencia = true;
 						break;
 					}

@@ -1052,10 +1052,8 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	
 	public Set<ContratoViewDto> checkPermanencia(Set<ContratoViewDto> listaContratos){
 		for (ContratoViewDto contrato : listaContratos) {
-			boolean tienePermanencia = permanencia.tienePermanencia(contrato.getContrato());
-			if (tienePermanencia){
-				contrato.setPermanencia(tienePermanencia);
-			}
+			Double cargosPermanencia = permanencia.getCargosACobrar(contrato.getContrato());
+			contrato.setCargosPermanencia(cargosPermanencia);
 		}
 		return listaContratos;
 	}
