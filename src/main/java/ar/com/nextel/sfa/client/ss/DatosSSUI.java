@@ -899,14 +899,14 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				i = 1;
 			}
 		}
-		detalleSS.setHTML(newRow, controller.isEditable()?7-i:++i, linea.getAlias() != null ? linea.getAlias() : "");
-		detalleSS.setHTML(newRow, controller.isEditable()?8-i:++i, linea.getPlan() != null ? linea.getPlan().getDescripcion() : "");
+		detalleSS.setHTML(newRow, controller.isEditable()?7-i:++i, !strIsEmpty(linea.getAlias()) ? linea.getAlias() : Sfa.constant().whiteSpace());
+		detalleSS.setHTML(newRow, controller.isEditable()?8-i:++i, linea.getPlan() != null ? linea.getPlan().getDescripcion() : Sfa.constant().whiteSpace());
 		detalleSS.setHTML(newRow, controller.isEditable()?9-i:++i, linea.getPlan() != null ? currencyFormat.format(linea
-				.getPrecioVentaPlan()) : "");
+				.getPrecioVentaPlan()) : Sfa.constant().whiteSpace());
 		detalleSS.getCellFormatter().addStyleName(newRow, controller.isEditable()?9-i:i, "alignRight");
 		detalleSS.setHTML(newRow, controller.isEditable()?10-i:++i, linea.getLocalidad() != null ? linea.getLocalidad().getDescripcion()
-				: "");
-		detalleSS.setHTML(newRow, controller.isEditable()?11-i:++i, linea.getNumeroReserva()!=null ? linea.getNumeroReserva() : Sfa.constant().whiteSpace()); //Sfa.constant().whiteSpace());
+				: Sfa.constant().whiteSpace());
+		detalleSS.setHTML(newRow, controller.isEditable()?11-i:++i, !strIsEmpty(linea.getNumeroReserva()) ? linea.getNumeroReserva() : Sfa.constant().whiteSpace()); //Sfa.constant().whiteSpace());
 		detalleSS.setHTML(newRow, controller.isEditable()?12-i:++i, linea.getTipoSolicitud().getDescripcion());
 		detalleSS.setHTML(newRow, controller.isEditable()?13-i:++i, "" + linea.getCantidad());
 		detalleSS.setHTML(newRow, controller.isEditable()?14-i:++i, linea.getDdn() ? IconFactory.tildeVerde().toString() : Sfa.constant().whiteSpace());
@@ -917,6 +917,11 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		else detalleSS.setHTML(newRow,controller.isEditable()?17-i:++i,Sfa.constant().whiteSpace());
 	}
 
+	private boolean strIsEmpty(String str) {
+		return str == null || str.trim().length() == 0;
+	}
+	
+	
 	public void editarPrecioDeVentaPlan() {
 		LineaSolicitudServicioDto lineaSS = editarSSUIData.getLineasSolicitudServicio().get(
 				selectedDetalleRow - 1);
