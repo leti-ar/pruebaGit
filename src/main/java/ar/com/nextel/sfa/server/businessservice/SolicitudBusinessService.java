@@ -140,6 +140,11 @@ public class SolicitudBusinessService {
 	
 //	MGR - Se mueve la creacion de la cuenta
 	private String MENSAJE_ERROR_CREAR_CUENTA= "La SS % quedó pendiente de aprobación, por favor verificar y dar curso manual.";
+
+//	MGR - Parche de emergencia
+	public static final int CIERRE_NORMAL = 1; //Se cierra la solicitud de servicio y se transfiere a Vantive
+	public static final int LINEAS_NO_CUMPLEN_CC = 2;
+	public static final int CIERRE_PASS_AUTOMATICO = 3;
 	
 	private static final String CANTIDAD_EQUIPOS = "CANTIDAD_EQUIPOS";
 	

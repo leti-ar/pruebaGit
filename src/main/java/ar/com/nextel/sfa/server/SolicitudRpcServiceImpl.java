@@ -1098,7 +1098,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				solicitudServicio.setNombreRegistroVendedor(userName);
 			
 //				MGR - Se mueve la creacion de la cuenta. Debo recordar si es prospect antes de enviar a cerrar
-				boolean eraProspect = !solicitudServicio.getCuenta().isCliente();
+//				JPP - 0003641: N-IM003607979 - Cierre y Pass Automatico. No genera automaticamente Caratula para anexo , reingreso. 
+//				eraProspect solo se usaba para la condicion que se modifico (ver informacion del ticket #3641 del mantis)
+//				boolean eraProspect = !solicitudServicio.getCuenta().isCliente();
 //				MGR - Refactorizacion del cierre
 				response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, resultadoCierre.getPuedeCerrar());
 				
@@ -1126,7 +1128,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				
 				
 				
-				if (!result.isError() && solicitudServicio.getCuenta().isTransferido() && puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO && cerrar) {
+				if (!result.isError() && solicitudServicio.getCuenta().isTransferido() && resultadoCierre.getPuedeCerrar() == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO && cerrar) {
 					
 						/*
 						 * JPP - #3641 - N-IM003607979 - Cierre y Pass Automatico. No genera automaticamente Caratula para anexo , reingreso.
