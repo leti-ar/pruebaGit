@@ -1117,13 +1117,35 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 //				MGR - Se mueve la creacion de la cuenta, cambia el if y su contenido
 //				Si era prospect, se cerro la SS correctamente, se creo la cuenta correctamente,
 //				va por pass automatico y es un cierre, creo y tranfiero caratula
-				if (eraProspect && !result.isError() && 
-						solicitudServicio.getCuenta().isTransferido() && 
-//						MGR - Refactorizacion del cierre
-						resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO && cerrar) {
+				
+//				JPP - 0003641: N-IM003607979 - Cierre y Pass Automatico. No genera automaticamente Caratula para anexo , reingreso. 
+//				Se modifico la condicion (se saco la validacion de eraProspect)
+//				if (eraProspect && !result.isError() && 
+//						solicitudServicio.getCuenta().isTransferido() && 
+//						puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO && cerrar) {
+				
+				
+				
+				if (!result.isError() && solicitudServicio.getCuenta().isTransferido() && puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO && cerrar) {
 					
-						Long idCaratula = solicitudBusinessService.crearCaratula(solicitudServicio.getCuenta(), solicitudServicio.getNumero(), resultadoVerazScoring);
-						solicitudBusinessService.transferirCaratula(idCaratula, solicitudServicio.getNumero());						
+						/*
+						 * JPP - #3641 - N-IM003607979 - Cierre y Pass Automatico. No genera automaticamente Caratula para anexo , reingreso.
+						 * Para detectar si una cuenta es Anexo, se va a obtener la cantidad de equipos activos del cliente, 
+						 * si tiene UN equipo activo o MAS DE UNO, lo damos como Anexo.
+						 * Si el cliente es Anexo, NO se crea la caratula.
+						 * Si el cliente NO tiene equipos activos (no es Anexo), se crea la caratula.
+						 */
+					
+						CantidadEquiposDTO cantidadEquiposDTO = avalonSystem.retreiveEquiposPorEstado(solicitudServicio.getCuenta().getCodigoVantive());
+						
+						if (("0".equals(cantidadEquiposDTO.getCantidadActivos())))
+						{
+							// El cliente NO es Anexo, es Reingreso o Cliente que nunca tuvo equipos activos
+							Long idCaratula = solicitudBusinessService.crearCaratula(solicitudServicio.getCuenta(), solicitudServicio.getNumero(), resultadoVerazScoring);
+							solicitudBusinessService.transferirCaratula(idCaratula, solicitudServicio.getNumero());		
+						}
+						
+					
 						solicitudServicio.setNumeroCuenta(solicitudServicio.getCuenta().getCodigoVantive());
 						solicitudBusinessService.updateSolicitudServicio(solicitudServicio);
 				}
