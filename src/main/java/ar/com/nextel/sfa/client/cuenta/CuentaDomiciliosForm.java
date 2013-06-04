@@ -350,11 +350,10 @@ public class CuentaDomiciliosForm extends Composite {
 					;
 				}
 			}
-			//TODO CAM TRANSFERENCIA DESCOMENTAR!!
-//			if (!hayDomicilioEntrega)
-//				validator.addError(Sfa.constant().ERR_DOMICILIO_ENTREGA());
-//			if (!hayDomicilioFacturacion)
-//				validator.addError(Sfa.constant().ERR_DOMICILIO_FACTURACION());
+			if (!hayDomicilioEntrega)
+				validator.addError(Sfa.constant().ERR_DOMICILIO_ENTREGA());
+			if (!hayDomicilioFacturacion)
+				validator.addError(Sfa.constant().ERR_DOMICILIO_FACTURACION());
 			//# 1850: Domicilio: mas de un domicilio principal de entrega y facturación
 			if (domiciliosEntrega > 1) {
 				validator.addError("La cuenta posee más de un domicilio de Entrega. Comuníquese con Administración de Ventas");

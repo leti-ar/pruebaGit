@@ -718,28 +718,34 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 
 	public NormalizarDomicilioResultDto normalizarDomicilio(DomiciliosCuentaDto domicilioANormalizar)
 			throws RpcExceptionMessages {
-		NormalizarDomicilioResultDto domicilioResultNormalizacion = null;
-		try {
+//		NormalizarDomicilioResultDto domicilioResultNormalizacion = null;
+		NormalizarDomicilioResultDto domicilioResultNormalizacion = new NormalizarDomicilioResultDto();
+//		try {
 			NormalizarDomicilioRequest normalizarDomicilioRequest = new NormalizarDomicilioRequest();
 			Domicilio domicilio = repository.createNewObject(Domicilio.class);
 			mapper.map(domicilioANormalizar, domicilio);
 			normalizarDomicilioRequest.populateFromDomicilio(domicilio);
-			domicilioResultNormalizacion = mapper.map(normalizadorDomicilio
-					.normalizarDomicilio(normalizarDomicilioRequest), NormalizarDomicilioResultDto.class);
-		} catch (MerlinException e) {
-			throw ExceptionUtil.wrap(e);
-		}
+		//TODO CAM DESCOMENTAR!!	
+//			domicilioResultNormalizacion = mapper.map(normalizadorDomicilio
+//					.normalizarDomicilio(normalizarDomicilioRequest), NormalizarDomicilioResultDto.class);
+			domicilioResultNormalizacion.setDireccion(domicilioANormalizar); //SACAR
+			domicilioResultNormalizacion.setTipo("exito"); //SACAR
+			
+//		} catch (MerlinException e) {
+//			throw ExceptionUtil.wrap(e);
+//		}
 		return domicilioResultNormalizacion;
 	}
 
 	public NormalizarCPAResultDto getDomicilioPorCPA(String cpa) throws RpcExceptionMessages {
-		NormalizarCPAResultDto resultConCPANormalizado = null;
-		try {
-			resultConCPANormalizado = mapper.map(normalizadorDomicilio.normalizarCPA(cpa),
-					NormalizarCPAResultDto.class);
-		} catch (MerlinException e) {
-			throw ExceptionUtil.wrap(e);
-		}
+//		NormalizarCPAResultDto resultConCPANormalizado = null;
+		NormalizarCPAResultDto resultConCPANormalizado = new NormalizarCPAResultDto();
+//		try {
+//			resultConCPANormalizado = mapper.map(normalizadorDomicilio.normalizarCPA(cpa),
+//					NormalizarCPAResultDto.class);
+//		} catch (MerlinException e) {
+//			throw ExceptionUtil.wrap(e);
+//		}
 		return resultConCPANormalizado;
 	}
 
