@@ -5,25 +5,15 @@ import java.util.Collections;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
-import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
-import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
-import ar.com.nextel.sfa.client.widget.MessageDialog;
+import ar.com.nextel.sfa.client.util.ReportUtils;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
-import ar.com.snoop.gwt.commons.client.util.WindowUtils;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
-import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
-import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Grid;
@@ -102,9 +92,9 @@ public class BuscarSSCerradasReportsDialog extends NextelDialog{
 								if(sender == lnkAceptar) 
 									hide();
 								else if(sender == lnkSS) 
-									descargarArchivo(getFileSolicitudReport());
+									ReportUtils.descargarArchivoSS(idSolicitud,getFileSolicitudReport());
 								else if(sender == lnkRemito)
-									descargarArchivo(getFileRemitoRtf());
+									ReportUtils.descargarArchivoSS(idSolicitud,getFileRemitoRtf());
 								else{
 //									MGR - Reporte remito
 									int fila = fileRemitoRtf == null ? 1 : 2;
@@ -117,7 +107,7 @@ public class BuscarSSCerradasReportsDialog extends NextelDialog{
 								        	extension = ".rtf";
 									for(int i = 0; i < portabilidadFileNames.size() && !encontro; i++){
 										if(sender == gridLayout.getWidget(i + fila, 1)){
-											descargarArchivo(((SimpleLink)gridLayout.getWidget(i + fila, 1)).getTitle() + extension);
+											ReportUtils.descargarArchivoSS(idSolicitud,((SimpleLink)gridLayout.getWidget(i + fila, 1)).getTitle() + extension);
 											encontro = true;
 										}
 									}
@@ -172,72 +162,72 @@ public class BuscarSSCerradasReportsDialog extends NextelDialog{
 	 * 
 	 * @param fileName
 	 */
-	private void descargarArchivo(String fileNameArg){
-		final String fileName = fileNameArg;
-		final String contextRoot = WindowUtils.getContextRoot();
-
-		SolicitudRpcService.Util.getInstance().existReport(fileName, new DefaultWaitCallback<Boolean>() {
-			@Override
-			public void success(Boolean result) {
-				LoadingModalDialog.getInstance().hide();
-				if(result) {
-					WindowUtils.redirect("/" + contextRoot + "/download/" + fileName + "?module=solicitudes&service=rtf&name=" + fileName);
-				}else{
-					SolicitudRpcService.Util.getInstance().crearArchivo(idSolicitud, false,new DefaultWaitCallback<Boolean>() {
-						@Override
-						public void success(Boolean result) {
-							RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getUrlReporte(fileName));
-							
-							requestBuilder.setCallback(new RequestCallback() {
-								public void onResponseReceived(Request request, Response response) {
-									WaitWindow.hide();
-									LoadingModalDialog.getInstance().hide();
-									
-									if (response.getStatusCode() == Response.SC_OK) WindowUtils.redirect(getUrlReporte(fileName));
-									else MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),MessageDialog.getCloseCommand());
-								}
-
-								public void onError(Request request, Throwable exception) {
-									WaitWindow.hide();
-									LoadingModalDialog.getInstance().hide();
-									MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),MessageDialog.getCloseCommand());
-								}
-							});
-
-							try {
-								requestBuilder.setTimeoutMillis(10 * 1000);
-								requestBuilder.send();
-								WaitWindow.show();
-								LoadingModalDialog.getInstance().showAndCenter("Solicitud","Esperando Solicitud de Servicio ...");
-							} catch (RequestException e) {
-								MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),MessageDialog.getCloseCommand());
-								LoadingModalDialog.getInstance().hide();
-							}
-						
-						}// end success
-					});
-				}// end else
-			}
-			
-			@Override
-			public void failure(Throwable caught) {
-				WaitWindow.hide();
-				LoadingModalDialog.getInstance().hide();
-				super.failure(caught);
-			}
-		});
-
-	}
+//	private void descargarArchivo(String fileNameArg){
+//		final String fileName = fileNameArg;
+//		final String contextRoot = WindowUtils.getContextRoot();
+//
+//		SolicitudRpcService.Util.getInstance().existReport(fileName, new DefaultWaitCallback<Boolean>() {
+//			@Override
+//			public void success(Boolean result) {
+//				LoadingModalDialog.getInstance().hide();
+//				if(result) {
+//					WindowUtils.redirect("/" + contextRoot + "/download/" + fileName + "?module=solicitudes&service=rtf&name=" + fileName);
+//				}else{
+//					SolicitudRpcService.Util.getInstance().crearArchivo(idSolicitud, false,new DefaultWaitCallback<Boolean>() {
+//						@Override
+//						public void success(Boolean result) {
+//							RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getUrlReporte(fileName));
+//							
+//							requestBuilder.setCallback(new RequestCallback() {
+//								public void onResponseReceived(Request request, Response response) {
+//									WaitWindow.hide();
+//									LoadingModalDialog.getInstance().hide();
+//									
+//									if (response.getStatusCode() == Response.SC_OK) WindowUtils.redirect(getUrlReporte(fileName));
+//									else MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),MessageDialog.getCloseCommand());
+//								}
+//
+//								public void onError(Request request, Throwable exception) {
+//									WaitWindow.hide();
+//									LoadingModalDialog.getInstance().hide();
+//									MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),MessageDialog.getCloseCommand());
+//								}
+//							});
+//
+//							try {
+//								requestBuilder.setTimeoutMillis(10 * 1000);
+//								requestBuilder.send();
+//								WaitWindow.show();
+//								LoadingModalDialog.getInstance().showAndCenter("Solicitud","Esperando Solicitud de Servicio ...");
+//							} catch (RequestException e) {
+//								MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),MessageDialog.getCloseCommand());
+//								LoadingModalDialog.getInstance().hide();
+//							}
+//						
+//						}// end success
+//					});
+//				}// end else
+//			}
+//			
+//			@Override
+//			public void failure(Throwable caught) {
+//				WaitWindow.hide();
+//				LoadingModalDialog.getInstance().hide();
+//				super.failure(caught);
+//			}
+//		});
+//
+//	}
 
 	/**
 	 * 
 	 * @param fileName
 	 * @return
 	 */
-	public String getUrlReporte(String fileName) {
-		return "/" + WindowUtils.getContextRoot() + "/download/" + fileName
-				+ "?module=solicitudes&service=rtf&name=" + fileName;
-	}
+//	public String getUrlReporte(String fileName) {
+//		return "/" + WindowUtils.getContextRoot() + "/download/" + fileName
+//				+ "?module=solicitudes&service=rtf&name=" + fileName;
+//	}
 
 	public String getFileSolicitudReport() {
 		return fileSolicitudReport;

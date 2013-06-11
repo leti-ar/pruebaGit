@@ -9,6 +9,7 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.util.ReportUtils;
 import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
@@ -146,9 +147,9 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 			hide();
 			aceptarCommand.execute();
 		}else if(sender == solicitudLink){ 
-			tirarDownload(fileName);
+			ReportUtils.descargarArchivoSS(idSolicitudCerrada,fileName);
 		}else if(sender == remitoLink){
-			tirarDownload(remitoName);
+			ReportUtils.descargarArchivoSS(idSolicitudCerrada,remitoName);
 		}else{
 			boolean find = false;
 			SimpleLink link;
@@ -157,83 +158,83 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 				link = (SimpleLink)solicitudReport.getWidget(i, 1);
 				if(sender == link){
 					find = true;
-					tirarDownload(link.getTitle());
+					ReportUtils.descargarArchivoSS(idSolicitudCerrada, link.getTitle());
 				}
 			}
 		}
 	}
 
-	private void tirarDownload(final String file){
-		RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getUrlReporte(file));
-		requestBuilder.setCallback(new RequestCallback() {
-			public void onResponseReceived(Request request, Response response) {
-				WaitWindow.hide();
-				LoadingModalDialog.getInstance().hide();
-				if (response.getStatusCode() == Response.SC_OK) {
-					WaitWindow.hide();
-					LoadingModalDialog.getInstance().hide();
-					WindowUtils.redirect(getUrlReporte(file));
-				} else {
-//					showFileNotFoundError();
-					//MGR - #1415 - Si por alguna razon no se genero el archivo, trato de generarlo nuevamente
-					SolicitudRpcService.Util.getInstance().crearArchivo(idSolicitudCerrada, false, new DefaultWaitCallback<Boolean>() {
-						@Override
-						public void success(Boolean result) {
-							RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getUrlReporte(file));
-							
-							requestBuilder.setCallback(new RequestCallback() {
-								public void onResponseReceived(Request request, Response response) {
-									WaitWindow.hide();
-									LoadingModalDialog.getInstance().hide();
-									
-									if (response.getStatusCode() == Response.SC_OK) WindowUtils.redirect(getUrlReporte(file));
-									else MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),MessageDialog.getCloseCommand());
-								}
-
-								public void onError(Request request, Throwable exception) {
-									WaitWindow.hide();
-									LoadingModalDialog.getInstance().hide();
-									MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),MessageDialog.getCloseCommand());
-								}
-							});
-
-							try {
-								requestBuilder.setTimeoutMillis(10 * 1000);
-								requestBuilder.send();
-								WaitWindow.show();
-								LoadingModalDialog.getInstance().showAndCenter("Solicitud","Esperando Solicitud de Servicio ...");
-							} catch (RequestException e) {
-								MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),MessageDialog.getCloseCommand());
-								LoadingModalDialog.getInstance().hide();
-							}
-						}
-					});
-				}
-			}
-
-			public void onError(Request request, Throwable exception) {
-				WaitWindow.hide();
-				LoadingModalDialog.getInstance().hide();
-				showFileNotFoundError();
-			}
-		});
-
-		try {
-			requestBuilder.setTimeoutMillis(10 * 1000);
-			requestBuilder.send();
-			WaitWindow.show();
-			LoadingModalDialog.getInstance().showAndCenter("Solicitud","Esperando Solicitud de Servicio ...");
-		} catch (RequestException e) {
-			showFileNotFoundError();
-			WaitWindow.hide();
-			LoadingModalDialog.getInstance().hide();
-		}
-	}
+//	private void tirarDownload(final String file){
+//		RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getUrlReporte(file));
+//		requestBuilder.setCallback(new RequestCallback() {
+//			public void onResponseReceived(Request request, Response response) {
+//				WaitWindow.hide();
+//				LoadingModalDialog.getInstance().hide();
+//				if (response.getStatusCode() == Response.SC_OK) {
+//					WaitWindow.hide();
+//					LoadingModalDialog.getInstance().hide();
+//					WindowUtils.redirect(getUrlReporte(file));
+//				} else {
+////					showFileNotFoundError();
+//					//MGR - #1415 - Si por alguna razon no se genero el archivo, trato de generarlo nuevamente
+//					SolicitudRpcService.Util.getInstance().crearArchivo(idSolicitudCerrada, false, new DefaultWaitCallback<Boolean>() {
+//						@Override
+//						public void success(Boolean result) {
+//							RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getUrlReporte(file));
+//							
+//							requestBuilder.setCallback(new RequestCallback() {
+//								public void onResponseReceived(Request request, Response response) {
+//									WaitWindow.hide();
+//									LoadingModalDialog.getInstance().hide();
+//									
+//									if (response.getStatusCode() == Response.SC_OK) WindowUtils.redirect(getUrlReporte(file));
+//									else MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),MessageDialog.getCloseCommand());
+//								}
+//
+//								public void onError(Request request, Throwable exception) {
+//									WaitWindow.hide();
+//									LoadingModalDialog.getInstance().hide();
+//									MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),MessageDialog.getCloseCommand());
+//								}
+//							});
+//
+//							try {
+//								requestBuilder.setTimeoutMillis(10 * 1000);
+//								requestBuilder.send();
+//								WaitWindow.show();
+//								LoadingModalDialog.getInstance().showAndCenter("Solicitud","Esperando Solicitud de Servicio ...");
+//							} catch (RequestException e) {
+//								MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),MessageDialog.getCloseCommand());
+//								LoadingModalDialog.getInstance().hide();
+//							}
+//						}
+//					});
+//				}
+//			}
+//
+//			public void onError(Request request, Throwable exception) {
+//				WaitWindow.hide();
+//				LoadingModalDialog.getInstance().hide();
+//				showFileNotFoundError();
+//			}
+//		});
+//
+//		try {
+//			requestBuilder.setTimeoutMillis(10 * 1000);
+//			requestBuilder.send();
+//			WaitWindow.show();
+//			LoadingModalDialog.getInstance().showAndCenter("Solicitud","Esperando Solicitud de Servicio ...");
+//		} catch (RequestException e) {
+//			showFileNotFoundError();
+//			WaitWindow.hide();
+//			LoadingModalDialog.getInstance().hide();
+//		}
+//	}
 	
-	private void showFileNotFoundError() {
-		MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),
-				MessageDialog.getCloseCommand());
-	}
+//	private void showFileNotFoundError() {
+//		MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),
+//				MessageDialog.getCloseCommand());
+//	}
 
 	public void showLoading(boolean cerrando) {
 		successText.setText("La solicitud se " + (cerrando ? "cerró" : "generó") + " correctamente");
