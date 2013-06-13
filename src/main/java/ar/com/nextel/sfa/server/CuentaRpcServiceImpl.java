@@ -6,11 +6,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletException;
 
+import org.apache.catalina.SessionListener;
 import org.apache.commons.collections.Transformer;
 import org.dozer.MappingException;
 import org.springframework.transaction.annotation.Propagation;
@@ -81,6 +83,7 @@ import ar.com.nextel.model.personas.beans.Provincia;
 import ar.com.nextel.model.personas.beans.Sexo;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
+import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.services.nextelServices.NextelServices;
@@ -146,6 +149,7 @@ import ar.com.nextel.sfa.client.initializer.VerazInitializer;
 import ar.com.nextel.sfa.server.businessservice.CuentaBusinessService;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
+import ar.com.nextel.util.PermisosUserCenter;
 import ar.com.nextel.util.StringUtil;
 import ar.com.nextel.web.download.DownloadService;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
@@ -771,22 +775,30 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 
 	public Boolean estaChequeadoPinEnNexus(String idRegistroAtencion, String customerId) throws RpcExceptionMessages {
 		List result = null;
-		try{
-			AppLogger.info("Validando si fue chequeado el PIN en Nexus customerId = " + customerId + " idRegistroAtencion = " + idRegistroAtencion,this);
-			result = repository.executeCustomQuery(PIN_CHECKED_IN_NEXUS, idRegistroAtencion, customerId);
-			AppLogger.info("validacion del PIN en Nexus finaliza correctamente.",this);
-		}catch (Exception e) {
-			AppLogger.error(e);
-			throw ExceptionUtil.wrap(e);
-		}
-
-		if(result == null || result.isEmpty()){
-			AppLogger.info("El PIN no ha sido solicitado en Nexus",this);
-			return false;
-		}else{
-			AppLogger.info("El PIN fue ingresado desde Nexus",this);
-			return true;
-		}
+		boolean estaChequeadoPinEnNxs = false;
+		HashMap<String, Boolean> mapaPermisosClient = (HashMap<String, Boolean>) sessionContextLoader.getSessionContext().get(SessionContext.PERMISOS);
+		boolean permisoCierrePin = (Boolean) mapaPermisosClient.get(PermisosUserCenter.CERRAR_SS_CON_PIN.getValue());
+		
+	    if (permisoCierrePin) {
+	    	try{
+	    		AppLogger.info("Validando si fue chequeado el PIN en Nexus customerId = " + customerId + " idRegistroAtencion = " + idRegistroAtencion,this);
+	    		result = repository.executeCustomQuery(PIN_CHECKED_IN_NEXUS, idRegistroAtencion, customerId);
+	    		AppLogger.info("validacion del PIN en Nexus finaliza correctamente.",this);
+	    	}catch (Exception e) {
+	    		AppLogger.error(e);
+	    		throw ExceptionUtil.wrap(e);
+	    	}
+	    	
+	    	if(result == null || result.isEmpty()){
+	    		AppLogger.info("El PIN no ha sido solicitado en Nexus",this);
+	    	}else{
+	    		AppLogger.info("El PIN fue ingresado desde Nexus",this);
+	    		estaChequeadoPinEnNxs = true;
+	    	}
+	    } else {
+    		AppLogger.info("Este perfil no ingresa PIN , no se evalua si fue ingresado desde nexus",this);
+	    }
+	    return estaChequeadoPinEnNxs;
 	}
 	
 	//MGR - #1466

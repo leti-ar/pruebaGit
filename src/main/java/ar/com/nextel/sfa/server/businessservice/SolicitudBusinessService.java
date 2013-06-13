@@ -661,7 +661,7 @@ public class SolicitudBusinessService {
 			// La SS se está invocando desde Objeto B (Interfaz web)
 			solicitudServicio.setSourceModule("B");
 		}
-		GeneracionCierreRequest generacionCierreRequest = new GeneracionCierreRequest(pinMaestro,
+		GeneracionCierreRequest generacionCierreRequest = new GeneracionCierreRequest(pinMaestro,pinChequeadoEnNexus,
 				solicitudServicio);
 		GeneracionCierreResponse response = null;
 		if (cerrar) {
@@ -845,7 +845,7 @@ public class SolicitudBusinessService {
 	}
 
 	public GeneracionCierreResponse crearArchivo(SolicitudServicio solicitudServicio, boolean enviarEmail) {
-		GeneracionCierreRequest generacionCierreRequest = new GeneracionCierreRequest("", solicitudServicio);
+		GeneracionCierreRequest generacionCierreRequest = new GeneracionCierreRequest("",false, solicitudServicio);
 		GeneracionCierreResponse response = generacionCierreBusinessOperator
 				.crearArchivo(generacionCierreRequest, enviarEmail);
 		return response;
