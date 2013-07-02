@@ -13,6 +13,8 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.collections.Transformer;
 import org.dozer.MappingException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
@@ -21,6 +23,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
+import ar.com.nextel.business.cuentas.flota.FlotaService;
 import ar.com.nextel.business.cuentas.migrator.legacy.dto.DocDigitalizadoLegacyDto;
 import ar.com.nextel.business.cuentas.search.SearchCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.search.businessUnits.CuentaSearchData;
@@ -84,7 +87,6 @@ import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.services.nextelServices.NextelServices;
-import ar.com.nextel.services.nextelServices.veraz.VerazService;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazRequestDTO;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.sfa.client.CuentaRpcService;
@@ -92,6 +94,7 @@ import ar.com.nextel.sfa.client.dto.BancoDto;
 import ar.com.nextel.sfa.client.dto.BusquedaPredefinidaDto;
 import ar.com.nextel.sfa.client.dto.CalifCrediticiaDto;
 import ar.com.nextel.sfa.client.dto.CalificacionDto;
+import ar.com.nextel.sfa.client.dto.CantEquiposDTO;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.CategoriaCuentaDto;
@@ -186,6 +189,10 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	//#LF
 	private static final String QUERY_VALID_EECC = "VALID_EECC";
 	private static final String QUERY_AUTOCOMP_VERAZ = "QUERY_AUTOCOMP_VERAZ";
+	
+	private FlotaService flotaService;
+	
+	
 
 	@Override
 	public void init() throws ServletException {
@@ -208,7 +215,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 
 		knownInstanceRetriever = (KnownInstanceRetriever) context.getBean("knownInstancesRetriever");
 		vantiveSystem = (VantiveSystem) context.getBean("vantiveSystemBean");
-		
+	    flotaService = (FlotaService)context.getBean("flotaService");
 		setGetAllBusinessOperator((GetAllBusinessOperator) context.getBean("getAllBusinessOperatorBean"));
 	}
 
@@ -540,7 +547,11 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 				errMsg = errMsg.replaceAll("\\{2\\}", nombre);
 				throw new RpcExceptionMessages(errMsg);
 			}
+
 			cuenta = repository.retrieve(Cuenta.class, cuenta.getId());
+			// Actualizo la cuenta con la flota correspondiente, ticket mantis: 0004038.
+			flotaService.updateCuentaConFlota(cuenta);
+			
 			cuentaBusinessService.validarAccesoCuenta(cuenta, getVendedor(), true);
 			if (asociarCuentaSiCorresponde(solicitudCta, cuenta)) {
 				// lockea
@@ -1028,5 +1039,21 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		AppLogger.info("Obteniendo path del archivo de Veraz.");
 		return veraz.obtenerPahtArchivoVeraz(verazFileName);
 	}
-	
+
+	public CantEquiposDTO retreiveEquiposPorEstado(String numeroCuenta) throws RpcExceptionMessages{
+		try{
+			CantidadEquiposDTO equipDto = this.avalonSystem.retreiveEquiposPorEstado(numeroCuenta);
+			
+			CantEquiposDTO cantEquipoDto = new CantEquiposDTO();
+			cantEquipoDto.setCantEquipActivos(Integer.parseInt(equipDto.getCantidadActivos()));
+			cantEquipoDto.setCantEquipDesactivados(Integer.parseInt(equipDto.getCantidadDesactivados()));
+			cantEquipoDto.setCantEquipSuspendidos(Integer.parseInt(equipDto.getCantidadSuspendidos()));
+			
+			return cantEquipoDto;
+			
+		}catch (Exception e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+	}
 }
