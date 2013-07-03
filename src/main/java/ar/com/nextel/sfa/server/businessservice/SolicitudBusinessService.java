@@ -472,20 +472,6 @@ public class SolicitudBusinessService {
 			solicitudServicioDto.setVendedor(mapper.map(vendedor, VendedorDto.class));
 //		}
 			
-		
-			
-			
-			
-			
-			
-			
-			
-		//
-		//
-		// Analizar este caso, puede ser que haya q meter mano poo si esta actualizando la CUenta / Flota
-		// Analizar con Mariela
-		//
-		//
 			
 		if( (solicitudServicio.getCuentaCedente() == null && solicitudServicioDto.getCuentaCedente() != null) ||
 				(solicitudServicio.getCuentaCedente() != null && solicitudServicioDto.getCuentaCedente() != null &&
@@ -504,15 +490,6 @@ public class SolicitudBusinessService {
 			
 			solicitudServicio.setCuentaCedente(ctaCedente);
 		}
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		
 		
 		//MGR - #1359
@@ -734,11 +711,11 @@ public class SolicitudBusinessService {
 				
 				//MGR - ISDN 1824
 				if (!esProspect) {
-//					facturaElectronicaService.adherirFacturaElectronica(
-//							codigoBSCS, solicitudServicio.getCuenta()
-//							.getCodigoVantive(), solicitudServicio.getCuenta()
-//							.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor());
-//					solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
+					facturaElectronicaService.adherirFacturaElectronica(
+							codigoBSCS, solicitudServicio.getCuenta()
+							.getCodigoVantive(), solicitudServicio.getCuenta()
+							.getFacturaElectronica().getEmail(), "", solicitudServicio.getVendedor());
+					solicitudServicio.getCuenta().getFacturaElectronica().setReplicadaAutogestion(Boolean.TRUE);
 				}
 				repository.save(solicitudServicio.getCuenta().getFacturaElectronica());
 				
