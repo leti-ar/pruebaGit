@@ -371,6 +371,7 @@ public class CuentaUIData extends UIData {
 						
 						formaPago.addAllItems(result.getFormaPago());
 						proveedorAnterior.addAllItems(result.getProveedorAnterior());
+						proveedorAnterior.setSelectedIndex(41);//NO RELEVADO
 						cargo.addAllItems(result.getCargo());
 						tipoCuentaBancaria.addAllItems(result.getTipoCuentaBancaria());
 						tipoTarjeta.addAllItems(result.getTipoTarjeta());
