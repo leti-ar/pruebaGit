@@ -108,6 +108,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 	private Long idPlanAnterior;
 	private Long idItemAnterior;
+	private Boolean fullPriceAnterior;
 
 	public static final int SOLO_ITEM = 0;
 	public static final int ITEM_PLAN = 1;
@@ -1069,6 +1070,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		}
 		plan.setSelectedItem(linea.getPlan());
 		idPlanAnterior = linea.getPlan() != null ? linea.getPlan().getId() : null;
+		fullPriceAnterior = linea.getFullPrice() != null ? linea.getFullPrice() : null;
 		
 		modalidadCobro.setSelectedItem(linea.getModalidadCobro());
 		if (linea.getTerminoPago() != null) {
@@ -1185,7 +1187,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			lineaSolicitudServicio.setPrecioListaAjustado(precio);
 			// Limpio los servicios adicionales para que los actualice
 			if (!(lineaSolicitudServicio.getPlan().getId().equals(idPlanAnterior) && lineaSolicitudServicio
-					.getItem().getId().equals(idItemAnterior))) {
+					.getItem().getId().equals(idItemAnterior) && lineaSolicitudServicio.getFullPrice().equals(fullPriceAnterior))) {
 				lineaSolicitudServicio.getServiciosAdicionales().clear();
 			}
 		} else {

@@ -30,6 +30,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.constants.MessageIdentifier;
+import ar.com.nextel.business.cuentas.permanencia.PermanenciaService;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.legacy.avalon.dto.CantidadEquiposDTO;
 import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
@@ -84,6 +85,7 @@ import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
 import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.PlanBase;
 import ar.com.nextel.model.solicitudes.beans.Segmento;
+import ar.com.nextel.model.solicitudes.beans.ServicioAdicional;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Sucursal;
@@ -182,6 +184,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private MailSender mailSender;
 	private CuentaBusinessService cuentaBusinessService;
 	private AvalonService avalonService;
+	private PermanenciaService permanenciaService;
 
 	//MELI
 	private DefaultSequenceImpl tripticoNextValue;
@@ -244,8 +247,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		messageRetriever = (DefaultRetriever)context.getBean("messageRetriever");
 		mailSender= (MailSender)context.getBean("mailSender");
 		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");		
-		avalonService = (AvalonService) context.getBean("avalonService");		
-
+		avalonService = (AvalonService) context.getBean("avalonService");
+		permanenciaService = (PermanenciaService) context.getBean("permanenciaService");
 	}
 
 	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
@@ -921,7 +924,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	}
 
 	public List<SubsidiosDto> getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado) {
-		return solicitudBusinessService.getSubsidiosPorItem(itemSolicitudTasado);
+		Long idItem = itemSolicitudTasado.getItem().getId();
+		return solicitudBusinessService.getSubsidiosPorItem(idItem);
 	}
 
 	public List<ServicioAdicionalLineaSolicitudServicioDto> getServiciosAdicionales(
@@ -949,6 +953,10 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			serviciosAdicionales = solicitudServicioRepository.getServiciosAdicionales(
 						linea.getTipoSolicitud().getId(), linea.getPlan().getId(), 
 								idItem, idCuenta, sessionContextLoader.getVendedor(), isEmpresa);
+			//CARGO IMPORTES EN SERVICIOS PERMANENCIA
+			if (!linea.getFullPrice()){
+				serviciosAdicionales = cargoImportesServiciosPermanencia(linea,serviciosAdicionales);
+			}
 		}
 		
 //		MGR - #3462 - Creo que a partir del cambio que genero este incidente, esto ya no es necesario
@@ -968,6 +976,43 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 //		}
 //		MGR - #3462 - Fin NO necesario
 		return mapper.convertList(serviciosAdicionales, ServicioAdicionalLineaSolicitudServicioDto.class);
+	}
+
+	private Collection<ServicioAdicionalLineaSolicitudServicio> cargoImportesServiciosPermanencia(LineaSolicitudServicioDto linea,
+			Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales) {
+		
+		Long idItem = linea.getItem().getId();
+		Long idPlan = linea.getPlan().getId();
+		Double subsidioEquipo = solicitudBusinessService.getSubsidiosPorItemPlan(idItem,idPlan);
+		Double subsidioCargoConexion = permanenciaService.getSubsidioCargoConexion();
+
+		ServicioAdicional servicioSubsidioEquipo = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_EQUIPO);
+		ServicioAdicional servicioBonifSubsidioEquipo = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_BONIF_EQUIPO);
+		ServicioAdicional servicioSubsidioActivacion = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_ACTIVACION);
+		ServicioAdicional servicioBonifSubsidioActivacion = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_BONIF_ACTIVACION);
+		
+		
+        for (ServicioAdicionalLineaSolicitudServicio servicio : serviciosAdicionales) {
+
+			if (servicio.getServicioAdicional().getCodigoBSCS().equals(servicioSubsidioEquipo.getCodigoBSCS())){
+	        	// SUBSIDIO EQUIPO
+				servicio.setPrecioLista(subsidioEquipo);
+				servicio.setPrecioVenta(subsidioEquipo);				
+			}else if(servicio.getServicioAdicional().getCodigoBSCS().equals(servicioBonifSubsidioEquipo.getCodigoBSCS())){
+				// BONIFICACION SUBSIDIO EQUIPO
+				servicio.setPrecioLista(-subsidioEquipo);
+				servicio.setPrecioVenta(-subsidioEquipo);			
+			}else if(servicio.getServicioAdicional().getCodigoBSCS().equals(servicioSubsidioActivacion.getCodigoBSCS())){
+				// SUBSIDIO ACTIVACION	
+				servicio.setPrecioLista(subsidioCargoConexion);
+				servicio.setPrecioVenta(subsidioCargoConexion);
+			}else if(servicio.getServicioAdicional().getCodigoBSCS().equals(servicioBonifSubsidioActivacion.getCodigoBSCS())){
+				// BONIFICACION SUBSIDIO ACTIVACION				
+				servicio.setPrecioLista(-subsidioCargoConexion);
+				servicio.setPrecioVenta(-subsidioCargoConexion);
+			}
+		}
+        return serviciosAdicionales;
 	}
 
 	public ResultadoReservaNumeroTelefonoDto reservarNumeroTelefonico(long numero, long idTipoTelefonia,

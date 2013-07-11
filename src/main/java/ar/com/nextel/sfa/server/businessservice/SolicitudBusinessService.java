@@ -96,7 +96,6 @@ import ar.com.nextel.services.nextelServices.veraz.dto.VerazRequestDTO;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
-import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SubsidiosDto;
@@ -1362,9 +1361,8 @@ public class SolicitudBusinessService {
 		return ss;
 	}
 	
-	public List<SubsidiosDto> getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado) {
+	public List<SubsidiosDto> getSubsidiosPorItem(Long idItem) {
 		Long idTipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor().getId();
-		Long idItem = itemSolicitudTasado.getItem().getId();
 
 		List<SubsidiosDto> subsidios = new ArrayList<SubsidiosDto>();
 		PreparedStatement stmt = null;
@@ -1398,6 +1396,41 @@ public class SolicitudBusinessService {
 			}
 	    }
 		return subsidios;
+	}
+
+	public Double getSubsidiosPorItemPlan(Long idItem, Long idPlan) {
+		Long idTipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor().getId();
+
+		Double subsidio = 0d;
+		PreparedStatement stmt = null;
+		String sql = String.format("select b.subsidio from sfa_plan_item a,sfa_plan_item_vendedor b " +
+				"where a.id_plan_item = b.id_plan_item " +
+				"and b.id_tipo_vendedor = " +idTipoVendedor+
+				"and a.id_item = " +idItem+
+				"and a.id_plan = " +idPlan);
+
+		try {
+			stmt = ((HibernateRepository) repository)
+					.getHibernateDaoSupport().getSessionFactory()
+					.getCurrentSession().connection().prepareStatement(sql);
+		
+			ResultSet resultSet = stmt.executeQuery();
+			while (resultSet.next()) {
+				subsidio = resultSet.getDouble(1);
+			}
+		} catch (HibernateException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally{
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException sqlEx) {}
+				stmt = null;
+			}
+	    }
+		return subsidio;
 	}
 
 	
