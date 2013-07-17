@@ -406,7 +406,7 @@ public class OperacionEnCursoResultUI extends FlowPanel implements ClickHandler,
 
 	private void cancelarOperacionEnCurso(OperacionEnCursoDto op) {
 //		MGR - #4231 - Si la solicitud tiene una factura, entonces no se puede borrar
-		if(op.getIdFactura()!= null){
+		if(op.getNumeroFactura()!= null){
 			ModalMessageDialog.getInstance().setDialogTitle("Eliminar Operación en Curso");
 			ModalMessageDialog.getInstance().setSize("300px", "100px");
 			ModalMessageDialog.getInstance().showAceptar("No se puede cancelar la operacion seleccionada " +

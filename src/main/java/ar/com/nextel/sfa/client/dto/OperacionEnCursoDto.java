@@ -13,7 +13,8 @@ public class OperacionEnCursoDto implements IsSerializable {
 	private Long idSolicitudServicio;
 	
 //	MGR - #4231 - Necesito el id de la factura
-	private Long idFactura;
+//	JM - #4520 - Necesito el numero de la factura	
+	private String numeroFactura;
 
 	public Long getIdSolicitudServicio() {
 		return idSolicitudServicio;
@@ -79,11 +80,11 @@ public class OperacionEnCursoDto implements IsSerializable {
 //		this.solicitudServicio = solicitudServicio;
 //	}
 
-	public Long getIdFactura() {
-		return idFactura;
+	public String getNumeroFactura() {
+		return numeroFactura;
 	}
 
-	public void setIdFactura(Long idFactura) {
-		this.idFactura = idFactura;
+	public void setNumerodFactura(String numeroFactura) {
+		this.numeroFactura = numeroFactura;
 	}
 }

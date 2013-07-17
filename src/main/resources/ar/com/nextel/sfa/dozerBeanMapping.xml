@@ -860,8 +860,8 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-b>
 <!-- 	MGR - #4231 -->
 		<field>
-			<a>solicitudServicio.factura.id</a>
-			<b>idFactura</b>
+			<a>solicitudServicio.factura.numero</a>
+			<b>numeroFactura</b>
         </field>
 	</mapping>	
 	<mapping>
