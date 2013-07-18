@@ -84,7 +84,7 @@ public class OperacionEnCursoDto implements IsSerializable {
 		return numeroFactura;
 	}
 
-	public void setNumerodFactura(String numeroFactura) {
+	public void setNumeroFactura(String numeroFactura) {
 		this.numeroFactura = numeroFactura;
 	}
 }
