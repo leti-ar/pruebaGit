@@ -122,6 +122,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private ItemSolicitudDialog dialog;
 	private boolean activacionOnline;
 	private Long idTipoSolicitudBaseActivacionOnline;
+	private Long idsTipoSolicitudBaseItemYPlanPermanencia;
 //	MGR - #3462
 	private boolean activacion = false;
 	private Long idTipoSolicitudBaseActivacion = 0L;
@@ -333,7 +334,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		idsTipoSolicitudBaseActivacion = new ArrayList<Long>();
 		idsTipoSolicitudBaseCDW = new ArrayList<Long>();
 
-		idsTipoSolicitudBaseItemYPlan.add(Long.valueOf(1)); // 1-TIPO_SOLICITUD_BASE_VENTA_EQUIPOS
+		setIdsTipoSolicitudBaseItemYPlanPermanencia(Long.valueOf(1)); // 1-TIPO_SOLICITUD_BASE_VENTA_EQUIPOS
+		
+		idsTipoSolicitudBaseItemYPlan.add(Long.valueOf(getIdsTipoSolicitudBaseItemYPlanPermanencia())); // 1-TIPO_SOLICITUD_BASE_VENTA_EQUIPOS
 		idsTipoSolicitudBaseItemYPlan.add(Long.valueOf(7)); // 7-TIPO_SOLICITUD_BASE_ALQUILER_EQUIPOS
 		idsTipoSolicitudBaseItemYPlan.add(Long.valueOf(10)); // 10-TIPO_SOLICITUD_BASE_VENTA_EQUIPOS_NUEVOS_G4
 		idsTipoSolicitudBaseItemYPlan.add(Long.valueOf(14)); // 14-TIPO_SOLICITUD_BASE_VENTA_EQUIPOS_USADOS_G4
@@ -1332,6 +1335,15 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	public void setIdTipoSolicitudBaseActivacionOnline(
 			Long idTipoSolicitudBaseActivacionOnline) {
 		this.idTipoSolicitudBaseActivacionOnline = idTipoSolicitudBaseActivacionOnline;
+	}
+	
+	public Long getIdsTipoSolicitudBaseItemYPlanPermanencia() {
+		return idsTipoSolicitudBaseItemYPlanPermanencia;
+	}
+
+	public void setIdsTipoSolicitudBaseItemYPlanPermanencia(
+			Long idsTipoSolicitudBaseItemYPlanPermanencia) {
+		this.idsTipoSolicitudBaseItemYPlanPermanencia = idsTipoSolicitudBaseItemYPlanPermanencia;
 	}
 	
 //	MGR - #3462

@@ -259,27 +259,28 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		itemSolicitudUIData.setActivacion(false);
 		itemSolicitudUIData.getFullPrice().setEnabled(false);
 		if (tipoSolicitud != null) {
-			if (itemSolicitudUIData.getIdsTipoSolicitudBaseItemYPlan().contains(
-					tipoSolicitud.getTipoSolicitudBase().getId())) {
-				tipoSolicitudPanel.setWidget(getItemYPlanSolicitudPermanenciaUI());
+			Long idTipoSolicitudBase = tipoSolicitud.getTipoSolicitudBase().getId();
+			if (itemSolicitudUIData.getIdsTipoSolicitudBaseItemYPlan().contains(idTipoSolicitudBase)) {
+				if(itemSolicitudUIData.getIdsTipoSolicitudBaseItemYPlanPermanencia().equals(idTipoSolicitudBase)) {
+					tipoSolicitudPanel.setWidget(getItemYPlanSolicitudPermanenciaUI());
+				}else{
+					tipoSolicitudPanel.setWidget(getItemYPlanSolicitudUI());
+				}
 				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.ITEM_PLAN);
-			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseItem().contains(
-					tipoSolicitud.getTipoSolicitudBase().getId())) {
+			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseItem().contains(idTipoSolicitudBase)) {
 				tipoSolicitudPanel.setWidget(getSoloItemSolicitudUI());
 				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.SOLO_ITEM);
-			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseActivacion().contains(
-					tipoSolicitud.getTipoSolicitudBase().getId())) {
-				if(itemSolicitudUIData.getIdTipoSolicitudBaseActivacionOnline().equals(tipoSolicitud.getTipoSolicitudBase().getId())) {
+			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseActivacion().contains(idTipoSolicitudBase)) {
+				if(itemSolicitudUIData.getIdTipoSolicitudBaseActivacionOnline().equals(idTipoSolicitudBase)) {
 					itemSolicitudUIData.setActivacionOnline(true);
 				}
 //				MGR - #3462
-				if(itemSolicitudUIData.getIdTipoSolicitudBaseActivacion().equals(tipoSolicitud.getTipoSolicitudBase().getId())) {
+				if(itemSolicitudUIData.getIdTipoSolicitudBaseActivacion().equals(idTipoSolicitudBase)) {
 					itemSolicitudUIData.setActivacion(true);
 				}
 				tipoSolicitudPanel.setWidget(getItemSolicitudActivacionUI(itemSolicitudUIData.isActivacionOnline()));
 				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.ACTIVACION);
-			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseCDW().contains(
-					tipoSolicitud.getTipoSolicitudBase().getId())) {
+			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseCDW().contains(idTipoSolicitudBase)) {
 				tipoSolicitudPanel.setWidget(getItemSolicitudCDWUI());
 				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.VENTA_CDW);
 			} else {
