@@ -145,6 +145,7 @@ public class SolicitudBusinessService {
 //	MGR - #3464
 //	private static String namedQueryItemParaActivacionOnline = "ITEMS_PARA_PLANES_ACT_ONLINE";
 	
+	private static String GET_SUBSIDIO_ITEM_VENDEDOR = "GET_SUBSIDIO_ITEM_VENDEDOR";
 	private static String GET_SUBSIDIO_ITEM_PLAN_VENDEDOR = "GET_SUBSIDIO_ITEM_PLAN_VENDEDOR";
 	
 	@Autowired
@@ -1365,38 +1366,18 @@ public class SolicitudBusinessService {
 	
 	public List<SubsidiosDto> getSubsidiosPorItem(Long idItem) {
 		Long idTipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor().getId();
-
 		List<SubsidiosDto> subsidios = new ArrayList<SubsidiosDto>();
-		PreparedStatement stmt = null;
-		String sql = String.format("select a.id_plan,b.subsidio from sfa_plan_item a,sfa_plan_item_vendedor b " +
-				"where a.id_plan_item = b.id_plan_item " +
-				"and b.id_tipo_vendedor = " +idTipoVendedor+
-				"and a.id_item = " +idItem);
-
-		try {
-			stmt = ((HibernateRepository) repository)
-					.getHibernateDaoSupport().getSessionFactory()
-					.getCurrentSession().connection().prepareStatement(sql);
 		
-			ResultSet resultSet = stmt.executeQuery();
-			while (resultSet.next()) {
-				SubsidiosDto s = new SubsidiosDto();
-				s.setIdPlan(resultSet.getLong(1));
-				s.setSubsidio(resultSet.getDouble(2));
-				subsidios.add(s);
-			}
-		} catch (HibernateException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally{
-			if (stmt != null) {
-				try {
-					stmt.close();
-				} catch (SQLException sqlEx) {}
-				stmt = null;
-			}
-	    }
+		List<Object[]> list = repository.executeCustomQuery(GET_SUBSIDIO_ITEM_VENDEDOR,
+							idTipoVendedor, idItem);
+		
+		for (Object[] result : list) {
+			SubsidiosDto subsidio = new SubsidiosDto();
+			subsidio.setIdPlan((Long)result[0]);
+			subsidio.setSubsidio((Double)result[1]);
+			subsidios.add(subsidio);
+		}
+		
 		return subsidios;
 	}
 
