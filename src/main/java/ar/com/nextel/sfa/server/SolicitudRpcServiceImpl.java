@@ -23,6 +23,7 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.HibernateException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -1322,7 +1323,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			for (Iterator iterator = solicitudServicio.getLineas().iterator(); iterator.hasNext();) {
 				LineaSolicitudServicio lineaSS = (LineaSolicitudServicio) iterator.next();
 				String nroSIM = lineaSS.getNumeroSimcard();
-				if(nroSIM != null) {
+				if(StringUtils.isNotBlank(nroSIM)) {
 					AppLogger.info("##Log Cierre y pass - Verificando que el numero de SIM '"+ nroSIM +"' se encuentre disponible en AVALON");
 					String estadoSim = this.getEstadoSim(nroSIM);
 					if(!estadoSim.equals(SIM_DISPONIBLE)) {
@@ -2712,7 +2713,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		List<String> alias = new ArrayList<String>();
 		for (Iterator iterator = lineas.iterator(); iterator.hasNext();) {
 			LineaSolicitudServicio lineaSS = (LineaSolicitudServicio) iterator.next();
-			if(lineaSS.getNumeroSimcard() != null) {
+			if(StringUtils.isNotBlank(lineaSS.getNumeroSimcard())) {
 				AppLogger.info("##Log Cierre y pass - Verificando si el numero de SIM " + lineaSS.getNumeroSimcard() + " de la linea " + lineaSS.getId() + " ya se encuentra cargada en otra solicitud");
 				String cantidadSims = (String) repository.executeCustomQuery("SIM_REPETIDO", lineaSS.getNumeroSimcard()).get(0);
 				if(Integer.parseInt(cantidadSims) > 0) {
