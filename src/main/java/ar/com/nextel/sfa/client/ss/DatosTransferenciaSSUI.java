@@ -142,7 +142,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		
 		EventBusUtil.getEventBus().addHandler(ClickPermanenciaEvent.TYPE, new ClickPermanenciaEventHandler() {
 			public void onClickPermanencia(ClickPermanenciaEvent event) {
-				onClickPopUpPermanencia(event);
+				doClickPopUpPermanencia(event);
 			}
 		});
 
@@ -168,6 +168,22 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		
 			}
 		}
+	}
+	
+	protected void doClickPopUpPermanencia(ClickPermanenciaEvent event) {
+		
+		boolean debeFacturar = event.isFactura();
+		boolean verBotonCerrar = false;
+		boolean verBotonFacturar = false;
+		boolean verBotonVerificarPago = false;
+		
+		if (debeFacturar){
+			//TODO CAM 9. El MP genera la factura por el monto de los cargos abonados detallando cada uno.
+			MessageDialog.getInstance().showAceptar("Aca deberia realizar la facturacion para permanencia..."
+					, MessageDialog.getCloseCommand());
+			verBotonVerificarPago = true;
+		}
+		controller.loadTransferencia(verBotonCerrar,verBotonFacturar,verBotonVerificarPago);
 	}
 
 	private Widget getNssLayout() {
@@ -812,24 +828,36 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	}
 
 	private void verificarContratosConPermanencia() {
-		CuentaRpcService.Util.getInstance().checkPermanencia(contratosChequeados,
-				new DefaultWaitCallback<Set<ContratoViewDto>>() {
+		CuentaRpcService.Util.getInstance().checkPermanencia(contratosChequeados, new DefaultWaitCallback<Set<ContratoViewDto>>() {
 			@Override
 			public void success(Set<ContratoViewDto> result) {
+				
 				contratosChequeados.clear();
 				contratosChequeados.addAll(result);
-				boolean tienePermanencia = false;
-				for (ContratoViewDto contrato : result) {
-					if (!contrato.getCargosPermanencia().equals(0d)){
-						tienePermanencia = true;
-						break;
+				boolean verBotonCerrar = false;
+				boolean verBotonFacturar = false;
+				boolean verBotonVerificarPago = false;
+				
+				if (existeContratosConPermanencia()){
+					if (ctaCedenteDto.isEmpresa()){
+						verBotonCerrar = true; //Cliente destino empresa
+					}else{
+						verBotonFacturar = true; //Cliente destino directo
 					}
 				}
-				controller.loadTransferencia(tienePermanencia,false);
+				controller.loadTransferencia(verBotonCerrar,verBotonFacturar,verBotonVerificarPago);
 			}
 		});
 	}
 
+	private boolean existeContratosConPermanencia(){
+		for (ContratoViewDto contrato : contratosChequeados) {
+			if (!contrato.getCargosPermanencia().equals(0d)){
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	private void limpiarTablaServFacturados(){
 		//Limpio la tabla de servicios
@@ -847,13 +875,5 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		this.limpiarTablaContratos();
 		this.limpiarTablaServFacturados();
 	}
-
-	protected void onClickPopUpPermanencia(ClickPermanenciaEvent event) {
-		//TODO CAM 9. El MP genera la factura por el monto de los cargos abonados detallando cada uno.
-		MessageDialog.getInstance().showAceptar("Aca deberia realizar la facturacion para permanencia..."
-				, MessageDialog.getCloseCommand());
-		controller.loadTransferencia(false,true);
-	}
-	
 
 }

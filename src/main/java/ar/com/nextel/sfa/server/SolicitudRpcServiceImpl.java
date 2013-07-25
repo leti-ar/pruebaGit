@@ -3110,7 +3110,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	public boolean validarImeiSim(String imei, String sim, String modeloEq)
 			throws RpcExceptionMessages {
 		String handsetAsociadoConSIM = avalonService.getHandsetAsociadoConSIM(sim);
-		if (handsetAsociadoConSIM==imei){
+		if (handsetAsociadoConSIM!=null && handsetAsociadoConSIM.equals(imei)){
 			return true;
 		}
 		return false;

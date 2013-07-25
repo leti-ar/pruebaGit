@@ -4,16 +4,16 @@ import com.google.gwt.event.shared.GwtEvent;
 
 public class ClickPermanenciaEvent extends GwtEvent<ClickPermanenciaEventHandler>{
 	public static Type<ClickPermanenciaEventHandler> TYPE = new Type<ClickPermanenciaEventHandler>();
-	public boolean isClicked;
+	private boolean isFactura;
 	
-	public ClickPermanenciaEvent(boolean isClicked) {
-		this.isClicked = isClicked;
+	public ClickPermanenciaEvent(boolean isFactura) {
+		this.isFactura = isFactura;
 	}
 	
-	public boolean isClicked() {
-		return isClicked;
+	public boolean isFactura() {
+		return isFactura;
 	}
-	
+
 	@Override
 	protected void dispatch(ClickPermanenciaEventHandler handler) {
 		handler.onClickPermanencia(this);

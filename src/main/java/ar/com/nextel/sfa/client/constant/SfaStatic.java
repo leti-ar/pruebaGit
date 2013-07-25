@@ -3383,7 +3383,7 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
    * 
    * @return translated "Contrato Número: {1} \n Monto a Cobrar: ${2}"
    */
-  @DefaultStringValue("Contrato Número: {1} \n Monto a Cobrar: ${2}")
+  @DefaultStringValue("Contrato Número: {1} \n Monto a Cobrar: ${2} \n Cantidad de meses restantes: {3} Meses")
   @Key("infoContrato")
   String infoContrato();
   

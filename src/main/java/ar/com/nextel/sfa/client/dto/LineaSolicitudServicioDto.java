@@ -57,7 +57,7 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 	private Boolean ddn = Boolean.FALSE;
 	private Boolean ddi = Boolean.FALSE;
 	private Boolean roaming = Boolean.FALSE;
-	private Boolean fullPrice = Boolean.TRUE;
+	private Boolean fullPrice = Boolean.FALSE;
 	
 	private Double precioConDescuento;
 	private Double monto;

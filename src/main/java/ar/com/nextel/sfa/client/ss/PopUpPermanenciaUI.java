@@ -37,7 +37,7 @@ public class PopUpPermanenciaUI extends DialogBox {
 	@UiField
 	Label title;
 	
-	private EditarSSUIController controller;
+	private boolean debeFacturar;
 	
 	interface PopUpPermanenciaUIUiBinder extends UiBinder<Widget, PopUpPermanenciaUI> {
 	}
@@ -58,9 +58,10 @@ public class PopUpPermanenciaUI extends DialogBox {
 		});
 		for (ContratoViewDto value : values) {
 			if (!value.getCargosPermanencia().equals(0d)){
-				String msg = Sfa.constant().infoContrato().replaceAll("\\{1\\}"
-						,value.getContrato().toString()).replaceAll("\\{2\\}"
-						, value.getCargosPermanencia().toString());
+				String msg = Sfa.constant().infoContrato()
+					.replaceAll("\\{1\\}", String.valueOf(value.getContrato()))
+					.replaceAll("\\{2\\}", String.valueOf(value.getCargosPermanencia()))
+					.replaceAll("\\{3\\}", String.valueOf(value.getMesesPermanencia()));
 				Label contratoInfo = new Label(msg);
 				contentTable.setWidget(row++, 0, contratoInfo);
 			}
@@ -69,7 +70,7 @@ public class PopUpPermanenciaUI extends DialogBox {
 	
 	@UiHandler("aceptarLink")
 	public void onClickAceptar(ClickEvent event){
-		EventBusUtil.getEventBus().fireEvent(new ClickPermanenciaEvent(true));
+		EventBusUtil.getEventBus().fireEvent(new ClickPermanenciaEvent(isDebeFacturar()));
 		super.hide();
 	}
 	
@@ -81,5 +82,14 @@ public class PopUpPermanenciaUI extends DialogBox {
 	public void setHeaderTitle(String title){
 		this.title.setText(title);
 	}
+
+	public void setDebeFacturar(boolean debeFacturar) {
+		this.debeFacturar = debeFacturar;
+	}
+
+	public boolean isDebeFacturar() {
+		return debeFacturar;
+	}
+	
 	
 }

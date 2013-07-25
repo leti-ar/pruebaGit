@@ -35,6 +35,7 @@ public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 	
 	private Long idTipoTelefoniaCedente;
 	private Double cargosPermanencia;
+	private int mesesPermanencia;
 	
 	public Long getContrato() {
 		return contrato;
@@ -251,4 +252,13 @@ public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 	public Double getCargosPermanencia() {
 		return cargosPermanencia;
 	}
+
+	public void setMesesPermanencia(int mesesPermanencia) {
+		this.mesesPermanencia = mesesPermanencia;
+	}
+
+	public int getMesesPermanencia() {
+		return mesesPermanencia;
+	}
+	
 }

@@ -100,8 +100,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private PopupPanel generarCerrarMenu;
 	private SimpleLink cerrarSolicitud;
 	private SimpleLink generarSolicitud;
-	private SimpleLink facturarSolicitud;
-	private SimpleLink verificarPagoSolicitud;
+	private SimpleLink cerrarPermanenciaSolicitud;
+	private SimpleLink facturarPermanenciaSolicitud;
+	private SimpleLink verificarPagoPermanenciaSolicitud;
 	private DefaultWaitCallback<GeneracionCierreResultDto> generacionCierreCallback;
 	private CerrarSSUI cerrarSSUI;
 	private PopUpPermanenciaUI popupPanel;
@@ -324,17 +325,19 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		
 	}
 	
-	public void loadTransferencia(Boolean verFacturar, Boolean verVerificarPago){
+	public void loadTransferencia(Boolean cerrarPermanencia, Boolean facturarPermanencia, Boolean verificarPermanencia){
 		linksCrearSS.clear();
 		if(grupoSS != null && knownInstancias != null && 
 				!grupoSS.equals(knownInstancias.get(GrupoSolicitudDto.ID_TRANSFERENCIA).toString()) &&
 				!ClientContext.getInstance().checkPermiso(PermisosEnum.OCULTA_LINK_GENERAR_SS.getValue())){
 			linksCrearSS.add(wrap(generarSolicitud));
 		}
-		if (verFacturar){
-			linksCrearSS.add(wrap(facturarSolicitud));
-		}else if (verVerificarPago){
-			linksCrearSS.add(wrap(verificarPagoSolicitud));
+		if (cerrarPermanencia){
+			linksCrearSS.add(wrap(cerrarPermanenciaSolicitud));
+		}else if (facturarPermanencia){
+			linksCrearSS.add(wrap(facturarPermanenciaSolicitud));
+		}else if (verificarPermanencia){
+			linksCrearSS.add(wrap(verificarPagoPermanenciaSolicitud));
 		}else{
 			linksCrearSS.add(wrap(cerrarSolicitud));
 		}
@@ -665,8 +668,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 //		FlowPanel linksCrearSS = new FlowPanel();
 		generarSolicitud = new SimpleLink("Generar");
 		cerrarSolicitud = new SimpleLink("Cerrar");
-		facturarSolicitud = new SimpleLink("Facturar");
-		verificarPagoSolicitud = new SimpleLink("Verificar Pago");
+		cerrarPermanenciaSolicitud = new SimpleLink("Cerrar");
+		facturarPermanenciaSolicitud = new SimpleLink("Facturar");
+		verificarPagoPermanenciaSolicitud = new SimpleLink("Verificar Pago");
 		
 		//MGR - #1122
 //		if(grupoSS != null && knownInstancias != null && 
@@ -678,8 +682,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 //		linksCrearSS.add(wrap(cerrarSolicitud));
 		generarSolicitud.addClickListener(this);
 		cerrarSolicitud.addClickListener(this);
-		facturarSolicitud.addClickListener(this);
-		verificarPagoSolicitud.addClickListener(this);
+		cerrarPermanenciaSolicitud.addClickListener(this);
+		facturarPermanenciaSolicitud.addClickListener(this);
+		verificarPagoPermanenciaSolicitud.addClickListener(this);
 		generarCerrarMenu.setWidget(linksCrearSS);
 
 		formButtonsBar = new FormButtonsBar();
@@ -925,9 +930,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			} else {
 				openGenerarCerrarSolicitdDialog(sender == cerrarSolicitud);
 			}
-		} else if (sender == facturarSolicitud){
-			cargarValoresPopup(datosTranferencia.getContratosSSChequeados());
-		} else if (sender == verificarPagoSolicitud){
+		} else if (sender == cerrarPermanenciaSolicitud){
+			verPopUpPermanencia(datosTranferencia.getContratosSSChequeados(),false);
+		} else if (sender == facturarPermanenciaSolicitud){
+			verPopUpPermanencia(datosTranferencia.getContratosSSChequeados(),true);
+		} else if (sender == verificarPagoPermanenciaSolicitud){
 			verificarPagos(datosTranferencia.getContratosSSChequeados());
 		}
 		//German - Comentado para salir solo con cierre - CU#5
@@ -1369,6 +1376,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		SolicitudRpcService.Util.getInstance().getServiciosAdicionalesContrato(idPlan, callback);
 	}
 	
+	public void getItemPorModelo(Long idModelo, Long idListaPrecios,
+			DefaultWaitCallback<ItemSolicitudTasadoDto> callback) {
+		SolicitudRpcService.Util.getInstance().getItemPorModelo(idModelo, idListaPrecios, callback);
+	}
+	
 	/**
 	 * Devuelve la SS de Transferencia con todos los datos ingresados
 	 */
@@ -1782,23 +1794,22 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		});
 	}
 
-	private void cargarValoresPopup(List<ContratoViewDto> values){
+	private void verPopUpPermanencia(List<ContratoViewDto> values, Boolean debeFacturar){
+		this.popupPanel.setDebeFacturar(debeFacturar);
 		this.popupPanel.setHeaderTitle(Sfa.constant().cargosPermanencia());
 		this.popupPanel.chargeContentTable(values);
 		this.popupPanel.show();
 		this.popupPanel.center();
 	}
 
-	public void getItemPorModelo(Long idModelo, Long idListaPrecios,
-			DefaultWaitCallback<ItemSolicitudTasadoDto> callback) {
-		SolicitudRpcService.Util.getInstance().getItemPorModelo(idModelo, idListaPrecios, callback);
-	}
-	
 	private void verificarPagos(List<ContratoViewDto> contratosSSChequeados) {
+		boolean verBotonCerrar = false;
+		boolean verBotonFacturar = false;
+		boolean verBotonVerificarPago = false;
 		//TODO CAM 11. El sistema verifica que se haya realizado el pago asociado a la SS.
 		MessageDialog.getInstance().showAceptar("Aca deberia verificar el pago asociado a la SS..."
 				, MessageDialog.getCloseCommand());
-		loadTransferencia(false, false);
+		loadTransferencia(verBotonCerrar, verBotonFacturar,verBotonVerificarPago);
 	}
 
 

@@ -257,11 +257,13 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		TipoSolicitudDto tipoSolicitud = (TipoSolicitudDto) tipoOrden.getSelectedItem();
 		itemSolicitudUIData.setActivacionOnline(false);
 		itemSolicitudUIData.setActivacion(false);
-		itemSolicitudUIData.getFullPrice().setEnabled(false);
+		itemSolicitudUIData.setPermanencia(false); // true para ordenes con opcion de subsidio
+		
 		if (tipoSolicitud != null) {
 			Long idTipoSolicitudBase = tipoSolicitud.getTipoSolicitudBase().getId();
 			if (itemSolicitudUIData.getIdsTipoSolicitudBaseItemYPlan().contains(idTipoSolicitudBase)) {
 				if(itemSolicitudUIData.getIdsTipoSolicitudBaseItemYPlanPermanencia().equals(idTipoSolicitudBase)) {
+					itemSolicitudUIData.setPermanencia(true);
 					tipoSolicitudPanel.setWidget(getItemYPlanSolicitudPermanenciaUI());
 				}else{
 					tipoSolicitudPanel.setWidget(getItemYPlanSolicitudUI());
@@ -272,6 +274,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.SOLO_ITEM);
 			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseActivacion().contains(idTipoSolicitudBase)) {
 				if(itemSolicitudUIData.getIdTipoSolicitudBaseActivacionOnline().equals(idTipoSolicitudBase)) {
+					itemSolicitudUIData.setPermanencia(true);
 					itemSolicitudUIData.setActivacionOnline(true);
 				}
 //				MGR - #3462

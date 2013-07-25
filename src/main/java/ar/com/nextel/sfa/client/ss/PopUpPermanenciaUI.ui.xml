@@ -14,11 +14,11 @@
 			<tr>
 				<td>
 					<div class="popCentral">
-						<table class="layout">		      			
+						<table>		      			
 							<tr>
 							<td width="100%">
-	        					<g:ScrollPanel width="500px" height="85px">
-			        				<g:FlexTable ui:field="contentTable" cellPadding="8" cellSpacing="8" width="92%"/>
+	        					<g:ScrollPanel width="500px" height="110px">
+			        				<g:FlexTable ui:field="contentTable" cellPadding="8" cellSpacing="5" width="92%"/>
 			        			</g:ScrollPanel>
 	    				   	</td>
 					    	</tr>
