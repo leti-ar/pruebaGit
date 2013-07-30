@@ -834,6 +834,10 @@ public class SolicitudBusinessService {
 						msgs.addMesage(msg);
 					}
 					response.setMessages(msgs);
+					//Si no hubo errores en los movimientos de inventario se reservan los números
+					if (msgs.isEmpty()) {
+						reservarNumerosTelefonicosPorDespacho(solicitudServicio);
+					}
 				}
 				
 			}
@@ -1439,6 +1443,11 @@ public class SolicitudBusinessService {
 	public List<String> movimientoInventario(SolicitudServicio ss){
 		return this.despachoSolicitudBusinessOperator.movimientoInventario(ss);
 	};
+
+	public void reservarNumerosTelefonicosPorDespacho(SolicitudServicio ss){
+		this.reservaNumeroTelefonoBusinessOperator.reservarNumerosTelefonosPorDespacho(ss);
+	};
+	
 	
 //	MGR - Validaciones previas a la facturacion
 	public List<Message> validarParaFacturar(SolicitudServicio solicitudServicio,
