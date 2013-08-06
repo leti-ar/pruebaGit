@@ -694,14 +694,10 @@ public class SolicitudBusinessService {
 			
 			response = generacionCierreBusinessOperator.cerrarSolicitudServicio(generacionCierreRequest, cierraPorCC);
 			
-
-			
-			
-			if(true){
-//			if (solicitudServicio.getCuenta().getFacturaElectronica() != null
-////					&& !solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion()
-//					&& hace4Dias.before(solicitudServicio.getCuenta().getFacturaElectronica().getLastModificationDate())
-//					&& !response.getMessages().hasErrors()) {
+			if (solicitudServicio.getCuenta().getFacturaElectronica() != null
+//					&& !solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion()
+					&& hace4Dias.before(solicitudServicio.getCuenta().getFacturaElectronica().getLastModificationDate())
+					&& !response.getMessages().hasErrors()) {
 				
 				//MGR - ISDN 1824 - El adm. de creditos adhiere el cliente a factura electronica y genera la gestion
 				//tanto para prospect como para clientes
