@@ -694,10 +694,14 @@ public class SolicitudBusinessService {
 			
 			response = generacionCierreBusinessOperator.cerrarSolicitudServicio(generacionCierreRequest, cierraPorCC);
 			
-			if (solicitudServicio.getCuenta().getFacturaElectronica() != null
-//					&& !solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion()
-					&& hace4Dias.before(solicitudServicio.getCuenta().getFacturaElectronica().getLastModificationDate())
-					&& !response.getMessages().hasErrors()) {
+
+			
+			
+			if(true){
+//			if (solicitudServicio.getCuenta().getFacturaElectronica() != null
+////					&& !solicitudServicio.getCuenta().getFacturaElectronica().getReplicadaAutogestion()
+//					&& hace4Dias.before(solicitudServicio.getCuenta().getFacturaElectronica().getLastModificationDate())
+//					&& !response.getMessages().hasErrors()) {
 				
 				//MGR - ISDN 1824 - El adm. de creditos adhiere el cliente a factura electronica y genera la gestion
 				//tanto para prospect como para clientes
@@ -730,19 +734,23 @@ public class SolicitudBusinessService {
 					
 					//MGR - ISDN 1824
 					String vendReal = "";
-//					if(isADMCreditos){
-//						vendReal = solicitudServicio.getVendedor().getUserReal();
-//					}else{
-//						vendReal = vendedor.getUserReal();
-//					}
+					
+					// SB - #0004176 (volvi atras este cambio para que no salga en el release 2)
+					if(isADMCreditos){
+						vendReal = solicitudServicio.getVendedor().getUserReal();
+					}else{
+						vendReal = vendedor.getUserReal();
+					}
 					
 					
-					String vendedorgenerico = String.valueOf(((GlobalParameter) globalParameterRetriever
-							.getObject(GlobalParameterIdentifier.USR_GENERICO_GEST_FA_SFA)).getValue());
+					// SB - #0004176 (volvi atras este cambio para que no salga en el release 2)
+					
+//					String vendedorgenerico = String.valueOf(((GlobalParameter) globalParameterRetriever
+//							.getObject(GlobalParameterIdentifier.USR_GENERICO_GEST_FA_SFA)).getValue());
 					
 					
 					Long idGestion = generacionCierreBusinessOperator.lanzarGestionCerrarSS(
-							vendedorgenerico,
+							vendReal,
 							0L, 
 							parametrosGestion, 
 							"", 
