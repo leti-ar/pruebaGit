@@ -103,7 +103,7 @@ public class OperacionEnCursoSeleccionCuentaPopup extends NextelDialog {
 					.getArea() != null ? "("
 					+ ((TelefonoDto) (cuenta.getPersona().getTelefonos()).get(0)).getArea() + ") " : "")
 					+ ((TelefonoDto) (cuenta.getPersona().getTelefonos()).get(0)).getNumeroLocal());
-			resultTable.setHTML(row, 4, /* credito fide ??? */null);
+			resultTable.setHTML(row, 4, /* credito fide ??? */"");
 			row++;
 		}
 		setVisible(true);
