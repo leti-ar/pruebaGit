@@ -595,15 +595,9 @@ public class CuentaBusinessService {
 					: getAccessCuenta(cuentaId, vendedor);
 			cuenta = (Cuenta) accessCuenta.getTargetObject();
 			
-			
-			
-			
 			// Actualizo la cuenta con la flota correspondiente, ticket mantis: 0004038.
 			flotaService.updateCuentaConFlota(cuenta);
 
-			
-			
-			
 			validarAccesoCuenta(cuenta, vendedor, filtradoPorDni);
 
 			//MGR - #1466
