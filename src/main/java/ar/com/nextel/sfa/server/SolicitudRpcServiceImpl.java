@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +94,7 @@ import ar.com.nextel.model.solicitudes.beans.TipoAnticipo;
 import ar.com.nextel.model.solicitudes.beans.TipoPersona;
 import ar.com.nextel.model.solicitudes.beans.TipoPlan;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
+import ar.com.nextel.model.solicitudes.beans.TipoSolicitudBase;
 import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
@@ -953,10 +955,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			serviciosAdicionales = solicitudServicioRepository.getServiciosAdicionales(
 						linea.getTipoSolicitud().getId(), linea.getPlan().getId(), 
 								idItem, idCuenta, sessionContextLoader.getVendedor(), isEmpresa);
-			//CARGO IMPORTES EN SERVICIOS PERMANENCIA
-			if (!linea.getFullPrice()){
-				serviciosAdicionales = cargoImportesServiciosPermanencia(linea,serviciosAdicionales);
-			}
+			//CARGO IMPORTES EN SERVICIOS PERMANENCIA Y REMUEVO LOS QUE NO DEBAN VISUALIZARSE DEPENDIENDO EL TIPO DE ORDEN
+			serviciosAdicionales = cargoServiciosAdicionalesPermanencia(linea,serviciosAdicionales);
+			
 		}
 		
 //		MGR - #3462 - Creo que a partir del cambio que genero este incidente, esto ya no es necesario
@@ -978,40 +979,61 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		return mapper.convertList(serviciosAdicionales, ServicioAdicionalLineaSolicitudServicioDto.class);
 	}
 
-	private Collection<ServicioAdicionalLineaSolicitudServicio> cargoImportesServiciosPermanencia(LineaSolicitudServicioDto linea,
-			Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales) {
+	
+	private Collection<ServicioAdicionalLineaSolicitudServicio> cargoServiciosAdicionalesPermanencia(
+			LineaSolicitudServicioDto linea, Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales) {
 		
-		Long idItem = linea.getItem().getId();
-		Long idPlan = linea.getPlan().getId();
-		Double subsidioEquipo = solicitudBusinessService.getSubsidiosPorItemPlan(idItem,idPlan);
-		Double subsidioCargoConexion = permanenciaService.getSubsidioCargoConexion();
-
-		ServicioAdicional servicioSubsidioEquipo = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_EQUIPO);
-		ServicioAdicional servicioBonifSubsidioEquipo = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_BONIF_EQUIPO);
-		ServicioAdicional servicioSubsidioActivacion = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_ACTIVACION);
-		ServicioAdicional servicioBonifSubsidioActivacion = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_BONIF_ACTIVACION);
+		Long tipoSolicitud = linea.getTipoSolicitud().getTipoSolicitudBase().getId();
+		Long tipoSolicitudActivacion       = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION)).getId();
+		Long tipoSolicitudActivacionOnline = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION_ONLINE)).getId();
+		Long tipoSolicitudVentaEquipos 	   = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_VENTA_EQUIPOS)).getId();
+		boolean verCargoActivacion 		= false;
+		boolean verBonifCargoActivacion = false;
 		
-		
-        for (ServicioAdicionalLineaSolicitudServicio servicio : serviciosAdicionales) {
-
-			if (servicio.getServicioAdicional().getCodigoBSCS().equals(servicioSubsidioEquipo.getCodigoBSCS())){
-	        	// SUBSIDIO EQUIPO
-				servicio.setPrecioLista(subsidioEquipo);
-				servicio.setPrecioVenta(subsidioEquipo);				
-			}else if(servicio.getServicioAdicional().getCodigoBSCS().equals(servicioBonifSubsidioEquipo.getCodigoBSCS())){
-				// BONIFICACION SUBSIDIO EQUIPO
-				servicio.setPrecioLista(-subsidioEquipo);
-				servicio.setPrecioVenta(-subsidioEquipo);			
-			}else if(servicio.getServicioAdicional().getCodigoBSCS().equals(servicioSubsidioActivacion.getCodigoBSCS())){
-				// SUBSIDIO ACTIVACION	
-				servicio.setPrecioLista(subsidioCargoConexion);
-				servicio.setPrecioVenta(subsidioCargoConexion);
-			}else if(servicio.getServicioAdicional().getCodigoBSCS().equals(servicioBonifSubsidioActivacion.getCodigoBSCS())){
-				// BONIFICACION SUBSIDIO ACTIVACION				
-				servicio.setPrecioLista(-subsidioCargoConexion);
-				servicio.setPrecioVenta(-subsidioCargoConexion);
+		if( tipoSolicitud.equals(tipoSolicitudVentaEquipos)	|| tipoSolicitud.equals(tipoSolicitudActivacion) ||
+			tipoSolicitud.equals(tipoSolicitudActivacionOnline)){
+			if(!linea.getFullPrice()){
+				verCargoActivacion = true;
+				verBonifCargoActivacion = true;
+			}else{
+				verCargoActivacion = true;	
 			}
 		}
+		serviciosAdicionales = cargoServiciosPermanencia(serviciosAdicionales,verCargoActivacion,verBonifCargoActivacion);
+		
+		return serviciosAdicionales;
+	}
+
+	private Collection<ServicioAdicionalLineaSolicitudServicio> cargoServiciosPermanencia(Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales,
+			boolean verCargoActivacion, boolean verBonifCargoActivacion) {
+		
+		Double subsidioCargoConexion = permanenciaService.getSubsidioCargoConexion();
+		ServicioAdicional servicioSubsidioActivacion = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_ACTIVACION);
+		ServicioAdicional servicioBonifSubsidioActivacion = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_BONIF_ACTIVACION);
+		Set<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionalesToRemove = new HashSet<ServicioAdicionalLineaSolicitudServicio>();
+
+        for (ServicioAdicionalLineaSolicitudServicio servicio : serviciosAdicionales) {
+        	
+			if(servicio.getServicioAdicional().getCodigoBSCS().equals(servicioSubsidioActivacion.getCodigoBSCS())){
+				// CARGO ACTIVACION
+				if (verCargoActivacion){
+					servicio.setPrecioLista(subsidioCargoConexion);
+					servicio.setPrecioVenta(subsidioCargoConexion);
+				}else{
+					serviciosAdicionalesToRemove.add(servicio);
+				}
+			}else if(servicio.getServicioAdicional().getCodigoBSCS().equals(servicioBonifSubsidioActivacion.getCodigoBSCS())){
+				// BONIFICACION CARGO ACTIVACION
+				if (verBonifCargoActivacion){
+					servicio.setPrecioLista(-subsidioCargoConexion);
+					servicio.setPrecioVenta(-subsidioCargoConexion);
+				}else{
+					serviciosAdicionalesToRemove.add(servicio);
+				}
+			}
+		}
+		serviciosAdicionales.removeAll(serviciosAdicionalesToRemove);
+
         return serviciosAdicionales;
 	}
 

@@ -262,6 +262,16 @@
         <configuration>
           <outputDirectory>war/WEB-INF/classes</outputDirectory>
           <wtpversion>2.0</wtpversion>
+          <additionalBuildcommands>
+			<buildCommand><name>com.google.gdt.eclipse.core.webAppProjectValidator</name></buildCommand>
+			<buildCommand><name>com.google.gdt.eclipse.core.gwtProjectValidator</name></buildCommand>
+		  </additionalBuildcommands>
+		  <additionalProjectnatures>
+			<projectnature>com.google.gwt.eclipse.core.gwtNature</projectnature>
+		  </additionalProjectnatures>
+		  <classpathContainers>
+			<classpathContainer>com.google.gwt.eclipse.core.GWT_CONTAINER</classpathContainer>
+		  </classpathContainers>
         </configuration>
       </plugin>
       <plugin>
