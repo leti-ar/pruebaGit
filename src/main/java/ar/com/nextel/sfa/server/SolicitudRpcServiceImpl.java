@@ -44,6 +44,7 @@ import ar.com.nextel.business.shift.InformacionNumeroDTO;
 import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSResponse;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
+import ar.com.nextel.business.solicitudes.generacionCierre.predicates.scoring.CierraConScoringNegativoPredicate;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
 import ar.com.nextel.business.solicitudes.negativeFiles.NegativeFilesBusinessOperator;
 import ar.com.nextel.business.solicitudes.negativeFiles.result.NegativeFilesBusinessResult;
@@ -95,7 +96,6 @@ import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
-import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
@@ -151,7 +151,6 @@ import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.client.util.PortabilidadResult;
 import ar.com.nextel.sfa.client.util.PortabilidadResult.ERROR_ENUM;
-import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.server.businessservice.CuentaBusinessService;
 import ar.com.nextel.sfa.server.businessservice.SolicitudBusinessService;
 import ar.com.nextel.sfa.server.util.MapperExtended;
@@ -1066,13 +1065,12 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				puedeCerrar = sonConfigurablesPorAPG(solicitudServicioDto.getLineas());
 				
 				if (puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO) {//pass de creditos segun la logica
-					errorCC = evaluarEquiposYDeuda(solicitudServicio, pinMaestro);
+					cierrePorVeraz = !solicitudServicio.getSolicitudServicioGeneracion().isCierreConPinOrScoringChecked(pinMaestro, pinChequeadoEnNexus);
+					errorCC = evaluarEquiposYDeuda(solicitudServicio, pinMaestro,cierrePorVeraz);
 					if ("".equals(errorCC)) {
 						
 						isVerazDisponible = (repository.executeCustomQuery("isVerazDisponible", "VERAZ_DISPONIBLE"));
 //						MGR - #3458 - Verifico si corresponde cerrar por Veraz (o Scoring)
-						cierrePorVeraz = ("".equals(pinMaestro) || pinMaestro == null)
-											&& !solicitudServicio.getSolicitudServicioGeneracion().getScoringChecked();
 						if (puedeDarPassDeCreditos(solicitudServicio, cierrePorVeraz, isVerazDisponible.get(0))) {
 							
 //							MGR - #3458
@@ -1092,7 +1090,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 						} else {
 							solicitudServicio.setPassCreditos(false);
 							if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
-								errorCC = generarErrorPorCC(solicitudServicio, pinMaestro);
+								errorCC = generarErrorPorCC(solicitudServicio, cierrePorVeraz);
 								
 						    	/* MGR - 04/07/2012
 						    	 * Al verificar si las lineas cumplen con las condiciones comerciales, la cantidad de equipos y la cantidad de pesos
@@ -2017,7 +2015,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 * @throws RpcExceptionMessages 
 	 */
 //	MGR - Parche de emergencia
-	private String evaluarEquiposYDeuda(SolicitudServicio ss, String pinMaestro) throws RpcExceptionMessages {
+	private String evaluarEquiposYDeuda(SolicitudServicio ss, String pinMaestro, boolean cierrePorVeraz) throws RpcExceptionMessages {
 //		MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
 		//Si es cliente, no es prospect o prospect en carga
 //		if (!RegularExpressionConstants.isVancuc(ss.getCuenta().getCodigoVantive())) {
@@ -2050,8 +2048,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					}
 				}
 				
-				if (("".equals(pinMaestro) || pinMaestro == null)
-						&& !ss.getSolicitudServicioGeneracion().getScoringChecked()) {
+//				if (("".equals(pinMaestro) || pinMaestro == null)
+//						&& !ss.getSolicitudServicioGeneracion().getScoringChecked()) {
+				if (cierrePorVeraz) {
 					//#3248
 					if ((ss.getGrupoSolicitud().getId() == 1L && permisoCierreScoring && !cerrandoConItemBB && ss.getCuenta().isCliente())
 							|| (ss.getGrupoSolicitud().getId() == 1L && permisoCierrePin && !cerrandoConItemBB)) {
@@ -2071,8 +2070,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				AppLogger.info("#Log Cierre y pass - La deuda de la cuenta corriente es: " + deudaCta, this);
 				
 				if ( deudaCta <= maxDeuda) { //no posee
-					if (!("".equals(pinMaestro) || pinMaestro == null)
-							|| ss.getSolicitudServicioGeneracion().getScoringChecked()) {
+//					if (!("".equals(pinMaestro) || pinMaestro == null)
+//							|| ss.getSolicitudServicioGeneracion().getScoringChecked()) {
+					if (!cierrePorVeraz) {
 						return "Solo se permite cerrar por Veraz dado que es un cliente existente sin equipos activos ni suspendidos.";
 					}
 				} else {
@@ -2080,8 +2080,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					return "El cliente no tiene equipos activos y tiene deuda vencida.";
 				}
 			}
-		} else if (!("".equals(pinMaestro) || pinMaestro == null)
-				|| ss.getSolicitudServicioGeneracion().getScoringChecked()) {
+//		} else if (!("".equals(pinMaestro) || pinMaestro == null)
+//				|| ss.getSolicitudServicioGeneracion().getScoringChecked()) {
+		} else if (!cierrePorVeraz) {
 			return "Solo se permite cerrar por Veraz.";
 		}
 		return "";
@@ -2257,7 +2258,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	 * @throws RpcExceptionMessages 
 	 */
 //	MGR - Parche de emergencia
-	private String generarErrorPorCC(SolicitudServicio ss, String pinMaestro) throws RpcExceptionMessages {
+	private String generarErrorPorCC(SolicitudServicio ss, boolean cierrePorVeraz) throws RpcExceptionMessages {
 		
 		//MGR - #3122 - Nueva forma de armar el mensaje de error
     	String mensaje = "";
@@ -2301,8 +2302,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     	
     	if(!"".equals(error)){
     		mensaje = "Para validación por ";
-    		if (("".equals(pinMaestro) || pinMaestro == null)
-    				&& !ss.getSolicitudServicioGeneracion().getScoringChecked()) {
+    		if (cierrePorVeraz) {
     			mensaje += "Veraz ";
 			} else {
 				mensaje += "Scoring ";
@@ -2326,8 +2326,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     			return error;
     		}
     		else if(condiciones.isEmpty()){
-        		if (("".equals(pinMaestro) || pinMaestro == null)
-        				&& !ss.getSolicitudServicioGeneracion().getScoringChecked()) {
+        		if (cierrePorVeraz) {
             			error += "el resultado " + resultadoVerazScoring + " para el tipo de Solicitud " + linea.getTipoSolicitud().getDescripcion();
         			} else {
         				error += "el resultado de scoring hasta " + resultadoVerazScoring + " terminales para el tipo de Solicitud " + linea.getTipoSolicitud().getDescripcion();
@@ -2419,8 +2418,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
     			if (!"".equals(mensaje)) {
     				mensaje += "- ";
     			}
-        		if (("".equals(pinMaestro) || pinMaestro == null)
-        				&& !ss.getSolicitudServicioGeneracion().getScoringChecked()) {
+        		if (cierrePorVeraz) {
         			error = "Para la linea " + linea.getAlias() + " para el resultado de veraz " + resultadoVerazScoring + ", no existe una Condicion Comercial con " + error; 
     			} else {
     				error = "Para la linea " + linea.getAlias() + " para el resultado de scoring " + resultadoVerazScoring + ", no existe una Condicion Comercial con " + error;

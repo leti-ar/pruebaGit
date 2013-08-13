@@ -808,12 +808,9 @@ public class SolicitudBusinessService {
 	}
 
 	private void setScoringChecked(SolicitudServicio solicitudServicio, String pinMaestro, boolean pinChequeadoEnNexus) {
-		Boolean pinNotEmpty = !GenericValidator.isBlankOrNull(pinMaestro);
 		// Se generará por scoring si tiene PIN ingresado (EECC) o si se tildá el checkbox de scoring
 		// (Dealers)
-		boolean scoringChecked = pinNotEmpty 
-				|| solicitudServicio.getSolicitudServicioGeneracion().getScoringChecked().booleanValue() || pinChequeadoEnNexus;
-
+		boolean scoringChecked = solicitudServicio.getSolicitudServicioGeneracion().isCierreConPinOrScoringChecked(pinMaestro, pinChequeadoEnNexus);
 		solicitudServicio.getSolicitudServicioGeneracion().setScoringChecked(scoringChecked);
 	}
 
