@@ -19,7 +19,9 @@ public class ListaPreciosDto extends EnumDto implements IsSerializable, ListBoxI
 	//MGR - #998
 	private int ordenAparicion;
 	
-	//MGR - #ISDM 1785 - Indica si se contatena Segment1 y Descripcion como descripción
+	private String codigoBSCS;
+	
+	//MGR - #ISDM 1785 - Indica si se contatena Segment1 y Descripcion como descripciï¿½n
 	private Boolean concatena;
 
 	public String getItemText() {
@@ -66,7 +68,10 @@ public class ListaPreciosDto extends EnumDto implements IsSerializable, ListBoxI
 	//MGR - #998 - La lista de precio debe estar ordenada por el campo Orden_Aparicion
 	public int compareTo(Object o) {
 		ListaPreciosDto o1 = (ListaPreciosDto)o;
-		return this.ordenAparicion <= o1.ordenAparicion? -1 : 1;
+		int codigoBSCSint = Integer.parseInt(this.codigoBSCS);
+		int o1CodigoBSCSint = Integer.parseInt(o1.codigoBSCS);
+		//return this.ordenAparicion <= o1.ordenAparicion? -1 : 1;
+		return codigoBSCSint <= o1CodigoBSCSint? -1 : 1;
 	}
 
 	public Boolean getConcatena() {
@@ -75,5 +80,13 @@ public class ListaPreciosDto extends EnumDto implements IsSerializable, ListBoxI
 
 	public void setConcatena(Boolean concatena) {
 		this.concatena = concatena;
+	}
+
+	public String getCodigoBSCS() {
+		return codigoBSCS;
+	}
+
+	public void setCodigoBSCS(String codigoBSCS) {
+		this.codigoBSCS = codigoBSCS;
 	}
 }

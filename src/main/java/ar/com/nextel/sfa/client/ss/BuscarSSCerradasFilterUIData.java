@@ -1,6 +1,8 @@
 package ar.com.nextel.sfa.client.ss;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -44,6 +46,7 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 	private Button limpiarButton;
 	
 	private DateTimeFormat dateFormatter = DateTimeFormat.getFormat("dd/MM/yyyy");
+	private List<String> errorList = new ArrayList();
 
 
 	public BuscarSSCerradasFilterUIData() {
@@ -206,5 +209,38 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 	public SimpleDatePicker getHastaDatePicker() {
 		return this.hasta;
 	}
+	
+	public List<String> validarCriterioBusquedaSSCerradas() {
+		errorList.clear();
+		
+		Date date1 = desde.getSelectedDate();
+		Date date2 = hasta.getSelectedDate();
+		int dif = getDiasEntreDosFechas(date1, date2);
+		
+		if (dif > 30) {
+			errorList
+					.add("Fecha invalida, solo puede buscar SS cerradas en un rango no mayor a los 30 días");
+		}
+		return errorList;
+	}
+	
+    /**
+     * Me dice cual es la cantidad de dias que existen entre la fecha fin y la de comienzo.</br>
+     * Compara por milisegundos.
+     * @return int cantidad de dias entre las dos fechas.
+     */
+    public static int getDiasEntreDosFechas(Date desde, Date hasta) {
+         long MILLISEGUNDOS_POR_DIA = 86400000;
+    	
+            if(desde == null) {
+                    throw new IllegalArgumentException("la fecha de comienzo es null");
+            }
+            if(hasta == null) {
+                    throw new IllegalArgumentException("la fecha de fin es null");
+            }
+            return new Long((hasta.getTime() - desde.getTime()) / MILLISEGUNDOS_POR_DIA).intValue();
+    }
+
+	
 	
 }
