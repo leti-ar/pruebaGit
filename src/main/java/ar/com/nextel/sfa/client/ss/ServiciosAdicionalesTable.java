@@ -21,7 +21,6 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.i18n.client.NumberFormat;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
@@ -40,11 +39,9 @@ public class ServiciosAdicionalesTable extends Composite {
 	public static final int COL_AGREGAR_QUITAR = 0;
 	public static final int COL_PRECIO_VENTA = 3;
 	private final NumberFormat currencyFormat = NumberFormat.getCurrencyFormat();
-	private boolean isEditable;
 
 	public ServiciosAdicionalesTable(EditarSSUIController controller) {
 		this.controller = controller;
-		this.setEditable(controller.isEditable());
 		this.editarSSUIData = controller.getEditarSSUIData();
 		SimplePanel wrapper = new SimplePanel();
 		initWidget(wrapper);
@@ -145,14 +142,16 @@ public class ServiciosAdicionalesTable extends Composite {
 	 */
 	public void setServiciosAdicionalesFor(int selectedLineaSS) {
 		this.selectedLineaSSRow = selectedLineaSS;
-		if (selectedLineaSSRow < 1 || editarSSUIData.getLineasSolicitudServicio().get(selectedLineaSSRow - 1).getPlan() == null) {
+		if (selectedLineaSSRow < 1
+				|| editarSSUIData.getLineasSolicitudServicio().get(selectedLineaSSRow - 1).getPlan() == null) {
 			table.resizeRows(1);
 			return;
 		}
-		List serviciosAdicionalesOriginales = editarSSUIData.getServiciosAdicionales().get(selectedLineaSSRow - 1);
-		
+		List serviciosAdicionalesOriginales = editarSSUIData.getServiciosAdicionales().get(
+				selectedLineaSSRow - 1);
 		if (!serviciosAdicionalesOriginales.isEmpty()) {
-			editarSSUIData.mergeServiciosAdicionalesConLineaSolicitudServicio(selectedLineaSSRow - 1,serviciosAdicionalesOriginales);
+			editarSSUIData.mergeServiciosAdicionalesConLineaSolicitudServicio(selectedLineaSSRow - 1,
+					serviciosAdicionalesOriginales);
 			refreshServiciosAdicionalesTable(selectedLineaSSRow - 1);
 		} else {
 			controller.getServiciosAdicionales(editarSSUIData.getLineasSolicitudServicio().get(
@@ -189,23 +188,8 @@ public class ServiciosAdicionalesTable extends Composite {
 				servicioAdicional = linea.getServiciosAdicionales().get(saIndex);
 			}
 			CheckBox check = new CheckBox();
-			
-			if(servicioAdicional.getServicioAdicional().getEsPortabilidad()){
-				servicioAdicional.setObligatorio(true);
-
-				if(linea.getPortabilidad() != null){
-					servicioAdicional.setChecked(true);
-					linea.getServiciosAdicionales().add(servicioAdicional);
-				}else servicioAdicional.setChecked(false); 
-
-				check.setValue(servicioAdicional.isChecked());
-				check.setEnabled(!servicioAdicional.isObligatorio());
-			}else{
-				check.setEnabled(!servicioAdicional.isObligatorio());
-				check.setValue(servicioAdicional.isObligatorio() || servicioAdicional.isChecked());
-			}
-
-			
+			check.setEnabled(!servicioAdicional.isObligatorio());
+			check.setValue(servicioAdicional.isObligatorio() || servicioAdicional.isChecked());
 			table.setWidget(row, 0, check);
 			table.setHTML(row, 1, servicioAdicional.getDescripcionServicioAdicional());
 			table.setHTML(row, 2, currencyFormat.format(servicioAdicional.getPrecioLista()));
@@ -261,12 +245,7 @@ public class ServiciosAdicionalesTable extends Composite {
 		for (Iterator<ServicioAdicionalIncluidoDto> iterator = serviciosAdicionales.iterator(); iterator.hasNext();) {
 			ServicioAdicionalIncluidoDto servicioAdicional = (ServicioAdicionalIncluidoDto) iterator.next();
 			CheckBox check = new CheckBox();
-			if(isEditable()) {
-				check.setEnabled(!servicioAdicional.getObligatorio());
-			} else {
-				check.setEnabled(false);
-			}
-			
+			check.setEnabled(!servicioAdicional.getObligatorio());
 			check.setValue(servicioAdicional.getObligatorio());
 			if (servicioAdicional.getServicioAdicional().getEsCargoAdministrativo()
 					|| servicioAdicional.getServicioAdicional().getEsCDT()) {
@@ -312,14 +291,4 @@ public class ServiciosAdicionalesTable extends Composite {
 			contratoViewDto.agregarServicioAdicional(servicioSelected);
 		}
 	}
-
-	public boolean isEditable() {
-		return isEditable;
-	}
-
-	public void setEditable(boolean isEditable) {
-		this.isEditable = isEditable;
-	}
-	
-	
 }

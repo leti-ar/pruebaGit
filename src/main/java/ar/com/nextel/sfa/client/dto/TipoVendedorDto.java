@@ -12,7 +12,6 @@ public class TipoVendedorDto implements IsSerializable {
     private String codigoVantive;
     private String descripcion;
     private List<GrupoSolicitudDto> grupos;
-    private boolean ejecutaNegFiles;
     
     public Long getId() {
 		return id;
@@ -45,10 +44,5 @@ public class TipoVendedorDto implements IsSerializable {
 	public void setGrupos(List<GrupoSolicitudDto> grupos) {
 		this.grupos = grupos;
 	}
-	public boolean isEjecutaNegFiles() {
-		return ejecutaNegFiles;
-	}
-	public void setEjecutaNegFiles(boolean ejecutaNegFiles) {
-		this.ejecutaNegFiles = ejecutaNegFiles;
-	}
+    
 }

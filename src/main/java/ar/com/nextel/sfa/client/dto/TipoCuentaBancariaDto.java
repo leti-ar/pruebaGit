@@ -4,9 +4,9 @@ import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class TipoCuentaBancariaDto extends EnumDto implements ListBoxItem, IsSerializable {
+public class TipoCuentaBancariaDto implements ListBoxItem, IsSerializable {
     
-	private Long id;
+	private long id;
 	private String codigoVantive;
     private String descripcion;
 
@@ -24,10 +24,10 @@ public class TipoCuentaBancariaDto extends EnumDto implements ListBoxItem, IsSer
 	public String getItemValue() {
 		return id + "";
 	}
-	public Long getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(Long id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public String getCodigoVantive() {

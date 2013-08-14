@@ -41,12 +41,10 @@ public class BuscarSSTotalesResultUI extends FlowPanel {
 	}
 
 	public void setValues(String equipos, double pataconex,
-			String equiposFirmados) {//LF#3, boolean analistaCredito) {
+			String equiposFirmados) {
 		labelEquipos.setText("Equipos: " + equipos);
-		//LF#3if(!analistaCredito) {
-			labelPataconex.setText("Pataconex: " + numberFormat.format(pataconex));
-			labelFirmados.setText("Eq. Firmados: " + equiposFirmados);
-	//LF#3	}
+		labelPataconex.setText("Pataconex: " + numberFormat.format(pataconex));
+		labelFirmados.setText("Eq. Firmados: " + equiposFirmados);
 	}
 
 }

@@ -16,8 +16,6 @@ import ar.com.nextel.sfa.client.dto.ModalidadCobroDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
-import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
-import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
 import ar.com.nextel.sfa.client.dto.TerminoPagoValidoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
@@ -27,7 +25,6 @@ import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
-import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
@@ -37,8 +34,6 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
@@ -66,15 +61,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private CheckBox ddn;
 	private CheckBox ddi;
 	private CheckBox roaming;
-
-	// portabilidad
-	private CheckBox portabilidad;
-	private PortabilidadUIData portabilidadPanel = new PortabilidadUIData();
-	private Command cmndAceptar;
-	private Command cmndCancelar;
-	boolean actuaXmodal = false;
-
-
 	private TextBox imei;
 	private ListBox modeloEq;
 	private ListBox item;
@@ -112,20 +98,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private static final long CUENTA_CORRIENTE_VENC_CICLO_ID = 33;
 	private static final String v1 = "\\{1\\}";
 	private static final String v2 = "\\{2\\}";
-	private static final String WARNING = "Advertencia";
 	private int tipoEdicion;
-	private ItemSolicitudDialog dialog;
-	private boolean activacionOnline;
-	private Long idTipoSolicitudBaseActivacionOnline;
-//	MGR - #3462
-	private boolean activacion = false;
-	private Long idTipoSolicitudBaseActivacion = 0L;
 
 	public ItemSolicitudUIData(EditarSSUIController controller) {
-		
-		// Oculta las opciones de portabilidad
-		portabilidadPanel.setVisible(false);
-		portabilidadPanel.setSolicitudServicio(controller.getEditarSSUIData().getSolicitudServicio());
+
 		this.controller = controller;
 
 		fields = new ArrayList<Widget>();
@@ -151,8 +127,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		fields.add(ddn = new CheckBox());
 		fields.add(ddi = new CheckBox());
 		fields.add(roaming = new CheckBox());
-		fields.add(portabilidad = new CheckBox());
-
 		totalLabel = new InlineHTML(currencyFormat.format(0d));
 		confirmarReserva = new Button("Ok");
 		desreservar = new Button();
@@ -189,7 +163,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		ddn.setText(Sfa.constant().ddn());
 		ddi.setText(Sfa.constant().ddi());
 		roaming.setText(Sfa.constant().roaming());
-		portabilidad.setText(Sfa.constant().portabilidad());
 		resetIMEICheck();
 		verificarSimWrapper.addStyleName("pl10");
 
@@ -217,108 +190,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		// SB - #0004558
 		// roaming.addClickHandler(this);
 		imei.addChangeListener(this);
-		
+
 		initIdsTipoSolicitudBase();
-		
-		// TODO: portabilidad
-		cantidad.addValueChangeHandler(valueChangeHandler_string);
-		portabilidad.addValueChangeHandler(valueChangeHandler_boolean);
-
-		portabilidadPanel.setCHKportabilidad(portabilidad);
-		portabilidadPanel.setReserva(confirmarReserva,reservar);
-
-		cmndAceptar = new Command() {
-			public void execute() {
-				if(!portabilidad.getValue()){
-					// Elimina la portabilidad
-					for(ServicioAdicionalLineaSolicitudServicioDto servicioAdicional : lineaSolicitudServicio.getServiciosAdicionales()){
-						if(servicioAdicional.getServicioAdicional().getEsPortabilidad() && servicioAdicional.isChecked()) servicioAdicional.setChecked(false);
-					}
-					portabilidadPanel.setSolicitudPortabilidad(null);
-					portabilidadPanel.resetearPortabilidad();
-					reservar.setEnabled(true);
-					confirmarReserva.setEnabled(true);
-					portabilidadPanel.setVisible(false);
-					dialog.center();
-				}else{
-					// Elimina la Reserva
-					desreservar();
-					reservar.setEnabled(false);
-					reservar.setText("");
-					confirmarReserva.setEnabled(false);
-					portabilidadPanel.setVisible(true);
-					portabilidadPanel.loadSolicitudPortabilidad(new SolicitudPortabilidadDto(),true);
-					dialog.center();
-				}
-				
-				ModalMessageDialog.getInstance().hide();
-			}
-		};
-		
-		cmndCancelar = new Command() {
-			public void execute() {
-				actuaXmodal = true;
-				
-				if(!portabilidad.getValue()) portabilidad.setValue(true);
-				else portabilidad.setValue(false);
-				
-				actuaXmodal = false;
-				ModalMessageDialog.getInstance().hide();
-			}
-		};
 	}
 
-	// TODO: portabilidad
-	// Objeto manejador del evento de cambio de valor tipo string
-	private ValueChangeHandler<String> valueChangeHandler_string = new ValueChangeHandler<String>() {
-		public void onValueChange(ValueChangeEvent<String> event) {
-			refreshTotalLabel();
-			enableAliasYReserva(isCantiadIgualNadaOUno());
-			
-			if(Integer.valueOf(cantidad.getText()).intValue() > 1){
-				// No puede haber portabilidad si la cantidad excede a 1
-				if(portabilidadPanel.isVisible()){
-					reservar.setEnabled(true);
-					confirmarReserva.setEnabled(true);
-					portabilidadPanel.resetearPortabilidad();
-					portabilidadPanel.setVisible(false);
-					portabilidad.setValue(false);
-					portabilidad.setEnabled(false);
-				}else portabilidad.setEnabled(false);
-			}else portabilidad.setEnabled(true);
-		}
-	};
-
-	// TODO: portabilidad
-	// Objeto manejador del evento de cambio de valor tipo boolean
-	private ValueChangeHandler<Boolean> valueChangeHandler_boolean = new ValueChangeHandler<Boolean>() {
-		public void onValueChange(ValueChangeEvent<Boolean> event) {
-			if(!actuaXmodal){
-				if(!portabilidad.getValue()){
-					ModalMessageDialog.getInstance().showAceptarCancelar(
-							WARNING,"Se eliminaran los datos correspondientes a Portabilidad",cmndAceptar, cmndCancelar);
-				}else{ 
-					if(cantidad.getText().length() < 1 || Integer.valueOf(cantidad.getText()) < 1) cantidad.setText("1");
-
-					if(lineaSolicitudServicio.getNumeroReserva() != null && lineaSolicitudServicio.getNumeroReserva().length() > 0 ){
-						ModalMessageDialog.getInstance().showAceptarCancelar(
-								WARNING,"Se eliminara la reserva de numero, desea continuar",cmndAceptar, cmndCancelar);
-					}else{
-						reservar.setEnabled(false);
-						confirmarReserva.setEnabled(false);
-						portabilidadPanel.setVisible(true);
-						portabilidadPanel.loadSolicitudPortabilidad(new SolicitudPortabilidadDto(),true);
-					}
-				}
-			}
-			dialog.center();
-		}
-	};
-
-	public void setItemSolicitudDialog(ItemSolicitudDialog dialog){
-		this.dialog = dialog;
-	}
-	
 	private void initIdsTipoSolicitudBase() {
 		idsTipoSolicitudBaseItemYPlan = new ArrayList<Long>();
 		idsTipoSolicitudBaseItem = new ArrayList<Long>();
@@ -336,19 +211,12 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		idsTipoSolicitudBaseItem.add(Long.valueOf(16)); // 16-TIPO_SOLICITUD_BASE_VTA_LICENCIAS_BB
 		idsTipoSolicitudBaseItem.add(Long.valueOf(12)); // 12-TIPO_SOLICITUD_BASE_VENTA_ACCESORIOS_G4
 
-		setIdTipoSolicitudBaseActivacionOnline(Long.valueOf(17)); // 17-TIPO_SOLICITUD_BASE_ACTIVACION_ONLINE
-		
-//		MGR - #3462
-//		idsTipoSolicitudBaseActivacion.add(Long.valueOf(9)); // 9-TIPO_SOLICITUD_BASE_ACTIVACION
-		setIdTipoSolicitudBaseActivacion(Long.valueOf(9)); 
-		idsTipoSolicitudBaseActivacion.add(getIdTipoSolicitudBaseActivacion()); // 17-TIPO_SOLICITUD_BASE_ACTIVACION_ONLINE
-		
+		idsTipoSolicitudBaseActivacion.add(Long.valueOf(9)); // 9-TIPO_SOLICITUD_BASE_ACTIVACION
 		idsTipoSolicitudBaseActivacion.add(Long.valueOf(13)); // 13-TIPO_SOLICITUD_BASE_ACTIVACION_G4
-		idsTipoSolicitudBaseActivacion.add(Long.valueOf(getIdTipoSolicitudBaseActivacionOnline())); // 17-TIPO_SOLICITUD_BASE_ACTIVACION_ONLINE
-		
+
 		idsTipoSolicitudBaseCDW.add(Long.valueOf(3)); // 3-TIPO_SOLICITUD_BASE_VENTA_CDW
 	}
-	
+
 	public void onClick(ClickEvent event) {
 		Widget sender = (Widget) event.getSource();
 		if (sender == confirmarReserva) {
@@ -415,7 +283,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 							desreservar.setVisible(true);
 							confirmarReserva.setVisible(false);
 							setFieldsFromNumeroTelefonicoCompleto("" + result.getReservedNumber());
-							lineaSolicitudServicio.setNumeroReserva(String.valueOf(result.getReservedNumber()));
 							MessageDialog.getInstance().showAceptar("Reserva Exitosa",
 									Sfa.constant().MSG_NUMERO_RESERVADO(), MessageDialog.getCloseCommand());
 						}
@@ -450,7 +317,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 						desreservar.setVisible(false);
 						confirmarReserva.setVisible(true);
 						reservarHidden.setText("");
-						lineaSolicitudServicio.setNumeroReserva(null);
 					}
 
 					public void failure(Throwable caught) {
@@ -470,7 +336,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		plan.setEnabled(enable);
 		localidad.setEnabled(enable);
 		modalidadCobro.setEnabled(enable);
-		//reservar.setEnabled(enable);
+		reservar.setEnabled(enable);
 		reservar.setReadOnly(!enable);
 	}
 
@@ -493,16 +359,12 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 						});
 			}
 		}
-		// LF
-//		if (isActivacionOnline()) {
-//			listaPrecio.setVisible(false);
-//		}
 	}
 
 	private void verificarSim() {
 		controller.verificarNegativeFiles(sim.getText(), new DefaultWaitCallback<String>() {
 			public void success(String result) {
-				if (result != null) { //#3265
+				if (result != null) {
 					ErrorDialog.getInstance().show(result, false);
 					verificarSimWrapper.setHTML(IconFactory.comprobarRojo(Sfa.constant().verificarSim())
 							.toString());
@@ -533,7 +395,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			});
 		}
 	}
-	
+
 	public void onChange(Widget sender) {
 		if (sender == listaPrecio) {
 			// Cargo Items y Terminos de pago a partir de la Lista de Precios
@@ -603,15 +465,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				}
 				precioListaItem.setInnerHTML(currencyFormat.format(precio));
 				if (tipoPlan.getSelectedItem() != null) {
-//					MGR - #3462 - Es necesario indicar el modelo y si es activacion online
-					ModeloDto modelo = (ModeloDto) modeloEq.getSelectedItem();
-					boolean isActivacion = this.isActivacion() || this.isActivacionOnline();
 					controller.getPlanesPorItemYTipoPlan(is, (TipoPlanDto) tipoPlan.getSelectedItem(),
-							isActivacion, modelo, getActualizarPlanCallback());
+							getActualizarPlanCallback());
 				}
 				// if(is.getItem().) // alcanza con isEquipo, isAccesorio?
 				ddn.setValue(true);
-				
 				if (tipoEdicion == ACTIVACION) {
 					if (is.getItem().getSinModelo()) {
 						sim.setEnabled(false);
@@ -626,17 +484,12 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				sim.setEnabled(true);
 				sim.setReadOnly(false);
 			}
-
 			refreshTotalLabel();
 		} else if (sender == tipoPlan) {
 			// Cargo los planes correspondientes al tipo de plan seleccionado
 			if (tipoPlan.getSelectedItem() != null && item.getSelectedItem() != null) {
-//				MGR - #3462 - Es necesario indicar el modelo y si es activacion online
-				ModeloDto modelo = (ModeloDto) modeloEq.getSelectedItem();
-				boolean isActivacion = this.isActivacion() || this.isActivacionOnline();
 				controller.getPlanesPorItemYTipoPlan((ItemSolicitudTasadoDto) item.getSelectedItem(),
-						(TipoPlanDto) tipoPlan.getSelectedItem(), isActivacion, modelo,
-						getActualizarPlanCallback());
+						(TipoPlanDto) tipoPlan.getSelectedItem(), getActualizarPlanCallback());
 			}
 		} else if (sender == plan) {
 			// Cargo Modalidades de Cobro posibles
@@ -680,10 +533,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			if (modelo != null) {
 				item.clear();
 				item.addAllItems(modelo.getItems());
-				//LF - Si el combo Item trae un solo valor se autocompletara el combo.
-				if(isActivacionOnline() && modelo.getItems().size() == 1) {
-					item.setSelectedItem(modelo.getItems().get(0));
-				}
 				if (lineaSolicitudServicio.getItem() != null) {
 					ItemSolicitudTasadoDto itemTasado = new ItemSolicitudTasadoDto();
 					itemTasado.setItem(lineaSolicitudServicio.getItem());
@@ -702,9 +551,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 		} else if (sender == imei) {
 			refreshModelos();
-		}
-		if (isActivacionOnline()) {
-			listaPrecio.setVisible(false);
 		}
 	}
 
@@ -826,11 +672,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		roaming.setEnabled(false);
 		return roaming;
 	}
-	
-	public CheckBox getPortabilidad() {
-		return portabilidad;
-	}
-
 	public TextBox getImei() {
 		return imei;
 	}
@@ -908,7 +749,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 					Sfa.constant().ERR_CANT_MA_CERO().replaceAll(v1, "Cantidad"), 0);
 		} else {
 			ModeloDto modelo = (ModeloDto) modeloEq.getSelectedItem();
-			if (modelo != null && !isActivacionOnline()) {
+			if (modelo != null) {
 				if (modelo.isEsBlackberry()) {
 					validator.addTarget(pin).required(
 							Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "PIN")).length(8,
@@ -1021,11 +862,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 			sim.setText(linea.getNumeroSimcard());
 		}
-		
-		// TODO: Portabilidad
-		portabilidadPanel.resetearPortabilidad();
-		if(linea.getPortabilidad() != null) portabilidadPanel.loadSolicitudPortabilidad(linea.getPortabilidad(),false);
-
 	}
 
 	/** Limpia las selecciones de los combos */
@@ -1137,10 +973,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			MessageDialog.getInstance().showAceptar("Se han eliminado los descuentos aplicados, si lo desea, puede cargarlos nuevamente", 
 					MessageDialog.getCloseCommand());
 		}
-
-		// TODO:Portabilidad
-		lineaSolicitudServicio.setPortabilidad(portabilidadPanel.getSolicitudPortabilidad(lineaSolicitudServicio));
-		portabilidadPanel.setSolicitudPortabilidad(null);
 		
 		return lineaSolicitudServicio;
 	}
@@ -1227,47 +1059,5 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Portabilidad
-	 * TODO: portabilidad
-	 */
-	public PortabilidadUIData getPortabilidadPanel() {
-		return portabilidadPanel;
-	}
-	
-	public boolean isActivacionOnline() {
-		return activacionOnline;
-	}
-
-	public void setActivacionOnline(boolean activacionOnline) {
-		this.activacionOnline = activacionOnline;
-	}
-	
-	public Long getIdTipoSolicitudBaseActivacionOnline() {
-		return idTipoSolicitudBaseActivacionOnline;
-	}
-
-	public void setIdTipoSolicitudBaseActivacionOnline(
-			Long idTipoSolicitudBaseActivacionOnline) {
-		this.idTipoSolicitudBaseActivacionOnline = idTipoSolicitudBaseActivacionOnline;
-	}
-	
-//	MGR - #3462
-	public boolean isActivacion() {
-		return activacion;
-	}
-
-	public void setActivacion(boolean activacion) {
-		this.activacion = activacion;
-	}
-
-	public Long getIdTipoSolicitudBaseActivacion() {
-		return idTipoSolicitudBaseActivacion;
-	}
-
-	public void setIdTipoSolicitudBaseActivacion(Long idTipoSolicitudBaseActivacion) {
-		this.idTipoSolicitudBaseActivacion = idTipoSolicitudBaseActivacion;
 	}
 }

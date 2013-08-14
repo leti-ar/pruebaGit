@@ -9,7 +9,6 @@ public class CuentaSSDto implements IsSerializable {
 	private String codigoVantive;
 	private PersonaDto persona;
 	private boolean empresa;
-	private boolean transferido;
 	
 	private VendedorDto vendedor;
 
@@ -63,13 +62,5 @@ public class CuentaSSDto implements IsSerializable {
 
 	public void setVendedor(VendedorDto vendedor) {
 		this.vendedor = vendedor;
-	}
-
-	public boolean isTransferido() {
-		return transferido;
-	}
-
-	public void setTransferido(boolean transferido) {
-		this.transferido = transferido;
 	}
 }

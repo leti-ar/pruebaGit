@@ -183,10 +183,7 @@ public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 
 	@Override
 	public int hashCode() {
-		if (this.contrato!=null) {
-			return this.contrato.intValue();
-		}
-		return super.hashCode();
+		return this.contrato.intValue();
 	}
 	
 	@Override

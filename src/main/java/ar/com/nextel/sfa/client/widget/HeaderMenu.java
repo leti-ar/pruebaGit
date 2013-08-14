@@ -4,7 +4,6 @@ package ar.com.nextel.sfa.client.widget;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.command.OpenPageCommand;
-import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
@@ -140,9 +139,9 @@ public class HeaderMenu extends Composite {
 		crearMenuSS(menuBarCrearSS);
 		mainMenu.addSeparator();
 
-		// LF#3
+		
+		
 		ssBuscarMenuItem = new MenuItem("SS", new OpenPageCommand(UILoader.BUSCAR_SOLICITUD));
-//		ssBuscarMenuItem = new MenuItem(getTitleSS(), new OpenPageCommand(UILoader.BUSCAR_SOLICITUD));
 		ssBuscarMenuItem.ensureDebugId(DebugConstants.MENU_SS_BUSCAR);
 		mainMenu.addItem(ssBuscarMenuItem);
 
@@ -199,7 +198,7 @@ public class HeaderMenu extends Composite {
 		}
 		
 		//MGR - #1397
-		if( (vieneDeNexus && customerCode == null) || !vieneDeNexus) { //LF#3|| ClientContext.getInstance().getVendedor().getTipoVendedor().getCodigo().equals("ADM")){
+		if( (vieneDeNexus && customerCode == null) || !vieneDeNexus){
 			ssBuscarMenuItem.setVisible((items & MENU_SOLICITUD) != 0);
 		}else{
 			ssBuscarMenuItem.setVisible(false);
@@ -252,22 +251,4 @@ public class HeaderMenu extends Composite {
 			builder.append(EditarSSUI.ID_GRUPO_SS + "=" + idGrupo);
 		return builder.toString();
 	}
-	
-
-	//LF#3
-//	/**
-//	 * Obtengo el titulo de la pestaña de Solicitud de Servicio. Si el usuario no es analista de creditos devuelve SS. 
-//	 * Si el usuario es analista de creditos y cliente de nexus devuel "SS Cliente", si no es cliente retorna "Buscar SS". 
-//	 * @return String
-//	 */
-//	private String getTitleSS(){
-//		if(ClientContext.getInstance().getVendedor().isADMCreditos()) {
-//			if(ClientContext.getInstance().vengoDeNexus() && ClientContext.getInstance().soyClienteNexus()){
-//				return Sfa.constant().ssClienteTitle();
-//			} else {
-//				return Sfa.constant().buscarSSTitle();
-//			}
-//		}		
-//		return Sfa.constant().ssTitle();
-//	}
 }

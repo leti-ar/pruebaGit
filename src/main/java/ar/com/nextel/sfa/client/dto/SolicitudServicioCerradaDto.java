@@ -16,15 +16,6 @@ public class SolicitudServicioCerradaDto implements IsSerializable {
 	private Date fechaCierreHasta;
 	private Long idEstadoAprobacionSS;
 	private Long cantidadResultados;
-	private Long idSucursal;
-	private Integer tipoDoc;
-	private String nroDoc;
-	private boolean enCarga;
-	private Date fechaCreacionDesde;
-	private Date fechaCreacionHasta;
-	private Long idCuenta;
-	private List<Long> perfiles;
-	private Long perfilAC;
 
 	public String getNumeroSS() {
 		return numeroSS;
@@ -96,80 +87,5 @@ public class SolicitudServicioCerradaDto implements IsSerializable {
 
 	public void setIdEstadoAprobacionSS(Long idEstadoAprobacionSS) {
 		this.idEstadoAprobacionSS = idEstadoAprobacionSS;
-	}
-
-	public Long getIdSucursal() {
-		return idSucursal;
-	}
-
-	public void setIdSucursal(Long idSucursal) {
-		this.idSucursal = idSucursal;
-	}
-
-	public boolean isEnCarga() {
-		return enCarga;
-	}
-
-	public void setEnCarga(boolean enCarga) {
-		this.enCarga = enCarga;
-	}
-
-	public Integer getTipoDoc() {
-		return tipoDoc;
-	}
-
-	public void setTipoDoc(Integer tipoDoc) {
-		this.tipoDoc = tipoDoc;
-	}
-
-	public String getNroDoc() {
-		return nroDoc;
-	}
-
-	public void setNroDoc(String nroDoc) {
-		this.nroDoc = nroDoc;
-	}
-
-	public Date getFechaCreacionDesde() {
-		return fechaCreacionDesde;
-	}
-
-	public void setFechaCreacionDesde(Date fechaCreacionDesde) {
-		this.fechaCreacionDesde = fechaCreacionDesde;
-	}
-
-	public Date getFechaCreacionHasta() {
-		return fechaCreacionHasta;
-	}
-
-	public void setFechaCreacionHasta(Date fechaCreacionHasta) {
-		this.fechaCreacionHasta = fechaCreacionHasta;
-	}
-
-	public Long getIdCuenta() {
-		return idCuenta;
-	}
-
-	public void setIdCuenta(Long idCuenta) {
-		this.idCuenta = idCuenta;
-	}
-
-	public List<Long> getPerfiles() {
-		return perfiles;
-	}
-
-	public void setPerfiles(List<Long> perfiles) {
-		this.perfiles = perfiles;
-	}
-
-	public Long getPerfilAC() {
-		return perfilAC;
-	}
-
-	public void setPerfilAC(Long perfilAC) {
-		this.perfilAC = perfilAC;
 	}	
-	
-	
-	
 }

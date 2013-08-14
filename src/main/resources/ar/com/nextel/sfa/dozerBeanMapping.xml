@@ -37,11 +37,9 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 
 
 	<mapping>
-		<class-a>
-			ar.com.nextel.model.cuentas.beans.ClaseCuenta
+		<class-a>ar.com.nextel.model.cuentas.beans.ClaseCuenta
 		</class-a>
-		<class-b>
-			ar.com.nextel.sfa.client.dto.ClaseCuentaDto
+		<class-b>ar.com.nextel.sfa.client.dto.ClaseCuentaDto
 		</class-b>
 	</mapping>
 
@@ -78,18 +76,14 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto
 		</class-b>
-<!--		<field>-->
-<!--			<a>idVantive</a>-->
-<!--			<b>idSolicitudServicio</b>-->
-<!--		</field>-->
 		<field>
-			<a>id</a>
+			<a>idVantive</a>
 			<b>idSolicitudServicio</b>
 		</field>
-<!--		<field>-->
-<!--			<a>cuenta.cliente</a>-->
-<!--			<b>cliente</b>-->
-<!--		</field>-->
+		<field>
+			<a>cuenta.cliente</a>
+			<b>cliente</b>
+		</field>
 		<field>
 			<a>cuenta.id</a>
 			<b>idCuenta</b>
@@ -113,48 +107,7 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<field>
 			<a>numero</a>
 			<b>numeroSS</b>
-		</field>	
-		
-		<field>
-			<a>usuarioCreacion.nombre</a>
-			<b>nombreUsuarioCreacion</b>
-		</field>		
-		<field>
-			<a>usuarioCreacion.apellido</a>
-			<b>apellidoUsuarioCreacion</b>
-		</field>	
-		<field>
-			<a>vendedor.apellidoNombre</a>
-			<b>apellidoNombreVendedor</b>
-		</field>		
-		<field>
-			<a>pinValidationSuccess</a>
-			<b>pin</b>
-		</field>	
-		<field>
-			<a>scoringValidationSuccess</a>
-			<b>scoring</b>
-		</field>			
-		<field>
-			<a>scoringValidationSuccess</a>
-			<b>scoring</b>
 		</field>
-		<field>
-			<a>tipoAnticipo.descripcion</a>
-			<b>anticipo</b>
-		</field>
-<!--        <field>-->
-<!--            <a>lineas</a>-->
-<!--            <b>lineas</b>-->
-<!--        </field>   -->
-        <field custom-converter-id="identifiableObjectToId">
-			<a>grupoSolicitud</a>
-			<b>idGrupoSolicitud</b>
-        </field>     	
-        <field>
-            <a>enCarga</a>
-            <b>enCarga</b>
-        </field>   
 	</mapping>
 
 	<mapping>
@@ -219,10 +172,6 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
             <a>vendedor</a>
             <b>vendedor</b>
         </field>
-        <field custom-converter-id="enumToDto">
-			<a>estadoH</a>
-			<b>estadoH</b>
-		</field>
 	</mapping>
 
 	<mapping>
@@ -291,11 +240,6 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>plainDescuentosLinea</a>
 			<b>descuentosLinea</b>
 		</field>
-		<field custom-converter-id="collectionPortabilidadConverter">
-			<a>plainSolicitudPortabilidad</a>
-			<b>solicitudPortabilidad</b>
-		</field>
-		
 	</mapping>
 
 	<mapping>
@@ -441,13 +385,8 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<field type="one-way">
 			<a>servicioAdicional.unicaVez</a>
 			<b>unicaVez</b>
-		</field>
-<!--  		<field type="one-way">
-			<a>servicioAdicional.esPortabilidad</a>
-			<b>esPortabilidad</b>
-		</field>
- --> 	
- 	</mapping>
+		</field>		
+	</mapping>
 
 	<mapping map-id="cuentaSolicitud" wildcard="false">
 		<class-a>ar.com.nextel.model.cuentas.beans.Cuenta
@@ -477,10 +416,6 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		<field type="one-way">
             <a>vendedor</a>
             <b>vendedor</b>
-        </field>
-        <field type="one-way">
-            <a>transferido</a>
-            <b>transferido</b>
         </field>
 	</mapping>
 	<mapping map-id="personaSolicitud" wildcard="false">
@@ -653,61 +588,8 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 			<a>facturaElectronica</a>
 			<b>facturaElectronica</b>
 		</field-exclude>
-		<field custom-converter-id="collectionCaratulaConverter">
-			<a>plainCaratulas</a>
-			<b>caratulas</b>
-			<a-hint>ar.com.nextel.model.cuentas.beans.Caratula</a-hint>
-			<b-hint>ar.com.nextel.sfa.client.dto.CaratulaDto</b-hint>
-		</field>
 	</mapping>
 
-	<mapping>
-		<class-a>ar.com.nextel.model.solicitudes.beans.EstadoPorSolicitud</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto</class-b>
-		<field>
-			<a>estado</a>
-			<b>estado</b>
-		</field>
-		<field>
-            <a>solicitud</a>
-            <b>solicitud</b>
-        </field>
-		<field>
-			<a>usuario</a>
-			<b>usuario</b>
-		</field>
-		<field>
-			<a>fecha</a>
-			<b>fecha</b>
-		</field>
-	</mapping>
-
-	<mapping>
-		<class-a>ar.com.nextel.model.solicitudes.beans.EstadoSolicitud</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.EstadoSolicitudDto</class-b>
-		<field>
-			<a>id</a>
-			<b>code</b>
-		</field>
-		<field>
-            <a>descripcion</a>
-            <b>descripcion</b>
-        </field>          
-	</mapping>
-	
-	<mapping>
-		<class-a>ar.com.nextel.model.solicitudes.beans.ComentarioAnalista</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.ComentarioAnalistaDto</class-b>
-		<field>
-            <a>estadoSolicitud</a>
-            <b>estadoSolicitud</b>
-        </field>  
-        <field>
-            <a>comentario</a>
-            <b>comentario</b>
-        </field>  
-	</mapping>
-	
 	<mapping>
 		<class-a>ar.com.nextel.model.cuentas.beans.GranCuenta</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.GranCuentaDto</class-b>
@@ -1018,217 +900,4 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
             <b>idContrato</b>
         </field>
     </mapping>  
-    
-    <mapping>
-		<class-a>ar.com.nextel.model.cuentas.beans.ValidacionDomicilio
-		</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.ValidacionDomicilioDto
-		</class-b>
-	</mapping>
-	
-	<mapping>
-		<class-a>ar.com.nextel.model.cuentas.beans.Banco
-		</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.BancoDto
-		</class-b>
-	</mapping>
-    
-    <mapping>
-		<class-a>ar.com.nextel.model.cuentas.beans.CalifCrediticia
-		</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.CalifCrediticiaDto
-		</class-b>
-	</mapping>
-	
-	<mapping>
-		<class-a>ar.com.nextel.model.cuentas.beans.Com
-		</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.ComDto
-		</class-b>
-	</mapping>
-	
-	<mapping>
-		<class-a>ar.com.nextel.model.cuentas.beans.Calificacion
-		</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.CalificacionDto
-		</class-b>
-	</mapping>
-	
-	<mapping>
-		<class-a>ar.com.nextel.model.cuentas.beans.RiskCode
-		</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.RiskCodeDto
-		</class-b>
-	</mapping>  
-	
-	<mapping>
-		<class-a>ar.com.nextel.model.cuentas.beans.CompPago
-		</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.CompPagoDto
-		</class-b>
-	</mapping>
-	
-	<mapping>
-		<class-a>ar.com.nextel.model.cuentas.beans.VerazNosis
-		</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.VerazNosisDto
-		</class-b>
-	</mapping>
-	
-	<mapping>
-		<class-a>ar.com.nextel.model.cuentas.beans.EstadoCreditBancoCentral
-		</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.EstadoCreditBancoCentralDto
-		</class-b>
-	</mapping>
-	
-	<mapping>
-		<class-a>ar.com.nextel.model.cuentas.beans.Caratula
-		</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.CaratulaDto
-		</class-b>
-		<field custom-converter-id="identifiableObjectToId">
-			<a>cuenta</a>
-			<b>idCuenta</b>
-		</field>
-		<field type="one-way">
-            <a>usuarioCreacion</a>
-            <b>usuarioCreacion</b>
-            <a-hint>ar.com.nextel.model.cuentas.beans.Vendedor</a-hint>
-            <b-hint>ar.com.nextel.sfa.client.dto.VendedorDto</b-hint>
-        </field>
-        <field custom-converter-id="enumToDto">
-			<a>validDomicilio</a>
-			<b>validDomicilio</b>
-		</field>
-		<field custom-converter-id="enumToDto">
-			<a>banco</a>
-			<b>banco</b>
-		</field>
-		<field custom-converter-id="enumToDto">
-			<a>tipoCtaBancaria</a>
-			<b>tipoCtaBancaria</b>
-		</field>
-		<field custom-converter-id="enumToDto">
-			<a>tipoTarjCred</a>
-			<b>tipoTarjCred</b>
-		</field>
-		<field custom-converter-id="enumToDto">
-			<a>califCred</a>
-			<b>califCred</b>
-		</field>
-		<field custom-converter-id="enumToDto">
-			<a>com</a>
-			<b>com</b>
-		</field>
-		<field custom-converter-id="enumToDto">
-			<a>calificacion</a>
-			<b>calificacion</b>
-		</field>
-		<field custom-converter-id="enumToDto">
-			<a>riskCode</a>
-			<b>riskCode</b>
-		</field>
-		<field custom-converter-id="enumToDto">
-			<a>compPago</a>
-			<b>compPago</b>
-		</field>
-		<field custom-converter-id="enumToDto">
-			<a>firmante</a>
-			<b>firmante</b>
-		</field>
-		<field custom-converter-id="enumToDto">
-			<a>veraz</a>
-			<b>veraz</b>
-		</field>
-		<field custom-converter-id="enumToDto">
-			<a>nosis</a>
-			<b>nosis</b>
-		</field>
-		<field custom-converter-id="enumToDto">
-			<a>estadoCredBC</a>
-			<b>estadoCredBC</b>
-		</field>
-	</mapping>
-    
-	<mapping>
-		<class-a>ar.com.nextel.model.solicitudes.beans.SolicitudPortabilidad</class-a>
-		<class-b>ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto</class-b>
-
-<!--         <field>
-        	<a>id</a>
-        	<b>id</b>
-        </field>
- -->        <field>
-            <a>recibeSMS</a>
-            <b>recibeSMS</b>
-        </field>
-        <field>
-            <a>email</a>
-            <b>email</b>
-        </field>
-        <field>
-            <a>numeroSolicitud</a>
-            <b>nroSS</b>
-        </field>
-        <field>
-            <a>nombre</a>
-            <b>nombre</b>
-        </field>
-        <field>
-            <a>apellido</a>
-            <b>apellido</b>
-        </field>
-        <field>
-            <a>numeroTelefono</a>
-            <b>telefono</b>
-        </field>
-        <field>
-            <a>razonSocial</a>
-            <b>razonSocial</b>
-        </field>
-        <field>
-            <a>numeroDocumento</a>
-            <b>numeroDocumento</b>
-        </field>
-        <field>
-            <a>areaTelefono</a>
-            <b>areaTelefono</b>
-        </field>
-        <field>
-            <a>telefonoPortar</a>
-            <b>telefonoPortar</b>
-        </field>
-        <field>
-            <a>ultimaFactura</a>
-            <b>nroUltimaFacura</b>
-        </field>
-        
-        <field>
-        	<a>tipoPersona</a>
-        	<b>tipoPersona</b>
-        </field>
-        
-        <field custom-converter-id="enumToDto">
-            <a>proveedorInicial</a>
-            <b>proveedorAnterior</b>
-        </field>
-        <field custom-converter-id="enumToDto">
-            <a>tipoDocumento</a>
-            <b>tipoDocumento</b>
-        </field>
-        <field custom-converter-id="enumToDto"> 
-            <a>tipoTelefonia</a>
-            <b>tipoTelefonia</b>
-        </field>
-        <field custom-converter-id="enumToDto">
-            <a>modalidadCobro</a>
-            <b>modalidadCobro</b>
-        </field>
-        <field custom-converter-id="identifiableObjectToId">
-            <a>lineaSolicitudServicio</a>
-            <b>lineaSolicitudServicio</b>
-        </field>
-	</mapping>
-
 </mappings>

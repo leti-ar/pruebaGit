@@ -169,25 +169,15 @@ public class VariosSSUI extends Composite {
 		scoringWrapper.setWidth("100%");
 		consultarScoring.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
-				//TODO: Portabilidad				
-				boolean tienePortabilidad = false;
-				for (LineaSolicitudServicioDto linea : editarSSUIData.getSolicitudServicio().getLineas()) {
-					if(linea.getPortabilidad() != null) tienePortabilidad = true;
-				}
-				if(!tienePortabilidad){
-					InfocomRpcService.Util.getInstance().consultarScoring(controller.getEditarSSUIData().getCuentaId(), 
-							controller.getEditarSSUIData().getCuenta().getCodigoVantive(), new DefaultWaitCallback<ScoringDto>() {
-						public void success(ScoringDto result) {
-							if (result != null) {
-								scoring.setText(result.getMensajeAdicional());
-								scoringWrapper.setVisible(true);
+				InfocomRpcService.Util.getInstance().consultarScoring(
+						controller.getEditarSSUIData().getCuentaId(), controller.getEditarSSUIData().getCuenta().getCodigoVantive(), new DefaultWaitCallback<ScoringDto>() {
+							public void success(ScoringDto result) {
+								if (result != null) {
+									scoring.setText(result.getMensajeAdicional());
+									scoringWrapper.setVisible(true);
+								}
 							}
-						}
-					});
-				}else{
-					scoring.setText("El scoring es invalido si posee Lineas con Portabilidad");
-					scoringWrapper.setVisible(true);
-				}
+						});
 			}
 		});
 		scoringWrapper.add(scoring);

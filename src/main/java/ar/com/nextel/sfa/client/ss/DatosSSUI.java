@@ -16,12 +16,9 @@ import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
-import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
-import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
-import ar.com.nextel.sfa.client.util.PortabilidadUtil;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
@@ -32,8 +29,6 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -48,19 +43,17 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLTable;
-import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 public class DatosSSUI extends Composite implements ClickHandler {
 
 	private FlowPanel mainpanel;
 	private EditarSSUIData editarSSUIData;
 	private Grid nnsLayout;
-	private Grid controlLayout;
-	private Grid historicoLayout;
 	private Grid domicilioLayout;
 	private FlexTable detalleSS;
 	private ServiciosAdicionalesTable serviciosAdicionales;
@@ -88,53 +81,19 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private List<TipoDescuentoSeleccionado> descuentoSeleccionados = new ArrayList<TipoDescuentoSeleccionado>();
 	private boolean sacarTipoDescuento;
 	private boolean descuentoTotalAplicado = false;
-	private PortabilidadInitializer portabilidadInitializer;
-	private PortabilidadUtil portabilidadUtil;
-	private static final String ESTADO_ENCARGA_SS= "ESTADO_ENCARGA_SS";
+	
 	private static final String SELECTED_ROW = "selectedRow";
 
-	private ChangeHandler handlerNroSS;
-	
 	public DatosSSUI(EditarSSUIController controller) {
 		mainpanel = new FlowPanel();
 		initWidget(mainpanel);
 		this.controller = controller;
 		editarSSUIData = controller.getEditarSSUIData();
 		mainpanel.add(getNssLayout());
-		//Estefania Iguacek - Comentado para salir solo con cierre - CU#6
-		//mainpanel.add(getControlLayout());
-		//larce - Comentado para salir solo con cierre
-//		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
-//			mainpanel.add(getHistoricoVentasPanel());
-//		}
 		mainpanel.add(getDomicilioPanel());
 		mainpanel.add(getDetallePanel());
-		
-		ChangeHandler handlerNroSS = new ChangeHandler() {
-			public void onChange(ChangeEvent event) {
-				asignarNroSSPortabilidad();
-			}
-		}; 
-		
-		editarSSUIData.getNss().addChangeHandler(handlerNroSS);
 	}
 
-	/**
-	 * Portabilidad
-	 */
-	private void asignarNroSSPortabilidad(){
-		if(portabilidadUtil == null) portabilidadUtil = new PortabilidadUtil();
-		portabilidadUtil.generarNroSS(controller.getEditarSSUIData().getSolicitudServicio());
-	}
-
-	/**
-	 * portabilidad
-	 * TODO
-	 */
-	public void setPortabilidadInitializer(PortabilidadInitializer unaPortabilidadInitializer){
-		portabilidadInitializer = unaPortabilidadInitializer;
-	}
-	
 	private Widget getNssLayout() {
 		//nnsLayout = new Grid(1, 6);
 		//MGR - #1027
@@ -144,31 +103,6 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		return nnsLayout;
 	}
 
-
-//Estefania Iguacel - Comentado para salir solo con cierre - CU#6
-//	private Widget getControlLayout() {
-//	
-//		controlLayout = new Grid(1,4);
-//		controlLayout.addStyleName("layout");
-//		refreshNssLayout();
-//		refreshControlLayout();
-//		return controlLayout;
-//	}
-//	
-//	
-//	private void refreshControlLayout(){
-//		
-//		
-//		controlLayout.setHTML(0,0, Sfa.constant().estado());
-//		controlLayout.setWidget(0,1, editarSSUIData.getEstado());
-//		
-//	//	if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_ESTADO.getValue())){
-//		controlLayout.setHTML(0,2, Sfa.constant().control());
-//		controlLayout.setWidget(0,3, editarSSUIData.getControl());
-//	//	}
-//	}
-//	
-	
 	private void refreshNssLayout() {
 		lineaModificada = new Long(0);
 		//MGR - #1050
@@ -191,7 +125,6 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			nnsLayout.clearCell(0, 4);
 			nnsLayout.clearCell(0, 5);
 		}
-
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
 			nnsLayout.setHTML(0, 6, Sfa.constant().vendedorReq());
 			nnsLayout.setWidget(0, 7, editarSSUIData.getVendedor());
@@ -240,26 +173,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			nnsLayout.clearCell(0, 10);
 			nnsLayout.clearCell(0, 11);
 		}
-	
 
 	}
-	
-	private Widget getHistoricoVentasPanel() {
-		TitledPanel historico = new TitledPanel("Histórico de Ventas");
-		historicoLayout = new Grid(1, 8);
-		historicoLayout.addStyleName("layout");
-		historicoLayout.setHTML(0, 0, Sfa.constant().cantidadEquipos());
-		historicoLayout.setWidget(0, 1, editarSSUIData.getCantidadEquipos());
-		historicoLayout.setHTML(0, 2, Sfa.constant().fechaFirma());
-		historicoLayout.setWidget(0, 3, editarSSUIData.getFechaFirma());
-		historicoLayout.setHTML(0, 4, Sfa.constant().estadoReq());
-		historicoLayout.setWidget(0, 5, editarSSUIData.getEstadoH());
-		historicoLayout.setHTML(0, 6, Sfa.constant().fechaEstado());
-		historicoLayout.setWidget(0, 7, editarSSUIData.getFechaEstado());
-		historico.add(historicoLayout);
-		return historico;
-	}
-	
+
 	private Widget getDomicilioPanel() {
 		TitledPanel domicilio = new TitledPanel("Domicilio");
 
@@ -271,7 +187,6 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		crearDomicilioWrapper.add(crearDomicilio);
 		crearDomicilioWrapper.addStyleName("h20");
 		domicilio.add(crearDomicilioWrapper);
-		crearDomicilio.setVisible(controller.isEditable());
 
 		editarDomicioFacturacion = IconFactory.lapiz();
 		borrarDomicioFacturacion = IconFactory.cancel();
@@ -281,10 +196,6 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		borrarDomicioFacturacion.addClickHandler(this);
 		editarDomicioEntrega.addClickHandler(this);
 		borrarDomicioEntrega.addClickHandler(this);
-		editarDomicioFacturacion.setVisible(controller.isEditable());
-		borrarDomicioFacturacion.setVisible(controller.isEditable());
-		editarDomicioEntrega.setVisible(controller.isEditable());
-		borrarDomicioEntrega.setVisible(controller.isEditable());
 
 		domicilioLayout = new Grid(3, 4);
 		domicilioLayout.addStyleName("layout");
@@ -334,7 +245,6 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		crearLinea.ensureDebugId(DebugConstants.EDITAR_SOLICITUD_DATOS_BUTTON_CREAR_LINEA);
 		crearLinea.addClickHandler(this);
 		crearLinea.addStyleName("crearLineaButton");
-		crearLinea.setVisible(controller.isEditable());
 		SimplePanel crearLineaWrapper = new SimplePanel();
 		crearLineaWrapper.add(crearLinea);
 		crearLineaWrapper.addStyleName("h20");
@@ -343,12 +253,16 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		wrapper.addStyleName("resumenSSTableWrapper mlr5");
 		detalleSS = new FlexTable();
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
-			String[] titlesDetalle = tableConDescuento();	
+			String[] titlesDetalle = { Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), 
+					Sfa.constant().whiteSpace(), "Item", "Pcio Vta.", "Precio con Desc.", "Alias", "Plan", 
+					"Pcio Vta. Plan", "Localidad", "Nº Reserva", "Tipo SS", "Cant.", "DDN", "DDI", "Roaming" };			
 			for (int i = 0; i < titlesDetalle.length; i++) {
 				detalleSS.setHTML(0, i, titlesDetalle[i]);
 			}
 		} else {
-			String[] titlesDetalle = tableSinDescuento();
+			String[] titlesDetalle = { Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), "Item",
+					"Pcio Vta.", "Alias", "Plan", "Pcio Vta. Plan", "Localidad", "Nº Reserva", "Tipo SS",
+					"Cant.", "DDN", "DDI", "Roaming" };
 			for (int i = 0; i < titlesDetalle.length; i++) {
 				detalleSS.setHTML(0, i, titlesDetalle[i]);
 			}
@@ -373,52 +287,26 @@ public class DatosSSUI extends Composite implements ClickHandler {
 
 		return detalle;
 	}
-	
-	public String[] tableConDescuento(){
-		String[] titlesDetalleEditable = {  Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), 
-				Sfa.constant().whiteSpace(), "Item", "Pcio Vta.", "Precio con Desc.", "Alias", "Plan", 
-				"Pcio Vta. Plan", "Localidad", "Nº Reserva", "Tipo SS", "Cant.", "DDN", "DDI", "Roaming",Sfa.constant().portabilidad() };
-		String[] titlesDetalle = { "Item", "Pcio Vta.", "Precio con Desc.", "Alias", "Plan", 
-				"Pcio Vta. Plan", "Localidad", "Nº Reserva", "Tipo SS", "Cant.", "DDN", "DDI", "Roaming",Sfa.constant().portabilidad() };		
-		if(controller.isEditable()) 
-			return titlesDetalleEditable;
-		else
-			return titlesDetalle;
-	}
-	
-	public String[] tableSinDescuento() {
-		String[] titlesDetalleEditable = {  Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), Sfa.constant().whiteSpace(), "Item",
-				"Pcio Vta.", "Alias", "Plan", "Pcio Vta. Plan", "Localidad", "Nº Reserva", "Tipo SS",
-				"Cant.", "DDN", "DDI", "Roaming",Sfa.constant().portabilidad() };
-		String[] titlesDetalle = { "Item", "Pcio Vta.", "Alias", "Plan", "Pcio Vta. Plan", "Localidad", "Nº Reserva",
-				"Tipo SS",	"Cant.", "DDN", "DDI", "Roaming",Sfa.constant().portabilidad() };		
-		if(controller.isEditable()) 
-			return titlesDetalleEditable;
-		else
-			return titlesDetalle;		
-	}
 
 	public void onClick(ClickEvent clickEvent) {
 		Widget sender = (Widget) clickEvent.getSource();
-		if(controller.isEditable()) {
-			if (sender == crearLinea) {
-				openItemSolicitudDialog(new LineaSolicitudServicioDto());
-			} else if (sender == crearDomicilio || sender == editarDomicioFacturacion
-					|| sender == editarDomicioEntrega) {
-				onClickEdicionDomicilios(sender);
-			} else if (sender == borrarDomicioFacturacion || sender == borrarDomicioEntrega) {
-				if ((sender == borrarDomicioFacturacion)) {
-					borrarDomicilioFacturacion();
-	
-				} else if (sender == borrarDomicioEntrega) {
-					borrarDomicilioEntrega();
-				}
-	
-			} else if (sender == detalleSS || sender == serviciosAdicionales.getTable()) {
-				Cell cell = ((HTMLTable) sender).getCellForEvent(clickEvent);
-				if (cell != null) {
-					onTableClick(sender, cell.getRowIndex(), cell.getCellIndex());
-				}
+		if (sender == crearLinea) {
+			openItemSolicitudDialog(new LineaSolicitudServicioDto());
+		} else if (sender == crearDomicilio || sender == editarDomicioFacturacion
+				|| sender == editarDomicioEntrega) {
+			onClickEdicionDomicilios(sender);
+		} else if (sender == borrarDomicioFacturacion || sender == borrarDomicioEntrega) {
+			if ((sender == borrarDomicioFacturacion)) {
+				borrarDomicilioFacturacion();
+
+			} else if (sender == borrarDomicioEntrega) {
+				borrarDomicilioEntrega();
+			}
+
+		} else if (sender == detalleSS || sender == serviciosAdicionales.getTable()) {
+			Cell cell = ((HTMLTable) sender).getCellForEvent(clickEvent);
+			if (cell != null) {
+				onTableClick(sender, cell.getRowIndex(), cell.getCellIndex());
 			}
 		}
 	}
@@ -482,134 +370,83 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	}
 
 	public void onTableClick(Widget sender, final int row, int col) {
-//		if(controller.isEditable()) {
-			if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
-				if (detalleSS == sender) {
-					if (row > 0) {
-						if (col == 9) {
-							if (!serviciosAdicionales.isEditing()) {
-								editarPrecioDeVentaPlan();
-							}
-						} else if (col > 3) {
-							// Carga servicios adicionales en la tabla
-							if (!serviciosAdicionales.isEditing()) {
-								selectDetalleLineaSSRow(row);
-							}
-						} else if (col == 0) {
-							// Abre panel de edicion de la LineaSolicitudServicio
-							lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1);
-							openItemSolicitudDialog(lineaSeleccionada);
-						} else if (col == 1) {
-							// Elimina la LineaSolicitudServicio
-							ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
-									new Command() {
-								public void execute() {
-									removeDetalleLineaSSRow(row);
-									asignarNroSSPortabilidad();
-								};
-							}, ModalMessageDialog.getCloseCommand());
-						} else if (col == 3) {
-							if (descuentoTotalAplicado) {
-								noSePuedeAplicarDescuento(false);
-							} else {
-								//Abre el panel de descuento de la LineaSolicitudServicio
-								lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1); 
-								verificarDescuento(lineaSeleccionada);
-							}
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
+			if (detalleSS == sender) {
+				if (row > 0) {
+					if (col == 8) {
+						if (!serviciosAdicionales.isEditing()) {
+							editarPrecioDeVentaPlan();
+						}
+					} else if (col > 2) {
+						// Carga servicios adicionales en la tabla
+						if (!serviciosAdicionales.isEditing()) {
+							selectDetalleLineaSSRow(row);
+						}
+					} else if (col == 0) {
+						// Abre panel de edicion de la LineaSolicitudServicio
+						openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
+						lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1);
+					} else if (col == 1) {
+						// Elimina la LineaSolicitudServicio
+						ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
+								new Command() {
+							public void execute() {
+								removeDetalleLineaSSRow(row);
+							};
+						}, ModalMessageDialog.getCloseCommand());
+					} else if (col == 2) {
+						if (descuentoTotalAplicado) {
+							noSePuedeAplicarDescuento(false);
+						} else {
+							//Abre el panel de descuento de la LineaSolicitudServicio
+							lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1); 
+							verificarDescuento(lineaSeleccionada);
 						}
 					}
-				} else if (serviciosAdicionales.getTable() == sender) {
-					if (col == 0 && row > 0) {
-						serviciosAdicionales.agregarQuitarServicioAdicional(row);
-					} else if (col == 5 && row > 0) {
-						serviciosAdicionales.editarPrecioDeVentaServicioAdicional(row);
-					}
 				}
-			} else {
-				if (detalleSS == sender) {
-	
-					if (row > 0) {
-						if (col == 7) {
-							if (!serviciosAdicionales.isEditing()) {
-								editarPrecioDeVentaPlan();
-							}
-						} else if (col > 2) {
-							// Carga servicios adicionales en la tabla
-							if (!serviciosAdicionales.isEditing()) {
-								selectDetalleLineaSSRow(row);
-							}
-						} else if (col == 0) {
-							// Abre panel de edicion de la LineaSolicitudServicio
-							openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
-						} else if (col == 1) {
-							// Elimina la LineaSolicitudServicio
-							ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
-									new Command() {
-										public void execute() {
-											removeDetalleLineaSSRow(row);
-											asignarNroSSPortabilidad();
-										};
-									}, ModalMessageDialog.getCloseCommand());
+			} else if (serviciosAdicionales.getTable() == sender) {
+				if (col == 0 && row > 0) {
+					serviciosAdicionales.agregarQuitarServicioAdicional(row);
+				} else if (col == 4 && row > 0) {
+					serviciosAdicionales.editarPrecioDeVentaServicioAdicional(row);
+				}
+			}
+		} else {
+			if (detalleSS == sender) {
+				if (row > 0) {
+					if (col == 6) {
+						if (!serviciosAdicionales.isEditing()) {
+							editarPrecioDeVentaPlan();
 						}
-					}
-				} else if (serviciosAdicionales.getTable() == sender) {
-					if (col == 0 && row > 0) {
-						serviciosAdicionales.agregarQuitarServicioAdicional(row);
-					} else if (col == 4 && row > 0) {
-						serviciosAdicionales.editarPrecioDeVentaServicioAdicional(row);
+					} else if (col > 1) {
+						// Carga servicios adicionales en la tabla
+						if (!serviciosAdicionales.isEditing()) {
+							selectDetalleLineaSSRow(row);
+						}
+					} else if (col == 0) {
+						// Abre panel de edicion de la LineaSolicitudServicio
+						openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
+					} else if (col == 1) {
+						// Elimina la LineaSolicitudServicio
+						ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
+								new Command() {
+									public void execute() {
+										removeDetalleLineaSSRow(row);
+									};
+								}, ModalMessageDialog.getCloseCommand());
 					}
 				}
-			}
-			// TODO: Portabilidad
-			if(detalleSS == sender){
-				if(row > 0 && col == 2){
-					openPortabilidadReplicarDialog(row);
+			} else if (serviciosAdicionales.getTable() == sender) {
+				if (col == 0 && row > 0) {
+					serviciosAdicionales.agregarQuitarServicioAdicional(row);
+				} else if (col == 3 && row > 0) {
+					serviciosAdicionales.editarPrecioDeVentaServicioAdicional(row);
 				}
 			}
-//		}
-	}
-
-	/**
-	 * TODO: Portabilidad
-	 * @param row
-	 */
-	private void openPortabilidadReplicarDialog(final int row){
-		SolicitudPortabilidadDto portabilidad = editarSSUIData.getLineasSolicitudServicio().get(row - 1).getPortabilidad();
-		
-
-		if(portabilidad != null){
-			if(portabilidad.getTipoDocumento() != null && notEmpty(portabilidad.getNumeroDocumento()) && 
-					notEmpty(portabilidad.getRazonSocial()) && notEmpty(portabilidad.getNombre()) && notEmpty(portabilidad.getApellido())){
-
-				final DatosSSUI datos = this;
-				SolicitudRpcService.Util.getInstance().getPortabilidadInitializer(editarSSUIData.getCuentaId().toString(), new DefaultWaitCallback<PortabilidadInitializer>() {
-					@Override
-					public void success(PortabilidadInitializer result) {
-						PortabilidadReplicarDialog replicarDialog = new PortabilidadReplicarDialog();
-						replicarDialog.show(editarSSUIData.getSolicitudServicio(),row - 1,result,datos,controller);
-					}
-				});
-			}else{
-				ModalMessageDialog.getInstance().showAceptar(
-						"Para portar los datos de Portabilidad deben estar completos Tipo y Numero de Documento, Razon Social, Nombre y Apellido", 
-						ModalMessageDialog.getCloseCommand());
-			}
-		}else{
-			ModalMessageDialog.getInstance().showAceptar(
-					"El Item seleccionado no posee una Solicitud de Portabilidad para replicar", 
-					ModalMessageDialog.getCloseCommand());
 		}
 	}
-	
-    private boolean empty(String s) {
-        return s == null || s.length() == 0;
-    }
 
-    private boolean notEmpty(String s) {
-        return !empty(s);
-    }
-
-    private void selectDetalleLineaSSRow(int row) {
+	private void selectDetalleLineaSSRow(int row) {
 		if (row > 0) {
 			detalleSS.getRowFormatter().removeStyleName(selectedDetalleRow, SELECTED_ROW);
 			detalleSS.getRowFormatter().addStyleName(row, SELECTED_ROW);
@@ -619,35 +456,13 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	}
 
 	private void removeDetalleLineaSSRow(int row) {
-//		if (selectedDetalleRow == row) {
-//			selectDetalleLineaSSRow(detalleSS.getRowCount() <= 1 ? 0 : 1);
-//		} else if (selectedDetalleRow > row) {
-//			selectDetalleLineaSSRow(--selectedDetalleRow);
-//		}
-
-//		MGR Inicio (23/07/2012) - Este es el codigo que habia antes de resolver el incidente #3424
-		//Si pasado un tiempo el nuevo codigo no trae problemas, eliminar estas lineas comentadas
-//		if(detalleSS.getRowCount() > 1) selectDetalleLineaSSRow(1);
-//		else selectDetalleLineaSSRow(0);
-//
-//		editarSSUIData.removeLineaSolicitudServicio(row - 1);
-//		detalleSS.removeRow(row);
-//		
-//		if(detalleSS.getRowCount() == 1) serviciosAdicionales.setServiciosAdicionalesFor(0);
-//		
-//		ModalMessageDialog.getInstance().hide();
-//		MGR Inicio (23/07/2012)
-		
-//		MGR - #3424
 		editarSSUIData.removeLineaSolicitudServicio(row - 1);
 		detalleSS.removeRow(row);
-		
 		if (selectedDetalleRow == row) {
-			selectDetalleLineaSSRow(editarSSUIData.getLineasSolicitudServicio().isEmpty() ? 0 : 1);
+			selectDetalleLineaSSRow(detalleSS.getRowCount() <= 1 ? 0 : 1);
 		} else if (selectedDetalleRow > row) {
 			selectDetalleLineaSSRow(--selectedDetalleRow);
 		}
-		
 		ModalMessageDialog.getInstance().hide();
 	}
 
@@ -657,24 +472,15 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			itemSolicitudDialog = new ItemSolicitudDialog("Agregar Item", controller);
 			Command aceptarCommand = new Command() {
 				public void execute() {
-					LineaSolicitudServicioDto lineaSolicitudServicio = itemSolicitudDialog.getItemSolicitudUIData().getLineaSolicitudServicio();
-					if(!itemSolicitudDialog.getItemSolicitudUIData().getPortabilidadPanel().getChkPortabilidad().getValue())lineaSolicitudServicio.setPortabilidad(null);
+					LineaSolicitudServicioDto lineaSolicitudServicio = itemSolicitudDialog.getItemSolicitudUIData()
+							.getLineaSolicitudServicio();
 					addLineaSolicitudServicio(lineaSolicitudServicio);
-					
-					// Genera los numeros de solicitudes de portabilidad
-					asignarNroSSPortabilidad();
 					lineaModificada = lineaSolicitudServicio.getId();
 				}
 			};
 			itemSolicitudDialog.setAceptarCommand(aceptarCommand);
-
-			// TODO: Carga los datos de inizializacion del componente de portabilidad
-			itemSolicitudDialog.cargarPortabilidadInitializer(portabilidadInitializer);
 		}
-		itemSolicitudDialog.cargarPersona(portabilidadInitializer.getPersona());
-		itemSolicitudDialog.resetearPanelPortabilidad();
 		itemSolicitudDialog.setCuentaEmpresa(editarSSUIData.getCuenta().isEmpresa());
-
 		itemSolicitudDialog.show(linea);
 	}
 
@@ -776,7 +582,6 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			if (catLineas > 1) {
 				linea.setCantidad(1);
 				for (int i = 0; i < catLineas - 1; i++) {
-					linea.setPortabilidad(null);
 					LineaSolicitudServicioDto lineaCloned = linea.clone();
 					lineaCloned.setNumeradorLinea(null);
 					nuevasLineas.add(lineaCloned);
@@ -795,7 +600,8 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			}
 			drawDetalleSSRow(nueva, newRow);
 		}
-		onTableClick(detalleSS, firstNewRow, 4);
+
+		onTableClick(detalleSS, firstNewRow, 3);
 	}
 
 	/** Limpia y recarga la tabla de Detalle de Solicitud de Servicio completamente */
@@ -815,60 +621,43 @@ public class DatosSSUI extends Composite implements ClickHandler {
 
 	/** Agrega una fila a la tabla de Detalle de Solicitud de Servicio en la posicion indicada */
 	private void drawDetalleSSRow(LineaSolicitudServicioDto linea, int newRow) {
-		if(controller.isEditable()) {
-			detalleSS.setWidget(newRow, 0, IconFactory.lapiz());
-			detalleSS.setWidget(newRow, 1, IconFactory.cancel());
-			detalleSS.setWidget(newRow, 2, IconFactory.copiar());
-		}
-		
+		detalleSS.setWidget(newRow, 0, IconFactory.lapiz());
+		detalleSS.setWidget(newRow, 1, IconFactory.cancel());
 		int i = 0;
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
-			if(controller.isEditable()) {
-				detalleSS.setWidget(newRow, 3-i, IconFactory.bolsaPesos());
-			} else {
-				detalleSS.setWidget(newRow, i, IconFactory.bolsaPesos());
-			}
+			detalleSS.setWidget(newRow, 2-i, IconFactory.bolsaPesos());
 		} else {
-			if(controller.isEditable()) {
-				i = 1;
-			}
-			
+			i = 1;
 		}
-		detalleSS.setHTML(newRow, controller.isEditable()?4-i:i, linea.getItem().getDescripcion());
-		detalleSS.setHTML(newRow, controller.isEditable()?5-i:++i, currencyFormat.format(linea.getPrecioLista()));
-		detalleSS.getCellFormatter().addStyleName(newRow, controller.isEditable()?5-i:i, "alignRight");
+		detalleSS.setHTML(newRow, 3-i, linea.getItem().getDescripcion());
+		detalleSS.setHTML(newRow, 4-i, currencyFormat.format(linea.getPrecioLista()));
+		detalleSS.getCellFormatter().addStyleName(newRow, 4-i, "alignRight");
 		if (linea.getPrecioConDescuento() == null) {
 			linea.setPrecioConDescuento(linea.getPrecioLista());
 		}
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
 			linea.setPrecioVenta(linea.getPrecioConDescuento());
-			detalleSS.setHTML(newRow, controller.isEditable()?6-i:++i, currencyFormat.format(linea.getPrecioConDescuento()));
-			detalleSS.getCellFormatter().addStyleName(newRow, controller.isEditable()?6-i:i, "alignRight");
+			detalleSS.setHTML(newRow, 5-i, currencyFormat.format(linea.getPrecioConDescuento()));
+			detalleSS.getCellFormatter().addStyleName(newRow, 5-i, "alignRight");
 		} else {
-			if(controller.isEditable()) {
-				i = 2;
-			} else {
-				i = 1;
-			}
+			i = 2;
 		}
-		detalleSS.setHTML(newRow, controller.isEditable()?7-i:++i, linea.getAlias() != null ? linea.getAlias() : "");
-		detalleSS.setHTML(newRow, controller.isEditable()?8-i:++i, linea.getPlan() != null ? linea.getPlan().getDescripcion() : "");
-		detalleSS.setHTML(newRow, controller.isEditable()?9-i:++i, linea.getPlan() != null ? currencyFormat.format(linea
+		detalleSS.setHTML(newRow, 6-i, linea.getAlias() != null ? linea.getAlias() : "");
+		detalleSS.setHTML(newRow, 7-i, linea.getPlan() != null ? linea.getPlan().getDescripcion() : "");
+		detalleSS.setHTML(newRow, 8-i, linea.getPlan() != null ? currencyFormat.format(linea
 				.getPrecioVentaPlan()) : "");
-		detalleSS.getCellFormatter().addStyleName(newRow, controller.isEditable()?9-i:i, "alignRight");
-		detalleSS.setHTML(newRow, controller.isEditable()?10-i:++i, linea.getLocalidad() != null ? linea.getLocalidad().getDescripcion()
+		detalleSS.getCellFormatter().addStyleName(newRow, 8-i, "alignRight");
+		detalleSS.setHTML(newRow, 9-i, linea.getLocalidad() != null ? linea.getLocalidad().getDescripcion()
 				: "");
-		detalleSS.setHTML(newRow, controller.isEditable()?11-i:++i, linea.getNumeroReserva());
-		detalleSS.setHTML(newRow, controller.isEditable()?12-i:++i, linea.getTipoSolicitud().getDescripcion());
-		detalleSS.setHTML(newRow, controller.isEditable()?13-i:++i, "" + linea.getCantidad());
-		detalleSS.setHTML(newRow, controller.isEditable()?14-i:++i, linea.getDdn() ? IconFactory.tildeVerde().toString() : Sfa.constant()
+		detalleSS.setHTML(newRow, 10-i, linea.getNumeroReserva());
+		detalleSS.setHTML(newRow, 11-i, linea.getTipoSolicitud().getDescripcion());
+		detalleSS.setHTML(newRow, 12-i, "" + linea.getCantidad());
+		detalleSS.setHTML(newRow, 13-i, linea.getDdn() ? IconFactory.tildeVerde().toString() : Sfa.constant()
 				.whiteSpace());
-		detalleSS.setHTML(newRow, controller.isEditable()?15-i:++i, linea.getDdi() ? IconFactory.tildeVerde().toString() : Sfa.constant()
+		detalleSS.setHTML(newRow, 14-i, linea.getDdi() ? IconFactory.tildeVerde().toString() : Sfa.constant()
 				.whiteSpace());
-		detalleSS.setHTML(newRow, controller.isEditable()?16-i:++i, linea.getRoaming() ? IconFactory.tildeVerde().toString() : Sfa.constant().whiteSpace());
-		
-		if(linea.getPortabilidad() != null) detalleSS.setWidget(newRow,controller.isEditable()?17-i:++i,IconFactory.tildeVerde());
-		else detalleSS.setHTML(newRow,controller.isEditable()?17-i:++i,Sfa.constant().whiteSpace());
+		detalleSS.setHTML(newRow, 15-i, linea.getRoaming() ? IconFactory.tildeVerde().toString() : Sfa
+				.constant().whiteSpace());
 	}
 
 	public void editarPrecioDeVentaPlan() {
@@ -877,9 +666,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		getPlanPrecioVentaTextBox().setText(
 				NumberFormat.getDecimalFormat().format(lineaSS.getPrecioVentaPlan()));
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
-			detalleSS.setWidget(selectedDetalleRow, 9, getPlanPrecioVentaTextBox());
+			detalleSS.setWidget(selectedDetalleRow, 8, getPlanPrecioVentaTextBox());
 		} else {
-			detalleSS.setWidget(selectedDetalleRow, 7, getPlanPrecioVentaTextBox());
+			detalleSS.setWidget(selectedDetalleRow, 6, getPlanPrecioVentaTextBox());
 		}
 		getPlanPrecioVentaTextBox().setFocus(true);
 	}
@@ -922,9 +711,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			valor = lineaSS.getPrecioVentaPlan();
 		}
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
-			detalleSS.setHTML(selectedDetalleRow, 9, NumberFormat.getCurrencyFormat().format(valor));
+			detalleSS.setHTML(selectedDetalleRow, 8, NumberFormat.getCurrencyFormat().format(valor));
 		} else {
-			detalleSS.setHTML(selectedDetalleRow, 7, NumberFormat.getCurrencyFormat().format(valor));
+			detalleSS.setHTML(selectedDetalleRow, 6, NumberFormat.getCurrencyFormat().format(valor));
 		}
 		editarSSUIData.modificarValorPlan(selectedDetalleRow - 1, valor);
 	}
@@ -990,22 +779,8 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	
 	public void refresh() {
 		refreshNssLayout();
-
-		//Estefania Iguacek - Comentado para salir solo con cierre - CU#6
-		//refreshControlLayout();
 		refreshDomicilioLayout();
 		refreshDetalleSSTable();
-		
-		editarSSUIData.getNss().setEnabled(controller.isEditable());
-		editarSSUIData.getNflota().setEnabled(controller.isEditable());
-		editarSSUIData.getOrigen().setEnabled(controller.isEditable());
-		editarSSUIData.getVendedor().setEnabled(controller.isEditable());
-		editarSSUIData.getSucursalOrigen().setEnabled(controller.isEditable());
-		editarSSUIData.getOrdenCompra().setEnabled(controller.isEditable());
-		editarSSUIData.getEntrega().setEnabled(controller.isEditable());
-		editarSSUIData.getFacturacion().setEnabled(controller.isEditable());
-		editarSSUIData.getAclaracion().setEnabled(controller.isEditable());
-		editarSSUIData.getEmail().setEnabled(controller.isEditable());
 	}
 	
 	/**
@@ -1017,4 +792,5 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			lineaSeleccionada.setPrecioConDescuento(null);
 		}
 	}	
+
 }

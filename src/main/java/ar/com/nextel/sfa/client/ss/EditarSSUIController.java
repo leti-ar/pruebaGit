@@ -26,9 +26,8 @@ public interface EditarSSUIController {
 	public void getListaPrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa,
 			DefaultWaitCallback<List<ListaPreciosDto>> defaultWaitCallback);
 
-//	MGR - #3462 - Es necesario indicar el modelo y si es activacion online
 	public void getPlanesPorItemYTipoPlan(ItemSolicitudTasadoDto itemSolicitudTasado, TipoPlanDto tipoPlan,
-			boolean isActivacion, ModeloDto modelo, DefaultWaitCallback<List<PlanDto>> callback);
+			DefaultWaitCallback<List<PlanDto>> callback);
 
 	public void getServiciosAdicionales(LineaSolicitudServicioDto linea,
 			DefaultWaitCallback<List<ServicioAdicionalLineaSolicitudServicioDto>> defaultWaitCallback);
@@ -55,6 +54,4 @@ public interface EditarSSUIController {
 			DefaultWaitCallback<List<ServicioAdicionalIncluidoDto>> defaultWaitCallback);
 
 	void getContratoViewInitializer(DefaultWaitCallback<ContratoViewInitializer> callback);
-	
-	boolean isEditable();
 }

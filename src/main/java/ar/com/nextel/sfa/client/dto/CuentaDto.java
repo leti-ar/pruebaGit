@@ -1,7 +1,5 @@
 package ar.com.nextel.sfa.client.dto;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -38,8 +36,6 @@ public class CuentaDto implements IsSerializable {
 	private String nombreUsuarioCreacion;
 	private Date fechaCreacion;
 	private FacturaElectronicaDto facturaElectronica;
-	
-	private List<CaratulaDto> caratulas = new ArrayList<CaratulaDto>();
 
 	public Long getId() {
 		return id;
@@ -322,18 +318,5 @@ public class CuentaDto implements IsSerializable {
 	public boolean isProspectEnCarga() {
 		return getCondicionCuenta().getId() == CondicionCuentaEnum.PROSPECT_EN_CARGA.getId();
 	}
-
-	public List<CaratulaDto> getCaratulas() {
-		if(this.caratulas != null && !this.caratulas.isEmpty()){
-			Collections.sort(this.caratulas);
-		}
-		if(caratulas == null){
-			caratulas = new ArrayList<CaratulaDto>();
-		}
-		return caratulas;
-	}
 	
-	public void setCaratulas(List<CaratulaDto> caratulas) {
-		this.caratulas = caratulas;
-	}
 }

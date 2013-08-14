@@ -10,15 +10,6 @@ public class OperacionEnCursoDto implements IsSerializable {
 	private String razonSocial;
 	private String numeroCliente;
 	private String descripcionGrupo;
-	private Long idSolicitudServicio;
-
-	public Long getIdSolicitudServicio() {
-		return idSolicitudServicio;
-	}
-
-	public void setIdSolicitudServicio(Long idSolicitudServicio) {
-		this.idSolicitudServicio = idSolicitudServicio;
-	}
 
 	public String getId() {
 		return id;

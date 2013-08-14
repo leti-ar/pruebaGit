@@ -74,7 +74,7 @@ public class BuscarSSCerradasFilterUIData extends UIData {
 		});
 
 		/** @author juliovesco: Carga inicial de combos */
-	    SolicitudRpcService.Util.getInstance().getBuscarSSInitializer(false, new DefaultWaitCallback<BuscarSSCerradasInitializer>() {
+	    SolicitudRpcService.Util.getInstance().getBuscarSSCerradasInitializer(new DefaultWaitCallback<BuscarSSCerradasInitializer>() {
 		  			public void success(BuscarSSCerradasInitializer result) {
 						setCombos(result);			
 					}

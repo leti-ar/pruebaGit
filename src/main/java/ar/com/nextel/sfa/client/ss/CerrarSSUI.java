@@ -9,7 +9,6 @@ import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
@@ -24,8 +23,7 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 	private static final String generarTitle = "SS - Generar SS";
 	private static final String cerrarTitle = "SS - Cerrar SS";
 	private FlexTable layout;
-	private boolean tienePortabilidad;
-	
+
 	public CerrarSSUI() {
 		super("SS - Generar SS", false, true);
 		init();
@@ -62,8 +60,6 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 		layout.setHTML(3, 1, Sfa.constant().scoringTitle());
 		layout.setWidget(3, 0, cerarSSUIData.getScoring());
 		add(layout);
-		
-		tienePortabilidad = false;
 	}
 
 	public void onClick(Widget sender) {
@@ -81,14 +77,6 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 		this.aceptarCommand = aceptarCommand;
 	}
 
-	/**
-	 * TODO: Portabilidad
-	 * @param tienePortabilidad
-	 */
-	public void setTienePortabilidad(boolean tienePortabilidad){
-		this.tienePortabilidad = tienePortabilidad;
-	}
-	
 	public void show(PersonaDto persona, boolean isCliente, SolicitudServicioGeneracionDto solicitudServicioGeneracion,
 			boolean isCDW, boolean isMDS, boolean cerrandoConItemBB, boolean isTRANSFERENCIA) {
 		cerarSSUIData.setEmails(persona.getEmails(), solicitudServicioGeneracion);
@@ -102,18 +90,13 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 			isTRANSFERENCIA = false;
 		}
 		
-		if(!tienePortabilidad){
-			if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierreScoring && !permisoCierrePin && isCliente) {
-				layout.setWidget(3, 0, cerarSSUIData.getScoring());
-				layout.setHTML(3, 1, Sfa.constant().scoringTitle());
-			} else if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierrePin && !cerrandoConItemBB && isCliente) {
-				layout.setHTML(3, 0, Sfa.constant().pinMaestro());
-				layout.setWidget(3, 1, cerarSSUIData.getPin());
-			} else {
-				layout.setHTML(3, 0, "");
-				layout.setHTML(3, 1, "");
-			}
-		}else {
+		if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierreScoring && !permisoCierrePin && isCliente) {
+			layout.setWidget(3, 0, cerarSSUIData.getScoring());
+			layout.setHTML(3, 1, Sfa.constant().scoringTitle());
+		} else if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierrePin && !cerrandoConItemBB && isCliente) {
+			layout.setHTML(3, 0, Sfa.constant().pinMaestro());
+			layout.setWidget(3, 1, cerarSSUIData.getPin());
+		} else {
 			layout.setHTML(3, 0, "");
 			layout.setHTML(3, 1, "");
 		}

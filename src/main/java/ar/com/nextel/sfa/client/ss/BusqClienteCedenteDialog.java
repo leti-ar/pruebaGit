@@ -54,7 +54,6 @@ public class BusqClienteCedenteDialog extends NextelDialog implements ChangeHand
 
 	public void setBuscarCommand(Command command){
 		buscarCommand = command;
-		busqClienteCedenteUI.setBuscarCommand(command); //#1422
 	}
 	
 	public BusqClienteCedenteUIData getBusqClienteCedenteUIData() {
