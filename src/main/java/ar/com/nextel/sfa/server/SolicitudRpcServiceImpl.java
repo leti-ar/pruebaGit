@@ -31,7 +31,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import ar.com.nextel.business.constants.GlobalParameterIdentifier;
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.constants.MessageIdentifier;
-import ar.com.nextel.business.cuentas.permanencia.PermanenciaService;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.legacy.avalon.dto.CantidadEquiposDTO;
 import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
@@ -186,7 +185,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private MailSender mailSender;
 	private CuentaBusinessService cuentaBusinessService;
 	private AvalonService avalonService;
-	private PermanenciaService permanenciaService;
 
 	//MELI
 	private DefaultSequenceImpl tripticoNextValue;
@@ -250,7 +248,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		mailSender= (MailSender)context.getBean("mailSender");
 		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");		
 		avalonService = (AvalonService) context.getBean("avalonService");
-		permanenciaService = (PermanenciaService) context.getBean("permanenciaService");
 	}
 
 	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
@@ -955,9 +952,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			serviciosAdicionales = solicitudServicioRepository.getServiciosAdicionales(
 						linea.getTipoSolicitud().getId(), linea.getPlan().getId(), 
 								idItem, idCuenta, sessionContextLoader.getVendedor(), isEmpresa);
-			//CARGO IMPORTES EN SERVICIOS PERMANENCIA Y REMUEVO LOS QUE NO DEBAN VISUALIZARSE DEPENDIENDO EL TIPO DE ORDEN
-			serviciosAdicionales = cargoServiciosAdicionalesPermanencia(linea,serviciosAdicionales);
-			
+			serviciosAdicionales = comprobarServiciosPermanencia(
+					linea.getTipoSolicitud().getTipoSolicitudBase().getId(),serviciosAdicionales);
 		}
 		
 //		MGR - #3462 - Creo que a partir del cambio que genero este incidente, esto ya no es necesario
@@ -980,61 +976,31 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	}
 
 	
-	private Collection<ServicioAdicionalLineaSolicitudServicio> cargoServiciosAdicionalesPermanencia(
-			LineaSolicitudServicioDto linea, Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales) {
+	private Collection<ServicioAdicionalLineaSolicitudServicio> comprobarServiciosPermanencia(Long tipoSolicitud, Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales) {
 		
-		Long tipoSolicitud = linea.getTipoSolicitud().getTipoSolicitudBase().getId();
+		Long tipoSolicitudVentaEquipos 	   = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_VENTA_EQUIPOS)).getId();
 		Long tipoSolicitudActivacion       = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION)).getId();
 		Long tipoSolicitudActivacionOnline = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION_ONLINE)).getId();
-		Long tipoSolicitudVentaEquipos 	   = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_VENTA_EQUIPOS)).getId();
-		boolean verCargoActivacion 		= false;
-		boolean verBonifCargoActivacion = false;
-		
-		if( tipoSolicitud.equals(tipoSolicitudVentaEquipos)	|| tipoSolicitud.equals(tipoSolicitudActivacion) ||
-			tipoSolicitud.equals(tipoSolicitudActivacionOnline)){
-			if(!linea.getFullPrice()){
-				verCargoActivacion = true;
-				verBonifCargoActivacion = true;
-			}else{
-				verCargoActivacion = true;	
+
+		//los servicios de permanencia solo deben visualizarse para ventas y activaciones comunes y online.
+		if(!tipoSolicitud.equals(tipoSolicitudVentaEquipos) && !tipoSolicitud.equals(tipoSolicitudActivacion) 
+			&& !tipoSolicitud.equals(tipoSolicitudActivacionOnline)){
+			
+			ServicioAdicional servicioSubsidioActivacion = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_ACTIVACION);
+			ServicioAdicional servicioBonifSubsidioActivacion = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_BONIF_ACTIVACION);
+			Set<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionalesToRemove = new HashSet<ServicioAdicionalLineaSolicitudServicio>();
+			
+	        for (ServicioAdicionalLineaSolicitudServicio servicio : serviciosAdicionales) {
+	        	
+				if (servicio.getServicioAdicional().getCodigoBSCS().equals(servicioSubsidioActivacion.getCodigoBSCS()) ||
+					servicio.getServicioAdicional().getCodigoBSCS().equals(servicioBonifSubsidioActivacion.getCodigoBSCS())){
+
+					serviciosAdicionalesToRemove.add(servicio);
+				}
 			}
+			serviciosAdicionales.removeAll(serviciosAdicionalesToRemove);
 		}
-		serviciosAdicionales = cargoServiciosPermanencia(serviciosAdicionales,verCargoActivacion,verBonifCargoActivacion);
-		
 		return serviciosAdicionales;
-	}
-
-	private Collection<ServicioAdicionalLineaSolicitudServicio> cargoServiciosPermanencia(Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales,
-			boolean verCargoActivacion, boolean verBonifCargoActivacion) {
-		
-		Double subsidioCargoConexion = permanenciaService.getSubsidioCargoConexion();
-		ServicioAdicional servicioSubsidioActivacion = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_ACTIVACION);
-		ServicioAdicional servicioBonifSubsidioActivacion = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_BONIF_ACTIVACION);
-		Set<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionalesToRemove = new HashSet<ServicioAdicionalLineaSolicitudServicio>();
-
-        for (ServicioAdicionalLineaSolicitudServicio servicio : serviciosAdicionales) {
-        	
-			if(servicio.getServicioAdicional().getCodigoBSCS().equals(servicioSubsidioActivacion.getCodigoBSCS())){
-				// CARGO ACTIVACION
-				if (verCargoActivacion){
-					servicio.setPrecioLista(subsidioCargoConexion);
-					servicio.setPrecioVenta(subsidioCargoConexion);
-				}else{
-					serviciosAdicionalesToRemove.add(servicio);
-				}
-			}else if(servicio.getServicioAdicional().getCodigoBSCS().equals(servicioBonifSubsidioActivacion.getCodigoBSCS())){
-				// BONIFICACION CARGO ACTIVACION
-				if (verBonifCargoActivacion){
-					servicio.setPrecioLista(-subsidioCargoConexion);
-					servicio.setPrecioVenta(-subsidioCargoConexion);
-				}else{
-					serviciosAdicionalesToRemove.add(servicio);
-				}
-			}
-		}
-		serviciosAdicionales.removeAll(serviciosAdicionalesToRemove);
-
-        return serviciosAdicionales;
 	}
 
 	public ResultadoReservaNumeroTelefonoDto reservarNumeroTelefonico(long numero, long idTipoTelefonia,
