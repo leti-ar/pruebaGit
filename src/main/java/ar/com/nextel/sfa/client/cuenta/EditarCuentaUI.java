@@ -10,9 +10,9 @@ import ar.com.nextel.sfa.client.enums.CondicionCuentaEnum;
 import ar.com.nextel.sfa.client.enums.TipoContribuyenteEnum;
 import ar.com.nextel.sfa.client.enums.TipoCuentaEnum;
 import ar.com.nextel.sfa.client.util.HistoryUtils;
-import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
 import ar.com.nextel.sfa.client.widget.UILoader;
+import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
@@ -190,10 +190,42 @@ public class EditarCuentaUI extends ApplicationUI {
 			cuentaTab.getCuentaDatosForm().getCamposTabDatos().getNombre().setText(nom);
 			cuentaTab.getCuentaDatosForm().getCamposTabDatos().getApellido().setText(ape);
 			cuentaTab.getCuentaDatosForm().getCamposTabDatos().getRazonSocial().setText(nom + " " + ape);
+			if (cuentaTab.getCuentaDatosForm().getCamposTabDatos().getSexo().getItemCount() <= 0) {//#3481
+				setearComboSexo(CuentaClientService.sexoVeraz);
+			} else {
+				cuentaTab.getCuentaDatosForm().getCamposTabDatos().getSexo().selectByText(CuentaClientService.sexoVeraz);
+			}
 			CuentaClientService.nombreFromVeraz = null;
 			CuentaClientService.apellidoFromVeraz = null;
+			CuentaClientService.sexoVeraz = null;
+		} else if (CuentaClientService.razonSocialFromVeraz != null 
+					&& cuentaTab.getCuentaDatosForm().getCamposTabDatos().getRazonSocial().getText().equals("")) { //#3481
+			cuentaTab.getCuentaDatosForm().getCamposTabDatos().getRazonSocial().setText(CuentaClientService.razonSocialFromVeraz);
+			if (cuentaTab.getCuentaDatosForm().getCamposTabDatos().getSexo().getItemCount() <= 0) {//#3481
+				setearComboSexo(CuentaClientService.sexoVeraz);
+			} else {
+				cuentaTab.getCuentaDatosForm().getCamposTabDatos().getSexo().selectByText(CuentaClientService.sexoVeraz);
+				CuentaDatosForm.getInstance().cambiarVisibilidadCamposSegunSexo();
+			}
+			CuentaClientService.razonSocialFromVeraz = null;
 		}
 		cuentaTab.validarCompletitud(false);
+	}
+
+	private void setearComboSexo(final String sexoVeraz) {
+		WaitWindow.show();
+		DeferredCommand.addCommand(new IncrementalCommand() {
+			public boolean execute() {
+				if (cuentaTab.getCuentaDatosForm().getCamposTabDatos().getSexo().getItemCount() <= 0){
+					return true;
+				}
+				cuentaTab.getCuentaDatosForm().getCamposTabDatos().getSexo().selectByText(sexoVeraz);
+				CuentaDatosForm.getInstance().cambiarVisibilidadCamposSegunSexo();
+				WaitWindow.hide();
+				return false;
+			}
+		});
+		
 	}
 
 	/**
@@ -231,6 +263,10 @@ public class EditarCuentaUI extends ApplicationUI {
 		cuentaTab.getCuentaContactoForm().getCrearButton().setVisible(esEdicionCuenta);
 		cuentaTab.getCuentaContactoForm().cargarTablaContactos(cuentaTab.getCuenta2editDto());
 
+		//Carga info pestaña Caratua
+//		MGR - Para salir sin "Caratula" (24-07-2012)
+//		cuentaTab.getCuentaCaratulaForm().cargaTablaCaratula(cuentaTab.getCuenta2editDto());
+		
 		// prepara UI para edicion cuenta o visualizacion opp
 		cuentaTab.setTabsTipoEditorCuenta(esEdicionCuenta);
 		cuentaTab.getCuentaDatosForm().setUItipoEditorCuenta(esEdicionCuenta);
@@ -296,7 +332,10 @@ public class EditarCuentaUI extends ApplicationUI {
 	}
 
 	private void doBusquedaCuenta() {
-		if (RegularExpressionConstants.isVancuc(CuentaClientService.cuentaDto.getCodigoVantive())) {
+//		MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
+		//Si no es cliente, es prospect o prospect en carga
+//		if (RegularExpressionConstants.isVancuc(CuentaClientService.cuentaDto.getCodigoVantive())) {
+		if (!CuentaClientService.cuentaDto.isCustomer()) {
 			cuentaTab.getCuentaDatosForm().setAtributosCamposCuenta(CuentaClientService.cuentaDto);
 			if (CuentaClientService.cuentaDto.getCondicionCuenta().getId() == CondicionCuentaEnum.PROSPECT
 					.getId()

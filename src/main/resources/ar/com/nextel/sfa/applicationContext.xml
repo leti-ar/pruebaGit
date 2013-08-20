@@ -36,9 +36,10 @@
 			    <entry key="collectionTipoDescuentoConverter" value-ref="collectionTipoDescuentoConverter"/>
 			    <entry key="collectionDescuentoConverter" value-ref="collectionDescuentoConverter"/>
 			    <entry key="collectionDescuentoLineaConverter" value-ref="collectionDescuentoLineaConverter"/>
-			    
 			    <entry key="collectionLineaTransfSolicitudServicioConverter" value-ref="collectionLineaTransfSolicitudServicioConverter" />
 			    <entry key="collectionServicioAdicionalTransfConverter" value-ref="collectionServicioAdicionalTransfConverter" />
+			    <entry key="collectionCaratulaConverter" value-ref="collectionCaratulaConverter" />
+				<entry key="collectionPortabilidadConverter" value-ref="collectionPortabilidadConverter" />
 		    </map>
 		</property>
 	</bean>
@@ -56,6 +57,21 @@
 			<bean class="ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto"></bean>
 		</property>
 	</bean>
+
+
+
+	<bean id="collectionPortabilidadConverter" class="ar.com.nextel.sfa.server.converter.CollectionOwnedConverter">
+		<property name="dozerMapper" ref="dozerMapper" />
+		<property name="repository" ref="repository" />
+		<property name="modelClass">
+			<bean class="ar.com.nextel.model.solicitudes.beans.SolicitudPortabilidad"></bean>
+		</property>
+		<property name="dtoClass">
+			<bean class="ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto"></bean>
+		</property>
+	</bean>
+
+
 
 	<bean id="collectionDomiciliosServicioConverter" class="ar.com.nextel.sfa.server.converter.CollectionOwnedConverter">
 		<property name="dozerMapper" ref="dozerMapper" />
@@ -146,4 +162,14 @@
         </property>
     </bean>	
 	
+	<bean id="collectionCaratulaConverter" class="ar.com.nextel.sfa.server.converter.CollectionCaratulaConverter">
+		<property name="dozerMapper" ref="dozerMapper" />
+		<property name="repository" ref="repository" />
+		<property name="modelClass">
+			<bean class="ar.com.nextel.model.cuentas.beans.Caratula"></bean>
+		</property>
+		<property name="dtoClass">
+			<bean class="ar.com.nextel.sfa.client.dto.CaratulaDto"></bean>
+		</property>
+	</bean>
 </beans>

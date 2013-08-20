@@ -1,16 +1,7 @@
 package ar.com.nextel.sfa.client.ss;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
-import ar.com.nextel.sfa.client.dto.ModalidadCobroDto;
-import ar.com.nextel.sfa.client.dto.PlanDto;
-import ar.com.nextel.sfa.client.dto.TipoPlanDto;
-import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -89,14 +80,16 @@ public class ItemYPlanSolicitudUI extends Composite {
 		cppAliasReservaTable.setWidget(1, 1, getReservaPanel());
 		mainPanel.add(cppAliasReservaTable);
 		
-		roamingTable = new Grid(1, 6);
+		roamingTable = new Grid(1, 7);
 		roamingTable.addStyleName("layout ml10");
 		roamingTable.getCellFormatter().setWidth(0, 0, "100px");
 		roamingTable.getCellFormatter().setWidth(0, 1, "100px");
 		roamingTable.setWidget(0, 0, itemSolicitudUIData.getDdn());
 		roamingTable.setWidget(0, 1, itemSolicitudUIData.getDdi());
 		roamingTable.setWidget(0, 2, itemSolicitudUIData.getRoaming());
+		roamingTable.setWidget(0, 3, itemSolicitudUIData.getPortabilidad());
 		mainPanel.add(roamingTable);
+		mainPanel.add(itemSolicitudUIData.getPortabilidadPanel());
 	}
 
 	private Widget getReservaPanel() {
@@ -130,11 +123,19 @@ public class ItemYPlanSolicitudUI extends Composite {
 		roamingTable.setVisible(true);
 	}
 
-	public ItemYPlanSolicitudUI setActivacionVisible() {
-		soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_ACTIVACION);
+	public ItemYPlanSolicitudUI setActivacionVisible(boolean online) {
+		if(online) {
+			cppAliasReservaTable.getCellFormatter().setVisible(0, 0, false);
+			cppAliasReservaTable.getCellFormatter().setVisible(0, 1, false);
+			cppAliasReservaTable.getCellFormatter().setVisible(0, 2, false);
+			cppAliasReservaTable.getCellFormatter().setVisible(0, 3, false);
+			soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_ACTIVACION_ONLINE);
+		} else {
+			soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_ACTIVACION);
+		}
 		return this;
 	}
-
+	
 	public ItemYPlanSolicitudUI setCDWVisible() {
 		aliasTable.setWidget(0, 1, itemSolicitudUIData.getAlias());
 		

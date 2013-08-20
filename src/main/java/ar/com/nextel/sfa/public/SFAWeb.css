@@ -10,7 +10,7 @@
 @IMPORT url("icons.css");
 
 .waiting {
-	cursor: wait;
+	cursor: wait;  
 }
 
 body,td,.normalText {
@@ -51,7 +51,7 @@ A {
 }
 
 .TableHeader {
-	background-color: #A53953;
+	background-color: #E05206;
 	text-align: center;
 	color: white;
 	font-weight: bold;
@@ -76,17 +76,17 @@ A {
 }
 
 .TableRowSelected {
-	background-color: #EFDAE0;
+	background-color: #F2A57C;
 	cursor: pointer;
 }
 
 .NoPointerTableRowSelected {
-	background-color: #EFDAE0;
+	background-color: #F2A57C;
 }
 
 /** Fin Estilos tablas */
 .gwt-HeaderMenu .menu {
-	background-color: #981836;
+	background-color: #E05206;
 	background-image: url(images/toolbar/back-menu-bar.gif);
 	height: 30px;
 	text-align: left;
@@ -99,7 +99,7 @@ A {
 
 .gwt-HeaderMenu .gwt-MenuItem {
 	/**	background-image: url(images/toolbar/back-menu-bar.gif);*/
-	border-right: 1px solid #981836;
+	border-right: 1px solid #E05206;
 	color: #EEEEEE;
 	display: block;
 	font-size: 12px;
@@ -112,7 +112,7 @@ A {
 .submenuPrincipal .gwt-MenuItem {
 	background-color: #FEFEFE;
 	border-bottom: 1px solid #E9E9E9;
-	color: #9E2F49;
+	color: #7A2D03;
 	display: block;
 	font-size: 10px;
 	font-weight: bold;
@@ -187,7 +187,7 @@ A {
 }
 
 .gwt-TitledPanel {
-	border: 1px solid #981836;
+	border: 1px solid #E05206;
 	margin-top: 5px;
 	margin-left: 5px;
 	margin-right: 5px;
@@ -201,7 +201,7 @@ A {
 	margin-left: 0px !IMPORTANT;
 	margin-right: 0px !IMPORTANT;
 	vertical-align: middle;
-	background-color: #981836;
+	background-color: #E05206;
 	background-image: url(images/h1_bkg_desplegable.jpg);
 	background-repeat: repeat-x;
 	text-indent: 5px;
@@ -214,14 +214,14 @@ A {
 }
 
 .header td {
-	background-color: #A53953;
+	background-color: #E05206;
 	color: #FFFFFF;
 	font-weight: bold;
 	text-align: center;
 	line-height: 14px;
 }
 
-.gwt-BuscarCuentaResultTable td,.gwt-VerazResultTable td,.dataTable td {
+.gwt-BuscarCuentaResultTable td,.gwt-VerazResultTable td,.gwt-CaratulaResultTable td,.dataTable td,.gwt-BuscarDocDigResultTable td {
 	border-right: 1px solid #EBEBEB;
 	border-bottom: 1px solid #EBEBEB;
 	height: 24px;
@@ -234,6 +234,15 @@ A {
 
 .resultTableWrapper {
 	height: 200px;
+	overflow: auto;
+	background-color: #FFF;
+	border: 1px solid gray;
+	margin-left: 8px;
+	margin-right: 8px;S
+}
+
+.resultTableWrapperLarge {
+	height: 420px;
 	overflow: auto;
 	background-color: #FFF;
 	border: 1px solid gray;
@@ -284,7 +293,7 @@ A {
 }
 
 .selectedRow td {
-	background-color: #EFDAE0;
+	background-color: #F2A57C;
 }
 
 .WaitWindow {
@@ -329,7 +338,7 @@ A {
 
 .gwt-TabBarItem-selected {
 	background-image: url(images/tabs/tab-on.gif) ! IMPORTANT;
-	color: #A83C56 ! IMPORTANT;
+	color: #E05206 ! IMPORTANT;
 }
 
 .gwt-TabBarItem {
@@ -403,7 +412,7 @@ A {
 }
 
 .abmPanel {
-	border: 1px solid #981836;
+	border: 1px solid #E05206;
 	margin-bottom: 8px;
 	width: 100%;
 }
@@ -424,7 +433,7 @@ A {
 	background-color: #dddddd;
 }
 
-.crearDomicilioButton,.crearLineaButton,.validarCompletitudButton {
+.crearDomicilioButton,.crearLineaButton,.validarCompletitudButton,.crearCaratulaButton {
 	background-repeat: no-repeat;
 	background-color: transparent;
 	height: 17px;
@@ -441,7 +450,7 @@ A {
 	text-align: right;
 }
 
-.crearDomicilioButton,.crearLineaButton {
+.crearDomicilioButton,.crearLineaButton,.crearCaratulaButton {
 	background-image: url(images/btn-table-nuevo.gif);
 	width: 115px;
 }
@@ -482,10 +491,10 @@ A {
 .abmPanelVeraz {
 	text-align: left;
 	text-indent: 4px;
-	border: 1px solid #981836;
+	border: 1px solid #E05206;
 	background-color: #FFFFFF;
 	margin-top: 8px;
-	border: 1px solid #981836;
+	border: 1px solid #E05206;
 	margin-bottom: 8px;
 	width: 100%;
 }
@@ -603,6 +612,18 @@ A {
 	width: 90px;
 }
 
+.verazRechazarLabel {
+	color: #FE003E;
+}
+
+.verazRevisarLabel {
+	color: #FFC000;
+}
+
+.verazAceptarLabel {
+	color: #189D21;
+}
+
 .gwt-ItemSolicitudDialog .topBar {
 	border-bottom: 1px #CCC solid;
 	padding: 5px;
@@ -649,7 +670,7 @@ SPAN.info {
 }
 
 .oppEnCursoTitulosLabel {
-	color: #A83C56;
+	color: #E05206;
 	font-weight: bold;
 	margin: 4px 0;
 	width: 100%;
@@ -660,12 +681,17 @@ SPAN.info {
 	font-weight: normal;
 }
 
+.docDigitalizadosLabel {
+	color: gray;
+	font-weight: normal;
+}
+
 .infocomSimpleLink {
 	text-decoration: underline;
 }
 
 .infocomTituloLabel {
-	color: #A83C56;
+	color: #E05206;
 }
 
 .infocomDescripcionTable {
@@ -700,7 +726,7 @@ input[disabled],input[readonly],select[disabled],select[readonly],checkbox[disab
 }
 
 .msgNoNormalizado {
-	color: #A83C56;
+	color: #E05206;
 }
 
 .fontNormal {
@@ -724,7 +750,7 @@ input[disabled],input[readonly],select[disabled],select[readonly],checkbox[disab
 }
 
 .botonReservarTel {
-	color: #A93F59;
+	color: #E05206;
 	font-weight: 600;
 	font-size: 11px;
 	background-image: url("images/btn-ok.gif");
@@ -786,4 +812,54 @@ margin:8px;
 
 .gwt-DescuentoDialog td {
 	vertical-align: top;
+}
+
+.portabilidadReplicar{
+	width: 600px;
+	
+	border-bottom: 1px #999 solid;
+	border-right: 1px #999 solid;
+	border-left: 1px #ccc solid;
+	border-top: 1px #ccc solid;
+	overflow: auto;
+	padding-right: 15px;
+	height: 150px;
+	
+}
+
+.portabilidadCheck{
+	font-weight: bold;
+}
+
+.portabilidadAlignCenter{
+	text-align: center;	
+}
+
+.copiarSS {
+	background-image: url(images/btn-table-nuevo.gif);
+	width: 115px;
+	margin-top: 5px;
+	position: absolute;
+	right: 180;
+	background-repeat: no-repeat;
+	background-color: transparent;
+	height: 17px;
+	font-size: 11px;
+	font-style: italic;
+	font-weight: bold;
+	color: #333;
+	line-height: 15px;
+	float: right;
+	padding-left: 5px;
+	margin-right: 8px;
+	border: none 0px;
+	color: gray;
+	text-align: center;
+}
+
+.gwt-ConsultarScoringBar {
+	font-family: Verdana, Arial, sans-serif;
+	color: #E05206;
+	width: 100%;
+	font-weight: bold;
 }

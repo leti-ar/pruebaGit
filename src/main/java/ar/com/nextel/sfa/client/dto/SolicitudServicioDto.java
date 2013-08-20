@@ -19,8 +19,8 @@ public class SolicitudServicioDto implements IsSerializable {
 	private String numero;
 	private String numeroFlota;
 	private Long nroTriptico;
-
-
+    private String estado;
+    private EstadoSolicitudDto estados;
 	// private CuentaPotencial cuentaPotencial;
 	private OrigenSolicitudDto origen;
 	// private Vendedor vendedorDae;
@@ -44,6 +44,8 @@ public class SolicitudServicioDto implements IsSerializable {
 	private TipoAnticipoDto tipoAnticipo;
 
 	private List<LineaSolicitudServicioDto> lineas = new ArrayList<LineaSolicitudServicioDto>();
+	
+	private List<EstadoPorSolicitudDto> historialEstados = new ArrayList<EstadoPorSolicitudDto>();
 
 	private Boolean pinValidationSuccess;
 	private Boolean scoringValidationSuccess;
@@ -55,7 +57,7 @@ public class SolicitudServicioDto implements IsSerializable {
 	private double precioListaTotal = 0;
 	private double precioVentaTotal = 0;
 	private double precioItemTotal = 0;
-
+    private ControlDto control;
 	private long tripticoNumber;
 	
 	private SolicitudServicioGeneracionDto solicitudServicioGeneracion;
@@ -74,6 +76,23 @@ public class SolicitudServicioDto implements IsSerializable {
     private Long idSucursal;
     private Long tipoCanalVentas;
     
+  //larce - Datos del histórico
+    private Long cantidadEquiposH;
+	private Date fechaFirma;
+	private EstadoHistoricoDto estadoH;
+	private Date fechaEstado;
+	private String clienteHistorico;
+    private Boolean passCreditos;
+	private Long idConsultaVeraz;
+	private Long idConsultaScoring;
+    	//GB - si es customer o no
+	private boolean customer;
+//	MGR - #3460 - A raiz de este bug, me di cuenta que esto esta de mas
+//	private VendedorDto vendedorLogueado;
+	
+	private Long cantLineasPortabilidad;
+	private String numeroSSWeb;//Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.	
+	
     public SolicitudServicioDto() {
 		solicitudServicioGeneracion = new SolicitudServicioGeneracionDto();
 	}
@@ -421,4 +440,140 @@ public class SolicitudServicioDto implements IsSerializable {
 	public void setTipoCanalVentas(Long tipoCanalVentas) {
 		this.tipoCanalVentas = tipoCanalVentas;
 	}
+	
+	public void setCantLineasPortabilidad(Long cantLineasPortabilidad){
+		this.cantLineasPortabilidad = cantLineasPortabilidad;
+	}
+	
+	public Long getCantLineasPortabilidad(){
+		return cantLineasPortabilidad;
+	}
+
+	public Long getCantidadEquiposH() {
+		return cantidadEquiposH;
+	}
+
+	public void setCantidadEquiposH(Long cantidadEquiposH) {
+		this.cantidadEquiposH = cantidadEquiposH;
+	}
+
+	public Date getFechaFirma() {
+		return fechaFirma;
+	}
+
+	public void setFechaFirma(Date fechaFirma) {
+		this.fechaFirma = fechaFirma;
+	}
+
+	public EstadoHistoricoDto getEstadoH() {
+		return estadoH;
+	}
+
+	public void setEstadoH(EstadoHistoricoDto estadoH) {
+		this.estadoH = estadoH;
+	}
+
+	public Date getFechaEstado() {
+		return fechaEstado;
+	}
+
+	public void setFechaEstado(Date fechaEstado) {
+		this.fechaEstado = fechaEstado;
+	}
+    
+	public String getClienteHistorico() {
+		return clienteHistorico;
+	}
+	
+	public void setClienteHistorico(String clienteHistorico) {
+		this.clienteHistorico = clienteHistorico;
+	}
+	
+
+	
+	public String getEstado() {
+		return estado;
+	}
+
+	public void setEstado(String estado) {
+		this.estado = estado;
+	}
+
+	public EstadoSolicitudDto getEstados() {
+		return estados;
+	}
+
+	public void setEstados(EstadoSolicitudDto estados) {
+		this.estados = estados;
+	}
+
+	public void addHistorialEstados(EstadoPorSolicitudDto nuevoEstado) {
+		this.historialEstados.add(nuevoEstado);
+	}
+
+	public List<EstadoPorSolicitudDto> getHistorialEstados() {
+		return historialEstados;
+	}
+
+	public void setHistorialEstados(List<EstadoPorSolicitudDto> historialEstados) {
+		this.historialEstados = historialEstados;
+	}
+
+	public ControlDto getControl() {
+		return control;
+	}
+
+	public void setControl(ControlDto control) {
+		this.control = control;
+	}
+
+	public void setPassCreditos(Boolean passCreditos) {
+		this.passCreditos = passCreditos;
+	}
+
+	public Boolean getPassCreditos() {
+		return passCreditos;
+	}
+	
+	public boolean isCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(boolean customer) {
+		this.customer = customer;
+	}
+
+	public Long getIdConsultaVeraz() {
+		return idConsultaVeraz;
+	}
+
+	public void setIdConsultaVeraz(Long idConsultaVeraz) {
+		this.idConsultaVeraz = idConsultaVeraz;
+	}
+
+	public Long getIdConsultaScoring() {
+		return idConsultaScoring;
+	}
+
+	public void setIdConsultaScoring(Long idConsultaScoring) {
+		this.idConsultaScoring = idConsultaScoring;
+	}
+
+//	MGR - #3460
+//	public VendedorDto getVendedorLogueado() {
+//		return vendedorLogueado;
+//	}
+//
+//	public void setVendedorLogueado(VendedorDto vendedorLogueado) {
+//		this.vendedorLogueado = vendedorLogueado;
+//	}
+		
+	public String getNumeroSSWeb() {
+		return numeroSSWeb;
+	}
+	
+	public void setNumeroSSWeb(String numeroSSWeb) {
+		this.numeroSSWeb = numeroSSWeb;
+	}		
+		
 }

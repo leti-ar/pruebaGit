@@ -407,7 +407,9 @@ public class CuentaDatosForm extends Composite {
 					if (CuentaClientService.tengoCuentaEnNull()){
 						return true;
 					}
-					boolean esProspect =RegularExpressionConstants.isVancuc(CuentaClientService.getCodigoVantive());
+//					MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
+//					boolean esProspect =RegularExpressionConstants.isVancuc(CuentaClientService.getCodigoVantive());
+					boolean esProspect =CuentaClientService.isProspectOrProspectEnCarga();
 					if(!esProspect){
 						emailTable.getWidget(0, 4).setVisible(false);
 					}
@@ -874,7 +876,10 @@ public class CuentaDatosForm extends Composite {
 
 		FormUtils.disableFields(campos);
 
-		boolean isVancuc = RegularExpressionConstants.isVancuc(cuentaDto.getCodigoVantive());
+//		MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
+		//Si no es cliente, es prospect o prospect en carga
+//		boolean isVancuc = RegularExpressionConstants.isVancuc(cuentaDto.getCodigoVantive());
+		boolean isVancuc = !cuentaDto.isCustomer();
 		iconoLupa.setVisible(isVancuc);
 		cuentaUIData.getVerazLabel().setVisible(isVancuc);
 		cuentaUIData.getVerazRta().setVisible(isVancuc);

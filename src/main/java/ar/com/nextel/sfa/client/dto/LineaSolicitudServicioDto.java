@@ -1,8 +1,14 @@
 package ar.com.nextel.sfa.client.dto;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
+import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
+import ar.com.nextel.model.support.owner.CollectionOwnerCreator;
+
+import com.google.gwt.dev.util.collect.HashSet;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDto, Cloneable {
@@ -56,6 +62,27 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 	private Double monto;
 	private Double porcentaje;
 	private List<DescuentoLineaDto> descuentosLinea = new ArrayList<DescuentoLineaDto>();
+
+	private List<SolicitudPortabilidadDto> solicitudPortabilidad = new ArrayList<SolicitudPortabilidadDto>();
+	
+
+	public List<SolicitudPortabilidadDto> getSolicitudPortabilidad() {
+		return solicitudPortabilidad;
+	}
+
+	public void setSolicitudPortabilidad(List<SolicitudPortabilidadDto> solicitudPortabilidad) {
+		this.solicitudPortabilidad = solicitudPortabilidad;
+	}
+	
+	public SolicitudPortabilidadDto getPortabilidad() {
+		if(this.solicitudPortabilidad.size() > 0) return solicitudPortabilidad.get(0);
+		return null;
+	}
+
+	public void setPortabilidad(SolicitudPortabilidadDto solicitudPortabilidad) {
+		if(this.solicitudPortabilidad.size() > 0) this.solicitudPortabilidad.clear();
+		this.solicitudPortabilidad.add(solicitudPortabilidad);
+	}
 
 	public Long getId() {
 		return id;

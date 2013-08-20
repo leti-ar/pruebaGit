@@ -15,7 +15,7 @@ public class ExportarExcelSSResultUI extends FlowPanel {
 		this.setHeight("30px");
 		icon = IconFactory.excel();
 		icon.addStyleName("exportarExcelSS mr10");
-		numResultados.setWidth("170px");
+		numResultados.setWidth("200px");
 		numResultados.addStyleName("floatLeft");
 		numResultados.addStyleName("mt5");
 		add(numResultados);

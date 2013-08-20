@@ -6,6 +6,8 @@ public class ItemSolicitudDto extends EnumDto implements IsSerializable {
 
 	private Boolean sinModelo;
 	private String segment1;
+	public String classIndicator;
+	public String esSim;
 	  
 	public Boolean getSinModelo() {
 		return sinModelo;
@@ -23,4 +25,22 @@ public class ItemSolicitudDto extends EnumDto implements IsSerializable {
 		this.segment1 = segment1;
 	}
 
+	public String getClassIndicator() {
+		return classIndicator;
+	}
+
+	public void setClassIndicator(String classIndicator) {
+		this.classIndicator = classIndicator;
+	}
+
+	public String getEsSim() {
+		return esSim;
+	}
+
+	public void setEsSim(String esSim) {
+		this.esSim = esSim;
+	}
+	
+
+	
 }

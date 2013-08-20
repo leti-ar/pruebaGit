@@ -50,7 +50,11 @@ public class RegularExpressionConstants {
 		return ".{0," + cant + "}";
 	}
 	/** true si el codigo vantive es vancuc */
-	public static final boolean isVancuc(String codigo_vantive) {
-		return codigo_vantive.contains("VANCUC");
-	}
+//	MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
+//	Ya no se puede preguntar por si el codigo vantive tiene la palabra vancuc o no para saber
+//	si es cliente o no. Usar los metodos "isProspect", "isProspectEnCarga" o "isCliente" si es
+//	necesario saber la situacion de la cuenta
+//	public static final boolean isVancuc(String codigo_vantive) {
+//		return codigo_vantive.contains("VANCUC");
+//	}
 }

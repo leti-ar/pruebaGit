@@ -18,16 +18,18 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
     private LocalidadDto localidad;
     private TipoVendedorDto tipoVendedor;
     private Long idSucursal;
-    
+    private boolean telemarketing;
     public static final String TIPO_VENDEDOR_DEALER = "TIPO_VENDEDOR_DEALER";
     public static final String TIPO_VENDEDOR_AP = "TIPO_VENDEDOR_AP";
     public static final String TIPO_VENDEDOR_ADM_CREDITOS = "TIPO_VENDEDOR_CREDITOS";
     public static final String TIPO_VENDEDOR_TELEMARKETING = "TIPO_VENDEDOR_TELEMARKETING";
     public static final String TIPO_VENDEDOR_EECC = "TIPO_VENDEDOR_EECC";
     public static final String TIPO_VENDEDOR_LAP = "TIPO_VENDEDOR_LAP";
+    public static final String TIPO_VENDEDOR_MINORISTA = "TIPO_VENDEDOR_MINORISTA";
+    public static final String TIPO_VENDEDOR_MAYORISTA = "TIPO_VENDEDOR_MAYORISTA";
+    public static final String TIPO_VENDEDOR_SALON = "TIPO_VENDEDOR_SALON";    
+    public static final String TIPO_VENDEDOR_RETAIL = "TIPO_VENDEDOR_RETAIL";
 
-
-    
     public boolean isEECC(){
     	HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
     	if(instancias != null && this.getTipoVendedor() != null){
@@ -44,14 +46,24 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
     	return false;
     }
     
-    public boolean isTelemarketing(){
-    	HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
-    	if(instancias != null && this.getTipoVendedor() != null){
-    		return instancias.get(TIPO_VENDEDOR_TELEMARKETING).equals(this.getTipoVendedor().getId());
-    	}
-    	return false;
-    }
+//    public boolean isTelemarketing(){
+//    	HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+//    	if(instancias != null && this.getTipoVendedor() != null){
+//    		return instancias.get(TIPO_VENDEDOR_TELEMARKETING).equals(this.getTipoVendedor().getId());
+//    	}
+//    	return false;
+//    }
 
+    //JM Mejoras telemarketing
+    //en lugar del id del tipo del vendedor se evalúa el codigo vantive por eso lo trae el dozer al mapear con Vendedor
+    public boolean isTelemarketing() {
+    	return this.telemarketing;
+    }
+    
+    public void setTelemarketing(boolean telemarketing) {
+    	this.telemarketing = telemarketing;
+    }
+    
     public boolean isDealer(){
 		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
 		if(instancias != null && this.getTipoVendedor() != null){
@@ -72,6 +84,14 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
 		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
 		if(instancias != null && this.getTipoVendedor() != null){
 			return instancias.get(TIPO_VENDEDOR_ADM_CREDITOS).equals(this.getTipoVendedor().getId());
+		}
+		return false;
+	}
+	
+	public boolean isRetail(){
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias != null && this.getTipoVendedor() != null){
+			return instancias.get(TIPO_VENDEDOR_RETAIL).equals(this.getTipoVendedor().getId());
 		}
 		return false;
 	}
