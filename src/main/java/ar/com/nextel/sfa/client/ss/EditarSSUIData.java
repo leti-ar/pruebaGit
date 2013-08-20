@@ -1175,7 +1175,12 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		List<ServicioAdicionalLineaSolicitudServicioDto> serviciosAGuardar = getLineasSolicitudServicio().get(indexLinea).getServiciosAdicionales();
 		
 		for (ServicioAdicionalLineaSolicitudServicioDto servicioAd : list) {
+			
+			System.out.println(" ---- " + servicioAd.getDescripcionServicioAdicional());
+			
 			if (servicioAd.isChecked() && !serviciosAGuardar.contains(servicioAd)) {
+				
+				System.out.println(" SI ---- " + servicioAd.getDescripcionServicioAdicional());
 				serviciosAGuardar.add(servicioAd);
 			}
 		}

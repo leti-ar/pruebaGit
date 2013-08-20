@@ -16,6 +16,7 @@ import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
@@ -410,6 +411,10 @@ public class DatosSSUI extends Composite implements ClickHandler {
 
 	public void onClick(ClickEvent clickEvent) {
 		Widget sender = (Widget) clickEvent.getSource();
+		
+		
+		
+		
 		if(controller.isEditable()) {
 			if (sender == crearLinea) {
 				openItemSolicitudDialog(new LineaSolicitudServicioDto());
@@ -433,6 +438,58 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		}
 	}
 
+	/**
+	 * Obtiene el total de servicios adicionales
+	 */
+	private void cargarTotalSA(){
+			if (editarSSUIData.getSolicitudServicio().getLineas().size() > 0){
+				controller.getServiciosAdicionales(editarSSUIData.getSolicitudServicio().getLineas().get(0), new DefaultWaitCallback<List<ServicioAdicionalLineaSolicitudServicioDto>>() {
+
+					@Override
+					public void success(
+							List<ServicioAdicionalLineaSolicitudServicioDto> result) {
+							cargarSA(obtenerSATildados(result));
+						
+						
+					}
+				});
+		}
+	}
+	
+	/**
+	 * Carga los servicios adicionales obligatorios a las líneas de detalle de la solicitud.
+	 * @param sas
+	 */
+	private void cargarSA(List<ServicioAdicionalLineaSolicitudServicioDto> sas){
+		for (int i=0; i < editarSSUIData.getSolicitudServicio().getLineas().size(); i++) {
+			editarSSUIData.getSolicitudServicio().getLineas().get(i).setServiciosAdicionales(clonarSA(sas));
+		} 
+	}
+	
+	private List<ServicioAdicionalLineaSolicitudServicioDto> clonarSA(List<ServicioAdicionalLineaSolicitudServicioDto> sas){
+		List<ServicioAdicionalLineaSolicitudServicioDto> sasClonado = new ArrayList<ServicioAdicionalLineaSolicitudServicioDto>();
+		for (ServicioAdicionalLineaSolicitudServicioDto servicioAdicionalLineaSolicitudServicioDto : sas) {
+			sasClonado.add(servicioAdicionalLineaSolicitudServicioDto);
+		}
+		return sasClonado;
+	
+	}
+	
+	/**
+	 * Filtra los servicios adicionales quedándose con aquellos obligatorios (checked)
+	 * @param result
+	 * @return
+	 */
+	private List<ServicioAdicionalLineaSolicitudServicioDto> obtenerSATildados(List<ServicioAdicionalLineaSolicitudServicioDto> result){
+		List<ServicioAdicionalLineaSolicitudServicioDto> resultado = new ArrayList<ServicioAdicionalLineaSolicitudServicioDto>();
+		for(ServicioAdicionalLineaSolicitudServicioDto sa: result){
+			if (sa.isChecked()){
+				resultado.add(sa);
+			}
+		}
+		return resultado;
+	}
+	
 	public void borrarDomicilioFacturacion() {
 		if (editarSSUIData.getFacturacion().getSelectedItemText() == null) {
 		} else {
@@ -547,6 +604,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 							// Carga servicios adicionales en la tabla
 							if (!serviciosAdicionales.isEditing()) {
 								selectDetalleLineaSSRow(row);
+								//cargarTotalSA();
 							}
 						} else if (col == 0) {
 							// Abre panel de edicion de la LineaSolicitudServicio
@@ -673,6 +731,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 					// Genera los numeros de solicitudes de portabilidad
 					asignarNroSSPortabilidad();
 					lineaModificada = lineaSolicitudServicio.getId();
+					cargarTotalSA();
 				}
 			};
 			itemSolicitudDialog.setAceptarCommand(aceptarCommand);
@@ -685,6 +744,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		itemSolicitudDialog.setCuentaEmpresa(editarSSUIData.getCuenta().isEmpresa());
 
 		itemSolicitudDialog.show(linea);
+		
 	}
 
 	/**Verifica si se puede aplicar un descuento al item seleccionado*/

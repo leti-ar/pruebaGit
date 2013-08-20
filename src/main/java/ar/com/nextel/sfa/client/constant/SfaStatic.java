@@ -1855,7 +1855,7 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
    * 
    * @return translated "Prov. Ant."
    */
-  @DefaultStringValue("Prov. Ant.")
+  @DefaultStringValue("Prove. Ant.")
   @Key("provedorAnterior")
   String provedorAnterior();
 
