@@ -151,7 +151,6 @@ import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
 import ar.com.nextel.sfa.client.initializer.SolicitudInitializer;
 import ar.com.nextel.sfa.client.util.PortabilidadResult;
 import ar.com.nextel.sfa.client.util.PortabilidadResult.ERROR_ENUM;
-import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.server.businessservice.CuentaBusinessService;
 import ar.com.nextel.sfa.server.businessservice.SolicitudBusinessService;
 import ar.com.nextel.sfa.server.util.MapperExtended;
@@ -1061,38 +1060,40 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			String errorCC = "";
 			int puedeCerrar = 0;
 //			MGR - Parche de emergencia
-			if (!solicitudServicio.getGrupoSolicitud().isGrupoTransferencia()) {
+			   if (!solicitudServicio.getGrupoSolicitud().isGrupoTransferencia()) {
 				//me fijo si tipo vendedor y orden son configurables por APG.
-				puedeCerrar = sonConfigurablesPorAPG(solicitudServicioDto.getLineas());
+			    	puedeCerrar = sonConfigurablesPorAPG(solicitudServicioDto.getLineas());
 				
-				if (puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO) {//pass de creditos segun la logica
-					errorCC = evaluarEquiposYDeuda(solicitudServicio, pinMaestro);
-					if ("".equals(errorCC)) {
+				    if (puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO) {//pass de creditos segun la logica
+					   errorCC = evaluarEquiposYDeuda(solicitudServicio, pinMaestro);
+					   if ("".equals(errorCC)) {
 						
-						isVerazDisponible = (repository.executeCustomQuery("isVerazDisponible", "VERAZ_DISPONIBLE"));
-//						MGR - #3458 - Verifico si corresponde cerrar por Veraz (o Scoring)
-						cierrePorVeraz = ("".equals(pinMaestro) || pinMaestro == null)
+						   isVerazDisponible = (repository.executeCustomQuery("isVerazDisponible", "VERAZ_DISPONIBLE"));
+//						   MGR - #3458 - Verifico si corresponde cerrar por Veraz (o Scoring)
+						   cierrePorVeraz = ("".equals(pinMaestro) || pinMaestro == null)
 											&& !solicitudServicio.getSolicitudServicioGeneracion().getScoringChecked();
-						if (puedeDarPassDeCreditos(solicitudServicio, cierrePorVeraz, isVerazDisponible.get(0))) {
+						   if (puedeDarPassDeCreditos(solicitudServicio, cierrePorVeraz, isVerazDisponible.get(0))) {
 							
-//							MGR - #3458
-//							Si puede dar el pass, pero el veraz esta deshabilitado y el pass se dio por veraz,
-//							entonces no le doy el pass (y mas adelante, si se cierra ccorrectamente, envio un mail)
-//							Si el pass se da por Scoring, sigue su curso normal
-							if(cierrePorVeraz && !"T".equals(isVerazDisponible.get(0))){
-								//En caso de que el veraz no este disponible, de cumplir con las condiciones comerciales se cierra 
-								//la SS quedando pendiente de aprobacion en vantive y se envia un mail informando la situacion
-								solicitudServicio.setPassCreditos(false);
-//								MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
-//								solicitudBusinessService.enviarMailPassCreditos(solicitudServicioDto.getNumero());
-							}else{ //MGR - #3463
-								solicitudServicio.setPassCreditos(true);
-							}
+//							   MGR - #3458
+//							   Si puede dar el pass, pero el veraz esta deshabilitado y el pass se dio por veraz,
+//							   entonces no le doy el pass (y mas adelante, si se cierra ccorrectamente, envio un mail)
+//							   Si el pass se da por Scoring, sigue su curso normal
+							      if(cierrePorVeraz && !"T".equals(isVerazDisponible.get(0))){
+								  //En caso de que el veraz no este disponible, de cumplir con las condiciones comerciales se cierra 
+								  //la SS quedando pendiente de aprobacion en vantive y se envia un mail informando la situacion
+								     solicitudServicio.setPassCreditos(false);
+//								  MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
+//								  solicitudBusinessService.enviarMailPassCreditos(solicitudServicioDto.getNumero());
+							      }else{//MGR - #3463
+							    	  //passCreditos puede ser true sólo para cerrar.
+							    	  if(cerrar)
+								         solicitudServicio.setPassCreditos(true);
+							      }
 							
-						} else {
-							solicitudServicio.setPassCreditos(false);
-							if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
-								errorCC = generarErrorPorCC(solicitudServicio, pinMaestro);
+						   } else {
+							      solicitudServicio.setPassCreditos(false);
+							      if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
+								     errorCC = generarErrorPorCC(solicitudServicio, pinMaestro);
 								
 						    	/* MGR - 04/07/2012
 						    	 * Al verificar si las lineas cumplen con las condiciones comerciales, la cantidad de equipos y la cantidad de pesos
@@ -1104,16 +1105,16 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 						    	 * (Revisar mail enviado por Marco Rossi el dia 04/07/2012 a Damian Schnaider, Giselle Rivas y Gonzalo Suarez, 
 						    	 * donde confirman esto)
 						    	 */
-								if(errorCC.equals("")){
-									AppLogger.info("#Log Cierre y pass - La SS con cumple con las CC pero el mensaje de error se encuentra vacio. Damos el pass de todas formas.", this);
-									solicitudServicio.setPassCreditos(true);
-								}
+								  if(errorCC.equals("") && (cerrar)){
+								      AppLogger.info("#Log Cierre y pass - La SS con cumple con las CC pero el mensaje de error se encuentra vacio. Damos el pass de todas formas.", this);
+									  solicitudServicio.setPassCreditos(true);
+								  }
 
-							}
+							    }
 						}
-					}
-				}
-				
+					  }
+				  }
+			  }
 				//larce - Req#9 Negative Files
 				if(solicitudServicio.getVendedor().getTipoVendedor().isEjecutaNegFiles()){
 					errorNF = verificarNegativeFilesPorLinea(solicitudServicio.getLineas());
@@ -1137,7 +1138,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 					response.getMessages().addMesage(message);
 					result.setError(true);
 				}
-			}
+			
 			
 			if(!hayError && puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO){
 				
@@ -1188,20 +1189,24 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			//MGR - #3123 - Si ninguno no fallo por alguna de las validaciones anteriores
 			if(!hayError){
 				
-				//LF - #3109 - Registro el vendedor logueado que realiza el cierre
-//				MGR - #3460 - Se pide registrar el nombre y el id del vendedor
-				String userName = sessionContextLoader.getVendedor().getUserName();
-				List<Long> listRegistroVend = repository.executeCustomQuery(GET_ID_REGISTRO_VENDEDOR, userName);
+				//LT - Sólo se deben setear los datos del vendedor cuando es cierre
+				if(cerrar){
+					//LF - #3109 - Registro el vendedor logueado que realiza el cierre
+//					MGR - #3460 - Se pide registrar el nombre y el id del vendedor
+					String userName = sessionContextLoader.getVendedor().getUserName();
+					List<Long> listRegistroVend = repository.executeCustomQuery(GET_ID_REGISTRO_VENDEDOR, userName);
 				
-				Long idRegistroVendedor = 0l;
-				if(!listRegistroVend.isEmpty())
-					idRegistroVendedor = listRegistroVend.get(0);
+					Long idRegistroVendedor = 0l;
+					if(!listRegistroVend.isEmpty())
+						idRegistroVendedor = listRegistroVend.get(0);
 				
-				solicitudServicio.setIdRegistroVendedor(idRegistroVendedor);
-				solicitudServicio.setNombreRegistroVendedor(userName);
-			
+					solicitudServicio.setIdRegistroVendedor(idRegistroVendedor);
+					solicitudServicio.setNombreRegistroVendedor(userName);
+				}
 //				MGR - Se mueve la creacion de la cuenta. Debo recordar si es prospect antes de enviar a cerrar
-				boolean eraProspect = !solicitudServicio.getCuenta().isCliente();
+//				JPP - 0003641: N-IM003607979 - Cierre y Pass Automatico. No genera automaticamente Caratula para anexo , reingreso. 
+//				eraProspect solo se usaba para la condicion que se modifico (ver informacion del ticket #3641 del mantis)
+//				boolean eraProspect = !solicitudServicio.getCuenta().isCliente();
 				response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, puedeCerrar);
 				
 				result.setError(response.getMessages().hasErrors());
@@ -1218,12 +1223,35 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 //				MGR - Se mueve la creacion de la cuenta, cambia el if y su contenido
 //				Si era prospect, se cerro la SS correctamente, se creo la cuenta correctamente,
 //				va por pass automatico y es un cierre, creo y tranfiero caratula
-				if (eraProspect && !result.isError() && 
-						solicitudServicio.getCuenta().isTransferido() && 
-						puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO && cerrar) {
+				
+//				JPP - 0003641: N-IM003607979 - Cierre y Pass Automatico. No genera automaticamente Caratula para anexo , reingreso. 
+//				Se modifico la condicion (se saco la validacion de eraProspect)
+//				if (eraProspect && !result.isError() && 
+//						solicitudServicio.getCuenta().isTransferido() && 
+//						puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO && cerrar) {
+				
+				
+				
+				if (!result.isError() && solicitudServicio.getCuenta().isTransferido() && puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO && cerrar) {
 					
-						Long idCaratula = solicitudBusinessService.crearCaratula(solicitudServicio.getCuenta(), solicitudServicio.getNumero(), resultadoVerazScoring);
-						solicitudBusinessService.transferirCaratula(idCaratula, solicitudServicio.getNumero());						
+						/*
+						 * JPP - #3641 - N-IM003607979 - Cierre y Pass Automatico. No genera automaticamente Caratula para anexo , reingreso.
+						 * Para detectar si una cuenta es Anexo, se va a obtener la cantidad de equipos activos del cliente, 
+						 * si tiene UN equipo activo o MAS DE UNO, lo damos como Anexo.
+						 * Si el cliente es Anexo, NO se crea la caratula.
+						 * Si el cliente NO tiene equipos activos (no es Anexo), se crea la caratula.
+						 */
+					
+						CantidadEquiposDTO cantidadEquiposDTO = avalonSystem.retreiveEquiposPorEstado(solicitudServicio.getCuenta().getCodigoVantive());
+						
+						if (("0".equals(cantidadEquiposDTO.getCantidadActivos())))
+						{
+							// El cliente NO es Anexo, es Reingreso o Cliente que nunca tuvo equipos activos
+							Long idCaratula = solicitudBusinessService.crearCaratula(solicitudServicio.getCuenta(), solicitudServicio.getNumero(), resultadoVerazScoring);
+							solicitudBusinessService.transferirCaratula(idCaratula, solicitudServicio.getNumero());		
+						}
+						
+					
 						solicitudServicio.setNumeroCuenta(solicitudServicio.getCuenta().getCodigoVantive());
 						solicitudBusinessService.updateSolicitudServicio(solicitudServicio);
 				}
@@ -2502,9 +2530,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	public boolean validarLineasPorSegmento(SolicitudServicioDto solicitud) throws RpcExceptionMessages {
 		
 		ArrayList<Boolean> resultadoValidacion = new ArrayList<Boolean>();
-		
+
 //		MGR - Parche de emergencia
-		Vendedor vend = repository.retrieve(Vendedor.class, solicitud.getVendedor().getId());
+		Vendedor vend = repository.retrieve(Vendedor.class, solicitud.getUsuarioCreacion().getId());
 		Long idTipoVendedor = vend.getTipoVendedor().getId();
 		
 		Long idSegmento = 0l;
