@@ -25,6 +25,7 @@ import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefoniaDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.util.FormUtils;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
@@ -1220,10 +1221,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		 
 		//Desc de Despacho, esto se creo para no tocar el compartamiento
 		//de imei y sim que ya existia en la activacion 
-		if(imeiRetiroEnSucursal.getText()!= null){
+		if(!FormUtils.fieldEmpty(imeiRetiroEnSucursal)){
 			lineaSolicitudServicio.setNumeroIMEI(imeiRetiroEnSucursal.getText());
 		}
-		if(simRetiroEnSucursal.getText()!= null){
+		if(!FormUtils.fieldEmpty(simRetiroEnSucursal)){
 			lineaSolicitudServicio.setNumeroSimcard(simRetiroEnSucursal.getText());
 			
 		}
