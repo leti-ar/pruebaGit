@@ -1231,17 +1231,14 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			resultado.setPuedeCerrar(puedeCerrar);
 			
 			if (puedeCerrar == CierreYPassResult.CIERRE_PASS_AUTOMATICO) {//pass de creditos segun la logica
-				errorCC = evaluarEquiposYDeuda(solicitudServicio, pinMaestro);
+				cierrePorVeraz = !solicitudServicio.getSolicitudServicioGeneracion().isCierreConPinOrScoringChecked(pinMaestro, pinChequeadoEnNexus);
+				errorCC = evaluarEquiposYDeuda(solicitudServicio, pinMaestro,cierrePorVeraz);
 				if ("".equals(errorCC)) {
 					
 					isVerazDisponible = (repository.executeCustomQuery("isVerazDisponible", "VERAZ_DISPONIBLE"));
 					resultado.setIsVerazDisponible(isVerazDisponible.get(0));
 					
 //					MGR - #3458 - Verifico si corresponde cerrar por Veraz (o Scoring)
-					cierrePorVeraz = ("".equals(pinMaestro) || pinMaestro == null)
-										&& !solicitudServicio.getSolicitudServicioGeneracion().getScoringChecked();
-					resultado.setCierrePorVeraz(cierrePorVeraz);
-					
 					if (puedeDarPassDeCreditos(solicitudServicio, cierrePorVeraz, isVerazDisponible.get(0))) {
 						
 //						MGR - #3458
@@ -1261,7 +1258,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					} else {
 						solicitudServicio.setPassCreditos(false);
 						if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
-							errorCC = generarErrorPorCC(solicitudServicio, pinMaestro);
+								errorCC = generarErrorPorCC(solicitudServicio, cierrePorVeraz);
 							
 					    	/* MGR - 04/07/2012
 					    	 * Al verificar si las lineas cumplen con las condiciones comerciales, la cantidad de equipos y la cantidad de pesos
