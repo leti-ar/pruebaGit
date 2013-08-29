@@ -1058,7 +1058,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			if (!solicitudServicio.getGrupoSolicitud().isGrupoTransferencia()) {
 				
 //				MGR - Refactorizacion del cierre
-				resultadoCierre = comprobarCierreYPassAutomatico(solicitudServicio, pinMaestro, result);
+				resultadoCierre = comprobarCierreYPassAutomatico(solicitudServicio, pinMaestro, pinChequeadoEnNexus, result);
 
 				//larce - Req#9 Negative Files
 				if(solicitudServicio.getVendedor().getTipoVendedor().isEjecutaNegFiles()){
@@ -1104,7 +1104,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 //				eraProspect solo se usaba para la condicion que se modifico (ver informacion del ticket #3641 del mantis)
 //				boolean eraProspect = !solicitudServicio.getCuenta().isCliente();
 //				MGR - Refactorizacion del cierre
-				response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, resultadoCierre.getPuedeCerrar());
+				response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, resultadoCierre.getPuedeCerrar(),pinChequeadoEnNexus);
 				
 				result.setError(response.getMessages().hasErrors());
 								
@@ -1215,7 +1215,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 //	MGR - Refactorizacion del cierre
 	private CierreYPassResult comprobarCierreYPassAutomatico(SolicitudServicio solicitudServicio, 
-			String pinMaestro, GeneracionCierreResultDto result) throws Exception{
+			String pinMaestro,  boolean pinChequeadoEnNexus ,GeneracionCierreResultDto result) throws Exception{
 		CierreYPassResult resultado = new CierreYPassResult();
 		
 		//larce - Req#5 Cierre y Pass automatico
@@ -3206,7 +3206,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				}
 			}
 			
-			CierreYPassResult resultadoCierre = comprobarCierreYPassAutomatico(solicitudServicio, null, result);
+			CierreYPassResult resultadoCierre = comprobarCierreYPassAutomatico(solicitudServicio, null, false, result);
 			if(!result.isError() && resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO){
 				validarSIMRepetidos(solicitudServicio, result);
 			}
