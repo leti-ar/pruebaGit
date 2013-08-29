@@ -21,6 +21,8 @@ public class ClientContext {
 	private ClienteNexusDto clienteNexus;
 	//MGR - #1050
 	private HashMap<String, Long> knownInstance;
+    public static final String ST_PARAMS_KEY_RECARGA_TIPO_ORDEN = "RecargaTipoOrden";
+    public static final String ST_PARAMS_VALUE_TRUE = "true";
 	
 	private ClientContext() {
 	}
@@ -108,4 +110,11 @@ public class ClientContext {
 		this.knownInstance = knownInstance;
 	}
 
+	public boolean isPinChequeadoEnNexus() {
+		if (vengoDeNexus() && ClientContext.getInstance().getVendedor().isTelemarketing()) {
+			return this.clienteNexus.isPinChequeadoEnNexus();
+		}
+		return false;
+	}
+	
 }

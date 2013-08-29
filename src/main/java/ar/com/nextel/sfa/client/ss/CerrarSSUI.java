@@ -23,7 +23,8 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 	private static final String generarTitle = "SS - Generar SS";
 	private static final String cerrarTitle = "SS - Cerrar SS";
 	private FlexTable layout;
-
+	private boolean tienePortabilidad;
+	
 	public CerrarSSUI() {
 		super("SS - Generar SS", false, true);
 		init();
@@ -60,6 +61,8 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 		layout.setHTML(3, 1, Sfa.constant().scoringTitle());
 		layout.setWidget(3, 0, cerarSSUIData.getScoring());
 		add(layout);
+		
+		tienePortabilidad = false;
 	}
 
 	public void onClick(Widget sender) {
@@ -77,26 +80,39 @@ public class CerrarSSUI extends NextelDialog implements ClickListener {
 		this.aceptarCommand = aceptarCommand;
 	}
 
+	/**
+	 * TODO: Portabilidad
+	 * @param tienePortabilidad
+	 */
+	public void setTienePortabilidad(boolean tienePortabilidad){
+		this.tienePortabilidad = tienePortabilidad;
+	}
+	
 	public void show(PersonaDto persona, boolean isCliente, SolicitudServicioGeneracionDto solicitudServicioGeneracion,
 			boolean isCDW, boolean isMDS, boolean cerrandoConItemBB, boolean isTRANSFERENCIA) {
 		cerarSSUIData.setEmails(persona.getEmails(), solicitudServicioGeneracion);
 		boolean permisoCierreScoring = ClientContext.getInstance().checkPermiso(
 				PermisosEnum.SCORING_CHECKED.getValue());
 		boolean permisoCierrePin = ClientContext.getInstance().checkPermiso(
-				PermisosEnum.CERRAR_SS_CON_PIN.getValue());
+				PermisosEnum.CERRAR_SS_CON_PIN.getValue()) && !ClientContext.getInstance().isPinChequeadoEnNexus();
 
 		//MGR - #1480
 		if(ClientContext.getInstance().getVendedor().isAP()){
 			isTRANSFERENCIA = false;
 		}
 		
-		if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierreScoring && !permisoCierrePin && isCliente) {
-			layout.setWidget(3, 0, cerarSSUIData.getScoring());
-			layout.setHTML(3, 1, Sfa.constant().scoringTitle());
-		} else if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierrePin && !cerrandoConItemBB && isCliente) {
-			layout.setHTML(3, 0, Sfa.constant().pinMaestro());
-			layout.setWidget(3, 1, cerarSSUIData.getPin());
-		} else {
+		if(!tienePortabilidad){
+			if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierreScoring && !permisoCierrePin && isCliente) {
+				layout.setWidget(3, 0, cerarSSUIData.getScoring());
+				layout.setHTML(3, 1, Sfa.constant().scoringTitle());
+			} else if (!isCDW && !isMDS && !isTRANSFERENCIA && permisoCierrePin && !cerrandoConItemBB && isCliente) {
+				layout.setHTML(3, 0, Sfa.constant().pinMaestro());
+				layout.setWidget(3, 1, cerarSSUIData.getPin());
+			} else {
+				layout.setHTML(3, 0, "");
+				layout.setHTML(3, 1, "");
+			}
+		}else {
 			layout.setHTML(3, 0, "");
 			layout.setHTML(3, 1, "");
 		}

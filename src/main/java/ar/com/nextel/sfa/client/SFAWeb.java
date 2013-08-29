@@ -88,6 +88,10 @@ public class SFAWeb implements EntryPoint {
 				+ HeaderMenu.MENU_OPORTUNIDADES : items;
 		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_OPERACIONES_EN_CURSO_BUTTON.getValue()) ? items
 				+ HeaderMenu.MENU_OP_EN_CURSO : items;
+		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_CONFIGURACION_SUCURSAL_BUTTON.getValue()) ? items
+				+ HeaderMenu.MENU_CAMBIO_SUCURSAL : items;
+		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_VALIDACION_STOCK_BUTTON.getValue()) ? items
+				+ HeaderMenu.MENU_VALIDAR_STOCK : items;
 		headerMenu.enableMenuItems(items);
 	}
 
@@ -118,9 +122,28 @@ public class SFAWeb implements EntryPoint {
 		if(vieneDeNexus){
 			ClienteNexusDto clienteNexus = new ClienteNexusDto();
 			String customerCode = HistoryUtils.getParam("customerCode");
+			String customerNexusId = HistoryUtils.getParam("customerId");
+			String idRegistroAtencion = HistoryUtils.getParam("idRegistroAtencion");
 			clienteNexus.setCustomerCode(customerCode);
 			clienteNexus.setVieneDeNexus(vieneDeNexus);
+			clienteNexus.setCustomerNexusId(customerNexusId);
+			clienteNexus.setIdRegistroAtencion(idRegistroAtencion);
 			ClientContext.getInstance().setClienteNexus(clienteNexus);
+			
+			if (customerNexusId != null && idRegistroAtencion  != null) {
+				CuentaRpcService.Util.getInstance().estaChequeadoPinEnNexus(idRegistroAtencion, customerNexusId,  
+						new DefaultWaitCallback<Boolean>() {
+					public void success(Boolean isPinChecked) {
+						ClientContext.getInstance().getClienteNexus().setPinChequeadoEnNexus(isPinChecked);
+					}
+
+					public void failure(Throwable caught) {
+						ClientContext.getInstance().getClienteNexus().setPinChequeadoEnNexus(false);
+					}
+				});
+			} else {
+				ClientContext.getInstance().getClienteNexus().setPinChequeadoEnNexus(false);
+			}
 			
 			//MGR - Si llega un codigo de cliente, busco el numero de su cuenta es SFA
 			if(customerCode != null){
