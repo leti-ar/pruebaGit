@@ -23,6 +23,7 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.HibernateException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -44,9 +45,12 @@ import ar.com.nextel.business.shift.InformacionNumeroDTO;
 import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSResponse;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
+import ar.com.nextel.business.solicitudes.facturacion.FacturacionSolServicioService;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
+import ar.com.nextel.business.solicitudes.generacionCierre.result.CierreYPassResult;
 import ar.com.nextel.business.solicitudes.negativeFiles.NegativeFilesBusinessOperator;
 import ar.com.nextel.business.solicitudes.negativeFiles.result.NegativeFilesBusinessResult;
+import ar.com.nextel.business.solicitudes.report.ReportBusinessOperator;
 import ar.com.nextel.business.solicitudes.report.SolicitudPortabilidadPropertiesReport;
 import ar.com.nextel.business.solicitudes.repository.SolicitudServicioRepository;
 import ar.com.nextel.business.solicitudes.search.dto.SolicitudServicioCerradaSearchCriteria;
@@ -73,6 +77,7 @@ import ar.com.nextel.model.solicitudes.beans.Control;
 import ar.com.nextel.model.solicitudes.beans.EstadoHistorico;
 import ar.com.nextel.model.solicitudes.beans.EstadoPorSolicitud;
 import ar.com.nextel.model.solicitudes.beans.EstadoSolicitud;
+import ar.com.nextel.model.solicitudes.beans.Factura;
 import ar.com.nextel.model.solicitudes.beans.GrupoSolicitud;
 import ar.com.nextel.model.solicitudes.beans.Item;
 import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
@@ -95,7 +100,6 @@ import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.services.nextelServices.veraz.dto.VerazResponseDTO;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
-import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
@@ -112,6 +116,8 @@ import ar.com.nextel.sfa.client.dto.EstadoHistoricoDto;
 import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
+import ar.com.nextel.sfa.client.dto.FacturaDto;
+import ar.com.nextel.sfa.client.dto.FacturacionResultDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudDto;
@@ -180,6 +186,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private DefaultRetriever globalParameterRetriever;
 	private MailSender mailSender;
 	private CuentaBusinessService cuentaBusinessService;
+	private ReportBusinessOperator reportBusinessOperator;
 
 	//MELI
 	private DefaultSequenceImpl tripticoNextValue;
@@ -190,6 +197,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
     
 	//MGR - #1481
 	private DefaultRetriever messageRetriever;
+	
+//	MGR - Facturacion
+	private FacturacionSolServicioService facturacionSolServicioService;
 	
 	//MGR - #3122
 	private static final String ERROR_CC_POR_RESULTADO = "ERROR_CC_POR_RESULTADO";
@@ -241,7 +251,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		
 		messageRetriever = (DefaultRetriever)context.getBean("messageRetriever");
 		mailSender= (MailSender)context.getBean("mailSender");
-		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");		
+		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");
+		facturacionSolServicioService = (FacturacionSolServicioService) context.getBean("facturacionSolServicioServiceBean");
+		reportBusinessOperator = (ReportBusinessOperator) context.getBean("reportBusinessOperator");
 
 	}
 
@@ -256,6 +268,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				SolicitudServicioRequest.class);
 		AppLogger.info("Creando Solicitud de Servicio con Request -> " + request.toString());
 		SolicitudServicio solicitud = null;
+	
 		try {
 			solicitud = solicitudBusinessService.createSolicitudServicio(request, mapper);
 		} catch (BusinessException e) {
@@ -396,7 +409,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		solicitudToCopy.setPataconex(0d);
 		solicitudToCopy.setFirmar(false);
 		solicitudToCopy.setAclaracionEntrega(null);
-		
+		solicitudToCopy.setRetiraEnSucursal(false);
 		resultDto.setSolicitud(solicitudToCopy);
 //		resultDto.setSolicitud(solicitudServicioDto);
 		return resultDto;
@@ -674,9 +687,11 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	//que permite realizar el manejo de mensajes
 	public CreateSaveSolicitudServicioResultDto saveSolicituServicio(SolicitudServicioDto solicitudServicioDto)
 			throws RpcExceptionMessages {
-		
+		List<String> mensajesError = new ArrayList<String>();
 		// TODO: Portabilidad
 		long contadorPortabilidad = 0;
+
+		//List<String>validacionStock=solicitudBusinessService.validarSIM_IMEI(solicitudServicio);
 		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
 			if(linea.getPortabilidad() != null) contadorPortabilidad++;
 		}
@@ -686,19 +701,20 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		try {
 
 			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
-			solicitudServicioDto = mapper.map(solicitudSaved, SolicitudServicioDto.class);
-			
 			Vendedor vendedor = sessionContextLoader.getSessionContext().getVendedor();
-			if (vendedor.isADMCreditos()) {
-				//Valida los predicados y el triptico
-				CreateSaveSSResponse response = solicitudBusinessService.validarPredicadosGuardarSS(solicitudSaved);
-				resultDto.setError(response.getMessages().hasErrors());
-				resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
-				//larce
-				//larce - Comentado para salir solo con cierre
-//				solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,true);
-			}
 
+//			MGR - Validacion SIM_IMEI - Valida los predicados que correspondan
+			CreateSaveSSResponse response = solicitudBusinessService.validarPredicadosGuardarSS(solicitudSaved, vendedor);
+			resultDto.setError(response.getMessages().hasErrors());
+			resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
+			solicitudServicioDto = mapper.map(response.getSolicitudServicio(), SolicitudServicioDto.class);
+			
+			//larce
+			//larce - Comentado para salir solo con cierre
+//			if (vendedor.isADMCreditos()) {
+//				solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,true);
+//			}
+				
 			if (solicitudServicioDto.getId() != null) {
 				if (solicitudServicioDto.getHistorialEstados() != null) {
 					if(solicitudServicioDto.getHistorialEstados().size() > 0){
@@ -708,7 +724,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					solicitudServicioDto.setHistorialEstados(getEstadosPorSolicitud(new Long(solicitudServicioDto.getId())));									
 				}
 			}
-			
+					
 			resultDto.setSolicitud(solicitudServicioDto);
 		} catch (Exception e) {
 			AppLogger.error(e);
@@ -717,7 +733,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return resultDto;
 	}
 
-public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto) throws RpcExceptionMessages {
+	public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto) throws RpcExceptionMessages {
 
 		try {
 			EstadoPorSolicitud estadoPorSolicitud = mapper.map(estadoPorSolicitudDto, EstadoPorSolicitud.class);
@@ -790,7 +806,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	}
 
 	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(
-			GrupoSolicitudDto grupoSolicitudDto, boolean isEmpresa) {
+			GrupoSolicitudDto grupoSolicitudDto, boolean isEmpresa, boolean retiraEnSucursal) {
 
 		LineasSolicitudServicioInitializer initializer = new LineasSolicitudServicioInitializer();
 		List<GrupoSolicitud> grupos = 
@@ -802,7 +818,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		Map<Long, List<TipoSolicitudDto>> tiposSolicitudPorGrupo = new HashMap();
 		for (GrupoSolicitud gp : grupos) {
 			tiposSolicitudPorGrupo.put(gp.getId(), 
-					mapper.convertList(gp.calculateTiposSolicitud(sucursal, sessionContextLoader.getVendedor()),
+					mapper.convertList(gp.calculateTiposSolicitud(sucursal, sessionContextLoader.getVendedor(),retiraEnSucursal),
 							TipoSolicitudDto.class));
 		}
 		initializer.setTiposSolicitudPorGrupo(tiposSolicitudPorGrupo);
@@ -1021,200 +1037,81 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		SolicitudServicio solicitudServicio = null;
 		//MGR - #3123
 		GeneracionCierreResponse response = new GeneracionCierreResponse();
-		boolean hayError = false;
-//		MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
-		List<String> isVerazDisponible = new ArrayList<String>();
-//		MGR - #3458
-		boolean cierrePorVeraz = false;
+		
+//		MGR - Refactorizacion del cierre
+		CierreYPassResult resultadoCierre = new CierreYPassResult();
+		
 		try {
 			
-			// TODO: Portabilidad
-			long contadorPortabilidad = 0;
-			for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
-				if(linea.getPortabilidad() != null) {
-					if(linea.getPortabilidad().getFechaUltFactura() != null) {
-						long dias = DateUtils.getInstance().getDistanceInDays(DateUtils.getInstance().getCurrentDate(), linea.getPortabilidad().getFechaUltFactura());
-						if(dias > 30) {
-							hayError = true;
-							String alias = linea.getAlias();
-							Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.FECHA_EMISION_PORT_ERROR);
-							message.addParameters(new Object[] { alias });
-							response.getMessages().addMesage(message);
-							result.setError(true);
-						}
-					}
-					contadorPortabilidad++;
-				}
-			}
+//			MGR - Refactorizacion del cierre
+			long contadorPortabilidad = verificarFacturaPortabilidad(solicitudServicioDto, result);
 			solicitudServicioDto.setCantLineasPortabilidad(contadorPortabilidad);
 
 			completarDomiciliosSolicitudTransferencia(solicitudServicioDto);
 //			MGR - Parche de emergencia
-			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
-//			MGR - Log informativo, quitar
-			AppLogger.info("Solicitud servicio de id: " + solicitudServicio.getId() + 
-					" es de trasnferencia: " + solicitudServicio.getGrupoSolicitud().isGrupoTransferencia(), this);
+//			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
+			// no es suficiente con mappear del Dto a la entidad sin grabarla?
+			solicitudServicio = solicitudBusinessService.mapperSSDtoToSolicitudServicio(solicitudServicioDto, mapper);
 			
-			String errorNF = "";
-			//larce - Req#5 Cierre y Pass automatico
-			String errorCC = "";
-			int puedeCerrar = 0;
 //			MGR - Parche de emergencia
-			   if (!solicitudServicio.getGrupoSolicitud().isGrupoTransferencia()) {
-				//me fijo si tipo vendedor y orden son configurables por APG.
-			    	puedeCerrar = sonConfigurablesPorAPG(solicitudServicioDto.getLineas());
+			if (!solicitudServicio.getGrupoSolicitud().isGrupoTransferencia()) {
 				
-				    if (puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO) {//pass de creditos segun la logica
-					   errorCC = evaluarEquiposYDeuda(solicitudServicio, pinMaestro);
-					   if ("".equals(errorCC)) {
-						
-						   isVerazDisponible = (repository.executeCustomQuery("isVerazDisponible", "VERAZ_DISPONIBLE"));
-//						   MGR - #3458 - Verifico si corresponde cerrar por Veraz (o Scoring)
-						   cierrePorVeraz = ("".equals(pinMaestro) || pinMaestro == null)
-											&& !solicitudServicio.getSolicitudServicioGeneracion().getScoringChecked();
-						   if (puedeDarPassDeCreditos(solicitudServicio, cierrePorVeraz, isVerazDisponible.get(0))) {
-							
-//							   MGR - #3458
-//							   Si puede dar el pass, pero el veraz esta deshabilitado y el pass se dio por veraz,
-//							   entonces no le doy el pass (y mas adelante, si se cierra ccorrectamente, envio un mail)
-//							   Si el pass se da por Scoring, sigue su curso normal
-							      if(cierrePorVeraz && !"T".equals(isVerazDisponible.get(0))){
-								  //En caso de que el veraz no este disponible, de cumplir con las condiciones comerciales se cierra 
-								  //la SS quedando pendiente de aprobacion en vantive y se envia un mail informando la situacion
-								     solicitudServicio.setPassCreditos(false);
-//								  MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
-//								  solicitudBusinessService.enviarMailPassCreditos(solicitudServicioDto.getNumero());
-							      }else{//MGR - #3463
-							    	  //passCreditos puede ser true sólo para cerrar.
-							    	  if(cerrar)
-								         solicitudServicio.setPassCreditos(true);
-							      }
-							
-						   } else {
-							      solicitudServicio.setPassCreditos(false);
-							      if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
-								     errorCC = generarErrorPorCC(solicitudServicio, pinMaestro);
-								
-						    	/* MGR - 04/07/2012
-						    	 * Al verificar si las lineas cumplen con las condiciones comerciales, la cantidad de equipos y la cantidad de pesos
-						    	 * de todas las lineas se suman y se evalua que todas las lineas cumplan con esas restriciones, por lo que puede suceder
-						    	 * que una Solicitud de Servicio no cumpla con las condiciones comerciales, pero que al armar el error a mostrar, el mismo
-						    	 * no se genere ya que por separado las lineas si cumplen.
-						    	 * En estos casos, se decidio junto con el usuario que se le otroga el pass a la solicitud de todas formas y que ellos 
-						    	 * asumen el riesgo en estos casos.
-						    	 * (Revisar mail enviado por Marco Rossi el dia 04/07/2012 a Damian Schnaider, Giselle Rivas y Gonzalo Suarez, 
-						    	 * donde confirman esto)
-						    	 */
-								  if(errorCC.equals("") && (cerrar)){
-								      AppLogger.info("#Log Cierre y pass - La SS con cumple con las CC pero el mensaje de error se encuentra vacio. Damos el pass de todas formas.", this);
-									  solicitudServicio.setPassCreditos(true);
-								  }
+//				MGR - Refactorizacion del cierre
+				resultadoCierre = comprobarCierreYPassAutomatico(solicitudServicio, pinMaestro, result);
 
-							    }
-						}
-					  }
-				  }
-			  }
 				//larce - Req#9 Negative Files
 				if(solicitudServicio.getVendedor().getTipoVendedor().isEjecutaNegFiles()){
-					errorNF = verificarNegativeFilesPorLinea(solicitudServicio.getLineas());
-				}
-				
-				if (!"".equals(errorNF)) {
-					hayError = true;
-					Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.CUSTOM_ERROR);
-					message.addParameters(new Object[] { errorNF });
-					response.getMessages().addMesage(message);
-					result.setError(true);
-				}
-				if (puedeCerrar == SolicitudBusinessService.LINEAS_NO_CUMPLEN_CC) {
-					hayError = true;
-					response.getMessages().addMesage((Message) this.messageRetriever.getObject(MessageIdentifier.TIPO_ORDEN_INCOMPATIBLE));
-					result.setError(true);
-				} else if (!"".equals(errorCC)) {
-					hayError = true;
-					Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.CUSTOM_ERROR);
-					message.addParameters(new Object[] { errorCC });
-					response.getMessages().addMesage(message);
-					result.setError(true);
-				}
-			
-			
-			if(!hayError && puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO){
-				
-				//LF - #3139 - Validacion de SIM repetidos
-				List<String> listaAlias = listaAliasSimRepetidos(solicitudServicio.getLineas());
-				if(!listaAlias.isEmpty()) {
-				    String mensaje = "";
-					if(listaAlias.size() > 1) {
-						String alias = "";
-			            for (Iterator iterator = listaAlias.iterator(); iterator.hasNext();) {
-			    			String aliasAux = (String) iterator.next();
-			    		    alias = alias + aliasAux + " ,";				
-			    		}	
-			            alias = alias.substring(0, alias.length() - 1);
-			            mensaje = " las líneas " + alias + "ya fueron utilizados ";
-			    	} else {
-			    		mensaje  = " la línea " + listaAlias.get(0) + " ya fue utilizado ";
-			    	}
-		            Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.SIM_REPETIDO);
-		            message.addParameters(new Object[] {mensaje});
-		            response.getMessages().addMesage(message);
-					hayError = true;
-				    result.setError(true);
-				} else { // Si el SIM no se carga en otra solicitud, verifica que este disponible en AVALON
-					for (Iterator iterator = solicitudServicio.getLineas().iterator(); iterator.hasNext();) {
-						LineaSolicitudServicio lineaSS = (LineaSolicitudServicio) iterator.next();
-						String nroSIM = lineaSS.getNumeroSimcard();
-						if(nroSIM != null) {
-							AppLogger.info("##Log Cierre y pass - Verificando que el numero de SIM '"+ nroSIM +"' se encuentre disponible en AVALON");
-							String estadoSim = this.getEstadoSim(nroSIM);
-							if(!estadoSim.equals(SIM_DISPONIBLE)) {
-								AppLogger.info("##Log Cierre y pass - El numero de SIM '"+ nroSIM +"' de la linea " + lineaSS.getId() + " NO se encuentra disponible en AVALON");
-								Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.SIM_NO_DISPONIBLE);
-						        message.addParameters(new Object[] {nroSIM, lineaSS.getAlias()}); //#3139 Nota
-						        response.getMessages().addMesage(message);
-								hayError = true;
-								result.setError(true);
-							} else {
-								AppLogger.info("##Log Cierre y pass - El numero de SIM '"+ lineaSS.getNumeroSimcard() +"' se encuentra disponible");
-							}
-						}
+					String errorNF = verificarNegativeFilesPorLinea(solicitudServicio.getLineas());
+					
+//					MGR - Refactorizacion del cierre
+					if (!"".equals(errorNF)) {
+						Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.CUSTOM_ERROR);
+						message.addParameters(new Object[] { errorNF });
+						response.getMessages().addMesage(message);
+						result.setError(true);
 					}
 				}
 			}
+			
+//			MGR - Refactorizacion del cierre
+			if(!result.isError() && resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO){
+				
+//				MGR - Refactorizacion del cierre
+				validarSIMRepetidos(solicitudServicio, result);
+			}
 
-			solicitudServicio = solicitudBusinessService.saveSolicituServicio(solicitudServicio);
+			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicio);
 
-			//MGR - #3123 - Si ninguno no fallo por alguna de las validaciones anteriores
-			if(!hayError){
+			//MGR - #3123 - Si ninguno fallo por alguna de las validaciones anteriores
+//			MGR - Refactorizacion del cierre
+			if(!result.isError()){
 				
-				//LT - Sólo se deben setear los datos del vendedor cuando es cierre
-				if(cerrar){
-					//LF - #3109 - Registro el vendedor logueado que realiza el cierre
-//					MGR - #3460 - Se pide registrar el nombre y el id del vendedor
-					String userName = sessionContextLoader.getVendedor().getUserName();
-					List<Long> listRegistroVend = repository.executeCustomQuery(GET_ID_REGISTRO_VENDEDOR, userName);
+				//LF - #3109 - Registro el vendedor logueado que realiza el cierre
+//				MGR - #3460 - Se pide registrar el nombre y el id del vendedor
+				String userName = sessionContextLoader.getVendedor().getUserName();
+				List<Long> listRegistroVend = repository.executeCustomQuery(GET_ID_REGISTRO_VENDEDOR, userName);
 				
-					Long idRegistroVendedor = 0l;
-					if(!listRegistroVend.isEmpty())
-						idRegistroVendedor = listRegistroVend.get(0);
+				Long idRegistroVendedor = 0l;
+				if(!listRegistroVend.isEmpty())
+					idRegistroVendedor = listRegistroVend.get(0);
 				
-					solicitudServicio.setIdRegistroVendedor(idRegistroVendedor);
-					solicitudServicio.setNombreRegistroVendedor(userName);
-				}
+				solicitudServicio.setIdRegistroVendedor(idRegistroVendedor);
+				solicitudServicio.setNombreRegistroVendedor(userName);
+			
 //				MGR - Se mueve la creacion de la cuenta. Debo recordar si es prospect antes de enviar a cerrar
 //				JPP - 0003641: N-IM003607979 - Cierre y Pass Automatico. No genera automaticamente Caratula para anexo , reingreso. 
 //				eraProspect solo se usaba para la condicion que se modifico (ver informacion del ticket #3641 del mantis)
 //				boolean eraProspect = !solicitudServicio.getCuenta().isCliente();
-				response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, puedeCerrar);
+//				MGR - Refactorizacion del cierre
+				response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, resultadoCierre.getPuedeCerrar());
 				
 				result.setError(response.getMessages().hasErrors());
 								
 //				MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
 //				MGR - #3458 - Y si el cierre fue por veraz
-				if (!result.isError() && puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO &&
-						cerrar && !"T".equals(isVerazDisponible.get(0)) && cierrePorVeraz) {
+//				MGR - Refactorizacion del cierre
+				if (!result.isError() && resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO &&
+						cerrar && !"T".equals(resultadoCierre.getIsVerazDisponible()) && resultadoCierre.isCierrePorVeraz()) {
 					solicitudBusinessService.enviarMailPassCreditos(solicitudServicio.getNumero());
 				}
 				
@@ -1232,7 +1129,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				
 				
 				
-				if (!result.isError() && solicitudServicio.getCuenta().isTransferido() && puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO && cerrar) {
+				if (!result.isError() && solicitudServicio.getCuenta().isTransferido() && resultadoCierre.getPuedeCerrar() == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO && cerrar) {
 					
 						/*
 						 * JPP - #3641 - N-IM003607979 - Cierre y Pass Automatico. No genera automaticamente Caratula para anexo , reingreso.
@@ -1280,6 +1177,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				}
 			}
 			
+//			MGR - Remito - Seteo el nombre del remito
+			result.setRemitoRtfFileName(response.getRtfFileNameRemito());
+			
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
@@ -1288,6 +1188,158 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		return result;
 	}
 
+//	MGR - Refactorizacion del cierre
+	private long verificarFacturaPortabilidad(SolicitudServicioDto solicitudServicioDto, GeneracionCierreResultDto result){
+		long contadorPortabilidad = 0;
+		for (LineaSolicitudServicioDto linea : solicitudServicioDto.getLineas()) {
+			if(linea.getPortabilidad() != null) {
+				if(linea.getPortabilidad().getFechaUltFactura() != null) {
+					long dias = DateUtils.getInstance()
+								.getDistanceInDays(DateUtils.getInstance().getCurrentDate(), linea.getPortabilidad().getFechaUltFactura());
+					if(dias > 30) {
+						String alias = linea.getAlias();
+						Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.FECHA_EMISION_PORT_ERROR);
+						message.addParameters(new Object[] { alias });
+						result.addMessage(message.getDescription());
+						result.setError(true);
+					}
+				}
+				contadorPortabilidad++;
+			}
+		}
+		
+		return contadorPortabilidad;
+	}
+	
+
+//	MGR - Refactorizacion del cierre
+	private CierreYPassResult comprobarCierreYPassAutomatico(SolicitudServicio solicitudServicio, 
+			String pinMaestro, GeneracionCierreResultDto result) throws Exception{
+		CierreYPassResult resultado = new CierreYPassResult();
+		
+		//larce - Req#5 Cierre y Pass automatico
+		boolean cierrePorVeraz = false;
+		String errorCC = "";
+		int puedeCerrar = 0;
+		List<String> isVerazDisponible;
+		
+		if (!solicitudServicio.getGrupoSolicitud().isGrupoTransferencia()) {
+			//me fijo si tipo vendedor y orden son configurables por APG.
+			List<LineaSolicitudServicio> lineas = new ArrayList<LineaSolicitudServicio>(solicitudServicio.getLineas());
+			puedeCerrar = solicitudBusinessService.sonConfigurablesPorAPG(lineas);
+			resultado.setPuedeCerrar(puedeCerrar);
+			
+			if (puedeCerrar == CierreYPassResult.CIERRE_PASS_AUTOMATICO) {//pass de creditos segun la logica
+				errorCC = evaluarEquiposYDeuda(solicitudServicio, pinMaestro);
+				if ("".equals(errorCC)) {
+					
+					isVerazDisponible = (repository.executeCustomQuery("isVerazDisponible", "VERAZ_DISPONIBLE"));
+					resultado.setIsVerazDisponible(isVerazDisponible.get(0));
+					
+//					MGR - #3458 - Verifico si corresponde cerrar por Veraz (o Scoring)
+					cierrePorVeraz = ("".equals(pinMaestro) || pinMaestro == null)
+										&& !solicitudServicio.getSolicitudServicioGeneracion().getScoringChecked();
+					resultado.setCierrePorVeraz(cierrePorVeraz);
+					
+					if (puedeDarPassDeCreditos(solicitudServicio, cierrePorVeraz, isVerazDisponible.get(0))) {
+						
+//						MGR - #3458
+//						Si puede dar el pass, pero el veraz esta deshabilitado y el pass se dio por veraz,
+//						entonces no le doy el pass (y mas adelante, si se cierra ccorrectamente, envio un mail)
+//						Si el pass se da por Scoring, sigue su curso normal
+						if(cierrePorVeraz && !"T".equals(isVerazDisponible.get(0))){
+							//En caso de que el veraz no este disponible, de cumplir con las condiciones comerciales se cierra 
+							//la SS quedando pendiente de aprobacion en vantive y se envia un mail informando la situacion
+							solicitudServicio.setPassCreditos(false);
+//							MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
+//							solicitudBusinessService.enviarMailPassCreditos(solicitudServicioDto.getNumero());
+						}else{ //MGR - #3463
+							solicitudServicio.setPassCreditos(true);
+						}
+						
+					} else {
+						solicitudServicio.setPassCreditos(false);
+						if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
+							errorCC = generarErrorPorCC(solicitudServicio, pinMaestro);
+							
+					    	/* MGR - 04/07/2012
+					    	 * Al verificar si las lineas cumplen con las condiciones comerciales, la cantidad de equipos y la cantidad de pesos
+					    	 * de todas las lineas se suman y se evalua que todas las lineas cumplan con esas restriciones, por lo que puede suceder
+					    	 * que una Solicitud de Servicio no cumpla con las condiciones comerciales, pero que al armar el error a mostrar, el mismo
+					    	 * no se genere ya que por separado las lineas si cumplen.
+					    	 * En estos casos, se decidio junto con el usuario que se le otroga el pass a la solicitud de todas formas y que ellos 
+					    	 * asumen el riesgo en estos casos.
+					    	 * (Revisar mail enviado por Marco Rossi el dia 04/07/2012 a Damian Schnaider, Giselle Rivas y Gonzalo Suarez, 
+					    	 * donde confirman esto)
+					    	 */
+							if(errorCC.equals("")){
+								AppLogger.info("#Log Cierre y pass - La SS con cumple con las CC pero el mensaje de error se encuentra vacio. Damos el pass de todas formas.", this);
+								solicitudServicio.setPassCreditos(true);
+							}
+
+						}
+					}
+				}
+			}
+		}
+		
+		if (puedeCerrar == CierreYPassResult.LINEAS_NO_CUMPLEN_CC) {
+			Message msg = (Message) this.messageRetriever.getObject(MessageIdentifier.TIPO_ORDEN_INCOMPATIBLE);
+			result.addMessage(msg.getDescription());
+			result.setError(true);
+		} else if (!"".equals(errorCC)) {
+			Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.CUSTOM_ERROR);
+			message.addParameters(new Object[] { errorCC });
+			result.addMessage(message.getDescription());
+			result.setError(true);
+		}
+		
+		return resultado;
+	}
+	
+//	MGR - Refactorizacion del cierre
+	private void validarSIMRepetidos(SolicitudServicio solicitudServicio, GeneracionCierreResultDto result) throws RpcExceptionMessages{
+		
+		//LF - #3139 - Validacion de SIM repetidos
+		List<String> listaAlias = listaAliasSimRepetidos(solicitudServicio.getLineas());
+		if(!listaAlias.isEmpty()) {
+		    String mensaje = "";
+			if(listaAlias.size() > 1) {
+				String alias = "";
+	            for (Iterator iterator = listaAlias.iterator(); iterator.hasNext();) {
+	    			String aliasAux = (String) iterator.next();
+	    		    alias = alias + aliasAux + " ,";				
+	    		}	
+	            alias = alias.substring(0, alias.length() - 1);
+	            mensaje = " las líneas " + alias + "ya fueron utilizados ";
+	    	} else {
+	    		mensaje  = " la línea " + listaAlias.get(0) + " ya fue utilizado ";
+	    	}
+            Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.SIM_REPETIDO);
+            message.addParameters(new Object[] {mensaje});
+            result.addMessage(message.getDescription());
+            result.setError(true);
+		} else { // Si el SIM no se carga en otra solicitud, verifica que este disponible en AVALON
+			for (Iterator iterator = solicitudServicio.getLineas().iterator(); iterator.hasNext();) {
+				LineaSolicitudServicio lineaSS = (LineaSolicitudServicio) iterator.next();
+				String nroSIM = lineaSS.getNumeroSimcard();
+				if(StringUtils.isNotBlank(nroSIM)) {
+					AppLogger.info("##Log Cierre y pass - Verificando que el numero de SIM '"+ nroSIM +"' se encuentre disponible en AVALON");
+					String estadoSim = this.getEstadoSim(nroSIM);
+					if(!estadoSim.equals(SIM_DISPONIBLE)) {
+						AppLogger.info("##Log Cierre y pass - El numero de SIM '"+ nroSIM +"' de la linea " + lineaSS.getId() + " NO se encuentra disponible en AVALON");
+						Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.SIM_NO_DISPONIBLE);
+				        message.addParameters(new Object[] {nroSIM, lineaSS.getAlias()}); //#3139 Nota
+				        result.addMessage(message.getDescription());
+						result.setError(true);
+					} else {
+						AppLogger.info("##Log Cierre y pass - El numero de SIM '"+ lineaSS.getNumeroSimcard() +"' se encuentra disponible");
+					}
+				}
+			}
+		}
+	}
+	
 	private void completarDomiciliosSolicitudTransferencia(SolicitudServicioDto solicitudServicioDto) {
 //		MGR - Log informativo, quitar
 		AppLogger.info("Solicitud servicio de id: " + solicitudServicioDto.getId() + 
@@ -1472,7 +1524,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		}
 		return true;
 	}
-
+	
 	public List<PlanDto> getPlanesPorTipoPlan(Long idTipoPlan, Long idCuenta) throws RpcExceptionMessages {
 		List planes = null;
 		planes = solicitudServicioRepository.getPlanesPorTipoPlan(idTipoPlan, idCuenta, sessionContextLoader.getVendedor());
@@ -1500,8 +1552,21 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 			//el resto de las validaciones
 			SolicitudServicio solicitudSaved = solicitudBusinessService.saveSolicitudServicio(
 					solicitudServicioDto, mapper);
-			SolicitudServicioDto solicitudDto = mapper.map(solicitudSaved, SolicitudServicioDto.class);
-
+			Vendedor vendedor = sessionContextLoader.getSessionContext().getVendedor();
+			
+//			MGR - Validacion SIM_IMEI
+			CreateSaveSSResponse response = solicitudBusinessService.validarPredicadosGuardarSS(solicitudSaved, vendedor);
+			resultDto.setError(response.getMessages().hasErrors());
+			resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
+			
+			solicitudServicioDto = mapper.map(response.getSolicitudServicio(), SolicitudServicioDto.class);
+			
+			//larce
+//			//larce - Comentado para salir solo con cierre
+//			if (vendedor.isADMCreditos()) {
+//				solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,true);
+//			}
+			
 			if (solicitudServicioDto.getId() != null) {
 				if (solicitudServicioDto.getHistorialEstados() != null) {
 					if(solicitudServicioDto.getHistorialEstados().size() > 0){
@@ -1512,18 +1577,8 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 				}
 			}
 			
-			resultDto.setSolicitud(solicitudDto);
-
-			Vendedor vendedor = sessionContextLoader.getSessionContext().getVendedor();
-			if (vendedor.isADMCreditos()) {
-				//Valida los predicados y el triptico
-				CreateSaveSSResponse response = solicitudBusinessService.validarPredicadosGuardarSS(solicitudSaved);
-				resultDto.setError(response.getMessages().hasErrors());
-				resultDto.setMessages(mapper.convertList(response.getMessages().getMessages(), MessageDto.class));
-				//larce
-				//larce - Comentado para salir solo con cierre
-//				solicitudBusinessService.transferirCuentaEHistorico(solicitudServicioDto,true);
-			}
+			resultDto.setSolicitud(solicitudServicioDto);
+			
 		} catch (Exception e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
@@ -2513,9 +2568,9 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 	public boolean validarLineasPorSegmento(SolicitudServicioDto solicitud) throws RpcExceptionMessages {
 		
 		ArrayList<Boolean> resultadoValidacion = new ArrayList<Boolean>();
-
+		
 //		MGR - Parche de emergencia
-		Vendedor vend = repository.retrieve(Vendedor.class, solicitud.getUsuarioCreacion().getId());
+		Vendedor vend = repository.retrieve(Vendedor.class, solicitud.getVendedor().getId());
 		Long idTipoVendedor = vend.getTipoVendedor().getId();
 		
 		Long idSegmento = 0l;
@@ -2658,7 +2713,7 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		List<String> alias = new ArrayList<String>();
 		for (Iterator iterator = lineas.iterator(); iterator.hasNext();) {
 			LineaSolicitudServicio lineaSS = (LineaSolicitudServicio) iterator.next();
-			if(lineaSS.getNumeroSimcard() != null) {
+			if(StringUtils.isNotBlank(lineaSS.getNumeroSimcard())) {
 				AppLogger.info("##Log Cierre y pass - Verificando si el numero de SIM " + lineaSS.getNumeroSimcard() + " de la linea " + lineaSS.getId() + " ya se encuentra cargada en otra solicitud");
 				String cantidadSims = (String) repository.executeCustomQuery("SIM_REPETIDO", lineaSS.getNumeroSimcard()).get(0);
 				if(Integer.parseInt(cantidadSims) > 0) {
@@ -3041,6 +3096,11 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
         return null;
 	}
 
+	public List<String> validarSIM_IMEI(SolicitudServicioDto solicitudDTO)throws RpcExceptionMessages{
+		SolicitudServicio solicitud = this.solicitudBusinessService.mapperSSDtoToSolicitudServicio(solicitudDTO,this.mapper);
+		return solicitudBusinessService.validarSIM_IMEI(solicitud);
+	}
+
 //	MGR - RQN 2328
 	public boolean validarAreaBilling(String numeroAPortar) throws RpcExceptionMessages {
 		try {
@@ -3072,4 +3132,98 @@ public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitu
 		RO, //ROSAR
 		ZZ; //SIN AREA
 	}
+	
+//	MGR - Facturacion
+	public FacturacionResultDto facturarSolicitudServicio(SolicitudServicioDto solicitudServicioDto){
+//		MGR - Verificar si hace falta if (solicitudServicioDTO.getUsuario().isVendedorSalon()){
+		FacturacionResultDto result = new FacturacionResultDto();
+		boolean facturar = false;
+		Vendedor vendedor = repository.retrieve(Vendedor.class, solicitudServicioDto.getUsuarioCreacion().getId());
+		SolicitudServicio solServ = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
+		
+//		MGR - Si es prospect, primero creo la cuenta y si todo va bien, entonces facturo
+		if (solServ.getCuenta().isProspectEnCarga() || solServ.getCuenta().isProspect()) {
+			Long crearCliente = solicitudBusinessService.crearCliente(solServ);
+			
+			if(crearCliente == 0L){//Se creo la cuenta con exito
+				facturar = true;
+			}else{
+				result.setError(true);
+				result.addMessage("Hubo un problema al crear al cliente, no se realizó la facturación.");
+			}
+		}else{
+			facturar = true;
+		}
+			
+		if(facturar){
+			facturacionSolServicioService.facturar(solServ,vendedor);
+		}
+		
+		solServ = repository.retrieve(SolicitudServicio.class, solServ.getId());
+		result.setSolicitud(mapper.map(solServ, SolicitudServicioDto.class));
+		return result;
+	}
+	
+//	MGR - Verificar Pago
+	/**
+	 * Verificar Pago de una factura.
+	 * @param solicitudServicioDTO
+	 */
+	public FacturaDto verificarPagoFacturaSolicitudServicio(SolicitudServicioDto solicitudServicioDto){
+		try {
+			SolicitudServicio solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
+			Factura factura = solicitudServicio.getFactura();
+			this.facturacionSolServicioService.verificarPago(factura);
+			return mapper.map(factura, FacturaDto.class);
+			
+		} catch (Exception e) {
+			log.error(e, e);
+			throw new RuntimeException(e);
+		}
+	}
+	
+//	MGR - Validaciones previas a la facturacion
+	public List<MessageDto> validarParaFacturar(SolicitudServicioDto solicitudServicioDto)
+			throws RpcExceptionMessages{
+		List<MessageDto> mensajes = new ArrayList<MessageDto>();
+
+		//MGR - Si bien el objeto no representa la validacion de facturacion
+		//lo utilizo igualmente para realizar las mismas validaciones que al cierre
+		GeneracionCierreResultDto result = new GeneracionCierreResultDto();
+		verificarFacturaPortabilidad(solicitudServicioDto, result);
+		if(result.isError()){
+			return result.getMessages();
+		}
+		
+		try{
+			SolicitudServicio solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicioDto, mapper);
+	
+			if(solicitudServicio.getVendedor().getTipoVendedor().isEjecutaNegFiles()){
+				String errorNF = verificarNegativeFilesPorLinea(solicitudServicio.getLineas());
+				
+				if (!"".equals(errorNF)) {
+					Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.CUSTOM_ERROR);
+					message.addParameters(new Object[] { errorNF });
+					mensajes.add(mapper.map(message, MessageDto.class));
+				}
+			}
+			
+			CierreYPassResult resultadoCierre = comprobarCierreYPassAutomatico(solicitudServicio, null, result);
+			if(!result.isError() && resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO){
+				validarSIMRepetidos(solicitudServicio, result);
+			}
+			
+			if(result.isError()){
+				mensajes.addAll(result.getMessages());
+			}else{
+				List<Message> mens = solicitudBusinessService.validarParaFacturar(solicitudServicio, resultadoCierre.getPuedeCerrar());
+				mensajes.addAll(mapper.convertList(mens, MessageDto.class));
+			}
+		} catch (Exception e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+		return mensajes;
+	}
 }
+

@@ -1,5 +1,6 @@
 package ar.com.nextel.sfa.client.ss;
 
+import ar.com.nextel.model.solicitudes.beans.IMEI;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 
@@ -8,6 +9,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -28,13 +30,16 @@ public class ItemYPlanSolicitudUI extends Composite {
 	private FlexTable cppAliasReservaTable;
 	//MGR - #1039 - Necesito poder identificar la tabla para poder ocultarla
 	private Grid table;
-
+	private EditarSSUIController controller;
+	private FlexTable imeiSimRetiroEnSucursal;
+	
 	public ItemYPlanSolicitudUI(SoloItemSolicitudUI soloItemSolicitudUI,
-			ItemSolicitudUIData itemSolicitudUIData) {
+			ItemSolicitudUIData itemSolicitudUIData,EditarSSUIController controller) {
 		this.soloItemSolicitudUI = soloItemSolicitudUI;
 		mainPanel = new FlowPanel();
 		this.itemSolicitudUIData = itemSolicitudUIData;
 		initWidget(mainPanel);
+		this.controller = controller;
 		initItemSolicitudAMBAUI();
 	}
 
@@ -79,7 +84,7 @@ public class ItemYPlanSolicitudUI extends Composite {
 		cppAliasReservaTable.setHTML(1, 0, Sfa.constant().reservarN());
 		cppAliasReservaTable.setWidget(1, 1, getReservaPanel());
 		mainPanel.add(cppAliasReservaTable);
-		
+			
 		roamingTable = new Grid(1, 7);
 		roamingTable.addStyleName("layout ml10");
 		roamingTable.getCellFormatter().setWidth(0, 0, "100px");
@@ -185,4 +190,10 @@ public class ItemYPlanSolicitudUI extends Composite {
 		roamingTable.setVisible(true);
 		return this;
 	}
+
+	public FlexTable getImeiSimRetiroEnSucursal() {
+		return imeiSimRetiroEnSucursal;
+	}
+	
+	
 }

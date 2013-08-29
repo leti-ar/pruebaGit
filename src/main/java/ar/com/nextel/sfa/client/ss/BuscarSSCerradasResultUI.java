@@ -435,7 +435,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler{
 //					}
 //				}
 //			} else {
-				if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() >= 1)) {
+				if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() >= 1) && solicitud.getRemito() == null) {
 					mostrarTablaDetalleSolicitudServicio();
 				} else if ((cell.getRowIndex() >= 1) && (cell.getCellIndex() == 0)) {
 //					MGR - #3423 - Para que se muestre el pop-up que lista los archivos disponibles
@@ -582,7 +582,7 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler{
 		for (Iterator iterator = solicitudesServicioCerradaResultDto.iterator(); iterator.hasNext();) {
 			SolicitudServicioCerradaResultDto solicitudServicioDto = (SolicitudServicioCerradaResultDto) iterator
 					.next();
-			if (solicitudServicioDto.getIdSolicitudServicio().equals(idSS)) {
+			if (solicitudServicioDto.getSolicitudServicio().getId().equals(idSS)) {
 				return solicitudServicioDto;
 			}
 		}
@@ -635,17 +635,15 @@ public class BuscarSSCerradasResultUI extends FlowPanel implements ClickHandler{
 	
 	/**
 	 * Metodo que calcula a travez de las lineas de SS, la cantidad de equipos que posee.
-	 * Esto se calcula si el classIndicator es EQUIPO o SERVICIO y si el sim es 'T'.
+	 * Esto se calcula si es EQUIPO,SERVICIO y si es Sim.
 	 * @param lineaSS
 	 * @return int 
 	 */
 	public Long calcularCantEquipos(List<LineaSolicitudServicioDto> lineaSS){
 		Long cantEquipos = new Long(0);
-		for (Iterator iterator = lineaSS.iterator(); iterator.hasNext();) {
-			LineaSolicitudServicioDto lineaSolicitudServicioDto = (LineaSolicitudServicioDto) iterator.next();
-			String sim = lineaSolicitudServicioDto.getItem().getEsSim();
-			String classIndicator = lineaSolicitudServicioDto.getItem().getClassIndicator();
-			if(sim.equals("T") || classIndicator.equals("EQUIPO") || classIndicator.equals("SERVICIO")) {
+		for (Iterator<LineaSolicitudServicioDto> iterator = lineaSS.iterator(); iterator.hasNext();) {
+			LineaSolicitudServicioDto lineaSolicitudServicioDto = iterator.next();
+			if(lineaSolicitudServicioDto.getItem().getEsSim() || lineaSolicitudServicioDto.getItem().isEquipo() || lineaSolicitudServicioDto.getItem().isServicio()) {
 				cantEquipos++;
 			}
 		}

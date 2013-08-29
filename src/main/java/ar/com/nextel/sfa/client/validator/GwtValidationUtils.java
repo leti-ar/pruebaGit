@@ -23,6 +23,10 @@ public class GwtValidationUtils {
 		return obj != null;
 	}
 
+	public static boolean validateNotEmpty(String text) {
+		return validateRequired(text);
+	}
+
 	public static boolean validateEmpty(String text) {
 		return !validateRequired(text);
 	}

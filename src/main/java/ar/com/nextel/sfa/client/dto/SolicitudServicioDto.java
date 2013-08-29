@@ -36,7 +36,7 @@ public class SolicitudServicioDto implements IsSerializable {
 	private Double montoDisponible; // cuenta.estadoCreditoFidelizacion.monto
 	private Long channelCode;
 	private Double pataconex;
-
+    private Boolean retiraEnSucursal= Boolean.FALSE;
 	private Boolean firmar = Boolean.FALSE;
 	// private EstadoAprobacionSolicitud estadoActual;
 	private String observaciones;
@@ -92,6 +92,13 @@ public class SolicitudServicioDto implements IsSerializable {
 	
 	private Long cantLineasPortabilidad;
 	private String numeroSSWeb;//Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.	
+	
+//	MGR - Facturacion
+	private FacturaDto factura;
+	private String customerNumberFactura;
+	
+	private RemitoDTO remito;
+	
 	
     public SolicitudServicioDto() {
 		solicitudServicioGeneracion = new SolicitudServicioGeneracionDto();
@@ -575,5 +582,45 @@ public class SolicitudServicioDto implements IsSerializable {
 	public void setNumeroSSWeb(String numeroSSWeb) {
 		this.numeroSSWeb = numeroSSWeb;
 	}		
-		
+
+	public Boolean getRetiraEnSucursal() {
+		return retiraEnSucursal;
+	}
+
+	public void setRetiraEnSucursal(Boolean retiraEnSucursal) {
+		this.retiraEnSucursal = retiraEnSucursal;
+	}
+
+	public FacturaDto getFactura() {
+		return factura;
+	}
+
+	public void setFactura(FacturaDto factura) {
+		this.factura = factura;
+	}
+	public String getCustomerNumberFactura() {
+		return customerNumberFactura;
+	}
+
+	public void setCustomerNumberFactura(String customerNumberFactura) {
+		this.customerNumberFactura = customerNumberFactura;
+	}
+
+	//	MGR - Facturacion	
+	public Boolean isCuentaCorriene(){
+		if(this.lineas.isEmpty())
+        	return false;
+        
+        LineaSolicitudServicioDto linea = this.lineas.get(0);
+        return linea.getTerminoPago().isCuentaCorriente();
+	}
+
+	public RemitoDTO getRemito() {
+		return remito;
+	}
+
+	public void setRemito(RemitoDTO remito) {
+		this.remito = remito;
+	}
+	
 }

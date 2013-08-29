@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.StockRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.debug.DebugConstants;
@@ -22,13 +23,17 @@ import ar.com.nextel.sfa.client.dto.TerminoPagoValidoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefoniaDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.util.FormUtils;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
+import ar.com.nextel.sfa.client.widget.MensajeRegex;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.ModalMessageDialog;
 import ar.com.nextel.sfa.client.widget.UIData;
+import ar.com.nextel.sfa.client.widget.VerificationRegexTextBox;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
@@ -66,7 +71,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private CheckBox ddn;
 	private CheckBox ddi;
 	private CheckBox roaming;
-
+    
 	// portabilidad
 	private CheckBox portabilidad;
 	private PortabilidadUIData portabilidadPanel = new PortabilidadUIData();
@@ -76,10 +81,14 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 
 	private TextBox imei;
+	private MensajeRegex imeiMensajeRegex;
+	private TextBox imeiRetiroEnSucursal;
 	private ListBox modeloEq;
 	private ListBox item;
 	private ListBox terminoPago;
 	private TextBox sim;
+	private MensajeRegex simMensajeRegex;
+	private TextBox simRetiroEnSucursal;
 	private TextBox serie;
 	private TextBox pin;
 	private Button confirmarReserva;
@@ -120,7 +129,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 //	MGR - #3462
 	private boolean activacion = false;
 	private Long idTipoSolicitudBaseActivacion = 0L;
-
+	private static final String LUGAR_DE_LLAMADA_DE_VALIDACION_STOCK="agregarItem";
+	
 	public ItemSolicitudUIData(EditarSSUIController controller) {
 		
 		// Oculta las opciones de portabilidad
@@ -142,10 +152,14 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		fields.add(reservarHidden = new TextBox());
 		fields.add(reservar = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(4)));
 		fields.add(imei = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(15)));
+		this.imeiMensajeRegex = new MensajeRegex(RegularExpressionConstants.getCantidadNumerosFijo(15),Sfa.constant().ERR_LENGHT().replaceAll(v1, "IMEI").replaceAll(v2, "15"));
+		fields.add(imeiRetiroEnSucursal = new VerificationRegexTextBox(RegularExpressionConstants.getNumerosLimitado(15),this.imeiMensajeRegex));
 		fields.add(modeloEq = new ListBox());
 		fields.add(item = new ListBox(" "));
 		fields.add(terminoPago = new ListBox());
 		fields.add(sim = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(15)));
+		this.simMensajeRegex = new MensajeRegex(RegularExpressionConstants.getCantidadNumerosFijo(15),Sfa.constant().ERR_LENGHT().replaceAll(v1, "SIM").replaceAll(v2, "15"));
+		fields.add(simRetiroEnSucursal = new VerificationRegexTextBox(RegularExpressionConstants.getNumerosLimitado(15),simMensajeRegex));
 		fields.add(serie = new RegexTextBox(RegularExpressionConstants.getNumerosYLetrasLimitado(10)));
 		fields.add(pin = new RegexTextBox(RegularExpressionConstants.getNumerosYLetrasLimitado(8)));
 		fields.add(ddn = new CheckBox());
@@ -168,7 +182,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		tipoPlan.setWidth("400px");
 		imei.setWidth("370px");
 		imei.setMaxLength(15);
+		imeiRetiroEnSucursal.setMaxLength(15);
 		sim.setMaxLength(15);
+		simRetiroEnSucursal.setMaxLength(15);
 		serie.setMaxLength(10);
 		pin.setMaxLength(8);
 		modeloEq.setWidth("400px");
@@ -216,6 +232,15 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		verificarSimWrapper.addClickHandler(this);
 		roaming.addClickHandler(this);
 		imei.addChangeListener(this);
+//		imeiRetiroEnSucursal.addBlurHandler(new BlurHandler() {
+//			
+//			public void onBlur(BlurEvent event) {
+//				if (imeiRetiroEnSucursal.getText().length() > 0 && imeiRetiroEnSucursal.getText().length() < 15) {
+//					ErrorDialog.getInstance().show(
+//							Sfa.constant().ERR_LENGHT().replaceAll(v1, "IMEI").replaceAll(v2, "15"), false);
+//				}
+//			}
+//		});
 		
 		initIdsTipoSolicitudBase();
 		
@@ -249,7 +274,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 					portabilidadPanel.loadSolicitudPortabilidad(new SolicitudPortabilidadDto(),true);
 					dialog.center();
 				}
-				
+			
 				ModalMessageDialog.getInstance().hide();
 			}
 		};
@@ -609,19 +634,36 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				
 				if (tipoEdicion == ACTIVACION) {
 					if (is.getItem().getSinModelo()) {
-						sim.setEnabled(false);
-						sim.setReadOnly(true);
-						sim.setText("");
+						this.disableTextBox(sim);
 					} else {
-						sim.setEnabled(true);
-						sim.setReadOnly(false);
+						this.enableTextBox(sim);
+					}
+				// agregado para entrega por sucursal	
+				} else if (controller.getEditarSSUIData().getRetiraEnSucursal().getValue()) {
+					if (tipoEdicion == ITEM_PLAN || tipoEdicion == SOLO_ITEM) {
+						if (is.getItem().isEquipo()) {
+							this.enableTextBox(imeiRetiroEnSucursal);
+							this.enableTextBox(simRetiroEnSucursal);
+							this.disableTextBox(cantidad,"1");
+						} else if (is.getItem().isAccesorio() && is.getItem().getEsSim()) {
+							this.disableTextBox(imeiRetiroEnSucursal);
+							this.enableTextBox(simRetiroEnSucursal);
+							this.disableTextBox(cantidad, "1");
+						} else {
+							this.disableTextBox(imeiRetiroEnSucursal);
+							this.disableTextBox(simRetiroEnSucursal);
+							this.enableTextBox(cantidad);
+						}
 					}
 				}
 			} else {
-				sim.setEnabled(true);
-				sim.setReadOnly(false);
+				this.enableTextBox(sim);
 			}
-
+			if (controller.getEditarSSUIData().getRetiraEnSucursal().getValue() &&
+				item.getSelectedItem()!=null) {
+				//llamar al metodo de validacion de stock
+				validarStock(new Long(item.getSelectedItem().getItemValue()));
+			}
 			refreshTotalLabel();
 		} else if (sender == tipoPlan) {
 			// Cargo los planes correspondientes al tipo de plan seleccionado
@@ -700,6 +742,21 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		}
 	}
 
+	private void disableTextBox(TextBox tb,String defecto) {
+		tb.setText(defecto);
+		tb.setEnabled(false);
+		tb.setReadOnly(true);
+	}
+
+	private void disableTextBox(TextBox tb) {
+		disableTextBox(tb,"");
+	}
+
+	private void enableTextBox(TextBox tb) {
+		tb.setEnabled(true);
+		tb.setReadOnly(false);
+	}
+	
 	private void enableAliasYReserva(boolean enabled) {
 		alias.setEnabled(enabled);
 		alias.setReadOnly(!enabled);
@@ -760,6 +817,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 	public TextBox getCantidad() {
 		return cantidad;
+	}
+	
+	public void setCantidad(String cantidadNueva) {
+		 cantidad.setText(cantidadNueva);
 	}
 
 	public ListBox getTipoOrden() {
@@ -914,6 +975,20 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM"));
 			}
 		}
+		
+		if (controller.getEditarSSUIData().getRetiraEnSucursal().getValue()) {
+			if (imeiRetiroEnSucursal.isEnabled()) {
+				validator.addTarget(imeiRetiroEnSucursal).required(
+						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "IMEI")).regEx(
+						imeiMensajeRegex.getMensaje(),imeiMensajeRegex.getRegexPattern());
+			}
+			if (simRetiroEnSucursal.isEnabled()) {
+				validator.addTarget(simRetiroEnSucursal).required(
+						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM")).regEx(
+						simMensajeRegex.getMensaje(), simMensajeRegex.getRegexPattern());
+			}
+		}
+		
 		return validator.fillResult().getErrors();
 	}
 
@@ -1007,6 +1082,24 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 			sim.setText(linea.getNumeroSimcard());
 		}
+		if (imei.getText()!=null) {
+			imei.setText(linea.getNumeroIMEI());
+			modeloEq.setSelectedItem(linea.getModelo());
+			if (linea.getModelo() != null && linea.getModelo().isEsBlackberry()) {
+				pin.setText(linea.getNumeroSerie());
+			} else {
+				serie.setText(linea.getNumeroSerie());
+			}
+			sim.setText(linea.getNumeroSimcard());
+		}
+		//Desc de Despacho
+		if (imeiRetiroEnSucursal.getText()!=null) {
+			imeiRetiroEnSucursal.setText(linea.getNumeroIMEI());
+		}
+		if (simRetiroEnSucursal.getText()!=null) {
+			simRetiroEnSucursal.setText(linea.getNumeroSimcard());
+		}
+		//Fin de Desc de Despacho
 		
 		// TODO: Portabilidad
 		portabilidadPanel.resetearPortabilidad();
@@ -1125,8 +1218,20 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		// TODO:Portabilidad
 		lineaSolicitudServicio.setPortabilidad(portabilidadPanel.getSolicitudPortabilidad(lineaSolicitudServicio));
 		portabilidadPanel.setSolicitudPortabilidad(null);
-		
+		 
+		//Desc de Despacho, esto se creo para no tocar el compartamiento
+		//de imei y sim que ya existia en la activacion 
+		if(!FormUtils.fieldEmpty(imeiRetiroEnSucursal)){
+			lineaSolicitudServicio.setNumeroIMEI(imeiRetiroEnSucursal.getText());
+		}
+		if(!FormUtils.fieldEmpty(simRetiroEnSucursal)){
+			lineaSolicitudServicio.setNumeroSimcard(simRetiroEnSucursal.getText());
+			
+		}
+//		controller.tieneLineasSolicitud();
+		//Fin de desc de despacho
 		return lineaSolicitudServicio;
+		
 	}
 
 	public void setNombreMovil(String nombreMovil) {
@@ -1254,4 +1359,28 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	public void setIdTipoSolicitudBaseActivacion(Long idTipoSolicitudBaseActivacion) {
 		this.idTipoSolicitudBaseActivacion = idTipoSolicitudBaseActivacion;
 	}
+
+	public TextBox getImeiRetiroEnSucursal() {
+		return imeiRetiroEnSucursal;
+	}
+
+	public TextBox getSimRetiroEnSucursal() {
+		return simRetiroEnSucursal;
+	}
+	
+	public void validarStock(Long idItem){
+		final VendedorDto vendedorDto = ClientContext.getInstance().getVendedor();
+		StockRpcService.Util.getInstance().validarStockDesdeSS(idItem, vendedorDto.getId(),
+				new DefaultWaitCallback<String>() {
+
+					@Override
+					public void success(String result) {
+					    if (!result.equals("")){
+						MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO,
+								result, MessageDialog.getCloseCommand());}
+						
+					}
+				});
+	}
+	
 }

@@ -1855,7 +1855,7 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
    * 
    * @return translated "Prov. Ant."
    */
-  @DefaultStringValue("Prove. Ant.")
+  @DefaultStringValue("Prov. Ant.")
   @Key("provedorAnterior")
   String provedorAnterior();
 
@@ -3349,15 +3349,68 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("buscarSSTitle")
   String buscarSSTitle();
   
-  /**
-   * Translated "<span class=\"req\">Nº SS Web:</span>".
-   * 
-   * @return translated "<span class=\"req\">Nº SS Web:</span>"
-   */
-  @DefaultStringValue("<span class=\"req\">Nº SS Web:</span>")
-  @Key("nroSSWeb")
-  String nroSSWeb();
+  @DefaultStringValue("Validar Stock")
+  @Key("validarStock")
+  String ValidarStock();
+  
+  @DefaultStringValue("Items:")
+  @Key("cantItems")
+  String cantidadItems();
+ 
+  @DefaultStringValue("Debe seleccionar al menos un item.")
+  @Key("ERROR_DEBE_SEL_ITEM")
+  String ERROR_DEBE_SEL_ITEM();
 
+
+  
+  
+  /**
+   * Translated "Configurar Sucursal".
+   * 
+   * @return translated "Configurar Sucursal"
+   */
+  @DefaultStringValue("Configurar Sucursal")
+  @Key("configSucursal")
+  String configurarSucursal();
+  
+  
+  /**
+   * Translated "Sucursal".
+   * 
+   * @return translated "Sucursal"
+   */
+  @DefaultStringValue("Sucursal:")
+  @Key("sucursal")
+  String sucursal();
+  
+  
+  /**
+   * Translated "Debe seleccionar un Documento".
+   * 
+   * @return translated "Debe seleccionar un Documento"
+   */
+  @DefaultStringValue("Debe seleccionar una Sucursal distinta")
+  @Key("ERR_NO_SUCURSAL_SELECTED")
+  String ERR_NO_SUCURSAL_SELECTED();
+  
+  /**
+   * Translated "Se ha guardado la solicitud con éxito.".
+   * 
+   * @return translated "Se ha guardado la solicitud con éxito."
+   */
+  @DefaultStringValue("Se ha guardado la sucursal con éxito.")
+  @Key("MSG_SUCURSAL_GUARDADA_OK")
+  String MSG_SUCURSAL_GUARDADA_OK();
+  
+  
+  /**
+   * Translated "Retira en Sucursal:".
+   * 
+   * @return translated "Retira en Sucursal:"
+   */
+  @DefaultStringValue("Retira en Sucursal:")
+  @Key("retiraEnSucursal")
+  String retiraEnSucursal();
   
 //  MGR - RQN 2328
   /**
@@ -3368,4 +3421,14 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @DefaultStringValue("El teléfono a portar no pertenece a un área habilitada para Nextel")
   @Key("ERR_AREA_BILLING_NO_VALIDA")
   String ERR_AREA_BILLING_NO_VALIDA();
+  
+  
+  /**
+   * Translated "<span class=\"req\">Nº SS Web:</span>".
+   * 
+   * @return translated "<span class=\"req\">Nº SS Web:</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">Nº SS Web:</span>")
+  @Key("nroSSWeb")
+  String nroSSWeb();  
 }

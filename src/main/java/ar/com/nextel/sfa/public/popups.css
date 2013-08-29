@@ -78,7 +78,7 @@ div.popFooter A,div.popFormButtons A {
 }
 
 .gwt-ErrorDialog .errorMessages {
-	text-align: center;
+	text-align: left;
 	margin: 10px;
 }
 
@@ -88,7 +88,7 @@ div.popFooter A,div.popFormButtons A {
 }
 
 .gwt-CustomDialogBox .message {
-	text-align: center;
+	text-align: left;
 	margin: 10px;
 	overflow: auto;
 }

@@ -69,7 +69,6 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		itemSolicitudUIData = new ItemSolicitudUIData(controller);
 		itemSolicitudUIData.setItemSolicitudDialog(this);
 		tipoOrden = itemSolicitudUIData.getTipoOrden();
-
 		tipoSolicitudPanel.setWidget(getItemYPlanSolicitudUI());
 		tipoOrden.addChangeHandler(this);
 
@@ -93,9 +92,12 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		aceptar.addClickListener(this);
 		cerrar.addClickListener(this);
 		
+		initTiposOrden(controller);
+	}
+
+	public void initTiposOrden(EditarSSUIController controller) {
 		controller.getLineasSolicitudServicioInitializer(initTiposOrdenCallback());
 	}
-	
 	
 	/**
 	 * TODO: Portabilidad
@@ -135,7 +137,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		List<String> errorsPortabilidad = new ArrayList<String>();
 		
 		errors.addAll(itemSolicitudUIData.validate());
-		
+
 		if(portabilidadVisible) errorsPortabilidad.addAll(itemSolicitudUIData.getPortabilidadPanel().ejecutarValidacion());
 
 		if (errors.isEmpty()) {
@@ -209,10 +211,12 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		};
 	}
 
-	private DefaultWaitCallback initTiposOrdenCallback() {
+	private DefaultWaitCallback<LineasSolicitudServicioInitializer> initTiposOrdenCallback() {
 		return new DefaultWaitCallback<LineasSolicitudServicioInitializer>() {
 			public void success(LineasSolicitudServicioInitializer initializer) {
 				List<TipoSolicitudDto> tiposSS = new ArrayList<TipoSolicitudDto>();
+				idGrupoSolicitudLoaded = null;
+				tiposSolicitudes.clear();
 				tiposSolicitudesPorGrupo = initializer.getTiposSolicitudPorGrupo();
 				for (Map.Entry<Long, List<TipoSolicitudDto>> tiposSSDeGrupo : tiposSolicitudesPorGrupo
 						.entrySet()) {
@@ -232,6 +236,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	public void onChange(ChangeEvent event) {
 		TipoSolicitudDto tipoSolicitud = (TipoSolicitudDto) tipoOrden.getSelectedItem();
 		itemSolicitudUIData.setActivacionOnline(false);
+		
 		if (tipoSolicitud != null) {
 			if (itemSolicitudUIData.getIdsTipoSolicitudBaseItemYPlan().contains(
 					tipoSolicitud.getTipoSolicitudBase().getId())) {
@@ -259,6 +264,8 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 			} else {
 				tipoSolicitudPanel.clear();
 			}
+			
+//			visualizarIMEI_SIM(tipoSolicitud);
 			loadUIData(tipoSolicitud);
 		}
 	}
@@ -268,8 +275,10 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 //		if (tiposSolicitudes.get(tiposSolicitud.getId()).getListasPrecios() == null) {
 			controller.getListaPrecios(tiposSolicitud, empresa, new DefaultWaitCallback<List<ListaPreciosDto>>() {
 				public void success(List<ListaPreciosDto> listasPrecios) {
-					tiposSolicitudes.get(tiposSolicitud.getId()).setListasPrecios(listasPrecios);
-					itemSolicitudUIData.load(tiposSolicitud.getListasPrecios());
+					if (tiposSolicitudes.get(tiposSolicitud.getId())!= null) {
+						tiposSolicitudes.get(tiposSolicitud.getId()).setListasPrecios(listasPrecios);
+						itemSolicitudUIData.load(tiposSolicitud.getListasPrecios());
+					}
 				};
 			});
 //		} else {
@@ -281,14 +290,14 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		if (soloItemSolicitudUI == null) {
 			soloItemSolicitudUI = new SoloItemSolicitudUI(itemSolicitudUIData);
 		}
-		return soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_CON_TOTAL);
+		return soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_CON_TOTAL,controller);
 	}
 
 	private ItemYPlanSolicitudUI getItemYPlanSolicitudUI() {
 		if (itemYPlanSolicitudUI == null) {
-			itemYPlanSolicitudUI = new ItemYPlanSolicitudUI(getSoloItemSolicitudUI(), itemSolicitudUIData);
+			itemYPlanSolicitudUI = new ItemYPlanSolicitudUI(getSoloItemSolicitudUI(), itemSolicitudUIData,controller);
 		}
-		soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_SIMPLE);
+		soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_SIMPLE, controller);
 		itemYPlanSolicitudUI.load();
 		return itemYPlanSolicitudUI;
 	}
@@ -388,7 +397,6 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	public void setCuentaEmpresa(boolean empresa) {
 		this.empresa = empresa;
 	}
-	
 	
 	//MGR - #1039
 	public static ItemYPlanSolicitudUI obtenerItemYPlanSolicitudUI(){

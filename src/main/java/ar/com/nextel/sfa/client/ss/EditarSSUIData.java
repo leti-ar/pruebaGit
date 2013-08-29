@@ -15,7 +15,6 @@ import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.DomiciliosCuentaDto;
-import ar.com.nextel.sfa.client.dto.EstadoHistoricoDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.EstadoTipoDomicilioDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
@@ -31,10 +30,13 @@ import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudBaseDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
+import ar.com.nextel.sfa.client.event.EventBusUtil;
+import ar.com.nextel.sfa.client.event.RefrescarPantallaSSEvent;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.initializer.InfocomInitializer;
 import ar.com.nextel.sfa.client.util.FormUtils;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
+import ar.com.nextel.sfa.client.validator.GwtValidationUtils;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.UIData;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -44,8 +46,6 @@ import ar.com.snoop.gwt.commons.client.widget.RegexTextBox;
 import ar.com.snoop.gwt.commons.client.widget.datepicker.SimpleDatePicker;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -60,6 +60,7 @@ import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineHTML;
@@ -161,17 +162,17 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private ListBox comentarioAnalista;
 	private TextArea notaAdicional;
 	Label cantEquipos;
-	
-    private List<ComentarioAnalistaDto> comentarioAnalistaMensaje = new ArrayList<ComentarioAnalistaDto>();
+	private List<ComentarioAnalistaDto> comentarioAnalistaMensaje = new ArrayList<ComentarioAnalistaDto>();
     private List<EstadoSolicitudDto> opcionesEstado = new ArrayList<EstadoSolicitudDto>();
-	
+    //finde analisis
+	private CheckBox retiraEnSucursal;
     private RegexTextBox numeroSSWeb; //Mejoras Perfil Telemarketing. REQ#2 - Nro de SS Web en la Solicitud de Servicio.
     
 	public EditarSSUIData(EditarSSUIController controller) {
 		this.controller = controller;
 		serviciosAdicionales = new ArrayList();
 		serviciosAdicionalesContrato = new ArrayList<ServicioAdicionalIncluidoDto>();
-
+        fields.add(retiraEnSucursal= new CheckBox());
 		fields.add(nss = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(10), true));
 		fields.add(nflota = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(5)));
 		fields.add(origen = new ListBox(""));
@@ -336,6 +337,15 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //		}
 		fields.add(numeroSSWeb = new RegexTextBox(RegularExpressionConstants.getCantCaracteres(10), true));
 				
+//		MGR - Facturacion - Necesito saber cuando se presiono el check para evaluar que opciones mostrar
+		retiraEnSucursal.addClickListener(new ClickListener() {
+				public void onClick(Widget arg0) {
+					EventBusUtil.getEventBus().fireEvent(
+							new RefrescarPantallaSSEvent(solicitudServicio, 
+									retiraEnSucursal.getValue()));
+				}
+			});
+		
 		inicializarBusquedaContratos();
 	}
 
@@ -560,8 +570,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 		solicitudServicio = solicitud;
 		nss.setText(solicitud.getNumero());
-		
 	
+		if(solicitud.getGrupoSolicitud().isEquiposAccesorios() && solicitud.getRetiraEnSucursal()!= null){
+			retiraEnSucursal.setValue(solicitud.getRetiraEnSucursal());
+		}
+		
 		//MGR - #1152
 //		MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
 		//Si no es cliente, es prospect o prospect en carga
@@ -656,7 +669,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			}
 			
 		}
-	  
+	 
 		enviarA.setText(textoDeEnvio);
 		titulo.setText("Nro de SS:" + ss + "  Razon Social:" +solicitudServicio.getCuenta().getPersona().getRazonSocial()  );
 		vendedor.setSelectedItem(solicitudServicio.getVendedor());
@@ -691,7 +704,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			numeroSSWeb.setText(solicitud.getNumeroSSWeb());
 		}
 	}
-	
+
 	private void cargarDatosTransferencia(){
 		if(solicitudServicio.getCuentaCedente() != null){
 			clienteCedente.setText(solicitudServicio.getCuentaCedente().getCodigoVantive());
@@ -787,6 +800,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		if (solicitudServicio.getGrupoSolicitud().isCDW()) {
 			solicitudServicio.setEmail(email.getText());
 		}
+		
+		if(solicitudServicio.getGrupoSolicitud().isEquiposAccesorios()){
+			solicitudServicio.setRetiraEnSucursal(retiraEnSucursal.getValue());
+		}
+		
 		//larce
 		//larce - Comentado para salir solo con cierre
 //		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_HISTORICO.getValue())) {
@@ -818,7 +836,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	}
 
 	public List<String> validarParaGuardar() {
-		GwtValidator validator = new GwtValidator();
+		final GwtValidator validator = new GwtValidator();
 		for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
 			validarAlquileresDeLineaSS(validator, linea);
 			validarPortabilidadAdicional(validator, linea);
@@ -885,11 +903,39 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				}
 			}
 		}
+
+		if(existeSIM_IMEIRepetidas(validator)){
+			validator.addError("No puede tener la misma SIM o IMEI en mas de una linea");
+		}
 		
 		validator.fillResult();
 		return validator.getErrors();
 	}
 
+	private boolean existeSIM_IMEIRepetidas(GwtValidator validator) {
+		boolean haySIM_IMEIRepetidas = false;
+		if (solicitudServicio.getRetiraEnSucursal()) {
+			for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
+				int cantIMEI = 0;
+				int cantSIM = 0;
+				if (!haySIM_IMEIRepetidas) {
+					for (LineaSolicitudServicioDto li : solicitudServicio.getLineas()) {
+						if (GwtValidationUtils.validateNotEmpty(linea.getNumeroIMEI()) 
+								&& GwtValidationUtils.validateEquals(linea.getNumeroIMEI(),li.getNumeroIMEI())) {
+							cantIMEI = cantIMEI + 1;
+						}
+						if (GwtValidationUtils.validateNotEmpty(linea.getNumeroSimcard()) 
+								&& GwtValidationUtils.validateEquals(linea.getNumeroSimcard(),li.getNumeroSimcard())) {
+							cantSIM = cantSIM + 1;
+						}
+					}
+					haySIM_IMEIRepetidas = cantIMEI > 1 || cantSIM > 1;
+				}
+			}
+		}
+		return haySIM_IMEIRepetidas;
+	}
+	
 	/**
 	 * @param generacionCierreDefinitivo
 	 *            true si debe validar para la generacion o cierre definitiva de la solicitud, que seria el
@@ -1126,6 +1172,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			}
 		}
 		
+//		MGR - Facturacion
+		EventBusUtil.getEventBus().fireEvent(
+				new RefrescarPantallaSSEvent(solicitudServicio, this.getRetiraEnSucursal().getValue()));
+		
 		return linea.getNumeradorLinea().intValue();
 	}
 
@@ -1175,12 +1225,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		List<ServicioAdicionalLineaSolicitudServicioDto> serviciosAGuardar = getLineasSolicitudServicio().get(indexLinea).getServiciosAdicionales();
 		
 		for (ServicioAdicionalLineaSolicitudServicioDto servicioAd : list) {
-			
-			System.out.println(" ---- " + servicioAd.getDescripcionServicioAdicional());
-			
 			if (servicioAd.isChecked() && !serviciosAGuardar.contains(servicioAd)) {
-				
-				System.out.println(" SI ---- " + servicioAd.getDescripcionServicioAdicional());
 				serviciosAGuardar.add(servicioAd);
 			}
 		}
@@ -1283,15 +1328,31 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	}
 
 	public boolean isCDW() {
-		return solicitudServicio.getGrupoSolicitud().isCDW();
+		if (solicitudServicio != null && solicitudServicio.getGrupoSolicitud() != null) {
+			return solicitudServicio.getGrupoSolicitud().isCDW();
+		}
+		return false;
+	}
+	
+	public boolean isEquiposAccesorios(){
+		if (solicitudServicio != null && solicitudServicio.getGrupoSolicitud() != null) {
+			return solicitudServicio.getGrupoSolicitud().isEquiposAccesorios();
+		}
+		return false;
 	}
 
 	public boolean isMDS() {
-		return solicitudServicio.getGrupoSolicitud().isMDS();
+		if (solicitudServicio != null && solicitudServicio.getGrupoSolicitud() != null) {
+			return solicitudServicio.getGrupoSolicitud().isMDS();
+		}
+		return false;
 	}
 	
 	public boolean isTRANSFERENCIA() {
-		return solicitudServicio.getGrupoSolicitud().isTransferencia();
+		if (solicitudServicio != null && solicitudServicio.getGrupoSolicitud() != null) {
+		    return solicitudServicio.getGrupoSolicitud().isTransferencia();
+		}
+		return false;
 	}
 
 	/** Indica si contiene lineas de solicitud con item BlackBerry */
@@ -1581,6 +1642,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				getCuenta().isEmpresa(), isSaving, defaultWaitCallback);
 	}
 	
+//	public void validarStockAgregarItem(final DefaultWaitCallback<List<String>> defaultWaitCallback, boolean isSaving){
+//		SolicitudRpcService.Util.getInstance().validarSIM_IMEI(solicitudServicio, defaultWaitCallback);
+//	}
+	
 	//MGR - #1415
 	public Long getIdSolicitudServicio(){
 		if(solicitudServicio != null){
@@ -1778,6 +1843,14 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	public void setEnviar(CheckBox enviar) {
 		this.enviar = enviar;
+	}
+
+	public CheckBox getRetiraEnSucursal() {
+		return retiraEnSucursal;
+	}
+
+	public void setRetiraEnSucursal(CheckBox retiraEnSucursal) {
+		this.retiraEnSucursal = retiraEnSucursal;
 	}
 
 	public RegexTextBox getNumeroSSWeb() {
