@@ -138,8 +138,11 @@ public class SolicitudBusinessService {
 	private KnownInstanceRetriever knownInstanceRetriever;
 	private InsertUpdateCuentaConfig insertUpdateCuentaConfig;
 	private CaratulaTransferidaConfig caratulaTransferidaConfig;
-	
 	private DespachoSolicitudBusinessOperator despachoSolicitudBusinessOperator;
+	
+	@Qualifier("serviceImpl")
+	private FlotaService flotaService;
+	
 	
 //	MGR - Se mueve la creacion de la cuenta
 	private String MENSAJE_ERROR_CREAR_CUENTA= "La SS % quedó pendiente de aprobación, por favor verificar y dar curso manual.";

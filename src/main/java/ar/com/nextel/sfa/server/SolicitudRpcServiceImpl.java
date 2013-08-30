@@ -1055,7 +1055,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			solicitudServicio = solicitudBusinessService.mapperSSDtoToSolicitudServicio(solicitudServicioDto, mapper);
 			
 //			MGR - Parche de emergencia
-			   if (!solicitudServicio.getGrupoSolicitud().isGrupoTransferencia()) {
+			if (!solicitudServicio.getGrupoSolicitud().isGrupoTransferencia()) {
 				
 //				MGR - Refactorizacion del cierre
 				resultadoCierre = comprobarCierreYPassAutomatico(solicitudServicio, pinMaestro, pinChequeadoEnNexus, result);
@@ -1072,7 +1072,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 						result.setError(true);
 					}
 				}
-			
+			}			
 			
 //			MGR - Refactorizacion del cierre
 			if(!result.isError() && resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO){
