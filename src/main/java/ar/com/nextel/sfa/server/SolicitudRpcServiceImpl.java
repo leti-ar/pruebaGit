@@ -1055,7 +1055,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			solicitudServicio = solicitudBusinessService.mapperSSDtoToSolicitudServicio(solicitudServicioDto, mapper);
 			
 //			MGR - Parche de emergencia
-			if (!solicitudServicio.getGrupoSolicitud().isGrupoTransferencia()) {
+			   if (!solicitudServicio.getGrupoSolicitud().isGrupoTransferencia()) {
 				
 //				MGR - Refactorizacion del cierre
 				resultadoCierre = comprobarCierreYPassAutomatico(solicitudServicio, pinMaestro, pinChequeadoEnNexus, result);
@@ -1072,7 +1072,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 						result.setError(true);
 					}
 				}
-			}
+			
 			
 //			MGR - Refactorizacion del cierre
 			if(!result.isError() && resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO){
@@ -1087,18 +1087,20 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 //			MGR - Refactorizacion del cierre
 			if(!result.isError()){
 				
-				//LF - #3109 - Registro el vendedor logueado que realiza el cierre
-//				MGR - #3460 - Se pide registrar el nombre y el id del vendedor
-				String userName = sessionContextLoader.getVendedor().getUserName();
-				List<Long> listRegistroVend = repository.executeCustomQuery(GET_ID_REGISTRO_VENDEDOR, userName);
+				//LT - Sólo se deben setear los datos del vendedor cuando es cierre
+				if(cerrar){
+					//LF - #3109 - Registro el vendedor logueado que realiza el cierre
+//					MGR - #3460 - Se pide registrar el nombre y el id del vendedor
+					String userName = sessionContextLoader.getVendedor().getUserName();
+					List<Long> listRegistroVend = repository.executeCustomQuery(GET_ID_REGISTRO_VENDEDOR, userName);
 				
-				Long idRegistroVendedor = 0l;
-				if(!listRegistroVend.isEmpty())
-					idRegistroVendedor = listRegistroVend.get(0);
+					Long idRegistroVendedor = 0l;
+					if(!listRegistroVend.isEmpty())
+						idRegistroVendedor = listRegistroVend.get(0);
 				
-				solicitudServicio.setIdRegistroVendedor(idRegistroVendedor);
-				solicitudServicio.setNombreRegistroVendedor(userName);
-			
+					solicitudServicio.setIdRegistroVendedor(idRegistroVendedor);
+					solicitudServicio.setNombreRegistroVendedor(userName);
+				}
 //				MGR - Se mueve la creacion de la cuenta. Debo recordar si es prospect antes de enviar a cerrar
 //				JPP - 0003641: N-IM003607979 - Cierre y Pass Automatico. No genera automaticamente Caratula para anexo , reingreso. 
 //				eraProspect solo se usaba para la condicion que se modifico (ver informacion del ticket #3641 del mantis)
@@ -2149,10 +2151,11 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				
 				AppLogger.info("#Log Cierre y pass - La deuda maxima posible es: " + maxDeuda, this);
 				
-				Long deudaCta = getDeudaCtaCte(solicitudServicio.getCuenta().getCodigoBSCS());
-				AppLogger.info("#Log Cierre y pass - La deuda de la cuenta corriente es: " + deudaCta, this);
+				//ticket: 0003807
+				Long maxDeudaCtaCte= getMaxDeudaCtaCte(solicitudServicio.getCuenta().getCodigoVantive());
+				AppLogger.info("#Log Cierre y pass - La deuda de la cuenta corriente es: " + maxDeudaCtaCte, this);
 				
-				if ( deudaCta <= maxDeuda) { //no posee
+				if ( maxDeudaCtaCte <= maxDeuda) { //no posee
 //					if (!("".equals(pinMaestro) || pinMaestro == null)
 //							|| ss.getSolicitudServicioGeneracion().getScoringChecked()) {
 					if (!cierrePorVeraz) {
@@ -2180,6 +2183,22 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private Long getDeudaCtaCte(String codigoBSCS) throws RpcExceptionMessages {
 		try {
 			return this.avalonSystem.getDeudaCtaCte(codigoBSCS);
+		} catch (AvalonSystemException e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+	}
+	
+	
+	/**
+	 * Obtengo la maxima deuda cta cte de un cliente.
+	 * @param codigoVantive
+	 * @return
+	 * @throws RpcExceptionMessages
+	 */
+	private Long getMaxDeudaCtaCte(String codigoVantive) throws RpcExceptionMessages {
+		try {
+			return this.avalonSystem.getMaxDeudaCtaCte(codigoVantive);
 		} catch (AvalonSystemException e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
@@ -2566,9 +2585,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	public boolean validarLineasPorSegmento(SolicitudServicioDto solicitud) throws RpcExceptionMessages {
 		
 		ArrayList<Boolean> resultadoValidacion = new ArrayList<Boolean>();
-		
+
 //		MGR - Parche de emergencia
-		Vendedor vend = repository.retrieve(Vendedor.class, solicitud.getVendedor().getId());
+		Vendedor vend = repository.retrieve(Vendedor.class, solicitud.getUsuarioCreacion().getId());
 		Long idTipoVendedor = vend.getTipoVendedor().getId();
 		
 		Long idSegmento = 0l;

@@ -28,6 +28,9 @@ import ar.com.nextel.business.cuentas.caratula.CaratulaTransferidaResultDto;
 import ar.com.nextel.business.cuentas.caratula.dao.config.CaratulaTransferidaConfig;
 import ar.com.nextel.business.cuentas.create.InsertUpdateCuentaConfig;
 import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaService;
+import ar.com.nextel.business.cuentas.flota.FlotaService;
+import ar.com.nextel.business.cuentas.flota.FlotaServiceImpl;
+import ar.com.nextel.business.cuentas.flota.exception.FlotaServiceException;
 import ar.com.nextel.business.cuentas.scoring.legacy.dto.ScoringCuentaLegacyDTO;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
@@ -147,6 +150,13 @@ public class SolicitudBusinessService {
 	public static final int CIERRE_PASS_AUTOMATICO = 3;
 	
 	private static final String CANTIDAD_EQUIPOS = "CANTIDAD_EQUIPOS";
+	
+	
+	
+	@Autowired
+    public void setFlotaService(@Qualifier("flotaService")FlotaService flotaService) {
+        this.flotaService = flotaService;
+    }
 	
 //	MGR - #3464
 //	private static String namedQueryItemParaActivacionOnline = "ITEMS_PARA_PLANES_ACT_ONLINE";
@@ -489,12 +499,25 @@ public class SolicitudBusinessService {
 			solicitudServicioDto.setVendedor(mapper.map(vendedor, VendedorDto.class));
 //		}
 			
+			
 		if( (solicitudServicio.getCuentaCedente() == null && solicitudServicioDto.getCuentaCedente() != null) ||
 				(solicitudServicio.getCuentaCedente() != null && solicitudServicioDto.getCuentaCedente() != null &&
 				!solicitudServicio.getCuentaCedente().getId().equals(solicitudServicioDto.getCuentaCedente().getId())) ){
+			
+		
 			Cuenta ctaCedente = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuentaCedente().getId());
+			
+			// Actualizo la cuenta con la flota correspondiente, ticket mantis: 0004038.
+			try {
+				flotaService.updateCuentaConFlota(ctaCedente);
+			} catch (FlotaServiceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			solicitudServicio.setCuentaCedente(ctaCedente);
 		}
+		
 		
 		//MGR - #1359
 //		if( (solicitudServicio.getUsuarioCreacion() == null && solicitudServicioDto.getUsuarioCreacion() != null) ||
@@ -723,17 +746,30 @@ public class SolicitudBusinessService {
 				repository.save(solicitudServicio.getCuenta().getFacturaElectronica());
 				
 				//MGR - ISDN 1824
+				
+				///   saco el ! para que sea prospect...volver a ponerlo
+				
+				
 				if (!esProspect) {
 					String codigoGestion = "TRANSF_FACT_ELECTRONICA";
 					ParametrosGestion parametrosGestion = repository.retrieve(ParametrosGestion.class, codigoGestion);
 					
 					//MGR - ISDN 1824
 					String vendReal = "";
+					
+					// SB - #0004176 (volvi atras este cambio para que no salga en el release 2)
 					if(isADMCreditos){
 						vendReal = solicitudServicio.getVendedor().getUserReal();
 					}else{
 						vendReal = vendedor.getUserReal();
 					}
+					
+					
+					// SB - #0004176 (volvi atras este cambio para que no salga en el release 2)
+					
+//					String vendedorgenerico = String.valueOf(((GlobalParameter) globalParameterRetriever
+//							.getObject(GlobalParameterIdentifier.USR_GENERICO_GEST_FA_SFA)).getValue());
+					
 					
 					Long idGestion = generacionCierreBusinessOperator.lanzarGestionCerrarSS(
 							vendReal,

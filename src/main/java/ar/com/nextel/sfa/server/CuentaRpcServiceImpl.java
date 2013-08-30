@@ -15,6 +15,8 @@ import javax.servlet.ServletException;
 import org.apache.catalina.SessionListener;
 import org.apache.commons.collections.Transformer;
 import org.dozer.MappingException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
@@ -23,6 +25,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
+import ar.com.nextel.business.cuentas.flota.FlotaService;
 import ar.com.nextel.business.cuentas.migrator.legacy.dto.DocDigitalizadoLegacyDto;
 import ar.com.nextel.business.cuentas.search.SearchCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.search.businessUnits.CuentaSearchData;
@@ -191,6 +194,10 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	//#LF
 	private static final String QUERY_VALID_EECC = "VALID_EECC";
 	private static final String QUERY_AUTOCOMP_VERAZ = "QUERY_AUTOCOMP_VERAZ";
+	
+	private FlotaService flotaService;
+	
+	
 
 	@Override
 	public void init() throws ServletException {
@@ -213,7 +220,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 
 		knownInstanceRetriever = (KnownInstanceRetriever) context.getBean("knownInstancesRetriever");
 		vantiveSystem = (VantiveSystem) context.getBean("vantiveSystemBean");
-		
+	    flotaService = (FlotaService)context.getBean("flotaService");
 		setGetAllBusinessOperator((GetAllBusinessOperator) context.getBean("getAllBusinessOperatorBean"));
 	}
 
@@ -545,7 +552,11 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 				errMsg = errMsg.replaceAll("\\{2\\}", nombre);
 				throw new RpcExceptionMessages(errMsg);
 			}
+
 			cuenta = repository.retrieve(Cuenta.class, cuenta.getId());
+			// Actualizo la cuenta con la flota correspondiente, ticket mantis: 0004038.
+			flotaService.updateCuentaConFlota(cuenta);
+			
 			cuentaBusinessService.validarAccesoCuenta(cuenta, getVendedor(), true);
 			if (asociarCuentaSiCorresponde(solicitudCta, cuenta)) {
 				// lockea
