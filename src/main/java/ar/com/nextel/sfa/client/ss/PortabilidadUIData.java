@@ -473,7 +473,7 @@ public class PortabilidadUIData extends Composite {
 		
 		validador.addTarget(txtTelefonoPortar.getNumero()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Telefono a Portar"));
 		
-		if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")){
+		if("POSTPAGO".equals(lstTipoTelefonia.getSelectedItemText())){
 			validador.addTarget(txtNroUltimaFacura).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Nro. Ultima Factura"));
 			validador.addTarget(fechaUltFactura.getTextBox()).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Portabilidad: Fecha de Emisi�n"));
 			if(!fechaUltFactura.getTextBox().getText().equals("")) {
@@ -511,7 +511,7 @@ public class PortabilidadUIData extends Composite {
 		return validador.getErrors();
 	}
 	
-//	MGR - RQN 2328 - Retorno el número a portar
+//	MGR - RQN 2328 - Retorno el numero a portar
 	public String obtenerNumeroAportar(){
 		return txtTelefonoPortar.getArea().getText() + txtTelefonoPortar.getNumero().getText();
 	}
@@ -641,7 +641,7 @@ public class PortabilidadUIData extends Composite {
 		}
 
 		if(solicitudPortabilidad.getNroSS() != null){
-			if(lstTipoTelefonia.getSelectedItemText().equals("POSTPAGO")) chkRecibeSMS.setValue(solicitudPortabilidad.isRecibeSMS());
+			if("POSTPAGO".equals(lstTipoTelefonia.getSelectedItemText())) chkRecibeSMS.setValue(solicitudPortabilidad.isRecibeSMS());
 		}
 
 		if(solicitudPortabilidad.getProveedorAnterior() == null) {

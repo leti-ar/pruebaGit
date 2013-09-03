@@ -2,12 +2,10 @@ package ar.com.nextel.sfa.client.infocom;
 
 import java.util.List;
 
-import ar.com.nextel.sfa.client.dto.DatosEquipoPorEstadoDto;
 import ar.com.nextel.sfa.client.dto.EquipoDto;
 import ar.com.nextel.sfa.client.dto.ResumenEquipoDto;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
-import ar.com.snoop.gwt.commons.client.widget.SimpleLabel;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 
 import com.google.gwt.i18n.client.NumberFormat;

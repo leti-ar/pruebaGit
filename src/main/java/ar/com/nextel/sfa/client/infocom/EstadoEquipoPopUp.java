@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.DatosEquipoPorEstadoDto;
-import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
-import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.nextel.sfa.client.widget.NextelTable;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;

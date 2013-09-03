@@ -11,12 +11,15 @@ import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
+import ar.com.nextel.sfa.client.dto.FacturaDto;
+import ar.com.nextel.sfa.client.dto.FacturacionResultDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
+import ar.com.nextel.sfa.client.dto.MessageDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
@@ -71,7 +74,7 @@ public interface SolicitudRpcServiceAsync {
 			AsyncCallback<DetalleSolicitudServicioDto> callback);
 
 	public void getLineasSolicitudServicioInitializer(GrupoSolicitudDto grupoSolicitudDto,
-			boolean isEmpresa, AsyncCallback<LineasSolicitudServicioInitializer> callback);
+			boolean isEmpresa, boolean retiraEnSucursal, AsyncCallback<LineasSolicitudServicioInitializer> callback);
 
 	public void getListasDePrecios(TipoSolicitudDto tipoSolicitudDto, boolean isEmpresa, 
 			AsyncCallback<List<ListaPreciosDto>> callback);
@@ -217,6 +220,8 @@ public interface SolicitudRpcServiceAsync {
 	public void validarLineasPorSegmento(SolicitudServicioDto solicitud, AsyncCallback<Boolean> callback);
 
 	public void sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas, AsyncCallback<Integer> callback);
+	
+	public void validarSIM_IMEI(SolicitudServicioDto solicitud, AsyncCallback<List<String>> callback);
 
 //	MGR - RQN 2328
 	public void validarAreaBilling(String numeroAPortar, AsyncCallback<Boolean> callback);
@@ -226,4 +231,13 @@ public interface SolicitudRpcServiceAsync {
 	public void validarImeiSim(String imei, String sim, String modeloEq, AsyncCallback<Boolean> callback);
 	
 	public void getItemPorModelo(Long idModelo, Long idListaPrecios, AsyncCallback<ItemSolicitudTasadoDto> callback);
+
+//	MGR - Facturacion
+	public void facturarSolicitudServicio(SolicitudServicioDto solicitudServicioDto, AsyncCallback<FacturacionResultDto> callback);
+	
+//	MGR - Verificar Pago
+	public void verificarPagoFacturaSolicitudServicio(SolicitudServicioDto solicitudServicioDto, AsyncCallback<FacturaDto> callback);
+	
+//	MGR - Validaciones previas a la facturacion
+	public void validarParaFacturar(SolicitudServicioDto solicitudServicioDto, AsyncCallback<List<MessageDto>> callback);
 }

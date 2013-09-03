@@ -31,7 +31,6 @@ import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorResu
 import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorServiceAxisImpl;
 import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorServiceException;
 import ar.com.nextel.business.describable.GetAllBusinessOperator;
-import ar.com.nextel.business.externalConnection.exception.MerlinException;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.legacy.avalon.dto.CantidadEquiposDTO;
 import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;

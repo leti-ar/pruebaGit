@@ -82,10 +82,14 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 <!--			<a>idVantive</a>-->
 <!--			<b>idSolicitudServicio</b>-->
 <!--		</field>-->
-		<field>
-			<a>id</a>
-			<b>idSolicitudServicio</b>
-		</field>
+<!-- 		<field> -->
+<!-- 			<a>id</a> -->
+<!-- 			<b>idSolicitudServicio</b> -->
+<!-- 		</field> -->
+<!-- 		<field> -->
+<!-- 			<a>id</a> -->
+<!-- 			<b>solicitudServicio</b> -->
+<!-- 		</field> -->
 <!--		<field>-->
 <!--			<a>cuenta.cliente</a>-->
 <!--			<b>cliente</b>-->
@@ -222,6 +226,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
         <field custom-converter-id="enumToDto">
 			<a>estadoH</a>
 			<b>estadoH</b>
+		</field>
+		<field>
+			<a>cuenta.customerNumberFactura</a>
+			<b>customerNumberFactura</b>
 		</field>
 	</mapping>
 
@@ -828,6 +836,10 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
             <a>sucursal.id</a>
             <b>idSucursal</b>
         </field>
+		<field custom-converter-id="enumToDto">
+			<a>localidad</a>
+			<b>localidad</b>
+		</field>
 	</mapping>
 	<mapping>
 		<class-a>ar.com.nextel.business.oportunidades.search.result.OportunidadNegocioSearchResult
@@ -846,6 +858,11 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-a>
 		<class-b>ar.com.nextel.sfa.client.dto.OperacionEnCursoDto
 		</class-b>
+<!-- 	MGR - #4231 -->
+		<field>
+			<a>solicitudServicio.factura.numero</a>
+			<b>numeroFactura</b>
+        </field>
 	</mapping>	
 	<mapping>
 		<class-a>ar.com.nextel.model.oportunidades.beans.OportunidadNegocio
@@ -1263,4 +1280,26 @@ http://dozer.sourceforge.net/schema/beanmapping.xsd"
 		</class-b>
 	</mapping>
 
+	<!-- MGR - Facturacion -->
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.Factura
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.FacturaDto
+		</class-b>
+		<field>
+            <a>solicitudServicio</a>
+            <b>solicitudServicioDTO</b>
+        </field>
+        <field>
+            <a>itemsFactura</a>
+            <b>items</b>
+        </field>
+	</mapping>
+	
+	<mapping>
+		<class-a>ar.com.nextel.model.solicitudes.beans.ItemFactura
+		</class-a>
+		<class-b>ar.com.nextel.sfa.client.dto.ItemFacturaDto
+		</class-b>
+	</mapping>
 </mappings>

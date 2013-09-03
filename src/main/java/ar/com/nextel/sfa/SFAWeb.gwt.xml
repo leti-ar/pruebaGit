@@ -15,10 +15,12 @@
       <!-- Specify the application specific style sheet.              -->
       <stylesheet src="SFAWeb.css"/>
 	
+      <servlet class="ar.com.nextel.sfa.server.ConfigurarSucursalRPCServiceImpl" path="/configurarsucursal.rpc"/>
 	<servlet class="ar.com.nextel.sfa.server.CuentaRpcServiceImpl" path="/cuenta.rpc"/>
 	<servlet class="ar.com.nextel.sfa.server.OperacionesRpcServiceImpl" path="/operaciones.rpc"/>
 	<servlet class="ar.com.nextel.sfa.server.OportunidadNegocioRpcServiceImpl" path="/oportunidades.rpc"/>
 	<servlet class="ar.com.nextel.sfa.server.SolicitudRpcServiceImpl" path="/solicitud.rpc"/>
     <servlet class="ar.com.nextel.sfa.server.UserCenterRpcServiceImpl" path="/usercenter.rpc"/>
     <servlet class="ar.com.nextel.sfa.server.InfocomRpcServiceImpl" path="/infocom.rpc"/>
+    <servlet class="ar.com.nextel.sfa.server.StockRpcServiceImpl" path="/stock.rpc"/>
 </module>

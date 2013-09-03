@@ -1,10 +1,10 @@
 package ar.com.nextel.sfa.client.widget;
-import com.google.gwt.dom.client.AnchorElement; 
-import com.google.gwt.dom.client.DivElement; 
-import com.google.gwt.dom.client.Document; 
-import com.google.gwt.user.client.Event; 
-import com.google.gwt.user.client.ui.Image; 
-import com.google.gwt.user.client.ui.Widget; 
+import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Anchor con un Image. Para usar en vez de un Hyperlink

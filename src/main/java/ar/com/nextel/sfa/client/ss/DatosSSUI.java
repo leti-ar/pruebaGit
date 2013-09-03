@@ -95,6 +95,14 @@ public class DatosSSUI extends Composite implements ClickHandler {
 
 	private ChangeHandler handlerNroSS;
 	
+//	MGR - #4170 - Esta variable lo que indica es si la tabla de los detalles (o items de la solicitud) puede
+//	ser modificada. Se torna falsa en caso de que una solicitud haya sido facturada.
+//	No se utilizo el metodo 'controller.isEditable()' por que si se indica que no es editable
+//	la pantalla no dibuja todas las columnas y la pantalla se ve mal y cambia su comportamiento.
+//	Se ve que en algún momento se implemento el uso de este metodo de manera erronea y ya no cumple con lo
+//	que indica su nombre
+	private boolean isDetalleSSModificable = true;
+	
 	public DatosSSUI(EditarSSUIController controller) {
 		mainpanel = new FlowPanel();
 		initWidget(mainpanel);
@@ -138,7 +146,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private Widget getNssLayout() {
 		//nnsLayout = new Grid(1, 6);
 		//MGR - #1027
-		nnsLayout = new Grid(1, 14);
+		nnsLayout = new Grid(1, 16);
 		nnsLayout.addStyleName("layout");
 		refreshNssLayout();
 		return nnsLayout;
@@ -179,29 +187,58 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		
 		nnsLayout.setHTML(0, 0, Sfa.constant().nssReq());
 		nnsLayout.setWidget(0, 1, editarSSUIData.getNss());
-		if (editarSSUIData.getGrupoSolicitud() == null
-				|| !instancias.get(GrupoSolicitudDto.ID_CDW).equals(editarSSUIData.getGrupoSolicitud().getId())) {
+		if (!editarSSUIData.isCDW()) {
 			nnsLayout.setHTML(0, 2, Sfa.constant().nflota());
 			nnsLayout.setWidget(0, 3, editarSSUIData.getNflota());
 			nnsLayout.setHTML(0, 4, Sfa.constant().origenReq());
 			nnsLayout.setWidget(0, 5, editarSSUIData.getOrigen());
+		
 		} else {
 			nnsLayout.setHTML(0, 2, Sfa.constant().origenReq());
 			nnsLayout.setWidget(0, 3, editarSSUIData.getOrigen());
 			nnsLayout.clearCell(0, 4);
 			nnsLayout.clearCell(0, 5);
 		}
+		
+		if (ClientContext.getInstance().getVendedor().isVendedorSalon() && editarSSUIData.isEquiposAccesorios()) {
+			nnsLayout.setHTML(0, 6, Sfa.constant().retiraEnSucursal());
+			nnsLayout.setWidget(0, 7, editarSSUIData.getRetiraEnSucursal());
+		} else {
+			nnsLayout.clearCell(0, 6);
+			nnsLayout.clearCell(0, 7);
+		}
 
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
-			nnsLayout.setHTML(0, 6, Sfa.constant().vendedorReq());
-			nnsLayout.setWidget(0, 7, editarSSUIData.getVendedor());
+			nnsLayout.setHTML(0, 8, Sfa.constant().vendedorReq());
+			nnsLayout.setWidget(0, 9, editarSSUIData.getVendedor());
+		} else {
+			nnsLayout.clearCell(0, 8);
+			nnsLayout.clearCell(0, 9);
 		}
 		
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
-			nnsLayout.setHTML(0, 8, Sfa.constant().sucOrigenReq());
-			nnsLayout.setWidget(0, 9, editarSSUIData.getSucursalOrigen());
+			nnsLayout.setHTML(0, 10, Sfa.constant().sucOrigenReq());
+			nnsLayout.setWidget(0, 11, editarSSUIData.getSucursalOrigen());
+		} 
+		
+		if(editarSSUIData.getGrupoSolicitud() != null &&
+				instancias.get(GrupoSolicitudDto.ID_FAC_MENSUAL).equals(editarSSUIData.getGrupoSolicitud().getId())){
+			nnsLayout.setHTML(0, 12, Sfa.constant().ordenCompraReq());
+			nnsLayout.setWidget(0, 13, editarSSUIData.getOrdenCompra());
+		} else {
+			nnsLayout.clearCell(0, 12);
+			nnsLayout.clearCell(0, 13);
 		}
 		
+//		Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
+		if (ClientContext.getInstance().getVendedor().isTelemarketing()	&& editarSSUIData.isEquiposAccesorios()) {
+			nnsLayout.setHTML(0, 14, Sfa.constant().nroSSWeb());
+			nnsLayout.setWidget(0, 15, editarSSUIData.getNumeroSSWeb());
+		} else {
+			nnsLayout.clearCell(0, 14);
+			nnsLayout.clearCell(0, 15);
+		}
+
 //		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
 //			nnsLayout.setHTML(0, 6, "Descuento Total:");
 //			nnsLayout.setWidget(0, 7, editarSSUIData.getDescuentoTotal());
@@ -231,27 +268,6 @@ public class DatosSSUI extends Composite implements ClickHandler {
 //			nnsLayout.clearCell(0, 7);
 //			nnsLayout.clearCell(0, 8);
 //		}
-			
-		if(editarSSUIData.getGrupoSolicitud() != null &&
-				instancias.get(GrupoSolicitudDto.ID_FAC_MENSUAL).equals(editarSSUIData.getGrupoSolicitud().getId())){
-			nnsLayout.setHTML(0, 10, Sfa.constant().ordenCompraReq());
-			nnsLayout.setWidget(0, 11, editarSSUIData.getOrdenCompra());
-		} else {
-			nnsLayout.clearCell(0, 10);
-			nnsLayout.clearCell(0, 11);
-		}
-		
-//		Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
-		if (ClientContext.getInstance().getVendedor().isTelemarketing()
-				&& (editarSSUIData.getGrupoSolicitud() != null
-				&& instancias.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS).equals(editarSSUIData.getGrupoSolicitud().getId()))) {
-			nnsLayout.setHTML(0, 12, Sfa.constant().nroSSWeb());
-			nnsLayout.setWidget(0, 13, editarSSUIData.getNumeroSSWeb());
-		} else {
-			nnsLayout.clearCell(0, 12);
-			nnsLayout.clearCell(0, 13);
-		}
-
 	}
 	
 	private Widget getHistoricoVentasPanel() {
@@ -495,36 +511,44 @@ public class DatosSSUI extends Composite implements ClickHandler {
 //		if(controller.isEditable()) {
 			if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
 				if (detalleSS == sender) {
-					if (row > 0) {
-						if (col == 9) {
-							if (!serviciosAdicionales.isEditing()) {
-								editarPrecioDeVentaPlan();
-							}
-						} else if (col > 3) {
-							// Carga servicios adicionales en la tabla
-							if (!serviciosAdicionales.isEditing()) {
-								selectDetalleLineaSSRow(row);
-							}
-						} else if (col == 0) {
-							// Abre panel de edicion de la LineaSolicitudServicio
-							lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1);
-							openItemSolicitudDialog(lineaSeleccionada);
-						} else if (col == 1) {
-							// Elimina la LineaSolicitudServicio
-							ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
-									new Command() {
-								public void execute() {
-									removeDetalleLineaSSRow(row);
-									asignarNroSSPortabilidad();
-								};
-							}, ModalMessageDialog.getCloseCommand());
-						} else if (col == 3) {
-							if (descuentoTotalAplicado) {
-								noSePuedeAplicarDescuento(false);
-							} else {
-								//Abre el panel de descuento de la LineaSolicitudServicio
-								lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1); 
-								verificarDescuento(lineaSeleccionada);
+//					MGR - #4170
+					if(!this.isDetalleSSModificable){
+						selectDetalleLineaSSRow(row);
+					}else{
+						if (row > 0) {
+							if (col == 9) {
+								if (!serviciosAdicionales.isEditing()) {
+									editarPrecioDeVentaPlan();
+								}
+							} else if (col > 3) {
+								// Carga servicios adicionales en la tabla
+								if (!serviciosAdicionales.isEditing()) {
+									selectDetalleLineaSSRow(row);
+								}
+							} else if (col == 0) {
+								// Abre panel de edicion de la LineaSolicitudServicio
+								lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1);
+								openItemSolicitudDialog(lineaSeleccionada);
+							} else if (col == 1) {
+								// Elimina la LineaSolicitudServicio
+								ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
+										new Command() {
+									public void execute() {
+										removeDetalleLineaSSRow(row);
+										asignarNroSSPortabilidad();
+										if (ClientContext.getInstance().getVendedor().isVendedorSalon() && editarSSUIData.isEquiposAccesorios()) {
+											editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
+										}
+									};
+								}, ModalMessageDialog.getCloseCommand());
+							} else if (col == 3) {
+								if (descuentoTotalAplicado) {
+									noSePuedeAplicarDescuento(false);
+								} else {
+									//Abre el panel de descuento de la LineaSolicitudServicio
+									lineaSeleccionada = editarSSUIData.getLineasSolicitudServicio().get(row - 1); 
+									verificarDescuento(lineaSeleccionada);
+								}
 							}
 						}
 					}
@@ -537,29 +561,36 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				}
 			} else {
 				if (detalleSS == sender) {
-	
-					if (row > 0) {
-						if (col == 7) {
-							if (!serviciosAdicionales.isEditing()) {
-								editarPrecioDeVentaPlan();
+//					MGR - #4170
+					if(!this.isDetalleSSModificable){
+						selectDetalleLineaSSRow(row);
+					}else{
+						if (row > 0) {
+							if (col == 7) {
+								if (!serviciosAdicionales.isEditing()) {
+									editarPrecioDeVentaPlan();
+								}
+							} else if (col > 2) {
+								// Carga servicios adicionales en la tabla
+								if (!serviciosAdicionales.isEditing()) {
+									selectDetalleLineaSSRow(row);
+								}
+							} else if (col == 0) {
+								// Abre panel de edicion de la LineaSolicitudServicio
+								openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
+							} else if (col == 1) {
+								// Elimina la LineaSolicitudServicio
+								ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
+										new Command() {
+											public void execute() {
+												removeDetalleLineaSSRow(row);
+												asignarNroSSPortabilidad();
+												if (ClientContext.getInstance().getVendedor().isVendedorSalon() && editarSSUIData.isEquiposAccesorios()) {
+													editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
+												}
+											};
+										}, ModalMessageDialog.getCloseCommand());
 							}
-						} else if (col > 2) {
-							// Carga servicios adicionales en la tabla
-							if (!serviciosAdicionales.isEditing()) {
-								selectDetalleLineaSSRow(row);
-							}
-						} else if (col == 0) {
-							// Abre panel de edicion de la LineaSolicitudServicio
-							openItemSolicitudDialog(editarSSUIData.getLineasSolicitudServicio().get(row - 1));
-						} else if (col == 1) {
-							// Elimina la LineaSolicitudServicio
-							ModalMessageDialog.getInstance().showAceptarCancelar("", "Desea eliminar el Item?",
-									new Command() {
-										public void execute() {
-											removeDetalleLineaSSRow(row);
-											asignarNroSSPortabilidad();
-										};
-									}, ModalMessageDialog.getCloseCommand());
 						}
 					}
 				} else if (serviciosAdicionales.getTable() == sender) {
@@ -571,7 +602,8 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				}
 			}
 			// TODO: Portabilidad
-			if(detalleSS == sender){
+//			MGR - #4170
+			if(detalleSS == sender && this.isDetalleSSModificable){
 				if(row > 0 && col == 2){
 					openPortabilidadReplicarDialog(row);
 				}
@@ -676,15 +708,22 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				}
 			};
 			itemSolicitudDialog.setAceptarCommand(aceptarCommand);
-
 			// TODO: Carga los datos de inizializacion del componente de portabilidad
 			itemSolicitudDialog.cargarPortabilidadInitializer(portabilidadInitializer);
+		} else if (recargaTiposOrden()) {
+			itemSolicitudDialog.initTiposOrden(controller);
+			ClientContext.getInstance().getSecretParams().remove(ClientContext.ST_PARAMS_KEY_RECARGA_TIPO_ORDEN);
 		}
 		itemSolicitudDialog.cargarPersona(portabilidadInitializer.getPersona());
 		itemSolicitudDialog.resetearPanelPortabilidad();
 		itemSolicitudDialog.setCuentaEmpresa(editarSSUIData.getCuenta().isEmpresa());
 
 		itemSolicitudDialog.show(linea);
+	}
+
+	private boolean recargaTiposOrden() {
+		return ClientContext.ST_PARAMS_VALUE_TRUE.equals(ClientContext.getInstance().getSecretParams().get(ClientContext.ST_PARAMS_KEY_RECARGA_TIPO_ORDEN))
+		|| editarSSUIData.getRetiraEnSucursal().isEnabled();
 	}
 
 	/**Verifica si se puede aplicar un descuento al item seleccionado*/
@@ -804,7 +843,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			}
 			drawDetalleSSRow(nueva, newRow);
 		}
-		onTableClick(detalleSS, firstNewRow, 4);
+		onTableClick(detalleSS, firstNewRow, 5);
 	}
 
 	/** Limpia y recarga la tabla de Detalle de Solicitud de Servicio completamente */
@@ -816,7 +855,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			drawDetalleSSRow(linea, editarSSUIData.getLineasSolicitudServicio().indexOf(linea) + 1);
 		}
 		if (!editarSSUIData.getLineasSolicitudServicio().isEmpty()) {
-			onTableClick(detalleSS, 1, 3);
+			onTableClick(detalleSS, 1, 5);
 		} else {
 			serviciosAdicionales.clear();
 		}
@@ -860,26 +899,29 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				i = 1;
 			}
 		}
-		detalleSS.setHTML(newRow, controller.isEditable()?7-i:++i, linea.getAlias() != null ? linea.getAlias() : "");
-		detalleSS.setHTML(newRow, controller.isEditable()?8-i:++i, linea.getPlan() != null ? linea.getPlan().getDescripcion() : "");
+		detalleSS.setHTML(newRow, controller.isEditable()?7-i:++i, !strIsEmpty(linea.getAlias()) ? linea.getAlias() : Sfa.constant().whiteSpace());
+		detalleSS.setHTML(newRow, controller.isEditable()?8-i:++i, linea.getPlan() != null ? linea.getPlan().getDescripcion() : Sfa.constant().whiteSpace());
 		detalleSS.setHTML(newRow, controller.isEditable()?9-i:++i, linea.getPlan() != null ? currencyFormat.format(linea
-				.getPrecioVentaPlan()) : "");
+				.getPrecioVentaPlan()) : Sfa.constant().whiteSpace());
 		detalleSS.getCellFormatter().addStyleName(newRow, controller.isEditable()?9-i:i, "alignRight");
 		detalleSS.setHTML(newRow, controller.isEditable()?10-i:++i, linea.getLocalidad() != null ? linea.getLocalidad().getDescripcion()
-				: "");
-		detalleSS.setHTML(newRow, controller.isEditable()?11-i:++i, linea.getNumeroReserva());
+				: Sfa.constant().whiteSpace());
+		detalleSS.setHTML(newRow, controller.isEditable()?11-i:++i, !strIsEmpty(linea.getNumeroReserva()) ? linea.getNumeroReserva() : Sfa.constant().whiteSpace()); //Sfa.constant().whiteSpace());
 		detalleSS.setHTML(newRow, controller.isEditable()?12-i:++i, linea.getTipoSolicitud().getDescripcion());
 		detalleSS.setHTML(newRow, controller.isEditable()?13-i:++i, "" + linea.getCantidad());
-		detalleSS.setHTML(newRow, controller.isEditable()?14-i:++i, linea.getDdn() ? IconFactory.tildeVerde().toString() : Sfa.constant()
-				.whiteSpace());
-		detalleSS.setHTML(newRow, controller.isEditable()?15-i:++i, linea.getDdi() ? IconFactory.tildeVerde().toString() : Sfa.constant()
-				.whiteSpace());
+		detalleSS.setHTML(newRow, controller.isEditable()?14-i:++i, linea.getDdn() ? IconFactory.tildeVerde().toString() : Sfa.constant().whiteSpace());
+		detalleSS.setHTML(newRow, controller.isEditable()?15-i:++i, linea.getDdi() ? IconFactory.tildeVerde().toString() : Sfa.constant().whiteSpace());
 		detalleSS.setHTML(newRow, controller.isEditable()?16-i:++i, linea.getRoaming() ? IconFactory.tildeVerde().toString() : Sfa.constant().whiteSpace());
 		
 		if(linea.getPortabilidad() != null) detalleSS.setWidget(newRow,controller.isEditable()?17-i:++i,IconFactory.tildeVerde());
 		else detalleSS.setHTML(newRow,controller.isEditable()?17-i:++i,Sfa.constant().whiteSpace());
 	}
 
+	private boolean strIsEmpty(String str) {
+		return str == null || str.trim().length() == 0;
+	}
+	
+	
 	public void editarPrecioDeVentaPlan() {
 		LineaSolicitudServicioDto lineaSS = editarSSUIData.getLineasSolicitudServicio().get(
 				selectedDetalleRow - 1);
@@ -1018,6 +1060,10 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		editarSSUIData.getFacturacion().setEnabled(controller.isEditable());
 		editarSSUIData.getAclaracion().setEnabled(controller.isEditable());
 		editarSSUIData.getEmail().setEnabled(controller.isEditable());
+		if (controller.getEditarSSUIData().isEquiposAccesorios()) {
+			editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
+//			editarSSUIData.getRetiraEnSucursal().setEnabled(detalleSS.getRowCount()>0);
+		}
 	}
 	
 	/**
@@ -1028,5 +1074,73 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		if(lineaSeleccionada!=null){
 			lineaSeleccionada.setPrecioConDescuento(null);
 		}
-	}	
+	}
+	
+//	MGR - Facturacion
+	public void deshabilitarModificarSolicitud(){
+		habilitarNssLayout(false);
+		deshabilitarDomicilioPanel(false);
+		deshabilitarDetallePanel();
+//		MGR - #4170 - Ya no se puede modificar la solicitud
+		this.isDetalleSSModificable = false;
+	}
+	
+	public void habilitarModificarSolicitud(){
+		habilitarNssLayout(true);
+		deshabilitarDomicilioPanel(true);
+		habilitarDetallePanel();	
+//		MGR - #4170
+		this.isDetalleSSModificable = true;
+	}
+	
+	private void habilitarDetallePanel(){
+		crearLinea.setVisible(true);
+	}
+	
+	private void deshabilitarDetallePanel(){
+		String[] titlesDetalle;
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
+			titlesDetalle = tableConDescuento();	
+		} else {
+			titlesDetalle = tableSinDescuento();
+		}
+		
+		//Si no hay titulo, es por que hay un icono, entonces los elimino
+		for (int i = 1; i < detalleSS.getRowCount(); i++) {
+			for(int j = 0; j < titlesDetalle.length; j++){
+				if(titlesDetalle[j].equals(Sfa.constant().whiteSpace()))
+					detalleSS.setHTML(i,j,Sfa.constant().whiteSpace());
+			}
+		} 
+		
+		//Oculto el boton para crear mas lineas
+		crearLinea.setVisible(false);
+	}
+	
+	private void deshabilitarDomicilioPanel(boolean habilitar){
+		crearDomicilio.setEnabled(habilitar);
+		editarDomicioFacturacion.setVisible(habilitar);
+		borrarDomicioFacturacion.setVisible(habilitar);
+		editarDomicioEntrega.setVisible(habilitar);
+		borrarDomicioEntrega.setVisible(habilitar);
+		editarSSUIData.getEntrega().setEnabled(habilitar);
+		editarSSUIData.getFacturacion().setEnabled(habilitar);
+		editarSSUIData.getAclaracion().setEnabled(habilitar);
+		editarSSUIData.getEmail().setEnabled(habilitar);
+	}
+	
+	private void habilitarNssLayout(boolean habilitar){
+//		editarSSUIData.getNss().setEnabled(habilitar);
+		editarSSUIData.getNflota().setEnabled(habilitar);
+		editarSSUIData.getOrigen().setEnabled(habilitar);
+		editarSSUIData.getRetiraEnSucursal().setEnabled(!this.controller.tieneLineasSolicitud() && habilitar);
+		editarSSUIData.getVendedor().setEnabled(habilitar);
+		editarSSUIData.getSucursalOrigen().setEnabled(habilitar);
+		editarSSUIData.getOrdenCompra().setEnabled(habilitar);
+	}
+
+	public FlexTable getDetalleSS() {
+		return detalleSS;
+	}
+	
 }

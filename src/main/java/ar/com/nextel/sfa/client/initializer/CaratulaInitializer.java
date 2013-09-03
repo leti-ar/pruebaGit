@@ -2,13 +2,9 @@ package ar.com.nextel.sfa.client.initializer;
 
 import java.util.List;
 
-import ar.com.nextel.model.cuentas.beans.EstadoCreditBancoCentral;
-import ar.com.nextel.model.cuentas.beans.TipoCuentaBancaria;
-import ar.com.nextel.model.cuentas.beans.VerazNosis;
 import ar.com.nextel.sfa.client.dto.BancoDto;
 import ar.com.nextel.sfa.client.dto.CalifCrediticiaDto;
 import ar.com.nextel.sfa.client.dto.CalificacionDto;
-import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.ComDto;
 import ar.com.nextel.sfa.client.dto.CompPagoDto;
 import ar.com.nextel.sfa.client.dto.EstadoCreditBancoCentralDto;

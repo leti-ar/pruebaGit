@@ -42,9 +42,11 @@ import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSTrans
 import ar.com.nextel.business.solicitudes.crearGuardar.request.GuardarRequest;
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
+import ar.com.nextel.business.solicitudes.despacho.DespachoSolicitudBusinessOperator;
 import ar.com.nextel.business.solicitudes.generacionCierre.GeneracionCierreBusinessOperator;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreRequest;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
+import ar.com.nextel.business.solicitudes.generacionCierre.result.CierreYPassResult;
 import ar.com.nextel.business.solicitudes.historico.TransferirCuentaHistoricoConfig;
 import ar.com.nextel.business.solicitudes.historico.VantiveHistoricoClienteConfig;
 import ar.com.nextel.business.solicitudes.historico.VantiveHistoricoVentaRetrieveConfig;
@@ -55,6 +57,9 @@ import ar.com.nextel.components.accessMode.AccessAuthorization;
 import ar.com.nextel.components.knownInstances.GlobalParameter;
 import ar.com.nextel.components.knownInstances.retrievers.DefaultRetriever;
 import ar.com.nextel.components.knownInstances.retrievers.model.KnownInstanceRetriever;
+import ar.com.nextel.components.message.Message;
+import ar.com.nextel.components.message.MessageImpl;
+import ar.com.nextel.components.message.MessageList;
 import ar.com.nextel.framework.connectionDAO.ConnectionDAOException;
 import ar.com.nextel.framework.connectionDAO.TransactionConnectionDAO;
 import ar.com.nextel.framework.repository.Repository;
@@ -132,14 +137,16 @@ public class SolicitudBusinessService {
 	private InsertUpdateCuentaConfig insertUpdateCuentaConfig;
 	private CaratulaTransferidaConfig caratulaTransferidaConfig;
 	
+	private DespachoSolicitudBusinessOperator despachoSolicitudBusinessOperator;
+	
 //	MGR - Se mueve la creacion de la cuenta
 	private String MENSAJE_ERROR_CREAR_CUENTA= "La SS % quedó pendiente de aprobación, por favor verificar y dar curso manual.";
-	
+
 //	MGR - Parche de emergencia
 	public static final int CIERRE_NORMAL = 1; //Se cierra la solicitud de servicio y se transfiere a Vantive
 	public static final int LINEAS_NO_CUMPLEN_CC = 2;
 	public static final int CIERRE_PASS_AUTOMATICO = 3;
-
+	
 	private static final String CANTIDAD_EQUIPOS = "CANTIDAD_EQUIPOS";
 	
 //	MGR - #3464
@@ -160,7 +167,7 @@ public class SolicitudBusinessService {
 			@Qualifier("avalonSystemBean")AvalonSystem avalonSystem) {
 		this.avalonSystem = avalonSystem;
 	}
-
+	
 	@Autowired
 	public void setFacturaElectronicaService(FacturaElectronicaService facturaElectronicaService) {
 		this.facturaElectronicaService = facturaElectronicaService;
@@ -264,6 +271,13 @@ public class SolicitudBusinessService {
 		this.caratulaTransferidaConfig = caratulaTransferidaConfig;
 	}
 	
+	@Autowired
+	public void setDespachoSolicitudBusinessOperator(
+			DespachoSolicitudBusinessOperator despachoSolicitudBusinessOperator) {
+		this.despachoSolicitudBusinessOperator = despachoSolicitudBusinessOperator;
+	}
+
+
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public SolicitudServicio createSolicitudServicio(SolicitudServicioRequest solicitudServicioRequest,
 			DozerBeanMapper mapper) throws BusinessException, FinancialSystemException {
@@ -440,14 +454,30 @@ public class SolicitudBusinessService {
 		return estadoPorSolicitud;
 	}
 	
-	
-	 
-	
+	/**
+	 * Mapea desde el DTO de la solicitud y luego lo salva en la base.
+	 * @param solicitudServicioDto
+	 * @param mapper
+	 * @return
+	 */
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public SolicitudServicio saveSolicitudServicio(SolicitudServicioDto solicitudServicioDto,
 			MapperExtended mapper) {
-		
-		
+		SolicitudServicio ss = this.mapperSSDtoToSolicitudServicio(solicitudServicioDto,mapper);
+		this.saveSolicitudServicio(ss);
+		return ss;
+	}
+	 
+	
+	/**
+	 * El mapper de DozerMapping no convierte completamente la SolicitudServicioDTO a la entidad
+	 * SolicitudServicio por lo tanto utilizar esté servicio para obtener la solicitud desde su dto.
+	 * @param solicitudServicioDto
+	 * @param mapper
+	 * @return
+	 */
+	public SolicitudServicio mapperSSDtoToSolicitudServicio(SolicitudServicioDto solicitudServicioDto,
+			MapperExtended mapper) {
 		
 		SolicitudServicio solicitudServicio = repository.retrieve(SolicitudServicio.class,
 				solicitudServicioDto.getId());
@@ -600,7 +630,6 @@ public class SolicitudBusinessService {
 		}
 		solicitudServicio.setIdConsultaScoring(solicitudServicioDto.getIdConsultaScoring());
         solicitudServicio.setIdConsultaVeraz(solicitudServicioDto.getIdConsultaVeraz());
-		repository.save(solicitudServicio);
 		
 		return solicitudServicio;
 	}
@@ -644,7 +673,7 @@ public class SolicitudBusinessService {
 //		MGR - Parche de emergencia
 		boolean cierraPorCC = false;
 		if(!solicitudServicio.getGrupoSolicitud().isGrupoTransferencia()){
-			cierraPorCC = puedeCerrar != SolicitudBusinessService.CIERRE_NORMAL;
+			cierraPorCC = puedeCerrar != CierreYPassResult.CIERRE_NORMAL;
 		}
 		
 		
@@ -776,7 +805,7 @@ public class SolicitudBusinessService {
 //				MGR - Se mueve la creacion de la cuenta. 
 //				Se mueve esto desde la clase SolicitudRpcServiceImpl, metodo generarCerrarSolicitud
 				if (!solicitudServicio.getCuenta().isTransferido() 
-						&& puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO) {
+						&& puedeCerrar == CierreYPassResult.CIERRE_PASS_AUTOMATICO) {
 					
 //					MGR - Se mueve la creacion de la cuenta. Pongo la solicitud en carga hasta haber creado el cliente
 //					Esto es por un bug raro que sucede si durante la creacion del cliente, el chron levanta la ss
@@ -784,9 +813,7 @@ public class SolicitudBusinessService {
 					repository.save(solicitudServicio);
 					repository.flush();
 					
-					Long crearCliente = this.crearCliente(solicitudServicio.getCuenta().getId());
-					Cuenta cta = repository.retrieve(Cuenta.class, solicitudServicio.getCuenta().getId());
-					repository.refresh(cta);
+					Long crearCliente = this.crearCliente(solicitudServicio);
 					
 //					MGR - Vuelvo a poner la solicitud en carga false
 					solicitudServicio.setEnCarga(Boolean.FALSE);
@@ -799,8 +826,26 @@ public class SolicitudBusinessService {
 						solicitudServicio.setPassCreditos(false);
 					}
 				}
+				
+				//mover inventario si se retira en sucursal
+			    Vendedor vendedorSalon= solicitudServicio.getVendedor();
+				if (vendedorSalon.isVendedorSalon() && solicitudServicio.getRetiraEnSucursal()) {
+					List<String> mensajesMovimientoInventario = movimientoInventario(solicitudServicio);
+					MessageList msgs = new MessageList();
+					for (String str : mensajesMovimientoInventario) {
+						MessageImpl msg = new MessageImpl();
+						msg.setDescription(str);
+						msgs.addMesage(msg);
+					}
+					response.setMessages(msgs);
+					//Si no hubo errores en los movimientos de inventario se reservan los números
+					if (msgs.isEmpty()) {
+						reservarNumerosTelefonicosPorDespacho(solicitudServicio);
+					}
+				}
+				
 			}
-						
+		
 		} else {
 //			MGR - #3440 - Si no hace las mismas validaciones
 			response = generacionCierreBusinessOperator.generarSolicitudServicio(generacionCierreRequest, cierraPorCC);
@@ -860,8 +905,8 @@ public class SolicitudBusinessService {
 	}
 	
 	//MGR - ISDN 1824
-	public CreateSaveSSResponse validarPredicadosGuardarSS(SolicitudServicio solicitudServicio) {
-		GuardarRequest guardarRequest = new GuardarRequest(solicitudServicio);
+	public CreateSaveSSResponse validarPredicadosGuardarSS(SolicitudServicio solicitudServicio, Vendedor vendedor) {
+		GuardarRequest guardarRequest = new GuardarRequest(solicitudServicio, vendedor);
 		CreateSaveSSResponse response = guardarBusinessOperator.validarPredicadosGuardarSS(guardarRequest);
 		return response;
 	}
@@ -1218,9 +1263,31 @@ public class SolicitudBusinessService {
 		return insertUpdateCuentaConfig;
 	}
 	
+	/**
+	 * 
+	 * @param idCuenta
+	 * @return 0L Si el cliente de creo correctamente, otro valor en caso contrario
+	 */
 //	MGR - Se mueve la creacion de la cuenta. Este metodo NO lanza excepcion, lo quito
-	public Long crearCliente(Long idCuenta){
-		AppLogger.info("##Log Cierre y pass - Se procede a transformar el prospect en cliente.");
+	@Transactional(readOnly = false, propagation= Propagation.REQUIRED)
+	public Long crearCliente(SolicitudServicio solicitud){
+//		MGR - Primero pongo todos los datos 'en_carga = F'
+		solicitud.getCuenta().getCuentaRaiz().descargar();
+		repository.save(solicitud.getCuenta());
+		repository.flush(); //Es necesario que este cambio se refleje en la base antes de crear el cliente
+		
+		Long idCuenta = solicitud.getCuenta().getId();
+		Long codError = prospectToCliente(idCuenta);
+		
+//		MGR - Actualizo la cuenta ya que la creacion del cliente la modifico
+		Cuenta cta = repository.retrieve(Cuenta.class, idCuenta);
+		repository.refresh(cta);
+		
+		return codError;
+	}
+	
+	private Long prospectToCliente(Long idCuenta){
+		AppLogger.info("Se procede a transformar el prospect en cliente.");
 		PreparedStatement stmt = null;
 		CallableStatement cstmt = null;
 		Long codError = -1l;
@@ -1253,7 +1320,7 @@ public class SolicitudBusinessService {
 								+ error);
 				throw new ConnectionDAOException(error);
 			}
-
+			
 		} catch (Exception e) {
 			AppLogger.info("##Log Cierre y pass - Error al transformar el prospect en cliente.");
 			AppLogger.error(e);
@@ -1335,13 +1402,13 @@ public class SolicitudBusinessService {
 		}
 		if (cumple == lineas.size()) {
 			AppLogger.info("#Log Cierre y pass - Todas las l�neas son configurables por APG");
-			return CIERRE_PASS_AUTOMATICO;
+			return CierreYPassResult.CIERRE_PASS_AUTOMATICO;
 		} else if ((cumple < lineas.size() && cumple != 0) ) {
 			AppLogger.info("#Log Cierre y pass - No todas las l�neas son configurables por APG");
-			return LINEAS_NO_CUMPLEN_CC;
+			return CierreYPassResult.LINEAS_NO_CUMPLEN_CC;
 		} else {
 			AppLogger.info("#Log Cierre y pass - Ninguna l�nea es configurable por APG");			
-			return CIERRE_NORMAL;
+			return CierreYPassResult.CIERRE_NORMAL;
 		}
 	}
 	
@@ -1357,9 +1424,8 @@ public class SolicitudBusinessService {
 		return cantEquipos;
 	}
 	
-//	MGR - Para guardar la solicitud, creado por un parche de emergencia
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public SolicitudServicio saveSolicituServicio(SolicitudServicio ss){
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	public SolicitudServicio saveSolicitudServicio(SolicitudServicio ss){
 		repository.save(ss);
 		return ss;
 	}
@@ -1391,5 +1457,41 @@ public class SolicitudBusinessService {
 			return 0.0;
 		
 		return result.get(0);
+	}
+	
+    /**
+     * Se valida que el/los numeros de sim/imei ingresados pertenezcan al
+     * inventario/subinventario del usuario que realizo el ingreso de la
+     * solicitud (solo si es vendedor de salon)
+     *
+     * @param solicitudServicio a validar
+     * @return retorna lista de mensajes con errores si es que hubiese o vacia
+     * en caso contrario
+     */
+    public List<String> validarSIM_IMEI(SolicitudServicio solicitudServicio) {
+    	List<String> mensajes = this.despachoSolicitudBusinessOperator.validarSIM_IMEI(solicitudServicio);
+		return mensajes;
+    }
+
+	public List<String> movimientoInventario(SolicitudServicio ss){
+		return this.despachoSolicitudBusinessOperator.movimientoInventario(ss);
+	};
+
+	public void reservarNumerosTelefonicosPorDespacho(SolicitudServicio ss){
+		this.reservaNumeroTelefonoBusinessOperator.reservarNumerosTelefonosPorDespacho(ss);
+	};
+	
+	
+//	MGR - Validaciones previas a la facturacion
+	public List<Message> validarParaFacturar(SolicitudServicio solicitudServicio,
+			int puedeCerrar){
+		
+		boolean cierraPorCC = puedeCerrar != CierreYPassResult.CIERRE_NORMAL;
+		
+		setScoringChecked(solicitudServicio, null);
+		// La SS se está invocando desde Objeto B (Interfaz web)
+		solicitudServicio.setSourceModule("B");
+
+		return generacionCierreBusinessOperator.validarParaFacturar(solicitudServicio, cierraPorCC);
 	}
 }

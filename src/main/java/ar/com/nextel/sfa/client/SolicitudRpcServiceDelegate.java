@@ -11,12 +11,15 @@ import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
+import ar.com.nextel.sfa.client.dto.FacturaDto;
+import ar.com.nextel.sfa.client.dto.FacturacionResultDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
+import ar.com.nextel.sfa.client.dto.MessageDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
@@ -112,9 +115,9 @@ public class SolicitudRpcServiceDelegate {
 	}
 
 	public void getLineasSolicitudServicioInitializer(GrupoSolicitudDto grupoSolicitudDto,
-			boolean isEmpresa, DefaultWaitCallback<LineasSolicitudServicioInitializer> callback) {
+			boolean isEmpresa, boolean retiraEnSucursal, DefaultWaitCallback<LineasSolicitudServicioInitializer> callback) {
 		WaitWindow.show();
-		solicitudRpcServiceAsync.getLineasSolicitudServicioInitializer(grupoSolicitudDto, isEmpresa, callback);
+		solicitudRpcServiceAsync.getLineasSolicitudServicioInitializer(grupoSolicitudDto, isEmpresa, retiraEnSucursal, callback);
 	}
 
 	public void buildExcel(SolicitudServicioCerradaDto solicitudServicioCerradaDto, //LF#3boolean analistaCreditos,
@@ -251,7 +254,7 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.crearArchivo(idSolicitud, enviarEmail, defaultWaitCallback);
 	}
-
+	
 	public void getPlanesPorTipoPlan(Long idTipoPlan, Long idCuenta,
 			DefaultWaitCallback<List<PlanDto>> defaultWaitCallback) {
 		WaitWindow.show();
@@ -427,6 +430,11 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.sonConfigurablesPorAPG(lineas, callback);
 	}
+	
+	public void validarSIM_IMEI(SolicitudServicioDto solicitud, DefaultWaitCallback<List<String>> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.validarSIM_IMEI(solicitud, callback);
+	}
 
 //	MGR - RQN 2328
 	public void validarAreaBilling(String numeroAPortar, DefaultWaitCallback<Boolean> callback) {
@@ -450,4 +458,22 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.getItemPorModelo(idModelo, idListaPrecios, callback);
 	}
 
+	
+//	MGR - Facturacion
+	public void facturarSolicitudServicio(SolicitudServicioDto solicitudServicioDto, DefaultWaitCallback<FacturacionResultDto> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.facturarSolicitudServicio(solicitudServicioDto, callback);
+	}
+	
+//	MGR - Verificar Pago
+	public void verificarPagoFacturaSolicitudServicio(SolicitudServicioDto solicitudServicioDto, DefaultWaitCallback<FacturaDto> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.verificarPagoFacturaSolicitudServicio(solicitudServicioDto, callback);
+	}
+	
+//	MGR - Validaciones previas a la facturacion
+	public void validarParaFacturar(SolicitudServicioDto solicitudServicioDto, DefaultWaitCallback<List<MessageDto>> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.validarParaFacturar(solicitudServicioDto, callback);
+	}
 }

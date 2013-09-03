@@ -68,4 +68,10 @@ public interface EditarSSUIController {
 	public void getItemPorModelo(Long idModelo, Long idListaPrecios,
 			DefaultWaitCallback<ItemSolicitudTasadoDto> callback);
 
+	
+//    public void validarSIM_IMEI(SolicitudServicioDto solicitud,DefaultWaitCallback<List<String>> callback);
+    
+    boolean tieneLineasSolicitud();
+    
+
 }

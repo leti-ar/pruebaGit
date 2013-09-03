@@ -1,7 +1,5 @@
 package ar.com.nextel.sfa.client.dto;
 
-import java.util.Date;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class CambiosSolicitudServicioDto implements IsSerializable {

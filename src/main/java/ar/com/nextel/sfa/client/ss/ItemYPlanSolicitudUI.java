@@ -28,13 +28,16 @@ public class ItemYPlanSolicitudUI extends Composite {
 	private FlexTable cppAliasReservaTable;
 	//MGR - #1039 - Necesito poder identificar la tabla para poder ocultarla
 	private Grid table;
-
+	private EditarSSUIController controller;
+	private FlexTable imeiSimRetiroEnSucursal;
+	
 	public ItemYPlanSolicitudUI(SoloItemSolicitudUI soloItemSolicitudUI,
-			ItemSolicitudUIData itemSolicitudUIData) {
+			ItemSolicitudUIData itemSolicitudUIData,EditarSSUIController controller) {
 		this.soloItemSolicitudUI = soloItemSolicitudUI;
 		mainPanel = new FlowPanel();
 		this.itemSolicitudUIData = itemSolicitudUIData;
 		initWidget(mainPanel);
+		this.controller = controller;
 		initItemSolicitudAMBAUI();
 	}
 
@@ -79,7 +82,7 @@ public class ItemYPlanSolicitudUI extends Composite {
 		cppAliasReservaTable.setHTML(1, 0, Sfa.constant().reservarN());
 		cppAliasReservaTable.setWidget(1, 1, getReservaPanel());
 		mainPanel.add(cppAliasReservaTable);
-		
+			
 		roamingTable = new Grid(1, 7);
 		roamingTable.addStyleName("layout ml10");
 		roamingTable.getCellFormatter().setWidth(0, 0, "100px");
@@ -185,4 +188,10 @@ public class ItemYPlanSolicitudUI extends Composite {
 		roamingTable.setVisible(true);
 		return this;
 	}
+
+	public FlexTable getImeiSimRetiroEnSucursal() {
+		return imeiSimRetiroEnSucursal;
+	}
+	
+	
 }

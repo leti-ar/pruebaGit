@@ -1,12 +1,10 @@
 package ar.com.nextel.sfa.client.caratula;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
-import ar.com.nextel.sfa.client.comparator.DocDigitalizadosComparator;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.DocDigitalizadosDto;
 import ar.com.nextel.sfa.client.image.IconFactory;

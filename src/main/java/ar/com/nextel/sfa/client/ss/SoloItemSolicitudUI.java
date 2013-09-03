@@ -27,13 +27,17 @@ public class SoloItemSolicitudUI extends Composite {
 	private FlexTable permanencia;
 	private FlexTable permanenciaPrecioLista;
 	private FlexTable terminoPago;
-
+	private EditarSSUIController controller;
 	public static final int LAYOUT_SIMPLE = 0;
 	public static final int LAYOUT_ACTIVACION = 1;
 	public static final int LAYOUT_CON_TOTAL = 2;
 	public static final int LAYOUT_ACTIVACION_ONLINE = 3;
 	public static final int LAYOUT_SIMPLE_PERMANENCIA = 4;
-
+	private FlexTable imeiSimRetiroEnSucursal;
+	private boolean visibleImeiSimRetiroSucursal;
+	
+	
+	
 	public SoloItemSolicitudUI(ItemSolicitudUIData itemSolicitudUIData) {
 		mainPanel = new FlowPanel();
 		itemSolicitudData = itemSolicitudUIData;
@@ -125,6 +129,7 @@ public class SoloItemSolicitudUI extends Composite {
 		precioCantidad.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
 		precioCantidad.setHTML(0, 2, Sfa.constant().cantidadReq());
 		precioCantidad.setWidget(0, 3, itemSolicitudData.getCantidad());
+		
 		mainPanel.add(precioCantidad);
 		
 		total = new Grid(1, 2);
@@ -152,13 +157,42 @@ public class SoloItemSolicitudUI extends Composite {
 		activacionSimSeriePin.getFlexCellFormatter().setColSpan(1, 3, 4);
 		mainPanel.add(activacionSimSeriePin);
 		
+		imeiSimRetiroEnSucursal =  new FlexTable();
 		
+		imeiSimRetiroEnSucursal.addStyleName("layout");
+		imeiSimRetiroEnSucursal.getCellFormatter().setWidth(0, 0, "100px");
+		imeiSimRetiroEnSucursal.setHTML(0, 0, Sfa.constant().imeiReq());
+		imeiSimRetiroEnSucursal.setWidget(0, 1,  itemSolicitudData.getImeiRetiroEnSucursal());
+		imeiSimRetiroEnSucursal.setHTML(0, 2, Sfa.constant().simReq());
+		imeiSimRetiroEnSucursal.setWidget(0, 3, itemSolicitudData.getSimRetiroEnSucursal());
+		imeiSimRetiroEnSucursal.setVisible(false);
+		mainPanel.add(imeiSimRetiroEnSucursal);
+		
+		visibleImeiSimRetiroSucursal = false;
 	}
 
+	public SoloItemSolicitudUI setLayout(int layout, EditarSSUIController controller) {
+		boolean retirar = false;
+		boolean esEquipoAccesorio= false;
+		visibleImeiSimRetiroSucursal = false;
+		if (controller.getEditarSSUIData().isEquiposAccesorios()){
+			 retirar= controller.getEditarSSUIData().getSolicitudServicio().getRetiraEnSucursal();
+			 esEquipoAccesorio= true;
+		}
+		//solo va a estar visible este panel en el caso de que este chequeado el retiro en sucursal
+		this.visibleImeiSimRetiroSucursal = (retirar && esEquipoAccesorio);
+		
+		//controller.getEditarSSUIData().getRetiraEnSucursal().setEnabled(false);
+		return this.setLayout(layout);	
+	}
+	
+	
 	public SoloItemSolicitudUI setLayout(int layout) {
-
+	
 		total.setVisible(false);
-
+		imeiSimRetiroEnSucursal.setVisible(false);
+	
+        
 		switch (layout) {
 		case LAYOUT_ACTIVACION:
 			activacionImei.setVisible(true);
@@ -185,6 +219,7 @@ public class SoloItemSolicitudUI extends Composite {
 			precioCantidad.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
 			permanencia.setVisible(false);
 			permanenciaPrecioLista.setVisible(false);
+			imeiSimRetiroEnSucursal.setVisible(visibleImeiSimRetiroSucursal);
 			break;
 			
 		case LAYOUT_SIMPLE_PERMANENCIA:

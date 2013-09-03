@@ -7,7 +7,6 @@ import java.util.List;
 import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
-import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
 import ar.com.nextel.sfa.client.dto.CargoDto;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.DocumentoDto;

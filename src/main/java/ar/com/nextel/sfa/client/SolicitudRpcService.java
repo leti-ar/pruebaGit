@@ -11,12 +11,15 @@ import ar.com.nextel.sfa.client.dto.DescuentoLineaDto;
 import ar.com.nextel.sfa.client.dto.DescuentoTotalDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.EstadoPorSolicitudDto;
+import ar.com.nextel.sfa.client.dto.FacturaDto;
+import ar.com.nextel.sfa.client.dto.FacturacionResultDto;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudDto;
 import ar.com.nextel.sfa.client.dto.ItemSolicitudTasadoDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
+import ar.com.nextel.sfa.client.dto.MessageDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
@@ -88,7 +91,7 @@ public interface SolicitudRpcService extends RemoteService {
 	public boolean saveEstadoPorSolicitudDto(EstadoPorSolicitudDto estadoPorSolicitudDto) throws RpcExceptionMessages;
 
 	public LineasSolicitudServicioInitializer getLineasSolicitudServicioInitializer(
-			GrupoSolicitudDto grupoSolicitudDto, boolean isEmpresa) throws RpcExceptionMessages;
+			GrupoSolicitudDto grupoSolicitudDto, boolean isEmpresa, boolean retiraEnSucursal) throws RpcExceptionMessages;
 
 	public DetalleSolicitudServicioDto getDetalleSolicitudServicio(Long idSolicitudServicio)
 			throws RpcExceptionMessages;
@@ -231,6 +234,8 @@ public interface SolicitudRpcService extends RemoteService {
 	public boolean validarLineasPorSegmento(SolicitudServicioDto solicitud) throws RpcExceptionMessages;
 
 	public int sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas) throws RpcExceptionMessages;
+	
+	public List<String> validarSIM_IMEI(SolicitudServicioDto solicitud)throws RpcExceptionMessages;
 
 //	MGR - RQN 2328
 	boolean validarAreaBilling(String numeroAPortar) throws RpcExceptionMessages;
@@ -242,5 +247,14 @@ public interface SolicitudRpcService extends RemoteService {
 	public ItemSolicitudTasadoDto getItemPorModelo(Long idModelo, Long idListaPrecios)
 		throws RpcExceptionMessages;
 
+	
+//	MGR - Facturacion
+	FacturacionResultDto facturarSolicitudServicio(SolicitudServicioDto solicitudServicioDto);
+	
+//	MGR - Verificar Pago
+	FacturaDto verificarPagoFacturaSolicitudServicio(SolicitudServicioDto solicitudServicioDto);
+	
+//	MGR - Validaciones previas a la facturacion
+	List<MessageDto> validarParaFacturar(SolicitudServicioDto solicitudServicioDto)	throws RpcExceptionMessages;
 }
 

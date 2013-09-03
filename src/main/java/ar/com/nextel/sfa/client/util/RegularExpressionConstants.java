@@ -41,6 +41,11 @@ public class RegularExpressionConstants {
 		return "[0-9]{0," + cant + "}";
 	}
 	
+	/** Permite ingresar un numeros de cierta cantidad fija de dígitos */
+	public static final String getCantidadNumerosFijo(int cant) {
+		return "[0-9]{" + cant + "}";
+	}
+	
 	/** Permite ingresar una numeros y caracteres hasta una cierta cantidad */
 	public static final String getNumerosYLetrasLimitado(int cant) {
 		return "[0-9a-zA-Z]{0," + cant + "}";

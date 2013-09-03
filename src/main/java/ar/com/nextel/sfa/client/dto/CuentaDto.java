@@ -45,6 +45,9 @@ public class CuentaDto implements IsSerializable {
 //	MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
 	private boolean prospect;
 
+//	MGR - Facturacion
+	private String customerNumberFactura;
+	
 	public Long getId() {
 		return id;
 	}
@@ -346,5 +349,18 @@ public class CuentaDto implements IsSerializable {
 	
 	public void setCaratulas(List<CaratulaDto> caratulas) {
 		this.caratulas = caratulas;
+	}
+
+//	MGR - Facturacion
+	public void setCustomerNumberFactura(String customerNumberFactura) {
+		this.customerNumberFactura = customerNumberFactura;
+	}
+	
+	public String getCustomerNumberFactura() {
+		return customerNumberFactura;
+	}
+	
+	public Boolean isCuentaCorriene(){
+		return (this.customerNumberFactura != null);
 	}
 }

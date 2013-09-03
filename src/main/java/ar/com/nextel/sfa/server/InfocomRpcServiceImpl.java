@@ -24,7 +24,6 @@ import ar.com.nextel.business.legacy.avalon.dto.DeudaDTO;
 import ar.com.nextel.business.legacy.avalon.dto.ResumenPorEquipoArbolDTO;
 import ar.com.nextel.business.legacy.avalon.dto.ResumenPorEquipoResponsablePagoDTO;
 import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
-import ar.com.nextel.business.legacy.dao.MibasLegacyDAO;
 import ar.com.nextel.business.legacy.dao.VantiveLegacyDAO;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.financial.dto.DetalleCreditoDTO;

@@ -88,6 +88,10 @@ public class SFAWeb implements EntryPoint {
 				+ HeaderMenu.MENU_OPORTUNIDADES : items;
 		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_OPERACIONES_EN_CURSO_BUTTON.getValue()) ? items
 				+ HeaderMenu.MENU_OP_EN_CURSO : items;
+		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_CONFIGURACION_SUCURSAL_BUTTON.getValue()) ? items
+				+ HeaderMenu.MENU_CAMBIO_SUCURSAL : items;
+		items = cc.checkPermiso(PermisosEnum.ROOTS_MENU_PANEL_VALIDACION_STOCK_BUTTON.getValue()) ? items
+				+ HeaderMenu.MENU_VALIDAR_STOCK : items;
 		headerMenu.enableMenuItems(items);
 	}
 

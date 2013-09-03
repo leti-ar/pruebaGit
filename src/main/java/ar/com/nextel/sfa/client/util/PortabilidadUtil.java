@@ -3,8 +3,6 @@ package ar.com.nextel.sfa.client.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.user.client.Window;
-
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;

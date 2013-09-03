@@ -1,14 +1,8 @@
 package ar.com.nextel.sfa.client.dto;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
-import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
-import ar.com.nextel.model.support.owner.CollectionOwnerCreator;
-
-import com.google.gwt.dev.util.collect.HashSet;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDto, Cloneable {

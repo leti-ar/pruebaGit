@@ -1,9 +1,6 @@
 package ar.com.nextel.sfa.client.oportunidad;
 
-import java.util.Date;
-
 import ar.com.nextel.sfa.client.widget.ApplicationUI;
-import ar.com.snoop.gwt.commons.client.util.DateUtil;
 
 /**
  * 

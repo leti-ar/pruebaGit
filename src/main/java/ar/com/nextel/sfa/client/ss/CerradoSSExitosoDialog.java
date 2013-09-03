@@ -4,25 +4,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
+import ar.com.nextel.sfa.client.util.ReportUtils;
 import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
-import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
-import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.WindowUtils;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
-import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
-import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -45,8 +36,10 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 	private Command aceptarCommand;
 	private InlineHTML successText;
 	private SimpleLink solicitudLink;
+	private SimpleLink remitoLink;
 	private SimpleLink aceptar;
 	private String fileName;
+	private String remitoName;
 	private Long idSolicitudCerrada;
 	private Grid solicitudReport;
 	
@@ -76,6 +69,8 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 		solicitudLink = new SimpleLink("Solicitud link", "#" + History.getToken(), true);
 		aceptar = new SimpleLink(Sfa.constant().aceptar());
 		aceptar.addClickListener(this);
+//		MGR - Remito
+		remitoLink = new SimpleLink("Remito link", "#" + History.getToken(), true);
 	}
 	
 	private void init(List<String> fileNamePorta) {
@@ -93,10 +88,20 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 		layout.getRowFormatter().setVerticalAlign(0, HasAlignment.ALIGN_MIDDLE);
 		cierreExitoso.add(layout);
 		solicitudLink.addClickListener(this);
+		remitoLink.addClickListener(this);
 		
-		solicitudReport = new Grid(1 + fileNamePorta.size(), 2);
+//		MGR - Remito
+		int filas = this.remitoName == null ? 0 : 1;
+		filas += 1 + fileNamePorta.size();
+		solicitudReport = new Grid(filas, 2);
 		solicitudReport.setWidget(0, 0, IconFactory.word());
 		solicitudReport.setWidget(0, 1, solicitudLink);
+		
+//		MGR - Remito
+		if(this.remitoName != null){
+			solicitudReport.setWidget(1, 0, IconFactory.word());
+			solicitudReport.setWidget(1, 1, remitoLink);
+		}
 		
 		//MGR - Los Vendedores del tipo retail generan pdf, el resto, rtf
 		String extension = null;
@@ -104,14 +109,15 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
         	extension = ".pdf";
         else
         	extension = ".rtf";
-        
+		
 		List<String> aux = new ArrayList<String>();
 		for (String fname : fileNamePorta) {
 			aux.add(fname.substring(0,fname.lastIndexOf(".")));
 		}
 		Collections.sort(aux);
 		
-		for (int i = 0; i < fileNamePorta.size(); i++) {
+		int i = this.remitoName == null ? 0 : 1;
+		for (;i < fileNamePorta.size(); i++) {
 			solicitudReport.setWidget(i + 1, 0, IconFactory.word());
 			solicitudReport.setWidget(i + 1, 1, new SimpleLink(aux.get(i) + extension,"#" + History.getToken(),true));
 			((SimpleLink)solicitudReport.getWidget(i + 1, 1)).addClickListener(this);
@@ -130,8 +136,11 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 		if (sender == aceptar) {
 			hide();
 			aceptarCommand.execute();
-		}else if(sender == solicitudLink) tirarDownload(fileName);
-		else{
+		}else if(sender == solicitudLink){ 
+			ReportUtils.descargarArchivoSS(idSolicitudCerrada,fileName);
+		}else if(sender == remitoLink){
+			ReportUtils.descargarArchivoSS(idSolicitudCerrada,remitoName);
+		}else{
 			boolean find = false;
 			SimpleLink link;
 			
@@ -139,85 +148,83 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 				link = (SimpleLink)solicitudReport.getWidget(i, 1);
 				if(sender == link){
 					find = true;
-					tirarDownload(link.getTitle());
+					ReportUtils.descargarArchivoSS(idSolicitudCerrada, link.getTitle());
 				}
 			}
-			
-		}
-
-	}
-
-	private void tirarDownload(final String file){
-		RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getUrlReporte(file));
-		requestBuilder.setCallback(new RequestCallback() {
-			public void onResponseReceived(Request request, Response response) {
-				WaitWindow.hide();
-				LoadingModalDialog.getInstance().hide();
-				if (response.getStatusCode() == Response.SC_OK) {
-					WaitWindow.hide();
-					LoadingModalDialog.getInstance().hide();
-					WindowUtils.redirect(getUrlReporte(file));
-				} else {
-//					showFileNotFoundError();
-					//MGR - #1415 - Si por alguna razon no se genero el archivo, trato de generarlo nuevamente
-					SolicitudRpcService.Util.getInstance().crearArchivo(idSolicitudCerrada, false, new DefaultWaitCallback<Boolean>() {
-						@Override
-						public void success(Boolean result) {
-							RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getUrlReporte(file));
-							
-							requestBuilder.setCallback(new RequestCallback() {
-								public void onResponseReceived(Request request, Response response) {
-									WaitWindow.hide();
-									LoadingModalDialog.getInstance().hide();
-									
-									if (response.getStatusCode() == Response.SC_OK) WindowUtils.redirect(getUrlReporte(file));
-									else MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),MessageDialog.getCloseCommand());
-								}
-
-								public void onError(Request request, Throwable exception) {
-									WaitWindow.hide();
-									LoadingModalDialog.getInstance().hide();
-									MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),MessageDialog.getCloseCommand());
-								}
-							});
-
-							try {
-								requestBuilder.setTimeoutMillis(10 * 1000);
-								requestBuilder.send();
-								WaitWindow.show();
-								LoadingModalDialog.getInstance().showAndCenter("Solicitud","Esperando Solicitud de Servicio ...");
-							} catch (RequestException e) {
-								MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),MessageDialog.getCloseCommand());
-								LoadingModalDialog.getInstance().hide();
-							}
-						}
-					});
-				}
-			}
-
-			public void onError(Request request, Throwable exception) {
-				WaitWindow.hide();
-				LoadingModalDialog.getInstance().hide();
-				showFileNotFoundError();
-			}
-		});
-
-		try {
-			requestBuilder.setTimeoutMillis(10 * 1000);
-			requestBuilder.send();
-			WaitWindow.show();
-			LoadingModalDialog.getInstance().showAndCenter("Solicitud","Esperando Solicitud de Servicio ...");
-		} catch (RequestException e) {
-			showFileNotFoundError();
-			WaitWindow.hide();
-			LoadingModalDialog.getInstance().hide();
 		}
 	}
+
+//	private void tirarDownload(final String file){
+//		RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getUrlReporte(file));
+//		requestBuilder.setCallback(new RequestCallback() {
+//			public void onResponseReceived(Request request, Response response) {
+//				WaitWindow.hide();
+//				LoadingModalDialog.getInstance().hide();
+//				if (response.getStatusCode() == Response.SC_OK) {
+//					WaitWindow.hide();
+//					LoadingModalDialog.getInstance().hide();
+//					WindowUtils.redirect(getUrlReporte(file));
+//				} else {
+////					showFileNotFoundError();
+//					//MGR - #1415 - Si por alguna razon no se genero el archivo, trato de generarlo nuevamente
+//					SolicitudRpcService.Util.getInstance().crearArchivo(idSolicitudCerrada, false, new DefaultWaitCallback<Boolean>() {
+//						@Override
+//						public void success(Boolean result) {
+//							RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getUrlReporte(file));
+//							
+//							requestBuilder.setCallback(new RequestCallback() {
+//								public void onResponseReceived(Request request, Response response) {
+//									WaitWindow.hide();
+//									LoadingModalDialog.getInstance().hide();
+//									
+//									if (response.getStatusCode() == Response.SC_OK) WindowUtils.redirect(getUrlReporte(file));
+//									else MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),MessageDialog.getCloseCommand());
+//								}
+//
+//								public void onError(Request request, Throwable exception) {
+//									WaitWindow.hide();
+//									LoadingModalDialog.getInstance().hide();
+//									MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),MessageDialog.getCloseCommand());
+//								}
+//							});
+//
+//							try {
+//								requestBuilder.setTimeoutMillis(10 * 1000);
+//								requestBuilder.send();
+//								WaitWindow.show();
+//								LoadingModalDialog.getInstance().showAndCenter("Solicitud","Esperando Solicitud de Servicio ...");
+//							} catch (RequestException e) {
+//								MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),MessageDialog.getCloseCommand());
+//								LoadingModalDialog.getInstance().hide();
+//							}
+//						}
+//					});
+//				}
+//			}
+//
+//			public void onError(Request request, Throwable exception) {
+//				WaitWindow.hide();
+//				LoadingModalDialog.getInstance().hide();
+//				showFileNotFoundError();
+//			}
+//		});
+//
+//		try {
+//			requestBuilder.setTimeoutMillis(10 * 1000);
+//			requestBuilder.send();
+//			WaitWindow.show();
+//			LoadingModalDialog.getInstance().showAndCenter("Solicitud","Esperando Solicitud de Servicio ...");
+//		} catch (RequestException e) {
+//			showFileNotFoundError();
+//			WaitWindow.hide();
+//			LoadingModalDialog.getInstance().hide();
+//		}
+//	}
 	
-	private void showFileNotFoundError() {
-		MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),
-				MessageDialog.getCloseCommand());
-	}
+//	private void showFileNotFoundError() {
+//		MessageDialog.getInstance().showAceptar(ErrorDialog.AVISO, Sfa.constant().ERR_FILE_NOT_FOUND(),
+//				MessageDialog.getCloseCommand());
+//	}
 
 	public void showLoading(boolean cerrando) {
 		successText.setText("La solicitud se " + (cerrando ? "cerró" : "generó") + " correctamente");
@@ -243,6 +250,9 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 
 		Collections.sort(fileNamePorta);
 
+//		MGR - Remito
+		this.remitoName = cierreResult.getRemitoRtfFileName();
+		
 		init(fileNamePorta);
 		
 		cierreExitoso.setVisible(true);
