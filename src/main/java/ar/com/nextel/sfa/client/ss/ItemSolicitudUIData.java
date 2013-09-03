@@ -837,21 +837,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		tb.setReadOnly(false);
 	}
 	
-	private void disableTextBox(TextBox tb,String defecto) {
-		tb.setText(defecto);
-		tb.setEnabled(false);
-		tb.setReadOnly(true);
-	}
-
-	private void disableTextBox(TextBox tb) {
-		disableTextBox(tb,"");
-	}
-
-	private void enableTextBox(TextBox tb) {
-		tb.setEnabled(true);
-		tb.setReadOnly(false);
-	}
-	
 	private void enableAliasYReserva(boolean enabled) {
 		alias.setEnabled(enabled);
 		alias.setReadOnly(!enabled);
@@ -1308,11 +1293,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			// Campo subsidio
 			if (isPermanencia()){
 				lineaSolicitudServicio.setFullPrice(fullPrice.getValue());
-				if (!fullPrice.getValue()){
-					precio = obtenerPrecioSubsidiado(precio);				
-					lineaSolicitudServicio.setPrecioLista(precio);
-					lineaSolicitudServicio.setPrecioVenta(precio);
-				}
+//				if (!fullPrice.getValue()){
+//					precio = obtenerPrecioSubsidiado(precio);				
+//					lineaSolicitudServicio.setPrecioLista(precio);
+//					lineaSolicitudServicio.setPrecioVenta(precio);
+//				}
 			}
 			
 			lineaSolicitudServicio.setPrecioListaAjustado(precio);

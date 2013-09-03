@@ -230,6 +230,7 @@ public class SoloItemSolicitudUI extends Composite {
 			precioCantidad.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
 			permanencia.setVisible(true);
 			permanenciaPrecioLista.setVisible(false);
+			imeiSimRetiroEnSucursal.setVisible(visibleImeiSimRetiroSucursal);
 			break;
 
 		case LAYOUT_ACTIVACION_ONLINE:
