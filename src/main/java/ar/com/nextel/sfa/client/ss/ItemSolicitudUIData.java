@@ -1248,7 +1248,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			lineaSolicitudServicio.setNumeroSimcard(sim.getText());
 			lineaSolicitudServicio.setCantidad(1);
 			if (isActivacionOnline() && itemActivacionOnline!=null){
-				lineaSolicitudServicio.setItem(itemActivacionOnline.getItem());
+//				lineaSolicitudServicio.setItem(itemActivacionOnline.getItem());
 				lineaSolicitudServicio.setPrecioLista(itemActivacionOnline.getPrecioLista());
 				lineaSolicitudServicio.setPrecioVenta(itemActivacionOnline.getPrecioLista());
 			}
