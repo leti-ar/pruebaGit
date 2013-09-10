@@ -46,7 +46,6 @@ import ar.com.nextel.business.solicitudes.crearGuardar.request.CreateSaveSSRespo
 import ar.com.nextel.business.solicitudes.creation.SolicitudServicioBusinessOperator;
 import ar.com.nextel.business.solicitudes.creation.request.SolicitudServicioRequest;
 import ar.com.nextel.business.solicitudes.facturacion.FacturacionSolServicioService;
-import ar.com.nextel.business.solicitudes.generacionCierre.predicates.scoring.CierraConScoringNegativoPredicate;
 import ar.com.nextel.business.solicitudes.generacionCierre.request.GeneracionCierreResponse;
 import ar.com.nextel.business.solicitudes.generacionCierre.result.CierreYPassResult;
 import ar.com.nextel.business.solicitudes.negativeFiles.NegativeFilesBusinessOperator;
@@ -1233,7 +1232,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			resultado.setPuedeCerrar(puedeCerrar);
 			
 			if (puedeCerrar == CierreYPassResult.CIERRE_PASS_AUTOMATICO) {//pass de creditos segun la logica
-				cierrePorVeraz = !solicitudServicio.getSolicitudServicioGeneracion().isCierreConPinOrScoringChecked(pinMaestro, pinChequeadoEnNexus);
+				cierrePorVeraz = !modoCierreConPinOrScoring(solicitudServicio, pinMaestro,pinChequeadoEnNexus);
 				errorCC = evaluarEquiposYDeuda(solicitudServicio, pinMaestro,cierrePorVeraz);
 				if ("".equals(errorCC)) {
 					
@@ -1295,6 +1294,32 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		}
 		
 		return resultado;
+	}
+
+	private boolean modoCierreConPinOrScoring(SolicitudServicio solicitudServicio, String pinMaestro, boolean pinChequeadoEnNexus) throws RpcExceptionMessages {
+		boolean isCierreConPinOrScoringChecked = solicitudServicio.getSolicitudServicioGeneracion().isCierreConPinOrScoringChecked(pinMaestro, pinChequeadoEnNexus);
+		boolean puedeCerrarSinValidarPinAnexo = SessionContextLoader.getInstance().getVendedor().puedeCerrarSinValidarPinAnexo();
+		boolean modoCierreConPinOrScoring = isCierreConPinOrScoringChecked || (puedeCerrarSinValidarPinAnexo && solicitudServicio.getCuenta().isCliente());
+		// Evalúo deuda en caso de ser cliente
+		if (puedeCerrarSinValidarPinAnexo && solicitudServicio.getCuenta().isCliente()) {
+			CantidadEquiposDTO cantidadEquipos = getCantEquiposCuenta(solicitudServicio.getCuenta().getCodigoVantive());
+			if (Integer.valueOf(cantidadEquipos.getCantidadActivos()) == 0
+					&& Integer.valueOf(cantidadEquipos.getCantidadSuspendidos()) == 0) {
+				Long maxDeuda = Long.valueOf(((GlobalParameter) globalParameterRetriever
+								.getObject(GlobalParameterIdentifier.MAX_DEUDA_CTA_CTE)).getValue());
+			
+				AppLogger.info("#Log Cierre y pass - La deuda maxima posible es: " + maxDeuda, this);
+			
+				Long maxDeudaCtaCte= getMaxDeudaCtaCte(solicitudServicio.getCuenta().getCodigoVantive());
+				AppLogger.info("#Log Cierre y pass - La deuda de la cuenta corriente es: " + maxDeudaCtaCte, this);
+			
+				if ( maxDeudaCtaCte <= maxDeuda) { //no posee
+					modoCierreConPinOrScoring = false;
+				}
+			}
+		}
+	    solicitudServicio.getSolicitudServicioGeneracion().setCierrePorScoringCC(modoCierreConPinOrScoring);
+		return modoCierreConPinOrScoring;
 	}
 	
 //	MGR - Refactorizacion del cierre
@@ -2106,15 +2131,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 //		if (!RegularExpressionConstants.isVancuc(ss.getCuenta().getCodigoVantive())) {
 		if (ss.getCuenta().isCliente()) {
 			
-			AppLogger.info("#Log Cierre y pass - Buscando cantidad de equipos en la cuenta: " + ss.getCuenta().getCodigoVantive(), this);
-			
-//			MGR - Parche de emergencia
 			CantidadEquiposDTO cantidadEquipos = getCantEquiposCuenta(ss.getCuenta().getCodigoVantive());
-			
-			AppLogger.info("#Log Cierre y pass - Cantidad equipos activos: " + cantidadEquipos.getCantidadActivos(), this);
-			AppLogger.info("#Log Cierre y pass - Cantidad equipos suspendidos: " + cantidadEquipos.getCantidadSuspendidos(), this);
-			AppLogger.info("#Log Cierre y pass - Cantidad equipos desactivados: " + cantidadEquipos.getCantidadDesactivados(), this);
-			
 			if (Integer.valueOf(cantidadEquipos.getCantidadActivos()) > 0
 					|| Integer.valueOf(cantidadEquipos.getCantidadSuspendidos()) > 0) {
 				//	En el caso de que el usuario no ingrese el pin, debido a que es un prospect o 
@@ -2123,15 +2140,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				HashMap<String, Boolean> mapaPermisosClient = (HashMap<String, Boolean>) sessionContextLoader.getSessionContext().get(SessionContext.PERMISOS);
 				boolean permisoCierrePin = (Boolean) mapaPermisosClient.get(PermisosUserCenter.CERRAR_SS_CON_PIN.getValue());
 				boolean permisoCierreScoring = (Boolean) mapaPermisosClient.get(PermisosEnum.SCORING_CHECKED.getValue());
-				boolean cerrandoConItemBB = false;
-
-				for (LineaSolicitudServicio linea : ss.getLineas()) {
-					Modelo modelo = linea.getModelo();
-					if (modelo != null && modelo.getEsBlackberry()) {
-						cerrandoConItemBB = true;
-						break;
-					}
-				}
+				boolean cerrandoConItemBB = cerrandoConItemBB(ss);
 				
 //				if (("".equals(pinMaestro) || pinMaestro == null)
 //						&& !ss.getSolicitudServicioGeneracion().getScoringChecked()) {
@@ -2173,6 +2182,18 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		}
 		return "";
 	}
+
+	private boolean cerrandoConItemBB(SolicitudServicio ss) {
+		boolean cerrandoConItemBB = false;
+		for (LineaSolicitudServicio linea : ss.getLineas()) {
+			Modelo modelo = linea.getModelo();
+			if (modelo != null && modelo.getEsBlackberry()) {
+				cerrandoConItemBB = true;
+				break;
+			}
+		}
+	return cerrandoConItemBB;
+}
 	
 	/**
 	 * Averiguo si el cliente posee deuda de cuenta corriente, evaluando si tiene deuda de equipos y servicio.
@@ -2695,10 +2716,14 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private CantidadEquiposDTO getCantEquiposCuenta(String codigoVantive){
         CantidadEquiposDTO resultDTO = new CantidadEquiposDTO();
         try {
+			AppLogger.info("#Log Cierre y pass - Buscando cantidad de equipos en la cuenta: " + codigoVantive, this);
         	resultDTO = this.avalonSystem.retreiveEquiposPorEstado(codigoVantive);
         } catch (LegacyDAOException e) {
             resultDTO.setCantidadActivos("0");
         }
+        AppLogger.info("#Log Cierre y pass - Cantidad equipos activos: " + resultDTO.getCantidadActivos(), this);
+        AppLogger.info("#Log Cierre y pass - Cantidad equipos suspendidos: " + resultDTO.getCantidadSuspendidos(), this);
+        AppLogger.info("#Log Cierre y pass - Cantidad equipos desactivados: " + resultDTO.getCantidadDesactivados(), this);
 		return resultDTO;
 	}
 

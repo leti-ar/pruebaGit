@@ -895,6 +895,9 @@ public class SolicitudBusinessService {
 		// Se generará por scoring si tiene PIN ingresado (EECC) o si se tildá el checkbox de scoring
 		// (Dealers)
 		boolean scoringChecked = solicitudServicio.getSolicitudServicioGeneracion().isCierreConPinOrScoringChecked(pinMaestro, pinChequeadoEnNexus);
+		if (solicitudServicio.getSolicitudServicioGeneracion().isCierrePorCC()) {
+			scoringChecked = solicitudServicio.getSolicitudServicioGeneracion().getCierrePorScoringCC();
+		}
 		solicitudServicio.getSolicitudServicioGeneracion().setScoringChecked(scoringChecked);
 	}
 
