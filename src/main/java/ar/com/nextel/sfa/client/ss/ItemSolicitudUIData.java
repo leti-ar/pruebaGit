@@ -1247,11 +1247,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 			lineaSolicitudServicio.setNumeroSimcard(sim.getText());
 			lineaSolicitudServicio.setCantidad(1);
-			if (isActivacionOnline() && itemActivacionOnline!=null){
-//				lineaSolicitudServicio.setItem(itemActivacionOnline.getItem());
-				lineaSolicitudServicio.setPrecioLista(itemActivacionOnline.getPrecioLista());
-				lineaSolicitudServicio.setPrecioVenta(itemActivacionOnline.getPrecioLista());
-			}
 		} else {
 			lineaSolicitudServicio.setCantidad(Integer.parseInt(cantidad.getText()));
 
@@ -1283,9 +1278,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				lineaSolicitudServicio.setPrecioVentaPlan(0d);
 			}
 			double precio = itemTasadoSelected.getPrecioLista();
-			if (isActivacionOnline() && itemActivacionOnline!=null){
-				precio = itemActivacionOnline.getPrecioLista();
-			}
 			if (terminoSelected != null && terminoSelected.getAjuste() != null) {
 				precio = terminoSelected.getAjuste() * precio;
 			}
@@ -1293,12 +1285,13 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			// Campo subsidio
 			if (isPermanencia()){
 				lineaSolicitudServicio.setFullPrice(fullPrice.getValue());
-//				if (!fullPrice.getValue()){
-//					precio = obtenerPrecioSubsidiado(precio);				
-//					lineaSolicitudServicio.setPrecioLista(precio);
-//					lineaSolicitudServicio.setPrecioVenta(precio);
-//				}
+				if (!fullPrice.getValue() && !isActivacionOnline()){
+					precio = obtenerPrecioSubsidiado(precio);				
+					lineaSolicitudServicio.setPrecioLista(precio);
+					lineaSolicitudServicio.setPrecioVenta(precio);
+				}
 			}
+			
 			
 			lineaSolicitudServicio.setPrecioListaAjustado(precio);
 			// Limpio los servicios adicionales para que los actualice
