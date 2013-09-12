@@ -153,7 +153,6 @@ public class SolicitudBusinessService {
 //	private static String namedQueryItemParaActivacionOnline = "ITEMS_PARA_PLANES_ACT_ONLINE";
 	
 	private static String GET_SUBSIDIO_ITEM_VENDEDOR = "GET_SUBSIDIO_ITEM_VENDEDOR";
-	private static String GET_SUBSIDIO_ITEM_PLAN_VENDEDOR = "GET_SUBSIDIO_ITEM_PLAN_VENDEDOR";
 	
 	@Autowired
 	public void setGlobalParameterRetriever(
@@ -1447,18 +1446,6 @@ public class SolicitudBusinessService {
 		return subsidios;
 	}
 
-	public Double getSubsidiosPorItemPlan(Long idItem, Long idPlan) {
-		Long idTipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor().getId();
-
-		List<Double> result = repository.executeCustomQuery(GET_SUBSIDIO_ITEM_PLAN_VENDEDOR, 
-							idTipoVendedor, idItem, idPlan);
-		
-		if(result.isEmpty())
-			return 0.0;
-		
-		return result.get(0);
-	}
-	
     /**
      * Se valida que el/los numeros de sim/imei ingresados pertenezcan al
      * inventario/subinventario del usuario que realizo el ingreso de la
