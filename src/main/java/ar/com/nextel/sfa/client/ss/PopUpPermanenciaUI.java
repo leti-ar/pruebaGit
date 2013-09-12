@@ -37,8 +37,6 @@ public class PopUpPermanenciaUI extends DialogBox {
 	@UiField
 	Label title;
 	
-	private boolean debeFacturar;
-	
 	interface PopUpPermanenciaUIUiBinder extends UiBinder<Widget, PopUpPermanenciaUI> {
 	}
 
@@ -70,7 +68,7 @@ public class PopUpPermanenciaUI extends DialogBox {
 	
 	@UiHandler("aceptarLink")
 	public void onClickAceptar(ClickEvent event){
-		EventBusUtil.getEventBus().fireEvent(new ClickPermanenciaEvent(isDebeFacturar()));
+		EventBusUtil.getEventBus().fireEvent(new ClickPermanenciaEvent());
 		super.hide();
 	}
 	
@@ -83,13 +81,4 @@ public class PopUpPermanenciaUI extends DialogBox {
 		this.title.setText(title);
 	}
 
-	public void setDebeFacturar(boolean debeFacturar) {
-		this.debeFacturar = debeFacturar;
-	}
-
-	public boolean isDebeFacturar() {
-		return debeFacturar;
-	}
-	
-	
 }

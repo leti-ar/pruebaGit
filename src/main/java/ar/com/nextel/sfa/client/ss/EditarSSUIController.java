@@ -62,8 +62,7 @@ public interface EditarSSUIController {
 	public void getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado,
 			DefaultWaitCallback<List<SubsidiosDto>> callback);
 
-	public void loadTransferencia(Boolean cerrarPermanencia, Boolean facturarPermanencia
-			, Boolean verificarPermanencia);
+	public void loadTransferencia(Boolean cerrarPermanencia);
 
 	public void getItemPorModelo(Long idModelo, Long idListaPrecios,
 			DefaultWaitCallback<ItemSolicitudTasadoDto> callback);

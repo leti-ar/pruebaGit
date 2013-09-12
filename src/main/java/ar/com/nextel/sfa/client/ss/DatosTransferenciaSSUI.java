@@ -171,19 +171,8 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	}
 	
 	protected void doClickPopUpPermanencia(ClickPermanenciaEvent event) {
-		
-		boolean debeFacturar = event.isFactura();
 		boolean verBotonCerrar = false;
-		boolean verBotonFacturar = false;
-		boolean verBotonVerificarPago = false;
-		
-		if (debeFacturar){
-			//TODO CAM 9. El MP genera la factura por el monto de los cargos abonados detallando cada uno.
-			MessageDialog.getInstance().showAceptar("Aca deberia realizar la facturacion para permanencia..."
-					, MessageDialog.getCloseCommand());
-			verBotonVerificarPago = true;
-		}
-		controller.loadTransferencia(verBotonCerrar,verBotonFacturar,verBotonVerificarPago);
+		controller.loadTransferencia(verBotonCerrar);
 	}
 
 	private Widget getNssLayout() {
@@ -835,17 +824,11 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 				contratosChequeados.clear();
 				contratosChequeados.addAll(result);
 				boolean verBotonCerrar = false;
-				boolean verBotonFacturar = false;
-				boolean verBotonVerificarPago = false;
 				
 				if (existeContratosConPermanencia()){
-					if (ctaCedenteDto.isEmpresa()){
-						verBotonCerrar = true; //Cliente destino empresa
-					}else{
-						verBotonFacturar = true; //Cliente destino directo
-					}
+					verBotonCerrar = true;
 				}
-				controller.loadTransferencia(verBotonCerrar,verBotonFacturar,verBotonVerificarPago);
+				controller.loadTransferencia(verBotonCerrar);
 			}
 		});
 	}

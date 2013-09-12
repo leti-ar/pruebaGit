@@ -109,8 +109,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private SimpleLink cerrarSolicitud;
 	private SimpleLink generarSolicitud;
 	private SimpleLink cerrarPermanenciaSolicitud;
-	private SimpleLink facturarPermanenciaSolicitud;
-	private SimpleLink verificarPagoPermanenciaSolicitud;
 	private DefaultWaitCallback<GeneracionCierreResultDto> generacionCierreCallback;
 	private CerrarSSUI cerrarSSUI;
 	private PopUpPermanenciaUI popupPanel;
@@ -344,7 +342,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		
 	}
 	
-	public void loadTransferencia(Boolean cerrarPermanencia, Boolean facturarPermanencia, Boolean verificarPermanencia){
+	public void loadTransferencia(Boolean cerrarPermanencia){
 		linksCrearSS.clear();
 		if(grupoSS != null && knownInstancias != null && 
 				!grupoSS.equals(knownInstancias.get(GrupoSolicitudDto.ID_TRANSFERENCIA).toString()) &&
@@ -353,10 +351,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		}
 		if (cerrarPermanencia){
 			linksCrearSS.add(wrap(cerrarPermanenciaSolicitud));
-		}else if (facturarPermanencia){
-			linksCrearSS.add(wrap(facturarPermanenciaSolicitud));
-		}else if (verificarPermanencia){
-			linksCrearSS.add(wrap(verificarPagoPermanenciaSolicitud));
 		}else{
 			linksCrearSS.add(wrap(cerrarSolicitud));
 		}
@@ -687,8 +681,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		generarSolicitud = new SimpleLink("Generar");
 		cerrarSolicitud = new SimpleLink("Cerrar");
 		cerrarPermanenciaSolicitud = new SimpleLink("Cerrar");
-		facturarPermanenciaSolicitud = new SimpleLink("Facturar");
-		verificarPagoPermanenciaSolicitud = new SimpleLink("Verificar Pago");
 		
 		//MGR - #1122
 //		if(grupoSS != null && knownInstancias != null && 
@@ -701,8 +693,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		generarSolicitud.addClickListener(this);
 		cerrarSolicitud.addClickListener(this);
 		cerrarPermanenciaSolicitud.addClickListener(this);
-		facturarPermanenciaSolicitud.addClickListener(this);
-		verificarPagoPermanenciaSolicitud.addClickListener(this);
 		generarCerrarMenu.setWidget(linksCrearSS);
 
 		formButtonsBar = new FormButtonsBar();
@@ -974,11 +964,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				openGenerarCerrarSolicitdDialog(sender == cerrarSolicitud);
 			}
 		} else if (sender == cerrarPermanenciaSolicitud){
-			verPopUpPermanencia(datosTranferencia.getContratosSSChequeados(),false);
-		} else if (sender == facturarPermanenciaSolicitud){
-			verPopUpPermanencia(datosTranferencia.getContratosSSChequeados(),true);
-		} else if (sender == verificarPagoPermanenciaSolicitud){
-			verificarPagos(datosTranferencia.getContratosSSChequeados());
+			verPopUpPermanencia(datosTranferencia.getContratosSSChequeados());
 		}
 //		MGR - Facturacion - Funcionalidad del link Facturar
 		else if (sender ==  facturarButton){
@@ -2052,25 +2038,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		});
 	}
 
-	private void verPopUpPermanencia(List<ContratoViewDto> values, Boolean debeFacturar){
-		this.popupPanel.setDebeFacturar(debeFacturar);
+	private void verPopUpPermanencia(List<ContratoViewDto> values){
 		this.popupPanel.setHeaderTitle(Sfa.constant().cargosPermanencia());
 		this.popupPanel.chargeContentTable(values);
 		this.popupPanel.show();
 		this.popupPanel.center();
 	}
-
-	private void verificarPagos(List<ContratoViewDto> contratosSSChequeados) {
-		boolean verBotonCerrar = false;
-		boolean verBotonFacturar = false;
-		boolean verBotonVerificarPago = false;
-		//TODO CAM 11. El sistema verifica que se haya realizado el pago asociado a la SS.
-		MessageDialog.getInstance().showAceptar("Aca deberia verificar el pago asociado a la SS..."
-				, MessageDialog.getCloseCommand());
-		loadTransferencia(verBotonCerrar, verBotonFacturar,verBotonVerificarPago);
-	}
-
-
 
 	/**
 	 * validacion de stock para el imei-sin cargados en agregar item
