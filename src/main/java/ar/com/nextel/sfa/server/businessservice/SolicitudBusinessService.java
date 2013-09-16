@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.server.businessservice;
 
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -1328,16 +1329,15 @@ public class SolicitudBusinessService {
 		Long codError = -1l;
 		try {
 			// MGR - Para que pueda transformar a cliente, debo setearle el lenguaje a la base
-			stmt = ((HibernateRepository) repository)
+			Connection connection = ((HibernateRepository) repository)
 					.getHibernateDaoSupport().getSessionFactory()
-					.getCurrentSession().connection()
+					.getCurrentSession().connection();
+			stmt = connection
 					.prepareStatement(
 							"BEGIN EXECUTE IMMEDIATE 'ALTER SESSION SET NLS_LANGUAGE =''Latin American Spanish'''; END;");
 			stmt.executeQuery();
 			
-			cstmt = ((HibernateRepository) repository)
-					.getHibernateDaoSupport().getSessionFactory()
-					.getCurrentSession().connection()
+			cstmt = connection
 					.prepareCall(
 							"call SFA_INSERT_UPDATE_CUENTA(?,?,?)");
 			cstmt.setLong(1, idCuenta);
