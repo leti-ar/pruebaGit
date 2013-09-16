@@ -1282,18 +1282,18 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				precio = terminoSelected.getAjuste() * precio;
 			}
 
+			lineaSolicitudServicio.setPrecioListaAjustado(precio);
+			
 			// Campo subsidio
 			if (isPermanencia()){
 				lineaSolicitudServicio.setFullPrice(fullPrice.getValue());
 				if (!fullPrice.getValue() && !isActivacionOnline()){
-					precio = obtenerPrecioSubsidiado(precio);				
-					lineaSolicitudServicio.setPrecioLista(precio);
-					lineaSolicitudServicio.setPrecioVenta(precio);
+					double precioSubsidiado = obtenerPrecioSubsidiado(precio);				
+					lineaSolicitudServicio.setPrecioLista(precioSubsidiado);
+					lineaSolicitudServicio.setPrecioVenta(precioSubsidiado);
 				}
 			}
-			
-			
-			lineaSolicitudServicio.setPrecioListaAjustado(precio);
+
 			// Limpio los servicios adicionales para que los actualice
 			if (!(lineaSolicitudServicio.getPlan().getId().equals(idPlanAnterior) && lineaSolicitudServicio
 					.getItem().getId().equals(idItemAnterior) && lineaSolicitudServicio.getFullPrice().equals(fullPriceAnterior))) {
