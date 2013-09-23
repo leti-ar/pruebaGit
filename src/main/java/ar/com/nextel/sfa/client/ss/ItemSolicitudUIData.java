@@ -25,6 +25,7 @@ import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefoniaDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
+import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.FormUtils;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
@@ -1510,6 +1511,13 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 						
 					}
 				});
+	}
+
+	public void visualizarCheckBoxPermanencia() {
+		if (isPermanencia() && !ClientContext.getInstance().checkPermiso(PermisosEnum.VER_PERMANENCIA.getValue())){
+			fullPrice.setVisible(false);
+			fullPrice.setValue(false);
+		}
 	}
 	
 }

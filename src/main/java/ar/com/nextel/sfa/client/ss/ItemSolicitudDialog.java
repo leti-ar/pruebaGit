@@ -294,6 +294,8 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 				tipoSolicitudPanel.clear();
 			}
 			
+			itemSolicitudUIData.visualizarCheckBoxPermanencia();
+			
 //			visualizarIMEI_SIM(tipoSolicitud);
 			loadUIData(tipoSolicitud);
 		}
