@@ -72,6 +72,7 @@ public interface CuentaRpcService extends RemoteService {
 	public List <CuentaDto> getCuentasAsociadasAVentaPotencial(Long idVentaPotencial) throws RpcExceptionMessages;
 	//MGR - Dado un codigo vantive, devuelve el numero de cuenta que le corresponde en SFA
 	public Long selectCuenta(String codigoVantive) throws RpcExceptionMessages;
+	public Boolean estaChequeadoPinEnNexus(String idRegistroAtencion, String customerId) throws RpcExceptionMessages;
 	//MGR - #1466
 	public List<CuentaDto> searchCuentasDto(CuentaSearchDto cuentaSearchDto, boolean deberiaLockear) throws RpcExceptionMessages;
 	public List<ContratoViewDto> searchContratosActivos(CuentaDto ctaDto) throws RpcExceptionMessages;

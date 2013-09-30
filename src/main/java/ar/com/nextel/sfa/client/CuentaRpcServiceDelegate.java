@@ -143,6 +143,12 @@ public class CuentaRpcServiceDelegate {
 		
 	}
 	
+	public void estaChequeadoPinEnNexus(String idRegistroAtencion, String customerId, DefaultWaitCallback<Boolean> callback) {
+		WaitWindow.show();
+		cuentaRpcService.estaChequeadoPinEnNexus(idRegistroAtencion, customerId, callback);
+	}
+	
+	
 	//MGR - #1466
 	public void searchCuentaDto(CuentaSearchDto cuentaSearchDto, boolean deberiaLockear, DefaultWaitCallback<List<CuentaDto>> callback) {
 		WaitWindow.show();

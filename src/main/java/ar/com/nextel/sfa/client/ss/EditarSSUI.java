@@ -1219,6 +1219,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			public void execute() {
 				editarSSUIData.setSolicitudServicioGeneracion(getCerrarSSUI().getCerrarSSUIData()
 						.getSolicitudServicioGeneracion());
+				
 				// Se comenta por el nuevo cartel de cargando;
 				CerradoSSExitosoDialog.getInstance().showLoading(cerrandoSolicitud);
 				List<String> errors = null;
@@ -1581,7 +1582,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		}
 
 		SolicitudRpcService.Util.getInstance().generarCerrarSolicitud(
-				ssDto, pinMaestro, cerrandoSolicitud,
+				ssDto, pinMaestro, cerrandoSolicitud, ClientContext.getInstance().isPinChequeadoEnNexus(), 
 				getGeneracionCierreCallback());
 	}
 

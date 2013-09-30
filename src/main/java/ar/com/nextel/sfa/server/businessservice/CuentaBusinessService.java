@@ -21,10 +21,11 @@ import ar.com.nextel.business.cuentas.caratula.ArpuService;
 import ar.com.nextel.business.cuentas.caratula.CaratulaTransferidaResultDto;
 import ar.com.nextel.business.cuentas.caratula.dao.config.CaratulaTransferidaConfig;
 import ar.com.nextel.business.cuentas.caratula.exception.ArpuServiceException;
-import ar.com.nextel.business.constants.MessageIdentifier;
 import ar.com.nextel.business.cuentas.create.CreateCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
 import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaService;
+import ar.com.nextel.business.cuentas.flota.FlotaService;
+import ar.com.nextel.business.cuentas.flota.FlotaServiceImpl;
 import ar.com.nextel.business.cuentas.scoring.legacy.dto.ScoringCuentaLegacyDTO;
 import ar.com.nextel.business.cuentas.select.SelectCuentaBusinessOperator;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
@@ -69,7 +70,6 @@ import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
-import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.dto.ContactoCuentaDto;
 import ar.com.nextel.sfa.client.dto.CuentaDto;
 import ar.com.nextel.sfa.client.dto.DatosDebitoCuentaBancariaDto;
@@ -126,6 +126,8 @@ public class CuentaBusinessService {
 	@Qualifier("knownInstancesRetriever")
 	private KnownInstanceRetriever knownInstanceRetriever;
 
+	private FlotaService flotaService;
+	
 	private FacturaElectronicaService facturaElectronicaService;
 
 	private Repository repository;
@@ -136,6 +138,11 @@ public class CuentaBusinessService {
 	private AvalonSystem avalonSystem;
 	private CaratulaTransferidaConfig caratulaTransferidaConfig;
 	private TransactionConnectionDAO sfaConnectionDAO;
+	
+	@Autowired
+    public void setFlotaService(@Qualifier("flotaService")FlotaService flotaService) {
+        this.flotaService = flotaService;
+    }
 	
 	@Autowired
 	public void setCaratulaTransferidaConfig(CaratulaTransferidaConfig caratulaTransferidaConfig) {
@@ -438,7 +445,7 @@ public class CuentaBusinessService {
 			}
 		}
 		// **********************************************************************************************
-
+		
 		repository.save(cuenta.getDatosPago());
 		repository.save(cuenta);
 		return cuenta.getId();
@@ -585,7 +592,16 @@ public class CuentaBusinessService {
 					cod_vantive, vendedor)
 					: getAccessCuenta(cuentaId, vendedor);
 			cuenta = (Cuenta) accessCuenta.getTargetObject();
+			
+			
+			
+			
+			// Actualizo la cuenta con la flota correspondiente, ticket mantis: 0004038.
+			flotaService.updateCuentaConFlota(cuenta);
 
+			
+			
+			
 			validarAccesoCuenta(cuenta, vendedor, filtradoPorDni);
 
 			//MGR - #1466

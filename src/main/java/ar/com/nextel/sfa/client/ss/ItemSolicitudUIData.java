@@ -230,7 +230,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		modeloEq.addChangeListener(this);
 		verificarImeiWrapper.addClickHandler(this);
 		verificarSimWrapper.addClickHandler(this);
-		roaming.addClickHandler(this);
+		// SB - #0004558
+		// roaming.addClickHandler(this);
 		imei.addChangeListener(this);
 //		imeiRetiroEnSucursal.addBlurHandler(new BlurHandler() {
 //			
@@ -383,14 +384,18 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			verificarImei();
 		} else if (sender == verificarSimWrapper) {
 			verificarSim();
-		} else if (sender == roaming) {
-			if (roaming.getValue()) {
-				ddi.setValue(true);
-				ddi.setEnabled(false);
-			} else {
-				ddi.setEnabled(true);
-			}
-		}
+		} 
+		
+		// SB - #0004558
+		
+//		else if (sender == roaming) {
+//			if (roaming.getValue()) {
+//				ddi.setValue(true);
+//				ddi.setEnabled(false);
+//			} else {
+//				ddi.setEnabled(true);
+//			}
+//		}
 	}
 
 	public boolean reservar() {
@@ -679,18 +684,21 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			// Cargo Modalidades de Cobro posibles
 			if (plan.getSelectedItem() != null) {
 				PlanDto planDto = (PlanDto) plan.getSelectedItem();
-				if (planDto.getTipoTelefonia().equals(TipoTelefoniaDto.TIPO_PREPAGO)) {
-					ddi.setValue(Boolean.TRUE);
-					//MGR - #1129
-					ddi.setEnabled(Boolean.TRUE);
-					roaming.setValue(Boolean.FALSE);
-					roaming.setEnabled(Boolean.FALSE);
-				} else {
-					ddi.setValue(Boolean.FALSE);
-					//MGR - #1129
-					ddi.setEnabled(Boolean.TRUE);
-					roaming.setEnabled(Boolean.TRUE);
-				}
+				
+				//SB - #0004558
+				
+//				if (planDto.getTipoTelefonia().equals(TipoTelefoniaDto.TIPO_PREPAGO)) {
+//					ddi.setValue(Boolean.TRUE);
+//					//MGR - #1129
+//					ddi.setEnabled(Boolean.TRUE);
+//					roaming.setValue(Boolean.FALSE);
+//					roaming.setEnabled(Boolean.FALSE);
+//				} else {
+//					ddi.setValue(Boolean.FALSE);
+//					//MGR - #1129
+//					ddi.setEnabled(Boolean.TRUE);
+//					roaming.setEnabled(Boolean.TRUE);
+//				}
 				precioListaPlan.setInnerHTML(currencyFormat.format(planDto.getPrecio()));
 				if (modalidadCobro.getItemCount() > 0) {
 					modalidadCobro.clear();
@@ -771,13 +779,14 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		pinLabel.setVisible(!visible);
 	}
 
+	//SB - #0004558
 	private void setDisableAndCheckedRoaming(boolean checked) {
 		ddn.setValue(checked);
-		ddi.setValue(checked);
-		roaming.setValue(checked);
+		// ddi.setValue(checked);
+		// roaming.setValue(checked);
 		ddn.setEnabled(!checked);
-		ddi.setEnabled(!checked);
-		roaming.setEnabled(!checked);
+		// ddi.setEnabled(!checked);
+		// roaming.setEnabled(!checked);
 	}
 
 	public DefaultWaitCallback<List<PlanDto>> getActualizarPlanCallback() {
@@ -868,13 +877,16 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	}
 
 	public CheckBox getDdi() {
+		// SB - 0004558: TKT351510- Servicios de DDI y ROAMING en SFA. 
+		ddi.setEnabled(false);
 		return ddi;
 	}
-
+	
 	public CheckBox getRoaming() {
+		// SB - 0004558: TKT351510- Servicios de DDI y ROAMING en SFA.
+		roaming.setEnabled(false);
 		return roaming;
 	}
-
 	
 	public CheckBox getPortabilidad() {
 		return portabilidad;
@@ -1034,7 +1046,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		cantidad.setText(linea.getCantidad() != null ? "" + linea.getCantidad() : "");
 		enableAliasYReserva(isCantiadIgualNadaOUno());
 		ddn.setValue(linea.getDdn());
-		ddi.setValue(linea.getDdi());
+		// SB - #0004558
+		// ddi.setValue(linea.getDdi());
 		if (linea.getLocalidad() != null) {
 			localidad.setSelectedItem(linea.getLocalidad());
 		} else {
@@ -1047,7 +1060,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		confirmarReserva.setVisible(!tieneNReserva);
 		serie.setText(linea.getNumeroSerie());
 		sim.setText(linea.getNumeroSimcard());
-		roaming.setValue(linea.getRoaming());
+		// SB - #0004558
+		// roaming.setValue(linea.getRoaming());
 		if (linea.getPlan() != null) {
 			tipoPlan.setSelectedItem(linea.getPlan().getTipoPlan());
 		} else {
@@ -1159,9 +1173,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 						.setModalidadCobro((ModalidadCobroDto) modalidadCobro.getSelectedItem());
 				lineaSolicitudServicio.setNumeroReserva(getNumeroTelefonicoCompletoFromFields());
 				lineaSolicitudServicio.setNumeroReservaArea(reservarHidden.getText());
-				lineaSolicitudServicio.setDdi(ddi.getValue());
+				// SB - #0004558
+				// lineaSolicitudServicio.setDdi(ddi.getValue());
 				lineaSolicitudServicio.setDdn(ddn.getValue());
-				lineaSolicitudServicio.setRoaming(roaming.getValue());
+				// SB - #0004558
+				// lineaSolicitudServicio.setRoaming(roaming.getValue());
 			}
 			PlanDto planSelected = (PlanDto) plan.getSelectedItem();
 

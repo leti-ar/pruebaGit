@@ -6,13 +6,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletException;
 
+import org.apache.catalina.SessionListener;
 import org.apache.commons.collections.Transformer;
 import org.dozer.MappingException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
@@ -21,6 +25,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
+import ar.com.nextel.business.cuentas.flota.FlotaService;
 import ar.com.nextel.business.cuentas.migrator.legacy.dto.DocDigitalizadoLegacyDto;
 import ar.com.nextel.business.cuentas.search.SearchCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.search.businessUnits.CuentaSearchData;
@@ -81,6 +86,7 @@ import ar.com.nextel.model.personas.beans.Provincia;
 import ar.com.nextel.model.personas.beans.Sexo;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
+import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.services.nextelServices.NextelServices;
@@ -146,6 +152,7 @@ import ar.com.nextel.sfa.client.initializer.VerazInitializer;
 import ar.com.nextel.sfa.server.businessservice.CuentaBusinessService;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
+import ar.com.nextel.util.PermisosUserCenter;
 import ar.com.nextel.util.StringUtil;
 import ar.com.nextel.web.download.DownloadService;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
@@ -182,10 +189,15 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	
 	private KnownInstanceRetriever knownInstanceRetriever;
 	private static final String VALID_EXIST_TRIPTICO = "VALID_EXIST_TRIPTICO";
+	private static final String PIN_CHECKED_IN_NEXUS = "PIN_CHECKED_IN_NEXUS";
 	private VantiveSystem vantiveSystem;
 	//#LF
 	private static final String QUERY_VALID_EECC = "VALID_EECC";
 	private static final String QUERY_AUTOCOMP_VERAZ = "QUERY_AUTOCOMP_VERAZ";
+	
+	private FlotaService flotaService;
+	
+	
 
 	@Override
 	public void init() throws ServletException {
@@ -208,7 +220,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 
 		knownInstanceRetriever = (KnownInstanceRetriever) context.getBean("knownInstancesRetriever");
 		vantiveSystem = (VantiveSystem) context.getBean("vantiveSystemBean");
-		
+	    flotaService = (FlotaService)context.getBean("flotaService");
 		setGetAllBusinessOperator((GetAllBusinessOperator) context.getBean("getAllBusinessOperatorBean"));
 	}
 
@@ -540,7 +552,11 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 				errMsg = errMsg.replaceAll("\\{2\\}", nombre);
 				throw new RpcExceptionMessages(errMsg);
 			}
+
 			cuenta = repository.retrieve(Cuenta.class, cuenta.getId());
+			// Actualizo la cuenta con la flota correspondiente, ticket mantis: 0004038.
+			flotaService.updateCuentaConFlota(cuenta);
+			
 			cuentaBusinessService.validarAccesoCuenta(cuenta, getVendedor(), true);
 			if (asociarCuentaSiCorresponde(solicitudCta, cuenta)) {
 				// lockea
@@ -768,6 +784,34 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		return null;
 	}
 
+	public Boolean estaChequeadoPinEnNexus(String idRegistroAtencion, String customerId) throws RpcExceptionMessages {
+		List result = null;
+		boolean estaChequeadoPinEnNxs = false;
+		HashMap<String, Boolean> mapaPermisosClient = (HashMap<String, Boolean>) sessionContextLoader.getSessionContext().get(SessionContext.PERMISOS);
+		boolean permisoCierrePin = (Boolean) mapaPermisosClient.get(PermisosUserCenter.CERRAR_SS_CON_PIN.getValue());
+		
+	    if (permisoCierrePin) {
+	    	try{
+	    		AppLogger.info("Validando si fue chequeado el PIN en Nexus customerId = " + customerId + " idRegistroAtencion = " + idRegistroAtencion,this);
+	    		result = repository.executeCustomQuery(PIN_CHECKED_IN_NEXUS, idRegistroAtencion, customerId);
+	    		AppLogger.info("validacion del PIN en Nexus finaliza correctamente.",this);
+	    	}catch (Exception e) {
+	    		AppLogger.error(e);
+	    		throw ExceptionUtil.wrap(e);
+	    	}
+	    	
+	    	if(result == null || result.isEmpty()){
+	    		AppLogger.info("El PIN no ha sido solicitado en Nexus",this);
+	    	}else{
+	    		AppLogger.info("El PIN fue ingresado desde Nexus",this);
+	    		estaChequeadoPinEnNxs = true;
+	    	}
+	    } else {
+    		AppLogger.info("Este perfil no ingresa PIN , no se evalua si fue ingresado desde nexus",this);
+	    }
+	    return estaChequeadoPinEnNxs;
+	}
+	
 	//MGR - #1466
 	public List<CuentaDto> searchCuentasDto(CuentaSearchDto cuentaSearchDto, boolean deberiaLockear) throws RpcExceptionMessages{
 		List<CuentaDto> cuentasDto = new ArrayList<CuentaDto>();
@@ -940,7 +984,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	public boolean validarExistenciaTriptico(String nro) throws RpcExceptionMessages{
 		List result = null;
 		try{
-			AppLogger.info("Validando la existencia del número de solicitud: " + nro);
+			AppLogger.info("Validando la existencia del n�mero de solicitud: " + nro);
 			result = repository.executeCustomQuery(VALID_EXIST_TRIPTICO, nro);
 			AppLogger.info("Número de solicitud " + nro + " validado correctamente.");
 		}catch (Exception e) {

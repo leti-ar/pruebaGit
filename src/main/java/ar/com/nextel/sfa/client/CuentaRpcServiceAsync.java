@@ -55,6 +55,7 @@ public interface CuentaRpcServiceAsync {
 	public void getCuentasAsociadasAVentaPotencial(Long idVentaPotencial, AsyncCallback<List<CuentaDto>> callback);
 	//MGR - Dado un codigo vantive, devuelve el numero de cuenta que le corresponde en SFA
 	public void selectCuenta(String codigoVantive,AsyncCallback<Long> callback);
+	public void estaChequeadoPinEnNexus(String idRegistroAtencion, String customerId,AsyncCallback<Boolean> callback);
 	
 	//MGR - #1466
 	public void searchCuentasDto(CuentaSearchDto cuentaSearchDto, boolean deberiaLockear, AsyncCallback<List<CuentaDto>> callback);
