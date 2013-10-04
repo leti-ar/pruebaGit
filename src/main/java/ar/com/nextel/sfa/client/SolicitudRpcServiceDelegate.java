@@ -172,9 +172,9 @@ public class SolicitudRpcServiceDelegate {
 	}
 
 	public void generarCerrarSolicitud(SolicitudServicioDto solicitudServicioDto, String pinMaestro,
-			boolean cerrar, DefaultWaitCallback<GeneracionCierreResultDto> callback) {
+			boolean cerrar, boolean pinChequeadoEnNexus, DefaultWaitCallback<GeneracionCierreResultDto> callback) {
 		WaitWindow.show();
-		solicitudRpcServiceAsync.generarCerrarSolicitud(solicitudServicioDto, pinMaestro, cerrar, callback);
+		solicitudRpcServiceAsync.generarCerrarSolicitud(solicitudServicioDto, pinMaestro, cerrar, pinChequeadoEnNexus, callback);
 	}
 
 	public void existReport(String report, DefaultWaitCallback<Boolean> callback) {

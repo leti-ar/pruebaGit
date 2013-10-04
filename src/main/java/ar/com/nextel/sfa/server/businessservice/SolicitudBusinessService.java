@@ -1,6 +1,7 @@
 package ar.com.nextel.sfa.server.businessservice;
 
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,6 +29,9 @@ import ar.com.nextel.business.cuentas.caratula.CaratulaTransferidaResultDto;
 import ar.com.nextel.business.cuentas.caratula.dao.config.CaratulaTransferidaConfig;
 import ar.com.nextel.business.cuentas.create.InsertUpdateCuentaConfig;
 import ar.com.nextel.business.cuentas.facturaelectronica.FacturaElectronicaService;
+import ar.com.nextel.business.cuentas.flota.FlotaService;
+import ar.com.nextel.business.cuentas.flota.FlotaServiceImpl;
+import ar.com.nextel.business.cuentas.flota.exception.FlotaServiceException;
 import ar.com.nextel.business.cuentas.scoring.legacy.dto.ScoringCuentaLegacyDTO;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
@@ -136,8 +140,11 @@ public class SolicitudBusinessService {
 	private KnownInstanceRetriever knownInstanceRetriever;
 	private InsertUpdateCuentaConfig insertUpdateCuentaConfig;
 	private CaratulaTransferidaConfig caratulaTransferidaConfig;
-	
 	private DespachoSolicitudBusinessOperator despachoSolicitudBusinessOperator;
+	
+	@Qualifier("serviceImpl")
+	private FlotaService flotaService;
+	
 	
 //	MGR - Se mueve la creacion de la cuenta
 	private String MENSAJE_ERROR_CREAR_CUENTA= "La SS % quedó pendiente de aprobación, por favor verificar y dar curso manual.";
@@ -148,6 +155,13 @@ public class SolicitudBusinessService {
 	public static final int CIERRE_PASS_AUTOMATICO = 3;
 	
 	private static final String CANTIDAD_EQUIPOS = "CANTIDAD_EQUIPOS";
+	
+	
+	
+	@Autowired
+    public void setFlotaService(@Qualifier("flotaService")FlotaService flotaService) {
+        this.flotaService = flotaService;
+    }
 	
 //	MGR - #3464
 //	private static String namedQueryItemParaActivacionOnline = "ITEMS_PARA_PLANES_ACT_ONLINE";
@@ -492,12 +506,25 @@ public class SolicitudBusinessService {
 			solicitudServicioDto.setVendedor(mapper.map(vendedor, VendedorDto.class));
 //		}
 			
+			
 		if( (solicitudServicio.getCuentaCedente() == null && solicitudServicioDto.getCuentaCedente() != null) ||
 				(solicitudServicio.getCuentaCedente() != null && solicitudServicioDto.getCuentaCedente() != null &&
 				!solicitudServicio.getCuentaCedente().getId().equals(solicitudServicioDto.getCuentaCedente().getId())) ){
+			
+		
 			Cuenta ctaCedente = repository.retrieve(Cuenta.class, solicitudServicioDto.getCuentaCedente().getId());
+			
+			// Actualizo la cuenta con la flota correspondiente, ticket mantis: 0004038.
+			try {
+				flotaService.updateCuentaConFlota(ctaCedente);
+			} catch (FlotaServiceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			solicitudServicio.setCuentaCedente(ctaCedente);
 		}
+		
 		
 		//MGR - #1359
 //		if( (solicitudServicio.getUsuarioCreacion() == null && solicitudServicioDto.getUsuarioCreacion() != null) ||
@@ -665,7 +692,7 @@ public class SolicitudBusinessService {
 //	MGR - Se mueve la creacion de la cuenta, se pasa "puedeCerrar" en lugar de "cierraPorCC"
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public GeneracionCierreResponse generarCerrarSolicitud(SolicitudServicio solicitudServicio,
-			String pinMaestro, boolean cerrar, int puedeCerrar) 
+			String pinMaestro, boolean cerrar, int puedeCerrar, boolean pinChequeadoEnNexus) 
 			throws BusinessException {
 		
 //		MGR - Se crea la variable que venia en la llamada	
@@ -687,13 +714,13 @@ public class SolicitudBusinessService {
 		if (!GenericValidator.isBlankOrNull(pinMaestro) && solicitudServicio.getCuenta().isEnCarga()) {
 			solicitudServicio.getCuenta().setPinMaestro(pinMaestro);
 		} else {
-			setScoringChecked(solicitudServicio, pinMaestro);
+			setScoringChecked(solicitudServicio, pinMaestro, pinChequeadoEnNexus);
 		}
 		if (cerrar) {
 			// La SS se está invocando desde Objeto B (Interfaz web)
 			solicitudServicio.setSourceModule("B");
 		}
-		GeneracionCierreRequest generacionCierreRequest = new GeneracionCierreRequest(pinMaestro,
+		GeneracionCierreRequest generacionCierreRequest = new GeneracionCierreRequest(pinMaestro,pinChequeadoEnNexus,
 				solicitudServicio);
 		GeneracionCierreResponse response = null;
 		if (cerrar) {
@@ -726,17 +753,30 @@ public class SolicitudBusinessService {
 				repository.save(solicitudServicio.getCuenta().getFacturaElectronica());
 				
 				//MGR - ISDN 1824
+				
+				///   saco el ! para que sea prospect...volver a ponerlo
+				
+				
 				if (!esProspect) {
 					String codigoGestion = "TRANSF_FACT_ELECTRONICA";
 					ParametrosGestion parametrosGestion = repository.retrieve(ParametrosGestion.class, codigoGestion);
 					
 					//MGR - ISDN 1824
 					String vendReal = "";
+					
+					// SB - #0004176 (volvi atras este cambio para que no salga en el release 2)
 					if(isADMCreditos){
 						vendReal = solicitudServicio.getVendedor().getUserReal();
 					}else{
 						vendReal = vendedor.getUserReal();
 					}
+					
+					
+					// SB - #0004176 (volvi atras este cambio para que no salga en el release 2)
+					
+//					String vendedorgenerico = String.valueOf(((GlobalParameter) globalParameterRetriever
+//							.getObject(GlobalParameterIdentifier.USR_GENERICO_GEST_FA_SFA)).getValue());
+					
 					
 					Long idGestion = generacionCierreBusinessOperator.lanzarGestionCerrarSS(
 							vendReal,
@@ -855,13 +895,13 @@ public class SolicitudBusinessService {
 		return response;
 	}
 
-	private void setScoringChecked(SolicitudServicio solicitudServicio, String pinMaestro) {
-		Boolean pinNotEmpty = !GenericValidator.isBlankOrNull(pinMaestro);
+	private void setScoringChecked(SolicitudServicio solicitudServicio, String pinMaestro, boolean pinChequeadoEnNexus) {
 		// Se generará por scoring si tiene PIN ingresado (EECC) o si se tildá el checkbox de scoring
 		// (Dealers)
-		boolean scoringChecked = pinNotEmpty
-				|| solicitudServicio.getSolicitudServicioGeneracion().getScoringChecked().booleanValue();
-
+		boolean scoringChecked = solicitudServicio.getSolicitudServicioGeneracion().isCierreConPinOrScoringChecked(pinMaestro, pinChequeadoEnNexus);
+		if (solicitudServicio.getSolicitudServicioGeneracion().isCierrePorCC()) {
+			scoringChecked = solicitudServicio.getSolicitudServicioGeneracion().getCierrePorScoringCC();
+		}
 		solicitudServicio.getSolicitudServicioGeneracion().setScoringChecked(scoringChecked);
 	}
 
@@ -893,7 +933,7 @@ public class SolicitudBusinessService {
 	}
 
 	public GeneracionCierreResponse crearArchivo(SolicitudServicio solicitudServicio, boolean enviarEmail) {
-		GeneracionCierreRequest generacionCierreRequest = new GeneracionCierreRequest("", solicitudServicio);
+		GeneracionCierreRequest generacionCierreRequest = new GeneracionCierreRequest("",false, solicitudServicio);
 		GeneracionCierreResponse response = generacionCierreBusinessOperator
 				.crearArchivo(generacionCierreRequest, enviarEmail);
 		return response;
@@ -1292,16 +1332,15 @@ public class SolicitudBusinessService {
 		Long codError = -1l;
 		try {
 			// MGR - Para que pueda transformar a cliente, debo setearle el lenguaje a la base
-			stmt = ((HibernateRepository) repository)
+			Connection connection = ((HibernateRepository) repository)
 					.getHibernateDaoSupport().getSessionFactory()
-					.getCurrentSession().connection()
+					.getCurrentSession().connection();
+			stmt = connection
 					.prepareStatement(
 							"BEGIN EXECUTE IMMEDIATE 'ALTER SESSION SET NLS_LANGUAGE =''Latin American Spanish'''; END;");
 			stmt.executeQuery();
 			
-			cstmt = ((HibernateRepository) repository)
-					.getHibernateDaoSupport().getSessionFactory()
-					.getCurrentSession().connection()
+			cstmt = connection
 					.prepareCall(
 							"call SFA_INSERT_UPDATE_CUENTA(?,?,?)");
 			cstmt.setLong(1, idCuenta);

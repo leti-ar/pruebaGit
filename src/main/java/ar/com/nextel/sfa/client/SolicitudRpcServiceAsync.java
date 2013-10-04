@@ -100,7 +100,7 @@ public interface SolicitudRpcServiceAsync {
 	public void verificarNegativeFiles(String numero, AsyncCallback<String> callback);
 
 	public void generarCerrarSolicitud(SolicitudServicioDto solicitudServicioDto, String pinMaestro,
-			boolean cerrar, AsyncCallback<GeneracionCierreResultDto> callback);
+			boolean cerrar, boolean pinChequeadoEnNexus, AsyncCallback<GeneracionCierreResultDto> callback);
 
 	public void existReport(String report, AsyncCallback<Boolean> callback);
 	

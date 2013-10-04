@@ -122,9 +122,28 @@ public class SFAWeb implements EntryPoint {
 		if(vieneDeNexus){
 			ClienteNexusDto clienteNexus = new ClienteNexusDto();
 			String customerCode = HistoryUtils.getParam("customerCode");
+			String customerNexusId = HistoryUtils.getParam("customerId");
+			String idRegistroAtencion = HistoryUtils.getParam("idRegistroAtencion");
 			clienteNexus.setCustomerCode(customerCode);
 			clienteNexus.setVieneDeNexus(vieneDeNexus);
+			clienteNexus.setCustomerNexusId(customerNexusId);
+			clienteNexus.setIdRegistroAtencion(idRegistroAtencion);
 			ClientContext.getInstance().setClienteNexus(clienteNexus);
+			
+			if (customerNexusId != null && idRegistroAtencion  != null) {
+				CuentaRpcService.Util.getInstance().estaChequeadoPinEnNexus(idRegistroAtencion, customerNexusId,  
+						new DefaultWaitCallback<Boolean>() {
+					public void success(Boolean isPinChecked) {
+						ClientContext.getInstance().getClienteNexus().setPinChequeadoEnNexus(isPinChecked);
+					}
+
+					public void failure(Throwable caught) {
+						ClientContext.getInstance().getClienteNexus().setPinChequeadoEnNexus(false);
+					}
+				});
+			} else {
+				ClientContext.getInstance().getClienteNexus().setPinChequeadoEnNexus(false);
+			}
 			
 			//MGR - Si llega un codigo de cliente, busco el numero de su cuenta es SFA
 			if(customerCode != null){
