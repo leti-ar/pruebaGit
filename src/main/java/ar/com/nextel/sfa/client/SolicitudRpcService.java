@@ -120,7 +120,7 @@ public interface SolicitudRpcService extends RemoteService {
 	public String verificarNegativeFiles(String numero) throws RpcExceptionMessages;
 
 	public GeneracionCierreResultDto generarCerrarSolicitud(SolicitudServicioDto solicitudServicioDto,
-			String pinMaestro, boolean cerrar) throws RpcExceptionMessages;
+			String pinMaestro, boolean cerrar, boolean pinChequeadoEnNexus) throws RpcExceptionMessages;
 
 	public Boolean existReport(String report) throws RpcExceptionMessages;
 	

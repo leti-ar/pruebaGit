@@ -1514,7 +1514,7 @@ public class SolicitudBusinessService {
 		
 		boolean cierraPorCC = puedeCerrar != CierreYPassResult.CIERRE_NORMAL;
 		
-		setScoringChecked(solicitudServicio, null);
+		setScoringChecked(solicitudServicio, null, false);
 		// La SS se está invocando desde Objeto B (Interfaz web)
 		solicitudServicio.setSourceModule("B");
 

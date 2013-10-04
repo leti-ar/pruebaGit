@@ -1267,7 +1267,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 //	MGR - Refactorizacion del cierre
 	private CierreYPassResult comprobarCierreYPassAutomatico(SolicitudServicio solicitudServicio, 
-			String pinMaestro, GeneracionCierreResultDto result) throws Exception{
+			String pinMaestro,  boolean pinChequeadoEnNexus ,GeneracionCierreResultDto result) throws Exception{
 		CierreYPassResult resultado = new CierreYPassResult();
 		
 		//larce - Req#5 Cierre y Pass automatico
@@ -1291,8 +1291,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					resultado.setIsVerazDisponible(isVerazDisponible.get(0));
 					
 //					MGR - #3458 - Verifico si corresponde cerrar por Veraz (o Scoring)
-					cierrePorVeraz = ("".equals(pinMaestro) || pinMaestro == null)
-										&& !solicitudServicio.getSolicitudServicioGeneracion().getScoringChecked();
 					if (puedeDarPassDeCreditos(solicitudServicio, cierrePorVeraz, isVerazDisponible.get(0))) {
 						
 //						MGR - #3458
