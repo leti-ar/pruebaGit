@@ -1049,16 +1049,8 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		//refreshControlLayout();
 		refreshDomicilioLayout();
 		refreshDetalleSSTable();
-		
 
-		//SB - 0004611: No se permite la edición del campo NºSS a los vendedores de perfil telemarketer.
-		if (ClientContext.getInstance().getVendedor().isTelemarketing()) {
-			// el setEnabled(controller.isEditable()) va si o si porque le agrega estos
-//			editarSSUIData.getNss().setEnabled(controller.isEditable());
-			controller.getEditarSSUIData().getNss().setEnabled(false);
-		} else {
-			editarSSUIData.getNss().setEnabled(controller.isEditable());
-		}
+		editarSSUIData.getNss().setEnabled(controller.isEditable());
 		editarSSUIData.getNflota().setEnabled(controller.isEditable());
 		editarSSUIData.getOrigen().setEnabled(controller.isEditable());
 		editarSSUIData.getVendedor().setEnabled(controller.isEditable());

@@ -593,6 +593,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			}
 		}
 		
+		//SB - 0004611: No se permite la edición del campo NºSS a los vendedores de perfil telemarketer.
+		if (ClientContext.getInstance().getVendedor().isTelemarketing()) {
+			nss.setReadOnly(true);
+		} else {
+			nss.setReadOnly(false);
+		}
+		
 		nflota.setEnabled(solicitud.getCuenta().getIdVantive() == null);
 		nflota.setReadOnly(!nflota.isEnabled());
 		nflota.setText(solicitud.getNumeroFlota());
