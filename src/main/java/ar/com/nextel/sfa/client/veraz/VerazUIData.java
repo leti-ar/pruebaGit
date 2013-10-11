@@ -73,6 +73,8 @@ public class VerazUIData extends UIData {
 
 		} else if (numeroDocTextBox.getText().length() > 10) {
 			errorList.add("El número de documento debe tener 10 dígitos como máximo");
+		} else if (numeroDocTextBox.getText().length() > numeroDocTextBox.getText().trim().length()){
+			errorList.add("El número de documento no puede contener espacios en blanco a la derecha.");
 		}
 		return errorList;
 	}
