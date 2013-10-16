@@ -502,7 +502,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	/** Comprueba la validez del IMEI y carga los combos de Modelo e Item */
 	private void refreshModelos() {
 		if (imei.getText().length() > 0) {
-			if (imei.getText().length() != 15) {
+			if (imei.getText().trim().length() != 15) {
 				ErrorDialog.getInstance().show(
 						Sfa.constant().ERR_LENGHT().replaceAll(v1, "IMEI").replaceAll(v2, "15"), false);
 			} else {
@@ -525,7 +525,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	}
 
 	private void verificarSim() {
-		if ((sim.getText().trim().length() != 15)) {
+		if (sim.getText().trim().length() != 15) {
 			ErrorDialog.getInstance().show(
 					Sfa.constant().ERR_LENGHT().replaceAll(v1, "SIM").replaceAll(v2, "15"), false);
 		} else {
@@ -541,11 +541,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 					}
 				}
 			});
-		}	
+		}
 	}
 
 	private void verificarImei() {
-		if ((imei.getText().trim().length() != 15)) {
+		if (imei.getText().trim().length() != 15) {
 			ErrorDialog.getInstance().show(
 					Sfa.constant().ERR_LENGHT().replaceAll(v1, "IMEI").replaceAll(v2, "15"), false);
 		} else {
@@ -749,7 +749,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 		} else if (sender == imei) {
 			refreshModelos();
-		}
+		} 
 		if (isActivacionOnline()) {
 			listaPrecio.setVisible(false);
 		}
@@ -980,16 +980,17 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 							Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "PIN")).length(8,
 							Sfa.constant().ERR_LENGHT().replaceAll(v1, "PIN").replaceAll(v2, "8"));
 				} else {
-					validator.addTarget(serie).required(
+					validator.addTarget(serie.getText().trim()).required(
 							Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Nº Serie")).length(10,
 							Sfa.constant().ERR_LENGHT().replaceAll(v1, "Nº Serie").replaceAll(v2, "10"));
 				}
 			}
-			validator.addTarget(imei).required(
+			validator.addTarget(imei.getText().trim()).required(
 					Sfa.constant().ERR_LENGHT().replaceAll(v1, "IMEI").replaceAll(v2, "15"));
 			if (sim.isEnabled()) {
-				validator.addTarget(sim).required(
-						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM"));
+				validator.addTarget(sim.getText().trim()).required(
+						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM")).length(10,
+						Sfa.constant().ERR_LENGHT().replaceAll(v1, "SIM").replaceAll(v2, "15"));
 			}
 		}
 		
