@@ -986,10 +986,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				}
 			}
 			validator.addTarget(imei.getText().trim()).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "IMEI")).length(15,
 					Sfa.constant().ERR_LENGHT().replaceAll(v1, "IMEI").replaceAll(v2, "15"));
 			if (sim.isEnabled()) {
 				validator.addTarget(sim.getText().trim()).required(
-						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM")).length(10,
+						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM")).length(15,
 						Sfa.constant().ERR_LENGHT().replaceAll(v1, "SIM").replaceAll(v2, "15"));
 			}
 		}
