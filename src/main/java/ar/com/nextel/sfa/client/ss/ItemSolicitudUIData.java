@@ -525,22 +525,27 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	}
 
 	private void verificarSim() {
-		controller.verificarNegativeFiles(sim.getText(), new DefaultWaitCallback<String>() {
-			public void success(String result) {
-				if (result != null) { //#3265
-					ErrorDialog.getInstance().show(result, false);
-					verificarSimWrapper.setHTML(IconFactory.comprobarRojo(Sfa.constant().verificarSim())
-							.toString());
-				} else {
-					verificarSimWrapper.setHTML(IconFactory.comprobarVerde(Sfa.constant().verificarSim())
-							.toString());
+		if ((sim.getText().trim().length() != 15)) {
+			ErrorDialog.getInstance().show(
+					Sfa.constant().ERR_LENGHT().replaceAll(v1, "SIM").replaceAll(v2, "15"), false);
+		} else {
+			controller.verificarNegativeFiles(sim.getText(), new DefaultWaitCallback<String>() {
+				public void success(String result) {
+					if (result != null) { //#3265
+						ErrorDialog.getInstance().show(result, false);
+						verificarSimWrapper.setHTML(IconFactory.comprobarRojo(Sfa.constant().verificarSim())
+								.toString());
+					} else {
+						verificarSimWrapper.setHTML(IconFactory.comprobarVerde(Sfa.constant().verificarSim())
+								.toString());
+					}
 				}
-			}
-		});
+			});
+		}	
 	}
 
 	private void verificarImei() {
-		if (imei.getText().length() != 15) {
+		if ((imei.getText().trim().length() != 15)) {
 			ErrorDialog.getInstance().show(
 					Sfa.constant().ERR_LENGHT().replaceAll(v1, "IMEI").replaceAll(v2, "15"), false);
 		} else {
