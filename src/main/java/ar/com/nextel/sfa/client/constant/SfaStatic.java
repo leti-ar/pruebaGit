@@ -3449,5 +3449,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
    */
   @DefaultStringValue("<span class=\"req\">Nº SS Web:</span>")
   @Key("nroSSWeb")
-  String nroSSWeb();  
+  String nroSSWeb();
+  
+  /**
+   * Translated "La Gama del Plan Cesionario no debe ser inferior al Plan que posee el Contrato.".
+   * 
+   * @return translated "La Gama del Plan Cesionario no debe ser inferior al Plan que posee el Contrato."
+   */
+  @DefaultStringValue("La Gama del Plan Cesionario no debe ser inferior al Plan que posee el Contrato.")
+  @Key("ERR_GAMA_INFERIOR")
+  String ERR_GAMA_INFERIOR();
+  
 }

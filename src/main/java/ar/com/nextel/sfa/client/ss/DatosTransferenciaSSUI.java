@@ -817,20 +817,12 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	}
 
 	private void verificarContratosConPermanencia() {
-		CuentaRpcService.Util.getInstance().checkPermanencia(contratosChequeados, new DefaultWaitCallback<Set<ContratoViewDto>>() {
-			@Override
-			public void success(Set<ContratoViewDto> result) {
-				
-				contratosChequeados.clear();
-				contratosChequeados.addAll(result);
-				boolean verBotonCerrar = false;
-				
-				if (existeContratosConPermanencia()){
-					verBotonCerrar = true;
-				}
-				controller.loadTransferencia(verBotonCerrar);
-			}
-		});
+		boolean verContratosConPermanencia = false;
+		
+		if (existeContratosConPermanencia()){
+			verContratosConPermanencia = true;
+		}
+		controller.loadTransferencia(verContratosConPermanencia);
 	}
 
 	private boolean existeContratosConPermanencia(){

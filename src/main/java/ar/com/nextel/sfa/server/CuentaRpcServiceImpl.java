@@ -9,15 +9,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 
-import org.apache.catalina.SessionListener;
 import org.apache.commons.collections.Transformer;
 import org.dozer.MappingException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
@@ -86,6 +82,7 @@ import ar.com.nextel.model.personas.beans.GrupoDocumento;
 import ar.com.nextel.model.personas.beans.Provincia;
 import ar.com.nextel.model.personas.beans.Sexo;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
+import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
@@ -863,6 +860,27 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 				contratos = mapper.convertList(
 						avalonSystem.retriveContratosActivosFull(ctaDto.getCodigoVantive()), ContratoViewDto.class);
 			}
+			
+			//cargo a los contratos los cargos de permanencia de existir
+			for (ContratoViewDto contrato : contratos) {
+				Object[] datosSubsidio = permanenciaWrapper.getCargoAbonar(contrato.getContrato());
+				contrato.setCargosPermanencia(0d);
+				if (datosSubsidio != null){
+					Double cargosPermanencia = ((Double) datosSubsidio[0]).doubleValue();
+					int mesesPermanencia = ((Integer) datosSubsidio[1]).intValue();
+					Long idPlan= ((Long) datosSubsidio[2]).longValue();
+					try {
+						Plan plan = (Plan) repository.retrieve(Plan.class, idPlan);	
+						contrato.setCargosPermanencia(cargosPermanencia);
+						contrato.setMesesPermanencia(mesesPermanencia);
+						contrato.setGamaPlanCedente(plan.getGamaPlan().getValor());
+					} catch (Exception e) {
+						throw new RpcExceptionMessages("Error de datos. El contrato "+contrato.getContrato() +" posee un subsidio sin plan asociado.");
+					}
+				    
+				}
+			}
+			
 		} catch (AvalonSystemException e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
@@ -1099,16 +1117,4 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		}
 	}
 	
-	public Set<ContratoViewDto> checkPermanencia(Set<ContratoViewDto> listaContratos){
-		for (ContratoViewDto contrato : listaContratos) {
-			Object[] datosSubsidio = permanenciaWrapper.getCargoAbonar(contrato.getContrato());
-			if (datosSubsidio != null){
-				Double cargosPermanencia = ((Double) datosSubsidio[0]).doubleValue();
-				int mesesPermanencia = ((Integer) datosSubsidio[1]).intValue();
-				contrato.setCargosPermanencia(cargosPermanencia);
-				contrato.setMesesPermanencia(mesesPermanencia);
-			}
-		}
-		return listaContratos;
-	}
 }
