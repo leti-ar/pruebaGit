@@ -793,6 +793,16 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 						
 						public void success(List<ContratoViewDto> result) {
 
+							for (ContratoViewDto contratoCedido : solicitud.getContratosCedidos()) {
+								for (ContratoViewDto contratoResult : result) {
+									if (contratoCedido.getContrato().equals(contratoResult.getContrato())){
+										contratoCedido.setCargosPermanencia(contratoResult.getCargosPermanencia());
+										contratoCedido.setMesesPermanencia(contratoResult.getMesesPermanencia());
+										contratoCedido.setGamaPlanCedente(contratoResult.getGamaPlanCedente());
+									}
+								}
+							}
+							
 							// primero seteo los contratos de la solicitud
 							if (!solicitud.getContratosCedidos().isEmpty()) {
 								todosContratosActivos.addAll(solicitud.getContratosCedidos());
