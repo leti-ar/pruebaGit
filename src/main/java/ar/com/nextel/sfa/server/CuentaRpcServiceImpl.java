@@ -32,6 +32,7 @@ import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorResu
 import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorServiceAxisImpl;
 import ar.com.nextel.business.cuentas.tarjetacredito.TarjetaCreditoValidatorServiceException;
 import ar.com.nextel.business.describable.GetAllBusinessOperator;
+import ar.com.nextel.business.externalConnection.exception.MerlinException;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.legacy.avalon.dto.CantidadEquiposDTO;
 import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
@@ -730,34 +731,28 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 
 	public NormalizarDomicilioResultDto normalizarDomicilio(DomiciliosCuentaDto domicilioANormalizar)
 			throws RpcExceptionMessages {
-//		NormalizarDomicilioResultDto domicilioResultNormalizacion = null;
-		NormalizarDomicilioResultDto domicilioResultNormalizacion = new NormalizarDomicilioResultDto();
-//		try {
+		NormalizarDomicilioResultDto domicilioResultNormalizacion = null;
+		try {
 			NormalizarDomicilioRequest normalizarDomicilioRequest = new NormalizarDomicilioRequest();
 			Domicilio domicilio = repository.createNewObject(Domicilio.class);
 			mapper.map(domicilioANormalizar, domicilio);
 			normalizarDomicilioRequest.populateFromDomicilio(domicilio);
-		//TODO CAM DESCOMENTAR!!	
-//			domicilioResultNormalizacion = mapper.map(normalizadorDomicilio
-//					.normalizarDomicilio(normalizarDomicilioRequest), NormalizarDomicilioResultDto.class);
-			domicilioResultNormalizacion.setDireccion(domicilioANormalizar); //SACAR
-			domicilioResultNormalizacion.setTipo("exito"); //SACAR
-			
-//		} catch (MerlinException e) {
-//			throw ExceptionUtil.wrap(e);
-//		}
+			domicilioResultNormalizacion = mapper.map(normalizadorDomicilio
+					.normalizarDomicilio(normalizarDomicilioRequest), NormalizarDomicilioResultDto.class);
+		} catch (MerlinException e) {
+			throw ExceptionUtil.wrap(e);
+		}
 		return domicilioResultNormalizacion;
 	}
 
 	public NormalizarCPAResultDto getDomicilioPorCPA(String cpa) throws RpcExceptionMessages {
-//		NormalizarCPAResultDto resultConCPANormalizado = null;
-		NormalizarCPAResultDto resultConCPANormalizado = new NormalizarCPAResultDto();
-//		try {
-//			resultConCPANormalizado = mapper.map(normalizadorDomicilio.normalizarCPA(cpa),
-//					NormalizarCPAResultDto.class);
-//		} catch (MerlinException e) {
-//			throw ExceptionUtil.wrap(e);
-//		}
+		NormalizarCPAResultDto resultConCPANormalizado = null;
+		try {
+			resultConCPANormalizado = mapper.map(normalizadorDomicilio.normalizarCPA(cpa),
+					NormalizarCPAResultDto.class);
+		} catch (MerlinException e) {
+			throw ExceptionUtil.wrap(e);
+		}
 		return resultConCPANormalizado;
 	}
 
