@@ -759,24 +759,24 @@ public class SolicitudBusinessService {
 					ParametrosGestion parametrosGestion = repository.retrieve(ParametrosGestion.class, codigoGestion);
 					
 					//MGR - ISDN 1824
-					String vendReal = "";
+//					String vendReal = "";
 					
 					// SB - #0004176 (volvi atras este cambio para que no salga en el release 2)
-					if(isADMCreditos){
-						vendReal = solicitudServicio.getVendedor().getUserReal();
-					}else{
-						vendReal = vendedor.getUserReal();
-					}
+//					if(isADMCreditos){
+//						vendReal = solicitudServicio.getVendedor().getUserReal();
+//					}else{
+//						vendReal = vendedor.getUserReal();
+//					}
 					
 					
 					// SB - #0004176 (volvi atras este cambio para que no salga en el release 2)
 					
-//					String vendedorgenerico = String.valueOf(((GlobalParameter) globalParameterRetriever
-//							.getObject(GlobalParameterIdentifier.USR_GENERICO_GEST_FA_SFA)).getValue());
+					String vendedorgenerico = String.valueOf(((GlobalParameter) globalParameterRetriever
+							.getObject(GlobalParameterIdentifier.USR_GENERICO_GEST_FA_SFA)).getValue());
 					
 					
 					Long idGestion = generacionCierreBusinessOperator.lanzarGestionCerrarSS(
-							vendReal,
+							vendedorgenerico,
 							0L, 
 							parametrosGestion, 
 							"", 
