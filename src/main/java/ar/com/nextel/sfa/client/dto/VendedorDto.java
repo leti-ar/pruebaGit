@@ -103,6 +103,14 @@ public class VendedorDto implements IsSerializable, ListBoxItem {
 		return false;
 	}
 
+	public boolean isMinorista(){
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+		if(instancias != null && this.getTipoVendedor() != null){
+			return instancias.get(TIPO_VENDEDOR_MINORISTA).equals(this.getTipoVendedor().getId());
+		}
+		return false;
+	}
+	
 	public Long getId() {
 		return id; 
 	}

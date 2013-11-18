@@ -110,7 +110,7 @@ public class CuentaDatosForm extends Composite {
 	private static int SCORE_DNI_INEXISTENTE = 3;
 
 	private static final DateTimeFormat DATE_TIME_FORMAT = DateTimeFormat.getMediumDateFormat();
-
+ 
 	private List<String> estilos = new ArrayList<String>();
 	private int estiloUsado = 0;
 
@@ -120,7 +120,7 @@ public class CuentaDatosForm extends Composite {
 		}
 		return instance;
 	}
-
+	
 	private CuentaDatosForm() {
 		cuentaUIData = new CuentaUIData();
 		initWidget(mainPanel);
@@ -208,6 +208,22 @@ public class CuentaDatosForm extends Composite {
 		} else {
 			datosCuentaTable.removeRow(row);
 		}
+		
+		// SB : grizar campos según el vendedor logueado
+		if(!ClientContext.getInstance().checkPermiso(PermisosEnum.VER_CAMPOS_PROSPECT.getValue())){
+					if (ClientContext.getInstance().getVendedor().isDealer() 
+							|| ClientContext.getInstance().getVendedor().isRetail()
+								|| ClientContext.getInstance().getVendedor().isMinorista()) {
+						cuentaUIData.getNombre().setReadOnly(true);
+						cuentaUIData.getApellido().setReadOnly(true);
+						cuentaUIData.getSexo().setEnabled(false);
+			        } else {
+						cuentaUIData.getNombre().setReadOnly(false);
+						cuentaUIData.getApellido().setReadOnly(false);
+						cuentaUIData.getSexo().setEnabled(true);
+			        }
+		}
+		
 		datosCuentaTable.setWidget(row, 0, cuentaUIData.getNombreLabel());
 		datosCuentaTable.setWidget(row, 1, cuentaUIData.getNombre());
 		datosCuentaTable.setWidget(row, 3, cuentaUIData.getApellidoLabel());
@@ -1819,6 +1835,11 @@ public class CuentaDatosForm extends Composite {
 				cuentaUIData.getFacturaElectronicaPanel().setFacturaElectronicaHabilitada(false);
 			}
 		}
+		
+        // RQN02642 FE en SFA
+ 	 	if (!CuentaClientService.cuentaDto.isEmpresa()){
+	 		cuentaUIData.getFacturaElectronicaPanel().setFacturaElectronicaReadolny();
+	 	}
 	}
 
 	public static List<String> validarCompletitud(PersonaDto persona) {
