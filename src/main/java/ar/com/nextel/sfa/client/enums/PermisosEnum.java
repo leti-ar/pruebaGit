@@ -71,8 +71,10 @@ public enum PermisosEnum {
 	ROOTS_MENU_PANEL_CUENTAS_EDITAR("rootsMenuPanel.cuentasEditar",Accion.X,true),
 	//MGR - #965 - Para ocultar el campo Factura Electronica
 	VER_CAMPO_FACTURA_ELECTRONICA("verCampoFacturaElectronica",Accion.X,true),
-	//SS - 0005558 - Permite editar los campos Apellido y Nombre de un Prospect en SFA. 
+	//SB - 0005558 - Permite editar los campos Apellido y Nombre de un Prospect en SFA. 
 	VER_CAMPOS_PROSPECT("verCampoProspect",Accion.X,true),
+	//SB -  Factura electronica. Obliga a Poner el Check para todos y No editable.
+	OBLIGA_CHECK_FACT_ELE("obligaCheckFactEle",Accion.X,true),
 	//MGR - #962
 	SELECT_OPC_TELEMARKETING_COMB_ORIGEN("selectOpcTelemarketingComboOrigen",Accion.X,true),
 	//MGR - #963
