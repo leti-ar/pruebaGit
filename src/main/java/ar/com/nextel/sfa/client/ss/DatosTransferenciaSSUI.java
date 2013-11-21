@@ -20,6 +20,8 @@ import ar.com.nextel.sfa.client.dto.ServicioContratoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
+import ar.com.nextel.sfa.client.event.ClickPermanenciaEvent;
+import ar.com.nextel.sfa.client.event.ClickPermanenciaEventHandler;
 import ar.com.nextel.sfa.client.event.ClickPincheEvent;
 import ar.com.nextel.sfa.client.event.ClickPincheEventHandler;
 import ar.com.nextel.sfa.client.event.EventBusUtil;
@@ -53,7 +55,6 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	
@@ -138,6 +139,13 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 				doClickChinche(event);
 			}
 		});
+		
+		EventBusUtil.getEventBus().addHandler(ClickPermanenciaEvent.TYPE, new ClickPermanenciaEventHandler() {
+			public void onClickPermanencia(ClickPermanenciaEvent event) {
+				doClickPopUpPermanencia(event);
+			}
+		});
+
 	}
 	
 //	@Override
@@ -160,6 +168,11 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		
 			}
 		}
+	}
+	
+	protected void doClickPopUpPermanencia(ClickPermanenciaEvent event) {
+		boolean verBotonCerrar = false;
+		controller.loadTransferencia(verBotonCerrar);
 	}
 
 	private Widget getNssLayout() {
@@ -654,6 +667,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 				}
 //			}
 		}
+		verificarContratosConPermanencia();
 	}
 	
 	private void chequarPrimero() {
@@ -779,6 +793,16 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 						
 						public void success(List<ContratoViewDto> result) {
 
+							for (ContratoViewDto contratoCedido : solicitud.getContratosCedidos()) {
+								for (ContratoViewDto contratoResult : result) {
+									if (contratoCedido.getContrato().equals(contratoResult.getContrato())){
+										contratoCedido.setCargosPermanencia(contratoResult.getCargosPermanencia());
+										contratoCedido.setMesesPermanencia(contratoResult.getMesesPermanencia());
+										contratoCedido.setGamaPlanCedente(contratoResult.getGamaPlanCedente());
+									}
+								}
+							}
+							
 							// primero seteo los contratos de la solicitud
 							if (!solicitud.getContratosCedidos().isEmpty()) {
 								todosContratosActivos.addAll(solicitud.getContratosCedidos());
@@ -801,6 +825,24 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 			refresh();
 		}
 	}
+
+	private void verificarContratosConPermanencia() {
+		boolean verContratosConPermanencia = false;
+		
+		if (existeContratosConPermanencia()){
+			verContratosConPermanencia = true;
+		}
+		controller.loadTransferencia(verContratosConPermanencia);
+	}
+
+	private boolean existeContratosConPermanencia(){
+		for (ContratoViewDto contrato : contratosChequeados) {
+			if (!contrato.getCargosPermanencia().equals(0d)){
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	private void limpiarTablaServFacturados(){
 		//Limpio la tabla de servicios
@@ -818,6 +860,5 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 		this.limpiarTablaContratos();
 		this.limpiarTablaServFacturados();
 	}
-	
 
 }

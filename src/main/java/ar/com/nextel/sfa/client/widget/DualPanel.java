@@ -3,8 +3,8 @@ package ar.com.nextel.sfa.client.widget;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HasVerticalAlignment.VerticalAlignmentConstant;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Esta clase es una tabla de 2 columnas, la segunda con alineacion a la derecha. Se creo para evitarponer

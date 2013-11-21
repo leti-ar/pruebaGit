@@ -1,19 +1,7 @@
 package ar.com.nextel.sfa.client.infocom;
 
-import ar.com.nextel.sfa.client.dto.ScoringDto;
-import ar.com.snoop.gwt.commons.client.widget.ListBox;
-import ar.com.snoop.gwt.commons.client.widget.SimpleLabel;
-import ar.com.snoop.gwt.commons.client.window.WaitWindow;
-
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 public class ScoringInfocomUI extends Composite {
 	

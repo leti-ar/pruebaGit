@@ -123,7 +123,13 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	
 	public void onClick(final Widget sender) {
 		if (sender == aceptar || sender == nuevoItem) {
-			executeItemCreation(sender);
+			// se valida la imei/sim cuando sea activacion online y sea subsidiado
+			if (itemSolicitudUIData.isActivacionOnline() && !itemSolicitudUIData.getFullPrice().getValue()){
+				executeItemCreationActivacionOnline(sender);
+			}else{
+				executeItemCreation(sender);
+			}
+			
 		} else if (sender == cerrar) {
 			itemSolicitudUIData.desreservarSiNoFueGrabado();
 			itemSolicitudUIData.getConfirmarReserva().setEnabled(true);
@@ -172,6 +178,24 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 			ErrorDialog.getInstance().show(errors, false);
 
 		}
+	}
+	
+	private void executeItemCreationActivacionOnline(final Widget sender) {
+		String imei = itemSolicitudUIData.getImei().getText();
+		String sim = itemSolicitudUIData.getSim().getText();
+		String modeloEq = itemSolicitudUIData.getModeloEq().getSelectedItem().getItemValue();
+		SolicitudRpcService.Util.getInstance().validarImeiSim(imei, sim, modeloEq,
+				new DefaultWaitCallback<Boolean>() {
+			@Override
+			public void success(Boolean result) {
+				if(result){
+					executeItemCreation(sender);
+				}else{
+					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+					ErrorDialog.getInstance().show("El IMEI y la SIM no se encuentran linkeadas", false);
+				}
+			}
+		});
 	}
 	
 //	MGR - RQN 2328 - Continuo con la aceptación del item ingresado
@@ -236,34 +260,41 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	public void onChange(ChangeEvent event) {
 		TipoSolicitudDto tipoSolicitud = (TipoSolicitudDto) tipoOrden.getSelectedItem();
 		itemSolicitudUIData.setActivacionOnline(false);
+		itemSolicitudUIData.setActivacion(false);
+		itemSolicitudUIData.setPermanencia(false); // true para ordenes con opcion de subsidio
 		
 		if (tipoSolicitud != null) {
-			if (itemSolicitudUIData.getIdsTipoSolicitudBaseItemYPlan().contains(
-					tipoSolicitud.getTipoSolicitudBase().getId())) {
-				tipoSolicitudPanel.setWidget(getItemYPlanSolicitudUI());
+			Long idTipoSolicitudBase = tipoSolicitud.getTipoSolicitudBase().getId();
+			if (itemSolicitudUIData.getIdsTipoSolicitudBaseItemYPlan().contains(idTipoSolicitudBase)) {
+				if(itemSolicitudUIData.getIdsTipoSolicitudBaseItemYPlanPermanencia().equals(idTipoSolicitudBase)) {
+					itemSolicitudUIData.setPermanencia(true);
+					tipoSolicitudPanel.setWidget(getItemYPlanSolicitudPermanenciaUI());
+				}else{
+					tipoSolicitudPanel.setWidget(getItemYPlanSolicitudUI());
+				}
 				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.ITEM_PLAN);
-			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseItem().contains(
-					tipoSolicitud.getTipoSolicitudBase().getId())) {
+			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseItem().contains(idTipoSolicitudBase)) {
 				tipoSolicitudPanel.setWidget(getSoloItemSolicitudUI());
 				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.SOLO_ITEM);
-			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseActivacion().contains(
-					tipoSolicitud.getTipoSolicitudBase().getId())) {
-				if(itemSolicitudUIData.getIdTipoSolicitudBaseActivacionOnline().equals(tipoSolicitud.getTipoSolicitudBase().getId())) {
+			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseActivacion().contains(idTipoSolicitudBase)) {
+				if(itemSolicitudUIData.getIdTipoSolicitudBaseActivacionOnline().equals(idTipoSolicitudBase)) {
+					itemSolicitudUIData.setPermanencia(true);
 					itemSolicitudUIData.setActivacionOnline(true);
 				}
 //				MGR - #3462
-				if(itemSolicitudUIData.getIdTipoSolicitudBaseActivacion().equals(tipoSolicitud.getTipoSolicitudBase().getId())) {
+				if(itemSolicitudUIData.getIdTipoSolicitudBaseActivacion().equals(idTipoSolicitudBase)) {
 					itemSolicitudUIData.setActivacion(true);
 				}
 				tipoSolicitudPanel.setWidget(getItemSolicitudActivacionUI(itemSolicitudUIData.isActivacionOnline()));
 				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.ACTIVACION);
-			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseCDW().contains(
-					tipoSolicitud.getTipoSolicitudBase().getId())) {
+			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseCDW().contains(idTipoSolicitudBase)) {
 				tipoSolicitudPanel.setWidget(getItemSolicitudCDWUI());
 				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.VENTA_CDW);
 			} else {
 				tipoSolicitudPanel.clear();
 			}
+			
+			itemSolicitudUIData.visualizarCheckBoxPermanencia();
 			
 //			visualizarIMEI_SIM(tipoSolicitud);
 			loadUIData(tipoSolicitud);
@@ -301,6 +332,16 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		itemYPlanSolicitudUI.load();
 		return itemYPlanSolicitudUI;
 	}
+
+	private ItemYPlanSolicitudUI getItemYPlanSolicitudPermanenciaUI() {
+		if (itemYPlanSolicitudUI == null) {
+			itemYPlanSolicitudUI = new ItemYPlanSolicitudUI(getSoloItemSolicitudUI(), itemSolicitudUIData,controller);
+		}
+		soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_SIMPLE_PERMANENCIA);
+		itemYPlanSolicitudUI.load();
+		return itemYPlanSolicitudUI;
+	}
+
 
 	private ItemYPlanSolicitudUI getItemSolicitudActivacionUI(boolean online) {
 		return getItemYPlanSolicitudUI().setActivacionVisible(online);

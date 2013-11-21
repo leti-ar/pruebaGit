@@ -1,0 +1,38 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+
+	<ui:with type="ar.com.nextel.sfa.client.constant.SfaStatic" field="msg" />
+
+    <g:HTMLPanel ui:field="panel" width="500px" >
+		<table cellspacing="0" cellpadding="0" class="gwt-CustomDialogBox" style="margin:auto" >
+			<tr>
+				<td>
+					<g:Label ui:field="title" styleName="gwt-HTML popHeader"/>
+		    	</td> 
+	  		</tr>
+			<tr>
+				<td>
+					<div class="popCentral">
+						<table>		      			
+							<tr>
+							<td width="100%">
+	        					<g:ScrollPanel width="500px" height="110px">
+			        				<g:FlexTable ui:field="contentTable" cellPadding="8" cellSpacing="5" width="92%"/>
+			        			</g:ScrollPanel>
+	    				   	</td>
+					    	</tr>
+					    </table>
+					</div>
+					<div class="popFormButtons" style="width: 100%;">
+        				<g:Anchor ui:field="aceptarLink" styleName="popFormButton" text="{msg.aceptar}"/>
+        				<g:Anchor ui:field="cancelarLink" styleName="popFormButton" text="{msg.cancelar}"/>
+					</div>
+					<div class="popFooterBar" style="width: 100%;">
+						<div class="popFooter"></div>
+					</div>
+				</td>	  
+			</tr> 
+		</table>
+	</g:HTMLPanel>
+</ui:UiBinder> 

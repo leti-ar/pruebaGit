@@ -1,7 +1,6 @@
 package ar.com.nextel.sfa.client.dto;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;

@@ -1,9 +1,7 @@
 package ar.com.nextel.sfa.client.cuenta;
 
 import ar.com.nextel.sfa.client.infocom.InfocomUI;
-import ar.com.nextel.sfa.client.util.HistoryUtils;
 
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 /**

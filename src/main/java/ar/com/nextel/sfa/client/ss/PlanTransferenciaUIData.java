@@ -159,6 +159,10 @@ public class PlanTransferenciaUIData extends UIData implements ChangeListener, C
 		GwtValidator validator = new GwtValidator();
 		validator.addTarget(tipoPlan).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Tipo Plan"));
 //		validator.addTarget(plan).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Plan"));
+		PlanDto planDto = (PlanDto) plan.getSelectedItem();
+		if (contrato.getGamaPlanCedente()!=null && contrato.getGamaPlanCedente()>planDto.getValorGama()){
+			validator.addError(Sfa.constant().ERR_GAMA_INFERIOR());
+		}
 		return validator.fillResult().getErrors();
 	}
 	

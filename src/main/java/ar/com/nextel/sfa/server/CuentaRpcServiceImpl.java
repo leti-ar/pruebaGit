@@ -12,11 +12,8 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 
-import org.apache.catalina.SessionListener;
 import org.apache.commons.collections.Transformer;
 import org.dozer.MappingException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
@@ -27,6 +24,7 @@ import ar.com.nextel.business.constants.KnownInstanceIdentifier;
 import ar.com.nextel.business.cuentas.create.businessUnits.SolicitudCuenta;
 import ar.com.nextel.business.cuentas.flota.FlotaService;
 import ar.com.nextel.business.cuentas.migrator.legacy.dto.DocDigitalizadoLegacyDto;
+import ar.com.nextel.business.cuentas.permanencia.PermanenciaServiceWrapper;
 import ar.com.nextel.business.cuentas.search.SearchCuentaBusinessOperator;
 import ar.com.nextel.business.cuentas.search.businessUnits.CuentaSearchData;
 import ar.com.nextel.business.cuentas.search.result.CuentaSearchResult;
@@ -85,6 +83,7 @@ import ar.com.nextel.model.personas.beans.GrupoDocumento;
 import ar.com.nextel.model.personas.beans.Provincia;
 import ar.com.nextel.model.personas.beans.Sexo;
 import ar.com.nextel.model.personas.beans.TipoDocumento;
+import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
@@ -179,6 +178,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 	private SessionContextLoader sessionContextLoader;
 	private MessageRetriever messageRetriever;
 	private AvalonSystem avalonSystem;
+	private PermanenciaServiceWrapper permanenciaWrapper;
 
 	private static final String ASOCIAR_CUENTA_A_OPP_ERROR = "La cuenta ya existe. No puede asociarse a la Oportunidad.";
 	private static final String ERROR_OPER_OTRO_VENDEDOR = "El prospect/cliente tiene una operación en curso con otro vendedor. No puede ver sus datos. El {1} es {2}";
@@ -222,6 +222,7 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 		vantiveSystem = (VantiveSystem) context.getBean("vantiveSystemBean");
 	    flotaService = (FlotaService)context.getBean("flotaService");
 		setGetAllBusinessOperator((GetAllBusinessOperator) context.getBean("getAllBusinessOperatorBean"));
+		permanenciaWrapper = (PermanenciaServiceWrapper) context.getBean("permanenciaServiceWrapper");
 	}
 
 	public List<CuentaSearchResultDto> searchCuenta(CuentaSearchDto cuentaSearchDto)
@@ -854,6 +855,27 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 				contratos = mapper.convertList(
 						avalonSystem.retriveContratosActivosFull(ctaDto.getCodigoVantive()), ContratoViewDto.class);
 			}
+			
+			//cargo a los contratos los cargos de permanencia de existir
+			for (ContratoViewDto contrato : contratos) {
+				Object[] datosSubsidio = permanenciaWrapper.getCargoAbonar(contrato.getContrato());
+				contrato.setCargosPermanencia(0d);
+				if (datosSubsidio != null){
+					Double cargosPermanencia = ((Double) datosSubsidio[0]).doubleValue();
+					int mesesPermanencia = ((Integer) datosSubsidio[1]).intValue();
+					Long idPlan= ((Long) datosSubsidio[2]).longValue();
+					try {
+						Plan plan = (Plan) repository.retrieve(Plan.class, idPlan);	
+						contrato.setCargosPermanencia(cargosPermanencia);
+						contrato.setMesesPermanencia(mesesPermanencia);
+						contrato.setGamaPlanCedente(plan.getGamaPlan().getValor());
+					} catch (Exception e) {
+						throw new RpcExceptionMessages("Error de datos. El contrato "+contrato.getContrato() +" posee un subsidio sin plan asociado.");
+					}
+				    
+				}
+			}
+			
 		} catch (AvalonSystemException e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
@@ -1089,4 +1111,5 @@ public class CuentaRpcServiceImpl extends RemoteService implements CuentaRpcServ
 			throw ExceptionUtil.wrap(e);
 		}
 	}
+	
 }
