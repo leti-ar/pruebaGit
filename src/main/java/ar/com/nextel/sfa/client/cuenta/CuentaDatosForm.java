@@ -211,17 +211,32 @@ public class CuentaDatosForm extends Composite {
 		
 		// SB : grizar campos según el vendedor logueado
 		if(!ClientContext.getInstance().checkPermiso(PermisosEnum.VER_CAMPOS_PROSPECT.getValue())){
-					if (ClientContext.getInstance().getVendedor().isDealer() 
-							|| ClientContext.getInstance().getVendedor().isRetail()
-								|| ClientContext.getInstance().getVendedor().isMinorista()) {
+//			CuentaClientService.isProspectOrProspectEnCarga() &&
+		// tira un NULL
+//			!"ORGANIZACION".equals(cuentaUIData.getSexo().getSelectedItemId().toString())
+			
+//		  if ((cuentaUIData.getSexo().getSelectedItemId().toString()) ){	
+//			if ((cuentaUIData.getSexo().getSelectedItemId().toString() != null) && !"ORGANIZACION".equals(cuentaUIData.getSexo().getSelectedItemId().toString())){ 
+					
+				if (ClientContext.getInstance().getVendedor().isDealer() 
+								|| ClientContext.getInstance().getVendedor().isRetail()
+									|| ClientContext.getInstance().getVendedor().isMinorista()) {
+						
+						cuentaUIData.getRazonSocial().setReadOnly(true);
 						cuentaUIData.getNombre().setReadOnly(true);
 						cuentaUIData.getApellido().setReadOnly(true);
 						cuentaUIData.getSexo().setEnabled(false);
 			        } else {
+						cuentaUIData.getRazonSocial().setReadOnly(true);
 						cuentaUIData.getNombre().setReadOnly(false);
 						cuentaUIData.getApellido().setReadOnly(false);
 						cuentaUIData.getSexo().setEnabled(true);
 			        }
+//			} else {
+//				cuentaUIData.getNombre().setReadOnly(false);
+//				cuentaUIData.getApellido().setReadOnly(false);
+//			}
+			
 		}
 		
 		datosCuentaTable.setWidget(row, 0, cuentaUIData.getNombreLabel());
@@ -1854,8 +1869,7 @@ public class CuentaDatosForm extends Composite {
 			}
 		}
 		
-		
-		//SB -
+		//SB - RQN02642 de Factura Electrónica 
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.OBLIGA_CHECK_FACT_ELE.getValue())){
 	        // RQN02642 FE en SFA
 	 	 	if (!CuentaClientService.cuentaDto.isEmpresa()){
