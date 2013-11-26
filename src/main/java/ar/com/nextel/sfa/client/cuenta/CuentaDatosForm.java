@@ -211,16 +211,14 @@ public class CuentaDatosForm extends Composite {
 		
 		// SB : grizar campos según el vendedor logueado
 		if(!ClientContext.getInstance().checkPermiso(PermisosEnum.VER_CAMPOS_PROSPECT.getValue())){
-//			CuentaClientService.isProspectOrProspectEnCarga() &&
-		// tira un NULL
-//			!"ORGANIZACION".equals(cuentaUIData.getSexo().getSelectedItemId().toString())
 			
-//		  if ((cuentaUIData.getSexo().getSelectedItemId().toString()) ){	
-//			if ((cuentaUIData.getSexo().getSelectedItemId().toString() != null) && !"ORGANIZACION".equals(cuentaUIData.getSexo().getSelectedItemId().toString())){ 
-					
-				if (ClientContext.getInstance().getVendedor().isDealer() 
-								|| ClientContext.getInstance().getVendedor().isRetail()
-									|| ClientContext.getInstance().getVendedor().isMinorista()) {
+			PersonaDto personaDto = getVerazSearch(cuentaUIData.getNumeroDocumento(), cuentaUIData
+					.getTipoDocumento(), cuentaUIData.getSexo());
+
+			if (!"ORGANIZACION".equals(personaDto.getSexo().getDescripcion()) && 
+					(ClientContext.getInstance().getVendedor().isDealer() 
+						|| ClientContext.getInstance().getVendedor().isRetail()
+							|| ClientContext.getInstance().getVendedor().isMinorista())) {
 						
 						cuentaUIData.getRazonSocial().setReadOnly(true);
 						cuentaUIData.getNombre().setReadOnly(true);
@@ -232,11 +230,6 @@ public class CuentaDatosForm extends Composite {
 						cuentaUIData.getApellido().setReadOnly(false);
 						cuentaUIData.getSexo().setEnabled(true);
 			        }
-//			} else {
-//				cuentaUIData.getNombre().setReadOnly(false);
-//				cuentaUIData.getApellido().setReadOnly(false);
-//			}
-			
 		}
 		
 		datosCuentaTable.setWidget(row, 0, cuentaUIData.getNombreLabel());
