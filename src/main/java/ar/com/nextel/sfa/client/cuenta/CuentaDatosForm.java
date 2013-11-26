@@ -212,10 +212,11 @@ public class CuentaDatosForm extends Composite {
 		// SB : grizar campos según el vendedor logueado
 		if(!ClientContext.getInstance().checkPermiso(PermisosEnum.VER_CAMPOS_PROSPECT.getValue())){
 			
-			PersonaDto personaDto = getVerazSearch(cuentaUIData.getNumeroDocumento(), cuentaUIData
-					.getTipoDocumento(), cuentaUIData.getSexo());
+			long selectedSexo = cuentaUIData.getSexo().getSelectedItemId() != null
+					&& !"".equals(cuentaUIData.getSexo().getSelectedItemId().trim()) ? Long
+					.parseLong(cuentaUIData.getSexo().getSelectedItemId()) : -1;
 
-			if (!"ORGANIZACION".equals(personaDto.getSexo().getDescripcion()) && 
+			if ((selectedSexo != SexoEnum.ORGANIZACION.getId()) && 
 					(ClientContext.getInstance().getVendedor().isDealer() 
 						|| ClientContext.getInstance().getVendedor().isRetail()
 							|| ClientContext.getInstance().getVendedor().isMinorista())) {
