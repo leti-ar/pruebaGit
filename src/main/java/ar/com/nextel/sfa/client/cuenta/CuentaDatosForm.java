@@ -221,16 +221,15 @@ public class CuentaDatosForm extends Composite {
 						|| ClientContext.getInstance().getVendedor().isRetail()
 							|| ClientContext.getInstance().getVendedor().isMinorista())) {
 						
-						cuentaUIData.getRazonSocial().setReadOnly(true);
-						cuentaUIData.getNombre().setReadOnly(true);
+  					    cuentaUIData.getNombre().setReadOnly(true);
 						cuentaUIData.getApellido().setReadOnly(true);
-						cuentaUIData.getSexo().setEnabled(false);
+						cuentaUIData.getSexo().setEnabled(true);
 			        } else {
-						cuentaUIData.getRazonSocial().setReadOnly(true);
 						cuentaUIData.getNombre().setReadOnly(false);
 						cuentaUIData.getApellido().setReadOnly(false);
-						cuentaUIData.getSexo().setEnabled(true);
+						cuentaUIData.getSexo().setEnabled(false);
 			        }
+			cuentaUIData.getRazonSocial().setReadOnly(true);
 		}
 		
 		datosCuentaTable.setWidget(row, 0, cuentaUIData.getNombreLabel());
