@@ -3382,8 +3382,8 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("configSucursal")
   String configurarSucursal();
   
-  
   /**
+   * Translated "Retira en Sucursal:".
    * Translated "Sucursal".
    * 
    * @return translated "Sucursal"
@@ -3431,6 +3431,26 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("ERR_AREA_BILLING_NO_VALIDA")
   String ERR_AREA_BILLING_NO_VALIDA();
   
+  /**
+   * Translated "Cargos de Permanencia".
+   * 
+   * @return translated "Cargos de Permanencia"
+   */
+  @DefaultStringValue("Cargos de Permanencia")
+  @Key("cargosPermanencia")
+  String cargosPermanencia();
+
+  /**
+   * Translated "Contrato Número: {1} \n Monto a Cobrar: ${2}".
+   * 
+   * @return translated "Contrato Número: {1} \n Monto a Cobrar: ${2}"
+   */
+  @DefaultStringValue("Contrato Número: {1} \n Monto a Cobrar: ${2} \n Cantidad de meses restantes: {3} Meses")
+  @Key("infoContrato")
+  String infoContrato();
+  
+  
+  
   
   /**
    * Translated "<span class=\"req\">Nº SS Web:</span>".
@@ -3439,5 +3459,15 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
    */
   @DefaultStringValue("<span class=\"req\">Nº SS Web:</span>")
   @Key("nroSSWeb")
-  String nroSSWeb();  
+  String nroSSWeb();
+  
+  /**
+   * Translated "La Gama del Plan Cesionario no debe ser inferior al Plan que posee el Contrato.".
+   * 
+   * @return translated "La Gama del Plan Cesionario no debe ser inferior al Plan que posee el Contrato."
+   */
+  @DefaultStringValue("La Gama del Plan Cesionario no debe ser inferior al Plan que posee el Contrato.")
+  @Key("ERR_GAMA_INFERIOR")
+  String ERR_GAMA_INFERIOR();
+  
 }

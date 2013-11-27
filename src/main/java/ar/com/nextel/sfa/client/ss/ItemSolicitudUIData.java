@@ -19,11 +19,13 @@ import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
+import ar.com.nextel.sfa.client.dto.SubsidiosDto;
 import ar.com.nextel.sfa.client.dto.TerminoPagoValidoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefoniaDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
+import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.FormUtils;
 import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
@@ -57,6 +59,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class ItemSolicitudUIData extends UIData implements ChangeListener, ClickHandler {
 
 	private ListBox listaPrecio;
+	private CheckBox fullPrice;
 	private TextBox cantidad;
 	private ListBox tipoOrden;
 	private ListBox tipoPlan;
@@ -99,6 +102,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private List idsTipoSolicitudBaseItem;
 	private List idsTipoSolicitudBaseActivacion;
 	private List idsTipoSolicitudBaseCDW;
+	
+	private List<SubsidiosDto> subsidios = new ArrayList<SubsidiosDto>();
 
 	private LineaSolicitudServicioDto lineaSolicitudServicio;
 	private EditarSSUIController controller;
@@ -113,6 +118,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 	private Long idPlanAnterior;
 	private Long idItemAnterior;
+	private Boolean fullPriceAnterior;
 
 	public static final int SOLO_ITEM = 0;
 	public static final int ITEM_PLAN = 1;
@@ -125,10 +131,13 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private int tipoEdicion;
 	private ItemSolicitudDialog dialog;
 	private boolean activacionOnline;
+	private boolean permanencia;
 	private Long idTipoSolicitudBaseActivacionOnline;
+	private Long idsTipoSolicitudBaseItemYPlanPermanencia;
 //	MGR - #3462
 	private boolean activacion = false;
 	private Long idTipoSolicitudBaseActivacion = 0L;
+	private ItemSolicitudTasadoDto itemActivacionOnline = null;
 	private static final String LUGAR_DE_LLAMADA_DE_VALIDACION_STOCK="agregarItem";
 	
 	public ItemSolicitudUIData(EditarSSUIController controller) {
@@ -141,6 +150,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		fields = new ArrayList<Widget>();
 		fields.add(tipoOrden = new ListBox());
 		fields.add(listaPrecio = new ListBox());
+		fields.add(fullPrice = new CheckBox());
 		fields.add(cantidad = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(4)));
 		fields.add(tipoPlan = new ListBox());
 		fields.add(plan = new ListBox(" "));
@@ -176,6 +186,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		verificarSimWrapper = new HTML();
 
 		listaPrecio.setWidth("400px");
+		fullPrice.setText("Full Price");
 		item.setWidth("400px");
 		cantidad.setWidth("70px");
 		terminoPago.setWidth("400px");
@@ -221,6 +232,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		modeloEq.ensureDebugId(DebugConstants.EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_MODELO);
 
 		listaPrecio.addChangeListener(this);
+		fullPrice.addClickHandler(this);
 		item.addChangeListener(this);
 		plan.addChangeListener(this);
 		tipoPlan.addChangeListener(this);
@@ -350,7 +362,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		idsTipoSolicitudBaseActivacion = new ArrayList<Long>();
 		idsTipoSolicitudBaseCDW = new ArrayList<Long>();
 
-		idsTipoSolicitudBaseItemYPlan.add(Long.valueOf(1)); // 1-TIPO_SOLICITUD_BASE_VENTA_EQUIPOS
+		setIdsTipoSolicitudBaseItemYPlanPermanencia(Long.valueOf(1)); // 1-TIPO_SOLICITUD_BASE_VENTA_EQUIPOS
+		
+		idsTipoSolicitudBaseItemYPlan.add(Long.valueOf(getIdsTipoSolicitudBaseItemYPlanPermanencia())); // 1-TIPO_SOLICITUD_BASE_VENTA_EQUIPOS
 		idsTipoSolicitudBaseItemYPlan.add(Long.valueOf(7)); // 7-TIPO_SOLICITUD_BASE_ALQUILER_EQUIPOS
 		idsTipoSolicitudBaseItemYPlan.add(Long.valueOf(10)); // 10-TIPO_SOLICITUD_BASE_VENTA_EQUIPOS_NUEVOS_G4
 		idsTipoSolicitudBaseItemYPlan.add(Long.valueOf(14)); // 14-TIPO_SOLICITUD_BASE_VENTA_EQUIPOS_USADOS_G4
@@ -384,6 +398,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			verificarImei();
 		} else if (sender == verificarSimWrapper) {
 			verificarSim();
+		} else if (sender == fullPrice) {
+			verificarSubsidio();
 		} 
 		
 		// SB - #0004558
@@ -620,19 +636,31 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			// Seteo el precio del item, ajustado por el Termino de Pago y cargo el ListBox de Planes
 			ItemSolicitudTasadoDto is = (ItemSolicitudTasadoDto) item.getSelectedItem();
 			setDisableAndCheckedRoaming(false);
+			precioListaItem.setInnerHTML(currencyFormat.format(0d));
 			if (is != null) {
 				TerminoPagoValidoDto terminoSelected = (TerminoPagoValidoDto) terminoPago.getSelectedItem();
 				double precio = is.getPrecioLista();
 				if (terminoSelected != null && terminoSelected.getAjuste() != null) {
 					precio = terminoSelected.getAjuste() * precio;
 				}
-				precioListaItem.setInnerHTML(currencyFormat.format(precio));
+				if (!isPermanencia()){
+					precioListaItem.setInnerHTML(currencyFormat.format(precio));
+				}
 				if (tipoPlan.getSelectedItem() != null) {
 //					MGR - #3462 - Es necesario indicar el modelo y si es activacion online
 					ModeloDto modelo = (ModeloDto) modeloEq.getSelectedItem();
 					boolean isActivacion = this.isActivacion() || this.isActivacionOnline();
 					controller.getPlanesPorItemYTipoPlan(is, (TipoPlanDto) tipoPlan.getSelectedItem(),
 							isActivacion, modelo, getActualizarPlanCallback());
+					if (isPermanencia()){
+						if (isActivacionOnline()){
+							if (itemActivacionOnline!=null){
+								controller.getSubsidiosPorItem(itemActivacionOnline, getActualizarSubsidiosCallback());
+							}
+						}else{
+							controller.getSubsidiosPorItem(is, getActualizarSubsidiosCallback());							
+						}	
+					}
 				}
 				// if(is.getItem().) // alcanza con isEquipo, isAccesorio?
 				ddn.setValue(true);
@@ -710,8 +738,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 						break;
 					}
 				}
+				verificarSubsidio();
+				fullPrice.setEnabled(true);
 			} else {
 				precioListaPlan.setInnerHTML(currencyFormat.format(0d));
+				fullPrice.setEnabled(false);
 			}
 		} else if (sender == cantidad) {
 			refreshTotalLabel();
@@ -741,6 +772,17 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 					setSerieVisibleAndPinInvisible(true);
 					setDisableAndCheckedRoaming(false);
 				}
+				// busco el item relacionado al modelo para activacion online
+				if (isActivacionOnline()){
+					Long idListaPrecio = ((ListaPreciosDto) listaPrecio.getSelectedItem()).getId();
+					controller.getItemPorModelo(modelo.getId(), idListaPrecio,
+						new DefaultWaitCallback<ItemSolicitudTasadoDto>() {
+							public void success(ItemSolicitudTasadoDto result) {
+								itemActivacionOnline = result; 
+								onChange(item);
+							}
+						});
+				}
 			}
 		} else if (sender == imei) {
 			refreshModelos();
@@ -748,6 +790,45 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		if (isActivacionOnline()) {
 			listaPrecio.setVisible(false);
 		}
+	}
+
+	private void verificarSubsidio() {
+		ItemSolicitudTasadoDto is = (ItemSolicitudTasadoDto) item.getSelectedItem();
+
+		if (is != null && isPermanencia()) {
+			TerminoPagoValidoDto terminoSelected = (TerminoPagoValidoDto) terminoPago.getSelectedItem();
+			double precio = is.getPrecioLista();
+			// Selecciono el item relacionado al modelo si es activacion online
+			if (isActivacionOnline() && itemActivacionOnline!=null){
+				precio = itemActivacionOnline.getPrecioLista();
+			}
+			if (terminoSelected != null && terminoSelected.getAjuste() != null) {
+				precio = terminoSelected.getAjuste() * precio;
+			}
+			if (!fullPrice.getValue()){
+				precio = obtenerPrecioSubsidiado(precio);				
+			}
+			precioListaItem.setInnerHTML(currencyFormat.format(precio));
+		}
+	}
+	
+	private double obtenerPrecioSubsidiado(double precio) {
+		PlanDto planSelected = (PlanDto) plan.getSelectedItem();
+		boolean existeSubsidio = false;
+
+		for (SubsidiosDto subsidio : subsidios) {
+			if (subsidio.getIdPlan().equals(planSelected.getId())){
+				existeSubsidio = true;
+				precio = precio - subsidio.getSubsidio();
+				break;
+			}
+		}
+		if (!existeSubsidio){
+			MessageDialog.getInstance().showAceptar("No existe configurado el subsidio para el item y plan seleccionado"
+					, MessageDialog.getCloseCommand());
+			fullPrice.setValue(true);
+		}
+		return precio;
 	}
 
 	private void disableTextBox(TextBox tb,String defecto) {
@@ -804,6 +885,18 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		};
 	}
 
+	public DefaultWaitCallback<List<SubsidiosDto>> getActualizarSubsidiosCallback() {
+		
+		return new DefaultWaitCallback<List<SubsidiosDto>>() {
+			public void success(List<SubsidiosDto> result) {
+				if (!subsidios.isEmpty()) {
+					subsidios.clear();
+				}
+				subsidios.addAll(result);
+			}
+		};
+	}
+
 	private String getNumeroTelefonicoCompletoFromFields() {
 		return reservarHidden.getText() + reservar.getText();
 	}
@@ -822,6 +915,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 	public ListBox getListaPrecio() {
 		return listaPrecio;
+	}
+
+	public CheckBox getFullPrice() {
+		return fullPrice;
 	}
 
 	public TextBox getCantidad() {
@@ -1062,6 +1159,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		sim.setText(linea.getNumeroSimcard());
 		// SB - #0004558
 		// roaming.setValue(linea.getRoaming());
+		fullPrice.setEnabled(false);
+		fullPrice.setValue(linea.getFullPrice());
 		if (linea.getPlan() != null) {
 			tipoPlan.setSelectedItem(linea.getPlan().getTipoPlan());
 		} else {
@@ -1080,6 +1179,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		}
 		plan.setSelectedItem(linea.getPlan());
 		idPlanAnterior = linea.getPlan() != null ? linea.getPlan().getId() : null;
+		fullPriceAnterior = linea.getFullPrice() != null ? linea.getFullPrice() : null;
 		
 		modalidadCobro.setSelectedItem(linea.getModalidadCobro());
 		if (linea.getTerminoPago() != null) {
@@ -1144,6 +1244,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		lineaSolicitudServicio.setPrecioLista(itemTasadoSelected.getPrecioLista());
 		lineaSolicitudServicio.setPrecioVenta(itemTasadoSelected.getPrecioLista());
 		lineaSolicitudServicio.setListaPrecios((ListaPreciosDto) listaPrecio.getSelectedItem());
+		lineaSolicitudServicio.setFullPrice(true);
 		TerminoPagoValidoDto terminoSelected = (TerminoPagoValidoDto) terminoPago.getSelectedItem();
 		if(terminoSelected != null){
 			lineaSolicitudServicio.setTerminoPago(terminoSelected.getTerminoPago());
@@ -1197,10 +1298,22 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			if (terminoSelected != null && terminoSelected.getAjuste() != null) {
 				precio = terminoSelected.getAjuste() * precio;
 			}
+
 			lineaSolicitudServicio.setPrecioListaAjustado(precio);
+			
+			// Campo subsidio
+			if (isPermanencia()){
+				lineaSolicitudServicio.setFullPrice(fullPrice.getValue());
+				if (!fullPrice.getValue() && !isActivacionOnline()){
+					double precioSubsidiado = obtenerPrecioSubsidiado(precio);				
+					lineaSolicitudServicio.setPrecioLista(precioSubsidiado);
+					lineaSolicitudServicio.setPrecioVenta(precioSubsidiado);
+				}
+			}
+
 			// Limpio los servicios adicionales para que los actualice
 			if (!(lineaSolicitudServicio.getPlan().getId().equals(idPlanAnterior) && lineaSolicitudServicio
-					.getItem().getId().equals(idItemAnterior))) {
+					.getItem().getId().equals(idItemAnterior) && lineaSolicitudServicio.getFullPrice().equals(fullPriceAnterior))) {
 				lineaSolicitudServicio.getServiciosAdicionales().clear();
 			}
 		} else {
@@ -1359,6 +1472,15 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		this.idTipoSolicitudBaseActivacionOnline = idTipoSolicitudBaseActivacionOnline;
 	}
 	
+	public Long getIdsTipoSolicitudBaseItemYPlanPermanencia() {
+		return idsTipoSolicitudBaseItemYPlanPermanencia;
+	}
+
+	public void setIdsTipoSolicitudBaseItemYPlanPermanencia(
+			Long idsTipoSolicitudBaseItemYPlanPermanencia) {
+		this.idsTipoSolicitudBaseItemYPlanPermanencia = idsTipoSolicitudBaseItemYPlanPermanencia;
+	}
+	
 //	MGR - #3462
 	public boolean isActivacion() {
 		return activacion;
@@ -1374,6 +1496,14 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 	public void setIdTipoSolicitudBaseActivacion(Long idTipoSolicitudBaseActivacion) {
 		this.idTipoSolicitudBaseActivacion = idTipoSolicitudBaseActivacion;
+	}
+
+	public void setPermanencia(boolean permanencia) {
+		this.permanencia = permanencia;
+	}
+
+	public boolean isPermanencia() {
+		return permanencia;
 	}
 
 	public TextBox getImeiRetiroEnSucursal() {
@@ -1397,6 +1527,13 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 						
 					}
 				});
+	}
+
+	public void visualizarCheckBoxPermanencia() {
+		if (isPermanencia() && !ClientContext.getInstance().checkPermiso(PermisosEnum.VER_PERMANENCIA.getValue())){
+			fullPrice.setVisible(false);
+			fullPrice.setValue(false);
+		}
 	}
 	
 }

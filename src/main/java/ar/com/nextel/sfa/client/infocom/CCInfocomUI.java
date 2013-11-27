@@ -1,11 +1,8 @@
 package ar.com.nextel.sfa.client.infocom;
 
-import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.widget.TitledPanel;
 
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 

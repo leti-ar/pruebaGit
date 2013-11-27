@@ -3,7 +3,6 @@ package ar.com.nextel.sfa.client;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.SucursalDto;
-import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 
 import com.google.gwt.core.client.GWT;

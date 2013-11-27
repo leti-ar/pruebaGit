@@ -30,6 +30,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
+import ar.com.nextel.sfa.client.dto.SubsidiosDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.dto.TipoPersonaDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
@@ -440,6 +441,23 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.validarAreaBilling(numeroAPortar, callback);
 	}
+
+	public void getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado, DefaultWaitCallback<List<SubsidiosDto>> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getSubsidiosPorItem(itemSolicitudTasado, callback);
+	}
+	
+	public void validarImeiSim(String imei, String sim, String modeloEq, DefaultWaitCallback<Boolean> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.validarImeiSim(imei,sim,modeloEq, callback);
+	}
+	
+	public void getItemPorModelo(Long idModelo, Long idListaPrecios,
+			DefaultWaitCallback<ItemSolicitudTasadoDto> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.getItemPorModelo(idModelo, idListaPrecios, callback);
+	}
+
 	
 //	MGR - Facturacion
 	public void facturarSolicitudServicio(SolicitudServicioDto solicitudServicioDto, DefaultWaitCallback<FacturacionResultDto> callback){

@@ -107,6 +107,7 @@ import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.SubsidiosDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
@@ -164,6 +165,8 @@ public class SolicitudBusinessService {
 	
 //	MGR - #3464
 //	private static String namedQueryItemParaActivacionOnline = "ITEMS_PARA_PLANES_ACT_ONLINE";
+	
+	private static String GET_SUBSIDIO_ITEM_VENDEDOR = "GET_SUBSIDIO_ITEM_VENDEDOR";
 	
 	@Autowired
 	public void setGlobalParameterRetriever(
@@ -1465,6 +1468,23 @@ public class SolicitudBusinessService {
 		return ss;
 	}
 	
+	public List<SubsidiosDto> getSubsidiosPorItem(Long idItem) {
+		Long idTipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor().getId();
+		List<SubsidiosDto> subsidios = new ArrayList<SubsidiosDto>();
+		
+		List<Object[]> list = repository.executeCustomQuery(GET_SUBSIDIO_ITEM_VENDEDOR,
+							idTipoVendedor, idItem);
+		
+		for (Object[] result : list) {
+			SubsidiosDto subsidio = new SubsidiosDto();
+			subsidio.setIdPlan((Long)result[0]);
+			subsidio.setSubsidio((Double)result[1]);
+			subsidios.add(subsidio);
+		}
+		
+		return subsidios;
+	}
+
     /**
      * Se valida que el/los numeros de sim/imei ingresados pertenezcan al
      * inventario/subinventario del usuario que realizo el ingreso de la

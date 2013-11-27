@@ -5,7 +5,6 @@ import java.util.List;
 
 import ar.com.nextel.sfa.client.dto.EstadoOportunidadDto;
 import ar.com.nextel.sfa.client.dto.GrupoDocumentoDto;
-import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 

@@ -1,14 +1,8 @@
 package ar.com.nextel.sfa.client.dto;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
-import ar.com.nextel.model.solicitudes.beans.LineaSolicitudServicio;
-import ar.com.nextel.model.support.owner.CollectionOwnerCreator;
-
-import com.google.gwt.dev.util.collect.HashSet;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDto, Cloneable {
@@ -57,6 +51,7 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 	private Boolean ddn = Boolean.FALSE;
 	private Boolean ddi = Boolean.FALSE;
 	private Boolean roaming = Boolean.FALSE;
+	private Boolean fullPrice = Boolean.FALSE;
 	
 	private Double precioConDescuento;
 	private Double monto;
@@ -440,6 +435,7 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
 		linea.ddn = ddn;
 		linea.ddi = ddi;
 		linea.roaming = roaming;
+		linea.fullPrice = fullPrice;
 		linea.precioConDescuento = precioConDescuento;
 		return linea;
 	}
@@ -479,5 +475,13 @@ public class LineaSolicitudServicioDto implements IsSerializable, IdentifiableDt
     public void addDescuentoLinea(DescuentoLineaDto descuento) {
         this.descuentosLinea.add(descuento);
     }
+
+	public void setFullPrice(Boolean fullPrice) {
+		this.fullPrice = fullPrice;
+	}
+
+	public Boolean getFullPrice() {
+		return fullPrice;
+	}
     
 }

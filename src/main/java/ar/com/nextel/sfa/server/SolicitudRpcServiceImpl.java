@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ import ar.com.nextel.business.constants.MessageIdentifier;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.legacy.avalon.dto.CantidadEquiposDTO;
 import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
+import ar.com.nextel.business.legacy.avalon.service.AvalonService;
 import ar.com.nextel.business.legacy.bps.BPSSystem;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.shift.ShiftSystem;
@@ -88,6 +90,7 @@ import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
 import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.PlanBase;
 import ar.com.nextel.model.solicitudes.beans.Segmento;
+import ar.com.nextel.model.solicitudes.beans.ServicioAdicional;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Sucursal;
@@ -95,6 +98,7 @@ import ar.com.nextel.model.solicitudes.beans.TipoAnticipo;
 import ar.com.nextel.model.solicitudes.beans.TipoPersona;
 import ar.com.nextel.model.solicitudes.beans.TipoPlan;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
+import ar.com.nextel.model.solicitudes.beans.TipoSolicitudBase;
 import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
@@ -140,6 +144,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
+import ar.com.nextel.sfa.client.dto.SubsidiosDto;
 import ar.com.nextel.sfa.client.dto.SucursalDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
@@ -186,6 +191,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private DefaultRetriever globalParameterRetriever;
 	private MailSender mailSender;
 	private CuentaBusinessService cuentaBusinessService;
+	private AvalonService avalonService;
 	private ReportBusinessOperator reportBusinessOperator;
 
 	//MELI
@@ -254,7 +260,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");
 		facturacionSolServicioService = (FacturacionSolServicioService) context.getBean("facturacionSolServicioServiceBean");
 		reportBusinessOperator = (ReportBusinessOperator) context.getBean("reportBusinessOperator");
-
+		avalonService = (AvalonService) context.getBean("avalonService");
 	}
 
 	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
@@ -933,6 +939,11 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return mapper.convertList(planes, PlanDto.class);
 	}
 
+	public List<SubsidiosDto> getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado) {
+		Long idItem = itemSolicitudTasado.getItem().getId();
+		return solicitudBusinessService.getSubsidiosPorItem(idItem);
+	}
+
 	public List<ServicioAdicionalLineaSolicitudServicioDto> getServiciosAdicionales(
 			LineaSolicitudServicioDto linea, Long idCuenta, boolean isEmpresa) {
 		
@@ -958,6 +969,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			serviciosAdicionales = solicitudServicioRepository.getServiciosAdicionales(
 						linea.getTipoSolicitud().getId(), linea.getPlan().getId(), 
 								idItem, idCuenta, sessionContextLoader.getVendedor(), isEmpresa);
+			serviciosAdicionales = comprobarServiciosPermanencia(
+					linea.getTipoSolicitud().getTipoSolicitudBase().getId(),serviciosAdicionales);
 		}
 		
 //		MGR - #3462 - Creo que a partir del cambio que genero este incidente, esto ya no es necesario
@@ -977,6 +990,34 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 //		}
 //		MGR - #3462 - Fin NO necesario
 		return mapper.convertList(serviciosAdicionales, ServicioAdicionalLineaSolicitudServicioDto.class);
+	}
+
+	
+	private Collection<ServicioAdicionalLineaSolicitudServicio> comprobarServiciosPermanencia(Long tipoSolicitud, Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales) {
+		
+		Long tipoSolicitudVentaEquipos 	   = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_VENTA_EQUIPOS)).getId();
+		Long tipoSolicitudActivacion       = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION)).getId();
+		Long tipoSolicitudActivacionOnline = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION_ONLINE)).getId();
+
+		//los servicios de permanencia solo deben visualizarse para ventas y activaciones comunes y online.
+		if(!tipoSolicitud.equals(tipoSolicitudVentaEquipos) && !tipoSolicitud.equals(tipoSolicitudActivacion) 
+			&& !tipoSolicitud.equals(tipoSolicitudActivacionOnline)){
+			
+			ServicioAdicional servicioSubsidioActivacion = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_ACTIVACION);
+			ServicioAdicional servicioBonifSubsidioActivacion = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_BONIF_ACTIVACION);
+			Set<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionalesToRemove = new HashSet<ServicioAdicionalLineaSolicitudServicio>();
+			
+	        for (ServicioAdicionalLineaSolicitudServicio servicio : serviciosAdicionales) {
+	        	
+				if (servicio.getServicioAdicional().getCodigoBSCS().equals(servicioSubsidioActivacion.getCodigoBSCS()) ||
+					servicio.getServicioAdicional().getCodigoBSCS().equals(servicioBonifSubsidioActivacion.getCodigoBSCS())){
+
+					serviciosAdicionalesToRemove.add(servicio);
+				}
+			}
+			serviciosAdicionales.removeAll(serviciosAdicionalesToRemove);
+		}
+		return serviciosAdicionales;
 	}
 
 	public ResultadoReservaNumeroTelefonoDto reservarNumeroTelefonico(long numero, long idTipoTelefonia,
@@ -1012,6 +1053,17 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					idListaPrecios, modelo.getId(), sessionContextLoader.getVendedor() ), ItemSolicitudTasadoDto.class));
 		}
 		return modelos;
+	}
+	
+	public ItemSolicitudTasadoDto getItemPorModelo(Long idModelo, Long idListaPrecios)
+			throws RpcExceptionMessages {
+		
+		List<ItemSolicitudTasadoDto> items = mapper.convertList(solicitudServicioRepository.getItemPorModelo(idListaPrecios
+				, idModelo, sessionContextLoader.getVendedor() ), ItemSolicitudTasadoDto.class);
+		if (items.isEmpty()){
+			return null;
+		}
+		return items.get(0);
 	}
 
 	/** Retorna null si la SIM es correcta. De lo contrario retorna el mensaje de error */
@@ -1071,7 +1123,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 						result.setError(true);
 					}
 				}
-			}			
+			}
 			
 //			MGR - Refactorizacion del cierre
 			if(!result.isError() && resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO){
@@ -1106,10 +1158,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 //				boolean eraProspect = !solicitudServicio.getCuenta().isCliente();
 //				MGR - Refactorizacion del cierre
 				response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, resultadoCierre.getPuedeCerrar(),pinChequeadoEnNexus);
-				
-				result.setError(response.getMessages().hasErrors());
+								result.setError(response.getMessages().hasErrors());
 								
-//				MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
+//					MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
 //				MGR - #3458 - Y si el cierre fue por veraz
 //				MGR - Refactorizacion del cierre
 				if (!result.isError() && resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO &&
@@ -2183,6 +2234,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return "";
 	}
 
+
 	private boolean cerrandoConItemBB(SolicitudServicio ss) {
 		boolean cerrandoConItemBB = false;
 		for (LineaSolicitudServicio linea : ss.getLineas()) {
@@ -3173,6 +3225,15 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		ME, //MENDO
 		RO, //ROSAR
 		ZZ; //SIN AREA
+	}
+
+	public boolean validarImeiSim(String imei, String sim, String modeloEq)
+			throws RpcExceptionMessages {
+		String handsetAsociadoConSIM = avalonService.getHandsetAsociadoConSIM(sim);
+		if (handsetAsociadoConSIM!=null && handsetAsociadoConSIM.equals(imei)){
+			return true;
+		}
+		return false;
 	}
 	
 //	MGR - Facturacion

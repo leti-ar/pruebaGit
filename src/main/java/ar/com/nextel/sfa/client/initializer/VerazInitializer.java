@@ -3,10 +3,10 @@ package ar.com.nextel.sfa.client.initializer;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 import ar.com.nextel.sfa.client.dto.SexoDto;
 import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * 
