@@ -1485,7 +1485,11 @@ public class SolicitudBusinessService {
 		for (Object[] result : list) {
 			SubsidiosDto subsidio = new SubsidiosDto();
 			subsidio.setIdPlan((Long)result[0]);
-			subsidio.setSubsidio((Double)result[1]);
+			if (result[1]==null){
+				subsidio.setSubsidio(0d);
+			}else{
+				subsidio.setSubsidio((Double)result[1]);
+			}
 			subsidios.add(subsidio);
 		}
 		
