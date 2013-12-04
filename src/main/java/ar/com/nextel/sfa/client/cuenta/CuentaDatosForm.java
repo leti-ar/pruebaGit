@@ -32,6 +32,7 @@ import ar.com.nextel.sfa.client.dto.TipoDocumentoDto;
 import ar.com.nextel.sfa.client.dto.TipoEmailDto;
 import ar.com.nextel.sfa.client.dto.TipoTarjetaDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefonoDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.dto.VerazResponseDto;
 import ar.com.nextel.sfa.client.enums.EstadoOportunidadEnum;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
@@ -208,28 +209,18 @@ public class CuentaDatosForm extends Composite {
 		} else {
 			datosCuentaTable.removeRow(row);
 		}
-		
-		// SB : grizar campos según el vendedor logueado
-		if(!ClientContext.getInstance().checkPermiso(PermisosEnum.VER_CAMPOS_PROSPECT.getValue())){
-			
-			long selectedSexo = cuentaUIData.getSexo().getSelectedItemId() != null
-					&& !"".equals(cuentaUIData.getSexo().getSelectedItemId().trim()) ? Long
-					.parseLong(cuentaUIData.getSexo().getSelectedItemId()) : -1;
 
-			if ((selectedSexo != SexoEnum.ORGANIZACION.getId()) && 
-					(ClientContext.getInstance().getVendedor().isDealer() 
-						|| ClientContext.getInstance().getVendedor().isRetail()
-							|| ClientContext.getInstance().getVendedor().isMinorista())) {
-						
-  					    cuentaUIData.getNombre().setReadOnly(true);
-						cuentaUIData.getApellido().setReadOnly(true);
-						cuentaUIData.getSexo().setEnabled(true);
-			        } else {
-						cuentaUIData.getNombre().setReadOnly(false);
-						cuentaUIData.getApellido().setReadOnly(false);
-						cuentaUIData.getSexo().setEnabled(false);
-			        }
-			cuentaUIData.getRazonSocial().setReadOnly(true);
+		String estadoFromVeraz = CuentaClientService.estadoFromVeraz;
+		Integer scoreDniFromVeraz = CuentaClientService.scoreDniFromVeraz;
+		String sexoFromVeraz = CuentaClientService.sexoVeraz;
+
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_CAMPOS_PROSPECT.getValue()) && isVendedorConPassAutomatico()){
+			if ("RECHAZAR".equals(estadoFromVeraz) && scoreDniFromVeraz == 0) {
+				this.actualizarCamposEditables(sexoFromVeraz);
+			}
+			else if ("REVISAR".equals(estadoFromVeraz)  && scoreDniFromVeraz == 3) {
+				this.actualizarCamposEditables(sexoFromVeraz);
+			}
 		}
 		
 		datosCuentaTable.setWidget(row, 0, cuentaUIData.getNombreLabel());
@@ -1885,6 +1876,75 @@ public class CuentaDatosForm extends Composite {
 			return true;
 		}
 		return false;
+	}
+	
+	private boolean isSexoFemeninoMasculino(String sexo) {
+		return SexoEnum.FEMENINO.getDescripcion().equals(sexo) || SexoEnum.MASCULINO.getDescripcion().equals(sexo);		
+	}
+	
+	private boolean isSexoOrganizacion(String sexo) {
+		return SexoEnum.ORGANIZACION.getDescripcion().equals(sexo);		
+	}
+	
+	private boolean isVendedorConPassAutomatico() {
+		
+		VendedorDto vendedorDto = ClientContext.getInstance().getVendedor();	
+		return vendedorDto.isDealer() || vendedorDto.isRetail() || vendedorDto.isMinorista();
+	}	
+		
+	private void actualizarCamposEditables(String sexoFromVeraz) {
+		
+		if (isSexoFemeninoMasculino(sexoFromVeraz)) {
+			//editables
+			this.setNombreEditable(true);
+			this.setApellidoEditable(true);
+									
+			// no editables
+			this.setRazonsocialEditable(false);
+		}
+		else if (isSexoOrganizacion(sexoFromVeraz)) {
+			//editables			
+			this.setRazonsocialEditable(true);
+			
+			// no editables
+			this.setNombreEditable(false);
+			this.setApellidoEditable(false);
+		}
+		
+		cuentaUIData.getSexo().setEnabled(false);
+	}			
+	
+	private void setNombreEditable(boolean editable) {
+		
+		if (editable) {
+			cuentaUIData.getNombre().setEnabled(true);
+			cuentaUIData.getNombre().setReadOnly(false);	
+		}
+		else {
+			cuentaUIData.getNombre().setEnabled(false);			
+		}	
+	}	
+	
+	private void setApellidoEditable(boolean editable) {
+		
+		if (editable) {
+			cuentaUIData.getApellido().setEnabled(true);
+			cuentaUIData.getApellido().setReadOnly(false);	
+		}
+		else {
+			cuentaUIData.getApellido().setEnabled(false);			
+		}	
+	}
+	
+	private void setRazonsocialEditable(boolean editable) {
+		
+		if (editable) {
+			cuentaUIData.getRazonSocial().setEnabled(true);
+			cuentaUIData.getRazonSocial().setReadOnly(false);	
+		}
+		else {
+			cuentaUIData.getRazonSocial().setEnabled(false);			
+		}	
 	}
 
 }

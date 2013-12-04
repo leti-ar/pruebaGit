@@ -79,6 +79,8 @@ public class VerazFilterUI extends Composite {
 					String apellidoFromVeraz = null;
 					String sexoVeraz = null;//#3481
 					String razonSocialFromVeraz = null;
+					Integer scoreDniFromVeraz = null;
+					String estadoFromVeraz = null;
 					if (verazResultUI.getVerazResponseDto()!=null) {
 						nombreFromVeraz   = verazResultUI.getVerazResponseDto().getNombre();
 						apellidoFromVeraz = verazResultUI.getVerazResponseDto().getApellido();
@@ -86,10 +88,13 @@ public class VerazFilterUI extends Composite {
 						verazResultUI.getVerazResponseDto().setApellido("");
 						sexoVeraz = verazEditor.getSexoListBox().getSelectedItemText();//#3481
 						razonSocialFromVeraz = verazResultUI.getVerazResponseDto().getRazonSocial();
+						scoreDniFromVeraz = verazResultUI.getVerazResponseDto().getScoreDni();
+						estadoFromVeraz = verazResultUI.getVerazResponseDto().getEstado();
 					}
 					//y acá le debería pasar el sexo para que lo ponga por default
 					CuentaClientService.reservaCreacionCuentaFromVeraz(new Long(verazEditor.getTipoDocListBox().getSelectedItemId()),
-							                                           verazEditor.getNumeroDocTextBox().getText(),	nombreFromVeraz, apellidoFromVeraz, sexoVeraz, razonSocialFromVeraz);
+							                                           verazEditor.getNumeroDocTextBox().getText(),	nombreFromVeraz, apellidoFromVeraz, sexoVeraz, razonSocialFromVeraz,
+							                                           scoreDniFromVeraz, estadoFromVeraz);
 				}
 			}			
 		});
