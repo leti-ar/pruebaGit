@@ -221,6 +221,12 @@ public class CuentaDatosForm extends Composite {
 			else if ("REVISAR".equals(estadoFromVeraz)  && scoreDniFromVeraz == 3) {
 				this.actualizarCamposEditables(sexoFromVeraz);
 			}
+			else {
+				// no editables
+				setNombreEditable(false);
+				setApellidoEditable(false);
+				cuentaUIData.getSexo().setEnabled(false);
+			}
 		}
 		
 		datosCuentaTable.setWidget(row, 0, cuentaUIData.getNombreLabel());
@@ -1921,7 +1927,8 @@ public class CuentaDatosForm extends Composite {
 			cuentaUIData.getNombre().setReadOnly(false);	
 		}
 		else {
-			cuentaUIData.getNombre().setEnabled(false);			
+			cuentaUIData.getNombre().setEnabled(false);
+			cuentaUIData.getNombre().setReadOnly(true);
 		}	
 	}	
 	
@@ -1932,7 +1939,8 @@ public class CuentaDatosForm extends Composite {
 			cuentaUIData.getApellido().setReadOnly(false);	
 		}
 		else {
-			cuentaUIData.getApellido().setEnabled(false);			
+			cuentaUIData.getApellido().setEnabled(false);
+			cuentaUIData.getApellido().setReadOnly(true);
 		}	
 	}
 	
@@ -1943,7 +1951,8 @@ public class CuentaDatosForm extends Composite {
 			cuentaUIData.getRazonSocial().setReadOnly(false);	
 		}
 		else {
-			cuentaUIData.getRazonSocial().setEnabled(false);			
+			cuentaUIData.getRazonSocial().setEnabled(false);
+			cuentaUIData.getRazonSocial().setReadOnly(true);
 		}	
 	}
 
