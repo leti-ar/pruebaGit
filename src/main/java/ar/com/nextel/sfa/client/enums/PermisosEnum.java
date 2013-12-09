@@ -72,7 +72,7 @@ public enum PermisosEnum {
 	//MGR - #965 - Para ocultar el campo Factura Electronica
 	VER_CAMPO_FACTURA_ELECTRONICA("verCampoFacturaElectronica",Accion.X,true),
 	//SB - 0005558 - Permite editar los campos Apellido y Nombre de un Prospect en SFA. 
-	VER_CAMPOS_PROSPECT("verCampoProspect",Accion.X,true),
+	VER_CAMPOS_PROSPECT("verCamposProspect",Accion.X,true),
 	//SB -  Factura electronica. Obliga a Poner el Check para todos y No editable.
 	OBLIGA_CHECK_FACT_ELE("obligaCheckFactEle",Accion.X,true),
 	//MGR - #962
