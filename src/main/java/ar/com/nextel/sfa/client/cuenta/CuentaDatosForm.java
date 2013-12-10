@@ -161,6 +161,12 @@ public class CuentaDatosForm extends Composite {
 												cuentaUIData.getNombre(), cuentaUIData.getRazonSocial(),
 												cuentaUIData.getSexo(), cuentaUIData.getVerazRta());
 										cuentaUIData.exportarNombreApellidoARazonSocial();
+
+										String estadoFromVeraz = result.getEstado();
+										Integer scoreDniFromVeraz = result.getScoreDni();
+										String sexoFromVeraz = cuentaUIData.getSexo().getSelectedItemText();
+
+										actualizarCamposEditables(estadoFromVeraz, scoreDniFromVeraz, sexoFromVeraz);
 									}
 								}
 							});
@@ -214,20 +220,7 @@ public class CuentaDatosForm extends Composite {
 		Integer scoreDniFromVeraz = CuentaClientService.scoreDniFromVeraz;
 		String sexoFromVeraz = CuentaClientService.sexoVeraz;
 
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_CAMPOS_PROSPECT.getValue()) && isVendedorConPassAutomatico()){
-			if ("RECHAZAR".equals(estadoFromVeraz) && scoreDniFromVeraz == 0) {
-				this.actualizarCamposEditables(sexoFromVeraz);
-			}
-			else if ("REVISAR".equals(estadoFromVeraz)  && scoreDniFromVeraz == 3) {
-				this.actualizarCamposEditables(sexoFromVeraz);
-			}
-			else {
-				// no editables
-				setNombreEditable(false);
-				setApellidoEditable(false);
-				cuentaUIData.getSexo().setEnabled(false);
-			}
-		}
+		this.actualizarCamposEditables(estadoFromVeraz, scoreDniFromVeraz, sexoFromVeraz);
 		
 		datosCuentaTable.setWidget(row, 0, cuentaUIData.getNombreLabel());
 		datosCuentaTable.setWidget(row, 1, cuentaUIData.getNombre());
@@ -1955,5 +1948,24 @@ public class CuentaDatosForm extends Composite {
 			cuentaUIData.getRazonSocial().setReadOnly(true);
 		}	
 	}
+
+	private void actualizarCamposEditables(String estadoFromVeraz, Integer scoreDniFromVeraz, String sexoFromVeraz) {
+				
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_CAMPOS_PROSPECT.getValue()) && isVendedorConPassAutomatico()){
+			if ("RECHAZAR".equals(estadoFromVeraz) && scoreDniFromVeraz == 0) {
+				actualizarCamposEditables(sexoFromVeraz);
+			}
+			else if ("REVISAR".equals(estadoFromVeraz)  && scoreDniFromVeraz == 3) {
+				actualizarCamposEditables(sexoFromVeraz);
+			}
+			else {
+				// no editables
+				setNombreEditable(false);
+				setApellidoEditable(false);
+				cuentaUIData.getSexo().setEnabled(false);
+			}
+		}
+	}
+	
 
 }
