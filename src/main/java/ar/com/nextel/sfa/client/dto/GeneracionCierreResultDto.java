@@ -13,6 +13,7 @@ public class GeneracionCierreResultDto implements IsSerializable {
 	private List<String> fileNamePortabilidad;
 	private List<String> fileNamePortabilidad_adj;
 	private String remitoRtfFileName;
+	private List<NumeroReservaDto> numerosReservados;
 	
 	public GeneracionCierreResultDto() {
 		error = false;
@@ -76,5 +77,13 @@ public class GeneracionCierreResultDto implements IsSerializable {
 		MessageDto mens = new MessageDto();
 		mens.setDescription(msg);
 		this.messages.add(mens);
+	}
+
+	public void setNumerosReservados(List<NumeroReservaDto> numerosReservados) {
+		this.numerosReservados = numerosReservados;
+	}
+
+	public List<NumeroReservaDto> getNumerosReservados() {
+		return numerosReservados;
 	}
 }

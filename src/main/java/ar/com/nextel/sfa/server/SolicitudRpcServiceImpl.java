@@ -25,6 +25,7 @@ import javax.servlet.ServletException;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.validator.GenericValidator;
 import org.hibernate.HibernateException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -132,6 +133,7 @@ import ar.com.nextel.sfa.client.dto.LocalidadDto;
 import ar.com.nextel.sfa.client.dto.MessageDto;
 import ar.com.nextel.sfa.client.dto.ModalidadCobroDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
+import ar.com.nextel.sfa.client.dto.NumeroReservaDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
@@ -1232,6 +1234,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			
 //			MGR - Remito - Seteo el nombre del remito
 			result.setRemitoRtfFileName(response.getRtfFileNameRemito());
+			
+			//cargo los numeros reservados para mostrarlos en el popup de cierre
+			result.setNumerosReservados(cargarNumerosReservados(solicitudServicio));
 			
 		} catch (Exception e) {
 			AppLogger.error(e);
@@ -3328,5 +3333,23 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		}
 		return mensajes;
 	}
+	
+	private List<NumeroReservaDto> cargarNumerosReservados(SolicitudServicio solicitudServicio) {
+		
+		List<NumeroReservaDto> numerosReservados = new ArrayList();
+		for (LineaSolicitudServicio linea : solicitudServicio.getLineas()) {
+			String numero = linea.getNumeroReserva();
+			if(!GenericValidator.isBlankOrNull(numero)){
+				NumeroReservaDto numeroReservado = new NumeroReservaDto();
+				numeroReservado.setImei((linea.getNumeroIMEI()==null)? "" : linea.getNumeroIMEI());
+				numeroReservado.setSim((linea.getNumeroSimcard()==null)? "" : linea.getNumeroSimcard());
+				numeroReservado.setAlias((linea.getAlias()==null)? "" : linea.getAlias());
+				numeroReservado.setNumero(numero);
+				numerosReservados.add(numeroReservado);
+			}
+		}
+		return numerosReservados;
+	}
+
 }
 

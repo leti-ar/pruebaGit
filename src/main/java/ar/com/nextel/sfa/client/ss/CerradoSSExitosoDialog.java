@@ -7,6 +7,7 @@ import java.util.List;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
+import ar.com.nextel.sfa.client.dto.NumeroReservaDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.ReportUtils;
 import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
@@ -17,11 +18,13 @@ import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineHTML;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -73,11 +76,17 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 		remitoLink = new SimpleLink("Remito link", "#" + History.getToken(), true);
 	}
 	
-	private void init(List<String> fileNamePorta) {
+	private void init(List<String> fileNamePorta, List<NumeroReservaDto> numerosReservados) {
 		cierreExitoso.clear();
 		
 		addStyleName("gwt-CerrarSSDialog");
 		mainPanel.setWidth("350px");
+		
+		if (!numerosReservados.isEmpty()) {
+			SimplePanel numerosReservadosTable = listarNumerosReservados(numerosReservados);
+			cierreExitoso.add(numerosReservadosTable);
+		}
+		
 		Grid layout = new Grid(1, 2);
 		layout.setWidth("290px");
 		Image check = new Image("images/ss-check.gif");
@@ -253,7 +262,7 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 //		MGR - Remito
 		this.remitoName = cierreResult.getRemitoRtfFileName();
 		
-		init(fileNamePorta);
+		init(fileNamePorta, cierreResult.getNumerosReservados());
 		
 		cierreExitoso.setVisible(true);
 		formButtons.setVisible(true);
@@ -283,4 +292,35 @@ public class CerradoSSExitosoDialog extends NextelDialog implements ClickListene
 	public void setAceptarCommand(Command aceptarCommand) {
 		this.aceptarCommand = aceptarCommand;
 	}
+	
+	private SimplePanel listarNumerosReservados(List<NumeroReservaDto> values) {
+		
+		SimplePanel wrapper = new SimplePanel();
+		wrapper.addStyleName("numerosReservadosTable mtb5 mlr5");
+
+		FlexTable numerosReservaTable = new FlexTable();
+		numerosReservaTable.addStyleName("dataTable");
+		numerosReservaTable.setCellPadding(0);
+		numerosReservaTable.setCellSpacing(0);
+		numerosReservaTable.setWidth("100%");
+		numerosReservaTable.getRowFormatter().addStyleName(0, "header");
+		numerosReservaTable.setText(0, 0, "IMEI/SIM");
+		numerosReservaTable.setText(0, 1, "Alias");
+		numerosReservaTable.setText(0, 2, "Numero de Telefono");
+
+		int row = 1;
+		for (NumeroReservaDto value : values) {
+			if (value.getImei().equals("") && value.getSim().equals("")) {
+				numerosReservaTable.setText(row, 0, "-");
+			}else{
+				numerosReservaTable.setText(row, 0, value.getImei() + " / " + value.getSim());
+			}
+			numerosReservaTable.setText(row, 1, value.getAlias());
+			numerosReservaTable.setText(row, 2, value.getNumero());
+			row++;
+		}
+		wrapper.add(numerosReservaTable);
+		return wrapper;
+	}
+	
 }
