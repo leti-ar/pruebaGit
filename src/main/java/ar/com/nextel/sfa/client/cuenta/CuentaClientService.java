@@ -276,4 +276,12 @@ public class CuentaClientService {
 			return false;
 		}
 	}
+	
+	public static void limpiarDatosVerazValidacionCamposEditables() {
+		
+		CuentaClientService.estadoFromVeraz = null;
+		CuentaClientService.scoreDniFromVeraz = null;
+		CuentaClientService.sexoVeraz = null;		
+	}
+	
 }

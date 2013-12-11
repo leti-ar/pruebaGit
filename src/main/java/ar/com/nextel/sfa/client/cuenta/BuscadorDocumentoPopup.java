@@ -46,6 +46,7 @@ public class BuscadorDocumentoPopup extends NextelDialog {
 	
 		aceptar.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent arg0) {
+				CuentaClientService.limpiarDatosVerazValidacionCamposEditables();
 				reservaCreacionCuenta();
 			}
 		});		
