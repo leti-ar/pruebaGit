@@ -3,16 +3,14 @@ package ar.com.nextel.sfa.client.initializer;
 import java.util.ArrayList;
 import java.util.List;
 
-
-import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.ComentarioAnalistaDto;
+import ar.com.nextel.sfa.client.dto.ControlDto;
 import ar.com.nextel.sfa.client.dto.EstadoHistoricoDto;
 import ar.com.nextel.sfa.client.dto.EstadoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.SucursalDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
-
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 

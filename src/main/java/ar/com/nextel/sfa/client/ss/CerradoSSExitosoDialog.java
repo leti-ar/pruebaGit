@@ -4,26 +4,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.dto.GeneracionCierreResultDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.ReportUtils;
 import ar.com.nextel.sfa.client.widget.LoadingModalDialog;
-import ar.com.nextel.sfa.client.widget.MessageDialog;
 import ar.com.nextel.sfa.client.widget.NextelDialog;
-import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 import ar.com.snoop.gwt.commons.client.util.WindowUtils;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
-import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
-import ar.com.snoop.gwt.commons.client.window.WaitWindow;
 
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.ClickListener;

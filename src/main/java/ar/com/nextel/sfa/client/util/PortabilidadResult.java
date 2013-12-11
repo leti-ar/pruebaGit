@@ -3,7 +3,6 @@ package ar.com.nextel.sfa.client.util;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class PortabilidadResult  implements IsSerializable{

@@ -1,8 +1,8 @@
 package ar.com.nextel.sfa.client.dto;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 import ar.com.snoop.gwt.commons.client.dto.ListBoxItem;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class RubroDto extends EnumDto implements ListBoxItem, IsSerializable {
 

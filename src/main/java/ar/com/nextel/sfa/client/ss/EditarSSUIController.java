@@ -10,7 +10,7 @@ import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
-import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
+import ar.com.nextel.sfa.client.dto.SubsidiosDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.initializer.ContratoViewInitializer;
@@ -58,6 +58,15 @@ public interface EditarSSUIController {
 	void getContratoViewInitializer(DefaultWaitCallback<ContratoViewInitializer> callback);
 	
 	boolean isEditable();
+
+	public void getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado,
+			DefaultWaitCallback<List<SubsidiosDto>> callback);
+
+	public void loadTransferencia(Boolean cerrarPermanencia);
+
+	public void getItemPorModelo(Long idModelo, Long idListaPrecios,
+			DefaultWaitCallback<ItemSolicitudTasadoDto> callback);
+
 	
 //    public void validarSIM_IMEI(SolicitudServicioDto solicitud,DefaultWaitCallback<List<String>> callback);
     

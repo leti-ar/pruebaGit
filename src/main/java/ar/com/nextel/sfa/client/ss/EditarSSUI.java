@@ -10,6 +10,7 @@ import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 import ar.com.nextel.sfa.client.cuenta.CuentaClientService;
 import ar.com.nextel.sfa.client.cuenta.CuentaEdicionTabPanel;
+import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSSTransfResultDto;
 import ar.com.nextel.sfa.client.dto.CreateSaveSolicitudServicioResultDto;
 import ar.com.nextel.sfa.client.dto.CuentaSSDto;
@@ -29,6 +30,7 @@ import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
+import ar.com.nextel.sfa.client.dto.SubsidiosDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
@@ -106,8 +108,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private PopupPanel generarCerrarMenu;
 	private SimpleLink cerrarSolicitud;
 	private SimpleLink generarSolicitud;
+	private SimpleLink cerrarPermanenciaSolicitud;
 	private DefaultWaitCallback<GeneracionCierreResultDto> generacionCierreCallback;
 	private CerrarSSUI cerrarSSUI;
+	private PopUpPermanenciaUI popupPanel;
 	private boolean guardandoSolicitud = false;
 	private boolean cerrandoSolicitud = false;
 	private String codigoVant;
@@ -135,6 +139,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		addStyleName("Gwt-EditarSSUI");
 		knownInstancias = ClientContext.getInstance().getKnownInstance();
 		linksCrearSS = new FlowPanel();
+		popupPanel = new PopUpPermanenciaUI();
 		
 //		MGR - Facturacion
 		EventBusUtil.getEventBus().addHandler(RefrescarPantallaSSEvent.TYPE, 
@@ -335,6 +340,21 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		}
 		return true;
 		
+	}
+	
+	public void loadTransferencia(Boolean cerrarPermanencia){
+		linksCrearSS.clear();
+		if(grupoSS != null && knownInstancias != null && 
+				!grupoSS.equals(knownInstancias.get(GrupoSolicitudDto.ID_TRANSFERENCIA).toString()) &&
+				!ClientContext.getInstance().checkPermiso(PermisosEnum.OCULTA_LINK_GENERAR_SS.getValue())){
+			linksCrearSS.add(wrap(generarSolicitud));
+		}
+		if (cerrarPermanencia){
+			linksCrearSS.add(wrap(cerrarPermanenciaSolicitud));
+		}else{
+			linksCrearSS.add(wrap(cerrarSolicitud));
+		}
+
 	}
 		
 		public boolean loadCopiarSS(SolicitudServicioDto solicitudSS) {
@@ -660,6 +680,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 //		FlowPanel linksCrearSS = new FlowPanel();
 		generarSolicitud = new SimpleLink("Generar");
 		cerrarSolicitud = new SimpleLink("Cerrar");
+		cerrarPermanenciaSolicitud = new SimpleLink("Cerrar");
 		
 		//MGR - #1122
 //		if(grupoSS != null && knownInstancias != null && 
@@ -671,6 +692,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 //		linksCrearSS.add(wrap(cerrarSolicitud));
 		generarSolicitud.addClickListener(this);
 		cerrarSolicitud.addClickListener(this);
+		cerrarPermanenciaSolicitud.addClickListener(this);
 		generarCerrarMenu.setWidget(linksCrearSS);
 
 		formButtonsBar = new FormButtonsBar();
@@ -941,6 +963,140 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			} else {
 				openGenerarCerrarSolicitdDialog(sender == cerrarSolicitud);
 			}
+		} else if (sender == cerrarPermanenciaSolicitud){
+			verPopUpPermanencia(datosTranferencia.getContratosSSChequeados());
+		}
+//		MGR - Facturacion - Funcionalidad del link Facturar
+		else if (sender ==  facturarButton){
+			
+			if(!editarSSUIData.isSaved()){
+				//guardar primero
+				ErrorDialog.getInstance().setDialogTitle("Aviso");
+				ErrorDialog.getInstance().show("Debe guardar la solicitud antes de facturar", false);
+			}else{
+				
+				//obtengo la cuenta
+				Long idCuenta = null;
+				if (HistoryUtils.getParam("idCuenta") != null) {
+					idCuenta = Long.parseLong(HistoryUtils.getParam("idCuenta"));
+				} else if (HistoryUtils.getParam("cuenta_id") != null) {
+					idCuenta = Long.parseLong(HistoryUtils.getParam("cuenta_id"));
+				}
+				CuentaClientService.cargarDatosCuenta(idCuenta, codigoVant, false, false);
+	
+				WaitWindow.show();
+				DeferredCommand.addCommand(new IncrementalCommand() {
+					public boolean execute() {
+						if (CuentaClientService.cuentaDto == null){
+							return true;
+						}
+						WaitWindow.hide();
+						
+						//si el campo nombre no está cargado significa que no están cargados los campos obligatorios de la cuenta
+						if (CuentaClientService.cuentaDto.getPersona().getNombre() != null) {
+							validacionPreviaFacturacion();
+						} else {
+							ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+							ErrorDialog.getInstance().show("Debe completar los campos obligatorios de la cuenta");
+						}
+						return false;
+					}
+				});
+			}
+			
+//		MGR - Facturacion
+		}else if (sender == verificarPagoButton){
+			
+//			MGR - Verificar Pago
+			SolicitudRpcService.Util.getInstance().verificarPagoFacturaSolicitudServicio(
+					editarSSUIData.getSolicitudServicio(), new DefaultWaitCallback<FacturaDto>() {
+
+						@Override
+						public void success(FacturaDto result) {
+							if (result.getPagado()){
+								editarSSUIData.getSolicitudServicio().setFactura(result);
+								
+								EventBusUtil.getEventBus().fireEvent(
+										new RefrescarPantallaSSEvent(editarSSUIData.getSolicitudServicio(), 
+												editarSSUIData.getSolicitudServicio().getRetiraEnSucursal()));
+							}
+							else{
+								MessageDialog.getInstance().showAceptar("No se realizo el pago",
+										new Command() {
+								    public void execute() {
+								    	MessageDialog.getInstance().hide();
+									};
+								});
+							}
+							
+						}
+					});
+		}
+//		MGR - Facturacion - Funcionalidad del link Facturar
+		else if (sender ==  facturarButton){
+			
+			if(!editarSSUIData.isSaved()){
+				//guardar primero
+				ErrorDialog.getInstance().setDialogTitle("Aviso");
+				ErrorDialog.getInstance().show("Debe guardar la solicitud antes de facturar", false);
+			}else{
+				
+				//obtengo la cuenta
+				Long idCuenta = null;
+				if (HistoryUtils.getParam("idCuenta") != null) {
+					idCuenta = Long.parseLong(HistoryUtils.getParam("idCuenta"));
+				} else if (HistoryUtils.getParam("cuenta_id") != null) {
+					idCuenta = Long.parseLong(HistoryUtils.getParam("cuenta_id"));
+				}
+				CuentaClientService.cargarDatosCuenta(idCuenta, codigoVant, false, false);
+	
+				WaitWindow.show();
+				DeferredCommand.addCommand(new IncrementalCommand() {
+					public boolean execute() {
+						if (CuentaClientService.cuentaDto == null){
+							return true;
+						}
+						WaitWindow.hide();
+						
+						//si el campo nombre no está cargado significa que no están cargados los campos obligatorios de la cuenta
+						if (CuentaClientService.cuentaDto.getPersona().getNombre() != null) {
+							validacionPreviaFacturacion();
+						} else {
+							ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+							ErrorDialog.getInstance().show("Debe completar los campos obligatorios de la cuenta");
+						}
+						return false;
+					}
+				});
+			}
+			
+//		MGR - Facturacion
+		}else if (sender == verificarPagoButton){
+			
+//			MGR - Verificar Pago
+			SolicitudRpcService.Util.getInstance().verificarPagoFacturaSolicitudServicio(
+					editarSSUIData.getSolicitudServicio(), new DefaultWaitCallback<FacturaDto>() {
+
+						@Override
+						public void success(FacturaDto result) {
+							if (result.getPagado()){
+								editarSSUIData.getSolicitudServicio().setFactura(result);
+								
+								EventBusUtil.getEventBus().fireEvent(
+										new RefrescarPantallaSSEvent(editarSSUIData.getSolicitudServicio(), 
+												editarSSUIData.getSolicitudServicio().getRetiraEnSucursal()));
+							}
+							else{
+								MessageDialog.getInstance().showAceptar("No se realizo el pago",
+										new Command() {
+								    public void execute() {
+								    	MessageDialog.getInstance().hide();
+									};
+								});
+							}
+							
+						}
+					});
 		}
 //		MGR - Facturacion - Funcionalidad del link Facturar
 		else if (sender ==  facturarButton){
@@ -1219,6 +1375,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			public void execute() {
 				editarSSUIData.setSolicitudServicioGeneracion(getCerrarSSUI().getCerrarSSUIData()
 						.getSolicitudServicioGeneracion());
+				
 				// Se comenta por el nuevo cartel de cargando;
 				CerradoSSExitosoDialog.getInstance().showLoading(cerrandoSolicitud);
 				List<String> errors = null;
@@ -1390,6 +1547,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		SolicitudRpcService.Util.getInstance().getPlanesPorItemYTipoPlan(itemSolicitudTasado, tipoPlan,
 				editarSSUIData.getCuentaId(), isActivacion, modelo, callback);
 	}
+	
+	public void getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado, 
+			DefaultWaitCallback<List<SubsidiosDto>> callback) {
+		SolicitudRpcService.Util.getInstance().getSubsidiosPorItem(itemSolicitudTasado, callback);
+	}
 
 	public void getServiciosAdicionales(LineaSolicitudServicioDto linea,
 			DefaultWaitCallback<List<ServicioAdicionalLineaSolicitudServicioDto>> defaultWaitCallback) {
@@ -1457,6 +1619,11 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	public void getServiciosAdicionalesContrato(Long idPlan,
 			DefaultWaitCallback<List<ServicioAdicionalIncluidoDto>> callback) {
 		SolicitudRpcService.Util.getInstance().getServiciosAdicionalesContrato(idPlan, callback);
+	}
+	
+	public void getItemPorModelo(Long idModelo, Long idListaPrecios,
+			DefaultWaitCallback<ItemSolicitudTasadoDto> callback) {
+		SolicitudRpcService.Util.getInstance().getItemPorModelo(idModelo, idListaPrecios, callback);
 	}
 	
 	/**
@@ -1581,7 +1748,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		}
 
 		SolicitudRpcService.Util.getInstance().generarCerrarSolicitud(
-				ssDto, pinMaestro, cerrandoSolicitud,
+				ssDto, pinMaestro, cerrandoSolicitud, ClientContext.getInstance().isPinChequeadoEnNexus(), 
 				getGeneracionCierreCallback());
 	}
 
@@ -1872,6 +2039,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		});
 	}
 
+	private void verPopUpPermanencia(List<ContratoViewDto> values){
+		this.popupPanel.setHeaderTitle(Sfa.constant().cargosPermanencia());
+		this.popupPanel.chargeContentTable(values);
+		this.popupPanel.show();
+		this.popupPanel.center();
+	}
 
 	/**
 	 * validacion de stock para el imei-sin cargados en agregar item

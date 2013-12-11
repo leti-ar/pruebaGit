@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ import ar.com.nextel.business.constants.MessageIdentifier;
 import ar.com.nextel.business.legacy.avalon.AvalonSystem;
 import ar.com.nextel.business.legacy.avalon.dto.CantidadEquiposDTO;
 import ar.com.nextel.business.legacy.avalon.exception.AvalonSystemException;
+import ar.com.nextel.business.legacy.avalon.service.AvalonService;
 import ar.com.nextel.business.legacy.bps.BPSSystem;
 import ar.com.nextel.business.legacy.financial.FinancialSystem;
 import ar.com.nextel.business.legacy.shift.ShiftSystem;
@@ -88,6 +90,7 @@ import ar.com.nextel.model.solicitudes.beans.OrigenSolicitud;
 import ar.com.nextel.model.solicitudes.beans.Plan;
 import ar.com.nextel.model.solicitudes.beans.PlanBase;
 import ar.com.nextel.model.solicitudes.beans.Segmento;
+import ar.com.nextel.model.solicitudes.beans.ServicioAdicional;
 import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaSolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Sucursal;
@@ -95,6 +98,7 @@ import ar.com.nextel.model.solicitudes.beans.TipoAnticipo;
 import ar.com.nextel.model.solicitudes.beans.TipoPersona;
 import ar.com.nextel.model.solicitudes.beans.TipoPlan;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
+import ar.com.nextel.model.solicitudes.beans.TipoSolicitudBase;
 import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
@@ -140,6 +144,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
+import ar.com.nextel.sfa.client.dto.SubsidiosDto;
 import ar.com.nextel.sfa.client.dto.SucursalDto;
 import ar.com.nextel.sfa.client.dto.TipoAnticipoDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
@@ -186,6 +191,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private DefaultRetriever globalParameterRetriever;
 	private MailSender mailSender;
 	private CuentaBusinessService cuentaBusinessService;
+	private AvalonService avalonService;
 	private ReportBusinessOperator reportBusinessOperator;
 
 	//MELI
@@ -254,7 +260,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		cuentaBusinessService = (CuentaBusinessService) context.getBean("cuentaBusinessService");
 		facturacionSolServicioService = (FacturacionSolServicioService) context.getBean("facturacionSolServicioServiceBean");
 		reportBusinessOperator = (ReportBusinessOperator) context.getBean("reportBusinessOperator");
-
+		avalonService = (AvalonService) context.getBean("avalonService");
 	}
 
 	//MGR - ISDN 1824 - Ya no devuelve una SolicitudServicioDto, sino un CreateSaveSolicitudServicioResultDto 
@@ -933,6 +939,11 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return mapper.convertList(planes, PlanDto.class);
 	}
 
+	public List<SubsidiosDto> getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado) {
+		Long idItem = itemSolicitudTasado.getItem().getId();
+		return solicitudBusinessService.getSubsidiosPorItem(idItem);
+	}
+
 	public List<ServicioAdicionalLineaSolicitudServicioDto> getServiciosAdicionales(
 			LineaSolicitudServicioDto linea, Long idCuenta, boolean isEmpresa) {
 		
@@ -958,6 +969,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			serviciosAdicionales = solicitudServicioRepository.getServiciosAdicionales(
 						linea.getTipoSolicitud().getId(), linea.getPlan().getId(), 
 								idItem, idCuenta, sessionContextLoader.getVendedor(), isEmpresa);
+			serviciosAdicionales = comprobarServiciosPermanencia(
+					linea.getTipoSolicitud().getTipoSolicitudBase().getId(),serviciosAdicionales);
 		}
 		
 //		MGR - #3462 - Creo que a partir del cambio que genero este incidente, esto ya no es necesario
@@ -977,6 +990,34 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 //		}
 //		MGR - #3462 - Fin NO necesario
 		return mapper.convertList(serviciosAdicionales, ServicioAdicionalLineaSolicitudServicioDto.class);
+	}
+
+	
+	private Collection<ServicioAdicionalLineaSolicitudServicio> comprobarServiciosPermanencia(Long tipoSolicitud, Collection<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionales) {
+		
+		Long tipoSolicitudVentaEquipos 	   = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_VENTA_EQUIPOS)).getId();
+		Long tipoSolicitudActivacion       = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION)).getId();
+		Long tipoSolicitudActivacionOnline = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION_ONLINE)).getId();
+
+		//los servicios de permanencia solo deben visualizarse para ventas y activaciones comunes y online.
+		if(!tipoSolicitud.equals(tipoSolicitudVentaEquipos) && !tipoSolicitud.equals(tipoSolicitudActivacion) 
+			&& !tipoSolicitud.equals(tipoSolicitudActivacionOnline)){
+			
+			ServicioAdicional servicioSubsidioActivacion = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_ACTIVACION);
+			ServicioAdicional servicioBonifSubsidioActivacion = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_BONIF_ACTIVACION);
+			Set<ServicioAdicionalLineaSolicitudServicio> serviciosAdicionalesToRemove = new HashSet<ServicioAdicionalLineaSolicitudServicio>();
+			
+	        for (ServicioAdicionalLineaSolicitudServicio servicio : serviciosAdicionales) {
+	        	
+				if (servicio.getServicioAdicional().getCodigoBSCS().equals(servicioSubsidioActivacion.getCodigoBSCS()) ||
+					servicio.getServicioAdicional().getCodigoBSCS().equals(servicioBonifSubsidioActivacion.getCodigoBSCS())){
+
+					serviciosAdicionalesToRemove.add(servicio);
+				}
+			}
+			serviciosAdicionales.removeAll(serviciosAdicionalesToRemove);
+		}
+		return serviciosAdicionales;
 	}
 
 	public ResultadoReservaNumeroTelefonoDto reservarNumeroTelefonico(long numero, long idTipoTelefonia,
@@ -1013,6 +1054,17 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		}
 		return modelos;
 	}
+	
+	public ItemSolicitudTasadoDto getItemPorModelo(Long idModelo, Long idListaPrecios)
+			throws RpcExceptionMessages {
+		
+		List<ItemSolicitudTasadoDto> items = mapper.convertList(solicitudServicioRepository.getItemPorModelo(idListaPrecios
+				, idModelo, sessionContextLoader.getVendedor() ), ItemSolicitudTasadoDto.class);
+		if (items.isEmpty()){
+			return null;
+		}
+		return items.get(0);
+	}
 
 	/** Retorna null si la SIM es correcta. De lo contrario retorna el mensaje de error */
 	public String verificarNegativeFiles(String numero) throws RpcExceptionMessages {
@@ -1030,7 +1082,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	}
 
 	public GeneracionCierreResultDto generarCerrarSolicitud(SolicitudServicioDto solicitudServicioDto,
-			String pinMaestro, boolean cerrar) throws RpcExceptionMessages {
+			String pinMaestro, boolean cerrar, boolean pinChequeadoEnNexus) throws RpcExceptionMessages {
 		String accion = cerrar ? "cierre" : "generación";
 		AppLogger.info("Iniciando " + accion + " de SS de id=" + solicitudServicioDto.getId() + " ...");
 		GeneracionCierreResultDto result = new GeneracionCierreResultDto();
@@ -1057,7 +1109,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			if (!solicitudServicio.getGrupoSolicitud().isGrupoTransferencia()) {
 				
 //				MGR - Refactorizacion del cierre
-				resultadoCierre = comprobarCierreYPassAutomatico(solicitudServicio, pinMaestro, result);
+				resultadoCierre = comprobarCierreYPassAutomatico(solicitudServicio, pinMaestro, pinChequeadoEnNexus, result);
 
 				//larce - Req#9 Negative Files
 				if(solicitudServicio.getVendedor().getTipoVendedor().isEjecutaNegFiles()){
@@ -1086,28 +1138,29 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 //			MGR - Refactorizacion del cierre
 			if(!result.isError()){
 				
-				//LF - #3109 - Registro el vendedor logueado que realiza el cierre
-//				MGR - #3460 - Se pide registrar el nombre y el id del vendedor
-				String userName = sessionContextLoader.getVendedor().getUserName();
-				List<Long> listRegistroVend = repository.executeCustomQuery(GET_ID_REGISTRO_VENDEDOR, userName);
+				//LT - Sólo se deben setear los datos del vendedor cuando es cierre
+				if(cerrar){
+					//LF - #3109 - Registro el vendedor logueado que realiza el cierre
+//					MGR - #3460 - Se pide registrar el nombre y el id del vendedor
+					String userName = sessionContextLoader.getVendedor().getUserName();
+					List<Long> listRegistroVend = repository.executeCustomQuery(GET_ID_REGISTRO_VENDEDOR, userName);
 				
-				Long idRegistroVendedor = 0l;
-				if(!listRegistroVend.isEmpty())
-					idRegistroVendedor = listRegistroVend.get(0);
+					Long idRegistroVendedor = 0l;
+					if(!listRegistroVend.isEmpty())
+						idRegistroVendedor = listRegistroVend.get(0);
 				
-				solicitudServicio.setIdRegistroVendedor(idRegistroVendedor);
-				solicitudServicio.setNombreRegistroVendedor(userName);
-			
+					solicitudServicio.setIdRegistroVendedor(idRegistroVendedor);
+					solicitudServicio.setNombreRegistroVendedor(userName);
+				}
 //				MGR - Se mueve la creacion de la cuenta. Debo recordar si es prospect antes de enviar a cerrar
 //				JPP - 0003641: N-IM003607979 - Cierre y Pass Automatico. No genera automaticamente Caratula para anexo , reingreso. 
 //				eraProspect solo se usaba para la condicion que se modifico (ver informacion del ticket #3641 del mantis)
 //				boolean eraProspect = !solicitudServicio.getCuenta().isCliente();
 //				MGR - Refactorizacion del cierre
-				response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, resultadoCierre.getPuedeCerrar());
-				
-				result.setError(response.getMessages().hasErrors());
+				response = solicitudBusinessService.generarCerrarSolicitud(solicitudServicio, pinMaestro, cerrar, resultadoCierre.getPuedeCerrar(),pinChequeadoEnNexus);
+								result.setError(response.getMessages().hasErrors());
 								
-//				MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
+//					MGR - Si no esta habilitado el veraz, el mail recien lo envio si la SS se cerro
 //				MGR - #3458 - Y si el cierre fue por veraz
 //				MGR - Refactorizacion del cierre
 				if (!result.isError() && resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO &&
@@ -1214,7 +1267,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 
 //	MGR - Refactorizacion del cierre
 	private CierreYPassResult comprobarCierreYPassAutomatico(SolicitudServicio solicitudServicio, 
-			String pinMaestro, GeneracionCierreResultDto result) throws Exception{
+			String pinMaestro,  boolean pinChequeadoEnNexus ,GeneracionCierreResultDto result) throws Exception{
 		CierreYPassResult resultado = new CierreYPassResult();
 		
 		//larce - Req#5 Cierre y Pass automatico
@@ -1230,17 +1283,14 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			resultado.setPuedeCerrar(puedeCerrar);
 			
 			if (puedeCerrar == CierreYPassResult.CIERRE_PASS_AUTOMATICO) {//pass de creditos segun la logica
-				errorCC = evaluarEquiposYDeuda(solicitudServicio, pinMaestro);
+				cierrePorVeraz = !modoCierreConPinOrScoring(solicitudServicio, pinMaestro,pinChequeadoEnNexus);
+				errorCC = evaluarEquiposYDeuda(solicitudServicio, pinMaestro,cierrePorVeraz);
 				if ("".equals(errorCC)) {
 					
 					isVerazDisponible = (repository.executeCustomQuery("isVerazDisponible", "VERAZ_DISPONIBLE"));
 					resultado.setIsVerazDisponible(isVerazDisponible.get(0));
 					
 //					MGR - #3458 - Verifico si corresponde cerrar por Veraz (o Scoring)
-					cierrePorVeraz = ("".equals(pinMaestro) || pinMaestro == null)
-										&& !solicitudServicio.getSolicitudServicioGeneracion().getScoringChecked();
-					resultado.setCierrePorVeraz(cierrePorVeraz);
-					
 					if (puedeDarPassDeCreditos(solicitudServicio, cierrePorVeraz, isVerazDisponible.get(0))) {
 						
 //						MGR - #3458
@@ -1260,7 +1310,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					} else {
 						solicitudServicio.setPassCreditos(false);
 						if (!"".equals(resultadoVerazScoring) && resultadoVerazScoring != null) {
-							errorCC = generarErrorPorCC(solicitudServicio, pinMaestro);
+								errorCC = generarErrorPorCC(solicitudServicio, cierrePorVeraz);
 							
 					    	/* MGR - 04/07/2012
 					    	 * Al verificar si las lineas cumplen con las condiciones comerciales, la cantidad de equipos y la cantidad de pesos
@@ -1295,6 +1345,32 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		}
 		
 		return resultado;
+	}
+
+	private boolean modoCierreConPinOrScoring(SolicitudServicio solicitudServicio, String pinMaestro, boolean pinChequeadoEnNexus) throws RpcExceptionMessages {
+		boolean isCierreConPinOrScoringChecked = solicitudServicio.getSolicitudServicioGeneracion().isCierreConPinOrScoringChecked(pinMaestro, pinChequeadoEnNexus);
+		boolean puedeCerrarSinValidarPinAnexo = SessionContextLoader.getInstance().getVendedor().puedeCerrarSinValidarPinAnexo();
+		boolean modoCierreConPinOrScoring = isCierreConPinOrScoringChecked || (puedeCerrarSinValidarPinAnexo && solicitudServicio.getCuenta().isCliente());
+		// Evalúo deuda en caso de ser cliente
+		if (puedeCerrarSinValidarPinAnexo && solicitudServicio.getCuenta().isCliente()) {
+			CantidadEquiposDTO cantidadEquipos = getCantEquiposCuenta(solicitudServicio.getCuenta().getCodigoVantive());
+			if (Integer.valueOf(cantidadEquipos.getCantidadActivos()) == 0
+					&& Integer.valueOf(cantidadEquipos.getCantidadSuspendidos()) == 0) {
+				Long maxDeuda = Long.valueOf(((GlobalParameter) globalParameterRetriever
+								.getObject(GlobalParameterIdentifier.MAX_DEUDA_CTA_CTE)).getValue());
+			
+				AppLogger.info("#Log Cierre y pass - La deuda maxima posible es: " + maxDeuda, this);
+			
+				Long maxDeudaCtaCte= getMaxDeudaCtaCte(solicitudServicio.getCuenta().getCodigoVantive());
+				AppLogger.info("#Log Cierre y pass - La deuda de la cuenta corriente es: " + maxDeudaCtaCte, this);
+			
+				if ( maxDeudaCtaCte <= maxDeuda) { //no posee
+					modoCierreConPinOrScoring = false;
+				}
+			}
+		}
+	    solicitudServicio.getSolicitudServicioGeneracion().setCierrePorScoringCC(modoCierreConPinOrScoring);
+		return modoCierreConPinOrScoring;
 	}
 	
 //	MGR - Refactorizacion del cierre
@@ -2100,21 +2176,13 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	 * @throws RpcExceptionMessages 
 	 */
 //	MGR - Parche de emergencia
-	private String evaluarEquiposYDeuda(SolicitudServicio ss, String pinMaestro) throws RpcExceptionMessages {
+	private String evaluarEquiposYDeuda(SolicitudServicio ss, String pinMaestro, boolean cierrePorVeraz) throws RpcExceptionMessages {
 //		MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
 		//Si es cliente, no es prospect o prospect en carga
 //		if (!RegularExpressionConstants.isVancuc(ss.getCuenta().getCodigoVantive())) {
 		if (ss.getCuenta().isCliente()) {
 			
-			AppLogger.info("#Log Cierre y pass - Buscando cantidad de equipos en la cuenta: " + ss.getCuenta().getCodigoVantive(), this);
-			
-//			MGR - Parche de emergencia
 			CantidadEquiposDTO cantidadEquipos = getCantEquiposCuenta(ss.getCuenta().getCodigoVantive());
-			
-			AppLogger.info("#Log Cierre y pass - Cantidad equipos activos: " + cantidadEquipos.getCantidadActivos(), this);
-			AppLogger.info("#Log Cierre y pass - Cantidad equipos suspendidos: " + cantidadEquipos.getCantidadSuspendidos(), this);
-			AppLogger.info("#Log Cierre y pass - Cantidad equipos desactivados: " + cantidadEquipos.getCantidadDesactivados(), this);
-			
 			if (Integer.valueOf(cantidadEquipos.getCantidadActivos()) > 0
 					|| Integer.valueOf(cantidadEquipos.getCantidadSuspendidos()) > 0) {
 				//	En el caso de que el usuario no ingrese el pin, debido a que es un prospect o 
@@ -2123,18 +2191,11 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				HashMap<String, Boolean> mapaPermisosClient = (HashMap<String, Boolean>) sessionContextLoader.getSessionContext().get(SessionContext.PERMISOS);
 				boolean permisoCierrePin = (Boolean) mapaPermisosClient.get(PermisosUserCenter.CERRAR_SS_CON_PIN.getValue());
 				boolean permisoCierreScoring = (Boolean) mapaPermisosClient.get(PermisosEnum.SCORING_CHECKED.getValue());
-				boolean cerrandoConItemBB = false;
-
-				for (LineaSolicitudServicio linea : ss.getLineas()) {
-					Modelo modelo = linea.getModelo();
-					if (modelo != null && modelo.getEsBlackberry()) {
-						cerrandoConItemBB = true;
-						break;
-					}
-				}
+				boolean cerrandoConItemBB = cerrandoConItemBB(ss);
 				
-				if (("".equals(pinMaestro) || pinMaestro == null)
-						&& !ss.getSolicitudServicioGeneracion().getScoringChecked()) {
+//				if (("".equals(pinMaestro) || pinMaestro == null)
+//						&& !ss.getSolicitudServicioGeneracion().getScoringChecked()) {
+				if (cierrePorVeraz) {
 					//#3248
 					if ((ss.getGrupoSolicitud().getId() == 1L && permisoCierreScoring && !cerrandoConItemBB && ss.getCuenta().isCliente())
 							|| (ss.getGrupoSolicitud().getId() == 1L && permisoCierrePin && !cerrandoConItemBB)) {
@@ -2150,12 +2211,14 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				
 				AppLogger.info("#Log Cierre y pass - La deuda maxima posible es: " + maxDeuda, this);
 				
-				Long deudaCta = getDeudaCtaCte(solicitudServicio.getCuenta().getCodigoBSCS());
-				AppLogger.info("#Log Cierre y pass - La deuda de la cuenta corriente es: " + deudaCta, this);
+				//ticket: 0003807
+				Long maxDeudaCtaCte= getMaxDeudaCtaCte(solicitudServicio.getCuenta().getCodigoVantive());
+				AppLogger.info("#Log Cierre y pass - La deuda de la cuenta corriente es: " + maxDeudaCtaCte, this);
 				
-				if ( deudaCta <= maxDeuda) { //no posee
-					if (!("".equals(pinMaestro) || pinMaestro == null)
-							|| ss.getSolicitudServicioGeneracion().getScoringChecked()) {
+				if ( maxDeudaCtaCte <= maxDeuda) { //no posee
+//					if (!("".equals(pinMaestro) || pinMaestro == null)
+//							|| ss.getSolicitudServicioGeneracion().getScoringChecked()) {
+					if (!cierrePorVeraz) {
 						return "Solo se permite cerrar por Veraz dado que es un cliente existente sin equipos activos ni suspendidos.";
 					}
 				} else {
@@ -2163,12 +2226,26 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					return "El cliente no tiene equipos activos y tiene deuda vencida.";
 				}
 			}
-		} else if (!("".equals(pinMaestro) || pinMaestro == null)
-				|| ss.getSolicitudServicioGeneracion().getScoringChecked()) {
+//		} else if (!("".equals(pinMaestro) || pinMaestro == null)
+//				|| ss.getSolicitudServicioGeneracion().getScoringChecked()) {
+		} else if (!cierrePorVeraz) {
 			return "Solo se permite cerrar por Veraz.";
 		}
 		return "";
 	}
+
+
+	private boolean cerrandoConItemBB(SolicitudServicio ss) {
+		boolean cerrandoConItemBB = false;
+		for (LineaSolicitudServicio linea : ss.getLineas()) {
+			Modelo modelo = linea.getModelo();
+			if (modelo != null && modelo.getEsBlackberry()) {
+				cerrandoConItemBB = true;
+				break;
+			}
+		}
+	return cerrandoConItemBB;
+}
 	
 	/**
 	 * Averiguo si el cliente posee deuda de cuenta corriente, evaluando si tiene deuda de equipos y servicio.
@@ -2179,6 +2256,22 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private Long getDeudaCtaCte(String codigoBSCS) throws RpcExceptionMessages {
 		try {
 			return this.avalonSystem.getDeudaCtaCte(codigoBSCS);
+		} catch (AvalonSystemException e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+	}
+	
+	
+	/**
+	 * Obtengo la maxima deuda cta cte de un cliente.
+	 * @param codigoVantive
+	 * @return
+	 * @throws RpcExceptionMessages
+	 */
+	private Long getMaxDeudaCtaCte(String codigoVantive) throws RpcExceptionMessages {
+		try {
+			return this.avalonSystem.getMaxDeudaCtaCte(codigoVantive);
 		} catch (AvalonSystemException e) {
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
@@ -2340,7 +2433,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	 * @throws RpcExceptionMessages 
 	 */
 //	MGR - Parche de emergencia
-	private String generarErrorPorCC(SolicitudServicio ss, String pinMaestro) throws RpcExceptionMessages {
+	private String generarErrorPorCC(SolicitudServicio ss, boolean cierrePorVeraz) throws RpcExceptionMessages {
 		
 		//MGR - #3122 - Nueva forma de armar el mensaje de error
     	String mensaje = "";
@@ -2384,8 +2477,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
     	
     	if(!"".equals(error)){
     		mensaje = "Para validación por ";
-    		if (("".equals(pinMaestro) || pinMaestro == null)
-    				&& !ss.getSolicitudServicioGeneracion().getScoringChecked()) {
+    		if (cierrePorVeraz) {
     			mensaje += "Veraz ";
 			} else {
 				mensaje += "Scoring ";
@@ -2409,8 +2501,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
     			return error;
     		}
     		else if(condiciones.isEmpty()){
-        		if (("".equals(pinMaestro) || pinMaestro == null)
-        				&& !ss.getSolicitudServicioGeneracion().getScoringChecked()) {
+        		if (cierrePorVeraz) {
             			error += "el resultado " + resultadoVerazScoring + " para el tipo de Solicitud " + linea.getTipoSolicitud().getDescripcion();
         			} else {
         				error += "el resultado de scoring hasta " + resultadoVerazScoring + " terminales para el tipo de Solicitud " + linea.getTipoSolicitud().getDescripcion();
@@ -2502,8 +2593,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
     			if (!"".equals(mensaje)) {
     				mensaje += "- ";
     			}
-        		if (("".equals(pinMaestro) || pinMaestro == null)
-        				&& !ss.getSolicitudServicioGeneracion().getScoringChecked()) {
+        		if (cierrePorVeraz) {
         			error = "Para la linea " + linea.getAlias() + " para el resultado de veraz " + resultadoVerazScoring + ", no existe una Condicion Comercial con " + error; 
     			} else {
     				error = "Para la linea " + linea.getAlias() + " para el resultado de scoring " + resultadoVerazScoring + ", no existe una Condicion Comercial con " + error;
@@ -2568,9 +2658,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	public boolean validarLineasPorSegmento(SolicitudServicioDto solicitud) throws RpcExceptionMessages {
 		
 		ArrayList<Boolean> resultadoValidacion = new ArrayList<Boolean>();
-		
+
 //		MGR - Parche de emergencia
-		Vendedor vend = repository.retrieve(Vendedor.class, solicitud.getVendedor().getId());
+		Vendedor vend = repository.retrieve(Vendedor.class, solicitud.getUsuarioCreacion().getId());
 		Long idTipoVendedor = vend.getTipoVendedor().getId();
 		
 		Long idSegmento = 0l;
@@ -2678,10 +2768,14 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	private CantidadEquiposDTO getCantEquiposCuenta(String codigoVantive){
         CantidadEquiposDTO resultDTO = new CantidadEquiposDTO();
         try {
+			AppLogger.info("#Log Cierre y pass - Buscando cantidad de equipos en la cuenta: " + codigoVantive, this);
         	resultDTO = this.avalonSystem.retreiveEquiposPorEstado(codigoVantive);
         } catch (LegacyDAOException e) {
             resultDTO.setCantidadActivos("0");
         }
+        AppLogger.info("#Log Cierre y pass - Cantidad equipos activos: " + resultDTO.getCantidadActivos(), this);
+        AppLogger.info("#Log Cierre y pass - Cantidad equipos suspendidos: " + resultDTO.getCantidadSuspendidos(), this);
+        AppLogger.info("#Log Cierre y pass - Cantidad equipos desactivados: " + resultDTO.getCantidadDesactivados(), this);
 		return resultDTO;
 	}
 
@@ -3132,6 +3226,15 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		RO, //ROSAR
 		ZZ; //SIN AREA
 	}
+
+	public boolean validarImeiSim(String imei, String sim, String modeloEq)
+			throws RpcExceptionMessages {
+		String handsetAsociadoConSIM = avalonService.getHandsetAsociadoConSIM(sim);
+		if (handsetAsociadoConSIM!=null && handsetAsociadoConSIM.equals(imei)){
+			return true;
+		}
+		return false;
+	}
 	
 //	MGR - Facturacion
 	public FacturacionResultDto facturarSolicitudServicio(SolicitudServicioDto solicitudServicioDto){
@@ -3208,7 +3311,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				}
 			}
 			
-			CierreYPassResult resultadoCierre = comprobarCierreYPassAutomatico(solicitudServicio, null, result);
+			CierreYPassResult resultadoCierre = comprobarCierreYPassAutomatico(solicitudServicio, null, false, result);
 			if(!result.isError() && resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO){
 				validarSIMRepetidos(solicitudServicio, result);
 			}

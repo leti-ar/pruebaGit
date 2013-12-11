@@ -17,18 +17,22 @@ import com.google.gwt.user.client.ui.InlineLabel;
 public class SoloItemSolicitudUI extends Composite {
 
 	private FlowPanel mainPanel;
-	private FlexTable activacionModeloImei;
+	private FlexTable activacionImei;
+	private FlexTable activacionModelo;
 	private FlexTable activacionSimSeriePin;
 	private Grid precioCantidad;
 	private Grid total;
 	private ItemSolicitudUIData itemSolicitudData;
 	private FlexTable listaPrecio;
+	private FlexTable permanencia;
+	private FlexTable permanenciaPrecioLista;
 	private FlexTable terminoPago;
 	private EditarSSUIController controller;
 	public static final int LAYOUT_SIMPLE = 0;
 	public static final int LAYOUT_ACTIVACION = 1;
 	public static final int LAYOUT_CON_TOTAL = 2;
 	public static final int LAYOUT_ACTIVACION_ONLINE = 3;
+	public static final int LAYOUT_SIMPLE_PERMANENCIA = 4;
 	private FlexTable imeiSimRetiroEnSucursal;
 	private boolean visibleImeiSimRetiroSucursal;
 	
@@ -58,18 +62,40 @@ public class SoloItemSolicitudUI extends Composite {
 //		primerTabla.setWidget(0, 1, itemSolicitudData.getListaPrecio());
 //		mainPanel.add(primerTabla);
 
-		activacionModeloImei = new FlexTable();
-		activacionModeloImei.addStyleName("layout");
-		activacionModeloImei.getCellFormatter().setWidth(0, 0, "100px");
-		activacionModeloImei.setVisible(false);
-		activacionModeloImei.setHTML(0, 0, Sfa.constant().imeiReq());
-		activacionModeloImei.setWidget(0, 1, itemSolicitudData.getImei());
-		activacionModeloImei.setWidget(0, 2, itemSolicitudData.getVerificarImeiWrapper());
-		activacionModeloImei.setHTML(1, 0, Sfa.constant().modeloEq());
-		activacionModeloImei.setWidget(1, 1, itemSolicitudData.getModeloEq());
-		activacionModeloImei.getFlexCellFormatter().setColSpan(1, 1, 2);
+		activacionImei = new FlexTable();
+		activacionImei.addStyleName("layout");
+		activacionImei.getCellFormatter().setWidth(0, 0, "100px");
+		activacionImei.getCellFormatter().setWidth(0, 1, "125px");
+		activacionImei.setVisible(false);
+		activacionImei.setHTML(0, 0, Sfa.constant().imeiReq());
+		activacionImei.setWidget(0, 1, itemSolicitudData.getImei());
+		activacionImei.setWidget(0, 2, itemSolicitudData.getVerificarImeiWrapper());
+		activacionImei.getFlexCellFormatter().setColSpan(0, 1, 2);
+		mainPanel.add(activacionImei);
+		
+		permanencia = new FlexTable();
+		permanencia.setVisible(false);
+		permanencia.getCellFormatter().setWidth(0, 0, "100px");
+		permanencia.setWidget(0, 1, itemSolicitudData.getFullPrice());
+		mainPanel.add(permanencia);
 
-		mainPanel.add(activacionModeloImei);
+		permanenciaPrecioLista = new FlexTable();
+		permanenciaPrecioLista.addStyleName("layout");
+		permanenciaPrecioLista.setVisible(false);
+		permanenciaPrecioLista.getCellFormatter().setWidth(0, 0, "100px");
+		permanenciaPrecioLista.getCellFormatter().setWidth(0, 1, "125px");
+		permanenciaPrecioLista.setHTML(0, 0, Sfa.constant().precioLista());
+		permanenciaPrecioLista.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
+		mainPanel.add(permanenciaPrecioLista);
+
+		activacionModelo = new FlexTable();
+		activacionModelo.addStyleName("layout");
+		activacionModelo.getCellFormatter().setWidth(0, 0, "100px");
+		activacionModelo.setVisible(false);
+		activacionModelo.setHTML(0, 0, Sfa.constant().modeloEq());
+		activacionModelo.setWidget(0, 1, itemSolicitudData.getModeloEq());
+//		activacionModelo.getFlexCellFormatter().setColSpan(1, 1, 2);
+		mainPanel.add(activacionModelo);
 		
 //		Grid segundaTabla = new Grid(2, 2);
 //		segundaTabla.addStyleName("layout");
@@ -105,7 +131,7 @@ public class SoloItemSolicitudUI extends Composite {
 		precioCantidad.setWidget(0, 3, itemSolicitudData.getCantidad());
 		
 		mainPanel.add(precioCantidad);
-
+		
 		total = new Grid(1, 2);
 		total.addStyleName("layout");
 		total.getCellFormatter().setWidth(0, 0, "100px");
@@ -169,35 +195,56 @@ public class SoloItemSolicitudUI extends Composite {
         
 		switch (layout) {
 		case LAYOUT_ACTIVACION:
-			activacionModeloImei.setVisible(true);
+			activacionImei.setVisible(true);
+			activacionModelo.setVisible(true);
 			activacionSimSeriePin.setVisible(true);
 			activacionSimSeriePin.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
 			mostrarActivacionPrecioListaYPin(true);
 			itemSolicitudData.resetIMEICheck();
 			precioCantidad.setVisible(false);
-		
+			permanencia.setVisible(false);
+			permanenciaPrecioLista.setVisible(false);
 			break;
 
 		case LAYOUT_CON_TOTAL:
 			total.setVisible(true);
+			permanencia.setVisible(false);
+
 
 		case LAYOUT_SIMPLE:
 			precioCantidad.setVisible(true);
-			activacionModeloImei.setVisible(false);
+			activacionImei.setVisible(false);
+			activacionModelo.setVisible(false);
 			activacionSimSeriePin.setVisible(false);
 			precioCantidad.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
+			permanencia.setVisible(false);
+			permanenciaPrecioLista.setVisible(false);
 			imeiSimRetiroEnSucursal.setVisible(visibleImeiSimRetiroSucursal);
 			break;
 			
+		case LAYOUT_SIMPLE_PERMANENCIA:
+			precioCantidad.setVisible(true);
+			activacionImei.setVisible(false);
+			activacionModelo.setVisible(false);
+			activacionSimSeriePin.setVisible(false);
+			precioCantidad.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
+			permanencia.setVisible(true);
+			permanenciaPrecioLista.setVisible(false);
+			imeiSimRetiroEnSucursal.setVisible(visibleImeiSimRetiroSucursal);
+			break;
+
 		case LAYOUT_ACTIVACION_ONLINE:
 			listaPrecio.setVisible(false);
-			activacionModeloImei.setVisible(true);
+			activacionImei.setVisible(true);
+			activacionModelo.setVisible(true);
+			permanenciaPrecioLista.setVisible(true);
+			permanenciaPrecioLista.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
 			activacionSimSeriePin.setVisible(true);
 			mostrarActivacionPrecioListaYPin(false);
-			
 			itemSolicitudData.resetIMEICheck();
 			precioCantidad.setVisible(false);
 			terminoPago.setVisible(false);
+			permanencia.setVisible(true);
 			break;
 			
 		default:

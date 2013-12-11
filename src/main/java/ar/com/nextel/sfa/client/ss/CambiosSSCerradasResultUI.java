@@ -2,9 +2,7 @@ package ar.com.nextel.sfa.client.ss;
 
 import ar.com.nextel.sfa.client.dto.CambiosSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.DetalleSolicitudServicioDto;
-import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineHTML;

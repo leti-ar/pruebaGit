@@ -10,7 +10,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import ar.com.nextel.business.sucursal.ConfigurarSucursalService;
 import ar.com.nextel.sfa.client.ConfigurarSucursalRPCService;
 import ar.com.nextel.sfa.client.dto.SucursalDto;
-import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.snoop.gwt.commons.client.exception.RpcExceptionMessages;
 import ar.com.snoop.gwt.commons.server.RemoteService;

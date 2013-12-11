@@ -5,7 +5,6 @@ import java.util.List;
 import ar.com.nextel.sfa.client.InfocomRpcService;
 import ar.com.nextel.sfa.client.dto.DatosEquipoPorEstadoDto;
 import ar.com.nextel.sfa.client.image.IconFactory;
-import ar.com.nextel.sfa.client.widget.NextelDialog;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
 
 import com.google.gwt.user.client.ui.ClickListener;

@@ -13,7 +13,6 @@ import ar.com.nextel.sfa.client.dto.SuscriptorDto;
 import ar.com.nextel.sfa.client.enums.PrioridadEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.ss.LinksCrearSS;
-import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.FormButtonsBar;

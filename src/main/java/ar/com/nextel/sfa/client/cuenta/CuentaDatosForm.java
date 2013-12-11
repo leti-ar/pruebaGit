@@ -44,7 +44,6 @@ import ar.com.nextel.sfa.client.enums.TipoTarjetaEnum;
 import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.FormUtils;
-import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.MessageDialog;

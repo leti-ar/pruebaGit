@@ -129,7 +129,8 @@ public enum PermisosEnum {
 	//@larce - Indica si en las pantallas de SS se puede ver el panel con los datos del histórico
 	VER_HISTORICO("verHistorico",Accion.X,true),
 //	MGR - #3466
-	PERMITE_CUALQUIER_PRECIO_VTA_PLAN("permiteCualquierPrecioVtaPlan", Accion.X, true);
+	PERMITE_CUALQUIER_PRECIO_VTA_PLAN("permiteCualquierPrecioVtaPlan", Accion.X, true),
+	VER_PERMANENCIA("permanenciaFullPrice", Accion.X, true);
 
 	private String value;
     private String accion;

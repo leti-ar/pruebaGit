@@ -30,6 +30,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
+import ar.com.nextel.sfa.client.dto.SubsidiosDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.dto.TipoPersonaDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
@@ -99,7 +100,7 @@ public interface SolicitudRpcServiceAsync {
 	public void verificarNegativeFiles(String numero, AsyncCallback<String> callback);
 
 	public void generarCerrarSolicitud(SolicitudServicioDto solicitudServicioDto, String pinMaestro,
-			boolean cerrar, AsyncCallback<GeneracionCierreResultDto> callback);
+			boolean cerrar, boolean pinChequeadoEnNexus, AsyncCallback<GeneracionCierreResultDto> callback);
 
 	public void existReport(String report, AsyncCallback<Boolean> callback);
 	
@@ -224,6 +225,12 @@ public interface SolicitudRpcServiceAsync {
 
 //	MGR - RQN 2328
 	public void validarAreaBilling(String numeroAPortar, AsyncCallback<Boolean> callback);
+
+	public void getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado, AsyncCallback<List<SubsidiosDto>> callback);
+
+	public void validarImeiSim(String imei, String sim, String modeloEq, AsyncCallback<Boolean> callback);
+	
+	public void getItemPorModelo(Long idModelo, Long idListaPrecios, AsyncCallback<ItemSolicitudTasadoDto> callback);
 
 //	MGR - Facturacion
 	public void facturarSolicitudServicio(SolicitudServicioDto solicitudServicioDto, AsyncCallback<FacturacionResultDto> callback);

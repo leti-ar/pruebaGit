@@ -28,13 +28,15 @@ public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 	//Cuando el Plan Cedente no existe es SFA, aqui se guarda el Id del Plan Cedente
 	private Long codigoBSCSPlanCedente;
 	private Double precioPlanCedente;
+	private Long gamaPlanCedente;
 	
 	private PlanDto planCesionario; //Plan Cesionario
 	private boolean isPinchado = false;
 	private List<ServicioAdicionalIncluidoDto> serviciosAdicionalesInc = new ArrayList<ServicioAdicionalIncluidoDto>();
 	
 	private Long idTipoTelefoniaCedente;
-
+	private Double cargosPermanencia;
+	private int mesesPermanencia;
 	
 	public Long getContrato() {
 		return contrato;
@@ -243,4 +245,29 @@ public class ContratoViewDto implements IsSerializable, IdentifiableDto{
 	public Long getIdTipoTelefoniaCedente() {
 		return idTipoTelefoniaCedente;
 	}
+
+	public void setCargosPermanencia(Double cargosPermanencia) {
+		this.cargosPermanencia = cargosPermanencia;
+	}
+
+	public Double getCargosPermanencia() {
+		return cargosPermanencia;
+	}
+
+	public void setMesesPermanencia(int mesesPermanencia) {
+		this.mesesPermanencia = mesesPermanencia;
+	}
+
+	public int getMesesPermanencia() {
+		return mesesPermanencia;
+	}
+
+	public void setGamaPlanCedente(Long gamaPlanCedente) {
+		this.gamaPlanCedente = gamaPlanCedente;
+	}
+
+	public Long getGamaPlanCedente() {
+		return gamaPlanCedente;
+	}
+	
 }

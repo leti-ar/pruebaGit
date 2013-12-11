@@ -30,6 +30,7 @@ import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioCerradaResultDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioRequestDto;
+import ar.com.nextel.sfa.client.dto.SubsidiosDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
 import ar.com.nextel.sfa.client.dto.TipoPersonaDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
@@ -119,7 +120,7 @@ public interface SolicitudRpcService extends RemoteService {
 	public String verificarNegativeFiles(String numero) throws RpcExceptionMessages;
 
 	public GeneracionCierreResultDto generarCerrarSolicitud(SolicitudServicioDto solicitudServicioDto,
-			String pinMaestro, boolean cerrar) throws RpcExceptionMessages;
+			String pinMaestro, boolean cerrar, boolean pinChequeadoEnNexus) throws RpcExceptionMessages;
 
 	public Boolean existReport(String report) throws RpcExceptionMessages;
 	
@@ -238,6 +239,14 @@ public interface SolicitudRpcService extends RemoteService {
 
 //	MGR - RQN 2328
 	boolean validarAreaBilling(String numeroAPortar) throws RpcExceptionMessages;
+	
+	public List<SubsidiosDto> getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado);
+
+	public boolean validarImeiSim(String imei, String sim, String modeloEq) throws RpcExceptionMessages;
+	
+	public ItemSolicitudTasadoDto getItemPorModelo(Long idModelo, Long idListaPrecios)
+		throws RpcExceptionMessages;
+
 	
 //	MGR - Facturacion
 	FacturacionResultDto facturarSolicitudServicio(SolicitudServicioDto solicitudServicioDto);
