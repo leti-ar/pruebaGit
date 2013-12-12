@@ -165,8 +165,9 @@ public class CuentaDatosForm extends Composite {
 										String estadoFromVeraz = result.getEstado();
 										Integer scoreDniFromVeraz = result.getScoreDni();
 										String sexoFromVeraz = cuentaUIData.getSexo().getSelectedItemText();
+										String razonSocialFromVeraz = result.getRazonSocial();
 
-										actualizarCamposEditables(estadoFromVeraz, scoreDniFromVeraz, sexoFromVeraz);
+										actualizarCamposEditables(estadoFromVeraz, scoreDniFromVeraz, sexoFromVeraz, razonSocialFromVeraz);
 									}
 								}
 							});
@@ -219,8 +220,9 @@ public class CuentaDatosForm extends Composite {
 		String estadoFromVeraz = CuentaClientService.estadoFromVeraz;
 		Integer scoreDniFromVeraz = CuentaClientService.scoreDniFromVeraz;
 		String sexoFromVeraz = CuentaClientService.sexoVeraz;
+		String razonSocialFromVeraz = CuentaClientService.razonSocialFromVeraz;
 
-		this.actualizarCamposEditables(estadoFromVeraz, scoreDniFromVeraz, sexoFromVeraz);
+		this.actualizarCamposEditables(estadoFromVeraz, scoreDniFromVeraz, sexoFromVeraz, razonSocialFromVeraz);
 		
 		datosCuentaTable.setWidget(row, 0, cuentaUIData.getNombreLabel());
 		datosCuentaTable.setWidget(row, 1, cuentaUIData.getNombre());
@@ -1891,7 +1893,7 @@ public class CuentaDatosForm extends Composite {
 		return vendedorDto.isDealer() || vendedorDto.isRetail() || vendedorDto.isMinorista();
 	}	
 		
-	private void actualizarCamposEditables(String sexoFromVeraz) {
+	private void actualizarCamposEditables(String sexoFromVeraz, String razonSocialFromVeraz) {
 		
 		if (isSexoFemeninoMasculino(sexoFromVeraz)) {
 			//editables
@@ -1902,12 +1904,7 @@ public class CuentaDatosForm extends Composite {
 			this.setRazonsocialEditable(false);
 		}
 		else if (isSexoOrganizacion(sexoFromVeraz)) {
-			//editables			
-			this.setRazonsocialEditable(true);
-			
-			// no editables
-			this.setNombreEditable(false);
-			this.setApellidoEditable(false);
+			actualizarCamposEditablesSexoOrganizacion(razonSocialFromVeraz);
 		}
 		
 		cuentaUIData.getSexo().setEnabled(false);
@@ -1949,22 +1946,48 @@ public class CuentaDatosForm extends Composite {
 		}	
 	}
 
-	private void actualizarCamposEditables(String estadoFromVeraz, Integer scoreDniFromVeraz, String sexoFromVeraz) {
+	private void actualizarCamposEditables(String estadoFromVeraz, Integer scoreDniFromVeraz, String sexoFromVeraz, String razonSocialFromVeraz) {
 				
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_CAMPOS_PROSPECT.getValue()) && isVendedorConPassAutomatico()){
 			if ("RECHAZAR".equals(estadoFromVeraz) && scoreDniFromVeraz == 0) {
-				actualizarCamposEditables(sexoFromVeraz);
+				actualizarCamposEditables(sexoFromVeraz, razonSocialFromVeraz);
 			}
 			else if ("REVISAR".equals(estadoFromVeraz)  && scoreDniFromVeraz == 3) {
-				actualizarCamposEditables(sexoFromVeraz);
+				actualizarCamposEditables(sexoFromVeraz, razonSocialFromVeraz);
 			}
+			else if ("ACEPTAR".equals(estadoFromVeraz) && isSexoOrganizacion(sexoFromVeraz)) {
+					actualizarCamposEditablesSexoOrganizacion(razonSocialFromVeraz);					
+				}
 			else {
 				// no editables
 				setNombreEditable(false);
 				setApellidoEditable(false);
+				setRazonsocialEditable(false);
 				cuentaUIData.getSexo().setEnabled(false);
 			}
 		}
+	}
+	
+	private void actualizarCamposEditablesSexoOrganizacion(String razonSocialFromVeraz) {
+		
+		if (razonSocialFromVeraz == null) {				
+			//editables			
+			this.setRazonsocialEditable(true);
+			
+			// no editables
+			this.setNombreEditable(false);
+			this.setApellidoEditable(false);				
+		}
+		else {
+			//editables
+			this.setNombreEditable(true);
+			this.setApellidoEditable(true);
+									
+			// no editables
+			this.setRazonsocialEditable(false);				
+		}
+		
+		cuentaUIData.getSexo().setEnabled(false);
 	}
 	
 
