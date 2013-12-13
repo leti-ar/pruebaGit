@@ -4,7 +4,7 @@
 	<artifactId>sfa-web-ear</artifactId>
 	<name>sfa-web-ear</name>
 	<packaging>ear</packaging>
-	<version>2.10.2.PERMANENCIA</version>
+	<version>2.10.3.PERMANENCIA-SNAPSHOT</version>
 	
 	<parent>
 		<groupId>ar.com.nextel.parent</groupId>
