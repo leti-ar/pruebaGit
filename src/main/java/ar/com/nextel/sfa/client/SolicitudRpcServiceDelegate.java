@@ -442,9 +442,9 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.validarAreaBilling(numeroAPortar, callback);
 	}
 
-	public void getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado, DefaultWaitCallback<List<SubsidiosDto>> callback) {
+	public void getSubsidiosPorItem(VendedorDto vendCombo, ItemSolicitudTasadoDto itemSolicitudTasado, DefaultWaitCallback<List<SubsidiosDto>> callback) {
 		WaitWindow.show();
-		solicitudRpcServiceAsync.getSubsidiosPorItem(itemSolicitudTasado, callback);
+		solicitudRpcServiceAsync.getSubsidiosPorItem(vendCombo, itemSolicitudTasado, callback);
 	}
 	
 	public void validarImeiSim(String imei, String sim, String modeloEq, DefaultWaitCallback<Boolean> callback) {

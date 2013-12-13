@@ -240,7 +240,7 @@ public interface SolicitudRpcService extends RemoteService {
 //	MGR - RQN 2328
 	boolean validarAreaBilling(String numeroAPortar) throws RpcExceptionMessages;
 	
-	public List<SubsidiosDto> getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado);
+	public List<SubsidiosDto> getSubsidiosPorItem(VendedorDto vendCombo, ItemSolicitudTasadoDto itemSolicitudTasado);
 
 	public boolean validarImeiSim(String imei, String sim, String modeloEq) throws RpcExceptionMessages;
 	

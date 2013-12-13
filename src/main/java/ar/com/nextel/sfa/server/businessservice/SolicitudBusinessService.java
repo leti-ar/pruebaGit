@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -97,6 +98,7 @@ import ar.com.nextel.model.solicitudes.beans.ServicioAdicionalLineaTransfSolicit
 import ar.com.nextel.model.solicitudes.beans.SolicitudServicio;
 import ar.com.nextel.model.solicitudes.beans.Sucursal;
 import ar.com.nextel.model.solicitudes.beans.TipoSolicitud;
+import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.services.components.sessionContext.SessionContextLoader;
 import ar.com.nextel.services.exceptions.BusinessException;
 import ar.com.nextel.services.nextelServices.scoring.ScoringHistoryItem;
@@ -109,6 +111,7 @@ import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SubsidiosDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
+import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.server.util.MapperExtended;
 import ar.com.nextel.util.AppLogger;
 import ar.com.nextel.util.StringUtil;
@@ -1468,8 +1471,12 @@ public class SolicitudBusinessService {
 		return ss;
 	}
 	
-	public List<SubsidiosDto> getSubsidiosPorItem(Long idItem) {
+	public List<SubsidiosDto> getSubsidiosPorItem(VendedorDto vendedor,Long idItem) {
+		
 		Long idTipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor().getId();
+		if(asignarComboVendedor()){
+			idTipoVendedor = vendedor.getTipoVendedor().getId();
+		}
 		List<SubsidiosDto> subsidios = new ArrayList<SubsidiosDto>();
 		
 		List<Object[]> list = repository.executeCustomQuery(GET_SUBSIDIO_ITEM_VENDEDOR,
@@ -1478,14 +1485,30 @@ public class SolicitudBusinessService {
 		for (Object[] result : list) {
 			SubsidiosDto subsidio = new SubsidiosDto();
 			subsidio.setIdPlan((Long)result[0]);
-			subsidio.setSubsidio((Double)result[1]);
+			if (result[1]==null){
+				subsidio.setSubsidio(0d);
+			}else{
+				subsidio.setSubsidio((Double)result[1]);
+			}
 			subsidios.add(subsidio);
 		}
 		
 		return subsidios;
 	}
 
-    /**
+    private boolean asignarComboVendedor() {
+    	
+		HashMap<String, Boolean> mapaPermisosClient = (HashMap<String, Boolean>) sessionContextLoader.getSessionContext().get(SessionContext.PERMISOS);
+		boolean verComboVendedor = (Boolean) mapaPermisosClient.get(PermisosEnum.VER_COMBO_VENDEDOR.getValue());
+		
+		if (verComboVendedor && sessionContextLoader.getVendedor().isADMCreditos()){
+			return true;
+		}
+		return false;
+	}
+
+
+	/**
      * Se valida que el/los numeros de sim/imei ingresados pertenezcan al
      * inventario/subinventario del usuario que realizo el ingreso de la
      * solicitud (solo si es vendedor de salon)
