@@ -1550,7 +1550,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	
 	public void getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado, 
 			DefaultWaitCallback<List<SubsidiosDto>> callback) {
-		SolicitudRpcService.Util.getInstance().getSubsidiosPorItem(itemSolicitudTasado, callback);
+		
+		VendedorDto vendCombo = null;
+		if (datos.requiereCampoVendedor()){
+			vendCombo = (VendedorDto) editarSSUIData.getVendedor().getSelectedItem();
+		}
+		SolicitudRpcService.Util.getInstance().getSubsidiosPorItem(vendCombo, itemSolicitudTasado, callback);
 	}
 
 	public void getServiciosAdicionales(LineaSolicitudServicioDto linea,

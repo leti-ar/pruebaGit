@@ -226,7 +226,7 @@ public interface SolicitudRpcServiceAsync {
 //	MGR - RQN 2328
 	public void validarAreaBilling(String numeroAPortar, AsyncCallback<Boolean> callback);
 
-	public void getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado, AsyncCallback<List<SubsidiosDto>> callback);
+	public void getSubsidiosPorItem(VendedorDto vendCombo, ItemSolicitudTasadoDto itemSolicitudTasado, AsyncCallback<List<SubsidiosDto>> callback);
 
 	public void validarImeiSim(String imei, String sim, String modeloEq, AsyncCallback<Boolean> callback);
 	

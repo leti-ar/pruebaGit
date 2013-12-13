@@ -939,9 +939,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return mapper.convertList(planes, PlanDto.class);
 	}
 
-	public List<SubsidiosDto> getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado) {
+	public List<SubsidiosDto> getSubsidiosPorItem(VendedorDto vendedor, ItemSolicitudTasadoDto itemSolicitudTasado) {
 		Long idItem = itemSolicitudTasado.getItem().getId();
-		return solicitudBusinessService.getSubsidiosPorItem(idItem);
+		return solicitudBusinessService.getSubsidiosPorItem(vendedor, idItem);
 	}
 
 	public List<ServicioAdicionalLineaSolicitudServicioDto> getServiciosAdicionales(
