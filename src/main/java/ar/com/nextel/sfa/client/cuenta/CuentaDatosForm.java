@@ -1854,12 +1854,11 @@ public class CuentaDatosForm extends Composite {
 			}
 		}
 		
-		//SB - RQN02642 de Factura Electrónica 
-		if(ClientContext.getInstance().checkPermiso(PermisosEnum.OBLIGA_CHECK_FACT_ELE.getValue())){
-	        // RQN02642 FE en SFA
-	 	 	if (!CuentaClientService.cuentaDto.isEmpresa()){
-		 		cuentaUIData.getFacturaElectronicaPanel().setFacturaElectronicaObligatoria(true);
-		 	}
+		//RQN02642 Factura Electronica 
+		if(!CuentaClientService.cuentaDto.isEmpresa() && CuentaClientService.cuentaDto.isProspectEnCarga()){
+	 	 	if (ClientContext.getInstance().checkPermiso(PermisosEnum.OBLIGA_CHECK_FACT_ELE.getValue())){
+	 	 		cuentaUIData.getFacturaElectronicaPanel().setFacturaElectronicaObligatoria(true);
+	 	 	}
 		}
 	}
 
