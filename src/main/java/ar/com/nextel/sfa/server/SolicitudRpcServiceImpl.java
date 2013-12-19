@@ -1235,8 +1235,12 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 //			MGR - Remito - Seteo el nombre del remito
 			result.setRemitoRtfFileName(response.getRtfFileNameRemito());
 			
-			//cargo los numeros reservados para mostrarlos en el popup de cierre
-			result.setNumerosReservados(cargarNumerosReservados(solicitudServicio));
+			//Cargo los numeros reservados para mostrarlos en el popup de cierre
+			List<NumeroReservaDto> numerosReservados = new ArrayList<NumeroReservaDto>();
+			if (cerrar){
+				numerosReservados = cargarNumerosReservados(solicitudServicio);
+			}
+			result.setNumerosReservados(numerosReservados);
 			
 		} catch (Exception e) {
 			AppLogger.error(e);
@@ -1290,7 +1294,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			if (puedeCerrar == CierreYPassResult.CIERRE_PASS_AUTOMATICO) {//pass de creditos segun la logica
 				cierrePorVeraz = !modoCierreConPinOrScoring(solicitudServicio, pinMaestro,pinChequeadoEnNexus);
 				errorCC = evaluarEquiposYDeuda(solicitudServicio, pinMaestro,cierrePorVeraz);
-				if ("".equals(errorCC)) {
+				
+				if ("".equals(errorCC)
+						//las condiciones comerciales las realizo en el caso de vendedor salon, solo si se retira en sucursal
+						&& !(solicitudServicio.getVendedor().isVendedorSalon() && !solicitudServicio.getRetiraEnSucursal())) {
 					
 					isVerazDisponible = (repository.executeCustomQuery("isVerazDisponible", "VERAZ_DISPONIBLE"));
 					resultado.setIsVerazDisponible(isVerazDisponible.get(0));
