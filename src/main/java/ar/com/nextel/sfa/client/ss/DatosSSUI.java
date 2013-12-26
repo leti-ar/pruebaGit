@@ -1082,7 +1082,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		refreshDomicilioLayout();
 		refreshDetalleSSTable();
 		
-		editarSSUIData.getNss().setEnabled(controller.isEditable());
+		//GE si el triptico es automatico tiene que quedar no editable
+		editarSSUIData.getNss().setEnabled(controller.isEditable()&&!ClientContext.getInstance().getVendedor().getTipoVendedor().isGeneraTriptico());
+		
 		editarSSUIData.getNflota().setEnabled(controller.isEditable());
 		editarSSUIData.getOrigen().setEnabled(controller.isEditable());
 		editarSSUIData.getVendedor().setEnabled(controller.isEditable());
