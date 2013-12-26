@@ -240,4 +240,5 @@ public interface SolicitudRpcServiceAsync {
 	
 //	MGR - Validaciones previas a la facturacion
 	public void validarParaFacturar(SolicitudServicioDto solicitudServicioDto, AsyncCallback<List<MessageDto>> callback);
+	public void obtenerSiguienteTriptico(AsyncCallback<String> callback);
 }

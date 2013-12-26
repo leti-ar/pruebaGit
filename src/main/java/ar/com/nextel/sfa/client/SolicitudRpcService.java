@@ -256,5 +256,6 @@ public interface SolicitudRpcService extends RemoteService {
 	
 //	MGR - Validaciones previas a la facturacion
 	List<MessageDto> validarParaFacturar(SolicitudServicioDto solicitudServicioDto)	throws RpcExceptionMessages;
+	String obtenerSiguienteTriptico();
 }
 

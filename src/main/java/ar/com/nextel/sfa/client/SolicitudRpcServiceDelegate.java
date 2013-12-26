@@ -476,4 +476,8 @@ public class SolicitudRpcServiceDelegate {
 		WaitWindow.show();
 		solicitudRpcServiceAsync.validarParaFacturar(solicitudServicioDto, callback);
 	}
+	public void obtenerSiguienteTriptico(DefaultWaitCallback<String> callback){
+		WaitWindow.show();
+		solicitudRpcServiceAsync.obtenerSiguienteTriptico(callback);
+	}
 }

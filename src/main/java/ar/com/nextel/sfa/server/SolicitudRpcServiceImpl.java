@@ -3358,5 +3358,30 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		return numerosReservados;
 	}
 
+	public String obtenerSiguienteTriptico(){
+		PreparedStatement stmt;
+		String resul ="";
+		String sql = String.format("select seq_triptico_autom.nextval from dual");
+		try {
+			stmt = ((HibernateRepository) repository)
+					.getHibernateDaoSupport().getSessionFactory()
+					.getCurrentSession().connection().prepareStatement(sql);
+		
+			
+			ResultSet resultSet = stmt.executeQuery();
+			while (resultSet.next()) {
+				
+				resul=resultSet.getString(1);
+				
+			}
+		} catch (HibernateException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return resul;
+		
+	}
 }
 

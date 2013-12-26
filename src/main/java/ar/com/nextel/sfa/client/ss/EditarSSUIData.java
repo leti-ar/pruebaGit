@@ -945,22 +945,26 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	public List<String> validarParaCerrarGenerar(boolean generacionCierreDefinitivo) {
 		recarcularValores();
 		GwtValidator validator = new GwtValidator();
-		validator.addTarget(nss).required(
-				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nº de Solicitud")).maxLength(10,
-				Sfa.constant().ERR_NSS_LONG());
-		GrupoSolicitudDto grupoSS = solicitudServicio.getGrupoSolicitud();
-
-		// Validacion rango NSS con y sin PIN
-		Long numeroSS = "".equals(nss.getText()) ? null : Long.valueOf(nss.getText());
-		if (numeroSS != null && grupoSS.getRangoMinimoSinPin() != null
-				&& grupoSS.getRangoMaximoSinPin() != null && grupoSS.getRangoMinimoConPin() != null
-				&& grupoSS.getRangoMaximoConPin() != null) {
-			boolean enRangoSinPin = numeroSS >= grupoSS.getRangoMinimoSinPin()
-					&& numeroSS <= grupoSS.getRangoMaximoSinPin();
-			boolean enRangoConPin = numeroSS >= grupoSS.getRangoMinimoConPin()
-					&& numeroSS <= grupoSS.getRangoMaximoConPin();
-			if (!enRangoSinPin && !enRangoConPin) {
-				validator.addError(Sfa.constant().ERR_NNS_RANGO());
+		
+		//GE si genera el triptico automatico no hace las validaciones de rango.
+		if(!ClientContext.getInstance().getVendedor().getTipoVendedor().isGeneraTriptico()){
+			// Validacion rango NSS con y sin PIN
+			validator.addTarget(nss).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nº de Solicitud")).maxLength(10,
+							Sfa.constant().ERR_NSS_LONG());
+			GrupoSolicitudDto grupoSS = solicitudServicio.getGrupoSolicitud();
+			
+			Long numeroSS = "".equals(nss.getText()) ? null : Long.valueOf(nss.getText());
+			if (numeroSS != null && grupoSS.getRangoMinimoSinPin() != null
+					&& grupoSS.getRangoMaximoSinPin() != null && grupoSS.getRangoMinimoConPin() != null
+					&& grupoSS.getRangoMaximoConPin() != null) {
+				boolean enRangoSinPin = numeroSS >= grupoSS.getRangoMinimoSinPin()
+						&& numeroSS <= grupoSS.getRangoMaximoSinPin();
+				boolean enRangoConPin = numeroSS >= grupoSS.getRangoMinimoConPin()
+						&& numeroSS <= grupoSS.getRangoMaximoConPin();
+				if (!enRangoSinPin && !enRangoConPin) {
+					validator.addError(Sfa.constant().ERR_NNS_RANGO());
+				}
 			}
 		}
 		validator.addTarget(origen).required(

@@ -1,6 +1,5 @@
 package ar.com.nextel.sfa.client.ss;
 
-import ar.com.nextel.model.solicitudes.beans.IMEI;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 
