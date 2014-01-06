@@ -25,6 +25,8 @@ public class CuentaClientService {
 	public static String razonSocialFromVeraz;
 	public static Integer scoreDniFromVeraz;
 	public static String estadoFromVeraz;
+	public static Long idTipoDocConsultaVeraz;
+	public static String nroDocConsultaVeraz;
 
 
 	public static void reservaCreacionCuentaFromVeraz(Long idTipoDoc, String nroDoc, String nombre,
@@ -35,6 +37,8 @@ public class CuentaClientService {
 		razonSocialFromVeraz = razonSocial;
 		scoreDniFromVeraz = scoreDni;
 		estadoFromVeraz = estadoVeraz;
+		idTipoDocConsultaVeraz = idTipoDoc;
+		nroDocConsultaVeraz = nroDoc;
 		reservaCreacionCuenta(idTipoDoc, nroDoc, null, true);
 	}
 
@@ -198,7 +202,19 @@ public class CuentaClientService {
 		CuentaRpcService.Util.getInstance().selectCuenta(cuentaID, codVantive, filtradoPorDni, 
 				new DefaultWaitCallback<CuentaDto>() {
 					public void success(CuentaDto ctaDto) {
-						cuentaDto = ctaDto;
+						cuentaDto = ctaDto;						
+						Long idTipoDoc = CuentaClientService.idTipoDocConsultaVeraz;
+						String nroDocConsultaVeraz = CuentaClientService.nroDocConsultaVeraz;
+						
+						if (cuentaDto.getPersona() != null && cuentaDto.getPersona().getIdTipoDocumento() != null) {							
+							if (!idTipoDoc.equals(cuentaDto.getPersona().getIdTipoDocumento()) ||
+									!nroDocConsultaVeraz.equals(cuentaDto.getPersona().getDocumento().getNumero())) {
+										CuentaClientService.limpiarDatosVerazValidacionCamposEditables();
+								}	
+						}
+						else {
+							CuentaClientService.limpiarDatosVerazValidacionCamposEditables();
+						}
 					}
 
 					public void failure(Throwable caught) {
@@ -282,6 +298,8 @@ public class CuentaClientService {
 		CuentaClientService.estadoFromVeraz = null;
 		CuentaClientService.scoreDniFromVeraz = null;
 		CuentaClientService.sexoVeraz = null;		
+		CuentaClientService.nombreFromVeraz = null;
+		CuentaClientService.apellidoFromVeraz = null;
 	}
 	
 }
