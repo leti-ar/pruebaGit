@@ -575,6 +575,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			retiraEnSucursal.setValue(solicitud.getRetiraEnSucursal());
 		}
 		
+		//para vendedor salon el check debe estar seleccionado
+		if (solicitud.getGrupoSolicitud().isEquiposAccesorios() && !getCuenta().isEmpresa()	
+			&& ClientContext.getInstance().getVendedor().isVendedorSalon()
+			&& solicitud.getLineas().isEmpty()){
+			retiraEnSucursal.setValue(true);
+		}
+		
 		//MGR - #1152
 //		MGR - Mejoras Perfil Telemarketing. REQ#1. Cambia la definicion de prospect para Telemarketing
 		//Si no es cliente, es prospect o prospect en carga
