@@ -18,6 +18,7 @@ import ar.com.nextel.sfa.client.dto.GrupoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudPortabilidadDto;
 import ar.com.nextel.sfa.client.dto.TipoDescuentoDto;
+import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.initializer.PortabilidadInitializer;
@@ -428,7 +429,17 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		Widget sender = (Widget) clickEvent.getSource();
 		if(controller.isEditable()) {
 			if (sender == crearLinea) {
-				openItemSolicitudDialog(new LineaSolicitudServicioDto());
+				//#5852 valido que este seleccionado el vendedor
+				if (requiereCampoVendedor()){
+					VendedorDto vendedorDto = (VendedorDto)editarSSUIData.getVendedor().getSelectedItem();
+					if(vendedorDto==null){
+						ModalMessageDialog.getInstance().showAceptar("Debe seleccionar un vendedor", ModalMessageDialog.getCloseCommand());
+					}else{
+						openItemSolicitudDialog(new LineaSolicitudServicioDto());
+					}
+				}else{
+					openItemSolicitudDialog(new LineaSolicitudServicioDto());					
+				}
 			} else if (sender == crearDomicilio || sender == editarDomicioFacturacion
 					|| sender == editarDomicioEntrega) {
 				onClickEdicionDomicilios(sender);
@@ -445,6 +456,24 @@ public class DatosSSUI extends Composite implements ClickHandler {
 				if (cell != null) {
 					onTableClick(sender, cell.getRowIndex(), cell.getCellIndex());
 				}
+			}
+		}
+	}
+
+	public boolean requiereCampoVendedor() {
+		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())
+			&& ClientContext.getInstance().getVendedor().isADMCreditos()){
+			return true;
+		}
+		return false;
+	}
+	
+	private void definirDisponibilidadCampoVendedor() {
+		if(requiereCampoVendedor()){
+			if(detalleSS.getRowCount() > 1){
+				editarSSUIData.getVendedor().setEnabled(false);
+			}else{
+				editarSSUIData.getVendedor().setEnabled(true);	
 			}
 		}
 	}
@@ -688,6 +717,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		} else if (selectedDetalleRow > row) {
 			selectDetalleLineaSSRow(--selectedDetalleRow);
 		}
+		definirDisponibilidadCampoVendedor();
 		
 		ModalMessageDialog.getInstance().hide();
 	}
@@ -915,6 +945,8 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		
 		if(linea.getPortabilidad() != null) detalleSS.setWidget(newRow,controller.isEditable()?17-i:++i,IconFactory.tildeVerde());
 		else detalleSS.setHTML(newRow,controller.isEditable()?17-i:++i,Sfa.constant().whiteSpace());
+		
+		definirDisponibilidadCampoVendedor();
 	}
 
 	private boolean strIsEmpty(String str) {
@@ -1064,6 +1096,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
 //			editarSSUIData.getRetiraEnSucursal().setEnabled(detalleSS.getRowCount()>0);
 		}
+		definirDisponibilidadCampoVendedor();
 	}
 	
 	/**
@@ -1137,6 +1170,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		editarSSUIData.getVendedor().setEnabled(habilitar);
 		editarSSUIData.getSucursalOrigen().setEnabled(habilitar);
 		editarSSUIData.getOrdenCompra().setEnabled(habilitar);
+		definirDisponibilidadCampoVendedor();
 	}
 
 	public FlexTable getDetalleSS() {

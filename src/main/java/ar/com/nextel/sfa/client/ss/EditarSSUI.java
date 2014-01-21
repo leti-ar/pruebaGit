@@ -963,140 +963,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			} else {
 				openGenerarCerrarSolicitdDialog(sender == cerrarSolicitud);
 			}
+
 		} else if (sender == cerrarPermanenciaSolicitud){
 			verPopUpPermanencia(datosTranferencia.getContratosSSChequeados());
-		}
-//		MGR - Facturacion - Funcionalidad del link Facturar
-		else if (sender ==  facturarButton){
-			
-			if(!editarSSUIData.isSaved()){
-				//guardar primero
-				ErrorDialog.getInstance().setDialogTitle("Aviso");
-				ErrorDialog.getInstance().show("Debe guardar la solicitud antes de facturar", false);
-			}else{
-				
-				//obtengo la cuenta
-				Long idCuenta = null;
-				if (HistoryUtils.getParam("idCuenta") != null) {
-					idCuenta = Long.parseLong(HistoryUtils.getParam("idCuenta"));
-				} else if (HistoryUtils.getParam("cuenta_id") != null) {
-					idCuenta = Long.parseLong(HistoryUtils.getParam("cuenta_id"));
-				}
-				CuentaClientService.cargarDatosCuenta(idCuenta, codigoVant, false, false);
-	
-				WaitWindow.show();
-				DeferredCommand.addCommand(new IncrementalCommand() {
-					public boolean execute() {
-						if (CuentaClientService.cuentaDto == null){
-							return true;
-						}
-						WaitWindow.hide();
-						
-						//si el campo nombre no está cargado significa que no están cargados los campos obligatorios de la cuenta
-						if (CuentaClientService.cuentaDto.getPersona().getNombre() != null) {
-							validacionPreviaFacturacion();
-						} else {
-							ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-							ErrorDialog.getInstance().show("Debe completar los campos obligatorios de la cuenta");
-						}
-						return false;
-					}
-				});
-			}
-			
-//		MGR - Facturacion
-		}else if (sender == verificarPagoButton){
-			
-//			MGR - Verificar Pago
-			SolicitudRpcService.Util.getInstance().verificarPagoFacturaSolicitudServicio(
-					editarSSUIData.getSolicitudServicio(), new DefaultWaitCallback<FacturaDto>() {
-
-						@Override
-						public void success(FacturaDto result) {
-							if (result.getPagado()){
-								editarSSUIData.getSolicitudServicio().setFactura(result);
-								
-								EventBusUtil.getEventBus().fireEvent(
-										new RefrescarPantallaSSEvent(editarSSUIData.getSolicitudServicio(), 
-												editarSSUIData.getSolicitudServicio().getRetiraEnSucursal()));
-							}
-							else{
-								MessageDialog.getInstance().showAceptar("No se realizo el pago",
-										new Command() {
-								    public void execute() {
-								    	MessageDialog.getInstance().hide();
-									};
-								});
-							}
-							
-						}
-					});
-		}
-//		MGR - Facturacion - Funcionalidad del link Facturar
-		else if (sender ==  facturarButton){
-			
-			if(!editarSSUIData.isSaved()){
-				//guardar primero
-				ErrorDialog.getInstance().setDialogTitle("Aviso");
-				ErrorDialog.getInstance().show("Debe guardar la solicitud antes de facturar", false);
-			}else{
-				
-				//obtengo la cuenta
-				Long idCuenta = null;
-				if (HistoryUtils.getParam("idCuenta") != null) {
-					idCuenta = Long.parseLong(HistoryUtils.getParam("idCuenta"));
-				} else if (HistoryUtils.getParam("cuenta_id") != null) {
-					idCuenta = Long.parseLong(HistoryUtils.getParam("cuenta_id"));
-				}
-				CuentaClientService.cargarDatosCuenta(idCuenta, codigoVant, false, false);
-	
-				WaitWindow.show();
-				DeferredCommand.addCommand(new IncrementalCommand() {
-					public boolean execute() {
-						if (CuentaClientService.cuentaDto == null){
-							return true;
-						}
-						WaitWindow.hide();
-						
-						//si el campo nombre no está cargado significa que no están cargados los campos obligatorios de la cuenta
-						if (CuentaClientService.cuentaDto.getPersona().getNombre() != null) {
-							validacionPreviaFacturacion();
-						} else {
-							ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-							ErrorDialog.getInstance().show("Debe completar los campos obligatorios de la cuenta");
-						}
-						return false;
-					}
-				});
-			}
-			
-//		MGR - Facturacion
-		}else if (sender == verificarPagoButton){
-			
-//			MGR - Verificar Pago
-			SolicitudRpcService.Util.getInstance().verificarPagoFacturaSolicitudServicio(
-					editarSSUIData.getSolicitudServicio(), new DefaultWaitCallback<FacturaDto>() {
-
-						@Override
-						public void success(FacturaDto result) {
-							if (result.getPagado()){
-								editarSSUIData.getSolicitudServicio().setFactura(result);
-								
-								EventBusUtil.getEventBus().fireEvent(
-										new RefrescarPantallaSSEvent(editarSSUIData.getSolicitudServicio(), 
-												editarSSUIData.getSolicitudServicio().getRetiraEnSucursal()));
-							}
-							else{
-								MessageDialog.getInstance().showAceptar("No se realizo el pago",
-										new Command() {
-								    public void execute() {
-								    	MessageDialog.getInstance().hide();
-									};
-								});
-							}
-							
-						}
-					});
 		}
 //		MGR - Facturacion - Funcionalidad del link Facturar
 		else if (sender ==  facturarButton){
@@ -1548,9 +1417,16 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				editarSSUIData.getCuentaId(), isActivacion, modelo, callback);
 	}
 	
+	
+	
 	public void getSubsidiosPorItem(ItemSolicitudTasadoDto itemSolicitudTasado, 
 			DefaultWaitCallback<List<SubsidiosDto>> callback) {
-		SolicitudRpcService.Util.getInstance().getSubsidiosPorItem(itemSolicitudTasado, callback);
+		
+		VendedorDto vendCombo = null;
+		if (datos.requiereCampoVendedor()){
+			vendCombo = (VendedorDto) editarSSUIData.getVendedor().getSelectedItem();
+		}
+		SolicitudRpcService.Util.getInstance().getSubsidiosPorItem(vendCombo, itemSolicitudTasado, callback);
 	}
 
 	public void getServiciosAdicionales(LineaSolicitudServicioDto linea,

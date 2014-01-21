@@ -1301,11 +1301,16 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 
 			lineaSolicitudServicio.setPrecioListaAjustado(precio);
 			
+		
+			
 			// Campo subsidio
 			if (isPermanencia()){
 				lineaSolicitudServicio.setFullPrice(fullPrice.getValue());
 				if (!fullPrice.getValue() && !isActivacionOnline()){
-					double precioSubsidiado = obtenerPrecioSubsidiado(precio);				
+					double precioSubsidiado = obtenerPrecioSubsidiado(precio);
+					if (precio==precioSubsidiado){ // #5864 si el subsidio es 0, se comporta como si fuera full price
+						lineaSolicitudServicio.setFullPrice(true);
+					}
 					lineaSolicitudServicio.setPrecioLista(precioSubsidiado);
 					lineaSolicitudServicio.setPrecioVenta(precioSubsidiado);
 				}

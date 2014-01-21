@@ -3431,6 +3431,7 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("ERR_AREA_BILLING_NO_VALIDA")
   String ERR_AREA_BILLING_NO_VALIDA();
   
+
   /**
    * Translated "Cargos de Permanencia".
    * 
@@ -3449,6 +3450,8 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("infoContrato")
   String infoContrato();
   
+  
+
   
   
   
