@@ -3,6 +3,8 @@ package ar.com.nextel.sfa.client;
 import java.util.List;
 import java.util.Set;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import ar.com.nextel.sfa.client.dto.CaratulaDto;
 import ar.com.nextel.sfa.client.dto.ContratoViewDto;
 import ar.com.nextel.sfa.client.dto.CrearCuentaDto;
@@ -51,7 +53,7 @@ public class CuentaRpcServiceDelegate {
 		cuentaRpcService.getAgregarCuentaInitializer(callback);
 		WaitWindow.hide();
 	}
-	public void saveCuenta(CuentaDto cuentaDto,DefaultWaitCallback<CuentaDto> callback) {
+	public void saveCuenta(CuentaDto cuentaDto,AsyncCallback<CuentaDto> callback) {
 		WaitWindow.show();
 		cuentaRpcService.saveCuenta(cuentaDto, callback);
 	}
