@@ -23,6 +23,8 @@ import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -271,14 +273,28 @@ public class CuentaEdicionTabPanel {
 
 		guardar.addClickListener(new ClickListener() {
 			public void onClick(Widget arg0) {
+				Window.alert("a");
+				
 				if (!editorDirty()) {
+				
+					Window.alert("b");
 					if (cuentaDatosForm.evaluarFacturaElectronicaPanel()) {
+						Window.alert("c");
+						
 						MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), Sfa.constant().NO_INGRESO_FACTURA_ELECTRONICA(), cancelarCommand);
+						Window.alert("c2");
+						
 					} else {
+						Window.alert("d");
 						MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(), Sfa.constant().MSG_NO_HAY_DATOS_NUEVOS(), cancelarCommand);
+						Window.alert("d2");
+						
 					}
 				} else if (validarCamposTabDatos()) {
+					Window.alert("e");
 					guardar();
+					Window.alert("e2");
+					
 				} 
 			}
 		});
@@ -409,11 +425,15 @@ public class CuentaEdicionTabPanel {
 	}
 	
 	private void guardar(){
+		Window.alert("1");
 		CuentaDto ctaDto = (CuentaDto)cuentaDatosForm.getCuentaDtoFromEditor();
-        //agrego domicilios
+		Window.alert("2");
+		    //agrego domicilios
 		ctaDto.getPersona().setDomicilios(CuentaDomiciliosForm.getInstance().getCuenta().getPersona().getDomicilios());
+		Window.alert("3");
 		//asegura que los contatos esten cargados en la granCuenta (para divisiones y suscriptores)
 		agregarContactos(ctaDto);
+		Window.alert("4");
 		
 		//Agrego Caratulas
 //		MGR - Para salir sin "Caratula" (24-07-2012)
@@ -421,9 +441,12 @@ public class CuentaEdicionTabPanel {
 		
 		//solo para actualizar imagen (sin mensaje de error).
 		validarCompletitud(false);
-		
-		CuentaRpcService.Util.getInstance().saveCuenta(ctaDto,new DefaultWaitCallback<CuentaDto>() {
-			public void success(CuentaDto cuentaDto) {
+		Window.alert("voy a llamar al save");
+		CuentaRpcService.Util.getInstance().saveCuenta(ctaDto,  new  AsyncCallback<CuentaDto>() {
+			
+			public void onSuccess(CuentaDto cuentaDto) {
+				Window.alert("volvio OK");
+				
 				CuentaEdicionTabPanel.getInstance().setCuenta2editDto(cuentaDto);
 				//actualiza pestaña datos
 				cuentaDatosForm.ponerDatosBusquedaEnFormulario(cuentaDto, true);
@@ -434,15 +457,25 @@ public class CuentaEdicionTabPanel {
 				//actualiza pestaña contactos
 				cuentaContactoForm.cargarTablaContactos(cuentaDto);
 				CuentaContactoForm.getInstance().setFormDirty(false);
-				//actualiza pestaña caratula
-//				MGR - Para salir sin "Caratula" (24-07-2012)
-//				cuentaCaratulaForm.cargaTablaCaratula(cuentaDto);
-//				cuentaCaratulaForm.setHuboCambios(false);
 				
-				
-//				MessageDialog.getInstance().showAceptar("", Sfa.constant().MSG_CUENTA_GUARDADA_OK(), MessageDialog.getCloseCommand());
 			}
-		});	
+			
+			public void onFailure(Throwable caught) {
+
+				Window.alert("volvio Error");
+Window.alert(caught.getMessage());
+Window.alert(caught.getLocalizedMessage());
+String msg = "";
+for (int i = 0; i < caught.getStackTrace().length; i++) {
+	msg += caught.getStackTrace()[i];
+	
+}
+Window.alert(msg);
+
+
+				
+			}
+				});	
 	}
 	
 	private void cancelar() {
