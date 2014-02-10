@@ -1312,7 +1312,11 @@ public class CuentaDatosForm extends Composite {
 		
 		if (cuentaUIData.getFacturaElectronicaPanel().isFacturaElectronicaChecked()
 				&& "".equals(cuentaUIData.getFacturaElectronicaPanel().getEmail().getText())) {
-			validator.addError(Sfa.constant().NO_INGRESO_FACTURA_ELECTRONICA());
+			if(ClientContext.getInstance().checkPermiso(PermisosEnum.OBLIGA_CHECK_FACT_ELE.getValue())){
+				validator.addError(Sfa.constant().NO_INGRESO_FACTURA_ELECTRONICA_OBLIGATORIA());
+			}else {
+				validator.addError(Sfa.constant().NO_INGRESO_FACTURA_ELECTRONICA());
+			}
 		}
 		
 		validator.fillResult();
@@ -1359,14 +1363,25 @@ public class CuentaDatosForm extends Composite {
 			validator.addTarget(cuentaUIData.getEmailLaboral()).mail(
 					Sfa.constant().ERR_EMAIL_NO_VALIDO().replaceAll("\\{1\\}",
 							cuentaUIData.getEmailLaboral().getName()));
-		if (!cuentaUIData.getFacturaElectronicaPanel().getEmail().getText().equals("") 
-				&& cuentaUIData.getFacturaElectronicaPanel().isEnabled() 
-				&& cuentaUIData.getFacturaElectronicaPanel().isFacturaElectronicaChecked())
-			validator.addTarget(cuentaUIData.getFacturaElectronicaPanel().getEmail()).mail(
-					Sfa.constant().ERR_EMAIL_NO_VALIDO().replaceAll(
-							"\\{1\\}",
-							cuentaUIData.getFacturaElectronicaPanel().getEmailLabel().getText().concat(
-									" " + Sfa.constant().habilitarFacturaElectronica())));
+		
+		
+		//SB - 
+		boolean isEnablePermisoObligatorio;
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.OBLIGA_CHECK_FACT_ELE.getValue())){
+			// la factura electronica ya es enable por defecto.
+			isEnablePermisoObligatorio = true;
+		} else {	
+			isEnablePermisoObligatorio = cuentaUIData.getFacturaElectronicaPanel().isEnabled(); 
+		}
+			
+			if (!cuentaUIData.getFacturaElectronicaPanel().getEmail().getText().equals("") 
+					&& isEnablePermisoObligatorio 
+					&& cuentaUIData.getFacturaElectronicaPanel().isFacturaElectronicaChecked())
+				validator.addTarget(cuentaUIData.getFacturaElectronicaPanel().getEmail()).mail(
+						Sfa.constant().ERR_EMAIL_NO_VALIDO().replaceAll(
+								"\\{1\\}",
+								cuentaUIData.getFacturaElectronicaPanel().getEmailLabel().getText().concat(
+										" " + Sfa.constant().habilitarFacturaElectronica())));
 
 		if (!cuentaUIData.getTelPrincipalTextBox().getArea().getText().equals("")
 				&& cuentaUIData.getTelPrincipalTextBox().getArea().isEnabled())
@@ -1817,6 +1832,12 @@ public class CuentaDatosForm extends Composite {
 			} else {
 				cuentaUIData.getFacturaElectronicaPanel().setFacturaElectronicaHabilitada(false);
 			}
+		}
+		//RQN02642 Factura Electronica 
+		if(!CuentaClientService.cuentaDto.isEmpresa() && CuentaClientService.cuentaDto.isProspectEnCarga()){
+	 	 	if (ClientContext.getInstance().checkPermiso(PermisosEnum.OBLIGA_CHECK_FACT_ELE.getValue())){
+	 	 		cuentaUIData.getFacturaElectronicaPanel().setFacturaElectronicaObligatoria(true);
+	 	 	}
 		}
 	}
 
