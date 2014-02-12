@@ -37,6 +37,7 @@ public class SolicitudServicioDto implements IsSerializable {
 	private Long channelCode;
 	private Double pataconex;
     private Boolean retiraEnSucursal= Boolean.FALSE;
+    private Boolean esProspect= Boolean.FALSE;
 	private Boolean firmar = Boolean.FALSE;
 	// private EstadoAprobacionSolicitud estadoActual;
 	private String observaciones;
@@ -589,6 +590,14 @@ public class SolicitudServicioDto implements IsSerializable {
 
 	public void setRetiraEnSucursal(Boolean retiraEnSucursal) {
 		this.retiraEnSucursal = retiraEnSucursal;
+	}
+
+	public Boolean getEsProspect() {
+		return esProspect;
+	}
+
+	public void setEsProspect(Boolean esProspect) {
+		this.esProspect = esProspect;
 	}
 
 	public FacturaDto getFactura() {

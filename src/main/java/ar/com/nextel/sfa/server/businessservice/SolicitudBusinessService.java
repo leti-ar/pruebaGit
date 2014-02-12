@@ -1434,10 +1434,15 @@ public class SolicitudBusinessService {
 		TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor();
 		for (Iterator<LineaSolicitudServicio> iterator = lineas.iterator(); iterator.hasNext();) {
 			LineaSolicitudServicio linea = (LineaSolicitudServicio) iterator.next();
-			if (linea.getTipoSolicitud() != null && linea.getPlan() != null && linea.getItem() != null) {
-				List result = repository.executeCustomQuery("configurablePorAPG", tipoVendedor.getId(), linea.getTipoSolicitud().getId());  
-				if (result.size() > 0) {
-					cumple++;
+			// #6487 los accesorios no deben contabilizarse como linea para validacion por lo que hago de cuenta que cumple
+			if (linea.isAccesorio()){
+				cumple++;
+			}else{
+				if (linea.getTipoSolicitud() != null && linea.getPlan() != null && linea.getItem() != null) {
+					List result = repository.executeCustomQuery("configurablePorAPG", tipoVendedor.getId(), linea.getTipoSolicitud().getId());  
+					if (result.size() > 0) {
+						cumple++;
+					}
 				}
 			}
 		}

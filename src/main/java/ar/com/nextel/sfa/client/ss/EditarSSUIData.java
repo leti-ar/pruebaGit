@@ -824,7 +824,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		if (ClientContext.getInstance().getVendedor().isTelemarketing()
 				&& solicitudServicio.getGrupoSolicitud().isEquiposAccesorios()) {
 			solicitudServicio.setNumeroSSWeb(numeroSSWeb.getText());
-		}		
+		}
+		
+		boolean esProspect = !solicitudServicio.getCuenta().isCliente();
+		solicitudServicio.setEsProspect(esProspect);
+		
 		return solicitudServicio;
 	}
 
@@ -920,11 +924,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 				int cantSIM = 0;
 				if (!haySIM_IMEIRepetidas) {
 					for (LineaSolicitudServicioDto li : solicitudServicio.getLineas()) {
-						if (GwtValidationUtils.validateNotEmpty(linea.getNumeroIMEI()) 
+						if (GwtValidationUtils.validateNotEmpty(linea.getNumeroIMEI())
+								&& GwtValidationUtils.validateNotEmpty(li.getNumeroIMEI())
 								&& GwtValidationUtils.validateEquals(linea.getNumeroIMEI(),li.getNumeroIMEI())) {
 							cantIMEI = cantIMEI + 1;
 						}
-						if (GwtValidationUtils.validateNotEmpty(linea.getNumeroSimcard()) 
+						if (GwtValidationUtils.validateNotEmpty(linea.getNumeroSimcard())
+								&& GwtValidationUtils.validateNotEmpty(li.getNumeroSimcard())
 								&& GwtValidationUtils.validateEquals(linea.getNumeroSimcard(),li.getNumeroSimcard())) {
 							cantSIM = cantSIM + 1;
 						}
