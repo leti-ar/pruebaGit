@@ -12,11 +12,8 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 
-import org.apache.catalina.SessionListener;
 import org.apache.commons.collections.Transformer;
 import org.dozer.MappingException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
