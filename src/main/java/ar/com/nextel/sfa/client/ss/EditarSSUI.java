@@ -1537,6 +1537,26 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	//Se llama al querer guardar una SS de Transferencia si todas las validacioens salieron bien
 	private DefaultWaitCallback<List<String>> guardarSolicitudCallback(){
 		
+		//Prueba para determinar si existe el registro de atención para luego después poder validar si 
+				//el PIN maestro fue validado en NEXUS
+		Window.alert("Prueba");
+				String idRegistroAtencion = HistoryUtils.getParam("idRegistroAtencion");
+				String customerId = HistoryUtils.getParam("customerId");
+
+
+				if ((idRegistroAtencion != null && idRegistroAtencion != "") && (customerId != null && customerId != "")){
+					CuentaRpcService.Util.getInstance().estaChequeadoPinEnNexus(idRegistroAtencion, customerId, new DefaultWaitCallback<Boolean>() {	
+							@Override
+							public void success(Boolean result) {
+								Window.alert("Pin Chequeado: " +  result);
+								
+							}
+						});			
+				} else {
+					Window.alert("No puedo chequear PIN: " + idRegistroAtencion + " - " + customerId);
+				}
+				//FIN prueba
+		
 		DefaultWaitCallback<List<String>> callback = new DefaultWaitCallback<List<String>>() {
 			@Override
 			public void success(List<String> errors) {
@@ -1572,7 +1592,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	private void cerrarGenerarSolicitud(){
 		//Prueba para determinar si existe el registro de atención para luego después poder validar si 
 		//el PIN maestro fue validado en NEXUS
-		
+		Window.alert("Prueba");
 		String idRegistroAtencion = HistoryUtils.getParam("idRegistroAtencion");
 		String customerId = HistoryUtils.getParam("customerId");
 
