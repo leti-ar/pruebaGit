@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.CuentaRpcService;
 import ar.com.nextel.sfa.client.InfocomRpcService;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
@@ -65,6 +66,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.IncrementalCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -1568,6 +1570,25 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	}
 	
 	private void cerrarGenerarSolicitud(){
+		//Prueba para determinar si existe el registro de atención para luego después poder validar si 
+		//el PIN maestro fue validado en NEXUS
+		
+		String idRegistroAtencion = HistoryUtils.getParam("idRegistroAtencion");
+		String customerId = HistoryUtils.getParam("customerId");
+
+
+		if ((idRegistroAtencion != null && idRegistroAtencion != "") && (customerId != null && customerId != "")){
+			CuentaRpcService.Util.getInstance().estaChequeadoPinEnNexus(idRegistroAtencion, customerId, new DefaultWaitCallback<Boolean>() {	
+					@Override
+					public void success(Boolean result) {
+						Window.alert("Pin Chequeado: " +  result);
+						
+					}
+				});			
+		} else {
+			Window.alert("No puedo chequear PIN: " + idRegistroAtencion + " - " + customerId);
+		}
+		//FIN prueba
 		SolicitudServicioDto ssDto = null;
 		String pinMaestro = getCerrarSSUI().getCerrarSSUIData().getPin().getText();
 		if(editarSSUIData.getGrupoSolicitud()!= null &&
@@ -1580,10 +1601,10 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				ssDto.getCuenta().setVendedor((VendedorDto) editarSSUIData.getVendedor().getSelectedItem());						
 			}		
 		}
-
-		SolicitudRpcService.Util.getInstance().generarCerrarSolicitud(
-				ssDto, pinMaestro, cerrandoSolicitud, ClientContext.getInstance().isPinChequeadoEnNexus(), 
-				getGeneracionCierreCallback());
+		
+//		SolicitudRpcService.Util.getInstance().generarCerrarSolicitud(
+//				ssDto, pinMaestro, cerrandoSolicitud, ClientContext.getInstance().isPinChequeadoEnNexus(), 
+//				getGeneracionCierreCallback());
 	}
 
 	private DefaultWaitCallback<List<String>> abrirCerrarDialogCallback(){
