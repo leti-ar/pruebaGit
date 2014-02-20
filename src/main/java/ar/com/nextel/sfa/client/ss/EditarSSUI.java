@@ -1608,19 +1608,24 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		} else {
 			Window.alert("No puedo chequear PIN: " + idRegistroAtencion + " - " + customerId);
 		}
+		CerradoSSExitosoDialog.getInstance().hideLoading();
 		//FIN prueba
-		SolicitudServicioDto ssDto = null;
-		String pinMaestro = getCerrarSSUI().getCerrarSSUIData().getPin().getText();
-		if(editarSSUIData.getGrupoSolicitud()!= null &&
-				editarSSUIData.getGrupoSolicitud().isTransferencia()){
-			ssDto = obtenerSolicitudTransferencia(true);
-		}else{
-			ssDto =editarSSUIData.getSolicitudServicio();
-			//El vendedor de la cuenta solo se cambia si la cuenta es prospect y el usuario logueado es Administrador de creditos
-			if(isProspectAndADMCreditos(ssDto.getCuenta())) {
-				ssDto.getCuenta().setVendedor((VendedorDto) editarSSUIData.getVendedor().getSelectedItem());						
-			}		
-		}
+		
+		
+		
+		
+//		SolicitudServicioDto ssDto = null;
+//		String pinMaestro = getCerrarSSUI().getCerrarSSUIData().getPin().getText();
+//		if(editarSSUIData.getGrupoSolicitud()!= null &&
+//				editarSSUIData.getGrupoSolicitud().isTransferencia()){
+//			ssDto = obtenerSolicitudTransferencia(true);
+//		}else{
+//			ssDto =editarSSUIData.getSolicitudServicio();
+//			//El vendedor de la cuenta solo se cambia si la cuenta es prospect y el usuario logueado es Administrador de creditos
+//			if(isProspectAndADMCreditos(ssDto.getCuenta())) {
+//				ssDto.getCuenta().setVendedor((VendedorDto) editarSSUIData.getVendedor().getSelectedItem());						
+//			}		
+//		}
 		
 //		SolicitudRpcService.Util.getInstance().generarCerrarSolicitud(
 //				ssDto, pinMaestro, cerrandoSolicitud, ClientContext.getInstance().isPinChequeadoEnNexus(), 
