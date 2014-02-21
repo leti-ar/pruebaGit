@@ -1079,6 +1079,18 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 //				MGR - Refactorizacion del cierre
 				validarSIMRepetidos(solicitudServicio, result);
 			}
+			
+			//Para issue=4632
+			if (solicitudServicio.getVendedor().isTelemarketing()){						
+				if (!pinChequeadoEnNexus && pinMaestro.equals("")){
+					Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.GESTION_SIN_PIN);
+					message.addParameters(new Object[] { "Debe validar cliente" });
+					response.getMessages().addMesage(message);
+					result.setError(true);
+					
+				}
+			}
+
 
 			solicitudServicio = solicitudBusinessService.saveSolicitudServicio(solicitudServicio);
 
