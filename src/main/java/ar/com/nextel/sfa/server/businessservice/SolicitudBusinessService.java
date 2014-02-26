@@ -1431,13 +1431,13 @@ public class SolicitudBusinessService {
 	public int sonConfigurablesPorAPG(List<LineaSolicitudServicio> lineas) {
 		AppLogger.info("#Log Cierre y pass - Validando que todas las líneas sean configurables por APG...");
 		int cumple = 0;
+		int cantidadLineasParaValidar = 0; 
 		TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor();
 		for (Iterator<LineaSolicitudServicio> iterator = lineas.iterator(); iterator.hasNext();) {
 			LineaSolicitudServicio linea = (LineaSolicitudServicio) iterator.next();
-			// #6487 los accesorios no deben contabilizarse como linea para validacion por lo que hago de cuenta que cumple
-			if (linea.isAccesorio()){
-				cumple++;
-			}else{
+			// #6487 los accesorios no deben contabilizarse como linea para validacion			
+			if (!linea.isAccesorio()){
+				cantidadLineasParaValidar++;
 				if (linea.getTipoSolicitud() != null && linea.getPlan() != null && linea.getItem() != null) {
 					List result = repository.executeCustomQuery("configurablePorAPG", tipoVendedor.getId(), linea.getTipoSolicitud().getId());  
 					if (result.size() > 0) {
@@ -1446,10 +1446,10 @@ public class SolicitudBusinessService {
 				}
 			}
 		}
-		if (cumple == lineas.size()) {
+		if (cumple == cantidadLineasParaValidar) {
 			AppLogger.info("#Log Cierre y pass - Todas las l�neas son configurables por APG");
 			return CierreYPassResult.CIERRE_PASS_AUTOMATICO;
-		} else if ((cumple < lineas.size() && cumple != 0) ) {
+		} else if ((cumple < cantidadLineasParaValidar && cumple != 0) ) {
 			AppLogger.info("#Log Cierre y pass - No todas las l�neas son configurables por APG");
 			return CierreYPassResult.LINEAS_NO_CUMPLEN_CC;
 		} else {
