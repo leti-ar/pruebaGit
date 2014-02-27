@@ -652,15 +652,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 					boolean isActivacion = this.isActivacion() || this.isActivacionOnline();
 					controller.getPlanesPorItemYTipoPlan(is, (TipoPlanDto) tipoPlan.getSelectedItem(),
 							isActivacion, modelo, getActualizarPlanCallback());
-					if (isPermanencia()){
-						if (isActivacionOnline()){
-							if (itemActivacionOnline!=null){
-								controller.getSubsidiosPorItem(itemActivacionOnline, getActualizarSubsidiosCallback());
-							}
-						}else{
-							controller.getSubsidiosPorItem(is, getActualizarSubsidiosCallback());							
-						}	
-					}
+					cargoSubsidiosPorItem(is);
 				}
 				// if(is.getItem().) // alcanza con isEquipo, isAccesorio?
 				ddn.setValue(true);
@@ -792,6 +784,16 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		}
 	}
 
+	private void cargoSubsidiosPorItem(ItemSolicitudTasadoDto item) {
+		if (isPermanencia()){
+			if (isActivacionOnline()){
+				controller.getSubsidiosPorItem(itemActivacionOnline, getActualizarSubsidiosCallback());
+			}else{
+				controller.getSubsidiosPorItem(item, getActualizarSubsidiosCallback());							
+			}	
+		}
+	}
+
 	private void verificarSubsidio() {
 		ItemSolicitudTasadoDto is = (ItemSolicitudTasadoDto) item.getSelectedItem();
 
@@ -806,13 +808,13 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 				precio = terminoSelected.getAjuste() * precio;
 			}
 			if (!fullPrice.getValue()){
-				precio = obtenerPrecioSubsidiado(precio);				
+				precio = obtenerPrecioSubsidiado(precio,true);				
 			}
 			precioListaItem.setInnerHTML(currencyFormat.format(precio));
 		}
 	}
 	
-	private double obtenerPrecioSubsidiado(double precio) {
+	private double obtenerPrecioSubsidiado(double precio,boolean mostrarMsgErr) {
 		PlanDto planSelected = (PlanDto) plan.getSelectedItem();
 		boolean existeSubsidio = false;
 
@@ -824,9 +826,13 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 		}
 		if (!existeSubsidio){
-			MessageDialog.getInstance().showAceptar("No existe configurado el subsidio para el item y plan seleccionado"
+			if(mostrarMsgErr){
+				MessageDialog.getInstance().showAceptar("No existe configurado el subsidio para el item y plan seleccionado"
 					, MessageDialog.getCloseCommand());
-			fullPrice.setValue(true);
+			}else{
+				//si no existe subsidio para el item/plan defino la linea como fullprice
+				fullPrice.setValue(true);	
+			}
 		}
 		return precio;
 	}
@@ -1304,13 +1310,15 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			// Campo subsidio
 			if (isPermanencia()){
 				lineaSolicitudServicio.setFullPrice(fullPrice.getValue());
-				if (!fullPrice.getValue() && !isActivacionOnline()){
-					double precioSubsidiado = obtenerPrecioSubsidiado(precio);
-					if (precio==precioSubsidiado){ // #5864 si el subsidio es 0, se comporta como si fuera full price
-						lineaSolicitudServicio.setFullPrice(true);
+				if (!fullPrice.getValue()){ //aplica subsidio
+					double precioSubsidiado = obtenerPrecioSubsidiado(precio,false);
+					if (!isActivacionOnline()){
+						if (precio==precioSubsidiado){ // #5864 si el subsidio es 0, se comporta como si fuera full price
+							lineaSolicitudServicio.setFullPrice(true);
+						}
+						lineaSolicitudServicio.setPrecioLista(precioSubsidiado);
+						lineaSolicitudServicio.setPrecioVenta(precioSubsidiado);
 					}
-					lineaSolicitudServicio.setPrecioLista(precioSubsidiado);
-					lineaSolicitudServicio.setPrecioVenta(precioSubsidiado);
 				}
 			}
 

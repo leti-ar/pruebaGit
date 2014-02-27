@@ -826,8 +826,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			solicitudServicio.setNumeroSSWeb(numeroSSWeb.getText());
 		}
 		
-		boolean esProspect = !solicitudServicio.getCuenta().isCliente();
-		solicitudServicio.setEsProspect(esProspect);
+		//#6448 true si el cliente ingresa como prospect. Si ya esta validado,solo validar para los anexos o reingresos
+		if (solicitudServicio.getEsProspect()==null){
+			boolean esProspect = !solicitudServicio.getCuenta().isCliente();
+			solicitudServicio.setEsProspect(esProspect);
+		}
 		
 		return solicitudServicio;
 	}

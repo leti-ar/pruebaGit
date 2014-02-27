@@ -942,7 +942,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 	}
 
 	public List<SubsidiosDto> getSubsidiosPorItem(VendedorDto vendedor, ItemSolicitudTasadoDto itemSolicitudTasado) {
-		Long idItem = itemSolicitudTasado.getItem().getId();
+		Long idItem = itemSolicitudTasado != null ? itemSolicitudTasado.getItem().getId() : null;
 		return solicitudBusinessService.getSubsidiosPorItem(vendedor, idItem);
 	}
 

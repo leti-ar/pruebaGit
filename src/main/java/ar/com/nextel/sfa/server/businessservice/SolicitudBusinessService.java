@@ -1477,12 +1477,16 @@ public class SolicitudBusinessService {
 	}
 	
 	public List<SubsidiosDto> getSubsidiosPorItem(VendedorDto vendedor,Long idItem) {
-		
+
+		List<SubsidiosDto> subsidios = new ArrayList<SubsidiosDto>();
 		Long idTipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor().getId();
 		if(asignarComboVendedor()){
 			idTipoVendedor = vendedor.getTipoVendedor().getId();
 		}
-		List<SubsidiosDto> subsidios = new ArrayList<SubsidiosDto>();
+		
+		if (idTipoVendedor==null || idItem==null){
+			return subsidios;
+		}
 		
 		List<Object[]> list = repository.executeCustomQuery(GET_SUBSIDIO_ITEM_VENDEDOR,
 							idTipoVendedor, idItem);
