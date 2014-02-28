@@ -684,7 +684,9 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			} else {
 				this.enableTextBox(sim);
 			}
-			if (controller.getEditarSSUIData().getRetiraEnSucursal().getValue() &&
+			
+			// #6633 no debe valida stock para ordenes de tipo activacion
+			if (controller.getEditarSSUIData().getRetiraEnSucursal().getValue() && tipoEdicion != ACTIVACION &&
 				item.getSelectedItem()!=null) {
 				//llamar al metodo de validacion de stock
 				validarStock(new Long(item.getSelectedItem().getItemValue()));
@@ -1070,6 +1072,21 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			validator.addTarget(cantidad).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Cantidad")).greater(
 					Sfa.constant().ERR_CANT_MA_CERO().replaceAll(v1, "Cantidad"), 0);
+			
+			//#6632 movi esto porque estos campos unicamente se agregan y deberian validarse cuando no es ACTIVACION
+			if (controller.getEditarSSUIData().getRetiraEnSucursal().getValue()) {
+				if (imeiRetiroEnSucursal.isEnabled()) {
+					validator.addTarget(imeiRetiroEnSucursal).required(
+							Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "IMEI")).regEx(
+							imeiMensajeRegex.getMensaje(),imeiMensajeRegex.getRegexPattern());
+				}
+				if (simRetiroEnSucursal.isEnabled()) {
+					validator.addTarget(simRetiroEnSucursal).required(
+							Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM")).regEx(
+							simMensajeRegex.getMensaje(), simMensajeRegex.getRegexPattern());
+				}
+			}
+			
 		} else {
 			ModeloDto modelo = (ModeloDto) modeloEq.getSelectedItem();
 			if (modelo != null && !isActivacionOnline()) {
@@ -1088,19 +1105,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			if (sim.isEnabled()) {
 				validator.addTarget(sim).required(
 						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM"));
-			}
-		}
-		
-		if (controller.getEditarSSUIData().getRetiraEnSucursal().getValue()) {
-			if (imeiRetiroEnSucursal.isEnabled()) {
-				validator.addTarget(imeiRetiroEnSucursal).required(
-						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "IMEI")).regEx(
-						imeiMensajeRegex.getMensaje(),imeiMensajeRegex.getRegexPattern());
-			}
-			if (simRetiroEnSucursal.isEnabled()) {
-				validator.addTarget(simRetiroEnSucursal).required(
-						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM")).regEx(
-						simMensajeRegex.getMensaje(), simMensajeRegex.getRegexPattern());
 			}
 		}
 		

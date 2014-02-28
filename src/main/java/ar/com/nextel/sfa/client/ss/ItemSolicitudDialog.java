@@ -337,7 +337,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		if (itemYPlanSolicitudUI == null) {
 			itemYPlanSolicitudUI = new ItemYPlanSolicitudUI(getSoloItemSolicitudUI(), itemSolicitudUIData,controller);
 		}
-		soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_SIMPLE_PERMANENCIA);
+		soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_SIMPLE_PERMANENCIA, controller);
 		itemYPlanSolicitudUI.load();
 		return itemYPlanSolicitudUI;
 	}
