@@ -2,6 +2,8 @@ package ar.com.nextel.sfa.client;
 
 import java.util.List;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import ar.com.nextel.sfa.client.dto.OperacionEnCursoDto;
 import ar.com.nextel.sfa.client.dto.VentaPotencialVistaResultDto;
 import ar.com.snoop.gwt.commons.client.service.DefaultWaitCallback;
@@ -42,5 +44,11 @@ public class OperacionesRpcServiceDelegate {
 			DefaultWaitCallback<VentaPotencialVistaResultDto> callback) {
 		WaitWindow.show();
 		opRpcService.cancelarOperacionEnCurso(idCuenta, callback);
+	}
+	
+	public void vendedorIsGeneraTriptico(Long idTipoVendedor,
+			AsyncCallback<Boolean> callback){
+		WaitWindow.show();
+		opRpcService.vendedorIsGeneraTriptico(idTipoVendedor, callback);
 	}
 }

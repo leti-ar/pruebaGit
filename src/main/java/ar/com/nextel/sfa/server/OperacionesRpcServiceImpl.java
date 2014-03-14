@@ -1,13 +1,18 @@
 package ar.com.nextel.sfa.server;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.ServletException;
 
+import org.hibernate.HibernateException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import ar.com.nextel.framework.repository.Repository;
+import ar.com.nextel.framework.repository.hibernate.HibernateRepository;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.oportunidades.beans.OperacionEnCurso;
@@ -124,7 +129,7 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 			throw ExceptionUtil.wrap(e);
 		}
 	}
-	
+
 	public void cancelarOperacionEnCurso(Long idCuenta) throws RpcExceptionMessages {
 		try {
 			Cuenta cuenta = repository.retrieve(Cuenta.class, idCuenta);
@@ -137,6 +142,25 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 			AppLogger.error(e);
 			throw ExceptionUtil.wrap(e);
 		}
+	}
+	
+	public boolean vendedorIsGeneraTriptico(Long idTipoVendedor) throws RpcExceptionMessages{
+		boolean ret = false;
+		String sql = String.format("select 1 from sfa_tipo_vendedor where id_tipo_vendedor ="+idTipoVendedor.toString()+" and genera_triptico = 'T'"); 
+		try {
+			PreparedStatement stmt = ((HibernateRepository) repository)
+					.getHibernateDaoSupport().getSessionFactory()
+					.getCurrentSession().connection().prepareStatement(sql);
+		
+			
+			ResultSet resultSet = stmt.executeQuery();
+			if(resultSet.next())
+				ret = true; 
+		} catch (Exception e) {
+			AppLogger.error(e);
+			throw ExceptionUtil.wrap(e);
+		}
+		return ret;
 	}
 	
 }

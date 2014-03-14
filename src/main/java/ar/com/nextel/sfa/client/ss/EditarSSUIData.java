@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.OperacionesRpcService;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -951,31 +952,38 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	 *            aceptar de la pantalla que pide los mails
 	 * @return Lista de errores
 	 */
+	Boolean genera;
 	public List<String> validarParaCerrarGenerar(boolean generacionCierreDefinitivo) {
 		recarcularValores();
-		GwtValidator validator = new GwtValidator();
-		
-		//GE si genera el triptico automatico no hace las validaciones de rango.
-		if(!ClientContext.getInstance().getVendedor().getTipoVendedor().isGeneraTriptico()){
-			// Validacion rango NSS con y sin PIN
-			validator.addTarget(nss).required(
-					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nº de Solicitud")).maxLength(10,
-							Sfa.constant().ERR_NSS_LONG());
-			GrupoSolicitudDto grupoSS = solicitudServicio.getGrupoSolicitud();
-			
-			Long numeroSS = "".equals(nss.getText()) ? null : Long.valueOf(nss.getText());
-			if (numeroSS != null && grupoSS.getRangoMinimoSinPin() != null
-					&& grupoSS.getRangoMaximoSinPin() != null && grupoSS.getRangoMinimoConPin() != null
-					&& grupoSS.getRangoMaximoConPin() != null) {
-				boolean enRangoSinPin = numeroSS >= grupoSS.getRangoMinimoSinPin()
-						&& numeroSS <= grupoSS.getRangoMaximoSinPin();
-				boolean enRangoConPin = numeroSS >= grupoSS.getRangoMinimoConPin()
-						&& numeroSS <= grupoSS.getRangoMaximoConPin();
-				if (!enRangoSinPin && !enRangoConPin) {
-					validator.addError(Sfa.constant().ERR_NNS_RANGO());
-				}
-			}
-		}
+		 OperacionesRpcService.Util.getInstance().vendedorIsGeneraTriptico(ClientContext.getInstance().getVendedor().getTipoVendedor().getId(), new DefaultWaitCallback<Boolean>() {
+				@Override
+				public void success(Boolean result) {
+					genera=result;
+					//GE si genera el triptico automatico no hace las validaciones de rango.
+					if(!result.booleanValue()){
+						GwtValidator validator = new GwtValidator();
+						// Validacion rango NSS con y sin PIN
+						validator.addTarget(nss).required(
+								Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nº de Solicitud")).maxLength(10,
+										Sfa.constant().ERR_NSS_LONG());
+						GrupoSolicitudDto grupoSS = solicitudServicio.getGrupoSolicitud();
+						
+						Long numeroSS = "".equals(nss.getText()) ? null : Long.valueOf(nss.getText());
+						if (numeroSS != null && grupoSS.getRangoMinimoSinPin() != null
+								&& grupoSS.getRangoMaximoSinPin() != null && grupoSS.getRangoMinimoConPin() != null
+								&& grupoSS.getRangoMaximoConPin() != null) {
+							boolean enRangoSinPin = numeroSS >= grupoSS.getRangoMinimoSinPin()
+									&& numeroSS <= grupoSS.getRangoMaximoSinPin();
+							boolean enRangoConPin = numeroSS >= grupoSS.getRangoMinimoConPin()
+									&& numeroSS <= grupoSS.getRangoMaximoConPin();
+							if (!enRangoSinPin && !enRangoConPin) {
+								validator.addError(Sfa.constant().ERR_NNS_RANGO());
+							}
+							
+						}
+					}}});
+		 //ic
+		 GwtValidator validator= null;//TODO ESTO NO VA
 		validator.addTarget(origen).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){

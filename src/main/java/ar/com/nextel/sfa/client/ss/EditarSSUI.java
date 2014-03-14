@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import ar.com.nextel.sfa.client.InfocomRpcService;
+import ar.com.nextel.sfa.client.OperacionesRpcService;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -917,7 +918,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	String riskCodeText = null;
 	
 	public void onClick(Widget sender) {
-		
 		if (sender == guardarButton) {
 			List<String> errors = null;
 			if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){	
@@ -1083,22 +1083,30 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				
 		///////////////////////////////////////////////////////////////////////////////////////////////////////		
 		
-		  if ("".equals(editarSSUIData.getNss().getText()) && ClientContext.getInstance().getVendedor().getTipoVendedor()
-					.isGeneraTriptico()) {
-				SolicitudRpcService.Util.getInstance().obtenerSiguienteTriptico(
-						new DefaultWaitCallback<String>() {
+//		  if ("".equals(editarSSUIData.getNss().getText()) && ClientContext.getInstance().getVendedor().getTipoVendedor()
+//					.isGeneraTriptico()) {
+			  OperacionesRpcService.Util.getInstance().vendedorIsGeneraTriptico(ClientContext.getInstance().getVendedor().getTipoVendedor().getId(), new DefaultWaitCallback<Boolean>() {
 
-							@Override
-							public void success(String result) {
-								editarSSUIData.getNss().setText(result);
-								editarSSUIData.getSolicitudServicio().setNroTriptico(Long.parseLong(result));
-								editarSSUIData.getSolicitudServicio().setNumero(result);
-								prepararSSYGuardar();
-							}
-						});
-			}else{
-				prepararSSYGuardar();
-			}
+				@Override
+				public void success(Boolean result) {
+					if("".equals(editarSSUIData.getNss().getText())&&result.booleanValue()){
+						
+						SolicitudRpcService.Util.getInstance().obtenerSiguienteTriptico(
+								new DefaultWaitCallback<String>() {
+									
+									@Override
+									public void success(String result) {
+										editarSSUIData.getNss().setText(result);
+										editarSSUIData.getSolicitudServicio().setNroTriptico(Long.parseLong(result));
+										editarSSUIData.getSolicitudServicio().setNumero(result);
+										prepararSSYGuardar();
+									}
+								});
+					}else{
+						prepararSSYGuardar();
+					}
+				}
+			});
 		}
 
 		private void prepararSSYGuardar() {
@@ -1277,24 +1285,28 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 					// GE,, si genera triptico y ya lo obtuvo verifica
 					// directamente y si todavia no tiene el triptico lo va a
 					// buscar primero
-					if (ClientContext.getInstance().getVendedor()
-							.getTipoVendedor().isGeneraTriptico()
-							&& "".equals(editarSSUIData.getNss().getText())) {
-						SolicitudRpcService.Util.getInstance()
-								.obtenerSiguienteTriptico(
-										new DefaultWaitCallback<String>() {
-											@Override
-											public void success(String result) {
-												editarSSUIData.getNss()
-														.setText(result);
-												editarSSUIData.getSolicitudServicio().setNroTriptico(Long.parseLong(result));
-												editarSSUIData.getSolicitudServicio().setNumero(result);
-												verificarErrores();
-											}
-										});
-					} else {
-						verificarErrores();
-					}
+					 OperacionesRpcService.Util.getInstance().vendedorIsGeneraTriptico(ClientContext.getInstance().getVendedor().getTipoVendedor().getId(), new DefaultWaitCallback<Boolean>() {
+
+							@Override
+							public void success(Boolean result) {
+								if(result.booleanValue()&&"".equals(editarSSUIData.getNss().getText())){
+									SolicitudRpcService.Util.getInstance()
+									.obtenerSiguienteTriptico(
+											new DefaultWaitCallback<String>() {
+												@Override
+												public void success(String result) {
+													editarSSUIData.getNss()
+													.setText(result);
+													editarSSUIData.getSolicitudServicio().setNroTriptico(Long.parseLong(result));
+													editarSSUIData.getSolicitudServicio().setNumero(result);
+													verificarErrores();
+											} 
+											});
+								}else {
+									verificarErrores();
+									}
+								}
+						});
 				} else {
 					CerradoSSExitosoDialog.getInstance().hideLoading();
 					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);

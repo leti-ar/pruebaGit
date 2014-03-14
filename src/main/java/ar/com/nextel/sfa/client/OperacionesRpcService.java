@@ -35,4 +35,6 @@ public interface OperacionesRpcService extends RemoteService {
 	
 	public void cancelarOperacionEnCurso(Long idCuenta) throws RpcExceptionMessages;
 	
+	public boolean vendedorIsGeneraTriptico(Long idTipoVendedor) throws RpcExceptionMessages;
+	
 }

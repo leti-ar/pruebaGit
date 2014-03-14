@@ -614,13 +614,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			stmt = ((HibernateRepository) repository)
 					.getHibernateDaoSupport().getSessionFactory()
 					.getCurrentSession().connection().prepareStatement(sql);
-		
 			
 			ResultSet resultSet = stmt.executeQuery();
 			while (resultSet.next()) {
-				
 				resul=resultSet.getString(1);
-				
 			}
 		} catch (HibernateException e) {
 			e.printStackTrace();

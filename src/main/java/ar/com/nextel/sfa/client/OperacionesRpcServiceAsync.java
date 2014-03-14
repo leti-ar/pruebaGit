@@ -20,5 +20,8 @@ public interface OperacionesRpcServiceAsync {
 	public void cancelarOperacionEnCurso(String idOperacionEnCurso,	AsyncCallback callback);
 
 	public void cancelarOperacionEnCurso(Long idCuenta,	AsyncCallback callback);
+
+	public void vendedorIsGeneraTriptico(Long idTipoVendedor,
+			AsyncCallback<Boolean> callback);
 	
 }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import ar.com.nextel.sfa.client.OperacionesRpcService;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -1083,22 +1084,28 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		refreshDetalleSSTable();
 		
 		//GE si el triptico es automatico tiene que quedar no editable
-		editarSSUIData.getNss().setEnabled(controller.isEditable()&&!ClientContext.getInstance().getVendedor().getTipoVendedor().isGeneraTriptico());
-		
-		editarSSUIData.getNflota().setEnabled(controller.isEditable());
-		editarSSUIData.getOrigen().setEnabled(controller.isEditable());
-		editarSSUIData.getVendedor().setEnabled(controller.isEditable());
-		editarSSUIData.getSucursalOrigen().setEnabled(controller.isEditable());
-		editarSSUIData.getOrdenCompra().setEnabled(controller.isEditable());
-		editarSSUIData.getEntrega().setEnabled(controller.isEditable());
-		editarSSUIData.getFacturacion().setEnabled(controller.isEditable());
-		editarSSUIData.getAclaracion().setEnabled(controller.isEditable());
-		editarSSUIData.getEmail().setEnabled(controller.isEditable());
-		if (controller.getEditarSSUIData().isEquiposAccesorios()) {
-			editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
+		 OperacionesRpcService.Util.getInstance().vendedorIsGeneraTriptico(ClientContext.getInstance().getVendedor().getTipoVendedor().getId(), new DefaultWaitCallback<Boolean>() {
+
+				@Override
+				public void success(Boolean result) {
+						editarSSUIData.getNss().setEnabled(controller.isEditable()&&!result.booleanValue());
+					}});
+		 
+		 editarSSUIData.getNflota().setEnabled(controller.isEditable());
+		 editarSSUIData.getOrigen().setEnabled(controller.isEditable());
+		 editarSSUIData.getVendedor().setEnabled(controller.isEditable());
+		 editarSSUIData.getSucursalOrigen().setEnabled(controller.isEditable());
+		 editarSSUIData.getOrdenCompra().setEnabled(controller.isEditable());
+		 editarSSUIData.getEntrega().setEnabled(controller.isEditable());
+		 editarSSUIData.getFacturacion().setEnabled(controller.isEditable());
+		 editarSSUIData.getAclaracion().setEnabled(controller.isEditable());
+		 editarSSUIData.getEmail().setEnabled(controller.isEditable());
+		 if (controller.getEditarSSUIData().isEquiposAccesorios()) {
+			 editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
 //			editarSSUIData.getRetiraEnSucursal().setEnabled(detalleSS.getRowCount()>0);
-		}
-		definirDisponibilidadCampoVendedor();
+		 }
+		 definirDisponibilidadCampoVendedor();
+		 
 	}
 	
 	/**
