@@ -1083,7 +1083,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		refreshDomicilioLayout();
 		refreshDetalleSSTable();
 		
-		//GE si el triptico es automatico tiene que quedar no editable
+		//GE si el triptico es automatico tiene que quedar no editable - #6637
 		 OperacionesRpcService.Util.getInstance().vendedorIsGeneraTriptico(ClientContext.getInstance().getVendedor().getTipoVendedor().getId(), new DefaultWaitCallback<Boolean>() {
 
 				@Override

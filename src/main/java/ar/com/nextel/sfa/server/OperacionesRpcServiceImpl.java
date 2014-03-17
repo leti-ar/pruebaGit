@@ -2,12 +2,10 @@ package ar.com.nextel.sfa.server;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.ServletException;
 
-import org.hibernate.HibernateException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -144,9 +142,12 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 		}
 	}
 	
+//	#6637
 	public boolean vendedorIsGeneraTriptico(Long idTipoVendedor) throws RpcExceptionMessages{
 		boolean ret = false;
-		String sql = String.format("select 1 from sfa_tipo_vendedor where id_tipo_vendedor ="+idTipoVendedor.toString()+" and genera_triptico = 'T'"); 
+		String sql = String.format("select 1 from sfa_tipo_vendedor where " +
+									"id_tipo_vendedor ="+idTipoVendedor.toString() +
+									" and genera_triptico = 'T'"); 
 		try {
 			PreparedStatement stmt = ((HibernateRepository) repository)
 					.getHibernateDaoSupport().getSessionFactory()
@@ -157,8 +158,8 @@ public class OperacionesRpcServiceImpl extends RemoteService implements Operacio
 			if(resultSet.next())
 				ret = true; 
 		} catch (Exception e) {
-			AppLogger.error(e);
-			throw ExceptionUtil.wrap(e);
+			AppLogger.error("No se pudo averiguar si el vendedor genera o no triptico", e);
+			throw ExceptionUtil.wrap("No se pudo averiguar si el vendedor genera o no triptico", e);
 		}
 		return ret;
 	}

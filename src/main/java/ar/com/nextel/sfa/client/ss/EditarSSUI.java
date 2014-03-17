@@ -133,7 +133,7 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	
 //	MGR - Validaciones previas a la facturacion
 	private List<String> erroresFacturacion;
-
+	
 	public EditarSSUI(boolean isEditable) {
 		super();
 		this.editable = isEditable;
@@ -1083,29 +1083,30 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				
 		///////////////////////////////////////////////////////////////////////////////////////////////////////		
 		
-//		  if ("".equals(editarSSUIData.getNss().getText()) && ClientContext.getInstance().getVendedor().getTipoVendedor()
-//					.isGeneraTriptico()) {
-			  OperacionesRpcService.Util.getInstance().vendedorIsGeneraTriptico(ClientContext.getInstance().getVendedor().getTipoVendedor().getId(), new DefaultWaitCallback<Boolean>() {
+//			  #6637
+			  OperacionesRpcService.Util.getInstance().vendedorIsGeneraTriptico(
+					  ClientContext.getInstance().getVendedor().getTipoVendedor().getId(), 
+					  new DefaultWaitCallback<Boolean>() {
 
-				@Override
-				public void success(Boolean result) {
-					if("".equals(editarSSUIData.getNss().getText())&&result.booleanValue()){
-						
-						SolicitudRpcService.Util.getInstance().obtenerSiguienteTriptico(
-								new DefaultWaitCallback<String>() {
+							@Override
+							public void success(Boolean result) {
+								if("".equals(editarSSUIData.getNss().getText()) && result.booleanValue()){
 									
-									@Override
-									public void success(String result) {
-										editarSSUIData.getNss().setText(result);
-										editarSSUIData.getSolicitudServicio().setNroTriptico(Long.parseLong(result));
-										editarSSUIData.getSolicitudServicio().setNumero(result);
-										prepararSSYGuardar();
-									}
-								});
-					}else{
-						prepararSSYGuardar();
-					}
-				}
+									SolicitudRpcService.Util.getInstance().obtenerSiguienteTriptico(
+											new DefaultWaitCallback<String>() {
+												
+												@Override
+												public void success(String result) {
+													editarSSUIData.getNss().setText(result);
+													editarSSUIData.getSolicitudServicio().setNroTriptico(Long.parseLong(result));
+													editarSSUIData.getSolicitudServicio().setNumero(result);
+													prepararSSYGuardar();
+												}
+											});
+								}else{
+									prepararSSYGuardar();
+								}
+							}
 			});
 		}
 
@@ -1219,43 +1220,25 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		        if (CuentaClientService.cuentaDto.getPersona().getNombre() != null) {
 		        	
 		        	errorsCerrar = null;
+		        	
 		        	if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
 		        		errorsCerrar = editarSSUIData.validarTransferenciaParaCerrarGenerar(datosTranferencia.getContratosSSChequeados(),false);
+		        		finalizarOpenGenerarCerrarSolicitdDialog();
 					}else{
-						errorsCerrar = editarSSUIData.validarParaCerrarGenerar(false);
-					}
-
-					SolicitudRpcService.Util.getInstance().validarLineasPorSegmento(editarSSUIData.getSolicitudServicio(), new DefaultWaitCallback<Boolean>() {
-						@Override
-						public void success(Boolean result) {
-							if(!result){
-								errorsCerrar.add("Ha superado la cantidad de lineas por cliente.");
+//						MGR - #6637 - Se modifica la forma de obtener las validaciones
+						editarSSUIData.realizarValidacionesParaCerrarGenerar(false);
+						DeferredCommand.addCommand(new IncrementalCommand() {
+							public boolean execute() {
+								if (!editarSSUIData.isMsjValidarParaCerrarGenerarObtenido()){
+									return true;
+								} 
+									
+								errorsCerrar = editarSSUIData.getMensajesValidarParaCerrarGenerar();
+								finalizarOpenGenerarCerrarSolicitdDialog();
+								return false;
 							}
-				            if (errorsCerrar.isEmpty()) {
-				            	
-				            	if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
-				            		editarSSUIData.validarPlanesCedentes(abrirCerrarDialogCallback(), false);
-				            	}else{
-				            		abrirDialogCerrar();
-				            	}
-				            } else {
-				            	ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-				                ErrorDialog.getInstance().show(errorsCerrar, false);
-				            }
-						}
-					});
-					
-//		            if (errorsCerrar.isEmpty()) {
-//		            	
-//		            	if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
-//		            		editarSSUIData.validarPlanesCedentes(abrirCerrarDialogCallback(), false);
-//		            	}else{
-//		            		abrirDialogCerrar();
-//		            	}
-//		            } else {
-//		            	ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-//		                ErrorDialog.getInstance().show(errorsCerrar, false);
-//		            }
+						});
+					}
 		        } else {
 		        	ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
 	                ErrorDialog.getInstance().show("Debe completar los campos obligatorios de la cuenta");
@@ -1264,6 +1247,42 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 		        return false;
 	        }
         });
+	}
+	
+//		MGR - #6637 - Se trae el codigo de ejecucion del metodo "openGenerarCerrarSolicitdDialog"
+	private void finalizarOpenGenerarCerrarSolicitdDialog(){
+		
+		SolicitudRpcService.Util.getInstance().validarLineasPorSegmento(editarSSUIData.getSolicitudServicio(), new DefaultWaitCallback<Boolean>() {
+			@Override
+			public void success(Boolean result) {
+				if(!result){
+					errorsCerrar.add("Ha superado la cantidad de lineas por cliente.");
+				}
+	            if (errorsCerrar.isEmpty()) {
+	            	
+	            	if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
+	            		editarSSUIData.validarPlanesCedentes(abrirCerrarDialogCallback(), false);
+	            	}else{
+	            		abrirDialogCerrar();
+	            	}
+	            } else {
+	            	ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+	                ErrorDialog.getInstance().show(errorsCerrar, false);
+	            }
+			}
+		});
+		
+//        if (errorsCerrar.isEmpty()) {
+//        	
+//        	if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
+//        		editarSSUIData.validarPlanesCedentes(abrirCerrarDialogCallback(), false);
+//        	}else{
+//        		abrirDialogCerrar();
+//        	}
+//        } else {
+//        	ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+//            ErrorDialog.getInstance().show(errorsCerrar, false);
+//        }
 	}
 
 	private Command generarCerrarSolicitudCommand() {
@@ -1274,46 +1293,65 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 				
 				// Se comenta por el nuevo cartel de cargando;
 				CerradoSSExitosoDialog.getInstance().showLoading(cerrandoSolicitud);
-				List<String> errors = null;
 
 				if(editarSSUIData.getGrupoSolicitud()!= null && editarSSUIData.getGrupoSolicitud().isTransferencia()){
-					errors = editarSSUIData.validarTransferenciaParaCerrarGenerar(datosTranferencia.getContratosSSChequeados(),true);
+					List<String> errors = editarSSUIData.validarTransferenciaParaCerrarGenerar(datosTranferencia.getContratosSSChequeados(),true);
+					finalizarGenerarCerrarSolicitudCommand(errors);
 				}else{
-					errors = editarSSUIData.validarParaCerrarGenerar(true);
-				}
-				if (errors.isEmpty()) {
-					// GE,, si genera triptico y ya lo obtuvo verifica
-					// directamente y si todavia no tiene el triptico lo va a
-					// buscar primero
-					 OperacionesRpcService.Util.getInstance().vendedorIsGeneraTriptico(ClientContext.getInstance().getVendedor().getTipoVendedor().getId(), new DefaultWaitCallback<Boolean>() {
-
-							@Override
-							public void success(Boolean result) {
-								if(result.booleanValue()&&"".equals(editarSSUIData.getNss().getText())){
-									SolicitudRpcService.Util.getInstance()
-									.obtenerSiguienteTriptico(
-											new DefaultWaitCallback<String>() {
-												@Override
-												public void success(String result) {
-													editarSSUIData.getNss()
-													.setText(result);
-													editarSSUIData.getSolicitudServicio().setNroTriptico(Long.parseLong(result));
-													editarSSUIData.getSolicitudServicio().setNumero(result);
-													verificarErrores();
-											} 
-											});
-								}else {
-									verificarErrores();
-									}
-								}
-						});
-				} else {
-					CerradoSSExitosoDialog.getInstance().hideLoading();
-					ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-					ErrorDialog.getInstance().show(errors, false);
+//					MGR - #6637 - Se modifica la forma de obtener las validaciones
+					editarSSUIData.realizarValidacionesParaCerrarGenerar(true);
+					DeferredCommand.addCommand(new IncrementalCommand() {
+						public boolean execute() {
+							if (!editarSSUIData.isMsjValidarParaCerrarGenerarObtenido()){
+								return true;
+							} 
+								
+							List<String> errors = editarSSUIData.getMensajesValidarParaCerrarGenerar();
+							finalizarGenerarCerrarSolicitudCommand(errors);
+							return false;
+						}
+					});
 				}
 			}
 		};
+	}
+	
+//	MGR - #6637 - Se trae el codigo de ejecucion del metodo "generarCerrarSolicitudCommand"
+	private void finalizarGenerarCerrarSolicitudCommand(List<String> errors){
+		if (errors.isEmpty()) {
+			// GE,, si genera triptico y ya lo obtuvo verifica
+			// directamente y si todavia no tiene el triptico lo va a
+			// buscar primero
+			
+			OperacionesRpcService.Util.getInstance().vendedorIsGeneraTriptico(
+					ClientContext.getInstance().getVendedor().getTipoVendedor().getId(), 
+					new DefaultWaitCallback<Boolean>() {
+				
+						@Override
+						public void success(Boolean result) {
+							if (result.booleanValue() && "".equals(editarSSUIData.getNss().getText())) {
+								SolicitudRpcService.Util.getInstance()
+										.obtenerSiguienteTriptico(
+												new DefaultWaitCallback<String>() {
+													@Override
+													public void success(String result) {
+														editarSSUIData.getNss()
+																.setText(result);
+														editarSSUIData.getSolicitudServicio().setNroTriptico(Long.parseLong(result));
+														editarSSUIData.getSolicitudServicio().setNumero(result);
+														verificarErrores();
+													}
+												});
+							} else {
+								verificarErrores();
+							}
+						}
+			});
+		} else {
+			CerradoSSExitosoDialog.getInstance().hideLoading();
+			ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+			ErrorDialog.getInstance().show(errors, false);
+		}
 	}
 	
 	private void verificarErrores() {
@@ -2069,38 +2107,50 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	 */
 	private void validacionPreviaFacturacion(){
 		erroresFacturacion= null;
-		erroresFacturacion = editarSSUIData.validarParaCerrarGenerar(false);
-		SolicitudRpcService.Util.getInstance().validarLineasPorSegmento(editarSSUIData.getSolicitudServicio(), 
-				new DefaultWaitCallback<Boolean>() {
-					@Override
-					public void success(Boolean result) {
-						if(!result){
-							erroresFacturacion.add("Ha superado la cantidad de lineas por cliente.");
-						}
-						if (erroresFacturacion.isEmpty()) {
-		
-							SolicitudRpcService.Util.getInstance().validarPortabilidad(editarSSUIData.getSolicitudServicio(), 
-									new DefaultWaitCallback<PortabilidadResult>() {
-										@Override
-										public void success(PortabilidadResult portabilidadResult) {
+//		MGR - #6637 - Se modifica la forma de obtener las validaciones
+		editarSSUIData.realizarValidacionesParaCerrarGenerar(false);
+		DeferredCommand.addCommand(new IncrementalCommand() {
+			public boolean execute() {
+				if (!editarSSUIData.isMsjValidarParaCerrarGenerarObtenido()){
+					return true;
+				} 
+					
+				erroresFacturacion = editarSSUIData.getMensajesValidarParaCerrarGenerar();
+
+				SolicitudRpcService.Util.getInstance().validarLineasPorSegmento(editarSSUIData.getSolicitudServicio(), 
+						new DefaultWaitCallback<Boolean>() {
+							@Override
+							public void success(Boolean result) {
+								if(!result){
+									erroresFacturacion.add("Ha superado la cantidad de lineas por cliente.");
+								}
+								if (erroresFacturacion.isEmpty()) {
 				
-											if(portabilidadResult.isConError()){
-												erroresFacturacion.addAll(portabilidadResult.getErroresDesc());
-				
-												ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-												ErrorDialog.getInstance().show(erroresFacturacion, false);
-				
-											}else {
-												validarFacturacion();
-											}
-										}
-									});
-						} else {
-							ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-							ErrorDialog.getInstance().show(erroresFacturacion, false);
-						}
-					}
-				});
+									SolicitudRpcService.Util.getInstance().validarPortabilidad(editarSSUIData.getSolicitudServicio(), 
+											new DefaultWaitCallback<PortabilidadResult>() {
+												@Override
+												public void success(PortabilidadResult portabilidadResult) {
+						
+													if(portabilidadResult.isConError()){
+														erroresFacturacion.addAll(portabilidadResult.getErroresDesc());
+						
+														ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+														ErrorDialog.getInstance().show(erroresFacturacion, false);
+						
+													}else {
+														validarFacturacion();
+													}
+												}
+											});
+								} else {
+									ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
+									ErrorDialog.getInstance().show(erroresFacturacion, false);
+								}
+							}
+						});
+				return false;
+			}
+		});
 	}
 	
 	private void validarFacturacion(){

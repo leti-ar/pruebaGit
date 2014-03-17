@@ -21,6 +21,7 @@ public interface OperacionesRpcServiceAsync {
 
 	public void cancelarOperacionEnCurso(Long idCuenta,	AsyncCallback callback);
 
+//	#6637
 	public void vendedorIsGeneraTriptico(Long idTipoVendedor,
 			AsyncCallback<Boolean> callback);
 	

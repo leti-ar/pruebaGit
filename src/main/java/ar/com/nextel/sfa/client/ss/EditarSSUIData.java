@@ -168,7 +168,13 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
     //finde analisis
 	private CheckBox retiraEnSucursal;
     private RegexTextBox numeroSSWeb; //Mejoras Perfil Telemarketing. REQ#2 - Nro de SS Web en la Solicitud de Servicio.
-    
+
+//	MGR - #6637
+	private List<String> mensajesValidarParaCerrarGenerar = new ArrayList<String>();
+	private boolean isMsjValidarParaCerrarGenerarObtenido = false;
+	private boolean vendGeneraTriptico = false;
+	private boolean isGeneraTripticoObtenido = false;
+
 	public EditarSSUIData(EditarSSUIController controller) {
 		this.controller = controller;
 		serviciosAdicionales = new ArrayList();
@@ -952,38 +958,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	 *            aceptar de la pantalla que pide los mails
 	 * @return Lista de errores
 	 */
-	Boolean genera;
-	public List<String> validarParaCerrarGenerar(boolean generacionCierreDefinitivo) {
+//	MGR - #6637 - Este metodo pasa a ser privado
+	private List<String> validarParaCerrarGenerar(boolean generacionCierreDefinitivo) {
 		recarcularValores();
-		 OperacionesRpcService.Util.getInstance().vendedorIsGeneraTriptico(ClientContext.getInstance().getVendedor().getTipoVendedor().getId(), new DefaultWaitCallback<Boolean>() {
-				@Override
-				public void success(Boolean result) {
-					genera=result;
-					//GE si genera el triptico automatico no hace las validaciones de rango.
-					if(!result.booleanValue()){
-						GwtValidator validator = new GwtValidator();
-						// Validacion rango NSS con y sin PIN
-						validator.addTarget(nss).required(
-								Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nº de Solicitud")).maxLength(10,
-										Sfa.constant().ERR_NSS_LONG());
-						GrupoSolicitudDto grupoSS = solicitudServicio.getGrupoSolicitud();
-						
-						Long numeroSS = "".equals(nss.getText()) ? null : Long.valueOf(nss.getText());
-						if (numeroSS != null && grupoSS.getRangoMinimoSinPin() != null
-								&& grupoSS.getRangoMaximoSinPin() != null && grupoSS.getRangoMinimoConPin() != null
-								&& grupoSS.getRangoMaximoConPin() != null) {
-							boolean enRangoSinPin = numeroSS >= grupoSS.getRangoMinimoSinPin()
-									&& numeroSS <= grupoSS.getRangoMaximoSinPin();
-							boolean enRangoConPin = numeroSS >= grupoSS.getRangoMinimoConPin()
-									&& numeroSS <= grupoSS.getRangoMaximoConPin();
-							if (!enRangoSinPin && !enRangoConPin) {
-								validator.addError(Sfa.constant().ERR_NNS_RANGO());
-							}
-							
-						}
-					}}});
-		 //ic
-		 GwtValidator validator= null;//TODO ESTO NO VA
+		GwtValidator validator = new GwtValidator();
+		
 		validator.addTarget(origen).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().origen()));
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
@@ -1878,4 +1857,83 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		return numeroSSWeb;
 	}
 	
+//	MGR - #6637 - Las validaciones al cerrar/generar se dividieron en dos metodos:
+//		"validarParaCerrarGenerar" y este mismo metodo (dentro del 'DeferredCommand')
+	public void realizarValidacionesParaCerrarGenerar(boolean generacionCierreDefinitivo){
+		
+		//Indico que todavia no termine la validacion y limpio los mensajes
+		isMsjValidarParaCerrarGenerarObtenido = false;
+		mensajesValidarParaCerrarGenerar = new ArrayList<String>();
+
+		//Realizo la primera parte de las validaciones
+		mensajesValidarParaCerrarGenerar = this.validarParaCerrarGenerar(generacionCierreDefinitivo);
+		
+		obtenerGeneraTriptico();
+		//Espero hasta que se haya averiguado si el vendedor genera el triptico para ejecutar la última validacion
+		DeferredCommand.addCommand(new IncrementalCommand() {
+			public boolean execute() {
+				if (!isGeneraTripticoObtenido){
+					return true;
+				} else {
+					//GE si genera el triptico automatico no hace las validaciones de rango.
+					if(!vendGeneraTriptico){
+						
+						GwtValidator validator = new GwtValidator();
+						
+						// Validacion rango NSS con y sin PIN
+						validator.addTarget(nss).required(
+								Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nº de Solicitud")).maxLength(10,
+										Sfa.constant().ERR_NSS_LONG());
+						GrupoSolicitudDto grupoSS = solicitudServicio.getGrupoSolicitud();
+						
+						Long numeroSS = "".equals(nss.getText()) ? null : Long.valueOf(nss.getText());
+						if (numeroSS != null && grupoSS.getRangoMinimoSinPin() != null
+								&& grupoSS.getRangoMaximoSinPin() != null && grupoSS.getRangoMinimoConPin() != null
+								&& grupoSS.getRangoMaximoConPin() != null) {
+							boolean enRangoSinPin = numeroSS >= grupoSS.getRangoMinimoSinPin()
+									&& numeroSS <= grupoSS.getRangoMaximoSinPin();
+							boolean enRangoConPin = numeroSS >= grupoSS.getRangoMinimoConPin()
+									&& numeroSS <= grupoSS.getRangoMaximoConPin();
+							if (!enRangoSinPin && !enRangoConPin) {
+								validator.addError(Sfa.constant().ERR_NNS_RANGO());
+							}
+						}
+						
+						validator.fillResult();
+						List<String> errores = validator.getErrors();
+						if(!errores.isEmpty())
+							mensajesValidarParaCerrarGenerar.addAll(errores);
+					}
+					//Indico que termine las validaciones
+					isMsjValidarParaCerrarGenerarObtenido = true;
+					return false;
+				}
+			}
+		});
+	}
+	
+//	MGR - #6637
+	private void obtenerGeneraTriptico(){
+		//Indico que todavia no pude obtener el valor necesario
+		isGeneraTripticoObtenido = false;
+		
+		OperacionesRpcService.Util.getInstance().vendedorIsGeneraTriptico(
+				ClientContext.getInstance().getVendedor().getTipoVendedor().getId(),
+				new DefaultWaitCallback<Boolean>() {
+
+			public void success(Boolean result) {
+				vendGeneraTriptico = result;
+				//Aviso que ya obtuve el valor
+				isGeneraTripticoObtenido = true;
+			}
+		});
+	}
+
+	public List<String> getMensajesValidarParaCerrarGenerar() {
+		return mensajesValidarParaCerrarGenerar;
+	}
+
+	public boolean isMsjValidarParaCerrarGenerarObtenido() {
+		return isMsjValidarParaCerrarGenerarObtenido;
+	}
 }

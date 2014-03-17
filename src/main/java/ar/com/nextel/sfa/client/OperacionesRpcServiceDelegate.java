@@ -46,6 +46,7 @@ public class OperacionesRpcServiceDelegate {
 		opRpcService.cancelarOperacionEnCurso(idCuenta, callback);
 	}
 	
+//	#6637
 	public void vendedorIsGeneraTriptico(Long idTipoVendedor,
 			AsyncCallback<Boolean> callback){
 		WaitWindow.show();
