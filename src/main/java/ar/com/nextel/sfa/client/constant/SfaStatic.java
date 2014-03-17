@@ -3460,4 +3460,13 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("ERR_GAMA_INFERIOR")
   String ERR_GAMA_INFERIOR();
   
+  /**
+   * Translated "El campo {1} es obligatorio".
+   * 
+   * @return translated "El campo {1} es obligatorio"
+   */
+  @DefaultStringValue("El campo {1} es obligatorio. Presionar Guardar antes de cerrar la SS")
+  @Key("ERR_CAMPO_OBLIGATORIO_GUARDAR")
+  String ERR_CAMPO_OBLIGATORIO_GUARDAR();
+  
 }

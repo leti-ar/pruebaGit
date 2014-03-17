@@ -1528,7 +1528,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		
 		GwtValidator validator = new GwtValidator();
 		validator.addTarget(nss).required(
-				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nº de Solicitud")).maxLength(10,
+				Sfa.constant().ERR_CAMPO_OBLIGATORIO_GUARDAR().replaceAll(V1, "Nº de Solicitud")).maxLength(10,
 				Sfa.constant().ERR_NSS_LONG());
 
 		GrupoSolicitudDto grupoSS = solicitudServicio.getGrupoSolicitud();
