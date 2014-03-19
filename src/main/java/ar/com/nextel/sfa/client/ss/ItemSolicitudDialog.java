@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -24,6 +25,7 @@ import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
+import com.google.gwt.dev.ModuleTabPanel.Session;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.Command;
@@ -290,7 +292,12 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 			} else if (itemSolicitudUIData.getIdsTipoSolicitudBaseCDW().contains(idTipoSolicitudBase)) {
 				tipoSolicitudPanel.setWidget(getItemSolicitudCDWUI());
 				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.VENTA_CDW);
-			} else {
+			} else if(itemSolicitudUIData.getIDsTipoSolicitudBaseVentaSim().contains(idTipoSolicitudBase)){
+				//solo sim
+				tipoSolicitudPanel.setWidget(getItemSolicitudVentaSim());
+				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.VENTA_SIM);
+			}
+			else {
 				tipoSolicitudPanel.clear();
 			}
 			
@@ -301,6 +308,26 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		}
 	}
 	
+	private SoloItemSolicitudUI getItemSolicitudVentaSim() {
+		itemSolicitudUIData.getImei().setVisible(false);
+		itemSolicitudUIData.getTerminoPago().setVisible(true);
+		itemSolicitudUIData.getCantidad().setVisible(true);
+		itemSolicitudUIData.getLocalidad().setVisible(true);
+		itemSolicitudUIData.getReservar().setVisible(false);
+		itemSolicitudUIData.getReservarHidden().setVisible(false);
+		if(ClientContext.getInstance().getVendedor().getTipoVendedor().isSimAutomatico())
+			itemSolicitudUIData.getSim().setVisible(true);	
+		else
+			itemSolicitudUIData.getSim().setVisible(false);
+//		itemSolicitudUIData.getTipoPlan().getSelectedIndex();
+//		if (soloItemSolicitudUI == null) {
+//			soloItemSolicitudUI = new SoloItemSolicitudUI(itemSolicitudUIData);
+//		}
+//		itemSolicitudUIData.get
+//		soloItemSolicitudUI.
+		return getSoloItemSolicitudUI();
+	}
+
 	private void loadUIData(final TipoSolicitudDto tiposSolicitud) {
 		//#1757 - La ListaPrecios se carga según el segmento del cliente
 //		if (tiposSolicitudes.get(tiposSolicitud.getId()).getListasPrecios() == null) {

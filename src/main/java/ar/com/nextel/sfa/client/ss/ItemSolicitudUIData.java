@@ -102,7 +102,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private List idsTipoSolicitudBaseItem;
 	private List idsTipoSolicitudBaseActivacion;
 	private List idsTipoSolicitudBaseCDW;
-	
+	private List idsTipoSolicitudBaseVentaSim;
 	private List<SubsidiosDto> subsidios = new ArrayList<SubsidiosDto>();
 
 	private LineaSolicitudServicioDto lineaSolicitudServicio;
@@ -124,6 +124,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	public static final int ITEM_PLAN = 1;
 	public static final int ACTIVACION = 2;
 	public static final int VENTA_CDW = 3;
+	public static final int SOLO_SIN = 4;
+	public static final int VENTA_SIM = 5;
 	private static final long CUENTA_CORRIENTE_VENC_CICLO_ID = 33;
 	private static final String v1 = "\\{1\\}";
 	private static final String v2 = "\\{2\\}";
@@ -361,7 +363,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		idsTipoSolicitudBaseItem = new ArrayList<Long>();
 		idsTipoSolicitudBaseActivacion = new ArrayList<Long>();
 		idsTipoSolicitudBaseCDW = new ArrayList<Long>();
-
+		idsTipoSolicitudBaseVentaSim = new ArrayList<Long>();
 		setIdsTipoSolicitudBaseItemYPlanPermanencia(Long.valueOf(1)); // 1-TIPO_SOLICITUD_BASE_VENTA_EQUIPOS
 		
 		idsTipoSolicitudBaseItemYPlan.add(Long.valueOf(getIdsTipoSolicitudBaseItemYPlanPermanencia())); // 1-TIPO_SOLICITUD_BASE_VENTA_EQUIPOS
@@ -386,6 +388,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		idsTipoSolicitudBaseActivacion.add(Long.valueOf(getIdTipoSolicitudBaseActivacionOnline())); // 17-TIPO_SOLICITUD_BASE_ACTIVACION_ONLINE
 		
 		idsTipoSolicitudBaseCDW.add(Long.valueOf(3)); // 3-TIPO_SOLICITUD_BASE_VENTA_CDW
+		
+		idsTipoSolicitudBaseVentaSim.add(Long.valueOf(18)); //18-TIPO_SOLICITUD_BASE_VENTA_SIMCARD
 	}
 	
 	public void onClick(ClickEvent event) {
@@ -1042,7 +1046,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		validator.addTarget(listaPrecio).required(
 				Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Lista de Precios"));
 		validator.addTarget(item).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Item"));
-		if (tipoEdicion == ITEM_PLAN || tipoEdicion == ACTIVACION || tipoEdicion == VENTA_CDW) {
+		if (tipoEdicion == ITEM_PLAN || tipoEdicion == ACTIVACION || tipoEdicion == VENTA_CDW || tipoEdicion == VENTA_SIM) {
 			validator.addTarget(tipoPlan).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Tipo Plan"));
 			validator.addTarget(plan).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Plan"));
@@ -1537,6 +1541,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			fullPrice.setVisible(false);
 			fullPrice.setValue(false);
 		}
+	}
+
+	public List getIDsTipoSolicitudBaseVentaSim() {
+		return idsTipoSolicitudBaseVentaSim;
 	}
 	
 }
