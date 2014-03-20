@@ -23,7 +23,6 @@ import ar.com.nextel.sfa.client.dto.SubsidiosDto;
 import ar.com.nextel.sfa.client.dto.TerminoPagoValidoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
-import ar.com.nextel.sfa.client.dto.TipoTelefoniaDto;
 import ar.com.nextel.sfa.client.dto.TipoVendedorDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
@@ -1278,11 +1277,23 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 			lineaSolicitudServicio.setNumeroSimcard(sim.getText());
 			lineaSolicitudServicio.setCantidad(1);
-		} else {
+		} 
+		else if(tipoEdicion == VENTA_SIM){
+			TipoVendedorDto tipoVend = ClientContext.getInstance().getVendedor().getTipoVendedor();
+			if(tipoVend.isIngresaSIM()){
+				lineaSolicitudServicio.setNumeroSimcard(sim.getText());
+				lineaSolicitudServicio.setCantidad(1);
+			}else{
+				lineaSolicitudServicio.setNumeroSimcard(null);
+				lineaSolicitudServicio.setCantidad(Integer.parseInt(cantidad.getText()));
+			}
+		}else {
 			lineaSolicitudServicio.setCantidad(Integer.parseInt(cantidad.getText()));
-
 		}
-		if (tipoEdicion == ITEM_PLAN || tipoEdicion == ACTIVACION || tipoEdicion == VENTA_CDW) {
+		
+		
+		if (tipoEdicion == ITEM_PLAN || tipoEdicion == ACTIVACION 
+				|| tipoEdicion == VENTA_CDW || tipoEdicion == VENTA_SIM) {
 			lineaSolicitudServicio.setAlias(alias.getText());
 			lineaSolicitudServicio.setLocalidad((LocalidadDto) localidad.getSelectedItem());
 			if (tipoEdicion != VENTA_CDW) {
