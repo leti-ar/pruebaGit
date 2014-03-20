@@ -24,6 +24,7 @@ import ar.com.nextel.sfa.client.dto.TerminoPagoValidoDto;
 import ar.com.nextel.sfa.client.dto.TipoPlanDto;
 import ar.com.nextel.sfa.client.dto.TipoSolicitudDto;
 import ar.com.nextel.sfa.client.dto.TipoTelefoniaDto;
+import ar.com.nextel.sfa.client.dto.TipoVendedorDto;
 import ar.com.nextel.sfa.client.dto.VendedorDto;
 import ar.com.nextel.sfa.client.enums.PermisosEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
@@ -389,7 +390,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		
 		idsTipoSolicitudBaseCDW.add(Long.valueOf(3)); // 3-TIPO_SOLICITUD_BASE_VENTA_CDW
 		
-		idsTipoSolicitudBaseVentaSim.add(Long.valueOf(18)); //18-TIPO_SOLICITUD_BASE_VENTA_SIMCARD
+		idsTipoSolicitudBaseVentaSim.add(Long.valueOf(18)); //18-TIPO_SOLICITUD_BASE_VENTA_SIMCARD_SERVICIO
+		idsTipoSolicitudBaseVentaSim.add(Long.valueOf(19)); //19-TIPO_SOLICITUD_BASE_Venta_SIMCARD
 	}
 	
 	public void onClick(ClickEvent event) {
@@ -1089,7 +1091,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 		}
 		
-		if (controller.getEditarSSUIData().getRetiraEnSucursal().getValue()) {
+		if (controller.getEditarSSUIData().getRetiraEnSucursal().getValue()
+				&& tipoEdicion != VENTA_SIM) {
 			if (imeiRetiroEnSucursal.isEnabled()) {
 				validator.addTarget(imeiRetiroEnSucursal).required(
 						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "IMEI")).regEx(
@@ -1100,6 +1103,15 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM")).regEx(
 						simMensajeRegex.getMensaje(), simMensajeRegex.getRegexPattern());
 			}
+		}
+		
+//		MGR**********
+		if(tipoEdicion == VENTA_SIM){
+			validator.addTarget(terminoPago).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Termino de Pago"));
+			
+			TipoVendedorDto tipoVend = ClientContext.getInstance().getVendedor().getTipoVendedor();
+			if(tipoVend.isIngresaSIM())
+				validator.addTarget(sim).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM"));
 		}
 		
 		return validator.fillResult().getErrors();

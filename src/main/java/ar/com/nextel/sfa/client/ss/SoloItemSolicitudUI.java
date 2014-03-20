@@ -1,6 +1,8 @@
 package ar.com.nextel.sfa.client.ss;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
+import ar.com.nextel.sfa.client.context.ClientContext;
+import ar.com.nextel.sfa.client.dto.TipoVendedorDto;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -33,9 +35,13 @@ public class SoloItemSolicitudUI extends Composite {
 	public static final int LAYOUT_CON_TOTAL = 2;
 	public static final int LAYOUT_ACTIVACION_ONLINE = 3;
 	public static final int LAYOUT_SIMPLE_PERMANENCIA = 4;
+//	MGR*********
+	public static final int LAYOUT_VENTA_SOLO_SIM = 5;
 	private FlexTable imeiSimRetiroEnSucursal;
 	private boolean visibleImeiSimRetiroSucursal;
 	
+//	MGR*****
+	private FlexTable ventaSimIngSim;
 	
 	
 	public SoloItemSolicitudUI(ItemSolicitudUIData itemSolicitudUIData) {
@@ -168,6 +174,18 @@ public class SoloItemSolicitudUI extends Composite {
 		imeiSimRetiroEnSucursal.setVisible(false);
 		mainPanel.add(imeiSimRetiroEnSucursal);
 		
+//		MGR*********
+		ventaSimIngSim = new FlexTable();
+		ventaSimIngSim.addStyleName("layout");
+		ventaSimIngSim.getCellFormatter().setWidth(0, 0, "100px");
+		ventaSimIngSim.getCellFormatter().setWidth(0, 1, "100px");
+		ventaSimIngSim.setVisible(false);
+		ventaSimIngSim.setHTML(0, 0, Sfa.constant().simReq());
+		ventaSimIngSim.setWidget(0, 1, itemSolicitudData.getSim());
+		ventaSimIngSim.setWidget(0, 2, itemSolicitudData.getVerificarSimWrapper());
+		ventaSimIngSim.getFlexCellFormatter().setColSpan(0, 1, 2);
+		mainPanel.add(ventaSimIngSim);
+		
 		visibleImeiSimRetiroSucursal = false;
 	}
 
@@ -245,6 +263,19 @@ public class SoloItemSolicitudUI extends Composite {
 			precioCantidad.setVisible(false);
 			terminoPago.setVisible(false);
 			permanencia.setVisible(true);
+			break;
+		
+		case LAYOUT_VENTA_SOLO_SIM:
+			TipoVendedorDto tipoVen = ClientContext.getInstance().getVendedor().getTipoVendedor();
+			if(tipoVen.isIngresaSIM())
+				ventaSimIngSim.setVisible(true);
+			else
+				ventaSimIngSim.setVisible(false);
+			activacionImei.setVisible(false);
+			activacionModelo.setVisible(false);
+			activacionSimSeriePin.setVisible(false);
+			precioCantidad.setVisible(true);
+			precioCantidad.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
 			break;
 			
 		default:

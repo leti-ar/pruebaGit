@@ -49,6 +49,8 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	//MGR - #1039
 	//private ItemYPlanSolicitudUI itemYPlanSolicitudUI;
 	private static ItemYPlanSolicitudUI itemYPlanSolicitudUI;
+//	MGR****
+	private static VentaSIMSolicitudUI ventaSIMSolicitudUI;
 	private static TipoPlanDto tipoPlanPorDefecto = null;
 	
 	private ItemSolicitudUIData itemSolicitudUIData;
@@ -294,7 +296,7 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.VENTA_CDW);
 			} else if(itemSolicitudUIData.getIDsTipoSolicitudBaseVentaSim().contains(idTipoSolicitudBase)){
 				//solo sim
-				tipoSolicitudPanel.setWidget(getItemSolicitudVentaSim());
+				tipoSolicitudPanel.setWidget(getItemSolicitudVentaSimUI());
 				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.VENTA_SIM);
 			}
 			else {
@@ -308,26 +310,6 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		}
 	}
 	
-	private SoloItemSolicitudUI getItemSolicitudVentaSim() {
-		itemSolicitudUIData.getImei().setVisible(false);
-		itemSolicitudUIData.getTerminoPago().setVisible(true);
-		itemSolicitudUIData.getCantidad().setVisible(true);
-		itemSolicitudUIData.getLocalidad().setVisible(true);
-		itemSolicitudUIData.getReservar().setVisible(false);
-		itemSolicitudUIData.getReservarHidden().setVisible(false);
-		if(ClientContext.getInstance().getVendedor().getTipoVendedor().isSimAutomatico())
-			itemSolicitudUIData.getSim().setVisible(true);	
-		else
-			itemSolicitudUIData.getSim().setVisible(false);
-//		itemSolicitudUIData.getTipoPlan().getSelectedIndex();
-//		if (soloItemSolicitudUI == null) {
-//			soloItemSolicitudUI = new SoloItemSolicitudUI(itemSolicitudUIData);
-//		}
-//		itemSolicitudUIData.get
-//		soloItemSolicitudUI.
-		return getSoloItemSolicitudUI();
-	}
-
 	private void loadUIData(final TipoSolicitudDto tiposSolicitud) {
 		//#1757 - La ListaPrecios se carga según el segmento del cliente
 //		if (tiposSolicitudes.get(tiposSolicitud.getId()).getListasPrecios() == null) {
@@ -359,6 +341,16 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		itemYPlanSolicitudUI.load();
 		return itemYPlanSolicitudUI;
 	}
+	
+//	MGR********
+	private VentaSIMSolicitudUI getVentaSIMSolicitudUI() {
+		if (ventaSIMSolicitudUI == null) {
+			ventaSIMSolicitudUI = new VentaSIMSolicitudUI(getSoloItemSolicitudUI(), itemSolicitudUIData,controller);
+		}
+		soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_VENTA_SOLO_SIM, controller);
+		ventaSIMSolicitudUI.load();
+		return ventaSIMSolicitudUI;
+	}
 
 	private ItemYPlanSolicitudUI getItemYPlanSolicitudPermanenciaUI() {
 		if (itemYPlanSolicitudUI == null) {
@@ -372,6 +364,11 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 
 	private ItemYPlanSolicitudUI getItemSolicitudActivacionUI(boolean online) {
 		return getItemYPlanSolicitudUI().setActivacionVisible(online);
+	}
+	
+//	MGR*********
+	private VentaSIMSolicitudUI getItemSolicitudVentaSimUI() {
+		return getVentaSIMSolicitudUI();
 	}
 
 	private ItemYPlanSolicitudUI getItemSolicitudCDWUI() {
