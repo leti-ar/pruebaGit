@@ -267,8 +267,12 @@ public class SoloItemSolicitudUI extends Composite {
 		
 		case LAYOUT_VENTA_SOLO_SIM:
 			TipoVendedorDto tipoVen = ClientContext.getInstance().getVendedor().getTipoVendedor();
-			if(tipoVen.isIngresaSIM())
+			if(tipoVen.isIngresaSIM()) { //#6678
 				ventaSimIngSim.setVisible(true);
+				itemSolicitudData.getCantidad().setText("1");
+				itemSolicitudData.getCantidad().setEnabled(false);
+				itemSolicitudData.getCantidad().setReadOnly(true);
+			}
 			else
 				ventaSimIngSim.setVisible(false);
 			activacionImei.setVisible(false);
