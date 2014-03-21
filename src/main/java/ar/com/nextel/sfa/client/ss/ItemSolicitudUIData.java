@@ -167,7 +167,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		this.imeiMensajeRegex = new MensajeRegex(RegularExpressionConstants.getCantidadNumerosFijo(15),Sfa.constant().ERR_LENGHT().replaceAll(v1, "IMEI").replaceAll(v2, "15"));
 		fields.add(imeiRetiroEnSucursal = new VerificationRegexTextBox(RegularExpressionConstants.getNumerosLimitado(15),this.imeiMensajeRegex));
 		fields.add(modeloEq = new ListBox());
-		fields.add(item = new ListBox(" "));
+		fields.add(item = new ListBox()); //#0006691
 		fields.add(terminoPago = new ListBox());
 		fields.add(sim = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(15)));
 		this.simMensajeRegex = new MensajeRegex(RegularExpressionConstants.getCantidadNumerosFijo(15),Sfa.constant().ERR_LENGHT().replaceAll(v1, "SIM").replaceAll(v2, "15"));
