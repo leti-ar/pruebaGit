@@ -167,7 +167,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		this.imeiMensajeRegex = new MensajeRegex(RegularExpressionConstants.getCantidadNumerosFijo(15),Sfa.constant().ERR_LENGHT().replaceAll(v1, "IMEI").replaceAll(v2, "15"));
 		fields.add(imeiRetiroEnSucursal = new VerificationRegexTextBox(RegularExpressionConstants.getNumerosLimitado(15),this.imeiMensajeRegex));
 		fields.add(modeloEq = new ListBox());
-		fields.add(item = new ListBox()); //#0006691
+		//Se deshace la solucion dada al #0006691 por que genera que no se carguen correctamente el item
+		fields.add(item = new ListBox(" "));
 		fields.add(terminoPago = new ListBox());
 		fields.add(sim = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(15)));
 		this.simMensajeRegex = new MensajeRegex(RegularExpressionConstants.getCantidadNumerosFijo(15),Sfa.constant().ERR_LENGHT().replaceAll(v1, "SIM").replaceAll(v2, "15"));
@@ -1224,14 +1225,18 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 			sim.setText(linea.getNumeroSimcard());
 		}
-		//Desc de Despacho
-		if (imeiRetiroEnSucursal.getText()!=null) {
-			imeiRetiroEnSucursal.setText(linea.getNumeroIMEI());
+		
+		if (controller.getEditarSSUIData().getRetiraEnSucursal().getValue()
+				&& tipoEdicion != VENTA_SIM) {
+			//Desc de Despacho
+			if (imeiRetiroEnSucursal.getText()!=null) {
+				imeiRetiroEnSucursal.setText(linea.getNumeroIMEI());
+			}
+			if (simRetiroEnSucursal.getText()!=null) {
+				simRetiroEnSucursal.setText(linea.getNumeroSimcard());
+			}
+			//Fin de Desc de Despacho
 		}
-		if (simRetiroEnSucursal.getText()!=null) {
-			simRetiroEnSucursal.setText(linea.getNumeroSimcard());
-		}
-		//Fin de Desc de Despacho
 		
 		// TODO: Portabilidad
 		portabilidadPanel.resetearPortabilidad();
@@ -1280,8 +1285,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 			lineaSolicitudServicio.setNumeroSimcard(sim.getText());
 			lineaSolicitudServicio.setCantidad(1);
-		} 
-		else if(tipoEdicion == VENTA_SIM){
+		
+		} else if(tipoEdicion == VENTA_SIM){
 			TipoVendedorDto tipoVend = ClientContext.getInstance().getVendedor().getTipoVendedor();
 			if(tipoVend.isIngresaSIM()){
 				lineaSolicitudServicio.setNumeroSimcard(sim.getText());
@@ -1381,17 +1386,20 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		lineaSolicitudServicio.setPortabilidad(portabilidadPanel.getSolicitudPortabilidad(lineaSolicitudServicio));
 		portabilidadPanel.setSolicitudPortabilidad(null);
 		 
-		//Desc de Despacho, esto se creo para no tocar el compartamiento
-		//de imei y sim que ya existia en la activacion 
-		if(!FormUtils.fieldEmpty(imeiRetiroEnSucursal)){
-			lineaSolicitudServicio.setNumeroIMEI(imeiRetiroEnSucursal.getText());
-		}
-		if(!FormUtils.fieldEmpty(simRetiroEnSucursal)){
-			lineaSolicitudServicio.setNumeroSimcard(simRetiroEnSucursal.getText());
-			
-		}
+		
+		if (controller.getEditarSSUIData().getRetiraEnSucursal().getValue()
+				&& tipoEdicion != VENTA_SIM) {
+			//Desc de Despacho, esto se creo para no tocar el compartamiento
+			//de imei y sim que ya existia en la activacion
+			if(!FormUtils.fieldEmpty(imeiRetiroEnSucursal)){
+				lineaSolicitudServicio.setNumeroIMEI(imeiRetiroEnSucursal.getText());
+			}
+			if(!FormUtils.fieldEmpty(simRetiroEnSucursal)){
+				lineaSolicitudServicio.setNumeroSimcard(simRetiroEnSucursal.getText());
+			}
 //		controller.tieneLineasSolicitud();
-		//Fin de desc de despacho
+			//Fin de desc de despacho
+		}
 		return lineaSolicitudServicio;
 		
 	}

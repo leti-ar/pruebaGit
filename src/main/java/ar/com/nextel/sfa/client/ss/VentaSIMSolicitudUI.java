@@ -92,11 +92,11 @@ public class VentaSIMSolicitudUI extends Composite {
 		roamingTable.setWidget(0, 0, itemSolicitudUIData.getDdn());
 		roamingTable.setWidget(0, 1, itemSolicitudUIData.getDdi());
 		roamingTable.setWidget(0, 2, itemSolicitudUIData.getRoaming());
-//		MGR*****
-//		roamingTable.setWidget(0, 3, itemSolicitudUIData.getPortabilidad());
+//		MGR - #6690
+		roamingTable.setWidget(0, 3, itemSolicitudUIData.getPortabilidad());
 		mainPanel.add(roamingTable);
-//		MGR*****
-//		mainPanel.add(itemSolicitudUIData.getPortabilidadPanel());
+//		MGR - #6690
+		mainPanel.add(itemSolicitudUIData.getPortabilidadPanel());
 	}
 
 	private Widget getReservaPanel() {
@@ -130,41 +130,41 @@ public class VentaSIMSolicitudUI extends Composite {
 		roamingTable.setVisible(true);
 	}
 
-	public VentaSIMSolicitudUI setActivacionVisible(boolean online) {
-		if(online) {
-			cppAliasReservaTable.getCellFormatter().setVisible(0, 0, false);
-			cppAliasReservaTable.getCellFormatter().setVisible(0, 1, false);
-			cppAliasReservaTable.getCellFormatter().setVisible(0, 2, false);
-			cppAliasReservaTable.getCellFormatter().setVisible(0, 3, false);
-//			MGR**** ver esto!!
-			soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_ACTIVACION_ONLINE);
-		} else {
-			soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_ACTIVACION);
-		}
-		return this;
-	}
+//	public VentaSIMSolicitudUI setActivacionVisible(boolean online) {
+//		if(online) {
+//			cppAliasReservaTable.getCellFormatter().setVisible(0, 0, false);
+//			cppAliasReservaTable.getCellFormatter().setVisible(0, 1, false);
+//			cppAliasReservaTable.getCellFormatter().setVisible(0, 2, false);
+//			cppAliasReservaTable.getCellFormatter().setVisible(0, 3, false);
+////			MGR**** ver esto!!
+//			soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_ACTIVACION_ONLINE);
+//		} else {
+//			soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_ACTIVACION);
+//		}
+//		return this;
+//	}
 	
-	public VentaSIMSolicitudUI setCDWVisible() {
-		aliasTable.setWidget(0, 1, itemSolicitudUIData.getAlias());
-		
-		cppAliasReservaTable.getCellFormatter().setVisible(0, 0, false);
-		cppAliasReservaTable.getCellFormatter().setVisible(0, 1, false);
-		cppAliasReservaTable.getCellFormatter().setVisible(0, 2, false);
-		cppAliasReservaTable.getCellFormatter().setVisible(0, 3, false);
-		cppAliasReservaTable.getCellFormatter().setVisible(1, 0, false);
-		cppAliasReservaTable.getCellFormatter().setVisible(1, 1, false);
-		cppAliasReservaTable.setVisible(false);
-		
-		aliasTable.getCellFormatter().setVisible(0, 0, true);
-		aliasTable.getCellFormatter().setVisible(0, 1, true);
-		aliasTable.setVisible(true);
-		
-		roamingTable.getCellFormatter().setVisible(0, 0, false);
-		roamingTable.getCellFormatter().setVisible(0, 1, false);
-		roamingTable.getCellFormatter().setVisible(0, 2, false);
-		roamingTable.setVisible(false);
-		return this;
-	}
+//	public VentaSIMSolicitudUI setCDWVisible() {
+//		aliasTable.setWidget(0, 1, itemSolicitudUIData.getAlias());
+//		
+//		cppAliasReservaTable.getCellFormatter().setVisible(0, 0, false);
+//		cppAliasReservaTable.getCellFormatter().setVisible(0, 1, false);
+//		cppAliasReservaTable.getCellFormatter().setVisible(0, 2, false);
+//		cppAliasReservaTable.getCellFormatter().setVisible(0, 3, false);
+//		cppAliasReservaTable.getCellFormatter().setVisible(1, 0, false);
+//		cppAliasReservaTable.getCellFormatter().setVisible(1, 1, false);
+//		cppAliasReservaTable.setVisible(false);
+//		
+//		aliasTable.getCellFormatter().setVisible(0, 0, true);
+//		aliasTable.getCellFormatter().setVisible(0, 1, true);
+//		aliasTable.setVisible(true);
+//		
+//		roamingTable.getCellFormatter().setVisible(0, 0, false);
+//		roamingTable.getCellFormatter().setVisible(0, 1, false);
+//		roamingTable.getCellFormatter().setVisible(0, 2, false);
+//		roamingTable.setVisible(false);
+//		return this;
+//	}
 	
 //	MGR*********
 //	//MGR - #1039

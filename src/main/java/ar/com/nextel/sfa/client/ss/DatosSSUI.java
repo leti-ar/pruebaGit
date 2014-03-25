@@ -729,7 +729,8 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			Command aceptarCommand = new Command() {
 				public void execute() {
 					LineaSolicitudServicioDto lineaSolicitudServicio = itemSolicitudDialog.getItemSolicitudUIData().getLineaSolicitudServicio();
-					if(!itemSolicitudDialog.getItemSolicitudUIData().getPortabilidadPanel().getChkPortabilidad().getValue())lineaSolicitudServicio.setPortabilidad(null);
+					if(!itemSolicitudDialog.getItemSolicitudUIData().getPortabilidadPanel().getChkPortabilidad().getValue())
+						lineaSolicitudServicio.setPortabilidad(null);
 					addLineaSolicitudServicio(lineaSolicitudServicio);
 					
 					// Genera los numeros de solicitudes de portabilidad

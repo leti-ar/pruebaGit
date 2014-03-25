@@ -390,7 +390,13 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		itemSolicitudUIData.setLineaSolicitudServicio(linea);
 
 		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
-		if(!instancias.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS).equals(controller.getEditarSSUIData().getGrupoSolicitud().getId())){
+		if(!instancias.get(GrupoSolicitudDto.ID_EQUIPOS_ACCESORIOS).
+				equals(controller.getEditarSSUIData().getGrupoSolicitud().getId()) &&
+//				MGR - #6690
+				!instancias.get(GrupoSolicitudDto.ID_GRUPO_VTA_SIM_POSPAGO).
+				equals(controller.getEditarSSUIData().getGrupoSolicitud().getId()) &&
+				!instancias.get(GrupoSolicitudDto.ID_GRUPO_VTA_SIM_SERV_POSPAGO).
+				equals(controller.getEditarSSUIData().getGrupoSolicitud().getId())){
 			itemSolicitudUIData.getPortabilidad().setEnabled(false);
 			itemSolicitudUIData.getPortabilidad().setVisible(false);
 		}else{

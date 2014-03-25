@@ -15,8 +15,9 @@ public class GrupoSolicitudDto implements IsSerializable {
 	//MGR - #1039
 	public static final String DESPACHO_TEL_ANEXO = "GRUPO7";
 	public static final String ID_TRANSFERENCIA = "GRUPO5";
-	private static final Object ID_GRUPO_VTA_SIM_POSPAGO = "GRUPO_VTA_SIM_POSPAGO";
-	private static final Object ID_GRUPO_VTA_SIM_SERV_POSPAGO = "GRUPO_VTA_SIM_SERV_POSPAGO";
+//	MGR - #6690
+	public static final Object ID_GRUPO_VTA_SIM_POSPAGO = "GRUPO_VTA_SIM_POSPAGO";
+	public static final Object ID_GRUPO_VTA_SIM_SERV_POSPAGO = "GRUPO_VTA_SIM_SERV_POSPAGO";
 
 	private Long id;
 	private String descripcion;
