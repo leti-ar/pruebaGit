@@ -1109,8 +1109,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			validator.addTarget(terminoPago).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Termino de Pago"));
 			
 			TipoVendedorDto tipoVend = ClientContext.getInstance().getVendedor().getTipoVendedor();
-			if(tipoVend.isIngresaSIM())
-				validator.addTarget(sim).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM"));
+			if(tipoVend.isIngresaSIM()) //#6702
+				validator.addTarget(sim).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM")).length(15,Sfa.constant().ERR_LENGHT().replaceAll(v1, "SIM").replaceAll(v2, "15"));;
 		}
 		
 		return validator.fillResult().getErrors();
