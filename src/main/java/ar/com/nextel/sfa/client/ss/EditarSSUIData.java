@@ -699,8 +699,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //					format(solicitudServicio.getFechaEstado()) : "");
 //		}
 		//Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
-		if (ClientContext.getInstance().getVendedor().isTelemarketing()
-				&& solicitud.getGrupoSolicitud().isEquiposAccesorios()) {
+		if (ClientContext.getInstance().getVendedor().isTelemarketing() &&
+				(solicitud.getGrupoSolicitud().isEquiposAccesorios() ||
+//						MGR - #6719
+						solicitud.getGrupoSolicitud().isVtaSoloSIM())) {
 			numeroSSWeb.setText(solicitud.getNumeroSSWeb());
 		}
 	}
@@ -821,8 +823,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //			solicitudServicio.setClienteHistorico(clienteHistorico);
 //		}
 //		Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
-		if (ClientContext.getInstance().getVendedor().isTelemarketing()
-				&& solicitudServicio.getGrupoSolicitud().isEquiposAccesorios()) {
+		if (ClientContext.getInstance().getVendedor().isTelemarketing() && 
+				(solicitudServicio.getGrupoSolicitud().isEquiposAccesorios()
+//						MGR - #6719
+						|| solicitudServicio.getGrupoSolicitud().isVtaSoloSIM())) {
 			solicitudServicio.setNumeroSSWeb(numeroSSWeb.getText());
 		}		
 		return solicitudServicio;
@@ -1040,8 +1044,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //		}
 		
 //		Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
-		if (ClientContext.getInstance().getVendedor().isTelemarketing()
-				&& solicitudServicio.getGrupoSolicitud().isEquiposAccesorios()) {
+		if (ClientContext.getInstance().getVendedor().isTelemarketing() &&
+				(solicitudServicio.getGrupoSolicitud().isEquiposAccesorios() ||
+//						MGR - #6719
+						solicitudServicio.getGrupoSolicitud().isVtaSoloSIM())) {
 			OrigenSolicitudDto origenSolicitudDto = (OrigenSolicitudDto) origen.getSelectedItem();
 			if (origenSolicitudDto != null && origenSolicitudDto.getUsaNumeroSSWeb()) {
 				validator.addTarget(numeroSSWeb).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nro SS Web"));
@@ -1356,6 +1362,14 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	public boolean isTRANSFERENCIA() {
 		if (solicitudServicio != null && solicitudServicio.getGrupoSolicitud() != null) {
 		    return solicitudServicio.getGrupoSolicitud().isTransferencia();
+		}
+		return false;
+	}
+	
+//	MGR - #6719
+	public boolean isVentaSoloSIM(){
+		if (solicitudServicio != null && solicitudServicio.getGrupoSolicitud() != null) {
+			return solicitudServicio.getGrupoSolicitud().isVtaSoloSIM();
 		}
 		return false;
 	}

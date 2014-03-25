@@ -232,7 +232,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		}
 		
 //		Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
-		if (ClientContext.getInstance().getVendedor().isTelemarketing()	&& editarSSUIData.isEquiposAccesorios()) {
+		if (ClientContext.getInstance().getVendedor().isTelemarketing()	&& 
+//				MGR - #6719
+				(editarSSUIData.isEquiposAccesorios() || editarSSUIData.isVentaSoloSIM())) {
 			nnsLayout.setHTML(0, 14, Sfa.constant().nroSSWeb());
 			nnsLayout.setWidget(0, 15, editarSSUIData.getNumeroSSWeb());
 		} else {
