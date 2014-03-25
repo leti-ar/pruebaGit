@@ -914,7 +914,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	private boolean existeSIM_IMEIRepetidas(GwtValidator validator) {
 		boolean haySIM_IMEIRepetidas = false;
-		if (solicitudServicio.getRetiraEnSucursal()) {
+		if (solicitudServicio.getRetiraEnSucursal() || solicitudServicio.getGrupoSolicitud().isVtaSoloSIM()) {//#6705
 			for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
 				int cantIMEI = 0;
 				int cantSIM = 0;
@@ -1046,6 +1046,11 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			if (origenSolicitudDto != null && origenSolicitudDto.getUsaNumeroSSWeb()) {
 				validator.addTarget(numeroSSWeb).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nro SS Web"));
 			}
+		}
+		
+		//#6705
+		if(existeSIM_IMEIRepetidas(validator)){
+			validator.addError("No puede tener la misma SIM o IMEI en mas de una linea");
 		}
 		
 		validator.fillResult();

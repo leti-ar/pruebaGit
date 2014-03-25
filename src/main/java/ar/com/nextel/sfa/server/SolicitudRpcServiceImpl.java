@@ -1126,7 +1126,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			}
 			
 //			MGR - Refactorizacion del cierre
-			if(!result.isError() && resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO){
+			if((!result.isError() && resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO) 
+					|| (!result.isError() && solicitudServicio.getGrupoSolicitud().isVtaSoloSIM())) {//#6705
 				
 //				MGR - Refactorizacion del cierre
 				validarSIMRepetidos(solicitudServicio, result);
@@ -1239,6 +1240,23 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		}
 		AppLogger.info(accion + " de SS de id=" + solicitudServicioDto.getId() + " finalizado.");
 		return result;
+	}
+
+	private void validarSIMRepetidosMismaSS(SolicitudServicio solicitudServicio, GeneracionCierreResultDto result) {
+		String mensaje = "";
+		for (Iterator iterator = solicitudServicio.getLineas().iterator(); iterator.hasNext();) {
+			LineaSolicitudServicio lineaSS = (LineaSolicitudServicio) iterator.next();
+			for (Iterator iterator2 = solicitudServicio.getLineas().iterator(); iterator2.hasNext();) {
+				LineaSolicitudServicio lineaSS2 = (LineaSolicitudServicio) iterator2.next();
+				if (lineaSS.getNumeroSimcard().equals(lineaSS2.getNumeroSimcard())) {
+					mensaje += "No se puede usar la misma SIM más de 1 vez. Número: " + lineaSS.getNumeroSimcard();
+				}
+			}
+		}
+		Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.SIM_REPETIDO);
+		message.addParameters(new Object[] {mensaje});
+		result.addMessage(message.getDescription());
+		result.setError(true);
 	}
 
 //	MGR - Refactorizacion del cierre

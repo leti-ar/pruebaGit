@@ -1110,8 +1110,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			
 			TipoVendedorDto tipoVend = ClientContext.getInstance().getVendedor().getTipoVendedor();
 			if(tipoVend.isIngresaSIM()) //#6702
-				if (!sim.getText().contains(RegularExpressionConstants.numeros)) {
-					validator.addError("El campo SIM sólo debe contener números.");
+				if (!"".equals(sim.getText())) {
+					validator.addTarget(sim).numericPositiveOrZero("El campo SIM sólo debe contener números.");
 				}
 				validator.addTarget(sim).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM")).length(15,Sfa.constant().ERR_LENGHT().replaceAll(v1, "SIM").replaceAll(v2, "15"));;
 		}
