@@ -2092,7 +2092,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			//No tiene factura asociada
 			else{
 				showGuardar();
-				if(solicitud.getGrupoSolicitud().isEquiposAccesorios()
+//				MGR - #6706
+				if( (solicitud.getGrupoSolicitud().isEquiposAccesorios() ||
+						solicitud.getGrupoSolicitud().isVtaSoloSIM()) 
 						&& ClientContext.getInstance().getVendedor().isVendedorSalon()
 						&& event.isRetiraEnSucursal()
 						&& !solicitud.isCuentaCorriene()){

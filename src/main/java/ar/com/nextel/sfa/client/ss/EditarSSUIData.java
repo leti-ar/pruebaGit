@@ -570,8 +570,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 		solicitudServicio = solicitud;
 		nss.setText(solicitud.getNumero());
-	
-		if(solicitud.getGrupoSolicitud().isEquiposAccesorios() && solicitud.getRetiraEnSucursal()!= null){
+		
+//		MGR - #6706
+		if(solicitud.getRetiraEnSucursal()!= null && 
+				(solicitud.getGrupoSolicitud().isEquiposAccesorios() || solicitud.getGrupoSolicitud().isVtaSoloSIM())){
 			retiraEnSucursal.setValue(solicitud.getRetiraEnSucursal());
 		}
 		
@@ -803,7 +805,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			solicitudServicio.setEmail(email.getText());
 		}
 		
-		if(solicitudServicio.getGrupoSolicitud().isEquiposAccesorios()){
+//		MGR - #6706
+		if(solicitudServicio.getGrupoSolicitud().isEquiposAccesorios() ||
+				solicitudServicio.getGrupoSolicitud().isVtaSoloSIM()){
 			solicitudServicio.setRetiraEnSucursal(retiraEnSucursal.getValue());
 		}
 		

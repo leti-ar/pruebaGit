@@ -201,7 +201,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			nnsLayout.clearCell(0, 5);
 		}
 		
-		if (ClientContext.getInstance().getVendedor().isVendedorSalon() && editarSSUIData.isEquiposAccesorios()) {
+//		MGR - #6706
+		if (ClientContext.getInstance().getVendedor().isVendedorSalon() && 
+				(editarSSUIData.isEquiposAccesorios() || editarSSUIData.isVentaSoloSIM())) {
 			nnsLayout.setHTML(0, 6, Sfa.constant().retiraEnSucursal());
 			nnsLayout.setWidget(0, 7, editarSSUIData.getRetiraEnSucursal());
 		} else {
@@ -567,7 +569,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 									public void execute() {
 										removeDetalleLineaSSRow(row);
 										asignarNroSSPortabilidad();
-										if (ClientContext.getInstance().getVendedor().isVendedorSalon() && editarSSUIData.isEquiposAccesorios()) {
+//										MGR - #6706
+										if (ClientContext.getInstance().getVendedor().isVendedorSalon() && 
+												(editarSSUIData.isEquiposAccesorios() || editarSSUIData.isVentaSoloSIM())) {
 											editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
 										}
 									};
@@ -616,7 +620,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 											public void execute() {
 												removeDetalleLineaSSRow(row);
 												asignarNroSSPortabilidad();
-												if (ClientContext.getInstance().getVendedor().isVendedorSalon() && editarSSUIData.isEquiposAccesorios()) {
+//												MGR - #6706
+												if (ClientContext.getInstance().getVendedor().isVendedorSalon() && 
+														(editarSSUIData.isEquiposAccesorios() || editarSSUIData.isVentaSoloSIM())) {
 													editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
 												}
 											};
@@ -1095,7 +1101,8 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		editarSSUIData.getFacturacion().setEnabled(controller.isEditable());
 		editarSSUIData.getAclaracion().setEnabled(controller.isEditable());
 		editarSSUIData.getEmail().setEnabled(controller.isEditable());
-		if (controller.getEditarSSUIData().isEquiposAccesorios()) {
+//		MGR - #6706
+		if (controller.getEditarSSUIData().isEquiposAccesorios() || controller.getEditarSSUIData().isVentaSoloSIM()) {
 			editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
 //			editarSSUIData.getRetiraEnSucursal().setEnabled(detalleSS.getRowCount()>0);
 		}
