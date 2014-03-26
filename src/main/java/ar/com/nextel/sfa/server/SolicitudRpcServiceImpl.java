@@ -3313,7 +3313,8 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			}
 			
 			CierreYPassResult resultadoCierre = comprobarCierreYPassAutomatico(solicitudServicio, null, false, result);
-			if(!result.isError() && resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO){
+			if((!result.isError() && resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO) 
+					|| (!result.isError() && solicitudServicio.getGrupoSolicitud().isVtaSoloSIM())) {//#6705 / MGR - #6706
 				validarSIMRepetidos(solicitudServicio, result);
 			}
 			
