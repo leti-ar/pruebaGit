@@ -126,74 +126,7 @@ public class VentaSIMSolicitudUI extends Composite {
 		roamingTable.setVisible(true);
 	}
 
-//	public VentaSIMSolicitudUI setActivacionVisible(boolean online) {
-//		if(online) {
-//			cppAliasReservaTable.getCellFormatter().setVisible(0, 0, false);
-//			cppAliasReservaTable.getCellFormatter().setVisible(0, 1, false);
-//			cppAliasReservaTable.getCellFormatter().setVisible(0, 2, false);
-//			cppAliasReservaTable.getCellFormatter().setVisible(0, 3, false);
-////			MGR**** ver esto!!
-//			soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_ACTIVACION_ONLINE);
-//		} else {
-//			soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_ACTIVACION);
-//		}
-//		return this;
-//	}
-	
-//	public VentaSIMSolicitudUI setCDWVisible() {
-//		aliasTable.setWidget(0, 1, itemSolicitudUIData.getAlias());
-//		
-//		cppAliasReservaTable.getCellFormatter().setVisible(0, 0, false);
-//		cppAliasReservaTable.getCellFormatter().setVisible(0, 1, false);
-//		cppAliasReservaTable.getCellFormatter().setVisible(0, 2, false);
-//		cppAliasReservaTable.getCellFormatter().setVisible(0, 3, false);
-//		cppAliasReservaTable.getCellFormatter().setVisible(1, 0, false);
-//		cppAliasReservaTable.getCellFormatter().setVisible(1, 1, false);
-//		cppAliasReservaTable.setVisible(false);
-//		
-//		aliasTable.getCellFormatter().setVisible(0, 0, true);
-//		aliasTable.getCellFormatter().setVisible(0, 1, true);
-//		aliasTable.setVisible(true);
-//		
-//		roamingTable.getCellFormatter().setVisible(0, 0, false);
-//		roamingTable.getCellFormatter().setVisible(0, 1, false);
-//		roamingTable.getCellFormatter().setVisible(0, 2, false);
-//		roamingTable.setVisible(false);
-//		return this;
-//	}
-	
-//	MGR*********
-//	//MGR - #1039
-//	/**
-//	 * Este metodo se encarga de ocultar los campos que no deben ser visibles al seleccionar
-//	 * Grupo SS: Despacho tel anexo, Tipo Orden: Venta x tel, Lista Precio: Ar equipos vta solo equipo
-//	 */
-//	public VentaSIMSolicitudUI ocultarCamposBBRed(){
-//		table.setVisible(false);
-//		aliasTable.setVisible(false);
-//		cppAliasReservaTable.setVisible(false);
-//		roamingTable.setVisible(false);
-//		itemSolicitudUIData.getLocalidad().setSelectedItem(ClientContext.getInstance().getVendedor().getLocalidad());
-//		itemSolicitudUIData.getTipoPlan().setSelectedItem(ItemSolicitudDialog.obtenerTipoPlanPorDefecto());
-//		itemSolicitudUIData.onChange(itemSolicitudUIData.getTipoPlan());
-//		return this;
-//	}
-//	
-//	/**
-//	 * Este metodo se encarga de mostar los campos que se ocultaron al seleccionar
-//	 * Grupo SS: Despacho tel anexo, Tipo Orden: Venta x tel, Lista Precio: Ar equipos vta solo equipo
-//	 */
-//	public VentaSIMSolicitudUI mostrarCamposBBRed(){
-//		table.setVisible(true);
-//		aliasTable.setVisible(true);
-//		cppAliasReservaTable.setVisible(true);
-//		roamingTable.setVisible(true);
-//		return this;
-//	}
-
 	public FlexTable getImeiSimRetiroEnSucursal() {
 		return imeiSimRetiroEnSucursal;
 	}
-	
-	
 }
