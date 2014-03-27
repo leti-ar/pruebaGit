@@ -2636,6 +2636,12 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					mensaje += (i == 0 ? "" : ", ") + linea.getAlias();
 					i++;
 				}
+			} //MGR - Vta solo sim verifica que la sim no este negada 
+			else if(linea.esDeTipoVentaSoloSim()){ 
+				if(verificarNegativeFiles(linea.getNumeroSimcard()) != null){
+					mensaje += (i == 0 ? "" : ", ") + linea.getAlias();
+					i++;
+				}
 			}
 		}
 		if (!"".equals(mensaje)) {
