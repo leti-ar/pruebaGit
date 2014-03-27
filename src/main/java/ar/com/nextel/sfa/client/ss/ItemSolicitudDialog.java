@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ar.com.nextel.services.components.sessionContext.SessionContext;
 import ar.com.nextel.sfa.client.SolicitudRpcService;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
@@ -25,7 +24,6 @@ import ar.com.snoop.gwt.commons.client.widget.ListBox;
 import ar.com.snoop.gwt.commons.client.widget.SimpleLink;
 import ar.com.snoop.gwt.commons.client.widget.dialog.ErrorDialog;
 
-import com.google.gwt.dev.ModuleTabPanel.Session;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.Command;
@@ -49,7 +47,6 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	//MGR - #1039
 	//private ItemYPlanSolicitudUI itemYPlanSolicitudUI;
 	private static ItemYPlanSolicitudUI itemYPlanSolicitudUI;
-//	MGR****
 	private static VentaSIMSolicitudUI ventaSIMSolicitudUI;
 	private static TipoPlanDto tipoPlanPorDefecto = null;
 	
@@ -342,7 +339,6 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		return itemYPlanSolicitudUI;
 	}
 	
-//	MGR********
 	private VentaSIMSolicitudUI getVentaSIMSolicitudUI() {
 		if (ventaSIMSolicitudUI == null) {
 			ventaSIMSolicitudUI = new VentaSIMSolicitudUI(getSoloItemSolicitudUI(), itemSolicitudUIData,controller);
@@ -366,7 +362,6 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		return getItemYPlanSolicitudUI().setActivacionVisible(online);
 	}
 	
-//	MGR*********
 	private VentaSIMSolicitudUI getItemSolicitudVentaSimUI() {
 		return getVentaSIMSolicitudUI();
 	}
