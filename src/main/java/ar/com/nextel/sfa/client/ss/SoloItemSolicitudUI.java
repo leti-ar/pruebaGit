@@ -1,8 +1,6 @@
 package ar.com.nextel.sfa.client.ss;
 
 import ar.com.nextel.sfa.client.constant.Sfa;
-import ar.com.nextel.sfa.client.context.ClientContext;
-import ar.com.nextel.sfa.client.dto.TipoVendedorDto;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -35,14 +33,11 @@ public class SoloItemSolicitudUI extends Composite {
 	public static final int LAYOUT_CON_TOTAL = 2;
 	public static final int LAYOUT_ACTIVACION_ONLINE = 3;
 	public static final int LAYOUT_SIMPLE_PERMANENCIA = 4;
-//	MGR*********
 	public static final int LAYOUT_VENTA_SOLO_SIM = 5;
 	private FlexTable imeiSimRetiroEnSucursal;
 	private boolean visibleImeiSimRetiroSucursal;
 	
-//	MGR*****
 	private FlexTable ventaSimIngSim;
-	
 	
 	public SoloItemSolicitudUI(ItemSolicitudUIData itemSolicitudUIData) {
 		mainPanel = new FlowPanel();
@@ -174,7 +169,6 @@ public class SoloItemSolicitudUI extends Composite {
 		imeiSimRetiroEnSucursal.setVisible(false);
 		mainPanel.add(imeiSimRetiroEnSucursal);
 		
-//		MGR*********
 		ventaSimIngSim = new FlexTable();
 		ventaSimIngSim.addStyleName("layout");
 		ventaSimIngSim.getCellFormatter().setWidth(0, 0, "100px");
@@ -266,8 +260,9 @@ public class SoloItemSolicitudUI extends Composite {
 			break;
 		
 		case LAYOUT_VENTA_SOLO_SIM:
-			TipoVendedorDto tipoVen = ClientContext.getInstance().getVendedor().getTipoVendedor();
-			if(tipoVen.isIngresaSIM()) { //#6678
+//			MGR - #6706
+			boolean ingresaSIM = itemSolicitudData.vendIngresaSIM();
+			if(ingresaSIM){ //#6678
 				ventaSimIngSim.setVisible(true);
 				itemSolicitudData.getCantidad().setText("1");
 				itemSolicitudData.getCantidad().setEnabled(false);

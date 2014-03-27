@@ -1177,6 +1177,13 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		editarSSUIData.getNflota().setEnabled(habilitar);
 		editarSSUIData.getOrigen().setEnabled(habilitar);
 		editarSSUIData.getRetiraEnSucursal().setEnabled(!this.controller.tieneLineasSolicitud() && habilitar);
+//		MGR - #6706 (esto se trajo del brach mejoras_pospago
+		// para el vendedor salon con segmento individuo el checkbox debe estar seleccionado y no editable
+		if (ClientContext.getInstance().getVendedor().isVendedorSalon()	&& !editarSSUIData.getCuenta().isEmpresa()
+			&& (controller.getEditarSSUIData().isEquiposAccesorios() || controller.getEditarSSUIData().isVentaSoloSIM())){
+			editarSSUIData.getRetiraEnSucursal().setValue(true);
+			editarSSUIData.getRetiraEnSucursal().setEnabled(false);
+		}
 		editarSSUIData.getVendedor().setEnabled(habilitar);
 		editarSSUIData.getSucursalOrigen().setEnabled(habilitar);
 		editarSSUIData.getOrdenCompra().setEnabled(habilitar);

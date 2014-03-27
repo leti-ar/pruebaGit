@@ -1105,12 +1105,11 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 		}
 		
-//		MGR**********
 		if(tipoEdicion == VENTA_SIM){
 			validator.addTarget(terminoPago).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "Termino de Pago"));
 			
-			TipoVendedorDto tipoVend = ClientContext.getInstance().getVendedor().getTipoVendedor();
-			if(tipoVend.isIngresaSIM()) { //#6702
+//			MGR - #6706
+			if(vendIngresaSIM()){ //#6702
 				if (!"".equals(sim.getText())) {
 					validator.addTarget(sim).numericPositiveOrZero("El campo SIM sólo debe contener números.");
 				}
@@ -1288,8 +1287,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			lineaSolicitudServicio.setCantidad(1);
 		
 		} else if(tipoEdicion == VENTA_SIM){
-			TipoVendedorDto tipoVend = ClientContext.getInstance().getVendedor().getTipoVendedor();
-			if(tipoVend.isIngresaSIM()){
+//			MGR - #6706
+			if(vendIngresaSIM()){
 				lineaSolicitudServicio.setNumeroSimcard(sim.getText());
 				lineaSolicitudServicio.setCantidad(1);
 			}else{
@@ -1582,4 +1581,20 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		return idsTipoSolicitudBaseVentaSim;
 	}
 	
+//	MGR - #6706
+	public boolean vendIngresaSIM(){
+		VendedorDto vend = ClientContext.getInstance().getVendedor();
+		boolean ingresaSIM = vend.getTipoVendedor().isIngresaSIM();
+		if(vend.isVendedorSalon()){
+			//Para vendedor de salon, si es empresa y NO retira en sucursal,
+			//entonces no ingresa SIM
+			EditarSSUIData editarSSUIData = controller.getEditarSSUIData();
+			if(editarSSUIData.getCuenta().isEmpresa() &&
+					!editarSSUIData.getRetiraEnSucursal().getValue()){
+				ingresaSIM = false;
+			}
+		}
+		
+		return ingresaSIM;
+	}
 }
