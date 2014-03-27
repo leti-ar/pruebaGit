@@ -1125,9 +1125,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	}
 
 	private void saveSolicitudServicio(){
-		
-		
-		
 		//MGR - ISDN 1824 - Como se realizan validaciones, ya no recibe una SolicitudServicioDto
 		//sino una SaveSolicitudServicioResultDto que permite realizar el manejo de mensajes
 		SolicitudRpcService.Util.getInstance().saveSolicituServicio(editarSSUIData.getSolicitudServicio(),

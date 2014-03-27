@@ -3191,10 +3191,12 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
         return null;
 	}
 
-	public List<String> validarSIM_IMEI(SolicitudServicioDto solicitudDTO)throws RpcExceptionMessages{
-		SolicitudServicio solicitud = this.solicitudBusinessService.mapperSSDtoToSolicitudServicio(solicitudDTO,this.mapper);
-		return solicitudBusinessService.validarSIM_IMEI(solicitud);
-	}
+//	MGR - Esta llamada dejo de usarse en la version 1.15.12.5 de la clase EditarSSUIController.java,
+//	la comento por que quedo de mas
+//	public List<String> validarSIM_IMEI(SolicitudServicioDto solicitudDTO)throws RpcExceptionMessages{
+//		SolicitudServicio solicitud = this.solicitudBusinessService.mapperSSDtoToSolicitudServicio(solicitudDTO,this.mapper);
+//		return solicitudBusinessService.validarSIM_IMEI(solicitud);
+//	}
 
 //	MGR - RQN 2328
 	public boolean validarAreaBilling(String numeroAPortar) throws RpcExceptionMessages {
