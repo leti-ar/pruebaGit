@@ -1021,12 +1021,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 												editarSSUIData.getSolicitudServicio().getRetiraEnSucursal()));
 							}
 							else{
-								MessageDialog.getInstance().showAceptar("No se realizo el pago",
-										new Command() {
-								    public void execute() {
-								    	MessageDialog.getInstance().hide();
-									};
-								});
+								MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(),
+										"No se realizo el pago", new Command() {
+								    				public void execute() {
+								    					MessageDialog.getInstance().hide();
+								    				};
+										});
 							}
 							
 						}
