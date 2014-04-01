@@ -47,7 +47,6 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	//MGR - #1039
 	//private ItemYPlanSolicitudUI itemYPlanSolicitudUI;
 	private static ItemYPlanSolicitudUI itemYPlanSolicitudUI;
-	private static VentaSIMSolicitudUI ventaSIMSolicitudUI;
 	private static TipoPlanDto tipoPlanPorDefecto = null;
 	
 	private ItemSolicitudUIData itemSolicitudUIData;
@@ -293,7 +292,8 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.VENTA_CDW);
 			} else if(itemSolicitudUIData.getIDsTipoSolicitudBaseVentaSim().contains(idTipoSolicitudBase)){
 				//solo sim
-				tipoSolicitudPanel.setWidget(getItemSolicitudVentaSimUI());
+//				MGR - #6757
+				tipoSolicitudPanel.setWidget(getItemYPlanSolicitudUIVtaSoloSim());
 				itemSolicitudUIData.setTipoEdicion(ItemSolicitudUIData.VENTA_SIM);
 			}
 			else {
@@ -339,20 +339,22 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		return itemYPlanSolicitudUI;
 	}
 	
-	private VentaSIMSolicitudUI getVentaSIMSolicitudUI() {
-		if (ventaSIMSolicitudUI == null) {
-			ventaSIMSolicitudUI = new VentaSIMSolicitudUI(getSoloItemSolicitudUI(), itemSolicitudUIData,controller);
+//	MGR - #6757
+	private ItemYPlanSolicitudUI getItemYPlanSolicitudUIVtaSoloSim() {
+		if (itemYPlanSolicitudUI == null) {
+			itemYPlanSolicitudUI = new ItemYPlanSolicitudUI(getSoloItemSolicitudUI(), itemSolicitudUIData,controller);
 		}
 		soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_VENTA_SOLO_SIM, controller);
-		ventaSIMSolicitudUI.load();
-		return ventaSIMSolicitudUI;
+		itemYPlanSolicitudUI.load();
+		return itemYPlanSolicitudUI;
 	}
-
+	
 	private ItemYPlanSolicitudUI getItemYPlanSolicitudPermanenciaUI() {
 		if (itemYPlanSolicitudUI == null) {
 			itemYPlanSolicitudUI = new ItemYPlanSolicitudUI(getSoloItemSolicitudUI(), itemSolicitudUIData,controller);
 		}
-		soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_SIMPLE_PERMANENCIA);
+//		MGR - #6757
+		soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_SIMPLE_PERMANENCIA, controller);
 		itemYPlanSolicitudUI.load();
 		return itemYPlanSolicitudUI;
 	}
@@ -362,10 +364,6 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 		return getItemYPlanSolicitudUI().setActivacionVisible(online);
 	}
 	
-	private VentaSIMSolicitudUI getItemSolicitudVentaSimUI() {
-		return getVentaSIMSolicitudUI();
-	}
-
 	private ItemYPlanSolicitudUI getItemSolicitudCDWUI() {
 		return getItemYPlanSolicitudUI().setCDWVisible();
 	}
@@ -472,5 +470,10 @@ public class ItemSolicitudDialog extends NextelDialog implements ChangeHandler, 
 	//MGR - #1039
 	public static TipoPlanDto obtenerTipoPlanPorDefecto(){
 		return tipoPlanPorDefecto;
+	}
+
+//	MGR - #6757
+	public boolean isPanelImeiSimRetiroEnSucursalVisible() {
+		return soloItemSolicitudUI.isPanelImeiSimRetiroEnSucursalVisible();
 	}
 }

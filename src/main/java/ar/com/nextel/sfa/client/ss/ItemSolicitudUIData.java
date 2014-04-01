@@ -142,11 +142,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 	private ItemSolicitudTasadoDto itemActivacionOnline = null;
 	private static final String LUGAR_DE_LLAMADA_DE_VALIDACION_STOCK="agregarItem";
 	
-//	MGR - #6757 - Ojo, no se puede usar el mismo TextBox en diferentes paneles, eso hace que quede solo en el ultimo!
-//	Es por eso que hay tres campos para ingresar la SIM (sim, simRetiroEnSucursal y simVtaSoloSim)
-	private TextBox simVtaSoloSim;
-	private HTML verificarSimWrapperVtaSoloSim;
-	
 	public ItemSolicitudUIData(EditarSSUIController controller) {
 		
 		// Oculta las opciones de portabilidad
@@ -178,7 +173,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		fields.add(sim = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(15)));
 		this.simMensajeRegex = new MensajeRegex(RegularExpressionConstants.getCantidadNumerosFijo(15),Sfa.constant().ERR_LENGHT().replaceAll(v1, "SIM").replaceAll(v2, "15"));
 		fields.add(simRetiroEnSucursal = new VerificationRegexTextBox(RegularExpressionConstants.getNumerosLimitado(15),simMensajeRegex));
-		fields.add(simVtaSoloSim = new RegexTextBox(RegularExpressionConstants.getNumerosLimitado(15)));
 		fields.add(serie = new RegexTextBox(RegularExpressionConstants.getNumerosYLetrasLimitado(10)));
 		fields.add(pin = new RegexTextBox(RegularExpressionConstants.getNumerosYLetrasLimitado(8)));
 		fields.add(ddn = new CheckBox());
@@ -193,7 +187,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		desreservar.setTitle("Liberar reserva");
 		verificarImeiWrapper = new HTML();
 		verificarSimWrapper = new HTML();
-		verificarSimWrapperVtaSoloSim = new HTML();
 		listaPrecio.setWidth("400px");
 		fullPrice.setText("Full Price");
 		item.setWidth("400px");
@@ -205,7 +198,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		imeiRetiroEnSucursal.setMaxLength(15);
 		sim.setMaxLength(15);
 		simRetiroEnSucursal.setMaxLength(15);
-		simVtaSoloSim.setMaxLength(15);
 		serie.setMaxLength(10);
 		pin.setMaxLength(8);
 		modeloEq.setWidth("400px");
@@ -229,8 +221,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		portabilidad.setText(Sfa.constant().portabilidad());
 		resetIMEICheck();
 		verificarSimWrapper.addStyleName("pl10");
-		verificarSimWrapperVtaSoloSim.addStyleName("pl10");
-		resetSimCheck();
 
 		// Debug Labels
 		item.ensureDebugId(DebugConstants.EDITAR_SOLICITUD_ITEM_SOLICITUD_COMBO_ITEM);
@@ -254,7 +244,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		modeloEq.addChangeListener(this);
 		verificarImeiWrapper.addClickHandler(this);
 		verificarSimWrapper.addClickHandler(this);
-		verificarSimWrapperVtaSoloSim.addClickHandler(this);
 		// SB - #0004558
 		// roaming.addClickHandler(this);
 		imei.addChangeListener(this);
@@ -414,8 +403,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			verificarImei();
 		} else if (sender == verificarSimWrapper) {
 			verificarSim();
-		} else if (sender == verificarSimWrapperVtaSoloSim) {
-			verificarSimVtaSoloSim();
 		} else if (sender == fullPrice) {
 			verificarSubsidio();
 		} 
@@ -573,22 +560,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		});
 	}
 	
-//	MGR - #6757
-	private void verificarSimVtaSoloSim() {
-		controller.verificarNegativeFiles(simVtaSoloSim.getText(), new DefaultWaitCallback<String>() {
-			public void success(String result) {
-				if (result != null) { //#3265
-					ErrorDialog.getInstance().show(result, false);
-					verificarSimWrapperVtaSoloSim.setHTML(IconFactory.comprobarRojo(Sfa.constant().verificarSim())
-							.toString());
-				} else {
-					verificarSimWrapperVtaSoloSim.setHTML(IconFactory.comprobarVerde(Sfa.constant().verificarSim())
-							.toString());
-				}
-			}
-		});
-	}
-
 	private void verificarImei() {
 		if (imei.getText().length() != 15) {
 			ErrorDialog.getInstance().show(
@@ -1113,15 +1084,15 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			}
 			validator.addTarget(imei).required(
 					Sfa.constant().ERR_LENGHT().replaceAll(v1, "IMEI").replaceAll(v2, "15"));
-//			MGR - #6757
-			if (sim.isEnabled() && tipoEdicion != VENTA_SIM) {
+			if (sim.isEnabled()) {
 				validator.addTarget(sim).required(
 						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM"));
 			}
 		}
 		
-		if (controller.getEditarSSUIData().getRetiraEnSucursal().getValue()
-				&& tipoEdicion != VENTA_SIM) {
+//		MGR - #6757 - Si el panel esta visible, valido esos campos
+		boolean visible = dialog.isPanelImeiSimRetiroEnSucursalVisible();
+		if (visible) {
 			if (imeiRetiroEnSucursal.isEnabled()) {
 				validator.addTarget(imeiRetiroEnSucursal).required(
 						Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "IMEI")).regEx(
@@ -1139,10 +1110,10 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			
 //			MGR - #6706
 			if(vendIngresaSIM()){ //#6702
-				if (!"".equals(simVtaSoloSim.getText())) {
-					validator.addTarget(simVtaSoloSim).numericPositiveOrZero("El campo SIM sólo debe contener números.");
+				if (!"".equals(sim.getText())) {
+					validator.addTarget(sim).numericPositiveOrZero("El campo SIM sólo debe contener números.");
 				}
-				validator.addTarget(simVtaSoloSim).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM")).length(15,Sfa.constant().ERR_LENGHT().replaceAll(v1, "SIM").replaceAll(v2, "15"));
+				validator.addTarget(sim).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(v1, "SIM")).length(15,Sfa.constant().ERR_LENGHT().replaceAll(v1, "SIM").replaceAll(v2, "15"));
 			}
 		}
 		
@@ -1255,19 +1226,14 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 			sim.setText(linea.getNumeroSimcard());
 		}
 		
-		if (controller.getEditarSSUIData().getRetiraEnSucursal().getValue()
-				&& tipoEdicion != VENTA_SIM) {
-			//Desc de Despacho
-			if (imeiRetiroEnSucursal.getText()!=null) {
-				imeiRetiroEnSucursal.setText(linea.getNumeroIMEI());
-			}
-			if (simRetiroEnSucursal.getText()!=null) {
-				simRetiroEnSucursal.setText(linea.getNumeroSimcard());
-			}
-			//Fin de Desc de Despacho
+		//Desc de Despacho
+		if (imeiRetiroEnSucursal.getText()!=null) {
+			imeiRetiroEnSucursal.setText(linea.getNumeroIMEI());
 		}
-		
-		simVtaSoloSim.setText(linea.getNumeroSimcard());
+		if (simRetiroEnSucursal.getText()!=null) {
+			simRetiroEnSucursal.setText(linea.getNumeroSimcard());
+		}
+		//Fin de Desc de Despacho
 		
 		// TODO: Portabilidad
 		portabilidadPanel.resetearPortabilidad();
@@ -1320,7 +1286,7 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		} else if(tipoEdicion == VENTA_SIM){
 //			MGR - #6706
 			if(vendIngresaSIM()){
-				lineaSolicitudServicio.setNumeroSimcard(simVtaSoloSim.getText());
+				lineaSolicitudServicio.setNumeroSimcard(sim.getText());
 				lineaSolicitudServicio.setCantidad(1);
 			}else{
 				lineaSolicitudServicio.setNumeroSimcard(null);
@@ -1417,9 +1383,8 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		lineaSolicitudServicio.setPortabilidad(portabilidadPanel.getSolicitudPortabilidad(lineaSolicitudServicio));
 		portabilidadPanel.setSolicitudPortabilidad(null);
 		 
-		
-		if (controller.getEditarSSUIData().getRetiraEnSucursal().getValue()
-				&& tipoEdicion != VENTA_SIM) {
+//		MGR - #6757
+		if (tipoEdicion != VENTA_SIM) {
 			//Desc de Despacho, esto se creo para no tocar el compartamiento
 			//de imei y sim que ya existia en la activacion
 			if(!FormUtils.fieldEmpty(imeiRetiroEnSucursal)){
@@ -1474,12 +1439,6 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		verificarSimWrapper.setHTML(IconFactory.comprobarNegro(Sfa.constant().verificarSim()).toString());
 	}
 	
-//	MGR - #6757
-	public void resetSimCheck() {
-		verificarSimWrapperVtaSoloSim.setHTML(IconFactory.comprobarNegro(Sfa.constant().verificarSim()).toString());
-	}
-	
-
 	public void desreservarSiNoFueGrabado() {
 		// Si no fue guardado nunca no tiene tipo
 		if (sinReservaAlAbrir()) {
@@ -1633,13 +1592,5 @@ public class ItemSolicitudUIData extends UIData implements ChangeListener, Click
 		}
 		
 		return ingresaSIM;
-	}
-
-	public TextBox getSimVtaSoloSim() {
-		return simVtaSoloSim;
-	}
-
-	public HTML getVerificarSimWrapperVtaSoloSim() {
-		return verificarSimWrapperVtaSoloSim;
 	}
 }
