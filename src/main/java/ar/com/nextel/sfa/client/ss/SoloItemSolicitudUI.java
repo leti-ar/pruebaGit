@@ -175,8 +175,8 @@ public class SoloItemSolicitudUI extends Composite {
 		ventaSimIngSim.getCellFormatter().setWidth(0, 1, "100px");
 		ventaSimIngSim.setVisible(false);
 		ventaSimIngSim.setHTML(0, 0, Sfa.constant().simReq());
-		ventaSimIngSim.setWidget(0, 1, itemSolicitudData.getSim());
-		ventaSimIngSim.setWidget(0, 2, itemSolicitudData.getVerificarSimWrapper());
+		ventaSimIngSim.setWidget(0, 1, itemSolicitudData.getSimVtaSoloSim());
+		ventaSimIngSim.setWidget(0, 2, itemSolicitudData.getVerificarSimWrapperVtaSoloSim());
 		ventaSimIngSim.getFlexCellFormatter().setColSpan(0, 1, 2);
 		mainPanel.add(ventaSimIngSim);
 		
@@ -275,6 +275,7 @@ public class SoloItemSolicitudUI extends Composite {
 			activacionSimSeriePin.setVisible(false);
 			precioCantidad.setVisible(true);
 			precioCantidad.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
+			itemSolicitudData.resetSimCheck();
 			break;
 			
 		default:
