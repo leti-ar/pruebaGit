@@ -777,12 +777,12 @@ public class SolicitudBusinessService {
 					
 					// SB - #0004176 (volvi atras este cambio para que no salga en el release 2)
 					
-//					String vendedorgenerico = String.valueOf(((GlobalParameter) globalParameterRetriever
-//							.getObject(GlobalParameterIdentifier.USR_GENERICO_GEST_FA_SFA)).getValue());
+					String vendedorgenerico = String.valueOf(((GlobalParameter) globalParameterRetriever
+							.getObject(GlobalParameterIdentifier.USR_GENERICO_GEST_FA_SFA)).getValue());
 					
 					
 					Long idGestion = generacionCierreBusinessOperator.lanzarGestionCerrarSS(
-							vendReal,
+							vendedorgenerico,
 							0L, 
 							parametrosGestion, 
 							"", 
