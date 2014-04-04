@@ -998,10 +998,13 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		Long tipoSolicitudVentaEquipos 	   = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_VENTA_EQUIPOS)).getId();
 		Long tipoSolicitudActivacion       = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION)).getId();
 		Long tipoSolicitudActivacionOnline = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION_ONLINE)).getId();
+		Long tipoSolicitudVentaSimCardPostpag = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_VENTA_SIMCARD_POSPAGO)).getId();
+		Long tipoSolicitudSimCardServPostpago = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_SIMCARD_SERVICIO_POSPAGO)).getId();
 
-		//los servicios de permanencia solo deben visualizarse para ventas y activaciones comunes y online.
+		//los servicios de permanencia solo deben visualizarse para ventas, activaciones comunes y online y ventas de sim postpagas.
 		if(!tipoSolicitud.equals(tipoSolicitudVentaEquipos) && !tipoSolicitud.equals(tipoSolicitudActivacion) 
-			&& !tipoSolicitud.equals(tipoSolicitudActivacionOnline)){
+			&& !tipoSolicitud.equals(tipoSolicitudActivacionOnline) && !tipoSolicitud.equals(tipoSolicitudVentaSimCardPostpag)
+			&& !tipoSolicitud.equals(tipoSolicitudSimCardServPostpago)){
 			
 			ServicioAdicional servicioSubsidioActivacion = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_ACTIVACION);
 			ServicioAdicional servicioBonifSubsidioActivacion = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_BONIF_ACTIVACION);
