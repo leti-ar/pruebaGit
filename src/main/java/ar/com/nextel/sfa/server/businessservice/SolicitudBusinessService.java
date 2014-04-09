@@ -1517,10 +1517,12 @@ public class SolicitudBusinessService {
      * @return retorna lista de mensajes con errores si es que hubiese o vacia
      * en caso contrario
      */
-    public List<String> validarSIM_IMEI(SolicitudServicio solicitudServicio) {
-    	List<String> mensajes = this.despachoSolicitudBusinessOperator.validarSIM_IMEI(solicitudServicio);
-		return mensajes;
-    }
+//	MGR - Esta llamada dejo de usarse en la version 1.15.12.5 de la clase EditarSSUIController.java,
+//	la comento por que quedo de mas
+//    public List<String> validarSIM_IMEI(SolicitudServicio solicitudServicio) {
+//    	List<String> mensajes = this.despachoSolicitudBusinessOperator.validarSIM_IMEI(solicitudServicio);
+//		return mensajes;
+//    }
 
 	public List<String> movimientoInventario(SolicitudServicio ss){
 		return this.despachoSolicitudBusinessOperator.movimientoInventario(ss);

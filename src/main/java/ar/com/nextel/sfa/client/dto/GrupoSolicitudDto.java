@@ -15,6 +15,9 @@ public class GrupoSolicitudDto implements IsSerializable {
 	//MGR - #1039
 	public static final String DESPACHO_TEL_ANEXO = "GRUPO7";
 	public static final String ID_TRANSFERENCIA = "GRUPO5";
+//	MGR - #6690
+	public static final Object ID_GRUPO_VTA_SIM_POSPAGO = "GRUPO_VTA_SIM_POSPAGO";
+	public static final Object ID_GRUPO_VTA_SIM_SERV_POSPAGO = "GRUPO_VTA_SIM_SERV_POSPAGO";
 
 	private Long id;
 	private String descripcion;
@@ -112,4 +115,11 @@ public class GrupoSolicitudDto implements IsSerializable {
 		}
 		return false;
 	}
+	
+    public boolean isVtaSoloSIM(){//#6705
+		HashMap<String, Long> instancias = ClientContext.getInstance().getKnownInstance();
+    	return instancias.get(ID_GRUPO_VTA_SIM_POSPAGO).equals(id)
+    			|| instancias.get(ID_GRUPO_VTA_SIM_SERV_POSPAGO).equals(id);
+    }
+    
 }

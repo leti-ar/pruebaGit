@@ -570,8 +570,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 		solicitudServicio = solicitud;
 		nss.setText(solicitud.getNumero());
-	
-		if(solicitud.getGrupoSolicitud().isEquiposAccesorios() && solicitud.getRetiraEnSucursal()!= null){
+		
+//		MGR - #6706
+		if(solicitud.getRetiraEnSucursal()!= null && 
+				(solicitud.getGrupoSolicitud().isEquiposAccesorios() || solicitud.getGrupoSolicitud().isVtaSoloSIM())){
 			retiraEnSucursal.setValue(solicitud.getRetiraEnSucursal());
 		}
 		
@@ -699,8 +701,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //					format(solicitudServicio.getFechaEstado()) : "");
 //		}
 		//Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
-		if (ClientContext.getInstance().getVendedor().isTelemarketing()
-				&& solicitud.getGrupoSolicitud().isEquiposAccesorios()) {
+		if (ClientContext.getInstance().getVendedor().isTelemarketing() &&
+				(solicitud.getGrupoSolicitud().isEquiposAccesorios() ||
+//						MGR - #6719
+						solicitud.getGrupoSolicitud().isVtaSoloSIM())) {
 			numeroSSWeb.setText(solicitud.getNumeroSSWeb());
 		}
 	}
@@ -801,7 +805,9 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			solicitudServicio.setEmail(email.getText());
 		}
 		
-		if(solicitudServicio.getGrupoSolicitud().isEquiposAccesorios()){
+//		MGR - #6706
+		if(solicitudServicio.getGrupoSolicitud().isEquiposAccesorios() ||
+				solicitudServicio.getGrupoSolicitud().isVtaSoloSIM()){
 			solicitudServicio.setRetiraEnSucursal(retiraEnSucursal.getValue());
 		}
 		
@@ -821,8 +827,10 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //			solicitudServicio.setClienteHistorico(clienteHistorico);
 //		}
 //		Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
-		if (ClientContext.getInstance().getVendedor().isTelemarketing()
-				&& solicitudServicio.getGrupoSolicitud().isEquiposAccesorios()) {
+		if (ClientContext.getInstance().getVendedor().isTelemarketing() && 
+				(solicitudServicio.getGrupoSolicitud().isEquiposAccesorios()
+//						MGR - #6719
+						|| solicitudServicio.getGrupoSolicitud().isVtaSoloSIM())) {
 			solicitudServicio.setNumeroSSWeb(numeroSSWeb.getText());
 		}		
 		return solicitudServicio;
@@ -914,7 +922,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	private boolean existeSIM_IMEIRepetidas(GwtValidator validator) {
 		boolean haySIM_IMEIRepetidas = false;
-		if (solicitudServicio.getRetiraEnSucursal()) {
+		if (solicitudServicio.getRetiraEnSucursal() || solicitudServicio.getGrupoSolicitud().isVtaSoloSIM()) {//#6705
 			for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
 				int cantIMEI = 0;
 				int cantSIM = 0;
@@ -1040,12 +1048,19 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //		}
 		
 //		Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
-		if (ClientContext.getInstance().getVendedor().isTelemarketing()
-				&& solicitudServicio.getGrupoSolicitud().isEquiposAccesorios()) {
+		if (ClientContext.getInstance().getVendedor().isTelemarketing() &&
+				(solicitudServicio.getGrupoSolicitud().isEquiposAccesorios() ||
+//						MGR - #6719
+						solicitudServicio.getGrupoSolicitud().isVtaSoloSIM())) {
 			OrigenSolicitudDto origenSolicitudDto = (OrigenSolicitudDto) origen.getSelectedItem();
 			if (origenSolicitudDto != null && origenSolicitudDto.getUsaNumeroSSWeb()) {
 				validator.addTarget(numeroSSWeb).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nro SS Web"));
 			}
+		}
+		
+		//#6705
+		if(existeSIM_IMEIRepetidas(validator)){
+			validator.addError("No puede tener la misma SIM o IMEI en mas de una linea");
 		}
 		
 		validator.fillResult();
@@ -1351,6 +1366,14 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	public boolean isTRANSFERENCIA() {
 		if (solicitudServicio != null && solicitudServicio.getGrupoSolicitud() != null) {
 		    return solicitudServicio.getGrupoSolicitud().isTransferencia();
+		}
+		return false;
+	}
+	
+//	MGR - #6719
+	public boolean isVentaSoloSIM(){
+		if (solicitudServicio != null && solicitudServicio.getGrupoSolicitud() != null) {
+			return solicitudServicio.getGrupoSolicitud().isVtaSoloSIM();
 		}
 		return false;
 	}

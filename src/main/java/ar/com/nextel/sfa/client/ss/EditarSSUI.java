@@ -1021,144 +1021,12 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 												editarSSUIData.getSolicitudServicio().getRetiraEnSucursal()));
 							}
 							else{
-								MessageDialog.getInstance().showAceptar("No se realizo el pago",
-										new Command() {
-								    public void execute() {
-								    	MessageDialog.getInstance().hide();
-									};
-								});
-							}
-							
-						}
-					});
-		}
-//		MGR - Facturacion - Funcionalidad del link Facturar
-		else if (sender ==  facturarButton){
-			
-			if(!editarSSUIData.isSaved()){
-				//guardar primero
-				ErrorDialog.getInstance().setDialogTitle("Aviso");
-				ErrorDialog.getInstance().show("Debe guardar la solicitud antes de facturar", false);
-			}else{
-				
-				//obtengo la cuenta
-				Long idCuenta = null;
-				if (HistoryUtils.getParam("idCuenta") != null) {
-					idCuenta = Long.parseLong(HistoryUtils.getParam("idCuenta"));
-				} else if (HistoryUtils.getParam("cuenta_id") != null) {
-					idCuenta = Long.parseLong(HistoryUtils.getParam("cuenta_id"));
-				}
-				CuentaClientService.cargarDatosCuenta(idCuenta, codigoVant, false, false);
-	
-				WaitWindow.show();
-				DeferredCommand.addCommand(new IncrementalCommand() {
-					public boolean execute() {
-						if (CuentaClientService.cuentaDto == null){
-							return true;
-						}
-						WaitWindow.hide();
-						
-						//si el campo nombre no está cargado significa que no están cargados los campos obligatorios de la cuenta
-						if (CuentaClientService.cuentaDto.getPersona().getNombre() != null) {
-							validacionPreviaFacturacion();
-						} else {
-							ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-							ErrorDialog.getInstance().show("Debe completar los campos obligatorios de la cuenta");
-						}
-						return false;
-					}
-				});
-			}
-			
-//		MGR - Facturacion
-		}else if (sender == verificarPagoButton){
-			
-//			MGR - Verificar Pago
-			SolicitudRpcService.Util.getInstance().verificarPagoFacturaSolicitudServicio(
-					editarSSUIData.getSolicitudServicio(), new DefaultWaitCallback<FacturaDto>() {
-
-						@Override
-						public void success(FacturaDto result) {
-							if (result.getPagado()){
-								editarSSUIData.getSolicitudServicio().setFactura(result);
-								
-								EventBusUtil.getEventBus().fireEvent(
-										new RefrescarPantallaSSEvent(editarSSUIData.getSolicitudServicio(), 
-												editarSSUIData.getSolicitudServicio().getRetiraEnSucursal()));
-							}
-							else{
-								MessageDialog.getInstance().showAceptar("No se realizo el pago",
-										new Command() {
-								    public void execute() {
-								    	MessageDialog.getInstance().hide();
-									};
-								});
-							}
-							
-						}
-					});
-		}
-//		MGR - Facturacion - Funcionalidad del link Facturar
-		else if (sender ==  facturarButton){
-			
-			if(!editarSSUIData.isSaved()){
-				//guardar primero
-				ErrorDialog.getInstance().setDialogTitle("Aviso");
-				ErrorDialog.getInstance().show("Debe guardar la solicitud antes de facturar", false);
-			}else{
-				
-				//obtengo la cuenta
-				Long idCuenta = null;
-				if (HistoryUtils.getParam("idCuenta") != null) {
-					idCuenta = Long.parseLong(HistoryUtils.getParam("idCuenta"));
-				} else if (HistoryUtils.getParam("cuenta_id") != null) {
-					idCuenta = Long.parseLong(HistoryUtils.getParam("cuenta_id"));
-				}
-				CuentaClientService.cargarDatosCuenta(idCuenta, codigoVant, false, false);
-	
-				WaitWindow.show();
-				DeferredCommand.addCommand(new IncrementalCommand() {
-					public boolean execute() {
-						if (CuentaClientService.cuentaDto == null){
-							return true;
-						}
-						WaitWindow.hide();
-						
-						//si el campo nombre no está cargado significa que no están cargados los campos obligatorios de la cuenta
-						if (CuentaClientService.cuentaDto.getPersona().getNombre() != null) {
-							validacionPreviaFacturacion();
-						} else {
-							ErrorDialog.getInstance().setDialogTitle(ErrorDialog.AVISO);
-							ErrorDialog.getInstance().show("Debe completar los campos obligatorios de la cuenta");
-						}
-						return false;
-					}
-				});
-			}
-			
-//		MGR - Facturacion
-		}else if (sender == verificarPagoButton){
-			
-//			MGR - Verificar Pago
-			SolicitudRpcService.Util.getInstance().verificarPagoFacturaSolicitudServicio(
-					editarSSUIData.getSolicitudServicio(), new DefaultWaitCallback<FacturaDto>() {
-
-						@Override
-						public void success(FacturaDto result) {
-							if (result.getPagado()){
-								editarSSUIData.getSolicitudServicio().setFactura(result);
-								
-								EventBusUtil.getEventBus().fireEvent(
-										new RefrescarPantallaSSEvent(editarSSUIData.getSolicitudServicio(), 
-												editarSSUIData.getSolicitudServicio().getRetiraEnSucursal()));
-							}
-							else{
-								MessageDialog.getInstance().showAceptar("No se realizo el pago",
-										new Command() {
-								    public void execute() {
-								    	MessageDialog.getInstance().hide();
-									};
-								});
+								MessageDialog.getInstance().showAceptar(Sfa.constant().MSG_DIALOG_TITLE(),
+										"No se realizo el pago", new Command() {
+								    				public void execute() {
+								    					MessageDialog.getInstance().hide();
+								    				};
+										});
 							}
 							
 						}
@@ -1257,9 +1125,6 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 	}
 
 	private void saveSolicitudServicio(){
-		
-		
-		
 		//MGR - ISDN 1824 - Como se realizan validaciones, ya no recibe una SolicitudServicioDto
 		//sino una SaveSolicitudServicioResultDto que permite realizar el manejo de mensajes
 		SolicitudRpcService.Util.getInstance().saveSolicituServicio(editarSSUIData.getSolicitudServicio(),
@@ -2092,7 +1957,9 @@ public class EditarSSUI extends ApplicationUI implements ClickHandler, ClickList
 			//No tiene factura asociada
 			else{
 				showGuardar();
-				if(solicitud.getGrupoSolicitud().isEquiposAccesorios()
+//				MGR - #6706
+				if( (solicitud.getGrupoSolicitud().isEquiposAccesorios() ||
+						solicitud.getGrupoSolicitud().isVtaSoloSIM()) 
 						&& ClientContext.getInstance().getVendedor().isVendedorSalon()
 						&& event.isRetiraEnSucursal()
 						&& !solicitud.isCuentaCorriene()){

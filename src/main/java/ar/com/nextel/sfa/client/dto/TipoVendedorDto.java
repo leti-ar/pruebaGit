@@ -13,6 +13,7 @@ public class TipoVendedorDto implements IsSerializable {
     private String descripcion;
     private List<GrupoSolicitudDto> grupos;
     private boolean ejecutaNegFiles;
+    private boolean ingresaSIM;
     
     public Long getId() {
 		return id;
@@ -50,5 +51,11 @@ public class TipoVendedorDto implements IsSerializable {
 	}
 	public void setEjecutaNegFiles(boolean ejecutaNegFiles) {
 		this.ejecutaNegFiles = ejecutaNegFiles;
+	}
+	public boolean isIngresaSIM() {
+		return ingresaSIM;
+	}
+	public void setIngresaSIM(boolean ingresaSIM) {
+		this.ingresaSIM = ingresaSIM;
 	}
 }
