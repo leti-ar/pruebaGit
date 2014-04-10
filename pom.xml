@@ -199,6 +199,7 @@
 				<module>ar.com.nextel.sfa.SFAWeb</module>
 			</modules>
 			<i18nMessagesBundle>ar.com.nextel.sfa.client.constant.SfaStatic</i18nMessagesBundle>
+			 <style>DETAILED</style>
 		</configuration>
 		<executions>
 			<execution>

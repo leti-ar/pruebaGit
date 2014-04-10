@@ -33,10 +33,11 @@ public class SoloItemSolicitudUI extends Composite {
 	public static final int LAYOUT_CON_TOTAL = 2;
 	public static final int LAYOUT_ACTIVACION_ONLINE = 3;
 	public static final int LAYOUT_SIMPLE_PERMANENCIA = 4;
+	public static final int LAYOUT_VENTA_SOLO_SIM = 5;
 	private FlexTable imeiSimRetiroEnSucursal;
 	private boolean visibleImeiSimRetiroSucursal;
 	
-	
+	private FlexTable ventaSimIngSim;
 	
 	public SoloItemSolicitudUI(ItemSolicitudUIData itemSolicitudUIData) {
 		mainPanel = new FlowPanel();
@@ -168,6 +169,17 @@ public class SoloItemSolicitudUI extends Composite {
 		imeiSimRetiroEnSucursal.setVisible(false);
 		mainPanel.add(imeiSimRetiroEnSucursal);
 		
+		ventaSimIngSim = new FlexTable();
+		ventaSimIngSim.addStyleName("layout");
+		ventaSimIngSim.getCellFormatter().setWidth(0, 0, "100px");
+		ventaSimIngSim.getCellFormatter().setWidth(0, 1, "100px");
+		ventaSimIngSim.setVisible(false);
+		ventaSimIngSim.setHTML(0, 0, Sfa.constant().simReq());
+		ventaSimIngSim.setWidget(0, 1, itemSolicitudData.getSim());
+		ventaSimIngSim.setWidget(0, 2, itemSolicitudData.getVerificarSimWrapper());
+		ventaSimIngSim.getFlexCellFormatter().setColSpan(0, 1, 2);
+		mainPanel.add(ventaSimIngSim);
+		
 		visibleImeiSimRetiroSucursal = false;
 	}
 
@@ -186,12 +198,13 @@ public class SoloItemSolicitudUI extends Composite {
 		return this.setLayout(layout);	
 	}
 	
-	
-	public SoloItemSolicitudUI setLayout(int layout) {
+//	MGR - #6757
+	private SoloItemSolicitudUI setLayout(int layout) {
 	
 		total.setVisible(false);
 		imeiSimRetiroEnSucursal.setVisible(false);
-	
+//		MGR - #6757
+		ventaSimIngSim.setVisible(false);
         
 		switch (layout) {
 		case LAYOUT_ACTIVACION:
@@ -199,6 +212,9 @@ public class SoloItemSolicitudUI extends Composite {
 			activacionModelo.setVisible(true);
 			activacionSimSeriePin.setVisible(true);
 			activacionSimSeriePin.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
+//			MGR - #6757
+			activacionSimSeriePin.setWidget(0, 3, itemSolicitudData.getSim());
+			activacionSimSeriePin.setWidget(0, 4, itemSolicitudData.getVerificarSimWrapper());
 			mostrarActivacionPrecioListaYPin(true);
 			itemSolicitudData.resetIMEICheck();
 			precioCantidad.setVisible(false);
@@ -240,11 +256,35 @@ public class SoloItemSolicitudUI extends Composite {
 			permanenciaPrecioLista.setVisible(true);
 			permanenciaPrecioLista.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
 			activacionSimSeriePin.setVisible(true);
+//			MGR - #6757
+			activacionSimSeriePin.setWidget(0, 3, itemSolicitudData.getSim());
+			activacionSimSeriePin.setWidget(0, 4, itemSolicitudData.getVerificarSimWrapper());
 			mostrarActivacionPrecioListaYPin(false);
 			itemSolicitudData.resetIMEICheck();
 			precioCantidad.setVisible(false);
 			terminoPago.setVisible(false);
 			permanencia.setVisible(true);
+			break;
+		
+		case LAYOUT_VENTA_SOLO_SIM:
+//			MGR - #6706
+			boolean ingresaSIM = itemSolicitudData.vendIngresaSIM();
+			if(ingresaSIM){ //#6678
+				ventaSimIngSim.setVisible(true);
+//				MGR - #6757
+				ventaSimIngSim.setWidget(0, 1, itemSolicitudData.getSim());
+				ventaSimIngSim.setWidget(0, 2, itemSolicitudData.getVerificarSimWrapper());
+				itemSolicitudData.getCantidad().setText("1");
+				itemSolicitudData.getCantidad().setEnabled(false);
+				itemSolicitudData.getCantidad().setReadOnly(true);
+			}
+			else
+				ventaSimIngSim.setVisible(false);
+			activacionImei.setVisible(false);
+			activacionModelo.setVisible(false);
+			activacionSimSeriePin.setVisible(false);
+			precioCantidad.setVisible(true);
+			precioCantidad.setWidget(0, 1, itemSolicitudData.getPrecioListaItem());
 			break;
 			
 		default:
@@ -265,5 +305,10 @@ public class SoloItemSolicitudUI extends Composite {
 		} else {
 			activacionSimSeriePin.getCellFormatter().setWidth(0, 2, "50");
 		}
+	}
+	
+//	MGR - #6757
+	public boolean isPanelImeiSimRetiroEnSucursalVisible(){
+		return imeiSimRetiroEnSucursal.isVisible();
 	}
 }

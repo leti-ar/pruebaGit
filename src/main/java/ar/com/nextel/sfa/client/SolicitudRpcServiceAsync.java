@@ -221,7 +221,9 @@ public interface SolicitudRpcServiceAsync {
 
 	public void sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas, AsyncCallback<Integer> callback);
 	
-	public void validarSIM_IMEI(SolicitudServicioDto solicitud, AsyncCallback<List<String>> callback);
+//	MGR - Esta llamada dejo de usarse en la version 1.15.12.5 de la clase EditarSSUIController.java,
+//	la comento por que quedo de mas
+//	public void validarSIM_IMEI(SolicitudServicioDto solicitud, AsyncCallback<List<String>> callback);
 
 //	MGR - RQN 2328
 	public void validarAreaBilling(String numeroAPortar, AsyncCallback<Boolean> callback);

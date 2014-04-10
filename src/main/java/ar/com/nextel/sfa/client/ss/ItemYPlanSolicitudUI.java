@@ -1,6 +1,5 @@
 package ar.com.nextel.sfa.client.ss;
 
-import ar.com.nextel.model.solicitudes.beans.IMEI;
 import ar.com.nextel.sfa.client.constant.Sfa;
 import ar.com.nextel.sfa.client.context.ClientContext;
 
@@ -9,7 +8,6 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -31,7 +29,6 @@ public class ItemYPlanSolicitudUI extends Composite {
 	//MGR - #1039 - Necesito poder identificar la tabla para poder ocultarla
 	private Grid table;
 	private EditarSSUIController controller;
-	private FlexTable imeiSimRetiroEnSucursal;
 	
 	public ItemYPlanSolicitudUI(SoloItemSolicitudUI soloItemSolicitudUI,
 			ItemSolicitudUIData itemSolicitudUIData,EditarSSUIController controller) {
@@ -134,9 +131,11 @@ public class ItemYPlanSolicitudUI extends Composite {
 			cppAliasReservaTable.getCellFormatter().setVisible(0, 1, false);
 			cppAliasReservaTable.getCellFormatter().setVisible(0, 2, false);
 			cppAliasReservaTable.getCellFormatter().setVisible(0, 3, false);
-			soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_ACTIVACION_ONLINE);
+//			MGR - #6757
+			soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_ACTIVACION_ONLINE, controller);
 		} else {
-			soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_ACTIVACION);
+//			MGR - #6757
+			soloItemSolicitudUI.setLayout(SoloItemSolicitudUI.LAYOUT_ACTIVACION, controller);
 		}
 		return this;
 	}
@@ -190,10 +189,4 @@ public class ItemYPlanSolicitudUI extends Composite {
 		roamingTable.setVisible(true);
 		return this;
 	}
-
-	public FlexTable getImeiSimRetiroEnSucursal() {
-		return imeiSimRetiroEnSucursal;
-	}
-	
-	
 }
