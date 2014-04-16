@@ -44,6 +44,7 @@ import ar.com.nextel.sfa.client.enums.TipoTarjetaEnum;
 import ar.com.nextel.sfa.client.enums.TipoTelefonoEnum;
 import ar.com.nextel.sfa.client.image.IconFactory;
 import ar.com.nextel.sfa.client.util.FormUtils;
+import ar.com.nextel.sfa.client.util.RegularExpressionConstants;
 import ar.com.nextel.sfa.client.validator.GwtValidator;
 import ar.com.nextel.sfa.client.widget.DualPanel;
 import ar.com.nextel.sfa.client.widget.MessageDialog;
@@ -1377,11 +1378,11 @@ public class CuentaDatosForm extends Composite {
 			if (!cuentaUIData.getFacturaElectronicaPanel().getEmail().getText().equals("") 
 					&& isEnablePermisoObligatorio 
 					&& cuentaUIData.getFacturaElectronicaPanel().isFacturaElectronicaChecked())
-				validator.addTarget(cuentaUIData.getFacturaElectronicaPanel().getEmail()).mail(
+				validator.addTarget(cuentaUIData.getFacturaElectronicaPanel().getEmail()).regEx(
 						Sfa.constant().ERR_EMAIL_NO_VALIDO().replaceAll(
 								"\\{1\\}",
 								cuentaUIData.getFacturaElectronicaPanel().getEmailLabel().getText().concat(
-										" " + Sfa.constant().habilitarFacturaElectronica())));
+										" " + Sfa.constant().habilitarFacturaElectronica())),RegularExpressionConstants.email);
 
 		if (!cuentaUIData.getTelPrincipalTextBox().getArea().getText().equals("")
 				&& cuentaUIData.getTelPrincipalTextBox().getArea().isEnabled())
