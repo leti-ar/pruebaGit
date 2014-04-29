@@ -22,6 +22,7 @@ import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.MessageDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
+import ar.com.nextel.sfa.client.dto.RegistroVendedorDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
@@ -431,12 +432,10 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.sonConfigurablesPorAPG(lineas, callback);
 	}
 	
-//	MGR - Esta llamada dejo de usarse en la version 1.15.12.5 de la clase EditarSSUIController.java,
-//	la comento por que quedo de mas
-//	public void validarSIM_IMEI(SolicitudServicioDto solicitud, DefaultWaitCallback<List<String>> callback) {
-//		WaitWindow.show();
-//		solicitudRpcServiceAsync.validarSIM_IMEI(solicitud, callback);
-//	}
+	public void validarSIM_IMEI(SolicitudServicioDto solicitud, DefaultWaitCallback<List<String>> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.validarSIM_IMEI(solicitud, callback);
+	}
 
 //	MGR - RQN 2328
 	public void validarAreaBilling(String numeroAPortar, DefaultWaitCallback<Boolean> callback) {
@@ -477,5 +476,10 @@ public class SolicitudRpcServiceDelegate {
 	public void validarParaFacturar(SolicitudServicioDto solicitudServicioDto, DefaultWaitCallback<List<MessageDto>> callback){
 		WaitWindow.show();
 		solicitudRpcServiceAsync.validarParaFacturar(solicitudServicioDto, callback);
+	}
+
+	public void buscarRegistrosVendedorPV(Long idVendedor, DefaultWaitCallback<List<RegistroVendedorDto>> callback) {
+		WaitWindow.show();
+		solicitudRpcServiceAsync.buscarRegistrosVendedorPV(idVendedor, callback);
 	}
 }

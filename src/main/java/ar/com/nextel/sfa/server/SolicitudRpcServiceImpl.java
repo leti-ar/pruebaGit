@@ -70,6 +70,7 @@ import ar.com.nextel.exception.SFAServerException;
 import ar.com.nextel.framework.repository.Repository;
 import ar.com.nextel.framework.repository.hibernate.HibernateRepository;
 import ar.com.nextel.model.cuentas.beans.Cuenta;
+import ar.com.nextel.model.cuentas.beans.RegistroVendedor;
 import ar.com.nextel.model.cuentas.beans.TipoVendedor;
 import ar.com.nextel.model.cuentas.beans.Vendedor;
 import ar.com.nextel.model.personas.beans.Localidad;
@@ -136,6 +137,7 @@ import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
 import ar.com.nextel.sfa.client.dto.ProveedorDto;
+import ar.com.nextel.sfa.client.dto.RegistroVendedorDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
@@ -998,13 +1000,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		Long tipoSolicitudVentaEquipos 	   = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_VENTA_EQUIPOS)).getId();
 		Long tipoSolicitudActivacion       = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION)).getId();
 		Long tipoSolicitudActivacionOnline = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_BASE_ACTIVACION_ONLINE)).getId();
-		Long tipoSolicitudVentaSimCardPostpag = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_VENTA_SIMCARD_POSPAGO)).getId();
-		Long tipoSolicitudSimCardServPostpago = ((TipoSolicitudBase)knownInstanceRetriever.getObject(KnownInstanceIdentifier.TIPO_SOLICITUD_SIMCARD_SERVICIO_POSPAGO)).getId();
 
-		//los servicios de permanencia solo deben visualizarse para ventas, activaciones comunes y online y ventas de sim postpagas.
+		//los servicios de permanencia solo deben visualizarse para ventas y activaciones comunes y online.
 		if(!tipoSolicitud.equals(tipoSolicitudVentaEquipos) && !tipoSolicitud.equals(tipoSolicitudActivacion) 
-			&& !tipoSolicitud.equals(tipoSolicitudActivacionOnline) && !tipoSolicitud.equals(tipoSolicitudVentaSimCardPostpag)
-			&& !tipoSolicitud.equals(tipoSolicitudSimCardServPostpago)){
+			&& !tipoSolicitud.equals(tipoSolicitudActivacionOnline)){
 			
 			ServicioAdicional servicioSubsidioActivacion = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_ACTIVACION);
 			ServicioAdicional servicioBonifSubsidioActivacion = (ServicioAdicional)this.knownInstanceRetriever.getObject(KnownInstanceIdentifier.SERVICIO_ADICIONAL_BONIF_ACTIVACION);
@@ -1129,8 +1128,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			}
 			
 //			MGR - Refactorizacion del cierre
-			if((!result.isError() && resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO) 
-					|| (!result.isError() && solicitudServicio.getGrupoSolicitud().isVtaSoloSIM())) {//#6705
+			if(!result.isError() && resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO){
 				
 //				MGR - Refactorizacion del cierre
 				validarSIMRepetidos(solicitudServicio, result);
@@ -2639,12 +2637,6 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					mensaje += (i == 0 ? "" : ", ") + linea.getAlias();
 					i++;
 				}
-			} //MGR - Vta solo sim verifica que la sim no este negada 
-			else if(linea.esDeTipoVentaSoloSim()){ 
-				if(verificarNegativeFiles(linea.getNumeroSimcard()) != null){
-					mensaje += (i == 0 ? "" : ", ") + linea.getAlias();
-					i++;
-				}
 			}
 		}
 		if (!"".equals(mensaje)) {
@@ -3200,12 +3192,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
         return null;
 	}
 
-//	MGR - Esta llamada dejo de usarse en la version 1.15.12.5 de la clase EditarSSUIController.java,
-//	la comento por que quedo de mas
-//	public List<String> validarSIM_IMEI(SolicitudServicioDto solicitudDTO)throws RpcExceptionMessages{
-//		SolicitudServicio solicitud = this.solicitudBusinessService.mapperSSDtoToSolicitudServicio(solicitudDTO,this.mapper);
-//		return solicitudBusinessService.validarSIM_IMEI(solicitud);
-//	}
+	public List<String> validarSIM_IMEI(SolicitudServicioDto solicitudDTO)throws RpcExceptionMessages{
+		SolicitudServicio solicitud = this.solicitudBusinessService.mapperSSDtoToSolicitudServicio(solicitudDTO,this.mapper);
+		return solicitudBusinessService.validarSIM_IMEI(solicitud);
+	}
 
 //	MGR - RQN 2328
 	public boolean validarAreaBilling(String numeroAPortar) throws RpcExceptionMessages {
@@ -3324,8 +3314,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			}
 			
 			CierreYPassResult resultadoCierre = comprobarCierreYPassAutomatico(solicitudServicio, null, false, result);
-			if((!result.isError() && resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO) 
-					|| (!result.isError() && solicitudServicio.getGrupoSolicitud().isVtaSoloSIM())) {//#6705 / MGR - #6706
+			if(!result.isError() && resultadoCierre.getPuedeCerrar() == CierreYPassResult.CIERRE_PASS_AUTOMATICO){
 				validarSIMRepetidos(solicitudServicio, result);
 			}
 			
@@ -3340,6 +3329,12 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			throw ExceptionUtil.wrap(e);
 		}
 		return mensajes;
+	}
+
+	private static String GET_REGISTROS_VENDEDOR_PV = "GET_REGISTROS_VENDEDOR_PV";
+	public List<RegistroVendedorDto> buscarRegistrosVendedorPV(Long idVendedor) {
+		List<RegistroVendedor> listRegistroVend = repository.executeCustomQuery(GET_REGISTROS_VENDEDOR_PV, idVendedor);
+		return mapper.convertList(listRegistroVend, RegistroVendedorDto.class);
 	}
 }
 

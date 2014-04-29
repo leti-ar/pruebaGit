@@ -22,6 +22,7 @@ import ar.com.nextel.sfa.client.dto.LineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.OrigenSolicitudDto;
 import ar.com.nextel.sfa.client.dto.PersonaDto;
+import ar.com.nextel.sfa.client.dto.RegistroVendedorDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
 import ar.com.nextel.sfa.client.dto.SolicitudServicioDto;
@@ -168,6 +169,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 	private CheckBox retiraEnSucursal;
     private RegexTextBox numeroSSWeb; //Mejoras Perfil Telemarketing. REQ#2 - Nro de SS Web en la Solicitud de Servicio.
     
+    private ListBox puntoVenta; //NIIAR784 - CREDITOS PDV
+    
 	public EditarSSUIData(EditarSSUIController controller) {
 		this.controller = controller;
 		serviciosAdicionales = new ArrayList();
@@ -269,9 +272,17 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		fields.add(vendedor = new ListBox(""));
 		vendedor.addChangeListener(new ChangeListener() {
 			public void onChange(Widget arg0) {
+				puntoVenta.clear();
 				VendedorDto vendSelected = (VendedorDto)vendedor.getSelectedItem();
 				if( vendSelected != null && vendSelected.getApellido() != null ){
 					sucursalOrigen.selectByValue(((VendedorDto)vendedor.getSelectedItem()).getIdSucursal().toString());
+					//NIIAR784 - CREDITOS PDV
+					SolicitudRpcService.Util.getInstance().buscarRegistrosVendedorPV(vendSelected.getId(), new DefaultWaitCallback<List<RegistroVendedorDto>>() {
+						@Override
+						public void success(List<RegistroVendedorDto> result) {
+							armarComboPDV(result);
+						}
+					});
 				}
 			}
 		});
@@ -345,6 +356,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 									retiraEnSucursal.getValue()));
 				}
 			});
+		
+		fields.add(puntoVenta = new ListBox(""));//NIIAR784 - CREDITOS PDV
 		
 		inicializarBusquedaContratos();
 	}
@@ -570,10 +583,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 		solicitudServicio = solicitud;
 		nss.setText(solicitud.getNumero());
-		
-//		MGR - #6706
-		if(solicitud.getRetiraEnSucursal()!= null && 
-				(solicitud.getGrupoSolicitud().isEquiposAccesorios() || solicitud.getGrupoSolicitud().isVtaSoloSIM())){
+	
+		if(solicitud.getGrupoSolicitud().isEquiposAccesorios() && solicitud.getRetiraEnSucursal()!= null){
 			retiraEnSucursal.setValue(solicitud.getRetiraEnSucursal());
 		}
 		
@@ -675,6 +686,19 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		enviarA.setText(textoDeEnvio);
 		titulo.setText("Nro de SS:" + ss + "  Razon Social:" +solicitudServicio.getCuenta().getPersona().getRazonSocial()  );
 		vendedor.setSelectedItem(solicitudServicio.getVendedor());
+		//NIIAR784 - CREDITOS PDV
+		if (solicitudServicio.getVendedor() != null) {//&& ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())) {
+			puntoVenta.clear();
+			SolicitudRpcService.Util.getInstance().buscarRegistrosVendedorPV(solicitudServicio.getVendedor().getId(), new DefaultWaitCallback<List<RegistroVendedorDto>>() {
+				@Override
+					public void success(List<RegistroVendedorDto> result) {
+					armarComboPDV(result);
+					if (solicitudServicio.getUserNamePuntoVenta() != null) {
+						puntoVenta.selectByText(solicitudServicio.getUserNamePuntoVenta());
+					}
+				}
+			});
+		}
 		if(solicitudServicio.getIdSucursal() != null){
 			sucursalOrigen.selectByValue(solicitudServicio.getIdSucursal().toString());
 		} else{ //Para que cargue correctamente la opcion del combo
@@ -701,10 +725,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //					format(solicitudServicio.getFechaEstado()) : "");
 //		}
 		//Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
-		if (ClientContext.getInstance().getVendedor().isTelemarketing() &&
-				(solicitud.getGrupoSolicitud().isEquiposAccesorios() ||
-//						MGR - #6719
-						solicitud.getGrupoSolicitud().isVtaSoloSIM())) {
+		if (ClientContext.getInstance().getVendedor().isTelemarketing()
+				&& solicitud.getGrupoSolicitud().isEquiposAccesorios()) {
 			numeroSSWeb.setText(solicitud.getNumeroSSWeb());
 		}
 	}
@@ -777,6 +799,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())) {
 			VendedorDto vendedorDto = (VendedorDto) vendedor.getSelectedItem();
 			solicitudServicio.setVendedor(vendedorDto);
+			solicitudServicio.setUserNamePuntoVenta(puntoVenta.getSelectedItemText());//NIIAR784 - CREDITOS PDV
 		}
 		
 		//MGR - #1027
@@ -805,9 +828,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 			solicitudServicio.setEmail(email.getText());
 		}
 		
-//		MGR - #6706
-		if(solicitudServicio.getGrupoSolicitud().isEquiposAccesorios() ||
-				solicitudServicio.getGrupoSolicitud().isVtaSoloSIM()){
+		if(solicitudServicio.getGrupoSolicitud().isEquiposAccesorios()){
 			solicitudServicio.setRetiraEnSucursal(retiraEnSucursal.getValue());
 		}
 		
@@ -827,10 +848,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //			solicitudServicio.setClienteHistorico(clienteHistorico);
 //		}
 //		Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
-		if (ClientContext.getInstance().getVendedor().isTelemarketing() && 
-				(solicitudServicio.getGrupoSolicitud().isEquiposAccesorios()
-//						MGR - #6719
-						|| solicitudServicio.getGrupoSolicitud().isVtaSoloSIM())) {
+		if (ClientContext.getInstance().getVendedor().isTelemarketing()
+				&& solicitudServicio.getGrupoSolicitud().isEquiposAccesorios()) {
 			solicitudServicio.setNumeroSSWeb(numeroSSWeb.getText());
 		}		
 		return solicitudServicio;
@@ -857,6 +876,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
 			validator.addTarget(vendedor).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedor()));
+			validator.addTarget(puntoVenta).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "PDV"));	//NIIAR784 - CREDITOS PDV		
 		}
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
 			validator.addTarget(sucursalOrigen).required(
@@ -922,7 +943,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 
 	private boolean existeSIM_IMEIRepetidas(GwtValidator validator) {
 		boolean haySIM_IMEIRepetidas = false;
-		if (solicitudServicio.getRetiraEnSucursal() || solicitudServicio.getGrupoSolicitud().isVtaSoloSIM()) {//#6705
+		if (solicitudServicio.getRetiraEnSucursal()) {
 			for (LineaSolicitudServicioDto linea : solicitudServicio.getLineas()) {
 				int cantIMEI = 0;
 				int cantSIM = 0;
@@ -976,6 +997,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
 			validator.addTarget(vendedor).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedor()));
+			validator.addTarget(puntoVenta).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "PDV"));//NIIAR784 - CREDITOS PDV
 		}
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
 			validator.addTarget(sucursalOrigen).required(
@@ -1048,19 +1071,12 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 //		}
 		
 //		Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
-		if (ClientContext.getInstance().getVendedor().isTelemarketing() &&
-				(solicitudServicio.getGrupoSolicitud().isEquiposAccesorios() ||
-//						MGR - #6719
-						solicitudServicio.getGrupoSolicitud().isVtaSoloSIM())) {
+		if (ClientContext.getInstance().getVendedor().isTelemarketing()
+				&& solicitudServicio.getGrupoSolicitud().isEquiposAccesorios()) {
 			OrigenSolicitudDto origenSolicitudDto = (OrigenSolicitudDto) origen.getSelectedItem();
 			if (origenSolicitudDto != null && origenSolicitudDto.getUsaNumeroSSWeb()) {
 				validator.addTarget(numeroSSWeb).required(Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "Nro SS Web"));
 			}
-		}
-		
-		//#6705
-		if(existeSIM_IMEIRepetidas(validator)){
-			validator.addError("No puede tener la misma SIM o IMEI en mas de una linea");
 		}
 		
 		validator.fillResult();
@@ -1369,14 +1385,6 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		}
 		return false;
 	}
-	
-//	MGR - #6719
-	public boolean isVentaSoloSIM(){
-		if (solicitudServicio != null && solicitudServicio.getGrupoSolicitud() != null) {
-			return solicitudServicio.getGrupoSolicitud().isVtaSoloSIM();
-		}
-		return false;
-	}
 
 	/** Indica si contiene lineas de solicitud con item BlackBerry */
 	public boolean hasItemBB() {
@@ -1479,6 +1487,7 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		if (ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())) {
 			VendedorDto vendedorDto = (VendedorDto) vendedor.getSelectedItem();
 			solicitudServicio.setVendedor(vendedorDto);
+			solicitudServicio.setUserNamePuntoVenta(puntoVenta.getSelectedItemText());//NIIAR784 - CREDITOS PDV
 		}
 		
 		if(canalVtas.getText().equals(CANAL_VTA_TRANSFERENCIA)){
@@ -1573,6 +1582,8 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
 			validator.addTarget(vendedor).required(
 					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, Sfa.constant().vendedor()));
+			validator.addTarget(puntoVenta).required(
+					Sfa.constant().ERR_CAMPO_OBLIGATORIO().replaceAll(V1, "PDV"));//NIIAR784 - CREDITOS PDV
 		}
 		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_SUCURSAL_ORIGEN.getValue())){
 			validator.addTarget(sucursalOrigen).required(
@@ -1880,4 +1891,18 @@ public class EditarSSUIData extends UIData implements ChangeListener, ClickHandl
 		return numeroSSWeb;
 	}
 	
+	public ListBox getPuntoVenta() {
+		return puntoVenta;
+	}
+	
+	public void setPuntoVenta(ListBox puntoVenta) {
+		this.puntoVenta = puntoVenta;
+	}
+	
+	private void armarComboPDV(List<RegistroVendedorDto> result) {
+		puntoVenta.addAllItems(result);
+		if (result.size() == 1) {
+			puntoVenta.setSelectedIndex(1);
+		}
+	}
 }

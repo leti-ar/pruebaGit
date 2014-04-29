@@ -22,6 +22,7 @@ import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.MessageDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
+import ar.com.nextel.sfa.client.dto.RegistroVendedorDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
@@ -221,9 +222,7 @@ public interface SolicitudRpcServiceAsync {
 
 	public void sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas, AsyncCallback<Integer> callback);
 	
-//	MGR - Esta llamada dejo de usarse en la version 1.15.12.5 de la clase EditarSSUIController.java,
-//	la comento por que quedo de mas
-//	public void validarSIM_IMEI(SolicitudServicioDto solicitud, AsyncCallback<List<String>> callback);
+	public void validarSIM_IMEI(SolicitudServicioDto solicitud, AsyncCallback<List<String>> callback);
 
 //	MGR - RQN 2328
 	public void validarAreaBilling(String numeroAPortar, AsyncCallback<Boolean> callback);
@@ -242,4 +241,6 @@ public interface SolicitudRpcServiceAsync {
 	
 //	MGR - Validaciones previas a la facturacion
 	public void validarParaFacturar(SolicitudServicioDto solicitudServicioDto, AsyncCallback<List<MessageDto>> callback);
+
+	public void buscarRegistrosVendedorPV(Long idVendedor, AsyncCallback< List<RegistroVendedorDto>> callback);
 }

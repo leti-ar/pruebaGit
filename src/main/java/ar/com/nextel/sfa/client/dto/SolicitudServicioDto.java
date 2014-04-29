@@ -98,7 +98,7 @@ public class SolicitudServicioDto implements IsSerializable {
 	private String customerNumberFactura;
 	
 	private RemitoDTO remito;
-	
+	private String userNamePuntoVenta;//NIIAR784 - CREDITOS PDV
 	
     public SolicitudServicioDto() {
 		solicitudServicioGeneracion = new SolicitudServicioGeneracionDto();
@@ -621,6 +621,14 @@ public class SolicitudServicioDto implements IsSerializable {
 
 	public void setRemito(RemitoDTO remito) {
 		this.remito = remito;
+	}
+	
+	public String getUserNamePuntoVenta() {
+		return userNamePuntoVenta;
+	}
+	
+	public void setUserNamePuntoVenta(String userNamePuntoVenta) {
+		this.userNamePuntoVenta = userNamePuntoVenta;
 	}
 	
 }

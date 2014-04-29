@@ -147,7 +147,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 	private Widget getNssLayout() {
 		//nnsLayout = new Grid(1, 6);
 		//MGR - #1027
-		nnsLayout = new Grid(1, 16);
+		nnsLayout = new Grid(1, 18);
 		nnsLayout.addStyleName("layout");
 		refreshNssLayout();
 		return nnsLayout;
@@ -201,9 +201,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			nnsLayout.clearCell(0, 5);
 		}
 		
-//		MGR - #6706
-		if (ClientContext.getInstance().getVendedor().isVendedorSalon() && 
-				(editarSSUIData.isEquiposAccesorios() || editarSSUIData.isVentaSoloSIM())) {
+		if (ClientContext.getInstance().getVendedor().isVendedorSalon() && editarSSUIData.isEquiposAccesorios()) {
 			nnsLayout.setHTML(0, 6, Sfa.constant().retiraEnSucursal());
 			nnsLayout.setWidget(0, 7, editarSSUIData.getRetiraEnSucursal());
 		} else {
@@ -234,16 +232,22 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		}
 		
 //		Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
-		if (ClientContext.getInstance().getVendedor().isTelemarketing()	&& 
-//				MGR - #6719
-				(editarSSUIData.isEquiposAccesorios() || editarSSUIData.isVentaSoloSIM())) {
+		if (ClientContext.getInstance().getVendedor().isTelemarketing()	&& editarSSUIData.isEquiposAccesorios()) {
 			nnsLayout.setHTML(0, 14, Sfa.constant().nroSSWeb());
 			nnsLayout.setWidget(0, 15, editarSSUIData.getNumeroSSWeb());
 		} else {
 			nnsLayout.clearCell(0, 14);
 			nnsLayout.clearCell(0, 15);
 		}
-
+//		NIIAR784 - CREDITOS PDV
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())) {
+			nnsLayout.setHTML(0, 16, Sfa.constant().puntoVenta());
+			nnsLayout.setWidget(0, 17, editarSSUIData.getPuntoVenta());
+		} else {
+			nnsLayout.clearCell(0, 16);
+			nnsLayout.clearCell(0, 17);
+		}
+		
 //		if(ClientContext.getInstance().checkPermiso(PermisosEnum.AGREGAR_DESCUENTOS.getValue())) {
 //			nnsLayout.setHTML(0, 6, "Descuento Total:");
 //			nnsLayout.setWidget(0, 7, editarSSUIData.getDescuentoTotal());
@@ -569,9 +573,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 									public void execute() {
 										removeDetalleLineaSSRow(row);
 										asignarNroSSPortabilidad();
-//										MGR - #6706
-										if (ClientContext.getInstance().getVendedor().isVendedorSalon() && 
-												(editarSSUIData.isEquiposAccesorios() || editarSSUIData.isVentaSoloSIM())) {
+										if (ClientContext.getInstance().getVendedor().isVendedorSalon() && editarSSUIData.isEquiposAccesorios()) {
 											editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
 										}
 									};
@@ -620,9 +622,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 											public void execute() {
 												removeDetalleLineaSSRow(row);
 												asignarNroSSPortabilidad();
-//												MGR - #6706
-												if (ClientContext.getInstance().getVendedor().isVendedorSalon() && 
-														(editarSSUIData.isEquiposAccesorios() || editarSSUIData.isVentaSoloSIM())) {
+												if (ClientContext.getInstance().getVendedor().isVendedorSalon() && editarSSUIData.isEquiposAccesorios()) {
 													editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
 												}
 											};
@@ -737,8 +737,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			Command aceptarCommand = new Command() {
 				public void execute() {
 					LineaSolicitudServicioDto lineaSolicitudServicio = itemSolicitudDialog.getItemSolicitudUIData().getLineaSolicitudServicio();
-					if(!itemSolicitudDialog.getItemSolicitudUIData().getPortabilidadPanel().getChkPortabilidad().getValue())
-						lineaSolicitudServicio.setPortabilidad(null);
+					if(!itemSolicitudDialog.getItemSolicitudUIData().getPortabilidadPanel().getChkPortabilidad().getValue())lineaSolicitudServicio.setPortabilidad(null);
 					addLineaSolicitudServicio(lineaSolicitudServicio);
 					
 					// Genera los numeros de solicitudes de portabilidad
@@ -1101,8 +1100,7 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		editarSSUIData.getFacturacion().setEnabled(controller.isEditable());
 		editarSSUIData.getAclaracion().setEnabled(controller.isEditable());
 		editarSSUIData.getEmail().setEnabled(controller.isEditable());
-//		MGR - #6706
-		if (controller.getEditarSSUIData().isEquiposAccesorios() || controller.getEditarSSUIData().isVentaSoloSIM()) {
+		if (controller.getEditarSSUIData().isEquiposAccesorios()) {
 			editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
 //			editarSSUIData.getRetiraEnSucursal().setEnabled(detalleSS.getRowCount()>0);
 		}
@@ -1177,13 +1175,6 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		editarSSUIData.getNflota().setEnabled(habilitar);
 		editarSSUIData.getOrigen().setEnabled(habilitar);
 		editarSSUIData.getRetiraEnSucursal().setEnabled(!this.controller.tieneLineasSolicitud() && habilitar);
-//		MGR - #6706 (esto se trajo del brach mejoras_pospago
-		// para el vendedor salon con segmento individuo el checkbox debe estar seleccionado y no editable
-		if (ClientContext.getInstance().getVendedor().isVendedorSalon()	&& !editarSSUIData.getCuenta().isEmpresa()
-			&& (controller.getEditarSSUIData().isEquiposAccesorios() || controller.getEditarSSUIData().isVentaSoloSIM())){
-			editarSSUIData.getRetiraEnSucursal().setValue(true);
-			editarSSUIData.getRetiraEnSucursal().setEnabled(false);
-		}
 		editarSSUIData.getVendedor().setEnabled(habilitar);
 		editarSSUIData.getSucursalOrigen().setEnabled(habilitar);
 		editarSSUIData.getOrdenCompra().setEnabled(habilitar);

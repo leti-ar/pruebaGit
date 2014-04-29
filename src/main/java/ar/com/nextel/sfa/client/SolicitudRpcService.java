@@ -22,6 +22,7 @@ import ar.com.nextel.sfa.client.dto.ListaPreciosDto;
 import ar.com.nextel.sfa.client.dto.MessageDto;
 import ar.com.nextel.sfa.client.dto.ModeloDto;
 import ar.com.nextel.sfa.client.dto.PlanDto;
+import ar.com.nextel.sfa.client.dto.RegistroVendedorDto;
 import ar.com.nextel.sfa.client.dto.ResultadoReservaNumeroTelefonoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalIncluidoDto;
 import ar.com.nextel.sfa.client.dto.ServicioAdicionalLineaSolicitudServicioDto;
@@ -234,10 +235,8 @@ public interface SolicitudRpcService extends RemoteService {
 	public boolean validarLineasPorSegmento(SolicitudServicioDto solicitud) throws RpcExceptionMessages;
 
 	public int sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas) throws RpcExceptionMessages;
-
-//	MGR - Esta llamada dejo de usarse en la version 1.15.12.5 de la clase EditarSSUIController.java,
-//	la comento por que quedo de mas
-//	public List<String> validarSIM_IMEI(SolicitudServicioDto solicitud)throws RpcExceptionMessages;
+	
+	public List<String> validarSIM_IMEI(SolicitudServicioDto solicitud)throws RpcExceptionMessages;
 
 //	MGR - RQN 2328
 	boolean validarAreaBilling(String numeroAPortar) throws RpcExceptionMessages;
@@ -258,5 +257,7 @@ public interface SolicitudRpcService extends RemoteService {
 	
 //	MGR - Validaciones previas a la facturacion
 	List<MessageDto> validarParaFacturar(SolicitudServicioDto solicitudServicioDto)	throws RpcExceptionMessages;
+
+	List<RegistroVendedorDto> buscarRegistrosVendedorPV(Long idVendedor);
 }
 

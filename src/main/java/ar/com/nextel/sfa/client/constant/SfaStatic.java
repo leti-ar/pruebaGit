@@ -3460,4 +3460,12 @@ public interface SfaStatic extends com.google.gwt.i18n.client.Constants {
   @Key("ERR_GAMA_INFERIOR")
   String ERR_GAMA_INFERIOR();
   
+  /**
+   * Translated "<span class=\"req\">PDV:</span>".
+   * 
+   * @return translated "<span class=\"req\">PDV:</span>"
+   */
+  @DefaultStringValue("<span class=\"req\">PDV:</span>")
+  @Key("PDV")
+  String puntoVenta();
 }

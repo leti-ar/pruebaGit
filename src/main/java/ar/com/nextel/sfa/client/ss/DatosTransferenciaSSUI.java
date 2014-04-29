@@ -176,7 +176,7 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 	}
 
 	private Widget getNssLayout() {
-		nnsLayout = new Grid(1, 8);
+		nnsLayout = new Grid(1, 10);
 		nnsLayout.addStyleName("layout");
 		refreshNssLayout();
 		return nnsLayout;
@@ -319,10 +319,17 @@ public class DatosTransferenciaSSUI extends Composite implements ClickHandler {
 			editarSSUIData.getSucursalOrigen().setEnabled(controller.isEditable());
 		}
 		
+		//NIIAR784 - CREDITOS PDV
+		if(ClientContext.getInstance().checkPermiso(PermisosEnum.VER_COMBO_VENDEDOR.getValue())){
+			nnsLayout.setHTML(0, 8, Sfa.constant().puntoVenta());
+			nnsLayout.setWidget(0, 9, editarSSUIData.getPuntoVenta());
+		}
+		
 		editarSSUIData.getNss().setEnabled(controller.isEditable());
 		editarSSUIData.getOrigenTR().setEnabled(controller.isEditable());
 		editarSSUIData.getVendedor().setEnabled(controller.isEditable());
 		editarSSUIData.getSucursalOrigen().setEnabled(controller.isEditable());
+		editarSSUIData.getPuntoVenta().setEnabled(controller.isEditable());
 	}
 	
 	private void refresObsLayout(){
