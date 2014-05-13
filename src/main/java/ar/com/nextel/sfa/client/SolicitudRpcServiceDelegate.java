@@ -432,10 +432,12 @@ public class SolicitudRpcServiceDelegate {
 		solicitudRpcServiceAsync.sonConfigurablesPorAPG(lineas, callback);
 	}
 	
-	public void validarSIM_IMEI(SolicitudServicioDto solicitud, DefaultWaitCallback<List<String>> callback) {
-		WaitWindow.show();
-		solicitudRpcServiceAsync.validarSIM_IMEI(solicitud, callback);
-	}
+//	MGR - Esta llamada dejo de usarse en la version 1.15.12.5 de la clase EditarSSUIController.java,
+//	la comento por que quedo de mas
+//	public void validarSIM_IMEI(SolicitudServicioDto solicitud, DefaultWaitCallback<List<String>> callback) {
+//		WaitWindow.show();
+//		solicitudRpcServiceAsync.validarSIM_IMEI(solicitud, callback);
+//	}
 
 //	MGR - RQN 2328
 	public void validarAreaBilling(String numeroAPortar, DefaultWaitCallback<Boolean> callback) {

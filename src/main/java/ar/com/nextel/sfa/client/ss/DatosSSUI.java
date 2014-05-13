@@ -201,7 +201,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			nnsLayout.clearCell(0, 5);
 		}
 		
-		if (ClientContext.getInstance().getVendedor().isVendedorSalon() && editarSSUIData.isEquiposAccesorios()) {
+//		MGR - #6706
+		if (ClientContext.getInstance().getVendedor().isVendedorSalon() && 
+				(editarSSUIData.isEquiposAccesorios() || editarSSUIData.isVentaSoloSIM())) {
 			nnsLayout.setHTML(0, 6, Sfa.constant().retiraEnSucursal());
 			nnsLayout.setWidget(0, 7, editarSSUIData.getRetiraEnSucursal());
 		} else {
@@ -232,7 +234,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		}
 		
 //		Mejoras Perfil Telemarketing. REQ#2 - N° de SS Web en la Solicitud de Servicio.
-		if (ClientContext.getInstance().getVendedor().isTelemarketing()	&& editarSSUIData.isEquiposAccesorios()) {
+		if (ClientContext.getInstance().getVendedor().isTelemarketing()	&& 
+//				MGR - #6719
+				(editarSSUIData.isEquiposAccesorios() || editarSSUIData.isVentaSoloSIM())) {
 			nnsLayout.setHTML(0, 14, Sfa.constant().nroSSWeb());
 			nnsLayout.setWidget(0, 15, editarSSUIData.getNumeroSSWeb());
 		} else {
@@ -573,7 +577,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 									public void execute() {
 										removeDetalleLineaSSRow(row);
 										asignarNroSSPortabilidad();
-										if (ClientContext.getInstance().getVendedor().isVendedorSalon() && editarSSUIData.isEquiposAccesorios()) {
+//										MGR - #6706
+										if (ClientContext.getInstance().getVendedor().isVendedorSalon() && 
+												(editarSSUIData.isEquiposAccesorios() || editarSSUIData.isVentaSoloSIM())) {
 											editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
 										}
 									};
@@ -622,7 +628,9 @@ public class DatosSSUI extends Composite implements ClickHandler {
 											public void execute() {
 												removeDetalleLineaSSRow(row);
 												asignarNroSSPortabilidad();
-												if (ClientContext.getInstance().getVendedor().isVendedorSalon() && editarSSUIData.isEquiposAccesorios()) {
+//												MGR - #6706
+												if (ClientContext.getInstance().getVendedor().isVendedorSalon() && 
+														(editarSSUIData.isEquiposAccesorios() || editarSSUIData.isVentaSoloSIM())) {
 													editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
 												}
 											};
@@ -737,7 +745,8 @@ public class DatosSSUI extends Composite implements ClickHandler {
 			Command aceptarCommand = new Command() {
 				public void execute() {
 					LineaSolicitudServicioDto lineaSolicitudServicio = itemSolicitudDialog.getItemSolicitudUIData().getLineaSolicitudServicio();
-					if(!itemSolicitudDialog.getItemSolicitudUIData().getPortabilidadPanel().getChkPortabilidad().getValue())lineaSolicitudServicio.setPortabilidad(null);
+					if(!itemSolicitudDialog.getItemSolicitudUIData().getPortabilidadPanel().getChkPortabilidad().getValue())
+						lineaSolicitudServicio.setPortabilidad(null);
 					addLineaSolicitudServicio(lineaSolicitudServicio);
 					
 					// Genera los numeros de solicitudes de portabilidad
@@ -1100,7 +1109,8 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		editarSSUIData.getFacturacion().setEnabled(controller.isEditable());
 		editarSSUIData.getAclaracion().setEnabled(controller.isEditable());
 		editarSSUIData.getEmail().setEnabled(controller.isEditable());
-		if (controller.getEditarSSUIData().isEquiposAccesorios()) {
+//		MGR - #6706
+		if (controller.getEditarSSUIData().isEquiposAccesorios() || controller.getEditarSSUIData().isVentaSoloSIM()) {
 			editarSSUIData.getRetiraEnSucursal().setEnabled(!controller.tieneLineasSolicitud());
 //			editarSSUIData.getRetiraEnSucursal().setEnabled(detalleSS.getRowCount()>0);
 		}
@@ -1175,6 +1185,13 @@ public class DatosSSUI extends Composite implements ClickHandler {
 		editarSSUIData.getNflota().setEnabled(habilitar);
 		editarSSUIData.getOrigen().setEnabled(habilitar);
 		editarSSUIData.getRetiraEnSucursal().setEnabled(!this.controller.tieneLineasSolicitud() && habilitar);
+//		MGR - #6706 (esto se trajo del brach mejoras_pospago
+		// para el vendedor salon con segmento individuo el checkbox debe estar seleccionado y no editable
+		if (ClientContext.getInstance().getVendedor().isVendedorSalon()	&& !editarSSUIData.getCuenta().isEmpresa()
+			&& (controller.getEditarSSUIData().isEquiposAccesorios() || controller.getEditarSSUIData().isVentaSoloSIM())){
+			editarSSUIData.getRetiraEnSucursal().setValue(true);
+			editarSSUIData.getRetiraEnSucursal().setEnabled(false);
+		}
 		editarSSUIData.getVendedor().setEnabled(habilitar);
 		editarSSUIData.getSucursalOrigen().setEnabled(habilitar);
 		editarSSUIData.getOrdenCompra().setEnabled(habilitar);

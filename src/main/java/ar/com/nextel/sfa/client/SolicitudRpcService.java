@@ -235,8 +235,10 @@ public interface SolicitudRpcService extends RemoteService {
 	public boolean validarLineasPorSegmento(SolicitudServicioDto solicitud) throws RpcExceptionMessages;
 
 	public int sonConfigurablesPorAPG(List<LineaSolicitudServicioDto> lineas) throws RpcExceptionMessages;
-	
-	public List<String> validarSIM_IMEI(SolicitudServicioDto solicitud)throws RpcExceptionMessages;
+
+//	MGR - Esta llamada dejo de usarse en la version 1.15.12.5 de la clase EditarSSUIController.java,
+//	la comento por que quedo de mas
+//	public List<String> validarSIM_IMEI(SolicitudServicioDto solicitud)throws RpcExceptionMessages;
 
 //	MGR - RQN 2328
 	boolean validarAreaBilling(String numeroAPortar) throws RpcExceptionMessages;

@@ -29,6 +29,7 @@ public class ItemYPlanSolicitudUI extends Composite {
 	//MGR - #1039 - Necesito poder identificar la tabla para poder ocultarla
 	private Grid table;
 	private EditarSSUIController controller;
+	private FlexTable imeiSimRetiroEnSucursal;
 	
 	public ItemYPlanSolicitudUI(SoloItemSolicitudUI soloItemSolicitudUI,
 			ItemSolicitudUIData itemSolicitudUIData,EditarSSUIController controller) {
@@ -189,4 +190,10 @@ public class ItemYPlanSolicitudUI extends Composite {
 		roamingTable.setVisible(true);
 		return this;
 	}
+
+	public FlexTable getImeiSimRetiroEnSucursal() {
+		return imeiSimRetiroEnSucursal;
+	}
+	
+	
 }
