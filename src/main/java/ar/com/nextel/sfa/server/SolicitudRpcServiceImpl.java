@@ -1179,9 +1179,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 //						solicitudServicio.getCuenta().isTransferido() && 
 //						puedeCerrar == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO && cerrar) {
 				
-				
-				
-				if (!result.isError() && solicitudServicio.getCuenta().isTransferido() && resultadoCierre.getPuedeCerrar() == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO && cerrar) {
+				if (!result.isError()
+						&& solicitudServicio.getCuenta().isTransferido()
+						&& resultadoCierre.getPuedeCerrar() == SolicitudBusinessService.CIERRE_PASS_AUTOMATICO
+						&& cerrar) {
 					
 						/*
 						 * JPP - #3641 - N-IM003607979 - Cierre y Pass Automatico. No genera automaticamente Caratula para anexo , reingreso.
@@ -1409,16 +1410,16 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				LineaSolicitudServicio lineaSS = (LineaSolicitudServicio) iterator.next();
 				String nroSIM = lineaSS.getNumeroSimcard();
 				if(StringUtils.isNotBlank(nroSIM)) {
-					AppLogger.info("##Log Cierre y pass - Verificando que el numero de SIM '"+ nroSIM +"' se encuentre disponible en AVALON");
+					AppLogger.info("##Log Cierre y pass - Verificando que el numero de SIM '"+ nroSIM +"' se encuentre disponible en AVALON", this);
 					String estadoSim = this.getEstadoSim(nroSIM);
 					if(!estadoSim.equals(SIM_DISPONIBLE)) {
-						AppLogger.info("##Log Cierre y pass - El numero de SIM '"+ nroSIM +"' de la linea " + lineaSS.getId() + " NO se encuentra disponible en AVALON");
+						AppLogger.info("##Log Cierre y pass - El numero de SIM '"+ nroSIM +"' de la linea " + lineaSS.getId() + " NO se encuentra disponible en AVALON", this);
 						Message message = (Message) this.messageRetriever.getObject(MessageIdentifier.SIM_NO_DISPONIBLE);
 				        message.addParameters(new Object[] {nroSIM, lineaSS.getAlias()}); //#3139 Nota
 				        result.addMessage(message.getDescription());
 						result.setError(true);
 					} else {
-						AppLogger.info("##Log Cierre y pass - El numero de SIM '"+ lineaSS.getNumeroSimcard() +"' se encuentra disponible");
+						AppLogger.info("##Log Cierre y pass - El numero de SIM '"+ lineaSS.getNumeroSimcard() +"' se encuentra disponible", this);
 					}
 				}
 			}
@@ -2306,7 +2307,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		resultadoVerazScoring = "";
 		
 		//LF #3248 
-		AppLogger.info("#Log Cierre y pass - Validando resultado Veraz/Scoring..");
+		AppLogger.info("#Log Cierre y pass - Validando resultado Veraz/Scoring..", this);
 //		MGR - #3458
 		if(cierrePorVeraz){
 			if ("T".equals(isVerazDisponible)) {
@@ -2315,7 +2316,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 				VerazResponseDTO responseDTO = solicitudBusinessService.consultarVerazCierreSS(ss);
 				
 				AppLogger.info("#Log Cierre y pass - Categoria de Veraz: " + responseDTO.getEstado() + " y mensaje: " +
-						responseDTO.getMensaje());
+						responseDTO.getMensaje(), this);
 				
 				if(responseDTO.getScoreDni() == SCORE_DNI_INEXISTENTE){
 					resultadoVerazScoring = "DOCUMENTO INEXISTENTE";
@@ -2324,10 +2325,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 					resultadoVerazScoring = responseDTO.getMensaje();
 				}
 				
-				AppLogger.info("#Log Cierre y pass - Resultado Veraz Scoring es: -" + resultadoVerazScoring + "-.");
+				AppLogger.info("#Log Cierre y pass - Resultado Veraz Scoring es: -" + resultadoVerazScoring + "-.", this);
 				
 				if ("".equals(resultadoVerazScoring) || resultadoVerazScoring == null) {
-					AppLogger.info("#Log Cierre y pass - No valida condiciones comerciales porque el resultado de Veraz/Scoring es '" + resultadoVerazScoring + "'");
+					AppLogger.info("#Log Cierre y pass - No valida condiciones comerciales porque el resultado de Veraz/Scoring es '" + resultadoVerazScoring + "'", this);
 					return false;
 				}
 			} else {// En caso de no estar activa la consulta al veraz, se deben evaluar 
@@ -2338,9 +2339,9 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		} else {
 			SolicitudServicio ssTemp = repository.retrieve(SolicitudServicio.class, ss.getId());
 			
-			AppLogger.info("#Log Cierre y pass - Se procede a la consulta de Scoring.");
+			AppLogger.info("#Log Cierre y pass - Se procede a la consulta de Scoring.", this);
 			resultadoVerazScoring = solicitudBusinessService.consultarScoring(ssTemp).getCantidadTerminales();
-			AppLogger.info("#Log Cierre y pass - Resultado del scoring: " + resultadoVerazScoring);
+			AppLogger.info("#Log Cierre y pass - Resultado del scoring: " + resultadoVerazScoring, this);
 			
 //			MGR - Cambio -  Si el scoring es mayor a 3, se deja ese valor
 			if (resultadoVerazScoring == null) { //#3321
@@ -2348,7 +2349,7 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 			}
 		}
 
-		AppLogger.info("#Log Cierre y pass - Validando que todas las lineas cumplan con las condiciones comerciales...");
+		AppLogger.info("#Log Cierre y pass - Validando que todas las lineas cumplan con las condiciones comerciales...", this);
 		
 		Set<LineaSolicitudServicio> lineas = ss.getLineas();
 		
@@ -2386,10 +2387,10 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
     				List<Item> items = repository.executeCustomQuery("LISTA_ITEMS_POR_MODELO", linea.getModelo().getId());
         			//LF - Este for es solo para logear los items que corresponden al modelo.
         			if(!items.isEmpty()) {
-    					AppLogger.info("#Log Cierre y pass - Los items que corresponden con el modelo: " + linea.getModelo().getDescripcion() + " son los siguientes: ");
+    					AppLogger.info("#Log Cierre y pass - Los items que corresponden con el modelo: " + linea.getModelo().getDescripcion() + " son los siguientes: ", this);
         				for (Iterator<Item> iterator2 = items.iterator(); iterator2.hasNext();) {
         					Item item = (Item ) iterator2.next();
-        					AppLogger.info("#Log Cierre y pass - " + item.getDescripcion() + " - " + item.getWarehouse().getDescripcion());
+        					AppLogger.info("#Log Cierre y pass - " + item.getDescripcion() + " - " + item.getWarehouse().getDescripcion(), this);
         				}
         			}
         			
@@ -2399,14 +2400,14 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
         			}else{
     	    			for (Iterator<Item> iterator2 = items.iterator(); iterator2.hasNext() && existeCC;) {
     						Item item = (Item ) iterator2.next();
-    						AppLogger.info("#Log Cierre y pass - Evaluando condicion comercial para el item: -" + item.getDescripcion() + " - " + item.getWarehouse().getDescripcion() + "-");
+    						AppLogger.info("#Log Cierre y pass - Evaluando condicion comercial para el item: -" + item.getDescripcion() + " - " + item.getWarehouse().getDescripcion() + "-", this);
     						List<CondicionComercial> condiciones  = repository.executeCustomQuery("condicionesComercialesPorSS", resultadoVerazScoring,
     		    					tipoVendedor.getId(), linea.getTipoSolicitud().getId(), linea.getPlan().getId(), item.getId(), cantEquipos, cantPesos);		
     		    			if (condiciones.size() <= 0) {
     		    				existeCC = false;
-    		    				AppLogger.info("#Log Cierre y pass - El item: -" + item.getDescripcion() + "- NO cumple con las condiciones comerciales");
+    		    				AppLogger.info("#Log Cierre y pass - El item: -" + item.getDescripcion() + "- NO cumple con las condiciones comerciales", this);
     		    			} else {
-    		    				AppLogger.info("#Log Cierre y pass - El item: -" + item.getDescripcion() + "- cumple con las condiciones comerciales");
+    		    				AppLogger.info("#Log Cierre y pass - El item: -" + item.getDescripcion() + "- cumple con las condiciones comerciales", this);
     		    			}
     		    			
     					}
@@ -2424,12 +2425,12 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
     		}
 		}
 		
-		AppLogger.info("#Log Cierre y pass - Dejo el metodo Resultado Veraz Scoring con valor: -" + resultadoVerazScoring + "-.");
+		AppLogger.info("#Log Cierre y pass - Dejo el metodo Resultado Veraz Scoring con valor: -" + resultadoVerazScoring + "-.", this);
 		
 		if (existeCC) {
-			AppLogger.info("#Log Cierre y pass - Todas las lineas cumplen con las condiciones comerciales...");
+			AppLogger.info("#Log Cierre y pass - Todas las lineas cumplen con las condiciones comerciales...", this);
 		} else {
-			AppLogger.info("#Log Cierre y pass - No todas las lineas cumplen con las condiciones comerciales...");
+			AppLogger.info("#Log Cierre y pass - No todas las lineas cumplen con las condiciones comerciales...", this);
 		}
 		return existeCC;
 	}
@@ -2817,13 +2818,13 @@ public class SolicitudRpcServiceImpl extends RemoteService implements SolicitudR
 		for (Iterator iterator = lineas.iterator(); iterator.hasNext();) {
 			LineaSolicitudServicio lineaSS = (LineaSolicitudServicio) iterator.next();
 			if(StringUtils.isNotBlank(lineaSS.getNumeroSimcard())) {
-				AppLogger.info("##Log Cierre y pass - Verificando si el numero de SIM " + lineaSS.getNumeroSimcard() + " de la linea " + lineaSS.getId() + " ya se encuentra cargada en otra solicitud");
+				AppLogger.info("##Log Cierre y pass - Verificando si el numero de SIM " + lineaSS.getNumeroSimcard() + " de la linea " + lineaSS.getId() + " ya se encuentra cargada en otra solicitud", this);
 				String cantidadSims = (String) repository.executeCustomQuery("SIM_REPETIDO", lineaSS.getNumeroSimcard()).get(0);
 				if(Integer.parseInt(cantidadSims) > 0) {
-					AppLogger.info("##Log Cierre y pass - El numero de SIM ya se encuentra cargada en otra solicitud");
+					AppLogger.info("##Log Cierre y pass - El numero de SIM ya se encuentra cargada en otra solicitud", this);
 					alias.add(lineaSS.getAlias());
 				} else {
-					AppLogger.info("##Log Cierre y pass - El numero de SIM no se encuentra cargada en otra solicitud");
+					AppLogger.info("##Log Cierre y pass - El numero de SIM no se encuentra cargada en otra solicitud", this);
 				}
 			}
 		}

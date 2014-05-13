@@ -1238,7 +1238,7 @@ public class SolicitudBusinessService {
 	 */
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Long crearCaratula(Cuenta cta, String nroSS, String resultadoVerazScoring) {
-		AppLogger.info("##Log Cierre y pass - Se va a crear la caratula.");
+		AppLogger.info("##Log Cierre y pass - Se va a crear la caratula.", this);
 		
 		Caratula caratula = new Caratula();
 		caratula.setNroSS(nroSS);
@@ -1271,7 +1271,7 @@ public class SolicitudBusinessService {
 		caratula.setUsuarioCreacion(sessionContextLoader.getVendedor());
 		repository.save(caratula);
 		
-		AppLogger.info("##Log Cierre y pass - Caratula creada correctamente.");
+		AppLogger.info("##Log Cierre y pass - Caratula creada correctamente.", this);
 		return caratula.getId();
 	}
 	
@@ -1280,14 +1280,14 @@ public class SolicitudBusinessService {
 		CaratulaTransferidaConfig caratulaTransferidaConfig = getCaratulaTransferidaConfig();
 		caratulaTransferidaConfig.setIdCaratula(idCaratula);
 		try {
-			AppLogger.info("##Log Cierre y pass - Transfiriendo caratula...");
+			AppLogger.info("##Log Cierre y pass - Transfiriendo caratula...", this);
 			CaratulaTransferidaResultDto result = (CaratulaTransferidaResultDto) sfaConnectionDAO.execute(caratulaTransferidaConfig);
 			
 			if(result.getDescripcion() == null || result.getDescripcion().equals("")){
-				AppLogger.info("##Log Cierre y pass - Caratula transferida correctamente.");
+				AppLogger.info("##Log Cierre y pass - Caratula transferida correctamente.", this);
 			}else{
 				String error = result.getCodError() + ". " + result.getDescripcion();
-				AppLogger.info("##Log Cierre y pass - Error al transferir la Caratula. " + error);
+				AppLogger.info("##Log Cierre y pass - Error al transferir la Caratula. " + error, this);
 				throw new ConnectionDAOException(error);
 			}
 		} catch (ConnectionDAOException e) {
@@ -1329,7 +1329,7 @@ public class SolicitudBusinessService {
 	}
 	
 	private Long prospectToCliente(Long idCuenta){
-		AppLogger.info("Se procede a transformar el prospect en cliente.");
+		AppLogger.info("Se procede a transformar el prospect en cliente.", this);
 		PreparedStatement stmt = null;
 		CallableStatement cstmt = null;
 		Long codError = -1l;
@@ -1353,17 +1353,17 @@ public class SolicitudBusinessService {
 			
 			codError = cstmt.getLong(2);
 			if (codError == 0L) {
-				AppLogger.info("#Log Cierre y pass - Cliente creado correctamente.");
+				AppLogger.info("#Log Cierre y pass - Cliente creado correctamente.", this);
 			} else {
 				String error = codError + ". "
 						+ cstmt.getString(3);
 				AppLogger.info("#Log Cierre y pass - Hubo un problema al crear al cliente. "
-								+ error);
+								+ error, this);
 				throw new ConnectionDAOException(error);
 			}
 			
 		} catch (Exception e) {
-			AppLogger.info("##Log Cierre y pass - Error al transformar el prospect en cliente.");
+			AppLogger.info("##Log Cierre y pass - Error al transformar el prospect en cliente.", this);
 			AppLogger.error(e);
 		}finally{
 			if (stmt != null) {
@@ -1429,7 +1429,7 @@ public class SolicitudBusinessService {
 	
 //	MGR - Parche de emergencia
 	public int sonConfigurablesPorAPG(List<LineaSolicitudServicio> lineas) {
-		AppLogger.info("#Log Cierre y pass - Validando que todas las líneas sean configurables por APG...");
+		AppLogger.info("#Log Cierre y pass - Validando que todas las líneas sean configurables por APG...", this);
 		int cumple = 0;
 		int cantidadLineasParaValidar = 0; 
 		TipoVendedor tipoVendedor = sessionContextLoader.getVendedor().getTipoVendedor();
@@ -1447,13 +1447,13 @@ public class SolicitudBusinessService {
 			}
 		}
 		if (cumple == cantidadLineasParaValidar) {
-			AppLogger.info("#Log Cierre y pass - Todas las l�neas son configurables por APG");
+			AppLogger.info("#Log Cierre y pass - Todas las l�neas son configurables por APG", this);
 			return CierreYPassResult.CIERRE_PASS_AUTOMATICO;
 		} else if ((cumple < cantidadLineasParaValidar && cumple != 0) ) {
-			AppLogger.info("#Log Cierre y pass - No todas las l�neas son configurables por APG");
+			AppLogger.info("#Log Cierre y pass - No todas las l�neas son configurables por APG", this);
 			return CierreYPassResult.LINEAS_NO_CUMPLEN_CC;
 		} else {
-			AppLogger.info("#Log Cierre y pass - Ninguna l�nea es configurable por APG");			
+			AppLogger.info("#Log Cierre y pass - Ninguna l�nea es configurable por APG", this);			
 			return CierreYPassResult.CIERRE_NORMAL;
 		}
 	}
